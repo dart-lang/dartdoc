@@ -24,7 +24,6 @@ void main(List<String> arguments) {
          [] : results['exclude'].split(',');
 
   Directory currentDir = Directory.current;
-
   new DartDoc(currentDir, excludeLibraries).generate();
 }
 
@@ -40,13 +39,13 @@ void _printUsageAndExit(ArgParser parser) {
 
  ArgParser _createArgsParser() {
    // TODO: more options to be added
-    ArgParser parser = new ArgParser();
-    parser.addOption(
-        'exclude',
-        help: 'a comma-separated list of library names to ignore');
-    parser.addFlag('help',
-        abbr: 'h',
-        negatable: false,
-        help: 'show command help');
-    return parser;
-  }
+  ArgParser parser = new ArgParser();
+  parser.addOption(
+      'exclude',
+      help: 'a comma-separated list of library names to ignore');
+  parser.addFlag('help',
+      abbr: 'h',
+      negatable: false,
+      help: 'show command help');
+  return parser;
+}
