@@ -2,7 +2,9 @@ name: dartdoc
 version: 0.0.1
 author: Dart Team <misc@dartlang.org>
 description: A documentation generator for Dart.
-homepage: https://www.dartlang.org/
+homepage: https://github.com/dart-lang/dartdoc
 dependencies:
   analyzer: any
   args: any
+executables:
+  dartdoc: dartdoc
