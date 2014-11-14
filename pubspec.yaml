@@ -7,4 +7,4 @@ dependencies:
   analyzer: any
   args: any
 executables:
-  dartdoc: dartdoc
+  dartdoc:
