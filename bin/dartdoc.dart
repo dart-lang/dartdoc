@@ -21,7 +21,7 @@ void main(List<String> arguments) {
          [] : results['exclude'].split(',');
 
   var currentDir = Directory.current;
-  new DartDoc(currentDir, excludeLibraries).generate();
+  new DartDoc(currentDir, excludeLibraries).generateDocs();
 }
 
 /// Print help if we are passed the help option or invalid arguments.
