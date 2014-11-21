@@ -59,7 +59,6 @@ class DartDoc {
 
   }
 
-
   List<LibraryElement> parseLibraries(List<String> files) {
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_getSdkDir().path));
 
@@ -99,7 +98,6 @@ class DartDoc {
     // Look relative to the dart executable.
     return new File(Platform.executable).parent.parent;
   }
-
 
   void generateLibrary(LibraryElement library) {
     File f = joinFile(new Directory(out.path), [getFileNameFor(library)]);
@@ -549,5 +547,4 @@ String createAnchor(Element e) {
     return '<a id=${e.name}></a>';
   }
 }
-
 

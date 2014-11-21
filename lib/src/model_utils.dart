@@ -1,26 +1,28 @@
+// Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
 library model_utils;
 
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/constant.dart';
 
-
 String getDocumentationFor(Element e) {
-      if (e == null) {
-        return null;
-      }
+  if (e == null) {
+    return null;
+  }
 
-      String comments = e.computeDocumentationComment();
+  String comments = e.computeDocumentationComment();
 
-      if (comments != null) {
-        return comments;
-      }
+  if (comments != null) {
+    return comments;
+  }
 
-      if (canOverride(e)) {
-        return getDocumentationFor(getOverriddenElement(e));
-      } else {
-        return null;
-      }
+  if (canOverride(e)) {
+    return getDocumentationFor(getOverriddenElement(e));
+  } else {
+    return null;
+  }
 }
 
 String getFileNameFor(LibraryElement library) {
@@ -59,13 +61,11 @@ Object _valueFor(EvaluationResultImpl result) {
 
 MethodElement getOverriddenElementMethod(MethodElement element) {
   ClassElement parent = element.enclosingElement;
-
   for (InterfaceType t in getAllSupertypes(parent)) {
     if (t.getMethod(element.name) != null) {
       return t.getMethod(element.name);
     }
   }
-
   return null;
 }
 
@@ -81,7 +81,6 @@ ClassElement getEnclosingElement(Element e) {
 
 List<InterfaceType> getAllSupertypes(ClassElement c) {
   InterfaceType t = c.type;
-
   return c.allSupertypes;
 
   // TODO:
@@ -89,18 +88,3 @@ List<InterfaceType> getAllSupertypes(ClassElement c) {
   //return _getAllSupertypes(t, []);
 }
 
-//List<InterfaceType> _getAllSupertypes(InterfaceType type, List<InterfaceType> types) {
-//
-//  // TODO:
-//
-//  type.element.get
-//  if (type == null || types.contains(type)) {
-//    return types;
-//  }
-//
-//  types.add(type);
-//
-//
-//
-//  return types;
-//}

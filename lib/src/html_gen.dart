@@ -1,3 +1,6 @@
+// Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
 
 library html_gen;
 
@@ -54,13 +57,10 @@ class HtmlGenerator {
         write('<${tag}>');
       }
     }
-
     indents.add(newLine);
-
     if (newLine) {
       indent = '$indent\t';
     }
-
     tags.add(tag);
   }
 
@@ -82,13 +82,10 @@ class HtmlGenerator {
 
   void endTag() {
     String tag = tags.removeLast();
-
     bool wasIndent = indents.removeLast();
-
     if (wasIndent) {
       indent = indent.substring(0, indent.length - 1);
     }
-
     writeln('</${tag}>');
   }
 
@@ -109,7 +106,6 @@ class HtmlGenerator {
       buffer.write(indent);
       startOfLine = false;
     }
-
     buffer.write(str);
   }
 
@@ -119,8 +115,6 @@ class HtmlGenerator {
     } else {
       write('${str}\n');
     }
-
     startOfLine = true;
   }
-
 }

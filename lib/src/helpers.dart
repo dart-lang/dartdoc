@@ -1,3 +1,7 @@
+// Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 library dartdoc.helpers;
 
 import 'package:analyzer/src/generated/element.dart';
@@ -18,7 +22,9 @@ class LibraryHelper {
       variables.addAll(cu.topLevelVariables);
     }
 
-    variables..removeWhere(isPrivate)..sort(elementCompare);
+    variables
+        ..removeWhere(isPrivate)
+        ..sort(elementCompare);
 
     return variables.map((e) => new VariableHelper(e)).toList();
   }
@@ -31,7 +37,9 @@ class LibraryHelper {
       accessors.addAll(cu.accessors);
     }
 
-    accessors..removeWhere(isPrivate)..sort(elementCompare);
+    accessors
+        ..removeWhere(isPrivate)
+        ..sort(elementCompare);
     accessors.removeWhere((e) => e.isSynthetic);
 
     return accessors.map((e) => new AccessorHelper(e)).toList();
@@ -45,7 +53,9 @@ class LibraryHelper {
       functions.addAll(cu.functionTypeAliases);
     }
 
-    functions..removeWhere(isPrivate)..sort(elementCompare);
+    functions
+        ..removeWhere(isPrivate)
+        ..sort(elementCompare);
 
     return functions.map((e) => new TypedefHelper(e)).toList();
   }
@@ -58,7 +68,9 @@ class LibraryHelper {
       functions.addAll(cu.functions);
     }
 
-    functions..removeWhere(isPrivate)..sort(elementCompare);
+    functions
+        ..removeWhere(isPrivate)
+        ..sort(elementCompare);
 
     return functions.map((e) => new FunctionHelper(e)).toList();
   }
@@ -71,7 +83,9 @@ class LibraryHelper {
       types.addAll(cu.types);
     }
 
-    types..removeWhere(isPrivate)..sort(elementCompare);
+    types
+        ..removeWhere(isPrivate)
+        ..sort(elementCompare);
 
     return types.map((e) => new ClassHelper(e)).toList();
   }
@@ -93,7 +107,7 @@ abstract class ElementHelper {
 
 class ClassHelper extends ElementHelper {
 
-  ClassHelper(ClassElement element): super(element);
+  ClassHelper(ClassElement element) : super(element);
 
   String get typeName => 'Classes';
 
@@ -104,7 +118,9 @@ class ClassHelper extends ElementHelper {
   }
 
   List<FieldElement> _getAllfields() {
-    return _cls.fields.toList()..removeWhere(isPrivate)..sort(elementCompare);
+    return _cls.fields.toList()
+        ..removeWhere(isPrivate)
+        ..sort(elementCompare);
   }
 
   List<FieldHelper> getStaticFields() {
@@ -118,25 +134,30 @@ class ClassHelper extends ElementHelper {
   }
 
   List<AccessorHelper> getAccessors() {
-    List<PropertyAccessorElement> accessors =
-        _cls.accessors.toList()..removeWhere(isPrivate)..sort(elementCompare);
+    List<PropertyAccessorElement> accessors = _cls.accessors.toList()
+        ..removeWhere(isPrivate)
+        ..sort(elementCompare);
     accessors.removeWhere((e) => e.isSynthetic);
     return accessors.map((e) => new AccessorHelper(e)).toList();
   }
 
   List<ConstructorHelper> getCtors() {
-    List<ConstructorElement> c = _cls.constructors.toList()..removeWhere(isPrivate)..sort(elementCompare);
+    List<ConstructorElement> c = _cls.constructors.toList()
+        ..removeWhere(isPrivate)
+        ..sort(elementCompare);
     return c.map((e) => new ConstructorHelper(e)).toList();
   }
 
   List<MethodHelper> getMethods() {
-    List<MethodElement> m = _cls.methods.toList()..removeWhere(isPrivate)..sort(elementCompare);
+    List<MethodElement> m = _cls.methods.toList()
+        ..removeWhere(isPrivate)
+        ..sort(elementCompare);
     return m.map((e) => new MethodHelper(e)).toList();
   }
 }
 
 abstract class PropertyInducingHelper extends ElementHelper {
-  PropertyInducingHelper(PropertyInducingElement element): super(element);
+  PropertyInducingHelper(PropertyInducingElement element) : super(element);
 
   PropertyInducingElement get _var => (element as PropertyInducingElement);
 
@@ -188,25 +209,25 @@ abstract class PropertyInducingHelper extends ElementHelper {
 }
 
 class VariableHelper extends PropertyInducingHelper {
-  VariableHelper(TopLevelVariableElement element): super(element);
+  VariableHelper(TopLevelVariableElement element) : super(element);
 
   String get typeName => 'Top-Level Variables';
 }
 
 class FieldHelper extends PropertyInducingHelper {
-  FieldHelper(FieldElement element): super(element);
+  FieldHelper(FieldElement element) : super(element);
 
   String get typeName => 'Fields';
 }
 
 class StaticFieldHelper extends PropertyInducingHelper {
-  StaticFieldHelper(FieldElement element): super(element);
+  StaticFieldHelper(FieldElement element) : super(element);
 
   String get typeName => 'Static Fields';
 }
 
 class AccessorHelper extends ElementHelper {
-  AccessorHelper(PropertyAccessorElement element): super(element);
+  AccessorHelper(PropertyAccessorElement element) : super(element);
 
   String get typeName => 'Getters and Setters';
 
@@ -220,8 +241,7 @@ class AccessorHelper extends ElementHelper {
       buf.write(': ');
       buf.write(generator.createLinkedReturnTypeName(_acc.type));
     } else {
-      buf.write('${generator.createLinkedName(element)}('
-          '${generator.printParams(_acc.parameters)})');
+      buf.write('${generator.createLinkedName(element)}(' '${generator.printParams(_acc.parameters)})');
     }
 
     return buf.toString();
@@ -245,7 +265,7 @@ class AccessorHelper extends ElementHelper {
 }
 
 class FunctionHelper extends ElementHelper {
-  FunctionHelper(FunctionElement element): super(element);
+  FunctionHelper(FunctionElement element) : super(element);
 
   String get typeName => 'Functions';
 
@@ -254,9 +274,7 @@ class FunctionHelper extends ElementHelper {
   String createLinkedSummary(Generator generator) {
     String retType = generator.createLinkedReturnTypeName(_func.type);
 
-    return '${generator.createLinkedName(element)}'
-        '(${generator.printParams(_func.parameters)})'
-        '${retType.isEmpty ? '' : ': $retType'}';
+    return '${generator.createLinkedName(element)}' '(${generator.printParams(_func.parameters)})' '${retType.isEmpty ? '' : ': $retType'}';
   }
 
   String createLinkedDescription(Generator generator) {
@@ -274,7 +292,7 @@ class FunctionHelper extends ElementHelper {
 }
 
 class TypedefHelper extends ElementHelper {
-  TypedefHelper(FunctionTypeAliasElement element): super(element);
+  TypedefHelper(FunctionTypeAliasElement element) : super(element);
 
   String get typeName => 'Typedefs';
 
@@ -324,16 +342,14 @@ class TypedefHelper extends ElementHelper {
 }
 
 abstract class ExecutableHelper extends ElementHelper {
-  ExecutableHelper(ExecutableElement element): super(element);
+  ExecutableHelper(ExecutableElement element) : super(element);
 
   ExecutableElement get _ex => (element as ExecutableElement);
 
   String createLinkedSummary(Generator generator) {
     String retType = generator.createLinkedReturnTypeName(_ex.type);
 
-    return '${generator.createLinkedName(element)}'
-        '(${generator.printParams(_ex.parameters)})'
-        '${retType.isEmpty ? '' : ': $retType'}';
+    return '${generator.createLinkedName(element)}' '(${generator.printParams(_ex.parameters)})' '${retType.isEmpty ? '' : ': $retType'}';
   }
 
   String createLinkedDescription(Generator generator) {
@@ -351,15 +367,14 @@ abstract class ExecutableHelper extends ElementHelper {
 }
 
 class ConstructorHelper extends ExecutableHelper {
-  ConstructorHelper(ConstructorElement element): super(element);
+  ConstructorHelper(ConstructorElement element) : super(element);
 
   String get typeName => 'Constructors';
 
   ConstructorElement get _ctor => (element as ConstructorElement);
 
   String createLinkedSummary(Generator generator) {
-    return '${generator.createLinkedName(element)}'
-        '(${generator.printParams(_ex.parameters)})';
+    return '${generator.createLinkedName(element)}' '(${generator.printParams(_ex.parameters)})';
   }
 
   String createLinkedDescription(Generator generator) {
@@ -372,15 +387,14 @@ class ConstructorHelper extends ExecutableHelper {
       buf.write('factory ');
     }
 
-    buf.write('${_ctor.type.returnType.name}${_ctor.name.isEmpty?'':'.'}'
-        '${_ctor.name}(${generator.printParams(_ex.parameters)})');
+    buf.write('${_ctor.type.returnType.name}${_ctor.name.isEmpty?'':'.'}' '${_ctor.name}(${generator.printParams(_ex.parameters)})');
 
     return buf.toString();
   }
 }
 
 class MethodHelper extends ExecutableHelper {
-  MethodHelper(MethodElement element): super(element);
+  MethodHelper(MethodElement element) : super(element);
 
   String get typeName => 'Methods';
 }
