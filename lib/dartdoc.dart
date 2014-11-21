@@ -40,9 +40,9 @@ class DartDoc {
 
   /// Generate the documentation
   void generateDocs() {
-
+    Stopwatch stopwatch = new Stopwatch();
+    stopwatch.start();
     var files = findFilesToDocumentInPackage(_rootDir.path);
-    files.forEach((f) => print(f.toString()));
     libraries.addAll(parseLibraries(files));
     generator = new GeneratorHelper(libraries);
     // create the out directory
@@ -57,6 +57,11 @@ class DartDoc {
     File f = joinFile(new Directory(out.path), [css.getCssName()]);
     f.writeAsStringSync(css.getCssContent());
 
+    double seconds = stopwatch.elapsedMilliseconds / 1000.0;
+    print('');
+    print("Documented ${libraries.length} "
+        "librar${libraries.length == 1 ? 'y' : 'ies'} in "
+        "${seconds.toStringAsFixed(1)} seconds.");
   }
 
   List<LibraryElement> parseLibraries(List<String> files) {
@@ -547,4 +552,3 @@ String createAnchor(Element e) {
     return '<a id=${e.name}></a>';
   }
 }
-
