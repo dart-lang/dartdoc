@@ -5,6 +5,7 @@ bin/packages
 .buildlog
 .project
 .pub
+.idea
 
 # Or the files created by dart2js.
 *.dart.js
