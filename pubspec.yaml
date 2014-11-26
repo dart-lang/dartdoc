@@ -6,6 +6,7 @@ homepage: https://github.com/dart-lang/dartdoc
 dependencies:
   analyzer: any
   args: any
+  bootstrap: any
   logging: any
   path: any
 executables:
