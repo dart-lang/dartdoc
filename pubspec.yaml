@@ -8,5 +8,6 @@ dependencies:
   args: any
   logging: any
   path: any
+  yaml: any
 executables:
   dartdoc: null
