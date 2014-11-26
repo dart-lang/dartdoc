@@ -14,7 +14,6 @@ class CSS {
   String getCssContent() {
       var script = new File(Platform.script.toFilePath());
       var cssFile = new File('${script.parent.path}$cssFilePath');
-//      cssFile = new File.fromUri(Uri.parse('package://bootstrap/css/bootstrap.css'));
       String text = cssFile.readAsStringSync(encoding: ASCII);
       return text;
   }
