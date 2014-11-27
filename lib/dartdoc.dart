@@ -119,12 +119,24 @@ class DartDoc {
       html.startTag('div', attributes: "class='row'", newLine: false);
       html.writeln();
       html.startTag('div', attributes: "class='span3'");
+      html.startTag('ul', attributes: 'class="nav nav-tabs nav-stacked left-nav"');
+      html.startTag('li', attributes: 'class="active"', newLine: false);
+      html.write('<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}</a>');
+      html.endTag(); //li
+      html.endTag(); //ul
+      html.endTag();
+      html.startTag('div', attributes: "class='span9'");
+      html.tag('h1', contents: packageName);
+      html.writeln('<hr>');
+      html.startTag('dl');
+      html.startTag('h4');
+      html.tag('dt', contents: 'Libraries');
+      html.endTag();
+      html.startTag('dd');
       for (LibraryElement lib in libraries) {
-        html.startTag('li', newLine: false);
-        html.write('<a href="${getFileNameFor(lib)}">' '<i class="chevron-nav icon-chevron-right"></i> ' '${lib.name}</a>');
-        html.endTag(); // li
+        html.writeln('<a href="${getFileNameFor(lib)}"> ${lib.name}</a><br>');
       }
-      html.endTag(); // div.span3
+      html.endTag();
       html.endTag(); // div.container
       generateFooter();
       html.end();
