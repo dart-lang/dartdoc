@@ -21,3 +21,6 @@ String getPackageName(String directoryName)  =>
    var contents = pubspec.readAsStringSync();
    return loadYaml(contents);
  }
+
+ String getPackageDescription(String directoryName) =>
+   _getPubspec(directoryName)['description'];
