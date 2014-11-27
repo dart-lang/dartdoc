@@ -107,6 +107,7 @@ class DartDoc {
 
   void generatePackage() {
     var packageName = getPackageName(_rootDir.path);
+    var packageDesc = getPackageDescription(_rootDir.path);
     if (packageName.isNotEmpty) {
       File f = joinFile(new Directory(out.path), ['${packageName}_package.html']);
       print('generating ${f.path}');
@@ -128,6 +129,7 @@ class DartDoc {
       html.startTag('div', attributes: "class='span9'");
       html.tag('h1', contents: packageName);
       html.writeln('<hr>');
+      html.write(packageDesc);
       html.startTag('dl');
       html.startTag('h4');
       html.tag('dt', contents: 'Libraries');
