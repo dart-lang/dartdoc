@@ -9,5 +9,6 @@ dependencies:
   bootstrap: any
   logging: any
   path: any
+  yaml: any
 executables:
   dartdoc: null

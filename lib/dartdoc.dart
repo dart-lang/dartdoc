@@ -14,11 +14,13 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
+
 import 'src/css.dart';
 import 'src/helpers.dart';
 import 'src/html_gen.dart';
 import 'src/io_utils.dart';
 import 'src/model_utils.dart';
+import 'src/package_utils.dart';
 import 'src/utils.dart';
 
 const String DEFAULT_OUTPUT_DIRECTORY = 'docs';
@@ -52,6 +54,7 @@ class DartDoc {
     }
     // generate the docs
     html = new HtmlGenerator();
+    generatePackage();
     libraries.forEach((lib) => generateLibrary(lib));
     // copy the css resource into 'out'
     File f = joinFile(new Directory(out.path), [css.getCssName()]);
@@ -59,9 +62,7 @@ class DartDoc {
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');
-    print("Documented ${libraries.length} "
-        "librar${libraries.length == 1 ? 'y' : 'ies'} in "
-        "${seconds.toStringAsFixed(1)} seconds.");
+    print("Documented ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.");
   }
 
   List<LibraryElement> parseLibraries(List<String> files) {
@@ -104,13 +105,57 @@ class DartDoc {
     return new File(Platform.executable).parent.parent;
   }
 
+  void generatePackage() {
+    var packageName = getPackageName(_rootDir.path);
+    var packageDesc = getPackageDescription(_rootDir.path);
+    if (packageName.isNotEmpty) {
+      File f = joinFile(new Directory(out.path), ['${packageName}_package.html']);
+      print('generating ${f.path}');
+      html = new HtmlGenerator();
+      html.start(title: 'Package ${packageName}', cssRef: css.getCssName());
+      generateHeader();
+
+      html.startTag('div', attributes: "class='container'", newLine: false);
+      html.writeln();
+      html.startTag('div', attributes: "class='row'", newLine: false);
+      html.writeln();
+      html.startTag('div', attributes: "class='span3'");
+      html.startTag('ul', attributes: 'class="nav nav-tabs nav-stacked left-nav"');
+      html.startTag('li', attributes: 'class="active"', newLine: false);
+      html.write('<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}</a>');
+      html.endTag(); //li
+      html.endTag(); //ul
+      html.endTag();
+      html.startTag('div', attributes: "class='span9'");
+      html.tag('h1', contents: packageName);
+      html.writeln('<hr>');
+      html.write(packageDesc);
+      html.startTag('dl');
+      html.startTag('h4');
+      html.tag('dt', contents: 'Libraries');
+      html.endTag();
+      html.startTag('dd');
+      for (LibraryElement lib in libraries) {
+        html.writeln('<a href="${getFileNameFor(lib)}"> ${lib.name}</a><br>');
+      }
+      html.endTag();
+      html.endTag(); // div.container
+      generateFooter();
+      html.end();
+      f.writeAsStringSync(html.toString());
+    }
+
+  }
+
+
+
   void generateLibrary(LibraryElement library) {
     File f = joinFile(new Directory(out.path), [getFileNameFor(library)]);
     print('generating ${f.path}');
     html = new HtmlGenerator();
     html.start(title: 'Library ${library.name}', cssRef: css.getCssName());
 
-    generateHeader(library);
+    generateHeader();
 
     html.startTag('div', attributes: "class='container'", newLine: false);
     html.writeln();
@@ -195,7 +240,7 @@ class DartDoc {
 
     html.endTag(); // div.container
 
-    generateFooter(library);
+    generateFooter();
 
     html.end();
 
@@ -203,13 +248,13 @@ class DartDoc {
     f.writeAsStringSync(html.toString());
   }
 
-  void generateHeader(LibraryElement library) {
+  void generateHeader() {
     // header
     html.startTag('header');
     html.endTag();
   }
 
-  void generateFooter(LibraryElement library) {
+  void generateFooter() {
     // footer
     html.startTag('footer');
 //    html.startTag('div', 'class="navbar navbar-fixed-bottom"');
