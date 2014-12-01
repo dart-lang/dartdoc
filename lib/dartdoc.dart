@@ -116,6 +116,7 @@ class DartDoc {
   void generatePackage() {
     var packageName = getPackageName(_rootDir.path);
     var packageDesc = getPackageDescription(_rootDir.path);
+    var packageVersion = getPackageVersion(_rootDir.path);
     if (packageName.isNotEmpty) {
       File f = joinFile(new Directory(out.path), ['${packageName}_package.html']);
       print('generating ${f.path}');
@@ -132,7 +133,7 @@ class DartDoc {
       html.startTag('li', attributes: 'class="active"', newLine: false);
       html.write('<a href="${packageName}">' 
         '<i class="chevron-nav icon-white icon-chevron-right"></i> ' 
-        '${packageName}-${getPackageVersion(_rootDir.path)}</a>');
+        '${packageName}-${packageVersion}</a>');
       html.endTag(); //li
       html.endTag(); //ul
       html.endTag();
