@@ -12,4 +12,4 @@ Please file reports on the [GitHub Issue Tracker][issues].
 
 See the LICENSE file for information.
 
-[issues]: https://github.com/dart-lang/dartdoc/issues 
+[issues]: https://github.com/dart-lang/dartdoc/issues
