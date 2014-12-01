@@ -29,7 +29,6 @@ const String DEFAULT_OUTPUT_DIRECTORY = 'docs';
 /// directory.
 class DartDoc {
 
-  //TODO(keertip): implement excludes
   List<String> _excludes;
   Directory _rootDir;
   final CSS css = new CSS();
@@ -45,7 +44,16 @@ class DartDoc {
     Stopwatch stopwatch = new Stopwatch();
     stopwatch.start();
     var files = findFilesToDocumentInPackage(_rootDir.path);
-    libraries.addAll(parseLibraries(files));
+    List<LibraryElement> libs = [];
+    libs.addAll(parseLibraries(files));
+    // remove excluded libraries
+    _excludes.forEach(
+        (pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
+    libs.removeWhere(
+        (LibraryElement library) => _excludes.contains(library.name));
+    libs.sort(elementCompare);
+    libraries.addAll(libs);
+
     generator = new GeneratorHelper(libraries);
     // create the out directory
     out = new Directory(DEFAULT_OUTPUT_DIRECTORY);
@@ -79,6 +87,7 @@ class DartDoc {
     context.sourceFactory = sourceFactory;
 
     files.forEach((String filePath) {
+      print('parsing ${filePath}...');
       Source source = new FileBasedSource.con1(new JavaFile(filePath));
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
@@ -108,6 +117,7 @@ class DartDoc {
   void generatePackage() {
     var packageName = getPackageName(_rootDir.path);
     var packageDesc = getPackageDescription(_rootDir.path);
+    var packageVersion = getPackageVersion(_rootDir.path);
     if (packageName.isNotEmpty) {
       File f = joinFile(new Directory(out.path), ['${packageName}_package.html']);
       print('generating ${f.path}');
@@ -122,7 +132,9 @@ class DartDoc {
       html.startTag('div', attributes: "class='span3'");
       html.startTag('ul', attributes: 'class="nav nav-tabs nav-stacked left-nav"');
       html.startTag('li', attributes: 'class="active"', newLine: false);
-      html.write('<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}</a>');
+      html.write('<a href="${packageName}">' 
+        '<i class="chevron-nav icon-white icon-chevron-right"></i> ' 
+        '${packageName}-${packageVersion}</a>');
       html.endTag(); //li
       html.endTag(); //ul
       html.endTag();
@@ -147,8 +159,6 @@ class DartDoc {
 
   }
 
-
-
   void generateLibrary(LibraryElement library) {
     File f = joinFile(new Directory(out.path), [getFileNameFor(library)]);
     print('generating ${f.path}');
@@ -165,18 +175,11 @@ class DartDoc {
     // left nav
     html.startTag('div', attributes: "class='span3'");
     html.startTag('ul', attributes: 'class="nav nav-tabs nav-stacked left-nav"');
-//      for (LibraryElement lib in libraries) {
-//        if (lib == library) {
     html.startTag('li', attributes: 'class="active"', newLine: false);
-    html.write('<a href="${getFileNameFor(library)}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${library.name}</a>');
-//        } else {
-//          html.startTag('li', newLine: false);
-//          html.write('<a href="${getFileNameFor(lib)}">'
-//          '<i class="chevron-nav icon-chevron-right"></i> '
-//          '${lib.name}</a>');
-//        }
+    html.write('<a href="${getFileNameFor(library)}">' 
+        '<i class="chevron-nav icon-white icon-chevron-right"></i> ' 
+        '${library.name}</a>');
     html.endTag(); // li
-//      }
     html.endTag(); // ul.nav
     html.endTag(); // div.span3
 
