@@ -87,6 +87,7 @@ class DartDoc {
     context.sourceFactory = sourceFactory;
 
     files.forEach((String filePath) {
+      print('parsing ${filePath}...');
       Source source = new FileBasedSource.con1(new JavaFile(filePath));
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
@@ -158,8 +159,6 @@ class DartDoc {
 
   }
 
-
-
   void generateLibrary(LibraryElement library) {
     File f = joinFile(new Directory(out.path), [getFileNameFor(library)]);
     print('generating ${f.path}');
@@ -176,18 +175,11 @@ class DartDoc {
     // left nav
     html.startTag('div', attributes: "class='span3'");
     html.startTag('ul', attributes: 'class="nav nav-tabs nav-stacked left-nav"');
-//      for (LibraryElement lib in libraries) {
-//        if (lib == library) {
     html.startTag('li', attributes: 'class="active"', newLine: false);
-    html.write('<a href="${getFileNameFor(library)}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${library.name}</a>');
-//        } else {
-//          html.startTag('li', newLine: false);
-//          html.write('<a href="${getFileNameFor(lib)}">'
-//          '<i class="chevron-nav icon-chevron-right"></i> '
-//          '${lib.name}</a>');
-//        }
+    html.write('<a href="${getFileNameFor(library)}">' 
+        '<i class="chevron-nav icon-white icon-chevron-right"></i> ' 
+        '${library.name}</a>');
     html.endTag(); // li
-//      }
     html.endTag(); // ul.nav
     html.endTag(); // div.span3
 
