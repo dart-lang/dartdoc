@@ -8,8 +8,9 @@ Note: This tool is currently in pre-alpha stage.
 
 Q: What about docgen/dartdocgen/dartdoc-viewer?
 
-A: This new tool intents to replace our existing set of tools. We'll take the best
-ideas and implementations from our existing tools, and fold them into this tool.
+A: This new tool intends to replace our existing set of API documentation
+tools. We'll take the best
+ideas and implementations from our existing doc tools, and fold them into this tool.
 
 ## Issues and bugs
 
