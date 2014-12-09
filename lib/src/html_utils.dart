@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library dartdoc.utils;
+library dartdoc.html_utils;
 
 String htmlEscape(String text) {
   return text.replaceAll('&', '&amp;').replaceAll('>', '&gt;').replaceAll('<', '&lt;');
@@ -116,18 +116,18 @@ String _processMarkdown(CodeResolver resolver, String line) {
     }
     line = "<h5>$line</h5>";
   } else {
-    line = _replaceAll(line, ['[:', ':]'], htmlEntity: 'code');
-    line = _replaceAll(line, ['`', '`'], htmlEntity: 'code');
-    line = _replaceAll(line, ['*', '*'], htmlEntity: 'i');
-    line = _replaceAll(line, ['__', '__'], htmlEntity: 'b');
-    line = _replaceAll(line, ['[', ']'], replaceFunction: (String ref) {
+    line = replaceAll(line, ['[:', ':]'], htmlEntity: 'code');
+    line = replaceAll(line, ['`', '`'], htmlEntity: 'code');
+    line = replaceAll(line, ['*', '*'], htmlEntity: 'i');
+    line = replaceAll(line, ['__', '__'], htmlEntity: 'b');
+    line = replaceAll(line, ['[', ']'], replaceFunction: (String ref) {
       return resolver.resolveCodeReference(ref);
     });
   }
   return line;
 }
 
-String _replaceAll(String str, List<String> matchChars, {String htmlEntity, var replaceFunction}) {
+String replaceAll(String str, List<String> matchChars, {String htmlEntity, var replaceFunction}) {
   int lastWritten = 0;
   int index = str.indexOf(matchChars[0]);
   StringBuffer buf = new StringBuffer();
@@ -155,3 +155,5 @@ String _replaceAll(String str, List<String> matchChars, {String htmlEntity, var 
   }
   return buf.toString();
 }
+
+
