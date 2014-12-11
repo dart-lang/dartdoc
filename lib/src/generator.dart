@@ -6,6 +6,8 @@ library dartdoc.generator;
 
 import 'dart:io';
 
+import 'package:mustache4dart/mustache4dart.dart';
+
 import 'css.dart';
 import 'html_gen.dart';
 import 'html_utils.dart';
@@ -14,12 +16,16 @@ import 'model.dart';
 
 /// Generates the HTML files
 class HtmlGenerator {
+  
+  // The sitemap template file
+  final String siteMapTemplate = '/templates/sitemap.xml';
 
   Directory out;
   Package package;
   HtmlHelper html = new HtmlHelper();
   CSS css = new CSS();
   HtmlGeneratorHelper helper;
+  List<String> htmlFiles =[];
 
   HtmlGenerator(this.package, this.out) {
     helper = new HtmlGeneratorHelper(package);
@@ -31,6 +37,7 @@ class HtmlGenerator {
     // copy the css resource into 'out'
     File f = joinFile(new Directory(out.path), [css.getCssName()]);
     f.writeAsStringSync(css.getCssContent());
+    generateSiteMap();
   }
 
   void generatePackage() {
@@ -38,7 +45,9 @@ class HtmlGenerator {
     var packageDesc = package.description;
     var packageVersion = package.version;
     if (packageName.isNotEmpty) {
-      File f = joinFile(new Directory(out.path), ['${packageName}_package.html']);
+      var fileName = '${packageName}_package.html';
+      File f = joinFile(new Directory(out.path), [fileName]);
+      htmlFiles.add(fileName);
       print('generating ${f.path}');
 
       html.start(title: 'Package ${packageName}', cssRef: css.getCssName());
@@ -75,8 +84,10 @@ class HtmlGenerator {
   }
 
   void generateLibrary(Library library) {
-    File f = joinFile(new Directory(out.path), [_getFileNameFor(library)]);
+    var fileName = _getFileNameFor(library);
+    File f = joinFile(new Directory(out.path), [fileName]);
     print('generating ${f.path}');
+    htmlFiles.add(fileName);
     html = new HtmlHelper();
     html.start(title: 'Library ${library.name}', cssRef: css.getCssName());
 
@@ -418,7 +429,17 @@ class HtmlGenerator {
     }
   }
 
-
+  void generateSiteMap() {
+    print('generating sitemap.xml');
+    File f = joinFile(new Directory(out.path), ['sitemap.xml']);
+    var script = new File(Platform.script.toFilePath());
+    File tmplFile = new File('${script.parent.parent.path}$siteMapTemplate');  
+    var tmpl = tmplFile.readAsStringSync();
+    // TODO: adjust urls
+    List names = htmlFiles.map((f) => {'name': '$f'}).toList();
+    var content = render(tmpl, {'links' : names}); 
+    f.writeAsStringSync(content);
+  }
 }
 
 String _getFileNameFor(Library library) {

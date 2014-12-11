@@ -26,10 +26,8 @@ pub get
 # Verify that the libraries are error free.
 dartanalyzer --fatal-warnings \
   bin/dartdoc.dart \
-  lib/dartdoc.dart
-# TODO:
-#  test/all.dart
+  lib/dartdoc.dart \
+  test/all.dart
 
 # Run the tests.
-# TODO:
-#dart test/all.dart
+dart test/all.dart

@@ -8,7 +8,9 @@ dependencies:
   args: any
   bootstrap: any
   logging: any
+  mustache4dart: '>= 1.0.0 < 2.0.0'
   path: any
+  unittest: any
   yaml: any
 executables:
   dartdoc: null
