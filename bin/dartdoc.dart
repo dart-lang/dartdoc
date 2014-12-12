@@ -20,8 +20,9 @@ void main(List<String> arguments) {
   List<String> excludeLibraries = results['exclude'] == null ?
          [] : results['exclude'].split(',');
 
+  String url = results['url'];
   var currentDir = Directory.current;
-  new DartDoc(currentDir, excludeLibraries).generateDocs();
+  new DartDoc(currentDir, excludeLibraries, url).generateDocs();
 }
 
 /// Print help if we are passed the help option or invalid arguments.
@@ -37,6 +38,10 @@ void _printUsageAndExit(ArgParser parser) {
   parser.addOption(
       'exclude',
       help: 'a comma-separated list of library names to ignore');
+  parser.addOption(
+        'url',
+        help: 'the url where the docs will be hosted.' 
+              'Used to generate the sitemap.');
   parser.addFlag('help',
       abbr: 'h',
       negatable: false,
