@@ -27,11 +27,12 @@ class DartDoc {
 
   List<String> _excludes;
   Directory _rootDir;
+  String _url;
   Directory out;
   Set<LibraryElement> libraries = new Set();
   HtmlGenerator generator;
 
-  DartDoc(this._rootDir, this._excludes);
+  DartDoc(this._rootDir, this._excludes, this._url);
 
   /// Generate the documentation
   void generateDocs() {
@@ -55,7 +56,7 @@ class DartDoc {
       out.createSync(recursive: true);
     }
     
-    generator = new HtmlGenerator(new Package(libraries, _rootDir.path), out);
+    generator = new HtmlGenerator(new Package(libraries, _rootDir.path), out, _url);
     // generate the docs
     generator.generate();
 

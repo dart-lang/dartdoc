@@ -26,8 +26,9 @@ class HtmlGenerator {
   CSS css = new CSS();
   HtmlGeneratorHelper helper;
   List<String> htmlFiles =[];
+  String url;
 
-  HtmlGenerator(this.package, this.out) {
+  HtmlGenerator(this.package, this.out, this.url) {
     helper = new HtmlGeneratorHelper(package);
   }
 
@@ -37,7 +38,9 @@ class HtmlGenerator {
     // copy the css resource into 'out'
     File f = joinFile(new Directory(out.path), [css.getCssName()]);
     f.writeAsStringSync(css.getCssContent());
-    generateSiteMap();
+    if (url != null) {
+      generateSiteMap();
+    }
   }
 
   void generatePackage() {
@@ -437,7 +440,7 @@ class HtmlGenerator {
     var tmpl = tmplFile.readAsStringSync();
     // TODO: adjust urls
     List names = htmlFiles.map((f) => {'name': '$f'}).toList();
-    var content = render(tmpl, {'links' : names}); 
+    var content = render(tmpl, {'url': url, 'links' : names}); 
     f.writeAsStringSync(content);
   }
 }
