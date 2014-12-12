@@ -24,7 +24,7 @@ tests() {
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
   <url>
-    <loc>somefile.html</loc>
+    <loc>/somefile.html</loc>
   </url>
 </urlset>
 ''');
@@ -36,10 +36,10 @@ tests() {
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
   <url>
-    <loc>somefile.html</loc>
+    <loc>/somefile.html</loc>
   </url>
   <url>
-    <loc>asecondfile.html</loc>
+    <loc>/asecondfile.html</loc>
   </url>
 </urlset>
 ''');
