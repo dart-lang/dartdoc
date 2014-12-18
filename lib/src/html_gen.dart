@@ -19,18 +19,17 @@ class HtmlHelper {
   }
 
   void generateHeader() {
-     // header
-     startTag('header');
-     endTag();
-   }
+    // header
+    startTag('header');
+    endTag();
+  }
 
-   void generateFooter() {
-     // footer
-     startTag('footer');
-     endTag();
-   }
-  
-  
+  void generateFooter() {
+    // footer
+    startTag('footer');
+    endTag();
+  }
+
   void start({String title, String cssRef}) {
     startTag('html', newLine: false);
     writeln();

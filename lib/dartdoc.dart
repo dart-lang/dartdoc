@@ -49,13 +49,12 @@ class DartDoc {
     libs.sort(elementCompare);
     libraries.addAll(libs);
 
-  
     // create the out directory
     out = new Directory(DEFAULT_OUTPUT_DIRECTORY);
     if (!out.existsSync()) {
       out.createSync(recursive: true);
     }
-    
+
     generator = new HtmlGenerator(new Package(libraries, _rootDir.path), out, _url);
     // generate the docs
     generator.generate();
@@ -107,5 +106,3 @@ class DartDoc {
   }
 
 }
-
-

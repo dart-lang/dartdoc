@@ -4,9 +4,8 @@
 
 library model_utils;
 
-import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/constant.dart';
-
+import 'package:analyzer/src/generated/element.dart';
 
 Object getConstantValue(PropertyInducingElement element) {
   if (element is ConstFieldElementImpl) {

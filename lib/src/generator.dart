@@ -16,7 +16,7 @@ import 'model.dart';
 
 /// Generates the HTML files
 class HtmlGenerator {
-  
+
   // The sitemap template file
   final String siteMapTemplate = '/templates/sitemap.xml';
 
@@ -436,11 +436,11 @@ class HtmlGenerator {
     print('generating sitemap.xml');
     File f = joinFile(new Directory(out.path), ['sitemap.xml']);
     var script = new File(Platform.script.toFilePath());
-    File tmplFile = new File('${script.parent.parent.path}$siteMapTemplate');  
+    File tmplFile = new File('${script.parent.parent.path}$siteMapTemplate');
     var tmpl = tmplFile.readAsStringSync();
     // TODO: adjust urls
     List names = htmlFiles.map((f) => {'name': '$f'}).toList();
-    var content = render(tmpl, {'url': url, 'links' : names}); 
+    var content = render(tmpl, {'url': url, 'links' : names});
     f.writeAsStringSync(content);
   }
 }
@@ -545,7 +545,6 @@ class HtmlGeneratorHelper extends Helper {
     return buf.toString();
   }
 
-
   String createLinkedReturnTypeName(ElementType type) {
     if (type.returnElement == null) {
       if (type.returnTypeName != null) {
@@ -558,6 +557,3 @@ class HtmlGeneratorHelper extends Helper {
     }
   }
 }
-
-
-

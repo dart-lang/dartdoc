@@ -5,7 +5,6 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-
 import 'package:dartdoc/dartdoc.dart';
 
 /// Analyzes Dart files and generates a representation of included libraries,
@@ -32,16 +31,15 @@ void _printUsageAndExit(ArgParser parser) {
   exit(0);
 }
 
- ArgParser _createArgsParser() {
-   // TODO: more options to be added
+ArgParser _createArgsParser() {
+  // TODO: more options to be added
   var parser = new ArgParser();
   parser.addOption(
       'exclude',
       help: 'a comma-separated list of library names to ignore');
   parser.addOption(
-        'url',
-        help: 'the url where the docs will be hosted.' 
-              'Used to generate the sitemap.');
+      'url',
+      help: 'the url where the docs will be hosted (used to generate the sitemap)');
   parser.addFlag('help',
       abbr: 'h',
       negatable: false,

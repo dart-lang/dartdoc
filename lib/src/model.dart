@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
 /// The models used to represent Dart code
 library dartdoc.models;
 
@@ -11,7 +10,6 @@ import 'package:analyzer/src/generated/element.dart';
 import 'html_utils.dart';
 import 'model_utils.dart';
 import 'package_utils.dart';
-
 
 abstract class ModelElement {
 
@@ -123,9 +121,9 @@ abstract class ModelElement {
       ExecutableElement ex = (element as ExecutableElement);
       String retType = generator.createLinkedReturnTypeName(new ElementType(ex.type, library));
 
-      return '${generator.createLinkedName(this)}' 
-             '(${generator.printParams(ex.parameters.map((f)=> 
-                 new Parameter(f, library)))})' 
+      return '${generator.createLinkedName(this)}'
+             '(${generator.printParams(ex.parameters.map((f)=>
+                 new Parameter(f, library)))})'
              '${retType.isEmpty ? '' : ': $retType'}';
     }
     if (isPropertyInducer) {
@@ -354,8 +352,8 @@ class Fnction extends ModelElement {
   String createLinkedSummary(Helper generator) {
     String retType = generator.createLinkedReturnTypeName(new ElementType(_func.type, library));
 
-    return '${generator.createLinkedName(this)}' 
-           '(${generator.printParams(_func.parameters.map((f)=> new Parameter(f, library)))})' 
+    return '${generator.createLinkedName(this)}'
+           '(${generator.printParams(_func.parameters.map((f)=> new Parameter(f, library)))})'
            '${retType.isEmpty ? '' : ': $retType'}';
   }
 
@@ -452,7 +450,7 @@ class Constructor extends ModelElement {
     if (_constructor.isFactory) {
       buf.write('factory ');
     }
-    buf.write('${_constructor.type.returnType.name}${_constructor.name.isEmpty?'':'.'}' 
+    buf.write('${_constructor.type.returnType.name}${_constructor.name.isEmpty?'':'.'}'
               '${_constructor.name}'
               '(${generator.printParams(
                       _constructor.parameters.map((f)=> new Parameter(f, library)))})');
@@ -496,11 +494,11 @@ class Accessor extends ModelElement {
       buf.write(generator.createLinkedName(this));
       buf.write(': ');
       buf.write(generator.createLinkedReturnTypeName(
-                new ElementType(_accessor.type, 
+                new ElementType(_accessor.type,
                 new ModelElement.from(_accessor.type.element, library))));
     } else {
-      buf.write('${generator.createLinkedName(this)}(' 
-                '${generator.printParams(_accessor.parameters.map((f)=> 
+      buf.write('${generator.createLinkedName(this)}('
+                '${generator.printParams(_accessor.parameters.map((f)=>
                     new Parameter(f,library)))})');
     }
     return buf.toString();
@@ -580,4 +578,3 @@ abstract class Helper {
   String printParams(List<Parameter> params);
   String createHrefFor(ModelElement e);
 }
-

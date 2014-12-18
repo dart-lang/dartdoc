@@ -155,5 +155,3 @@ String replaceAll(String str, List<String> matchChars, {String htmlEntity, var r
   }
   return buf.toString();
 }
-
-
