@@ -122,7 +122,7 @@ abstract class ModelElement {
       String retType = generator.createLinkedReturnTypeName(new ElementType(ex.type, library));
 
       return '${generator.createLinkedName(this)}'
-             '(${generator.printParams(ex.parameters.map((f)=>
+             '(${generator.printParams(ex.parameters.map((f) =>
                  new Parameter(f, library)))})'
              '${retType.isEmpty ? '' : ': $retType'}';
     }
@@ -149,7 +149,7 @@ abstract class ModelElement {
       }
 
       buf.write(generator.createLinkedReturnTypeName(new ElementType(e.type, library)));
-      buf.write(' ${e.name}(${generator.printParams(e.parameters.map((f)=> new Parameter(f, library)).toList())})');
+      buf.write(' ${e.name}(${generator.printParams(e.parameters.map((f) => new Parameter(f, library)).toList())})');
       return buf.toString();
     }
     if (isPropertyInducer) {
@@ -353,7 +353,7 @@ class Fnction extends ModelElement {
     String retType = generator.createLinkedReturnTypeName(new ElementType(_func.type, library));
 
     return '${generator.createLinkedName(this)}'
-           '(${generator.printParams(_func.parameters.map((f)=> new Parameter(f, library)))})'
+           '(${generator.printParams(_func.parameters.map((f) => new Parameter(f, library)))})'
            '${retType.isEmpty ? '' : ': $retType'}';
   }
 
@@ -363,7 +363,7 @@ class Fnction extends ModelElement {
       buf.write('static ');
     }
     buf.write(generator.createLinkedReturnTypeName(new ElementType(_func.type, library)));
-    buf.write(' ${_func.name}(${generator.printParams(_func.parameters.map((f)=> new Parameter(f, library)))})');
+    buf.write(' ${_func.name}(${generator.printParams(_func.parameters.map((f) => new Parameter(f, library)))})');
     return buf.toString();
   }
 }
@@ -391,7 +391,7 @@ class Typedef extends ModelElement {
       }
       buf.write('&gt;');
     }
-    buf.write('(${generator.printParams(_typedef.parameters.map((f)=> new Parameter(f, library)))}): ');
+    buf.write('(${generator.printParams(_typedef.parameters.map((f) => new Parameter(f, library)))}): ');
     buf.write(generator.createLinkedReturnTypeName(new ElementType(_typedef.type, library)));
     return buf.toString();
   }
@@ -411,7 +411,7 @@ class Typedef extends ModelElement {
       }
       buf.write('&gt;');
     }
-    buf.write('(${generator.printParams(_typedef.parameters.map((f)=> new Parameter(f, library)))}): ');
+    buf.write('(${generator.printParams(_typedef.parameters.map((f) => new Parameter(f, library)))}): ');
     return buf.toString();
   }
 
@@ -453,7 +453,7 @@ class Constructor extends ModelElement {
     buf.write('${_constructor.type.returnType.name}${_constructor.name.isEmpty?'':'.'}'
               '${_constructor.name}'
               '(${generator.printParams(
-                      _constructor.parameters.map((f)=> new Parameter(f, library)))})');
+                      _constructor.parameters.map((f) => new Parameter(f, library)))})');
     return buf.toString();
   }
 }
@@ -498,7 +498,7 @@ class Accessor extends ModelElement {
                 new ModelElement.from(_accessor.type.element, library))));
     } else {
       buf.write('${generator.createLinkedName(this)}('
-                '${generator.printParams(_accessor.parameters.map((f)=>
+                '${generator.printParams(_accessor.parameters.map((f) =>
                     new Parameter(f,library)))})');
     }
     return buf.toString();
@@ -512,7 +512,7 @@ class Accessor extends ModelElement {
     if (_accessor.isGetter) {
       buf.write('${generator.createLinkedReturnTypeName(new ElementType(_accessor.type, new ModelElement.from(_accessor.type.element, library)))} get ${_accessor.name}');
     } else {
-      buf.write('set ${_accessor.name}(${generator.printParams(_accessor.parameters.map((f)=> new Parameter(f,library)))})');
+      buf.write('set ${_accessor.name}(${generator.printParams(_accessor.parameters.map((f) => new Parameter(f,library)))})');
     }
     return buf.toString();
   }
@@ -536,10 +536,11 @@ class Parameter extends ModelElement {
 
   Parameter(ParameterElement element, Library library) : super(element, library);
 
-  ParameterElement get _parameter => (element as ParameterElement);
+  ParameterElement get _parameter => element as ParameterElement;
 
   ElementType get type => new ElementType(_parameter.type, library);
 
+  String toString() => element.name;
 }
 
 class ElementType {

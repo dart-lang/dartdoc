@@ -509,8 +509,8 @@ class HtmlGeneratorHelper extends Helper {
         buf.write(', ');
       }
       if (p.type != null && p.type.name != null) {
-        buf.write(createLinkedTypeName(p.type));
-        buf.write(' ');
+        String typeName = createLinkedTypeName(p.type);
+        if (typeName.isNotEmpty) buf.write('${typeName} ');
       }
       buf.write(p.name);
     }
