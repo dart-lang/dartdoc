@@ -25,7 +25,7 @@ tests() {
       expect(sitemap({'links' : [{'name': 'somefile.html'}]}),
             '''
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>/somefile.html</loc>
   </url>
@@ -37,7 +37,7 @@ tests() {
       expect(sitemap({'links' : [{'name': 'somefile.html'}, {'name': 'asecondfile.html'}]}),
             '''
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>/somefile.html</loc>
   </url>
@@ -52,7 +52,7 @@ tests() {
       expect(sitemap({'url': 'http://mydoc.com','links' : [{'name': 'somefile.html'}]}),
                  '''
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>http://mydoc.com/somefile.html</loc>
   </url>

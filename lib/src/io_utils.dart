@@ -83,7 +83,6 @@ List<String> findFilesToDocumentInPackage(String packageDir) {
     // TODO(janicejl): Remove when Issue(12406) is resolved.
     var contents = new File(lib).readAsStringSync();
 
-
     if (contents.contains(new RegExp('\npart of ')) ||
         contents.startsWith(new RegExp('part of '))) {
 //      logger.warning('Skipping part "$lib". '

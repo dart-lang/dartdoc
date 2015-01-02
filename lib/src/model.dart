@@ -24,7 +24,7 @@ abstract class ModelElement {
       return new Class(e, library);
     }
     if (e is FunctionElement) {
-      return new Fnction(e, library);
+      return new ModelFunction(e, library);
     }
     if (e is FunctionTypeAliasElement) {
       return new Typedef(e, library);
@@ -259,7 +259,7 @@ class Library extends ModelElement {
     return elements.map((e) => new Typedef(e, this)).toList();
   }
 
-  List<Fnction> getFunctions() {
+  List<ModelFunction> getFunctions() {
     List<FunctionElement> elements = [];
     elements.addAll(_library.definingCompilationUnit.functions);
     for (CompilationUnitElement cu in _library.parts) {
@@ -268,7 +268,7 @@ class Library extends ModelElement {
     elements
         ..removeWhere(isPrivate)
         ..sort(elementCompare);
-    return elements.map((e) => new Fnction(e, this)).toList();
+    return elements.map((e) => new ModelFunction(e, this)).toList();
   }
 
   List<Class> getTypes() {
@@ -340,10 +340,9 @@ class Class extends ModelElement {
   }
 }
 
+class ModelFunction extends ModelElement {
 
-class Fnction extends ModelElement {
-
-  Fnction(FunctionElement element, Library library) : super(element, library);
+  ModelFunction(FunctionElement element, Library library) : super(element, library);
 
   FunctionElement get _func => (element as FunctionElement);
 
@@ -367,7 +366,6 @@ class Fnction extends ModelElement {
     return buf.toString();
   }
 }
-
 
 class Typedef extends ModelElement {
 
@@ -457,7 +455,6 @@ class Constructor extends ModelElement {
     return buf.toString();
   }
 }
-
 
 class Method extends ModelElement {
   // MethodElement get _method => (element as MethodElement);
@@ -570,7 +567,6 @@ class ElementType {
   }
   List<ElementType> get typeArguments => (_type as ParameterizedType).typeArguments.map((f) => new ElementType(f, library)).toList();
 }
-
 
 abstract class Helper {
   String createLinkedName(ModelElement e, [bool appendParens = false]);

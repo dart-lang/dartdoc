@@ -139,7 +139,7 @@ class HtmlGenerator {
 
     List<Variable> variables = library.getVariables();
     List<Accessor> accessors = library.getAccessors();
-    List<Fnction> functions = library.getFunctions();
+    List<ModelFunction> functions = library.getFunctions();
     List<Typedef> typedefs = library.getTypedefs();
     List<Class> types = library.getTypes();
 
@@ -245,7 +245,6 @@ class HtmlGenerator {
     generateElements(cls.getMethods(), false);
   }
 
-
   void printComments(ModelElement e, [bool indent = true]) {
     String comments = e.getDocumentation();
     if (comments != null) {
@@ -262,7 +261,6 @@ class HtmlGenerator {
       }
     }
   }
-
 
   void generateElements(List<ModelElement> elements, [bool header = true]) {
     if (!elements.isEmpty) {
@@ -446,7 +444,6 @@ String _getFileNameFor(Library library) {
   return '${library.name}.html';
 }
 
-
 class HtmlGeneratorHelper extends Helper {
 
   Package package;
@@ -482,7 +479,7 @@ class HtmlGeneratorHelper extends Helper {
     } else {
       String append = '';
 
-      if (appendParens && (e is Method || e is Fnction)) {
+      if (appendParens && (e is Method || e is ModelFunction)) {
         append = '()';
       }
       return "<a href=${createHrefFor(e)}>${htmlEscape(e.name)}$append</a>";

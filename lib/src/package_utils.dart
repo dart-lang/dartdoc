@@ -22,6 +22,6 @@ Map _getPubspec(String directoryName) {
 
 String getPackageDescription(String directoryName) =>
   _getPubspec(directoryName)['description'];
- 
+
 String getPackageVersion(String directoryName) =>
   _getPubspec(directoryName)['version'];

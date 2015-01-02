@@ -3,6 +3,7 @@ version: 0.0.1
 author: Dart Team <misc@dartlang.org>
 description: A documentation generator for Dart.
 homepage: https://github.com/dart-lang/dartdoc
+
 dependencies:
   analyzer: any
   args: any
@@ -10,7 +11,10 @@ dependencies:
   logging: any
   mustache4dart: '>= 1.0.0 < 2.0.0'
   path: any
-  unittest: any
   yaml: any
+
+dev_dependencies:
+  unittest: any
+
 executables:
   dartdoc: null
