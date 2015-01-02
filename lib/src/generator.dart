@@ -421,10 +421,7 @@ class HtmlGenerator {
   String _resolveCodeReference(ModelElement e, String reference) {
     ModelElement element = e.getChild(reference);
 
-    if (element.isLocalElement) {
-      element = null;
-    }
-    if (element != null) {
+    if (element != null && !element.isLocalElement) {
       return helper.createLinkedName(element, true);
     } else {
       //return "<a>$reference</a>";
