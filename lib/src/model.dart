@@ -123,7 +123,7 @@ abstract class ModelElement {
 
       return '${generator.createLinkedName(this)}'
              '(${generator.printParams(ex.parameters.map((f) =>
-                 new Parameter(f, library)))})'
+                 new Parameter(f, library)).toList())})'
              '${retType.isEmpty ? '' : ': $retType'}';
     }
     if (isPropertyInducer) {
@@ -362,7 +362,7 @@ class ModelFunction extends ModelElement {
       buf.write('static ');
     }
     buf.write(generator.createLinkedReturnTypeName(new ElementType(_func.type, library)));
-    buf.write(' ${_func.name}(${generator.printParams(_func.parameters.map((f) => new Parameter(f, library)))})');
+    buf.write(' ${_func.name}(${generator.printParams(_func.parameters.map((f) => new Parameter(f, library)).toList())})');
     return buf.toString();
   }
 }
@@ -389,7 +389,7 @@ class Typedef extends ModelElement {
       }
       buf.write('&gt;');
     }
-    buf.write('(${generator.printParams(_typedef.parameters.map((f) => new Parameter(f, library)))}): ');
+    buf.write('(${generator.printParams(_typedef.parameters.map((f) => new Parameter(f, library)).toList())}): ');
     buf.write(generator.createLinkedReturnTypeName(new ElementType(_typedef.type, library)));
     return buf.toString();
   }
@@ -409,7 +409,7 @@ class Typedef extends ModelElement {
       }
       buf.write('&gt;');
     }
-    buf.write('(${generator.printParams(_typedef.parameters.map((f) => new Parameter(f, library)))}): ');
+    buf.write('(${generator.printParams(_typedef.parameters.map((f) => new Parameter(f, library)).toList())}): ');
     return buf.toString();
   }
 
@@ -451,7 +451,7 @@ class Constructor extends ModelElement {
     buf.write('${_constructor.type.returnType.name}${_constructor.name.isEmpty?'':'.'}'
               '${_constructor.name}'
               '(${generator.printParams(
-                      _constructor.parameters.map((f) => new Parameter(f, library)))})');
+                      _constructor.parameters.map((f) => new Parameter(f, library)).toList())})');
     return buf.toString();
   }
 }
