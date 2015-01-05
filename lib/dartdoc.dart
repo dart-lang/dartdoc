@@ -24,7 +24,6 @@ const String DEFAULT_OUTPUT_DIRECTORY = 'docs';
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
 class DartDoc {
-
   List<String> _excludes;
   Directory _rootDir;
   String _url;
@@ -55,25 +54,32 @@ class DartDoc {
       out.createSync(recursive: true);
     }
 
-    generator = new HtmlGenerator(new Package(libraries, _rootDir.path), out, _url);
+    generator = new HtmlGenerator(
+        new Package(libraries, _rootDir.path), out, _url);
     // generate the docs
     generator.generate();
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');
-    print("Documented ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.");
+    print(
+        "Documented ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.");
   }
 
   List<LibraryElement> parseLibraries(List<String> files) {
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_getSdkDir().path));
 
     ContentCache contentCache = new ContentCache();
-    List<UriResolver> resolvers = [new DartUriResolver(sdk), new FileUriResolver()];
-    JavaFile packagesDir = new JavaFile.relative(new JavaFile(_rootDir.path), 'packages');
+    List<UriResolver> resolvers = [
+      new DartUriResolver(sdk),
+      new FileUriResolver()
+    ];
+    JavaFile packagesDir = new JavaFile.relative(
+        new JavaFile(_rootDir.path), 'packages');
     if (packagesDir.exists()) {
       resolvers.add(new PackageUriResolver([packagesDir]));
     }
-    SourceFactory sourceFactory = new SourceFactory(/*contentCache,*/ resolvers);
+    SourceFactory sourceFactory = new SourceFactory(
+        /*contentCache,*/ resolvers);
     AnalysisContext context = AnalysisEngine.instance.createAnalysisContext();
     context.sourceFactory = sourceFactory;
 
@@ -104,5 +110,4 @@ class DartDoc {
     // Look relative to the dart executable.
     return new File(Platform.executable).parent.parent;
   }
-
 }

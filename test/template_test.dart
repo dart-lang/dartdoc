@@ -12,7 +12,8 @@ import 'package:unittest/unittest.dart';
 tests() {
   group('template', () {
     var script = new File(Platform.script.toFilePath());
-    File tmplFile = new File('${script.parent.parent.path}/templates/sitemap.xml');
+    File tmplFile = new File(
+        '${script.parent.parent.path}/templates/sitemap.xml');
 
     test('sitemap template exists', () {
       tmplFile.exists().then((t) => expect(t, true));
@@ -22,8 +23,7 @@ tests() {
     var sitemap = compile(siteMapTmpl);
 
     test('render', () {
-      expect(sitemap({'links' : [{'name': 'somefile.html'}]}),
-            '''
+      expect(sitemap({'links': [{'name': 'somefile.html'}]}), '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -34,8 +34,9 @@ tests() {
     });
 
     test('substitute multiple links', () {
-      expect(sitemap({'links' : [{'name': 'somefile.html'}, {'name': 'asecondfile.html'}]}),
-            '''
+      expect(sitemap({
+        'links': [{'name': 'somefile.html'}, {'name': 'asecondfile.html'}]
+      }), '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -49,8 +50,10 @@ tests() {
     });
 
     test('url and file name', () {
-      expect(sitemap({'url': 'http://mydoc.com','links' : [{'name': 'somefile.html'}]}),
-                 '''
+      expect(sitemap({
+        'url': 'http://mydoc.com',
+        'links': [{'name': 'somefile.html'}]
+      }), '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -58,6 +61,6 @@ tests() {
   </url>
 </urlset>
 ''');
-      });
+    });
   });
 }

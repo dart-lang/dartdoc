@@ -5,7 +5,10 @@
 library dartdoc.html_utils;
 
 String htmlEscape(String text) {
-  return text.replaceAll('&', '&amp;').replaceAll('>', '&gt;').replaceAll('<', '&lt;');
+  return text
+      .replaceAll('&', '&amp;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('<', '&lt;');
 }
 
 String escapeBrackets(String text) {
@@ -13,7 +16,11 @@ String escapeBrackets(String text) {
 }
 
 String stringEscape(String text, String quoteType) {
-  return text.replaceAll(quoteType, "\\${quoteType}").replaceAll('\n', '\\n').replaceAll('\r', '\\r').replaceAll('\t', '\\t');
+  return text
+      .replaceAll(quoteType, "\\${quoteType}")
+      .replaceAll('\n', '\\n')
+      .replaceAll('\r', '\\r')
+      .replaceAll('\t', '\\t');
 }
 
 abstract class CodeResolver {
@@ -52,7 +59,8 @@ String prettifyDocs(CodeResolver resolver, String docs) {
         buf.write('${line}\n');
       }
     } else if (inList) {
-      buf.write('<li>${_processMarkdown(resolver, line.trim().substring(2))}</li>');
+      buf.write(
+          '<li>${_processMarkdown(resolver, line.trim().substring(2))}</li>');
     } else if (line.trim().length == 0) {
       buf.write('</p>\n<p>');
     } else {
@@ -127,7 +135,8 @@ String _processMarkdown(CodeResolver resolver, String line) {
   return line;
 }
 
-String replaceAll(String str, List<String> matchChars, {String htmlEntity, var replaceFunction}) {
+String replaceAll(String str, List<String> matchChars,
+    {String htmlEntity, var replaceFunction}) {
   int lastWritten = 0;
   int index = str.indexOf(matchChars[0]);
   StringBuffer buf = new StringBuffer();

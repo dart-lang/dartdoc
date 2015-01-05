@@ -9,7 +9,7 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
-String getPackageName(String directoryName)  =>
+String getPackageName(String directoryName) =>
     _getPubspec(directoryName)['name'];
 
 Map _getPubspec(String directoryName) {
@@ -21,7 +21,7 @@ Map _getPubspec(String directoryName) {
 }
 
 String getPackageDescription(String directoryName) =>
-  _getPubspec(directoryName)['description'];
+    _getPubspec(directoryName)['description'];
 
 String getPackageVersion(String directoryName) =>
-  _getPubspec(directoryName)['version'];
+    _getPubspec(directoryName)['version'];
