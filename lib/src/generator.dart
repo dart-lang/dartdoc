@@ -16,9 +16,13 @@ import 'model.dart';
 
 /// Generates the HTML files
 class HtmlGenerator {
-
   // The sitemap template file
-  final String siteMapTemplate = '/templates/sitemap.xml';
+  static final String siteMapTemplate = '/templates/sitemap.xml';
+
+  static final String bootstrapOverrides = '''
+body {
+  margin: 8px;
+}''';
 
   Directory out;
   Package package;
@@ -53,20 +57,21 @@ class HtmlGenerator {
       htmlFiles.add(fileName);
       print('generating ${f.path}');
 
-      html.start(title: 'Package ${packageName}', cssRef: css.getCssName());
+      html.start(title: 'Package ${packageName}', cssRef: css.getCssName(),
+          inlineStyle: bootstrapOverrides);
       html.generateHeader();
       html.startTag('div', attributes: "class='container'", newLine: false);
       html.writeln();
       html.startTag('div', attributes: "class='row'", newLine: false);
       html.writeln();
-      html.startTag('div', attributes: "class='span3'");
-      html.startTag('ul', attributes: 'class="nav nav-tabs nav-stacked left-nav"');
+      html.startTag('div', attributes: "class='col-md-3'");
+      html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
       html.startTag('li', attributes: 'class="active"', newLine: false);
       html.write('<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}-${packageVersion}</a>');
       html.endTag(); //li
       html.endTag(); //ul
       html.endTag();
-      html.startTag('div', attributes: "class='span9'");
+      html.startTag('div', attributes: "class='col-md-9'");
       html.tag('h1', contents: packageName);
       html.writeln('<hr>');
       html.write(packageDesc);
@@ -92,7 +97,8 @@ class HtmlGenerator {
     print('generating ${f.path}');
     htmlFiles.add(fileName);
     html = new HtmlHelper();
-    html.start(title: 'Library ${library.name}', cssRef: css.getCssName());
+    html.start(title: 'Library ${library.name}', cssRef: css.getCssName(),
+        inlineStyle: bootstrapOverrides);
 
     html.generateHeader();
 
@@ -102,16 +108,16 @@ class HtmlGenerator {
     html.writeln();
 
     // left nav
-    html.startTag('div', attributes: "class='span3'");
-    html.startTag('ul', attributes: 'class="nav nav-tabs nav-stacked left-nav"');
+    html.startTag('div', attributes: "class='col-md-3'");
+    html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
     html.startTag('li', attributes: 'class="active"', newLine: false);
     html.write('<a href="${_getFileNameFor(library)}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${library.name}</a>');
     html.endTag(); // li
     html.endTag(); // ul.nav
-    html.endTag(); // div.span3
+    html.endTag(); // div.col-md-3
 
     // main content
-    html.startTag('div', attributes: "class='span9'");
+    html.startTag('div', attributes: "class='col-md-9'");
 
     html.tag('h1', contents: library.name);
 
@@ -162,7 +168,7 @@ class HtmlGenerator {
 
     html.writeln('<hr>');
 
-    html.endTag(); // div.span9
+    html.endTag(); // div.col-md-9
 
     html.endTag(); // div.row
 
@@ -329,6 +335,9 @@ class HtmlGenerator {
   }
 
   String createIconFor(ModelElement e) {
+    // TODO: This icons need to be upgraded to bootstrap 3.0 - something like:
+    // <span class="glyphicon glyphicon-search"></span>
+
     if (e.isPropertyAccessor) {
       Accessor a = (e as Accessor);
       if (a.isGetter) {

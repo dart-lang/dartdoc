@@ -30,7 +30,7 @@ class HtmlHelper {
     endTag();
   }
 
-  void start({String title, String cssRef}) {
+  void start({String title, String cssRef, String inlineStyle}) {
     startTag('html', newLine: false);
     writeln();
     startTag('head');
@@ -42,7 +42,11 @@ class HtmlHelper {
     if (cssRef != null) {
       writeln('<link href="${cssRef}" rel="stylesheet" media="screen">');
     }
-    // head
+    if (inlineStyle != null) {
+      startTag('style');
+      writeln(inlineStyle);
+      endTag();
+    }
     endTag();
     writeln();
     startTag('body', newLine: false);
