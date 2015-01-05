@@ -35,7 +35,8 @@ class HtmlHelper {
     writeln();
     startTag('head');
     writeln('<meta charset="utf-8">');
-    writeln('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+    writeln(
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">');
     if (title != null) {
       writeln('<title>${title}</title>');
     }

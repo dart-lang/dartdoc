@@ -16,16 +16,16 @@ import 'package:path/path.dart' as path;
 /// Excludes files and directories beginning with `.`
 ///
 /// The returned paths are guaranteed to begin with [dir].
-List<String> _listDir(String dir, {bool recursive: false,
-  List<FileSystemEntity> listDir(Directory dir)}) {
+List<String> _listDir(String dir,
+    {bool recursive: false, List<FileSystemEntity> listDir(Directory dir)}) {
   if (listDir == null) listDir = (Directory dir) => dir.listSync();
 
   return _doList(dir, new Set<String>(), recursive, listDir);
 }
 
 File joinFile(Directory dir, List<String> files) {
-   String pathFragment = files.join(Platform.pathSeparator);
-   return new File("${dir.path}${Platform.pathSeparator}${pathFragment}");
+  String pathFragment = files.join(Platform.pathSeparator);
+  return new File("${dir.path}${Platform.pathSeparator}${pathFragment}");
 }
 
 List<String> _doList(String dir, Set<String> listedDirectories, bool recurse,
@@ -49,8 +49,8 @@ List<String> _doList(String dir, Set<String> listedDirectories, bool recurse,
     contents.add(entity.path);
     if (entity is Directory) {
       if (recurse) {
-        children.addAll(_doList(entity.path, listedDirectories, recurse,
-            listDir));
+        children.addAll(
+            _doList(entity.path, listedDirectories, recurse, listDir));
       }
     }
   }
@@ -67,32 +67,32 @@ List<String> findFilesToDocumentInPackage(String packageDir) {
   // containing '/packages' will be added. The only exception is if the file
   // to analyze already has a '/package' in its path.
   var files = _listDir(packageDir, recursive: true, listDir: _packageDirList)
-    .where((f) => f.endsWith('.dart') &&
-      (!f.contains('${path.separator}packages') ||
-          packageDir.contains('${path.separator}packages')))
-    .toList();
+      .where((f) => f.endsWith('.dart') &&
+          (!f.contains('${path.separator}packages') ||
+              packageDir.contains('${path.separator}packages')))
+      .toList();
 
   var packageLibDir = path.join(packageDir, 'lib');
   var packageLibSrcDir = path.join(packageLibDir, 'src');
 
   files.forEach((String lib) {
-  // Only include libraries within the lib dir that are not in lib/src
-  if (path.isWithin(packageLibDir, lib) &&
-      !path.isWithin(packageLibSrcDir, lib)) {
-    // Only add the file if it does not contain 'part of'
-    // TODO(janicejl): Remove when Issue(12406) is resolved.
-    var contents = new File(lib).readAsStringSync();
+    // Only include libraries within the lib dir that are not in lib/src
+    if (path.isWithin(packageLibDir, lib) &&
+        !path.isWithin(packageLibSrcDir, lib)) {
+      // Only add the file if it does not contain 'part of'
+      // TODO(janicejl): Remove when Issue(12406) is resolved.
+      var contents = new File(lib).readAsStringSync();
 
-    if (contents.contains(new RegExp('\npart of ')) ||
-        contents.startsWith(new RegExp('part of '))) {
+      if (contents.contains(new RegExp('\npart of ')) ||
+          contents.startsWith(new RegExp('part of '))) {
 //      logger.warning('Skipping part "$lib". '
 //          'Part files should be in "lib/src".');
-    } else {
-      var uri = new Uri.file(path.normalize(path.absolute(lib)));
-      libraries.add(uri.path);
+      } else {
+        var uri = new Uri.file(path.normalize(path.absolute(lib)));
+        libraries.add(uri.path);
 //      logger.info('Added to libraries: $lib');
+      }
     }
-  }
   });
   return libraries;
 }
@@ -104,15 +104,17 @@ List<String> findFilesToDocumentInPackage(String packageDir) {
 List<FileSystemEntity> _packageDirList(Directory dir) {
   var entities = dir.listSync();
 
-  var pubspec = entities.firstWhere((e) => e is File &&
-    path.basename(e.path) == 'pubspec.yaml', orElse: () => null);
+  var pubspec = entities.firstWhere(
+      (e) => e is File && path.basename(e.path) == 'pubspec.yaml',
+      orElse: () => null);
 
-  var libDir = entities.firstWhere((e) => e is Directory &&
-    path.basename(e.path) == 'lib', orElse: () => null);
+  var libDir = entities.firstWhere(
+      (e) => e is Directory && path.basename(e.path) == 'lib',
+      orElse: () => null);
 
   if (pubspec != null && libDir != null) {
-  return [libDir];
+    return [libDir];
   } else {
-  return entities;
+    return entities;
   }
 }

@@ -12,7 +12,6 @@ import 'model_utils.dart';
 import 'package_utils.dart';
 
 abstract class ModelElement {
-
   Element element;
 
   Library library;
@@ -119,18 +118,20 @@ abstract class ModelElement {
   String createLinkedSummary(Helper generator) {
     if (isExecutable) {
       ExecutableElement ex = (element as ExecutableElement);
-      String retType = generator.createLinkedReturnTypeName(new ElementType(ex.type, library));
+      String retType = generator.createLinkedReturnTypeName(
+          new ElementType(ex.type, library));
 
       return '${generator.createLinkedName(this)}'
-             '(${generator.printParams(ex.parameters.map((f) =>
+          '(${generator.printParams(ex.parameters.map((f) =>
                  new Parameter(f, library)).toList())})'
-             '${retType.isEmpty ? '' : ': $retType'}';
+          '${retType.isEmpty ? '' : ': $retType'}';
     }
     if (isPropertyInducer) {
       PropertyInducingElement pe = (element as PropertyInducingElement);
       StringBuffer buf = new StringBuffer();
       buf.write('${generator.createLinkedName(this)}');
-      String type = generator.createLinkedName(pe.type == null ? null : new ModelElement.from(pe.type.element, library));
+      String type = generator.createLinkedName(pe.type == null ? null :
+          new ModelElement.from(pe.type.element, library));
       if (!type.isEmpty) {
         buf.write(': $type');
       }
@@ -148,8 +149,10 @@ abstract class ModelElement {
         buf.write('static ');
       }
 
-      buf.write(generator.createLinkedReturnTypeName(new ElementType(e.type, library)));
-      buf.write(' ${e.name}(${generator.printParams(e.parameters.map((f) => new Parameter(f, library)).toList())})');
+      buf.write(generator.createLinkedReturnTypeName(
+          new ElementType(e.type, library)));
+      buf.write(
+          ' ${e.name}(${generator.printParams(e.parameters.map((f) => new Parameter(f, library)).toList())})');
       return buf.toString();
     }
     if (isPropertyInducer) {
@@ -165,7 +168,8 @@ abstract class ModelElement {
         buf.write('const ');
       }
 
-      buf.write(generator.createLinkedName(e.type == null ? null : new ModelElement.from(e.type.element, library)));
+      buf.write(generator.createLinkedName(e.type == null ? null :
+          new ModelElement.from(e.type.element, library)));
       buf.write(' ${e.name}');
 
       // write out any constant value
@@ -187,7 +191,6 @@ abstract class ModelElement {
 }
 
 class Package {
-
   String _rootDirPath;
 
   List<Library> _libraries = [];
@@ -215,12 +218,12 @@ class Package {
 }
 
 class Library extends ModelElement {
-
   LibraryElement get _library => (element as LibraryElement);
 
   Library(LibraryElement element) : super(element, null);
 
-  List<Library> get exported =>  _library.exportedLibraries.map((lib) => new Library(lib)).toList();
+  List<Library> get exported =>
+      _library.exportedLibraries.map((lib) => new Library(lib)).toList();
 
   List<Variable> getVariables() {
     List<TopLevelVariableElement> elements = [];
@@ -229,8 +232,8 @@ class Library extends ModelElement {
       elements.addAll(cu.topLevelVariables);
     }
     elements
-        ..removeWhere(isPrivate)
-        ..sort(elementCompare);
+      ..removeWhere(isPrivate)
+      ..sort(elementCompare);
     return elements.map((e) => new Variable(e, this)).toList();
   }
 
@@ -241,8 +244,8 @@ class Library extends ModelElement {
       elements.addAll(cu.accessors);
     }
     elements
-        ..removeWhere(isPrivate)
-        ..sort(elementCompare);
+      ..removeWhere(isPrivate)
+      ..sort(elementCompare);
     elements.removeWhere((e) => e.isSynthetic);
     return elements.map((e) => new Accessor(e, this)).toList();
   }
@@ -254,8 +257,8 @@ class Library extends ModelElement {
       elements.addAll(cu.functionTypeAliases);
     }
     elements
-        ..removeWhere(isPrivate)
-        ..sort(elementCompare);
+      ..removeWhere(isPrivate)
+      ..sort(elementCompare);
     return elements.map((e) => new Typedef(e, this)).toList();
   }
 
@@ -266,8 +269,8 @@ class Library extends ModelElement {
       elements.addAll(cu.functions);
     }
     elements
-        ..removeWhere(isPrivate)
-        ..sort(elementCompare);
+      ..removeWhere(isPrivate)
+      ..sort(elementCompare);
     return elements.map((e) => new ModelFunction(e, this)).toList();
   }
 
@@ -278,14 +281,13 @@ class Library extends ModelElement {
       types.addAll(cu.types);
     }
     types
-        ..removeWhere(isPrivate)
-        ..sort(elementCompare);
-   return types.map((e) => new Class(e, this)).toList();
+      ..removeWhere(isPrivate)
+      ..sort(elementCompare);
+    return types.map((e) => new Class(e, this)).toList();
   }
 }
 
 class Class extends ModelElement {
-
   ClassElement get _cls => (element as ClassElement);
 
   String get typeName => 'Classes';
@@ -294,44 +296,49 @@ class Class extends ModelElement {
 
   bool get isAbstract => _cls.isAbstract;
 
-  bool get hasSupertype => _cls.supertype != null && _cls.supertype.element.supertype != null;
+  bool get hasSupertype =>
+      _cls.supertype != null && _cls.supertype.element.supertype != null;
 
   ElementType get supertype => new ElementType(_cls.supertype, library);
 
-  List<ElementType> get mixins => _cls.mixins.map((f) => new ElementType(f, library)).toList();
+  List<ElementType> get mixins =>
+      _cls.mixins.map((f) => new ElementType(f, library)).toList();
 
-  List<ElementType> get interfaces => _cls.interfaces.map((f) => new ElementType(f, library)).toList();
+  List<ElementType> get interfaces =>
+      _cls.interfaces.map((f) => new ElementType(f, library)).toList();
 
   List<Field> _getAllfields() {
     List<FieldElement> elements = _cls.fields.toList()
-        ..removeWhere(isPrivate)
-        ..sort(elementCompare);
+      ..removeWhere(isPrivate)
+      ..sort(elementCompare);
     return elements.map((e) => new Field(e, library)).toList();
   }
 
-  List<Field> getStaticFields() => _getAllfields()..removeWhere((f) => !f.isStatic);
+  List<Field> getStaticFields() =>
+      _getAllfields()..removeWhere((f) => !f.isStatic);
 
-  List<Field> getInstanceFields() => _getAllfields()..removeWhere((f) => f.isStatic);
+  List<Field> getInstanceFields() =>
+      _getAllfields()..removeWhere((f) => f.isStatic);
 
   List<Accessor> getAccessors() {
     List<PropertyAccessorElement> accessors = _cls.accessors.toList()
-        ..removeWhere(isPrivate)
-        ..sort(elementCompare);
+      ..removeWhere(isPrivate)
+      ..sort(elementCompare);
     accessors.removeWhere((e) => e.isSynthetic);
     return accessors.map((e) => new Accessor(e, library)).toList();
   }
 
   List<Constructor> getCtors() {
     List<ConstructorElement> c = _cls.constructors.toList()
-        ..removeWhere(isPrivate)
-        ..sort(elementCompare);
+      ..removeWhere(isPrivate)
+      ..sort(elementCompare);
     return c.map((e) => new Constructor(e, library)).toList();
   }
 
   List<Method> getMethods() {
     List<MethodElement> m = _cls.methods.toList()
-        ..removeWhere(isPrivate)
-        ..sort(elementCompare);
+      ..removeWhere(isPrivate)
+      ..sort(elementCompare);
     return m.map((e) => new Method(e, library)).toList();
   }
 
@@ -341,19 +348,20 @@ class Class extends ModelElement {
 }
 
 class ModelFunction extends ModelElement {
-
-  ModelFunction(FunctionElement element, Library library) : super(element, library);
+  ModelFunction(FunctionElement element, Library library)
+      : super(element, library);
 
   FunctionElement get _func => (element as FunctionElement);
 
   String get typeName => 'Functions';
 
   String createLinkedSummary(Helper generator) {
-    String retType = generator.createLinkedReturnTypeName(new ElementType(_func.type, library));
+    String retType = generator.createLinkedReturnTypeName(
+        new ElementType(_func.type, library));
 
     return '${generator.createLinkedName(this)}'
-           '(${generator.printParams(_func.parameters.map((f) => new Parameter(f, library)))})'
-           '${retType.isEmpty ? '' : ': $retType'}';
+        '(${generator.printParams(_func.parameters.map((f) => new Parameter(f, library)))})'
+        '${retType.isEmpty ? '' : ': $retType'}';
   }
 
   String createLinkedDescription(Helper generator) {
@@ -361,17 +369,20 @@ class ModelFunction extends ModelElement {
     if (_func.isStatic) {
       buf.write('static ');
     }
-    buf.write(generator.createLinkedReturnTypeName(new ElementType(_func.type, library)));
-    buf.write(' ${_func.name}(${generator.printParams(_func.parameters.map((f) => new Parameter(f, library)).toList())})');
+    buf.write(generator.createLinkedReturnTypeName(
+        new ElementType(_func.type, library)));
+    buf.write(
+        ' ${_func.name}(${generator.printParams(_func.parameters.map((f) => new Parameter(f, library)).toList())})');
     return buf.toString();
   }
 }
 
 class Typedef extends ModelElement {
+  FunctionTypeAliasElement get _typedef =>
+      (element as FunctionTypeAliasElement);
 
-  FunctionTypeAliasElement get _typedef => (element as FunctionTypeAliasElement);
-
-  Typedef(FunctionTypeAliasElement element, Library library) : super(element, library);
+  Typedef(FunctionTypeAliasElement element, Library library)
+      : super(element, library);
 
   String get typeName => 'Typedefs';
 
@@ -389,8 +400,10 @@ class Typedef extends ModelElement {
       }
       buf.write('&gt;');
     }
-    buf.write('(${generator.printParams(_typedef.parameters.map((f) => new Parameter(f, library)).toList())}): ');
-    buf.write(generator.createLinkedReturnTypeName(new ElementType(_typedef.type, library)));
+    buf.write(
+        '(${generator.printParams(_typedef.parameters.map((f) => new Parameter(f, library)).toList())}): ');
+    buf.write(generator.createLinkedReturnTypeName(
+        new ElementType(_typedef.type, library)));
     return buf.toString();
   }
 
@@ -398,7 +411,8 @@ class Typedef extends ModelElement {
     // typedef int Comparator<T>(T a, T b)
 
     StringBuffer buf = new StringBuffer();
-    buf.write('typedef ${generator.createLinkedReturnTypeName(new ElementType(_typedef.type, library))} ${_typedef.name}');
+    buf.write(
+        'typedef ${generator.createLinkedReturnTypeName(new ElementType(_typedef.type, library))} ${_typedef.name}');
     if (!_typedef.typeParameters.isEmpty) {
       buf.write('&lt;');
       for (int i = 0; i < _typedef.typeParameters.length; i++) {
@@ -409,14 +423,13 @@ class Typedef extends ModelElement {
       }
       buf.write('&gt;');
     }
-    buf.write('(${generator.printParams(_typedef.parameters.map((f) => new Parameter(f, library)).toList())}): ');
+    buf.write(
+        '(${generator.printParams(_typedef.parameters.map((f) => new Parameter(f, library)).toList())}): ');
     return buf.toString();
   }
-
 }
 
 class Field extends ModelElement {
-
   FieldElement get _field => (element as FieldElement);
 
   Field(FieldElement element, Library library) : super(element, library);
@@ -429,10 +442,10 @@ class Field extends ModelElement {
 }
 
 class Constructor extends ModelElement {
-
   ConstructorElement get _constructor => (element as ConstructorElement);
 
-  Constructor(ConstructorElement element, Library library) : super(element, library);
+  Constructor(ConstructorElement element, Library library)
+      : super(element, library);
 
   String get typeName => 'Constructors';
 
@@ -448,9 +461,10 @@ class Constructor extends ModelElement {
     if (_constructor.isFactory) {
       buf.write('factory ');
     }
-    buf.write('${_constructor.type.returnType.name}${_constructor.name.isEmpty?'':'.'}'
-              '${_constructor.name}'
-              '(${generator.printParams(
+    buf.write(
+        '${_constructor.type.returnType.name}${_constructor.name.isEmpty?'':'.'}'
+        '${_constructor.name}'
+        '(${generator.printParams(
                       _constructor.parameters.map((f) => new Parameter(f, library)).toList())})');
     return buf.toString();
   }
@@ -475,10 +489,10 @@ class Method extends ModelElement {
 }
 
 class Accessor extends ModelElement {
-
   PropertyAccessorElement get _accessor => (element as PropertyAccessorElement);
 
-  Accessor(PropertyAccessorElement element, Library library) : super(element, library);
+  Accessor(PropertyAccessorElement element, Library library)
+      : super(element, library);
 
   String get typeName => 'Getters and Setters';
 
@@ -490,12 +504,12 @@ class Accessor extends ModelElement {
     if (_accessor.isGetter) {
       buf.write(generator.createLinkedName(this));
       buf.write(': ');
-      buf.write(generator.createLinkedReturnTypeName(
-                new ElementType(_accessor.type,
-                new ModelElement.from(_accessor.type.element, library))));
+      buf.write(generator.createLinkedReturnTypeName(new ElementType(
+          _accessor.type, new ModelElement.from(
+              _accessor.type.element, library))));
     } else {
       buf.write('${generator.createLinkedName(this)}('
-                '${generator.printParams(_accessor.parameters.map((f) =>
+          '${generator.printParams(_accessor.parameters.map((f) =>
                     new Parameter(f,library)))})');
     }
     return buf.toString();
@@ -507,20 +521,21 @@ class Accessor extends ModelElement {
       buf.write('static ');
     }
     if (_accessor.isGetter) {
-      buf.write('${generator.createLinkedReturnTypeName(new ElementType(_accessor.type, new ModelElement.from(_accessor.type.element, library)))} get ${_accessor.name}');
+      buf.write(
+          '${generator.createLinkedReturnTypeName(new ElementType(_accessor.type, new ModelElement.from(_accessor.type.element, library)))} get ${_accessor.name}');
     } else {
-      buf.write('set ${_accessor.name}(${generator.printParams(_accessor.parameters.map((f) => new Parameter(f,library)))})');
+      buf.write(
+          'set ${_accessor.name}(${generator.printParams(_accessor.parameters.map((f) => new Parameter(f,library)))})');
     }
     return buf.toString();
   }
-
 }
 
 class Variable extends ModelElement {
-
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 
-  Variable(TopLevelVariableElement element, Library library) : super(element, library);
+  Variable(TopLevelVariableElement element, Library library)
+      : super(element, library);
 
   String get typeName => 'Top-Level Variables';
 
@@ -530,8 +545,8 @@ class Variable extends ModelElement {
 }
 
 class Parameter extends ModelElement {
-
-  Parameter(ParameterElement element, Library library) : super(element, library);
+  Parameter(ParameterElement element, Library library)
+      : super(element, library);
 
   ParameterElement get _parameter => element as ParameterElement;
 
@@ -556,7 +571,8 @@ class ElementType {
 
   String get returnTypeName => (_type as FunctionType).returnType.name;
 
-  ElementType get returnType => new ElementType((_type as FunctionType).returnType, library);
+  ElementType get returnType =>
+      new ElementType((_type as FunctionType).returnType, library);
 
   ModelElement get returnElement {
     Element e = (_type as FunctionType).returnType.element;
@@ -565,7 +581,10 @@ class ElementType {
     }
     return (new ModelElement.from(e, element.library));
   }
-  List<ElementType> get typeArguments => (_type as ParameterizedType).typeArguments.map((f) => new ElementType(f, library)).toList();
+  List<ElementType> get typeArguments =>
+      (_type as ParameterizedType).typeArguments
+      .map((f) => new ElementType(f, library))
+      .toList();
 }
 
 abstract class Helper {

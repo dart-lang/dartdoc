@@ -29,7 +29,7 @@ body {
   HtmlHelper html = new HtmlHelper();
   CSS css = new CSS();
   HtmlGeneratorHelper helper;
-  List<String> htmlFiles =[];
+  List<String> htmlFiles = [];
   String url;
 
   HtmlGenerator(this.package, this.out, this.url) {
@@ -57,7 +57,9 @@ body {
       htmlFiles.add(fileName);
       print('generating ${f.path}');
 
-      html.start(title: 'Package ${packageName}', cssRef: css.getCssName(),
+      html.start(
+          title: 'Package ${packageName}',
+          cssRef: css.getCssName(),
           inlineStyle: bootstrapOverrides);
       html.generateHeader();
       html.startTag('div', attributes: "class='container'", newLine: false);
@@ -67,7 +69,8 @@ body {
       html.startTag('div', attributes: "class='col-md-3'");
       html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
       html.startTag('li', attributes: 'class="active"', newLine: false);
-      html.write('<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}-${packageVersion}</a>');
+      html.write(
+          '<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}-${packageVersion}</a>');
       html.endTag(); //li
       html.endTag(); //ul
       html.endTag();
@@ -97,7 +100,9 @@ body {
     print('generating ${f.path}');
     htmlFiles.add(fileName);
     html = new HtmlHelper();
-    html.start(title: 'Library ${library.name}', cssRef: css.getCssName(),
+    html.start(
+        title: 'Library ${library.name}',
+        cssRef: css.getCssName(),
         inlineStyle: bootstrapOverrides);
 
     html.generateHeader();
@@ -111,7 +116,8 @@ body {
     html.startTag('div', attributes: "class='col-md-3'");
     html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
     html.startTag('li', attributes: 'class="active"', newLine: false);
-    html.write('<a href="${_getFileNameFor(library)}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${library.name}</a>');
+    html.write(
+        '<a href="${_getFileNameFor(library)}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${library.name}</a>');
     html.endTag(); // li
     html.endTag(); // ul.nav
     html.endTag(); // div.col-md-3
@@ -194,7 +200,6 @@ body {
   }
 
   void generateClass(Class cls) {
-
     html.write(createAnchor(cls));
     html.writeln('<hr>');
     html.startTag('h4');
@@ -444,7 +449,7 @@ body {
     var tmpl = tmplFile.readAsStringSync();
     // TODO: adjust urls
     List names = htmlFiles.map((f) => {'name': '$f'}).toList();
-    var content = render(tmpl, {'url': url, 'links' : names});
+    var content = render(tmpl, {'url': url, 'links': names});
     f.writeAsStringSync(content);
   }
 }
@@ -454,7 +459,6 @@ String _getFileNameFor(Library library) {
 }
 
 class HtmlGeneratorHelper extends Helper {
-
   Package package;
 
   HtmlGeneratorHelper(this.package);
