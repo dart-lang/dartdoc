@@ -4,6 +4,8 @@ A documentation generator for Dart.
 
 [![Build Status](https://travis-ci.org/dart-lang/dartdoc.svg)](https://travis-ci.org/dart-lang/dartdoc)
 
+[![Coverage Status](https://img.shields.io/coveralls/dart-lang/dartdoc.svg)](https://coveralls.io/r/dart-lang/dartdoc)
+
 Note: This tool is currently in pre-alpha stage.
 
 ## FAQ
