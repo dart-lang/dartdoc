@@ -5,7 +5,9 @@
 library dartdoc.all_tests;
 
 import 'template_test.dart' as template_tests;
+import 'model_test.dart' as model_tests;
 
 main() {
   template_tests.tests();
+  model_tests.tests();
 }
