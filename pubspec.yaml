@@ -8,8 +8,9 @@ dependencies:
   analyzer: any
   args: any
   bootstrap: any
+  grinder: '>=0.6.0 <0.7.0'
   logging: any
-  mustache4dart: '>= 1.0.0 < 2.0.0'
+  mustache4dart: '>=1.0.0 <2.0.0'
   path: any
   yaml: any
 
