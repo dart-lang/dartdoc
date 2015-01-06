@@ -40,8 +40,8 @@ body {
     generatePackage();
     package.libraries.forEach((lib) => generateLibrary(lib));
     // copy the css resource into 'out'
-    File f = joinFile(new Directory(out.path), [css.getCssName()]);
-    f.writeAsStringSync(css.getCssContent());
+//    File f = joinFile(new Directory(out.path), [css.getCssName()]);
+//    f.writeAsStringSync(css.getCssContent());
     if (url != null) {
       generateSiteMap();
     }
@@ -59,7 +59,9 @@ body {
 
       html.start(
           title: 'Package ${packageName}',
-          cssRef: css.getCssName(),
+          cssRef: css.cssHeader,
+          theme: css.theme,
+          jsScript: css.jsScript,
           inlineStyle: bootstrapOverrides);
       html.generateHeader();
       html.startTag('div', attributes: "class='container'", newLine: false);
@@ -102,7 +104,9 @@ body {
     html = new HtmlHelper();
     html.start(
         title: 'Library ${library.name}',
-        cssRef: css.getCssName(),
+        cssRef: css.cssHeader,
+        theme: css.theme,
+        jsScript: css.jsScript,
         inlineStyle: bootstrapOverrides);
 
     html.generateHeader();
