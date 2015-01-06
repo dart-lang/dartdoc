@@ -4,8 +4,11 @@
 
 library dartdoc.all_tests;
 
+import 'css_test.dart' as css_tests;
 import 'template_test.dart' as template_tests;
 
+
 main() {
+  css_tests.tests();
   template_tests.tests();
 }
