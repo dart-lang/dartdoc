@@ -25,13 +25,14 @@ const String DEFAULT_OUTPUT_DIRECTORY = 'docs';
 /// directory.
 class DartDoc {
   List<String> _excludes;
+  String _sdkLocation;
   Directory _rootDir;
   String _url;
   Directory out;
   Set<LibraryElement> libraries = new Set();
   HtmlGenerator generator;
 
-  DartDoc(this._rootDir, this._excludes, this._url);
+  DartDoc(this._rootDir, this._sdkLocation, this._excludes, this._url);
 
   /// Generate the documentation
   void generateDocs() {
@@ -97,11 +98,8 @@ class DartDoc {
   }
 
   Directory _getSdkDir() {
-    // Look for --dart-sdk on the command line.
-    // TODO:
-    List<String> args = []; //new Options().arguments;
-    if (args.contains('--dart-sdk')) {
-      return new Directory(args[args.indexOf('dart-sdk') + 1]);
+    if (_sdkLocation != null) {
+      return new Directory(_sdkLocation);
     }
     // Look in env['DART_SDK'].
     if (Platform.environment['DART_SDK'] != null) {
