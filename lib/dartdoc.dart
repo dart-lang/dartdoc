@@ -31,7 +31,6 @@ class DartDoc {
   Directory out;
   Set<LibraryElement> libraries = new Set();
   HtmlGenerator generator;
-
   final List _cliArgs;
 
   DartDoc(this._rootDir, this._excludes, this._url, [this._cliArgs]);

@@ -30,7 +30,7 @@ void main(List<String> arguments) {
 /// Print help if we are passed the help option or invalid arguments.
 void _printUsageAndExit(ArgParser parser) {
   print(parser.usage);
-  print('Usage: dartdoc [OPTIONS]');
+  print('Usage: dartdoc --dartsdk=sdkLocation [OPTIONS]');
   exit(0);
 }
 
