@@ -18,12 +18,16 @@ void main(List<String> arguments) {
   if (results['help']) {
     _printUsageAndExit(parser);
   }
+  if (results['version']) {
+    print('$NAME version: $VERSION');
+    exit(0);
+  }
   List<String> excludeLibraries =
       results['exclude'] == null ? [] : results['exclude'].split(',');
 
   String url = results['url'];
   var currentDir = Directory.current;
-  DartDoc dartdoc = new DartDoc(currentDir, excludeLibraries, url, arguments)
+  new DartDoc(currentDir, excludeLibraries, url, arguments)
       ..generateDocs();
 }
 
@@ -45,5 +49,7 @@ ArgParser _createArgsParser() {
       help: 'the url where the docs will be hosted (used to generate the sitemap)');
   parser.addFlag('help',
       abbr: 'h', negatable: false, help: 'show command help');
+  parser.addFlag('version',
+      help: 'Display the version for $NAME', negatable: false);
   return parser;
 }
