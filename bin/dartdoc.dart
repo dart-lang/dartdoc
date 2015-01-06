@@ -23,8 +23,8 @@ void main(List<String> arguments) {
 
   String url = results['url'];
   var currentDir = Directory.current;
-  DartDoc dartdoc = new DartDoc(currentDir, excludeLibraries, url, arguments);
-  dartdoc.generateDocs();
+  DartDoc dartdoc = new DartDoc(currentDir, excludeLibraries, url, arguments)
+      ..generateDocs();
 }
 
 /// Print help if we are passed the help option or invalid arguments.

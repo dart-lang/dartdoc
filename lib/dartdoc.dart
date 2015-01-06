@@ -76,6 +76,7 @@ class DartDoc {
       print(
           "Warning: unable to locate the Dart SDK. Please use the --dart-sdk "
           "command line option or set the DART_SDK environment variable.");
+      exit(1);
     }
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
 
