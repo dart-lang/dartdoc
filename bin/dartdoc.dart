@@ -23,7 +23,8 @@ void main(List<String> arguments) {
 
   String url = results['url'];
   var currentDir = Directory.current;
-  new DartDoc(currentDir, excludeLibraries, url).generateDocs();
+  DartDoc dartdoc = new DartDoc(currentDir, excludeLibraries, url, arguments);
+  dartdoc.generateDocs();
 }
 
 /// Print help if we are passed the help option or invalid arguments.
@@ -38,6 +39,8 @@ ArgParser _createArgsParser() {
   var parser = new ArgParser();
   parser.addOption('exclude',
       help: 'a comma-separated list of library names to ignore');
+  parser.addOption('dart-sdk',
+      help: 'the location of the Dart SDK');
   parser.addOption('url',
       help: 'the url where the docs will be hosted (used to generate the sitemap)');
   parser.addFlag('help',

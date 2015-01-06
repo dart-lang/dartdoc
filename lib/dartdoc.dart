@@ -13,6 +13,7 @@ import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:grinder/grinder.dart' as grinder;
 
 import 'src/generator.dart';
 import 'src/io_utils.dart';
@@ -31,7 +32,9 @@ class DartDoc {
   Set<LibraryElement> libraries = new Set();
   HtmlGenerator generator;
 
-  DartDoc(this._rootDir, this._excludes, this._url);
+  final List _cliArgs;
+
+  DartDoc(this._rootDir, this._excludes, this._url, [this._cliArgs]);
 
   /// Generate the documentation
   void generateDocs() {
@@ -62,11 +65,19 @@ class DartDoc {
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');
     print(
-        "Documented ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.");
+        "Documented ${libraries.length} "
+        "librar${libraries.length == 1 ? 'y' : 'ies'} in "
+        "${seconds.toStringAsFixed(1)} seconds.");
   }
 
   List<LibraryElement> parseLibraries(List<String> files) {
-    DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_getSdkDir().path));
+    Directory sdkDir = grinder.getSdkDir(_cliArgs);
+    if (sdkDir == null) {
+      print(
+          "Warning: unable to locate the Dart SDK. Please use the --dart-sdk "
+          "command line option or set the DART_SDK environment variable.");
+    }
+    DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
 
     ContentCache contentCache = new ContentCache();
     List<UriResolver> resolvers = [
@@ -94,20 +105,5 @@ class DartDoc {
       }
     });
     return libraries.toList();
-  }
-
-  Directory _getSdkDir() {
-    // Look for --dart-sdk on the command line.
-    // TODO:
-    List<String> args = []; //new Options().arguments;
-    if (args.contains('--dart-sdk')) {
-      return new Directory(args[args.indexOf('dart-sdk') + 1]);
-    }
-    // Look in env['DART_SDK'].
-    if (Platform.environment['DART_SDK'] != null) {
-      return new Directory(Platform.environment['DART_SDK']);
-    }
-    // Look relative to the dart executable.
-    return new File(Platform.executable).parent.parent;
   }
 }
