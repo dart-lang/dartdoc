@@ -16,7 +16,7 @@ tests() {
   group('dartdoc test', () {
 
     test('version info', () {
-      String version = getPackageVersion(Directory.current.parent.path);
+      String version = getPackageVersion(Directory.current.path);
       expect(version, VERSION);
     });
   });
