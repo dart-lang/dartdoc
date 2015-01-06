@@ -9,11 +9,6 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 
-const String NAME = 'dartdoc';
-
-// Update when puspec version changes
-const String VERSION = '0.0.1';
-
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
 void main(List<String> arguments) {
@@ -32,7 +27,7 @@ void main(List<String> arguments) {
 
   String url = results['url'];
   var currentDir = Directory.current;
-  DartDoc dartdoc = new DartDoc(currentDir, excludeLibraries, url, arguments)
+  new DartDoc(currentDir, excludeLibraries, url, arguments)
       ..generateDocs();
 }
 

@@ -22,6 +22,11 @@ import 'src/model_utils.dart';
 
 const String DEFAULT_OUTPUT_DIRECTORY = 'docs';
 
+const String NAME = 'dartdoc';
+
+// Update when puspec version changes
+const String VERSION = '0.0.1';
+
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
 class DartDoc {
