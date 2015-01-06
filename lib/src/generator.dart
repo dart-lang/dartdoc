@@ -61,7 +61,6 @@ body {
           title: 'Package ${packageName}',
           cssRef: css.cssHeader,
           theme: css.theme,
-          jsScript: css.jsScript,
           inlineStyle: bootstrapOverrides);
       html.generateHeader();
       html.startTag('div', attributes: "class='container'", newLine: false);
@@ -106,7 +105,6 @@ body {
         title: 'Library ${library.name}',
         cssRef: css.cssHeader,
         theme: css.theme,
-        jsScript: css.jsScript,
         inlineStyle: bootstrapOverrides);
 
     html.generateHeader();
