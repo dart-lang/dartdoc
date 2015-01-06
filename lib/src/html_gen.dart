@@ -30,7 +30,7 @@ class HtmlHelper {
     endTag();
   }
 
-  void start({String title, String cssRef, String inlineStyle}) {
+  void start({String title, String cssRef, String theme, String jsScript, String inlineStyle}) {
     startTag('html', newLine: false);
     writeln();
     startTag('head');
@@ -42,6 +42,12 @@ class HtmlHelper {
     }
     if (cssRef != null) {
       writeln('<link href="${cssRef}" rel="stylesheet" media="screen">');
+    }
+    if (theme != null) {
+      writeln('<link href="${theme}" rel="stylesheet">');
+    }
+    if (jsScript != null) {
+      writeln('<script src="${jsScript}"></script>');
     }
     if (inlineStyle != null) {
       startTag('style');

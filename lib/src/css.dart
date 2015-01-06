@@ -12,6 +12,15 @@ class CSS {
   // The bootstrap css file
   final String cssFilePath = '/packages/bootstrap/css/bootstrap.css';
 
+  final String cssHeader =
+      'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css';
+
+  final String theme =
+      'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css';
+
+  final String jsScript =
+      'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js';
+
   String getCssName() => 'bootstrap.css';
 
   String getCssContent() {
@@ -20,4 +29,5 @@ class CSS {
     String text = cssFile.readAsStringSync(encoding: ASCII);
     return text;
   }
+
 }
