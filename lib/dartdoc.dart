@@ -67,6 +67,7 @@ class DartDoc {
   }
 
   List<LibraryElement> parseLibraries(List<String> files) {
+    print(_getSdkDir().path);
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_getSdkDir().path));
 
     ContentCache contentCache = new ContentCache();

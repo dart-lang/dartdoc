@@ -9,6 +9,11 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 
+const String NAME = 'dartdoc';
+
+// Update when puspec version changes
+const String VERSION = '0.0.1';
+
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
 void main(List<String> arguments) {
@@ -17,6 +22,10 @@ void main(List<String> arguments) {
 
   if (results['help']) {
     _printUsageAndExit(parser);
+  }
+  if (results['version']) {
+    print('$NAME version: $VERSION');
+    exit(0);
   }
   List<String> excludeLibraries =
       results['exclude'] == null ? [] : results['exclude'].split(',');
@@ -43,10 +52,12 @@ ArgParser _createArgsParser() {
   parser.addOption('dart-sdk',
       help: 'the complete path to the dart sdk.');
   parser.addOption('exclude',
-       help: 'a comma-separated list of library names to ignore');
+      help: 'a comma-separated list of library names to ignore');
   parser.addOption('url',
       help: 'the url where the docs will be hosted (used to generate the sitemap)');
   parser.addFlag('help',
       abbr: 'h', negatable: false, help: 'show command help');
+  parser.addFlag('version',
+      help: 'Display the version for $NAME', negatable: false);
   return parser;
 }
