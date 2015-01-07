@@ -43,6 +43,9 @@ abstract class ModelElement {
     if (e is TopLevelVariableElement) {
       return new Variable(e, library);
     }
+    if (e is TypeParameterElement) {
+      return new TypeParameter(e, library);
+    }
   }
 
   String getDocumentation() {
@@ -553,6 +556,17 @@ class Parameter extends ModelElement {
   ElementType get type => new ElementType(_parameter.type, library);
 
   String toString() => element.name;
+}
+
+class TypeParameter extends ModelElement {
+  TypeParameter(TypeParameterElement element, Library library)
+       : super(element, library);
+
+   TypeParameterElement get _typeParameter => element as TypeParameterElement;
+
+   ElementType get type => new ElementType(_typeParameter.type, library);
+
+   String toString() => element.name;
 }
 
 class ElementType {
