@@ -51,48 +51,46 @@ body {
     var packageName = package.name;
     var packageDesc = package.description;
     var packageVersion = package.version;
-    if (packageName.isNotEmpty) {
-      var fileName = '${packageName}_package.html';
-      File f = joinFile(new Directory(out.path), [fileName]);
-      htmlFiles.add(fileName);
-      print('generating ${f.path}');
+    var fileName = 'index.html';
 
-      html.start(
-          title: 'Package ${packageName}',
-          cssRef: css.cssHeader,
-          theme: css.theme,
-          inlineStyle: bootstrapOverrides);
-      html.generateHeader();
-      html.startTag('div', attributes: "class='container'", newLine: false);
-      html.writeln();
-      html.startTag('div', attributes: "class='row'", newLine: false);
-      html.writeln();
-      html.startTag('div', attributes: "class='col-md-3'");
-      html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
-      html.startTag('li', attributes: 'class="active"', newLine: false);
-      html.write(
-          '<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}-${packageVersion}</a>');
-      html.endTag(); //li
-      html.endTag(); //ul
-      html.endTag();
-      html.startTag('div', attributes: "class='col-md-9'");
-      html.tag('h1', contents: packageName);
-      html.writeln('<hr>');
-      html.write(packageDesc);
-      html.startTag('dl');
-      html.startTag('h4');
-      html.tag('dt', contents: 'Libraries');
-      html.endTag();
-      html.startTag('dd');
-      for (Library lib in package.libraries) {
-        html.writeln('<a href="${_getFileNameFor(lib)}"> ${lib.name}</a><br>');
-      }
-      html.endTag();
-      html.endTag(); // div.container
-      html.generateFooter();
-      html.end();
-      f.writeAsStringSync(html.toString());
+    File f = joinFile(new Directory(out.path), [fileName]);
+    htmlFiles.add(fileName);
+    print('generating ${f.path}');
+    html.start(
+        title: 'Package ${packageName}',
+        cssRef: css.cssHeader,
+        theme: css.theme,
+        inlineStyle: bootstrapOverrides);
+    html.generateHeader();
+    html.startTag('div', attributes: "class='container'", newLine: false);
+    html.writeln();
+    html.startTag('div', attributes: "class='row'", newLine: false);
+    html.writeln();
+    html.startTag('div', attributes: "class='col-md-3'");
+    html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
+    html.startTag('li', attributes: 'class="active"', newLine: false);
+    html.write(
+        '<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}-${packageVersion}</a>');
+    html.endTag(); //li
+    html.endTag(); //ul
+    html.endTag();
+    html.startTag('div', attributes: "class='col-md-9'");
+    html.tag('h1', contents: packageName);
+    html.writeln('<hr>');
+    html.write(packageDesc);
+    html.startTag('dl');
+    html.startTag('h4');
+    html.tag('dt', contents: 'Libraries');
+    html.endTag();
+    html.startTag('dd');
+    for (Library lib in package.libraries) {
+      html.writeln('<a href="${_getFileNameFor(lib)}"> ${lib.name}</a><br>');
     }
+    html.endTag();
+    html.endTag(); // div.container
+    html.generateFooter();
+    html.end();
+    f.writeAsStringSync(html.toString());
   }
 
   void generateLibrary(Library library) {
