@@ -556,6 +556,8 @@ class Parameter extends ModelElement {
   ElementType get type => new ElementType(_parameter.type, library);
 
   String toString() => element.name;
+
+  String get typeName => 'Parameters';
 }
 
 class TypeParameter extends ModelElement {
@@ -567,6 +569,8 @@ class TypeParameter extends ModelElement {
    ElementType get type => new ElementType(_typeParameter.type, library);
 
    String toString() => element.name;
+
+   String get typeName => 'Type Parameters';
 }
 
 class ElementType {

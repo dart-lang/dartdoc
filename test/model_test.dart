@@ -15,4 +15,13 @@ tests() {
       expect(c.typeName, equals('Classes'));
     });
   });
+
+  group('TypeParameter', () {
+
+     test('has correct type name', () {
+       var t = new TypeParameter(null, null);
+       expect(t.typeName, equals('Type Parameters'));
+     });
+   });
+
 }
