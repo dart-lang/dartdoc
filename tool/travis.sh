@@ -20,6 +20,10 @@ fi
 # Display installed versions.
 dart --version
 
+# Globally install grinder.
+pub global activate grinder
+export PATH=$PATH:~/.pub-cache/bin
+
 # Get our packages.
 pub get
 
@@ -41,10 +45,6 @@ if [ "$REPO_TOKEN" ]; then
     --exclude-test-files \
     test/all.dart
 fi
-
-# Globally install grinder.
-pub global activate grinder
-export PATH=~/.pub-cache/bin:$PATH
 
 # Run dartdoc.
 pub global run grind test
