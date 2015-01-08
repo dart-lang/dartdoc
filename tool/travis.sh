@@ -41,3 +41,10 @@ if [ "$REPO_TOKEN" ]; then
     --exclude-test-files \
     test/all.dart
 fi
+
+# Globally install grinder.
+pub global activate grinder
+export PATH=~/.pub-cache/bin:$PATH
+
+# Run dartdoc.
+grind test
