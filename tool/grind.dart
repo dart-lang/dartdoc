@@ -10,19 +10,9 @@ import 'package:grinder/grinder.dart';
 final Directory DOC_DIR = new Directory(DEFAULT_OUTPUT_DIRECTORY);
 
 void main([List<String> args]) {
-  task('init', init);
+  task('init', defaultInit);
   task('test', testDartdoc, ['init']);
   startGrinder(args);
-}
-
-/**
- * Do any necessary build set up.
- */
-void init(GrinderContext context) {
-  // Verify we're running in the project root.
-  if (!getDir('lib').existsSync() || !getFile('pubspec.yaml').existsSync()) {
-    context.fail('This script must be run from the project root.');
-  }
 }
 
 /**
@@ -33,7 +23,7 @@ void testDartdoc(GrinderContext context) {
 
   try {
       context.log('running dartdoc');
-      runDartScript(context, '../bin/dartdoc.dart');
+      runDartScript(context, 'bin/dartdoc.dart');
 
       File indexHtml = joinFile(DOC_DIR, ['index.html']);
       if(!indexHtml.existsSync()) context.fail('docs not generated');
@@ -41,9 +31,6 @@ void testDartdoc(GrinderContext context) {
       if(!docFile.existsSync()) context.fail('docs not generated');
 
   } catch (e) {
-    try { DOC_DIR.deleteSync(recursive: true); }
-    catch (_) { }
-
     rethrow;
   }
 }

@@ -47,4 +47,4 @@ pub global activate grinder
 export PATH=~/.pub-cache/bin:$PATH
 
 # Run dartdoc.
-grind test
+pub global run grind test
