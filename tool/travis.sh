@@ -32,6 +32,9 @@ dartanalyzer --fatal-warnings \
   bin/dartdoc.dart \
   lib/dartdoc.dart \
   test/all.dart
+  
+# Run dartdoc.
+pub global run grind test
 
 # Run the tests.
 dart test/all.dart
@@ -45,6 +48,3 @@ if [ "$REPO_TOKEN" ]; then
     --exclude-test-files \
     test/all.dart
 fi
-
-# Run dartdoc.
-pub global run grind test
