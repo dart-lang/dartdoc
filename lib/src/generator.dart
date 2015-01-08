@@ -70,7 +70,7 @@ body {
     html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
     html.startTag('li', attributes: 'class="active"', newLine: false);
     html.write(
-        '<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}-${packageVersion}</a>');
+        '<a href="inde.html">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}-${packageVersion}</a>');
     html.endTag(); //li
     html.endTag(); //ul
     html.endTag();
