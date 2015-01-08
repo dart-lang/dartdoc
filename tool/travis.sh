@@ -20,6 +20,10 @@ fi
 # Display installed versions.
 dart --version
 
+# Globally install grinder.
+pub global activate grinder
+export PATH="$PATH":"~/.pub-cache/bin"
+
 # Get our packages.
 pub get
 
@@ -28,6 +32,9 @@ dartanalyzer --fatal-warnings \
   bin/dartdoc.dart \
   lib/dartdoc.dart \
   test/all.dart
+  
+# Run dartdoc.
+pub global run grinder test
 
 # Run the tests.
 dart test/all.dart
