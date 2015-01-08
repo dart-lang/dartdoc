@@ -19,6 +19,8 @@ class HtmlGenerator {
   // The sitemap template file
   static final String siteMapTemplate = '/templates/sitemap.xml';
 
+  static final String indexTemplate = '/templates/index.html';
+
   static final String bootstrapOverrides = '''
 body {
   margin: 8px;
@@ -48,49 +50,25 @@ body {
   }
 
   void generatePackage() {
-    var packageName = package.name;
-    var packageDesc = package.description;
-    var packageVersion = package.version;
+    var data = {
+      'packageName': package.name,
+      'packageDesc': package.description,
+      'packageVersion': package.version,
+      'libraries': package.libraries.map((lib) {
+          return {'name': lib.name, 'filename': _getFileNameFor(lib)};
+      })
+    };
     var fileName = 'index.html';
 
     File f = joinFile(new Directory(out.path), [fileName]);
     htmlFiles.add(fileName);
     print('generating ${f.path}');
-    html.start(
-        title: 'Package ${packageName}',
-        cssRef: css.cssHeader,
-        theme: css.theme,
-        inlineStyle: bootstrapOverrides);
-    html.generateHeader();
-    html.startTag('div', attributes: "class='container'", newLine: false);
-    html.writeln();
-    html.startTag('div', attributes: "class='row'", newLine: false);
-    html.writeln();
-    html.startTag('div', attributes: "class='col-md-3'");
-    html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
-    html.startTag('li', attributes: 'class="active"', newLine: false);
-    html.write(
-        '<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}-${packageVersion}</a>');
-    html.endTag(); //li
-    html.endTag(); //ul
-    html.endTag();
-    html.startTag('div', attributes: "class='col-md-9'");
-    html.tag('h1', contents: packageName);
-    html.writeln('<hr>');
-    html.write(packageDesc);
-    html.startTag('dl');
-    html.startTag('h4');
-    html.tag('dt', contents: 'Libraries');
-    html.endTag();
-    html.startTag('dd');
-    for (Library lib in package.libraries) {
-      html.writeln('<a href="${_getFileNameFor(lib)}"> ${lib.name}</a><br>');
-    }
-    html.endTag();
-    html.endTag(); // div.container
-    html.generateFooter();
-    html.end();
-    f.writeAsStringSync(html.toString());
+
+    var script = new File(Platform.script.toFilePath());
+    File tmplFile = new File('${script.parent.parent.path}$indexTemplate');
+    var tmpl = tmplFile.readAsStringSync();
+    var content = render(tmpl, data);
+    f.writeAsStringSync(content);
   }
 
   void generateLibrary(Library library) {
