@@ -82,7 +82,7 @@ String ltrim(String str) {
 
 String stripComments(String str) {
   if (str == null) return null;
-  
+
   StringBuffer buf = new StringBuffer();
 
   if (str.startsWith('///')) {
