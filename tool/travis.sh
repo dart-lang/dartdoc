@@ -34,7 +34,7 @@ dartanalyzer --fatal-warnings \
   test/all.dart
   
 # Run dartdoc.
-pub global run grind test
+pub global run grinder test
 
 # Run the tests.
 dart test/all.dart
