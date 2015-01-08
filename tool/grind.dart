@@ -32,7 +32,7 @@ void testDartdoc(GrinderContext context) {
   if (DOC_DIR.existsSync()) DOC_DIR.deleteSync(recursive: true);
 
   try {
-      context.log('running ');
+      context.log('running dartdoc');
       runDartScript(context, '../bin/dartdoc.dart');
 
       File indexHtml = joinFile(DOC_DIR, ['index.html']);
