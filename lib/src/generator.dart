@@ -55,7 +55,9 @@ body {
       'packageDesc': package.description,
       'packageVersion': package.version,
       'libraries': package.libraries.map((lib) {
-          return {'name': lib.name, 'filename': _getFileNameFor(lib)};
+          return {'name': lib.name,
+                  'filename': _getFileNameFor(lib),
+                  'descr': getDocOneLiner(lib)};
       })
     };
     var fileName = 'index.html';
@@ -340,6 +342,17 @@ body {
       return '<i class=icon-ok-sign></i> ';
     } else {
       return '';
+    }
+  }
+
+  String getDocOneLiner(ModelElement e) {
+    var doc = stripComments(e.getDocumentation());
+    if (doc == null || doc == '') return null;
+    var endOfFirstSentence = doc.indexOf('.');
+    if (endOfFirstSentence >= 0) {
+      return doc.substring(0, endOfFirstSentence+1);
+    } else {
+      return doc;
     }
   }
 

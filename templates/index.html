@@ -29,20 +29,23 @@
         <div class='col-md-9'>
             <h1>{{ packageName }}</h1>
             <hr>
-            {{ packageDesc }}<dl>
+            <p>{{ packageDesc }}</p>
             <h4>
-                <dt>Libraries</dt>
+                Libraries
             </h4>
-            <dd>
-                {{ #libraries }}
-                <a href="{{ filename }}">{{ name }}</a><br>
-                {{ /libraries }}
-            </dd>
-        </dl>
-            <footer>
-            </footer>
+            <table>
+                <tbody>
+                    {{ #libraries }}
+                    <tr>
+                        <td><a href="{{ filename }}">{{ name }}</a></td>
+                        <td>{{ descr }}</td>
+                    </tr>
+                    {{ /libraries }}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+<footer></footer>
 </body>
 </html>
