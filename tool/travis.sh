@@ -22,7 +22,7 @@ dart --version
 
 # Globally install grinder.
 pub global activate grinder
-export PATH=$PATH:~/.pub-cache/bin
+export PATH="$PATH":"~/.pub-cache/bin"
 
 # Get our packages.
 pub get
