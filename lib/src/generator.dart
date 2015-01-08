@@ -56,40 +56,42 @@ body {
     File f = joinFile(new Directory(out.path), [fileName]);
     htmlFiles.add(fileName);
     print('generating ${f.path}');
-    html.start(
+    html
+      ..start(
         title: 'Package ${packageName}',
         cssRef: css.cssHeader,
         theme: css.theme,
-        inlineStyle: bootstrapOverrides);
-    html.generateHeader();
-    html.startTag('div', attributes: "class='container'", newLine: false);
-    html.writeln();
-    html.startTag('div', attributes: "class='row'", newLine: false);
-    html.writeln();
-    html.startTag('div', attributes: "class='col-md-3'");
-    html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
-    html.startTag('li', attributes: 'class="active"', newLine: false);
-    html.write(
-        '<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}-${packageVersion}</a>');
-    html.endTag(); //li
-    html.endTag(); //ul
-    html.endTag();
-    html.startTag('div', attributes: "class='col-md-9'");
-    html.tag('h1', contents: packageName);
-    html.writeln('<hr>');
-    html.write(packageDesc);
-    html.startTag('dl');
-    html.startTag('h4');
-    html.tag('dt', contents: 'Libraries');
-    html.endTag();
-    html.startTag('dd');
+        inlineStyle: bootstrapOverrides)
+      ..generateHeader()
+      ..startTag('div', attributes: "class='container'", newLine: false)
+      ..writeln()
+      ..startTag('div', attributes: "class='row'", newLine: false)
+      ..writeln()
+      ..startTag('div', attributes: "class='col-md-3'")
+      ..startTag('ul', attributes: 'class="nav nav-pills nav-stacked"')
+      ..startTag('li', attributes: 'class="active"', newLine: false)
+      ..write(
+        '<a href="${packageName}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${packageName}-${packageVersion}</a>')
+      ..endTag() //li
+      ..endTag() //ul
+      ..endTag()
+      ..startTag('div', attributes: "class='col-md-9'")
+      ..tag('h1', contents: packageName)
+      ..writeln('<hr>')
+      ..write(packageDesc)
+      ..startTag('dl')
+      ..startTag('h4')
+      ..tag('dt', contents: 'Libraries')
+      ..endTag()
+      ..startTag('dd');
     for (Library lib in package.libraries) {
       html.writeln('<a href="${_getFileNameFor(lib)}"> ${lib.name}</a><br>');
     }
-    html.endTag();
-    html.endTag(); // div.container
-    html.generateFooter();
-    html.end();
+    html
+      ..endTag()
+      ..endTag() // div.container
+      ..generateFooter()
+      ..end();
     f.writeAsStringSync(html.toString());
   }
 
@@ -98,34 +100,34 @@ body {
     File f = joinFile(new Directory(out.path), [fileName]);
     print('generating ${f.path}');
     htmlFiles.add(fileName);
-    html = new HtmlHelper();
-    html.start(
+    html = new HtmlHelper()
+      ..start(
         title: 'Library ${library.name}',
         cssRef: css.cssHeader,
         theme: css.theme,
-        inlineStyle: bootstrapOverrides);
+        inlineStyle: bootstrapOverrides)
 
-    html.generateHeader();
+      ..generateHeader()
 
-    html.startTag('div', attributes: "class='container'", newLine: false);
-    html.writeln();
-    html.startTag('div', attributes: "class='row'", newLine: false);
-    html.writeln();
+      ..startTag('div', attributes: "class='container'", newLine: false)
+      ..writeln()
+      ..startTag('div', attributes: "class='row'", newLine: false)
+      ..writeln()
 
-    // left nav
-    html.startTag('div', attributes: "class='col-md-3'");
-    html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
-    html.startTag('li', attributes: 'class="active"', newLine: false);
-    html.write(
-        '<a href="${_getFileNameFor(library)}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${library.name}</a>');
-    html.endTag(); // li
-    html.endTag(); // ul.nav
-    html.endTag(); // div.col-md-3
+      // left nav
+      ..startTag('div', attributes: "class='col-md-3'")
+      ..startTag('ul', attributes: 'class="nav nav-pills nav-stacked"')
+      ..startTag('li', attributes: 'class="active"', newLine: false)
+      ..write(
+        '<a href="${_getFileNameFor(library)}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${library.name}</a>')
+      ..endTag() // li
+      ..endTag() // ul.nav
+      ..endTag() // div.col-md-3
 
-    // main content
-    html.startTag('div', attributes: "class='col-md-9'");
+      // main content
+      ..startTag('div', attributes: "class='col-md-9'")
 
-    html.tag('h1', contents: library.name);
+      ..tag('h1', contents: library.name);
 
     if (!library.exported.isEmpty) {
       html.startTag('p');
@@ -145,9 +147,9 @@ body {
       html.endTag();
     }
 
-    html.writeln('<hr>');
-
-    html.startTag('dl', attributes: "class=dl-horizontal");
+    html
+      ..writeln('<hr>')
+      ..startTag('dl', attributes: "class=dl-horizontal");
 
     List<Variable> variables = library.getVariables();
     List<Accessor> accessors = library.getAccessors();
@@ -172,17 +174,18 @@ body {
 
     types.forEach(generateClass);
 
-    html.writeln('<hr>');
+    html
+      ..writeln('<hr>')
 
-    html.endTag(); // div.col-md-9
+      ..endTag() // div.col-md-9
 
-    html.endTag(); // div.row
+      ..endTag() // div.row
 
-    html.endTag(); // div.container
+      ..endTag() // div.container
 
-    html.generateFooter();
+      ..generateFooter()
 
-    html.end();
+      ..end();
 
     // write the file contents
     f.writeAsStringSync(html.toString());
@@ -200,9 +203,10 @@ body {
   }
 
   void generateClass(Class cls) {
-    html.write(createAnchor(cls));
-    html.writeln('<hr>');
-    html.startTag('h4');
+    html
+      ..write(createAnchor(cls))
+      ..writeln('<hr>')
+      ..startTag('h4');
     generateAnnotations(cls.getAnnotations());
     html.write(createIconFor(cls));
     if (cls.isAbstract) {
