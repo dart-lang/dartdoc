@@ -27,12 +27,5 @@ tests() {
       });
     });
 
-    test('js script exists', () {
-      var url = css.jsScript;
-      http.get(url).then((response) {
-        expect(response.statusCode, 200);
-      });
-    });
-
   });
 }

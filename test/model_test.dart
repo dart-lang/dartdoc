@@ -19,6 +19,12 @@ import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
 const SOURCE1 = r'''
+library ex;
+
+static int function1(String s, bool b) => 5;
+
+get y => 2;
+
 class A {
   const int n = 5;
   static  String s = 'hello';
@@ -28,69 +34,111 @@ class A {
 
   get m => 0;
 }
+class B extends A { 
+  void m(){}
+}
+abstract class C {}
 ''';
 
-main() {
-  tests();
-}
 
 tests() {
 
   AnalyzerHelper helper = new AnalyzerHelper();
-
   Source source = helper.addSource(SOURCE1);
-  LibraryElement e = helper.resolve(source);
-  var l = new Library(e);
-  var classes = l.getTypes();
-  Class c = classes[0];
+     LibraryElement e = helper.resolve(source);
+     var l = new Library(e);
 
-  group('Class', () {
-
-    test('no of classes', () {
-      expect(classes.length, 1);
-    });
+  group('Library', () {
 
     test('name', () {
-      expect(c.name, 'A');
-    });
-
-    test('abstract', () {
-      expect(c.isAbstract, false);
-    });
-
-    test('get ctors', () {
-      expect(c.getCtors().length, 1);
-    });
-
-    test('get static fields', () {
-      expect(c.getStaticFields().length, 1);
-    });
-
-    test('get instance fields', () {
-      expect(c.getInstanceFields().length, 3);
-    });
-
-    test('get accessors', () {
-      expect(c.getAccessors().length, 1);
-    });
-
-    test('get methods', () {
-      expect(c.getMethods().length, 0);
-    });
-
-    test('has correct type name', () {
-      expect(c.typeName, equals('Classes'));
+      expect(l.name, 'ex');
     });
   });
 
+  group('Class', () {
+
+    var classes = l.getTypes();
+    Class A = classes[0];
+    var B = classes[1];
+    var C = classes[2];
+
+    test('no of classes', () {
+      expect(classes.length, 3);
+    });
+
+    test('name', () {
+      expect(A.name, 'A');
+    });
+
+    test('abstract', () {
+      expect(C.isAbstract, true);
+    });
+
+    test('supertype', () {
+      expect(B.hasSupertype, true);
+    });
+
+    test('interfaces', () {
+      expect(A.interfaces.length, 0);
+    });
+
+    test('mixins', () {
+      expect(A.mixins.length, 0);
+    });
+
+    test('get ctors', () {
+      expect(A.getCtors().length, 1);
+    });
+
+    test('get static fields', () {
+      expect(A.getStaticFields().length, 1);
+    });
+
+    test('get instance fields', () {
+      expect(A.getInstanceFields().length, 3);
+    });
+
+    test('get accessors', () {
+      expect(A.getAccessors().length, 1);
+    });
+
+    test('get methods', () {
+      expect(B.getMethods().length, 1);
+    });
+
+    test('has correct type name', () {
+      expect(A.typeName, equals('Classes'));
+    });
+  });
+
+  group('Function', () {
+
+    ModelFunction f1 = l.getFunctions()[0];
+
+    test('local element', () {
+      expect(f1.isLocalElement, true);
+    });
+
+    test('is executable', () {
+      expect(f1.isExecutable, true);
+    });
+
+    test('is static', () {
+      expect(f1.isStatic, true);
+    });
+
+    test('has correct type name', () {
+      expect(f1.typeName, equals('Functions'));
+    });
+  });
 
   group('TypeParameter', () {
 
-      test('has correct type name', () {
-        var t = new TypeParameter(null, null);
-        expect(t.typeName, equals('Type Parameters'));
-      });
+    test('has correct type name', () {
+      var t = new TypeParameter(null, null);
+      expect(t.typeName, equals('Type Parameters'));
     });
+  });
 
 }
 

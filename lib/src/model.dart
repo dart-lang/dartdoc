@@ -356,6 +356,8 @@ class ModelFunction extends ModelElement {
 
   FunctionElement get _func => (element as FunctionElement);
 
+  bool get isStatic => _func.isStatic;
+
   String get typeName => 'Functions';
 
   String createLinkedSummary(Helper generator) {
