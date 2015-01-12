@@ -23,6 +23,7 @@ library ex;
 
 static int function1(String s, bool b) => 5;
 
+static int number;
 get y => 2;
 
 class A {
@@ -32,10 +33,13 @@ class A {
 
   A(this.m);
 
+  void m1(){};
+
   get m => 0;
 }
-class B extends A { 
-  void m(){}
+class B extends A {
+  @override 
+  void m1() {};
 }
 abstract class C {}
 ''';
@@ -45,8 +49,8 @@ tests() {
 
   AnalyzerHelper helper = new AnalyzerHelper();
   Source source = helper.addSource(SOURCE1);
-     LibraryElement e = helper.resolve(source);
-     var l = new Library(e);
+  LibraryElement e = helper.resolve(source);
+  var l = new Library(e);
 
   group('Library', () {
 
@@ -132,6 +136,86 @@ tests() {
     });
   });
 
+  group('Method', () {
+
+    var c = l.getTypes()[1];
+    var m = c.getMethods()[0];
+
+    test('overriden method', () {
+      expect(m.getOverriddenElement().runtimeType.toString(), 'Method');
+    });
+
+    test('has correct type name', () {
+      expect(m.typeName, equals('Methods'));
+    });
+  });
+
+  group('Accessor', () {
+
+    var c = l.getTypes()[0];
+    var a = c.getAccessors()[0];
+
+    test('is getter', () {
+      expect(a.isGetter, true);
+    });
+
+    test('has correct type name', () {
+      expect(a.typeName, equals('Getters and Setters'));
+    });
+  });
+
+  group('Field', () {
+
+    var c = l.getTypes()[0];
+    var f1 = c.getStaticFields()[0];
+    var f2 = c.getInstanceFields()[1];
+
+    test('is const', () {
+      expect(f2.isConst, true);
+    });
+
+    test('is final', () {
+      expect(f2.isFinal, false);
+    });
+
+    test('is static', () {
+      expect(f1.isStatic, true);
+    });
+
+    test('has correct type name', () {
+      expect(f1.typeName, equals('Fields'));
+    });
+  });
+
+  group('Variable', () {
+
+    var v = l.getVariables()[0];
+
+    test('is final', () {
+      expect(v.isFinal, false);
+    });
+
+    test('is const', () {
+      expect(v.isConst, false);
+    });
+
+    test('is static', () {
+      expect(v.isStatic, true);
+    });
+
+    test('has correct type name', () {
+      expect(v.typeName, equals('Top-Level Variables'));
+    });
+  });
+
+  group('Parameter', () {
+
+     test('has correct type name', () {
+       var t = new Parameter(null, null);
+       expect(t.typeName, equals('Parameters'));
+     });
+   });
+
   group('TypeParameter', () {
 
     test('has correct type name', () {
@@ -139,6 +223,23 @@ tests() {
       expect(t.typeName, equals('Type Parameters'));
     });
   });
+
+  group('Constructor', () {
+
+    var c = l.getTypes()[0].getCtors()[0];
+
+      test('has correct type name', () {
+        expect(c.typeName, equals('Constructors'));
+      });
+    });
+
+  group('Typedef', () {
+
+      test('has correct type name', () {
+        var t = new Typedef(null, null);
+        expect(t.typeName, equals('Typedefs'));
+      });
+    });
 
 }
 
