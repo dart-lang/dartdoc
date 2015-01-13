@@ -2,20 +2,21 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library dartdoc.generator;
+library dartdoc.html_generator;
 
 import 'dart:io';
 
 import 'package:mustache4dart/mustache4dart.dart';
 
 import 'css.dart';
-import 'html_gen.dart';
+import 'html_printer.dart';
 import 'html_utils.dart';
-import 'io_utils.dart';
+import 'utils.dart';
 import 'model.dart';
+import '../generator.dart';
 
 /// Generates the HTML files
-class HtmlGenerator {
+class HtmlGenerator extends Generator {
   // The sitemap template file
   static final String siteMapTemplate = '/templates/sitemap.xml';
 
@@ -26,24 +27,22 @@ body {
   margin: 8px;
 }''';
 
-  Directory out;
-  Package package;
-  HtmlHelper html = new HtmlHelper();
+  HtmlPrinter html = new HtmlPrinter();
   CSS css = new CSS();
   HtmlGeneratorHelper helper;
   List<String> htmlFiles = [];
   String url;
 
-  HtmlGenerator(this.package, this.out, this.url) {
-    helper = new HtmlGeneratorHelper(package);
+  HtmlGenerator(this.url) {
+
   }
 
-  void generate() {
+  void generate(Package package, Directory out) {
+    this.package = package;
+    this.out = out;
+    helper = new HtmlGeneratorHelper(package);
     generatePackage();
     package.libraries.forEach((lib) => generateLibrary(lib));
-    // copy the css resource into 'out'
-//    File f = joinFile(new Directory(out.path), [css.getCssName()]);
-//    f.writeAsStringSync(css.getCssContent());
     if (url != null) {
       generateSiteMap();
     }
@@ -78,7 +77,7 @@ body {
     File f = joinFile(new Directory(out.path), [fileName]);
     print('generating ${f.path}');
     htmlFiles.add(fileName);
-    html = new HtmlHelper();
+    html = new HtmlPrinter();
     html.start(
         title: 'Library ${library.name}',
         cssRef: css.cssHeader,
@@ -446,7 +445,7 @@ body {
 }
 
 String _getFileNameFor(Library library) {
-  return '${library.name}.html';
+  return '${library.name.replaceAll('.', '_')}.html';
 }
 
 class HtmlGeneratorHelper extends Helper {

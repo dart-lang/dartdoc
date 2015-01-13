@@ -13,9 +13,9 @@ import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:grinder/grinder.dart' as grinder;
 
-import 'src/generator.dart';
+import 'generator.dart';
+import 'src/html_generator.dart';
 import 'src/io_utils.dart';
 import 'src/model.dart';
 import 'src/model_utils.dart';
@@ -27,18 +27,25 @@ const String NAME = 'dartdoc';
 // Update when puspec version changes
 const String VERSION = '0.0.1';
 
+
+/// Initialize and setup the generators
+List<Generator> initGenerators(String url) {
+  List<Generator> generators = [];
+  generators.add(new HtmlGenerator(url));
+  return generators;
+}
+
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
 class DartDoc {
   List<String> _excludes;
   Directory _rootDir;
-  String _url;
   Directory out;
+  Directory _sdkDir;
   Set<LibraryElement> libraries = new Set();
-  HtmlGenerator generator;
-  final List _cliArgs;
+  List<Generator> _generators;
 
-  DartDoc(this._rootDir, this._excludes, this._url, [this._cliArgs]);
+  DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators);
 
   /// Generate the documentation
   void generateDocs() {
@@ -48,10 +55,8 @@ class DartDoc {
     List<LibraryElement> libs = [];
     libs.addAll(parseLibraries(files));
     // remove excluded libraries
-    _excludes.forEach(
-        (pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
-    libs.removeWhere(
-        (LibraryElement library) => _excludes.contains(library.name));
+    _excludes.forEach((pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
+    libs.removeWhere((LibraryElement library) => _excludes.contains(library.name));
     libs.sort(elementCompare);
     libraries.addAll(libs);
 
@@ -60,43 +65,26 @@ class DartDoc {
     if (!out.existsSync()) {
       out.createSync(recursive: true);
     }
-
-    generator = new HtmlGenerator(
-        new Package(libraries, _rootDir.path), out, _url);
-    // generate the docs
-    generator.generate();
+    Package package = new Package(libraries, _rootDir.path);
+    _generators.forEach((generator) => generator.generate(package, out));
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');
-    print(
-        "Documented ${libraries.length} "
-        "librar${libraries.length == 1 ? 'y' : 'ies'} in "
-        "${seconds.toStringAsFixed(1)} seconds.");
+    print("Documented ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.");
   }
 
   List<LibraryElement> parseLibraries(List<String> files) {
 
-    Directory sdkDir = grinder.getSdkDir(_cliArgs);
-    if (sdkDir == null) {
-      print(
-          "Warning: unable to locate the Dart SDK. Please use the --dart-sdk "
-          "command line option or set the DART_SDK environment variable.");
-      exit(1);
-    }
-    DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
+
+    DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_sdkDir.path));
 
     ContentCache contentCache = new ContentCache();
-    List<UriResolver> resolvers = [
-      new DartUriResolver(sdk),
-      new FileUriResolver()
-    ];
-    JavaFile packagesDir = new JavaFile.relative(
-        new JavaFile(_rootDir.path), 'packages');
+    List<UriResolver> resolvers = [new DartUriResolver(sdk), new FileUriResolver()];
+    JavaFile packagesDir = new JavaFile.relative(new JavaFile(_rootDir.path), 'packages');
     if (packagesDir.exists()) {
       resolvers.add(new PackageUriResolver([packagesDir]));
     }
-    SourceFactory sourceFactory = new SourceFactory(
-        /*contentCache,*/ resolvers);
+    SourceFactory sourceFactory = new SourceFactory(/*contentCache,*/ resolvers);
     AnalysisContext context = AnalysisEngine.instance.createAnalysisContext();
     context.sourceFactory = sourceFactory;
 
