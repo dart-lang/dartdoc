@@ -11,7 +11,7 @@ import 'package:mustache4dart/mustache4dart.dart';
 import 'css.dart';
 import 'html_printer.dart';
 import 'html_utils.dart';
-import 'utils.dart';
+import 'io_utils.dart';
 import 'model.dart';
 import '../generator.dart';
 
