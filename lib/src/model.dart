@@ -195,18 +195,21 @@ abstract class ModelElement {
 
 class Package {
   String _rootDirPath;
-
   List<Library> _libraries = [];
+  bool _isSdk;
 
-  String get name => getPackageName(_rootDirPath);
+  String get name =>
+      _isSdk ? 'dart-sdk' : getPackageName(_rootDirPath);
 
-  String get version => getPackageVersion(_rootDirPath);
+  String get version =>
+      _isSdk ? '0' : getPackageVersion(_rootDirPath);
 
-  String get description => getPackageDescription(_rootDirPath);
+  String get description =>
+      _isSdk ? 'Dart API libraries' : getPackageDescription(_rootDirPath);
 
   List<Library> get libraries => _libraries;
 
-  Package(Iterable<LibraryElement> libraryElements, this._rootDirPath) {
+  Package(Iterable<LibraryElement> libraryElements, this._rootDirPath, [this._isSdk =false]) {
     libraryElements.forEach((element) {
       _libraries.add(new Library(element));
     });

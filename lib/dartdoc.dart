@@ -42,18 +42,20 @@ class DartDoc {
   Directory _rootDir;
   Directory out;
   Directory _sdkDir;
+  bool _sdkDocs;
   Set<LibraryElement> libraries = new Set();
   List<Generator> _generators;
 
-  DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators);
+  DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators, [this._sdkDocs = false]);
 
   /// Generate the documentation
   void generateDocs() {
     Stopwatch stopwatch = new Stopwatch();
     stopwatch.start();
-    var files = findFilesToDocumentInPackage(_rootDir.path);
+
+    var files = _sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
     List<LibraryElement> libs = [];
-    libs.addAll(parseLibraries(files));
+    libs.addAll(_parseLibraries(files));
     // remove excluded libraries
     _excludes.forEach((pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
     libs.removeWhere((LibraryElement library) => _excludes.contains(library.name));
@@ -65,7 +67,7 @@ class DartDoc {
     if (!out.existsSync()) {
       out.createSync(recursive: true);
     }
-    Package package = new Package(libraries, _rootDir.path);
+    Package package = new Package(libraries, _rootDir.path, _sdkDocs);
     _generators.forEach((generator) => generator.generate(package, out));
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
@@ -73,9 +75,7 @@ class DartDoc {
     print("Documented ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.");
   }
 
-  List<LibraryElement> parseLibraries(List<String> files) {
-
-
+  List<LibraryElement> _parseLibraries(List<String> files) {
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_sdkDir.path));
 
     ContentCache contentCache = new ContentCache();
@@ -88,6 +88,15 @@ class DartDoc {
     AnalysisContext context = AnalysisEngine.instance.createAnalysisContext();
     context.sourceFactory = sourceFactory;
 
+    if (_sdkDocs) {
+      sdk.sdkLibraries.where((SdkLibrary sdkLib) => !sdkLib.isInternal).forEach((SdkLibrary sdkLib) {
+              Source source = sdk.mapDartUri(sdkLib.shortName);
+              LibraryElement library = context.computeLibraryElement(source);
+              CompilationUnit unit = context.resolveCompilationUnit(source, library);
+              libraries.add(library);
+              libraries.addAll(library.exportedLibraries);
+            });
+    }
     files.forEach((String filePath) {
       print('parsing ${filePath}...');
       Source source = new FileBasedSource.con1(new JavaFile(filePath));
