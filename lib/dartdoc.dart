@@ -77,7 +77,6 @@ class DartDoc {
 
   List<LibraryElement> _parseLibraries(List<String> files) {
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_sdkDir.path));
-
     ContentCache contentCache = new ContentCache();
     List<UriResolver> resolvers = [new DartUriResolver(sdk), new FileUriResolver()];
     JavaFile packagesDir = new JavaFile.relative(new JavaFile(_rootDir.path), 'packages');
@@ -89,7 +88,12 @@ class DartDoc {
     context.sourceFactory = sourceFactory;
 
     if (_sdkDocs) {
-      sdk.sdkLibraries.where((SdkLibrary sdkLib) => !sdkLib.isInternal).forEach((SdkLibrary sdkLib) {
+      var sdkApiLibs =
+          sdk.sdkLibraries.where((SdkLibrary sdkLib)
+              => !sdkLib.isInternal && sdkLib.isDocumented).toList();
+      sdkApiLibs.sort((lib1, lib2) => lib1.shortName.compareTo(lib2.shortName));
+      sdkApiLibs
+           .forEach((SdkLibrary sdkLib) {
               Source source = sdk.mapDartUri(sdkLib.shortName);
               LibraryElement library = context.computeLibraryElement(source);
               CompilationUnit unit = context.resolveCompilationUnit(source, library);

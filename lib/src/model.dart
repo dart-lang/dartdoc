@@ -228,6 +228,11 @@ class Library extends ModelElement {
 
   Library(LibraryElement element) : super(element, null);
 
+  String get name {
+    var source = _library.definingCompilationUnit.source;
+    return source.isInSystemLibrary ? source.encoding : super.name;
+  }
+
   List<Library> get exported =>
       _library.exportedLibraries.map((lib) => new Library(lib)).toList();
 
