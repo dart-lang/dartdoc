@@ -67,7 +67,8 @@ class DartDoc {
     if (!out.existsSync()) {
       out.createSync(recursive: true);
     }
-    Package package = new Package(libraries, _rootDir.path, _sdkDocs);
+    Package package =
+        new Package(libraries, _rootDir.path, _getSdkVersion(), _sdkDocs);
     _generators.forEach((generator) => generator.generate(package, out));
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
@@ -112,5 +113,10 @@ class DartDoc {
       }
     });
     return libraries.toList();
+  }
+
+  String _getSdkVersion() {
+    var versionFile = joinFile(_sdkDir, ['version']);
+    return versionFile.readAsStringSync();
   }
 }

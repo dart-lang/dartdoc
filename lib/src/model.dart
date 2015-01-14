@@ -197,19 +197,20 @@ class Package {
   String _rootDirPath;
   List<Library> _libraries = [];
   bool _isSdk;
+  String _sdkVersion;
 
   String get name =>
       _isSdk ? 'dart-sdk' : getPackageName(_rootDirPath);
 
   String get version =>
-      _isSdk ? '0' : getPackageVersion(_rootDirPath);
+      _isSdk ? _sdkVersion : getPackageVersion(_rootDirPath);
 
   String get description =>
       _isSdk ? 'Dart API libraries' : getPackageDescription(_rootDirPath);
 
   List<Library> get libraries => _libraries;
 
-  Package(Iterable<LibraryElement> libraryElements, this._rootDirPath, [this._isSdk =false]) {
+  Package(Iterable<LibraryElement> libraryElements, this._rootDirPath, [this._sdkVersion, this._isSdk =false]) {
     libraryElements.forEach((element) {
       _libraries.add(new Library(element));
     });
