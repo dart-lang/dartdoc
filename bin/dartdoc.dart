@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:grinder/grinder.dart' as grinder;
 
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
@@ -22,14 +23,23 @@ void main(List<String> arguments) {
     print('$NAME version: $VERSION');
     exit(0);
   }
+  
+  Directory sdkDir = grinder.getSdkDir(arguments);
+  if (sdkDir == null) {
+    print(
+          "Warning: unable to locate the Dart SDK. Please use the --dart-sdk "
+          "command line option or set the DART_SDK environment variable.");
+    exit(1);
+  }   
   List<String> excludeLibraries =
       results['exclude'] == null ? [] : results['exclude'].split(',');
-
   String url = results['url'];
-  var currentDir = Directory.current;
-  new DartDoc(currentDir, excludeLibraries, url, arguments)
+  var currentDir = Directory.current;     
+  var generators = initGenerators(url);
+  new DartDoc(currentDir, excludeLibraries, sdkDir, generators)
       ..generateDocs();
 }
+
 
 /// Print help if we are passed the help option or invalid arguments.
 void _printUsageAndExit(ArgParser parser) {

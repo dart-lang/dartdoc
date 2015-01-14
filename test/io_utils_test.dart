@@ -15,7 +15,7 @@ tests() {
 
     test('find files to document', () {
       var files = findFilesToDocumentInPackage(Directory.current.path);
-      expect(files.length, 1);
+      expect(files.length, 2);
     });
 
   });
