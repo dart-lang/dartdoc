@@ -8,11 +8,10 @@ import 'dart:io';
 
 import 'package:unittest/unittest.dart';
 
-import '../lib/src/package_utils.dart';
+import 'package:dartdoc/src/package_utils.dart';
 
-tests() {
+void main() {
   group('package utils test', () {
-
     test('get package name', () {
       String name = getPackageName(Directory.current.path);
       expect(name, 'dartdoc');

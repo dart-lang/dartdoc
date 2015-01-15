@@ -9,11 +9,11 @@ import 'dart:io';
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:unittest/unittest.dart';
 
-tests() {
+void main() {
   group('template', () {
     var script = new File(Platform.script.toFilePath());
-    File tmplFile = new File(
-        '${script.parent.parent.path}/templates/sitemap.xml');
+    File tmplFile =
+        new File('${script.parent.parent.path}/templates/sitemap.xml');
 
     test('sitemap template exists', () {
       tmplFile.exists().then((t) => expect(t, true));

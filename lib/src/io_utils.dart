@@ -49,8 +49,8 @@ List<String> _doList(String dir, Set<String> listedDirectories, bool recurse,
     contents.add(entity.path);
     if (entity is Directory) {
       if (recurse) {
-        children.addAll(
-            _doList(entity.path, listedDirectories, recurse, listDir));
+        children
+            .addAll(_doList(entity.path, listedDirectories, recurse, listDir));
       }
     }
   }

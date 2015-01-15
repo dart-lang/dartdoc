@@ -7,9 +7,9 @@ library dartdoc.css_test;
 import 'package:http/http.dart' as http;
 import 'package:unittest/unittest.dart';
 
-import '../lib/src/css.dart';
+import 'package:dartdoc/src/css.dart';
 
-tests() {
+void main() {
   group('check bootstrap', () {
     CSS css = new CSS();
 
@@ -26,6 +26,5 @@ tests() {
         expect(response.statusCode, 200);
       });
     });
-
   });
 }

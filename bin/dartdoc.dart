@@ -26,15 +26,14 @@ void main(List<String> arguments) {
 
   Directory sdkDir = grinder.getSdkDir(arguments);
   if (sdkDir == null) {
-    print(
-          "Warning: unable to locate the Dart SDK. Please use the --dart-sdk "
-          "command line option or set the DART_SDK environment variable.");
+    print("Warning: unable to locate the Dart SDK. Please use the --dart-sdk "
+        "command line option or set the DART_SDK environment variable.");
     exit(1);
   }
 
   bool sdkDocs = false;
-   if (results['sdk-docs']) {
-     sdkDocs = true;
+  if (results['sdk-docs']) {
+    sdkDocs = true;
   }
 
   List<String> excludeLibraries =
@@ -43,9 +42,8 @@ void main(List<String> arguments) {
   var currentDir = Directory.current;
   var generators = initGenerators(url);
   new DartDoc(currentDir, excludeLibraries, sdkDir, generators, sdkDocs)
-      ..generateDocs();
+    ..generateDocs();
 }
-
 
 /// Print help if we are passed the help option or invalid arguments.
 void _printUsageAndExit(ArgParser parser) {
@@ -59,17 +57,14 @@ ArgParser _createArgsParser() {
   var parser = new ArgParser();
   parser.addOption('exclude',
       help: 'a comma-separated list of library names to ignore');
-  parser.addOption('dart-sdk',
-      help: 'the location of the Dart SDK');
+  parser.addOption('dart-sdk', help: 'the location of the Dart SDK');
   parser.addOption('url',
       help: 'the url where the docs will be hosted (used to generate the sitemap)');
   parser.addFlag('help',
       abbr: 'h', negatable: false, help: 'show command help');
   parser.addFlag('version',
       help: 'Display the version for $NAME', negatable: false);
-  parser.addFlag(
-      'sdk-docs',
-      help: 'generate docs for the dart sdk.'
-            'Use "--dart-sdk" option to specify path to sdk');
+  parser.addFlag('sdk-docs', help: 'generate docs for the dart sdk.'
+      'Use "--dart-sdk" option to specify path to sdk');
   return parser;
 }

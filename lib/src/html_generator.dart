@@ -25,8 +25,10 @@ body {
   margin: 8px;
 }''';
 
-  static final String bootstrapCss = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css';
-  static final String bootstrapTheme ='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css';
+  static final String bootstrapCss =
+      'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css';
+  static final String bootstrapTheme =
+      'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css';
 
   HtmlPrinter html = new HtmlPrinter();
   CSS css = new CSS();
@@ -34,9 +36,7 @@ body {
   List<String> htmlFiles = [];
   String url;
 
-  HtmlGenerator(this.url) {
-
-  }
+  HtmlGenerator(this.url) {}
 
   void generate(Package package, Directory out) {
     this.package = package;
@@ -51,15 +51,17 @@ body {
 
   void generatePackage() {
     var data = {
-      'css' : bootstrapCss,
-      'theme' : bootstrapTheme,
+      'css': bootstrapCss,
+      'theme': bootstrapTheme,
       'packageName': package.name,
       'packageDesc': package.description,
       'packageVersion': package.version,
       'libraries': package.libraries.map((lib) {
-          return {'name': lib.name,
-                  'filename': _getFileNameFor(lib),
-                  'descr': getDocOneLiner(lib)};
+        return {
+          'name': lib.name,
+          'filename': _getFileNameFor(lib),
+          'descr': getDocOneLiner(lib)
+        };
       })
     };
     var fileName = 'index.html';
@@ -352,7 +354,7 @@ body {
     if (doc == null || doc == '') return null;
     var endOfFirstSentence = doc.indexOf('.');
     if (endOfFirstSentence >= 0) {
-      return doc.substring(0, endOfFirstSentence+1);
+      return doc.substring(0, endOfFirstSentence + 1);
     } else {
       return doc;
     }

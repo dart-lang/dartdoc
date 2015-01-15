@@ -30,7 +30,8 @@ class HtmlPrinter {
     endTag();
   }
 
-  void start({String title, String cssRef, String theme, String jsScript, String inlineStyle}) {
+  void start({String title, String cssRef, String theme, String jsScript,
+      String inlineStyle}) {
     startTag('html', newLine: false);
     writeln();
     startTag('head');

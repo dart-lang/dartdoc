@@ -17,8 +17,8 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
-import '../lib/src/model.dart';
-import '../lib/src/model_utils.dart';
+import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 
 const SOURCE1 = r'''
 library ex;
@@ -47,9 +47,7 @@ class B extends A {
 abstract class C {}
 ''';
 
-
-tests() {
-
+void main() {
   AnalyzerHelper helper = new AnalyzerHelper();
   Source source = helper.addSource(SOURCE1);
   LibraryElement e = helper.resolve(source);
@@ -85,23 +83,20 @@ tests() {
     });
   });
 
-
   group('Library', () {
-
     test('name', () {
       expect(l.name, 'ex');
     });
 
-    Library sdkLib = new Library(getSdkLibrariesToDocument(helper.sdk, helper.context)[0]);
+    Library sdkLib =
+        new Library(getSdkLibrariesToDocument(helper.sdk, helper.context)[0]);
 
     test('sdk library name', () {
       expect(sdkLib.name, 'dart:async');
     });
-
   });
 
   group('Class', () {
-
     var classes = l.getTypes();
     Class A = classes[0];
     var B = classes[1];
@@ -161,7 +156,6 @@ tests() {
   });
 
   group('Function', () {
-
     ModelFunction f1 = l.getFunctions()[0];
 
     test('local element', () {
@@ -182,7 +176,6 @@ tests() {
   });
 
   group('Method', () {
-
     var c = l.getTypes()[1];
     var m = c.getMethods()[0];
 
@@ -196,7 +189,6 @@ tests() {
   });
 
   group('Accessor', () {
-
     var c = l.getTypes()[0];
     var a = c.getAccessors()[0];
 
@@ -210,7 +202,6 @@ tests() {
   });
 
   group('Field', () {
-
     var c = l.getTypes()[0];
     var f1 = c.getStaticFields()[0];
     var f2 = c.getInstanceFields()[1];
@@ -233,7 +224,6 @@ tests() {
   });
 
   group('Variable', () {
-
     var v = l.getVariables()[0];
 
     test('is final', () {
@@ -254,7 +244,6 @@ tests() {
   });
 
   group('Parameter', () {
-
     test('has correct type name', () {
       var t = new Parameter(null, null);
       expect(t.typeName, equals('Parameters'));
@@ -262,7 +251,6 @@ tests() {
   });
 
   group('TypeParameter', () {
-
     test('has correct type name', () {
       var t = new TypeParameter(null, null);
       expect(t.typeName, equals('Type Parameters'));
@@ -270,7 +258,6 @@ tests() {
   });
 
   group('Constructor', () {
-
     var c = l.getTypes()[0].getCtors()[0];
 
     test('has correct type name', () {
@@ -279,7 +266,6 @@ tests() {
   });
 
   group('Typedef', () {
-
     test('has correct type name', () {
       var t = new Typedef(null, null);
       expect(t.typeName, equals('Typedefs'));
@@ -289,9 +275,7 @@ tests() {
       var t = new Typedef(null, null);
       expect(t.getDocumentation(), null);
     });
-
   });
-
 }
 
 class AnalyzerHelper {
@@ -305,7 +289,10 @@ class AnalyzerHelper {
   void _initAnalyzer() {
     Directory sdkDir = grinder.getSdkDir(['']);
     sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
-    List<UriResolver> resolvers = [new DartUriResolver(sdk), new FileUriResolver()];
+    List<UriResolver> resolvers = [
+      new DartUriResolver(sdk),
+      new FileUriResolver()
+    ];
 
     SourceFactory sourceFactory = new SourceFactory(resolvers);
     context = AnalysisEngine.instance.createAnalysisContext();
@@ -313,7 +300,6 @@ class AnalyzerHelper {
   }
 
   Source addSource(String contents) {
-
     Source source = _cacheSource("/test.dart", contents);
     ChangeSet changeSet = new ChangeSet();
     changeSet.addedSource(source);
@@ -322,11 +308,12 @@ class AnalyzerHelper {
   }
 
   Source _cacheSource(String filePath, String contents) {
-    Source source = new FileBasedSource.con1(FileUtilities2.createFile(filePath));
+    Source source =
+        new FileBasedSource.con1(FileUtilities2.createFile(filePath));
     context.setContents(source, contents);
     return source;
   }
 
-  LibraryElement resolve(Source librarySource) => context.computeLibraryElement(librarySource);
-
+  LibraryElement resolve(Source librarySource) =>
+      context.computeLibraryElement(librarySource);
 }
