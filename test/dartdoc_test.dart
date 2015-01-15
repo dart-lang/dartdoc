@@ -8,8 +8,8 @@ import 'dart:io';
 
 import 'package:unittest/unittest.dart';
 
-import '../lib/dartdoc.dart';
-import '../lib/src/package_utils.dart';
+import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/package_utils.dart';
 
 
 void main() {

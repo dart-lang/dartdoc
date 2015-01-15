@@ -7,7 +7,7 @@ library dartdoc.css_test;
 import 'package:http/http.dart' as http;
 import 'package:unittest/unittest.dart';
 
-import '../lib/src/css.dart';
+import 'package:dartdoc/src/css.dart';
 
 void main() {
   group('check bootstrap', () {

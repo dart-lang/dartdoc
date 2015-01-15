@@ -8,7 +8,7 @@ import 'dart:io';
 
 import 'package:unittest/unittest.dart';
 
-import '../lib/src/io_utils.dart';
+import 'package:dartdoc/src/io_utils.dart';
 
 void main() {
   group('io utils', () {

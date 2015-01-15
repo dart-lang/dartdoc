@@ -17,8 +17,8 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
-import '../lib/src/model.dart';
-import '../lib/src/model_utils.dart';
+import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
 
 const SOURCE1 = r'''
 library ex;
