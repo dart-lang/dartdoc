@@ -450,7 +450,9 @@ body {
 }
 
 String _getFileNameFor(Library library) {
-  return '${library.name.replaceAll('.', '_')}.html';
+  // dart.dartdoc => dart_dartdoc
+  // dart:core => dart_core
+  return '${library.name.replaceAll('.', '_').replaceAll(':', '_')}.html';
 }
 
 class HtmlGeneratorHelper extends Helper {
