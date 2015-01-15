@@ -448,6 +448,8 @@ body {
 }
 
 String _getFileNameFor(Library library) {
+  // dart.dartdoc => dart_dartdoc
+  // dart:core => dart_core
   return '${library.name.replaceAll('.', '_').replaceAll(':', '_')}.html';
 }
 
