@@ -9,7 +9,7 @@ import 'package:unittest/unittest.dart';
 
 import '../lib/src/css.dart';
 
-tests() {
+void main() {
   group('check bootstrap', () {
     CSS css = new CSS();
 

@@ -10,7 +10,7 @@ import 'package:unittest/unittest.dart';
 
 import '../lib/src/io_utils.dart';
 
-tests() {
+void main() {
   group('io utils', () {
 
     test('find files to document', () {

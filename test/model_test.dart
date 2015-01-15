@@ -48,7 +48,7 @@ abstract class C {}
 ''';
 
 
-tests() {
+void main() {
 
   AnalyzerHelper helper = new AnalyzerHelper();
   Source source = helper.addSource(SOURCE1);

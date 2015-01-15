@@ -10,7 +10,7 @@ import 'package:unittest/unittest.dart';
 
 import '../lib/src/package_utils.dart';
 
-tests() {
+void main() {
   group('package utils test', () {
 
     test('get package name', () {

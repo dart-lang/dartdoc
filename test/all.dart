@@ -12,11 +12,11 @@ import 'package_utils_test.dart' as package_util_tests;
 import 'template_test.dart' as template_tests;
 
 
-main() {
-  css_tests.tests();
-  dartdoc_tests.tests();
-  io_utils_tests.tests();
-  model_tests.tests();
-  package_util_tests.tests();
-  template_tests.tests();
+void main() {
+  css_tests.main();
+  dartdoc_tests.main();
+  io_utils_tests.main();
+  model_tests.main();
+  package_util_tests.main();
+  template_tests.main();
 }

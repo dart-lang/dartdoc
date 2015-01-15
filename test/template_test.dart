@@ -9,7 +9,7 @@ import 'dart:io';
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:unittest/unittest.dart';
 
-tests() {
+void main() {
   group('template', () {
     var script = new File(Platform.script.toFilePath());
     File tmplFile = new File(

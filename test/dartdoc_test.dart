@@ -12,7 +12,7 @@ import '../lib/dartdoc.dart';
 import '../lib/src/package_utils.dart';
 
 
-tests() {
+void main() {
   group('dartdoc test', () {
 
     test('version info', () {
