@@ -37,7 +37,6 @@ bool isPrivate(Element e) => e.name.startsWith('_');
 
 List<LibraryElement> getSdkLibrariesToDocument(DartSdk sdk,
                                                AnalysisContext context) {
-
   List<LibraryElement> libraries = [];
   var sdkApiLibs =
       sdk.sdkLibraries.where((SdkLibrary sdkLib)

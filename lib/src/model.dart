@@ -210,7 +210,10 @@ class Package {
 
   List<Library> get libraries => _libraries;
 
-  Package(Iterable<LibraryElement> libraryElements, this._rootDirPath, [this._sdkVersion, this._isSdk =false]) {
+  Package(Iterable<LibraryElement> libraryElements,
+          this._rootDirPath,
+          [this._sdkVersion,
+          this._isSdk = false]) {
     libraryElements.forEach((element) {
       _libraries.add(new Library(element));
     });
