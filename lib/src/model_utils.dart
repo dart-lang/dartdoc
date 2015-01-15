@@ -4,7 +4,6 @@
 
 library dartdoc.model_utils;
 
-import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/constant.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
@@ -45,7 +44,6 @@ List<LibraryElement> getSdkLibrariesToDocument(DartSdk sdk,
   sdkApiLibs.forEach((SdkLibrary sdkLib) {
     Source source = sdk.mapDartUri(sdkLib.shortName);
     LibraryElement library = context.computeLibraryElement(source);
-    CompilationUnit unit = context.resolveCompilationUnit(source, library);
     libraries.add(library);
     libraries.addAll(library.exportedLibraries);
   });
@@ -53,7 +51,6 @@ List<LibraryElement> getSdkLibrariesToDocument(DartSdk sdk,
 }
 
 List<InterfaceType> getAllSupertypes(ClassElement c) {
-  InterfaceType t = c.type;
   return c.allSupertypes;
 
   // TODO:

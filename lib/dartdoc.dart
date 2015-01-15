@@ -6,7 +6,6 @@ library dartdoc;
 
 import 'dart:io';
 
-import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
@@ -84,7 +83,6 @@ class DartDoc {
 
   List<LibraryElement> _parseLibraries(List<String> files) {
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_sdkDir.path));
-    ContentCache contentCache = new ContentCache();
     List<UriResolver> resolvers = [new DartUriResolver(sdk),
                                    new FileUriResolver()];
     JavaFile packagesDir =
@@ -104,7 +102,6 @@ class DartDoc {
       Source source = new FileBasedSource.con1(new JavaFile(filePath));
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
-        CompilationUnit unit = context.resolveCompilationUnit(source, library);
         libraries.add(library);
         libraries.addAll(library.exportedLibraries);
       }
