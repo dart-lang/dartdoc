@@ -200,13 +200,13 @@ class Package {
   String _sdkVersion;
 
   String get name =>
-      _isSdk ? 'dart-sdk' : getPackageName(_rootDirPath);
+      _isSdk ? 'Dart API Reference' : getPackageName(_rootDirPath);
 
   String get version =>
       _isSdk ? _sdkVersion : getPackageVersion(_rootDirPath);
 
   String get description =>
-      _isSdk ? 'Dart API libraries' : getPackageDescription(_rootDirPath);
+      _isSdk ? 'Dart API Libraries' : getPackageDescription(_rootDirPath);
 
   List<Library> get libraries => _libraries;
 
