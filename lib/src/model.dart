@@ -195,18 +195,25 @@ abstract class ModelElement {
 
 class Package {
   String _rootDirPath;
-
   List<Library> _libraries = [];
+  bool _isSdk;
+  String _sdkVersion;
 
-  String get name => getPackageName(_rootDirPath);
+  String get name =>
+      _isSdk ? 'Dart API Reference' : getPackageName(_rootDirPath);
 
-  String get version => getPackageVersion(_rootDirPath);
+  String get version =>
+      _isSdk ? _sdkVersion : getPackageVersion(_rootDirPath);
 
-  String get description => getPackageDescription(_rootDirPath);
+  String get description =>
+      _isSdk ? 'Dart API Libraries' : getPackageDescription(_rootDirPath);
 
   List<Library> get libraries => _libraries;
 
-  Package(Iterable<LibraryElement> libraryElements, this._rootDirPath) {
+  Package(Iterable<LibraryElement> libraryElements,
+          this._rootDirPath,
+          [this._sdkVersion,
+          this._isSdk = false]) {
     libraryElements.forEach((element) {
       _libraries.add(new Library(element));
     });
@@ -224,6 +231,11 @@ class Library extends ModelElement {
   LibraryElement get _library => (element as LibraryElement);
 
   Library(LibraryElement element) : super(element, null);
+
+  String get name {
+    var source = _library.definingCompilationUnit.source;
+    return source.isInSystemLibrary ? source.encoding : super.name;
+  }
 
   List<Library> get exported =>
       _library.exportedLibraries.map((lib) => new Library(lib)).toList();

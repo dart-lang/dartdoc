@@ -4,8 +4,12 @@
 
 library dartdoc.model_utils;
 
+import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/constant.dart';
 import 'package:analyzer/src/generated/element.dart';
+import 'package:analyzer/src/generated/engine.dart';
+import 'package:analyzer/src/generated/sdk.dart';
+import 'package:analyzer/src/generated/source_io.dart';
 
 Object getConstantValue(PropertyInducingElement element) {
   if (element is ConstFieldElementImpl) {
@@ -30,6 +34,23 @@ Object _valueFor(EvaluationResultImpl result) {
 int elementCompare(Element a, Element b) => a.name.compareTo(b.name);
 
 bool isPrivate(Element e) => e.name.startsWith('_');
+
+List<LibraryElement> getSdkLibrariesToDocument(DartSdk sdk,
+                                               AnalysisContext context) {
+  List<LibraryElement> libraries = [];
+  var sdkApiLibs =
+      sdk.sdkLibraries.where((SdkLibrary sdkLib)
+          => !sdkLib.isInternal && sdkLib.isDocumented).toList();
+  sdkApiLibs.sort((lib1, lib2) => lib1.shortName.compareTo(lib2.shortName));
+  sdkApiLibs.forEach((SdkLibrary sdkLib) {
+    Source source = sdk.mapDartUri(sdkLib.shortName);
+    LibraryElement library = context.computeLibraryElement(source);
+    CompilationUnit unit = context.resolveCompilationUnit(source, library);
+    libraries.add(library);
+    libraries.addAll(library.exportedLibraries);
+  });
+  return libraries;
+}
 
 List<InterfaceType> getAllSupertypes(ClassElement c) {
   InterfaceType t = c.type;

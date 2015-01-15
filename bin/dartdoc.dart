@@ -23,20 +23,26 @@ void main(List<String> arguments) {
     print('$NAME version: $VERSION');
     exit(0);
   }
-  
+
   Directory sdkDir = grinder.getSdkDir(arguments);
   if (sdkDir == null) {
     print(
           "Warning: unable to locate the Dart SDK. Please use the --dart-sdk "
           "command line option or set the DART_SDK environment variable.");
     exit(1);
-  }   
+  }
+
+  bool sdkDocs = false;
+   if (results['sdk-docs']) {
+     sdkDocs = true;
+  }
+
   List<String> excludeLibraries =
       results['exclude'] == null ? [] : results['exclude'].split(',');
   String url = results['url'];
-  var currentDir = Directory.current;     
+  var currentDir = Directory.current;
   var generators = initGenerators(url);
-  new DartDoc(currentDir, excludeLibraries, sdkDir, generators)
+  new DartDoc(currentDir, excludeLibraries, sdkDir, generators, sdkDocs)
       ..generateDocs();
 }
 
@@ -44,7 +50,7 @@ void main(List<String> arguments) {
 /// Print help if we are passed the help option or invalid arguments.
 void _printUsageAndExit(ArgParser parser) {
   print(parser.usage);
-  print('Usage: dartdoc --dartsdk=sdkLocation [OPTIONS]');
+  print('Usage: dartdoc [OPTIONS]');
   exit(0);
 }
 
@@ -61,5 +67,9 @@ ArgParser _createArgsParser() {
       abbr: 'h', negatable: false, help: 'show command help');
   parser.addFlag('version',
       help: 'Display the version for $NAME', negatable: false);
+  parser.addFlag(
+      'sdk-docs',
+      help: 'generate docs for the dart sdk.'
+            'Use "--dart-sdk" option to specify path to sdk');
   return parser;
 }

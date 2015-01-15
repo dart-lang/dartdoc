@@ -19,13 +19,14 @@ import '../generator.dart';
 class HtmlGenerator extends Generator {
   // The sitemap template file
   static final String siteMapTemplate = '/templates/sitemap.xml';
-
   static final String indexTemplate = '/templates/index.html';
-
   static final String bootstrapOverrides = '''
 body {
   margin: 8px;
 }''';
+
+  static final String bootstrapCss = 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css';
+  static final String bootstrapTheme ='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css';
 
   HtmlPrinter html = new HtmlPrinter();
   CSS css = new CSS();
@@ -50,6 +51,8 @@ body {
 
   void generatePackage() {
     var data = {
+      'css' : bootstrapCss,
+      'theme' : bootstrapTheme,
       'packageName': package.name,
       'packageDesc': package.description,
       'packageVersion': package.version,
