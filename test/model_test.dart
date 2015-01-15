@@ -6,7 +6,6 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
-import 'package:dartdoc/src/model.dart';
 import 'package:grinder/grinder.dart' as grinder;
 import 'package:unittest/unittest.dart';
 
@@ -17,6 +16,9 @@ import 'package:analyzer/src/generated/java_engine_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+
+import '../lib/src/model.dart';
+import '../lib/src/model_utils.dart';
 
 const SOURCE1 = r'''
 library ex;
@@ -67,6 +69,20 @@ tests() {
     test('is documented', () {
       expect(p.isDocumented(l), true);
     });
+
+    var p2 = new Package([e], Directory.current.path, '1.9.0-dev.3.0', true);
+
+    test('sdk name', () {
+      expect(p2.name, 'Dart API Reference');
+    });
+
+    test('sdk version', () {
+      expect(p2.version, '1.9.0-dev.3.0');
+    });
+
+    test('sdk description', () {
+      expect(p2.description, 'Dart API Libraries');
+    });
   });
 
 
@@ -75,6 +91,13 @@ tests() {
     test('name', () {
       expect(l.name, 'ex');
     });
+
+    Library sdkLib = new Library(getSdkLibrariesToDocument(helper.sdk, helper.context)[0]);
+
+    test('sdk library name', () {
+      expect(sdkLib.name, 'dart:async');
+    });
+
   });
 
   group('Class', () {
@@ -273,6 +296,7 @@ tests() {
 
 class AnalyzerHelper {
   AnalysisContext context;
+  DartSdk sdk;
 
   AnalyzerHelper() {
     _initAnalyzer();
@@ -280,7 +304,7 @@ class AnalyzerHelper {
 
   void _initAnalyzer() {
     Directory sdkDir = grinder.getSdkDir(['']);
-    DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
+    sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
     List<UriResolver> resolvers = [new DartUriResolver(sdk), new FileUriResolver()];
 
     SourceFactory sourceFactory = new SourceFactory(resolvers);
@@ -304,4 +328,5 @@ class AnalyzerHelper {
   }
 
   LibraryElement resolve(Source librarySource) => context.computeLibraryElement(librarySource);
+
 }

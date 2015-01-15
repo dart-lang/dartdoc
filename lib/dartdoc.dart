@@ -89,18 +89,7 @@ class DartDoc {
     context.sourceFactory = sourceFactory;
 
     if (_sdkDocs) {
-      var sdkApiLibs =
-          sdk.sdkLibraries.where((SdkLibrary sdkLib)
-              => !sdkLib.isInternal && sdkLib.isDocumented).toList();
-      sdkApiLibs.sort((lib1, lib2) => lib1.shortName.compareTo(lib2.shortName));
-      sdkApiLibs
-           .forEach((SdkLibrary sdkLib) {
-              Source source = sdk.mapDartUri(sdkLib.shortName);
-              LibraryElement library = context.computeLibraryElement(source);
-              CompilationUnit unit = context.resolveCompilationUnit(source, library);
-              libraries.add(library);
-              libraries.addAll(library.exportedLibraries);
-            });
+     libraries.addAll(getSdkLibrariesToDocument(sdk, context));
     }
     files.forEach((String filePath) {
       print('parsing ${filePath}...');
