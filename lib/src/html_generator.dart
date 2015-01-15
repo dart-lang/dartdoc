@@ -448,7 +448,7 @@ body {
 }
 
 String _getFileNameFor(Library library) {
-  return '${library.name.replaceAll('.', '_')}.html';
+  return '${library.name.replaceAll('.', '_').replaceAll(':', '_')}.html';
 }
 
 class HtmlGeneratorHelper extends Helper {
