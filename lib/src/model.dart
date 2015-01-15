@@ -218,7 +218,7 @@ class Package {
 
   bool isDocumented(ModelElement e) {
     if (e is Library) {
-      return _libraries.contains(e);
+      return _libraries.any((library)  => library.element == e.element);
     }
     return _libraries.contains(e.library);
   }

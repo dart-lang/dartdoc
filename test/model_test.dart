@@ -26,6 +26,7 @@ static int function1(String s, bool b) => 5;
 static int number;
 get y => 2;
 
+/// Sample class
 class A {
   const int n = 5;
   static  String s = 'hello';
@@ -52,6 +53,23 @@ tests() {
   LibraryElement e = helper.resolve(source);
   var l = new Library(e);
 
+  group('Package', () {
+    var p = new Package([e], Directory.current.path);
+
+    test('name', () {
+      expect(p.name, 'dartdoc');
+    });
+
+    test('libraries', () {
+      expect(p.libraries.length, 1);
+    });
+
+    test('is documented', () {
+      expect(p.isDocumented(l), true);
+    });
+  });
+
+
   group('Library', () {
 
     test('name', () {
@@ -72,6 +90,10 @@ tests() {
 
     test('name', () {
       expect(A.name, 'A');
+    });
+
+    test('docs', () {
+      expect(A.getDocumentation(), '/// Sample class');
     });
 
     test('abstract', () {
@@ -210,11 +232,11 @@ tests() {
 
   group('Parameter', () {
 
-     test('has correct type name', () {
-       var t = new Parameter(null, null);
-       expect(t.typeName, equals('Parameters'));
-     });
-   });
+    test('has correct type name', () {
+      var t = new Parameter(null, null);
+      expect(t.typeName, equals('Parameters'));
+    });
+  });
 
   group('TypeParameter', () {
 
@@ -228,18 +250,24 @@ tests() {
 
     var c = l.getTypes()[0].getCtors()[0];
 
-      test('has correct type name', () {
-        expect(c.typeName, equals('Constructors'));
-      });
+    test('has correct type name', () {
+      expect(c.typeName, equals('Constructors'));
     });
+  });
 
   group('Typedef', () {
 
-      test('has correct type name', () {
-        var t = new Typedef(null, null);
-        expect(t.typeName, equals('Typedefs'));
-      });
+    test('has correct type name', () {
+      var t = new Typedef(null, null);
+      expect(t.typeName, equals('Typedefs'));
     });
+
+    test('docs', () {
+      var t = new Typedef(null, null);
+      expect(t.getDocumentation(), null);
+    });
+
+  });
 
 }
 
