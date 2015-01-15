@@ -12,11 +12,9 @@ import 'package:dartdoc/src/io_utils.dart';
 
 void main() {
   group('io utils', () {
-
     test('find files to document', () {
       var files = findFilesToDocumentInPackage(Directory.current.path);
       expect(files.length, 2);
     });
-
   });
 }

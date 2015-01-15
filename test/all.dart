@@ -11,7 +11,6 @@ import 'model_test.dart' as model_tests;
 import 'package_utils_test.dart' as package_util_tests;
 import 'template_test.dart' as template_tests;
 
-
 void main() {
   css_tests.main();
   dartdoc_tests.main();

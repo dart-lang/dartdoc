@@ -121,8 +121,8 @@ abstract class ModelElement {
   String createLinkedSummary(Helper generator) {
     if (isExecutable) {
       ExecutableElement ex = (element as ExecutableElement);
-      String retType = generator.createLinkedReturnTypeName(
-          new ElementType(ex.type, library));
+      String retType = generator
+          .createLinkedReturnTypeName(new ElementType(ex.type, library));
 
       return '${generator.createLinkedName(this)}'
           '(${generator.printParams(ex.parameters.map((f) =>
@@ -133,8 +133,9 @@ abstract class ModelElement {
       PropertyInducingElement pe = (element as PropertyInducingElement);
       StringBuffer buf = new StringBuffer();
       buf.write('${generator.createLinkedName(this)}');
-      String type = generator.createLinkedName(pe.type == null ? null :
-          new ModelElement.from(pe.type.element, library));
+      String type = generator.createLinkedName(pe.type == null
+          ? null
+          : new ModelElement.from(pe.type.element, library));
       if (!type.isEmpty) {
         buf.write(': $type');
       }
@@ -152,8 +153,8 @@ abstract class ModelElement {
         buf.write('static ');
       }
 
-      buf.write(generator.createLinkedReturnTypeName(
-          new ElementType(e.type, library)));
+      buf.write(generator
+          .createLinkedReturnTypeName(new ElementType(e.type, library)));
       buf.write(
           ' ${e.name}(${generator.printParams(e.parameters.map((f) => new Parameter(f, library)).toList())})');
       return buf.toString();
@@ -171,8 +172,9 @@ abstract class ModelElement {
         buf.write('const ');
       }
 
-      buf.write(generator.createLinkedName(e.type == null ? null :
-          new ModelElement.from(e.type.element, library)));
+      buf.write(generator.createLinkedName(e.type == null
+          ? null
+          : new ModelElement.from(e.type.element, library)));
       buf.write(' ${e.name}');
 
       // write out any constant value
@@ -202,18 +204,15 @@ class Package {
   String get name =>
       _isSdk ? 'Dart API Reference' : getPackageName(_rootDirPath);
 
-  String get version =>
-      _isSdk ? _sdkVersion : getPackageVersion(_rootDirPath);
+  String get version => _isSdk ? _sdkVersion : getPackageVersion(_rootDirPath);
 
   String get description =>
       _isSdk ? 'Dart API Libraries' : getPackageDescription(_rootDirPath);
 
   List<Library> get libraries => _libraries;
 
-  Package(Iterable<LibraryElement> libraryElements,
-          this._rootDirPath,
-          [this._sdkVersion,
-          this._isSdk = false]) {
+  Package(Iterable<LibraryElement> libraryElements, this._rootDirPath,
+      [this._sdkVersion, this._isSdk = false]) {
     libraryElements.forEach((element) {
       _libraries.add(new Library(element));
     });
@@ -221,7 +220,7 @@ class Package {
 
   bool isDocumented(ModelElement e) {
     if (e is Library) {
-      return _libraries.any((library)  => library.element == e.element);
+      return _libraries.any((library) => library.element == e.element);
     }
     return _libraries.contains(e.library);
   }
@@ -373,8 +372,8 @@ class ModelFunction extends ModelElement {
   String get typeName => 'Functions';
 
   String createLinkedSummary(Helper generator) {
-    String retType = generator.createLinkedReturnTypeName(
-        new ElementType(_func.type, library));
+    String retType = generator
+        .createLinkedReturnTypeName(new ElementType(_func.type, library));
 
     return '${generator.createLinkedName(this)}'
         '(${generator.printParams(_func.parameters.map((f) => new Parameter(f, library)))})'
@@ -386,8 +385,8 @@ class ModelFunction extends ModelElement {
     if (_func.isStatic) {
       buf.write('static ');
     }
-    buf.write(generator.createLinkedReturnTypeName(
-        new ElementType(_func.type, library)));
+    buf.write(generator
+        .createLinkedReturnTypeName(new ElementType(_func.type, library)));
     buf.write(
         ' ${_func.name}(${generator.printParams(_func.parameters.map((f) => new Parameter(f, library)).toList())})');
     return buf.toString();
@@ -419,8 +418,8 @@ class Typedef extends ModelElement {
     }
     buf.write(
         '(${generator.printParams(_typedef.parameters.map((f) => new Parameter(f, library)).toList())}): ');
-    buf.write(generator.createLinkedReturnTypeName(
-        new ElementType(_typedef.type, library)));
+    buf.write(generator
+        .createLinkedReturnTypeName(new ElementType(_typedef.type, library)));
     return buf.toString();
   }
 
@@ -522,8 +521,8 @@ class Accessor extends ModelElement {
       buf.write(generator.createLinkedName(this));
       buf.write(': ');
       buf.write(generator.createLinkedReturnTypeName(new ElementType(
-          _accessor.type, new ModelElement.from(
-              _accessor.type.element, library))));
+          _accessor.type,
+          new ModelElement.from(_accessor.type.element, library))));
     } else {
       buf.write('${generator.createLinkedName(this)}('
           '${generator.printParams(_accessor.parameters.map((f) =>
@@ -576,15 +575,15 @@ class Parameter extends ModelElement {
 
 class TypeParameter extends ModelElement {
   TypeParameter(TypeParameterElement element, Library library)
-       : super(element, library);
+      : super(element, library);
 
-   TypeParameterElement get _typeParameter => element as TypeParameterElement;
+  TypeParameterElement get _typeParameter => element as TypeParameterElement;
 
-   ElementType get type => new ElementType(_typeParameter.type, library);
+  ElementType get type => new ElementType(_typeParameter.type, library);
 
-   String toString() => element.name;
+  String toString() => element.name;
 
-   String get typeName => 'Type Parameters';
+  String get typeName => 'Type Parameters';
 }
 
 class ElementType {
@@ -615,8 +614,8 @@ class ElementType {
   }
   List<ElementType> get typeArguments =>
       (_type as ParameterizedType).typeArguments
-      .map((f) => new ElementType(f, library))
-      .toList();
+          .map((f) => new ElementType(f, library))
+          .toList();
 }
 
 abstract class Helper {

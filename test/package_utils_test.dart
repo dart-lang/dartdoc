@@ -12,7 +12,6 @@ import 'package:dartdoc/src/package_utils.dart';
 
 void main() {
   group('package utils test', () {
-
     test('get package name', () {
       String name = getPackageName(Directory.current.path);
       expect(name, 'dartdoc');

@@ -11,14 +11,11 @@ import 'package:unittest/unittest.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/package_utils.dart';
 
-
 void main() {
   group('dartdoc test', () {
-
     test('version info', () {
       String version = getPackageVersion(Directory.current.path);
       expect(version, VERSION);
     });
   });
-
 }

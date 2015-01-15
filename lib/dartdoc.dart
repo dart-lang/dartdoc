@@ -26,7 +26,6 @@ const String NAME = 'dartdoc';
 // Update when puspec version changes
 const String VERSION = '0.0.1';
 
-
 /// Initialize and setup the generators
 List<Generator> initGenerators(String url) {
   List<Generator> generators = [];
@@ -45,11 +44,8 @@ class DartDoc {
   Set<LibraryElement> libraries = new Set();
   List<Generator> _generators;
 
-  DartDoc(this._rootDir,
-          this._excludes,
-          this._sdkDir,
-          this._generators,
-          [this._sdkDocs = false]);
+  DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators,
+      [this._sdkDocs = false]);
 
   /// Generate the documentation
   void generateDocs() {
@@ -60,10 +56,10 @@ class DartDoc {
     List<LibraryElement> libs = [];
     libs.addAll(_parseLibraries(files));
     // remove excluded libraries
-    _excludes.forEach((pattern)
-        => libs.removeWhere((l) => l.name.startsWith(pattern)));
-    libs.removeWhere((LibraryElement library)
-        => _excludes.contains(library.name));
+    _excludes.forEach(
+        (pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
+    libs.removeWhere(
+        (LibraryElement library) => _excludes.contains(library.name));
     libs.sort(elementCompare);
     libraries.addAll(libs);
 
@@ -78,24 +74,28 @@ class DartDoc {
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');
-    print("Documented ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.");
+    print(
+        "Documented ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.");
   }
 
   List<LibraryElement> _parseLibraries(List<String> files) {
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_sdkDir.path));
-    List<UriResolver> resolvers = [new DartUriResolver(sdk),
-                                   new FileUriResolver()];
+    List<UriResolver> resolvers = [
+      new DartUriResolver(sdk),
+      new FileUriResolver()
+    ];
     JavaFile packagesDir =
         new JavaFile.relative(new JavaFile(_rootDir.path), 'packages');
     if (packagesDir.exists()) {
       resolvers.add(new PackageUriResolver([packagesDir]));
     }
-    SourceFactory sourceFactory = new SourceFactory(/*contentCache,*/ resolvers);
+    SourceFactory sourceFactory =
+        new SourceFactory(/*contentCache,*/ resolvers);
     AnalysisContext context = AnalysisEngine.instance.createAnalysisContext();
     context.sourceFactory = sourceFactory;
 
     if (_sdkDocs) {
-     libraries.addAll(getSdkLibrariesToDocument(sdk, context));
+      libraries.addAll(getSdkLibrariesToDocument(sdk, context));
     }
     files.forEach((String filePath) {
       print('parsing ${filePath}...');

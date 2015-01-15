@@ -5,7 +5,6 @@
 library dartdoc.css;
 
 class CSS {
-
   final String cssHeader =
       'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css';
 
@@ -13,5 +12,4 @@ class CSS {
       'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css';
 
   String getCssName() => 'bootstrap.css';
-
 }

@@ -34,12 +34,12 @@ int elementCompare(Element a, Element b) => a.name.compareTo(b.name);
 
 bool isPrivate(Element e) => e.name.startsWith('_');
 
-List<LibraryElement> getSdkLibrariesToDocument(DartSdk sdk,
-                                               AnalysisContext context) {
+List<LibraryElement> getSdkLibrariesToDocument(
+    DartSdk sdk, AnalysisContext context) {
   List<LibraryElement> libraries = [];
-  var sdkApiLibs =
-      sdk.sdkLibraries.where((SdkLibrary sdkLib)
-          => !sdkLib.isInternal && sdkLib.isDocumented).toList();
+  var sdkApiLibs = sdk.sdkLibraries
+      .where((SdkLibrary sdkLib) => !sdkLib.isInternal && sdkLib.isDocumented)
+      .toList();
   sdkApiLibs.sort((lib1, lib2) => lib1.shortName.compareTo(lib2.shortName));
   sdkApiLibs.forEach((SdkLibrary sdkLib) {
     Source source = sdk.mapDartUri(sdkLib.shortName);

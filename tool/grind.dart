@@ -22,14 +22,13 @@ void testDartdoc(GrinderContext context) {
   if (DOC_DIR.existsSync()) DOC_DIR.deleteSync(recursive: true);
 
   try {
-      context.log('running dartdoc');
-      runDartScript(context, 'bin/dartdoc.dart');
+    context.log('running dartdoc');
+    runDartScript(context, 'bin/dartdoc.dart');
 
-      File indexHtml = joinFile(DOC_DIR, ['index.html']);
-      if(!indexHtml.existsSync()) context.fail('docs not generated');
-      File docFile = joinFile(DOC_DIR, ['dartdoc.html']);
-      if(!docFile.existsSync()) context.fail('docs not generated');
-
+    File indexHtml = joinFile(DOC_DIR, ['index.html']);
+    if (!indexHtml.existsSync()) context.fail('docs not generated');
+    File docFile = joinFile(DOC_DIR, ['dartdoc.html']);
+    if (!docFile.existsSync()) context.fail('docs not generated');
   } catch (e) {
     rethrow;
   }
