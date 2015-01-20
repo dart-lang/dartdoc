@@ -59,7 +59,7 @@ body {
       'libraries': package.libraries.map((lib) {
         return {
           'name': lib.name,
-          'filename': _getFileNameFor(lib),
+          'filename': getFileNameFor(lib.name),
           'descr': getDocOneLiner(lib)
         };
       })
@@ -78,7 +78,7 @@ body {
   }
 
   void generateLibrary(Library library) {
-    var fileName = _getFileNameFor(library);
+    var fileName = getFileNameFor(library.name);
     File f = joinFile(new Directory(out.path), [fileName]);
     print('generating ${f.path}');
     htmlFiles.add(fileName);
@@ -101,7 +101,7 @@ body {
     html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
     html.startTag('li', attributes: 'class="active"', newLine: false);
     html.write(
-        '<a href="${_getFileNameFor(library)}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${library.name}</a>');
+        '<a href="${getFileNameFor(library.name)}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${library.name}</a>');
     html.endTag(); // li
     html.endTag(); // ul.nav
     html.endTag(); // div.col-md-3
@@ -121,7 +121,7 @@ body {
 
         Library lib = library.exported[i];
         if (package.libraries.contains(lib)) {
-          html.write('<a href="${_getFileNameFor(lib)}">${lib.name}</a>');
+          html.write('<a href="${getFileNameFor(lib.name)}">${lib.name}</a>');
         } else {
           html.write(lib.name);
         }
@@ -167,7 +167,6 @@ body {
     html.generateFooter();
 
     html.end();
-
     // write the file contents
     f.writeAsStringSync(html.toString());
   }
@@ -449,12 +448,6 @@ body {
   }
 }
 
-String _getFileNameFor(Library library) {
-  // dart.dartdoc => dart_dartdoc
-  // dart:core => dart_core
-  return '${library.name.replaceAll('.', '_').replaceAll(':', '_')}.html';
-}
-
 class HtmlGeneratorHelper extends Helper {
   Package package;
 
@@ -502,9 +495,9 @@ class HtmlGeneratorHelper extends Helper {
     }
     Class c = e.getEnclosingElement();
     if (c != null) {
-      return '${_getFileNameFor(e.library)}#${c.name}.${escapeBrackets(e.name)}';
+      return '${getFileNameFor(e.library.name)}#${c.name}.${escapeBrackets(e.name)}';
     } else {
-      return '${_getFileNameFor(e.library)}#${e.name}';
+      return '${getFileNameFor(e.library.name)}#${e.name}';
     }
   }
 
