@@ -118,3 +118,9 @@ List<FileSystemEntity> _packageDirList(Directory dir) {
     return entities;
   }
 }
+
+String getFileNameFor(String name) {
+  // dart.dartdoc => dart_dartdoc
+  // dart:core => dart_core
+  return '${name.replaceAll('.', '_').replaceAll(':', '_')}.html';
+}
