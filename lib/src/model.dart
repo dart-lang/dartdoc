@@ -487,7 +487,7 @@ class Constructor extends ModelElement {
 }
 
 class Method extends ModelElement {
-  // MethodElement get _method => (element as MethodElement);
+  MethodElement get _method => (element as MethodElement);
 
   Method(MethodElement element, Library library) : super(element, library);
 
@@ -500,6 +500,9 @@ class Method extends ModelElement {
     }
     return null;
   }
+
+  String get source => _method.node.toSource();
+
 
   String get typeName => 'Methods';
 }

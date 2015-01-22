@@ -42,7 +42,7 @@ class A {
 }
 class B extends A {
   @override 
-  void m1() {};
+  void m1() { var a = 6; var b = a * 9;};
 }
 abstract class C {}
 ''';
@@ -181,6 +181,10 @@ void main() {
 
     test('overriden method', () {
       expect(m.getOverriddenElement().runtimeType.toString(), 'Method');
+    });
+
+    test('method source', () {
+      expect(m.source, '@override void m1() {var a = 6; var b = a * 9;}');
     });
 
     test('has correct type name', () {
