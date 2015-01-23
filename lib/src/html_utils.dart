@@ -4,25 +4,21 @@
 
 library dartdoc.html_utils;
 
-//TODO: use HtmlEscape in dart:convert
-String htmlEscape(String text) {
-  return text
-      .replaceAll('&', '&amp;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('<', '&lt;');
-}
+import 'dart:convert';
+
+String htmlEscape(String text) => HTML_ESCAPE.convert(text);
 
 String escapeBrackets(String text) {
   return text.replaceAll('>', '_').replaceAll('<', '_');
 }
 
-//TODO: Fix case of "\\n" which is mishandled with the current impl.
 String stringEscape(String text, String quoteType) {
   return text
+      .replaceAll('\\', r'\\')
       .replaceAll(quoteType, "\\${quoteType}")
-      .replaceAll('\n', '\\n')
-      .replaceAll('\r', '\\r')
-      .replaceAll('\t', '\\t');
+      .replaceAllMapped(_escapeRegExp, (m) {
+    return _escapMap[m.input];
+  });
 }
 
 abstract class CodeResolver {
@@ -167,4 +163,22 @@ String replaceAll(String str, List<String> matchChars,
     buf.write(str.substring(lastWritten, str.length));
   }
   return buf.toString();
+}
+
+const _escapMap = const {
+  '\n': r'\n',
+  '\r': r'\r',
+  '\f': r'\f',
+  '\b': r'\b',
+  '\t': r'\t',
+  '\v': r'\v',
+};
+
+final _escapeStr = "[" + _escapMap.keys.map(_getHexLiteral).join() + "]";
+
+final _escapeRegExp = new RegExp(_escapeStr);
+
+String _getHexLiteral(String input) {
+  int rune = input.runes.single;
+  return r'\x' + rune.toRadixString(16).padLeft(2, '0');
 }
