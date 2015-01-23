@@ -4,6 +4,7 @@
 
 library dartdoc.html_utils;
 
+//TODO: use HtmlEscape in dart:convert
 String htmlEscape(String text) {
   return text
       .replaceAll('&', '&amp;')
@@ -15,6 +16,7 @@ String escapeBrackets(String text) {
   return text.replaceAll('>', '_').replaceAll('<', '_');
 }
 
+//TODO: Fix case of "\\n" which is mishandled with the current impl.
 String stringEscape(String text, String quoteType) {
   return text
       .replaceAll(quoteType, "\\${quoteType}")

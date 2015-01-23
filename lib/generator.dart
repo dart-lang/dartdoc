@@ -12,8 +12,8 @@ import 'src/model.dart';
 /// for a given package. Generators can generate documentation in different
 /// formats - html, json etc
 abstract class Generator {
-  Package package;
-  Directory out;
+  Package get package;
+  Directory get out;
 
   Generator();
 

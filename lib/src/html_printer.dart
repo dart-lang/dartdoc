@@ -5,11 +5,11 @@
 library dartdoc.html_printer;
 
 class HtmlPrinter {
-  StringBuffer buffer = new StringBuffer();
-  bool startOfLine = true;
-  List<String> tags = [];
-  List<bool> indents = [];
-  String indent = '';
+  final StringBuffer _buffer = new StringBuffer();
+  bool _startOfLine = true;
+  final List<String> _tags = [];
+  final List<bool> _indents = [];
+  String _indent = '';
 
   HtmlPrinter() {
     writeln('<!DOCTYPE html>');
@@ -75,11 +75,11 @@ class HtmlPrinter {
         write('<${tag}>');
       }
     }
-    indents.add(newLine);
+    _indents.add(newLine);
     if (newLine) {
-      indent = '$indent\t';
+      _indent = '$_indent\t';
     }
-    tags.add(tag);
+    _tags.add(tag);
   }
 
   void tag(String tag, {String attributes, String contents}) {
@@ -99,10 +99,10 @@ class HtmlPrinter {
   }
 
   void endTag() {
-    String tag = tags.removeLast();
-    bool wasIndent = indents.removeLast();
+    String tag = _tags.removeLast();
+    bool wasIndent = _indents.removeLast();
     if (wasIndent) {
-      indent = indent.substring(0, indent.length - 1);
+      _indent = _indent.substring(0, _indent.length - 1);
     }
     writeln('</${tag}>');
   }
@@ -115,15 +115,15 @@ class HtmlPrinter {
   }
 
   String toString() {
-    return buffer.toString();
+    return _buffer.toString();
   }
 
   void write(String str) {
-    if (startOfLine) {
-      buffer.write(indent);
-      startOfLine = false;
+    if (_startOfLine) {
+      _buffer.write(_indent);
+      _startOfLine = false;
     }
-    buffer.write(str);
+    _buffer.write(str);
   }
 
   void writeln([String str]) {
@@ -132,6 +132,6 @@ class HtmlPrinter {
     } else {
       write('${str}\n');
     }
-    startOfLine = true;
+    _startOfLine = true;
   }
 }

@@ -36,13 +36,14 @@ List<Generator> initGenerators(String url) {
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
 class DartDoc {
-  List<String> _excludes;
-  Directory _rootDir;
+  final List<String> _excludes;
+  final Directory _rootDir;
+  final Directory _sdkDir;
+  final bool _sdkDocs;
+  final Set<LibraryElement> libraries = new Set();
+  final List<Generator> _generators;
+
   Directory out;
-  Directory _sdkDir;
-  bool _sdkDocs;
-  Set<LibraryElement> libraries = new Set();
-  List<Generator> _generators;
 
   DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators,
       [this._sdkDocs = false]);

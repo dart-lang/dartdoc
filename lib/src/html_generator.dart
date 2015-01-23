@@ -25,34 +25,40 @@ body {
   margin: 8px;
 }''';
 
-  static final String bootstrapCss =
+  static const String _bootstrapCss =
       'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css';
-  static final String bootstrapTheme =
+  static const String _bootstrapTheme =
       'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css';
 
-  HtmlPrinter html = new HtmlPrinter();
-  CSS css = new CSS();
-  HtmlGeneratorHelper helper;
-  List<String> htmlFiles = [];
-  String url;
+  HtmlPrinter _html = new HtmlPrinter();
+  final CSS _css = new CSS();
+  HtmlGeneratorHelper _helper;
+  final List<String> _htmlFiles = [];
+  final String _url;
 
-  HtmlGenerator(this.url) {}
+  Package get package => _package;
+  Package _package;
+
+  Directory get out => _out;
+  Directory _out;
+
+  HtmlGenerator(this._url) {}
 
   void generate(Package package, Directory out) {
-    this.package = package;
-    this.out = out;
-    helper = new HtmlGeneratorHelper(package);
+    this._package = package;
+    this._out = out;
+    _helper = new HtmlGeneratorHelper(package);
     generatePackage();
     package.libraries.forEach((lib) => generateLibrary(lib));
-    if (url != null) {
+    if (_url != null) {
       generateSiteMap();
     }
   }
 
   void generatePackage() {
     var data = {
-      'css': bootstrapCss,
-      'theme': bootstrapTheme,
+      'css': _bootstrapCss,
+      'theme': _bootstrapTheme,
       'packageName': package.name,
       'packageDesc': package.description,
       'packageVersion': package.version,
@@ -67,7 +73,7 @@ body {
     var fileName = 'index.html';
 
     File f = joinFile(new Directory(out.path), [fileName]);
-    htmlFiles.add(fileName);
+    _htmlFiles.add(fileName);
     print('generating ${f.path}');
 
     var script = new File(Platform.script.toFilePath());
@@ -81,57 +87,57 @@ body {
     var fileName = getFileNameFor(library.name);
     File f = joinFile(new Directory(out.path), [fileName]);
     print('generating ${f.path}');
-    htmlFiles.add(fileName);
-    html = new HtmlPrinter();
-    html.start(
+    _htmlFiles.add(fileName);
+    _html = new HtmlPrinter();
+    _html.start(
         title: 'Library ${library.name}',
-        cssRef: css.cssHeader,
-        theme: css.theme,
+        cssRef: _css.cssHeader,
+        theme: _css.theme,
         inlineStyle: bootstrapOverrides);
 
-    html.generateHeader();
+    _html.generateHeader();
 
-    html.startTag('div', attributes: "class='container'", newLine: false);
-    html.writeln();
-    html.startTag('div', attributes: "class='row'", newLine: false);
-    html.writeln();
+    _html.startTag('div', attributes: "class='container'", newLine: false);
+    _html.writeln();
+    _html.startTag('div', attributes: "class='row'", newLine: false);
+    _html.writeln();
 
     // left nav
-    html.startTag('div', attributes: "class='col-md-3'");
-    html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
-    html.startTag('li', attributes: 'class="active"', newLine: false);
-    html.write(
+    _html.startTag('div', attributes: "class='col-md-3'");
+    _html.startTag('ul', attributes: 'class="nav nav-pills nav-stacked"');
+    _html.startTag('li', attributes: 'class="active"', newLine: false);
+    _html.write(
         '<a href="${getFileNameFor(library.name)}">' '<i class="chevron-nav icon-white icon-chevron-right"></i> ' '${library.name}</a>');
-    html.endTag(); // li
-    html.endTag(); // ul.nav
-    html.endTag(); // div.col-md-3
+    _html.endTag(); // li
+    _html.endTag(); // ul.nav
+    _html.endTag(); // div.col-md-3
 
     // main content
-    html.startTag('div', attributes: "class='col-md-9'");
+    _html.startTag('div', attributes: "class='col-md-9'");
 
-    html.tag('h1', contents: library.name);
+    _html.tag('h1', contents: library.name);
 
     if (!library.exported.isEmpty) {
-      html.startTag('p');
-      html.write('exports ');
+      _html.startTag('p');
+      _html.write('exports ');
       for (int i = 0; i < library.exported.length; i++) {
         if (i > 0) {
-          html.write(', ');
+          _html.write(', ');
         }
 
         Library lib = library.exported[i];
         if (package.libraries.contains(lib)) {
-          html.write('<a href="${getFileNameFor(lib.name)}">${lib.name}</a>');
+          _html.write('<a href="${getFileNameFor(lib.name)}">${lib.name}</a>');
         } else {
-          html.write(lib.name);
+          _html.write(lib.name);
         }
       }
-      html.endTag();
+      _html.endTag();
     }
 
-    html.writeln('<hr>');
+    _html.writeln('<hr>');
 
-    html.startTag('dl', attributes: "class=dl-horizontal");
+    _html.startTag('dl', attributes: "class=dl-horizontal");
 
     List<Variable> variables = library.getVariables();
     List<Accessor> accessors = library.getAccessors();
@@ -145,7 +151,7 @@ body {
     createToc(typedefs);
     createToc(types);
 
-    html.endTag(); // dl
+    _html.endTag(); // dl
 
     printComments(library);
 
@@ -156,79 +162,79 @@ body {
 
     types.forEach(generateClass);
 
-    html.writeln('<hr>');
+    _html.writeln('<hr>');
 
-    html.endTag(); // div.col-md-9
+    _html.endTag(); // div.col-md-9
 
-    html.endTag(); // div.row
+    _html.endTag(); // div.row
 
-    html.endTag(); // div.container
+    _html.endTag(); // div.container
 
-    html.generateFooter();
+    _html.generateFooter();
 
-    html.end();
+    _html.end();
     // write the file contents
-    f.writeAsStringSync(html.toString());
+    f.writeAsStringSync(_html.toString());
   }
 
   void createToc(List<ModelElement> elements) {
     if (!elements.isEmpty) {
-      html.tag('dt', contents: elements[0].typeName);
-      html.startTag('dd');
+      _html.tag('dt', contents: elements[0].typeName);
+      _html.startTag('dd');
       for (ModelElement e in elements) {
-        html.writeln('${createIconFor(e)}${e.createLinkedSummary(helper)}<br>');
+        _html.writeln('${createIconFor(e)}${e.createLinkedSummary(_helper)}<br>');
       }
-      html.endTag();
+      _html.endTag();
     }
   }
 
   void generateClass(Class cls) {
-    html.write(createAnchor(cls));
-    html.writeln('<hr>');
-    html.startTag('h4');
+    _html.write(createAnchor(cls));
+    _html.writeln('<hr>');
+    _html.startTag('h4');
     generateAnnotations(cls.getAnnotations());
-    html.write(createIconFor(cls));
+    _html.write(createIconFor(cls));
     if (cls.isAbstract) {
-      html.write('Abstract class ${cls.name}');
+      _html.write('Abstract class ${cls.name}');
     } else {
-      html.write('Class ${cls.name}');
+      _html.write('Class ${cls.name}');
     }
     if (cls.hasSupertype) {
-      html.write(' extends ${helper.createLinkedTypeName(cls.supertype)}');
+      _html.write(' extends ${_helper.createLinkedTypeName(cls.supertype)}');
     }
     if (!cls.mixins.isEmpty) {
-      html.write(' with');
+      _html.write(' with');
       for (int i = 0; i < cls.mixins.length; i++) {
         if (i == 0) {
-          html.write(' ');
+          _html.write(' ');
         } else {
-          html.write(', ');
+          _html.write(', ');
         }
-        html.write(helper.createLinkedTypeName(cls.mixins[i]));
+        _html.write(_helper.createLinkedTypeName(cls.mixins[i]));
       }
     }
 
     if (!cls.interfaces.isEmpty) {
-      html.write(' implements');
+      _html.write(' implements');
       for (int i = 0; i < cls.interfaces.length; i++) {
         if (i == 0) {
-          html.write(' ');
+          _html.write(' ');
         } else {
-          html.write(', ');
+          _html.write(', ');
         }
-        html.write(helper.createLinkedTypeName(cls.interfaces[i]));
+        _html.write(_helper.createLinkedTypeName(cls.interfaces[i]));
       }
     }
 
-    html.endTag();
+    _html.endTag();
 
-    html.startTag('dl', attributes: 'class=dl-horizontal');
+    _html.startTag('dl', attributes: 'class=dl-horizontal');
     createToc(cls.getStaticFields());
     createToc(cls.getInstanceFields());
     createToc(cls.getAccessors());
     createToc(cls.getCtors());
     createToc(cls.getMethods());
-    html.endTag();
+    _html.endTag();
 
     printComments(cls);
 
@@ -243,54 +249,54 @@ body {
     String comments = e.getDocumentation();
     if (comments != null) {
       if (indent) {
-        html.startTag('div', attributes: "class=indent");
+        _html.startTag('div', attributes: "class=indent");
       }
-      html.tag('p', contents: cleanupDocs(e, comments));
+      _html.tag('p', contents: cleanupDocs(e, comments));
       if (indent) {
-        html.endTag();
+        _html.endTag();
       }
     } else {
       if (indent) {
-        html.tag('div', attributes: "class=indent");
+        _html.tag('div', attributes: "class=indent");
       }
     }
   }
 
   void generateElements(List<ModelElement> elements, [bool header = true]) {
     if (!elements.isEmpty) {
-      html.tag('h4', contents: elements[0].typeName);
+      _html.tag('h4', contents: elements[0].typeName);
       if (header) {
-        html.startTag('div', attributes: "class=indent");
+        _html.startTag('div', attributes: "class=indent");
       }
       elements.forEach(generateElement);
       if (header) {
-        html.endTag();
+        _html.endTag();
       }
     }
   }
 
   void generateElement(ModelElement f) {
-    html.startTag('b', newLine: false);
-    html.write('${createAnchor(f)}');
+    _html.startTag('b', newLine: false);
+    _html.write('${createAnchor(f)}');
     generateAnnotations(f.getAnnotations());
-    html.write(createIconFor(f));
+    _html.write(createIconFor(f));
     if (f is Method) {
-      html.write(generateOverrideIcon(f));
+      _html.write(generateOverrideIcon(f));
     }
-    html.write(f.createLinkedDescription(helper));
-    html.endTag();
+    _html.write(f.createLinkedDescription(_helper));
+    _html.endTag();
     printComments(f);
   }
 
   void generateAnnotations(List<String> annotations) {
     if (!annotations.isEmpty) {
-      html.write('<i class="icon-info-sign icon-hidden"></i> ');
+      _html.write('<i class="icon-info-sign icon-hidden"></i> ');
       for (String a in annotations) {
         // TODO: I don't believe we get back the right elements for const
         // ctor annotations
-        html.writeln('@${a} ');
+        _html.writeln('@${a} ');
       }
-      html.writeln('<br>');
+      _html.writeln('<br>');
     }
   }
 
@@ -301,7 +307,7 @@ body {
     } else if (!package.isDocumented(o)) {
       return "<i title='Overrides ${getNameFor(o)}' " "class='icon-circle-arrow-up icon-disabled'></i> ";
     } else {
-      return "<a href='${helper.createHrefFor(o)}'>" "<i title='Overrides ${getNameFor(o)}' " "class='icon-circle-arrow-up'></i></a> ";
+      return "<a href='${_helper.createHrefFor(o)}'>" "<i title='Overrides ${getNameFor(o)}' " "class='icon-circle-arrow-up'></i></a> ";
     }
   }
 
@@ -428,7 +434,7 @@ body {
     ModelElement element = e.getChild(reference);
 
     if (element != null && !element.isLocalElement) {
-      return helper.createLinkedName(element, true);
+      return _helper.createLinkedName(element, true);
     } else {
       //return "<a>$reference</a>";
       return "<code>$reference</code>";
@@ -442,22 +448,22 @@ body {
     File tmplFile = new File('${script.parent.parent.path}$siteMapTemplate');
     var tmpl = tmplFile.readAsStringSync();
     // TODO: adjust urls
-    List names = htmlFiles.map((f) => {'name': '$f'}).toList();
-    var content = render(tmpl, {'url': url, 'links': names});
+    List names = _htmlFiles.map((f) => {'name': '$f'}).toList();
+    var content = render(tmpl, {'url': _url, 'links': names});
     f.writeAsStringSync(content);
   }
 }
 
 class HtmlGeneratorHelper extends Helper {
-  Package package;
+  final Package _package;
 
-  HtmlGeneratorHelper(this.package);
+  HtmlGeneratorHelper(this._package);
 
   String createLinkedName(ModelElement e, [bool appendParens = false]) {
     if (e == null) {
       return '';
     }
-    if (!package.isDocumented(e)) {
+    if (!_package.isDocumented(e)) {
       return htmlEscape(e.name);
     }
     if (e.name.startsWith('_')) {
@@ -490,7 +496,7 @@ class HtmlGeneratorHelper extends Helper {
   }
 
   String createHrefFor(ModelElement e) {
-    if (!package.isDocumented(e)) {
+    if (!_package.isDocumented(e)) {
       return '';
     }
     Class c = e.getEnclosingElement();
