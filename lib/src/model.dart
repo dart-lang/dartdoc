@@ -230,7 +230,7 @@ class Library extends ModelElement {
   LibraryElement get _library => (element as LibraryElement);
 
   Library(LibraryElement element, [String source])
-      : super(element, null, source) {}
+      : super(element, null, source);
 
   String get name {
     var source = _library.definingCompilationUnit.source;
