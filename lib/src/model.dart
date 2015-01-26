@@ -12,9 +12,10 @@ import 'model_utils.dart';
 import 'package_utils.dart';
 
 abstract class ModelElement {
-  Element element;
-  Library library;
-  String source;
+  
+  final Element element;
+  final Library library;
+  final String source;
 
   ModelElement(this.element, this.library, [this.source]);
 
