@@ -52,6 +52,7 @@ void main() {
   Source source = helper.addSource(SOURCE1);
   LibraryElement e = helper.resolve(source);
   var l = new Library(e);
+  var lib2 = new Library(e, SOURCE1); 
 
   group('Package', () {
     var p = new Package([e], Directory.current.path);
@@ -157,6 +158,7 @@ void main() {
 
   group('Function', () {
     ModelFunction f1 = l.getFunctions()[0];
+    var f2 = lib2.getFunctions()[0];
 
     test('local element', () {
       expect(f1.isLocalElement, true);
@@ -171,7 +173,11 @@ void main() {
     });
 
     test('has correct type name', () {
-      expect(f1.typeName, equals('Functions'));
+      expect(f1.typeName, equals('int function1(String s, bool b) => 5;'));
+    });
+    
+    test('has correct source code', () {
+      expect(f2.source, equals('Functions'));
     });
   });
 
