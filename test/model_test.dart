@@ -33,7 +33,8 @@ class A {
   const int n = 5;
   static  String s = 'hello';
   String s2;
-
+  
+  ///Constructor
   A(this.m);
 
   void m1(){};
@@ -52,7 +53,7 @@ void main() {
   Source source = helper.addSource(SOURCE1);
   LibraryElement e = helper.resolve(source);
   var l = new Library(e);
-  var lib2 = new Library(e, SOURCE1); 
+  var lib2 = new Library(e, SOURCE1);
 
   group('Package', () {
     var p = new Package([e], Directory.current.path);
@@ -173,24 +174,25 @@ void main() {
     });
 
     test('has correct type name', () {
-      expect(f1.typeName, equals('int function1(String s, bool b) => 5;'));
+      expect(f1.typeName, equals('Functions'));
     });
-    
+
     test('has correct source code', () {
-      expect(f2.source, equals('Functions'));
+      expect(f2.source, equals('int function1(String s, bool b) => 5;'));
     });
   });
 
   group('Method', () {
     var c = l.getTypes()[1];
     var m = c.getMethods()[0];
+    var m2 = lib2.getTypes()[1].getMethods()[0];
 
     test('overriden method', () {
       expect(m.getOverriddenElement().runtimeType.toString(), 'Method');
     });
 
     test('method source', () {
-      expect(m.source, '@override void m1() {var a = 6; var b = a * 9;}');
+      expect(m2.source, '@override \n  void m1() { var a = 6; var b = a * 9;}');
     });
 
     test('has correct type name', () {
@@ -269,9 +271,14 @@ void main() {
 
   group('Constructor', () {
     var c = l.getTypes()[0].getCtors()[0];
+    var c2 = lib2.getTypes()[0].getCtors()[0];
 
     test('has correct type name', () {
       expect(c.typeName, equals('Constructors'));
+    });
+
+    test('has source', () {
+      expect(c2.source, equals('///Constructor\n  A(this.m);'));
     });
   });
 

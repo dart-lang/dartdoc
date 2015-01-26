@@ -12,7 +12,6 @@ import 'model_utils.dart';
 import 'package_utils.dart';
 
 abstract class ModelElement {
-  
   final Element element;
   final Library library;
   final String source;
@@ -228,12 +227,10 @@ class Package {
 }
 
 class Library extends ModelElement {
-  
   LibraryElement get _library => (element as LibraryElement);
 
-  Library(LibraryElement element, [String source]) : super(element, null, source) {    
- 
-  }
+  Library(LibraryElement element, [String source])
+      : super(element, null, source) {}
 
   String get name {
     var source = _library.definingCompilationUnit.source;
@@ -290,14 +287,10 @@ class Library extends ModelElement {
       ..removeWhere(isPrivate)
       ..sort(elementCompare);
     return elements.map((e) {
-      if (source != null) {
-        var eSource = 
-            source.substring(e.node.offset, e.node.end);        
-        return new ModelFunction(e, this, eSource);
-      } else {
-        return new ModelFunction(e, this);
-      }
-      }).toList();
+      var eSource =
+          (source != null) ? source.substring(e.node.offset, e.node.end) : null;
+      return new ModelFunction(e, this, eSource);
+    }).toList();
   }
 
   List<Class> getTypes() {
@@ -318,7 +311,7 @@ class Class extends ModelElement {
 
   String get typeName => 'Classes';
 
-  Class(ClassElement element, Library library,  [String source]) 
+  Class(ClassElement element, Library library, [String source])
       : super(element, library, source);
 
   bool get isAbstract => _cls.isAbstract;
@@ -360,13 +353,9 @@ class Class extends ModelElement {
       ..removeWhere(isPrivate)
       ..sort(elementCompare);
     return c.map((e) {
-      if (source != null) {
-        var cSource = source.substring(e.node.offset, e.node.end);
-        return new Constructor(e, library, cSource);
-      } else {
-        return new Constructor(e, library);
-      }
-      
+      var cSource =
+          (source != null) ? source.substring(e.node.offset, e.node.end) : null;
+      return new Constructor(e, library, cSource);
     }).toList();
   }
 
@@ -375,7 +364,8 @@ class Class extends ModelElement {
       ..removeWhere(isPrivate)
       ..sort(elementCompare);
     return m.map((e) {
-      var mSource = source != null ? source.substring(e.node.offset, e.node.end) : '';
+      var mSource =
+          source != null ? source.substring(e.node.offset, e.node.end) : null;
       return new Method(e, library, mSource);
     }).toList();
   }
@@ -386,7 +376,7 @@ class Class extends ModelElement {
 }
 
 class ModelFunction extends ModelElement {
-  ModelFunction(FunctionElement element, Library library,  [String contents] )
+  ModelFunction(FunctionElement element, Library library, [String contents])
       : super(element, library, contents);
 
   FunctionElement get _func => (element as FunctionElement);
@@ -511,9 +501,9 @@ class Constructor extends ModelElement {
 }
 
 class Method extends ModelElement {
-  MethodElement get _method => (element as MethodElement);
+//  MethodElement get _method => (element as MethodElement);
 
-  Method(MethodElement element, Library library, [String source]) 
+  Method(MethodElement element, Library library, [String source])
       : super(element, library, source);
 
   Method getOverriddenElement() {
@@ -525,9 +515,6 @@ class Method extends ModelElement {
     }
     return null;
   }
-
-  String get source => _method.node.toSource();
-
 
   String get typeName => 'Methods';
 }
