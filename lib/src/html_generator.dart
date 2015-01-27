@@ -6,6 +6,7 @@ library dartdoc.html_generator;
 
 import 'dart:io';
 
+import 'package:intl/intl.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
 import 'css.dart';
@@ -56,9 +57,12 @@ body {
   }
 
   void generatePackage() {
+    var date = new DateFormat('MMMM dd yyyy').format(new DateTime.now());
     var data = {
       'css': _bootstrapCss,
       'theme': _bootstrapTheme,
+      'sdkVersion': package.sdkVersion.trim(),
+      'date': date,
       'packageName': package.name,
       'packageDesc': package.description,
       'packageVersion': package.version,
@@ -182,7 +186,8 @@ body {
       _html.tag('dt', contents: elements[0].typeName);
       _html.startTag('dd');
       for (ModelElement e in elements) {
-        _html.writeln('${createIconFor(e)}${e.createLinkedSummary(_helper)}<br>');
+        _html.writeln(
+            '${createIconFor(e)}${e.createLinkedSummary(_helper)}<br>');
       }
       _html.endTag();
     }
