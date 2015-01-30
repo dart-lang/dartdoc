@@ -12,6 +12,7 @@ dependencies:
   mustache4dart: '>=1.0.0 <2.0.0'
   path: any
   yaml: any
+  mustache: any
 dev_dependencies:
   http: any
   unittest: any

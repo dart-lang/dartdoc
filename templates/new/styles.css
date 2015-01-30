@@ -1,0 +1,142 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata:400,700);
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+pre {
+  font-family: 'Inconsolata', monospace;
+}
+
+code {
+  background-color: transparent;
+  color: black;
+  padding: 0;
+  border-radius: 0;
+  font-size: 100%;
+}
+
+pre.prettyprint {
+  /* from bootstrap */
+  padding: 9.5px;
+  border: 1px solid #CCC;
+}
+
+.title .type, .classname {
+  color: #BBB;
+}
+
+@media (min-width:970px) and (max-width: 2500px) {
+  .container {
+    width:970px;
+  }   
+}
+
+#title {
+  background-color: rgba(0,164,228, 0.1);
+  margin-bottom: 20px;
+}
+
+h1 {
+  margin: 120px 0 60px 0;
+}
+
+dt {
+  font-weight: normal;
+  margin-bottom: 3px;
+}
+
+.impls-extends ul {
+  margin-bottom: 0;
+}
+
+.impls-extends ul li {
+  display: inline;
+}
+
+section.summary h2 {
+  background-color: rgba(0,164,228, 0.1);
+  line-height: 48px;
+  padding: 16px;
+  font-size: 20px;
+  color: gray;
+}
+
+section.desc h2 {
+  font-size: 18px;
+}
+
+.summary dl, .summary table {
+  margin: 16px;
+}
+
+.summary dd {
+  margin-bottom: 9px;
+}
+
+dl.withreturntypes .returntype {
+  float: left;
+  width: 250px;
+  color: gray;
+}
+
+dl.withreturntypes dd {
+  margin-left: 250px;
+}
+
+@media (max-width: 768px) {
+  dl.withreturntypes dd {
+    margin-left: 0;
+    padding-left: 18px;
+  }
+
+  dl.withreturntypes .returntype {
+    display: block;
+    float: none;
+    width: auto;
+  }
+}
+
+dl.dl-horizontal dt {
+  width: 250px;
+  font-style: normal;
+}
+
+dl.dl-horizontal dd {
+  border-bottom: 1px solid #eee;
+  padding-left: 18px;
+  margin-left: 0; /* override bootstrap */
+}
+
+.optional {
+  font-style: italic;
+}
+
+.parameters {
+  margin-left:36px;
+}
+
+.param-name {
+  font-style: italic;
+}
+
+p.firstline {
+  font-weight: bold;
+}
+
+.method-detail {
+  border-bottom: 1px solid gray;
+  margin-bottom: 9px;
+}
+
+.dl-horizontal dt {
+  text-align: left;
+  font-style: italic;
+}
+
+footer {
+  margin-top: 36px;
+  background-color: #EEE;
+  height: 60px;
+  padding: 18px;
+}
