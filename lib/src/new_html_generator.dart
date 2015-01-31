@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:intl/intl.dart';
 import 'package:mustache4dart/mustache4dart.dart';
+import 'package:markdown/markdown.dart';
 import 'package:path/path.dart' as path;
 
 import 'io_utils.dart';
@@ -42,10 +43,12 @@ class NewHtmlGenerator extends Generator {
 
   void generatePackage() {
     var date = new DateFormat('MMMM dd yyyy').format(new DateTime.now());
-    var data = {
+    var data = {};
+    data.addAll({
       'package': package,
-      'generatedOn': date
-    };
+      'generatedOn': date,
+      'markdown': (s) => markdownToHtml(render(s, data))
+    });
     var fileName = 'index.html';
 
     File f = joinFile(new Directory(out.path), [fileName]);

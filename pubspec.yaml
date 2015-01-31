@@ -13,6 +13,7 @@ dependencies:
     git: 'https://github.com/sethladd/mustache4dart.git'
   path: any
   yaml: any
+  markdown: any
 dev_dependencies:
   http: any
   unittest: any

@@ -31,11 +31,9 @@
 
       <section class="desc">
 
-        <p class="firstline">
-          {{! description.firstLine }}
-        </p>
-
-        {{! description.body }}
+        {{#markdown}}
+          {{ package.description }}
+        {{/markdown}}
 
       </section>
 
