@@ -193,6 +193,17 @@ abstract class ModelElement {
     }
     return null;
   }
+
+  String get docOneLiner {
+    var doc = stripComments(getDocumentation());
+    if (doc == null || doc == '') return null;
+    var endOfFirstSentence = doc.indexOf('.');
+    if (endOfFirstSentence >= 0) {
+      return doc.substring(0, endOfFirstSentence + 1);
+    } else {
+      return doc;
+    }
+  }
 }
 
 class Package {

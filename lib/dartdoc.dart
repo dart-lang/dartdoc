@@ -15,6 +15,7 @@ import 'package:analyzer/src/generated/source_io.dart';
 
 import 'generator.dart';
 import 'src/html_generator.dart';
+import 'src/new_html_generator.dart';
 import 'src/io_utils.dart';
 import 'src/model.dart';
 import 'src/model_utils.dart';
@@ -28,9 +29,10 @@ const String VERSION = '0.0.1';
 
 /// Initialize and setup the generators
 List<Generator> initGenerators(String url) {
-  List<Generator> generators = [];
-  generators.add(new HtmlGenerator(url));
-  return generators;
+  return [
+    new HtmlGenerator(url),
+    new NewHtmlGenerator(url)
+  ];
 }
 
 /// Generates Dart documentation for all public Dart libraries in the given

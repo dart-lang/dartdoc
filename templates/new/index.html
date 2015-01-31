@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ package.name }} - Dart API docs</title>
+
+<link rel="stylesheet" href="prettify.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="styles.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+<meta name="description" content="String API docs from dart:core, for the Dart programming language.">
+
+</head>
+
+<body>
+
+  <header class="container-fluid" id="title">
+    <div class="container">
+      <h1 class="title">
+        {{ package.name }} <span class="type">dartdocs</span>
+      </h1>
+    </div>
+  </header>
+
+  <div class="container">
+
+      <section class="desc">
+
+        <p class="firstline">
+          {{! description.firstLine }}
+        </p>
+
+        {{! description.body }}
+
+      </section>
+
+      <section class="summary" id="libraries">
+        <h2>Libraries</h2>
+        <dl class="dl-horizontal">
+          {{#package.libraries}}
+            <dt>
+              <a href="#">{{ name }}</a>
+            </dt>
+            <dd>
+              {{ docOneLiner }}
+            </dd>
+          {{/package.libraries}}
+        </dl>
+      </section>
+
+  </div>
+
+   <footer>
+    <div class="container-fluid">
+      <div class="container">
+        <p class="text-center">
+          <span class="generatedon">{{ generatedOn }}</span> |
+          <span class="version">{{ package.version }}</span> |
+          <span class="copyright">
+            <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
+          </span> |
+          <span class="issues">
+            <a href="#">Suggestions and comments</a>
+          </span>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+<!--
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+-->
+
+<script src="prettify.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  prettyPrint();
+});
+</script>
+</body>
+
+</html>
