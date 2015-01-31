@@ -10,7 +10,7 @@ dependencies:
   intl: any
   logging: any
   mustache4dart:
-    git: 'git@github.com:sethladd/mustache4dart.git'
+    git: 'https://github.com/sethladd/mustache4dart.git'
   path: any
   yaml: any
 dev_dependencies:
