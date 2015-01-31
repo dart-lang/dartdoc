@@ -20,8 +20,16 @@ Map _getPubspec(String directoryName) {
   return loadYaml(contents);
 }
 
-String getPackageDescription(String directoryName) =>
-    _getPubspec(directoryName)['description'];
+String getPackageDescription(String directoryName) {
+  var dir = new Directory(directoryName);
+  var readmeFile = dir.listSync().firstWhere((FileSystemEntity file) =>
+      path.basename(file.path).toLowerCase().startsWith("readme"));
+  if (readmeFile.existsSync()) {
+    // TODO(keertip): cleanup the contents
+    return readmeFile.readAsStringSync();
+  }
+  return '';
+}
 
 String getPackageVersion(String directoryName) =>
     _getPubspec(directoryName)['version'];
