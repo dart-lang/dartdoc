@@ -9,10 +9,10 @@ dependencies:
   grinder: '>=0.6.0 <0.7.0'
   intl: any
   logging: any
-  mustache4dart: '>=1.0.0 <2.0.0'
+  mustache4dart:
+    git: 'git@github.com:sethladd/mustache4dart.git'
   path: any
   yaml: any
-  mustache: any
 dev_dependencies:
   http: any
   unittest: any

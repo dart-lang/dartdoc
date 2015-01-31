@@ -7,7 +7,7 @@ library dartdoc.new_html_generator;
 import 'dart:io';
 
 import 'package:intl/intl.dart';
-import 'package:mustache/mustache.dart';
+import 'package:mustache4dart/mustache4dart.dart';
 import 'package:path/path.dart' as path;
 
 import 'io_utils.dart';
@@ -55,7 +55,7 @@ class NewHtmlGenerator extends Generator {
     var script = new File(Platform.script.toFilePath());
     File tmplFile = new File(path.join(script.parent.parent.path, indexTemplate));
     var tmpl = tmplFile.readAsStringSync();
-    var content = parse(tmpl).renderString(data);
+    var content = render(tmpl, data);
     f.writeAsStringSync(content);
   }
 
