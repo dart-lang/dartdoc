@@ -24,7 +24,9 @@ void main() {
 
     test('get package description', () {
       String desc = getPackageDescription(Directory.current.path);
-      expect(desc, 'A documentation generator for Dart.');
+      expect(
+          desc.startsWith('# dartdoc\n\nA documentation generator for Dart.\n'),
+          true);
     });
   });
 }
