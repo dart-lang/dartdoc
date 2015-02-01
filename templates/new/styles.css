@@ -37,7 +37,7 @@ pre.prettyprint {
   margin-bottom: 20px;
 }
 
-h1 {
+h1.title {
   margin: 120px 0 60px 0;
 }
 
@@ -139,4 +139,12 @@ footer {
   background-color: #EEE;
   height: 60px;
   padding: 18px;
+}
+
+.markdown h1 {
+  font-size: 18px;
+}
+
+.markdown h2 {
+  font-size: 16px;
 }

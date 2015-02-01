@@ -8,6 +8,8 @@ import 'dart:io';
 
 import 'package:intl/intl.dart';
 import 'package:mustache4dart/mustache4dart.dart';
+import 'package:html5lib/parser.dart' show parse;
+import 'package:html5lib/dom.dart' as html;
 import 'package:markdown/markdown.dart';
 import 'package:path/path.dart' as path;
 
@@ -47,7 +49,7 @@ class NewHtmlGenerator extends Generator {
     data.addAll({
       'package': package,
       'generatedOn': date,
-      'markdown': (s) => markdownToHtml(render(s, data))
+      'markdown': (String s) => renderMarkdown(s, data)
     });
     var fileName = 'index.html';
 
@@ -69,4 +71,13 @@ class NewHtmlGenerator extends Generator {
         .copySync(path.join(out.path, f));
     });
   }
+}
+
+/// Converts a markdown formatted string into HTML,
+/// and removes any script tags. Returns the HTML as a string.
+String renderMarkdown(String markdown, Map data) {
+  String html = markdownToHtml(render(markdown, data));
+  html.Document doc = parse(html);
+  doc.querySelectorAll('script').forEach((s) => s.remove());
+  return doc.outerHtml;
 }
