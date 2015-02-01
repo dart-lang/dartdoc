@@ -42,7 +42,7 @@
         <dl class="dl-horizontal">
           {{#package.libraries}}
             <dt>
-              <a href="#">{{ name }}</a>
+              <a href="{{name}}.html">{{ name }}</a>
             </dt>
             <dd>
               {{ docOneLiner }}
@@ -53,34 +53,4 @@
 
   </div>
 
-   <footer>
-    <div class="container-fluid">
-      <div class="container">
-        <p class="text-center">
-          <span class="generatedon">{{ generatedOn }}</span> |
-          <span class="version">{{ package.version }}</span> |
-          <span class="copyright">
-            <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
-          </span> |
-          <span class="issues">
-            <a href="#">Suggestions and comments</a>
-          </span>
-        </p>
-      </div>
-    </div>
-  </footer>
-
-<!--
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
--->
-
-<script src="prettify.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  prettyPrint();
-});
-</script>
-</body>
-
-</html>
+{{>footer}}

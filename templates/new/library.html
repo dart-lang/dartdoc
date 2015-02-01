@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ library.name }} library - Dart API</title>
+
+    <link rel="stylesheet" href="prettify.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+    <meta name="description" content="dart:core library API docs, for the Dart programming language.">
+
+</head>
+
+<body>
+
+<header class="container-fluid" id="title">
+    <div class="container">
+        <h1 class="title">
+            <span class="name">{{ library.name }}</span> <span class="type">library</span>
+        </h1>
+    </div>
+</header>
+
+<div class="container">
+
+    <section class="desc">
+
+        <p class="firstline">Built-in types, collections, and other core functionality for every Dart program.</p>
+
+        <p>This library is automatically imported.</p>
+
+        <p>Some classes in this library, such as <a href="#">String</a> and
+            <a href="#">num</a>, support Dart's built-in data types. Other classes,
+            such as <a href="#">List</a> and <a href="#">Map</a>, provide data
+            structures for managing collections
+            of objects. And still other classes represent commonly used types of
+            data such as URIs, dates and times, and errors.</p>
+
+        <h2>Numbers and booleans</h2>
+
+        <p><a href="#">int</a> and <a href="#">double</a> provide support for Dart's built-in numerical data types: integers and double-precision floating point numbers, respectively. An object of type bool is either true or false. Variables of these types can be constructed from literals:</p>
+
+    <pre class="prettyprint">
+int meaningOfLife = 42;
+double valueOfPi  = 3.141592;
+bool visible      = true;</pre>
+
+
+        <h2>Strings and regular expressions</h2>
+
+        <p>A <a href="#">String</a> is immutable and represents a sequence of characters.</p>
+
+        <pre class="prettyprint">String shakespeareQuote = "All the world's a stage, ...";</pre>
+
+        <p><a href="#">StringBuffer</a> provides a way to construct strings efficiently.</p>
+
+    <pre class="prettyprint">
+StringBuffer moreShakespeare = new StringBuffer();
+moreShakespeare.write('And all the men and women ');
+moreShakespeare.write('merely players; ...');</pre>
+
+
+    </section>
+
+    <section class="summary" id="classes">
+        <h2>Classes</h2>
+
+        <dl class="dl-horizontal">
+            <dt>
+                <a href="#">BidirectionalIterator</a>
+            </dt>
+            <dd>
+                An Iterator that allows moving backwards as well as forwards.
+            </dd>
+            <dt>
+                <a href="#">Comparable</a>
+            </dt>
+            <dd>
+                Interface used by types that have an intrinsic ordering.
+            </dd>
+            <dt>
+                <a href="#">DateTime</a>
+            </dt>
+            <dd>
+                An instant in time, such as July 20, 1969, 8:18pm GMT.
+            </dd>
+
+            <dt>
+                <a href-"#">Deprecated</a>
+            </dt>
+            <dd>
+                The annotation <code>@Deprecated('expires when')</code> marks a feature as deprecated.
+            </dd>
+
+            <dt>
+                <a href-"#">Duration</a>
+            </dt>
+            <dd>
+                A span of time, such as 27 days, 4 hours, 12 minutes, and 3 seconds.
+            </dd>
+
+            <dt>
+                <a href="#">Expando</a>
+            </dt>
+            <dd>
+                An Expando allows adding new properties to objects.
+            </dd>
+
+            <dt>
+                <a href="#">Function</a>
+            </dt>
+            <dd>
+                The base class for all function types.
+            </dd>
+
+            <dt>
+                <a href="#">Invocation</a>
+            </dt>
+            <dd>
+                Representation of the invocation of a member on an object.
+            </dd>
+
+            <dt>
+                <a href="#">Iterable</a>
+            </dt>
+            <dd>
+                An object that uses an Iterator to serve objects one at a time.
+            </dd>
+
+            <dt>
+                <a href="#">Iterator</a>
+            </dt>
+            <dd>
+                An interface for getting items, one at a time, from an object.
+            </dd>
+        </dl>
+
+    </section>
+
+    <section class="summary" id="properties">
+        <h2>Properties</h2>
+
+    </section>
+
+    <section class="summary" id="functions">
+        <h2>Functions</h2>
+
+        <dl class="withreturntypes">
+            <dt>
+                <code>
+                    <a href="#">
+                        <span class="returntype">int</span>
+                        <span class="name">identityHashCode</span>(Object)
+                    </a>
+                </code>
+            </dt>
+            <dd>
+                Returns the identity hash code of object.
+            </dd>
+
+            <dt>
+                <code>
+                    <a href="#">
+                        <span class="returntype">bool</span>
+                        <span class="name">identical</span>(Object, Object)
+                    </a>
+                </code>
+            </dt>
+            <dd>
+                Check whether two references are to the same object.
+            </dd>
+
+            <dt>
+                <code>
+                    <a href="#">
+                        <span class="returntype">void</span>
+                        <span class="name">print</span>(Object)
+                    </a>
+                </code>
+            </dt>
+            <dd>
+                Prints a string representation of the object to the console.
+            </dd>
+
+        </dl>
+    </section>
+
+    <section class="summary" id="typedefs">
+        <h2>Typedefs</h2>
+
+    </section>
+
+    <section class="summary" id="exceptions">
+        <h2>Exceptions</h2>
+
+    </section>
+
+</div>
+
+{{>footer}}
