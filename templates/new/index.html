@@ -29,13 +29,11 @@
 
   <div class="container">
 
-      <section class="desc">
+      <section class="desc markdown">
 
-        <p class="firstline">
-          {{! description.firstLine }}
-        </p>
-
-        {{! description.body }}
+        {{#markdown}}
+          {{{ package.description }}}
+        {{/markdown}}
 
       </section>
 
