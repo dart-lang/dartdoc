@@ -6,6 +6,7 @@ library dartdoc.html_generator;
 
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:intl/intl.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 
@@ -77,7 +78,7 @@ body {
     };
     var fileName = 'index.html';
 
-    File f = joinFile(new Directory(out.path), [fileName]);
+    File f = new File(path.join(out.path, fileName));
     _htmlFiles.add(fileName);
     print('generating ${f.path}');
 
@@ -90,7 +91,7 @@ body {
 
   void generateLibrary(Library library) {
     var fileName = getFileNameFor(library.name);
-    File f = joinFile(new Directory(out.path), [fileName]);
+    File f = new File(path.join(out.path, fileName));
     print('generating ${f.path}');
     _htmlFiles.add(fileName);
     _html = new HtmlPrinter();
@@ -449,7 +450,7 @@ body {
 
   void generateSiteMap() {
     print('generating sitemap.xml');
-    File f = joinFile(new Directory(out.path), ['sitemap.xml']);
+    File f = new File(path.join(out.path, 'sitemap.xml'));
     var script = new File(Platform.script.toFilePath());
     File tmplFile = new File('${script.parent.parent.path}$siteMapTemplate');
     var tmpl = tmplFile.readAsStringSync();
@@ -460,109 +461,109 @@ body {
   }
 }
 
-class HtmlGeneratorHelper extends Helper {
-  final Package _package;
-
-  HtmlGeneratorHelper(this._package);
-
-  String createLinkedName(ModelElement e, [bool appendParens = false]) {
-    if (e == null) {
-      return '';
-    }
-    if (!_package.isDocumented(e)) {
-      return htmlEscape(e.name);
-    }
-    if (e.name.startsWith('_')) {
-      return htmlEscape(e.name);
-    }
-    Class c = e.getEnclosingElement();
-    if (c != null && c.name.startsWith('_')) {
-      return '${c.name}.${htmlEscape(e.name)}';
-    }
-    if (c != null && e is Constructor) {
-      String name;
-      if (e.name.isEmpty) {
-        name = c.name;
-      } else {
-        name = '${c.name}.${htmlEscape(e.name)}';
-      }
-      if (appendParens) {
-        return "<a href=${createHrefFor(e)}>${name}()</a>";
-      } else {
-        return "<a href=${createHrefFor(e)}>${name}</a>";
-      }
-    } else {
-      String append = '';
-
-      if (appendParens && (e is Method || e is ModelFunction)) {
-        append = '()';
-      }
-      return "<a href=${createHrefFor(e)}>${htmlEscape(e.name)}$append</a>";
-    }
-  }
-
-  String createHrefFor(ModelElement e) {
-    if (!_package.isDocumented(e)) {
-      return '';
-    }
-    Class c = e.getEnclosingElement();
-    if (c != null) {
-      return '${getFileNameFor(e.library.name)}#${c.name}.${escapeBrackets(e.name)}';
-    } else {
-      return '${getFileNameFor(e.library.name)}#${e.name}';
-    }
-  }
-
-  String printParams(List<Parameter> params) {
-    StringBuffer buf = new StringBuffer();
-
-    for (Parameter p in params) {
-      if (buf.length > 0) {
-        buf.write(', ');
-      }
-      if (p.type != null && p.type.name != null) {
-        String typeName = createLinkedTypeName(p.type);
-        if (typeName.isNotEmpty) buf.write('${typeName} ');
-      }
-      buf.write(p.name);
-    }
-    return buf.toString();
-  }
-
-  String createLinkedTypeName(ElementType type) {
-    StringBuffer buf = new StringBuffer();
-
-    if (type.isParameterType) {
-      buf.write(type.element.name);
-    } else {
-      buf.write(createLinkedName(type.element));
-    }
-
-    if (type.isParameterizedType) {
-      if (!type.typeArguments.isEmpty) {
-        buf.write('&lt;');
-        for (int i = 0; i < type.typeArguments.length; i++) {
-          if (i > 0) {
-            buf.write(', ');
-          }
-          ElementType t = type.typeArguments[i];
-          buf.write(createLinkedTypeName(t));
-        }
-        buf.write('&gt;');
-      }
-    }
-    return buf.toString();
-  }
-
-  String createLinkedReturnTypeName(ElementType type) {
-    if (type.returnElement == null) {
-      if (type.returnTypeName != null) {
-        return type.returnTypeName;
-      } else {
-        return '';
-      }
-    } else {
-      return createLinkedTypeName(type.returnType);
-    }
-  }
-}
+//class HtmlGeneratorHelper extends Helper {
+//  final Package _package;
+//
+//  HtmlGeneratorHelper(this._package);
+//
+//  String createLinkedName(ModelElement e, [bool appendParens = false]) {
+//    if (e == null) {
+//      return '';
+//    }
+//    if (!_package.isDocumented(e)) {
+//      return htmlEscape(e.name);
+//    }
+//    if (e.name.startsWith('_')) {
+//      return htmlEscape(e.name);
+//    }
+//    Class c = e.getEnclosingElement();
+//    if (c != null && c.name.startsWith('_')) {
+//      return '${c.name}.${htmlEscape(e.name)}';
+//    }
+//    if (c != null && e is Constructor) {
+//      String name;
+//      if (e.name.isEmpty) {
+//        name = c.name;
+//      } else {
+//        name = '${c.name}.${htmlEscape(e.name)}';
+//      }
+//      if (appendParens) {
+//        return "<a href=${createHrefFor(e)}>${name}()</a>";
+//      } else {
+//        return "<a href=${createHrefFor(e)}>${name}</a>";
+//      }
+//    } else {
+//      String append = '';
+//
+//      if (appendParens && (e is Method || e is ModelFunction)) {
+//        append = '()';
+//      }
+//      return "<a href=${createHrefFor(e)}>${htmlEscape(e.name)}$append</a>";
+//    }
+//  }
+//
+//  String createHrefFor(ModelElement e) {
+//    if (!_package.isDocumented(e)) {
+//      return '';
+//    }
+//    Class c = e.getEnclosingElement();
+//    if (c != null) {
+//      return '${getFileNameFor(e.library.name)}#${c.name}.${escapeBrackets(e.name)}';
+//    } else {
+//      return '${getFileNameFor(e.library.name)}#${e.name}';
+//    }
+//  }
+//
+//  String printParams(List<Parameter> params) {
+//    StringBuffer buf = new StringBuffer();
+//
+//    for (Parameter p in params) {
+//      if (buf.length > 0) {
+//        buf.write(', ');
+//      }
+//      if (p.type != null && p.type.name != null) {
+//        String typeName = createLinkedTypeName(p.type);
+//        if (typeName.isNotEmpty) buf.write('${typeName} ');
+//      }
+//      buf.write(p.name);
+//    }
+//    return buf.toString();
+//  }
+//
+//  String createLinkedTypeName(ElementType type) {
+//    StringBuffer buf = new StringBuffer();
+//
+//    if (type.isParameterType) {
+//      buf.write(type.element.name);
+//    } else {
+//      buf.write(createLinkedName(type.element));
+//    }
+//
+//    if (type.isParameterizedType) {
+//      if (!type.typeArguments.isEmpty) {
+//        buf.write('&lt;');
+//        for (int i = 0; i < type.typeArguments.length; i++) {
+//          if (i > 0) {
+//            buf.write(', ');
+//          }
+//          ElementType t = type.typeArguments[i];
+//          buf.write(createLinkedTypeName(t));
+//        }
+//        buf.write('&gt;');
+//      }
+//    }
+//    return buf.toString();
+//  }
+//
+//  String createLinkedReturnTypeName(ElementType type) {
+//    if (type.returnElement == null) {
+//      if (type.returnTypeName != null) {
+//        return type.returnTypeName;
+//      } else {
+//        return '';
+//      }
+//    } else {
+//      return createLinkedTypeName(type.returnType);
+//    }
+//  }
+//}

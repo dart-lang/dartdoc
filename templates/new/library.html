@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ library.name }} library - Dart API</title>
 
-    <link rel="stylesheet" href="prettify.css">
+    <link rel="stylesheet" href="../prettify.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../styles.css">
 
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
@@ -42,73 +42,14 @@
         <h2>Classes</h2>
 
         <dl class="dl-horizontal">
+            {{#library.types}}
             <dt>
-                <a href="#">BidirectionalIterator</a>
+                <a href="{{library.name}}/{{name}}.html">{{name}}</a>
             </dt>
             <dd>
-                An Iterator that allows moving backwards as well as forwards.
+                {{docOneLiner}}
             </dd>
-            <dt>
-                <a href="#">Comparable</a>
-            </dt>
-            <dd>
-                Interface used by types that have an intrinsic ordering.
-            </dd>
-            <dt>
-                <a href="#">DateTime</a>
-            </dt>
-            <dd>
-                An instant in time, such as July 20, 1969, 8:18pm GMT.
-            </dd>
-
-            <dt>
-                <a href-"#">Deprecated</a>
-            </dt>
-            <dd>
-                The annotation <code>@Deprecated('expires when')</code> marks a feature as deprecated.
-            </dd>
-
-            <dt>
-                <a href-"#">Duration</a>
-            </dt>
-            <dd>
-                A span of time, such as 27 days, 4 hours, 12 minutes, and 3 seconds.
-            </dd>
-
-            <dt>
-                <a href="#">Expando</a>
-            </dt>
-            <dd>
-                An Expando allows adding new properties to objects.
-            </dd>
-
-            <dt>
-                <a href="#">Function</a>
-            </dt>
-            <dd>
-                The base class for all function types.
-            </dd>
-
-            <dt>
-                <a href="#">Invocation</a>
-            </dt>
-            <dd>
-                Representation of the invocation of a member on an object.
-            </dd>
-
-            <dt>
-                <a href="#">Iterable</a>
-            </dt>
-            <dd>
-                An object that uses an Iterator to serve objects one at a time.
-            </dd>
-
-            <dt>
-                <a href="#">Iterator</a>
-            </dt>
-            <dd>
-                An interface for getting items, one at a time, from an object.
-            </dd>
+            {{/library.types}}
         </dl>
 
     </section>
@@ -122,42 +63,17 @@
         <h2>Functions</h2>
 
         <dl class="withreturntypes">
+            {{#library.functions}}
             <dt>
                 <code>
-                    <a href="#">
-                        <span class="returntype">int</span>
-                        <span class="name">identityHashCode</span>(Object)
-                    </a>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ name }}</span>({{{ linkedParams }})
                 </code>
             </dt>
             <dd>
-                Returns the identity hash code of object.
+                {{ docOneLiner }}
             </dd>
-
-            <dt>
-                <code>
-                    <a href="#">
-                        <span class="returntype">bool</span>
-                        <span class="name">identical</span>(Object, Object)
-                    </a>
-                </code>
-            </dt>
-            <dd>
-                Check whether two references are to the same object.
-            </dd>
-
-            <dt>
-                <code>
-                    <a href="#">
-                        <span class="returntype">void</span>
-                        <span class="name">print</span>(Object)
-                    </a>
-                </code>
-            </dt>
-            <dd>
-                Prints a string representation of the object to the console.
-            </dd>
-
+            {{/library.functions}}
         </dl>
     </section>
 

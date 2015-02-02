@@ -13,7 +13,6 @@ import 'package:html5lib/dom.dart' as html;
 import 'package:markdown/markdown.dart';
 import 'package:path/path.dart' as path;
 
-import 'io_utils.dart';
 import 'model.dart';
 import '../generator.dart';
 
@@ -57,7 +56,7 @@ class NewHtmlGenerator extends Generator {
   }
 
   void generatePackage() {
-    var data = {};
+    Map data = {};
     // TODO should we add _this_ to the context and avoid putting stuff
     // in the map?
     data.addAll({
@@ -70,21 +69,21 @@ class NewHtmlGenerator extends Generator {
   }
 
   void generateLibrary(Package package, Library lib) {
-    var data = {};
+    Map data = {};
     // TODO should we add _this_ to the context and avoid putting stuff
     // in the map?
     data.addAll({
-        'package': package,
-        'library': lib,
-        'generatedOn': generatedOn,
-        'markdown': (String s) => renderMarkdown(s, data)
+      'package': package,
+      'library': lib,
+      'generatedOn': generatedOn,
+      'markdown': (String s) => renderMarkdown(s, data)
     });
 
-    _writeFile(lib.name+'.html', libraryTemplate, data);
+    _writeFile(path.join(lib.name,'index.html'), libraryTemplate, data);
   }
 
   void _copyResources() {
-    var script = new File(Platform.script.toFilePath());
+    File script = new File(Platform.script.toFilePath());
     ['styles.css', 'prettify.css', 'prettify.js'].forEach((f) {
       new File(path.join(script.parent.parent.path, 'templates', 'new', f))
         .copySync(path.join(out.path, f));
@@ -92,7 +91,8 @@ class NewHtmlGenerator extends Generator {
   }
 
   File _createOutputFile(String filename) {
-    File f = joinFile(new Directory(out.path), [filename]);
+    File f = new File(path.join(out.path, filename));
+    if (!f.existsSync()) f.createSync(recursive: true);
     _htmlFiles.add(filename);
     print('generating ${f.path}');
     return f;
