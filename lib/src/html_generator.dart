@@ -12,6 +12,7 @@ import 'package:mustache4dart/mustache4dart.dart';
 import 'css.dart';
 import 'html_printer.dart';
 import 'html_utils.dart';
+import 'model_utils.dart'; // temp. this class is getting deleted anyway
 import 'io_utils.dart';
 import 'model.dart';
 import '../generator.dart';
@@ -251,7 +252,7 @@ body {
   }
 
   void printComments(ModelElement e, [bool indent = true]) {
-    String comments = e.getDocumentation();
+    String comments = e.documentation;
     if (comments != null) {
       if (indent) {
         _html.startTag('div', attributes: "class=indent");
@@ -360,7 +361,7 @@ body {
   }
 
   String getDocOneLiner(ModelElement e) {
-    var doc = stripComments(e.getDocumentation());
+    var doc = stripComments(e.documentation);
     if (doc == null || doc == '') return null;
     var endOfFirstSentence = doc.indexOf('.');
     if (endOfFirstSentence >= 0) {

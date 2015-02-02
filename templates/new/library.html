@@ -29,44 +29,14 @@
 
 <div class="container">
 
-    <section class="desc">
+    <section class="desc markdown">
 
-        <p class="firstline">Built-in types, collections, and other core functionality for every Dart program.</p>
-
-        <p>This library is automatically imported.</p>
-
-        <p>Some classes in this library, such as <a href="#">String</a> and
-            <a href="#">num</a>, support Dart's built-in data types. Other classes,
-            such as <a href="#">List</a> and <a href="#">Map</a>, provide data
-            structures for managing collections
-            of objects. And still other classes represent commonly used types of
-            data such as URIs, dates and times, and errors.</p>
-
-        <h2>Numbers and booleans</h2>
-
-        <p><a href="#">int</a> and <a href="#">double</a> provide support for Dart's built-in numerical data types: integers and double-precision floating point numbers, respectively. An object of type bool is either true or false. Variables of these types can be constructed from literals:</p>
-
-    <pre class="prettyprint">
-int meaningOfLife = 42;
-double valueOfPi  = 3.141592;
-bool visible      = true;</pre>
-
-
-        <h2>Strings and regular expressions</h2>
-
-        <p>A <a href="#">String</a> is immutable and represents a sequence of characters.</p>
-
-        <pre class="prettyprint">String shakespeareQuote = "All the world's a stage, ...";</pre>
-
-        <p><a href="#">StringBuffer</a> provides a way to construct strings efficiently.</p>
-
-    <pre class="prettyprint">
-StringBuffer moreShakespeare = new StringBuffer();
-moreShakespeare.write('And all the men and women ');
-moreShakespeare.write('merely players; ...');</pre>
-
+        {{#markdown}}
+          {{{ library.documentation }}}
+        {{/markdown}}
 
     </section>
+
 
     <section class="summary" id="classes">
         <h2>Classes</h2>

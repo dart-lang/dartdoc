@@ -119,11 +119,12 @@ class NewHtmlGenerator extends Generator {
   }
 }
 
+// TODO: parse the custom dartdoc formatting brackets
 /// Converts a markdown formatted string into HTML,
 /// and removes any script tags. Returns the HTML as a string.
 String renderMarkdown(String markdown, Map data) {
-  String html = markdownToHtml(render(markdown, data));
+  String html = markdownToHtml(render(markdown.trim(), data));
   html.Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
-  return doc.outerHtml;
+  return doc.body.innerHtml;
 }

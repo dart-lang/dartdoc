@@ -16,6 +16,8 @@ abstract class ModelElement {
   final Library library;
   final String source;
 
+  String _documentation;
+
   ModelElement(this.element, this.library, [this.source]);
 
   factory ModelElement.from(Element e, Library library) {
@@ -48,23 +50,26 @@ abstract class ModelElement {
     }
   }
 
-  String getDocumentation() {
+  String get documentation {
+    if (_documentation != null) return _documentation;
+
     if (element == null) {
       return null;
     }
 
-    String comments = element.computeDocumentationComment();
+    _documentation = element.computeDocumentationComment();
 
-    if (comments != null) {
-      return comments;
-    }
-
-    if (canOverride()) {
+    if (_documentation == null && canOverride()) {
       if (getOverriddenElement() != null) {
-        return getOverriddenElement().getDocumentation();
+        _documentation = getOverriddenElement().documentation;
       }
     }
-    return null;
+
+    if (_documentation != null) {
+      _documentation = stripComments(_documentation);
+    }
+
+    return _documentation;
   }
 
   ModelElement getChild(String reference) {
@@ -195,7 +200,7 @@ abstract class ModelElement {
   }
 
   String get docOneLiner {
-    var doc = stripComments(getDocumentation());
+    var doc = stripComments(documentation);
     if (doc == null || doc == '') return null;
     var endOfFirstSentence = doc.indexOf('.');
     if (endOfFirstSentence >= 0) {
