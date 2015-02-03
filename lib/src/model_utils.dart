@@ -10,50 +10,6 @@ import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
-String stripComments(String str) {
-  if (str == null) return null;
-
-  StringBuffer buf = new StringBuffer();
-
-  if (str.startsWith('///')) {
-    for (String line in str.split('\n')) {
-      if (line.startsWith('/// ')) {
-        buf.write('${line.substring(4)}\n');
-      } else if (line.startsWith('///')) {
-        buf.write('${line.substring(3)}\n');
-      } else {
-        buf.write('${line}\n');
-      }
-    }
-  } else {
-    if (str.startsWith('/**')) {
-      str = str.substring(3);
-    }
-    if (str.endsWith('*/')) {
-      str = str.substring(0, str.length - 2);
-    }
-    str = str.trim();
-    for (String line in str.split('\n')) {
-      line = ltrim(line);
-      if (line.startsWith('* ')) {
-        buf.write('${line.substring(2)}\n');
-      } else if (line.startsWith('*')) {
-        buf.write('${line.substring(1)}\n');
-      } else {
-        buf.write('$line\n');
-      }
-    }
-  }
-  return buf.toString().trim();
-}
-
-String ltrim(String str) {
-  while (str.length > 0 && (str[0] == ' ' || str[0] == '\t')) {
-    str = str.substring(1);
-  }
-  return str;
-}
-
 Object getConstantValue(PropertyInducingElement element) {
   if (element is ConstFieldElementImpl) {
     ConstFieldElementImpl e = element;

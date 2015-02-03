@@ -25,9 +25,6 @@ abstract class CodeResolver {
   String resolveCodeReference(String reference);
 }
 
-//silencing the analyzer for now
-String stripComments(String c) => throw "unsupported";
-
 String prettifyDocs(CodeResolver resolver, String docs) {
   if (docs == null) {
     return '';
@@ -74,8 +71,49 @@ String prettifyDocs(CodeResolver resolver, String docs) {
   return buf.toString().replaceAll('\n\n</pre>', '\n</pre>').trim();
 }
 
-// silencing the analyzer for now
-String ltrim(String s) => throw "not implemented";
+String stripComments(String str) {
+  if (str == null) return null;
+
+  StringBuffer buf = new StringBuffer();
+
+  if (str.startsWith('///')) {
+    for (String line in str.split('\n')) {
+      if (line.startsWith('/// ')) {
+        buf.write('${line.substring(4)}\n');
+      } else if (line.startsWith('///')) {
+        buf.write('${line.substring(3)}\n');
+      } else {
+        buf.write('${line}\n');
+      }
+    }
+  } else {
+    if (str.startsWith('/**')) {
+      str = str.substring(3);
+    }
+    if (str.endsWith('*/')) {
+      str = str.substring(0, str.length - 2);
+    }
+    str = str.trim();
+    for (String line in str.split('\n')) {
+      line = ltrim(line);
+      if (line.startsWith('* ')) {
+        buf.write('${line.substring(2)}\n');
+      } else if (line.startsWith('*')) {
+        buf.write('${line.substring(1)}\n');
+      } else {
+        buf.write('$line\n');
+      }
+    }
+  }
+  return buf.toString().trim();
+}
+
+String ltrim(String str) {
+  while (str.length > 0 && (str[0] == ' ' || str[0] == '\t')) {
+    str = str.substring(1);
+  }
+  return str;
+}
 
 String _processMarkdown(CodeResolver resolver, String line) {
   line = ltrim(line);
