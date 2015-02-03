@@ -35,7 +35,7 @@ body {
 
   HtmlPrinter _html = new HtmlPrinter();
   final CSS _css = new CSS();
-  HtmlGeneratorHelper _helper;
+  //HtmlGeneratorHelper _helper;
   final List<String> _htmlFiles = [];
   final String _url;
 

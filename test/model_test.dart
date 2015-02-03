@@ -52,8 +52,9 @@ void main() {
   AnalyzerHelper helper = new AnalyzerHelper();
   Source source = helper.addSource(SOURCE1);
   LibraryElement e = helper.resolve(source);
-  var l = new Library(e);
-  var lib2 = new Library(e, SOURCE1);
+  Package package = new Package([], null);
+  var l = new Library(e, package);
+  var lib2 = new Library(e, package, SOURCE1);
 
   group('Package', () {
     var p = new Package([e], Directory.current.path);
@@ -90,8 +91,10 @@ void main() {
       expect(l.name, 'ex');
     });
 
+    Package package = new Package([], null);
     Library sdkLib =
-        new Library(getSdkLibrariesToDocument(helper.sdk, helper.context)[0]);
+        new Library(getSdkLibrariesToDocument(helper.sdk, helper.context)[0],
+        package);
 
     test('sdk library name', () {
       expect(sdkLib.name, 'dart:async');
@@ -113,7 +116,7 @@ void main() {
     });
 
     test('docs', () {
-      expect(A.getDocumentation(), '/// Sample class');
+      expect(A.documentation, '/// Sample class');
     });
 
     test('abstract', () {
@@ -257,14 +260,14 @@ void main() {
 
   group('Parameter', () {
     test('has correct type name', () {
-      var t = new Parameter(null, null);
+      var t = new Parameter(null, null, null);
       expect(t.typeName, equals('Parameters'));
     });
   });
 
   group('TypeParameter', () {
     test('has correct type name', () {
-      var t = new TypeParameter(null, null);
+      var t = new TypeParameter(null, null, null);
       expect(t.typeName, equals('Type Parameters'));
     });
   });
@@ -284,13 +287,13 @@ void main() {
 
   group('Typedef', () {
     test('has correct type name', () {
-      var t = new Typedef(null, null);
+      Typedef t = new Typedef(null, null, null);
       expect(t.typeName, equals('Typedefs'));
     });
 
     test('docs', () {
-      var t = new Typedef(null, null);
-      expect(t.getDocumentation(), null);
+      Typedef t = new Typedef(null, null, null);
+      expect(t.documentation, null);
     });
   });
 }

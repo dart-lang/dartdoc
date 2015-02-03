@@ -9,8 +9,8 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:html5lib/parser.dart' show parse;
-import 'package:html5lib/dom.dart' as html;
-import 'package:markdown/markdown.dart';
+import 'package:html5lib/dom.dart' show Document;
+import 'package:markdown/markdown.dart' hide Document;
 import 'package:path/path.dart' as path;
 
 import 'model.dart';
@@ -124,7 +124,7 @@ class NewHtmlGenerator extends Generator {
 /// and removes any script tags. Returns the HTML as a string.
 String renderMarkdown(String markdown, Map data) {
   String html = markdownToHtml(render(markdown.trim(), data));
-  html.Document doc = parse(html);
+  Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
   return doc.body.innerHtml;
 }

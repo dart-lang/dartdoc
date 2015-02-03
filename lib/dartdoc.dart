@@ -16,7 +16,7 @@ import 'package:analyzer/src/generated/source_io.dart';
 import 'package:path/path.dart' as path;
 
 import 'generator.dart';
-import 'src/html_generator.dart';
+//import 'src/html_generator.dart';
 import 'src/new_html_generator.dart';
 import 'src/io_utils.dart';
 import 'src/model.dart';

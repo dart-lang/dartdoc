@@ -23,6 +23,8 @@ abstract class ModelElement {
   final Package package;
   final String source;
 
+  // add getter for ElementType
+
   String _documentation;
 
   ModelElement(this.element, this.library, this.package, [this.source]) {
