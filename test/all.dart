@@ -4,7 +4,6 @@
 
 library dartdoc.all_tests;
 
-import 'css_test.dart' as css_tests;
 import 'dartdoc_test.dart' as dartdoc_tests;
 import 'io_utils_test.dart' as io_utils_tests;
 import 'model_test.dart' as model_tests;
@@ -12,7 +11,6 @@ import 'package_utils_test.dart' as package_util_tests;
 import 'template_test.dart' as template_tests;
 
 void main() {
-  css_tests.main();
   dartdoc_tests.main();
   io_utils_tests.main();
   model_tests.main();

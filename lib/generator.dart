@@ -18,6 +18,6 @@ abstract class Generator {
   Generator();
 
   /// Generate the documentation for the given package in the
-  /// speicifed directory.
+  /// specified directory.
   void generate(Package package, Directory out);
 }
