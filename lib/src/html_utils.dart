@@ -25,6 +25,9 @@ abstract class CodeResolver {
   String resolveCodeReference(String reference);
 }
 
+//silencing the analyzer for now
+String stripComments(String c) => throw "unsupported";
+
 String prettifyDocs(CodeResolver resolver, String docs) {
   if (docs == null) {
     return '';
@@ -70,6 +73,9 @@ String prettifyDocs(CodeResolver resolver, String docs) {
   }
   return buf.toString().replaceAll('\n\n</pre>', '\n</pre>').trim();
 }
+
+// silencing the analyzer for now
+String ltrim(String s) => throw "not implemented";
 
 String _processMarkdown(CodeResolver resolver, String line) {
   line = ltrim(line);
