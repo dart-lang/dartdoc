@@ -10,7 +10,9 @@ dependencies:
   intl: any
   logging: any
   mustache4dart:
-    git: 'https://github.com/sethladd/mustache4dart.git'
+    git:
+      url: https://github.com/sethladd/mustache4dart.git
+      ref: lambda-with-context
   path: any
   yaml: any
   markdown: any

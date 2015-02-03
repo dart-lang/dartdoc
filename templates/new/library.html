@@ -41,7 +41,7 @@
                 <a href="{{library.name}}/{{name}}.html">{{name}}</a>
             </dt>
             <dd>
-                {{docOneLiner}}
+                {{#markdown}}{{docOneLiner}}{{/markdown}}
             </dd>
             {{/library.types}}
         </dl>
@@ -65,7 +65,7 @@
                 </code>
             </dt>
             <dd>
-                {{ docOneLiner }}
+                {{#markdown}}{{ docOneLiner }}{{/markdown}}
             </dd>
             {{/library.functions}}
         </dl>

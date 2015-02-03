@@ -59,28 +59,26 @@ class NewHtmlGenerator extends Generator {
   }
 
   void generatePackage() {
-    Map data = {};
     // TODO should we add _this_ to the context and avoid putting stuff
     // in the map?
-    data.addAll({
+    Map data = {
       'package': package,
       'generatedOn': generatedOn,
-      'markdown': (String s) => renderMarkdown(s, data)
-    });
+      'markdown': renderMarkdown
+    };
 
     _writeFile('index.html', indexTemplate, data);
   }
 
   void generateLibrary(Package package, Library lib) {
-    Map data = {};
     // TODO should we add _this_ to the context and avoid putting stuff
     // in the map?
-    data.addAll({
+    Map data = {
       'package': package,
       'library': lib,
       'generatedOn': generatedOn,
-      'markdown': (String s) => renderMarkdown(s, data)
-    });
+      'markdown': renderMarkdown
+    };
 
     _writeFile(path.join(lib.name,'index.html'), libraryTemplate, data);
   }
@@ -125,8 +123,9 @@ class NewHtmlGenerator extends Generator {
 // TODO: parse the custom dartdoc formatting brackets
 /// Converts a markdown formatted string into HTML,
 /// and removes any script tags. Returns the HTML as a string.
-String renderMarkdown(String markdown, Map data) {
-  String html = markdownToHtml(render(markdown.trim(), data));
+String renderMarkdown(String markdown, context) {
+  String mustached = render(markdown.trim(), context);
+  String html = markdownToHtml(mustached);
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
   return doc.body.innerHtml;
