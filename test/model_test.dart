@@ -116,7 +116,7 @@ void main() {
     });
 
     test('docs', () {
-      expect(A.documentation, '/// Sample class');
+      expect(A.documentation, 'Sample class');
     });
 
     test('abstract', () {
