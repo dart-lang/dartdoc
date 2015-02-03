@@ -20,6 +20,7 @@ class NewHtmlGenerator extends Generator {
   static const String indexTemplatePath = 'templates/new/index.html';
   static const String libraryTemplatePath = 'templates/new/library.html';
   static const String footerTemplatePath = 'templates/new/_footer.html';
+  static const String headTemplatePath = 'templates/new/_head.html';
 
   final String _url;
   final List<String> _htmlFiles = [];
@@ -35,9 +36,11 @@ class NewHtmlGenerator extends Generator {
   static final String indexTemplate = _loadTemplate(indexTemplatePath);
   static final String libraryTemplate = _loadTemplate(libraryTemplatePath);
   static final String footerTemplate = _loadTemplate(footerTemplatePath);
+  static final String headTemplate = _loadTemplate(headTemplatePath);
 
   static final Map partials = {
-    'footer': footerTemplate
+    'footer': footerTemplate,
+    'head': headTemplate
   };
 
   NewHtmlGenerator(this._url) :
