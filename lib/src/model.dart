@@ -27,12 +27,9 @@ abstract class ModelElement {
 
   String _documentation;
 
-  ModelElement(this.element, this.library, this.package, [this.source]) {
-    if (package == null) throw "Package cannot be null";
-  }
+  ModelElement(this.element, this.library, this.package, [this.source]);
 
   factory ModelElement.from(Element e, Library library, Package package) {
-    if (package == null) throw "Package cannot be null";
     if (e is ClassElement) {
       return new Class(e, library, package);
     }
