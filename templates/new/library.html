@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ library.name }} library - Dart API</title>
+
+    <link rel="stylesheet" href="../prettify.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../styles.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+    <meta name="description" content="dart:core library API docs, for the Dart programming language.">
+
+</head>
+
+<body>
+
+<header class="container-fluid" id="title">
+    <div class="container">
+        <h1 class="title">
+            <span class="name">{{ library.name }}</span> <span class="type">library</span>
+        </h1>
+    </div>
+</header>
+
+<div class="container">
+
+    <section class="desc markdown">
+
+
+        {{#markdown}}
+        {{#dartdoclinks}}
+          {{{ library.documentation }}}
+
+        {{/dartdoclinks}}
+        {{/markdown}}
+
+    </section>
+
+
+    <section class="summary" id="classes">
+        <h2>Classes</h2>
+
+        <dl class="dl-horizontal">
+            {{#library.types}}
+            <dt>
+                <a href="{{library.name}}/{{name}}.html">{{name}}</a>
+            </dt>
+            <dd>
+                {{docOneLiner}}
+            </dd>
+            {{/library.types}}
+        </dl>
+
+    </section>
+
+    <section class="summary" id="properties">
+        <h2>Properties</h2>
+
+    </section>
+
+    <section class="summary" id="functions">
+        <h2>Functions</h2>
+
+        <dl class="withreturntypes">
+            {{#library.functions}}
+            <dt>
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ name }}</span>({{{ linkedParams }})
+                </code>
+            </dt>
+            <dd>
+                {{ docOneLiner }}
+            </dd>
+            {{/library.functions}}
+        </dl>
+    </section>
+
+    <section class="summary" id="typedefs">
+        <h2>Typedefs</h2>
+
+    </section>
+
+    <section class="summary" id="exceptions">
+        <h2>Exceptions</h2>
+
+    </section>
+
+</div>
+
+{{>footer}}

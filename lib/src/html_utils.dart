@@ -71,13 +71,6 @@ String prettifyDocs(CodeResolver resolver, String docs) {
   return buf.toString().replaceAll('\n\n</pre>', '\n</pre>').trim();
 }
 
-String ltrim(String str) {
-  while (str.length > 0 && (str[0] == ' ' || str[0] == '\t')) {
-    str = str.substring(1);
-  }
-  return str;
-}
-
 String stripComments(String str) {
   if (str == null) return null;
 
@@ -113,6 +106,13 @@ String stripComments(String str) {
     }
   }
   return buf.toString().trim();
+}
+
+String ltrim(String str) {
+  while (str.length > 0 && (str[0] == ' ' || str[0] == '\t')) {
+    str = str.substring(1);
+  }
+  return str;
 }
 
 String _processMarkdown(CodeResolver resolver, String line) {

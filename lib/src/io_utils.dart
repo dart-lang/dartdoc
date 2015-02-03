@@ -23,11 +23,6 @@ List<String> _listDir(String dir,
   return _doList(dir, new Set<String>(), recursive, listDir);
 }
 
-File joinFile(Directory dir, List<String> files) {
-  String pathFragment = files.join(Platform.pathSeparator);
-  return new File("${dir.path}${Platform.pathSeparator}${pathFragment}");
-}
-
 List<String> _doList(String dir, Set<String> listedDirectories, bool recurse,
     List<FileSystemEntity> listDir(Directory dir)) {
   var contents = <String>[];

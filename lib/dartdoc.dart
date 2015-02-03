@@ -13,8 +13,10 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
+import 'package:path/path.dart' as path;
+
 import 'generator.dart';
-import 'src/html_generator.dart';
+//import 'src/html_generator.dart';
 import 'src/new_html_generator.dart';
 import 'src/io_utils.dart';
 import 'src/model.dart';
@@ -30,7 +32,7 @@ const String VERSION = '0.0.1';
 /// Initialize and setup the generators
 List<Generator> initGenerators(String url) {
   return [
-    new HtmlGenerator(url),
+    //new HtmlGenerator(url),
     new NewHtmlGenerator(url)
   ];
 }
@@ -113,7 +115,7 @@ class DartDoc {
   }
 
   String _getSdkVersion() {
-    var versionFile = joinFile(_sdkDir, ['version']);
+    File versionFile = new File(path.join(_sdkDir.path, 'version'));
     return versionFile.readAsStringSync();
   }
 }
