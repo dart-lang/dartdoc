@@ -491,7 +491,7 @@ class Class extends ModelElement {
     return c.map((e) {
       var cSource =
           (source != null) ? source.substring(e.node.offset, e.node.end) : null;
-      return new Constructor(e, library, cSource);
+      return new Constructor(e, library, package, cSource);
     }).toList();
   }
 
@@ -502,7 +502,7 @@ class Class extends ModelElement {
     return m.map((e) {
       var mSource =
           source != null ? source.substring(e.node.offset, e.node.end) : null;
-      return new Method(e, library, mSource);
+      return new Method(e, library, package, mSource);
     }).toList();
   }
 
