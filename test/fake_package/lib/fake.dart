@@ -20,3 +20,14 @@ typedef T GenericTypedef<T>(T input);
 class Cool {
 
 }
+
+/// My bad!
+class Oops implements Exception {
+  final String message;
+  Oops(this.message);
+}
+
+/// Also, my bad.
+class Doh extends Error {
+
+}

@@ -421,6 +421,7 @@ class Library extends ModelElement {
     }
     elements
       ..removeWhere(isPrivate)
+      // TODO not sure we want to sort these. Source order might be best.
       ..sort(elementCompare);
     return elements.map((e) {
       String eSource =
@@ -429,6 +430,7 @@ class Library extends ModelElement {
     }).toList();
   }
 
+  // TODO: rename this to getClasses
   List<Class> getTypes() {
     List<ClassElement> types = [];
     types.addAll(_library.definingCompilationUnit.types);
@@ -439,6 +441,18 @@ class Library extends ModelElement {
       ..removeWhere(isPrivate)
       ..sort(elementCompare);
     return types.map((e) => new Class(e, this, package, source)).toList();
+  }
+
+  List<Class> getExceptions() {
+    LibraryElement coreLib = _library.importedLibraries
+        .firstWhere((i) => i.name == 'dart.core');
+    ClassElement exception = coreLib.getType('Exception');
+    ClassElement error = coreLib.getType('Error');
+    bool isExceptionOrError(Class t) {
+      return t._cls.type.isSubtypeOf(exception.type) ||
+             t._cls.type.isSubtypeOf(error.type);
+    }
+    return getTypes().where(isExceptionOrError).toList();
   }
 }
 
@@ -569,6 +583,7 @@ class Typedef extends ModelElement {
         if (i > 0) {
           buf.write(', ');
         }
+        // TODO link this name
         buf.write(_typedef.typeParameters[i].name);
       }
       buf.write('>');

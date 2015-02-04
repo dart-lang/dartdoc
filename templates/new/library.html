@@ -92,6 +92,16 @@
     <section class="summary" id="exceptions">
         <h2>Exceptions</h2>
 
+        <dl class="dl-horizontal">
+            {{#library.exceptions}}
+            <dt>
+                <a href="{{library.name}}/{{name}}.html">{{name}}</a>
+            </dt>
+            <dd>
+                {{#markdown}}{{docOneLiner}}{{/markdown}}
+            </dd>
+            {{/library.exceptions}}
+        </dl>
     </section>
 
 </div>
