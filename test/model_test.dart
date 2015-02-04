@@ -41,6 +41,7 @@ class A {
 
   get m => 0;
 }
+/// Extends class [A]
 class B extends A {
   @override 
   void m1() { var a = 6; var b = a * 9;};

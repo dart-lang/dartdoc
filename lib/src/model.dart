@@ -5,6 +5,7 @@
 /// The models used to represent Dart code
 library dartdoc.models;
 
+import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
 
 import 'html_utils.dart';
@@ -60,6 +61,9 @@ abstract class ModelElement {
   }
 
   String get documentation {
+    var commentRefs;
+    var refLibrary;
+    
     if (_documentation != null) return _documentation;
 
     if (element == null) {
@@ -70,17 +74,58 @@ abstract class ModelElement {
 
     if (_documentation == null && canOverride()) {
       if (getOverriddenElement() != null) {
-        _documentation = getOverriddenElement().documentation;
+        var melement = getOverriddenElement();
+        _documentation = melement.documentation;
+        if (melement.element.node is AnnotatedNode) {
+        commentRefs = (melement.element.node as AnnotatedNode).documentationComment.references;    
+        refLibrary = melement.library;
+        }
       }
+    } else {
+      commentRefs = (element.node as AnnotatedNode).documentationComment.references;
+      refLibrary = this.library;
     }
 
     if (_documentation != null) {
-      _documentation = stripComments(_documentation);
+      _documentation = _processRefs(stripComments(_documentation), commentRefs, refLibrary);
     }
-
     return _documentation;
   }
 
+  String _processRefs(String docs, NodeList<CommentReference> commentRefs, Library refLibrary) {
+    var matchChars = ['[', ']'];
+      int lastWritten = 0;
+        int index = docs.indexOf(matchChars[0]);
+        StringBuffer buf = new StringBuffer();
+
+        while (index != -1) {
+          int end = docs.indexOf(matchChars[1], index + 1);
+          if (end != -1) {
+            if (index - lastWritten > 0) {
+              buf.write(docs.substring(lastWritten, index));
+            }
+            String codeRef = docs.substring(index + matchChars[0].length, end);
+            buf.write('[$codeRef]');
+            var refElement = commentRefs.firstWhere((ref) => ref.identifier.name == codeRef).identifier.staticElement;
+            var e = new ModelElement.from(refElement, refLibrary, package);
+            var refString = e.createLinkedName(e);
+            if (refString.length > 0) {
+            buf.write('($refString)');
+            }
+            lastWritten = end + matchChars[1].length;
+          } else {
+            break;
+          }
+          index = docs.indexOf(matchChars[0], end + 1);
+        }
+        if (lastWritten < docs.length) {
+          buf.write(docs.substring(lastWritten, docs.length));
+        }
+        print(buf.toString());
+    
+    return buf.toString();
+  }
+  
   String toString() => '$runtimeType $name';
 
   ModelElement getChild(String reference) {
@@ -206,6 +251,38 @@ abstract class ModelElement {
       return buf.toString();
     }
     return null;
+  }
+  
+  String getLink([bool appendParens = false]) {
+    if (!package.isDocumented(this) || name.startsWith('_')) {
+         return name;
+       }
+       
+       Class c = getEnclosingElement();
+       if (c != null && c.name.startsWith('_')) {
+         return '${c.name}.${name}';
+       }
+       if (c != null && this is Constructor) {
+         String n;
+         if (name.isEmpty) {
+           n = c.name;
+         } else {
+           n = '${c.name}.${name}';
+         }
+         if (appendParens) {
+           return '<a href="${createHrefFor(e)}">${name}()</a>';
+         } else {
+           return '<a href="${createHrefFor(e)}">${name}</a>';
+         }
+       } else {
+         String append = '';
+
+         if (appendParens && (e is Method || e is ModelFunction)) {
+           append = '()';
+         }
+         return '<a href="${createHrefFor(e)}">${htmlEscape(e.name)}$append</a>';
+       }
+    
   }
 
   String createLinkedName(ModelElement e, [bool appendParens = false]) {
@@ -344,13 +421,25 @@ class Package {
   Package(Iterable<LibraryElement> libraryElements, this._rootDirPath,
       [this._sdkVersion, this._isSdk = false]) {
     libraryElements.forEach((element) {
-      print('adding lib $element to package $name');
+   //   print('adding lib $element to package $name');
       _libraries.add(new Library(element, this));
     });
   }
 
   String toString() => 'Package $name, isSdk: $_isSdk';
 
+  ModelElement getChild(String reference) {
+    _libraries.forEach((library) {
+      if (!library.isInSdk) {
+        var element = library.getChild(reference);
+        if (element != null) {
+          return element;
+        }
+      }
+    });
+    return null;
+   }
+  
   bool isDocumented(ModelElement e) {
     // TODO: review this logic. I'm compensating for what's probably a bug
     // see also ElementType and how an elementType is linked to a library
@@ -372,6 +461,8 @@ class Library extends ModelElement {
     var source = _library.definingCompilationUnit.source;
     return source.isInSystemLibrary ? source.encoding : super.name;
   }
+  
+  bool get isInSdk => _library.isInSdk;
 
   List<Library> get exported =>
       _library.exportedLibraries.map((lib) => new Library(lib, package)).toList();
