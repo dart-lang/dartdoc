@@ -12,6 +12,7 @@ final Directory DOC_DIR = new Directory(DEFAULT_OUTPUT_DIRECTORY);
 void main([List<String> args]) {
   task('init', defaultInit);
   task('test', testDartdoc, ['init']);
+  task('analyze', analyze);
   startGrinder(args);
 }
 
@@ -32,4 +33,10 @@ void testDartdoc(GrinderContext context) {
   } catch (e) {
     rethrow;
   }
+}
+
+void analyze(GrinderContext context) {
+  Analyzer.analyzePaths(context,
+      ['bin/dartdoc.dart', 'lib/dartdoc.dart', 'test/all.dart'],
+      fatalWarnings: true);
 }
