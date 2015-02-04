@@ -20,6 +20,7 @@ class NewHtmlGenerator extends Generator {
   static const String indexTemplatePath = 'templates/new/index.html';
   static const String libraryTemplatePath = 'templates/new/library.html';
   static const String footerTemplatePath = 'templates/new/_footer.html';
+  static const String headTemplatePath = 'templates/new/_head.html';
 
   final String _url;
   final List<String> _htmlFiles = [];
@@ -35,9 +36,11 @@ class NewHtmlGenerator extends Generator {
   static final String indexTemplate = _loadTemplate(indexTemplatePath);
   static final String libraryTemplate = _loadTemplate(libraryTemplatePath);
   static final String footerTemplate = _loadTemplate(footerTemplatePath);
+  static final String headTemplate = _loadTemplate(headTemplatePath);
 
   static final Map partials = {
-    'footer': footerTemplate
+    'footer': footerTemplate,
+    'head': headTemplate
   };
 
   NewHtmlGenerator(this._url) :
@@ -56,28 +59,26 @@ class NewHtmlGenerator extends Generator {
   }
 
   void generatePackage() {
-    Map data = {};
     // TODO should we add _this_ to the context and avoid putting stuff
     // in the map?
-    data.addAll({
+    Map data = {
       'package': package,
       'generatedOn': generatedOn,
-      'markdown': (String s) => renderMarkdown(s, data)
-    });
+      'markdown': renderMarkdown
+    };
 
     _writeFile('index.html', indexTemplate, data);
   }
 
   void generateLibrary(Package package, Library lib) {
-    Map data = {};
     // TODO should we add _this_ to the context and avoid putting stuff
     // in the map?
-    data.addAll({
+    Map data = {
       'package': package,
       'library': lib,
       'generatedOn': generatedOn,
-      'markdown': (String s) => renderMarkdown(s, data)
-    });
+      'markdown': renderMarkdown
+    };
 
     _writeFile(path.join(lib.name,'index.html'), libraryTemplate, data);
   }
@@ -122,8 +123,9 @@ class NewHtmlGenerator extends Generator {
 // TODO: parse the custom dartdoc formatting brackets
 /// Converts a markdown formatted string into HTML,
 /// and removes any script tags. Returns the HTML as a string.
-String renderMarkdown(String markdown, Map data) {
-  String html = markdownToHtml(render(markdown.trim(), data));
+String renderMarkdown(String markdown, context) {
+  String mustached = render(markdown.trim(), context);
+  String html = markdownToHtml(mustached);
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
   return doc.body.innerHtml;

@@ -501,7 +501,7 @@ class Library extends ModelElement {
     elements
       ..removeWhere(isPrivate)
       ..sort(elementCompare);
-    return elements.map((e) => new Typedef(e, this, null)).toList();
+    return elements.map((e) => new Typedef(e, this, package)).toList();
   }
 
   List<ModelFunction> getFunctions() {
@@ -512,6 +512,7 @@ class Library extends ModelElement {
     }
     elements
       ..removeWhere(isPrivate)
+      // TODO not sure we want to sort these. Source order might be best.
       ..sort(elementCompare);
     return elements.map((e) {
       String eSource =
@@ -520,6 +521,7 @@ class Library extends ModelElement {
     }).toList();
   }
 
+  // TODO: rename this to getClasses
   List<Class> getTypes() {
     List<ClassElement> types = [];
     types.addAll(_library.definingCompilationUnit.types);
@@ -530,6 +532,18 @@ class Library extends ModelElement {
       ..removeWhere(isPrivate)
       ..sort(elementCompare);
     return types.map((e) => new Class(e, this, package, source)).toList();
+  }
+
+  List<Class> getExceptions() {
+    LibraryElement coreLib = _library.importedLibraries
+        .firstWhere((i) => i.name == 'dart.core');
+    ClassElement exception = coreLib.getType('Exception');
+    ClassElement error = coreLib.getType('Error');
+    bool isExceptionOrError(Class t) {
+      return t._cls.type.isSubtypeOf(exception.type) ||
+             t._cls.type.isSubtypeOf(error.type);
+    }
+    return getTypes().where(isExceptionOrError).toList();
   }
 }
 
@@ -651,45 +665,29 @@ class Typedef extends ModelElement {
 
   String get typeName => 'Typedefs';
 
-  String createLinkedSummary() {
-    // Comparator<T>(T a, T b): int
+  String get linkedName {
     StringBuffer buf = new StringBuffer();
-    buf.write(createLinkedName(this));
+    buf.write(_typedef.name);
     if (!_typedef.typeParameters.isEmpty) {
-      buf.write('&lt;');
+      buf.write('<');
       for (int i = 0; i < _typedef.typeParameters.length; i++) {
         if (i > 0) {
           buf.write(', ');
         }
+        // TODO link this name
         buf.write(_typedef.typeParameters[i].name);
       }
-      buf.write('&gt;');
+      buf.write('>');
     }
-    buf.write(
-        '(${printParams(_typedef.parameters.map((f) => new Parameter(f, library, package)).toList())}): ');
-    buf.write(createLinkedReturnTypeName(new ElementType(_typedef.type, library, package)));
     return buf.toString();
   }
 
-  String createLinkedDescription() {
-    // typedef int Comparator<T>(T a, T b)
+  String get linkedReturnType {
+    return createLinkedReturnTypeName(new ElementType(_typedef.type, library, package));
+  }
 
-    StringBuffer buf = new StringBuffer();
-    buf.write(
-        'typedef ${createLinkedReturnTypeName(new ElementType(_typedef.type, library, package))} ${_typedef.name}');
-    if (!_typedef.typeParameters.isEmpty) {
-      buf.write('&lt;');
-      for (int i = 0; i < _typedef.typeParameters.length; i++) {
-        if (i > 0) {
-          buf.write(', ');
-        }
-        buf.write(_typedef.typeParameters[i].name);
-      }
-      buf.write('&gt;');
-    }
-    buf.write(
-        '(${printParams(_typedef.parameters.map((f) => new Parameter(f, library, package)).toList())}): ');
-    return buf.toString();
+  String get linkedParams {
+    return printParams(_typedef.parameters.map((f) => new Parameter(f, library, package)).toList());
   }
 }
 

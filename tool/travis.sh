@@ -28,11 +28,8 @@ export PATH="$PATH":"~/.pub-cache/bin"
 pub get
 
 # Verify that the libraries are error free.
-dartanalyzer --fatal-warnings \
-  bin/dartdoc.dart \
-  lib/dartdoc.dart \
-  test/all.dart
-  
+grind analyze
+
 # Run dartdoc.
 pub global run grinder test
 

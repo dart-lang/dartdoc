@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+{{>head}}
     <title>{{ library.name }} library - Dart API</title>
 
     <link rel="stylesheet" href="../prettify.css">
@@ -13,8 +8,7 @@
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 
-    <meta name="description" content="dart:core library API docs, for the Dart programming language.">
-
+    <meta name="description" content="{{ library.name }} library API docs, for the Dart programming language.">
 </head>
 
 <body>
@@ -31,12 +25,8 @@
 
     <section class="desc markdown">
 
-
         {{#markdown}}
-        {{#dartdoclinks}}
           {{{ library.documentation }}}
-
-        {{/dartdoclinks}}
         {{/markdown}}
 
     </section>
@@ -51,7 +41,7 @@
                 <a href="{{library.name}}/{{name}}.html">{{name}}</a>
             </dt>
             <dd>
-                {{docOneLiner}}
+                {{#markdown}}{{docOneLiner}}{{/markdown}}
             </dd>
             {{/library.types}}
         </dl>
@@ -75,7 +65,7 @@
                 </code>
             </dt>
             <dd>
-                {{ docOneLiner }}
+                {{#markdown}}{{ docOneLiner }}{{/markdown}}
             </dd>
             {{/library.functions}}
         </dl>
@@ -84,11 +74,34 @@
     <section class="summary" id="typedefs">
         <h2>Typedefs</h2>
 
+        <dl class="withreturntypes">
+            {{#library.typedefs}}
+            <dt>
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ linkedName }}</span>({{{ linkedParams }})
+                </code>
+            </dt>
+            <dd>
+                {{#markdown}}{{ docOneLiner }}{{/markdown}}
+            </dd>
+            {{/library.typedefs}}
+        </dl>
     </section>
 
     <section class="summary" id="exceptions">
         <h2>Exceptions</h2>
 
+        <dl class="dl-horizontal">
+            {{#library.exceptions}}
+            <dt>
+                <a href="{{library.name}}/{{name}}.html">{{name}}</a>
+            </dt>
+            <dd>
+                {{#markdown}}{{docOneLiner}}{{/markdown}}
+            </dd>
+            {{/library.exceptions}}
+        </dl>
     </section>
 
 </div>
