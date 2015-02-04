@@ -7,12 +7,12 @@ library dartdoc.model_test;
 import 'dart:io';
 
 import 'package:grinder/grinder.dart' as grinder;
+import 'package:path/path.dart' as path;
 import 'package:unittest/unittest.dart';
 
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
-import 'package:analyzer/src/generated/java_engine_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
@@ -23,39 +23,45 @@ import 'package:dartdoc/src/model_utils.dart';
 const SOURCE1 = r'''
 library ex;
 
-static int function1(String s, bool b) => 5;
+int function1(String s, bool b) => 5;
 
-static int number;
+int number;
+
 get y => 2;
 
 /// Sample class
 class A {
-  const int n = 5;
-  static  String s = 'hello';
+  static const int n = 5;
+  static String _s = 'hello';
   String s2;
+  int m = 0; 
   
   ///Constructor
-  A(this.m);
+  A();
 
-  void m1(){};
-
-  get m => 0;
+  String get s => _s;
+  
+  void m1(){}
+  
 }
 /// Extends class [A]
 class B extends A {
   @override 
-  void m1() { var a = 6; var b = a * 9;};
+  void m1() { var a = 6; var b = a * 9;}
 }
+
 abstract class C {}
 ''';
 
 void main() {
   AnalyzerHelper helper = new AnalyzerHelper();
-  Source source = helper.addSource(SOURCE1);
+  String dirPath = path.join(Directory.current.path, 'test/fake_package');
+  Source source = helper.addSource(path.join(dirPath, 'lib/example.dart'));
   LibraryElement e = helper.resolve(source);
-  Package package = new Package([], null);
+  Package package = new Package([e], dirPath);
   var l = new Library(e, package);
-  var lib2 = new Library(e, package, SOURCE1);
+  var file = new File(path.join(dirPath, 'lib/example.dart'));
+  var lib2 = new Library(e, package, file.readAsStringSync());
 
   group('Package', () {
     var p = new Package([e], Directory.current.path);
@@ -92,7 +98,6 @@ void main() {
       expect(l.name, 'ex');
     });
 
-    Package package = new Package([], null);
     Library sdkLib =
         new Library(getSdkLibrariesToDocument(helper.sdk, helper.context)[0],
         package);
@@ -119,6 +124,10 @@ void main() {
     test('docs', () {
       expect(A.documentation, 'Sample class');
     });
+    
+    test('docs refs', () {
+      expect(B.documentation, 'Extends class [A](ex.html#A)');
+    });
 
     test('abstract', () {
       expect(C.isAbstract, true);
@@ -141,7 +150,7 @@ void main() {
     });
 
     test('get static fields', () {
-      expect(A.getStaticFields().length, 1);
+      expect(A.getStaticFields().length, 2);
     });
 
     test('get instance fields', () {
@@ -220,18 +229,18 @@ void main() {
   group('Field', () {
     var c = l.getTypes()[0];
     var f1 = c.getStaticFields()[0];
-    var f2 = c.getInstanceFields()[1];
+    var f2 = c.getInstanceFields()[0];
 
     test('is const', () {
-      expect(f2.isConst, true);
+      expect(f1.isConst, true);
     });
 
     test('is final', () {
-      expect(f2.isFinal, false);
+      expect(f1.isFinal, false);
     });
 
     test('is static', () {
-      expect(f1.isStatic, true);
+      expect(f2.isStatic, false);
     });
 
     test('has correct type name', () {
@@ -282,7 +291,7 @@ void main() {
     });
 
     test('has source', () {
-      expect(c2.source, equals('///Constructor\n  A(this.m);'));
+      expect(c2.source, equals('///Constructor\n  A();'));
     });
   });
 
@@ -320,18 +329,11 @@ class AnalyzerHelper {
     context.sourceFactory = sourceFactory;
   }
 
-  Source addSource(String contents) {
-    Source source = _cacheSource("/test.dart", contents);
+  Source addSource(String filePath) {
+    Source source = new FileBasedSource.con1(new JavaFile(filePath));
     ChangeSet changeSet = new ChangeSet();
     changeSet.addedSource(source);
     context.applyChanges(changeSet);
-    return source;
-  }
-
-  Source _cacheSource(String filePath, String contents) {
-    Source source =
-        new FileBasedSource.con1(FileUtilities2.createFile(filePath));
-    context.setContents(source, contents);
     return source;
   }
 

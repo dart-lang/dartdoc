@@ -108,10 +108,7 @@ abstract class ModelElement {
             buf.write('[$codeRef]');
             var refElement = commentRefs.firstWhere((ref) => ref.identifier.name == codeRef).identifier.staticElement;
             var e = new ModelElement.from(refElement, refLibrary, package);
-            var refString = e.createLinkedName(e);
-            if (refString.length > 0) {
-            buf.write('($refString)');
-            }
+            buf.write('(${e.link})');
             lastWritten = end + matchChars[1].length;
           } else {
             break;
@@ -253,7 +250,7 @@ abstract class ModelElement {
     return null;
   }
   
-  String getLink([bool appendParens = false]) {
+  String get link {
     if (!package.isDocumented(this) || name.startsWith('_')) {
          return name;
        }
@@ -262,26 +259,11 @@ abstract class ModelElement {
        if (c != null && c.name.startsWith('_')) {
          return '${c.name}.${name}';
        }
-       if (c != null && this is Constructor) {
-         String n;
-         if (name.isEmpty) {
-           n = c.name;
-         } else {
-           n = '${c.name}.${name}';
-         }
-         if (appendParens) {
-           return '<a href="${createHrefFor(e)}">${name}()</a>';
-         } else {
-           return '<a href="${createHrefFor(e)}">${name}</a>';
-         }
-       } else {
-         String append = '';
-
-         if (appendParens && (e is Method || e is ModelFunction)) {
-           append = '()';
-         }
-         return '<a href="${createHrefFor(e)}">${htmlEscape(e.name)}$append</a>';
-       }
+       if (c != null) {
+            return '${getFileNameFor(this.library.name)}#${c.name}.$name)}';
+          } else {
+            return '${getFileNameFor(this.library.name)}#$name';
+          }
     
   }
 
