@@ -74,6 +74,19 @@
     <section class="summary" id="typedefs">
         <h2>Typedefs</h2>
 
+        <dl class="withreturntypes">
+            {{#library.typedefs}}
+            <dt>
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ linkedName }}</span>({{{ linkedParams }})
+                </code>
+            </dt>
+            <dd>
+                {{#markdown}}{{ docOneLiner }}{{/markdown}}
+            </dd>
+            {{/library.typedefs}}
+        </dl>
     </section>
 
     <section class="summary" id="exceptions">

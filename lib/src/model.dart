@@ -410,7 +410,7 @@ class Library extends ModelElement {
     elements
       ..removeWhere(isPrivate)
       ..sort(elementCompare);
-    return elements.map((e) => new Typedef(e, this, null)).toList();
+    return elements.map((e) => new Typedef(e, this, package)).toList();
   }
 
   List<ModelFunction> getFunctions() {
@@ -560,45 +560,28 @@ class Typedef extends ModelElement {
 
   String get typeName => 'Typedefs';
 
-  String createLinkedSummary() {
-    // Comparator<T>(T a, T b): int
+  String get linkedName {
     StringBuffer buf = new StringBuffer();
-    buf.write(createLinkedName(this));
+    buf.write(_typedef.name);
     if (!_typedef.typeParameters.isEmpty) {
-      buf.write('&lt;');
+      buf.write('<');
       for (int i = 0; i < _typedef.typeParameters.length; i++) {
         if (i > 0) {
           buf.write(', ');
         }
         buf.write(_typedef.typeParameters[i].name);
       }
-      buf.write('&gt;');
+      buf.write('>');
     }
-    buf.write(
-        '(${printParams(_typedef.parameters.map((f) => new Parameter(f, library, package)).toList())}): ');
-    buf.write(createLinkedReturnTypeName(new ElementType(_typedef.type, library, package)));
     return buf.toString();
   }
 
-  String createLinkedDescription() {
-    // typedef int Comparator<T>(T a, T b)
+  String get linkedReturnType {
+    return createLinkedReturnTypeName(new ElementType(_typedef.type, library, package));
+  }
 
-    StringBuffer buf = new StringBuffer();
-    buf.write(
-        'typedef ${createLinkedReturnTypeName(new ElementType(_typedef.type, library, package))} ${_typedef.name}');
-    if (!_typedef.typeParameters.isEmpty) {
-      buf.write('&lt;');
-      for (int i = 0; i < _typedef.typeParameters.length; i++) {
-        if (i > 0) {
-          buf.write(', ');
-        }
-        buf.write(_typedef.typeParameters[i].name);
-      }
-      buf.write('&gt;');
-    }
-    buf.write(
-        '(${printParams(_typedef.parameters.map((f) => new Parameter(f, library, package)).toList())}): ');
-    return buf.toString();
+  String get linkedParams {
+    return printParams(_typedef.parameters.map((f) => new Parameter(f, library, package)).toList());
   }
 }
 
