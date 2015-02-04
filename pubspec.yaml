@@ -4,21 +4,21 @@ author: Dart Team <misc@dartlang.org>
 description: A documentation generator for Dart.
 homepage: https://github.com/dart-lang/dartdoc
 dependencies:
-  analyzer: any
-  args: any
+  analyzer: '>=0.22.0 <0.23.0'
+  args: '>=0.12.2 <0.13.0'
   grinder: '>=0.6.0 <0.7.0'
-  intl: any
-  logging: any
+  intl: '>=0.12.0 <0.13.0'
+  logging: '>=0.9.0 <0.10.0'
   mustache4dart:
     git:
       url: https://github.com/sethladd/mustache4dart.git
       ref: lambda-with-context
-  path: any
-  yaml: any
-  markdown: any
-  html5lib: any
+  path: '>=1.3.0 <1.4.0'
+  yaml: '>=2.1.0 <2.2.0'
+  markdown: '>=0.7.1 <0.8.0'
+  html5lib: '>=0.12.0 <0.13.0'
 dev_dependencies:
-  http: any
-  unittest: any
+  http: '>=0.11.0 <0.12.0'
+  unittest: '>=0.11.0 <0.12.0'
 executables:
   dartdoc: null
