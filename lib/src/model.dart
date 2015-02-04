@@ -57,6 +57,7 @@ abstract class ModelElement {
     if (e is TypeParameterElement) {
       return new TypeParameter(e, library, package);
     }
+    throw "Unknown type $e.runtimeType";
   }
 
   String get documentation {
@@ -388,6 +389,7 @@ class Library extends ModelElement {
     return elements.map((e) => new Variable(e, this, package)).toList();
   }
 
+  /// Returns getters and setters?
   List<Accessor> getAccessors() {
     List<PropertyAccessorElement> elements = [];
     elements.addAll(_library.definingCompilationUnit.accessors);
@@ -458,8 +460,6 @@ class Library extends ModelElement {
 
 class Class extends ModelElement {
   ClassElement get _cls => (element as ClassElement);
-
-  String get typeName => 'Classes';
 
   Class(ClassElement element, Library library, Package package, [String source])
       : super(element, library, package, source);
@@ -535,8 +535,6 @@ class ModelFunction extends ModelElement {
 
   bool get isStatic => _func.isStatic;
 
-  String get typeName => 'Functions';
-
   String get linkedSummary {
     String retType = createLinkedReturnTypeName(new ElementType(_func.type, library, package));
 
@@ -571,8 +569,6 @@ class Typedef extends ModelElement {
 
   Typedef(FunctionTypeAliasElement element, Library library, Package package)
       : super(element, library, package);
-
-  String get typeName => 'Typedefs';
 
   String get linkedName {
     StringBuffer buf = new StringBuffer();
@@ -609,8 +605,6 @@ class Field extends ModelElement {
   bool get isFinal => _field.isFinal;
 
   bool get isConst => _field.isConst;
-
-  String get typeName => 'Fields';
 }
 
 class Constructor extends ModelElement {
@@ -618,8 +612,6 @@ class Constructor extends ModelElement {
 
   Constructor(ConstructorElement element, Library library, Package package, [String source])
       : super(element, library, package, source);
-
-  String get typeName => 'Constructors';
 
   String createLinkedSummary() {
     return '${createLinkedName(this)}' '(${printParams(_constructor.parameters.map((f) => new Parameter(f, library, package)).toList())})';
@@ -657,17 +649,14 @@ class Method extends ModelElement {
     }
     return null;
   }
-
-  String get typeName => 'Methods';
 }
 
+/// Getters and setters.
 class Accessor extends ModelElement {
   PropertyAccessorElement get _accessor => (element as PropertyAccessorElement);
 
   Accessor(PropertyAccessorElement element, Library library, Package package)
       : super(element, library, package);
-
-  String get typeName => 'Getters and Setters';
 
   bool get isGetter => _accessor.isGetter;
 
@@ -705,17 +694,29 @@ class Accessor extends ModelElement {
   }
 }
 
+/// Top-level variables. But also picks up getters and setters?
 class Variable extends ModelElement {
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 
   Variable(TopLevelVariableElement element, Library library, Package package)
       : super(element, library, package);
 
-  String get typeName => 'Top-Level Variables';
-
   bool get isFinal => _variable.isFinal;
 
   bool get isConst => _variable.isConst;
+
+  // TODO: is this correct? this handles const, final, getters, and setters
+  String get linkedReturnType {
+    if (hasGetter) {
+      return createLinkedTypeName(new ElementType(_variable.getter.returnType, library, package));
+    } else {
+      return createLinkedTypeName(new ElementType(_variable.setter.parameters.first.type, library, package));
+    }
+  }
+
+  bool get hasGetter => _variable.getter != null;
+
+  bool get hasSetter => _variable.setter != null;
 }
 
 class Parameter extends ModelElement {
@@ -727,8 +728,6 @@ class Parameter extends ModelElement {
   ElementType get type => new ElementType(_parameter.type, library, package);
 
   String toString() => element.name;
-
-  String get typeName => 'Parameters';
 }
 
 class TypeParameter extends ModelElement {
@@ -740,8 +739,6 @@ class TypeParameter extends ModelElement {
   ElementType get type => new ElementType(_typeParameter.type, library, package);
 
   String toString() => element.name;
-
-  String get typeName => 'Type Parameters';
 }
 
 class ElementType {
@@ -782,10 +779,3 @@ class ElementType {
           .toList();
 }
 
-//abstract class Helper {
-//  String createLinkedName(ModelElement e, [bool appendParens = false]);
-//  String createLinkedReturnTypeName(ElementType type);
-//  String createLinkedTypeName(ElementType type);
-//  String printParams(List<Parameter> params);
-//  String createHrefFor(ModelElement e);
-//}

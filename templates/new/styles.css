@@ -29,7 +29,7 @@ pre.prettyprint {
 @media (min-width:970px) and (max-width: 2500px) {
   .container {
     width:970px;
-  }   
+  }
 }
 
 #title {
@@ -147,4 +147,8 @@ footer {
 
 .markdown h2 {
   font-size: 16px;
+}
+
+.has-it::before {
+  content: '\2713';
 }

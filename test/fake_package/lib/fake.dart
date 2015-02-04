@@ -31,3 +31,27 @@ class Oops implements Exception {
 class Doh extends Error {
 
 }
+
+/// Constant property.
+const double PI = 3.14159;
+
+/// Final property.
+final int meaningOfLife = 42;
+
+/// Simple property
+String simpleProperty;
+
+/// Just a setter. No partner getter.
+void set justSetter(int value) {}
+
+/// Just a getter. No partner setter.
+bool get justGetter => false;
+
+/// The setter for setAndGet.
+void set setAndGet(String thing) {}
+
+/// The getter for setAndGet.
+String get setAndGet => 'hello';
+
+// Top-level function with 2-3 parameters.
+String topLevelFunction(int param1, bool param2, [double optionalPositional]) {}
