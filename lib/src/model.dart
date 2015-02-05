@@ -61,22 +61,21 @@ abstract class ModelElement {
 
   String get documentation {
     var commentRefs;
-
-    if (_documentation != null) return _documentation;
-
+    if (_documentation != null) {
+      return _documentation;
+    }
     if (element == null) {
       return null;
     }
-
     _documentation = element.computeDocumentationComment();
 
     if (_documentation == null && canOverride()) {
-      if (getOverriddenElement() != null) {
-        var melement = getOverriddenElement();
-        _documentation = melement.documentation;
-        if (melement.element.node is AnnotatedNode) {
+      var overrideElement = getOverriddenElement();
+      if (overrideElement != null) {
+        _documentation = overrideElement.documentation;
+        if (overrideElement.element.node is AnnotatedNode) {
           commentRefs =
-              (melement.element.node as AnnotatedNode).documentationComment.references;
+              (overrideElement.element.node as AnnotatedNode).documentationComment.references;
         }
       }
     } else {
@@ -85,7 +84,6 @@ abstract class ModelElement {
             (element.node as AnnotatedNode).documentationComment.references;
       }
     }
-
     if (_documentation != null) {
       _documentation = _processRefs(stripComments(_documentation), commentRefs);
     }
@@ -120,20 +118,10 @@ abstract class ModelElement {
     if (lastWritten < docs.length) {
       buf.write(docs.substring(lastWritten, docs.length));
     }
-    print(buf.toString());
-
     return buf.toString();
   }
 
   String toString() => '$runtimeType $name';
-
-  ModelElement getChild(String reference) {
-    Element e = (element as ElementImpl).getChild(reference);
-    if (e is LocalElement /*|| e is TypeVariableElement*/) {
-      return null;
-    }
-    return new ModelElement.from(e, library);
-  }
 
   List<String> getAnnotations() {
     List<ElementAnnotation> a = element.metadata;
@@ -260,13 +248,12 @@ abstract class ModelElement {
     if (!package.isDocumented(this) || name.startsWith('_')) {
       return name;
     }
-
     Class c = getEnclosingElement();
     if (c != null && c.name.startsWith('_')) {
       return '${c.name}.${name}';
     }
     if (c != null) {
-      return '${getFileNameFor(this.library.name)}#${c.name}.$name)}';
+      return '${this.library.name}/${getFileNameFor(c.name)}#$name)}';
     } else {
       return '${this.library.name}/${getFileNameFor(name)}';
     }
@@ -415,18 +402,6 @@ class Package {
   }
 
   String toString() => 'Package $name, isSdk: $_isSdk';
-
-  ModelElement getChild(String reference) {
-    _libraries.forEach((library) {
-      if (!library.isInSdk) {
-        var element = library.getChild(reference);
-        if (element != null) {
-          return element;
-        }
-      }
-    });
-    return null;
-  }
 
   bool isDocumented(ModelElement e) {
     // TODO: review this logic. I'm compensating for what's probably a bug
