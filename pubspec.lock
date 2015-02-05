@@ -9,6 +9,10 @@ packages:
     description: args
     source: hosted
     version: "0.12.2+3"
+  cli_util:
+    description: cli_util
+    source: hosted
+    version: "0.0.1"
   collection:
     description: collection
     source: hosted
