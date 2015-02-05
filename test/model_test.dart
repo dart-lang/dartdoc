@@ -98,9 +98,8 @@ void main() {
       expect(l.name, 'ex');
     });
 
-    Library sdkLib =
-        new Library(getSdkLibrariesToDocument(helper.sdk, helper.context)[0],
-        package);
+    Library sdkLib = new Library(
+        getSdkLibrariesToDocument(helper.sdk, helper.context)[0], package);
 
     test('sdk library name', () {
       expect(sdkLib.name, 'dart:async');
@@ -124,7 +123,7 @@ void main() {
     test('docs', () {
       expect(A.documentation, 'Sample class');
     });
-    
+
     test('docs refs', () {
       expect(B.documentation, 'Extends class [A](ex.html#A)');
     });
@@ -270,14 +269,14 @@ void main() {
 
   group('Parameter', () {
     test('has correct type name', () {
-      var t = new Parameter(null, null, null);
+      var t = new Parameter(null, null);
       expect(t.typeName, equals('Parameters'));
     });
   });
 
   group('TypeParameter', () {
     test('has correct type name', () {
-      var t = new TypeParameter(null, null, null);
+      var t = new TypeParameter(null, null);
       expect(t.typeName, equals('Type Parameters'));
     });
   });
@@ -297,12 +296,12 @@ void main() {
 
   group('Typedef', () {
     test('has correct type name', () {
-      Typedef t = new Typedef(null, null, null);
+      Typedef t = new Typedef(null, null);
       expect(t.typeName, equals('Typedefs'));
     });
 
     test('docs', () {
-      Typedef t = new Typedef(null, null, null);
+      Typedef t = new Typedef(null, null);
       expect(t.documentation, null);
     });
   });
