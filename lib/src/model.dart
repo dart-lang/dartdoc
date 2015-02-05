@@ -87,14 +87,12 @@ abstract class ModelElement {
     }
 
     if (_documentation != null) {
-      _documentation =
-          _processRefs(stripComments(_documentation), commentRefs);
+      _documentation = _processRefs(stripComments(_documentation), commentRefs);
     }
     return _documentation;
   }
 
-  String _processRefs(
-      String docs, NodeList<CommentReference> commentRefs) {
+  String _processRefs(String docs, NodeList<CommentReference> commentRefs) {
     var matchChars = ['[', ']'];
     int lastWritten = 0;
     int index = docs.indexOf(matchChars[0]);
@@ -270,7 +268,7 @@ abstract class ModelElement {
     if (c != null) {
       return '${getFileNameFor(this.library.name)}#${c.name}.$name)}';
     } else {
-      return '${getFileNameFor(this.library.name)}#$name';
+      return '${this.library.name}/${getFileNameFor(name)}';
     }
   }
 
@@ -382,17 +380,11 @@ abstract class ModelElement {
   String get docOneLiner {
     var doc = documentation;
     if (doc == null || doc == '') return null;
-    var endOfFirstSentence = doc.allMatches('.');
-    if (endOfFirstSentence.length > 0) {
-      endOfFirstSentence.forEach((index) {
-        if (doc[index+1] == ' ') {
-          return doc.substring(0, index + 1);
-        }
-      });
-      
-    } else {
-      return doc;
+    var endOfFirstSentence = doc.indexOf('. ');
+    if (endOfFirstSentence >= 0) {
+      return doc.substring(0, endOfFirstSentence + 1);
     }
+    return doc;
   }
 }
 
