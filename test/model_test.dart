@@ -125,7 +125,7 @@ void main() {
     });
 
     test('docs refs', () {
-      expect(B.documentation, 'Extends class [A](ex.html#A)');
+      expect(B.documentation, 'Extends class [A](ex/A.html)');
     });
 
     test('abstract', () {
