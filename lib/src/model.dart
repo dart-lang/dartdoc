@@ -82,7 +82,7 @@ abstract class ModelElement {
     } else {
       if (_documentation != null) {
         commentRefs =
-            (element.node as AnnotatedNode).documentationComment.references;
+          (element.node as AnnotatedNode).documentationComment.references;
       }
     }
     if (_documentation != null) {

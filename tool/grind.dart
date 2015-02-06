@@ -11,7 +11,7 @@ final Directory DOC_DIR = new Directory(DEFAULT_OUTPUT_DIRECTORY);
 
 void main([List<String> args]) {
   task('init', defaultInit);
-  task('test', testDartdoc, ['init']);
+  task('docitself', testDartdoc, ['init']);
   task('analyze', analyze);
   startGrinder(args);
 }
