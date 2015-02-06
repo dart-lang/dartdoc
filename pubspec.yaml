@@ -6,7 +6,7 @@ homepage: https://github.com/dart-lang/dartdoc
 dependencies:
   analyzer: '>=0.22.0 <0.23.0'
   args: '>=0.12.2 <0.13.0'
-  grinder: '>=0.6.0 <0.7.0'
+  cli_util: '>=0.0.1 <0.1.0'
   intl: '>=0.12.0 <0.13.0'
   logging: '>=0.9.0 <0.10.0'
   mustache4dart:
@@ -20,5 +20,6 @@ dependencies:
 dev_dependencies:
   http: '>=0.11.0 <0.12.0'
   unittest: '>=0.11.0 <0.12.0'
+  grinder: '>=0.6.0 <0.7.0'
 executables:
   dartdoc: null

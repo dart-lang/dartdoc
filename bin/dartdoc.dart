@@ -8,7 +8,7 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:grinder/grinder.dart' as grinder;
+import 'package:cli_util/cli_util.dart' as cli_util;
 
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
@@ -24,7 +24,7 @@ void main(List<String> arguments) {
     exit(0);
   }
 
-  Directory sdkDir = grinder.getSdkDir(arguments);
+  Directory sdkDir = cli_util.getSdkDir(arguments);
   if (sdkDir == null) {
     print("Warning: unable to locate the Dart SDK. Please use the --dart-sdk "
         "command line option or set the DART_SDK environment variable.");
