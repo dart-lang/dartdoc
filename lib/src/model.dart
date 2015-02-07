@@ -141,8 +141,6 @@ abstract class ModelElement {
 
   ModelElement getOverriddenElement() => null;
 
-  String get typeName => 'element';
-
   String get name => element.name;
 
   bool get isExecutable => element is ExecutableElement;

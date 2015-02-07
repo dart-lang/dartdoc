@@ -134,10 +134,6 @@ void main() {
     test('get methods', () {
       expect(B.getMethods().length, 1);
     });
-
-    test('has correct type name', () {
-      expect(A.typeName, equals('Classes'));
-    });
   });
 
   group('Function', () {
@@ -154,10 +150,6 @@ void main() {
 
     test('is static', () {
       expect(f1.isStatic, true);
-    });
-
-    test('has correct type name', () {
-      expect(f1.typeName, equals('Functions'));
     });
 
     test('has correct source code', () {
@@ -177,10 +169,6 @@ void main() {
     test('method source', () {
       expect(m2.source, '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n  }');
     });
-
-    test('has correct type name', () {
-      expect(m.typeName, equals('Methods'));
-    });
   });
 
   group('Accessor', () {
@@ -189,10 +177,6 @@ void main() {
 
     test('is getter', () {
       expect(a.isGetter, true);
-    });
-
-    test('has correct type name', () {
-      expect(a.typeName, equals('Getters and Setters'));
     });
   });
 
@@ -212,10 +196,6 @@ void main() {
     test('is static', () {
       expect(f2.isStatic, false);
     });
-
-    test('has correct type name', () {
-      expect(f1.typeName, equals('Fields'));
-    });
   });
 
   group('Variable', () {
@@ -232,33 +212,11 @@ void main() {
     test('is static', () {
       expect(v.isStatic, true);
     });
-
-    test('has correct type name', () {
-      expect(v.typeName, equals('Top-Level Variables'));
-    });
-  });
-
-  group('Parameter', () {
-    test('has correct type name', () {
-      var t = new Parameter(null, null);
-      expect(t.typeName, equals('Parameters'));
-    });
-  });
-
-  group('TypeParameter', () {
-    test('has correct type name', () {
-      var t = new TypeParameter(null, null);
-      expect(t.typeName, equals('Type Parameters'));
-    });
   });
 
   group('Constructor', () {
     var c = l.getTypes()[0].getCtors()[0];
     var c2 = lib2.getTypes()[0].getCtors()[0];
-
-    test('has correct type name', () {
-      expect(c.typeName, equals('Constructors'));
-    });
 
     test('has source', () {
       expect(c2.source, equals('///Constructor\n  A();'));
@@ -266,10 +224,6 @@ void main() {
   });
 
   group('Typedef', () {
-    test('has correct type name', () {
-      Typedef t = new Typedef(null, null);
-      expect(t.typeName, equals('Typedefs'));
-    });
 
     test('docs', () {
       Typedef t = new Typedef(null, null);
