@@ -175,7 +175,7 @@ void main() {
     });
 
     test('method source', () {
-      expect(m2.source, '@override \n  void m1() { var a = 6; var b = a * 9;}');
+      expect(m2.source, '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n  }');
     });
 
     test('has correct type name', () {
