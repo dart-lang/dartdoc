@@ -20,39 +20,6 @@ import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 
-const SOURCE1 = r'''
-library ex;
-
-int function1(String s, bool b) => 5;
-
-int number;
-
-get y => 2;
-
-/// Sample class
-class A {
-  static const int n = 5;
-  static String _s = 'hello';
-  String s2;
-  int m = 0; 
-  
-  ///Constructor
-  A();
-
-  String get s => _s;
-  
-  void m1(){}
-  
-}
-/// Extends class [A]
-class B extends A {
-  @override 
-  void m1() { var a = 6; var b = a * 9;}
-}
-
-abstract class C {}
-''';
-
 void main() {
   AnalyzerHelper helper = new AnalyzerHelper();
   String dirPath = path.join(Directory.current.path, 'test/fake_package');
@@ -103,6 +70,10 @@ void main() {
 
     test('sdk library name', () {
       expect(sdkLib.name, 'dart:async');
+    });
+
+    test('documentation', () {
+      expect(l.documentation, 'a library');
     });
   });
 
@@ -204,7 +175,7 @@ void main() {
     });
 
     test('method source', () {
-      expect(m2.source, '@override \n  void m1() { var a = 6; var b = a * 9;}');
+      expect(m2.source, '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n  }');
     });
 
     test('has correct type name', () {

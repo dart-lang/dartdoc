@@ -80,8 +80,10 @@ abstract class ModelElement {
       }
     } else {
       if (_documentation != null) {
-        commentRefs =
-            (element.node as AnnotatedNode).documentationComment.references;
+        if (element.node is AnnotatedNode) {
+          commentRefs =
+              (element.node as AnnotatedNode).documentationComment.references;
+        }
       }
     }
     if (_documentation != null) {
