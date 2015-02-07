@@ -53,5 +53,8 @@ void set setAndGet(String thing) {}
 /// The getter for setAndGet.
 String get setAndGet => 'hello';
 
-// Top-level function with 2-3 parameters.
+/// A dynamic getter.
+get dynamicGetter => 'i could be anything';
+
+/// Top-level function with 2-3 parameters.
 String topLevelFunction(int param1, bool param2, [double optionalPositional]) {}

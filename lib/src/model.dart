@@ -57,7 +57,10 @@ abstract class ModelElement {
     if (e is TypeParameterElement) {
       return new TypeParameter(e, library);
     }
-    throw "Unknown type $e.runtimeType";
+    if (e is DynamicElementImpl) {
+      return new Dynamic(e, library);
+    }
+    throw "Unknown type ${e.runtimeType}";
   }
 
   String get documentation {
@@ -376,6 +379,11 @@ abstract class ModelElement {
     }
     return doc;
   }
+}
+
+class Dynamic extends ModelElement {
+  Dynamic(DynamicElementImpl element, Library library, [String source])
+      : super(element, library, source);
 }
 
 class Package {
@@ -807,6 +815,8 @@ class ElementType {
   ElementType(this._type, this.library);
 
   String toString() => "$_type";
+
+  bool get isDynamic => _type.isDynamic;
 
   bool get isParameterType => (_type is TypeParameterType);
 
