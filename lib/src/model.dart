@@ -57,6 +57,10 @@ abstract class ModelElement {
     if (e is TypeParameterElement) {
       return new TypeParameter(e, library);
     }
+    if (e is DynamicElementImpl) {
+      return new Dynamic(e, library);
+    }
+    throw "Unknown type ${e.runtimeType}";
   }
 
   String get documentation {
@@ -136,8 +140,6 @@ abstract class ModelElement {
   bool canOverride() => element is ClassMemberElement;
 
   ModelElement getOverriddenElement() => null;
-
-  String get typeName => 'element';
 
   String get name => element.name;
 
@@ -377,6 +379,11 @@ abstract class ModelElement {
   }
 }
 
+class Dynamic extends ModelElement {
+  Dynamic(DynamicElementImpl element, Library library, [String source])
+      : super(element, library, source);
+}
+
 class Package {
   String _rootDirPath;
   final List<Library> _libraries = [];
@@ -447,6 +454,7 @@ class Library extends ModelElement {
     return elements.map((e) => new Variable(e, this)).toList();
   }
 
+  /// Returns getters and setters?
   List<Accessor> getAccessors() {
     List<PropertyAccessorElement> elements = [];
     elements.addAll(_library.definingCompilationUnit.accessors);
@@ -517,8 +525,6 @@ class Library extends ModelElement {
 
 class Class extends ModelElement {
   ClassElement get _cls => (element as ClassElement);
-
-  String get typeName => 'Classes';
 
   Class(ClassElement element, Library library, [String source])
       : super(element, library, source);
@@ -592,8 +598,6 @@ class ModelFunction extends ModelElement {
 
   bool get isStatic => _func.isStatic;
 
-  String get typeName => 'Functions';
-
   String get linkedSummary {
     String retType =
         createLinkedReturnTypeName(new ElementType(_func.type, library));
@@ -631,8 +635,6 @@ class Typedef extends ModelElement {
   Typedef(FunctionTypeAliasElement element, Library library)
       : super(element, library);
 
-  String get typeName => 'Typedefs';
-
   String get linkedName {
     StringBuffer buf = new StringBuffer();
     buf.write(_typedef.name);
@@ -668,8 +670,6 @@ class Field extends ModelElement {
   bool get isFinal => _field.isFinal;
 
   bool get isConst => _field.isConst;
-
-  String get typeName => 'Fields';
 }
 
 class Constructor extends ModelElement {
@@ -677,8 +677,6 @@ class Constructor extends ModelElement {
 
   Constructor(ConstructorElement element, Library library, [String source])
       : super(element, library, source);
-
-  String get typeName => 'Constructors';
 
   String createLinkedSummary() {
     return '${createLinkedName(this)}' '(${printParams(_constructor.parameters.map((f) => new Parameter(f, library)).toList())})';
@@ -716,17 +714,14 @@ class Method extends ModelElement {
     }
     return null;
   }
-
-  String get typeName => 'Methods';
 }
 
+/// Getters and setters.
 class Accessor extends ModelElement {
   PropertyAccessorElement get _accessor => (element as PropertyAccessorElement);
 
   Accessor(PropertyAccessorElement element, Library library)
       : super(element, library);
-
-  String get typeName => 'Getters and Setters';
 
   bool get isGetter => _accessor.isGetter;
 
@@ -762,17 +757,29 @@ class Accessor extends ModelElement {
   }
 }
 
+/// Top-level variables. But also picks up getters and setters?
 class Variable extends ModelElement {
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 
   Variable(TopLevelVariableElement element, Library library)
       : super(element, library);
 
-  String get typeName => 'Top-Level Variables';
-
   bool get isFinal => _variable.isFinal;
 
   bool get isConst => _variable.isConst;
+
+  // TODO: is this correct? this handles const, final, getters, and setters
+  String get linkedReturnType {
+    if (hasGetter) {
+      return createLinkedTypeName(new ElementType(_variable.getter.returnType, library));
+    } else {
+      return createLinkedTypeName(new ElementType(_variable.setter.parameters.first.type, library));
+    }
+  }
+
+  bool get hasGetter => _variable.getter != null;
+
+  bool get hasSetter => _variable.setter != null;
 }
 
 class Parameter extends ModelElement {
@@ -784,8 +791,6 @@ class Parameter extends ModelElement {
   ElementType get type => new ElementType(_parameter.type, library);
 
   String toString() => element.name;
-
-  String get typeName => 'Parameters';
 }
 
 class TypeParameter extends ModelElement {
@@ -797,8 +802,6 @@ class TypeParameter extends ModelElement {
   ElementType get type => new ElementType(_typeParameter.type, library);
 
   String toString() => element.name;
-
-  String get typeName => 'Type Parameters';
 }
 
 class ElementType {
@@ -810,6 +813,8 @@ class ElementType {
   ElementType(this._type, this.library);
 
   String toString() => "$_type";
+
+  bool get isDynamic => _type.isDynamic;
 
   bool get isParameterType => (_type is TypeParameterType);
 
@@ -838,10 +843,3 @@ class ElementType {
           .toList();
 }
 
-//abstract class Helper {
-//  String createLinkedName(ModelElement e, [bool appendParens = false]);
-//  String createLinkedReturnTypeName(ElementType type);
-//  String createLinkedTypeName(ElementType type);
-//  String printParams(List<Parameter> params);
-//  String createHrefFor(ModelElement e);
-//}
