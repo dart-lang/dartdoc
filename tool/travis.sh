@@ -30,8 +30,13 @@ pub get
 # Verify that the libraries are error free.
 grind analyze
 
-# Run dartdoc.
-pub global run grinder test
+# Run dartdoc on ourself.
+grind docitself
+
+# Another smoke test: Run dartdoc on fake_package.
+cd test/fake_package
+dart ../../bin/dartdoc.dart
+cd ../..
 
 # Run the tests.
 dart test/all.dart
