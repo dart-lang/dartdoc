@@ -838,10 +838,3 @@ class ElementType {
           .toList();
 }
 
-//abstract class Helper {
-//  String createLinkedName(ModelElement e, [bool appendParens = false]);
-//  String createLinkedReturnTypeName(ElementType type);
-//  String createLinkedTypeName(ElementType type);
-//  String printParams(List<Parameter> params);
-//  String createHrefFor(ModelElement e);
-//}
