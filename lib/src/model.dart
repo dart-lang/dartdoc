@@ -7,6 +7,7 @@ library dartdoc.models;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
+import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 
 import 'html_utils.dart';
 import 'model_utils.dart';
@@ -143,6 +144,27 @@ abstract class ModelElement {
 
   String get name => element.name;
 
+  bool get hasParameters => element is ExecutableElement || element is FunctionTypeAliasElement;
+
+  List<Parameter> get parameters {
+    if (!hasParameters) {
+      throw new StateError("$element does not have parameters");
+    }
+
+    List<ParameterElement> params;
+
+    if (element is ExecutableElement) {
+      // the as check silences the warning
+      params = (element as ExecutableElement).parameters;
+    }
+
+    if (element is FunctionTypeAliasElement) {
+      params = (element as FunctionTypeAliasElement).parameters;
+    }
+
+    return params.map((p) => new Parameter(p, library)).toList(growable:false);
+  }
+
   bool get isExecutable => element is ExecutableElement;
 
   bool get isPropertyInducer => element is PropertyInducingElement;
@@ -177,8 +199,7 @@ abstract class ModelElement {
           createLinkedReturnTypeName(new ElementType(ex.type, library));
 
       return '${createLinkedName(this)}'
-          '(${printParams(ex.parameters.map((f) =>
-                 new Parameter(f, library)).toList())})'
+          '($linkedParams)'
           '${retType.isEmpty ? '' : ': $retType'}';
     }
     if (isPropertyInducer) {
@@ -207,7 +228,7 @@ abstract class ModelElement {
 
       buf.write(createLinkedReturnTypeName(new ElementType(e.type, library)));
       buf.write(
-          ' ${e.name}(${printParams(e.parameters.map((f) => new Parameter(f, library)).toList())})');
+          ' ${e.name}($linkedParams)');
       return buf.toString();
     }
     if (isPropertyInducer) {
@@ -311,19 +332,53 @@ abstract class ModelElement {
     }
   }
 
-  String printParams(List<Parameter> params) {
+  // TODO: handle default values
+  String get linkedParams {
+    List<Parameter> allParams = parameters;
+
+    List<Parameter> requiredParams =
+      allParams.where((Parameter p) => !p.isOptional).toList();
+
+    List<Parameter> positionalParams =
+      allParams.where((Parameter p) => p.isOptionalPositional).toList();
+
+    List<Parameter> namedParams =
+      allParams.where((Parameter p) => p.isOptionalNamed).toList();
+
     StringBuffer buf = new StringBuffer();
 
-    for (Parameter p in params) {
-      if (buf.length > 0) {
+    void renderParams(StringBuffer buf, List<Parameter> params) {
+      for (int i = 0; i < params.length; i++) {
+        Parameter p = params[i];
+        if (i > 0) buf.write(', ');
+        if (p.type != null && p.type.name != null) {
+          String typeName = createLinkedTypeName(p.type);
+          if (typeName.isNotEmpty) buf.write('$typeName ');
+        }
+        buf.write(p.name);
+      }
+    }
+
+    renderParams(buf, requiredParams);
+
+    if (positionalParams.isNotEmpty) {
+      if (requiredParams.isNotEmpty) {
         buf.write(', ');
       }
-      if (p.type != null && p.type.name != null) {
-        String typeName = createLinkedTypeName(p.type);
-        if (typeName.isNotEmpty) buf.write('${typeName} ');
-      }
-      buf.write(p.name);
+      buf.write('[');
+      renderParams(buf, positionalParams);
+      buf.write(']');
     }
+
+    if (namedParams.isNotEmpty) {
+      if (requiredParams.isNotEmpty) {
+        buf.write(', ');
+      }
+      buf.write('{');
+      renderParams(buf, namedParams);
+      buf.write('}');
+    }
+
     return buf.toString();
   }
 
@@ -603,7 +658,7 @@ class ModelFunction extends ModelElement {
         createLinkedReturnTypeName(new ElementType(_func.type, library));
 
     return '${createLinkedName(this)}'
-        '(${printParams(_func.parameters.map((f) => new Parameter(f, library)))})'
+        '($linkedParams)'
         '${retType.isEmpty ? '' : ': $retType'}';
   }
 
@@ -614,13 +669,8 @@ class ModelFunction extends ModelElement {
     }
     buf.write(createLinkedReturnTypeName(new ElementType(_func.type, library)));
     buf.write(
-        ' ${_func.name}(${printParams(_func.parameters.map((f) => new Parameter(f, library)).toList())})');
+        ' ${_func.name}($linkedParams)');
     return buf.toString();
-  }
-
-  String get linkedParams {
-    return printParams(
-        _func.parameters.map((f) => new Parameter(f, library)).toList());
   }
 
   String get linkedReturnType {
@@ -656,10 +706,6 @@ class Typedef extends ModelElement {
     return createLinkedReturnTypeName(new ElementType(_typedef.type, library));
   }
 
-  String get linkedParams {
-    return printParams(
-        _typedef.parameters.map((f) => new Parameter(f, library)).toList());
-  }
 }
 
 class Field extends ModelElement {
@@ -679,7 +725,7 @@ class Constructor extends ModelElement {
       : super(element, library, source);
 
   String createLinkedSummary() {
-    return '${createLinkedName(this)}' '(${printParams(_constructor.parameters.map((f) => new Parameter(f, library)).toList())})';
+    return '${createLinkedName(this)} ($linkedParams)';
   }
 
   String createLinkedDescription() {
@@ -693,8 +739,7 @@ class Constructor extends ModelElement {
     buf.write(
         '${_constructor.type.returnType.name}${_constructor.name.isEmpty?'':'.'}'
         '${_constructor.name}'
-        '(${printParams(
-                      _constructor.parameters.map((f) => new Parameter(f, library)).toList())})');
+        '($linkedParams)');
     return buf.toString();
   }
 }
@@ -734,9 +779,7 @@ class Accessor extends ModelElement {
       buf.write(createLinkedReturnTypeName(new ElementType(_accessor.type,
           new ModelElement.from(_accessor.type.element, library))));
     } else {
-      buf.write('${createLinkedName(this)}('
-          '${printParams(_accessor.parameters.map((f) =>
-                    new Parameter(f,library)))})');
+      buf.write('${createLinkedName(this)}($linkedParams)');
     }
     return buf.toString();
   }
@@ -751,7 +794,7 @@ class Accessor extends ModelElement {
           '${createLinkedReturnTypeName(new ElementType(_accessor.type, new ModelElement.from(_accessor.type.element, library)))} get ${_accessor.name}');
     } else {
       buf.write(
-          'set ${_accessor.name}(${printParams(_accessor.parameters.map((f) => new Parameter(f,library)))})');
+          'set ${_accessor.name}($linkedParams)');
     }
     return buf.toString();
   }
@@ -789,6 +832,12 @@ class Parameter extends ModelElement {
   ParameterElement get _parameter => element as ParameterElement;
 
   ElementType get type => new ElementType(_parameter.type, library);
+
+  bool get isOptional => _parameter.parameterKind.isOptional;
+
+  bool get isOptionalPositional => _parameter.parameterKind == ParameterKind.POSITIONAL;
+
+  bool get isOptionalNamed => _parameter.parameterKind == ParameterKind.NAMED;
 
   String toString() => element.name;
 }
