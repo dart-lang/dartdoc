@@ -354,9 +354,11 @@ abstract class ModelElement {
         if (i > 0) buf.write(', ');
         if (p.type != null && p.type.name != null) {
           String typeName = createLinkedTypeName(p.type);
-          if (typeName.isNotEmpty) buf.write('$typeName ');
+          if (typeName.isNotEmpty) {
+            buf.write('<span class="type-annotation">$typeName</span> ');
+          }
         }
-        buf.write(p.name);
+        buf.write('<span class="parameter-name">${p.name}</span>');
 
         if (p.hasDefaultValue) {
           if (p.isOptionalNamed) {
@@ -364,7 +366,7 @@ abstract class ModelElement {
           } else {
             buf.write('= ');
           }
-          buf.write(p.defaultValue);
+          buf.write('<span class="default-value">${p.defaultValue}</span>');
         }
       }
     }
