@@ -399,11 +399,11 @@ class Dynamic extends ModelElement {
 }
 
 class Package {
-  String _rootDirPath;
+  final String _rootDirPath;
   final List<Library> _libraries = [];
-  bool _isSdk;
-  String _sdkVersion;
   final String _readmeLoc;
+  final bool _isSdk;
+  final String _sdkVersion;
 
   String get name =>
       _isSdk ? 'Dart API Reference' : getPackageName(_rootDirPath);
@@ -462,7 +462,7 @@ class Package {
 }
 
 class Library extends ModelElement {
-  Package package;
+  final Package package;
   List<Class> _classes;
   List<Class> _enums;
   List<ModelFunction> _functions;
