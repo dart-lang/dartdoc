@@ -56,5 +56,9 @@ String get setAndGet => 'hello';
 /// A dynamic getter.
 get dynamicGetter => 'i could be anything';
 
-/// Top-level function with 2-3 parameters.
+/// Top-level function 2 params and 1 optional positional param.
 String topLevelFunction(int param1, bool param2, [double optionalPositional]) {}
+
+/// Top-level function with 1 param and 2 optional named params, 1 with a
+/// default value.
+void soIntense(anything, {bool flag: true, int value}) {  }
