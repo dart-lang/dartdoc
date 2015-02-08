@@ -57,7 +57,10 @@ String get setAndGet => 'hello';
 get dynamicGetter => 'i could be anything';
 
 /// Top-level function 2 params and 1 optional positional param.
-String topLevelFunction(int param1, bool param2, [double optionalPositional]) {}
+String topLevelFunction(int param1, bool param2, [double optionalPositional = 0.0]) {}
+
+/// A single optional positional param, no type annotation, no default value.
+void onlyPositionalWithNoDefaultNoType([anything]);
 
 /// Top-level function with 1 param and 2 optional named params, 1 with a
 /// default value.

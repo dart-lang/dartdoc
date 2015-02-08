@@ -7,6 +7,7 @@ library dartdoc.models;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
+import 'package:analyzer/src/generated/source.dart' show SourceRange;
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 
 import 'html_utils.dart';
@@ -353,9 +354,20 @@ abstract class ModelElement {
         if (i > 0) buf.write(', ');
         if (p.type != null && p.type.name != null) {
           String typeName = createLinkedTypeName(p.type);
-          if (typeName.isNotEmpty) buf.write('$typeName ');
+          if (typeName.isNotEmpty) {
+            buf.write('<span class="type-annotation">$typeName</span> ');
+          }
         }
-        buf.write(p.name);
+        buf.write('<span class="parameter-name">${p.name}</span>');
+
+        if (p.hasDefaultValue) {
+          if (p.isOptionalNamed) {
+            buf.write(': ');
+          } else {
+            buf.write('= ');
+          }
+          buf.write('<span class="default-value">${p.defaultValue}</span>');
+        }
       }
     }
 
@@ -838,6 +850,17 @@ class Parameter extends ModelElement {
   bool get isOptionalPositional => _parameter.parameterKind == ParameterKind.POSITIONAL;
 
   bool get isOptionalNamed => _parameter.parameterKind == ParameterKind.NAMED;
+
+  bool get hasDefaultValue {
+    return _parameter.defaultValueRange != null &&
+           _parameter.defaultValueRange != SourceRange.EMPTY;
+  }
+
+  String get defaultValue {
+    if (!hasDefaultValue) return null;
+    SourceRange range = _parameter.defaultValueRange;
+    return _parameter.source.contents.data.substring(range.offset, range.end);
+  }
 
   String toString() => element.name;
 }
