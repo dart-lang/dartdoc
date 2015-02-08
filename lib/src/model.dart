@@ -7,6 +7,7 @@ library dartdoc.models;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
+import 'package:analyzer/src/generated/source.dart' show SourceRange;
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 
 import 'html_utils.dart';
@@ -356,6 +357,15 @@ abstract class ModelElement {
           if (typeName.isNotEmpty) buf.write('$typeName ');
         }
         buf.write(p.name);
+
+        if (p.hasDefaultValue) {
+          if (p.isOptionalNamed) {
+            buf.write(': ');
+          } else {
+            buf.write('= ');
+          }
+          buf.write(p.defaultValue);
+        }
       }
     }
 
@@ -838,6 +848,17 @@ class Parameter extends ModelElement {
   bool get isOptionalPositional => _parameter.parameterKind == ParameterKind.POSITIONAL;
 
   bool get isOptionalNamed => _parameter.parameterKind == ParameterKind.NAMED;
+
+  bool get hasDefaultValue {
+    return _parameter.defaultValueRange != null &&
+           _parameter.defaultValueRange != SourceRange.EMPTY;
+  }
+
+  String get defaultValue {
+    if (!hasDefaultValue) return null;
+    SourceRange range = _parameter.defaultValueRange;
+    return _parameter.source.contents.data.substring(range.offset, range.end);
+  }
 
   String toString() => element.name;
 }
