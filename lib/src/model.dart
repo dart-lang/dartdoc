@@ -14,12 +14,6 @@ import 'html_utils.dart';
 import 'model_utils.dart';
 import 'package_utils.dart';
 
-String getFileNameFor(String name) {
-  // dart.dartdoc => dart_dartdoc
-  // dart:core => dart_core
-  return '${name.replaceAll('.', '_').replaceAll(':', '_')}.html';
-}
-
 abstract class ModelElement {
   final Element element;
   final Library library;
@@ -116,7 +110,7 @@ abstract class ModelElement {
             (ref) => ref.identifier.name == codeRef).identifier.staticElement;
         var refLibrary = new Library(refElement.library, package);
         var e = new ModelElement.from(refElement, refLibrary);
-        buf.write('(${e.link})');
+        buf.write('(${e.href})');
         lastWritten = end + matchChars[1].length;
       } else {
         break;
@@ -128,6 +122,8 @@ abstract class ModelElement {
     }
     return buf.toString();
   }
+
+  String get htmlId => name;
 
   String toString() => '$runtimeType $name';
 
@@ -185,153 +181,124 @@ abstract class ModelElement {
 
   bool get isConst => false;
 
-  Class getEnclosingElement() {
-    if (element is ClassMemberElement) {
-      return new Class(element.enclosingElement, library);
+  /// Returns the [ModelElement] that encloses this.
+  ModelElement getEnclosingElement() {
+    // A class's enclosing element is a library, and there isn't a
+    // modelelement for a library.
+    if (element.enclosingElement != null && element.enclosingElement is ClassElement) {
+      return new ModelElement.from(element.enclosingElement, library);
     } else {
       return null;
     }
   }
 
-  String createLinkedSummary() {
-    if (isExecutable) {
-      ExecutableElement ex = (element as ExecutableElement);
-      String retType =
-          createLinkedReturnTypeName(new ElementType(ex.type, library));
+//  String createLinkedSummary() {
+//    if (isExecutable) {
+//      ExecutableElement ex = (element as ExecutableElement);
+//      String retType =
+//          createLinkedReturnTypeName(new ElementType(ex.type, library));
+//
+//      return '${createLinkedName(this)}'
+//          '($linkedParams)'
+//          '${retType.isEmpty ? '' : ': $retType'}';
+//    }
+//    if (isPropertyInducer) {
+//      PropertyInducingElement pe = (element as PropertyInducingElement);
+//      StringBuffer buf = new StringBuffer();
+//      buf.write('${createLinkedName(this)}');
+//      String type = createLinkedName(pe.type == null
+//          ? null
+//          : new ModelElement.from(pe.type.element, library));
+//      if (!type.isEmpty) {
+//        buf.write(': $type');
+//      }
+//      return buf.toString();
+//    }
+//    return createLinkedName(this);
+//  }
 
-      return '${createLinkedName(this)}'
-          '($linkedParams)'
-          '${retType.isEmpty ? '' : ': $retType'}';
-    }
-    if (isPropertyInducer) {
-      PropertyInducingElement pe = (element as PropertyInducingElement);
-      StringBuffer buf = new StringBuffer();
-      buf.write('${createLinkedName(this)}');
-      String type = createLinkedName(pe.type == null
-          ? null
-          : new ModelElement.from(pe.type.element, library));
-      if (!type.isEmpty) {
-        buf.write(': $type');
-      }
-      return buf.toString();
-    }
-    return createLinkedName(this);
-  }
-
-  String createLinkedDescription() {
-    if (isExecutable && !(element is ConstructorElement)) {
-      ExecutableElement e = (element as ExecutableElement);
-      StringBuffer buf = new StringBuffer();
-
-      if (e.isStatic) {
-        buf.write('static ');
-      }
-
-      buf.write(createLinkedReturnTypeName(new ElementType(e.type, library)));
-      buf.write(
-          ' ${e.name}($linkedParams)');
-      return buf.toString();
-    }
-    if (isPropertyInducer) {
-      PropertyInducingElement e = (element as PropertyInducingElement);
-      StringBuffer buf = new StringBuffer();
-      if (e.isStatic) {
-        buf.write('static ');
-      }
-      if (e.isFinal) {
-        buf.write('final ');
-      }
-      if (e.isConst) {
-        buf.write('const ');
-      }
-
-      buf.write(createLinkedName(e.type == null
-          ? null
-          : new ModelElement.from(e.type.element, library)));
-      buf.write(' ${e.name}');
-
-      // write out any constant value
-      Object value = getConstantValue(e);
-
-      if (value != null) {
-        if (value is String) {
-          String str = stringEscape(value, "'");
-          buf.write(" = '${str}'");
-        } else if (value is num) {
-          buf.write(" = ${value}");
-        }
-        //NumberFormat.decimalPattern
-      }
-      return buf.toString();
-    }
-    return null;
-  }
+//  String createLinkedDescription() {
+//    if (isExecutable && !(element is ConstructorElement)) {
+//      ExecutableElement e = (element as ExecutableElement);
+//      StringBuffer buf = new StringBuffer();
+//
+//      if (e.isStatic) {
+//        buf.write('static ');
+//      }
+//
+//      buf.write(createLinkedReturnTypeName(new ElementType(e.type, library)));
+//      buf.write(
+//          ' ${e.name}($linkedParams)');
+//      return buf.toString();
+//    }
+//    if (isPropertyInducer) {
+//      PropertyInducingElement e = (element as PropertyInducingElement);
+//      StringBuffer buf = new StringBuffer();
+//      if (e.isStatic) {
+//        buf.write('static ');
+//      }
+//      if (e.isFinal) {
+//        buf.write('final ');
+//      }
+//      if (e.isConst) {
+//        buf.write('const ');
+//      }
+//
+//      buf.write(createLinkedName(e.type == null
+//          ? null
+//          : new ModelElement.from(e.type.element, library)));
+//      buf.write(' ${e.name}');
+//
+//      // write out any constant value
+//      Object value = getConstantValue(e);
+//
+//      if (value != null) {
+//        if (value is String) {
+//          String str = stringEscape(value, "'");
+//          buf.write(" = '${str}'");
+//        } else if (value is num) {
+//          buf.write(" = ${value}");
+//        }
+//        //NumberFormat.decimalPattern
+//      }
+//      return buf.toString();
+//    }
+//    return null;
+//  }
 
   Package get package =>
       (this is Library) ? (this as Library).package : this.library.package;
 
-  String get link {
-    if (!package.isDocumented(this) || name.startsWith('_')) {
-      return name;
+  String get linkedName {
+    if (!package.isDocumented(this)) {
+      return htmlEscape(name);
+    }
+    if (name.startsWith('_')) {
+      return htmlEscape(name);
     }
     Class c = getEnclosingElement();
     if (c != null && c.name.startsWith('_')) {
-      return '${c.name}.${name}';
+      return '${c.name}.${htmlEscape(name)}';
     }
-    if (c != null) {
-      return '${this.library.name}/${getFileNameFor(c.name)}#$name)}';
-    } else {
-      return '${this.library.name}/${getFileNameFor(name)}';
-    }
-  }
-
-  String createLinkedName(ModelElement e, [bool appendParens = false]) {
-    if (e == null) {
-      return '';
-    }
-    if (!package.isDocumented(e)) {
-      return htmlEscape(e.name);
-    }
-    if (e.name.startsWith('_')) {
-      return htmlEscape(e.name);
-    }
-    Class c = e.getEnclosingElement();
-    if (c != null && c.name.startsWith('_')) {
-      return '${c.name}.${htmlEscape(e.name)}';
-    }
-    if (c != null && e is Constructor) {
+    if (c != null && this is Constructor) {
       String name;
-      if (e.name.isEmpty) {
+      if (name.isEmpty) {
         name = c.name;
       } else {
-        name = '${c.name}.${htmlEscape(e.name)}';
+        name = '${c.name}.${htmlEscape(name)}';
       }
-      if (appendParens) {
-        return '<a href="${createHrefFor(e)}">${name}()</a>';
-      } else {
-        return '<a href="${createHrefFor(e)}">${name}</a>';
-      }
+      return '<a href="${href}">${name}</a>';
     } else {
-      String append = '';
-
-      if (appendParens && (e is Method || e is ModelFunction)) {
-        append = '()';
-      }
-      return '<a href="${createHrefFor(e)}">${htmlEscape(e.name)}$append</a>';
+      return '<a href="${href}">${htmlEscape(name)}</a>';
     }
   }
 
-  String createHrefFor(ModelElement e) {
-    if (!package.isDocumented(e)) {
-      return '';
-    }
-    Class c = e.getEnclosingElement();
-    if (c != null) {
-      return '${getFileNameFor(e.library.name)}#${c.name}.${escapeBrackets(e.name)}';
-    } else {
-      return '${getFileNameFor(e.library.name)}#${e.name}';
-    }
+  String get href {
+    if (!package.isDocumented(this)) return null;
+    return _href;
   }
+
+  String get _href;
 
   // TODO: handle default values
   String get linkedParams {
@@ -400,7 +367,7 @@ abstract class ModelElement {
     if (type.isParameterType) {
       buf.write(type.element.name);
     } else {
-      buf.write(createLinkedName(type.element));
+      buf.write(type.element.linkedName);
     }
 
     // TODO: apparently, EVERYTHING is a parameterized type ?!?!
@@ -449,6 +416,8 @@ abstract class ModelElement {
 class Dynamic extends ModelElement {
   Dynamic(DynamicElementImpl element, Library library, [String source])
       : super(element, library, source);
+
+  String get _href => throw new StateError('dynamic should not have an href');
 }
 
 class Package {
@@ -588,6 +557,9 @@ class Library extends ModelElement {
     }
     return getTypes().where(isExceptionOrError).toList();
   }
+
+  @override
+  String get _href => '$name/index.html';
 }
 
 class Class extends ModelElement {
@@ -652,9 +624,8 @@ class Class extends ModelElement {
     }).toList();
   }
 
-  String createLinkedDescription() {
-    return '';
-  }
+  @override
+  String get _href => '${library.name}/$name.html';
 }
 
 class ModelFunction extends ModelElement {
@@ -665,29 +636,13 @@ class ModelFunction extends ModelElement {
 
   bool get isStatic => _func.isStatic;
 
-  String get linkedSummary {
-    String retType =
-        createLinkedReturnTypeName(new ElementType(_func.type, library));
-
-    return '${createLinkedName(this)}'
-        '($linkedParams)'
-        '${retType.isEmpty ? '' : ': $retType'}';
-  }
-
-  String createLinkedDescription() {
-    StringBuffer buf = new StringBuffer();
-    if (_func.isStatic) {
-      buf.write('static ');
-    }
-    buf.write(createLinkedReturnTypeName(new ElementType(_func.type, library)));
-    buf.write(
-        ' ${_func.name}($linkedParams)');
-    return buf.toString();
-  }
-
   String get linkedReturnType {
     return createLinkedReturnTypeName(new ElementType(_func.type, library));
   }
+
+  // TODO: functions can be in libraries or classes
+  @override
+  String get _href => throw "Not Implemented yet.";
 }
 
 class Typedef extends ModelElement {
@@ -697,26 +652,29 @@ class Typedef extends ModelElement {
   Typedef(FunctionTypeAliasElement element, Library library)
       : super(element, library);
 
-  String get linkedName {
-    StringBuffer buf = new StringBuffer();
-    buf.write(_typedef.name);
-    if (!_typedef.typeParameters.isEmpty) {
-      buf.write('<');
-      for (int i = 0; i < _typedef.typeParameters.length; i++) {
-        if (i > 0) {
-          buf.write(', ');
-        }
-        // TODO link this name
-        buf.write(_typedef.typeParameters[i].name);
-      }
-      buf.write('>');
-    }
-    return buf.toString();
-  }
+  // TODO: will the superclass version work?
+//  String get linkedName {
+//    StringBuffer buf = new StringBuffer();
+//    buf.write(_typedef.name);
+//    if (!_typedef.typeParameters.isEmpty) {
+//      buf.write('<');
+//      for (int i = 0; i < _typedef.typeParameters.length; i++) {
+//        if (i > 0) {
+//          buf.write(', ');
+//        }
+//        // TODO link this name
+//        buf.write(_typedef.typeParameters[i].name);
+//      }
+//      buf.write('>');
+//    }
+//    return buf.toString();
+//  }
 
   String get linkedReturnType {
     return createLinkedReturnTypeName(new ElementType(_typedef.type, library));
   }
+
+  String get _href => '${library.name}.html#$name';
 
 }
 
@@ -728,6 +686,16 @@ class Field extends ModelElement {
   bool get isFinal => _field.isFinal;
 
   bool get isConst => _field.isConst;
+
+  String get _href {
+    if (element.enclosingElement is ClassElement) {
+      return '/${library.name}/${element.enclosingElement.name}.html#$name';
+    } else if (element.enclosingElement is LibraryElement) {
+      return '/${library.name}.html#$name';
+    } else {
+      throw new StateError('$name is not in a class or library, instead a ${element.enclosingElement}');
+    }
+  }
 }
 
 class Constructor extends ModelElement {
@@ -736,24 +704,8 @@ class Constructor extends ModelElement {
   Constructor(ConstructorElement element, Library library, [String source])
       : super(element, library, source);
 
-  String createLinkedSummary() {
-    return '${createLinkedName(this)} ($linkedParams)';
-  }
-
-  String createLinkedDescription() {
-    StringBuffer buf = new StringBuffer();
-    if (_constructor.isStatic) {
-      buf.write('static ');
-    }
-    if (_constructor.isFactory) {
-      buf.write('factory ');
-    }
-    buf.write(
-        '${_constructor.type.returnType.name}${_constructor.name.isEmpty?'':'.'}'
-        '${_constructor.name}'
-        '($linkedParams)');
-    return buf.toString();
-  }
+  @override
+  String get _href => '${library.name}/${_constructor.enclosingElement.name}.html#$name}';
 }
 
 class Method extends ModelElement {
@@ -771,6 +723,9 @@ class Method extends ModelElement {
     }
     return null;
   }
+
+  @override
+  String get _href => throw 'not implemented yet';
 }
 
 /// Getters and setters.
@@ -782,34 +737,8 @@ class Accessor extends ModelElement {
 
   bool get isGetter => _accessor.isGetter;
 
-  String createLinkedSummary() {
-    StringBuffer buf = new StringBuffer();
-
-    if (_accessor.isGetter) {
-      buf.write(createLinkedName(this));
-      buf.write(': ');
-      buf.write(createLinkedReturnTypeName(new ElementType(_accessor.type,
-          new ModelElement.from(_accessor.type.element, library))));
-    } else {
-      buf.write('${createLinkedName(this)}($linkedParams)');
-    }
-    return buf.toString();
-  }
-
-  String createLinkedDescription() {
-    StringBuffer buf = new StringBuffer();
-    if (_accessor.isStatic) {
-      buf.write('static ');
-    }
-    if (_accessor.isGetter) {
-      buf.write(
-          '${createLinkedReturnTypeName(new ElementType(_accessor.type, new ModelElement.from(_accessor.type.element, library)))} get ${_accessor.name}');
-    } else {
-      buf.write(
-          'set ${_accessor.name}($linkedParams)');
-    }
-    return buf.toString();
-  }
+  @override
+  String get _href => throw "not implemented yet";
 }
 
 /// Top-level variables. But also picks up getters and setters?
@@ -835,6 +764,10 @@ class Variable extends ModelElement {
   bool get hasGetter => _variable.getter != null;
 
   bool get hasSetter => _variable.setter != null;
+
+  // TODO: check if this works for libraries and classes
+  @override
+  String get _href => throw 'Not implemented yet';
 }
 
 class Parameter extends ModelElement {
@@ -843,7 +776,8 @@ class Parameter extends ModelElement {
 
   ParameterElement get _parameter => element as ParameterElement;
 
-  ElementType get type => new ElementType(_parameter.type, library);
+  ElementType get type => new ElementType(_parameter.type,
+      new Library(_parameter.type.element.library, package));
 
   bool get isOptional => _parameter.parameterKind.isOptional;
 
@@ -863,6 +797,9 @@ class Parameter extends ModelElement {
   }
 
   String toString() => element.name;
+
+  @override
+  String get _href => throw 'not implemented yet';
 }
 
 class TypeParameter extends ModelElement {
@@ -874,6 +811,9 @@ class TypeParameter extends ModelElement {
   ElementType get type => new ElementType(_typeParameter.type, library);
 
   String toString() => element.name;
+
+  @override
+  String get _href => throw 'not implemented yet';
 }
 
 class ElementType {

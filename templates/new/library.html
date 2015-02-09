@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 
     <meta name="description" content="{{ library.name }} library API docs, for the Dart programming language.">
+
+    <!-- required because all the links are pseudo-absolute -->
+    <base href="..">
 </head>
 
 <body>
@@ -23,7 +26,7 @@
 
 <div class="container">
 
-    <section class="desc markdown">
+    <section class="desc markdown" id="description">
 
         {{#markdown}}
           {{{ library.documentation }}}
@@ -37,8 +40,8 @@
 
         <dl class="dl-horizontal">
             {{#library.types}}
-            <dt>
-                <a href="{{library.name}}/{{name}}.html">{{name}}</a>
+            <dt id="{{htmlId}}">
+                {{{linkedName}}}
             </dt>
             <dd>
                 {{#markdown}}{{docOneLiner}}{{/markdown}}
@@ -53,7 +56,7 @@
 
         <dl class="withreturntypes">
             {{#library.variables}}
-            <dt>
+            <dt id="{{htmlId}}">
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
                     <span class="name">{{ name }}</span>
@@ -75,7 +78,7 @@
 
         <dl class="withreturntypes">
             {{#library.functions}}
-            <dt>
+            <dt id="{{htmlId}}">
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
                     <span class="name">{{ name }}</span>({{{ linkedParams }})
@@ -93,10 +96,10 @@
 
         <dl class="withreturntypes">
             {{#library.typedefs}}
-            <dt>
+            <dt id="htmlId">
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name">{{ linkedName }}</span>({{{ linkedParams }})
+                    <span class="name">{{ name }}</span>({{{ linkedParams }})
                 </code>
             </dt>
             <dd>
@@ -111,8 +114,8 @@
 
         <dl class="dl-horizontal">
             {{#library.exceptions}}
-            <dt>
-                <a href="{{library.name}}/{{name}}.html">{{name}}</a>
+            <dt id="{{htmlId}}">
+                {{{linkedName}}}
             </dt>
             <dd>
                 {{#markdown}}{{docOneLiner}}{{/markdown}}

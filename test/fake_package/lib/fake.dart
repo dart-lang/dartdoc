@@ -10,6 +10,8 @@
 /// * It smells nice.
 library fake;
 
+import 'example.dart';
+
 /// Takes input, returns output.
 typedef String FakeProcesses(String input);
 
@@ -65,3 +67,6 @@ void onlyPositionalWithNoDefaultNoType([anything]);
 /// Top-level function with 1 param and 2 optional named params, 1 with a
 /// default value.
 void soIntense(anything, {bool flag: true, int value}) {  }
+
+/// [A] comes from another library.
+void paramFromAnotherLib(A thing) {}
