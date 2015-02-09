@@ -1,17 +1,14 @@
 {{>head}}
     <title>{{ library.name }} library - Dart API</title>
 
-    <link rel="stylesheet" href="../prettify.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../styles.css">
+    <!-- required because all the links are pseudo-absolute -->
+    <base href="..">
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+    {{>styles_and_scripts}}
 
     <meta name="description" content="{{ library.name }} library API docs, for the Dart programming language.">
 
-    <!-- required because all the links are pseudo-absolute -->
-    <base href="..">
+
 </head>
 
 <body>
