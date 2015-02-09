@@ -416,6 +416,8 @@ abstract class ModelElement {
 class Dynamic extends ModelElement {
   Dynamic(DynamicElementImpl element, Library library, [String source])
       : super(element, library, source);
+
+  String get _href => throw new StateError('dynamic should not have an href');
 }
 
 class Package {
@@ -555,6 +557,9 @@ class Library extends ModelElement {
     }
     return getTypes().where(isExceptionOrError).toList();
   }
+
+  @override
+  String get _href => '$name/index.html';
 }
 
 class Class extends ModelElement {
@@ -619,6 +624,7 @@ class Class extends ModelElement {
     }).toList();
   }
 
+  @override
   String get _href => '${library.name}/$name.html';
 }
 
@@ -630,29 +636,13 @@ class ModelFunction extends ModelElement {
 
   bool get isStatic => _func.isStatic;
 
-  String get linkedSummary {
-    String retType =
-        createLinkedReturnTypeName(new ElementType(_func.type, library));
-
-    return '${linkedName}'
-        '($linkedParams)'
-        '${retType.isEmpty ? '' : ': $retType'}';
-  }
-
-  String createLinkedDescription() {
-    StringBuffer buf = new StringBuffer();
-    if (_func.isStatic) {
-      buf.write('static ');
-    }
-    buf.write(createLinkedReturnTypeName(new ElementType(_func.type, library)));
-    buf.write(
-        ' ${_func.name}($linkedParams)');
-    return buf.toString();
-  }
-
   String get linkedReturnType {
     return createLinkedReturnTypeName(new ElementType(_func.type, library));
   }
+
+  // TODO: functions can be in libraries or classes
+  @override
+  String get _href => throw "Not Implemented yet.";
 }
 
 class Typedef extends ModelElement {
@@ -714,9 +704,8 @@ class Constructor extends ModelElement {
   Constructor(ConstructorElement element, Library library, [String source])
       : super(element, library, source);
 
-  String createLinkedSummary() {
-    return '${linkedName} ($linkedParams)';
-  }
+  @override
+  String get _href => '${library.name}/${_constructor.enclosingElement.name}.html#$name}';
 }
 
 class Method extends ModelElement {
@@ -734,6 +723,9 @@ class Method extends ModelElement {
     }
     return null;
   }
+
+  @override
+  String get _href => throw 'not implemented yet';
 }
 
 /// Getters and setters.
@@ -744,6 +736,9 @@ class Accessor extends ModelElement {
       : super(element, library);
 
   bool get isGetter => _accessor.isGetter;
+
+  @override
+  String get _href => throw "not implemented yet";
 }
 
 /// Top-level variables. But also picks up getters and setters?
@@ -769,6 +764,10 @@ class Variable extends ModelElement {
   bool get hasGetter => _variable.getter != null;
 
   bool get hasSetter => _variable.setter != null;
+
+  // TODO: check if this works for libraries and classes
+  @override
+  String get _href => throw 'Not implemented yet';
 }
 
 class Parameter extends ModelElement {
@@ -798,6 +797,9 @@ class Parameter extends ModelElement {
   }
 
   String toString() => element.name;
+
+  @override
+  String get _href => throw 'not implemented yet';
 }
 
 class TypeParameter extends ModelElement {
@@ -809,6 +811,9 @@ class TypeParameter extends ModelElement {
   ElementType get type => new ElementType(_typeParameter.type, library);
 
   String toString() => element.name;
+
+  @override
+  String get _href => throw 'not implemented yet';
 }
 
 class ElementType {
