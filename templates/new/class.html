@@ -1,0 +1,35 @@
+{{>head}}
+    <title>{{class.name}} class - {{ library.name }} library - Dart API</title>
+
+    <!-- required because all the links are pseudo-absolute -->
+    <base href="..">
+
+    {{>styles_and_scripts}}
+
+    <meta name="description" content="API docs for {{class.name}} class from {{ library.name }} library, for the Dart programming language.">
+
+</head>
+
+<body>
+
+<header class="container-fluid" id="title">
+    <div class="container">
+        <h1 class="title">
+            {{ class.name }} <span class="type">class</span>
+        </h1>
+    </div>
+</header>
+
+<div class="container">
+
+    <section class="desc markdown">
+
+        {{#markdown}}
+        {{{ class.description }}}
+        {{/markdown}}
+
+    </section>
+
+</div>
+
+{{>footer}}

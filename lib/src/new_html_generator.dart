@@ -17,10 +17,6 @@ import 'model.dart';
 import '../generator.dart';
 
 class NewHtmlGenerator extends Generator {
-  static const String indexTemplatePath = 'templates/new/index.html';
-  static const String libraryTemplatePath = 'templates/new/library.html';
-  static const String footerTemplatePath = 'templates/new/_footer.html';
-  static const String headTemplatePath = 'templates/new/_head.html';
 
   final String _url;
   final List<String> _htmlFiles = [];
@@ -33,14 +29,14 @@ class NewHtmlGenerator extends Generator {
 
   final String generatedOn;
 
-  static final String indexTemplate = _loadTemplate(indexTemplatePath);
-  static final String libraryTemplate = _loadTemplate(libraryTemplatePath);
-  static final String footerTemplate = _loadTemplate(footerTemplatePath);
-  static final String headTemplate = _loadTemplate(headTemplatePath);
+  static final String indexTemplate = _loadTemplate('templates/new/index.html');
+  static final String libraryTemplate = _loadTemplate('templates/new/library.html');
+  static final String classTemplate = _loadTemplate('templates/new/class.html');
 
   static final Map partials = {
-    'footer': footerTemplate,
-    'head': headTemplate
+    'footer': _loadTemplate('templates/new/_footer.html'),
+    'head': _loadTemplate('templates/new/_head.html'),
+    'styles_and_scripts': _loadTemplate('templates/new/_styles_and_scripts.html')
   };
 
   NewHtmlGenerator(this._url) :
@@ -52,7 +48,13 @@ class NewHtmlGenerator extends Generator {
     if (!_out.existsSync()) _out.createSync();
     generatePackage();
     _copyResources();
-    package.libraries.forEach((lib) => generateLibrary(package, lib));
+    package.libraries.forEach((lib) {
+      generateLibrary(package, lib);
+
+      lib.getTypes().forEach((clazz) {
+        generateClass(package, lib, clazz);
+      });
+    });
     // if (_url != null) {
     //   generateSiteMap();
     // }
@@ -81,6 +83,18 @@ class NewHtmlGenerator extends Generator {
     };
 
     _writeFile(path.join(lib.name,'index.html'), libraryTemplate, data);
+  }
+
+  void generateClass(Package package, Library lib, Class clazz) {
+    Map data = {
+      'package': package,
+      'generatedOn': generatedOn,
+      'markdown': renderMarkdown,
+      'library': lib,
+      'class': clazz
+    };
+
+    _writeFile(path.joinAll(clazz.href.split('/')), classTemplate, data);
   }
 
   void _copyResources() {
