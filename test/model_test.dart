@@ -107,10 +107,6 @@ void main() {
       expect(B.hasSupertype, true);
     });
 
-    test('interfaces', () {
-      expect(A.interfaces.length, 0);
-    });
-
     test('mixins', () {
       expect(A.mixins.length, 0);
     });
@@ -161,13 +157,19 @@ void main() {
     var c = l.getTypes()[1];
     var m = c.getMethods()[0];
     var m2 = lib2.getTypes()[1].getMethods()[0];
+    var m3 = l.getTypes()[0].getMethods()[2];
 
     test('overriden method', () {
       expect(m.getOverriddenElement().runtimeType.toString(), 'Method');
     });
 
     test('method source', () {
-      expect(m2.source, '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n  }');
+      expect(m2.source,
+          '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n  }');
+    });
+
+    test('has params', () {
+      expect(m3.hasParameters, true);
     });
   });
 
@@ -223,12 +225,35 @@ void main() {
     });
   });
 
-  group('Typedef', () {
+//  group('Typedef', () {
+//
+//    test('docs', () {
+//      Typedef t = new Typedef(null, null);
+//      expect(t.documentation, null);
+//    });
+//  });
 
-    test('docs', () {
-      Typedef t = new Typedef(null, null);
-      expect(t.documentation, null);
+  group('Parameter', () {
+    var c = l.getTypes()[0];
+    var m1 = c.getMethods()[2];
+    var m2 = c.getMethods()[0];
+
+    var p1 = m1.parameters[1];
+    var p2 = m2.parameters[1];
+
+    test('is optional', () {
+      expect(p1.isOptional, true);
     });
+
+    test('default value', () {
+      expect(p2.defaultValue, '5');
+    });
+
+    test('is named', () {
+      expect(p2.isOptionalNamed, true);
+    });
+
+    test('createdLinkedTypeName', () {});
   });
 }
 

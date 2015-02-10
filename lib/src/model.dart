@@ -18,7 +18,7 @@ abstract class ModelElement {
   final Element element;
   final Library library;
   final String source;
-   
+
   ElementType _type;
   String _documentation;
 
@@ -140,25 +140,23 @@ abstract class ModelElement {
 
   String get name => element.name;
 
-  bool get hasParameters => element is ExecutableElement || element is FunctionTypeAliasElement;
+  bool get hasParameters =>
+      element is ExecutableElement || element is FunctionTypeAliasElement;
 
   List<Parameter> get parameters {
     if (!hasParameters) {
       throw new StateError("$element does not have parameters");
     }
-
     List<ParameterElement> params;
-
     if (element is ExecutableElement) {
       // the as check silences the warning
       params = (element as ExecutableElement).parameters;
     }
-
     if (element is FunctionTypeAliasElement) {
       params = (element as FunctionTypeAliasElement).parameters;
     }
 
-    return params.map((p) => new Parameter(p, library)).toList(growable:false);
+    return params.map((p) => new Parameter(p, library)).toList(growable: false);
   }
 
   bool get isExecutable => element is ExecutableElement;
@@ -179,14 +177,15 @@ abstract class ModelElement {
   bool get isFinal => false;
 
   bool get isConst => false;
-  
+
   ElementType get type => _type;
 
   /// Returns the [ModelElement] that encloses this.
   ModelElement getEnclosingElement() {
     // A class's enclosing element is a library, and there isn't a
     // modelelement for a library.
-    if (element.enclosingElement != null && element.enclosingElement is ClassElement) {
+    if (element.enclosingElement != null &&
+        element.enclosingElement is ClassElement) {
       return new ModelElement.from(element.enclosingElement, library);
     } else {
       return null;
@@ -306,13 +305,13 @@ abstract class ModelElement {
     List<Parameter> allParams = parameters;
 
     List<Parameter> requiredParams =
-      allParams.where((Parameter p) => !p.isOptional).toList();
+        allParams.where((Parameter p) => !p.isOptional).toList();
 
     List<Parameter> positionalParams =
-      allParams.where((Parameter p) => p.isOptionalPositional).toList();
+        allParams.where((Parameter p) => p.isOptionalPositional).toList();
 
     List<Parameter> namedParams =
-      allParams.where((Parameter p) => p.isOptionalNamed).toList();
+        allParams.where((Parameter p) => p.isOptionalNamed).toList();
 
     StringBuffer buf = new StringBuffer();
 
@@ -564,24 +563,24 @@ class Library extends ModelElement {
 }
 
 class Class extends ModelElement {
-  
   List<ElementType> _mixins;
   ElementType _supertype;
-  
+
   ClassElement get _cls => (element as ClassElement);
 
   Class(ClassElement element, Library library, [String source])
       : super(element, library, source) {
-        _type = new ElementType(_cls.type, this);
-        _mixins = _cls.mixins.map((f) {
-          var lib = new Library(f.element.library, package);
-          new ElementType(f, new ModelElement.from(f.element, lib));
-        }).toList();
-        if (hasSupertype) {
-          var lib = new Library(_cls.supertype.element.library, package);
-          _supertype = new ElementType(_cls.supertype,new ModelElement.from(_cls.supertype.element, lib) );
-        } 
-      }
+    _type = new ElementType(_cls.type, this);
+    _mixins = _cls.mixins.map((f) {
+      var lib = new Library(f.element.library, package);
+      new ElementType(f, new ModelElement.from(f.element, lib));
+    }).toList();
+    if (hasSupertype) {
+      var lib = new Library(_cls.supertype.element.library, package);
+      _supertype = new ElementType(
+          _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
+    }
+  }
 
   bool get isAbstract => _cls.isAbstract;
 
@@ -591,7 +590,7 @@ class Class extends ModelElement {
   ElementType get supertype => _supertype;
 
   List<ElementType> get mixins => _mixins;
-     
+
 // TODO: check if needed
 //  List<ElementType> get interfaces =>
 //      _cls.interfaces.map((f) => new ElementType(f, library)).toList();
@@ -644,11 +643,10 @@ class Class extends ModelElement {
 }
 
 class ModelFunction extends ModelElement {
-  
   ModelFunction(FunctionElement element, Library library, [String contents])
       : super(element, library, contents) {
-        _type = new ElementType(_func.type, this);
-      }
+    _type = new ElementType(_func.type, this);
+  }
 
   FunctionElement get _func => (element as FunctionElement);
 
@@ -663,14 +661,13 @@ class ModelFunction extends ModelElement {
 }
 
 class Typedef extends ModelElement {
-  
   FunctionTypeAliasElement get _typedef =>
       (element as FunctionTypeAliasElement);
 
   Typedef(FunctionTypeAliasElement element, Library library)
       : super(element, library) {
-        _type = new ElementType(_typedef.type, this);
-      }
+    _type = new ElementType(_typedef.type, this);
+  }
 
   // TODO: will the superclass version work?
 //  String get linkedName {
@@ -712,7 +709,8 @@ class Field extends ModelElement {
     } else if (element.enclosingElement is LibraryElement) {
       return '/${library.name}.html#$name';
     } else {
-      throw new StateError('$name is not in a class or library, instead a ${element.enclosingElement}');
+      throw new StateError(
+          '$name is not in a class or library, instead a ${element.enclosingElement}');
     }
   }
 }
@@ -724,17 +722,17 @@ class Constructor extends ModelElement {
       : super(element, library, source);
 
   @override
-  String get _href => '${library.name}/${_constructor.enclosingElement.name}.html#$name}';
+  String get _href =>
+      '${library.name}/${_constructor.enclosingElement.name}.html#$name}';
 }
 
 class Method extends ModelElement {
-  
   MethodElement get _method => (element as MethodElement);
 
   Method(MethodElement element, Library library, [String source])
       : super(element, library, source) {
-        _type = new ElementType(_method.type, this);
-      }
+    _type = new ElementType(_method.type, this);
+  }
 
   Method getOverriddenElement() {
     ClassElement parent = element.enclosingElement;
@@ -744,8 +742,8 @@ class Method extends ModelElement {
       }
     }
     return null;
-  } 
-  
+  }
+
   @override
   String get _href => throw 'not implemented yet';
 }
@@ -769,16 +767,16 @@ class Variable extends ModelElement {
 
   Variable(TopLevelVariableElement element, Library library)
       : super(element, library) {
-        if (hasGetter) {
-          var t = _variable.getter.returnType;
-          var lib = new Library(t.element.library, package);
-          _type = new ElementType(t, new ModelElement.from(t.element, lib));
-        } else {
-          var s = _variable.setter.parameters.first.type;
-          var lib = new Library(s.element.library, package);
-          _type = new ElementType(s, new ModelElement.from(s.element, lib));
-        }
-      }
+    if (hasGetter) {
+      var t = _variable.getter.returnType;
+      var lib = new Library(t.element.library, package);
+      _type = new ElementType(t, new ModelElement.from(t.element, lib));
+    } else {
+      var s = _variable.setter.parameters.first.type;
+      var lib = new Library(s.element.library, package);
+      _type = new ElementType(s, new ModelElement.from(s.element, lib));
+    }
+  }
 
   bool get isFinal => _variable.isFinal;
 
@@ -805,20 +803,23 @@ class Variable extends ModelElement {
 class Parameter extends ModelElement {
   Parameter(ParameterElement element, Library library)
       : super(element, library) {
-        _type = new ElementType(_parameter.type, this);
-      }
+    var t = _parameter.type;
+    _type = new ElementType(t, new ModelElement.from(
+        t.element, new Library(t.element.library, library.package)));
+  }
 
   ParameterElement get _parameter => element as ParameterElement;
 
   bool get isOptional => _parameter.parameterKind.isOptional;
 
-  bool get isOptionalPositional => _parameter.parameterKind == ParameterKind.POSITIONAL;
+  bool get isOptionalPositional =>
+      _parameter.parameterKind == ParameterKind.POSITIONAL;
 
   bool get isOptionalNamed => _parameter.parameterKind == ParameterKind.NAMED;
 
   bool get hasDefaultValue {
     return _parameter.defaultValueRange != null &&
-           _parameter.defaultValueRange != SourceRange.EMPTY;
+        _parameter.defaultValueRange != SourceRange.EMPTY;
   }
 
   String get defaultValue {
@@ -836,8 +837,8 @@ class Parameter extends ModelElement {
 class TypeParameter extends ModelElement {
   TypeParameter(TypeParameterElement element, Library library)
       : super(element, library) {
-        _type = new ElementType(_typeParameter.type, this);
-      }
+    _type = new ElementType(_typeParameter.type, this);
+  }
 
   TypeParameterElement get _typeParameter => element as TypeParameterElement;
 
@@ -850,7 +851,7 @@ class TypeParameter extends ModelElement {
 class ElementType {
   DartType _type;
   ModelElement _element;
-  
+
   ElementType(this._type, this._element);
 
   String toString() => "$_type";
@@ -860,19 +861,19 @@ class ElementType {
   bool get isParameterType => (_type is TypeParameterType);
 
   ModelElement get element => _element;
-  
+
   String get name => _type.name;
 
   bool get isParameterizedType => (_type is ParameterizedType);
 
   String get returnTypeName => (_type as FunctionType).returnType.name;
-  
+
   bool get _hasReturnType => _type is FunctionType;
 
   ElementType get returnType {
     if (_hasReturnType) {
-    var t = (_type as FunctionType).returnType;
-    var lib = new Library(t.element.library, _element.package);
+      var t = (_type as FunctionType).returnType;
+      var lib = new Library(t.element.library, _element.package);
       return new ElementType(t, new ModelElement.from(t.element, lib));
     }
     return null;
@@ -885,12 +886,10 @@ class ElementType {
     Library lib = new Library(e.library, null);
     return (new ModelElement.from(e, lib));
   }
-  
+
   List<ElementType> get typeArguments =>
-      (_type as ParameterizedType).typeArguments
-          .map((f) {
+      (_type as ParameterizedType).typeArguments.map((f) {
     var lib = new Library(f.element.library, _element.package);
     new ElementType(f, new ModelElement.from(f.element, lib));
   }).toList();
 }
-

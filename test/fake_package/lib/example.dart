@@ -20,6 +20,12 @@ class A {
   String get s => s2;
 
   void m1() {}
+  
+  void printMsg(String msg, [bool linebreak]) {}
+  
+  bool isGreaterThan(int number, {int check:5}) {
+    return number > check;
+  }
 }
 /// Extends class [A]
 class B extends A {
