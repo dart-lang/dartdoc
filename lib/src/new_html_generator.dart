@@ -149,35 +149,21 @@ String renderMarkdown(String markdown, context) {
   return doc.body.innerHtml;
 }
 
-String stripMarkdown(String markdown) {
-  if (markdown == null || markdown.trim().isEmpty) return '';
-  var lines = markdown.replaceAll('\r\n', '\n').split('\n');
+String oneLiner(String text, context) {
+  String mustached = render(text.trim(), context).trim();
+  if (mustached == null || mustached.trim().isEmpty) return '';
+
+  // Parse with Markdown, but only care about the first block or paragraph.
+  var lines = mustached.replaceAll('\r\n', '\n').split('\n');
   var document = new md.Document();
   document.parseRefLinks(lines);
   var blocks = document.parseLines(lines);
-  var stripped = new PlainTextRenderer().render(blocks);
-  return stripped;
-}
+  var firstPara = new PlainTextRenderer().render([blocks.first]);
 
-String firstParagraph(String text) {
-  var doc = text;
-  if (doc == null || doc == '') return '';
-  StringBuffer buffer = new StringBuffer();
-  for (var line in doc.split('\n')) {
-    if (line.trim().isEmpty) break;
-    buffer.write(line);
+  if (firstPara.length > 200) {
+    firstPara = firstPara.substring(0, 200) + '...';
   }
-  var paragraph = buffer.toString();
-  if (paragraph.length > 200) {
-    paragraph = paragraph.substring(0, 200) + '...';
-  }
-  return paragraph;
-}
 
-String oneLiner(String text, context) {
-  String mustached = render(text.trim(), context).trim();
-  String deMarkdowned = stripMarkdown(mustached);
-  String firstPara = firstParagraph(deMarkdowned);
   return firstPara;
 }
 
