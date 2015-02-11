@@ -318,10 +318,7 @@ abstract class ModelElement {
 
     return buf.toString();
   }
-
-
-  }
-
+}
 
 class Dynamic extends ModelElement {
   Dynamic(DynamicElementImpl element, Library library, [String source])

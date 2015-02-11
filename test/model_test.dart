@@ -226,7 +226,7 @@ void main() {
       expect(v.linkedReturnType, 'String');
     });
 
-    test('linked return type', () {
+    test('linked return type 2', () {
       expect(v3.linkedReturnType, 'dynamic');
     });
   });
