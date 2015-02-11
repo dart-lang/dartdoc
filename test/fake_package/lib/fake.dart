@@ -74,6 +74,7 @@ get dynamicGetter => 'i could be anything';
 String topLevelFunction(int param1, bool param2, [double optionalPositional = 0.0]) {}
 
 /// A single optional positional param, no type annotation, no default value.
+
 void onlyPositionalWithNoDefaultNoType([anything]) {}
 
 /// Top-level function with 1 param and 2 optional named params, 1 with a
