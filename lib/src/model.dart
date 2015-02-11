@@ -320,7 +320,7 @@ abstract class ModelElement {
         Parameter p = params[i];
         if (i > 0) buf.write(', ');
         if (p.type != null && p.type.name != null) {
-          String typeName = createLinkedTypeName(p.type);
+          String typeName = p.type.createLinkedName();
           if (typeName.isNotEmpty) {
             buf.write('<span class="type-annotation">$typeName</span> ');
           }
@@ -359,47 +359,6 @@ abstract class ModelElement {
     }
 
     return buf.toString();
-  }
-
-  String createLinkedTypeName(ElementType type) {
-    StringBuffer buf = new StringBuffer();
-
-    if (type.isParameterType) {
-      buf.write(type.name);
-    } else {
-      buf.write(type.element.linkedName);
-    }
-
-    // TODO: apparently, EVERYTHING is a parameterized type ?!?!
-    // this is always true
-    if (type.isParameterizedType) {
-      if (!type.typeArguments.isEmpty &&
-          (type.typeArguments.length > 1 ||
-              type.typeArguments.first.toString() != 'dynamic')) {
-        buf.write('&lt;');
-        for (int i = 0; i < type.typeArguments.length; i++) {
-          if (i > 0) {
-            buf.write(', ');
-          }
-          ElementType t = type.typeArguments[i];
-          buf.write(createLinkedTypeName(t));
-        }
-        buf.write('&gt;');
-      }
-    }
-    return buf.toString();
-  }
-
-  String createLinkedReturnTypeName(ElementType type) {
-    if (type.returnElement == null) {
-      if (type.returnTypeName != null) {
-        return type.returnTypeName;
-      } else {
-        return '';
-      }
-    } else {
-      return createLinkedTypeName(type.returnType);
-    }
   }
 
   String get docOneLiner {
@@ -570,13 +529,15 @@ class Class extends ModelElement {
 
   Class(ClassElement element, Library library, [String source])
       : super(element, library, source) {
+    var p = library.package;
+//     var lib = new Library(_cls.type.element.library, p);
     _type = new ElementType(_cls.type, this);
     _mixins = _cls.mixins.map((f) {
-      var lib = new Library(f.element.library, package);
+      var lib = new Library(f.element.library, p);
       new ElementType(f, new ModelElement.from(f.element, lib));
     }).toList();
     if (hasSupertype) {
-      var lib = new Library(_cls.supertype.element.library, package);
+      var lib = new Library(_cls.supertype.element.library, p);
       _supertype = new ElementType(
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
     }
@@ -645,6 +606,7 @@ class Class extends ModelElement {
 class ModelFunction extends ModelElement {
   ModelFunction(FunctionElement element, Library library, [String contents])
       : super(element, library, contents) {
+    var e = _func.type.element;
     _type = new ElementType(_func.type, this);
   }
 
@@ -653,7 +615,7 @@ class ModelFunction extends ModelElement {
   bool get isStatic => _func.isStatic;
 
   String get linkedReturnType {
-    return createLinkedReturnTypeName(type);
+    return type.createLinkedReturnTypeName();
   }
 
   @override
@@ -666,6 +628,7 @@ class Typedef extends ModelElement {
 
   Typedef(FunctionTypeAliasElement element, Library library)
       : super(element, library) {
+    var e = _typedef.type.element;
     _type = new ElementType(_typedef.type, this);
   }
 
@@ -688,7 +651,7 @@ class Typedef extends ModelElement {
 //  }
 
   String get linkedReturnType {
-    return createLinkedReturnTypeName(type);
+    return type.createLinkedReturnTypeName();
   }
 
   String get _href => '${library.name}.html#$name';
@@ -697,7 +660,11 @@ class Typedef extends ModelElement {
 class Field extends ModelElement {
   FieldElement get _field => (element as FieldElement);
 
-  Field(FieldElement element, Library library) : super(element, library);
+  Field(FieldElement element, Library library) : super(element, library) {
+    var e = _field.type.element;
+    _type = new ElementType(
+        _field.type, new ModelElement.from(e, new Library(e.library, package)));
+  }
 
   bool get isFinal => _field.isFinal;
 
@@ -782,13 +749,8 @@ class Variable extends ModelElement {
 
   bool get isConst => _variable.isConst;
 
-  // TODO: is this correct? this handles const, final, getters, and setters
   String get linkedReturnType {
-    if (hasGetter) {
-      return createLinkedTypeName(type);
-    } else {
-      return createLinkedTypeName(type);
-    }
+    return type.createLinkedName();
   }
 
   bool get hasGetter => _variable.getter != null;
@@ -866,11 +828,11 @@ class ElementType {
 
   bool get isParameterizedType => (_type is ParameterizedType);
 
-  String get returnTypeName => (_type as FunctionType).returnType.name;
+  String get _returnTypeName => (_type as FunctionType).returnType.name;
 
   bool get _hasReturnType => _type is FunctionType;
 
-  ElementType get returnType {
+  ElementType get _returnType {
     if (_hasReturnType) {
       var t = (_type as FunctionType).returnType;
       var lib = new Library(t.element.library, _element.package);
@@ -883,7 +845,7 @@ class ElementType {
     if (e == null) {
       return null;
     }
-    Library lib = new Library(e.library, null);
+    Library lib = new Library(e.library, _element.package);
     return (new ModelElement.from(e, lib));
   }
 
@@ -892,4 +854,44 @@ class ElementType {
     var lib = new Library(f.element.library, _element.package);
     new ElementType(f, new ModelElement.from(f.element, lib));
   }).toList();
+
+  String createLinkedName() {
+    StringBuffer buf = new StringBuffer();
+
+    if (isParameterType) {
+      buf.write(name);
+    } else {
+      buf.write(element.linkedName);
+    }
+
+    // not TypeParameterType or Void or Union type
+    if (isParameterizedType) {
+      if (!typeArguments.isEmpty &&
+          (typeArguments.length > 1 ||
+              typeArguments.first.toString() != 'dynamic')) {
+        buf.write('&lt;');
+        for (int i = 0; i < typeArguments.length; i++) {
+          if (i > 0) {
+            buf.write(', ');
+          }
+          ElementType t = typeArguments[i];
+          buf.write(t.createLinkedName());
+        }
+        buf.write('&gt;');
+      }
+    }
+    return buf.toString();
+  }
+
+  String createLinkedReturnTypeName() {
+    if (returnElement == null) {
+      if (_returnTypeName != null) {
+        return _returnTypeName;
+      } else {
+        return '';
+      }
+    } else {
+      return _returnType.createLinkedName();
+    }
+  }
 }
