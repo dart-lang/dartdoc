@@ -46,6 +46,11 @@ class Doh extends Error {
 
 }
 
+/// ROYGBIV
+enum Color {
+  RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET
+}
+
 /// Constant property.
 const double PI = 3.14159;
 
