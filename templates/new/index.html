@@ -34,7 +34,7 @@
               <a href="{{name}}/index.html">{{ name }}</a>
             </dt>
             <dd>
-              {{ docOneLiner }}
+              {{#oneLiner}}{{ documentation }}{{/oneLiner}}
             </dd>
           {{/package.libraries}}
         </dl>

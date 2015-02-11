@@ -5,7 +5,6 @@
 /// The models used to represent Dart code
 library dartdoc.models;
 
-import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/source.dart' show SourceRange;
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
@@ -59,67 +58,26 @@ abstract class ModelElement {
   }
 
   String get documentation {
-    var commentRefs;
     if (_documentation != null) {
       return _documentation;
     }
+
     if (element == null) {
       return null;
     }
+
     _documentation = element.computeDocumentationComment();
 
     if (_documentation == null && canOverride()) {
       var overrideElement = getOverriddenElement();
       if (overrideElement != null) {
         _documentation = overrideElement.documentation;
-        if (overrideElement.element.node is AnnotatedNode) {
-          commentRefs =
-              (overrideElement.element.node as AnnotatedNode).documentationComment.references;
-        }
-      }
-    } else {
-      if (_documentation != null) {
-        if (element.node is AnnotatedNode) {
-          commentRefs =
-              (element.node as AnnotatedNode).documentationComment.references;
-        }
       }
     }
-    if (_documentation != null) {
-      _documentation = _processRefs(stripComments(_documentation), commentRefs);
-    }
+
+    _documentation = stripComments(_documentation);
+
     return _documentation;
-  }
-
-  String _processRefs(String docs, NodeList<CommentReference> commentRefs) {
-    var matchChars = ['[', ']'];
-    int lastWritten = 0;
-    int index = docs.indexOf(matchChars[0]);
-    StringBuffer buf = new StringBuffer();
-
-    while (index != -1) {
-      int end = docs.indexOf(matchChars[1], index + 1);
-      if (end != -1) {
-        if (index - lastWritten > 0) {
-          buf.write(docs.substring(lastWritten, index));
-        }
-        String codeRef = docs.substring(index + matchChars[0].length, end);
-        buf.write('[$codeRef]');
-        var refElement = commentRefs.firstWhere(
-            (ref) => ref.identifier.name == codeRef).identifier.staticElement;
-        var refLibrary = new Library(refElement.library, package);
-        var e = new ModelElement.from(refElement, refLibrary);
-        buf.write('(${e.href})');
-        lastWritten = end + matchChars[1].length;
-      } else {
-        break;
-      }
-      index = docs.indexOf(matchChars[0], end + 1);
-    }
-    if (lastWritten < docs.length) {
-      buf.write(docs.substring(lastWritten, docs.length));
-    }
-    return buf.toString();
   }
 
   String get htmlId => name;
@@ -361,16 +319,9 @@ abstract class ModelElement {
     return buf.toString();
   }
 
-  String get docOneLiner {
-    var doc = documentation;
-    if (doc == null || doc == '') return null;
-    var endOfFirstSentence = doc.indexOf('. ');
-    if (endOfFirstSentence >= 0) {
-      return doc.substring(0, endOfFirstSentence + 1);
-    }
-    return doc;
+
   }
-}
+
 
 class Dynamic extends ModelElement {
   Dynamic(DynamicElementImpl element, Library library, [String source])
