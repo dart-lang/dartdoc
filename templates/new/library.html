@@ -26,8 +26,9 @@
     <section class="desc markdown" id="description">
 
         {{#markdown}}
-          {{{ library.documentation }}}
+         {{{ library.documentation }}}
         {{/markdown}}
+
 
     </section>
 
@@ -41,7 +42,7 @@
                 {{{linkedName}}}
             </dt>
             <dd>
-                {{#markdown}}{{docOneLiner}}{{/markdown}}
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
             </dd>
             {{/library.types}}
         </dl>
@@ -64,7 +65,7 @@
                     <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
                     <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
                 </div>
-                {{#markdown}}{{ docOneLiner }}{{/markdown}}
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
             </dd>
             {{/library.variables}}
         </dl>
@@ -82,7 +83,7 @@
                 </code>
             </dt>
             <dd>
-                {{#markdown}}{{ docOneLiner }}{{/markdown}}
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
             </dd>
             {{/library.functions}}
         </dl>
@@ -100,7 +101,7 @@
                 </code>
             </dt>
             <dd>
-                {{#markdown}}{{ docOneLiner }}{{/markdown}}
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
             </dd>
             {{/library.typedefs}}
         </dl>
@@ -115,7 +116,7 @@
                 {{{linkedName}}}
             </dt>
             <dd>
-                {{#markdown}}{{docOneLiner}}{{/markdown}}
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
             </dd>
             {{/library.exceptions}}
         </dl>
