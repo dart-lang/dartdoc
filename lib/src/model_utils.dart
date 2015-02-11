@@ -13,18 +13,10 @@ import 'package:analyzer/src/generated/source_io.dart';
 Object getConstantValue(PropertyInducingElement element) {
   if (element is ConstFieldElementImpl) {
     ConstFieldElementImpl e = element;
-    return _valueFor(e.evaluationResult);
+    return e.evaluationResult.value;
   } else if (element is ConstTopLevelVariableElementImpl) {
     ConstTopLevelVariableElementImpl e = element;
-    return _valueFor(e.evaluationResult);
-  } else {
-    return null;
-  }
-}
-
-Object _valueFor(EvaluationResultImpl result) {
-  if (result is ValidResult) {
-    return result.value;
+    return e.evaluationResult.value;
   } else {
     return null;
   }
