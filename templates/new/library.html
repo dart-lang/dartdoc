@@ -29,7 +29,6 @@
          {{{ library.documentation }}}
         {{/markdown}}
 
-
     </section>
 
 
@@ -45,6 +44,22 @@
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
             </dd>
             {{/library.types}}
+        </dl>
+
+    </section>
+
+    <section class="summary" id="enums">
+        <h2>Enums</h2>
+
+        <dl class="dl-horizontal">
+            {{#library.enums}}
+            <dt id="{{htmlId}}">
+                {{{linkedName}}}
+            </dt>
+            <dd>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/library.enums}}
         </dl>
 
     </section>

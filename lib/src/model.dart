@@ -6,7 +6,6 @@
 library dartdoc.models;
 
 import 'package:analyzer/src/generated/element.dart';
-import 'package:analyzer/src/generated/source.dart' show SourceRange;
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 
 import 'html_utils.dart';
@@ -25,8 +24,11 @@ abstract class ModelElement {
   ModelElement(this.element, this.library, [this.source]);
 
   factory ModelElement.from(Element e, Library library) {
-    if (e is ClassElement) {
+    if (e is ClassElement && !e.isEnum) {
       return new Class(e, library);
+    }
+    if (e is ClassElement && e.isEnum) {
+      return new Enum(e, library);
     }
     if (e is FunctionElement) {
       return new ModelFunction(e, library);
@@ -435,7 +437,18 @@ class Library extends ModelElement {
     elements
       ..removeWhere(isPrivate)
       ..sort(elementCompare);
-    return elements.map((e) => new Variable(e, this)).toList();
+    return elements.map((e) => new Variable(e, this)).toList(growable: false);
+  }
+
+  List<Enum> getEnums() {
+    List<ClassElement> enumClasses = _library.definingCompilationUnit.enums;
+    for (CompilationUnitElement cu in _library.parts) {
+      enumClasses.addAll(cu.enums);
+    }
+    return enumClasses
+        .where(isPublic)
+        .map((e) => new Enum(e, this))
+        .toList(growable: false)..sort(elementCompare);
   }
 
   /// Returns getters and setters?
@@ -508,6 +521,17 @@ class Library extends ModelElement {
 
   @override
   String get _href => '$name/index.html';
+}
+
+class Enum extends ModelElement {
+  ClassElement get _enum => (element as ClassElement);
+
+  Enum(ClassElement element, Library library, [String source])
+      : super(element, library, source);
+
+  String get _href => '${library.name}/$name.html';
+
+  List<String> get names => _enum.fields.map((f) => f.name);
 }
 
 class Class extends ModelElement {
@@ -734,14 +758,13 @@ class Parameter extends ModelElement {
   bool get isOptionalNamed => _parameter.parameterKind == ParameterKind.NAMED;
 
   bool get hasDefaultValue {
-    return _parameter.defaultValueRange != null &&
-           _parameter.defaultValueRange != SourceRange.EMPTY;
+    return _parameter.defaultValueCode != null &&
+           _parameter.defaultValueCode.isNotEmpty;
   }
 
   String get defaultValue {
     if (!hasDefaultValue) return null;
-    SourceRange range = _parameter.defaultValueRange;
-    return _parameter.source.contents.data.substring(range.offset, range.end);
+    return _parameter.defaultValueCode;
   }
 
   String toString() => element.name;

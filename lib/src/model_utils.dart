@@ -34,6 +34,8 @@ int elementCompare(Element a, Element b) => a.name.compareTo(b.name);
 
 bool isPrivate(Element e) => e.name.startsWith('_');
 
+bool isPublic(Element e) => !isPrivate(e);
+
 List<LibraryElement> getSdkLibrariesToDocument(
     DartSdk sdk, AnalysisContext context) {
   List<LibraryElement> libraries = [];
