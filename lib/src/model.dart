@@ -252,7 +252,9 @@ abstract class ModelElement {
   }
 
   String get href {
-    if (!package.isDocumented(this)) return null;
+    if (!package.isDocumented(this)) {
+      return null;
+    }
     return _href;
   }
 
@@ -781,12 +783,9 @@ class ElementType {
   bool get _hasReturnType => _type is FunctionType;
 
   ElementType get _returnType {
-    if (_hasReturnType) {
-      var t = (_type as FunctionType).returnType;
-      var lib = new Library(t.element.library, _element.package);
-      return new ElementType(t, new ModelElement.from(t.element, lib));
-    }
-    return null;
+    var rt = (_type as FunctionType).returnType;
+    return new ElementType(rt, new ModelElement.from(
+        rt.element, new Library(rt.element.library, _element.package)));
   }
   ModelElement get returnElement {
     Element e = (_type as FunctionType).returnType.element;
@@ -800,7 +799,7 @@ class ElementType {
   List<ElementType> get typeArguments =>
       (_type as ParameterizedType).typeArguments.map((f) {
     var lib = new Library(f.element.library, _element.package);
-    new ElementType(f, new ModelElement.from(f.element, lib));
+    return new ElementType(f, new ModelElement.from(f.element, lib));
   }).toList();
 
   String createLinkedName() {
@@ -814,6 +813,7 @@ class ElementType {
 
     // not TypeParameterType or Void or Union type
     if (isParameterizedType) {
+      var typeArgs = typeArguments;
       if (!typeArguments.isEmpty &&
           (typeArguments.length > 1 ||
               typeArguments.first.toString() != 'dynamic')) {
@@ -832,7 +832,8 @@ class ElementType {
   }
 
   String createLinkedReturnTypeName() {
-    if (returnElement == null) {
+    if ((_type as FunctionType).returnType.element == null ||
+        (_type as FunctionType).returnType.element.library == null) {
       if (_returnTypeName != null) {
         return _returnTypeName;
       } else {
