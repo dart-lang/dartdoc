@@ -1,13 +1,17 @@
-/// # WOW FAKE PACKAGE IS BEST PACKAGE
+/// # WOW FAKE PACKAGE IS __BEST__ [PACKAGE][pkg]
 ///
 /// If you don't have this package yet, get it.
 /// Don't ask questions.
+///
+/// My favorite class is [Cool].
 ///
 /// *Why should you get this package?*
 ///
 /// * We told you so.
 /// * Everyone is doing it.
 /// * It smells nice.
+///
+/// [pkg]: http://example.org
 library fake;
 
 import 'example.dart';
@@ -20,6 +24,14 @@ typedef T GenericTypedef<T>(T input);
 
 /// This class is cool!
 class Cool {
+
+}
+
+/// This is a very long line spread
+/// across... wait for it... two physical lines.
+///
+/// The rest of this is not in the first paragraph.
+class LongFirstLine {
 
 }
 
@@ -62,7 +74,7 @@ get dynamicGetter => 'i could be anything';
 String topLevelFunction(int param1, bool param2, [double optionalPositional = 0.0]) {}
 
 /// A single optional positional param, no type annotation, no default value.
-void onlyPositionalWithNoDefaultNoType([anything]);
+void onlyPositionalWithNoDefaultNoType([anything]) {}
 
 /// Top-level function with 1 param and 2 optional named params, 1 with a
 /// default value.

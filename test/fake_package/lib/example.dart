@@ -30,4 +30,6 @@ class B extends A {
   }
 }
 
+// Do NOT add a doc comment to C. Testing blank comments.
+
 abstract class C {}

@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:html5lib/parser.dart' show parse;
 import 'package:html5lib/dom.dart' show Document;
-import 'package:markdown/markdown.dart' hide Document;
+import 'package:markdown/markdown.dart' as md;
 import 'package:path/path.dart' as path;
 
 import 'model.dart';
@@ -66,7 +66,8 @@ class NewHtmlGenerator extends Generator {
     Map data = {
       'package': package,
       'generatedOn': generatedOn,
-      'markdown': renderMarkdown
+      'markdown': renderMarkdown,
+      'oneLiner': oneLiner
     };
 
     _writeFile('index.html', indexTemplate, data);
@@ -79,7 +80,8 @@ class NewHtmlGenerator extends Generator {
       'package': package,
       'library': lib,
       'generatedOn': generatedOn,
-      'markdown': renderMarkdown
+      'markdown': renderMarkdown,
+      'oneLiner': oneLiner
     };
 
     _writeFile(path.join(lib.name,'index.html'), libraryTemplate, data);
@@ -90,6 +92,7 @@ class NewHtmlGenerator extends Generator {
       'package': package,
       'generatedOn': generatedOn,
       'markdown': renderMarkdown,
+      'oneLiner': oneLiner,
       'library': lib,
       'class': clazz
     };
@@ -122,7 +125,8 @@ class NewHtmlGenerator extends Generator {
   static String _loadTemplate(String templatePath) {
     File script = new File(Platform.script.toFilePath());
     File tmplFile = new File(path.join(script.parent.parent.path, templatePath));
-    return tmplFile.readAsStringSync();
+    String contents = tmplFile.readAsStringSync();
+    return contents;
   }
 
   static String _partials(String name) {
@@ -139,8 +143,71 @@ class NewHtmlGenerator extends Generator {
 /// and removes any script tags. Returns the HTML as a string.
 String renderMarkdown(String markdown, context) {
   String mustached = render(markdown.trim(), context);
-  String html = markdownToHtml(mustached);
+  String html = md.markdownToHtml(mustached);
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
   return doc.body.innerHtml;
+}
+
+String stripMarkdown(String markdown) {
+  if (markdown == null || markdown.trim().isEmpty) return '';
+  var lines = markdown.replaceAll('\r\n', '\n').split('\n');
+  var document = new md.Document();
+  document.parseRefLinks(lines);
+  var blocks = document.parseLines(lines);
+  var stripped = new PlainTextRenderer().render(blocks);
+  return stripped;
+}
+
+String firstParagraph(String text) {
+  var doc = text;
+  if (doc == null || doc == '') return '';
+  StringBuffer buffer = new StringBuffer();
+  for (var line in doc.split('\n')) {
+    if (line.trim().isEmpty) break;
+    buffer.write(line);
+  }
+  var paragraph = buffer.toString();
+  if (paragraph.length > 200) {
+    paragraph = paragraph.substring(0, 200) + '...';
+  }
+  return paragraph;
+}
+
+String oneLiner(String text, context) {
+  String mustached = render(text.trim(), context).trim();
+  String deMarkdowned = stripMarkdown(mustached);
+  String firstPara = firstParagraph(deMarkdowned);
+  return firstPara;
+}
+
+class PlainTextRenderer implements md.NodeVisitor {
+  static final _BLOCK_TAGS = new RegExp(
+      'blockquote|h1|h2|h3|h4|h5|h6|hr|p|pre');
+
+  StringBuffer buffer;
+
+  String render(List<md.Node> nodes) {
+    buffer = new StringBuffer();
+
+    for (final node in nodes) node.accept(this);
+
+    return buffer.toString();
+  }
+
+  void visitText(md.Text text) {
+    buffer.write(text.text);
+  }
+
+  bool visitElementBefore(md.Element element) {
+    // do nothing
+    return true;
+  }
+
+  void visitElementAfter(md.Element element) {
+    // Hackish. Separate block-level elements with newlines.
+    if (!buffer.isEmpty && _BLOCK_TAGS.firstMatch(element.tag) != null) {
+      buffer.write('\n\n');
+    }
+  }
 }
