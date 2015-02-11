@@ -3,9 +3,13 @@ library ex;
 
 int function1(String s, bool b) => 5;
 
-int number;
+double number;
 
 get y => 2;
+
+const String COLOR = 'red';
+
+typedef String processMessage(String msg);
 
 /// Sample class
 class A {
@@ -20,9 +24,18 @@ class A {
   String get s => s2;
 
   void m1() {}
+  
+  void printMsg(String msg, [bool linebreak]) {}
+  
+  bool isGreaterThan(int number, {int check:5}) {
+    return number > check;
+  }
 }
 /// Extends class [A]
 class B extends A {
+  
+  List<String> list;
+  
   @override
   void m1() {
     var a = 6;

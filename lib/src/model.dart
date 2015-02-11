@@ -17,8 +17,7 @@ abstract class ModelElement {
   final Library library;
   final String source;
 
-  // add getter for ElementType
-
+  ElementType _type;
   String _documentation;
 
   ModelElement(this.element, this.library, [this.source]);
@@ -101,25 +100,23 @@ abstract class ModelElement {
 
   String get name => element.name;
 
-  bool get hasParameters => element is ExecutableElement || element is FunctionTypeAliasElement;
+  bool get hasParameters =>
+      element is ExecutableElement || element is FunctionTypeAliasElement;
 
   List<Parameter> get parameters {
     if (!hasParameters) {
       throw new StateError("$element does not have parameters");
     }
-
     List<ParameterElement> params;
-
     if (element is ExecutableElement) {
       // the as check silences the warning
       params = (element as ExecutableElement).parameters;
     }
-
     if (element is FunctionTypeAliasElement) {
       params = (element as FunctionTypeAliasElement).parameters;
     }
 
-    return params.map((p) => new Parameter(p, library)).toList(growable:false);
+    return params.map((p) => new Parameter(p, library)).toList(growable: false);
   }
 
   bool get isExecutable => element is ExecutableElement;
@@ -141,11 +138,14 @@ abstract class ModelElement {
 
   bool get isConst => false;
 
+  ElementType get type => _type;
+
   /// Returns the [ModelElement] that encloses this.
   ModelElement getEnclosingElement() {
     // A class's enclosing element is a library, and there isn't a
     // modelelement for a library.
-    if (element.enclosingElement != null && element.enclosingElement is ClassElement) {
+    if (element.enclosingElement != null &&
+        element.enclosingElement is ClassElement) {
       return new ModelElement.from(element.enclosingElement, library);
     } else {
       return null;
@@ -254,7 +254,9 @@ abstract class ModelElement {
   }
 
   String get href {
-    if (!package.isDocumented(this)) return null;
+    if (!package.isDocumented(this)) {
+      return null;
+    }
     return _href;
   }
 
@@ -265,13 +267,13 @@ abstract class ModelElement {
     List<Parameter> allParams = parameters;
 
     List<Parameter> requiredParams =
-      allParams.where((Parameter p) => !p.isOptional).toList();
+        allParams.where((Parameter p) => !p.isOptional).toList();
 
     List<Parameter> positionalParams =
-      allParams.where((Parameter p) => p.isOptionalPositional).toList();
+        allParams.where((Parameter p) => p.isOptionalPositional).toList();
 
     List<Parameter> namedParams =
-      allParams.where((Parameter p) => p.isOptionalNamed).toList();
+        allParams.where((Parameter p) => p.isOptionalNamed).toList();
 
     StringBuffer buf = new StringBuffer();
 
@@ -280,7 +282,7 @@ abstract class ModelElement {
         Parameter p = params[i];
         if (i > 0) buf.write(', ');
         if (p.type != null && p.type.name != null) {
-          String typeName = createLinkedTypeName(p.type);
+          String typeName = p.type.createLinkedName();
           if (typeName.isNotEmpty) {
             buf.write('<span class="type-annotation">$typeName</span> ');
           }
@@ -319,47 +321,6 @@ abstract class ModelElement {
     }
 
     return buf.toString();
-  }
-
-  String createLinkedTypeName(ElementType type) {
-    StringBuffer buf = new StringBuffer();
-
-    if (type.isParameterType) {
-      buf.write(type.element.name);
-    } else {
-      buf.write(type.element.linkedName);
-    }
-
-    // TODO: apparently, EVERYTHING is a parameterized type ?!?!
-    // this is always true
-    if (type.isParameterizedType) {
-      if (!type.typeArguments.isEmpty &&
-          (type.typeArguments.length > 1 ||
-              type.typeArguments.first.toString() != 'dynamic')) {
-        buf.write('&lt;');
-        for (int i = 0; i < type.typeArguments.length; i++) {
-          if (i > 0) {
-            buf.write(', ');
-          }
-          ElementType t = type.typeArguments[i];
-          buf.write(createLinkedTypeName(t));
-        }
-        buf.write('&gt;');
-      }
-    }
-    return buf.toString();
-  }
-
-  String createLinkedReturnTypeName(ElementType type) {
-    if (type.returnElement == null) {
-      if (type.returnTypeName != null) {
-        return type.returnTypeName;
-      } else {
-        return '';
-      }
-    } else {
-      return createLinkedTypeName(type.returnType);
-    }
   }
 }
 
@@ -535,23 +496,39 @@ class Enum extends ModelElement {
 }
 
 class Class extends ModelElement {
+  List<ElementType> _mixins;
+  ElementType _supertype;
+
   ClassElement get _cls => (element as ClassElement);
 
   Class(ClassElement element, Library library, [String source])
-      : super(element, library, source);
+      : super(element, library, source) {
+    var p = library.package;
+//     var lib = new Library(_cls.type.element.library, p);
+    _type = new ElementType(_cls.type, this);
+    _mixins = _cls.mixins.map((f) {
+      var lib = new Library(f.element.library, p);
+      new ElementType(f, new ModelElement.from(f.element, lib));
+    }).toList();
+    if (hasSupertype) {
+      var lib = new Library(_cls.supertype.element.library, p);
+      _supertype = new ElementType(
+          _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
+    }
+  }
 
   bool get isAbstract => _cls.isAbstract;
 
   bool get hasSupertype =>
       _cls.supertype != null && _cls.supertype.element.supertype != null;
 
-  ElementType get supertype => new ElementType(_cls.supertype, library);
+  ElementType get supertype => _supertype;
 
-  List<ElementType> get mixins =>
-      _cls.mixins.map((f) => new ElementType(f, library)).toList();
+  List<ElementType> get mixins => _mixins;
 
-  List<ElementType> get interfaces =>
-      _cls.interfaces.map((f) => new ElementType(f, library)).toList();
+// TODO: check if needed
+//  List<ElementType> get interfaces =>
+//      _cls.interfaces.map((f) => new ElementType(f, library)).toList();
 
   List<Field> _getAllfields() {
     List<FieldElement> elements = _cls.fields.toList()
@@ -602,19 +579,21 @@ class Class extends ModelElement {
 
 class ModelFunction extends ModelElement {
   ModelFunction(FunctionElement element, Library library, [String contents])
-      : super(element, library, contents);
+      : super(element, library, contents) {
+    var e = _func.type.element;
+    _type = new ElementType(_func.type, this);
+  }
 
   FunctionElement get _func => (element as FunctionElement);
 
   bool get isStatic => _func.isStatic;
 
   String get linkedReturnType {
-    return createLinkedReturnTypeName(new ElementType(_func.type, library));
+    return type.createLinkedReturnTypeName();
   }
 
-  // TODO: functions can be in libraries or classes
   @override
-  String get _href => throw "Not Implemented yet.";
+  String get _href => '${library.name}.html#$name';
 }
 
 class Typedef extends ModelElement {
@@ -622,7 +601,10 @@ class Typedef extends ModelElement {
       (element as FunctionTypeAliasElement);
 
   Typedef(FunctionTypeAliasElement element, Library library)
-      : super(element, library);
+      : super(element, library) {
+    var e = _typedef.type.element;
+    _type = new ElementType(_typedef.type, this);
+  }
 
   // TODO: will the superclass version work?
 //  String get linkedName {
@@ -643,17 +625,20 @@ class Typedef extends ModelElement {
 //  }
 
   String get linkedReturnType {
-    return createLinkedReturnTypeName(new ElementType(_typedef.type, library));
+    return type.createLinkedReturnTypeName();
   }
 
   String get _href => '${library.name}.html#$name';
-
 }
 
 class Field extends ModelElement {
   FieldElement get _field => (element as FieldElement);
 
-  Field(FieldElement element, Library library) : super(element, library);
+  Field(FieldElement element, Library library) : super(element, library) {
+    var e = _field.type.element;
+    _type = new ElementType(
+        _field.type, new ModelElement.from(e, new Library(e.library, package)));
+  }
 
   bool get isFinal => _field.isFinal;
 
@@ -665,7 +650,8 @@ class Field extends ModelElement {
     } else if (element.enclosingElement is LibraryElement) {
       return '/${library.name}.html#$name';
     } else {
-      throw new StateError('$name is not in a class or library, instead a ${element.enclosingElement}');
+      throw new StateError(
+          '$name is not in a class or library, instead a ${element.enclosingElement}');
     }
   }
 }
@@ -677,14 +663,17 @@ class Constructor extends ModelElement {
       : super(element, library, source);
 
   @override
-  String get _href => '${library.name}/${_constructor.enclosingElement.name}.html#$name}';
+  String get _href =>
+      '${library.name}/${_constructor.enclosingElement.name}.html#$name}';
 }
 
 class Method extends ModelElement {
-//  MethodElement get _method => (element as MethodElement);
+  MethodElement get _method => (element as MethodElement);
 
   Method(MethodElement element, Library library, [String source])
-      : super(element, library, source);
+      : super(element, library, source) {
+    _type = new ElementType(_method.type, this);
+  }
 
   Method getOverriddenElement() {
     ClassElement parent = element.enclosingElement;
@@ -718,19 +707,24 @@ class Variable extends ModelElement {
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 
   Variable(TopLevelVariableElement element, Library library)
-      : super(element, library);
+      : super(element, library) {
+    if (hasGetter) {
+      var t = _variable.getter.returnType;
+      var lib = new Library(t.element.library, package);
+      _type = new ElementType(t, new ModelElement.from(t.element, lib));
+    } else {
+      var s = _variable.setter.parameters.first.type;
+      var lib = new Library(s.element.library, package);
+      _type = new ElementType(s, new ModelElement.from(s.element, lib));
+    }
+  }
 
   bool get isFinal => _variable.isFinal;
 
   bool get isConst => _variable.isConst;
 
-  // TODO: is this correct? this handles const, final, getters, and setters
   String get linkedReturnType {
-    if (hasGetter) {
-      return createLinkedTypeName(new ElementType(_variable.getter.returnType, library));
-    } else {
-      return createLinkedTypeName(new ElementType(_variable.setter.parameters.first.type, library));
-    }
+    return type.createLinkedName();
   }
 
   bool get hasGetter => _variable.getter != null;
@@ -744,16 +738,18 @@ class Variable extends ModelElement {
 
 class Parameter extends ModelElement {
   Parameter(ParameterElement element, Library library)
-      : super(element, library);
+      : super(element, library) {
+    var t = _parameter.type;
+    _type = new ElementType(t, new ModelElement.from(
+        t.element, new Library(t.element.library, library.package)));
+  }
 
   ParameterElement get _parameter => element as ParameterElement;
 
-  ElementType get type => new ElementType(_parameter.type,
-      new Library(_parameter.type.element.library, package));
-
   bool get isOptional => _parameter.parameterKind.isOptional;
 
-  bool get isOptionalPositional => _parameter.parameterKind == ParameterKind.POSITIONAL;
+  bool get isOptionalPositional =>
+      _parameter.parameterKind == ParameterKind.POSITIONAL;
 
   bool get isOptionalNamed => _parameter.parameterKind == ParameterKind.NAMED;
 
@@ -775,11 +771,11 @@ class Parameter extends ModelElement {
 
 class TypeParameter extends ModelElement {
   TypeParameter(TypeParameterElement element, Library library)
-      : super(element, library);
+      : super(element, library) {
+    _type = new ElementType(_typeParameter.type, this);
+  }
 
   TypeParameterElement get _typeParameter => element as TypeParameterElement;
-
-  ElementType get type => new ElementType(_typeParameter.type, library);
 
   String toString() => element.name;
 
@@ -789,11 +785,9 @@ class TypeParameter extends ModelElement {
 
 class ElementType {
   DartType _type;
-  Library library;
+  ModelElement _element;
 
-  // TODO: Should this be the program's library and package, or the
-  // library and package of the actual _type ?
-  ElementType(this._type, this.library);
+  ElementType(this._type, this._element);
 
   String toString() => "$_type";
 
@@ -801,28 +795,75 @@ class ElementType {
 
   bool get isParameterType => (_type is TypeParameterType);
 
-  ModelElement get element => new ModelElement.from(_type.element, library);
+  ModelElement get element => _element;
 
   String get name => _type.name;
 
   bool get isParameterizedType => (_type is ParameterizedType);
 
-  String get returnTypeName => (_type as FunctionType).returnType.name;
+  String get _returnTypeName => (_type as FunctionType).returnType.name;
 
-  ElementType get returnType =>
-      new ElementType((_type as FunctionType).returnType, library);
+  bool get _hasReturnType => _type is FunctionType;
 
+  ElementType get _returnType {
+    var rt = (_type as FunctionType).returnType;
+    return new ElementType(rt, new ModelElement.from(
+        rt.element, new Library(rt.element.library, _element.package)));
+  }
   ModelElement get returnElement {
     Element e = (_type as FunctionType).returnType.element;
     if (e == null) {
       return null;
     }
-    // TODO: this is probably a bug. e and element are probably not the same?
-    return (new ModelElement.from(e, element.library));
+    Library lib = new Library(e.library, _element.package);
+    return (new ModelElement.from(e, lib));
   }
-  List<ElementType> get typeArguments =>
-      (_type as ParameterizedType).typeArguments
-          .map((f) => new ElementType(f, library))
-          .toList();
-}
 
+  List<ElementType> get typeArguments =>
+      (_type as ParameterizedType).typeArguments.map((f) {
+    var lib = new Library(f.element.library, _element.package);
+    return new ElementType(f, new ModelElement.from(f.element, lib));
+  }).toList();
+
+  String createLinkedName() {
+    StringBuffer buf = new StringBuffer();
+
+    if (isParameterType) {
+      buf.write(name);
+    } else {
+      buf.write(element.linkedName);
+    }
+
+    // not TypeParameterType or Void or Union type
+    if (isParameterizedType) {
+      var typeArgs = typeArguments;
+      if (!typeArguments.isEmpty &&
+          (typeArguments.length > 1 ||
+              typeArguments.first.toString() != 'dynamic')) {
+        buf.write('&lt;');
+        for (int i = 0; i < typeArguments.length; i++) {
+          if (i > 0) {
+            buf.write(', ');
+          }
+          ElementType t = typeArguments[i];
+          buf.write(t.createLinkedName());
+        }
+        buf.write('&gt;');
+      }
+    }
+    return buf.toString();
+  }
+
+  String createLinkedReturnTypeName() {
+    if ((_type as FunctionType).returnType.element == null ||
+        (_type as FunctionType).returnType.element.library == null) {
+      if (_returnTypeName != null) {
+        return _returnTypeName;
+      } else {
+        return '';
+      }
+    } else {
+      return _returnType.createLinkedName();
+    }
+  }
+}

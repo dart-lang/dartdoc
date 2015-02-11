@@ -108,10 +108,6 @@ void main() {
       expect(B.hasSupertype, true);
     });
 
-    test('interfaces', () {
-      expect(A.interfaces.length, 0);
-    });
-
     test('mixins', () {
       expect(A.mixins.length, 0);
     });
@@ -162,13 +158,23 @@ void main() {
     var c = l.getTypes()[1];
     var m = c.getMethods()[0];
     var m2 = lib2.getTypes()[1].getMethods()[0];
+    var m3 = l.getTypes()[0].getMethods()[0];
 
     test('overriden method', () {
       expect(m.getOverriddenElement().runtimeType.toString(), 'Method');
     });
 
     test('method source', () {
-      expect(m2.source, '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n  }');
+      expect(m2.source,
+          '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n  }');
+    });
+
+    test('has params', () {
+      expect(m3.hasParameters, true);
+    });
+
+    test('return type', () {
+      expect(m3.type.createLinkedReturnTypeName(), 'bool');
     });
   });
 
@@ -201,17 +207,27 @@ void main() {
 
   group('Variable', () {
     var v = l.getVariables()[0];
+    var v2 = l.getVariables()[1];
+    var v3 = l.getVariables()[2];
 
     test('is final', () {
-      expect(v.isFinal, false);
+      expect(v2.isFinal, false);
     });
 
     test('is const', () {
-      expect(v.isConst, false);
+      expect(v2.isConst, false);
     });
 
     test('is static', () {
-      expect(v.isStatic, true);
+      expect(v2.isStatic, true);
+    });
+
+    test('linked return type', () {
+      expect(v.linkedReturnType, 'String');
+    });
+
+    test('linked return type 2', () {
+      expect(v3.linkedReturnType, 'dynamic');
     });
   });
 
@@ -224,11 +240,48 @@ void main() {
     });
   });
 
+  group('Type', () {
+    var f = l.getTypes()[1].getInstanceFields()[0];
+
+    test('parameterized type', () {
+      expect(f.type.isParameterizedType, true);
+    });
+  });
+
   group('Typedef', () {
+    var t = l.getTypedefs()[0];
 
     test('docs', () {
-      Typedef t = new Typedef(null, null);
       expect(t.documentation, null);
+    });
+
+    test('linked return type', () {
+      expect(t.linkedReturnType, 'String');
+    });
+  });
+
+  group('Parameter', () {
+    var c = l.getTypes()[0];
+    var m1 = c.getMethods()[2]; // printMsg
+    var m2 = c.getMethods()[0]; // isGreaterThan
+
+    var p1 = m1.parameters[1]; // [bool linebreak]
+    var p2 = m2.parameters[1]; // {int check:5}
+
+    test('is optional', () {
+      expect(p1.isOptional, true);
+    });
+
+    test('default value', () {
+      expect(p2.defaultValue, '5');
+    });
+
+    test('is named', () {
+      expect(p2.isOptionalNamed, true);
+    });
+
+    test('createdLinkedTypeName', () {
+      expect(p2.type.createLinkedName(), 'int');
     });
   });
 }
