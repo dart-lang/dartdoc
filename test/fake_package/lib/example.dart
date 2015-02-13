@@ -11,7 +11,7 @@ const String COLOR = 'red';
 
 typedef String processMessage(String msg);
 
-/// Sample class
+/// Sample class [String]
 class A {
   static const int n = 5;
   static String string = 'hello';

@@ -5,6 +5,7 @@
 /// The models used to represent Dart code
 library dartdoc.models;
 
+import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 
@@ -80,6 +81,60 @@ abstract class ModelElement {
     _documentation = stripComments(_documentation);
 
     return _documentation;
+  }
+
+  String resolveReferences(String docs) {
+    NodeList<CommentReference> _getCommentRefs() {
+      if (_documentation == null && canOverride()) {
+        var melement = getOverriddenElement();
+        if (melement.element.node != null &&
+            melement.element.node is AnnotatedNode) {
+          return (melement.element.node as AnnotatedNode).documentationComment.references;
+        }
+      }
+      if (element.node is AnnotatedNode) {
+        return (element.node as AnnotatedNode).documentationComment.references;
+      }
+      return null;
+    }
+
+    var commentRefs = _getCommentRefs();
+    if (commentRefs == null || commentRefs.isEmpty) {
+      return docs;
+    }
+
+    var matchChars = ['[', ']'];
+    int lastWritten = 0;
+    int index = docs.indexOf(matchChars[0]);
+    StringBuffer buf = new StringBuffer();
+
+    while (index != -1) {
+      int end = docs.indexOf(matchChars[1], index + 1);
+      if (end != -1) {
+        if (index - lastWritten > 0) {
+          buf.write(docs.substring(lastWritten, index));
+        }
+        String codeRef = docs.substring(index + matchChars[0].length, end);
+        buf.write('[$codeRef]');
+        var refElement = commentRefs.firstWhere(
+            (ref) => ref.identifier.name == codeRef).identifier.staticElement;
+        var refLibrary = new Library(refElement.library, package);
+        var e = new ModelElement.from(refElement, refLibrary);
+        var link = e.href;
+        if (link != null) {
+          buf.write('(${e.href})');
+        }
+        lastWritten = end + matchChars[1].length;
+      } else {
+        break;
+      }
+      index = docs.indexOf(matchChars[0], end + 1);
+    }
+    if (lastWritten < docs.length) {
+      buf.write(docs.substring(lastWritten, docs.length));
+    }
+    print(buf.toString());
+    return buf.toString();
   }
 
   String get htmlId => name;
