@@ -92,14 +92,14 @@ void main() {
       expect(A.name, 'A');
     });
 
-    test('docs', () {
-      expect(A.documentation, 'Sample class');
+    test('docs ', () {
+      expect(A.resolveReferences(A.documentation), 'Sample class [String]');
     });
 
-    // SKIP for now
-//    test('docs refs', () {
-//      expect(B.documentation, 'Extends class [A](ex/A.html)');
-//    });
+    test('docs refs', () {
+      expect(
+          B.resolveReferences(B.documentation), 'Extends class [A](ex/A.html)');
+    });
 
     test('abstract', () {
       expect(C.isAbstract, true);
