@@ -498,23 +498,27 @@ class Enum extends ModelElement {
 class Class extends ModelElement {
   List<ElementType> _mixins;
   ElementType _supertype;
+  List<ElementType> _interfaces;
 
   ClassElement get _cls => (element as ClassElement);
 
   Class(ClassElement element, Library library, [String source])
       : super(element, library, source) {
     var p = library.package;
-//     var lib = new Library(_cls.type.element.library, p);
     _type = new ElementType(_cls.type, this);
     _mixins = _cls.mixins.map((f) {
       var lib = new Library(f.element.library, p);
-      new ElementType(f, new ModelElement.from(f.element, lib));
+      return new ElementType(f, new ModelElement.from(f.element, lib));
     }).toList();
     if (hasSupertype) {
       var lib = new Library(_cls.supertype.element.library, p);
       _supertype = new ElementType(
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
     }
+    _interfaces = _cls.interfaces.map((f) {
+      var lib = new Library(f.element.library, p);
+      return new ElementType(f, new ModelElement.from(f.element, lib));
+    }).toList();
   }
 
   bool get isAbstract => _cls.isAbstract;
@@ -526,9 +530,7 @@ class Class extends ModelElement {
 
   List<ElementType> get mixins => _mixins;
 
-// TODO: check if needed
-//  List<ElementType> get interfaces =>
-//      _cls.interfaces.map((f) => new ElementType(f, library)).toList();
+  List<ElementType> get interfaces => _interfaces;
 
   List<Field> _getAllfields() {
     List<FieldElement> elements = _cls.fields.toList()
@@ -755,7 +757,7 @@ class Parameter extends ModelElement {
 
   bool get hasDefaultValue {
     return _parameter.defaultValueCode != null &&
-           _parameter.defaultValueCode.isNotEmpty;
+        _parameter.defaultValueCode.isNotEmpty;
   }
 
   String get defaultValue {

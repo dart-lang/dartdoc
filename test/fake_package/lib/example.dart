@@ -45,4 +45,18 @@ class B extends A {
 
 // Do NOT add a doc comment to C. Testing blank comments.
 
-abstract class C {}
+abstract class C {
+  
+  bool get isImplemented;
+}
+
+class D implements C {
+  
+  @override
+  bool get isImplemented => true;
+  
+  List<A> getClassA() {
+    return [new A()];
+  }
+}
+

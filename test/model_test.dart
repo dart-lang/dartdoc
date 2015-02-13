@@ -82,9 +82,10 @@ void main() {
     Class A = classes[0];
     var B = classes[1];
     var C = classes[2];
+    var D = classes[3];
 
     test('no of classes', () {
-      expect(classes.length, 3);
+      expect(classes.length, 4);
     });
 
     test('name', () {
@@ -110,6 +111,12 @@ void main() {
 
     test('mixins', () {
       expect(A.mixins.length, 0);
+    });
+
+    test('interfaces', () {
+      var interfaces = D.interfaces;
+      expect(interfaces.length, 1);
+      expect(interfaces[0].name, 'C');
     });
 
     test('get ctors', () {
@@ -232,7 +239,6 @@ void main() {
   });
 
   group('Constructor', () {
-    var c = l.getTypes()[0].getCtors()[0];
     var c2 = lib2.getTypes()[0].getCtors()[0];
 
     test('has source', () {
