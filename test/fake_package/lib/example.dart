@@ -50,7 +50,11 @@ abstract class C {
   bool get isImplemented;
 }
 
-class D implements C {
+abstract class E {
+
+}
+
+class D implements C, E {
   
   @override
   bool get isImplemented => true;

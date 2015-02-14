@@ -85,7 +85,7 @@ void main() {
     var D = classes[3];
 
     test('no of classes', () {
-      expect(classes.length, 4);
+      expect(classes.length, 5);
     });
 
     test('name', () {
@@ -115,8 +115,9 @@ void main() {
 
     test('interfaces', () {
       var interfaces = D.interfaces;
-      expect(interfaces.length, 1);
+      expect(interfaces.length, 2);
       expect(interfaces[0].name, 'C');
+      expect(interfaces[1].name, 'E');
     });
 
     test('get ctors', () {
@@ -286,8 +287,8 @@ void main() {
       expect(p2.isOptionalNamed, true);
     });
 
-    test('createdLinkedTypeName', () {
-      expect(p2.type.createLinkedName(), 'int');
+    test('linkedName', () {
+      expect(p2.type.linkedName, 'int');
     });
   });
 }

@@ -337,7 +337,7 @@ abstract class ModelElement {
         Parameter p = params[i];
         if (i > 0) buf.write(', ');
         if (p.type != null && p.type.name != null) {
-          String typeName = p.type.createLinkedName();
+          String typeName = p.type.linkedName;
           if (typeName.isNotEmpty) {
             buf.write('<span class="type-annotation">$typeName</span> ');
           }
@@ -587,6 +587,8 @@ class Class extends ModelElement {
 
   List<ElementType> get interfaces => _interfaces;
 
+  bool get hasInterfaces => _interfaces.isNotEmpty;
+
   List<Field> _getAllfields() {
     List<FieldElement> elements = _cls.fields.toList()
       ..removeWhere(isPrivate)
@@ -781,7 +783,7 @@ class Variable extends ModelElement {
   bool get isConst => _variable.isConst;
 
   String get linkedReturnType {
-    return type.createLinkedName();
+    return type.linkedName;
   }
 
   bool get hasGetter => _variable.getter != null;
@@ -843,6 +845,7 @@ class TypeParameter extends ModelElement {
 class ElementType {
   DartType _type;
   ModelElement _element;
+  String _linkedName;
 
   ElementType(this._type, this._element);
 
@@ -882,7 +885,9 @@ class ElementType {
     return new ElementType(f, new ModelElement.from(f.element, lib));
   }).toList();
 
-  String createLinkedName() {
+  String get linkedName {
+    if (_linkedName != null) return _linkedName;
+
     StringBuffer buf = new StringBuffer();
 
     if (isParameterType) {
@@ -903,12 +908,14 @@ class ElementType {
             buf.write(', ');
           }
           ElementType t = typeArguments[i];
-          buf.write(t.createLinkedName());
+          buf.write(t.linkedName);
         }
         buf.write('&gt;');
       }
     }
-    return buf.toString();
+    _linkedName = buf.toString();
+
+    return _linkedName;
   }
 
   String createLinkedReturnTypeName() {
@@ -920,7 +927,7 @@ class ElementType {
         return '';
       }
     } else {
-      return _returnType.createLinkedName();
+      return _returnType.linkedName;
     }
   }
 }
