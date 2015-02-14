@@ -43,6 +43,13 @@ abstract class AnotherInterface {
 /// The rest of this is not in the first paragraph.
 class LongFirstLine implements Interface, AnotherInterface {
 
+  /// The default constructor.
+  LongFirstLine();
+
+  /// Named constructors are awesome.
+  ///
+  /// The map is a key/value pairs of data that helps create an instance.
+  LongFirstLine.fromMap(Map data);
 }
 
 /// My bad!

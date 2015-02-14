@@ -295,17 +295,8 @@ abstract class ModelElement {
     if (c != null && c.name.startsWith('_')) {
       return '${c.name}.${htmlEscape(name)}';
     }
-    if (c != null && this is Constructor) {
-      String name;
-      if (name.isEmpty) {
-        name = c.name;
-      } else {
-        name = '${c.name}.${htmlEscape(name)}';
-      }
-      return '<a href="${href}">${name}</a>';
-    } else {
-      return '<a href="${href}">${htmlEscape(name)}</a>';
-    }
+
+    return '<a href="${href}">$name</a>';
   }
 
   String get href {
@@ -554,6 +545,7 @@ class Class extends ModelElement {
   List<ElementType> _mixins;
   ElementType _supertype;
   List<ElementType> _interfaces;
+  List<Constructor> _constructors;
 
   ClassElement get _cls => (element as ClassElement);
 
@@ -610,15 +602,19 @@ class Class extends ModelElement {
     return accessors.map((e) => new Accessor(e, library)).toList();
   }
 
-  List<Constructor> getCtors() {
+  List<Constructor> get constructors {
+    if (_constructors != null) return _constructors;
+
     List<ConstructorElement> c = _cls.constructors.toList()
       ..removeWhere(isPrivate)
       ..sort(elementCompare);
-    return c.map((e) {
+    _constructors = c.map((e) {
       var cSource =
           (source != null) ? source.substring(e.node.offset, e.node.end) : null;
       return new Constructor(e, library, cSource);
     }).toList();
+
+    return _constructors;
   }
 
   List<Method> getMethods() {
@@ -723,7 +719,18 @@ class Constructor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.name}/${_constructor.enclosingElement.name}.html#$name}';
+      '${library.name}/${_constructor.enclosingElement.name}.html#$name';
+
+  @override
+  String get name {
+    String constructorName = element.name;
+    Class c = getEnclosingElement();
+    if (constructorName.isEmpty) {
+      return c.name;
+    } else {
+      return '${c.name}.$constructorName';
+    }
+  }
 }
 
 class Method extends ModelElement {

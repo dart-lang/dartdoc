@@ -41,6 +41,22 @@
     </section>
     {{/class.hasInterfaces}}
 
+    <section class="summary" id="constructors">
+        <h2>Constructors</h2>
+
+        <dl class="dl-horizontal">
+            {{#class.constructors}}
+            <dt id="{{htmlId}}">
+                {{{linkedName}}}
+            </dt>
+            <dd>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.constructors}}
+        </dl>
+
+    </section>
+
 </div>
 
 {{>footer}}
