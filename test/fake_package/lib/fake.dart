@@ -27,11 +27,21 @@ class Cool {
 
 }
 
+/// An interface that can be implemented.
+abstract class Interface {
+
+}
+
+/// Yet another interface that can be implemented.
+abstract class AnotherInterface {
+
+}
+
 /// This is a very long line spread
 /// across... wait for it... two physical lines.
 ///
 /// The rest of this is not in the first paragraph.
-class LongFirstLine {
+class LongFirstLine implements Interface, AnotherInterface {
 
 }
 

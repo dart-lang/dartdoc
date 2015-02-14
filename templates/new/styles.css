@@ -152,3 +152,19 @@ footer {
 .has-it::before {
   content: '\2713';
 }
+
+ul.interfaces-implemented {
+  list-style: none;
+}
+
+ul.interfaces-implemented li {
+  display: inline;
+}
+
+ul.interfaces-implemented li:after {
+  content: ", ";
+}
+
+ul.interfaces-implemented li:last-child:after {
+  content: "";
+}
