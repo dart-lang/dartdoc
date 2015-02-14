@@ -120,8 +120,8 @@ void main() {
       expect(interfaces[1].name, 'E');
     });
 
-    test('get ctors', () {
-      expect(A.getCtors().length, 1);
+    test('get constructors', () {
+      expect(A.constructors.length, 1);
     });
 
     test('get static fields', () {
@@ -240,7 +240,7 @@ void main() {
   });
 
   group('Constructor', () {
-    var c2 = lib2.getTypes()[0].getCtors()[0];
+    var c2 = lib2.getTypes()[0].constructors[0];
 
     test('has source', () {
       expect(c2.source, equals('///Constructor\n  A();'));
