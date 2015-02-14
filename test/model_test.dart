@@ -287,8 +287,8 @@ void main() {
       expect(p2.isOptionalNamed, true);
     });
 
-    test('createdLinkedTypeName', () {
-      expect(p2.type.createLinkedName(), 'int');
+    test('linkedName', () {
+      expect(p2.type.linkedName, 'int');
     });
   });
 }
