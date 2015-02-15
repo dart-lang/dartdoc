@@ -304,6 +304,23 @@ void main() {
       expect(p2.type.linkedName, 'int');
     });
   });
+
+  group('Implementors', () {
+    var c = l.getTypes()[0];
+    var impls = getAllImplementorsFor(c);
+
+    test('getAllImplementors', () {
+      expect(impls != null, true);
+    });
+
+    test('implementors href', () {
+      expect(impls[0].href != null, true);
+    });
+
+    test('implementors linked name', () {
+      expect(impls[0].linkedName != null, true);
+    });
+  });
 }
 
 class AnalyzerHelper {
