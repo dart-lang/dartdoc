@@ -13,6 +13,26 @@ import 'html_utils.dart';
 import 'model_utils.dart';
 import 'package_utils.dart';
 
+/// Returns all the implementors of the class specified.
+// TODO(keertip): impelement this
+List<Class> getAllImplementorsFor(Class c) =>
+    [new MockClass('SampleClass'), new MockClass('AnotherClass')];
+
+// TODO: remove once getAllImplementorsFor is implemented,
+// ignore warning
+class MockClass implements Class {
+  final String className;
+
+  MockClass(this.className);
+
+  @override
+  String get name => className;
+  @override
+  String get linkedName => '<a href="${href}">$className</a>';
+  @override
+  String get href => 'library/$className.html';
+}
+
 abstract class ModelElement {
   final Element element;
   final Library library;

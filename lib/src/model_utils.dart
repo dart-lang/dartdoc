@@ -46,8 +46,6 @@ List<LibraryElement> getSdkLibrariesToDocument(
 
 List<InterfaceType> getAllSupertypes(ClassElement c) {
   return c.allSupertypes;
-
-  // TODO:
-
-  //return _getAllSupertypes(t, []);
 }
+
+
