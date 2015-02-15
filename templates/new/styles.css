@@ -82,6 +82,7 @@ dl.withreturntypes .returntype {
 
 dl.withreturntypes dd {
   margin-left: 250px;
+  color: gray;
 }
 
 @media (max-width: 768px) {

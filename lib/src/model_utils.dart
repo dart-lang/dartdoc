@@ -10,6 +10,7 @@ import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
+// TODO how to handle non-primitive values ?
 Object getConstantValue(PropertyInducingElement element) {
   if (element is ConstFieldElementImpl) {
     ConstFieldElementImpl e = element;

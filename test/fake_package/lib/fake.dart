@@ -70,6 +70,18 @@ class LongFirstLine implements Interface, AnotherInterface {
   ///
   /// The map is a key/value pairs of data that helps create an instance.
   LongFirstLine.fromMap(Map data);
+
+  /// No params.
+  void noParams() {}
+
+  /// Returns a single string.
+  String returnString() => 'cool';
+
+  /// Two params, the first has a type annotation, the second does not.
+  int twoParams(String one, two) => 42;
+
+  /// One dynamic param, two named optionals.
+  bool optionalParams(first, {second, int third}) => true;
 }
 
 /// My bad!
