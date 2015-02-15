@@ -214,28 +214,41 @@ void main() {
   });
 
   group('Variable', () {
-    var v = l.getVariables()[0];
-    var v2 = l.getVariables()[1];
-    var v3 = l.getVariables()[2];
 
-    test('is final', () {
-      expect(v2.isFinal, false);
+    Variable v;
+    Variable v3;
+
+    setUp(() {
+      v = l.getProperties()[0];
+      v3 = l.getProperties()[1];
     });
 
-    test('is const', () {
-      expect(v2.isConst, false);
+    test('found two properties', () {
+      expect(l.getProperties().length, 2);
     });
 
-    test('is static', () {
-      expect(v2.isStatic, true);
+    test('linked return type is a double', () {
+      expect(v.linkedReturnType, 'double');
     });
 
-    test('linked return type', () {
-      expect(v.linkedReturnType, 'String');
-    });
-
-    test('linked return type 2', () {
+    test('linked return type is dynamic', () {
       expect(v3.linkedReturnType, 'dynamic');
+    });
+  });
+
+  group('Constant', () {
+    Variable constant;
+
+    setUp(() {
+      constant = l.getConstants()[0];
+    });
+
+    test('found one constant', () {
+      expect(l.getConstants().length, 1);
+    });
+
+    test('is constant', () {
+      expect(constant.isConst, isTrue);
     });
   });
 

@@ -417,6 +417,7 @@ class Package {
 }
 
 class Library extends ModelElement {
+  List<Variable> _variables;
   Package package;
 
   LibraryElement get _library => (element as LibraryElement);
@@ -435,7 +436,9 @@ class Library extends ModelElement {
       .map((lib) => new Library(lib, package))
       .toList();
 
-  List<Variable> getVariables() {
+  List<Variable> _getVariables() {
+    if (_variables != null) return _variables;
+
     List<TopLevelVariableElement> elements = [];
     elements.addAll(_library.definingCompilationUnit.topLevelVariables);
     for (CompilationUnitElement cu in _library.parts) {
@@ -444,7 +447,18 @@ class Library extends ModelElement {
     elements
       ..removeWhere(isPrivate)
       ..sort(elementCompare);
-    return elements.map((e) => new Variable(e, this)).toList(growable: false);
+    _variables = elements.map((e) => new Variable(e, this)).toList(growable: false);
+
+    return _variables;
+  }
+
+  /// All variables ("properties") except constants.
+  List<Variable> getProperties() {
+    return _getVariables().where((v) => !v.isConst).toList(growable:false);
+  }
+
+  List<Variable> getConstants() {
+    return _getVariables().where((v) => v.isConst).toList(growable:false);
   }
 
   List<Enum> getEnums() {
@@ -456,20 +470,6 @@ class Library extends ModelElement {
         .where(isPublic)
         .map((e) => new Enum(e, this))
         .toList(growable: false)..sort(elementCompare);
-  }
-
-  /// Returns getters and setters?
-  List<Accessor> getAccessors() {
-    List<PropertyAccessorElement> elements = [];
-    elements.addAll(_library.definingCompilationUnit.accessors);
-    for (CompilationUnitElement cu in _library.parts) {
-      elements.addAll(cu.accessors);
-    }
-    elements
-      ..removeWhere(isPrivate)
-      ..sort(elementCompare);
-    elements.removeWhere((e) => e.isSynthetic);
-    return elements.map((e) => new Accessor(e, this)).toList();
   }
 
   List<Typedef> getTypedefs() {
@@ -791,6 +791,12 @@ class Variable extends ModelElement {
 
   String get linkedReturnType {
     return type.linkedName;
+  }
+
+  String get constantValue {
+    var v = (_variable as ConstTopLevelVariableElementImpl).node.toSource();
+    if (v == null) return '';
+    return v.substring(v.indexOf('= ')+2, v.length);
   }
 
   bool get hasGetter => _variable.getter != null;
