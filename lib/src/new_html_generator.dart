@@ -119,7 +119,8 @@ class NewHtmlGenerator extends Generator {
   void _writeFile(String filename, String template, Map data) {
     File f = _createOutputFile(filename);
     String content = render(template, data, partial: _partials,
-        assumeNullNonExistingProperty: false);
+        assumeNullNonExistingProperty: false,
+        errorOnMissingProperty: true);
     f.writeAsStringSync(content);
   }
 
@@ -144,7 +145,8 @@ class NewHtmlGenerator extends Generator {
 /// and removes any script tags. Returns the HTML as a string.
 String renderMarkdown(String markdown, {nestedContext}) {
   String mustached = render(markdown.trim(), nestedContext,
-      assumeNullNonExistingProperty: false);
+      assumeNullNonExistingProperty: false,
+      errorOnMissingProperty: true);
   String html = md.markdownToHtml(mustached);
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
@@ -153,7 +155,9 @@ String renderMarkdown(String markdown, {nestedContext}) {
 
 String oneLiner(String text, {nestedContext}) {
   String mustached = render(text.trim(), nestedContext,
-      assumeNullNonExistingProperty: false).trim();
+      assumeNullNonExistingProperty: false,
+      errorOnMissingProperty: true)
+      .trim();
   if (mustached == null || mustached.trim().isEmpty) return '';
 
   // Parse with Markdown, but only care about the first block or paragraph.

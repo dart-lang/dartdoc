@@ -26,7 +26,7 @@
     <section class="desc markdown">
 
         {{#markdown}}
-          {{{ class.description }}}
+          {{{ class.documentation }}}
         {{/markdown}}
 
     </section>
@@ -41,6 +41,17 @@
         </ul>
     </section>
     {{/class.hasInterfaces}}
+
+    {{#class.hasMixins}}
+    <section id="mixes-in">
+        <h4>Mixes-in</h4>
+        <ul class="interfaces-implemented">
+            {{#class.mixins}}
+            <li>{{{linkedName}}}</li>
+            {{/class.mixins}}
+        </ul>
+    </section>
+    {{/class.hasMixins}}
 
     <section class="summary" id="constructors">
         <h2>Constructors</h2>
