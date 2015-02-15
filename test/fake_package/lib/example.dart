@@ -50,10 +50,6 @@ abstract class C {
   bool get isImplemented;
 }
 
-abstract class E {
-
-}
-
 class D implements C, E {
   
   @override
@@ -64,3 +60,6 @@ class D implements C, E {
   }
 }
 
+abstract class E {
+
+}

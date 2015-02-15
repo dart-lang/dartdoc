@@ -63,9 +63,9 @@ class DartDoc {
     // remove excluded libraries
     _excludes.forEach(
         (pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
-    libs.removeWhere(
-        (LibraryElement library) => _excludes.contains(library.name));
-    libs.sort(elementCompare);
+    libs
+        ..removeWhere(
+          (LibraryElement library) => _excludes.contains(library.name));
     libraries.addAll(libs);
 
     // create the out directory

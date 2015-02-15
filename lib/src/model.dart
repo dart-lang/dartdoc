@@ -14,12 +14,14 @@ import 'model_utils.dart';
 import 'package_utils.dart';
 
 /// Returns all the implementors of the class specified.
+// TODO: should this go into model_utils.dart ?
 // TODO(keertip): impelement this
 List<Class> getAllImplementorsFor(Class c) =>
     [new MockClass('SampleClass'), new MockClass('AnotherClass')];
 
 // TODO: remove once getAllImplementorsFor is implemented,
 // ignore warning
+// if only we had an @ignorewarnings!! :)
 class MockClass implements Class {
   final String className;
 
@@ -391,8 +393,7 @@ class Library extends ModelElement {
       elements.addAll(cu.topLevelVariables);
     }
     elements
-      ..removeWhere(isPrivate)
-      ..sort(elementCompare);
+      ..removeWhere(isPrivate);
     _variables = elements.map((e) => new Variable(e, this)).toList(growable: false);
 
     return _variables;
@@ -415,7 +416,7 @@ class Library extends ModelElement {
     return enumClasses
         .where(isPublic)
         .map((e) => new Enum(e, this))
-        .toList(growable: false)..sort(elementCompare);
+        .toList(growable: false);
   }
 
   List<Typedef> getTypedefs() {
@@ -425,8 +426,7 @@ class Library extends ModelElement {
       elements.addAll(cu.functionTypeAliases);
     }
     elements
-      ..removeWhere(isPrivate)
-      ..sort(elementCompare);
+      ..removeWhere(isPrivate);
     return elements.map((e) => new Typedef(e, this)).toList();
   }
 
@@ -437,9 +437,7 @@ class Library extends ModelElement {
       elements.addAll(cu.functions);
     }
     elements
-      ..removeWhere(isPrivate)
-      // TODO not sure we want to sort these. Source order might be best.
-      ..sort(elementCompare);
+      ..removeWhere(isPrivate);
     return elements.map((e) {
       String eSource =
           (source != null) ? source.substring(e.node.offset, e.node.end) : null;
@@ -455,8 +453,7 @@ class Library extends ModelElement {
       types.addAll(cu.types);
     }
     types
-      ..removeWhere(isPrivate)
-      ..sort(elementCompare);
+      ..removeWhere(isPrivate);
     return types.map((e) => new Class(e, this, source)).toList();
   }
 
@@ -530,8 +527,7 @@ class Class extends ModelElement {
 
   List<Field> _getAllfields() {
     List<FieldElement> elements = _cls.fields.toList()
-      ..removeWhere(isPrivate)
-      ..sort(elementCompare);
+      ..removeWhere(isPrivate);
     return elements.map((e) => new Field(e, library)).toList();
   }
 
@@ -544,14 +540,14 @@ class Class extends ModelElement {
   List<Constructor> get constructors {
     if (_constructors != null) return _constructors;
 
-    List<ConstructorElement> c = _cls.constructors.toList()
-      ..removeWhere(isPrivate)
-      ..sort(elementCompare);
-    _constructors = c.map((e) {
-      var cSource =
-          (source != null) ? source.substring(e.node.offset, e.node.end) : null;
-      return new Constructor(e, library, cSource);
-    }).toList();
+    _constructors = _cls.constructors
+      .where(isPublic)
+      .map((e) {
+        var cSource =
+            (source != null) ? source.substring(e.node.offset, e.node.end) : null;
+        return new Constructor(e, library, cSource);
+      })
+      .toList(growable: true);
 
     return _constructors;
   }
