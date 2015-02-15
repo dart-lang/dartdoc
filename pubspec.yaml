@@ -9,10 +9,7 @@ dependencies:
   cli_util: '>=0.0.1 <0.1.0'
   intl: '>=0.12.0 <0.13.0'
   logging: '>=0.9.0 <0.10.0'
-  mustache4dart:
-    git:
-      url: https://github.com/sethladd/mustache4dart.git
-      ref: lambda-with-context
+  mustache4dart: '>=1.0.9 <1.1.0'
   path: '>=1.3.0 <1.4.0'
   yaml: '>=2.1.0 <2.2.0'
   markdown: '>=0.7.1 <0.8.0'
