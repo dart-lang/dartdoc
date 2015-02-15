@@ -15,7 +15,8 @@
 <header class="container-fluid" id="title">
     <div class="container">
         <h1 class="title">
-            {{ class.name }} <span class="type">class</span>
+            {{ class.name }}
+            <span class="type">{{#class.isAbstract}}abstract{{/class.isAbstract}} class</span>
         </h1>
     </div>
 </header>
