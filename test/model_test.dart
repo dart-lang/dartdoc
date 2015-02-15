@@ -132,12 +132,8 @@ void main() {
       expect(A.getInstanceFields().length, 3);
     });
 
-    test('get accessors', () {
-      expect(A.getAccessors().length, 1);
-    });
-
     test('get methods', () {
-      expect(B.getMethods().length, 1);
+      expect(B.methods.length, 1);
     });
   });
 
@@ -164,9 +160,9 @@ void main() {
 
   group('Method', () {
     var c = l.getTypes()[1];
-    var m = c.getMethods()[0];
-    var m2 = lib2.getTypes()[1].getMethods()[0];
-    var m3 = l.getTypes()[0].getMethods()[0];
+    var m = c.methods[0];
+    var m2 = lib2.getTypes()[1].methods[0];
+    var m3 = l.getTypes()[0].methods[0];
 
     test('overriden method', () {
       expect(m.getOverriddenElement().runtimeType.toString(), 'Method');
@@ -182,16 +178,7 @@ void main() {
     });
 
     test('return type', () {
-      expect(m3.type.createLinkedReturnTypeName(), 'bool');
-    });
-  });
-
-  group('Accessor', () {
-    var c = l.getTypes()[0];
-    var a = c.getAccessors()[0];
-
-    test('is getter', () {
-      expect(a.isGetter, true);
+      expect(m3.type.createLinkedReturnTypeName(), 'void');
     });
   });
 
@@ -281,27 +268,35 @@ void main() {
   });
 
   group('Parameter', () {
-    var c = l.getTypes()[0];
-    var m1 = c.getMethods()[2]; // printMsg
-    var m2 = c.getMethods()[0]; // isGreaterThan
+    Class c;
+    Method m1, printMsg, isGreaterThan;
+    Parameter p1, p2;
 
-    var p1 = m1.parameters[1]; // [bool linebreak]
-    var p2 = m2.parameters[1]; // {int check:5}
+    setUp(() {
+      c = l.getTypes()[0]; // A
+
+      m1 = c.methods[0]; // m1
+      printMsg = c.methods[1]; // printMsg
+      isGreaterThan = c.methods[2]; // isGreaterThan
+
+      p1 = isGreaterThan.parameters[1]; // {int check:5}
+      p2 = printMsg.parameters[1]; // [bool linebreak]
+    });
 
     test('is optional', () {
       expect(p1.isOptional, true);
     });
 
     test('default value', () {
-      expect(p2.defaultValue, '5');
+      expect(p1.defaultValue, '5');
     });
 
     test('is named', () {
-      expect(p2.isOptionalNamed, true);
+      expect(p1.isOptionalNamed, true);
     });
 
     test('linkedName', () {
-      expect(p2.type.linkedName, 'int');
+      expect(p1.type.linkedName, 'int');
     });
   });
 

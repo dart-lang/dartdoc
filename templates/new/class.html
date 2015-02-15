@@ -58,6 +58,25 @@
 
     </section>
 
+    {{#class.hasMethods}}
+    <section id="methods-summary" class="summary">
+        <h2>Methods</h2>
+        <dl class="withreturntypes">
+            {{#class.methods}}
+            <dt>
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ name }}</span>({{{ linkedParams }})
+                </code>
+            </dt>
+            <dd>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.methods}}
+        </dl>
+    </section>
+    {{/class.hasMethods}}
+
 </div>
 
 {{>footer}}

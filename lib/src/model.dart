@@ -227,80 +227,6 @@ abstract class ModelElement {
     }
   }
 
-//  String createLinkedSummary() {
-//    if (isExecutable) {
-//      ExecutableElement ex = (element as ExecutableElement);
-//      String retType =
-//          createLinkedReturnTypeName(new ElementType(ex.type, library));
-//
-//      return '${createLinkedName(this)}'
-//          '($linkedParams)'
-//          '${retType.isEmpty ? '' : ': $retType'}';
-//    }
-//    if (isPropertyInducer) {
-//      PropertyInducingElement pe = (element as PropertyInducingElement);
-//      StringBuffer buf = new StringBuffer();
-//      buf.write('${createLinkedName(this)}');
-//      String type = createLinkedName(pe.type == null
-//          ? null
-//          : new ModelElement.from(pe.type.element, library));
-//      if (!type.isEmpty) {
-//        buf.write(': $type');
-//      }
-//      return buf.toString();
-//    }
-//    return createLinkedName(this);
-//  }
-
-//  String createLinkedDescription() {
-//    if (isExecutable && !(element is ConstructorElement)) {
-//      ExecutableElement e = (element as ExecutableElement);
-//      StringBuffer buf = new StringBuffer();
-//
-//      if (e.isStatic) {
-//        buf.write('static ');
-//      }
-//
-//      buf.write(createLinkedReturnTypeName(new ElementType(e.type, library)));
-//      buf.write(
-//          ' ${e.name}($linkedParams)');
-//      return buf.toString();
-//    }
-//    if (isPropertyInducer) {
-//      PropertyInducingElement e = (element as PropertyInducingElement);
-//      StringBuffer buf = new StringBuffer();
-//      if (e.isStatic) {
-//        buf.write('static ');
-//      }
-//      if (e.isFinal) {
-//        buf.write('final ');
-//      }
-//      if (e.isConst) {
-//        buf.write('const ');
-//      }
-//
-//      buf.write(createLinkedName(e.type == null
-//          ? null
-//          : new ModelElement.from(e.type.element, library)));
-//      buf.write(' ${e.name}');
-//
-//      // write out any constant value
-//      Object value = getConstantValue(e);
-//
-//      if (value != null) {
-//        if (value is String) {
-//          String str = stringEscape(value, "'");
-//          buf.write(" = '${str}'");
-//        } else if (value is num) {
-//          buf.write(" = ${value}");
-//        }
-//        //NumberFormat.decimalPattern
-//      }
-//      return buf.toString();
-//    }
-//    return null;
-//  }
-
   Package get package =>
       (this is Library) ? (this as Library).package : this.library.package;
 
@@ -566,6 +492,7 @@ class Class extends ModelElement {
   ElementType _supertype;
   List<ElementType> _interfaces;
   List<Constructor> _constructors;
+  List<Method> _methods;
 
   ClassElement get _cls => (element as ClassElement);
 
@@ -614,14 +541,6 @@ class Class extends ModelElement {
   List<Field> getInstanceFields() =>
       _getAllfields()..removeWhere((f) => f.isStatic);
 
-  List<Accessor> getAccessors() {
-    List<PropertyAccessorElement> accessors = _cls.accessors.toList()
-      ..removeWhere(isPrivate)
-      ..sort(elementCompare);
-    accessors.removeWhere((e) => e.isSynthetic);
-    return accessors.map((e) => new Accessor(e, library)).toList();
-  }
-
   List<Constructor> get constructors {
     if (_constructors != null) return _constructors;
 
@@ -637,16 +556,24 @@ class Class extends ModelElement {
     return _constructors;
   }
 
-  List<Method> getMethods() {
-    List<MethodElement> m = _cls.methods.toList()
-      ..removeWhere(isPrivate)
-      ..sort(elementCompare);
-    return m.map((e) {
-      var mSource =
+  List<Method> get methods {
+    if (_methods != null) return _methods;
+
+    // Do not sort. We want source order.
+    // Also, check if this is lexically ordered
+    _methods = _cls.methods
+      .where(isPublic)
+      .map((e) {
+        var mSource =
           source != null ? source.substring(e.node.offset, e.node.end) : null;
-      return new Method(e, library, mSource);
-    }).toList();
+        return new Method(e, library, mSource);
+      })
+    .toList(growable:false);
+
+    return _methods;
   }
+
+  bool get hasMethods => methods.isNotEmpty;
 
   @override
   String get _href => '${library.name}/$name.html';
@@ -680,24 +607,6 @@ class Typedef extends ModelElement {
     var e = _typedef.type.element;
     _type = new ElementType(_typedef.type, this);
   }
-
-  // TODO: will the superclass version work?
-//  String get linkedName {
-//    StringBuffer buf = new StringBuffer();
-//    buf.write(_typedef.name);
-//    if (!_typedef.typeParameters.isEmpty) {
-//      buf.write('<');
-//      for (int i = 0; i < _typedef.typeParameters.length; i++) {
-//        if (i > 0) {
-//          buf.write(', ');
-//        }
-//        // TODO link this name
-//        buf.write(_typedef.typeParameters[i].name);
-//      }
-//      buf.write('>');
-//    }
-//    return buf.toString();
-//  }
 
   String get linkedReturnType {
     return type.createLinkedReturnTypeName();
@@ -770,6 +679,8 @@ class Method extends ModelElement {
     }
     return null;
   }
+
+  String get linkedReturnType => type.createLinkedReturnTypeName();
 
   @override
   String get _href => throw 'not implemented yet';
