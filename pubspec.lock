@@ -66,12 +66,9 @@ packages:
     source: hosted
     version: "0.9.1"
   mustache4dart:
-    description:
-      ref: lambda-with-context
-      resolved-ref: c3f60253e90192365f8d97a9b3a9be9df12ce647
-      url: "https://github.com/sethladd/mustache4dart.git"
-    source: git
-    version: "1.0.8"
+    description: mustache4dart
+    source: hosted
+    version: "1.0.9"
   path:
     description: path
     source: hosted
