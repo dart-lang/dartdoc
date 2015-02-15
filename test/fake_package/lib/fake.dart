@@ -16,6 +16,26 @@ library fake;
 
 import 'example.dart';
 
+class ConstantClass {
+  final String value;
+  const ConstantClass(this.value);
+}
+
+// No dart docs on purpose. Also, a non-primitive const class.
+const ConstantClass CUSTOM_CLASS = const ConstantClass('custom');
+
+/// Up is a direction.
+///
+/// Getting up in the morning can be hard.
+const String UP = 'up';
+
+/// Dynamic-typed down.
+const DOWN = 'down';
+
+/// A constant integer value,
+/// which is a bit redundant.
+const int ZERO = 0;
+
 /// Takes input, returns output.
 typedef String FakeProcesses(String input);
 
