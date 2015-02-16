@@ -19,6 +19,17 @@ import 'package_utils.dart';
 List<Class> getAllImplementorsFor(Class c) =>
     [new MockClass('SampleClass'), new MockClass('AnotherClass')];
 
+bool _isClassErrorOrException(ClassElement element) {
+  // TODO can I get dart.core statically, without going through _library?
+  LibraryElement coreLib =
+      element.library.importedLibraries.firstWhere((i) => i.name == 'dart.core');
+  ClassElement exception = coreLib.getType('Exception');
+  ClassElement error = coreLib.getType('Error');
+
+  return element.type.isSubtypeOf(exception.type) ||
+         element.type.isSubtypeOf(error.type);
+}
+
 // TODO: remove once getAllImplementorsFor is implemented,
 // ignore warning
 // if only we had an @ignorewarnings!! :)
@@ -33,6 +44,8 @@ class MockClass implements Class {
   String get linkedName => '<a href="${href}">$className</a>';
   @override
   String get href => 'library/$className.html';
+  @override
+  bool get hasMethods => true;
 }
 
 abstract class ModelElement {
@@ -365,8 +378,10 @@ class Package {
 }
 
 class Library extends ModelElement {
+
   List<Variable> _variables;
   Package package;
+  List<Class> _classes;
 
   LibraryElement get _library => (element as LibraryElement);
 
@@ -445,28 +460,30 @@ class Library extends ModelElement {
     }).toList();
   }
 
-  // TODO: rename this to getClasses
-  List<Class> getTypes() {
+  List<Class> get allClasses {
+    if (_classes != null) return _classes;
+
     List<ClassElement> types = [];
     types.addAll(_library.definingCompilationUnit.types);
     for (CompilationUnitElement cu in _library.parts) {
       types.addAll(cu.types);
     }
-    types
-      ..removeWhere(isPrivate);
-    return types.map((e) => new Class(e, this, source)).toList();
+
+    _classes = types
+      .where(isPublic)
+      .map((e) => new Class(e, this, source)) // is source a bug? it's the library's source
+      .toList(growable: true);
+
+    return _classes;
+  }
+
+  // TODO: rename this to getClasses
+  List<Class> getTypes() {
+    return allClasses.where((c) => !c.isErrorOrException).toList(growable:false);
   }
 
   List<Class> getExceptions() {
-    LibraryElement coreLib =
-        _library.importedLibraries.firstWhere((i) => i.name == 'dart.core');
-    ClassElement exception = coreLib.getType('Exception');
-    ClassElement error = coreLib.getType('Error');
-    bool isExceptionOrError(Class t) {
-      return t._cls.type.isSubtypeOf(exception.type) ||
-          t._cls.type.isSubtypeOf(error.type);
-    }
-    return getTypes().where(isExceptionOrError).toList();
+    return allClasses.where((c) => c.isErrorOrException).toList(growable:false);
   }
 
   @override
@@ -510,6 +527,7 @@ class Class extends ModelElement {
       var lib = new Library(f.element.library, p);
       return new ElementType(f, new ModelElement.from(f.element, lib));
     }).toList(growable: false);
+
   }
 
   bool get isAbstract => _cls.isAbstract;
@@ -571,8 +589,11 @@ class Class extends ModelElement {
 
   bool get hasMethods => methods.isNotEmpty;
 
+  bool get isErrorOrException => _isClassErrorOrException(element);
+
   @override
   String get _href => '${library.name}/$name.html';
+
 }
 
 class ModelFunction extends ModelElement {
