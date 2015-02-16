@@ -125,11 +125,11 @@ void main() {
     });
 
     test('get static fields', () {
-      expect(A.getStaticFields(), hasLength(2));
+      expect(A.staticProperties, hasLength(2));
     });
 
     test('get instance fields', () {
-      expect(A.getInstanceFields(), hasLength(3));
+      expect(A.instanceProperties, hasLength(3));
     });
 
     test('get methods', () {
@@ -184,8 +184,8 @@ void main() {
 
   group('Field', () {
     var c = l.getTypes()[0];
-    var f1 = c.getStaticFields()[0];
-    var f2 = c.getInstanceFields()[0];
+    var f1 = c.staticProperties[0];
+    var f2 = c.instanceProperties[0];
 
     test('is const', () {
       expect(f1.isConst, true);
@@ -248,7 +248,7 @@ void main() {
   });
 
   group('Type', () {
-    var f = l.getTypes()[1].getInstanceFields()[0];
+    var f = l.getTypes()[1].instanceProperties[0];
 
     test('parameterized type', () {
       expect(f.type.isParameterizedType, true);

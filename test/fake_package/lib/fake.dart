@@ -68,6 +68,12 @@ abstract class AnotherInterface {
 /// The rest of this is not in the first paragraph.
 class LongFirstLine extends Object with MixMeIn implements Interface, AnotherInterface {
 
+  /// An instance string property. Readable and writable.
+  String aStringProperty;
+
+  /// A static int property.
+  static int meaningOfLife = 42;
+
   /// The default constructor.
   LongFirstLine();
 
@@ -87,6 +93,12 @@ class LongFirstLine extends Object with MixMeIn implements Interface, AnotherInt
 
   /// One dynamic param, two named optionals.
   bool optionalParams(first, {second, int third}) => true;
+
+  /// Dynamic getter. Readable only.
+  get dynamicGetter => 'could be anything';
+
+  /// Only a setter, with a single param, of type double.
+  void set onlySetter(double d) {}
 }
 
 /// My bad!
