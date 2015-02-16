@@ -47,6 +47,11 @@ class Cool {
 
 }
 
+/// Perfect for mix-ins.
+abstract class MixMeIn {
+
+}
+
 /// An interface that can be implemented.
 abstract class Interface {
 
@@ -61,7 +66,7 @@ abstract class AnotherInterface {
 /// across... wait for it... two physical lines.
 ///
 /// The rest of this is not in the first paragraph.
-class LongFirstLine implements Interface, AnotherInterface {
+class LongFirstLine extends Object with MixMeIn implements Interface, AnotherInterface {
 
   /// The default constructor.
   LongFirstLine();

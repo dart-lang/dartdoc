@@ -500,7 +500,7 @@ class Class extends ModelElement {
     _mixins = _cls.mixins.map((f) {
       var lib = new Library(f.element.library, p);
       return new ElementType(f, new ModelElement.from(f.element, lib));
-    }).toList();
+    }).toList(growable: false);
     if (hasSupertype) {
       var lib = new Library(_cls.supertype.element.library, p);
       _supertype = new ElementType(
@@ -509,7 +509,7 @@ class Class extends ModelElement {
     _interfaces = _cls.interfaces.map((f) {
       var lib = new Library(f.element.library, p);
       return new ElementType(f, new ModelElement.from(f.element, lib));
-    }).toList();
+    }).toList(growable: false);
   }
 
   bool get isAbstract => _cls.isAbstract;
@@ -521,9 +521,11 @@ class Class extends ModelElement {
 
   List<ElementType> get mixins => _mixins;
 
+  bool get hasMixins => mixins.isNotEmpty;
+
   List<ElementType> get interfaces => _interfaces;
 
-  bool get hasInterfaces => _interfaces.isNotEmpty;
+  bool get hasInterfaces => interfaces.isNotEmpty;
 
   List<Field> _getAllfields() {
     List<FieldElement> elements = _cls.fields.toList()
@@ -555,8 +557,6 @@ class Class extends ModelElement {
   List<Method> get methods {
     if (_methods != null) return _methods;
 
-    // Do not sort. We want source order.
-    // Also, check if this is lexically ordered
     _methods = _cls.methods
       .where(isPublic)
       .map((e) {
