@@ -38,7 +38,7 @@ void main() {
     });
 
     test('libraries', () {
-      expect(p.libraries.length, 1);
+      expect(p.libraries, hasLength(1));
     });
 
     test('is documented', () {
@@ -85,7 +85,7 @@ void main() {
     var D = classes[3];
 
     test('no of classes', () {
-      expect(classes.length, 5);
+      expect(classes, hasLength(5));
     });
 
     test('name', () {
@@ -110,30 +110,30 @@ void main() {
     });
 
     test('mixins', () {
-      expect(A.mixins.length, 0);
+      expect(A.mixins, hasLength(0));
     });
 
     test('interfaces', () {
       var interfaces = D.interfaces;
-      expect(interfaces.length, 2);
+      expect(interfaces, hasLength(2));
       expect(interfaces[0].name, 'C');
       expect(interfaces[1].name, 'E');
     });
 
     test('get constructors', () {
-      expect(A.constructors.length, 1);
+      expect(A.constructors, hasLength(1));
     });
 
     test('get static fields', () {
-      expect(A.getStaticFields().length, 2);
+      expect(A.getStaticFields(), hasLength(2));
     });
 
     test('get instance fields', () {
-      expect(A.getInstanceFields().length, 3);
+      expect(A.getInstanceFields(), hasLength(3));
     });
 
     test('get methods', () {
-      expect(B.methods.length, 1);
+      expect(B.methods, hasLength(1));
     });
   });
 
@@ -211,7 +211,7 @@ void main() {
     });
 
     test('found two properties', () {
-      expect(l.getProperties().length, 2);
+      expect(l.getProperties(), hasLength(2));
     });
 
     test('linked return type is a double', () {
@@ -231,7 +231,7 @@ void main() {
     });
 
     test('found one constant', () {
-      expect(l.getConstants().length, 1);
+      expect(l.getConstants(), hasLength(1));
     });
 
     test('is constant', () {
