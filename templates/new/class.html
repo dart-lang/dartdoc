@@ -71,7 +71,7 @@
 
     {{#class.hasInstanceProperties}}
     <section class="summary" id="properties">
-        <h2>Properties</h2>
+        <h2>Instance Properties</h2>
 
         <dl class="withreturntypes">
             {{#class.instanceProperties}}
@@ -92,6 +92,30 @@
         </dl>
     </section>
     {{/class.hasInstanceProperties}}
+
+    {{#class.hasStaticProperties}}
+    <section class="summary" id="properties">
+        <h2>Static Properties</h2>
+
+        <dl class="withreturntypes">
+            {{#class.staticProperties}}
+            <dt id="{{htmlId}}">
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ name }}</span>
+                </code>
+            </dt>
+            <dd>
+                <div>
+                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
+                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
+                </div>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.staticProperties}}
+        </dl>
+    </section>
+    {{/class.hasStaticProperties}}
 
     {{#class.hasMethods}}
     <section id="methods-summary" class="summary">

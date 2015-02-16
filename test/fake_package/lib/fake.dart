@@ -99,6 +99,10 @@ class LongFirstLine extends Object with MixMeIn implements Interface, AnotherInt
 
   /// Only a setter, with a single param, of type double.
   void set onlySetter(double d) {}
+
+  static int get staticGetter => 11111;
+
+  static void set staticOnlySetter(bool thing) {}
 }
 
 /// My bad!
