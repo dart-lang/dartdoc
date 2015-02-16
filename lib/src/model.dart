@@ -378,7 +378,6 @@ class Package {
 }
 
 class Library extends ModelElement {
-
   List<Variable> _variables;
   Package package;
   List<Class> _classes;
@@ -507,6 +506,9 @@ class Class extends ModelElement {
   List<ElementType> _interfaces;
   List<Constructor> _constructors;
   List<Method> _methods;
+  List<Field> _fields;
+  List<Field> _staticFields;
+  List<Field> _instanceFields;
 
   ClassElement get _cls => (element as ClassElement);
 
@@ -514,20 +516,22 @@ class Class extends ModelElement {
       : super(element, library, source) {
     var p = library.package;
     _type = new ElementType(_cls.type, this);
+
     _mixins = _cls.mixins.map((f) {
       var lib = new Library(f.element.library, p);
       return new ElementType(f, new ModelElement.from(f.element, lib));
     }).toList(growable: false);
+
     if (hasSupertype) {
       var lib = new Library(_cls.supertype.element.library, p);
       _supertype = new ElementType(
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
     }
+
     _interfaces = _cls.interfaces.map((f) {
       var lib = new Library(f.element.library, p);
       return new ElementType(f, new ModelElement.from(f.element, lib));
     }).toList(growable: false);
-
   }
 
   bool get isAbstract => _cls.isAbstract;
@@ -545,17 +549,33 @@ class Class extends ModelElement {
 
   bool get hasInterfaces => interfaces.isNotEmpty;
 
-  List<Field> _getAllfields() {
-    List<FieldElement> elements = _cls.fields.toList()
-      ..removeWhere(isPrivate);
-    return elements.map((e) => new Field(e, library)).toList();
+  List<Field> get _allFields {
+    if (_fields != null) return _fields;
+
+    _fields = _cls
+      .fields
+      .where(isPublic)
+      .map((e) => new Field(e, library))
+      .toList(growable: false);
+
+    return _fields;
   }
 
-  List<Field> getStaticFields() =>
-      _getAllfields()..removeWhere((f) => !f.isStatic);
+  List<Field> get staticProperties {
+    if (_staticFields != null) return _staticFields;
+    _staticFields = _allFields.where((f) => f.isStatic).toList(growable:false);
+    return _staticFields;
+  }
 
-  List<Field> getInstanceFields() =>
-      _getAllfields()..removeWhere((f) => f.isStatic);
+  List<Field> get instanceProperties {
+    if (_instanceFields != null) return _instanceFields;
+    _instanceFields = _allFields.where((f) => !f.isStatic).toList(growable:false);
+    return _instanceFields;
+  }
+
+  bool get hasStaticProperties => staticProperties.isNotEmpty;
+
+  bool get hasInstanceProperties => instanceProperties.isNotEmpty;
 
   List<Constructor> get constructors {
     if (_constructors != null) return _constructors;
@@ -637,13 +657,35 @@ class Field extends ModelElement {
 
   Field(FieldElement element, Library library) : super(element, library) {
     var e = _field.type.element;
-    _type = new ElementType(
-        _field.type, new ModelElement.from(e, new Library(e.library, package)));
+
+    if (hasGetter) {
+      var t = _field.getter.returnType;
+      var lib = new Library(t.element.library, package);
+      _type = new ElementType(t, new ModelElement.from(t.element, lib));
+    } else {
+      var s = _field.setter.parameters.first.type;
+      var lib = new Library(s.element.library, package);
+      _type = new ElementType(s, new ModelElement.from(s.element, lib));
+    }
   }
 
   bool get isFinal => _field.isFinal;
 
   bool get isConst => _field.isConst;
+
+  String get linkedReturnType {
+    return type.linkedName;
+  }
+
+  String get constantValue {
+    var v = (_field as ConstFieldElementImpl).node.toSource();
+    if (v == null) return '';
+    return v.substring(v.indexOf('= ')+2, v.length);
+  }
+
+  bool get hasGetter => _field.getter != null;
+
+  bool get hasSetter => _field.setter != null;
 
   String get _href {
     if (element.enclosingElement is ClassElement) {
