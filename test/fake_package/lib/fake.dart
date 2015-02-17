@@ -103,6 +103,14 @@ class LongFirstLine extends Object with MixMeIn implements Interface, AnotherInt
   static int get staticGetter => 11111;
 
   static void set staticOnlySetter(bool thing) {}
+
+  /// Just a static method with no parameters.
+  ///
+  /// Returns an int.
+  static int staticMethodNoParams() => 42;
+
+  /// A static method that takes a single dynamic thing, and returns void.
+  static void staticMethodReturnsVoid(dynamicThing) {}
 }
 
 /// My bad!

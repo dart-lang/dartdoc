@@ -133,7 +133,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(B.methods, hasLength(1));
+      expect(B.instanceMethods, hasLength(1));
     });
   });
 
@@ -160,9 +160,9 @@ void main() {
 
   group('Method', () {
     var c = l.getTypes()[1];
-    var m = c.methods[0];
-    var m2 = lib2.getTypes()[1].methods[0];
-    var m3 = l.getTypes()[0].methods[0];
+    var m = c.instanceMethods[0];
+    var m2 = lib2.getTypes()[1].instanceMethods[0];
+    var m3 = l.getTypes()[0].instanceMethods[0];
 
     test('overriden method', () {
       expect(m.getOverriddenElement().runtimeType.toString(), 'Method');
@@ -275,9 +275,9 @@ void main() {
     setUp(() {
       c = l.getTypes()[0]; // A
 
-      m1 = c.methods[0]; // m1
-      printMsg = c.methods[1]; // printMsg
-      isGreaterThan = c.methods[2]; // isGreaterThan
+      m1 = c.instanceMethods[0]; // m1
+      printMsg = c.instanceMethods[1]; // printMsg
+      isGreaterThan = c.instanceMethods[2]; // isGreaterThan
 
       p1 = isGreaterThan.parameters[1]; // {int check:5}
       p2 = printMsg.parameters[1]; // [bool linebreak]

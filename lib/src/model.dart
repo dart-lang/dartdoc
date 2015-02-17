@@ -505,7 +505,9 @@ class Class extends ModelElement {
   ElementType _supertype;
   List<ElementType> _interfaces;
   List<Constructor> _constructors;
-  List<Method> _methods;
+  List<Method> _allMethods;
+  List<Method> _staticMethods;
+  List<Method> _instanceMethods;
   List<Field> _fields;
   List<Field> _staticFields;
   List<Field> _instanceFields;
@@ -592,10 +594,10 @@ class Class extends ModelElement {
     return _constructors;
   }
 
-  List<Method> get methods {
-    if (_methods != null) return _methods;
+  List<Method> get _methods {
+    if (_allMethods != null) return _allMethods;
 
-    _methods = _cls.methods
+    _allMethods = _cls.methods
       .where(isPublic)
       .map((e) {
         var mSource =
@@ -604,10 +606,28 @@ class Class extends ModelElement {
       })
     .toList(growable:false);
 
-    return _methods;
+    return _allMethods;
   }
 
-  bool get hasMethods => methods.isNotEmpty;
+  List<Method> get staticMethods {
+    if (_staticMethods != null) return _staticMethods;
+
+    _staticMethods = _methods.where((m) => m.isStatic).toList(growable:false);
+
+    return _staticMethods;
+  }
+
+  List<Method> get instanceMethods {
+    if (_instanceMethods != null) return _instanceMethods;
+
+    _instanceMethods = _methods.where((m) => !m.isStatic).toList(growable:false);
+
+    return _instanceMethods;
+  }
+
+  bool get hasInstanceMethods => instanceMethods.isNotEmpty;
+
+  bool get hasStaticMethods => staticMethods.isNotEmpty;
 
   bool get isErrorOrException => _isClassErrorOrException(element);
 
@@ -738,6 +758,9 @@ class Method extends ModelElement {
     }
     return null;
   }
+
+  @override
+  bool get isStatic => _method.isStatic;
 
   String get linkedReturnType => type.createLinkedReturnTypeName();
 
