@@ -491,8 +491,7 @@ class Library extends ModelElement {
     return _classes;
   }
 
-  // TODO: rename this to getClasses
-  List<Class> getTypes() {
+  List<Class> getClasses() {
     return allClasses
         .where((c) => !c.isErrorOrException)
         .toList(growable: false);

@@ -78,7 +78,7 @@ void main() {
   });
 
   group('Class', () {
-    var classes = l.getTypes();
+    var classes = l.getClasses();
     Class A = classes[0];
     var B = classes[1];
     var C = classes[2];
@@ -163,10 +163,10 @@ void main() {
   });
 
   group('Method', () {
-    var c = l.getTypes()[1];
+    var c = l.getClasses()[1];
     var m = c.instanceMethods[0];
-    var m2 = lib2.getTypes()[1].instanceMethods[0];
-    var m3 = l.getTypes()[0].instanceMethods[0];
+    var m2 = lib2.getClasses()[1].instanceMethods[0];
+    var m3 = l.getClasses()[0].instanceMethods[0];
 
     test('overriden method', () {
       expect(m.getOverriddenElement().runtimeType.toString(), 'Method');
@@ -187,7 +187,7 @@ void main() {
   });
 
   group('Field', () {
-    var c = l.getTypes()[0];
+    var c = l.getClasses()[0];
     var f1 = c.staticProperties[0]; // n
     var f2 = c.instanceProperties[0];
     var constField = c.constants[0]; // string
@@ -248,7 +248,7 @@ void main() {
   });
 
   group('Constructor', () {
-    var c2 = lib2.getTypes()[0].constructors[0];
+    var c2 = lib2.getClasses()[0].constructors[0];
 
     test('has source', () {
       expect(c2.source, equals('///Constructor\n  Apple();'));
@@ -256,7 +256,7 @@ void main() {
   });
 
   group('Type', () {
-    var f = l.getTypes()[1].instanceProperties[0];
+    var f = l.getClasses()[1].instanceProperties[0];
 
     test('parameterized type', () {
       expect(f.type.isParameterizedType, true);
@@ -281,7 +281,7 @@ void main() {
     Parameter p1, p2;
 
     setUp(() {
-      c = l.getTypes()[0]; // A
+      c = l.getClasses()[0]; // A
 
       m1 = c.instanceMethods[0]; // m1
       printMsg = c.instanceMethods[1]; // printMsg
@@ -309,7 +309,7 @@ void main() {
   });
 
   group('Implementors', () {
-    var c = l.getTypes()[0];
+    var c = l.getClasses()[0];
     var implA = getAllImplementorsFor(c);
 
     test('getAllImplementors for A', () {
@@ -324,7 +324,7 @@ void main() {
       expect(implA[0].name, 'B');
     });
 
-    var implC = getAllImplementorsFor(l.getTypes()[2]);
+    var implC = getAllImplementorsFor(l.getClasses()[2]);
 
     test('implementors for C length', () {
       expect(implC, hasLength(2));
