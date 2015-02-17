@@ -510,6 +510,7 @@ class Class extends ModelElement {
   List<Method> _instanceMethods;
   List<Field> _fields;
   List<Field> _staticFields;
+  List<Field> _constants;
   List<Field> _instanceFields;
 
   ClassElement get _cls => (element as ClassElement);
@@ -565,7 +566,10 @@ class Class extends ModelElement {
 
   List<Field> get staticProperties {
     if (_staticFields != null) return _staticFields;
-    _staticFields = _allFields.where((f) => f.isStatic).toList(growable:false);
+    _staticFields = _allFields
+        .where((f) => f.isStatic)
+        .where((f) => !f.isConst)
+        .toList(growable:false);
     return _staticFields;
   }
 
@@ -574,6 +578,14 @@ class Class extends ModelElement {
     _instanceFields = _allFields.where((f) => !f.isStatic).toList(growable:false);
     return _instanceFields;
   }
+
+  List<Field> get constants {
+    if (_constants != null) return _constants;
+    _constants = _allFields.where((f) => f.isConst).toList(growable:false);
+    return _constants;
+  }
+
+  bool get hasConstants => constants.isNotEmpty;
 
   bool get hasStaticProperties => staticProperties.isNotEmpty;
 

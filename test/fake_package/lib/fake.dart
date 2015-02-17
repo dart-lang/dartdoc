@@ -68,6 +68,9 @@ abstract class AnotherInterface {
 /// The rest of this is not in the first paragraph.
 class LongFirstLine extends Object with MixMeIn implements Interface, AnotherInterface {
 
+  static const THING = 'yup';
+  static const int ANSWER = 42;
+
   /// An instance string property. Readable and writable.
   String aStringProperty;
 

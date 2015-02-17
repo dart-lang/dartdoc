@@ -125,7 +125,11 @@ void main() {
     });
 
     test('get static fields', () {
-      expect(A.staticProperties, hasLength(2));
+      expect(A.staticProperties, hasLength(1));
+    });
+
+    test('get constants', () {
+      expect(A.constants, hasLength(1));
     });
 
     test('get instance fields', () {
@@ -184,11 +188,16 @@ void main() {
 
   group('Field', () {
     var c = l.getTypes()[0];
-    var f1 = c.staticProperties[0];
+    var f1 = c.staticProperties[0]; // n
     var f2 = c.instanceProperties[0];
+    var constField = c.constants[0]; // string
+
+    test('is not const', () {
+      expect(f1.isConst, isFalse);
+    });
 
     test('is const', () {
-      expect(f1.isConst, true);
+      expect(constField.isConst, isTrue);
     });
 
     test('is final', () {

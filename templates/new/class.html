@@ -117,6 +117,28 @@
     </section>
     {{/class.hasStaticProperties}}
 
+    {{#class.hasConstants}}
+    <section class="summary" id="properties">
+        <h2>Constants</h2>
+
+        <dl class="withreturntypes">
+            {{#class.constants}}
+            <dt id="{{htmlId}}">
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ name }}</span>
+                    =
+                    <span class="constant-value">{{ constantValue }}</span>
+                </code>
+            </dt>
+            <dd>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.constants}}
+        </dl>
+    </section>
+    {{/class.hasConstants}}
+
     {{#class.hasStaticMethods}}
     <section id="static-methods-summary" class="summary">
         <h2>Static Methods</h2>
