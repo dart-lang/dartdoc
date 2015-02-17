@@ -17,9 +17,7 @@ import 'package_utils.dart';
 Map<Class, List<Class>> _implementors = new Map();
 
 /// Returns all the implementors of the class specified.
-List<Class> getAllImplementorsFor(Class c) {
-  var m = _implementors[c];
-  return m;}
+List<Class> getAllImplementorsFor(Class c) => _implementors[c];
 
 void _addToImplementors(Class c) {
   void _checkAndAddClass(Class key, Class implClass) {
