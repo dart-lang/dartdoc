@@ -154,11 +154,11 @@ footer {
   content: '\2713';
 }
 
-ul.interfaces-implemented {
+ul.class-relationships {
   list-style: none;
 }
 
-ul.interfaces-implemented li {
+ul.class-relationships li {
   display: inline;
 }
 
@@ -168,4 +168,12 @@ ul.interfaces-implemented li:after {
 
 ul.interfaces-implemented li:last-child:after {
   content: "";
+}
+
+ul.class-extends li:after {
+    content: " > ";
+}
+
+ul.class-extends li:last-child:after {
+    content: "";
 }

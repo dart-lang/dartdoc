@@ -62,11 +62,16 @@ abstract class AnotherInterface {
 
 }
 
+/// A super class, with many powers.
+class SuperAwesomeClass {
+
+}
+
 /// This is a very long line spread
 /// across... wait for it... two physical lines.
 ///
 /// The rest of this is not in the first paragraph.
-class LongFirstLine extends Object with MixMeIn implements Interface, AnotherInterface {
+class LongFirstLine extends SuperAwesomeClass with MixMeIn implements Interface, AnotherInterface {
 
   static const THING = 'yup';
   static const int ANSWER = 42;
