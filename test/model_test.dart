@@ -26,7 +26,7 @@ void main() {
   Source source = helper.addSource(path.join(dirPath, 'lib/example.dart'));
   LibraryElement e = helper.resolve(source);
   Package package = new Package([e], dirPath);
-  var l = new Library(e, package);
+  var l = package.libraries[0];
   var file = new File(path.join(dirPath, 'lib/example.dart'));
   var lib2 = new Library(e, package, file.readAsStringSync());
 
@@ -89,7 +89,7 @@ void main() {
     });
 
     test('name', () {
-      expect(A.name, 'A');
+      expect(A.name, 'Apple');
     });
 
     test('docs ', () {
@@ -98,7 +98,7 @@ void main() {
 
     test('docs refs', () {
       expect(
-          B.resolveReferences(B.documentation), 'Extends class [A](ex/A.html)');
+          B.resolveReferences(B.documentation), 'Extends class [Apple](ex/Apple.html)');
     });
 
     test('abstract', () {
@@ -116,7 +116,7 @@ void main() {
     test('interfaces', () {
       var interfaces = D.interfaces;
       expect(interfaces, hasLength(2));
-      expect(interfaces[0].name, 'C');
+      expect(interfaces[0].name, 'Cat');
       expect(interfaces[1].name, 'E');
     });
 
@@ -210,7 +210,6 @@ void main() {
   });
 
   group('Variable', () {
-
     Variable v;
     Variable v3;
 
@@ -252,7 +251,7 @@ void main() {
     var c2 = lib2.getTypes()[0].constructors[0];
 
     test('has source', () {
-      expect(c2.source, equals('///Constructor\n  A();'));
+      expect(c2.source, equals('///Constructor\n  Apple();'));
     });
   });
 
@@ -311,18 +310,29 @@ void main() {
 
   group('Implementors', () {
     var c = l.getTypes()[0];
-    var impls = getAllImplementorsFor(c);
+    var implA = getAllImplementorsFor(c);
 
-    test('getAllImplementors', () {
-      expect(impls != null, true);
+    test('getAllImplementors for A', () {
+      expect(implA != null, true);
     });
 
-    test('implementors href', () {
-      expect(impls[0].href != null, true);
+    test('implementors for A length', () {
+      expect(implA, hasLength(1));
     });
 
-    test('implementors linked name', () {
-      expect(impls[0].linkedName != null, true);
+    test('implementors for A name', () {
+      expect(implA[0].name, 'B');
+    });
+
+    var implC = getAllImplementorsFor(l.getTypes()[2]);
+
+    test('implementors for C length', () {
+      expect(implC, hasLength(2));
+    });
+
+    test('implementors for C names', () {
+      expect(implC[0].name, 'B');
+      expect(implC[1].name, 'Dog');
     });
   });
 }
