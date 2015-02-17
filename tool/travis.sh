@@ -12,8 +12,7 @@ pub global activate grinder
 export PATH="$PATH":"~/.pub-cache/bin"
 
 # Verify that the libraries are error free.
-# uncomment when MockClass is no longer needed
-#grind analyze
+grind analyze
 
 # Run dartdoc on ourself.
 grind docitself

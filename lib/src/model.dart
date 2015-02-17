@@ -8,44 +8,53 @@ library dartdoc.models;
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
+import 'package:quiver/core.dart';
 
 import 'html_utils.dart';
 import 'model_utils.dart';
 import 'package_utils.dart';
 
+Map<Class, List<Class>> _implementors = new Map();
+
 /// Returns all the implementors of the class specified.
-// TODO: should this go into model_utils.dart ?
-// TODO(keertip): impelement this
-List<Class> getAllImplementorsFor(Class c) =>
-    [new MockClass('SampleClass'), new MockClass('AnotherClass')];
+List<Class> getAllImplementorsFor(Class c) => _implementors[c];
+
+void _addToImplementors(Class c) {
+  void _checkAndAddClass(Class key, Class implClass) {
+    List list = _implementors[key];
+    if (list == null) {
+      list = new List();
+    }
+    if (!list.contains(implClass)) {
+      list.add(implClass);
+      _implementors[key] = list;
+    }
+  }
+
+  if (!c._mixins.isEmpty) {
+    c._mixins.forEach((t) {
+      _checkAndAddClass(t.element, c);
+    });
+  }
+  if (c._supertype != null) {
+    _checkAndAddClass(c._supertype.element, c);
+  }
+  if (!c._interfaces.isEmpty) {
+    c._interfaces.forEach((t) {
+      _checkAndAddClass(t.element, c);
+    });
+  }
+}
 
 bool _isClassErrorOrException(ClassElement element) {
   // TODO can I get dart.core statically, without going through _library?
-  LibraryElement coreLib =
-      element.library.importedLibraries.firstWhere((i) => i.name == 'dart.core');
+  LibraryElement coreLib = element.library.importedLibraries
+      .firstWhere((i) => i.name == 'dart.core');
   ClassElement exception = coreLib.getType('Exception');
   ClassElement error = coreLib.getType('Error');
 
   return element.type.isSubtypeOf(exception.type) ||
-         element.type.isSubtypeOf(error.type);
-}
-
-// TODO: remove once getAllImplementorsFor is implemented,
-// ignore warning
-// if only we had an @ignorewarnings!! :)
-class MockClass implements Class {
-  final String className;
-
-  MockClass(this.className);
-
-  @override
-  String get name => className;
-  @override
-  String get linkedName => '<a href="${href}">$className</a>';
-  @override
-  String get href => 'library/$className.html';
-  @override
-  bool get hasMethods => true;
+      element.type.isSubtypeOf(error.type);
 }
 
 abstract class ModelElement {
@@ -362,6 +371,11 @@ class Package {
       //   print('adding lib $element to package $name');
       _libraries.add(new Library(element, this));
     });
+    _libraries.forEach((library) {
+      library.allClasses.forEach((c) {
+        _addToImplementors(c);
+      });
+    });
   }
 
   String toString() => 'Package $name, isSdk: $_isSdk';
@@ -406,20 +420,20 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.topLevelVariables);
     }
-    elements
-      ..removeWhere(isPrivate);
-    _variables = elements.map((e) => new Variable(e, this)).toList(growable: false);
+    elements..removeWhere(isPrivate);
+    _variables =
+        elements.map((e) => new Variable(e, this)).toList(growable: false);
 
     return _variables;
   }
 
   /// All variables ("properties") except constants.
   List<Variable> getProperties() {
-    return _getVariables().where((v) => !v.isConst).toList(growable:false);
+    return _getVariables().where((v) => !v.isConst).toList(growable: false);
   }
 
   List<Variable> getConstants() {
-    return _getVariables().where((v) => v.isConst).toList(growable:false);
+    return _getVariables().where((v) => v.isConst).toList(growable: false);
   }
 
   List<Enum> getEnums() {
@@ -439,8 +453,7 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functionTypeAliases);
     }
-    elements
-      ..removeWhere(isPrivate);
+    elements..removeWhere(isPrivate);
     return elements.map((e) => new Typedef(e, this)).toList();
   }
 
@@ -450,8 +463,7 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functions);
     }
-    elements
-      ..removeWhere(isPrivate);
+    elements..removeWhere(isPrivate);
     return elements.map((e) {
       String eSource =
           (source != null) ? source.substring(e.node.offset, e.node.end) : null;
@@ -469,20 +481,24 @@ class Library extends ModelElement {
     }
 
     _classes = types
-      .where(isPublic)
-      .map((e) => new Class(e, this, source)) // is source a bug? it's the library's source
-      .toList(growable: true);
+        .where(isPublic)
+        .map((e) => new Class(
+            e, this, source)) // is source a bug? it's the library's source
+        .toList(growable: true);
 
     return _classes;
   }
 
-  // TODO: rename this to getClasses
-  List<Class> getTypes() {
-    return allClasses.where((c) => !c.isErrorOrException).toList(growable:false);
+  List<Class> getClasses() {
+    return allClasses
+        .where((c) => !c.isErrorOrException)
+        .toList(growable: false);
   }
 
   List<Class> getExceptions() {
-    return allClasses.where((c) => c.isErrorOrException).toList(growable:false);
+    return allClasses
+        .where((c) => c.isErrorOrException)
+        .toList(growable: false);
   }
 
   @override
@@ -565,11 +581,10 @@ class Class extends ModelElement {
   List<Field> get _allFields {
     if (_fields != null) return _fields;
 
-    _fields = _cls
-      .fields
-      .where(isPublic)
-      .map((e) => new Field(e, library))
-      .toList(growable: false);
+    _fields = _cls.fields
+        .where(isPublic)
+        .map((e) => new Field(e, library))
+        .toList(growable: false);
 
     return _fields;
   }
@@ -579,19 +594,20 @@ class Class extends ModelElement {
     _staticFields = _allFields
         .where((f) => f.isStatic)
         .where((f) => !f.isConst)
-        .toList(growable:false);
+        .toList(growable: false);
     return _staticFields;
   }
 
   List<Field> get instanceProperties {
     if (_instanceFields != null) return _instanceFields;
-    _instanceFields = _allFields.where((f) => !f.isStatic).toList(growable:false);
+    _instanceFields =
+        _allFields.where((f) => !f.isStatic).toList(growable: false);
     return _instanceFields;
   }
 
   List<Field> get constants {
     if (_constants != null) return _constants;
-    _constants = _allFields.where((f) => f.isConst).toList(growable:false);
+    _constants = _allFields.where((f) => f.isConst).toList(growable: false);
     return _constants;
   }
 
@@ -604,14 +620,11 @@ class Class extends ModelElement {
   List<Constructor> get constructors {
     if (_constructors != null) return _constructors;
 
-    _constructors = _cls.constructors
-      .where(isPublic)
-      .map((e) {
-        var cSource =
-            (source != null) ? source.substring(e.node.offset, e.node.end) : null;
-        return new Constructor(e, library, cSource);
-      })
-      .toList(growable: true);
+    _constructors = _cls.constructors.where(isPublic).map((e) {
+      var cSource =
+          (source != null) ? source.substring(e.node.offset, e.node.end) : null;
+      return new Constructor(e, library, cSource);
+    }).toList(growable: true);
 
     return _constructors;
   }
@@ -619,14 +632,11 @@ class Class extends ModelElement {
   List<Method> get _methods {
     if (_allMethods != null) return _allMethods;
 
-    _allMethods = _cls.methods
-      .where(isPublic)
-      .map((e) {
-        var mSource =
+    _allMethods = _cls.methods.where(isPublic).map((e) {
+      var mSource =
           source != null ? source.substring(e.node.offset, e.node.end) : null;
-        return new Method(e, library, mSource);
-      })
-    .toList(growable:false);
+      return new Method(e, library, mSource);
+    }).toList(growable: false);
 
     return _allMethods;
   }
@@ -634,7 +644,7 @@ class Class extends ModelElement {
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
 
-    _staticMethods = _methods.where((m) => m.isStatic).toList(growable:false);
+    _staticMethods = _methods.where((m) => m.isStatic).toList(growable: false);
 
     return _staticMethods;
   }
@@ -642,7 +652,8 @@ class Class extends ModelElement {
   List<Method> get instanceMethods {
     if (_instanceMethods != null) return _instanceMethods;
 
-    _instanceMethods = _methods.where((m) => !m.isStatic).toList(growable:false);
+    _instanceMethods =
+        _methods.where((m) => !m.isStatic).toList(growable: false);
 
     return _instanceMethods;
   }
@@ -653,9 +664,17 @@ class Class extends ModelElement {
 
   bool get isErrorOrException => _isClassErrorOrException(element);
 
+  bool operator ==(o) => o is Class &&
+      name == o.name &&
+      o.library.name == library.name &&
+      o.library.package.name == library.package.name;
+
+  // a stronger hash?
+  int get hashCode => hash3(
+      name.hashCode, library.name.hashCode, library.package.name.hashCode);
+
   @override
   String get _href => '${library.name}/$name.html';
-
 }
 
 class ModelFunction extends ModelElement {
@@ -722,7 +741,7 @@ class Field extends ModelElement {
   String get constantValue {
     var v = (_field as ConstFieldElementImpl).node.toSource();
     if (v == null) return '';
-    return v.substring(v.indexOf('= ')+2, v.length);
+    return v.substring(v.indexOf('= ') + 2, v.length);
   }
 
   bool get hasGetter => _field.getter != null;
@@ -831,7 +850,7 @@ class Variable extends ModelElement {
   String get constantValue {
     var v = (_variable as ConstTopLevelVariableElementImpl).node.toSource();
     if (v == null) return '';
-    return v.substring(v.indexOf('= ')+2, v.length);
+    return v.substring(v.indexOf('= ') + 2, v.length);
   }
 
   bool get hasGetter => _variable.getter != null;

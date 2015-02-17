@@ -51,7 +51,7 @@ class NewHtmlGenerator extends Generator {
     package.libraries.forEach((lib) {
       generateLibrary(package, lib);
 
-      lib.getTypes().forEach((clazz) {
+      lib.getClasses().forEach((clazz) {
         generateClass(package, lib, clazz);
       });
     });

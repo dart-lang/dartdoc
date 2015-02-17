@@ -12,30 +12,32 @@ const String COLOR = 'red';
 typedef String processMessage(String msg);
 
 /// Sample class [String]
-class A {
+class Apple {
   static const int n = 5;
   static String string = 'hello';
   String s2;
   int m = 0;
 
   ///Constructor
-  A();
+  Apple();
 
   String get s => s2;
 
   void m1() {}
-  
+
   void printMsg(String msg, [bool linebreak]) {}
-  
+
   bool isGreaterThan(int number, {int check:5}) {
     return number > check;
   }
 }
-/// Extends class [A]
-class B extends A {
-  
+/// Extends class [Apple]
+class B extends Apple with Cat {
+
   List<String> list;
-  
+
+  bool get isImplemented => false;
+
   @override
   void m1() {
     var a = 6;
@@ -45,18 +47,18 @@ class B extends A {
 
 // Do NOT add a doc comment to C. Testing blank comments.
 
-abstract class C {
-  
+abstract class Cat {
+
   bool get isImplemented;
 }
 
-class D implements C, E {
-  
+class Dog implements Cat, E {
+
   @override
   bool get isImplemented => true;
-  
-  List<A> getClassA() {
-    return [new A()];
+
+  List<Apple> getClassA() {
+    return [new Apple()];
   }
 }
 
