@@ -544,6 +544,16 @@ class Class extends ModelElement {
 
   ElementType get supertype => _supertype;
 
+  List<ElementType> get superChain {
+    List<ElementType> typeChain = [];
+    var parent = _supertype;
+    while (parent != null) {
+      typeChain.add(parent);
+      parent = (parent.element as Class)._supertype;
+    }
+    return typeChain;
+  }
+
   List<ElementType> get mixins => _mixins;
 
   bool get hasMixins => mixins.isNotEmpty;
