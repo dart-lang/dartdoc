@@ -117,11 +117,11 @@
     </section>
     {{/class.hasStaticProperties}}
 
-    {{#class.hasMethods}}
-    <section id="methods-summary" class="summary">
-        <h2>Methods</h2>
+    {{#class.hasStaticMethods}}
+    <section id="static-methods-summary" class="summary">
+        <h2>Static Methods</h2>
         <dl class="withreturntypes">
-            {{#class.methods}}
+            {{#class.staticMethods}}
             <dt>
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
@@ -131,10 +131,29 @@
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
             </dd>
-            {{/class.methods}}
+            {{/class.staticMethods}}
         </dl>
     </section>
-    {{/class.hasMethods}}
+    {{/class.hasStaticMethods}}
+
+    {{#class.hasInstanceMethods}}
+    <section id="instance-methods-summary" class="summary">
+        <h2>Instance Methods</h2>
+        <dl class="withreturntypes">
+            {{#class.instanceMethods}}
+            <dt>
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ name }}</span>({{{ linkedParams }})
+                </code>
+            </dt>
+            <dd>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.instanceMethods}}
+        </dl>
+    </section>
+    {{/class.hasInstanceMethods}}
 
 </div>
 
