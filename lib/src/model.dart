@@ -7,6 +7,7 @@ library dartdoc.models;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart';
+import 'package:analyzer/src/generated/resolver.dart';
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:quiver/core.dart';
 
@@ -44,14 +45,14 @@ void _addToImplementors(Class c) {
 }
 
 bool _isClassErrorOrException(ClassElement element) {
-  // TODO can I get dart.core statically, without going through _library?
-  LibraryElement coreLib = element.library.importedLibraries
-      .firstWhere((i) => i.name == 'dart.core');
-  ClassElement exception = coreLib.getType('Exception');
-  ClassElement error = coreLib.getType('Error');
-
-  return element.type.isSubtypeOf(exception.type) ||
-      element.type.isSubtypeOf(error.type);
+  var t = element.supertype;
+  while (t != null && t.name != 'Object') {
+    if (t.name == 'Exception' || t.name == 'Error') {
+      return true;
+    }
+    t = t.superclass;
+  }
+  return false;
 }
 
 abstract class ModelElement {
@@ -432,7 +433,8 @@ class Library extends ModelElement {
   }
 
   List<Enum> getEnums() {
-    List<ClassElement> enumClasses = _library.definingCompilationUnit.enums;
+    List<ClassElement> enumClasses = [];
+    enumClasses.addAll(_library.definingCompilationUnit.enums);
     for (CompilationUnitElement cu in _library.parts) {
       enumClasses.addAll(cu.enums);
     }
@@ -485,9 +487,11 @@ class Library extends ModelElement {
   }
 
   List<Class> getClasses() {
-    return allClasses
-        .where((c) => !c.isErrorOrException)
-        .toList(growable: false);
+    if (package._isSdk) {
+      return allClasses;
+    }
+    return allClasses.where((c) => !c.isErrorOrException).toList(
+        growable: false);
   }
 
   List<Class> getExceptions() {
@@ -517,6 +521,7 @@ class Class extends ModelElement {
   List<ElementType> _interfaces;
   List<Constructor> _constructors;
   List<Method> _allMethods;
+  List<Method> _inheritedMethods;
   List<Method> _staticMethods;
   List<Method> _instanceMethods;
   List<Field> _fields;
@@ -658,6 +663,28 @@ class Class extends ModelElement {
     return _instanceMethods;
   }
 
+  List<Method> get inheritedMethods {
+    if (_inheritedMethods != null) return _inheritedMethods;
+    InheritanceManager manager = new InheritanceManager(element.library);
+    MemberMap map = manager.getMapOfMembersInheritedFromClasses(element);
+    _methods.forEach((method) => map.remove(method.name));
+    var methodList = [];
+    for (var i = 0; i < map.size; i++) {
+      var value = map.getValue(i);
+      if (value != null &&
+          value is MethodElement &&
+          !value.isPrivate &&
+          value.enclosingElement.name != 'Object') {
+        var lib = value.library == library.element
+            ? library
+            : new Library(value.library, package);
+        methodList.add(new Method(value, lib));
+      }
+    }
+    _inheritedMethods = methodList;
+    return _inheritedMethods;
+  }
+
   bool get hasInstanceMethods => instanceMethods.isNotEmpty;
 
   bool get hasStaticMethods => staticMethods.isNotEmpty;
@@ -702,7 +729,6 @@ class Typedef extends ModelElement {
 
   Typedef(FunctionTypeAliasElement element, Library library)
       : super(element, library) {
-    var e = _typedef.type.element;
     _type = new ElementType(_typedef.type, this);
   }
 
@@ -717,8 +743,6 @@ class Field extends ModelElement {
   FieldElement get _field => (element as FieldElement);
 
   Field(FieldElement element, Library library) : super(element, library) {
-    var e = _field.type.element;
-
     if (hasGetter) {
       var t = _field.getter.returnType;
       var lib = new Library(t.element.library, package);

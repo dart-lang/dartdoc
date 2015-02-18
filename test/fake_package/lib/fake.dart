@@ -173,4 +173,4 @@ void onlyPositionalWithNoDefaultNoType([anything]) {}
 void soIntense(anything, {bool flag: true, int value}) {  }
 
 /// [A] comes from another library.
-void paramFromAnotherLib(A thing) {}
+void paramFromAnotherLib(Apple thing) {}
