@@ -352,34 +352,39 @@ void main() {
   });
 
   group('Implementors', () {
-    var c, implA;
+
+    Class apple;
+    Class b;
+    List<Class> implA, implC;
 
     setUp(() {
-      c = l.getClasses()[0];
-      implA = getAllImplementorsFor(c);
+      apple = l.getClasses()[0];
+      b = l.getClasses()[1];
+      implA = apple.implementors;
+      implC = l.getClasses()[2].implementors;
     });
 
-    test('getAllImplementors for A', () {
-      expect(implA != null, true);
+    test('the first class is Apple', () {
+      expect(apple.name, equals('Apple'));
     });
 
-    test('implementors for A length', () {
+    test('apple has some implementors', () {
+      expect(apple.hasImplementors, isTrue);
+      expect(implA, isNotNull);
       expect(implA, hasLength(1));
+      expect(implA[0].name, equals('B'));
     });
 
-    test('implementors for A name', () {
-      expect(implA[0].name, 'B');
-    });
-
-    var implC = getAllImplementorsFor(l.getClasses()[2]);
-
-    test('implementors for C length', () {
+    test('C has implementors', () {
       expect(implC, hasLength(2));
+      expect(implC[0].name, equals('B'));
+      expect(implC[1].name, equals('Dog'));
     });
 
-    test('implementors for C names', () {
-      expect(implC[0].name, 'B');
-      expect(implC[1].name, 'Dog');
+    test('B does not have implementors', () {
+      expect(b, isNotNull);
+      expect(b.name, equals('B'));
+      expect(b.implementors, hasLength(0));
     });
   });
 }
