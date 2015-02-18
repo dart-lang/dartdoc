@@ -45,14 +45,18 @@ void _addToImplementors(Class c) {
 }
 
 bool _isClassErrorOrException(ClassElement element) {
-  var t = element.supertype;
-  while (t != null && t.name != 'Object') {
-    if ((t.name == 'Exception' ||
-        t.name == 'Error') && t.element.library.isDartCore) {
-      return true;
+  var supertypes = element.allSupertypes;
+  for (int i = 0; i < supertypes.length; i++) {
+    var t = supertypes[i];
+    while (t != null && t.name != 'Object') {
+      if ((t.name == 'Exception' || t.name == 'Error') &&
+          t.element.library.isDartCore) {
+        return true;
+      }
+      t = t.superclass;
     }
-    t = t.superclass;
   }
+
   return false;
 }
 
