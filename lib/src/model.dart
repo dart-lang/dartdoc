@@ -14,20 +14,17 @@ import 'html_utils.dart';
 import 'model_utils.dart';
 import 'package_utils.dart';
 
-Map<Class, List<Class>> _implementors = new Map();
-
-/// Returns all the implementors of the class specified.
-List<Class> getAllImplementorsFor(Class c) => _implementors[c];
+final Map<Class, List<Class>> _implementors = new Map();
 
 void _addToImplementors(Class c) {
+  _implementors.putIfAbsent(c, () => []);
+
   void _checkAndAddClass(Class key, Class implClass) {
+    _implementors.putIfAbsent(key, () => []);
     List list = _implementors[key];
-    if (list == null) {
-      list = new List();
-    }
+
     if (!list.contains(implClass)) {
       list.add(implClass);
-      _implementors[key] = list;
     }
   }
 
@@ -372,9 +369,7 @@ class Package {
       _libraries.add(new Library(element, this));
     });
     _libraries.forEach((library) {
-      library.allClasses.forEach((c) {
-        _addToImplementors(c);
-      });
+      library.allClasses.forEach(_addToImplementors);
     });
   }
 
@@ -577,6 +572,11 @@ class Class extends ModelElement {
   List<ElementType> get interfaces => _interfaces;
 
   bool get hasInterfaces => interfaces.isNotEmpty;
+
+  /// Returns all the implementors of the class specified.
+  List<Class> get implementors => _implementors[this];
+
+  bool get hasImplementors => implementors.isNotEmpty;
 
   List<Field> get _allFields {
     if (_fields != null) return _fields;

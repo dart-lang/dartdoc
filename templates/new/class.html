@@ -65,6 +65,17 @@
     </section>
     {{/class.hasMixins}}
 
+    {{#class.hasImplementors}}
+    <section id="implementors">
+        <h4>Implementors</h4>
+        <ul class="interfaces-implemented class-relationships">
+            {{#class.implementors}}
+            <li>{{{linkedName}}}</li>
+            {{/class.implementors}}
+        </ul>
+    </section>
+    {{/class.hasImplementors}}
+
     <section class="summary" id="constructors">
         <h2>Constructors</h2>
 
