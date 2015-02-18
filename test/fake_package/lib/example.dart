@@ -65,3 +65,7 @@ class Dog implements Cat, E {
 abstract class E {
 
 }
+
+class CatString extends StringBuffer {
+
+}

@@ -85,17 +85,18 @@ void main() {
   });
 
   group('Class', () {
-    var classes, A, B, C, D;
+    var classes, A, B, C, D, CError;
     setUp(() {
-      classes = l.getClasses();
+      classes = l.allClasses;
       A = classes[0];
       B = classes[1];
       C = classes[2];
       D = classes[3];
+      CError = classes[5];
     });
 
     test('no of classes', () {
-      expect(classes, hasLength(5));
+      expect(classes, hasLength(6));
     });
 
     test('name', () {
@@ -157,6 +158,10 @@ void main() {
     test('inherited methods names', () {
       expect(B.inheritedMethods[0].name, 'printMsg');
       expect(B.inheritedMethods[1].name, 'isGreaterThan');
+    });
+
+    test('inherited methods from another package', () {
+      expect(CError.inheritedMethods, hasLength(6));
     });
   });
 
