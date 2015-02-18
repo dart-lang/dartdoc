@@ -16,6 +16,12 @@ library fake;
 
 import 'example.dart';
 
+/// Useful for annotations.
+class Annotation {
+  final String value;
+  const Annotation(this.value);
+}
+
 class ConstantClass {
   final String value;
   const ConstantClass(this.value);
@@ -71,6 +77,7 @@ class SuperAwesomeClass {
 /// across... wait for it... two physical lines.
 ///
 /// The rest of this is not in the first paragraph.
+@Annotation('value')
 class LongFirstLine extends SuperAwesomeClass with MixMeIn implements Interface, AnotherInterface {
 
   static const THING = 'yup';

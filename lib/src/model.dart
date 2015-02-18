@@ -44,10 +44,12 @@ void _addToImplementors(Class c) {
   }
 }
 
+// TODO will this work for classes named Error or Exception that are NOT in dart:core?
+// Added check.
 bool _isClassErrorOrException(ClassElement element) {
   var t = element.supertype;
   while (t != null && t.name != 'Object') {
-    if (t.name == 'Exception' || t.name == 'Error') {
+    if (t.element.library.isDartCore && (t.name == 'Exception' || t.name == 'Error')) {
       return true;
     }
     t = t.superclass;
@@ -184,9 +186,9 @@ abstract class ModelElement {
   String toString() => '$runtimeType $name';
 
   List<String> getAnnotations() {
-    List<ElementAnnotation> a = element.metadata;
-    if (a.isNotEmpty) {
-      return a.map((f) => f.element.name).toList();
+    List<ElementAnnotation> annotations = element.metadata;
+    if (annotations.isNotEmpty) {
+      return annotations.map((f) => f.element.name).toList(growable:false);
     }
     return [];
   }
