@@ -32,13 +32,12 @@
     </section>
 
     {{#class.hasAnnotations}}
-    <section id="extends">
+    <section id="annotations">
         <h4>Annotated by</h4>
-        <ul class="class-extends class-relationships">
-            {{#class.superChain}}
-            <li>{{{linkedName}}}</li>
-            {{/class.superChain}}
-            <li>Object</li>
+        <ul class="interfaces-implemented class-relationships">
+            {{#class.annotations}}
+            <li>{{{.}}}</li>
+            {{/class.annotations}}
         </ul>
     </section>
     {{/class.hasAnnotations}}

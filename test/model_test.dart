@@ -103,7 +103,7 @@ void main() {
     });
 
     test('no of classes', () {
-      expect(classes, hasLength(6));
+      expect(classes, hasLength(8));
     });
 
     test('docs ', () {
@@ -394,6 +394,21 @@ void main() {
     test('library has the exact errors/exceptions we expect', () {
       expect(library.getExceptions().map((e) => e.name),
           unorderedEquals(expectedNames));
+    });
+  });
+
+  group('Annotations', () {
+    Class forAnnotation;
+    setUp(() {
+      forAnnotation = library.getClasses().firstWhere((c) => c.name == 'HasAnnotation');
+    });
+
+    test('is not null', () => expect(forAnnotation, isNotNull));
+
+    test('has one annotation', () => expect(forAnnotation.annotations, hasLength(1)));
+
+    test('has the right annotation', () {
+      expect(forAnnotation.annotations.first, equals('ForAnnotation'));
     });
   });
 }
