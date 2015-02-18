@@ -69,3 +69,19 @@ abstract class E {
 class CatString extends StringBuffer {
 
 }
+
+class MyError extends Error {
+
+}
+
+class MyException implements Exception {
+
+}
+
+class MyErrorImplements implements Error {
+  StackTrace get stackTrace => null;
+}
+
+class MyExceptionImplements implements Exception {
+
+}

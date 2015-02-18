@@ -26,7 +26,7 @@ void main() {
   Source source = helper.addSource(path.join(dirPath, 'lib/example.dart'));
   LibraryElement e = helper.resolve(source);
   Package package = new Package([e], dirPath);
-  var l = package.libraries[0];
+  var library = package.libraries[0];
   var file = new File(path.join(dirPath, 'lib/example.dart'));
   var lib2 = new Library(e, package, file.readAsStringSync());
 
@@ -47,7 +47,7 @@ void main() {
     });
 
     test('is documented', () {
-      expect(p.isDocumented(l), true);
+      expect(p.isDocumented(library), true);
     });
 
     test('sdk name', () {
@@ -72,7 +72,7 @@ void main() {
     });
 
     test('name', () {
-      expect(l.name, 'ex');
+      expect(library.name, 'ex');
     });
 
     test('sdk library name', () {
@@ -80,31 +80,34 @@ void main() {
     });
 
     test('documentation', () {
-      expect(l.documentation, 'a library');
+      expect(library.documentation, 'a library');
     });
   });
 
   group('Class', () {
-    var classes, A, B, C, D, CError;
+    List<Class> classes;
+    Class Apple, B, Cat, Dog;
     setUp(() {
-      classes = l.allClasses;
-      A = classes[0];
+      classes = library.getClasses();
+      Apple = classes[0];
       B = classes[1];
-      C = classes[2];
-      D = classes[3];
-      CError = classes[5];
+      Cat = classes[2];
+      Dog = classes[3];
+    });
+
+    test('we got the classes we expect', () {
+      expect(Apple.name, equals('Apple'));
+      expect(B.name, equals('B'));
+      expect(Cat.name, equals('Cat'));
+      expect(Dog.name, equals('Dog'));
     });
 
     test('no of classes', () {
       expect(classes, hasLength(6));
     });
 
-    test('name', () {
-      expect(A.name, 'Apple');
-    });
-
     test('docs ', () {
-      expect(A.resolveReferences(A.documentation), 'Sample class [String]');
+      expect(Apple.resolveReferences(Apple.documentation), 'Sample class [String]');
     });
 
     test('docs refs', () {
@@ -113,7 +116,7 @@ void main() {
     });
 
     test('abstract', () {
-      expect(C.isAbstract, true);
+      expect(Cat.isAbstract, true);
     });
 
     test('supertype', () {
@@ -121,30 +124,30 @@ void main() {
     });
 
     test('mixins', () {
-      expect(A.mixins, hasLength(0));
+      expect(Apple.mixins, hasLength(0));
     });
 
     test('interfaces', () {
-      var interfaces = D.interfaces;
+      var interfaces = Dog.interfaces;
       expect(interfaces, hasLength(2));
       expect(interfaces[0].name, 'Cat');
       expect(interfaces[1].name, 'E');
     });
 
     test('get constructors', () {
-      expect(A.constructors, hasLength(1));
+      expect(Apple.constructors, hasLength(1));
     });
 
     test('get static fields', () {
-      expect(A.staticProperties, hasLength(1));
+      expect(Apple.staticProperties, hasLength(1));
     });
 
     test('get constants', () {
-      expect(A.constants, hasLength(1));
+      expect(Apple.constants, hasLength(1));
     });
 
     test('get instance fields', () {
-      expect(A.instanceProperties, hasLength(3));
+      expect(Apple.instanceProperties, hasLength(3));
     });
 
     test('get methods', () {
@@ -160,16 +163,13 @@ void main() {
       expect(B.inheritedMethods[1].name, 'isGreaterThan');
     });
 
-    test('inherited methods from another package', () {
-      expect(CError.inheritedMethods, hasLength(6));
-    });
   });
 
   group('Function', () {
     var f1, f2;
 
     setUp(() {
-      f1 = l.getFunctions()[0];
+      f1 = library.getFunctions()[0];
       f2 = lib2.getFunctions()[0];
     });
 
@@ -194,10 +194,10 @@ void main() {
     var c, m, m2, m3;
 
     setUp(() {
-      c = l.getClasses()[1];
+      c = library.getClasses()[1];
       m = c.instanceMethods[0];
       m2 = lib2.getClasses()[1].instanceMethods[0];
-      m3 = l.getClasses()[0].instanceMethods[0];
+      m3 = library.getClasses()[0].instanceMethods[0];
     });
 
     test('overriden method', () {
@@ -222,7 +222,7 @@ void main() {
     var c, f1, f2, constField;
 
     setUp(() {
-      c = l.getClasses()[0];
+      c = library.getClasses()[0];
       f1 = c.staticProperties[0]; // n
       f2 = c.instanceProperties[0];
       constField = c.constants[0]; // string
@@ -250,12 +250,12 @@ void main() {
     Variable v3;
 
     setUp(() {
-      v = l.getProperties()[0];
-      v3 = l.getProperties()[1];
+      v = library.getProperties()[0];
+      v3 = library.getProperties()[1];
     });
 
     test('found two properties', () {
-      expect(l.getProperties(), hasLength(2));
+      expect(library.getProperties(), hasLength(2));
     });
 
     test('linked return type is a double', () {
@@ -271,11 +271,11 @@ void main() {
     Variable constant;
 
     setUp(() {
-      constant = l.getConstants()[0];
+      constant = library.getConstants()[0];
     });
 
     test('found one constant', () {
-      expect(l.getConstants(), hasLength(1));
+      expect(library.getConstants(), hasLength(1));
     });
 
     test('is constant', () {
@@ -295,7 +295,7 @@ void main() {
   });
 
   group('Type', () {
-    var f = l.getClasses()[1].instanceProperties[0];
+    var f = library.getClasses()[1].instanceProperties[0];
 
     test('parameterized type', () {
       expect(f.type.isParameterizedType, true);
@@ -306,7 +306,7 @@ void main() {
     var t;
 
     setUp(() {
-      t = l.getTypedefs()[0];
+      t = library.getTypedefs()[0];
     });
 
     test('docs', () {
@@ -324,7 +324,7 @@ void main() {
     Parameter p1, p2;
 
     setUp(() {
-      c = l.getClasses()[0]; // A
+      c = library.getClasses()[0]; // A
 
       m1 = c.instanceMethods[0]; // m1
       printMsg = c.instanceMethods[1]; // printMsg
@@ -358,10 +358,10 @@ void main() {
     List<Class> implA, implC;
 
     setUp(() {
-      apple = l.getClasses()[0];
-      b = l.getClasses()[1];
+      apple = library.getClasses()[0];
+      b = library.getClasses()[1];
       implA = apple.implementors;
-      implC = l.getClasses()[2].implementors;
+      implC = library.getClasses()[2].implementors;
     });
 
     test('the first class is Apple', () {
@@ -385,6 +385,12 @@ void main() {
       expect(b, isNotNull);
       expect(b.name, equals('B'));
       expect(b.implementors, hasLength(0));
+    });
+  });
+
+  group('Errors and exceptions', () {
+    test('library has four errors/exceptions', () {
+      expect(library.getExceptions(), hasLength(4));
     });
   });
 }

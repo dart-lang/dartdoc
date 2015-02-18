@@ -44,19 +44,6 @@ void _addToImplementors(Class c) {
   }
 }
 
-// TODO will this work for classes named Error or Exception that are NOT in dart:core?
-// Added check.
-bool _isClassErrorOrException(ClassElement element) {
-  var t = element.supertype;
-  while (t != null && t.name != 'Object') {
-    if (t.element.library.isDartCore && (t.name == 'Exception' || t.name == 'Error')) {
-      return true;
-    }
-    t = t.superclass;
-  }
-  return false;
-}
-
 abstract class ModelElement {
   final Element element;
   final Library library;
@@ -372,7 +359,7 @@ class Package {
       _libraries.add(new Library(element, this));
     });
     _libraries.forEach((library) {
-      library.allClasses.forEach(_addToImplementors);
+      library._allClasses.forEach(_addToImplementors);
     });
   }
 
@@ -470,7 +457,7 @@ class Library extends ModelElement {
     }).toList();
   }
 
-  List<Class> get allClasses {
+  List<Class> get _allClasses {
     if (_classes != null) return _classes;
 
     List<ClassElement> types = [];
@@ -490,14 +477,14 @@ class Library extends ModelElement {
 
   List<Class> getClasses() {
     if (package._isSdk) {
-      return allClasses;
+      return _allClasses;
     }
-    return allClasses.where((c) => !c.isErrorOrException).toList(
+    return _allClasses.where((c) => !c.isErrorOrException).toList(
         growable: false);
   }
 
   List<Class> getExceptions() {
-    return allClasses
+    return _allClasses
         .where((c) => c.isErrorOrException)
         .toList(growable: false);
   }
@@ -691,7 +678,14 @@ class Class extends ModelElement {
 
   bool get hasStaticMethods => staticMethods.isNotEmpty;
 
-  bool get isErrorOrException => _isClassErrorOrException(element);
+  bool get isErrorOrException {
+    bool _doCheck(InterfaceType type) {
+      return (type.element.library.isDartCore &&
+          (type.name == 'Exception' || type.name == 'Error'));
+    }
+
+    return _cls.allSupertypes.any(_doCheck);
+  }
 
   bool operator ==(o) => o is Class &&
       name == o.name &&
