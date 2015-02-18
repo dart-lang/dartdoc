@@ -85,3 +85,13 @@ class MyErrorImplements implements Error {
 class MyExceptionImplements implements Exception {
 
 }
+
+class ForAnnotation {
+  final String value;
+  const ForAnnotation(this.value);
+}
+
+@ForAnnotation('my value')
+class HasAnnotation {
+
+}
