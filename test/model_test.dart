@@ -31,7 +31,12 @@ void main() {
   var lib2 = new Library(e, package, file.readAsStringSync());
 
   group('Package', () {
-    var p = new Package([e], Directory.current.path);
+    var p, p2;
+
+    setUp(() {
+      p = new Package([e], Directory.current.path);
+      p2 = new Package([e], Directory.current.path, '1.9.0-dev.3.0', true);
+    });
 
     test('name', () {
       expect(p.name, 'dartdoc');
@@ -44,8 +49,6 @@ void main() {
     test('is documented', () {
       expect(p.isDocumented(l), true);
     });
-
-    var p2 = new Package([e], Directory.current.path, '1.9.0-dev.3.0', true);
 
     test('sdk name', () {
       expect(p2.name, 'Dart API Reference');
@@ -61,12 +64,16 @@ void main() {
   });
 
   group('Library', () {
+    var sdkLib;
+
+    setUp(() {
+      sdkLib = new Library(
+          getSdkLibrariesToDocument(helper.sdk, helper.context)[0], package);
+    });
+
     test('name', () {
       expect(l.name, 'ex');
     });
-
-    Library sdkLib = new Library(
-        getSdkLibrariesToDocument(helper.sdk, helper.context)[0], package);
 
     test('sdk library name', () {
       expect(sdkLib.name, 'dart:async');
@@ -78,11 +85,14 @@ void main() {
   });
 
   group('Class', () {
-    var classes = l.getClasses();
-    Class A = classes[0];
-    var B = classes[1];
-    var C = classes[2];
-    var D = classes[3];
+    var classes, A, B, C, D;
+    setUp(() {
+      classes = l.getClasses();
+      A = classes[0];
+      B = classes[1];
+      C = classes[2];
+      D = classes[3];
+    });
 
     test('no of classes', () {
       expect(classes, hasLength(5));
@@ -97,8 +107,8 @@ void main() {
     });
 
     test('docs refs', () {
-      expect(
-          B.resolveReferences(B.documentation), 'Extends class [Apple](ex/Apple.html)');
+      expect(B.resolveReferences(B.documentation),
+          'Extends class [Apple](ex/Apple.html)');
     });
 
     test('abstract', () {
@@ -139,11 +149,24 @@ void main() {
     test('get methods', () {
       expect(B.instanceMethods, hasLength(1));
     });
+
+    test('inherited methods', () {
+      expect(B.inheritedMethods, hasLength(2));
+    });
+
+    test('inherited methods names', () {
+      expect(B.inheritedMethods[0].name, 'printMsg');
+      expect(B.inheritedMethods[1].name, 'isGreaterThan');
+    });
   });
 
   group('Function', () {
-    ModelFunction f1 = l.getFunctions()[0];
-    var f2 = lib2.getFunctions()[0];
+    var f1, f2;
+
+    setUp(() {
+      f1 = l.getFunctions()[0];
+      f2 = lib2.getFunctions()[0];
+    });
 
     test('local element', () {
       expect(f1.isLocalElement, true);
@@ -163,10 +186,14 @@ void main() {
   });
 
   group('Method', () {
-    var c = l.getClasses()[1];
-    var m = c.instanceMethods[0];
-    var m2 = lib2.getClasses()[1].instanceMethods[0];
-    var m3 = l.getClasses()[0].instanceMethods[0];
+    var c, m, m2, m3;
+
+    setUp(() {
+      c = l.getClasses()[1];
+      m = c.instanceMethods[0];
+      m2 = lib2.getClasses()[1].instanceMethods[0];
+      m3 = l.getClasses()[0].instanceMethods[0];
+    });
 
     test('overriden method', () {
       expect(m.getOverriddenElement().runtimeType.toString(), 'Method');
@@ -187,10 +214,14 @@ void main() {
   });
 
   group('Field', () {
-    var c = l.getClasses()[0];
-    var f1 = c.staticProperties[0]; // n
-    var f2 = c.instanceProperties[0];
-    var constField = c.constants[0]; // string
+    var c, f1, f2, constField;
+
+    setUp(() {
+      c = l.getClasses()[0];
+      f1 = c.staticProperties[0]; // n
+      f2 = c.instanceProperties[0];
+      constField = c.constants[0]; // string
+    });
 
     test('is not const', () {
       expect(f1.isConst, isFalse);
@@ -248,7 +279,10 @@ void main() {
   });
 
   group('Constructor', () {
-    var c2 = lib2.getClasses()[0].constructors[0];
+    var c2;
+    setUp(() {
+      c2 = lib2.getClasses()[0].constructors[0];
+    });
 
     test('has source', () {
       expect(c2.source, equals('///Constructor\n  Apple();'));
@@ -264,7 +298,11 @@ void main() {
   });
 
   group('Typedef', () {
-    var t = l.getTypedefs()[0];
+    var t;
+
+    setUp(() {
+      t = l.getTypedefs()[0];
+    });
 
     test('docs', () {
       expect(t.documentation, null);
@@ -309,8 +347,12 @@ void main() {
   });
 
   group('Implementors', () {
-    var c = l.getClasses()[0];
-    var implA = getAllImplementorsFor(c);
+    var c, implA;
+
+    setUp(() {
+      c = l.getClasses()[0];
+      implA = getAllImplementorsFor(c);
+    });
 
     test('getAllImplementors for A', () {
       expect(implA != null, true);
