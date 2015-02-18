@@ -389,8 +389,11 @@ void main() {
   });
 
   group('Errors and exceptions', () {
-    test('library has four errors/exceptions', () {
-      expect(library.getExceptions(), hasLength(4));
+    final List<String> expectedNames =
+      ['MyError', 'MyException', 'MyErrorImplements', 'MyExceptionImplements'];
+    test('library has the exact errors/exceptions we expect', () {
+      expect(library.getExceptions().map((e) => e.name),
+          unorderedEquals(expectedNames));
     });
   });
 }
