@@ -179,7 +179,7 @@ abstract class ModelElement {
      if (annotations.isNotEmpty) {
        return annotations.map((f) {
          var s =
-         f.toSource();
+         f.toSource().substring(1);
          return s;
        }).toList(growable:false);
      }
