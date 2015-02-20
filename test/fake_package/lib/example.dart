@@ -23,6 +23,7 @@ class Apple {
 
   String get s => s2;
 
+  /// this is a method
   void m1() {}
 
   void printMsg(String msg, [bool linebreak]) {}
@@ -52,6 +53,7 @@ abstract class Cat {
   bool get isImplemented;
 }
 
+/// implements [Cat], [E]
 class Dog implements Cat, E {
 
   @override

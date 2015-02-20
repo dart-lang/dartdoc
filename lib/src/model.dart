@@ -172,17 +172,17 @@ abstract class ModelElement {
 
   String toString() => '$runtimeType $name';
 
-  // TODO: get how this annotation was created (params)
   List<String> get annotations {
-    List<ElementAnnotation> annotations = element.metadata;
-    if (annotations.isNotEmpty) {
-      return annotations.map((f) {
-        if (f.element is ConstructorElement) {
-          return f.element.enclosingElement.name;
-        } else {
-          return f.element.name;
-        }
-      }).toList(growable:false);
+    var node = element.node;
+    if (node is AnnotatedNode) {
+      List<Annotation> annotations = node.metadata;
+     if (annotations.isNotEmpty) {
+       return annotations.map((f) {
+         var s =
+         f.toSource().substring(1);
+         return s;
+       }).toList(growable:false);
+     }
     }
     return [];
   }

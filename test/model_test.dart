@@ -209,6 +209,10 @@ void main() {
           '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n  }');
     });
 
+    test('method documentation',(){
+      expect(m2.documentation, 'this is a method');
+    });
+
     test('has params', () {
       expect(m3.hasParameters, true);
     });
@@ -405,10 +409,12 @@ void main() {
 
     test('is not null', () => expect(forAnnotation, isNotNull));
 
+    test('has annotations', () => expect(forAnnotation.hasAnnotations, true));
+
     test('has one annotation', () => expect(forAnnotation.annotations, hasLength(1)));
 
     test('has the right annotation', () {
-      expect(forAnnotation.annotations.first, equals('ForAnnotation'));
+      expect(forAnnotation.annotations.first, equals('ForAnnotation(\'my value\')'));
     });
   });
 }
