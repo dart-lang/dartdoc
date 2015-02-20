@@ -176,13 +176,11 @@ abstract class ModelElement {
     var node = element.node;
     if (node is AnnotatedNode) {
       List<Annotation> annotations = node.metadata;
-     if (annotations.isNotEmpty) {
-       return annotations.map((f) {
-         var s =
-         f.toSource().substring(1);
-         return s;
-       }).toList(growable:false);
-     }
+      if (annotations.isNotEmpty) {
+        return annotations.map((f) {
+          return f.toSource().substring(1);
+        }).toList(growable: false);
+      }
     }
     return [];
   }
