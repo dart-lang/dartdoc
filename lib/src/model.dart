@@ -134,38 +134,18 @@ abstract class ModelElement {
       return docs;
     }
 
-    var matchChars = ['[', ']'];
-    int lastWritten = 0;
-    int index = docs.indexOf(matchChars[0]);
-    StringBuffer buf = new StringBuffer();
-
-    while (index != -1) {
-      int end = docs.indexOf(matchChars[1], index + 1);
-      if (end != -1) {
-        if (index - lastWritten > 0) {
-          buf.write(docs.substring(lastWritten, index));
-        }
-        String codeRef = docs.substring(index + matchChars[0].length, end);
-        buf.write('[$codeRef]');
-        var refElement = commentRefs.firstWhere(
-            (ref) => ref.identifier.name == codeRef).identifier.staticElement;
-        var refLibrary = new Library(refElement.library, package);
-        var e = new ModelElement.from(refElement, refLibrary);
-        var link = e.href;
-        if (link != null) {
-          buf.write('(${e.href})');
-        }
-        lastWritten = end + matchChars[1].length;
-      } else {
-        break;
+    String _getMatchingLink(String codeRef) {
+      var refElement = commentRefs.firstWhere(
+          (ref) => ref.identifier.name == codeRef).identifier.staticElement;
+      var refLibrary = new Library(refElement.library, package);
+      var e = new ModelElement.from(refElement, refLibrary);
+      var link = e.href;
+      if (link != null) {
+        return e.href;
       }
-      index = docs.indexOf(matchChars[0], end + 1);
+      return null;
     }
-    if (lastWritten < docs.length) {
-      buf.write(docs.substring(lastWritten, docs.length));
-    }
-    print(buf.toString());
-    return buf.toString();
+    return replaceAllLinks(docs, replaceFunction: _getMatchingLink);
   }
 
   String get htmlId => name;
@@ -176,13 +156,12 @@ abstract class ModelElement {
     var node = element.node;
     if (node is AnnotatedNode) {
       List<Annotation> annotations = node.metadata;
-     if (annotations.isNotEmpty) {
-       return annotations.map((f) {
-         var s =
-         f.toSource().substring(1);
-         return s;
-       }).toList(growable:false);
-     }
+      if (annotations.isNotEmpty) {
+        return annotations.map((f) {
+          var s = f.toSource().substring(1);
+          return s;
+        }).toList(growable: false);
+      }
     }
     return [];
   }

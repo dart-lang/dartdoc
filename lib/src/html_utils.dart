@@ -130,45 +130,15 @@ String _processMarkdown(CodeResolver resolver, String line) {
     }
     line = "<h5>$line</h5>";
   } else {
-    line = replaceAll(line, ['[:', ':]'], htmlEntity: 'code');
-    line = replaceAll(line, ['`', '`'], htmlEntity: 'code');
-    line = replaceAll(line, ['*', '*'], htmlEntity: 'i');
-    line = replaceAll(line, ['__', '__'], htmlEntity: 'b');
-    line = replaceAll(line, ['[', ']'], replaceFunction: (String ref) {
+    line = replaceAllLinks(line, ['[:', ':]'], htmlEntity: 'code');
+    line = replaceAllLinks(line, ['`', '`'], htmlEntity: 'code');
+    line = replaceAllLinks(line, ['*', '*'], htmlEntity: 'i');
+    line = replaceAllLinks(line, ['__', '__'], htmlEntity: 'b');
+    line = replaceAllLinks(line, ['[', ']'], replaceFunction: (String ref) {
       return resolver.resolveCodeReference(ref);
     });
   }
   return line;
-}
-
-String replaceAll(String str, List<String> matchChars,
-    {String htmlEntity, var replaceFunction}) {
-  int lastWritten = 0;
-  int index = str.indexOf(matchChars[0]);
-  StringBuffer buf = new StringBuffer();
-
-  while (index != -1) {
-    int end = str.indexOf(matchChars[1], index + 1);
-    if (end != -1) {
-      if (index - lastWritten > 0) {
-        buf.write(str.substring(lastWritten, index));
-      }
-      String codeRef = str.substring(index + matchChars[0].length, end);
-      if (htmlEntity != null) {
-        buf.write('<$htmlEntity>$codeRef</$htmlEntity>');
-      } else {
-        buf.write(replaceFunction(codeRef));
-      }
-      lastWritten = end + matchChars[1].length;
-    } else {
-      break;
-    }
-    index = str.indexOf(matchChars[0], end + 1);
-  }
-  if (lastWritten < str.length) {
-    buf.write(str.substring(lastWritten, str.length));
-  }
-  return buf.toString();
 }
 
 const _escapMap = const {

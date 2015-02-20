@@ -47,4 +47,35 @@ List<InterfaceType> getAllSupertypes(ClassElement c) {
   return c.allSupertypes;
 }
 
+String replaceAllLinks(String str, {var replaceFunction}) {
+  var matchChars = ['[', ']'];
+  int lastWritten = 0;
+  int index = str.indexOf(matchChars[0]);
+  StringBuffer buf = new StringBuffer();
+
+  while (index != -1) {
+    int end = str.indexOf(matchChars[1], index + 1);
+    if (end != -1) {
+      if (index - lastWritten > 0) {
+        buf.write(str.substring(lastWritten, index));
+      }
+      String codeRef = str.substring(index + matchChars[0].length, end);
+      if (codeRef != null) {
+        buf.write('[$codeRef]');
+        var link = replaceFunction(codeRef);
+        if (link != null) {
+        buf.write('($link)');
+        }
+      }
+      lastWritten = end + matchChars[1].length;
+    } else {
+      break;
+    }
+    index = str.indexOf(matchChars[0], end + 1);
+  }
+  if (lastWritten < str.length) {
+    buf.write(str.substring(lastWritten, str.length));
+  }
+  return buf.toString();
+}
 
