@@ -7,23 +7,25 @@ library dartdoc.template_test;
 import 'dart:io';
 
 import 'package:mustache4dart/mustache4dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:unittest/unittest.dart';
 
 void main() {
   group('template', () {
-    var script = new File(Platform.script.toFilePath());
-    File tmplFile =
-        new File('${script.parent.parent.path}/templates/sitemap.xml');
+    group('with sitemap', () {
+      var sitemap;
 
-    test('sitemap template exists', () {
-      tmplFile.exists().then((t) => expect(t, true));
-    });
+      setUp(() {
+        if (sitemap == null) {
+          var templatePath = p.join(p.current, 'templates/sitemap.xml');
+          File tmplFile = new File(templatePath);
+          var siteMapTmpl = tmplFile.readAsStringSync();
+          sitemap = compile(siteMapTmpl);
+        }
+      });
 
-    var siteMapTmpl = tmplFile.readAsStringSync();
-    var sitemap = compile(siteMapTmpl);
-
-    test('render', () {
-      expect(sitemap({'links': [{'name': 'somefile.html'}]}), '''
+      test('render', () {
+        expect(sitemap({'links': [{'name': 'somefile.html'}]}), '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -31,12 +33,12 @@ void main() {
   </url>
 </urlset>
 ''');
-    });
+      });
 
-    test('substitute multiple links', () {
-      expect(sitemap({
-        'links': [{'name': 'somefile.html'}, {'name': 'asecondfile.html'}]
-      }), '''
+      test('substitute multiple links', () {
+        expect(sitemap({
+          'links': [{'name': 'somefile.html'}, {'name': 'asecondfile.html'}]
+        }), '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -47,13 +49,13 @@ void main() {
   </url>
 </urlset>
 ''');
-    });
+      });
 
-    test('url and file name', () {
-      expect(sitemap({
-        'url': 'http://mydoc.com',
-        'links': [{'name': 'somefile.html'}]
-      }), '''
+      test('url and file name', () {
+        expect(sitemap({
+          'url': 'http://mydoc.com',
+          'links': [{'name': 'somefile.html'}]
+        }), '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -61,6 +63,7 @@ void main() {
   </url>
 </urlset>
 ''');
+      });
     });
   });
 }
