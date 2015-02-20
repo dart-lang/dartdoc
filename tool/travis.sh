@@ -23,7 +23,7 @@ dart ../../bin/dartdoc.dart
 cd ../..
 
 # Run the tests.
-dart test/all.dart
+pub run unittest:unittest
 
 # Gather and send coverage data.
 if [ "$REPO_TOKEN" ]; then
