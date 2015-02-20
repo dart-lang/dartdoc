@@ -4,24 +4,11 @@
 
 library dartdoc.model_utils;
 
-import 'package:analyzer/src/generated/constant.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
-// TODO how to handle non-primitive values ?
-Object getConstantValue(PropertyInducingElement element) {
-  if (element is ConstFieldElementImpl) {
-    ConstFieldElementImpl e = element;
-    return e.evaluationResult.value;
-  } else if (element is ConstTopLevelVariableElementImpl) {
-    ConstTopLevelVariableElementImpl e = element;
-    return e.evaluationResult.value;
-  } else {
-    return null;
-  }
-}
 
 bool isPrivate(Element e) => e.name.startsWith('_');
 
