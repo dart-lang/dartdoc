@@ -56,12 +56,14 @@ abstract class Cat {
 /// implements [Cat], [E]
 class Dog implements Cat, E {
 
+  @deprecated
+    List<Apple> getClassA() {
+      return [new Apple()];
+    }
+
   @override
   bool get isImplemented => true;
 
-  List<Apple> getClassA() {
-    return [new Apple()];
-  }
 }
 
 abstract class E {

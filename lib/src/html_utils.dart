@@ -72,36 +72,6 @@ String ltrim(String str) {
   return str;
 }
 
-String replaceAll(String str, List<String> matchChars,
-    {String htmlEntity, var replaceFunction}) {
-  int lastWritten = 0;
-  int index = str.indexOf(matchChars[0]);
-  StringBuffer buf = new StringBuffer();
-
-  while (index != -1) {
-    int end = str.indexOf(matchChars[1], index + 1);
-    if (end != -1) {
-      if (index - lastWritten > 0) {
-        buf.write(str.substring(lastWritten, index));
-      }
-      String codeRef = str.substring(index + matchChars[0].length, end);
-      if (htmlEntity != null) {
-        buf.write('<$htmlEntity>$codeRef</$htmlEntity>');
-      } else {
-        buf.write(replaceFunction(codeRef));
-      }
-      lastWritten = end + matchChars[1].length;
-    } else {
-      break;
-    }
-    index = str.indexOf(matchChars[0], end + 1);
-  }
-  if (lastWritten < str.length) {
-    buf.write(str.substring(lastWritten, str.length));
-  }
-  return buf.toString();
-}
-
 const _escapMap = const {
   '\n': r'\n',
   '\r': r'\r',
