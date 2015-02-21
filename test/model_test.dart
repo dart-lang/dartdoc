@@ -107,7 +107,8 @@ void main() {
     });
 
     test('docs ', () {
-      expect(Apple.resolveReferences(Apple.documentation), 'Sample class [String]');
+      expect(Apple.resolveReferences(Apple.documentation),
+          'Sample class [String]');
     });
 
     test('docs refs', () {
@@ -162,7 +163,6 @@ void main() {
       expect(B.inheritedMethods[0].name, 'printMsg');
       expect(B.inheritedMethods[1].name, 'isGreaterThan');
     });
-
   });
 
   group('Function', () {
@@ -209,7 +209,7 @@ void main() {
           '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n  }');
     });
 
-    test('method documentation',(){
+    test('method documentation', () {
       expect(m2.documentation, 'this is a method');
     });
 
@@ -356,7 +356,6 @@ void main() {
   });
 
   group('Implementors', () {
-
     Class apple;
     Class b;
     List<Class> implA, implC;
@@ -393,8 +392,12 @@ void main() {
   });
 
   group('Errors and exceptions', () {
-    final List<String> expectedNames =
-      ['MyError', 'MyException', 'MyErrorImplements', 'MyExceptionImplements'];
+    final List<String> expectedNames = [
+      'MyError',
+      'MyException',
+      'MyErrorImplements',
+      'MyExceptionImplements'
+    ];
     test('library has the exact errors/exceptions we expect', () {
       expect(library.getExceptions().map((e) => e.name),
           unorderedEquals(expectedNames));
@@ -402,19 +405,27 @@ void main() {
   });
 
   group('Annotations', () {
-    Class forAnnotation;
+    Class forAnnotation, dog;
     setUp(() {
-      forAnnotation = library.getClasses().firstWhere((c) => c.name == 'HasAnnotation');
+      forAnnotation =
+          library.getClasses().firstWhere((c) => c.name == 'HasAnnotation');
+      dog = library.getClasses().firstWhere((c) => c.name == 'Dog');
     });
 
     test('is not null', () => expect(forAnnotation, isNotNull));
 
     test('has annotations', () => expect(forAnnotation.hasAnnotations, true));
 
-    test('has one annotation', () => expect(forAnnotation.annotations, hasLength(1)));
+    test('has one annotation',
+        () => expect(forAnnotation.annotations, hasLength(1)));
 
     test('has the right annotation', () {
-      expect(forAnnotation.annotations.first, equals('ForAnnotation(\'my value\')'));
+      expect(forAnnotation.annotations.first,
+          equals('[ForAnnotation](ex/ForAnnotation.html)(\'my value\')'));
+    });
+
+    test('methods has the right annotation', () {
+      expect(dog.instanceMethods.first.annotations.first, equals('deprecated'));
     });
   });
 }

@@ -139,11 +139,7 @@ abstract class ModelElement {
           (ref) => ref.identifier.name == codeRef).identifier.staticElement;
       var refLibrary = new Library(refElement.library, package);
       var e = new ModelElement.from(refElement, refLibrary);
-      var link = e.href;
-      if (link != null) {
-        return e.href;
-      }
-      return null;
+      return e.href;
     }
     return replaceAllLinks(docs, replaceFunction: _getMatchingLink);
   }
@@ -158,8 +154,15 @@ abstract class ModelElement {
       List<Annotation> annotations = node.metadata;
       if (annotations.isNotEmpty) {
         return annotations.map((f) {
-          var s = f.toSource().substring(1);
-          return s;
+          var annotationString = f.toSource().substring(1);
+          var e = f.element;
+          if (e != null && (e is ConstructorElement)) {
+            var me = new ModelElement.from(
+                e.enclosingElement, new Library(e.library, package));
+            return annotationString.replaceAll(
+                me.name, '[${me.name}](${me.href})');
+          }
+          return annotationString;
         }).toList(growable: false);
       }
     }

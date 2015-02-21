@@ -27,55 +27,6 @@ String stringEscape(String text, String quoteType) {
   });
 }
 
-abstract class CodeResolver {
-  String resolveCodeReference(String reference);
-}
-
-String prettifyDocs(CodeResolver resolver, String docs) {
-  if (docs == null) {
-    return '';
-  }
-  docs = htmlEscape(docs);
-  docs = stripComments(docs);
-  StringBuffer buf = new StringBuffer();
-
-  bool inCode = false;
-  bool inList = false;
-  for (String line in docs.split('\n')) {
-    if (inList && !line.startsWith("* ")) {
-      inList = false;
-      buf.write('</ul>');
-    }
-    if (inCode && !(line.startsWith('    ') || line.trim().isEmpty)) {
-      inCode = false;
-      buf.write('</pre>');
-    } else if (line.startsWith('    ') && !inCode) {
-      inCode = true;
-      buf.write('<pre>');
-    } else if (line.trim().startsWith('* ') && !inList) {
-      inList = true;
-      buf.write('<ul>');
-    }
-    if (inCode) {
-      if (line.startsWith('    ')) {
-        buf.write('${line.substring(4)}\n');
-      } else {
-        buf.write('${line}\n');
-      }
-    } else if (inList) {
-      buf.write(
-          '<li>${_processMarkdown(resolver, line.trim().substring(2))}</li>');
-    } else if (line.trim().length == 0) {
-      buf.write('</p>\n<p>');
-    } else {
-      buf.write('${_processMarkdown(resolver, line)} ');
-    }
-  }
-  if (inCode) {
-    buf.write('</pre>');
-  }
-  return buf.toString().replaceAll('\n\n</pre>', '\n</pre>').trim();
-}
 
 String stripComments(String str) {
   if (str == null) return null;
@@ -119,26 +70,6 @@ String ltrim(String str) {
     str = str.substring(1);
   }
   return str;
-}
-
-String _processMarkdown(CodeResolver resolver, String line) {
-  line = ltrim(line);
-  if (line.startsWith("##")) {
-    line = line.substring(2);
-    if (line.endsWith("##")) {
-      line = line.substring(0, line.length - 2);
-    }
-    line = "<h5>$line</h5>";
-  } else {
-    line = replaceAllLinks(line, ['[:', ':]'], htmlEntity: 'code');
-    line = replaceAllLinks(line, ['`', '`'], htmlEntity: 'code');
-    line = replaceAllLinks(line, ['*', '*'], htmlEntity: 'i');
-    line = replaceAllLinks(line, ['__', '__'], htmlEntity: 'b');
-    line = replaceAllLinks(line, ['[', ']'], replaceFunction: (String ref) {
-      return resolver.resolveCodeReference(ref);
-    });
-  }
-  return line;
 }
 
 const _escapMap = const {
