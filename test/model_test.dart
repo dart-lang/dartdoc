@@ -421,7 +421,7 @@ void main() {
 
     test('has the right annotation', () {
       expect(forAnnotation.annotations.first,
-          equals('[ForAnnotation](ex/ForAnnotation.html)(\'my value\')'));
+          equals('<a href="ex/ForAnnotation.html">ForAnnotation</a>(\'my value\')'));
     });
 
     test('methods has the right annotation', () {

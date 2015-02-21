@@ -160,7 +160,7 @@ abstract class ModelElement {
             var me = new ModelElement.from(
                 e.enclosingElement, new Library(e.library, package));
             return annotationString.replaceAll(
-                me.name, '[${me.name}](${me.href})');
+                me.name, '<a href="${me.href}">${me.name}</a>');
           }
           return annotationString;
         }).toList(growable: false);
