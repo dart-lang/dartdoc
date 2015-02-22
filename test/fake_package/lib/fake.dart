@@ -71,6 +71,12 @@ abstract class AnotherInterface {
 /// A super class, with many powers.
 class SuperAwesomeClass {
 
+  /// In the super class.
+  List<String> powers;
+
+  /// In the super class.
+  void fly() {}
+
 }
 
 /// This is a very long line spread
