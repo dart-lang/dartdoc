@@ -48,6 +48,10 @@ typedef String FakeProcesses(String input);
 /// A typedef with a type parameter.
 typedef T GenericTypedef<T>(T input);
 
+/// Lots and lots of parameters.
+typedef int LotsAndLotsOfParameters(so,many,parameters,it,should,wrap,when,
+  converted,to,html,documentation);
+
 /// This class is cool!
 class Cool {
 
