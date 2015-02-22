@@ -80,6 +80,11 @@ dl.withreturntypes .returntype {
   color: gray;
 }
 
+dl.withreturntypes span.name-and-params {
+    display: block;
+    margin-left: 250px;
+}
+
 dl.withreturntypes dd {
   margin-left: 250px;
   color: gray;
@@ -95,6 +100,11 @@ dl.withreturntypes dd {
     display: block;
     float: none;
     width: auto;
+  }
+
+  dl.withreturntypes span.name-and-params {
+      display: inline;
+      margin:0;
   }
 }
 
