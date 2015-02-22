@@ -15,6 +15,13 @@ A: This new tool intends to replace our existing set of API documentation
 tools. We'll take the best ideas and implementations from our existing doc
 tools and fold them into this tool.
 
+Q: Can I help?
+
+A: Yes! Start by using the tool and filing issues and requests. If you want
+to contribute, check out the [issue tracker][issues] and see if there's an issue
+that you're passionate about. If you want to add a new feature that's not
+yet in the issue tracker, start by opening an issue. Thanks!
+
 ## Issues and bugs
 
 Please file reports on the [GitHub Issue Tracker][issues].
