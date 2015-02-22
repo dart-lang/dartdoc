@@ -634,6 +634,8 @@ class Class extends ModelElement {
     return _staticMethods;
   }
 
+  bool get hasStaticMethods => staticMethods.isNotEmpty;
+
   List<Method> get instanceMethods {
     if (_instanceMethods != null) return _instanceMethods;
 
@@ -643,12 +645,14 @@ class Class extends ModelElement {
     return _instanceMethods;
   }
 
+  bool get hasInstanceMethods => instanceMethods.isNotEmpty;
+
   List<Method> get inheritedMethods {
     if (_inheritedMethods != null) return _inheritedMethods;
     InheritanceManager manager = new InheritanceManager(element.library);
     MemberMap map = manager.getMapOfMembersInheritedFromClasses(element);
     _methods.forEach((method) => map.remove(method.name));
-    var methodList = [];
+    _inheritedMethods = [];
     for (var i = 0; i < map.size; i++) {
       var value = map.getValue(i);
       if (value != null &&
@@ -658,16 +662,13 @@ class Class extends ModelElement {
         var lib = value.library == library.element
             ? library
             : new Library(value.library, package);
-        methodList.add(new Method(value, lib));
+        _inheritedMethods.add(new Method(value, lib));
       }
     }
-    _inheritedMethods = methodList;
     return _inheritedMethods;
   }
 
-  bool get hasInstanceMethods => instanceMethods.isNotEmpty;
-
-  bool get hasStaticMethods => staticMethods.isNotEmpty;
+  bool get hasInheritedMethods => inheritedMethods.isNotEmpty;
 
   bool get isErrorOrException {
     bool _doCheck(InterfaceType type) {

@@ -207,6 +207,19 @@
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
             </dd>
             {{/class.instanceMethods}}
+
+            {{#class.inheritedMethods}}
+            <dt class="inherited-method">
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ name }}</span>({{{ linkedParams }})
+                </code>
+            </dt>
+            <dd>
+                <div class="is-inherited">Inherited</div>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.inheritedMethods}}
         </dl>
     </section>
     {{/class.hasInstanceMethods}}

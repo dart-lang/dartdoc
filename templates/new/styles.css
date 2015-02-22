@@ -171,9 +171,13 @@ ul.interfaces-implemented li:last-child:after {
 }
 
 ul.class-extends li:after {
-    content: " > ";
+  content: " > ";
 }
 
 ul.class-extends li:last-child:after {
-    content: "";
+  content: "";
+}
+
+.is-inherited {
+  font-style: italic;
 }

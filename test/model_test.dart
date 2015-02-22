@@ -157,6 +157,7 @@ void main() {
 
     test('inherited methods', () {
       expect(B.inheritedMethods, hasLength(2));
+      expect(B.hasInheritedMethods, isTrue);
     });
 
     test('inherited methods names', () {
