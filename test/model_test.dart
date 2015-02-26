@@ -152,7 +152,12 @@ void main() {
     });
 
     test('get methods', () {
-      expect(B.instanceMethods, hasLength(1));
+      expect(Dog.instanceMethods, hasLength(1));
+    });
+
+    test('get operators', () {
+      expect(Dog.operators, hasLength(1));
+      expect(Dog.operators[0].name, '==');
     });
 
     test('inherited methods', () {
@@ -421,8 +426,8 @@ void main() {
         () => expect(forAnnotation.annotations, hasLength(1)));
 
     test('has the right annotation', () {
-      expect(forAnnotation.annotations.first,
-          equals('<a href="ex/ForAnnotation.html">ForAnnotation</a>(\'my value\')'));
+      expect(forAnnotation.annotations.first, equals(
+          '<a href="ex/ForAnnotation.html">ForAnnotation</a>(\'my value\')'));
     });
 
     test('methods has the right annotation', () {

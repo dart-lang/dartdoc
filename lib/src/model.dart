@@ -501,6 +501,7 @@ class Class extends ModelElement {
   List<ElementType> _interfaces;
   List<Constructor> _constructors;
   List<Method> _allMethods;
+  List<Method> _operators;
   List<Method> _inheritedMethods;
   List<Method> _staticMethods;
   List<Method> _instanceMethods;
@@ -626,6 +627,14 @@ class Class extends ModelElement {
     return _allMethods;
   }
 
+  List<Method> get operators {
+    if (_operators != null) return _operators;
+
+    _operators = _methods.where((m) => m.isOperator).toList(growable: false);
+
+    return _operators;
+  }
+
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
 
@@ -639,8 +648,9 @@ class Class extends ModelElement {
   List<Method> get instanceMethods {
     if (_instanceMethods != null) return _instanceMethods;
 
-    _instanceMethods =
-        _methods.where((m) => !m.isStatic).toList(growable: false);
+    _instanceMethods = _methods
+        .where((m) => !m.isStatic && !m.isOperator)
+        .toList(growable: false);
 
     return _instanceMethods;
   }
@@ -814,6 +824,8 @@ class Method extends ModelElement {
 
   @override
   bool get isStatic => _method.isStatic;
+
+  bool get isOperator => _method.isOperator;
 
   String get linkedReturnType => type.createLinkedReturnTypeName();
 
