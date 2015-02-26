@@ -56,6 +56,8 @@ abstract class Cat {
 /// implements [Cat], [E]
 class Dog implements Cat, E {
 
+  String name;
+
   @deprecated
     List<Apple> getClassA() {
       return [new Apple()];
@@ -64,6 +66,7 @@ class Dog implements Cat, E {
   @override
   bool get isImplemented => true;
 
+  operator ==(Dog other) => name == other.name;
 }
 
 abstract class E {
