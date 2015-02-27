@@ -509,6 +509,7 @@ class Class extends ModelElement {
   List<Field> _staticFields;
   List<Field> _constants;
   List<Field> _instanceFields;
+  List<Field> _inheritedProperties;
 
   ClassElement get _cls => (element as ClassElement);
 
@@ -676,6 +677,15 @@ class Class extends ModelElement {
       }
     }
     return _inheritedMethods;
+  }
+
+  List<Field> get inheritedProperties {
+    if (_inheritedProperties != null) return _inheritedProperties;
+    InheritanceManager manager = new InheritanceManager(element.library);
+      MemberMap map = manager.getMapOfMembersInheritedFromClasses(element);
+      _inheritedProperties = [];
+      
+      return _inheritedProperties;
   }
 
   bool get hasInheritedMethods => inheritedMethods.isNotEmpty;
