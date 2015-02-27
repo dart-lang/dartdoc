@@ -1017,6 +1017,7 @@ class ElementType {
         (_type as FunctionType).returnType.element.library == null) {
       if (_returnTypeName != null) {
         if (_returnTypeName == 'dynamic' && element.isAsynchronous) {
+          // TODO(keertip): for SDK docs it should be a link
           return 'Future';
         }
         return _returnTypeName;
