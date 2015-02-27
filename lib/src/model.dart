@@ -204,6 +204,9 @@ abstract class ModelElement {
 
   bool get isLocalElement => element is LocalElement;
 
+  bool get isAsynchronous =>
+      isExecutable && (element as ExecutableElement).isAsynchronous;
+
   bool get isStatic {
     if (isPropertyInducer) {
       return (element as PropertyInducingElement).isStatic;
@@ -1013,6 +1016,10 @@ class ElementType {
     if ((_type as FunctionType).returnType.element == null ||
         (_type as FunctionType).returnType.element.library == null) {
       if (_returnTypeName != null) {
+        if (_returnTypeName == 'dynamic' && element.isAsynchronous) {
+          // TODO(keertip): for SDK docs it should be a link
+          return 'Future';
+        }
         return _returnTypeName;
       } else {
         return '';

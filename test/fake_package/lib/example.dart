@@ -67,6 +67,8 @@ class Dog implements Cat, E {
   bool get isImplemented => true;
 
   operator ==(Dog other) => name == other.name;
+
+  foo() async => 42;
 }
 
 abstract class E {

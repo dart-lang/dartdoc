@@ -152,7 +152,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.instanceMethods, hasLength(1));
+      expect(Dog.instanceMethods, hasLength(2));
     });
 
     test('get operators', () {
@@ -330,18 +330,15 @@ void main() {
 
   group('Parameter', () {
     Class c;
-    Method m1, printMsg, isGreaterThan;
-    Parameter p1, p2;
+    Method isGreaterThan, asyncM;
+    Parameter p1;
 
     setUp(() {
       c = library.getClasses()[0]; // A
 
-      m1 = c.instanceMethods[0]; // m1
-      printMsg = c.instanceMethods[1]; // printMsg
       isGreaterThan = c.instanceMethods[2]; // isGreaterThan
-
+      asyncM = library.getClasses()[3].instanceMethods.firstWhere((m) => m.name == 'foo');
       p1 = isGreaterThan.parameters[1]; // {int check:5}
-      p2 = printMsg.parameters[1]; // [bool linebreak]
     });
 
     test('is optional', () {
@@ -358,6 +355,10 @@ void main() {
 
     test('linkedName', () {
       expect(p1.type.linkedName, 'int');
+    });
+
+    test('async return type', (){
+      expect(asyncM.linkedReturnType, 'Future');
     });
   });
 
