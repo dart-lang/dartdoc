@@ -125,6 +125,16 @@ class LongFirstLine extends SuperAwesomeClass with MixMeIn implements Interface,
   /// Only a setter, with a single param, of type double.
   void set onlySetter(double d) {}
 
+  /// Adds another one of these thingies.
+  LongFirstLine operator +(LongFirstLine other) {
+    return null;
+  }
+
+  /// Multiplies a thingies to this thingie and then returns a new thingie.
+  LongFirstLine operator *(LongFirstLine other) {
+    return null;
+  }
+
   static int get staticGetter => 11111;
 
   static void set staticOnlySetter(bool thing) {}

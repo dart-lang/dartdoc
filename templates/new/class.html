@@ -228,6 +228,27 @@
     </section>
     {{/class.hasInstanceMethods}}
 
+    {{#class.hasOperators}}
+    <section id="operators-summary" class="summary">
+        <h2>Operators</h2>
+        <dl class="withreturntypes">
+            {{#class.operators}}
+            <dt>
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name-and-params">
+                        <span class="name">{{ name }}</span>({{{ linkedParams }})
+                    </span>
+                </code>
+            </dt>
+            <dd>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.operators}}
+        </dl>
+    </section>
+    {{/class.hasOperators}}
+
 </div>
 
 {{>footer}}
