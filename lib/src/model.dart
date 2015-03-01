@@ -638,6 +638,8 @@ class Class extends ModelElement {
     return _operators;
   }
 
+  bool get hasOperators => operators.isNotEmpty;
+
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
 
