@@ -14,6 +14,8 @@
 /// [pkg]: http://example.org
 library fake;
 
+import 'dart:async';
+
 import 'example.dart';
 
 /// Useful for annotations.
@@ -201,3 +203,9 @@ void soIntense(anything, {bool flag: true, int value}) {  }
 
 /// [A] comes from another library.
 void paramFromAnotherLib(Apple thing) {}
+
+/// An async function. It should look like I return a Future.
+thisIsAsync() async => 42;
+
+/// Explicitly returns a Future and is marked async.
+Future thisIsAlsoAsync() async => 43;
