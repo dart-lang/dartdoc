@@ -15,13 +15,13 @@ typedef String processMessage(String msg);
 class Apple {
   static const int n = 5;
   static String string = 'hello';
-  String s2;
+  String _s2;
   int m = 0;
 
   ///Constructor
   Apple();
 
-  String get s => s2;
+  String get s => _s2;
 
   /// this is a method
   void m1() {}

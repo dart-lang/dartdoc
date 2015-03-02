@@ -679,16 +679,33 @@ class Class extends ModelElement {
     return _inheritedMethods;
   }
 
+  bool get hasInheritedMethods => inheritedMethods.isNotEmpty;
+
   List<Field> get inheritedProperties {
     if (_inheritedProperties != null) return _inheritedProperties;
     InheritanceManager manager = new InheritanceManager(element.library);
-      MemberMap map = manager.getMapOfMembersInheritedFromClasses(element);
-      _inheritedProperties = [];
-      
-      return _inheritedProperties;
+    MemberMap map = manager.getMapOfMembersInheritedFromClasses(element);
+    _inheritedProperties = [];
+    for (var i = 0; i < map.size; i++) {
+      var value = map.getValue(i);
+      if (value != null &&
+          value is PropertyAccessorElement &&
+          !value.isPrivate &&
+          value.enclosingElement.name != 'Object') {
+        var e = value.variable;
+        if (_inheritedProperties.any((f) => f.element == e)) {
+          continue;
+        }
+        var lib = value.library == library.element
+            ? library
+            : new Library(value.library, package);
+        _inheritedProperties.add(new Field(e, lib));
+      }
+    }
+    return _inheritedProperties;
   }
 
-  bool get hasInheritedMethods => inheritedMethods.isNotEmpty;
+  bool get hasInheritedProperties => inheritedProperties.isNotEmpty;
 
   bool get isErrorOrException {
     bool _doCheck(InterfaceType type) {
