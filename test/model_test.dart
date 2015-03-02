@@ -148,7 +148,11 @@ void main() {
     });
 
     test('get instance fields', () {
-      expect(Apple.instanceProperties, hasLength(3));
+      expect(Apple.instanceProperties, hasLength(2));
+    });
+
+    test('get inherited properties', () {
+      expect(B.inheritedProperties, hasLength(2));
     });
 
     test('get methods', () {
