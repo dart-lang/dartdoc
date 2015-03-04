@@ -124,7 +124,16 @@ abstract class ModelElement {
         }
       }
       if (element.node is AnnotatedNode) {
-        return (element.node as AnnotatedNode).documentationComment.references;
+        if ((element.node as AnnotatedNode).documentationComment != null) {
+          return (element.node as AnnotatedNode).documentationComment.references;
+        }
+      } else if (element is LibraryElement) {
+        var node = element.node.parent.parent;
+        if (node is AnnotatedNode) {
+          if ((node as AnnotatedNode).documentationComment != null) {
+            return (node as AnnotatedNode).documentationComment.references;
+          }
+        }
       }
       return null;
     }
@@ -135,12 +144,21 @@ abstract class ModelElement {
     }
 
     String _getMatchingLink(String codeRef) {
-      var refElement = commentRefs.firstWhere(
-          (ref) => ref.identifier.name == codeRef).identifier.staticElement;
+      var refElement;
+      try {
+        refElement = commentRefs.firstWhere(
+            (ref) => ref.identifier.name == codeRef).identifier.staticElement;
+      } on StateError catch (error) {
+        // do nothing
+      }
+      if (refElement == null) {
+        return null;
+      }
       var refLibrary = new Library(refElement.library, package);
       var e = new ModelElement.from(refElement, refLibrary);
       return e.href;
     }
+
     return replaceAllLinks(docs, replaceFunction: _getMatchingLink);
   }
 
