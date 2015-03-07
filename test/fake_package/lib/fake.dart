@@ -191,6 +191,15 @@ String get setAndGet => 'hello';
 get dynamicGetter => 'i could be anything';
 
 /// Top-level function 2 params and 1 optional positional param.
+///
+/// This is the second paragraph.
+/// It has two lines.
+///
+/// Here is a code snippet:
+///
+///     var thing = topLevelFunction(1, true, 3.4);
+///
+/// Thanks for using this function!
 String topLevelFunction(int param1, bool param2, [double optionalPositional = 0.0]) {}
 
 /// A single optional positional param, no type annotation, no default value.

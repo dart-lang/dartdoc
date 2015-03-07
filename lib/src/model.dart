@@ -319,6 +319,11 @@ abstract class ModelElement {
 
     return buf.toString();
   }
+
+  /// End each parameter with a `<br>`
+  String get linkedParamsLines {
+    return linkedParams.replaceAll(',', ',<br>');
+  }
 }
 
 class Dynamic extends ModelElement {
@@ -368,6 +373,8 @@ class Package {
       return _libraries.any((lib) => lib.element == e.element.library);
     }
   }
+
+  String get href => 'index.html';
 }
 
 class Library extends ModelElement {
@@ -723,7 +730,7 @@ class ModelFunction extends ModelElement {
   }
 
   @override
-  String get _href => '${library.name}.html#$name';
+  String get _href => '${library.name}/$name.html';
 }
 
 class Typedef extends ModelElement {

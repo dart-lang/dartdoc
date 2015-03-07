@@ -32,6 +32,7 @@ class NewHtmlGenerator extends Generator {
   static final String indexTemplate = _loadTemplate('templates/new/index.html');
   static final String libraryTemplate = _loadTemplate('templates/new/library.html');
   static final String classTemplate = _loadTemplate('templates/new/class.html');
+  static final String functionTemplate = _loadTemplate('templates/new/function.html');
 
   static final Map partials = {
     'footer': _loadTemplate('templates/new/_footer.html'),
@@ -53,6 +54,10 @@ class NewHtmlGenerator extends Generator {
 
       lib.getClasses().forEach((clazz) {
         generateClass(package, lib, clazz);
+      });
+
+      lib.getFunctions().forEach((function) {
+        generateFunction(package, lib, function);
       });
     });
     // if (_url != null) {
@@ -98,6 +103,19 @@ class NewHtmlGenerator extends Generator {
     };
 
     _writeFile(path.joinAll(clazz.href.split('/')), classTemplate, data);
+  }
+
+  void generateFunction(Package package, Library lib, ModelFunction function) {
+    Map data = {
+      'package': package,
+      'generatedOn': generatedOn,
+      'markdown': renderMarkdown,
+      'oneLiner': oneLiner,
+      'library': lib,
+      'function': function
+    };
+
+    _writeFile(path.joinAll(function.href.split('/')), functionTemplate, data);
   }
 
   void _copyResources() {

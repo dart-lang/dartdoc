@@ -1,0 +1,52 @@
+{{>head}}
+<title>{{function.name}} function - {{ library.name }} library - Dart API</title>
+
+<!-- required because all the links are pseudo-absolute -->
+<base href="..">
+
+{{>styles_and_scripts}}
+
+<meta name="description" content="API docs for the {{function.name}} function from the {{ library.name }} library, for the Dart programming language.">
+
+</head>
+
+<body>
+
+<header class="container-fluid" id="title">
+    <!-- TODO: align this -->
+    <div class="container">
+        <ul class="breadcrumbs">
+            <li><a href="{{package.href}}">{{package.name}} package</a></li>
+            <li><a href="{{library.href}}">{{library.name}} library</a></li>
+        </ul>
+        <h1 class="title">
+            {{ function.name }}
+            <span class="type">function</span>
+        </h1>
+    </div>
+</header>
+
+<div class="container">
+
+    <section class="multi-line-signature">
+        {{#function}}
+            <span class="returntype">{{{ linkedReturnType }}}</span>
+            <span class="name">{{ name }}</span>(<br>
+            <div class="parameters">
+              {{{linkedParamsLines}}}
+            </div>
+            )
+        {{/function}}
+    </section>
+
+    <section class="desc markdown">
+
+        {{#markdown}}
+        {{{ function.documentation }}}
+        {{/markdown}}
+
+    </section>
+
+</div>
+
+{{>footer}}

@@ -191,3 +191,8 @@ ul.class-extends li:last-child:after {
 .is-inherited {
   font-style: italic;
 }
+
+.multi-line-signature {
+    font-size: 20px;
+    margin-bottom: 18px;
+}
