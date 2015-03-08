@@ -81,7 +81,7 @@ class SuperAwesomeClass {
   List<String> powers;
 
   /// In the super class.
-  void fly() {}
+  void fly(int height, Cool superCool, {String msg}) {}
 
   SuperAwesomeClass operator -(other) { return null; }
 
