@@ -56,6 +56,10 @@ class NewHtmlGenerator extends Generator {
         generateClass(package, lib, clazz);
       });
 
+      lib.getEnums().forEach((eNum) {
+        generateEnum(package, lib, eNum);
+      });
+
       lib.getFunctions().forEach((function) {
         generateFunction(package, lib, function);
       });
@@ -103,6 +107,19 @@ class NewHtmlGenerator extends Generator {
     };
 
     _writeFile(path.joinAll(clazz.href.split('/')), classTemplate, data);
+  }
+
+  void generateEnum(Package package, Library lib, Class eNum) {
+    Map data = {
+        'package': package,
+        'generatedOn': generatedOn,
+        'markdown': renderMarkdown,
+        'oneLiner': oneLiner,
+        'library': lib,
+        'class': eNum
+    };
+
+    _writeFile(path.joinAll(eNum.href.split('/')), classTemplate, data);
   }
 
   void generateFunction(Package package, Library lib, ModelFunction function) {
