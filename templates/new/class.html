@@ -127,6 +127,23 @@
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
             </dd>
             {{/class.instanceProperties}}
+
+            {{#class.inheritedProperties}}
+            <dt id="{{htmlId}}" class="inherited">
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ name }}</span>
+                </code>
+            </dt>
+            <dd>
+                <div>
+                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
+                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
+                </div>
+                <div class="is-inherited">Inherited</div>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.inheritedProperties}}
         </dl>
     </section>
     {{/class.hasInstanceProperties}}
@@ -201,7 +218,7 @@
     {{#class.hasInstanceMethods}}
     <section id="instance-methods-summary" class="summary">
         <h2>Instance Methods</h2>
-        <dl class="withreturntypes">
+        <dl id="{{htmlId}}" class="withreturntypes">
             {{#class.instanceMethods}}
             <dt>
                 <code>
@@ -217,7 +234,7 @@
             {{/class.instanceMethods}}
 
             {{#class.inheritedMethods}}
-            <dt class="inherited-method">
+            <dt id="{{htmlId}}" class="inherited-method inherited">
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
                     <span class="name">{{ name }}</span>({{{ linkedParams }})
