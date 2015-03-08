@@ -880,7 +880,7 @@ class Method extends ModelElement {
   String get linkedReturnType => type.createLinkedReturnTypeName();
 
   @override
-  String get _href => throw 'not implemented yet';
+  String get _href => '${library.name}/${_method.enclosingElement.name}/$name.html';
 }
 
 /// Getters and setters.

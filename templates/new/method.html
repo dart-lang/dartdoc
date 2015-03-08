@@ -1,0 +1,68 @@
+{{>head}}
+<title>{{method.name}} method - {{class.name}} class - {{ library.name }} library - Dart API</title>
+
+<!-- required because all the links are pseudo-absolute -->
+<base href="../..">
+
+{{>styles_and_scripts}}
+
+<meta name="description" content="API docs for the {{method.name}} method from the {{class.name}} class {{ library.name }} library, for the Dart programming language.">
+
+</head>
+
+<body>
+
+<header class="container-fluid" id="title">
+    <!-- TODO: align this -->
+    <div class="container">
+        <ul class="breadcrumbs gt-separated">
+            <li><a href="{{package.href}}">{{package.name}} package</a></li>
+            <li><a href="{{library.href}}">{{library.name}} library</a></li>
+            <li><a href="{{class.href}}">{{class.name}} class</a></li>
+        </ul>
+        <h1 class="title">
+            {{ method.name }}
+            <span class="type">method</span>
+        </h1>
+    </div>
+</header>
+
+<div class="container">
+
+    <section class="multi-line-signature">
+        <code>
+            {{#method}}
+            <span class="returntype">{{{ linkedReturnType }}}</span>
+            <span class="name">{{ name }}</span>({{#hasParameters}}
+            <br>
+            <div class="parameters">
+                {{{linkedParamsLines}}}
+            </div>
+            {{/hasParameters}})
+            {{/method}}
+        </code>
+    </section>
+
+    <section id="declared-in">
+        Declared in <a href="{{class.href}}">{{class.name}}</a>.
+        {{#class.hasImplementors}}
+        Also accessible from
+        <ul class="comma-separated">
+        {{#class.implementors}}
+        <li><a href="{{href}}">{{name}}</a></li>
+        {{/class.implementors}}
+        </ul>
+        {{/class.hasImplementors}}
+    </section>
+
+    <section class="desc markdown">
+
+        {{#markdown}}
+        {{{ method.documentation }}}
+        {{/markdown}}
+
+    </section>
+
+</div>
+
+{{>footer}}
