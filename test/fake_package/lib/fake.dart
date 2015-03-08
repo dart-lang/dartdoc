@@ -190,8 +190,20 @@ String get setAndGet => 'hello';
 /// A dynamic getter.
 get dynamicGetter => 'i could be anything';
 
-/// Top-level function 2 params and 1 optional positional param.
-String topLevelFunction(int param1, bool param2, [double optionalPositional = 0.0]) {}
+/// Top-level function 3 params and 1 optional positional param.
+///
+/// This is the second paragraph.
+/// It has two lines.
+///
+/// The third parameter is a [Cool] object.
+///
+/// Here is a code snippet:
+///
+///     var thing = topLevelFunction(1, true, 3.4);
+///
+/// Thanks for using this function!
+String topLevelFunction(int param1, bool param2, Cool coolBeans,
+                        [double optionalPositional = 0.0]) { return null; }
 
 /// A single optional positional param, no type annotation, no default value.
 

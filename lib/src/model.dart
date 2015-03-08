@@ -52,6 +52,8 @@ abstract class ModelElement {
   ElementType _type;
   String _documentation;
 
+  List _parameters;
+
   ModelElement(this.element, this.library, [this.source]);
 
   factory ModelElement.from(Element e, Library library) {
@@ -177,24 +179,33 @@ abstract class ModelElement {
 
   String get name => element.name;
 
-  bool get hasParameters =>
+  bool get canHaveParameters =>
       element is ExecutableElement || element is FunctionTypeAliasElement;
 
   List<Parameter> get parameters {
-    if (!hasParameters) {
-      throw new StateError("$element does not have parameters");
+    if (!canHaveParameters) {
+      throw new StateError("$element cannot have parameters");
     }
+
+    if (_parameters != null) return _parameters;
+
     List<ParameterElement> params;
+
     if (element is ExecutableElement) {
       // the as check silences the warning
       params = (element as ExecutableElement).parameters;
     }
+
     if (element is FunctionTypeAliasElement) {
       params = (element as FunctionTypeAliasElement).parameters;
     }
 
-    return params.map((p) => new Parameter(p, library)).toList(growable: false);
+    _parameters = params.map((p) => new Parameter(p, library)).toList(growable: false);
+
+    return _parameters;
   }
+
+  bool get hasParameters => parameters.isNotEmpty;
 
   bool get isExecutable => element is ExecutableElement;
 
@@ -319,6 +330,11 @@ abstract class ModelElement {
 
     return buf.toString();
   }
+
+  /// End each parameter with a `<br>`
+  String get linkedParamsLines {
+    return linkedParams.replaceAll(',', ',<br>');
+  }
 }
 
 class Dynamic extends ModelElement {
@@ -368,6 +384,8 @@ class Package {
       return _libraries.any((lib) => lib.element == e.element.library);
     }
   }
+
+  String get href => 'index.html';
 }
 
 class Library extends ModelElement {
@@ -750,7 +768,7 @@ class ModelFunction extends ModelElement {
   }
 
   @override
-  String get _href => '${library.name}.html#$name';
+  String get _href => '${library.name}/$name.html';
 }
 
 class Typedef extends ModelElement {

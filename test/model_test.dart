@@ -223,8 +223,12 @@ void main() {
       expect(m2.documentation, 'this is a method');
     });
 
-    test('has params', () {
-      expect(m3.hasParameters, true);
+    test('can have params', () {
+      expect(m3.canHaveParameters, isTrue);
+    });
+
+    test('has parameters', () {
+      expect(m3.hasParameters, isFalse);
     });
 
     test('return type', () {

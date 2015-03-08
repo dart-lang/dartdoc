@@ -191,3 +191,26 @@ ul.class-extends li:last-child:after {
 .is-inherited {
   font-style: italic;
 }
+
+.multi-line-signature {
+    font-size: 20px;
+    margin-bottom: 18px;
+}
+
+ul.breadcrumbs {
+    list-style: none;
+    padding: 0;
+    position: absolute;
+}
+
+ul.breadcrumbs li {
+    display: inline;
+}
+
+ul.breadcrumbs li:after {
+    content: " > ";
+}
+
+ul.breadcrumbs li:last-child:after {
+    content: "";
+}
