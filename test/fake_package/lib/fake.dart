@@ -83,6 +83,8 @@ class SuperAwesomeClass {
   /// In the super class.
   void fly() {}
 
+  SuperAwesomeClass operator -(other) { return null; }
+
 }
 
 /// This is a very long line spread
