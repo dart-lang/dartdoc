@@ -1,12 +1,12 @@
 {{>head}}
-    <title>{{class.name}} class - {{ library.name }} library - Dart API</title>
+    <title>{{class.name}} {{class.kind}} - {{ library.name }} library - Dart API</title>
 
     <!-- required because all the links are pseudo-absolute -->
     <base href="..">
 
     {{>styles_and_scripts}}
 
-    <meta name="description" content="API docs for the {{class.name}} class from the {{ library.name }} library, for the Dart programming language.">
+    <meta name="description" content="API docs for the {{class.name}} {{class.kind}} from the {{ library.name }} library, for the Dart programming language.">
 
 </head>
 
@@ -20,7 +20,7 @@
         </ul>
         <h1 class="title">
             {{ class.name }}
-            <span class="type">{{#class.isAbstract}}abstract{{/class.isAbstract}} class</span>
+            <span class="type">{{#class.isAbstract}}abstract{{/class.isAbstract}} {{class.kind}}</span>
         </h1>
     </div>
 </header>
@@ -91,6 +91,7 @@
     </section>
     {{/class.hasImplementors}}
 
+    {{#class.hasConstructors}}
     <section class="summary" id="constructors">
         <h2>Constructors</h2>
 
@@ -106,6 +107,31 @@
         </dl>
 
     </section>
+    {{/class.hasConstructors}}
+
+    {{#class.hasConstants}}
+    <section class="summary" id="properties">
+        <h2>Constants</h2>
+
+        <dl class="withreturntypes">
+            {{#class.constants}}
+            <dt id="{{htmlId}}">
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ name }}</span>
+                    {{#constantValue}}
+                    =
+                    <span class="constant-value">{{ constantValue }}</span>
+                    {{/constantValue}}
+                </code>
+            </dt>
+            <dd>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.constants}}
+        </dl>
+    </section>
+    {{/class.hasConstants}}
 
     {{#class.hasInstanceProperties}}
     <section class="summary" id="instance-properties">
@@ -171,28 +197,6 @@
         </dl>
     </section>
     {{/class.hasStaticProperties}}
-
-    {{#class.hasConstants}}
-    <section class="summary" id="properties">
-        <h2>Constants</h2>
-
-        <dl class="withreturntypes">
-            {{#class.constants}}
-            <dt id="{{htmlId}}">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name">{{ name }}</span>
-                    =
-                    <span class="constant-value">{{ constantValue }}</span>
-                </code>
-            </dt>
-            <dd>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
-            {{/class.constants}}
-        </dl>
-    </section>
-    {{/class.hasConstants}}
 
     {{#class.hasStaticMethods}}
     <section id="static-methods-summary" class="summary">
