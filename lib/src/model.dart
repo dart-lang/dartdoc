@@ -52,6 +52,8 @@ abstract class ModelElement {
   ElementType _type;
   String _documentation;
 
+  List _parameters;
+
   ModelElement(this.element, this.library, [this.source]);
 
   factory ModelElement.from(Element e, Library library) {
@@ -177,24 +179,33 @@ abstract class ModelElement {
 
   String get name => element.name;
 
-  bool get hasParameters =>
+  bool get canHaveParameters =>
       element is ExecutableElement || element is FunctionTypeAliasElement;
 
   List<Parameter> get parameters {
-    if (!hasParameters) {
-      throw new StateError("$element does not have parameters");
+    if (!canHaveParameters) {
+      throw new StateError("$element cannot have parameters");
     }
+
+    if (_parameters != null) return _parameters;
+
     List<ParameterElement> params;
+
     if (element is ExecutableElement) {
       // the as check silences the warning
       params = (element as ExecutableElement).parameters;
     }
+
     if (element is FunctionTypeAliasElement) {
       params = (element as FunctionTypeAliasElement).parameters;
     }
 
-    return params.map((p) => new Parameter(p, library)).toList(growable: false);
+    _parameters = params.map((p) => new Parameter(p, library)).toList(growable: false);
+
+    return _parameters;
   }
+
+  bool get hasParameters => parameters.isNotEmpty;
 
   bool get isExecutable => element is ExecutableElement;
 

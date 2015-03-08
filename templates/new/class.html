@@ -14,6 +14,10 @@
 
 <header class="container-fluid" id="title">
     <div class="container">
+        <ul class="breadcrumbs">
+            <li><a href="{{package.href}}">{{package.name}} package</a></li>
+            <li><a href="{{library.href}}">{{library.name}} library</a></li>
+        </ul>
         <h1 class="title">
             {{ class.name }}
             <span class="type">{{#class.isAbstract}}abstract{{/class.isAbstract}} class</span>

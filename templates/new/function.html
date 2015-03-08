@@ -29,14 +29,19 @@
 <div class="container">
 
     <section class="multi-line-signature">
+        <code>
         {{#function}}
             <span class="returntype">{{{ linkedReturnType }}}</span>
-            <span class="name">{{ name }}</span>(<br>
+            <span class="name">{{ name }}</span>(
+            {{#hasParameters}}
+            <br>
             <div class="parameters">
               {{{linkedParamsLines}}}
             </div>
+            {{/hasParameters}}
             )
         {{/function}}
+        </code>
     </section>
 
     <section class="desc markdown">
