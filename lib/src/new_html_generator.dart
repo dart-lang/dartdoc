@@ -237,9 +237,9 @@ String oneLiner(String text, {nestedContext}) {
 }
 
 String resolveDocReferences(String text, MustacheContext nestedContext) {
-
   ModelElement _getElement() {
-    var obj = nestedContext.parent.ctxReflector.m;
+    var obj = (nestedContext as MustacheToString).parent;
+    obj = obj.ctxReflector.m;
     if (obj != null) {
       var reflectee = obj.reflectee;
       if (reflectee is ModelElement) {

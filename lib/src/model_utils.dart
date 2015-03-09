@@ -9,7 +9,6 @@ import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
-
 bool isPrivate(Element e) => e.name.startsWith('_');
 
 bool isPublic(Element e) => !isPrivate(e);
@@ -50,7 +49,7 @@ String replaceAllLinks(String str, {var findMatchingLink}) {
       if (codeRef != null) {
         var link = findMatchingLink(codeRef);
         if (link != null) {
-        buf.write('<a href=$link> $codeRef</a>');
+          buf.write('<a href=$link> $codeRef</a>');
         } else {
           buf.write(codeRef);
         }
@@ -66,4 +65,3 @@ String replaceAllLinks(String str, {var findMatchingLink}) {
   }
   return buf.toString();
 }
-

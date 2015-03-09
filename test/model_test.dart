@@ -107,8 +107,8 @@ void main() {
     });
 
     test('docs ', () {
-      expect(Apple.resolveReferences(Apple.documentation),
-          'Sample class String');
+      expect(
+          Apple.resolveReferences(Apple.documentation), 'Sample class String');
     });
 
     test('docs refs', () {
@@ -345,7 +345,8 @@ void main() {
       c = library.getClasses()[0]; // A
 
       isGreaterThan = c.instanceMethods[2]; // isGreaterThan
-      asyncM = library.getClasses()[3].instanceMethods.firstWhere((m) => m.name == 'foo');
+      asyncM = library.getClasses()[3].instanceMethods
+          .firstWhere((m) => m.name == 'foo');
       p1 = isGreaterThan.parameters[1]; // {int check:5}
     });
 
@@ -365,7 +366,7 @@ void main() {
       expect(p1.type.linkedName, 'int');
     });
 
-    test('async return type', (){
+    test('async return type', () {
       expect(asyncM.linkedReturnType, 'Future');
     });
   });
