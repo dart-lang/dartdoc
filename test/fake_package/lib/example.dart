@@ -26,6 +26,8 @@ class Apple {
   /// this is a method
   void m1() {}
 
+  operator *(Apple other) => this;
+
   void printMsg(String msg, [bool linebreak]) {}
 
   bool isGreaterThan(int number, {int check:5}) {

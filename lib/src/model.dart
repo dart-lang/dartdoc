@@ -704,6 +704,7 @@ class Class extends ModelElement {
       if (value != null &&
           value is MethodElement &&
           !value.isPrivate &&
+          !value.isOperator &&
           value.enclosingElement.name != 'Object') {
         var lib = value.library == library.element
             ? library
