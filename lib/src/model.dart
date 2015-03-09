@@ -159,7 +159,7 @@ abstract class ModelElement {
       return e.href;
     }
 
-    return replaceAllLinks(docs, replaceFunction: _getMatchingLink);
+    return replaceAllLinks(docs, findMatchingLink: _getMatchingLink);
   }
 
   String get htmlId => name;

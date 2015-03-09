@@ -5,9 +5,11 @@
 library dartdoc.new_html_generator;
 
 import 'dart:io';
+import 'dart:mirrors';
 
 import 'package:intl/intl.dart';
 import 'package:mustache4dart/mustache4dart.dart';
+import 'package:mustache4dart/mustache_context.dart';
 import 'package:html5lib/parser.dart' show parse;
 import 'package:html5lib/dom.dart' show Document;
 import 'package:markdown/markdown.dart' as md;
@@ -17,7 +19,6 @@ import 'model.dart';
 import '../generator.dart';
 
 class NewHtmlGenerator extends Generator {
-
   final String _url;
   final List<String> _htmlFiles = [];
 
@@ -30,17 +31,19 @@ class NewHtmlGenerator extends Generator {
   final String generatedOn;
 
   static final String indexTemplate = _loadTemplate('templates/new/index.html');
-  static final String libraryTemplate = _loadTemplate('templates/new/library.html');
+  static final String libraryTemplate =
+      _loadTemplate('templates/new/library.html');
   static final String classTemplate = _loadTemplate('templates/new/class.html');
 
   static final Map partials = {
     'footer': _loadTemplate('templates/new/_footer.html'),
     'head': _loadTemplate('templates/new/_head.html'),
-    'styles_and_scripts': _loadTemplate('templates/new/_styles_and_scripts.html')
+    'styles_and_scripts':
+        _loadTemplate('templates/new/_styles_and_scripts.html')
   };
 
-  NewHtmlGenerator(this._url) :
-    generatedOn = new DateFormat('MMMM dd yyyy').format(new DateTime.now());
+  NewHtmlGenerator(this._url)
+      : generatedOn = new DateFormat('MMMM dd yyyy').format(new DateTime.now());
 
   void generate(Package package, Directory out) {
     _package = package;
@@ -84,7 +87,7 @@ class NewHtmlGenerator extends Generator {
       'oneLiner': oneLiner
     };
 
-    _writeFile(path.join(lib.name,'index.html'), libraryTemplate, data);
+    _writeFile(path.join(lib.name, 'index.html'), libraryTemplate, data);
   }
 
   void generateClass(Package package, Library lib, Class clazz) {
@@ -104,7 +107,7 @@ class NewHtmlGenerator extends Generator {
     File script = new File(Platform.script.toFilePath());
     ['styles.css', 'prettify.css', 'prettify.js'].forEach((f) {
       new File(path.join(script.parent.parent.path, 'templates', 'new', f))
-        .copySync(path.join(out.path, f));
+          .copySync(path.join(out.path, f));
     });
   }
 
@@ -118,7 +121,8 @@ class NewHtmlGenerator extends Generator {
 
   void _writeFile(String filename, String template, Map data) {
     File f = _createOutputFile(filename);
-    String content = render(template, data, partial: _partials,
+    String content = render(template, data,
+        partial: _partials,
         assumeNullNonExistingProperty: false,
         errorOnMissingProperty: true);
     f.writeAsStringSync(content);
@@ -126,7 +130,8 @@ class NewHtmlGenerator extends Generator {
 
   static String _loadTemplate(String templatePath) {
     File script = new File(Platform.script.toFilePath());
-    File tmplFile = new File(path.join(script.parent.parent.path, templatePath));
+    File tmplFile =
+        new File(path.join(script.parent.parent.path, templatePath));
     String contents = tmplFile.readAsStringSync();
     return contents;
   }
@@ -145,9 +150,12 @@ class NewHtmlGenerator extends Generator {
 /// and removes any script tags. Returns the HTML as a string.
 String renderMarkdown(String markdown, {nestedContext}) {
   String mustached = render(markdown.trim(), nestedContext,
-      assumeNullNonExistingProperty: false,
-      errorOnMissingProperty: true);
+      assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
+
+  // reflector.
   String html = md.markdownToHtml(mustached);
+  html = resolveDocReferences(html, nestedContext);
+  html = md.markdownToHtml(html);
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
   return doc.body.innerHtml;
@@ -155,28 +163,48 @@ String renderMarkdown(String markdown, {nestedContext}) {
 
 String oneLiner(String text, {nestedContext}) {
   String mustached = render(text.trim(), nestedContext,
-      assumeNullNonExistingProperty: false,
-      errorOnMissingProperty: true)
+          assumeNullNonExistingProperty: false, errorOnMissingProperty: true)
       .trim();
   if (mustached == null || mustached.trim().isEmpty) return '';
-
   // Parse with Markdown, but only care about the first block or paragraph.
   var lines = mustached.replaceAll('\r\n', '\n').split('\n');
   var document = new md.Document();
   document.parseRefLinks(lines);
   var blocks = document.parseLines(lines);
-  var firstPara = new PlainTextRenderer().render([blocks.first]);
 
+  var firstPara = new PlainTextRenderer().render([blocks.first]);
   if (firstPara.length > 200) {
     firstPara = firstPara.substring(0, 200) + '...';
   }
-
+  firstPara = resolveDocReferences(firstPara, nestedContext);
+  firstPara = md.markdownToHtml(firstPara);
   return firstPara;
 }
 
+String resolveDocReferences(String text, MustacheContext nestedContext) {
+  var resolvedText;
+  var obj = nestedContext.parent.ctxReflector.m;
+  if (obj != null) {
+    var reflector = obj.reflectee;
+    if (reflector is ModelElement) {
+      resolvedText = (reflector as ModelElement).resolveReferences(text);
+    } else {
+      var element = reflector['class'];
+        if (element == null) {
+          element = reflector['library'];
+        }
+        if (element != null) {
+          resolvedText = (element as ModelElement).resolveReferences(text);
+       }
+    }
+  }
+  if (resolvedText != null) return resolvedText;
+  return text;
+}
+
 class PlainTextRenderer implements md.NodeVisitor {
-  static final _BLOCK_TAGS = new RegExp(
-      'blockquote|h1|h2|h3|h4|h5|h6|hr|p|pre');
+  static final _BLOCK_TAGS =
+      new RegExp('blockquote|h1|h2|h3|h4|h5|h6|hr|p|pre');
 
   StringBuffer buffer;
 

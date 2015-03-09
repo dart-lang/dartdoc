@@ -34,7 +34,7 @@ List<InterfaceType> getAllSupertypes(ClassElement c) {
   return c.allSupertypes;
 }
 
-String replaceAllLinks(String str, {var replaceFunction}) {
+String replaceAllLinks(String str, {var findMatchingLink, var replaceFunction}) {
   var matchChars = ['[', ']'];
   int lastWritten = 0;
   int index = str.indexOf(matchChars[0]);
@@ -48,10 +48,11 @@ String replaceAllLinks(String str, {var replaceFunction}) {
       }
       String codeRef = str.substring(index + matchChars[0].length, end);
       if (codeRef != null) {
-        buf.write('[$codeRef]');
-        var link = replaceFunction(codeRef);
+        var link = findMatchingLink(codeRef);
         if (link != null) {
-        buf.write('($link)');
+        buf.write('<a href=$link> $codeRef</a>');
+        } else {
+          buf.write(codeRef);
         }
       }
       lastWritten = end + matchChars[1].length;
