@@ -5,7 +5,6 @@
 library dartdoc.new_html_generator;
 
 import 'dart:io';
-import 'dart:mirrors';
 
 import 'package:intl/intl.dart';
 import 'package:mustache4dart/mustache4dart.dart';
