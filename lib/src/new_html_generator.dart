@@ -232,8 +232,7 @@ String oneLiner(String text, {nestedContext}) {
   if (firstPara.length > 200) {
     firstPara = firstPara.substring(0, 200) + '...';
   }
-  firstPara = resolveDocReferences(firstPara, nestedContext);
-  return firstPara;
+  return resolveDocReferences(firstPara, nestedContext);
 }
 
 String resolveDocReferences(String text, MustacheContext nestedContext) {
