@@ -34,7 +34,7 @@ List<InterfaceType> getAllSupertypes(ClassElement c) {
   return c.allSupertypes;
 }
 
-String replaceAllLinks(String str, {var findMatchingLink, var replaceFunction}) {
+String replaceAllLinks(String str, {var findMatchingLink}) {
   var matchChars = ['[', ']'];
   int lastWritten = 0;
   int index = str.indexOf(matchChars[0]);

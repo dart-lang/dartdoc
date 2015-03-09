@@ -34,8 +34,10 @@ class NewHtmlGenerator extends Generator {
   static final String libraryTemplate =
       _loadTemplate('templates/new/library.html');
   static final String classTemplate = _loadTemplate('templates/new/class.html');
-  static final String functionTemplate = _loadTemplate('templates/new/function.html');
-  static final String methodTemplate = _loadTemplate('templates/new/method.html');
+  static final String functionTemplate =
+      _loadTemplate('templates/new/function.html');
+  static final String methodTemplate =
+      _loadTemplate('templates/new/method.html');
 
   static final Map partials = {
     'footer': _loadTemplate('templates/new/_footer.html'),
@@ -119,12 +121,12 @@ class NewHtmlGenerator extends Generator {
 
   void generateEnum(Package package, Library lib, Class eNum) {
     Map data = {
-        'package': package,
-        'generatedOn': generatedOn,
-        'markdown': renderMarkdown,
-        'oneLiner': oneLiner,
-        'library': lib,
-        'class': eNum
+      'package': package,
+      'generatedOn': generatedOn,
+      'markdown': renderMarkdown,
+      'oneLiner': oneLiner,
+      'library': lib,
+      'class': eNum
     };
 
     _writeFile(path.joinAll(eNum.href.split('/')), classTemplate, data);
@@ -143,15 +145,16 @@ class NewHtmlGenerator extends Generator {
     _writeFile(path.joinAll(function.href.split('/')), functionTemplate, data);
   }
 
-  void generateMethod(Package package, Library lib, Class clazz, Method method) {
+  void generateMethod(
+      Package package, Library lib, Class clazz, Method method) {
     Map data = {
-        'package': package,
-        'generatedOn': generatedOn,
-        'markdown': renderMarkdown,
-        'oneLiner': oneLiner,
-        'library': lib,
-        'class': clazz,
-        'method': method
+      'package': package,
+      'generatedOn': generatedOn,
+      'markdown': renderMarkdown,
+      'oneLiner': oneLiner,
+      'library': lib,
+      'class': clazz,
+      'method': method
     };
 
     _writeFile(path.joinAll(method.href.split('/')), methodTemplate, data);
@@ -209,7 +212,6 @@ String renderMarkdown(String markdown, {nestedContext}) {
   // reflector.
   String html = md.markdownToHtml(mustached);
   html = resolveDocReferences(html, nestedContext);
-  html = md.markdownToHtml(html);
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
   return doc.body.innerHtml;
@@ -231,28 +233,34 @@ String oneLiner(String text, {nestedContext}) {
     firstPara = firstPara.substring(0, 200) + '...';
   }
   firstPara = resolveDocReferences(firstPara, nestedContext);
-  firstPara = md.markdownToHtml(firstPara);
   return firstPara;
 }
 
 String resolveDocReferences(String text, MustacheContext nestedContext) {
-  var resolvedText;
-  var obj = nestedContext.parent.ctxReflector.m;
-  if (obj != null) {
-    var reflector = obj.reflectee;
-    if (reflector is ModelElement) {
-      resolvedText = (reflector as ModelElement).resolveReferences(text);
-    } else {
-      var element = reflector['class'];
-        if (element == null) {
-          element = reflector['library'];
-        }
-        if (element != null) {
-          resolvedText = (element as ModelElement).resolveReferences(text);
-       }
+
+  ModelElement _getElement() {
+    var obj = nestedContext.parent.ctxReflector.m;
+    if (obj != null) {
+      var reflectee = obj.reflectee;
+      if (reflectee is ModelElement) {
+        return reflectee;
+      } else {
+        var objE = reflectee['method'];
+        if (objE == null) objE = reflectee['class'];
+        if (objE == null) objE = reflectee['function'];
+        if (objE == null) objE = reflectee['library'];
+        return objE;
+      }
     }
+    return null;
   }
-  if (resolvedText != null) return resolvedText;
+
+  var resolvedText;
+  var element = _getElement();
+  if (element != null) {
+    resolvedText = element.resolveReferences(text);
+    return resolvedText;
+  }
   return text;
 }
 

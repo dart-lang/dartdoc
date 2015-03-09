@@ -108,12 +108,12 @@ void main() {
 
     test('docs ', () {
       expect(Apple.resolveReferences(Apple.documentation),
-          'Sample class [String]');
+          'Sample class String');
     });
 
     test('docs refs', () {
       expect(B.resolveReferences(B.documentation),
-          'Extends class [Apple](ex/Apple.html)');
+          'Extends class <a href=ex/Apple.html> Apple</a>');
     });
 
     test('abstract', () {

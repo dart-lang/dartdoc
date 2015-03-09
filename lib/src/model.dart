@@ -118,7 +118,7 @@ abstract class ModelElement {
     NodeList<CommentReference> _getCommentRefs() {
       if (_documentation == null && canOverride()) {
         var melement = getOverriddenElement();
-        if (melement.element.node != null &&
+        if (melement != null && melement.element.node != null &&
             melement.element.node is AnnotatedNode) {
           return (melement.element.node as AnnotatedNode).documentationComment.references;
         }
