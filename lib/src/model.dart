@@ -118,13 +118,23 @@ abstract class ModelElement {
     NodeList<CommentReference> _getCommentRefs() {
       if (_documentation == null && canOverride()) {
         var melement = getOverriddenElement();
-        if (melement.element.node != null &&
+        if (melement != null &&
+            melement.element.node != null &&
             melement.element.node is AnnotatedNode) {
           return (melement.element.node as AnnotatedNode).documentationComment.references;
         }
       }
       if (element.node is AnnotatedNode) {
-        return (element.node as AnnotatedNode).documentationComment.references;
+        if ((element.node as AnnotatedNode).documentationComment != null) {
+          return (element.node as AnnotatedNode).documentationComment.references;
+        }
+      } else if (element is LibraryElement) {
+        var node = element.node.parent.parent;
+        if (node is AnnotatedNode) {
+          if ((node as AnnotatedNode).documentationComment != null) {
+            return (node as AnnotatedNode).documentationComment.references;
+          }
+        }
       }
       return null;
     }
@@ -135,13 +145,22 @@ abstract class ModelElement {
     }
 
     String _getMatchingLink(String codeRef) {
-      var refElement = commentRefs.firstWhere(
-          (ref) => ref.identifier.name == codeRef).identifier.staticElement;
+      var refElement;
+      try {
+        refElement = commentRefs.firstWhere(
+            (ref) => ref.identifier.name == codeRef).identifier.staticElement;
+      } on StateError catch (error) {
+        // do nothing
+      }
+      if (refElement == null) {
+        return null;
+      }
       var refLibrary = new Library(refElement.library, package);
       var e = new ModelElement.from(refElement, refLibrary);
       return e.href;
     }
-    return replaceAllLinks(docs, replaceFunction: _getMatchingLink);
+
+    return replaceAllLinks(docs, findMatchingLink: _getMatchingLink);
   }
 
   String get htmlId => name;
@@ -198,7 +217,8 @@ abstract class ModelElement {
       params = (element as FunctionTypeAliasElement).parameters;
     }
 
-    _parameters = params.map((p) => new Parameter(p, library)).toList(growable: false);
+    _parameters =
+        params.map((p) => new Parameter(p, library)).toList(growable: false);
 
     return _parameters;
   }
@@ -571,7 +591,8 @@ class Class extends ModelElement {
   bool get hasInterfaces => interfaces.isNotEmpty;
 
   /// Returns all the implementors of the class specified.
-  List<Class> get implementors => _implementors[this] != null ? _implementors[this] : new List(0);
+  List<Class> get implementors =>
+      _implementors[this] != null ? _implementors[this] : new List(0);
 
   bool get hasImplementors => implementors.isNotEmpty;
 
@@ -745,7 +766,7 @@ class Class extends ModelElement {
 
 class Enum extends Class {
   Enum(ClassElement element, Library library, [String source])
-    : super(element, library, source);
+      : super(element, library, source);
 
   @override
   String get kind => 'enum';
@@ -880,7 +901,8 @@ class Method extends ModelElement {
   String get linkedReturnType => type.createLinkedReturnTypeName();
 
   @override
-  String get _href => '${library.name}/${_method.enclosingElement.name}/$name.html';
+  String get _href =>
+      '${library.name}/${_method.enclosingElement.name}/$name.html';
 }
 
 /// Getters and setters.
