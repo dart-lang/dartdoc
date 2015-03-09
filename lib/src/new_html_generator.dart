@@ -34,6 +34,8 @@ class NewHtmlGenerator extends Generator {
   static final String libraryTemplate =
       _loadTemplate('templates/new/library.html');
   static final String classTemplate = _loadTemplate('templates/new/class.html');
+  static final String functionTemplate = _loadTemplate('templates/new/function.html');
+  static final String methodTemplate = _loadTemplate('templates/new/method.html');
 
   static final Map partials = {
     'footer': _loadTemplate('templates/new/_footer.html'),
@@ -56,6 +58,18 @@ class NewHtmlGenerator extends Generator {
 
       lib.getClasses().forEach((clazz) {
         generateClass(package, lib, clazz);
+
+        clazz.instanceMethods.forEach((m) {
+          generateMethod(package, lib, clazz, m);
+        });
+      });
+
+      lib.getEnums().forEach((eNum) {
+        generateEnum(package, lib, eNum);
+      });
+
+      lib.getFunctions().forEach((function) {
+        generateFunction(package, lib, function);
       });
     });
     // if (_url != null) {
@@ -101,6 +115,46 @@ class NewHtmlGenerator extends Generator {
     };
 
     _writeFile(path.joinAll(clazz.href.split('/')), classTemplate, data);
+  }
+
+  void generateEnum(Package package, Library lib, Class eNum) {
+    Map data = {
+        'package': package,
+        'generatedOn': generatedOn,
+        'markdown': renderMarkdown,
+        'oneLiner': oneLiner,
+        'library': lib,
+        'class': eNum
+    };
+
+    _writeFile(path.joinAll(eNum.href.split('/')), classTemplate, data);
+  }
+
+  void generateFunction(Package package, Library lib, ModelFunction function) {
+    Map data = {
+      'package': package,
+      'generatedOn': generatedOn,
+      'markdown': renderMarkdown,
+      'oneLiner': oneLiner,
+      'library': lib,
+      'function': function
+    };
+
+    _writeFile(path.joinAll(function.href.split('/')), functionTemplate, data);
+  }
+
+  void generateMethod(Package package, Library lib, Class clazz, Method method) {
+    Map data = {
+        'package': package,
+        'generatedOn': generatedOn,
+        'markdown': renderMarkdown,
+        'oneLiner': oneLiner,
+        'library': lib,
+        'class': clazz,
+        'method': method
+    };
+
+    _writeFile(path.joinAll(method.href.split('/')), methodTemplate, data);
   }
 
   void _copyResources() {

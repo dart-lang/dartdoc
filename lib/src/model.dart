@@ -52,14 +52,14 @@ abstract class ModelElement {
   ElementType _type;
   String _documentation;
 
+  List _parameters;
+
   ModelElement(this.element, this.library, [this.source]);
 
   factory ModelElement.from(Element e, Library library) {
-    if (e is ClassElement && !e.isEnum) {
+    // Also handles enums
+    if (e is ClassElement) {
       return new Class(e, library);
-    }
-    if (e is ClassElement && e.isEnum) {
-      return new Enum(e, library);
     }
     if (e is FunctionElement) {
       return new ModelFunction(e, library);
@@ -195,24 +195,33 @@ abstract class ModelElement {
 
   String get name => element.name;
 
-  bool get hasParameters =>
+  bool get canHaveParameters =>
       element is ExecutableElement || element is FunctionTypeAliasElement;
 
   List<Parameter> get parameters {
-    if (!hasParameters) {
-      throw new StateError("$element does not have parameters");
+    if (!canHaveParameters) {
+      throw new StateError("$element cannot have parameters");
     }
+
+    if (_parameters != null) return _parameters;
+
     List<ParameterElement> params;
+
     if (element is ExecutableElement) {
       // the as check silences the warning
       params = (element as ExecutableElement).parameters;
     }
+
     if (element is FunctionTypeAliasElement) {
       params = (element as FunctionTypeAliasElement).parameters;
     }
 
-    return params.map((p) => new Parameter(p, library)).toList(growable: false);
+    _parameters = params.map((p) => new Parameter(p, library)).toList(growable: false);
+
+    return _parameters;
   }
+
+  bool get hasParameters => parameters.isNotEmpty;
 
   bool get isExecutable => element is ExecutableElement;
 
@@ -337,6 +346,11 @@ abstract class ModelElement {
 
     return buf.toString();
   }
+
+  /// End each parameter with a `<br>`
+  String get linkedParamsLines {
+    return linkedParams.replaceAll(',', ',<br>');
+  }
 }
 
 class Dynamic extends ModelElement {
@@ -386,6 +400,8 @@ class Package {
       return _libraries.any((lib) => lib.element == e.element.library);
     }
   }
+
+  String get href => 'index.html';
 }
 
 class Library extends ModelElement {
@@ -433,7 +449,7 @@ class Library extends ModelElement {
     return _getVariables().where((v) => v.isConst).toList(growable: false);
   }
 
-  List<Enum> getEnums() {
+  List<Class> getEnums() {
     List<ClassElement> enumClasses = [];
     enumClasses.addAll(_library.definingCompilationUnit.enums);
     for (CompilationUnitElement cu in _library.parts) {
@@ -505,17 +521,6 @@ class Library extends ModelElement {
   String get _href => '$name/index.html';
 }
 
-class Enum extends ModelElement {
-  ClassElement get _enum => (element as ClassElement);
-
-  Enum(ClassElement element, Library library, [String source])
-      : super(element, library, source);
-
-  String get _href => '${library.name}/$name.html';
-
-  List<String> get names => _enum.fields.map((f) => f.name);
-}
-
 class Class extends ModelElement {
   List<ElementType> _mixins;
   ElementType _supertype;
@@ -556,6 +561,8 @@ class Class extends ModelElement {
     }).toList(growable: false);
   }
 
+  String get kind => 'class';
+
   bool get isAbstract => _cls.isAbstract;
 
   bool get hasSupertype =>
@@ -582,7 +589,7 @@ class Class extends ModelElement {
   bool get hasInterfaces => interfaces.isNotEmpty;
 
   /// Returns all the implementors of the class specified.
-  List<Class> get implementors => _implementors[this];
+  List<Class> get implementors => _implementors[this] != null ? _implementors[this] : new List(0);
 
   bool get hasImplementors => implementors.isNotEmpty;
 
@@ -636,6 +643,8 @@ class Class extends ModelElement {
 
     return _constructors;
   }
+
+  bool get hasConstructors => constructors.isNotEmpty;
 
   List<Method> get _methods {
     if (_allMethods != null) return _allMethods;
@@ -752,6 +761,14 @@ class Class extends ModelElement {
   String get _href => '${library.name}/$name.html';
 }
 
+class Enum extends Class {
+  Enum(ClassElement element, Library library, [String source])
+    : super(element, library, source);
+
+  @override
+  String get kind => 'enum';
+}
+
 class ModelFunction extends ModelElement {
   ModelFunction(FunctionElement element, Library library, [String contents])
       : super(element, library, contents) {
@@ -768,7 +785,7 @@ class ModelFunction extends ModelElement {
   }
 
   @override
-  String get _href => '${library.name}.html#$name';
+  String get _href => '${library.name}/$name.html';
 }
 
 class Typedef extends ModelElement {
@@ -811,8 +828,9 @@ class Field extends ModelElement {
   }
 
   String get constantValue {
-    var v = (_field as ConstFieldElementImpl).node.toSource();
-    if (v == null) return '';
+    if (_field.node == null) return null;
+    var v = _field.node.toSource();
+    if (v == null) return null;
     return v.substring(v.indexOf('= ') + 2, v.length);
   }
 
@@ -880,7 +898,7 @@ class Method extends ModelElement {
   String get linkedReturnType => type.createLinkedReturnTypeName();
 
   @override
-  String get _href => throw 'not implemented yet';
+  String get _href => '${library.name}/${_method.enclosingElement.name}/$name.html';
 }
 
 /// Getters and setters.

@@ -164,30 +164,57 @@ footer {
   content: '\2713';
 }
 
-ul.class-relationships {
+ul.gt-separated {
   list-style: none;
+  padding: 0;
 }
 
-ul.class-relationships li {
+ul.gt-separated li {
   display: inline;
 }
 
-ul.interfaces-implemented li:after {
-  content: ", ";
-}
-
-ul.interfaces-implemented li:last-child:after {
-  content: "";
-}
-
-ul.class-extends li:after {
+ul.gt-separated li:after {
   content: " > ";
 }
 
-ul.class-extends li:last-child:after {
+ul.gt-separated li:last-child:after {
   content: "";
 }
 
 .is-inherited {
   font-style: italic;
+}
+
+.multi-line-signature {
+    font-size: 18px;
+}
+
+ul.breadcrumbs {
+    position: absolute;
+}
+
+ul.comma-separated {
+    list-style: none;
+    padding: 0;
+    display: inline;
+}
+
+ul.comma-separated li {
+    display: inline;
+}
+
+ul.comma-separated li:after {
+    content: ", ";
+}
+
+ul.comma-separated li:last-child:after {
+    content: ".";
+}
+
+section {
+    margin-bottom: 18px;
+}
+
+#declared-in {
+    font-style: italic;
 }

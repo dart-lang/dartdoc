@@ -15,6 +15,9 @@
 
 <header class="container-fluid" id="title">
     <div class="container">
+        <ul class="breadcrumbs gt-separated">
+            <li><a href="{{package.href}}">{{package.name}} package</a></li>
+        </ul>
         <h1 class="title">
             <span class="name">{{ library.name }}</span> <span class="type">library</span>
         </h1>
@@ -115,7 +118,7 @@
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
                     <span class="name-and-params">
-                        <span class="name">{{ name }}</span>({{{ linkedParams }})
+                        <a href="{{href}}"><span class="name">{{ name }}</span></a>({{{ linkedParams }})
                     </span>
                 </code>
             </dt>

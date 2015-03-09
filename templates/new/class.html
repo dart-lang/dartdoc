@@ -1,12 +1,12 @@
 {{>head}}
-    <title>{{class.name}} class - {{ library.name }} library - Dart API</title>
+    <title>{{class.name}} {{class.kind}} - {{ library.name }} library - Dart API</title>
 
     <!-- required because all the links are pseudo-absolute -->
     <base href="..">
 
     {{>styles_and_scripts}}
 
-    <meta name="description" content="API docs for the {{class.name}} class from the {{ library.name }} library, for the Dart programming language.">
+    <meta name="description" content="API docs for the {{class.name}} {{class.kind}} from the {{ library.name }} library, for the Dart programming language.">
 
 </head>
 
@@ -14,9 +14,13 @@
 
 <header class="container-fluid" id="title">
     <div class="container">
+        <ul class="breadcrumbs gt-separated">
+            <li><a href="{{package.href}}">{{package.name}} package</a></li>
+            <li><a href="{{library.href}}">{{library.name}} library</a></li>
+        </ul>
         <h1 class="title">
             {{ class.name }}
-            <span class="type">{{#class.isAbstract}}abstract{{/class.isAbstract}} class</span>
+            <span class="type">{{#class.isAbstract}}abstract{{/class.isAbstract}} {{class.kind}}</span>
         </h1>
     </div>
 </header>
@@ -34,7 +38,7 @@
     {{#class.hasAnnotations}}
     <section id="annotations">
         <h4>Annotated by</h4>
-        <ul class="interfaces-implemented class-relationships">
+        <ul class="comma-separated class-relationships">
             {{#class.annotations}}
             <li>{{{.}}}</li>
             {{/class.annotations}}
@@ -45,7 +49,7 @@
     {{#class.hasSupertype}}
     <section id="extends">
         <h4>Extends</h4>
-        <ul class="class-extends class-relationships">
+        <ul class="gt-separated class-relationships">
             {{#class.superChain}}
             <li>{{{linkedName}}}</li>
             {{/class.superChain}}
@@ -57,7 +61,7 @@
     {{#class.hasInterfaces}}
     <section id="implements">
         <h4>Implements</h4>
-        <ul class="interfaces-implemented class-relationships">
+        <ul class="comma-separated class-relationships">
             {{#class.interfaces}}
             <li>{{{linkedName}}}</li>
             {{/class.interfaces}}
@@ -68,7 +72,7 @@
     {{#class.hasMixins}}
     <section id="mixes-in">
         <h4>Mixes-in</h4>
-        <ul class="interfaces-implemented class-relationships">
+        <ul class="comma-separated class-relationships">
             {{#class.mixins}}
             <li>{{{linkedName}}}</li>
             {{/class.mixins}}
@@ -79,7 +83,7 @@
     {{#class.hasImplementors}}
     <section id="implementors">
         <h4>Implementors</h4>
-        <ul class="interfaces-implemented class-relationships">
+        <ul class="comma-separated class-relationships">
             {{#class.implementors}}
             <li>{{{linkedName}}}</li>
             {{/class.implementors}}
@@ -87,6 +91,7 @@
     </section>
     {{/class.hasImplementors}}
 
+    {{#class.hasConstructors}}
     <section class="summary" id="constructors">
         <h2>Constructors</h2>
 
@@ -102,6 +107,31 @@
         </dl>
 
     </section>
+    {{/class.hasConstructors}}
+
+    {{#class.hasConstants}}
+    <section class="summary" id="properties">
+        <h2>Constants</h2>
+
+        <dl class="withreturntypes">
+            {{#class.constants}}
+            <dt id="{{htmlId}}">
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ name }}</span>
+                    {{#constantValue}}
+                    =
+                    <span class="constant-value">{{ constantValue }}</span>
+                    {{/constantValue}}
+                </code>
+            </dt>
+            <dd>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.constants}}
+        </dl>
+    </section>
+    {{/class.hasConstants}}
 
     {{#class.hasInstanceProperties}}
     <section class="summary" id="instance-properties">
@@ -123,6 +153,23 @@
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
             </dd>
             {{/class.instanceProperties}}
+
+            {{#class.inheritedProperties}}
+            <dt id="{{htmlId}}" class="inherited">
+                <code>
+                    <span class="returntype">{{{ linkedReturnType }}}</span>
+                    <span class="name">{{ name }}</span>
+                </code>
+            </dt>
+            <dd>
+                <div>
+                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
+                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
+                </div>
+                <div class="is-inherited">Inherited</div>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.inheritedProperties}}
         </dl>
     </section>
     {{/class.hasInstanceProperties}}
@@ -151,28 +198,6 @@
     </section>
     {{/class.hasStaticProperties}}
 
-    {{#class.hasConstants}}
-    <section class="summary" id="properties">
-        <h2>Constants</h2>
-
-        <dl class="withreturntypes">
-            {{#class.constants}}
-            <dt id="{{htmlId}}">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name">{{ name }}</span>
-                    =
-                    <span class="constant-value">{{ constantValue }}</span>
-                </code>
-            </dt>
-            <dd>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
-            {{/class.constants}}
-        </dl>
-    </section>
-    {{/class.hasConstants}}
-
     {{#class.hasStaticMethods}}
     <section id="static-methods-summary" class="summary">
         <h2>Static Methods</h2>
@@ -182,7 +207,7 @@
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
                     <span class="name-and-params">
-                        <span class="name">{{ name }}</span>({{{ linkedParams }})
+                        <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }})
                     </span>
                 </code>
             </dt>
@@ -197,13 +222,13 @@
     {{#class.hasInstanceMethods}}
     <section id="instance-methods-summary" class="summary">
         <h2>Instance Methods</h2>
-        <dl class="withreturntypes">
+        <dl id="{{htmlId}}" class="withreturntypes">
             {{#class.instanceMethods}}
             <dt>
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
                     <span class="name-and-params">
-                        <span class="name">{{ name }}</span>({{{ linkedParams }})
+                        <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }})
                     </span>
                 </code>
             </dt>
@@ -213,10 +238,10 @@
             {{/class.instanceMethods}}
 
             {{#class.inheritedMethods}}
-            <dt class="inherited-method">
+            <dt id="{{htmlId}}" class="inherited-method inherited">
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name">{{ name }}</span>({{{ linkedParams }})
+                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }})
                 </code>
             </dt>
             <dd>
