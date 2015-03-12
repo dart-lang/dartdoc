@@ -16,7 +16,6 @@ import 'package:analyzer/src/generated/source_io.dart';
 import 'package:path/path.dart' as path;
 
 import 'generator.dart';
-//import 'src/html_generator.dart';
 import 'src/html_generator.dart';
 import 'src/io_utils.dart';
 import 'src/model.dart';
@@ -32,7 +31,6 @@ const String VERSION = '0.0.1';
 /// Initialize and setup the generators
 List<Generator> initGenerators(String url) {
   return [
-    //new HtmlGenerator(url),
     new HtmlGenerator(url)
   ];
 }
@@ -47,6 +45,7 @@ class DartDoc {
   final Set<LibraryElement> libraries = new Set();
   final List<Generator> _generators;
 
+  Stopwatch stopwatch;
   Directory out;
 
   DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators,
@@ -54,7 +53,7 @@ class DartDoc {
 
   /// Generate the documentation
   void generateDocs() {
-    Stopwatch stopwatch = new Stopwatch();
+    stopwatch = new Stopwatch();
     stopwatch.start();
 
     var files = _sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
@@ -111,6 +110,9 @@ class DartDoc {
         libraries.addAll(library.exportedLibraries);
       }
     });
+    double seconds = stopwatch.elapsedMilliseconds / 1000.0;
+    print(
+           "\nParsed ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.\n");
     return libraries.toList();
   }
 
