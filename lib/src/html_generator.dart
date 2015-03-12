@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library dartdoc.new_html_generator;
+library dartdoc.html_generator;
 
 import 'dart:io';
 
@@ -231,6 +231,7 @@ String oneLiner(String text, {nestedContext}) {
   if (firstPara.length > 200) {
     firstPara = firstPara.substring(0, 200) + '...';
   }
+
   return resolveDocReferences(firstPara, nestedContext);
 }
 
