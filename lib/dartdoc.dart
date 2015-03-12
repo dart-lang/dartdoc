@@ -17,7 +17,7 @@ import 'package:path/path.dart' as path;
 
 import 'generator.dart';
 //import 'src/html_generator.dart';
-import 'src/new_html_generator.dart';
+import 'src/html_generator.dart';
 import 'src/io_utils.dart';
 import 'src/model.dart';
 import 'src/model_utils.dart';
@@ -33,7 +33,7 @@ const String VERSION = '0.0.1';
 List<Generator> initGenerators(String url) {
   return [
     //new HtmlGenerator(url),
-    new NewHtmlGenerator(url)
+    new HtmlGenerator(url)
   ];
 }
 
