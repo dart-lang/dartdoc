@@ -17,7 +17,7 @@ import 'package:path/path.dart' as path;
 import 'model.dart';
 import '../generator.dart';
 
-class NewHtmlGenerator extends Generator {
+class HtmlGenerator extends Generator {
   final String _url;
   final List<String> _htmlFiles = [];
 
@@ -29,28 +29,28 @@ class NewHtmlGenerator extends Generator {
 
   final String generatedOn;
 
-  static final String indexTemplate = _loadTemplate('templates/new/index.html');
+  static final String indexTemplate = _loadTemplate('templates/index.html');
   static final String libraryTemplate =
-      _loadTemplate('templates/new/library.html');
-  static final String classTemplate = _loadTemplate('templates/new/class.html');
+      _loadTemplate('templates/library.html');
+  static final String classTemplate = _loadTemplate('templates/class.html');
   static final String functionTemplate =
-      _loadTemplate('templates/new/function.html');
+      _loadTemplate('templates/function.html');
   static final String methodTemplate =
-      _loadTemplate('templates/new/method.html');
+      _loadTemplate('templates/method.html');
 
   static final Map partials = {
-    'footer': _loadTemplate('templates/new/_footer.html'),
-    'head': _loadTemplate('templates/new/_head.html'),
+    'footer': _loadTemplate('templates/_footer.html'),
+    'head': _loadTemplate('templates/_head.html'),
     'styles_and_scripts':
-        _loadTemplate('templates/new/_styles_and_scripts.html')
+        _loadTemplate('templates/_styles_and_scripts.html')
   };
 
-  NewHtmlGenerator(this._url)
+  HtmlGenerator(this._url)
       : generatedOn = new DateFormat('MMMM dd yyyy').format(new DateTime.now());
 
   void generate(Package package, Directory out) {
     _package = package;
-    _out = new Directory(path.join(out.path, 'new'));
+    _out = out;
     if (!_out.existsSync()) _out.createSync();
     generatePackage();
     _copyResources();
@@ -162,7 +162,7 @@ class NewHtmlGenerator extends Generator {
   void _copyResources() {
     File script = new File(Platform.script.toFilePath());
     ['styles.css', 'prettify.css', 'prettify.js'].forEach((f) {
-      new File(path.join(script.parent.parent.path, 'templates', 'new', f))
+      new File(path.join(script.parent.parent.path, 'templates', f))
           .copySync(path.join(out.path, f));
     });
   }

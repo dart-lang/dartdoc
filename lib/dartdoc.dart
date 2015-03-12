@@ -33,7 +33,7 @@ const String VERSION = '0.0.1';
 List<Generator> initGenerators(String url) {
   return [
     //new HtmlGenerator(url),
-    new NewHtmlGenerator(url)
+    new HtmlGenerator(url)
   ];
 }
 
