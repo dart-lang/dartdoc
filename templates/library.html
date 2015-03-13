@@ -50,7 +50,8 @@
         </dl>
 
     </section>
-
+    
+    {{#library.hasEnums}}
     <section class="summary" id="enums">
         <h2>Enums</h2>
 
@@ -64,9 +65,10 @@
             </dd>
             {{/library.enums}}
         </dl>
-
     </section>
-
+    {{/library.hasEnums}}
+    
+    {{#library.hasProperties}}
     <section class="summary" id="properties">
         <h2>Properties</h2>
 
@@ -88,7 +90,9 @@
             {{/library.properties}}
         </dl>
     </section>
-
+    {{/library.hasProperties}}
+    
+    {{#library.hasConstants}}
     <section class="summary" id="constants">
         <h2>Constants</h2>
 
@@ -108,6 +112,7 @@
             {{/library.constants}}
         </dl>
     </section>
+    {{/library.hasConstants}}
 
     <section class="summary" id="functions">
         <h2>Functions</h2>
@@ -129,6 +134,7 @@
         </dl>
     </section>
 
+    {{#library.hasTypedefs}}
     <section class="summary" id="typedefs">
         <h2>Typedefs</h2>
 
@@ -148,7 +154,9 @@
             {{/library.typedefs}}
         </dl>
     </section>
+    {{/library.hasTypedefs}}
 
+    {{#library.hasExceptions}}
     <section class="summary" id="exceptions">
         <h2>Exceptions/Errors</h2>
 
@@ -163,6 +171,7 @@
             {{/library.exceptions}}
         </dl>
     </section>
+    {{/library.hasExceptions}}
 
 </div>
 

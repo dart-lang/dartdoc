@@ -407,9 +407,11 @@ class Package {
 }
 
 class Library extends ModelElement {
-  List<Variable> _variables;
   Package package;
   List<Class> _classes;
+  List<Class> _enums;
+  List<Typedef> _typeDefs;
+  List<Variable> _variables;
 
   LibraryElement get _library => (element as LibraryElement);
 
@@ -442,35 +444,49 @@ class Library extends ModelElement {
     return _variables;
   }
 
+  bool get hasProperties => _getVariables().any((v) => !v.isConst);
+
   /// All variables ("properties") except constants.
   List<Variable> getProperties() {
     return _getVariables().where((v) => !v.isConst).toList(growable: false);
   }
 
+  bool get hasConstants => _getVariables().any((v) => v.isConst);
+
   List<Variable> getConstants() {
     return _getVariables().where((v) => v.isConst).toList(growable: false);
   }
 
+  bool get hasEnums => !getEnums().isEmpty;
+
   List<Class> getEnums() {
+    if (_enums != null) return _enums;
+
     List<ClassElement> enumClasses = [];
     enumClasses.addAll(_library.definingCompilationUnit.enums);
     for (CompilationUnitElement cu in _library.parts) {
       enumClasses.addAll(cu.enums);
     }
-    return enumClasses
+    _enums = enumClasses
         .where(isPublic)
         .map((e) => new Enum(e, this))
         .toList(growable: false);
+    return _enums;
   }
 
+  bool get hasTypeDefs => !getTypedefs().isEmpty;
+
   List<Typedef> getTypedefs() {
+    if (_typeDefs != null) return _typeDefs;
+
     List<FunctionTypeAliasElement> elements = [];
     elements.addAll(_library.definingCompilationUnit.functionTypeAliases);
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functionTypeAliases);
     }
     elements..removeWhere(isPrivate);
-    return elements.map((e) => new Typedef(e, this)).toList();
+    _typeDefs = elements.map((e) => new Typedef(e, this)).toList();
+    return _typeDefs;
   }
 
   List<ModelFunction> getFunctions() {
@@ -512,6 +528,8 @@ class Library extends ModelElement {
     return _allClasses.where((c) => !c.isErrorOrException).toList(
         growable: false);
   }
+
+  bool get hasExceptions => _allClasses.any((c) => c.isErrorOrException);
 
   List<Class> getExceptions() {
     return _allClasses
