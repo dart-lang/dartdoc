@@ -99,6 +99,10 @@ void main() {
       expect(library.hasEnums, false);
     });
 
+    test('has functions', () {
+      expect(library.hasFunctions, true);
+    });
+
     test('has typedefs', () {
       expect(library.hasTypeDefs, true);
     });

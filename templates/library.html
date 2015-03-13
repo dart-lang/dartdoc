@@ -114,6 +114,7 @@
     </section>
     {{/library.hasConstants}}
 
+    {{#library.hasFunctions}}
     <section class="summary" id="functions">
         <h2>Functions</h2>
 
@@ -133,6 +134,7 @@
             {{/library.functions}}
         </dl>
     </section>
+    {{/library.hasFunctions}}
 
     {{#library.hasTypedefs}}
     <section class="summary" id="typedefs">

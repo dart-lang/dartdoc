@@ -410,6 +410,7 @@ class Library extends ModelElement {
   Package package;
   List<Class> _classes;
   List<Class> _enums;
+  List<ModelFunction> _functions;
   List<Typedef> _typeDefs;
   List<Variable> _variables;
 
@@ -489,18 +490,23 @@ class Library extends ModelElement {
     return _typeDefs;
   }
 
+  bool get hasFunctions => !getFunctions().isEmpty;
+
   List<ModelFunction> getFunctions() {
+    if (_functions != null) return _functions;
+
     List<FunctionElement> elements = [];
     elements.addAll(_library.definingCompilationUnit.functions);
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functions);
     }
     elements..removeWhere(isPrivate);
-    return elements.map((e) {
+    _functions = elements.map((e) {
       String eSource =
           (source != null) ? source.substring(e.node.offset, e.node.end) : null;
       return new ModelFunction(e, this, eSource);
-    }).toList();
+    }).toList(growable: false);
+    return _functions;
   }
 
   List<Class> get _allClasses {
