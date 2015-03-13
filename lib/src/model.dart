@@ -80,7 +80,7 @@ abstract class ModelElement {
       return new Accessor(e, library);
     }
     if (e is TopLevelVariableElement) {
-      return new Variable(e, library);
+      return new TopLevelVariable(e, library);
     }
     if (e is TypeParameterElement) {
       return new TypeParameter(e, library);
@@ -412,7 +412,7 @@ class Library extends ModelElement {
   List<Class> _enums;
   List<ModelFunction> _functions;
   List<Typedef> _typeDefs;
-  List<Variable> _variables;
+  List<TopLevelVariable> _variables;
 
   LibraryElement get _library => (element as LibraryElement);
 
@@ -430,7 +430,7 @@ class Library extends ModelElement {
       .map((lib) => new Library(lib, package))
       .toList();
 
-  List<Variable> _getVariables() {
+  List<TopLevelVariable> _getVariables() {
     if (_variables != null) return _variables;
 
     List<TopLevelVariableElement> elements = [];
@@ -440,7 +440,7 @@ class Library extends ModelElement {
     }
     elements..removeWhere(isPrivate);
     _variables =
-        elements.map((e) => new Variable(e, this)).toList(growable: false);
+        elements.map((e) => new TopLevelVariable(e, this)).toList(growable: false);
 
     return _variables;
   }
@@ -448,17 +448,17 @@ class Library extends ModelElement {
   bool get hasProperties => _getVariables().any((v) => !v.isConst);
 
   /// All variables ("properties") except constants.
-  List<Variable> getProperties() {
+  List<TopLevelVariable> getProperties() {
     return _getVariables().where((v) => !v.isConst).toList(growable: false);
   }
 
   bool get hasConstants => _getVariables().any((v) => v.isConst);
 
-  List<Variable> getConstants() {
+  List<TopLevelVariable> getConstants() {
     return _getVariables().where((v) => v.isConst).toList(growable: false);
   }
 
-  bool get hasEnums => !getEnums().isEmpty;
+  bool get hasEnums => getEnums().isNotEmpty;
 
   List<Class> getEnums() {
     if (_enums != null) return _enums;
@@ -475,7 +475,7 @@ class Library extends ModelElement {
     return _enums;
   }
 
-  bool get hasTypeDefs => !getTypedefs().isEmpty;
+  bool get hasTypeDefs => getTypedefs().isNotEmpty;
 
   List<Typedef> getTypedefs() {
     if (_typeDefs != null) return _typeDefs;
@@ -490,7 +490,7 @@ class Library extends ModelElement {
     return _typeDefs;
   }
 
-  bool get hasFunctions => !getFunctions().isEmpty;
+  bool get hasFunctions => getFunctions().isNotEmpty;
 
   List<ModelFunction> getFunctions() {
     if (_functions != null) return _functions;
@@ -940,14 +940,14 @@ class Accessor extends ModelElement {
   bool get isGetter => _accessor.isGetter;
 
   @override
-  String get _href => throw "not implemented yet";
+  String get _href => '${library.name}/${_accessor.enclosingElement.name}/$name.html';
 }
 
 /// Top-level variables. But also picks up getters and setters?
-class Variable extends ModelElement {
+class TopLevelVariable extends ModelElement {
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 
-  Variable(TopLevelVariableElement element, Library library)
+  TopLevelVariable(TopLevelVariableElement element, Library library)
       : super(element, library) {
     if (hasGetter) {
       var t = _variable.getter.returnType;
