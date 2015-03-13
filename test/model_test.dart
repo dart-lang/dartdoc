@@ -82,6 +82,30 @@ void main() {
     test('documentation', () {
       expect(library.documentation, 'a library');
     });
+
+    test('has properties', () {
+      expect(library.hasProperties, true);
+    });
+
+    test('has constants', () {
+      expect(library.hasConstants, true);
+    });
+
+    test('has exceptions', () {
+      expect(library.hasExceptions, true);
+    });
+
+    test('has enums', () {
+      expect(library.hasEnums, false);
+    });
+
+    test('has functions', () {
+      expect(library.hasFunctions, true);
+    });
+
+    test('has typedefs', () {
+      expect(library.hasTypeDefs, true);
+    });
   });
 
   group('Class', () {
