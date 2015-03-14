@@ -24,9 +24,23 @@ class Annotation {
   const Annotation(this.value);
 }
 
+/// For make-better testing of constants.
+///
+/// Make one of these neato classes like this:
+///
+/// `var constant = const ConstantClass('neat')`
 class ConstantClass {
   final String value;
+
+  /// Make compile-time constants with this constructor!
+  /// Go ahead, it's fun.
   const ConstantClass(this.value);
+
+  /// A named compile-time constant constructor.
+  const ConstantClass.isVeryConstant(this.value);
+
+  /// Not actually constant.
+  ConstantClass.notConstant(this.value);
 }
 
 // No dart docs on purpose. Also, a non-primitive const class.

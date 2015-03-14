@@ -900,7 +900,9 @@ class Constructor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.name}/${_constructor.enclosingElement.name}.html#$name';
+      '${library.name}/${_constructor.enclosingElement.name}/$name.html';
+
+  bool get isConst => _constructor.isConst;
 
   @override
   String get name {
