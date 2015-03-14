@@ -88,6 +88,9 @@ abstract class ModelElement {
     if (e is DynamicElementImpl) {
       return new Dynamic(e, library);
     }
+    if (e is ParameterElement) {
+      return new Parameter(e, library);
+    }
     throw "Unknown type ${e.runtimeType}";
   }
 
@@ -121,7 +124,9 @@ abstract class ModelElement {
         if (melement != null &&
             melement.element.node != null &&
             melement.element.node is AnnotatedNode) {
-          return (melement.element.node as AnnotatedNode).documentationComment.references;
+          var docComment = (melement.element.node as AnnotatedNode).documentationComment;
+          if (docComment != null) return docComment.references;
+          return null;
         }
       }
       if (element.node is AnnotatedNode) {
@@ -439,8 +444,9 @@ class Library extends ModelElement {
       elements.addAll(cu.topLevelVariables);
     }
     elements..removeWhere(isPrivate);
-    _variables =
-        elements.map((e) => new TopLevelVariable(e, this)).toList(growable: false);
+    _variables = elements
+        .map((e) => new TopLevelVariable(e, this))
+        .toList(growable: false);
 
     return _variables;
   }
@@ -940,7 +946,8 @@ class Accessor extends ModelElement {
   bool get isGetter => _accessor.isGetter;
 
   @override
-  String get _href => '${library.name}/${_accessor.enclosingElement.name}/$name.html';
+  String get _href =>
+      '${library.name}/${_accessor.enclosingElement.name}/$name.html';
 }
 
 /// Top-level variables. But also picks up getters and setters?
@@ -1013,7 +1020,7 @@ class Parameter extends ModelElement {
   String toString() => element.name;
 
   @override
-  String get _href => throw 'not implemented yet';
+  String get _href => '${library.name}/${_parameter.enclosingElement.name}/$name.html';
 }
 
 class TypeParameter extends ModelElement {
@@ -1027,7 +1034,7 @@ class TypeParameter extends ModelElement {
   String toString() => element.name;
 
   @override
-  String get _href => throw 'not implemented yet';
+  String get _href => '${library.name}/${_typeParameter.enclosingElement.name}/$name';
 }
 
 class ElementType {
