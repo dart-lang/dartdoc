@@ -124,7 +124,8 @@ abstract class ModelElement {
         if (melement != null &&
             melement.element.node != null &&
             melement.element.node is AnnotatedNode) {
-          var docComment = (melement.element.node as AnnotatedNode).documentationComment;
+          var docComment =
+              (melement.element.node as AnnotatedNode).documentationComment;
           if (docComment != null) return docComment.references;
           return null;
         }
@@ -1020,7 +1021,8 @@ class Parameter extends ModelElement {
   String toString() => element.name;
 
   @override
-  String get _href => '${library.name}/${_parameter.enclosingElement.name}/$name.html';
+  String get _href =>
+      '${library.name}/${_parameter.enclosingElement.name}/$name.html';
 }
 
 class TypeParameter extends ModelElement {
@@ -1034,7 +1036,8 @@ class TypeParameter extends ModelElement {
   String toString() => element.name;
 
   @override
-  String get _href => '${library.name}/${_typeParameter.enclosingElement.name}/$name';
+  String get _href =>
+      '${library.name}/${_typeParameter.enclosingElement.name}/$name';
 }
 
 class ElementType {
