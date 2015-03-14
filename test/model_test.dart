@@ -288,8 +288,8 @@ void main() {
   });
 
   group('Variable', () {
-    Variable v;
-    Variable v3;
+    TopLevelVariable v;
+    TopLevelVariable v3;
 
     setUp(() {
       v = library.getProperties()[0];
@@ -310,7 +310,7 @@ void main() {
   });
 
   group('Constant', () {
-    Variable constant;
+    TopLevelVariable constant;
 
     setUp(() {
       constant = library.getConstants()[0];
