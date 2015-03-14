@@ -208,6 +208,10 @@ ul.comma-separated li:after {
 }
 
 ul.comma-separated li:last-child:after {
+  content: "";
+}
+
+ul.end-with-period li:last-child:after {
     content: ".";
 }
 

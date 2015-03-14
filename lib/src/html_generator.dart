@@ -63,6 +63,10 @@ class HtmlGenerator extends Generator {
         clazz.instanceMethods.forEach((m) {
           generateMethod(package, lib, clazz, m);
         });
+
+        clazz.staticMethods.forEach((m) {
+          generateMethod(package, lib, clazz, m);
+        });
       });
 
       lib.getEnums().forEach((eNum) {

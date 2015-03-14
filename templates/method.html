@@ -22,7 +22,9 @@
         </ul>
         <h1 class="title">
             {{ method.name }}
-            <span class="type">method</span>
+            <span class="type">
+                {{#method.isStatic}}static {{/method.isStatic}}method
+            </span>
         </h1>
     </div>
 </header>
@@ -47,7 +49,7 @@
         Declared in <a href="{{class.href}}">{{class.name}}</a>.
         {{#class.hasImplementors}}
         Also accessible from
-        <ul class="comma-separated">
+        <ul class="comma-separated end-with-period">
         {{#class.implementors}}
         <li><a href="{{href}}">{{name}}</a></li>
         {{/class.implementors}}
