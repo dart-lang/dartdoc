@@ -22,7 +22,9 @@
         </ul>
         <h1 class="title">
             {{ method.name }}
-            <span class="type">method</span>
+            <span class="type">
+                {{#method.isStatic}}static {{/method.isStatic}}method
+            </span>
         </h1>
     </div>
 </header>
