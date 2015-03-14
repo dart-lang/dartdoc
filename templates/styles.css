@@ -22,7 +22,7 @@ pre.prettyprint {
   border: 1px solid #CCC;
 }
 
-.title .type, .classname {
+.title .type, .classname, .classname a {
   color: #BBB;
 }
 

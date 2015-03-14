@@ -1,5 +1,5 @@
 {{>head}}
-<title>{{method.name}} method - {{class.name}} class - {{ library.name }} library - Dart API</title>
+<title>{{method.name}} {{method.typeName}} - {{class.name}} class - {{ library.name }} library - Dart API</title>
 
 <!-- required because all the links are pseudo-absolute -->
 <base href="../..">
@@ -23,7 +23,8 @@
         <h1 class="title">
             {{ method.name }}
             <span class="type">
-                {{#method.isStatic}}static {{/method.isStatic}}method
+                {{#method.isStatic}}static {{/method.isStatic}}{{method.typeName}}
+                on <span class="classname"><a href="{{class.href}}">{{class.name}}</a></span>
             </span>
         </h1>
     </div>
@@ -43,18 +44,6 @@
             {{/hasParameters}})
             {{/method}}
         </code>
-    </section>
-
-    <section id="declared-in">
-        Declared in <a href="{{class.href}}">{{class.name}}</a>.
-        {{#class.hasImplementors}}
-        Also accessible from
-        <ul class="comma-separated end-with-period">
-        {{#class.implementors}}
-        <li><a href="{{href}}">{{name}}</a></li>
-        {{/class.implementors}}
-        </ul>
-        {{/class.hasImplementors}}
     </section>
 
     <section class="desc markdown">
