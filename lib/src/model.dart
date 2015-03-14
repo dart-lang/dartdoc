@@ -73,7 +73,10 @@ abstract class ModelElement {
     if (e is ConstructorElement) {
       return new Constructor(e, library);
     }
-    if (e is MethodElement) {
+    if (e is MethodElement && e.isOperator) {
+      return new Operator(e, library);
+    }
+    if (e is MethodElement && !e.isOperator) {
       return new Method(e, library);
     }
     if (e is PropertyAccessorElement) {
@@ -560,7 +563,7 @@ class Class extends ModelElement {
   List<ElementType> _interfaces;
   List<Constructor> _constructors;
   List<Method> _allMethods;
-  List<Method> _operators;
+  List<Operator> _operators;
   List<Method> _inheritedMethods;
   List<Method> _staticMethods;
   List<Method> _instanceMethods;
@@ -686,13 +689,17 @@ class Class extends ModelElement {
     _allMethods = _cls.methods.where(isPublic).map((e) {
       var mSource =
           source != null ? source.substring(e.node.offset, e.node.end) : null;
-      return new Method(e, library, mSource);
+      if (!e.isOperator) {
+        return new Method(e, library, mSource);
+      } else {
+        return new Operator(e, library, mSource);
+      }
     }).toList(growable: false);
 
     return _allMethods;
   }
 
-  List<Method> get operators {
+  List<Operator> get operators {
     if (_operators != null) return _operators;
 
     _operators = _methods.where((m) => m.isOperator).toList(growable: false);
@@ -928,13 +935,24 @@ class Method extends ModelElement {
   @override
   bool get isStatic => _method.isStatic;
 
-  bool get isOperator => _method.isOperator;
+  bool get isOperator => false;
+
+  String get typeName => 'method';
 
   String get linkedReturnType => type.createLinkedReturnTypeName();
 
   @override
   String get _href =>
       '${library.name}/${_method.enclosingElement.name}/$name.html';
+}
+
+class Operator extends Method {
+  Operator(MethodElement element, Library library, [String source])
+    : super(element, library, source);
+
+  bool get isOperator => true;
+
+  String get typeName => 'operator';
 }
 
 /// Getters and setters.
