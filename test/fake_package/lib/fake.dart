@@ -125,6 +125,8 @@ class LongFirstLine extends SuperAwesomeClass with MixMeIn implements Interface,
   /// The map is a key/value pairs of data that helps create an instance.
   LongFirstLine.fromMap(Map data);
 
+  LongFirstLine.fromHasGenerics(HasGenerics hg);
+
   /// No params.
   void noParams() {}
 
@@ -196,6 +198,22 @@ class Foo2 {
   static const Foo2 BAZ = const Foo2(1);
 }
 
+class HasGenerics<X, Y, Z> {
+  HasGenerics(X x, Y y, Z z) {}
+
+  X returnX() => null;
+
+  Z returnZ() => null;
+
+  Z doStuff(String s, X x) => null;
+
+  Map<X, Y> convertToMap() => null;
+}
+
+class OtherGenericsThing<A> {
+
+  HasGenerics<A, Cool, String> convert() => null;
+}
 
 /// Constant property.
 const double PI = 3.14159;

@@ -316,8 +316,9 @@ abstract class ModelElement {
       for (int i = 0; i < params.length; i++) {
         Parameter p = params[i];
         if (i > 0) buf.write(', ');
-        if (p.type != null && p.type.name != null) {
-          String typeName = p.type.linkedName;
+        buf.write('<span class="parameter">');
+        if (p.type != null && p.type.element != null && p.type.element.type != null) {
+          String typeName = p.type.element.type.linkedName;
           if (typeName.isNotEmpty) {
             buf.write('<span class="type-annotation">$typeName</span> ');
           }
@@ -332,6 +333,7 @@ abstract class ModelElement {
           }
           buf.write('<span class="default-value">${p.defaultValue}</span>');
         }
+        buf.write('</span><!-- end param -->');
       }
     }
 
@@ -360,7 +362,7 @@ abstract class ModelElement {
 
   /// End each parameter with a `<br>`
   String get linkedParamsLines {
-    return linkedParams.replaceAll(',', ',<br>');
+    return linkedParams.replaceAll('<!-- end param -->,', ',<br>');
   }
 }
 
@@ -597,6 +599,11 @@ class Class extends ModelElement {
     }).toList(growable: false);
   }
 
+  String get nameWithGenerics {
+    if (!type.isParameterizedType) return name;
+    return '$name<${type.typeArguments.map((t) => t.name).join(', ')}>';
+  }
+
   String get kind => 'class';
 
   bool get isAbstract => _cls.isAbstract;
@@ -822,9 +829,7 @@ class ModelFunction extends ModelElement {
 
   bool get isStatic => _func.isStatic;
 
-  String get linkedReturnType {
-    return type.createLinkedReturnTypeName();
-  }
+  String get linkedReturnType => type.createLinkedReturnTypeName();
 
   @override
   String get _href => '${library.name}/$name.html';
@@ -839,9 +844,7 @@ class Typedef extends ModelElement {
     _type = new ElementType(_typedef.type, this);
   }
 
-  String get linkedReturnType {
-    return type.createLinkedReturnTypeName();
-  }
+  String get linkedReturnType => type.createLinkedReturnTypeName();
 
   String get _href => '${library.name}.html#$name';
 }
@@ -865,9 +868,7 @@ class Field extends ModelElement {
 
   bool get isConst => _field.isConst;
 
-  String get linkedReturnType {
-    return type.linkedName;
-  }
+  String get linkedReturnType => type.linkedName;
 
   String get constantValue {
     if (_field.node == null) return null;
@@ -992,9 +993,7 @@ class TopLevelVariable extends ModelElement {
 
   bool get isConst => _variable.isConst;
 
-  String get linkedReturnType {
-    return type.linkedName;
-  }
+  String get linkedReturnType => type.linkedName;
 
   String get constantValue {
     var v = (_variable as ConstTopLevelVariableElementImpl).node.toSource();
@@ -1077,7 +1076,8 @@ class ElementType {
 
   String get name => _type.name;
 
-  bool get isParameterizedType => (_type is ParameterizedType);
+  // TODO: this is probably a bug. Apparently, EVERYTHING is a parameterized type?
+  bool get isParameterizedType => (_type is ParameterizedType) && (_type as ParameterizedType).typeArguments.isNotEmpty;
 
   String get _returnTypeName => (_type as FunctionType).returnType.name;
 
@@ -1116,26 +1116,22 @@ class ElementType {
 
     // not TypeParameterType or Void or Union type
     if (isParameterizedType) {
-      var typeArgs = typeArguments;
-      if (!typeArguments.isEmpty &&
-          (typeArguments.length > 1 ||
-              typeArguments.first.toString() != 'dynamic')) {
-        buf.write('&lt;');
-        for (int i = 0; i < typeArguments.length; i++) {
-          if (i > 0) {
-            buf.write(', ');
-          }
-          ElementType t = typeArguments[i];
-          buf.write(t.linkedName);
+      buf.write('&lt;');
+      for (int i = 0; i < typeArguments.length; i++) {
+        if (i > 0) {
+          buf.write(', ');
         }
-        buf.write('&gt;');
+        ElementType t = typeArguments[i];
+        buf.write(t.linkedName);
       }
+      buf.write('&gt;');
     }
     _linkedName = buf.toString();
 
     return _linkedName;
   }
 
+  // TODO: why does this method exist? Why can't we just use linkedName ?
   String createLinkedReturnTypeName() {
     if ((_type as FunctionType).returnType.element == null ||
         (_type as FunctionType).returnType.element.library == null) {
