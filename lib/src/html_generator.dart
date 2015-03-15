@@ -190,7 +190,7 @@ class HtmlGenerator extends Generator {
 
   void _copyResources() {
     File script = new File(Platform.script.toFilePath());
-    ['styles.css', 'prettify.css', 'prettify.js'].forEach((f) {
+    ['styles.css', 'prettify.css', 'material-design-typography.css', 'prettify.js'].forEach((f) {
       new File(path.join(script.parent.parent.path, 'templates', f))
           .copySync(path.join(out.path, f));
     });

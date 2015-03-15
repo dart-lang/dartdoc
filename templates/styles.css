@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata:400,700);
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,700|Inconsolata:400,700);
 
 body {
   font-family: 'Roboto', sans-serif;
@@ -54,12 +54,13 @@ dt {
   display: inline;
 }
 
+section.summary {
+  border-top: 1px solid hsl(0, 0%, 78%);
+}
+
 section.summary h2 {
-  background-color: rgba(0,164,228, 0.1);
-  line-height: 48px;
-  padding: 16px;
-  font-size: 20px;
-  color: gray;
+  color: hsl(0, 0%, 46%);
+  margin: 20px 0 20px 0;
 }
 
 section.desc h2 {
@@ -114,7 +115,6 @@ dl.dl-horizontal dt {
 }
 
 dl.dl-horizontal dd {
-  border-bottom: 1px solid #eee;
   padding-left: 18px;
   margin-left: 0; /* override bootstrap */
 }
@@ -191,6 +191,8 @@ ul.gt-separated li:last-child:after {
 
 ul.breadcrumbs {
     position: absolute;
+    padding: 0;
+    margin: 8px 0 8px 0;
 }
 
 ul.comma-separated {
