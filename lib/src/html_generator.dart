@@ -29,6 +29,7 @@ class HtmlGenerator extends Generator {
 
   final String generatedOn;
 
+  // TODO: fix this to be a single map, just like _partialTemplates
   static final String indexTemplate = _loadTemplate('templates/index.html');
   static final String libraryTemplate =
       _loadTemplate('templates/library.html');
@@ -37,13 +38,14 @@ class HtmlGenerator extends Generator {
       _loadTemplate('templates/function.html');
   static final String methodTemplate =
       _loadTemplate('templates/method.html');
+  static final String constructorTemplate =
+      _loadTemplate('templates/constructor.html');
 
-  static final Map partials = {
-    'footer': _loadTemplate('templates/_footer.html'),
-    'head': _loadTemplate('templates/_head.html'),
-    'styles_and_scripts':
-        _loadTemplate('templates/_styles_and_scripts.html')
-  };
+  static final Map<String, String> _partialTemplates = {};
+
+  static String _partial(String name) {
+    return _partialTemplates.putIfAbsent(name, () => _loadTemplate('templates/_$name.html'));
+  }
 
   HtmlGenerator(this._url)
       : generatedOn = new DateFormat('MMMM dd yyyy').format(new DateTime.now());
@@ -59,6 +61,10 @@ class HtmlGenerator extends Generator {
 
       lib.getClasses().forEach((Class clazz) {
         generateClass(package, lib, clazz);
+
+        clazz.constructors.forEach((constructor) {
+          generateConstructor(package, lib, clazz, constructor);
+        });
 
         clazz.instanceMethods.forEach((method) {
           generateMethod(package, lib, clazz, method);
@@ -126,6 +132,21 @@ class HtmlGenerator extends Generator {
     _writeFile(path.joinAll(clazz.href.split('/')), classTemplate, data);
   }
 
+  void generateConstructor(Package package, Library lib, Class clazz,
+                           Constructor constructor) {
+    Map data = {
+        'package': package,
+        'generatedOn': generatedOn,
+        'markdown': renderMarkdown,
+        'oneLiner': oneLiner,
+        'library': lib,
+        'class': clazz,
+        'constructor': constructor
+    };
+
+    _writeFile(path.joinAll(constructor.href.split('/')), constructorTemplate, data);
+  }
+
   void generateEnum(Package package, Library lib, Class eNum) {
     Map data = {
       'package': package,
@@ -186,7 +207,7 @@ class HtmlGenerator extends Generator {
   void _writeFile(String filename, String template, Map data) {
     File f = _createOutputFile(filename);
     String content = render(template, data,
-        partial: _partials,
+        partial: _partial,
         assumeNullNonExistingProperty: false,
         errorOnMissingProperty: true);
     f.writeAsStringSync(content);
@@ -200,13 +221,6 @@ class HtmlGenerator extends Generator {
     return contents;
   }
 
-  static String _partials(String name) {
-    String partial = partials[name];
-    if (partial == null) {
-      throw "Could not find partial '$name'";
-    }
-    return partial;
-  }
 }
 
 // TODO: parse the custom dartdoc formatting brackets

@@ -222,3 +222,12 @@ section {
 #declared-in {
     font-style: italic;
 }
+
+dl.constructor-summary-list dd {
+  margin-left: 18px;
+  color: gray;
+}
+
+.constructor-modifier {
+  font-style: italic;
+}
