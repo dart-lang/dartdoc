@@ -18,7 +18,7 @@
             <li><a href="{{package.href}}">{{package.name}} package</a></li>
             <li><a href="{{library.href}}">{{library.name}} library</a></li>
         </ul>
-        <h1 class="title">
+        <h1 class="title text-display-2">
             {{ class.name }}
             <span class="type">{{#class.isAbstract}}abstract{{/class.isAbstract}} {{class.kind}}</span>
         </h1>
@@ -93,7 +93,7 @@
 
     {{#class.hasConstructors}}
     <section class="summary" id="constructors">
-        <h2>Constructors</h2>
+        <h2 class="text-display-1">Constructors</h2>
 
         <dl class="constructor-summary-list">
             {{#class.constructors}}
@@ -116,7 +116,7 @@
 
     {{#class.hasConstants}}
     <section class="summary" id="properties">
-        <h2>Constants</h2>
+        <h2 class="text-display-1">Constants</h2>
 
         <dl class="withreturntypes">
             {{#class.constants}}
@@ -140,7 +140,7 @@
 
     {{#class.hasInstanceProperties}}
     <section class="summary" id="instance-properties">
-        <h2>Instance Properties</h2>
+        <h2 class="text-display-1">Instance Properties</h2>
 
         <dl class="withreturntypes">
             {{#class.instanceProperties}}
@@ -181,7 +181,7 @@
 
     {{#class.hasStaticProperties}}
     <section class="summary" id="static-properties">
-        <h2>Static Properties</h2>
+        <h2 class="text-display-1">Static Properties</h2>
 
         <dl class="withreturntypes">
             {{#class.staticProperties}}
@@ -205,7 +205,7 @@
 
     {{#class.hasStaticMethods}}
     <section id="static-methods-summary" class="summary">
-        <h2>Static Methods</h2>
+        <h2 class="text-display-1">Static Methods</h2>
         <dl class="withreturntypes">
             {{#class.staticMethods}}
             <dt>
@@ -226,7 +226,7 @@
 
     {{#class.hasInstanceMethods}}
     <section id="instance-methods-summary" class="summary">
-        <h2>Instance Methods</h2>
+        <h2 class="text-display-1">Instance Methods</h2>
         <dl id="{{htmlId}}" class="withreturntypes">
             {{#class.instanceMethods}}
             <dt>
@@ -260,7 +260,7 @@
 
     {{#class.hasOperators}}
     <section id="operators-summary" class="summary">
-        <h2>Operators</h2>
+        <h2 class="text-display-1">Operators</h2>
         <dl class="withreturntypes">
             {{#class.operators}}
             <dt>
