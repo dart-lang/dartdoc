@@ -435,6 +435,11 @@ class Library extends ModelElement {
     return source.isInSystemLibrary ? source.encoding : super.name;
   }
 
+  String get fileName {
+    if (isInSdk) return name.replaceAll(':', '_');
+    return name;
+  }
+
   bool get isInSdk => _library.isInSdk;
 
   List<Library> get exported => _library.exportedLibraries
@@ -807,7 +812,7 @@ class Class extends ModelElement {
       name.hashCode, library.name.hashCode, library.package.name.hashCode);
 
   @override
-  String get _href => '${library.name}/$name.html';
+  String get _href => '${library.fileName}/$name.html';
 }
 
 class Enum extends Class {
@@ -832,7 +837,7 @@ class ModelFunction extends ModelElement {
   String get linkedReturnType => type.createLinkedReturnTypeName();
 
   @override
-  String get _href => '${library.name}/$name.html';
+  String get _href => '${library.fileName}/$name.html';
 }
 
 class Typedef extends ModelElement {
@@ -846,7 +851,7 @@ class Typedef extends ModelElement {
 
   String get linkedReturnType => type.createLinkedReturnTypeName();
 
-  String get _href => '${library.name}.html#$name';
+  String get _href => '${library.fileName}.html#$name';
 }
 
 class Field extends ModelElement {
@@ -883,9 +888,9 @@ class Field extends ModelElement {
 
   String get _href {
     if (element.enclosingElement is ClassElement) {
-      return '/${library.name}/${element.enclosingElement.name}.html#$name';
+      return '/${library.fileName}/${element.enclosingElement.name}.html#$name';
     } else if (element.enclosingElement is LibraryElement) {
-      return '/${library.name}.html#$name';
+      return '/${library.fileName}.html#$name';
     } else {
       throw new StateError(
           '$name is not in a class or library, instead a ${element.enclosingElement}');
@@ -901,7 +906,7 @@ class Constructor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.name}/${_constructor.enclosingElement.name}/$name.html';
+      '${library.fileName}/${_constructor.enclosingElement.name}/$name.html';
 
   bool get isConst => _constructor.isConst;
 
@@ -946,7 +951,7 @@ class Method extends ModelElement {
 
   @override
   String get _href =>
-      '${library.name}/${_method.enclosingElement.name}/$name.html';
+      '${library.fileName}/${_method.enclosingElement.name}/$name.html';
 }
 
 class Operator extends Method {
@@ -969,7 +974,7 @@ class Accessor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.name}/${_accessor.enclosingElement.name}/$name.html';
+      '${library.fileName}/${_accessor.enclosingElement.name}/$name.html';
 }
 
 /// Top-level variables. But also picks up getters and setters?
@@ -1041,7 +1046,7 @@ class Parameter extends ModelElement {
 
   @override
   String get _href =>
-      '${library.name}/${_parameter.enclosingElement.name}/$name.html';
+      '${library.fileName}/${_parameter.enclosingElement.name}/$name.html';
 }
 
 class TypeParameter extends ModelElement {
@@ -1056,7 +1061,7 @@ class TypeParameter extends ModelElement {
 
   @override
   String get _href =>
-      '${library.name}/${_typeParameter.enclosingElement.name}/$name';
+      '${library.fileName}/${_typeParameter.enclosingElement.name}/$name';
 }
 
 class ElementType {
