@@ -116,7 +116,7 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner
     };
 
-    _writeFile(path.join(lib.name, 'index.html'), libraryTemplate, data);
+    _writeFile(path.join(lib.fileName, 'index.html'), libraryTemplate, data);
   }
 
   void generateClass(Package package, Library lib, Class clazz) {
