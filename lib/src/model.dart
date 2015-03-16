@@ -492,7 +492,7 @@ class Library extends ModelElement {
     return _enums;
   }
 
-  bool get hasTypeDefs => getTypedefs().isNotEmpty;
+  bool get hasTypedefs => getTypedefs().isNotEmpty;
 
   List<Typedef> getTypedefs() {
     if (_typeDefs != null) return _typeDefs;

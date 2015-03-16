@@ -104,7 +104,7 @@ void main() {
     });
 
     test('has typedefs', () {
-      expect(library.hasTypeDefs, true);
+      expect(library.hasTypedefs, true);
     });
   });
 
