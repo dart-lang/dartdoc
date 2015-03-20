@@ -49,7 +49,7 @@ abstract class ModelElement {
   final Library library;
   final String source;
 
-  ElementType _type;
+  ElementType _modelType;
   String _documentation;
 
   List _parameters;
@@ -256,7 +256,7 @@ abstract class ModelElement {
 
   bool get isConst => false;
 
-  ElementType get type => _type;
+  ElementType get modelType => _modelType;
 
   /// Returns the [ModelElement] that encloses this.
   ModelElement getEnclosingElement() {
@@ -317,13 +317,22 @@ abstract class ModelElement {
         Parameter p = params[i];
         if (i > 0) buf.write(', ');
         buf.write('<span class="parameter">');
-        if (p.type != null && p.type.element != null && p.type.element.type != null) {
-          String typeName = p.type.element.type.linkedName;
+        if (p.modelType.isFunctionType) {
+          buf.write(
+              '<span class="type-annotation">${(p.modelType.element as Typedef).linkedReturnType}</span> ');
+          buf.write('<span class="parameter-name">${p.name}</span>');
+          buf.write('(');
+          buf.write(p.modelType.element.linkedParams);
+          buf.write(')');
+        } else if (p.modelType != null &&
+            p.modelType.element != null &&
+            p.modelType.element.modelType != null) {
+          String typeName = p.modelType.element.modelType.linkedName;
           if (typeName.isNotEmpty) {
             buf.write('<span class="type-annotation">$typeName</span> ');
           }
+          buf.write('<span class="parameter-name">${p.name}</span>');
         }
-        buf.write('<span class="parameter-name">${p.name}</span>');
 
         if (p.hasDefaultValue) {
           if (p.isOptionalNamed) {
@@ -555,9 +564,8 @@ class Library extends ModelElement {
   bool get hasExceptions => _allClasses.any((c) => c.isErrorOrException);
 
   List<Class> getExceptions() {
-    return _allClasses
-        .where((c) => c.isErrorOrException)
-        .toList(growable: false);
+    return _allClasses.where((c) => c.isErrorOrException).toList(
+        growable: false);
   }
 
   @override
@@ -585,7 +593,7 @@ class Class extends ModelElement {
   Class(ClassElement element, Library library, [String source])
       : super(element, library, source) {
     var p = library.package;
-    _type = new ElementType(_cls.type, this);
+    _modelType = new ElementType(_cls.type, this);
 
     _mixins = _cls.mixins.map((f) {
       var lib = new Library(f.element.library, p);
@@ -605,8 +613,8 @@ class Class extends ModelElement {
   }
 
   String get nameWithGenerics {
-    if (!type.isParameterizedType) return name;
-    return '$name<${type.typeArguments.map((t) => t.name).join(', ')}>';
+    if (!modelType.isParameterizedType) return name;
+    return '$name<${modelType.typeArguments.map((t) => t.name).join(', ')}>';
   }
 
   String get kind => 'class';
@@ -826,15 +834,14 @@ class Enum extends Class {
 class ModelFunction extends ModelElement {
   ModelFunction(FunctionElement element, Library library, [String contents])
       : super(element, library, contents) {
-    var e = _func.type.element;
-    _type = new ElementType(_func.type, this);
+    _modelType = new ElementType(_func.type, this);
   }
 
   FunctionElement get _func => (element as FunctionElement);
 
   bool get isStatic => _func.isStatic;
 
-  String get linkedReturnType => type.createLinkedReturnTypeName();
+  String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
   @override
   String get _href => '${library.fileName}/$name.html';
@@ -846,10 +853,14 @@ class Typedef extends ModelElement {
 
   Typedef(FunctionTypeAliasElement element, Library library)
       : super(element, library) {
-    _type = new ElementType(_typedef.type, this);
+    if (element.type != null) {
+      _modelType = new ElementType(element.type, this);
+    }
   }
 
-  String get linkedReturnType => type.createLinkedReturnTypeName();
+  String get linkedReturnType => modelType != null
+      ? modelType.createLinkedReturnTypeName()
+      : _typedef.returnType.name;
 
   String get _href => '${library.fileName}.html#$name';
 }
@@ -861,11 +872,11 @@ class Field extends ModelElement {
     if (hasGetter) {
       var t = _field.getter.returnType;
       var lib = new Library(t.element.library, package);
-      _type = new ElementType(t, new ModelElement.from(t.element, lib));
+      _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
     } else {
       var s = _field.setter.parameters.first.type;
       var lib = new Library(s.element.library, package);
-      _type = new ElementType(s, new ModelElement.from(s.element, lib));
+      _modelType = new ElementType(s, new ModelElement.from(s.element, lib));
     }
   }
 
@@ -873,7 +884,7 @@ class Field extends ModelElement {
 
   bool get isConst => _field.isConst;
 
-  String get linkedReturnType => type.linkedName;
+  String get linkedReturnType => modelType.linkedName;
 
   String get constantValue {
     if (_field.node == null) return null;
@@ -927,7 +938,7 @@ class Method extends ModelElement {
 
   Method(MethodElement element, Library library, [String source])
       : super(element, library, source) {
-    _type = new ElementType(_method.type, this);
+    _modelType = new ElementType(_method.type, this);
   }
 
   Method getOverriddenElement() {
@@ -947,7 +958,7 @@ class Method extends ModelElement {
 
   String get typeName => 'method';
 
-  String get linkedReturnType => type.createLinkedReturnTypeName();
+  String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
   @override
   String get _href =>
@@ -956,7 +967,7 @@ class Method extends ModelElement {
 
 class Operator extends Method {
   Operator(MethodElement element, Library library, [String source])
-    : super(element, library, source);
+      : super(element, library, source);
 
   bool get isOperator => true;
 
@@ -986,11 +997,11 @@ class TopLevelVariable extends ModelElement {
     if (hasGetter) {
       var t = _variable.getter.returnType;
       var lib = new Library(t.element.library, package);
-      _type = new ElementType(t, new ModelElement.from(t.element, lib));
+      _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
     } else {
       var s = _variable.setter.parameters.first.type;
       var lib = new Library(s.element.library, package);
-      _type = new ElementType(s, new ModelElement.from(s.element, lib));
+      _modelType = new ElementType(s, new ModelElement.from(s.element, lib));
     }
   }
 
@@ -998,7 +1009,7 @@ class TopLevelVariable extends ModelElement {
 
   bool get isConst => _variable.isConst;
 
-  String get linkedReturnType => type.linkedName;
+  String get linkedReturnType => modelType.linkedName;
 
   String get constantValue {
     var v = (_variable as ConstTopLevelVariableElementImpl).node.toSource();
@@ -1019,7 +1030,7 @@ class Parameter extends ModelElement {
   Parameter(ParameterElement element, Library library)
       : super(element, library) {
     var t = _parameter.type;
-    _type = new ElementType(t, new ModelElement.from(
+    _modelType = new ElementType(t, new ModelElement.from(
         t.element, new Library(t.element.library, library.package)));
   }
 
@@ -1052,7 +1063,7 @@ class Parameter extends ModelElement {
 class TypeParameter extends ModelElement {
   TypeParameter(TypeParameterElement element, Library library)
       : super(element, library) {
-    _type = new ElementType(_typeParameter.type, this);
+    _modelType = new ElementType(_typeParameter.type, this);
   }
 
   TypeParameterElement get _typeParameter => element as TypeParameterElement;
@@ -1077,12 +1088,15 @@ class ElementType {
 
   bool get isParameterType => (_type is TypeParameterType);
 
+  bool get isFunctionType => (_type is FunctionType);
+
   ModelElement get element => _element;
 
   String get name => _type.name;
 
   // TODO: this is probably a bug. Apparently, EVERYTHING is a parameterized type?
-  bool get isParameterizedType => (_type is ParameterizedType) && (_type as ParameterizedType).typeArguments.isNotEmpty;
+  bool get isParameterizedType => (_type is ParameterizedType) &&
+      (_type as ParameterizedType).typeArguments.isNotEmpty;
 
   String get _returnTypeName => (_type as FunctionType).returnType.name;
 

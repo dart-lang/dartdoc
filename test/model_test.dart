@@ -225,13 +225,14 @@ void main() {
   });
 
   group('Method', () {
-    var c, m, m2, m3;
+    var c, m, m2, m3, m4;
 
     setUp(() {
       c = library.getClasses()[1];
       m = c.instanceMethods[0];
       m2 = lib2.getClasses()[1].instanceMethods[0];
       m3 = library.getClasses()[0].instanceMethods[0];
+      m4 = library.getClasses()[1].instanceMethods[1];
     });
 
     test('overriden method', () {
@@ -256,7 +257,11 @@ void main() {
     });
 
     test('return type', () {
-      expect(m3.type.createLinkedReturnTypeName(), 'void');
+      expect(m3.modelType.createLinkedReturnTypeName(), 'void');
+    });
+
+    test('parameter is a function', () {
+      expect(m4.parameters[1].modelType.element.linkedReturnType, 'String');
     });
   });
 
@@ -340,7 +345,7 @@ void main() {
     var f = library.getClasses()[1].instanceProperties[0];
 
     test('parameterized type', () {
-      expect(f.type.isParameterizedType, true);
+      expect(f.modelType.isParameterizedType, true);
     });
   });
 
@@ -387,7 +392,7 @@ void main() {
     });
 
     test('linkedName', () {
-      expect(p1.type.linkedName, 'int');
+      expect(p1.modelType.linkedName, 'int');
     });
 
     test('async return type', () {

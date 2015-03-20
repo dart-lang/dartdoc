@@ -46,6 +46,10 @@ class B extends Apple with Cat {
     var a = 6;
     var b = a * 9;
   }
+
+  void writeMsg(String msg, [String transformMsg(String origMsg, bool flag)]) {
+    // do nothing
+  }
 }
 
 // Do NOT add a doc comment to C. Testing blank comments.
