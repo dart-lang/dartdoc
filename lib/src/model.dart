@@ -575,7 +575,7 @@ class Library extends ModelElement {
   }
 
   @override
-  String get _href => '$name/index.html';
+  String get _href => '$fileName/index.html';
 }
 
 class Class extends ModelElement {
