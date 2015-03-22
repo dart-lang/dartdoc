@@ -235,6 +235,9 @@ String renderMarkdown(String markdown, {nestedContext}) {
   html = resolveDocReferences(html, nestedContext);
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
+  doc.querySelectorAll('pre > code').forEach((e) {
+    e.classes.add("prettyprint");
+  });
   return doc.body.innerHtml;
 }
 
