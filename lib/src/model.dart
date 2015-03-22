@@ -325,9 +325,12 @@ abstract class ModelElement {
           buf.write(p.modelType.element.linkedParams);
           buf.write(')');
         } else if (p.modelType != null &&
-            p.modelType.element != null &&
-            p.modelType.element.modelType != null) {
-          String typeName = p.modelType.element.modelType.linkedName;
+            p.modelType.element != null) {
+          var mt = p.modelType.element.modelType;
+          String typeName = "";
+          if (mt != null) {
+            typeName = mt.linkedName;
+          }
           if (typeName.isNotEmpty) {
             buf.write('<span class="type-annotation">$typeName</span> ');
           }
