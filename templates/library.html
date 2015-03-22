@@ -35,6 +35,7 @@
     </section>
 
 
+    {{#library.hasClasses}}
     <section class="summary" id="classes">
         <h2>Classes</h2>
 
@@ -50,7 +51,8 @@
         </dl>
 
     </section>
-    
+    {{/library.hasClasses}}
+
     {{#library.hasEnums}}
     <section class="summary" id="enums">
         <h2>Enums</h2>
@@ -67,7 +69,7 @@
         </dl>
     </section>
     {{/library.hasEnums}}
-    
+
     {{#library.hasProperties}}
     <section class="summary" id="properties">
         <h2>Properties</h2>
@@ -91,7 +93,7 @@
         </dl>
     </section>
     {{/library.hasProperties}}
-    
+
     {{#library.hasConstants}}
     <section class="summary" id="constants">
         <h2>Constants</h2>

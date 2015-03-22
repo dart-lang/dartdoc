@@ -557,9 +557,12 @@ class Library extends ModelElement {
     if (package._isSdk) {
       return _allClasses;
     }
+
     return _allClasses.where((c) => !c.isErrorOrException).toList(
         growable: false);
   }
+
+  bool get hasClasses => getClasses().isNotEmpty;
 
   bool get hasExceptions => _allClasses.any((c) => c.isErrorOrException);
 
