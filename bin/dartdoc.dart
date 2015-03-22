@@ -19,6 +19,7 @@ void main(List<String> arguments) {
   if (results['help']) {
     _printUsageAndExit(parser);
   }
+
   if (results['version']) {
     print('$NAME version: $VERSION');
     exit(0);
@@ -64,7 +65,8 @@ ArgParser _createArgsParser() {
       abbr: 'h', negatable: false, help: 'show command help');
   parser.addFlag('version',
       help: 'Display the version for $NAME', negatable: false);
-  parser.addFlag('sdk-docs', help: 'generate docs for the dart sdk.'
+  parser.addFlag('sdk-docs', help: 'generate docs for the Dart SDK.'
+      ' '
       'Use "--dart-sdk" option to specify path to sdk');
   return parser;
 }
