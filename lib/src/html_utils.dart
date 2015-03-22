@@ -23,7 +23,7 @@ String stringEscape(String text, String quoteType) {
       .replaceAll('\\', r'\\')
       .replaceAll(quoteType, "\\${quoteType}")
       .replaceAllMapped(_escapeRegExp, (m) {
-    return _escapMap[m.input];
+    return _escapeMap[m.input];
   });
 }
 
@@ -72,7 +72,7 @@ String ltrim(String str) {
   return str;
 }
 
-const _escapMap = const {
+const _escapeMap = const {
   '\n': r'\n',
   '\r': r'\r',
   '\f': r'\f',
@@ -81,7 +81,7 @@ const _escapMap = const {
   '\v': r'\v',
 };
 
-final _escapeStr = "[" + _escapMap.keys.map(_getHexLiteral).join() + "]";
+final _escapeStr = "[" + _escapeMap.keys.map(_getHexLiteral).join() + "]";
 
 final _escapeRegExp = new RegExp(_escapeStr);
 
