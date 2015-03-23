@@ -760,22 +760,36 @@ class Class extends ModelElement {
   List<Method> get inheritedMethods {
     if (_inheritedMethods != null) return _inheritedMethods;
     InheritanceManager manager = new InheritanceManager(element.library);
-    MemberMap map = manager.getMapOfMembersInheritedFromClasses(element);
-    _methods.forEach((method) => map.remove(method.name));
+    MemberMap cmap = manager.getMapOfMembersInheritedFromClasses(element);
+    MemberMap imap = manager.getMapOfMembersInheritedFromInterfaces(element);
+    _methods.forEach((method) {
+      cmap.remove(method.name);
+      imap.remove(method.name);
+    });
     _inheritedMethods = [];
-    for (var i = 0; i < map.size; i++) {
-      var value = map.getValue(i);
+    var vs = [];
+    for (var i = 0; i < cmap.size; i++) {
+      vs.add(cmap.getValue(i));
+    }
+
+    for (var i = 0; i < imap.size; i++) {
+      vs.add(imap.getValue(i));
+    }
+
+    for (var value in vs) {
       if (value != null &&
-          value is MethodElement &&
-          !value.isPrivate &&
-          !value.isOperator &&
-          value.enclosingElement.name != 'Object') {
+        value is MethodElement &&
+        !value.isPrivate &&
+        !value.isOperator &&
+        value.enclosingElement != null &&
+        value.enclosingElement.name != 'Object') {
         var lib = value.library == library.element
-            ? library
-            : new Library(value.library, package);
+        ? library
+        : new Library(value.library, package);
         _inheritedMethods.add(new Method(value, lib));
       }
     }
+
     return _inheritedMethods;
   }
 
@@ -784,26 +798,35 @@ class Class extends ModelElement {
   List<Field> get inheritedProperties {
     if (_inheritedProperties != null) return _inheritedProperties;
     InheritanceManager manager = new InheritanceManager(element.library);
-    MemberMap map = manager.getMapOfMembersInheritedFromClasses(element);
+    MemberMap cmap = manager.getMapOfMembersInheritedFromClasses(element);
+    MemberMap imap = manager.getMapOfMembersInheritedFromInterfaces(element);
     _inheritedProperties = [];
-    for (var i = 0; i < map.size; i++) {
-      var value = map.getValue(i);
+    var vs = [];
+    for (var i = 0; i < cmap.size; i++) {
+      vs.add(cmap.getValue(i));
+    }
+    for (var i = 0; i < imap.size; i++) {
+      vs.add(imap.getValue(i));
+    }
+
+    for (var value in vs) {
       if (value != null &&
-          value is PropertyAccessorElement &&
-          !value.isPrivate &&
-          value.enclosingElement.name != 'Object') {
+        value is PropertyAccessorElement &&
+        !value.isPrivate &&
+        value.enclosingElement != null &&
+        value.enclosingElement.name != 'Object') {
         var e = value.variable;
         if (_inheritedProperties.any((f) => f.element == e)) {
           continue;
         }
-        var lib = value.library == library.element
-            ? library
-            : new Library(value.library, package);
+        var lib = value.library == library.element ? library : new Library(value.library, package);
         _inheritedProperties.add(new Field(e, lib));
       }
     }
     return _inheritedProperties;
   }
+
+  bool get hasMethods => instanceMethods.isNotEmpty || inheritedMethods.isNotEmpty;
 
   bool get hasInheritedProperties => inheritedProperties.isNotEmpty;
 
