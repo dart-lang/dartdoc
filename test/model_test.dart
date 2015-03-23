@@ -325,8 +325,8 @@ void main() {
       constant = library.getConstants()[0];
     });
 
-    test('found one constant', () {
-      expect(library.getConstants(), hasLength(1));
+    test('found two constants', () {
+      expect(library.getConstants(), hasLength(2));
     });
 
     test('is constant', () {
