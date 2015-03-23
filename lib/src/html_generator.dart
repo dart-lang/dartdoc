@@ -206,7 +206,7 @@ class HtmlGenerator extends Generator {
     return f;
   }
 
-  void _writeFile(String filename, template, Map data) {
+  void _writeFile(String filename, MustacheTemplate template, Map data) {
     File f = _createOutputFile(filename);
     String content = template(data, assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
     f.writeAsStringSync(content);
