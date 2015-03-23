@@ -241,6 +241,8 @@ String renderMarkdown(String markdown, {nestedContext}) {
   return doc.body.innerHtml;
 }
 
+const List<String> _oneLinerSkipTags = const ["code", "pre"];
+
 String oneLiner(String text, {nestedContext}) {
   String mustached = render(text.trim(), nestedContext,
           assumeNullNonExistingProperty: false, errorOnMissingProperty: true)
@@ -251,6 +253,14 @@ String oneLiner(String text, {nestedContext}) {
   var document = new md.Document();
   document.parseRefLinks(lines);
   var blocks = document.parseLines(lines);
+
+  while (blocks.isNotEmpty && (blocks.first is md.Element && _oneLinerSkipTags.contains(blocks.first.tag))) {
+    blocks.removeAt(0);
+  }
+
+  if (blocks.isEmpty) {
+    return '';
+  }
 
   var firstPara = new PlainTextRenderer().render([blocks.first]);
   if (firstPara.length > 200) {
