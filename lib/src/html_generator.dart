@@ -17,6 +17,8 @@ import 'package:path/path.dart' as path;
 import 'model.dart';
 import '../generator.dart';
 
+typedef String MustacheTemplate(context, {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});
+
 class HtmlGenerator extends Generator {
   final String _url;
   final List<String> _htmlFiles = [];
@@ -30,15 +32,15 @@ class HtmlGenerator extends Generator {
   final String generatedOn;
 
   // TODO: fix this to be a single map, just like _partialTemplates
-  static final Function indexTemplate = _loadTemplate('templates/index.html');
-  static final Function libraryTemplate =
+  static final MustacheTemplate indexTemplate = _loadTemplate('templates/index.html');
+  static final MustacheTemplate libraryTemplate =
       _loadTemplate('templates/library.html');
-  static final Function classTemplate = _loadTemplate('templates/class.html');
+  static final MustacheTemplate classTemplate = _loadTemplate('templates/class.html');
   static final Function functionTemplate =
       _loadTemplate('templates/function.html');
-  static final Function methodTemplate =
+  static final MustacheTemplate methodTemplate =
       _loadTemplate('templates/method.html');
-  static final Function constructorTemplate =
+  static final MustacheTemplate constructorTemplate =
       _loadTemplate('templates/constructor.html');
 
   static final Map<String, String> _partialTemplates = {};
@@ -217,7 +219,6 @@ class HtmlGenerator extends Generator {
     String contents = tmplFile.readAsStringSync();
     return partial ? contents : compile(contents, partial: _partial);
   }
-
 }
 
 // TODO: parse the custom dartdoc formatting brackets
