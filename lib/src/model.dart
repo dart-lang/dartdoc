@@ -325,9 +325,12 @@ abstract class ModelElement {
           buf.write(p.modelType.element.linkedParams);
           buf.write(')');
         } else if (p.modelType != null &&
-            p.modelType.element != null &&
-            p.modelType.element.modelType != null) {
-          String typeName = p.modelType.element.modelType.linkedName;
+            p.modelType.element != null) {
+          var mt = p.modelType.element.modelType;
+          String typeName = "";
+          if (mt != null) {
+            typeName = mt.linkedName;
+          }
           if (typeName.isNotEmpty) {
             buf.write('<span class="type-annotation">$typeName</span> ');
           }
@@ -557,9 +560,12 @@ class Library extends ModelElement {
     if (package._isSdk) {
       return _allClasses;
     }
+
     return _allClasses.where((c) => !c.isErrorOrException).toList(
         growable: false);
   }
+
+  bool get hasClasses => getClasses().isNotEmpty;
 
   bool get hasExceptions => _allClasses.any((c) => c.isErrorOrException);
 
@@ -569,7 +575,7 @@ class Library extends ModelElement {
   }
 
   @override
-  String get _href => '$name/index.html';
+  String get _href => '$fileName/index.html';
 }
 
 class Class extends ModelElement {
@@ -972,6 +978,18 @@ class Operator extends Method {
   bool get isOperator => true;
 
   String get typeName => 'operator';
+
+  @override
+  String get _href {
+    var h = super._href;
+    var n = name;
+    if (n == "[]" || n == "[]=") {
+      var isSetter = n.endsWith("=");
+      return (h.split("/")..removeLast()).join("/") + "/:brackets${isSetter ? '=' : ''}.html";
+    } else {
+      return h;
+    }
+  }
 }
 
 /// Getters and setters.
@@ -1057,7 +1075,7 @@ class Parameter extends ModelElement {
 
   @override
   String get _href =>
-      '${library.fileName}/${_parameter.enclosingElement.name}/$name.html';
+      '${library.fileName}/${_parameter.enclosingElement.name}.html';
 }
 
 class TypeParameter extends ModelElement {

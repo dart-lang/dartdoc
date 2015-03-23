@@ -58,7 +58,7 @@ List<String> _doList(String dir, Set<String> listedDirectories, bool recurse,
 /// library files in the "lib" directory to document.
 List<String> findFilesToDocumentInPackage(String packageDir) {
   var libraries = [];
-  // To avoid anaylzing package files twice, only files with paths not
+  // To avoid analyzing package files twice, only files with paths not
   // containing '/packages' will be added. The only exception is if the file
   // to analyze already has a '/package' in its path.
   var files = _listDir(packageDir, recursive: true, listDir: _packageDirList)

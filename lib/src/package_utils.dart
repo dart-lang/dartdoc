@@ -23,8 +23,8 @@ Map _getPubspec(String directoryName) {
 String getPackageDescription(String directoryName) {
   var dir = new Directory(directoryName);
   var readmeFile = dir.listSync().firstWhere((FileSystemEntity file) =>
-      path.basename(file.path).toLowerCase().startsWith("readme"));
-  if (readmeFile.existsSync()) {
+      path.basename(file.path).toLowerCase().startsWith("readme"), orElse: () => null);
+  if (readmeFile != null && readmeFile.existsSync()) {
     // TODO(keertip): cleanup the contents
     return readmeFile.readAsStringSync();
   }
