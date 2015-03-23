@@ -200,7 +200,7 @@ void main() {
   });
 
   group('Function', () {
-    var f1, f2;
+    ModelFunction f1, f2;
 
     setUp(() {
       f1 = library.getFunctions()[0];
@@ -219,8 +219,12 @@ void main() {
       expect(f1.isStatic, true);
     });
 
+    test('handles dynamic parameters correctly', () {
+      expect(f2.linkedParams, contains('lastParam'));
+    });
+
     test('has correct source code', () {
-      expect(f2.source, equals('int function1(String s, bool b) => 5;'));
+      expect(f2.source, equals('int function1(String s, bool b, lastParam) => 5;'));
     });
   });
 

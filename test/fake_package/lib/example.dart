@@ -1,7 +1,7 @@
 /// a library
 library ex;
 
-int function1(String s, bool b) => 5;
+int function1(String s, bool b, lastParam) => 5;
 
 double number;
 
