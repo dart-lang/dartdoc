@@ -30,21 +30,21 @@ class HtmlGenerator extends Generator {
   final String generatedOn;
 
   // TODO: fix this to be a single map, just like _partialTemplates
-  static final String indexTemplate = _loadTemplate('templates/index.html');
-  static final String libraryTemplate =
+  static final Function indexTemplate = _loadTemplate('templates/index.html');
+  static final Function libraryTemplate =
       _loadTemplate('templates/library.html');
-  static final String classTemplate = _loadTemplate('templates/class.html');
-  static final String functionTemplate =
+  static final Function classTemplate = _loadTemplate('templates/class.html');
+  static final Function functionTemplate =
       _loadTemplate('templates/function.html');
-  static final String methodTemplate =
+  static final Function methodTemplate =
       _loadTemplate('templates/method.html');
-  static final String constructorTemplate =
+  static final Function constructorTemplate =
       _loadTemplate('templates/constructor.html');
 
   static final Map<String, String> _partialTemplates = {};
 
   static String _partial(String name) {
-    return _partialTemplates.putIfAbsent(name, () => _loadTemplate('templates/_$name.html'));
+    return _partialTemplates.putIfAbsent(name, () => _loadTemplate('templates/_$name.html', true));
   }
 
   HtmlGenerator(this._url)
@@ -204,21 +204,18 @@ class HtmlGenerator extends Generator {
     return f;
   }
 
-  void _writeFile(String filename, String template, Map data) {
+  void _writeFile(String filename, template, Map data) {
     File f = _createOutputFile(filename);
-    String content = render(template, data,
-        partial: _partial,
-        assumeNullNonExistingProperty: false,
-        errorOnMissingProperty: true);
+    String content = template(data, assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
     f.writeAsStringSync(content);
   }
 
-  static String _loadTemplate(String templatePath) {
+  static dynamic _loadTemplate(String templatePath, [bool partial = false]) {
     File script = new File(Platform.script.toFilePath());
     File tmplFile =
         new File(path.join(script.parent.parent.path, templatePath));
     String contents = tmplFile.readAsStringSync();
-    return contents;
+    return partial ? contents : compile(contents, partial: _partial);
   }
 
 }
@@ -235,9 +232,6 @@ String renderMarkdown(String markdown, {nestedContext}) {
   html = resolveDocReferences(html, nestedContext);
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
-  doc.querySelectorAll('pre > code').forEach((e) {
-    e.classes.add("prettyprint");
-  });
   return doc.body.innerHtml;
 }
 
