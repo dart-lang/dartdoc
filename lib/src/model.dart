@@ -1063,7 +1063,7 @@ class Parameter extends ModelElement {
 
   @override
   String get _href =>
-      '${library.fileName}/${_parameter.enclosingElement.name}/$name.html';
+      '${library.fileName}/${_parameter.enclosingElement.name}.html';
 }
 
 class TypeParameter extends ModelElement {
