@@ -768,6 +768,7 @@ class Class extends ModelElement {
     });
     _inheritedMethods = [];
     var vs = [];
+
     for (var i = 0; i < cmap.size; i++) {
       vs.add(cmap.getValue(i));
     }
@@ -776,6 +777,8 @@ class Class extends ModelElement {
       vs.add(imap.getValue(i));
     }
 
+    vs = vs.toSet().toList();
+
     for (var value in vs) {
       if (value != null &&
         value is MethodElement &&
@@ -783,9 +786,7 @@ class Class extends ModelElement {
         !value.isOperator &&
         value.enclosingElement != null &&
         value.enclosingElement.name != 'Object') {
-        var lib = value.library == library.element
-        ? library
-        : new Library(value.library, package);
+        var lib = value.library == library.element ? library : new Library(value.library, package);
         _inheritedMethods.add(new Method(value, lib));
       }
     }
@@ -805,9 +806,14 @@ class Class extends ModelElement {
     for (var i = 0; i < cmap.size; i++) {
       vs.add(cmap.getValue(i));
     }
+
     for (var i = 0; i < imap.size; i++) {
       vs.add(imap.getValue(i));
     }
+
+    vs = vs.toSet().toList();
+
+    vs.removeWhere((it) => _instanceFields.any((i) => it.name == i.name));
 
     for (var value in vs) {
       if (value != null &&
