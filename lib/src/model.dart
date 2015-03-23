@@ -878,8 +878,10 @@ class ModelFunction extends ModelElement {
 
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
+  String get fileName => "${name}.html";
+
   @override
-  String get _href => '${library.fileName}/$name.html';
+  String get _href => '${library.fileName}/${fileName}';
 }
 
 class Typedef extends ModelElement {
@@ -995,9 +997,11 @@ class Method extends ModelElement {
 
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
+  String get fileName => "${name}.html";
+
   @override
   String get _href =>
-      '${library.fileName}/${_method.enclosingElement.name}/$name.html';
+      '${library.fileName}/${_method.enclosingElement.name}/${fileName}';
 }
 
 class Operator extends Method {
@@ -1009,16 +1013,39 @@ class Operator extends Method {
   String get typeName => 'operator';
 
   @override
-  String get _href {
-    var h = super._href;
-    var n = name;
-    if (n == "[]" || n == "[]=") {
-      var isSetter = n.endsWith("=");
-      return (h.split("/")..removeLast()).join("/") + "/:brackets${isSetter ? '=' : ''}.html";
+  String get fileName => "${_rewriteOperatorName(name)}.html";
+
+  /// Rewrite Operator Names to be friendly.
+  static String _rewriteOperatorName(String op) {
+    if (friendlyNames.containsKey(op)) {
+      return ":${friendlyNames[op]}";
     } else {
-      return h;
+      return op;
     }
   }
+
+  static const Map<String, String> friendlyNames = const {
+    "[]": "get",
+    "[]=": "put",
+    "~": "bitwise_negate",
+    "==": "equals",
+    "-": "minus",
+    "+": "plus",
+    "*": "multiply",
+    "/": "divide",
+    "<": "less",
+    ">": "greater",
+    ">=": "greater_equal",
+    "<=": "less_equal",
+    "<<": "shift_left",
+    ">>": "shift_right",
+    "^": "bitwise_exclusive_or",
+    "unary-": "unary_minus",
+    "|": "bitwise_or",
+    "&": "bitwise_and",
+    "~/": "truncate_divide",
+    "%": "modulo"
+  };
 }
 
 /// Getters and setters.
@@ -1103,8 +1130,16 @@ class Parameter extends ModelElement {
   String toString() => element.name;
 
   @override
-  String get _href =>
-      '${library.fileName}/${_parameter.enclosingElement.name}.html';
+  String get _href {
+    var p = _parameter.enclosingElement;
+
+    if (p is FunctionElement) {
+      return '${library.fileName}/${p.name}.html';
+    } else {
+      return '${library.fileName}/${p.enclosingElement.name}/' +
+        '${Operator._rewriteOperatorName(p.name)}.html';
+    }
+  }
 }
 
 class TypeParameter extends ModelElement {
