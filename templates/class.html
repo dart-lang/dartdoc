@@ -224,7 +224,7 @@
     </section>
     {{/class.hasStaticMethods}}
 
-    {{#class.hasInstanceMethods}}
+    {{#class.hasMethods}}
     <section id="instance-methods-summary" class="summary">
         <h2 class="text-display-1">Instance Methods</h2>
         <dl id="{{htmlId}}" class="withreturntypes">
@@ -256,7 +256,7 @@
             {{/class.inheritedMethods}}
         </dl>
     </section>
-    {{/class.hasInstanceMethods}}
+    {{/class.hasMethods}}
 
     {{#class.hasOperators}}
     <section id="operators-summary" class="summary">
