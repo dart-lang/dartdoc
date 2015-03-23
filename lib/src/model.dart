@@ -187,8 +187,10 @@ abstract class ModelElement {
           if (e != null && (e is ConstructorElement)) {
             var me = new ModelElement.from(
                 e.enclosingElement, new Library(e.library, package));
-            return annotationString.replaceAll(
+            if (me.href != null) {
+              return annotationString.replaceAll(
                 me.name, '<a href="${me.href}">${me.name}</a>');
+            }
           }
           return annotationString;
         }).toList(growable: false);
