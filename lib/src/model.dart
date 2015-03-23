@@ -978,6 +978,18 @@ class Operator extends Method {
   bool get isOperator => true;
 
   String get typeName => 'operator';
+
+  @override
+  String get _href {
+    var h = super._href;
+    var n = name;
+    if (n == "[]" || n == "[]=") {
+      var isSetter = n.endsWith("=");
+      return (h.split("/")..removeLast()).join("/") + "/:brackets${isSetter ? '=' : ''}.html";
+    } else {
+      return h;
+    }
+  }
 }
 
 /// Getters and setters.
