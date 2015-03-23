@@ -119,6 +119,22 @@ class HtmlGenerator extends Generator {
     _build(path.join(lib.fileName, 'index.html'), libraryTemplate, data);
   }
 
+  Class get objectType {
+    if (_objectType != null) {
+      return _objectType;
+    }
+
+    Library dc = package.libraries.firstWhere((it) => it.name == "dart:core", orElse: () => null);
+
+    if (dc == null) {
+      return _objectType = null;
+    }
+
+    return _objectType = dc.getClassByName("Object");
+  }
+
+  Class _objectType;
+
   void generateClass(Package package, Library lib, Class clazz) {
     Map data = {
       'package': package,
@@ -126,7 +142,8 @@ class HtmlGenerator extends Generator {
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'library': lib,
-      'class': clazz
+      'class': clazz,
+      'linkedObjectType': objectType == null ? 'Object' : objectType.linkedName
     };
 
     _build(path.joinAll(clazz.href.split('/')), classTemplate, data);

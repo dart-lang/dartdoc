@@ -504,6 +504,10 @@ class Library extends ModelElement {
     return _enums;
   }
 
+  Class getClassByName(String name) {
+    return _allClasses.firstWhere((it) => it.name == name, orElse: () => null);
+  }
+
   bool get hasTypedefs => getTypedefs().isNotEmpty;
 
   List<Typedef> getTypedefs() {
@@ -606,10 +610,15 @@ class Class extends ModelElement {
       return new ElementType(f, new ModelElement.from(f.element, lib));
     }).toList(growable: false);
 
-    if (hasSupertype) {
+    if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
       var lib = new Library(_cls.supertype.element.library, p);
       _supertype = new ElementType(
-          _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
+        _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
+
+      /* Private Superclasses should not be shown. */
+      if (_supertype._element.element.isPrivate) {
+        _supertype = null;
+      }
     }
 
     _interfaces = _cls.interfaces.map((f) {
@@ -628,7 +637,7 @@ class Class extends ModelElement {
   bool get isAbstract => _cls.isAbstract;
 
   bool get hasSupertype =>
-      _cls.supertype != null && _cls.supertype.element.supertype != null;
+      supertype != null;
 
   ElementType get supertype => _supertype;
 
