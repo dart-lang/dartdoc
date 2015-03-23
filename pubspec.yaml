@@ -4,7 +4,7 @@ author: Dart Team <misc@dartlang.org>
 description: A documentation generator for Dart.
 homepage: https://github.com/dart-lang/dartdoc
 dependencies:
-  analyzer: '>=0.22.0 <0.24.0'
+  analyzer: '>=0.22.0 <0.25.0'
   args: '>=0.12.2 <0.13.0'
   cli_util: '>=0.0.1 <0.1.0'
   html5lib: '>=0.12.0 <0.13.0'
@@ -21,3 +21,5 @@ dev_dependencies:
   unittest: '>=0.11.0 <0.12.0'
 executables:
   dartdoc: null
+dependency_overrides:
+  analyzer: 0.25.0-dev.1
