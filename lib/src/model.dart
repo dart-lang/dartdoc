@@ -986,6 +986,11 @@ class Constructor extends ModelElement {
 
   bool get isConst => _constructor.isConst;
 
+  String get ownerHref =>
+    "${library.getClassByName(_constructor.enclosingElement.name).href}#${htmlId}";
+
+  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
+
   @override
   String get name {
     String constructorName = element.name;
