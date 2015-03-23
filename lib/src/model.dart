@@ -341,7 +341,7 @@ abstract class ModelElement {
           if (p.isOptionalNamed) {
             buf.write(': ');
           } else {
-            buf.write('= ');
+            buf.write(' = ');
           }
           buf.write('<span class="default-value">${p.defaultValue}</span>');
         }
