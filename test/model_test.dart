@@ -19,6 +19,7 @@ import 'package:analyzer/src/generated/source_io.dart';
 
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
+import 'package:dartdoc/src/package_utils.dart';
 
 void main() {
   AnalyzerHelper helper = new AnalyzerHelper();
@@ -59,7 +60,7 @@ void main() {
     });
 
     test('sdk description', () {
-      expect(p2.description, 'Dart API Libraries');
+      expect(p2.description, SDK_INTRO);
     });
   });
 
