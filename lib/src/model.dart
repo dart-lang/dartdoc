@@ -616,15 +616,28 @@ class Class extends ModelElement {
         _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
 
       /* Private Superclasses should not be shown. */
-      if (_supertype._element.element.isPrivate) {
+      var exclude = _supertype.element.element.isPrivate;
+
+      /* Hide dart2js related stuff */
+      exclude = exclude || (
+        lib.name.startsWith("dart:") && _supertype.name == "NativeFieldWrapperClass2"
+      );
+
+      if (exclude) {
         _supertype = null;
       }
     }
 
     _interfaces = _cls.interfaces.map((f) {
       var lib = new Library(f.element.library, p);
-      return new ElementType(f, new ModelElement.from(f.element, lib));
-    }).toList(growable: false);
+      var t = new ElementType(f, new ModelElement.from(f.element, lib));
+      var exclude = t.element.element.isPrivate;
+      if (exclude) {
+        return null;
+      } else {
+        return t;
+      }
+    }).where((it) => it != null).toList(growable: false);
   }
 
   String get nameWithGenerics {
