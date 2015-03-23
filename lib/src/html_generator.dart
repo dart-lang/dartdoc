@@ -236,7 +236,7 @@ String renderMarkdown(String markdown, {nestedContext}) {
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
   doc.querySelectorAll('pre > code').forEach((e) {
-    e.classes.add("prettyprint");
+    e.classes.addAll(['prettyprint', 'lang-dart']);
   });
   return doc.body.innerHtml;
 }
