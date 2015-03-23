@@ -904,6 +904,10 @@ class ModelFunction extends ModelElement {
 
   String get fileName => "${name}.html";
 
+  String get ownerHref => "${library.href}#${htmlId}";
+
+  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
+
   @override
   String get _href => '${library.fileName}/${fileName}';
 }
@@ -1022,6 +1026,11 @@ class Method extends ModelElement {
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
   String get fileName => "${name}.html";
+
+  String get ownerHref =>
+    "${library.getClassByName(_method.enclosingElement.name).href}#${htmlId}";
+
+  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
 
   @override
   String get _href =>
