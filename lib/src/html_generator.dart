@@ -15,6 +15,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:path/path.dart' as path;
 
 import 'model.dart';
+import 'html_utils.dart';
 import '../generator.dart';
 
 class HtmlGenerator extends Generator {
@@ -243,7 +244,6 @@ class HtmlGenerator extends Generator {
   }
 }
 
-// TODO: parse the custom dartdoc formatting brackets
 /// Converts a markdown formatted string into HTML,
 /// and removes any script tags. Returns the HTML as a string.
 String renderMarkdown(String markdown, {nestedContext}) {
@@ -251,7 +251,7 @@ String renderMarkdown(String markdown, {nestedContext}) {
       assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
   // reflector.
-  String html = md.markdownToHtml(mustached);
+  String html = md.markdownToHtml(mustached, inlineSyntaxes: MARKDOWN_SYNTAXES);
   html = resolveDocReferences(html, nestedContext);
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
@@ -324,27 +324,51 @@ class PlainTextRenderer implements md.NodeVisitor {
 
   StringBuffer buffer;
 
+  @override
   String render(List<md.Node> nodes) {
     buffer = new StringBuffer();
 
-    for (final node in nodes) node.accept(this);
+    for (final node in nodes) {
+      node.accept(this);
+    }
 
     return buffer.toString();
   }
 
+  @override
   void visitText(md.Text text) {
     buffer.write(text.text);
   }
 
+  @override
   bool visitElementBefore(md.Element element) {
     // do nothing
     return true;
   }
 
+  @override
   void visitElementAfter(md.Element element) {
     // Hackish. Separate block-level elements with newlines.
     if (!buffer.isEmpty && _BLOCK_TAGS.firstMatch(element.tag) != null) {
       buffer.write('\n\n');
     }
+  }
+}
+
+final List<md.InlineSyntax> MARKDOWN_SYNTAXES = [
+  new InlineCodeSyntax()
+];
+
+class InlineCodeSyntax extends md.InlineSyntax {
+  InlineCodeSyntax() : super(r'\[:\s?((?:.|\n)*?)\s?:\]');
+
+  @override
+  bool onMatch(md.InlineParser parser, Match match) {
+    var element = new md.Element.text('code', htmlEscape(match[1]));
+    var c = element.attributes.putIfAbsent("class", () => "");
+    c = (c.isEmpty ? "" : " ") + "prettyprint";
+    element.attributes["class"] = c;
+    parser.addNode(element);
+    return true;
   }
 }

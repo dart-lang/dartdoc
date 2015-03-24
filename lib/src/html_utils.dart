@@ -27,7 +27,6 @@ String stringEscape(String text, String quoteType) {
   });
 }
 
-
 String stripComments(String str) {
   if (str == null) return null;
 
