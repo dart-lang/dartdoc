@@ -971,11 +971,26 @@ class Field extends ModelElement {
 
   bool get hasSetter => _field.setter != null;
 
+  String get typeName => "property";
+
+  String get ownerHref {
+    if (element.enclosingElement is ClassElement) {
+      return "${library.getClassByName(_field.enclosingElement.name).href}#${htmlId}";
+    } else if (element.enclosingElement is LibraryElement) {
+      return "${library.fileName}.html#$name";
+    } else {
+      throw new StateError(
+        '$name is not in a class or library, instead a ${element.enclosingElement}');
+    }
+  }
+
+  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
+
   String get _href {
     if (element.enclosingElement is ClassElement) {
-      return '/${library.fileName}/${element.enclosingElement.name}.html#$name';
+      return '${library.fileName}/${element.enclosingElement.name}/$name.html';
     } else if (element.enclosingElement is LibraryElement) {
-      return '/${library.fileName}.html#$name';
+      return '${library.fileName}/$name.html';
     } else {
       throw new StateError(
           '$name is not in a class or library, instead a ${element.enclosingElement}');
@@ -1138,13 +1153,15 @@ class TopLevelVariable extends ModelElement {
     return v.substring(v.indexOf('= ') + 2, v.length);
   }
 
+  String get ownerHref => "${library.href}#${htmlId}";
+  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
+
   bool get hasGetter => _variable.getter != null;
 
   bool get hasSetter => _variable.setter != null;
 
-  // TODO: check if this works for libraries and classes
   @override
-  String get _href => throw 'Not implemented yet';
+  String get _href => '${library.fileName}/${name}.html';
 }
 
 class Parameter extends ModelElement {

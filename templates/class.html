@@ -147,7 +147,7 @@
             <dt id="{{htmlId}}">
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name">{{ name }}</span>
+                    <span class="name"><a href="{{href}}">{{ name }}</a></span>
                 </code>
             </dt>
             <dd>
@@ -188,7 +188,7 @@
             <dt id="{{htmlId}}">
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name">{{ name }}</span>
+                    <span class="name"><a href="{{href}}">{{ name }}</a></span>
                 </code>
             </dt>
             <dd>
@@ -208,7 +208,7 @@
         <h2 class="text-display-1">Static Methods</h2>
         <dl class="withreturntypes">
             {{#class.staticMethods}}
-            <dt>
+            <dt id="{{htmlId}}">
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
                     <span class="name-and-params">
