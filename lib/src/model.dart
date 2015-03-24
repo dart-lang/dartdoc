@@ -189,7 +189,7 @@ abstract class ModelElement {
                 e.enclosingElement, new Library(e.library, package));
             if (me.href != null) {
               return annotationString.replaceAll(
-                me.name, '<a href="${me.href}">${me.name}</a>');
+                  me.name, '<a href="${me.href}">${me.name}</a>');
             }
           }
           return annotationString;
@@ -326,8 +326,7 @@ abstract class ModelElement {
           buf.write('(');
           buf.write(p.modelType.element.linkedParams);
           buf.write(')');
-        } else if (p.modelType != null &&
-            p.modelType.element != null) {
+        } else if (p.modelType != null && p.modelType.element != null) {
           var mt = p.modelType.element.modelType;
           String typeName = "";
           if (mt != null) {
@@ -609,21 +608,27 @@ class Class extends ModelElement {
 
     _mixins = _cls.mixins.map((f) {
       var lib = new Library(f.element.library, p);
-      return new ElementType(f, new ModelElement.from(f.element, lib));
-    }).toList(growable: false);
+      var t = new ElementType(f, new ModelElement.from(f.element, lib));
+      var exclude = t.element.element.isPrivate;
+      if (exclude) {
+        return null;
+      } else {
+        return t;
+      }
+    }).where((mixin) => mixin != null).toList(growable: false);
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
       var lib = new Library(_cls.supertype.element.library, p);
       _supertype = new ElementType(
-        _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
+          _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
 
       /* Private Superclasses should not be shown. */
       var exclude = _supertype.element.element.isPrivate;
 
       /* Hide dart2js related stuff */
-      exclude = exclude || (
-        lib.name.startsWith("dart:") && _supertype.name == "NativeFieldWrapperClass2"
-      );
+      exclude = exclude ||
+          (lib.name.startsWith("dart:") &&
+              _supertype.name == "NativeFieldWrapperClass2");
 
       if (exclude) {
         _supertype = null;
@@ -651,8 +656,7 @@ class Class extends ModelElement {
 
   bool get isAbstract => _cls.isAbstract;
 
-  bool get hasSupertype =>
-      supertype != null;
+  bool get hasSupertype => supertype != null;
 
   ElementType get supertype => _supertype;
 
@@ -805,12 +809,14 @@ class Class extends ModelElement {
 
     for (var value in vs) {
       if (value != null &&
-        value is MethodElement &&
-        !value.isPrivate &&
-        !value.isOperator &&
-        value.enclosingElement != null &&
-        value.enclosingElement.name != 'Object') {
-        var lib = value.library == library.element ? library : new Library(value.library, package);
+          value is MethodElement &&
+          !value.isPrivate &&
+          !value.isOperator &&
+          value.enclosingElement != null &&
+          value.enclosingElement.name != 'Object') {
+        var lib = value.library == library.element
+            ? library
+            : new Library(value.library, package);
         _inheritedMethods.add(new Method(value, lib));
       }
     }
@@ -841,22 +847,25 @@ class Class extends ModelElement {
 
     for (var value in vs) {
       if (value != null &&
-        value is PropertyAccessorElement &&
-        !value.isPrivate &&
-        value.enclosingElement != null &&
-        value.enclosingElement.name != 'Object') {
+          value is PropertyAccessorElement &&
+          !value.isPrivate &&
+          value.enclosingElement != null &&
+          value.enclosingElement.name != 'Object') {
         var e = value.variable;
         if (_inheritedProperties.any((f) => f.element == e)) {
           continue;
         }
-        var lib = value.library == library.element ? library : new Library(value.library, package);
+        var lib = value.library == library.element
+            ? library
+            : new Library(value.library, package);
         _inheritedProperties.add(new Field(e, lib));
       }
     }
     return _inheritedProperties;
   }
 
-  bool get hasMethods => instanceMethods.isNotEmpty || inheritedMethods.isNotEmpty;
+  bool get hasMethods =>
+      instanceMethods.isNotEmpty || inheritedMethods.isNotEmpty;
 
   bool get hasInheritedProperties => inheritedProperties.isNotEmpty;
 
@@ -987,7 +996,7 @@ class Constructor extends ModelElement {
   bool get isConst => _constructor.isConst;
 
   String get ownerHref =>
-    "${library.getClassByName(_constructor.enclosingElement.name).href}#${htmlId}";
+      "${library.getClassByName(_constructor.enclosingElement.name).href}#${htmlId}";
 
   String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
 
@@ -1033,7 +1042,7 @@ class Method extends ModelElement {
   String get fileName => "${name}.html";
 
   String get ownerHref =>
-    "${library.getClassByName(_method.enclosingElement.name).href}#${htmlId}";
+      "${library.getClassByName(_method.enclosingElement.name).href}#${htmlId}";
 
   String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
 
@@ -1175,7 +1184,7 @@ class Parameter extends ModelElement {
       return '${library.fileName}/${p.name}.html';
     } else {
       return '${library.fileName}/${p.enclosingElement.name}/' +
-        '${Operator._rewriteOperatorName(p.name)}.html';
+          '${Operator._rewriteOperatorName(p.name)}.html';
     }
   }
 }
