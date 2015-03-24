@@ -473,6 +473,8 @@ class Library extends ModelElement {
         .map((e) => new TopLevelVariable(e, this))
         .toList(growable: false);
 
+    _variables = _sort(_variables);
+
     return _variables;
   }
 
@@ -499,10 +501,14 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       enumClasses.addAll(cu.enums);
     }
+
     _enums = enumClasses
         .where(isPublic)
         .map((e) => new Enum(e, this))
         .toList(growable: false);
+
+    _enums = _sort(_enums);
+
     return _enums;
   }
 
@@ -522,6 +528,7 @@ class Library extends ModelElement {
     }
     elements..removeWhere(isPrivate);
     _typeDefs = elements.map((e) => new Typedef(e, this)).toList();
+    _typeDefs = _sort(_typeDefs);
     return _typeDefs;
   }
 
@@ -541,6 +548,7 @@ class Library extends ModelElement {
           (source != null) ? source.substring(e.node.offset, e.node.end) : null;
       return new ModelFunction(e, this, eSource);
     }).toList(growable: false);
+    _functions = _sort(_functions);
     return _functions;
   }
 
@@ -558,6 +566,8 @@ class Library extends ModelElement {
         .map((e) => new Class(
             e, this, source)) // is source a bug? it's the library's source
         .toList(growable: true);
+
+    _classes = _sort(_classes);
 
     return _classes;
   }
@@ -582,6 +592,12 @@ class Library extends ModelElement {
 
   @override
   String get _href => '$fileName/index.html';
+}
+
+List<ModelElement> _sort(List<ModelElement> elements) {
+  var x = elements.toList();
+  x.sort((a, b) => a.name.compareTo(b.name));
+  return x;
 }
 
 class Class extends ModelElement {
@@ -688,6 +704,8 @@ class Class extends ModelElement {
         .map((e) => new Field(e, library))
         .toList(growable: false);
 
+    _fields = _sort(_fields);
+
     return _fields;
   }
 
@@ -728,6 +746,8 @@ class Class extends ModelElement {
       return new Constructor(e, library, cSource);
     }).toList(growable: true);
 
+    _constructors = _sort(_constructors);
+
     return _constructors;
   }
 
@@ -745,6 +765,8 @@ class Class extends ModelElement {
         return new Operator(e, library, mSource);
       }
     }).toList(growable: false);
+
+    _allMethods = _sort(_allMethods);
 
     return _allMethods;
   }
@@ -815,6 +837,8 @@ class Class extends ModelElement {
       }
     }
 
+    _inheritedMethods = _sort(_inheritedMethods);
+
     return _inheritedMethods;
   }
 
@@ -853,6 +877,9 @@ class Class extends ModelElement {
         _inheritedProperties.add(new Field(e, lib));
       }
     }
+
+    _inheritedProperties = _sort(_inheritedProperties);
+
     return _inheritedProperties;
   }
 
@@ -1281,7 +1308,7 @@ class ElementType {
         }
         return _returnTypeName;
       } else {
-        return '';
+        return 'dynamic';
       }
     } else {
       return _returnType.linkedName;
