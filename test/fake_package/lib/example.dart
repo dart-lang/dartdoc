@@ -111,3 +111,22 @@ class ForAnnotation {
 class HasAnnotation {
 
 }
+
+abstract class _PrivateInterface {
+  void test();
+}
+
+class PublicClassImplementsPrivateInterface implements _PrivateInterface {
+  @override
+  void test() {
+  }
+}
+
+abstract class _PrivateAbstractClass {
+  void test() {
+    print("Hello World");
+  }
+}
+
+class PublicClassExtendsPrivateClass extends _PrivateAbstractClass {
+}
