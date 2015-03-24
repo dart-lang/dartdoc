@@ -17,6 +17,11 @@ import 'package:path/path.dart' as path;
 import 'model.dart';
 import '../generator.dart';
 
+typedef String TemplateRenderer(context, {
+  bool assumeNullNonExistingProperty,
+  bool errorOnMissingProperty
+});
+
 class HtmlGenerator extends Generator {
   final String _url;
   final List<String> _htmlFiles = [];
@@ -29,22 +34,21 @@ class HtmlGenerator extends Generator {
 
   final String generatedOn;
 
-  // TODO: fix this to be a single map, just like _partialTemplates
-  static final String indexTemplate = _loadTemplate('templates/index.html');
-  static final String libraryTemplate =
+  static final TemplateRenderer indexTemplate = _loadTemplate('templates/index.html');
+  static final TemplateRenderer libraryTemplate =
       _loadTemplate('templates/library.html');
-  static final String classTemplate = _loadTemplate('templates/class.html');
-  static final String functionTemplate =
+  static final TemplateRenderer classTemplate = _loadTemplate('templates/class.html');
+  static final TemplateRenderer functionTemplate =
       _loadTemplate('templates/function.html');
-  static final String methodTemplate =
+  static final TemplateRenderer methodTemplate =
       _loadTemplate('templates/method.html');
-  static final String constructorTemplate =
+  static final TemplateRenderer constructorTemplate =
       _loadTemplate('templates/constructor.html');
 
   static final Map<String, String> _partialTemplates = {};
 
   static String _partial(String name) {
-    return _partialTemplates.putIfAbsent(name, () => _loadTemplate('templates/_$name.html'));
+    return _partialTemplates.putIfAbsent(name, () => _loadPartial('templates/_$name.html'));
   }
 
   HtmlGenerator(this._url)
@@ -221,11 +225,13 @@ class HtmlGenerator extends Generator {
     return f;
   }
 
-  void _build(String filename, String template, Map data) {
-    String content = render(template, data,
-        partial: _partial,
+  void _build(String filename, TemplateRenderer template, Map data) {
+    String content = template(
+        data,
         assumeNullNonExistingProperty: false,
-        errorOnMissingProperty: true);
+        errorOnMissingProperty: true
+    );
+
     _writeFile(filename, content);
   }
 
@@ -234,12 +240,19 @@ class HtmlGenerator extends Generator {
     f.writeAsStringSync(content);
   }
 
-  static String _loadTemplate(String templatePath) {
+  static TemplateRenderer _loadTemplate(String templatePath) {
+    return compile(_getTemplateFile(templatePath), partial: _partial);
+  }
+
+  static String _getTemplateFile(String templatePath) {
     File script = new File(Platform.script.toFilePath());
     File tmplFile =
-        new File(path.join(script.parent.parent.path, templatePath));
-    String contents = tmplFile.readAsStringSync();
-    return contents;
+      new File(path.join(script.parent.parent.path, templatePath));
+    return tmplFile.readAsStringSync();
+  }
+
+  static String _loadPartial(String templatePath) {
+    return _getTemplateFile(templatePath);
   }
 }
 
