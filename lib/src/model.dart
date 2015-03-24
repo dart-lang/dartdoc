@@ -187,8 +187,10 @@ abstract class ModelElement {
           if (e != null && (e is ConstructorElement)) {
             var me = new ModelElement.from(
                 e.enclosingElement, new Library(e.library, package));
-            return annotationString.replaceAll(
+            if (me.href != null) {
+              return annotationString.replaceAll(
                 me.name, '<a href="${me.href}">${me.name}</a>');
+            }
           }
           return annotationString;
         }).toList(growable: false);
@@ -504,6 +506,10 @@ class Library extends ModelElement {
     return _enums;
   }
 
+  Class getClassByName(String name) {
+    return _allClasses.firstWhere((it) => it.name == name, orElse: () => null);
+  }
+
   bool get hasTypedefs => getTypedefs().isNotEmpty;
 
   List<Typedef> getTypedefs() {
@@ -606,16 +612,34 @@ class Class extends ModelElement {
       return new ElementType(f, new ModelElement.from(f.element, lib));
     }).toList(growable: false);
 
-    if (hasSupertype) {
+    if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
       var lib = new Library(_cls.supertype.element.library, p);
       _supertype = new ElementType(
-          _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
+        _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
+
+      /* Private Superclasses should not be shown. */
+      var exclude = _supertype.element.element.isPrivate;
+
+      /* Hide dart2js related stuff */
+      exclude = exclude || (
+        lib.name.startsWith("dart:") && _supertype.name == "NativeFieldWrapperClass2"
+      );
+
+      if (exclude) {
+        _supertype = null;
+      }
     }
 
     _interfaces = _cls.interfaces.map((f) {
       var lib = new Library(f.element.library, p);
-      return new ElementType(f, new ModelElement.from(f.element, lib));
-    }).toList(growable: false);
+      var t = new ElementType(f, new ModelElement.from(f.element, lib));
+      var exclude = t.element.element.isPrivate;
+      if (exclude) {
+        return null;
+      } else {
+        return t;
+      }
+    }).where((it) => it != null).toList(growable: false);
   }
 
   String get nameWithGenerics {
@@ -628,7 +652,7 @@ class Class extends ModelElement {
   bool get isAbstract => _cls.isAbstract;
 
   bool get hasSupertype =>
-      _cls.supertype != null && _cls.supertype.element.supertype != null;
+      supertype != null;
 
   ElementType get supertype => _supertype;
 
@@ -878,8 +902,14 @@ class ModelFunction extends ModelElement {
 
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
+  String get fileName => "${name}.html";
+
+  String get ownerHref => "${library.href}#${htmlId}";
+
+  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
+
   @override
-  String get _href => '${library.fileName}/$name.html';
+  String get _href => '${library.fileName}/${fileName}';
 }
 
 class Typedef extends ModelElement {
@@ -956,6 +986,11 @@ class Constructor extends ModelElement {
 
   bool get isConst => _constructor.isConst;
 
+  String get ownerHref =>
+    "${library.getClassByName(_constructor.enclosingElement.name).href}#${htmlId}";
+
+  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
+
   @override
   String get name {
     String constructorName = element.name;
@@ -995,9 +1030,16 @@ class Method extends ModelElement {
 
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
+  String get fileName => "${name}.html";
+
+  String get ownerHref =>
+    "${library.getClassByName(_method.enclosingElement.name).href}#${htmlId}";
+
+  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
+
   @override
   String get _href =>
-      '${library.fileName}/${_method.enclosingElement.name}/$name.html';
+      '${library.fileName}/${_method.enclosingElement.name}/${fileName}';
 }
 
 class Operator extends Method {
@@ -1009,16 +1051,39 @@ class Operator extends Method {
   String get typeName => 'operator';
 
   @override
-  String get _href {
-    var h = super._href;
-    var n = name;
-    if (n == "[]" || n == "[]=") {
-      var isSetter = n.endsWith("=");
-      return (h.split("/")..removeLast()).join("/") + "/:brackets${isSetter ? '=' : ''}.html";
+  String get fileName => "${_rewriteOperatorName(name)}.html";
+
+  /// Rewrite Operator Names to be friendly.
+  static String _rewriteOperatorName(String op) {
+    if (friendlyNames.containsKey(op)) {
+      return ":${friendlyNames[op]}";
     } else {
-      return h;
+      return op;
     }
   }
+
+  static const Map<String, String> friendlyNames = const {
+    "[]": "get",
+    "[]=": "put",
+    "~": "bitwise_negate",
+    "==": "equals",
+    "-": "minus",
+    "+": "plus",
+    "*": "multiply",
+    "/": "divide",
+    "<": "less",
+    ">": "greater",
+    ">=": "greater_equal",
+    "<=": "less_equal",
+    "<<": "shift_left",
+    ">>": "shift_right",
+    "^": "bitwise_exclusive_or",
+    "unary-": "unary_minus",
+    "|": "bitwise_or",
+    "&": "bitwise_and",
+    "~/": "truncate_divide",
+    "%": "modulo"
+  };
 }
 
 /// Getters and setters.
@@ -1032,7 +1097,7 @@ class Accessor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.fileName}/${_accessor.enclosingElement.name}/$name.html';
+      '${library.fileName}/${_accessor.enclosingElement.name}.html#${htmlId}';
 }
 
 /// Top-level variables. But also picks up getters and setters?
@@ -1103,8 +1168,16 @@ class Parameter extends ModelElement {
   String toString() => element.name;
 
   @override
-  String get _href =>
-      '${library.fileName}/${_parameter.enclosingElement.name}.html';
+  String get _href {
+    var p = _parameter.enclosingElement;
+
+    if (p is FunctionElement) {
+      return '${library.fileName}/${p.name}.html';
+    } else {
+      return '${library.fileName}/${p.enclosingElement.name}/' +
+        '${Operator._rewriteOperatorName(p.name)}.html';
+    }
+  }
 }
 
 class TypeParameter extends ModelElement {

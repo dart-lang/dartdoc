@@ -53,7 +53,7 @@
             {{#class.superChain}}
             <li>{{{linkedName}}}</li>
             {{/class.superChain}}
-            <li>Object</li>
+            <li>{{{linkedObjectType}}}</li>
         </ul>
     </section>
     {{/class.hasSupertype}}
@@ -229,7 +229,7 @@
         <h2 class="text-display-1">Instance Methods</h2>
         <dl id="{{htmlId}}" class="withreturntypes">
             {{#class.instanceMethods}}
-            <dt>
+            <dt id="{{htmlId}}">
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
                     <span class="name-and-params">
@@ -263,7 +263,7 @@
         <h2 class="text-display-1">Operators</h2>
         <dl class="withreturntypes">
             {{#class.operators}}
-            <dt>
+            <dt id="{{htmlId}}">
                 <code>
                     <span class="returntype">{{{ linkedReturnType }}}</span>
                     <span class="name-and-params">

@@ -75,17 +75,13 @@ List<String> findFilesToDocumentInPackage(String packageDir) {
     if (path.isWithin(packageLibDir, lib) &&
         !path.isWithin(packageLibSrcDir, lib)) {
       // Only add the file if it does not contain 'part of'
-      // TODO(janicejl): Remove when Issue(12406) is resolved.
       var contents = new File(lib).readAsStringSync();
 
       if (contents.contains(new RegExp('\npart of ')) ||
-          contents.startsWith(new RegExp('part of '))) {
-//      logger.warning('Skipping part "$lib". '
-//          'Part files should be in "lib/src".');
+        contents.startsWith(new RegExp('part of '))) {
       } else {
         var uri = new Uri.file(path.normalize(path.absolute(lib)));
         libraries.add(uri.path);
-//      logger.info('Added to libraries: $lib');
       }
     }
   });

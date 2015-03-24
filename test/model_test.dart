@@ -126,8 +126,8 @@ void main() {
       expect(Dog.name, equals('Dog'));
     });
 
-    test('no of classes', () {
-      expect(classes, hasLength(8));
+    test('correctly finds classes', () {
+      expect(classes, hasLength(10));
     });
 
     test('docs ', () {
@@ -325,8 +325,8 @@ void main() {
       constant = library.getConstants()[0];
     });
 
-    test('found one constant', () {
-      expect(library.getConstants(), hasLength(1));
+    test('found two constants', () {
+      expect(library.getConstants(), hasLength(2));
     });
 
     test('is constant', () {

@@ -102,7 +102,7 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner
     };
 
-    _writeFile('index.html', indexTemplate, data);
+    _build('index.html', indexTemplate, data);
   }
 
   void generateLibrary(Package package, Library lib) {
@@ -116,8 +116,24 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner
     };
 
-    _writeFile(path.join(lib.fileName, 'index.html'), libraryTemplate, data);
+    _build(path.join(lib.fileName, 'index.html'), libraryTemplate, data);
   }
+
+  Class get objectType {
+    if (_objectType != null) {
+      return _objectType;
+    }
+
+    Library dc = package.libraries.firstWhere((it) => it.name == "dart:core", orElse: () => null);
+
+    if (dc == null) {
+      return _objectType = null;
+    }
+
+    return _objectType = dc.getClassByName("Object");
+  }
+
+  Class _objectType;
 
   void generateClass(Package package, Library lib, Class clazz) {
     Map data = {
@@ -126,10 +142,11 @@ class HtmlGenerator extends Generator {
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'library': lib,
-      'class': clazz
+      'class': clazz,
+      'linkedObjectType': objectType == null ? 'Object' : objectType.linkedName
     };
 
-    _writeFile(path.joinAll(clazz.href.split('/')), classTemplate, data);
+    _build(path.joinAll(clazz.href.split('/')), classTemplate, data);
   }
 
   void generateConstructor(Package package, Library lib, Class clazz,
@@ -144,7 +161,7 @@ class HtmlGenerator extends Generator {
         'constructor': constructor
     };
 
-    _writeFile(path.joinAll(constructor.href.split('/')), constructorTemplate, data);
+    _build(path.joinAll(constructor.href.split('/')), constructorTemplate, data);
   }
 
   void generateEnum(Package package, Library lib, Class eNum) {
@@ -157,7 +174,7 @@ class HtmlGenerator extends Generator {
       'class': eNum
     };
 
-    _writeFile(path.joinAll(eNum.href.split('/')), classTemplate, data);
+    _build(path.joinAll(eNum.href.split('/')), classTemplate, data);
   }
 
   void generateFunction(Package package, Library lib, ModelFunction function) {
@@ -170,7 +187,7 @@ class HtmlGenerator extends Generator {
       'function': function
     };
 
-    _writeFile(path.joinAll(function.href.split('/')), functionTemplate, data);
+    _build(path.joinAll(function.href.split('/')), functionTemplate, data);
   }
 
   void generateMethod(
@@ -185,7 +202,7 @@ class HtmlGenerator extends Generator {
       'method': method
     };
 
-    _writeFile(path.joinAll(method.href.split('/')), methodTemplate, data);
+    _build(path.joinAll(method.href.split('/')), methodTemplate, data);
   }
 
   void _copyResources() {
@@ -204,12 +221,16 @@ class HtmlGenerator extends Generator {
     return f;
   }
 
-  void _writeFile(String filename, String template, Map data) {
-    File f = _createOutputFile(filename);
+  void _build(String filename, String template, Map data) {
     String content = render(template, data,
         partial: _partial,
         assumeNullNonExistingProperty: false,
         errorOnMissingProperty: true);
+    _writeFile(filename, content);
+  }
+
+  void _writeFile(String filename, String content) {
+    File f = _createOutputFile(filename);
     f.writeAsStringSync(content);
   }
 
@@ -220,7 +241,6 @@ class HtmlGenerator extends Generator {
     String contents = tmplFile.readAsStringSync();
     return contents;
   }
-
 }
 
 // TODO: parse the custom dartdoc formatting brackets
