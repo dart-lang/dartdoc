@@ -110,13 +110,14 @@ void main() {
 
   group('Class', () {
     List<Class> classes;
-    Class Apple, B, Cat, Dog;
+    Class Apple, B, Cat, Dog, F;
     setUp(() {
       classes = library.getClasses();
       Apple = classes[0];
       B = classes[1];
       Cat = classes[2];
       Dog = classes[3];
+      F = classes.firstWhere((c) => c.name == 'F');
     });
 
     test('we got the classes we expect', () {
@@ -127,7 +128,7 @@ void main() {
     });
 
     test('correctly finds classes', () {
-      expect(classes, hasLength(10));
+      expect(classes, hasLength(11));
     });
 
     test('docs ', () {
@@ -150,6 +151,10 @@ void main() {
 
     test('mixins', () {
       expect(Apple.mixins, hasLength(0));
+    });
+
+    test('mixins not private', () {
+      expect(F.mixins, hasLength(0));
     });
 
     test('interfaces', () {
@@ -224,7 +229,8 @@ void main() {
     });
 
     test('has correct source code', () {
-      expect(f2.source, equals('int function1(String s, bool b, lastParam) => 5;'));
+      expect(f2.source,
+          equals('int function1(String s, bool b, lastParam) => 5;'));
     });
   });
 

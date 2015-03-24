@@ -61,7 +61,7 @@ abstract class Cat {
 }
 
 /// implements [Cat], [E]
-class Dog implements Cat, E {
+class Dog implements Cat, E  {
 
   String name;
 
@@ -79,6 +79,10 @@ class Dog implements Cat, E {
 }
 
 abstract class E {
+
+}
+
+class F extends Dog  with _PrivateAbstractClass {
 
 }
 
