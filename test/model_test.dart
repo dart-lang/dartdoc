@@ -126,8 +126,8 @@ void main() {
       expect(Dog.name, equals('Dog'));
     });
 
-    test('no of classes', () {
-      expect(classes, hasLength(8));
+    test('correctly finds classes', () {
+      expect(classes, hasLength(10));
     });
 
     test('docs ', () {
