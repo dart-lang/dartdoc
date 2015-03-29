@@ -1,0 +1,55 @@
+{{>head}}
+<title>{{property.name}} {{property.typeName}} - {{ library.name }} library - Dart API</title>
+
+<!-- required because all the links are pseudo-absolute -->
+<base href="..">
+
+{{>styles_and_scripts}}
+
+<meta name="description" content="API docs for the {{property.name}} property from the {{ library.name }} library, for the Dart programming language.">
+
+</head>
+
+<body>
+
+<header class="container-fluid" id="title">
+  <!-- TODO: align this -->
+  <div class="container">
+    <ul class="breadcrumbs gt-separated">
+      <li><a href="{{package.href}}">{{package.name}} package</a></li>
+      <li><a href="{{library.href}}">{{library.name}} library</a></li>
+    </ul>
+    <h1 class="title">
+        {{ property.name }}
+      <span class="type">property</span>
+    </h1>
+  </div>
+</header>
+
+<div class="container">
+
+  <section class="multi-line-signature">
+    <code>
+        {{#property}}
+          <span class="returntype">{{{ linkedReturnType }}}</span>
+          <span class="name">{{{ linkedOwner }}}</span>
+        {{/property}}
+    </code>
+  </section>
+
+  <div>
+    <span class="{{#property.hasGetter}}has-it{{/property.hasGetter}} getter">read</span>
+    <span class="{{#property.hasSetter}}has-it{{/property.hasSetter}} setter">write</span>
+  </div>
+
+  <section class="desc markdown">
+
+      {{#markdown}}
+          {{{ property.documentation }}}
+      {{/markdown}}
+
+  </section>
+
+</div>
+
+{{>footer}}

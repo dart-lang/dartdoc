@@ -41,6 +41,14 @@ class HtmlGenerator extends Generator {
       _loadTemplate('templates/method.html');
   static final String constructorTemplate =
       _loadTemplate('templates/constructor.html');
+  static final String propertyTemplate =
+      _loadTemplate('templates/property.html');
+  static final String constantTemplate =
+      _loadTemplate('templates/constant.html');
+  static final String topLevelConstantTemplate =
+    _loadTemplate('templates/top_level_constant.html');
+  static final String topLevelPropertyTemplate =
+      _loadTemplate('templates/top_level_property.html');
 
   static final Map<String, String> _partialTemplates = {};
 
@@ -57,7 +65,7 @@ class HtmlGenerator extends Generator {
     if (!_out.existsSync()) _out.createSync();
     generatePackage();
     _copyResources();
-    package.libraries.forEach((lib) {
+    package.libraries.forEach((Library lib) {
       generateLibrary(package, lib);
 
       lib.getClasses().forEach((Class clazz) {
@@ -65,6 +73,18 @@ class HtmlGenerator extends Generator {
 
         clazz.constructors.forEach((constructor) {
           generateConstructor(package, lib, clazz, constructor);
+        });
+
+        clazz.constants.forEach((constant) {
+          generateConstant(package, lib, clazz, constant);
+        });
+
+        clazz.staticProperties.forEach((property) {
+          generateProperty(package, lib, clazz, property);
+        });
+
+        clazz.instanceProperties.forEach((property) {
+          generateProperty(package, lib, clazz, property);
         });
 
         clazz.instanceMethods.forEach((method) {
@@ -82,6 +102,14 @@ class HtmlGenerator extends Generator {
 
       lib.getEnums().forEach((eNum) {
         generateEnum(package, lib, eNum);
+      });
+
+      lib.getConstants().forEach((constant) {
+        generateTopLevelConstant(package, lib, constant);
+      });
+
+      lib.getProperties().forEach((property) {
+        generateTopLevelProperty(package, lib, property);
       });
 
       lib.getFunctions().forEach((function) {
@@ -204,6 +232,64 @@ class HtmlGenerator extends Generator {
     };
 
     _build(path.joinAll(method.href.split('/')), methodTemplate, data);
+  }
+
+  void generateConstant(
+    Package package, Library lib, Class clazz, Field property) {
+    Map data = {
+      'package': package,
+      'generatedOn': generatedOn,
+      'markdown': renderMarkdown,
+      'oneLiner': oneLiner,
+      'library': lib,
+      'class': clazz,
+      'property': property
+    };
+
+    _build(path.joinAll(property.href.split('/')), constantTemplate, data);
+  }
+
+  void generateProperty(
+    Package package, Library lib, Class clazz, Field property) {
+    Map data = {
+      'package': package,
+      'generatedOn': generatedOn,
+      'markdown': renderMarkdown,
+      'oneLiner': oneLiner,
+      'library': lib,
+      'class': clazz,
+      'property': property
+    };
+
+    _build(path.joinAll(property.href.split('/')), propertyTemplate, data);
+  }
+
+  void generateTopLevelProperty(
+    Package package, Library lib, TopLevelVariable property) {
+    Map data = {
+      'package': package,
+      'generatedOn': generatedOn,
+      'markdown': renderMarkdown,
+      'oneLiner': oneLiner,
+      'library': lib,
+      'property': property
+    };
+
+    _build(path.joinAll(property.href.split('/')), topLevelPropertyTemplate, data);
+  }
+
+  void generateTopLevelConstant(
+    Package package, Library lib, TopLevelVariable property) {
+    Map data = {
+      'package': package,
+      'generatedOn': generatedOn,
+      'markdown': renderMarkdown,
+      'oneLiner': oneLiner,
+      'library': lib,
+      'property': property
+    };
+
+    _build(path.joinAll(property.href.split('/')), topLevelConstantTemplate, data);
   }
 
   void _copyResources() {
