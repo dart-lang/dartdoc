@@ -11,4 +11,3 @@ packages
 *.dart.js
 *.js.deps
 *.js.map
-pubspec.lock
