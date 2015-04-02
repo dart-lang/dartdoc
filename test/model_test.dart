@@ -64,7 +64,7 @@ void main() {
     });
 
     test('sdk description', () {
-      expect(p2.description, 'Welcome to the Dart API reference documentation.');
+      expect(true, p2.description.startsWith('Welcome to the Dart API reference documentation.'));
     });
   });
 
