@@ -38,6 +38,10 @@ void main(List<String> arguments) {
   }
 
   var readme = results['readme'];
+  if (readme != null && !(new File(readme).existsSync())) {
+    print("Warning: invalid path, unable to locate the SDK description file at $readme.");
+    exit(1);
+  }
 
   List<String> excludeLibraries =
       results['exclude'] == null ? [] : results['exclude'].split(',');
@@ -70,6 +74,6 @@ ArgParser _createArgsParser() {
       ' '
       'Use "--dart-sdk" option to specify path to sdk');
   parser.addOption('readme',
-      help: 'path to the package description file, including file name');
+      help: 'path to the SDK description file');
   return parser;
 }
