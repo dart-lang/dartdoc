@@ -46,13 +46,13 @@ class HtmlGenerator extends Generator {
       _loadTemplate('templates/method.html');
   static final TemplateRenderer constructorTemplate =
       _loadTemplate('templates/constructor.html');
-  static final String propertyTemplate =
+  static final TemplateRenderer propertyTemplate =
       _loadTemplate('templates/property.html');
-  static final String constantTemplate =
+  static final TemplateRenderer constantTemplate =
       _loadTemplate('templates/constant.html');
-  static final String topLevelConstantTemplate =
+  static final TemplateRenderer topLevelConstantTemplate =
     _loadTemplate('templates/top_level_constant.html');
-  static final String topLevelPropertyTemplate =
+  static final TemplateRenderer topLevelPropertyTemplate =
       _loadTemplate('templates/top_level_property.html');
 
   static final Map<String, String> _partialTemplates = {};

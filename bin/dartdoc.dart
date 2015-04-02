@@ -37,12 +37,18 @@ void main(List<String> arguments) {
     sdkDocs = true;
   }
 
+  var readme = results['readme'];
+  if (readme != null && !(new File(readme).existsSync())) {
+    print("Warning: invalid path, unable to locate the SDK description file at $readme.");
+    exit(1);
+  }
+
   List<String> excludeLibraries =
       results['exclude'] == null ? [] : results['exclude'].split(',');
   String url = results['url'];
   var currentDir = Directory.current;
   var generators = initGenerators(url);
-  new DartDoc(currentDir, excludeLibraries, sdkDir, generators, sdkDocs)
+  new DartDoc(currentDir, excludeLibraries, sdkDir, generators, sdkDocs, readme)
     ..generateDocs();
 }
 
@@ -54,7 +60,6 @@ void _printUsageAndExit(ArgParser parser) {
 }
 
 ArgParser _createArgsParser() {
-  // TODO: more options to be added
   var parser = new ArgParser();
   parser.addOption('exclude',
       help: 'a comma-separated list of library names to ignore');
@@ -68,5 +73,7 @@ ArgParser _createArgsParser() {
   parser.addFlag('sdk-docs', help: 'generate docs for the Dart SDK.'
       ' '
       'Use "--dart-sdk" option to specify path to sdk');
+  parser.addOption('readme',
+      help: 'path to the SDK description file');
   return parser;
 }
