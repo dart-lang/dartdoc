@@ -391,6 +391,7 @@ class Package {
   final List<Library> _libraries = [];
   bool _isSdk;
   String _sdkVersion;
+  final String _readmeLoc;
 
   String get name =>
       _isSdk ? 'Dart API Reference' : getPackageName(_rootDirPath);
@@ -400,12 +401,12 @@ class Package {
   String get sdkVersion => _sdkVersion;
 
   String get description =>
-      _isSdk ? 'Dart API Libraries' : getPackageDescription(_rootDirPath);
+     getPackageDescription(_isSdk, _readmeLoc, _rootDirPath);
 
   List<Library> get libraries => _libraries;
 
   Package(Iterable<LibraryElement> libraryElements, this._rootDirPath,
-      [this._sdkVersion, this._isSdk = false]) {
+      [this._sdkVersion, this._isSdk = false, this._readmeLoc]) {
     libraryElements.forEach((element) {
       //   print('adding lib $element to package $name');
       _libraries.add(new Library(element, this));

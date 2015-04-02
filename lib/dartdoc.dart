@@ -44,12 +44,13 @@ class DartDoc {
   final bool _sdkDocs;
   final Set<LibraryElement> libraries = new Set();
   final List<Generator> _generators;
+  final String readmeLoc;
 
   Stopwatch stopwatch;
   Directory out;
 
   DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators,
-      [this._sdkDocs = false]);
+      [this._sdkDocs = false, this.readmeLoc]);
 
   /// Generate the documentation
   void generateDocs() {
@@ -72,8 +73,9 @@ class DartDoc {
     if (!out.existsSync()) {
       out.createSync(recursive: true);
     }
+
     Package package =
-        new Package(libraries, _rootDir.path, _getSdkVersion(), _sdkDocs);
+        new Package(libraries, _rootDir.path, _getSdkVersion(), _sdkDocs, readmeLoc);
     _generators.forEach((generator) => generator.generate(package, out));
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
