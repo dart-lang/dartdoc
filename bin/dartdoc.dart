@@ -70,6 +70,6 @@ ArgParser _createArgsParser() {
       ' '
       'Use "--dart-sdk" option to specify path to sdk');
   parser.addOption('readme',
-      help: 'the path to the package description file including file name');
+      help: 'path to the package description file, including file name');
   return parser;
 }
