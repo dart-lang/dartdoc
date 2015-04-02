@@ -5,6 +5,7 @@ packages
 .pub
 .idea
 .settings/
+.DS_Store
 
 # Or the files created by dart2js.
 *.dart.js

@@ -16,7 +16,7 @@ import 'package:path/path.dart' as path;
 /// Excludes files and directories beginning with `.`
 ///
 /// The returned paths are guaranteed to begin with [dir].
-List<String> _listDir(String dir,
+List<String> listDir(String dir,
     {bool recursive: false, List<FileSystemEntity> listDir(Directory dir)}) {
   if (listDir == null) listDir = (Directory dir) => dir.listSync();
 
@@ -61,7 +61,7 @@ List<String> findFilesToDocumentInPackage(String packageDir) {
   // To avoid analyzing package files twice, only files with paths not
   // containing '/packages' will be added. The only exception is if the file
   // to analyze already has a '/package' in its path.
-  var files = _listDir(packageDir, recursive: true, listDir: _packageDirList)
+  var files = listDir(packageDir, recursive: true, listDir: _packageDirList)
       .where((f) => f.endsWith('.dart') &&
           (!f.contains('${path.separator}packages') ||
               packageDir.contains('${path.separator}packages')))
