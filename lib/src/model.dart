@@ -161,6 +161,7 @@ abstract class ModelElement {
       } on StateError catch (error) {
         // do nothing
       }
+
       if (refElement == null) {
         return null;
       }
@@ -399,8 +400,23 @@ class Package {
 
   String get sdkVersion => _sdkVersion;
 
-  String get description =>
-      _isSdk ? 'Dart API Libraries' : getPackageDescription(_rootDirPath);
+  String get description {
+    if (!_isSdk) {
+      return getPackageDescription(_rootDirPath);
+    }
+
+    var desc = SDK_INTRO;
+    var regex = new RegExp(r"\[(dart\:.+)\]");
+
+    regex.allMatches(desc).map((it) => it[1]).toSet().forEach((name) {
+      var lib = libraries.firstWhere((it) => it.name == name, orElse: () => null);
+      if (lib != null) {
+        desc = desc.replaceAll("[${name}]", "[${name}](${lib.href})");
+      }
+    });
+
+    return desc;
+  }
 
   List<Library> get libraries => _libraries;
 
