@@ -1,22 +1,4 @@
 {{>head}}
-    <title>{{ package.name }} - Dart API docs</title>
-
-    {{>styles_and_scripts}}
-
-    <meta name="description" content="{{ package.name }} API docs, for the Dart programming language.">
-</head>
-
-<body>
-
-  <header class="container-fluid" id="title">
-    <div class="container">
-      <h1 class="title">
-        {{ package.name }} <span class="type">dartdocs</span>
-      </h1>
-    </div>
-  </header>
-
-  <div class="container">
 
       <section class="desc markdown">
 
@@ -39,7 +21,5 @@
           {{/package.libraries}}
         </dl>
       </section>
-
-  </div>
 
 {{>footer}}

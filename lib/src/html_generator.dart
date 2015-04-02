@@ -17,6 +17,7 @@ import 'package:path/path.dart' as path;
 import 'model.dart';
 import 'html_utils.dart';
 import '../generator.dart';
+import 'io_utils.dart';
 
 typedef String TemplateRenderer(context, {
   bool assumeNullNonExistingProperty,
@@ -132,7 +133,12 @@ class HtmlGenerator extends Generator {
       'package': package,
       'generatedOn': generatedOn,
       'markdown': renderMarkdown,
-      'oneLiner': oneLiner
+      'oneLiner': oneLiner,
+      'title': '${package.name} - Dart API docs',
+      'layoutTitle': '${package.name} package',
+      'metaDescription': '${package.name} API docs, for the Dart programming language.',
+      'navLinks': [package],
+      'htmlBase': '.'
     };
 
     _build('index.html', indexTemplate, data);
@@ -146,7 +152,12 @@ class HtmlGenerator extends Generator {
       'library': lib,
       'generatedOn': generatedOn,
       'markdown': renderMarkdown,
-      'oneLiner': oneLiner
+      'oneLiner': oneLiner,
+      'title': '${lib.name} library - Dart API',
+      'htmlBase': '..',
+      'metaDescription': '${lib.name} library API docs, for the Dart programming language.',
+      'navLinks': [package],
+      'layoutTitle': '${lib.name} library'
     };
 
     _build(path.join(lib.fileName, 'index.html'), libraryTemplate, data);
@@ -176,7 +187,12 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner,
       'library': lib,
       'class': clazz,
-      'linkedObjectType': objectType == null ? 'Object' : objectType.linkedName
+      'linkedObjectType': objectType == null ? 'Object' : objectType.linkedName,
+      'title': '${clazz.name} ${clazz.kind} - ${lib.name} library - Dart API',
+      'metaDescription': 'API docs for the ${clazz.name} ${clazz.kind} from the ${lib.name} library, for the Dart programming language.',
+      'layoutTitle': '${clazz.nameWithGenerics} ${clazz.kind}',
+      'navLinks': [package, lib],
+      'htmlBase': '..'
     };
 
     _build(path.joinAll(clazz.href.split('/')), classTemplate, data);
@@ -217,7 +233,12 @@ class HtmlGenerator extends Generator {
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'library': lib,
-      'function': function
+      'function': function,
+      'title': '${function.name} function - ${lib.name} library - Dart API',
+      'layoutTitle': '${function.name} function',
+      'metaDescription': 'API docs for the ${function.name} function from the ${lib.name} library, for the Dart programming language.',
+      'navLinks': [package, lib],
+      'htmlBase': '..'
     };
 
     _build(path.joinAll(function.href.split('/')), functionTemplate, data);
@@ -232,7 +253,12 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner,
       'library': lib,
       'class': clazz,
-      'method': method
+      'method': method,
+      'title': '${method.name} method - ${clazz.name} class - ${lib.name} library - Dart API',
+      'layoutTitle': '${method.name} method',
+      'metaDescription': 'API docs for the ${method.name} method from the ${clazz.name} class, for the Dart programming language.',
+      'navLinks': [package, lib, clazz],
+      'htmlBase': '../..'
     };
 
     _build(path.joinAll(method.href.split('/')), methodTemplate, data);
@@ -247,7 +273,12 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner,
       'library': lib,
       'class': clazz,
-      'property': property
+      'property': property,
+      'title': '${property.name} constant - ${clazz.name} class - ${lib.name} library - Dart API',
+      'layoutTitle': '${property.name} constant',
+      'metaDescription': 'API docs for the ${property.name} constant from the ${clazz.name} class, for the Dart programming language.',
+      'navLinks': [package, lib, clazz],
+      'htmlBase': '../..'
     };
 
     _build(path.joinAll(property.href.split('/')), constantTemplate, data);
@@ -262,7 +293,12 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner,
       'library': lib,
       'class': clazz,
-      'property': property
+      'property': property,
+      'title': '${property.name} property - ${clazz.name} class - ${lib.name} library - Dart API',
+      'layoutTitle': '${property.name} property',
+      'metaDescription': 'API docs for the ${property.name} property from the ${clazz.name} class, for the Dart programming language.',
+      'navLinks': [package, lib, clazz],
+      'htmlBase': '../..'
     };
 
     _build(path.joinAll(property.href.split('/')), propertyTemplate, data);
@@ -276,7 +312,12 @@ class HtmlGenerator extends Generator {
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'library': lib,
-      'property': property
+      'property': property,
+      'title': '${property.name} property - ${lib.name} library - Dart API',
+      'layoutTitle': '${property.name} property',
+      'metaDescription': 'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
+      'navLinks': [package, lib],
+      'htmlBase': '../..'
     };
 
     _build(path.joinAll(property.href.split('/')), topLevelPropertyTemplate, data);
@@ -290,7 +331,12 @@ class HtmlGenerator extends Generator {
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'library': lib,
-      'property': property
+      'property': property,
+      'title': '${property.name} property - ${lib.name} library - Dart API',
+      'layoutTitle': '${property.name} property',
+      'metaDescription': 'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
+      'navLinks': [package, lib],
+      'htmlBase': '../..'
     };
 
     _build(path.joinAll(property.href.split('/')), topLevelConstantTemplate, data);
@@ -298,10 +344,19 @@ class HtmlGenerator extends Generator {
 
   void _copyResources() {
     File script = new File(Platform.script.toFilePath());
-    ['styles.css', 'prettify.css', 'material-design-typography.css', 'prettify.js'].forEach((f) {
-      new File(path.join(script.parent.parent.path, 'templates', f))
-          .copySync(path.join(out.path, f));
-    });
+    var sourcePath = path.join(script.parent.parent.path, 'resources');
+    if (!new Directory(sourcePath).existsSync()) {
+      throw new StateError('resources/ directory not found');
+    }
+    for (var fileName in listDir(sourcePath, recursive: true)) {
+      var destFileName = fileName.substring(sourcePath.length+1);
+      if (FileSystemEntity.isDirectorySync(fileName)) {
+        new Directory(path.join(out.path, destFileName)).createSync(recursive: true);
+      } else {
+        var destPath = path.join(out.path, destFileName);
+        new File(fileName).copySync(destPath);
+      }
+    }
   }
 
   File _createOutputFile(String filename) {
