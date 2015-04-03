@@ -36,7 +36,7 @@ void testDartdoc(GrinderContext context) {
 }
 
 void analyze(GrinderContext context) {
-  Analyzer.analyzePaths(context,
-      ['bin/dartdoc.dart', 'lib/dartdoc.dart', 'test/all.dart'],
+  Analyzer.analyzePaths(
+      context, ['bin/dartdoc.dart', 'lib/dartdoc.dart', 'test/all.dart'],
       fatalWarnings: true);
 }

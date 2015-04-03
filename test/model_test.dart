@@ -35,8 +35,10 @@ void main() {
 
     setUp(() {
       p = new Package([e], Directory.current.path);
-      var readmeLoc = '${Directory.current.path}/test/fake_package/test_readme.md';
-      p2 = new Package([e], Directory.current.path, '1.9.0-dev.3.0', true, readmeLoc);
+      var readmeLoc =
+          '${Directory.current.path}/test/fake_package/test_readme.md';
+      p2 = new Package(
+          [e], Directory.current.path, '1.9.0-dev.3.0', true, readmeLoc);
     });
 
     test('name', () {
@@ -64,7 +66,8 @@ void main() {
     });
 
     test('sdk description', () {
-      expect(true, p2.description.startsWith('Welcome to the Dart API reference documentation.'));
+      expect(true, p2.description
+          .startsWith('Welcome to the Dart API reference documentation.'));
     });
   });
 

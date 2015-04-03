@@ -31,13 +31,12 @@ class Apple {
 
   void printMsg(String msg, [bool linebreak]) {}
 
-  bool isGreaterThan(int number, {int check:5}) {
+  bool isGreaterThan(int number, {int check: 5}) {
     return number > check;
   }
 }
 /// Extends class [Apple]
 class B extends Apple with Cat {
-
   List<String> list;
 
   bool get isImplemented => false;
@@ -56,19 +55,17 @@ class B extends Apple with Cat {
 // Do NOT add a doc comment to C. Testing blank comments.
 
 abstract class Cat {
-
   bool get isImplemented;
 }
 
 /// implements [Cat], [E]
-class Dog implements Cat, E  {
-
+class Dog implements Cat, E {
   String name;
 
   @deprecated
-    List<Apple> getClassA() {
-      return [new Apple()];
-    }
+  List<Apple> getClassA() {
+    return [new Apple()];
+  }
 
   @override
   bool get isImplemented => true;
@@ -78,33 +75,21 @@ class Dog implements Cat, E  {
   foo() async => 42;
 }
 
-abstract class E {
+abstract class E {}
 
-}
+class F extends Dog with _PrivateAbstractClass {}
 
-class F extends Dog  with _PrivateAbstractClass {
+class CatString extends StringBuffer {}
 
-}
+class MyError extends Error {}
 
-class CatString extends StringBuffer {
-
-}
-
-class MyError extends Error {
-
-}
-
-class MyException implements Exception {
-
-}
+class MyException implements Exception {}
 
 class MyErrorImplements implements Error {
   StackTrace get stackTrace => null;
 }
 
-class MyExceptionImplements implements Exception {
-
-}
+class MyExceptionImplements implements Exception {}
 
 class ForAnnotation {
   final String value;
@@ -112,9 +97,7 @@ class ForAnnotation {
 }
 
 @ForAnnotation('my value')
-class HasAnnotation {
-
-}
+class HasAnnotation {}
 
 abstract class _PrivateInterface {
   void test();
@@ -122,8 +105,7 @@ abstract class _PrivateInterface {
 
 class PublicClassImplementsPrivateInterface implements _PrivateInterface {
   @override
-  void test() {
-  }
+  void test() {}
 }
 
 abstract class _PrivateAbstractClass {
@@ -132,5 +114,4 @@ abstract class _PrivateAbstractClass {
   }
 }
 
-class PublicClassExtendsPrivateClass extends _PrivateAbstractClass {
-}
+class PublicClassExtendsPrivateClass extends _PrivateAbstractClass {}

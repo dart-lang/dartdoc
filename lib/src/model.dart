@@ -401,7 +401,7 @@ class Package {
   String get sdkVersion => _sdkVersion;
 
   String get description =>
-     getPackageDescription(_isSdk, _readmeLoc, _rootDirPath);
+      getPackageDescription(_isSdk, _readmeLoc, _rootDirPath);
 
   List<Library> get libraries => _libraries;
 
@@ -981,7 +981,7 @@ class Field extends ModelElement {
       return "${library.fileName}.html#$name";
     } else {
       throw new StateError(
-        '$name is not in a class or library, instead a ${element.enclosingElement}');
+          '$name is not in a class or library, instead a ${element.enclosingElement}');
     }
   }
 
