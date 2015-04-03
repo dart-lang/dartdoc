@@ -48,11 +48,11 @@
     <section class="summary" id="properties">
         <h2>Properties</h2>
 
-        <dl>
+        <dl class="properties">
             {{#library.properties}}
             <dt id="{{htmlId}}">
-                <span class="returntype">{{{ linkedReturnType }}}</span>
                 <span class="name"><a href="{{href}}">{{ name }}</a></span>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
             </dt>
             <dd>
                 <div>
@@ -115,10 +115,11 @@
         <dl>
             {{#library.typedefs}}
             <dt id="{{htmlId}}">
-                <span class="returntype">{{{ linkedReturnType }}}</span>
                 <span class="name-and-params">
                     <span class="name">{{ name }}</span>({{{ linkedParams }}})
                 </span>
+                &#8594;
+                <span class="returntype">{{{ linkedReturnType }}}</span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}

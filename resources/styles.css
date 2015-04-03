@@ -96,13 +96,18 @@ dd {
   color: hsl(0, 0%, 46%);
 }
 
+dl.properties dt .name {
+  float: left;
+  width: 320px
+}
+
 section.summary h2 {
   color: hsl(0, 0%, 46%);
   margin: 32px 0 32px 0;
 }
 
 dl.dl-horizontal dt {
-  width: 250px;
+  width: 320px;
   font-style: normal;
 }
 
