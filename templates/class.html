@@ -109,43 +109,6 @@
     </section>
     {{/class.hasConstants}}
 
-    {{#class.hasInstanceProperties}}
-    <section class="summary" id="instance-properties">
-        <h2>Instance Properties</h2>
-
-        <dl class="properties">
-            {{#class.instanceProperties}}
-            <dt id="{{htmlId}}">
-                <span class="name"><a href="{{href}}">{{ name }}</a></span>
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                <div>
-                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
-                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
-                </div>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
-            {{/class.instanceProperties}}
-
-            {{#class.inheritedProperties}}
-            <dt id="{{htmlId}}" class="inherited">
-                <span class="name">{{ name }}</span>
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                <div>
-                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
-                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
-                </div>
-                <div class="is-inherited">Inherited</div>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
-            {{/class.inheritedProperties}}
-        </dl>
-    </section>
-    {{/class.hasInstanceProperties}}
-
     {{#class.hasStaticProperties}}
     <section class="summary" id="static-properties">
         <h2>Static Properties</h2>
@@ -187,6 +150,43 @@
         </dl>
     </section>
     {{/class.hasStaticMethods}}
+
+    {{#class.hasInstanceProperties}}
+    <section class="summary" id="instance-properties">
+        <h2>Instance Properties</h2>
+
+        <dl class="properties">
+            {{#class.instanceProperties}}
+            <dt id="{{htmlId}}">
+                <span class="name"><a href="{{href}}">{{ name }}</a></span>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+            </dt>
+            <dd>
+                <div>
+                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
+                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
+                </div>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.instanceProperties}}
+
+            {{#class.inheritedProperties}}
+            <dt id="{{htmlId}}" class="inherited">
+                <span class="name">{{ name }}</span>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+            </dt>
+            <dd>
+                <div>
+                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
+                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
+                </div>
+                <div class="is-inherited">Inherited</div>
+                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+            </dd>
+            {{/class.inheritedProperties}}
+        </dl>
+    </section>
+    {{/class.hasInstanceProperties}}
 
     {{#class.hasMethods}}
     <section id="instance-methods-summary" class="summary">
