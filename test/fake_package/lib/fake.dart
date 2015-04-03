@@ -76,28 +76,20 @@ typedef String FakeProcesses(String input);
 typedef T GenericTypedef<T>(T input);
 
 /// Lots and lots of parameters.
-typedef int LotsAndLotsOfParameters(so,many,parameters,it,should,wrap,when,
-  converted,to,html,documentation);
+typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,
+    when, converted, to, html, documentation);
 
 /// This class is cool!
-class Cool {
-
-}
+class Cool {}
 
 /// Perfect for mix-ins.
-abstract class MixMeIn {
-
-}
+abstract class MixMeIn {}
 
 /// An interface that can be implemented.
-abstract class Interface {
-
-}
+abstract class Interface {}
 
 /// Yet another interface that can be implemented.
-abstract class AnotherInterface {
-
-}
+abstract class AnotherInterface {}
 
 /// A super class, with many powers.
 class SuperAwesomeClass {
@@ -108,8 +100,9 @@ class SuperAwesomeClass {
   /// In the super class.
   void fly(int height, Cool superCool, {String msg}) {}
 
-  SuperAwesomeClass operator -(other) { return null; }
-
+  SuperAwesomeClass operator -(other) {
+    return null;
+  }
 }
 
 /// This is a very long line spread
@@ -117,8 +110,8 @@ class SuperAwesomeClass {
 ///
 /// The rest of this is not in the first paragraph.
 @Annotation('value')
-class LongFirstLine extends SuperAwesomeClass with MixMeIn implements Interface, AnotherInterface {
-
+class LongFirstLine extends SuperAwesomeClass with MixMeIn
+    implements Interface, AnotherInterface {
   static const THING = 'yup';
   static const int ANSWER = 42;
 
@@ -186,9 +179,7 @@ class Oops implements Exception {
 }
 
 /// Also, my bad.
-class Doh extends Error {
-
-}
+class Doh extends Error {}
 
 /// ROYGBIV
 enum Color {
@@ -197,8 +188,11 @@ enum Color {
 
   /// Orange
   ORANGE,
-
-  YELLOW, GREEN, BLUE, INDIGO, VIOLET
+  YELLOW,
+  GREEN,
+  BLUE,
+  INDIGO,
+  VIOLET
 }
 
 class Foo2 {
@@ -222,7 +216,6 @@ class HasGenerics<X, Y, Z> {
 }
 
 class OtherGenericsThing<A> {
-
   HasGenerics<A, Cool, String> convert() => null;
 }
 
@@ -263,7 +256,9 @@ get dynamicGetter => 'i could be anything';
 ///
 /// Thanks for using this function!
 String topLevelFunction(int param1, bool param2, Cool coolBeans,
-                        [double optionalPositional = 0.0]) { return null; }
+    [double optionalPositional = 0.0]) {
+  return null;
+}
 
 /// A single optional positional param, no type annotation, no default value.
 
@@ -271,7 +266,7 @@ void onlyPositionalWithNoDefaultNoType([anything]) {}
 
 /// Top-level function with 1 param and 2 optional named params, 1 with a
 /// default value.
-void soIntense(anything, {bool flag: true, int value}) {  }
+void soIntense(anything, {bool flag: true, int value}) {}
 
 /// [A] comes from another library.
 void paramFromAnotherLib(Apple thing) {}

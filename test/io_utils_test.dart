@@ -17,9 +17,9 @@ void main() {
       expect(files.length, 2);
     });
 
-    test('check file name', (){
+    test('check file name', () {
       var fileName = getFileNameFor('dart:io');
-      expect(fileName,'dart_io.html');
+      expect(fileName, 'dart_io.html');
       fileName = getFileNameFor('dartdoc.generator');
       expect(fileName, 'dartdoc_generator.html');
     });

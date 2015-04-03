@@ -19,10 +19,8 @@ import 'html_utils.dart';
 import '../generator.dart';
 import 'io_utils.dart';
 
-typedef String TemplateRenderer(context, {
-  bool assumeNullNonExistingProperty,
-  bool errorOnMissingProperty
-});
+typedef String TemplateRenderer(context,
+    {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});
 
 class HtmlGenerator extends Generator {
   final String _url;
@@ -36,10 +34,12 @@ class HtmlGenerator extends Generator {
 
   final String generatedOn;
 
-  static final TemplateRenderer indexTemplate = _loadTemplate('templates/index.html');
+  static final TemplateRenderer indexTemplate =
+      _loadTemplate('templates/index.html');
   static final TemplateRenderer libraryTemplate =
       _loadTemplate('templates/library.html');
-  static final TemplateRenderer classTemplate = _loadTemplate('templates/class.html');
+  static final TemplateRenderer classTemplate =
+      _loadTemplate('templates/class.html');
   static final TemplateRenderer functionTemplate =
       _loadTemplate('templates/function.html');
   static final TemplateRenderer methodTemplate =
@@ -51,14 +51,15 @@ class HtmlGenerator extends Generator {
   static final TemplateRenderer constantTemplate =
       _loadTemplate('templates/constant.html');
   static final TemplateRenderer topLevelConstantTemplate =
-    _loadTemplate('templates/top_level_constant.html');
+      _loadTemplate('templates/top_level_constant.html');
   static final TemplateRenderer topLevelPropertyTemplate =
       _loadTemplate('templates/top_level_property.html');
 
   static final Map<String, String> _partialTemplates = {};
 
   static String _partial(String name) {
-    return _partialTemplates.putIfAbsent(name, () => _loadPartial('templates/_$name.html'));
+    return _partialTemplates.putIfAbsent(
+        name, () => _loadPartial('templates/_$name.html'));
   }
 
   HtmlGenerator(this._url)
@@ -136,7 +137,8 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner,
       'title': '${package.name} - Dart API docs',
       'layoutTitle': '${package.name} package',
-      'metaDescription': '${package.name} API docs, for the Dart programming language.',
+      'metaDescription':
+          '${package.name} API docs, for the Dart programming language.',
       'navLinks': [package],
       'htmlBase': '.'
     };
@@ -155,7 +157,8 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner,
       'title': '${lib.name} library - Dart API',
       'htmlBase': '..',
-      'metaDescription': '${lib.name} library API docs, for the Dart programming language.',
+      'metaDescription':
+          '${lib.name} library API docs, for the Dart programming language.',
       'navLinks': [package],
       'layoutTitle': '${lib.name} library'
     };
@@ -168,7 +171,8 @@ class HtmlGenerator extends Generator {
       return _objectType;
     }
 
-    Library dc = package.libraries.firstWhere((it) => it.name == "dart:core", orElse: () => null);
+    Library dc = package.libraries.firstWhere((it) => it.name == "dart:core",
+        orElse: () => null);
 
     if (dc == null) {
       return _objectType = null;
@@ -189,7 +193,8 @@ class HtmlGenerator extends Generator {
       'class': clazz,
       'linkedObjectType': objectType == null ? 'Object' : objectType.linkedName,
       'title': '${clazz.name} ${clazz.kind} - ${lib.name} library - Dart API',
-      'metaDescription': 'API docs for the ${clazz.name} ${clazz.kind} from the ${lib.name} library, for the Dart programming language.',
+      'metaDescription':
+          'API docs for the ${clazz.name} ${clazz.kind} from the ${lib.name} library, for the Dart programming language.',
       'layoutTitle': '${clazz.nameWithGenerics} ${clazz.kind}',
       'navLinks': [package, lib],
       'htmlBase': '..'
@@ -198,19 +203,20 @@ class HtmlGenerator extends Generator {
     _build(path.joinAll(clazz.href.split('/')), classTemplate, data);
   }
 
-  void generateConstructor(Package package, Library lib, Class clazz,
-                           Constructor constructor) {
+  void generateConstructor(
+      Package package, Library lib, Class clazz, Constructor constructor) {
     Map data = {
-        'package': package,
-        'generatedOn': generatedOn,
-        'markdown': renderMarkdown,
-        'oneLiner': oneLiner,
-        'library': lib,
-        'class': clazz,
-        'constructor': constructor
+      'package': package,
+      'generatedOn': generatedOn,
+      'markdown': renderMarkdown,
+      'oneLiner': oneLiner,
+      'library': lib,
+      'class': clazz,
+      'constructor': constructor
     };
 
-    _build(path.joinAll(constructor.href.split('/')), constructorTemplate, data);
+    _build(
+        path.joinAll(constructor.href.split('/')), constructorTemplate, data);
   }
 
   void generateEnum(Package package, Library lib, Class eNum) {
@@ -236,7 +242,8 @@ class HtmlGenerator extends Generator {
       'function': function,
       'title': '${function.name} function - ${lib.name} library - Dart API',
       'layoutTitle': '${function.name} function',
-      'metaDescription': 'API docs for the ${function.name} function from the ${lib.name} library, for the Dart programming language.',
+      'metaDescription':
+          'API docs for the ${function.name} function from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib],
       'htmlBase': '..'
     };
@@ -254,9 +261,11 @@ class HtmlGenerator extends Generator {
       'library': lib,
       'class': clazz,
       'method': method,
-      'title': '${method.name} method - ${clazz.name} class - ${lib.name} library - Dart API',
+      'title':
+          '${method.name} method - ${clazz.name} class - ${lib.name} library - Dart API',
       'layoutTitle': '${method.name} method',
-      'metaDescription': 'API docs for the ${method.name} method from the ${clazz.name} class, for the Dart programming language.',
+      'metaDescription':
+          'API docs for the ${method.name} method from the ${clazz.name} class, for the Dart programming language.',
       'navLinks': [package, lib, clazz],
       'htmlBase': '../..'
     };
@@ -265,7 +274,7 @@ class HtmlGenerator extends Generator {
   }
 
   void generateConstant(
-    Package package, Library lib, Class clazz, Field property) {
+      Package package, Library lib, Class clazz, Field property) {
     Map data = {
       'package': package,
       'generatedOn': generatedOn,
@@ -274,9 +283,11 @@ class HtmlGenerator extends Generator {
       'library': lib,
       'class': clazz,
       'property': property,
-      'title': '${property.name} constant - ${clazz.name} class - ${lib.name} library - Dart API',
+      'title':
+          '${property.name} constant - ${clazz.name} class - ${lib.name} library - Dart API',
       'layoutTitle': '${property.name} constant',
-      'metaDescription': 'API docs for the ${property.name} constant from the ${clazz.name} class, for the Dart programming language.',
+      'metaDescription':
+          'API docs for the ${property.name} constant from the ${clazz.name} class, for the Dart programming language.',
       'navLinks': [package, lib, clazz],
       'htmlBase': '../..'
     };
@@ -285,7 +296,7 @@ class HtmlGenerator extends Generator {
   }
 
   void generateProperty(
-    Package package, Library lib, Class clazz, Field property) {
+      Package package, Library lib, Class clazz, Field property) {
     Map data = {
       'package': package,
       'generatedOn': generatedOn,
@@ -294,9 +305,11 @@ class HtmlGenerator extends Generator {
       'library': lib,
       'class': clazz,
       'property': property,
-      'title': '${property.name} property - ${clazz.name} class - ${lib.name} library - Dart API',
+      'title':
+          '${property.name} property - ${clazz.name} class - ${lib.name} library - Dart API',
       'layoutTitle': '${property.name} property',
-      'metaDescription': 'API docs for the ${property.name} property from the ${clazz.name} class, for the Dart programming language.',
+      'metaDescription':
+          'API docs for the ${property.name} property from the ${clazz.name} class, for the Dart programming language.',
       'navLinks': [package, lib, clazz],
       'htmlBase': '../..'
     };
@@ -305,7 +318,7 @@ class HtmlGenerator extends Generator {
   }
 
   void generateTopLevelProperty(
-    Package package, Library lib, TopLevelVariable property) {
+      Package package, Library lib, TopLevelVariable property) {
     Map data = {
       'package': package,
       'generatedOn': generatedOn,
@@ -315,16 +328,18 @@ class HtmlGenerator extends Generator {
       'property': property,
       'title': '${property.name} property - ${lib.name} library - Dart API',
       'layoutTitle': '${property.name} property',
-      'metaDescription': 'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
+      'metaDescription':
+          'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib],
       'htmlBase': '../..'
     };
 
-    _build(path.joinAll(property.href.split('/')), topLevelPropertyTemplate, data);
+    _build(
+        path.joinAll(property.href.split('/')), topLevelPropertyTemplate, data);
   }
 
   void generateTopLevelConstant(
-    Package package, Library lib, TopLevelVariable property) {
+      Package package, Library lib, TopLevelVariable property) {
     Map data = {
       'package': package,
       'generatedOn': generatedOn,
@@ -334,12 +349,14 @@ class HtmlGenerator extends Generator {
       'property': property,
       'title': '${property.name} property - ${lib.name} library - Dart API',
       'layoutTitle': '${property.name} property',
-      'metaDescription': 'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
+      'metaDescription':
+          'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib],
       'htmlBase': '../..'
     };
 
-    _build(path.joinAll(property.href.split('/')), topLevelConstantTemplate, data);
+    _build(
+        path.joinAll(property.href.split('/')), topLevelConstantTemplate, data);
   }
 
   void _copyResources() {
@@ -349,9 +366,10 @@ class HtmlGenerator extends Generator {
       throw new StateError('resources/ directory not found');
     }
     for (var fileName in listDir(sourcePath, recursive: true)) {
-      var destFileName = fileName.substring(sourcePath.length+1);
+      var destFileName = fileName.substring(sourcePath.length + 1);
       if (FileSystemEntity.isDirectorySync(fileName)) {
-        new Directory(path.join(out.path, destFileName)).createSync(recursive: true);
+        new Directory(path.join(out.path, destFileName)).createSync(
+            recursive: true);
       } else {
         var destPath = path.join(out.path, destFileName);
         new File(fileName).copySync(destPath);
@@ -368,11 +386,8 @@ class HtmlGenerator extends Generator {
   }
 
   void _build(String filename, TemplateRenderer template, Map data) {
-    String content = template(
-        data,
-        assumeNullNonExistingProperty: false,
-        errorOnMissingProperty: true
-    );
+    String content = template(data,
+        assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
     _writeFile(filename, content);
   }
@@ -389,7 +404,7 @@ class HtmlGenerator extends Generator {
   static String _getTemplateFile(String templatePath) {
     File script = new File(Platform.script.toFilePath());
     File tmplFile =
-      new File(path.join(script.parent.parent.path, templatePath));
+        new File(path.join(script.parent.parent.path, templatePath));
     return tmplFile.readAsStringSync();
   }
 
@@ -428,7 +443,9 @@ String oneLiner(String text, {nestedContext}) {
   document.parseRefLinks(lines);
   var blocks = document.parseLines(lines);
 
-  while (blocks.isNotEmpty && (blocks.first is md.Element && _oneLinerSkipTags.contains(blocks.first.tag))) {
+  while (blocks.isNotEmpty &&
+      (blocks.first is md.Element &&
+          _oneLinerSkipTags.contains(blocks.first.tag))) {
     blocks.removeAt(0);
   }
 
@@ -509,9 +526,7 @@ class PlainTextRenderer implements md.NodeVisitor {
   }
 }
 
-final List<md.InlineSyntax> MARKDOWN_SYNTAXES = [
-  new InlineCodeSyntax()
-];
+final List<md.InlineSyntax> MARKDOWN_SYNTAXES = [new InlineCodeSyntax()];
 
 class InlineCodeSyntax extends md.InlineSyntax {
   InlineCodeSyntax() : super(r'\[:\s?((?:.|\n)*?)\s?:\]');

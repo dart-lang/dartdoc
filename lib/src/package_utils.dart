@@ -20,14 +20,17 @@ Map _getPubspec(String directoryName) {
   return loadYaml(contents);
 }
 
-String getPackageDescription(bool isSdk, String readmeLoc, String directoryName) {
-  if (isSdk && readmeLoc !=  null) {
+String getPackageDescription(
+    bool isSdk, String readmeLoc, String directoryName) {
+  if (isSdk && readmeLoc != null) {
     var readmeFile = new File(readmeLoc);
     if (readmeFile.existsSync()) return readmeFile.readAsStringSync();
   }
   var dir = new Directory(directoryName);
-  var readmeFile = dir.listSync().firstWhere((FileSystemEntity file) =>
-      path.basename(file.path).toLowerCase().startsWith("readme"), orElse: () => null);
+  var readmeFile = dir.listSync().firstWhere((FileSystemEntity file) => path
+      .basename(file.path)
+      .toLowerCase()
+      .startsWith("readme"), orElse: () => null);
   if (readmeFile != null && readmeFile.existsSync()) {
     // TODO(keertip): cleanup the contents
     return readmeFile.readAsStringSync();

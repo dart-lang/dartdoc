@@ -30,9 +30,7 @@ const String VERSION = '0.0.1';
 
 /// Initialize and setup the generators
 List<Generator> initGenerators(String url) {
-  return [
-    new HtmlGenerator(url)
-  ];
+  return [new HtmlGenerator(url)];
 }
 
 /// Generates Dart documentation for all public Dart libraries in the given
@@ -64,7 +62,7 @@ class DartDoc {
     _excludes.forEach(
         (pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
     libs
-        ..removeWhere(
+      ..removeWhere(
           (LibraryElement library) => _excludes.contains(library.name));
     libraries.addAll(libs);
 
@@ -74,8 +72,8 @@ class DartDoc {
       out.createSync(recursive: true);
     }
 
-    Package package =
-        new Package(libraries, _rootDir.path, _getSdkVersion(), _sdkDocs, readmeLoc);
+    Package package = new Package(
+        libraries, _rootDir.path, _getSdkVersion(), _sdkDocs, readmeLoc);
     _generators.forEach((generator) => generator.generate(package, out));
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
@@ -114,7 +112,7 @@ class DartDoc {
     });
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print(
-           "\nParsed ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.\n");
+        "\nParsed ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.\n");
     return libraries.toList();
   }
 
