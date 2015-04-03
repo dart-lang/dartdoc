@@ -1,17 +1,15 @@
 {{>head}}
 
     <section class="multi-line-signature">
-        <code>
-            {{#constructor}}
-            {{#isConst}}const{{/isConst}}
-            <span class="name">{{{ linkedOwner }}}</span>({{#hasParameters}}
-            <br>
-            <div class="parameters">
-                {{{linkedParamsLines}}}
-            </div>
-            {{/hasParameters}})
-            {{/constructor}}
-        </code>
+        {{#constructor}}
+        {{#isConst}}const{{/isConst}}
+        <span class="name">{{{ linkedOwner }}}</span>({{#hasParameters}}
+        <br>
+        <div class="parameters">
+            {{{linkedParamsLines}}}
+        </div>
+        {{/hasParameters}})
+        {{/constructor}}
     </section>
 
     <section class="desc markdown">

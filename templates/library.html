@@ -48,13 +48,11 @@
     <section class="summary" id="properties">
         <h2>Properties</h2>
 
-        <dl class="withreturntypes">
+        <dl>
             {{#library.properties}}
             <dt id="{{htmlId}}">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name"><a href="{{href}}">{{ name }}</a></span>
-                </code>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+                <span class="name"><a href="{{href}}">{{ name }}</a></span>
             </dt>
             <dd>
                 <div>
@@ -72,15 +70,13 @@
     <section class="summary" id="constants">
         <h2>Constants</h2>
 
-        <dl class="withreturntypes">
+        <dl>
             {{#library.constants}}
             <dt id="{{htmlId}}">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name">{{{ linkedName }}}</span>
-                    =
-                    <span class="constant-value">{{ constantValue }}</span>
-                </code>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+                <span class="name">{{{ linkedName }}}</span>
+                =
+                <span class="constant-value">{{ constantValue }}</span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
@@ -94,15 +90,15 @@
     <section class="summary" id="functions">
         <h2>Functions</h2>
 
-        <dl class="withreturntypes">
+        <dl>
             {{#library.functions}}
             <dt id="{{htmlId}}">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name-and-params">
-                        <a href="{{href}}"><span class="name">{{ name }}</span></a>({{{ linkedParams }}})
-                    </span>
-                </code>
+
+                <span class="name-and-params">
+                    <a href="{{href}}"><span class="name">{{ name }}</span></a>({{{ linkedParams }}})
+                </span>
+                &#8594;
+                <span class="returntype">{{{ linkedReturnType }}}</span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
@@ -116,15 +112,13 @@
     <section class="summary" id="typedefs">
         <h2>Typedefs</h2>
 
-        <dl class="withreturntypes">
+        <dl>
             {{#library.typedefs}}
-            <dt id="htmlId">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name-and-params">
-                        <span class="name">{{ name }}</span>({{{ linkedParams }}})
-                    </span>
-                </code>
+            <dt id="{{htmlId}}">
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+                <span class="name-and-params">
+                    <span class="name">{{ name }}</span>({{{ linkedParams }}})
+                </span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
