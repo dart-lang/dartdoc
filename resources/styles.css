@@ -83,6 +83,10 @@ header a {
   color: white;
 }
 
+header h1 .kind {
+  font-weight: 300;
+}
+
 .title-description p {
   font-size: 24px;
 }
