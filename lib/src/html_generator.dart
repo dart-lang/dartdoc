@@ -341,7 +341,7 @@ class HtmlGenerator extends Generator {
       'metaDescription':
           'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib],
-      'htmlBase': '../..'
+      'htmlBase': '..'
     };
 
     _build(
@@ -363,7 +363,7 @@ class HtmlGenerator extends Generator {
       'metaDescription':
           'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib],
-      'htmlBase': '../..'
+      'htmlBase': '..'
     };
 
     _build(
