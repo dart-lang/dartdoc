@@ -11,6 +11,12 @@
 /// * Everyone is doing it.
 /// * It smells nice.
 ///
+/// ```
+/// class Foo {
+///   long line is very long long line is very long long line is very long line long line long line
+/// }
+/// ```
+///
 /// [pkg]: http://example.org
 library fake;
 
@@ -29,6 +35,11 @@ class Annotation {
 /// Make one of these neato classes like this:
 ///
 /// `var constant = const ConstantClass('neat')`
+///
+/// This is a code block
+///
+///     var x = 'hello';
+///     print(x);
 class ConstantClass {
   final String value;
 

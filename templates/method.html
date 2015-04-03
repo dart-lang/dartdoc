@@ -1,17 +1,15 @@
 {{>head}}
 
     <section class="multi-line-signature">
-        <code>
-            {{#method}}
-            <span class="returntype">{{{ linkedReturnType }}}</span>
-            <span class="name">{{{ linkedOwner }}}</span>({{#hasParameters}}
-            <br>
-            <div class="parameters">
-                {{{linkedParamsLines}}}
-            </div>
-            {{/hasParameters}})
-            {{/method}}
-        </code>
+        {{#method}}
+        <span class="returntype">{{{ linkedReturnType }}}</span>
+        <span class="name">{{{ linkedOwner }}}</span>({{#hasParameters}}
+        <br>
+        <div class="parameters">
+            {{{linkedParamsLines}}}
+        </div>
+        {{/hasParameters}})
+        {{/method}}
     </section>
 
     <section class="desc markdown">

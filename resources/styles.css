@@ -1,25 +1,34 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,700|Inconsolata:400,700);
-
 body {
   font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 300;
 }
 
 pre {
   font-family: 'Inconsolata', monospace;
+  color: black;
+  border-radius: 0;
+  font-size: 100%;
+  width: 80ch;
+  overflow-x: scroll;
+  word-wrap: normal;
+}
+
+pre code {
+  white-space: pre;
 }
 
 code {
-  background-color: transparent;
-  color: black;
-  padding: 0;
+  font-family: 'Inconsolata', monospace;
+  /* overriding bootstrap */
+  font-size: inherit;
+  color: inherit;
   border-radius: 0;
-  font-size: 100%;
-}
-
-pre.prettyprint {
-  /* from bootstrap */
-  padding: 9.5px;
-  border: 1px solid #CCC;
+  padding: 0;
+  background-color: inherit;
 }
 
 .title .type, .classname, .classname a {
@@ -39,23 +48,16 @@ pre.prettyprint {
 
 h1.title {
   margin: 120px 0 60px 0;
+  font-weight: 300;
 }
 
 dt {
   font-weight: normal;
-  margin-bottom: 3px;
 }
 
-.impls-extends ul {
-  margin-bottom: 0;
-}
-
-.impls-extends ul li {
-  display: inline;
-}
-
-section.summary {
-  border-top: 1px solid hsl(0, 0%, 78%);
+dd {
+  margin-bottom: 32px;
+  color: hsl(0, 0%, 46%);
 }
 
 section.summary h2 {
@@ -64,49 +66,7 @@ section.summary h2 {
 }
 
 section.desc h2 {
-  font-size: 18px;
-}
-
-.summary dl, .summary table {
-  margin: 16px;
-}
-
-.summary dd {
-  margin-bottom: 9px;
-}
-
-dl.withreturntypes .returntype {
-  float: left;
-  width: 250px;
-  color: gray;
-}
-
-dl.withreturntypes span.name-and-params {
-    display: block;
-    margin-left: 250px;
-}
-
-dl.withreturntypes dd {
-  margin-left: 250px;
-  color: gray;
-}
-
-@media (max-width: 768px) {
-  dl.withreturntypes dd {
-    margin-left: 0;
-    padding-left: 18px;
-  }
-
-  dl.withreturntypes .returntype {
-    display: block;
-    float: none;
-    width: auto;
-  }
-
-  dl.withreturntypes span.name-and-params {
-      display: inline;
-      margin:0;
-  }
+  font-size: 24px;
 }
 
 dl.dl-horizontal dt {
@@ -123,21 +83,8 @@ dl.dl-horizontal dd {
   font-style: italic;
 }
 
-.parameters {
-  margin-left:36px;
-}
-
-.param-name {
-  font-style: italic;
-}
-
 p.firstline {
   font-weight: bold;
-}
-
-.method-detail {
-  border-bottom: 1px solid gray;
-  margin-bottom: 9px;
 }
 
 .dl-horizontal dt {
@@ -153,7 +100,7 @@ footer {
 }
 
 .markdown h1 {
-  font-size: 18px;
+  font-size: 24px;
 }
 
 .markdown h2 {
@@ -218,18 +165,13 @@ ul.end-with-period li:last-child:after {
 }
 
 section {
-    margin-bottom: 18px;
-}
-
-#declared-in {
-    font-style: italic;
-}
-
-dl.constructor-summary-list dd {
-  margin-left: 18px;
-  color: gray;
+    margin-bottom: 24px;
 }
 
 .constructor-modifier {
   font-style: italic;
+}
+
+.parameter-name {
+  color: hsl(0, 0%, 46%);
 }

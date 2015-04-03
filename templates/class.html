@@ -71,7 +71,7 @@
         <dl class="constructor-summary-list">
             {{#class.constructors}}
             <dt id="{{htmlId}}">
-                <code>{{{linkedName}}}({{{linkedParams}}})</code>
+                {{{linkedName}}}({{{linkedParams}}})
             </dt>
             <dd>
                 {{#isConst}}
@@ -91,17 +91,15 @@
     <section class="summary" id="properties">
         <h2 class="text-display-1">Constants</h2>
 
-        <dl class="withreturntypes">
+        <dl>
             {{#class.constants}}
             <dt id="{{htmlId}}">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name">{{ name }}</span>
-                    {{#constantValue}}
-                    =
-                    <span class="constant-value">{{ constantValue }}</span>
-                    {{/constantValue}}
-                </code>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+                <span class="name">{{ name }}</span>
+                {{#constantValue}}
+                =
+                <span class="constant-value">{{ constantValue }}</span>
+                {{/constantValue}}
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
@@ -115,13 +113,11 @@
     <section class="summary" id="instance-properties">
         <h2 class="text-display-1">Instance Properties</h2>
 
-        <dl class="withreturntypes">
+        <dl>
             {{#class.instanceProperties}}
             <dt id="{{htmlId}}">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name"><a href="{{href}}">{{ name }}</a></span>
-                </code>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+                <span class="name"><a href="{{href}}">{{ name }}</a></span>
             </dt>
             <dd>
                 <div>
@@ -134,10 +130,8 @@
 
             {{#class.inheritedProperties}}
             <dt id="{{htmlId}}" class="inherited">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name">{{ name }}</span>
-                </code>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+                <span class="name">{{ name }}</span>
             </dt>
             <dd>
                 <div>
@@ -156,13 +150,11 @@
     <section class="summary" id="static-properties">
         <h2 class="text-display-1">Static Properties</h2>
 
-        <dl class="withreturntypes">
+        <dl>
             {{#class.staticProperties}}
             <dt id="{{htmlId}}">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name"><a href="{{href}}">{{ name }}</a></span>
-                </code>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+                <span class="name"><a href="{{href}}">{{ name }}</a></span>
             </dt>
             <dd>
                 <div>
@@ -179,15 +171,13 @@
     {{#class.hasStaticMethods}}
     <section id="static-methods-summary" class="summary">
         <h2 class="text-display-1">Static Methods</h2>
-        <dl class="withreturntypes">
+        <dl>
             {{#class.staticMethods}}
             <dt id="{{htmlId}}">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name-and-params">
-                        <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
-                    </span>
-                </code>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+                <span class="name-and-params">
+                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
+                </span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
@@ -200,15 +190,13 @@
     {{#class.hasMethods}}
     <section id="instance-methods-summary" class="summary">
         <h2 class="text-display-1">Instance Methods</h2>
-        <dl id="{{htmlId}}" class="withreturntypes">
+        <dl id="{{htmlId}}">
             {{#class.instanceMethods}}
             <dt id="{{htmlId}}">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name-and-params">
-                        <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
-                    </span>
-                </code>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+                <span class="name-and-params">
+                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
+                </span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
@@ -217,10 +205,8 @@
 
             {{#class.inheritedMethods}}
             <dt id="{{htmlId}}" class="inherited-method inherited">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
-                </code>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+                <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
             </dt>
             <dd>
                 <div class="is-inherited">Inherited</div>
@@ -234,15 +220,13 @@
     {{#class.hasOperators}}
     <section id="operators-summary" class="summary">
         <h2 class="text-display-1">Operators</h2>
-        <dl class="withreturntypes">
+        <dl>
             {{#class.operators}}
             <dt id="{{htmlId}}">
-                <code>
-                    <span class="returntype">{{{ linkedReturnType }}}</span>
-                    <span class="name-and-params">
-                        <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
-                    </span>
-                </code>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
+                <span class="name-and-params">
+                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
+                </span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
