@@ -7,6 +7,17 @@ A documentation generator for Dart.
 
 Note: This tool is currently in alpha stage.
 
+## Running dartdoc
+
+### Generating documentation for a package
+
+Run `dartdoc` from the root directory of package. `dartdoc` produces HTML files as documentation for the 
+`.dart` files it finds in the package. The documentation is output to `docs` directory.
+
+### Generating documentation for Dart SDK
+
+Run `dartdoc` with the following command line arguments `--dart-sdk /pathTo/dart-sdk --sdk-docs --readme /pathTo/sdk_readme.md`. The documentation for the SDK will be generated in the `docs` folder of the current directory.
+
 ## FAQ
 
 Q: What about docgen/dartdocgen/dartdoc-viewer?
