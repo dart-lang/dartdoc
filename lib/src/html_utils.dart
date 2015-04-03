@@ -8,12 +8,6 @@ import 'dart:convert';
 
 String htmlEscape(String text) => HTML_ESCAPE.convert(text);
 
-String getHtmlFileNameFor(String name) {
-  // dart.dartdoc => dart_dartdoc
-  // dart:core => dart_core
-  return '${name.replaceAll('.', '_').replaceAll(':', '_')}.html';
-}
-
 String escapeBrackets(String text) {
   return text.replaceAll('>', '_').replaceAll('<', '_');
 }
