@@ -133,7 +133,7 @@
     {{#class.hasStaticMethods}}
     <section id="static-methods-summary" class="summary">
         <h2>Static Methods</h2>
-        <dl>
+        <dl class="callables">
             {{#class.staticMethods}}
             <dt id="{{htmlId}}">
                 <span class="name-and-params">
@@ -190,7 +190,7 @@
     {{#class.hasMethods}}
     <section id="instance-methods-summary" class="summary">
         <h2>Instance Methods</h2>
-        <dl id="{{htmlId}}">
+        <dl class="callables" id="{{htmlId}}">
             {{#class.instanceMethods}}
             <dt id="{{htmlId}}">
                 <span class="name-and-params">
@@ -222,7 +222,7 @@
     {{#class.hasOperators}}
     <section id="operators-summary" class="summary">
         <h2>Operators</h2>
-        <dl>
+        <dl class="callables">
             {{#class.operators}}
             <dt id="{{htmlId}}">
                 <span class="name-and-params">
