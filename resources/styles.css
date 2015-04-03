@@ -113,6 +113,13 @@ section.summary h2 {
 dl.dl-horizontal dt {
   width: 320px;
   font-style: normal;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .dl-horizontal dd {
+    margin-left: 320px;
+  }
 }
 
 .optional {
@@ -123,16 +130,13 @@ p.firstline {
   font-weight: bold;
 }
 
-.dl-horizontal dt {
-  text-align: left;
-  font-style: italic;
+footer {
+  background-color: #B6B6B6;
+  padding: 16px;
 }
 
-footer {
-  margin-top: 36px;
-  background-color: #B6B6B6;
-  height: 64px;
-  padding: 16px;
+footer p {
+  margin: 0;
 }
 
 .markdown h1 {
