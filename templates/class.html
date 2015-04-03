@@ -137,7 +137,7 @@
             {{#class.staticMethods}}
             <dt id="{{htmlId}}">
                 <span class="name-and-params">
-                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
+                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParamsNoNames }}})
                 </span>
                 &#8594;
                 <span class="returntype">{{{ linkedReturnType }}}</span>
@@ -194,7 +194,7 @@
             {{#class.instanceMethods}}
             <dt id="{{htmlId}}">
                 <span class="name-and-params">
-                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
+                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParamsNoNames }}})
                 </span>
                 &#8594;
                 <span class="returntype">{{{ linkedReturnType }}}</span>
@@ -206,7 +206,7 @@
 
             {{#class.inheritedMethods}}
             <dt id="{{htmlId}}" class="inherited-method inherited">
-                <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
+                <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParamsNoNames }}})
                 &#8594;
                 <span class="returntype">{{{ linkedReturnType }}}</span>
             </dt>
@@ -226,7 +226,7 @@
             {{#class.operators}}
             <dt id="{{htmlId}}">
                 <span class="name-and-params">
-                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
+                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParamsNoNames }}})
                 </span>
                 &#8594;
                 <span class="returntype">{{{ linkedReturnType }}}</span>
