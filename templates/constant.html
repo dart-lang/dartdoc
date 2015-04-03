@@ -1,14 +1,12 @@
 {{>head}}
 
   <section class="multi-line-signature">
-    <code>
         {{#property}}
             <span class="returntype">{{{ linkedReturnType }}}</span>
             <span class="name">{{{ linkedOwner }}}</span>
             =
             <span class="constant-value">{{ constantValue }}</span>
         {{/property}}
-    </code>
   </section>
 
   <section class="desc markdown">
