@@ -9,8 +9,8 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:mustache4dart/mustache_context.dart';
-import 'package:html5lib/parser.dart' show parse;
-import 'package:html5lib/dom.dart' show Document;
+import 'package:html/parser.dart' show parse;
+import 'package:html/dom.dart' show Document;
 import 'package:markdown/markdown.dart' as md;
 import 'package:path/path.dart' as path;
 

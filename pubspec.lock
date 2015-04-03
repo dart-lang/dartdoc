@@ -29,10 +29,10 @@ packages:
     description: grinder
     source: hosted
     version: "0.6.6+3"
-  html5lib:
-    description: html5lib
+  html:
+    description: html
     source: hosted
-    version: "0.12.0"
+    version: "0.12.1"
   http:
     description: http
     source: hosted
