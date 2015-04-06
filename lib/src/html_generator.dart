@@ -22,6 +22,67 @@ import 'io_utils.dart';
 typedef String TemplateRenderer(context,
     {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});
 
+
+class Templates {
+
+  static TemplateRenderer indexTemplate, libraryTemplate,classTemplate, functionTemplate, methodTemplate, constructorTemplate,propertyTemplate, constantTemplate
+  ,topLevelConstantTemplate,topLevelPropertyTemplate;
+
+  static final Map<String, String> _partialTemplates = {};
+
+  static String _footer;
+
+  Templates(String footer) {
+
+   _footer = footer;
+   indexTemplate =
+        _loadTemplate('templates/index.html');
+    libraryTemplate =
+        _loadTemplate('templates/library.html');
+    classTemplate =
+        _loadTemplate('templates/class.html');
+    functionTemplate =
+        _loadTemplate('templates/function.html');
+     methodTemplate =
+        _loadTemplate('templates/method.html');
+    constructorTemplate =
+        _loadTemplate('templates/constructor.html');
+    propertyTemplate =
+        _loadTemplate('templates/property.html');
+    constantTemplate =
+        _loadTemplate('templates/constant.html');
+    topLevelConstantTemplate =
+        _loadTemplate('templates/top_level_constant.html');
+    topLevelPropertyTemplate =
+        _loadTemplate('templates/top_level_property.html');
+
+  }
+
+    static String _partial(String name) {
+      return _partialTemplates.putIfAbsent(
+          name, () => _loadPartial('templates/_$name.html'));
+    }
+
+    static TemplateRenderer _loadTemplate(String templatePath) {
+       return compile(_getTemplateFile(templatePath), partial: _partial);
+     }
+
+     static String _getTemplateFile(String templatePath) {
+       File script = new File(Platform.script.toFilePath());
+       File tmplFile =
+           new File(path.join(script.parent.parent.path, templatePath));
+       return tmplFile.readAsStringSync();
+     }
+
+     static String _loadPartial(String templatePath) {
+       var template = _getTemplateFile(templatePath);
+       if (templatePath.contains('_footer') && _footer != null)
+          template = template.replaceAll('<-- Footer Placeholder -->', _footer);
+       return template;
+     }
+
+}
+
 class HtmlGenerator extends Generator {
   final String _url;
   final List<String> _htmlFiles = [];
@@ -34,36 +95,38 @@ class HtmlGenerator extends Generator {
 
   final String generatedOn;
 
-  static final TemplateRenderer indexTemplate =
-      _loadTemplate('templates/index.html');
-  static final TemplateRenderer libraryTemplate =
-      _loadTemplate('templates/library.html');
-  static final TemplateRenderer classTemplate =
-      _loadTemplate('templates/class.html');
-  static final TemplateRenderer functionTemplate =
-      _loadTemplate('templates/function.html');
-  static final TemplateRenderer methodTemplate =
-      _loadTemplate('templates/method.html');
-  static final TemplateRenderer constructorTemplate =
-      _loadTemplate('templates/constructor.html');
-  static final TemplateRenderer propertyTemplate =
-      _loadTemplate('templates/property.html');
-  static final TemplateRenderer constantTemplate =
-      _loadTemplate('templates/constant.html');
-  static final TemplateRenderer topLevelConstantTemplate =
-      _loadTemplate('templates/top_level_constant.html');
-  static final TemplateRenderer topLevelPropertyTemplate =
-      _loadTemplate('templates/top_level_property.html');
+//  static final TemplateRenderer indexTemplate =
+//      _loadTemplate('templates/index.html');
+//  static final TemplateRenderer libraryTemplate =
+//      _loadTemplate('templates/library.html');
+//  static final TemplateRenderer classTemplate =
+//      _loadTemplate('templates/class.html');
+//  static final TemplateRenderer functionTemplate =
+//      _loadTemplate('templates/function.html');
+//  static final TemplateRenderer methodTemplate =
+//      _loadTemplate('templates/method.html');
+//  static final TemplateRenderer constructorTemplate =
+//      _loadTemplate('templates/constructor.html');
+//  static final TemplateRenderer propertyTemplate =
+//      _loadTemplate('templates/property.html');
+//  static final TemplateRenderer constantTemplate =
+//      _loadTemplate('templates/constant.html');
+//  static final TemplateRenderer topLevelConstantTemplate =
+//      _loadTemplate('templates/top_level_constant.html');
+//  static final TemplateRenderer topLevelPropertyTemplate =
+//      _loadTemplate('templates/top_level_property.html');
+//
+//  static final Map<String, String> _partialTemplates = {};
+//
+//  static String _partial(String name) {
+//    return _partialTemplates.putIfAbsent(
+//        name, () => _loadPartial('templates/_$name.html'));
+//  }
 
-  static final Map<String, String> _partialTemplates = {};
-
-  static String _partial(String name) {
-    return _partialTemplates.putIfAbsent(
-        name, () => _loadPartial('templates/_$name.html'));
+  HtmlGenerator(this._url, String footer)
+      : generatedOn = new DateFormat('MMMM dd yyyy').format(new DateTime.now()) {
+    new Templates(footer);
   }
-
-  HtmlGenerator(this._url)
-      : generatedOn = new DateFormat('MMMM dd yyyy').format(new DateTime.now());
 
   void generate(Package package, Directory out) {
     _package = package;
@@ -144,7 +207,7 @@ class HtmlGenerator extends Generator {
       'htmlBase': '.'
     };
 
-    _build('index.html', indexTemplate, data);
+    _build('index.html', Templates.indexTemplate, data);
   }
 
   void generateLibrary(Package package, Library lib) {
@@ -165,7 +228,7 @@ class HtmlGenerator extends Generator {
       'layoutTitle': '${lib.name} library'
     };
 
-    _build(path.join(lib.fileName, 'index.html'), libraryTemplate, data);
+    _build(path.join(lib.fileName, 'index.html'), Templates.libraryTemplate, data);
   }
 
   Class get objectType {
@@ -203,7 +266,7 @@ class HtmlGenerator extends Generator {
       'htmlBase': '..'
     };
 
-    _build(path.joinAll(clazz.href.split('/')), classTemplate, data);
+    _build(path.joinAll(clazz.href.split('/')), Templates.classTemplate, data);
   }
 
   void generateConstructor(
@@ -220,7 +283,7 @@ class HtmlGenerator extends Generator {
     };
 
     _build(
-        path.joinAll(constructor.href.split('/')), constructorTemplate, data);
+        path.joinAll(constructor.href.split('/')), Templates.constructorTemplate, data);
   }
 
   void generateEnum(Package package, Library lib, Class eNum) {
@@ -234,7 +297,7 @@ class HtmlGenerator extends Generator {
       'class': eNum
     };
 
-    _build(path.joinAll(eNum.href.split('/')), classTemplate, data);
+    _build(path.joinAll(eNum.href.split('/')), Templates.classTemplate, data);
   }
 
   void generateFunction(Package package, Library lib, ModelFunction function) {
@@ -254,7 +317,7 @@ class HtmlGenerator extends Generator {
       'htmlBase': '..'
     };
 
-    _build(path.joinAll(function.href.split('/')), functionTemplate, data);
+    _build(path.joinAll(function.href.split('/')), Templates.functionTemplate, data);
   }
 
   void generateMethod(
@@ -277,7 +340,7 @@ class HtmlGenerator extends Generator {
       'htmlBase': '../..'
     };
 
-    _build(path.joinAll(method.href.split('/')), methodTemplate, data);
+    _build(path.joinAll(method.href.split('/')), Templates.methodTemplate, data);
   }
 
   void generateConstant(
@@ -300,7 +363,7 @@ class HtmlGenerator extends Generator {
       'htmlBase': '../..'
     };
 
-    _build(path.joinAll(property.href.split('/')), constantTemplate, data);
+    _build(path.joinAll(property.href.split('/')), Templates.constantTemplate, data);
   }
 
   void generateProperty(
@@ -323,7 +386,7 @@ class HtmlGenerator extends Generator {
       'htmlBase': '../..'
     };
 
-    _build(path.joinAll(property.href.split('/')), propertyTemplate, data);
+    _build(path.joinAll(property.href.split('/')), Templates.propertyTemplate, data);
   }
 
   void generateTopLevelProperty(
@@ -345,7 +408,7 @@ class HtmlGenerator extends Generator {
     };
 
     _build(
-        path.joinAll(property.href.split('/')), topLevelPropertyTemplate, data);
+        path.joinAll(property.href.split('/')), Templates.topLevelPropertyTemplate, data);
   }
 
   void generateTopLevelConstant(
@@ -367,7 +430,7 @@ class HtmlGenerator extends Generator {
     };
 
     _build(
-        path.joinAll(property.href.split('/')), topLevelConstantTemplate, data);
+        path.joinAll(property.href.split('/')), Templates.topLevelConstantTemplate, data);
   }
 
   void _copyResources() {
@@ -408,20 +471,20 @@ class HtmlGenerator extends Generator {
     f.writeAsStringSync(content);
   }
 
-  static TemplateRenderer _loadTemplate(String templatePath) {
-    return compile(_getTemplateFile(templatePath), partial: _partial);
-  }
-
-  static String _getTemplateFile(String templatePath) {
-    File script = new File(Platform.script.toFilePath());
-    File tmplFile =
-        new File(path.join(script.parent.parent.path, templatePath));
-    return tmplFile.readAsStringSync();
-  }
-
-  static String _loadPartial(String templatePath) {
-    return _getTemplateFile(templatePath);
-  }
+//  static TemplateRenderer _loadTemplate(String templatePath) {
+//    return compile(_getTemplateFile(templatePath), partial: _partial);
+//  }
+//
+//  static String _getTemplateFile(String templatePath) {
+//    File script = new File(Platform.script.toFilePath());
+//    File tmplFile =
+//        new File(path.join(script.parent.parent.path, templatePath));
+//    return tmplFile.readAsStringSync();
+//  }
+//
+//  static String _loadPartial(String templatePath) {
+//    return _getTemplateFile(templatePath);
+//  }
 }
 
 /// Converts a markdown formatted string into HTML,

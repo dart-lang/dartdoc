@@ -47,8 +47,9 @@ void main(List<String> arguments) {
   List<String> excludeLibraries =
       results['exclude'] == null ? [] : results['exclude'].split(',');
   String url = results['url'];
+  String footer = results['footer'];
   var currentDir = Directory.current;
-  var generators = initGenerators(url);
+  var generators = initGenerators(url,footer);
   new DartDoc(currentDir, excludeLibraries, sdkDir, generators, sdkDocs, readme)
     ..generateDocs();
 }
@@ -75,5 +76,6 @@ ArgParser _createArgsParser() {
       ' '
       'Use "--dart-sdk" option to specify path to sdk');
   parser.addOption('readme', help: 'path to the SDK description file');
+  parser.addOption('footer', help: 'HTML to insert in the footer');
   return parser;
 }
