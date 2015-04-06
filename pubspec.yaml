@@ -22,5 +22,3 @@ dev_dependencies:
   unittest: '^0.11.0'
 executables:
   dartdoc: null
-dependency_overrides:
-  analyzer: 0.25.0-dev.1
