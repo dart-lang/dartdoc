@@ -247,7 +247,8 @@ class HtmlGenerator extends Generator {
       'library': lib,
       'class': clazz,
       'constructor': constructor,
-      'layoutTitle': _layoutTitle(constructor.name, 'constructor')
+      'layoutTitle': _layoutTitle(constructor.name, 'constructor'),
+      'htmlBase': '../..'
     };
 
     _build(path.joinAll(constructor.href.split('/')),
