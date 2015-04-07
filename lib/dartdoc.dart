@@ -29,8 +29,8 @@ const String NAME = 'dartdoc';
 const String VERSION = '0.0.1';
 
 /// Initialize and setup the generators
-List<Generator> initGenerators(String url) {
-  return [new HtmlGenerator(url)];
+List<Generator> initGenerators(String url, String footer) {
+  return [new HtmlGenerator(url, footer)];
 }
 
 /// Generates Dart documentation for all public Dart libraries in the given
