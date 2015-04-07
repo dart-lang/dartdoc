@@ -67,7 +67,7 @@ code {
 
 @media (min-width:970px) and (max-width: 2500px) {
   .container {
-    width:970px;
+    width:768px;
   }
 }
 
@@ -88,10 +88,6 @@ header a {
 
 header h1 .kind {
   font-weight: 300;
-}
-
-.title-description p {
-  font-size: 24px;
 }
 
 dt {
