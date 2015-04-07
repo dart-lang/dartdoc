@@ -335,12 +335,10 @@ abstract class ModelElement {
             typeName = mt.linkedName;
           }
           if (typeName.isNotEmpty) {
-            buf.write('<span class="type-annotation">$typeName</span>');
-          } else {
-            buf.write('dynamic');
+            buf.write('<span class="type-annotation">$typeName</span> ');
           }
           if (showNames) {
-            buf.write(' <span class="parameter-name">${p.name}</span>');
+            buf.write('<span class="parameter-name">${p.name}</span>');
           }
         }
 
