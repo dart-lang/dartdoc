@@ -90,7 +90,7 @@ class HtmlGenerator extends Generator {
 
   final String generatedOn;
 
-  HtmlGenerator(this._url, [String footer = null])
+  HtmlGenerator(this._url, [String footer])
       : generatedOn = new DateFormat('MMMM dd yyyy').format(new DateTime.now()),
         _templates = new Templates(footer);
 
