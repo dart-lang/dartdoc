@@ -91,17 +91,7 @@
 
         <dl class="callables">
             {{#library.functions}}
-            <dt id="{{htmlId}}">
-
-                <span class="name-and-params">
-                    <a href="{{href}}"><span class="name">{{ name }}</span></a>({{{ linkedParams }}})
-                </span>
-                &#8594;
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>callable}}
             {{/library.functions}}
         </dl>
     </section>
@@ -113,16 +103,7 @@
 
         <dl class="callables">
             {{#library.typedefs}}
-            <dt id="{{htmlId}}">
-                <span class="name-and-params">
-                    <span class="name">{{ name }}</span>({{{ linkedParams }}})
-                </span>
-                &#8594;
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>callable}}
             {{/library.typedefs}}
         </dl>
     </section>

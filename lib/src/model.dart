@@ -826,7 +826,7 @@ class Class extends ModelElement {
         var lib = value.library == library.element
             ? library
             : new Library(value.library, package);
-        _inheritedMethods.add(new Method(value, lib));
+        _inheritedMethods.add(new Method.inherited(value, lib));
       }
     }
 
@@ -1037,11 +1037,19 @@ class Constructor extends ModelElement {
 }
 
 class Method extends ModelElement {
+  bool _isInherited = false;
+
   MethodElement get _method => (element as MethodElement);
 
   Method(MethodElement element, Library library, [String source])
       : super(element, library, source) {
     _modelType = new ElementType(_method.type, this);
+  }
+
+  Method.inherited(MethodElement element, Library library, [String source])
+      : super(element, library, source) {
+    _modelType = new ElementType(_method.type, this);
+    _isInherited = true;
   }
 
   Method getOverriddenElement() {
@@ -1073,6 +1081,8 @@ class Method extends ModelElement {
   @override
   String get _href =>
       '${library.fileName}/${_method.enclosingElement.name}/${fileName}';
+
+  bool get isInherited => _isInherited;
 }
 
 class Operator extends Method {

@@ -1,0 +1,10 @@
+<dt id="{{htmlId}}">
+    <span class="name"><a href="{{href}}">{{ name }}</a></span><span class="signature">({{{ linkedParams }}})
+    &#8594;
+    <span class="returntype">{{{ linkedReturnType }}}</span>
+    </span> <!-- signature -->
+</dt>
+<dd>
+    {{#isInherited}}<div class="is-inherited">Inherited</div>{{/isInherited}}
+    {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+</dd>

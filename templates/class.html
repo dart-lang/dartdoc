@@ -190,30 +190,13 @@
     {{#class.hasMethods}}
     <section id="instance-methods-summary" class="summary">
         <h2>Instance Methods</h2>
-        <dl class="callables" id="{{htmlId}}">
+        <dl class="callables">
             {{#class.instanceMethods}}
-            <dt id="{{htmlId}}">
-                <span class="name-and-params">
-                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
-                </span>
-                &#8594;
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>callable}}
             {{/class.instanceMethods}}
 
             {{#class.inheritedMethods}}
-            <dt id="{{htmlId}}" class="inherited-method inherited">
-                <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
-                &#8594;
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                <div class="is-inherited">Inherited</div>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>callable}}
             {{/class.inheritedMethods}}
         </dl>
     </section>
@@ -224,16 +207,7 @@
         <h2>Operators</h2>
         <dl class="callables">
             {{#class.operators}}
-            <dt id="{{htmlId}}">
-                <span class="name-and-params">
-                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
-                </span>
-                &#8594;
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>callable}}
             {{/class.operators}}
         </dl>
     </section>
