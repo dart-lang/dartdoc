@@ -7,6 +7,8 @@
 # Fast fail the script on failures.
 set -e
 
+$(dirname -- "$0")/ensure_dartfmt.sh
+
 # Globally install grinder.
 pub global activate grinder
 export PATH="$PATH":"~/.pub-cache/bin"
