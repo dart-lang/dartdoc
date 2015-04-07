@@ -20,10 +20,13 @@ body {
   font-size: 16px;
 }
 
+dl {
+  margin: 0;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-weight: 300;
-  margin-top: 24px;
-  margin-bottom: 8px;
+  margin: 0;
 }
 
 h2 {
@@ -83,6 +86,10 @@ header a {
   color: white;
 }
 
+header h1 .kind {
+  font-weight: 300;
+}
+
 .title-description p {
   font-size: 24px;
 }
@@ -96,14 +103,31 @@ dd {
   color: hsl(0, 0%, 46%);
 }
 
+
+
 section.summary h2 {
   color: hsl(0, 0%, 46%);
-  margin: 32px 0 32px 0;
+  margin-bottom: 32px;
 }
 
 dl.dl-horizontal dt {
-  width: 250px;
   font-style: normal;
+  text-align: left;
+}
+
+@media (min-width: 768px) {
+  .dl-horizontal dd {
+    margin-left: 320px;
+  }
+
+  .dl-horizontal dt {
+    width: 320px;
+  }
+
+  dl dt .name {
+    float: left;
+    width: 320px
+  }
 }
 
 .optional {
@@ -114,16 +138,13 @@ p.firstline {
   font-weight: bold;
 }
 
-.dl-horizontal dt {
-  text-align: left;
-  font-style: italic;
+footer {
+  background-color: #B6B6B6;
+  padding: 16px;
 }
 
-footer {
-  margin-top: 36px;
-  background-color: #B6B6B6;
-  height: 64px;
-  padding: 16px;
+footer p {
+  margin: 0;
 }
 
 .markdown h1 {
@@ -191,7 +212,8 @@ ul.end-with-period li:last-child:after {
 }
 
 section {
-    paddig-bottom: 24px;
+  padding: 32px 0 32px 0;
+  border-bottom: 1px solid #eeeeee;
 }
 
 .constructor-modifier {

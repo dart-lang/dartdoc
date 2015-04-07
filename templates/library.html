@@ -48,11 +48,11 @@
     <section class="summary" id="properties">
         <h2>Properties</h2>
 
-        <dl>
+        <dl class="properties">
             {{#library.properties}}
             <dt id="{{htmlId}}">
-                <span class="returntype">{{{ linkedReturnType }}}</span>
                 <span class="name"><a href="{{href}}">{{ name }}</a></span>
+                <span class="returntype">{{{ linkedReturnType }}}</span>
             </dt>
             <dd>
                 <div>
@@ -70,10 +70,9 @@
     <section class="summary" id="constants">
         <h2>Constants</h2>
 
-        <dl>
+        <dl class="properties">
             {{#library.constants}}
             <dt id="{{htmlId}}">
-                <span class="returntype">{{{ linkedReturnType }}}</span>
                 <span class="name">{{{ linkedName }}}</span>
                 =
                 <span class="constant-value">{{ constantValue }}</span>
@@ -90,7 +89,7 @@
     <section class="summary" id="functions">
         <h2>Functions</h2>
 
-        <dl>
+        <dl class="callables">
             {{#library.functions}}
             <dt id="{{htmlId}}">
 
@@ -112,13 +111,14 @@
     <section class="summary" id="typedefs">
         <h2>Typedefs</h2>
 
-        <dl>
+        <dl class="callables">
             {{#library.typedefs}}
             <dt id="{{htmlId}}">
-                <span class="returntype">{{{ linkedReturnType }}}</span>
                 <span class="name-and-params">
                     <span class="name">{{ name }}</span>({{{ linkedParams }}})
                 </span>
+                &#8594;
+                <span class="returntype">{{{ linkedReturnType }}}</span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}

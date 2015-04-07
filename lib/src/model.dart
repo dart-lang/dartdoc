@@ -300,7 +300,7 @@ abstract class ModelElement {
   String get _href;
 
   // TODO: handle default values
-  String get linkedParams {
+  String linkedParams({bool showNames: true}) {
     List<Parameter> allParams = parameters;
 
     List<Parameter> requiredParams =
@@ -321,10 +321,12 @@ abstract class ModelElement {
         buf.write('<span class="parameter">');
         if (p.modelType.isFunctionType) {
           buf.write(
-              '<span class="type-annotation">${(p.modelType.element as Typedef).linkedReturnType}</span> ');
-          buf.write('<span class="parameter-name">${p.name}</span>');
+              '<span class="type-annotation">${(p.modelType.element as Typedef).linkedReturnType}</span>');
+          if (showNames) {
+            buf.write(' <span class="parameter-name">${p.name}</span>');
+          }
           buf.write('(');
-          buf.write(p.modelType.element.linkedParams);
+          buf.write(p.modelType.element.linkedParams(showNames: showNames));
           buf.write(')');
         } else if (p.modelType != null && p.modelType.element != null) {
           var mt = p.modelType.element.modelType;
@@ -335,7 +337,9 @@ abstract class ModelElement {
           if (typeName.isNotEmpty) {
             buf.write('<span class="type-annotation">$typeName</span> ');
           }
-          buf.write('<span class="parameter-name">${p.name}</span>');
+          if (showNames) {
+            buf.write('<span class="parameter-name">${p.name}</span>');
+          }
         }
 
         if (p.hasDefaultValue) {
@@ -373,9 +377,13 @@ abstract class ModelElement {
     return buf.toString();
   }
 
+  String get linkedParamsNoNames {
+    return linkedParams(showNames: false);
+  }
+
   /// End each parameter with a `<br>`
   String get linkedParamsLines {
-    return linkedParams.replaceAll('<!-- end param -->,', ',<br>');
+    return linkedParams().replaceAll('<!-- end param -->,', ',<br>');
   }
 }
 

@@ -220,6 +220,11 @@ void main() {
       f2 = lib2.getFunctions()[0];
     });
 
+    test('name is function1', () {
+      expect(f1.name, 'function1');
+      expect(f2.name, 'function1');
+    });
+
     test('local element', () {
       expect(f1.isLocalElement, true);
     });
@@ -233,7 +238,7 @@ void main() {
     });
 
     test('handles dynamic parameters correctly', () {
-      expect(f2.linkedParams, contains('lastParam'));
+      expect(f2.linkedParams(), contains('lastParam'));
     });
 
     test('has correct source code', () {

@@ -166,7 +166,7 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner,
       'documentation': package.description,
       'title': '${package.name} - Dart API docs',
-      'layoutTitle': '${package.name} package',
+      'layoutTitle': _layoutTitle(package.name, 'package'),
       'metaDescription':
           '${package.name} API docs, for the Dart programming language.',
       'navLinks': [package],
@@ -191,7 +191,7 @@ class HtmlGenerator extends Generator {
       'metaDescription':
           '${lib.name} library API docs, for the Dart programming language.',
       'navLinks': [package],
-      'layoutTitle': '${lib.name} library'
+      'layoutTitle': _layoutTitle(lib.name, 'library')
     };
 
     _build(path.join(lib.fileName, 'index.html'), _templates.libraryTemplate,
@@ -228,7 +228,7 @@ class HtmlGenerator extends Generator {
       'title': '${clazz.name} ${clazz.kind} - ${lib.name} library - Dart API',
       'metaDescription':
           'API docs for the ${clazz.name} ${clazz.kind} from the ${lib.name} library, for the Dart programming language.',
-      'layoutTitle': '${clazz.nameWithGenerics} ${clazz.kind}',
+      'layoutTitle': _layoutTitle(clazz.nameWithGenerics, clazz.kind),
       'navLinks': [package, lib],
       'htmlBase': '..'
     };
@@ -246,7 +246,8 @@ class HtmlGenerator extends Generator {
       'documentation': constructor.documentation,
       'library': lib,
       'class': clazz,
-      'constructor': constructor
+      'constructor': constructor,
+      'layoutTitle': _layoutTitle(constructor.name, 'constructor')
     };
 
     _build(path.joinAll(constructor.href.split('/')),
@@ -261,7 +262,8 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner,
       'documentation': eNum,
       'library': lib,
-      'class': eNum
+      'class': eNum,
+      'layoutTitle': _layoutTitle(eNum.name, 'enum')
     };
 
     _build(path.joinAll(eNum.href.split('/')), _templates.classTemplate, data);
@@ -277,7 +279,7 @@ class HtmlGenerator extends Generator {
       'library': lib,
       'function': function,
       'title': '${function.name} function - ${lib.name} library - Dart API',
-      'layoutTitle': '${function.name} function',
+      'layoutTitle': _layoutTitle(function.name, 'function'),
       'metaDescription':
           'API docs for the ${function.name} function from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib],
@@ -301,7 +303,7 @@ class HtmlGenerator extends Generator {
       'method': method,
       'title':
           '${method.name} method - ${clazz.name} class - ${lib.name} library - Dart API',
-      'layoutTitle': '${method.name} method',
+      'layoutTitle': _layoutTitle(method.name, 'method'),
       'metaDescription':
           'API docs for the ${method.name} method from the ${clazz.name} class, for the Dart programming language.',
       'navLinks': [package, lib, clazz],
@@ -325,7 +327,7 @@ class HtmlGenerator extends Generator {
       'property': property,
       'title':
           '${property.name} constant - ${clazz.name} class - ${lib.name} library - Dart API',
-      'layoutTitle': '${property.name} constant',
+      'layoutTitle': _layoutTitle(property.name, 'constant'),
       'metaDescription':
           'API docs for the ${property.name} constant from the ${clazz.name} class, for the Dart programming language.',
       'navLinks': [package, lib, clazz],
@@ -349,7 +351,7 @@ class HtmlGenerator extends Generator {
       'property': property,
       'title':
           '${property.name} property - ${clazz.name} class - ${lib.name} library - Dart API',
-      'layoutTitle': '${property.name} property',
+      'layoutTitle': _layoutTitle(property.name, 'property'),
       'metaDescription':
           'API docs for the ${property.name} property from the ${clazz.name} class, for the Dart programming language.',
       'navLinks': [package, lib, clazz],
@@ -371,7 +373,7 @@ class HtmlGenerator extends Generator {
       'library': lib,
       'property': property,
       'title': '${property.name} property - ${lib.name} library - Dart API',
-      'layoutTitle': '${property.name} property',
+      'layoutTitle': _layoutTitle(property.name, 'property'),
       'metaDescription':
           'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib],
@@ -393,7 +395,7 @@ class HtmlGenerator extends Generator {
       'library': lib,
       'property': property,
       'title': '${property.name} property - ${lib.name} library - Dart API',
-      'layoutTitle': '${property.name} property',
+      'layoutTitle': _layoutTitle(property.name, 'constant'),
       'metaDescription':
           'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib],
@@ -443,11 +445,15 @@ class HtmlGenerator extends Generator {
   }
 }
 
+String _layoutTitle(String name, String kind) {
+  return '$name <span class="kind">$kind</span>';
+}
+
 /// Converts a markdown formatted string into HTML,
 /// and removes any script tags. Returns the HTML as a string.
 String renderMarkdown(String markdown, {nestedContext}) {
   String mustached = render(markdown.trim(), nestedContext,
-      assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
+  assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
   // reflector.
   String html = md.markdownToHtml(mustached, inlineSyntaxes: MARKDOWN_SYNTAXES);
@@ -464,8 +470,8 @@ const List<String> _oneLinerSkipTags = const ["code", "pre"];
 
 String oneLiner(String text, {nestedContext}) {
   String mustached = render(text.trim(), nestedContext,
-          assumeNullNonExistingProperty: false, errorOnMissingProperty: true)
-      .trim();
+  assumeNullNonExistingProperty: false, errorOnMissingProperty: true)
+  .trim();
   if (mustached == null || mustached.trim().isEmpty) return '';
   // Parse with Markdown, but only care about the first block or paragraph.
   var lines = mustached.replaceAll('\r\n', '\n').split('\n');
@@ -474,8 +480,8 @@ String oneLiner(String text, {nestedContext}) {
   var blocks = document.parseLines(lines);
 
   while (blocks.isNotEmpty &&
-      (blocks.first is md.Element &&
-          _oneLinerSkipTags.contains(blocks.first.tag))) {
+  (blocks.first is md.Element &&
+  _oneLinerSkipTags.contains(blocks.first.tag))) {
     blocks.removeAt(0);
   }
 
@@ -518,6 +524,7 @@ String resolveDocReferences(String text, MustacheContext nestedContext) {
   }
   return text;
 }
+
 
 class PlainTextRenderer implements md.NodeVisitor {
   static final _BLOCK_TAGS =
