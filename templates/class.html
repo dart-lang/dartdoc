@@ -93,16 +93,7 @@
 
         <dl class="properties">
             {{#class.constants}}
-            <dt id="{{htmlId}}">
-                <span class="name">{{ name }}</span>
-                {{#constantValue}}
-                =
-                <span class="constant-value">{{ constantValue }}</span>
-                {{/constantValue}}
-            </dt>
-            <dd>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>constant}}
             {{/class.constants}}
         </dl>
     </section>
@@ -114,17 +105,7 @@
 
         <dl class="properties">
             {{#class.staticProperties}}
-            <dt id="{{htmlId}}">
-                <span class="name"><a href="{{href}}">{{ name }}</a></span>
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                <div>
-                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
-                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
-                </div>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>property}}
             {{/class.staticProperties}}
         </dl>
     </section>
@@ -147,32 +128,11 @@
 
         <dl class="properties">
             {{#class.instanceProperties}}
-            <dt id="{{htmlId}}">
-                <span class="name"><a href="{{href}}">{{ name }}</a></span>
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                <div>
-                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
-                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
-                </div>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>property}}
             {{/class.instanceProperties}}
 
             {{#class.inheritedProperties}}
-            <dt id="{{htmlId}}" class="inherited">
-                <span class="name"><a href="{{href}}">{{ name }}</a></span>
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                <div>
-                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
-                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
-                </div>
-                <div class="is-inherited">Inherited</div>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>property}}
             {{/class.inheritedProperties}}
         </dl>
     </section>

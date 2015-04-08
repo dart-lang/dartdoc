@@ -165,10 +165,6 @@ footer p {
   margin-bottom: 8px;
 }
 
-.has-it::before {
-  content: '\2713';
-}
-
 ul.gt-separated {
   list-style: none;
   padding: 0;
@@ -227,5 +223,9 @@ section {
 }
 
 .constructor-modifier {
+  font-style: italic;
+}
+
+.readable-writable {
   font-style: italic;
 }

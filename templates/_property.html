@@ -1,0 +1,12 @@
+<dt id="{{htmlId}}" class="property">
+    <span class="name"><a href="{{href}}">{{ name }}</a></span>
+    <span class="returntype">{{{ linkedReturnType }}}</span>
+</dt>
+<dd>
+    <div class="readable-writable">
+        {{#readOnly}}read-only{{/readOnly}}
+        {{#writeOnly}}write-only{{/writeOnly}}
+        {{#readWrite}}read/write{{/readWrite}}
+    </div>
+    {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+</dd>
