@@ -454,7 +454,7 @@ String _layoutTitle(String name, String kind) {
 /// and removes any script tags. Returns the HTML as a string.
 String renderMarkdown(String markdown, {nestedContext}) {
   String mustached = render(markdown.trim(), nestedContext,
-  assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
+      assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
   // reflector.
   String html = md.markdownToHtml(mustached, inlineSyntaxes: MARKDOWN_SYNTAXES);
@@ -471,8 +471,8 @@ const List<String> _oneLinerSkipTags = const ["code", "pre"];
 
 String oneLiner(String text, {nestedContext}) {
   String mustached = render(text.trim(), nestedContext,
-  assumeNullNonExistingProperty: false, errorOnMissingProperty: true)
-  .trim();
+          assumeNullNonExistingProperty: false, errorOnMissingProperty: true)
+      .trim();
   if (mustached == null || mustached.trim().isEmpty) return '';
   // Parse with Markdown, but only care about the first block or paragraph.
   var lines = mustached.replaceAll('\r\n', '\n').split('\n');
@@ -481,8 +481,8 @@ String oneLiner(String text, {nestedContext}) {
   var blocks = document.parseLines(lines);
 
   while (blocks.isNotEmpty &&
-  (blocks.first is md.Element &&
-  _oneLinerSkipTags.contains(blocks.first.tag))) {
+      (blocks.first is md.Element &&
+          _oneLinerSkipTags.contains(blocks.first.tag))) {
     blocks.removeAt(0);
   }
 
@@ -525,7 +525,6 @@ String resolveDocReferences(String text, MustacheContext nestedContext) {
   }
   return text;
 }
-
 
 class PlainTextRenderer implements md.NodeVisitor {
   static final _BLOCK_TAGS =

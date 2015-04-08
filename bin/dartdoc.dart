@@ -49,7 +49,7 @@ void main(List<String> arguments) {
   String url = results['url'];
   String footer = results['footer'];
   var currentDir = Directory.current;
-  var generators = initGenerators(url,footer);
+  var generators = initGenerators(url, footer);
   new DartDoc(currentDir, excludeLibraries, sdkDir, generators, sdkDocs, readme)
     ..generateDocs();
 }
