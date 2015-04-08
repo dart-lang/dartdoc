@@ -164,7 +164,12 @@ abstract class ModelElement {
       if (refElement == null) {
         return null;
       }
-      var refLibrary = new Library(refElement.library, package);
+      var refLibrary;
+      if (this is Library) {
+        refLibrary = this;
+      } else {
+        refLibrary = this.library;
+      }
       var e = new ModelElement.from(refElement, refLibrary);
       return e.href;
     }
@@ -432,7 +437,9 @@ class Package {
     if (e is Library) {
       return _libraries.any((lib) => lib.element == e.element);
     } else {
-      return _libraries.any((lib) => lib.element == e.element.library);
+      return _libraries.any((lib) => lib.element == e.element.library ||
+          (lib.element as LibraryElement).exportedLibraries
+              .contains(e.element.library));
     }
   }
 
@@ -463,10 +470,6 @@ class Library extends ModelElement {
   }
 
   bool get isInSdk => _library.isInSdk;
-
-  List<Library> get exported => _library.exportedLibraries
-      .map((lib) => new Library(lib, package))
-      .toList();
 
   List<TopLevelVariable> _getVariables() {
     if (_variables != null) return _variables;
@@ -560,7 +563,9 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       types.addAll(cu.types);
     }
-
+    for (LibraryElement le in _library.exportedLibraries) {
+      types.addAll(le.definingCompilationUnit.types);
+    }
     _classes = types
         .where(isPublic)
         .map((e) => new Class(
@@ -662,6 +667,8 @@ class Class extends ModelElement {
   }
 
   String get kind => 'class';
+
+  String get fileName => "${name}_class.html";
 
   bool get isAbstract => _cls.isAbstract;
 
@@ -897,7 +904,7 @@ class Class extends ModelElement {
       name.hashCode, library.name.hashCode, library.package.name.hashCode);
 
   @override
-  String get _href => '${library.fileName}/$name.html';
+  String get _href => '${library.fileName}/$fileName.html';
 }
 
 class Enum extends Class {
