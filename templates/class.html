@@ -135,16 +135,7 @@
         <h2>Static Methods</h2>
         <dl class="callables">
             {{#class.staticMethods}}
-            <dt id="{{htmlId}}">
-                <span class="name-and-params">
-                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
-                </span>
-                &#8594;
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>callable}}
             {{/class.staticMethods}}
         </dl>
     </section>
