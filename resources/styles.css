@@ -20,6 +20,10 @@ body {
   font-size: 16px;
 }
 
+header.container-fluid {
+  padding: 0;
+}
+
 dl {
   margin: 0;
 }
@@ -99,8 +103,6 @@ dd {
   color: hsl(0, 0%, 46%);
 }
 
-
-
 section.summary h2 {
   color: hsl(0, 0%, 46%);
   margin-bottom: 32px;
@@ -124,6 +126,16 @@ dl.dl-horizontal dt {
     float: left;
     width: 320px
   }
+}
+
+dl dt.callable .name {
+  display: block;
+  float: none;
+  width: auto;
+}
+
+dl dt.callable .signature {
+  display:block;
 }
 
 .optional {
@@ -216,8 +228,4 @@ section {
 
 .constructor-modifier {
   font-style: italic;
-}
-
-.parameter-name {
-  color: hsl(0, 0%, 46%);
 }
