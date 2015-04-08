@@ -8,61 +8,58 @@
 
     </section>
 
-    {{#class.hasAnnotations}}
-    <section id="annotations">
-        <h4>Annotated by</h4>
-        <ul class="comma-separated class-relationships">
+    <section>
+        <dl class="dl-horizontal">
+        {{#class.hasAnnotations}}
+        <dt>Annotated by:</dt>
+        <dd><ul class="comma-separated class-relationships">
             {{#class.annotations}}
             <li>{{{.}}}</li>
             {{/class.annotations}}
-        </ul>
-    </section>
-    {{/class.hasAnnotations}}
+        </ul></dd>
+        {{/class.hasAnnotations}}
 
-    {{#class.hasSupertype}}
-    <section id="extends">
-        <h4>Extends</h4>
-        <ul class="gt-separated class-relationships">
+        {{#class.hasSupertype}}
+        <dt>Extends:</dt>
+        <dd><ul class="gt-separated class-relationships">
             {{#class.superChain}}
             <li>{{{linkedName}}}</li>
             {{/class.superChain}}
             <li>{{{linkedObjectType}}}</li>
-        </ul>
-    </section>
-    {{/class.hasSupertype}}
+        </ul></dd>
+        {{/class.hasSupertype}}
 
-    {{#class.hasInterfaces}}
-    <section id="implements">
-        <h4>Implements</h4>
+        {{#class.hasInterfaces}}
+        <dt>Implements:</dt>
+            <dd>
         <ul class="comma-separated class-relationships">
             {{#class.interfaces}}
             <li>{{{linkedName}}}</li>
             {{/class.interfaces}}
         </ul>
-    </section>
-    {{/class.hasInterfaces}}
+            </dd>
+        {{/class.hasInterfaces}}
 
-    {{#class.hasMixins}}
-    <section id="mixes-in">
-        <h4>Mixes-in</h4>
-        <ul class="comma-separated class-relationships">
+        {{#class.hasMixins}}
+        <dt>Mixes-in:</dt>
+        <dd><ul class="comma-separated class-relationships">
             {{#class.mixins}}
             <li>{{{linkedName}}}</li>
             {{/class.mixins}}
-        </ul>
-    </section>
-    {{/class.hasMixins}}
+        </ul></dd>
+        {{/class.hasMixins}}
 
-    {{#class.hasImplementors}}
-    <section id="implementors">
-        <h4>Implementors</h4>
-        <ul class="comma-separated class-relationships">
+        {{#class.hasImplementors}}
+        <dt>Implementors</dt>
+        <dd><ul class="comma-separated class-relationships">
             {{#class.implementors}}
             <li>{{{linkedName}}}</li>
             {{/class.implementors}}
-        </ul>
+        </ul></dd>
+        {{/class.hasImplementors}}
+        </dl>
+
     </section>
-    {{/class.hasImplementors}}
 
     {{#class.hasConstructors}}
     <section class="summary" id="constructors">
