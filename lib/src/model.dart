@@ -980,6 +980,12 @@ class Field extends ModelElement {
 
   bool get hasSetter => _field.setter != null;
 
+  bool get readOnly => hasGetter && !hasSetter;
+
+  bool get writeOnly => hasSetter && !hasGetter;
+
+  bool get readWrite => hasGetter && hasSetter;
+
   String get typeName => "property";
 
   String get ownerHref {

@@ -8,61 +8,58 @@
 
     </section>
 
-    {{#class.hasAnnotations}}
-    <section id="annotations">
-        <h4>Annotated by</h4>
-        <ul class="comma-separated class-relationships">
+    <section>
+        <dl class="dl-horizontal">
+        {{#class.hasAnnotations}}
+        <dt>Annotated by:</dt>
+        <dd><ul class="comma-separated class-relationships">
             {{#class.annotations}}
             <li>{{{.}}}</li>
             {{/class.annotations}}
-        </ul>
-    </section>
-    {{/class.hasAnnotations}}
+        </ul></dd>
+        {{/class.hasAnnotations}}
 
-    {{#class.hasSupertype}}
-    <section id="extends">
-        <h4>Extends</h4>
-        <ul class="gt-separated class-relationships">
+        {{#class.hasSupertype}}
+        <dt>Extends:</dt>
+        <dd><ul class="gt-separated class-relationships">
             {{#class.superChain}}
             <li>{{{linkedName}}}</li>
             {{/class.superChain}}
             <li>{{{linkedObjectType}}}</li>
-        </ul>
-    </section>
-    {{/class.hasSupertype}}
+        </ul></dd>
+        {{/class.hasSupertype}}
 
-    {{#class.hasInterfaces}}
-    <section id="implements">
-        <h4>Implements</h4>
+        {{#class.hasInterfaces}}
+        <dt>Implements:</dt>
+            <dd>
         <ul class="comma-separated class-relationships">
             {{#class.interfaces}}
             <li>{{{linkedName}}}</li>
             {{/class.interfaces}}
         </ul>
-    </section>
-    {{/class.hasInterfaces}}
+            </dd>
+        {{/class.hasInterfaces}}
 
-    {{#class.hasMixins}}
-    <section id="mixes-in">
-        <h4>Mixes-in</h4>
-        <ul class="comma-separated class-relationships">
+        {{#class.hasMixins}}
+        <dt>Mixes-in:</dt>
+        <dd><ul class="comma-separated class-relationships">
             {{#class.mixins}}
             <li>{{{linkedName}}}</li>
             {{/class.mixins}}
-        </ul>
-    </section>
-    {{/class.hasMixins}}
+        </ul></dd>
+        {{/class.hasMixins}}
 
-    {{#class.hasImplementors}}
-    <section id="implementors">
-        <h4>Implementors</h4>
-        <ul class="comma-separated class-relationships">
+        {{#class.hasImplementors}}
+        <dt>Implementors</dt>
+        <dd><ul class="comma-separated class-relationships">
             {{#class.implementors}}
             <li>{{{linkedName}}}</li>
             {{/class.implementors}}
-        </ul>
+        </ul></dd>
+        {{/class.hasImplementors}}
+        </dl>
+
     </section>
-    {{/class.hasImplementors}}
 
     {{#class.hasConstructors}}
     <section class="summary" id="constructors">
@@ -93,16 +90,7 @@
 
         <dl class="properties">
             {{#class.constants}}
-            <dt id="{{htmlId}}">
-                <span class="name">{{ name }}</span>
-                {{#constantValue}}
-                =
-                <span class="constant-value">{{ constantValue }}</span>
-                {{/constantValue}}
-            </dt>
-            <dd>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>constant}}
             {{/class.constants}}
         </dl>
     </section>
@@ -114,17 +102,7 @@
 
         <dl class="properties">
             {{#class.staticProperties}}
-            <dt id="{{htmlId}}">
-                <span class="name"><a href="{{href}}">{{ name }}</a></span>
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                <div>
-                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
-                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
-                </div>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>property}}
             {{/class.staticProperties}}
         </dl>
     </section>
@@ -135,16 +113,7 @@
         <h2>Static Methods</h2>
         <dl class="callables">
             {{#class.staticMethods}}
-            <dt id="{{htmlId}}">
-                <span class="name-and-params">
-                    <span class="name"><a href="{{href}}">{{ name }}</a></span>({{{ linkedParams }}})
-                </span>
-                &#8594;
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>callable}}
             {{/class.staticMethods}}
         </dl>
     </section>
@@ -156,32 +125,11 @@
 
         <dl class="properties">
             {{#class.instanceProperties}}
-            <dt id="{{htmlId}}">
-                <span class="name"><a href="{{href}}">{{ name }}</a></span>
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                <div>
-                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
-                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
-                </div>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>property}}
             {{/class.instanceProperties}}
 
             {{#class.inheritedProperties}}
-            <dt id="{{htmlId}}" class="inherited">
-                <span class="name"><a href="{{href}}">{{ name }}</a></span>
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                <div>
-                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
-                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
-                </div>
-                <div class="is-inherited">Inherited</div>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>property}}
             {{/class.inheritedProperties}}
         </dl>
     </section>

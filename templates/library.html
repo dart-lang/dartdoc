@@ -50,17 +50,7 @@
 
         <dl class="properties">
             {{#library.properties}}
-            <dt id="{{htmlId}}">
-                <span class="name"><a href="{{href}}">{{ name }}</a></span>
-                <span class="returntype">{{{ linkedReturnType }}}</span>
-            </dt>
-            <dd>
-                <div>
-                    <span class="{{#hasGetter}}has-it{{/hasGetter}} getter">read</span>
-                    <span class="{{#hasSetter}}has-it{{/hasSetter}} setter">write</span>
-                </div>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>property}}
             {{/library.properties}}
         </dl>
     </section>
@@ -72,14 +62,7 @@
 
         <dl class="properties">
             {{#library.constants}}
-            <dt id="{{htmlId}}">
-                <span class="name">{{{ linkedName }}}</span>
-                =
-                <span class="constant-value">{{ constantValue }}</span>
-            </dt>
-            <dd>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
-            </dd>
+            {{>constant}}
             {{/library.constants}}
         </dl>
     </section>
@@ -125,7 +108,5 @@
         </dl>
     </section>
     {{/library.hasExceptions}}
-
-</div>
 
 {{>footer}}
