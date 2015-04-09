@@ -114,6 +114,15 @@ void main() {
     test('has typedefs', () {
       expect(library.hasTypedefs, true);
     });
+
+    test('exported class', () {
+      expect(library.getClasses().any((c) => c.name == 'Helper'), true);
+    });
+
+    test('exported function', () {
+      expect(
+          library.getFunctions().any((f) => f.name == 'helperFunction'), false);
+    });
   });
 
   group('Class', () {
@@ -136,7 +145,7 @@ void main() {
     });
 
     test('correctly finds classes', () {
-      expect(classes, hasLength(11));
+      expect(classes, hasLength(12));
     });
 
     test('docs ', () {
@@ -146,7 +155,7 @@ void main() {
 
     test('docs refs', () {
       expect(B.resolveReferences(B.documentation),
-          'Extends class <a href=ex/Apple.html> Apple</a>');
+          'Extends class <a href=ex/Apple_class.html> Apple</a>');
     });
 
     test('abstract', () {
@@ -489,7 +498,7 @@ void main() {
 
     test('has the right annotation', () {
       expect(forAnnotation.annotations.first, equals(
-          '<a href="ex/ForAnnotation.html">ForAnnotation</a>(\'my value\')'));
+          '<a href="ex/ForAnnotation_class.html">ForAnnotation</a>(\'my value\')'));
     });
 
     test('methods has the right annotation', () {

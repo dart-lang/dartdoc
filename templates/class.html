@@ -8,6 +8,7 @@
 
     </section>
 
+    {{#class.hasModifiers}}
     <section>
         <dl class="dl-horizontal">
         {{#class.hasAnnotations}}
@@ -60,6 +61,7 @@
         </dl>
 
     </section>
+    {{/class.hasModifiers}}
 
     {{#class.hasConstructors}}
     <section class="summary" id="constructors">

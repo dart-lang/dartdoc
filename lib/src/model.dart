@@ -164,7 +164,12 @@ abstract class ModelElement {
       if (refElement == null) {
         return null;
       }
-      var refLibrary = new Library(refElement.library, package);
+      var refLibrary;
+      if (this is Library) {
+        refLibrary = this;
+      } else {
+        refLibrary = this.library;
+      }
       var e = new ModelElement.from(refElement, refLibrary);
       return e.href;
     }
@@ -432,7 +437,9 @@ class Package {
     if (e is Library) {
       return _libraries.any((lib) => lib.element == e.element);
     } else {
-      return _libraries.any((lib) => lib.element == e.element.library);
+      return _libraries.any((lib) => lib.element == e.element.library ||
+          (lib.element as LibraryElement).exportedLibraries
+              .contains(e.element.library));
     }
   }
 
@@ -446,11 +453,26 @@ class Library extends ModelElement {
   List<ModelFunction> _functions;
   List<Typedef> _typeDefs;
   List<TopLevelVariable> _variables;
+  List<String> _nameSpace;
 
   LibraryElement get _library => (element as LibraryElement);
 
   Library(LibraryElement element, this.package, [String source])
       : super(element, null, source);
+
+  List<String> get _exportedNameSpace {
+    if (_nameSpace == null) _buildExportedNameSpace();
+    return _nameSpace;
+  }
+
+  _buildExportedNameSpace() {
+    _nameSpace = [];
+    for (ExportElement e in _library.exports) {
+      Namespace namespace =
+          new NamespaceBuilder().createExportNamespaceForDirective(e);
+      _nameSpace.addAll(namespace.definedNames.keys);
+    }
+  }
 
   String get name {
     var source = _library.definingCompilationUnit.source;
@@ -464,10 +486,6 @@ class Library extends ModelElement {
 
   bool get isInSdk => _library.isInSdk;
 
-  List<Library> get exported => _library.exportedLibraries
-      .map((lib) => new Library(lib, package))
-      .toList();
-
   List<TopLevelVariable> _getVariables() {
     if (_variables != null) return _variables;
 
@@ -475,6 +493,11 @@ class Library extends ModelElement {
     elements.addAll(_library.definingCompilationUnit.topLevelVariables);
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.topLevelVariables);
+    }
+    for (LibraryElement le in _library.exportedLibraries) {
+      elements.addAll(le.definingCompilationUnit.topLevelVariables
+          .where((v) => _exportedNameSpace.contains(v.name))
+          .toList());
     }
     elements..removeWhere(isPrivate);
     _variables = elements
@@ -507,6 +530,11 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       enumClasses.addAll(cu.enums);
     }
+    for (LibraryElement le in _library.exportedLibraries) {
+      enumClasses.addAll(le.definingCompilationUnit.enums
+          .where((e) => _exportedNameSpace.contains(e.name))
+          .toList());
+    }
     _enums = enumClasses
         .where(isPublic)
         .map((e) => new Enum(e, this))
@@ -528,6 +556,11 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functionTypeAliases);
     }
+    for (LibraryElement le in _library.exportedLibraries) {
+      elements.addAll(le.definingCompilationUnit.functionTypeAliases
+          .where((f) => _exportedNameSpace.contains(f.name))
+          .toList());
+    }
     elements..removeWhere(isPrivate);
     _typeDefs = elements.map((e) => new Typedef(e, this)).toList();
     return _typeDefs;
@@ -543,6 +576,12 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functions);
     }
+    for (LibraryElement le in _library.exportedLibraries) {
+      elements.addAll(le.definingCompilationUnit.functions
+          .where((f) => _exportedNameSpace.contains(f.name))
+          .toList());
+    }
+    // TODO(keerti): fix source for exported libraries
     elements..removeWhere(isPrivate);
     _functions = elements.map((e) {
       String eSource =
@@ -560,7 +599,11 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       types.addAll(cu.types);
     }
-
+    for (LibraryElement le in _library.exportedLibraries) {
+      types.addAll(le.definingCompilationUnit.types
+          .where((t) => _exportedNameSpace.contains(t.name))
+          .toList());
+    }
     _classes = types
         .where(isPublic)
         .map((e) => new Class(
@@ -578,6 +621,8 @@ class Library extends ModelElement {
     return _allClasses.where((c) => !c.isErrorOrException).toList(
         growable: false);
   }
+
+  List<Class> get allClasses => _allClasses;
 
   bool get hasClasses => getClasses().isNotEmpty;
 
@@ -663,9 +708,17 @@ class Class extends ModelElement {
 
   String get kind => 'class';
 
+  String get fileName => "${name}_class.html";
+
   bool get isAbstract => _cls.isAbstract;
 
   bool get hasSupertype => supertype != null;
+
+  bool get hasModifiers => hasMixins ||
+      hasAnnotations ||
+      hasInterfaces ||
+      hasSupertype ||
+      hasImplementors;
 
   ElementType get supertype => _supertype;
 
@@ -897,7 +950,7 @@ class Class extends ModelElement {
       name.hashCode, library.name.hashCode, library.package.name.hashCode);
 
   @override
-  String get _href => '${library.fileName}/$name.html';
+  String get _href => '${library.fileName}/$fileName';
 }
 
 class Enum extends Class {
