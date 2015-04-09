@@ -622,7 +622,7 @@ class Library extends ModelElement {
         growable: false);
   }
 
-  List<Class> getAllClasses() => _allClasses;
+  List<Class> get allClasses => _allClasses;
 
   bool get hasClasses => getClasses().isNotEmpty;
 

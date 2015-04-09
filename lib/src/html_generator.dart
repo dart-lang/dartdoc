@@ -103,7 +103,7 @@ class HtmlGenerator extends Generator {
     package.libraries.forEach((Library lib) {
       generateLibrary(package, lib);
 
-      lib.getAllClasses().forEach((Class clazz) {
+      lib.allClasses.forEach((Class clazz) {
         generateClass(package, lib, clazz);
 
         clazz.constructors.forEach((constructor) {
