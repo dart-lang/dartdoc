@@ -674,6 +674,12 @@ class Class extends ModelElement {
 
   bool get hasSupertype => supertype != null;
 
+  bool get hasModifiers => hasMixins ||
+      hasAnnotations ||
+      hasInterfaces ||
+      hasSupertype ||
+      hasImplementors;
+
   ElementType get supertype => _supertype;
 
   List<ElementType> get superChain {
