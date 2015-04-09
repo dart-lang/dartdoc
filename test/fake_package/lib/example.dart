@@ -1,6 +1,8 @@
 /// a library
 library ex;
 
+export 'src/mylib.dart' show Helper;
+
 int function1(String s, bool b, lastParam) => 5;
 
 double number;

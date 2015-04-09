@@ -950,7 +950,7 @@ class Class extends ModelElement {
       name.hashCode, library.name.hashCode, library.package.name.hashCode);
 
   @override
-  String get _href => '${library.fileName}/$fileName.html';
+  String get _href => '${library.fileName}/$fileName';
 }
 
 class Enum extends Class {
