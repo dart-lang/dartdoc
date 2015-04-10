@@ -1,0 +1,17 @@
+{{>head}}
+
+<section class="multi-line-signature">
+    {{#typeDef}}
+        {{>callable_multiline}}
+    {{/typeDef}}
+</section>
+
+<section class="desc markdown">
+
+    {{#markdown}}
+    {{{ typeDef.documentation }}}
+    {{/markdown}}
+
+</section>
+
+{{>footer}}

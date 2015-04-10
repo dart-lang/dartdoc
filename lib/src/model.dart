@@ -479,6 +479,7 @@ class Library extends ModelElement {
     return source.isInSystemLibrary ? source.encoding : super.name;
   }
 
+  // TODO: this isn't really a fileName
   String get fileName {
     if (isInSdk) return name.replaceAll(':', '_');
     return name;
@@ -973,14 +974,10 @@ class ModelFunction extends ModelElement {
 
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
-  String get fileName => "${name}.html";
-
-  String get ownerHref => "${library.href}#${htmlId}";
-
-  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
+  String get fileName => "$name.html";
 
   @override
-  String get _href => '${library.fileName}/${fileName}';
+  String get _href => '${library.fileName}/$fileName';
 }
 
 class Typedef extends ModelElement {
@@ -994,11 +991,13 @@ class Typedef extends ModelElement {
     }
   }
 
+  String get fileName => '$name.html';
+
   String get linkedReturnType => modelType != null
       ? modelType.createLinkedReturnTypeName()
       : _typedef.returnType.name;
 
-  String get _href => '${library.fileName}.html#$name';
+  String get _href => '${library.name}/$fileName';
 }
 
 class Field extends ModelElement {
@@ -1052,8 +1051,6 @@ class Field extends ModelElement {
     }
   }
 
-  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
-
   String get _href {
     if (element.enclosingElement is ClassElement) {
       return '${library.fileName}/${element.enclosingElement.name}/$name.html';
@@ -1080,8 +1077,6 @@ class Constructor extends ModelElement {
 
   String get ownerHref =>
       "${library.getClassByName(_constructor.enclosingElement.name).href}#${htmlId}";
-
-  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
 
   @override
   String get name {
@@ -1134,8 +1129,6 @@ class Method extends ModelElement {
 
   String get ownerHref =>
       "${library.getClassByName(_method.enclosingElement.name).href}#${htmlId}";
-
-  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
 
   @override
   String get _href =>
@@ -1223,6 +1216,12 @@ class TopLevelVariable extends ModelElement {
 
   bool get isConst => _variable.isConst;
 
+  bool get readOnly => hasGetter && !hasSetter;
+
+  bool get writeOnly => hasSetter && !hasGetter;
+
+  bool get readWrite => hasGetter && hasSetter;
+
   String get linkedReturnType => modelType.linkedName;
 
   String get constantValue {
@@ -1230,9 +1229,6 @@ class TopLevelVariable extends ModelElement {
     if (v == null) return '';
     return v.substring(v.indexOf('= ') + 2, v.length);
   }
-
-  String get ownerHref => "${library.href}#${htmlId}";
-  String get linkedOwner => '<a href="${ownerHref}">${name}</a>';
 
   bool get hasGetter => _variable.getter != null;
 
