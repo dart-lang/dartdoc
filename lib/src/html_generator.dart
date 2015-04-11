@@ -196,7 +196,7 @@ class HtmlGenerator extends Generator {
       'htmlBase': '..',
       'metaDescription':
           '${lib.name} library API docs, for the Dart programming language.',
-      'navLinks': [package],
+      'navLinks': [package, lib],
       'layoutTitle': _layoutTitle(lib.name, 'library')
     };
 
@@ -235,7 +235,7 @@ class HtmlGenerator extends Generator {
       'metaDescription':
           'API docs for the ${clazz.name} ${clazz.kind} from the ${lib.name} library, for the Dart programming language.',
       'layoutTitle': _layoutTitle(clazz.nameWithGenerics, clazz.kind),
-      'navLinks': [package, lib],
+      'navLinks': [package, lib, clazz],
       'htmlBase': '..'
     };
 
@@ -254,6 +254,7 @@ class HtmlGenerator extends Generator {
       'class': clazz,
       'constructor': constructor,
       'layoutTitle': _layoutTitle(constructor.name, 'constructor'),
+      'navLinks': [package, lib, clazz, constructor],
       'htmlBase': '../..'
     };
 
@@ -271,6 +272,7 @@ class HtmlGenerator extends Generator {
       'library': lib,
       'class': eNum,
       'layoutTitle': _layoutTitle(eNum.name, 'enum'),
+      'navLinks': [package, lib, eNum],
       'htmlBase': '..'
     };
 
@@ -290,7 +292,7 @@ class HtmlGenerator extends Generator {
       'layoutTitle': _layoutTitle(function.name, 'function'),
       'metaDescription':
           'API docs for the ${function.name} function from the ${lib.name} library, for the Dart programming language.',
-      'navLinks': [package, lib],
+      'navLinks': [package, lib, function],
       'htmlBase': '..'
     };
 
@@ -314,7 +316,7 @@ class HtmlGenerator extends Generator {
       'layoutTitle': _layoutTitle(method.name, 'method'),
       'metaDescription':
           'API docs for the ${method.name} method from the ${clazz.name} class, for the Dart programming language.',
-      'navLinks': [package, lib, clazz],
+      'navLinks': [package, lib, clazz, method],
       'htmlBase': '../..'
     };
 
@@ -338,7 +340,7 @@ class HtmlGenerator extends Generator {
       'layoutTitle': _layoutTitle(property.name, 'constant'),
       'metaDescription':
           'API docs for the ${property.name} constant from the ${clazz.name} class, for the Dart programming language.',
-      'navLinks': [package, lib, clazz],
+      'navLinks': [package, lib, clazz, property],
       'htmlBase': '../..'
     };
 
@@ -362,7 +364,7 @@ class HtmlGenerator extends Generator {
       'layoutTitle': _layoutTitle(property.name, 'property'),
       'metaDescription':
           'API docs for the ${property.name} property from the ${clazz.name} class, for the Dart programming language.',
-      'navLinks': [package, lib, clazz],
+      'navLinks': [package, lib, clazz, property],
       'htmlBase': '../..'
     };
 
@@ -384,7 +386,7 @@ class HtmlGenerator extends Generator {
       'layoutTitle': _layoutTitle(property.name, 'property'),
       'metaDescription':
           'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
-      'navLinks': [package, lib],
+      'navLinks': [package, lib, property],
       'htmlBase': '..'
     };
 
@@ -406,7 +408,7 @@ class HtmlGenerator extends Generator {
       'layoutTitle': _layoutTitle(property.name, 'constant'),
       'metaDescription':
           'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
-      'navLinks': [package, lib],
+      'navLinks': [package, lib, property],
       'htmlBase': '..'
     };
 
@@ -427,7 +429,7 @@ class HtmlGenerator extends Generator {
       'layoutTitle': _layoutTitle(typeDef.name, 'typedef'),
       'metaDescription':
       'API docs for the ${typeDef.name} property from the ${lib.name} library, for the Dart programming language.',
-      'navLinks': [package, lib],
+      'navLinks': [package, lib, typeDef],
       'htmlBase': '..'
     };
 
