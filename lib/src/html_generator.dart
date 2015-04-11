@@ -66,8 +66,7 @@ class Templates {
 
   String _getTemplateFile(String templatePath) {
     var script = new File(Platform.script.toFilePath());
-    var tmplFile =
-        new File(path.join(script.parent.parent.path, templatePath));
+    var tmplFile = new File(path.join(script.parent.parent.path, templatePath));
     return tmplFile.readAsStringSync();
   }
 
@@ -430,11 +429,12 @@ class HtmlGenerator extends Generator {
       'metaDescription':
       'API docs for the ${typeDef.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib, typeDef],
+      'navLinks': [package, lib],
       'htmlBase': '..'
     };
 
-    _build(path.joinAll(typeDef.href.split('/')),
-        _templates.typeDefTemplate, data);
+    _build(path.joinAll(typeDef.href.split('/')), _templates.typeDefTemplate,
+        data);
   }
 
   void _copyResources() {
