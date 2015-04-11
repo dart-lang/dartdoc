@@ -21,14 +21,16 @@
 <body>
 
 <header class="container-fluid" id="title">
-    <div class="container">
-        <nav>
-            <ul class="breadcrumbs gt-separated">
+    <nav class="navbar navbar-fixed-top">
+        <div class="container">
+            <ol class="breadcrumbs gt-separated">
                 {{#navLinks}}
                 <li><a class="wsk-navigation__link" href="{{href}}">{{name}}</a></li>
                 {{/navLinks}}
-            </ul>
-        </nav>
+            </ol>
+        </div>
+    </nav>
+    <div class="container">
         <div class="title-description">
             <h1 class="title">
                 {{{ layoutTitle }}}
