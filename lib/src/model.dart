@@ -1025,7 +1025,7 @@ class Field extends ModelElement {
     if (_field.node == null) return null;
     var v = _field.node.toSource();
     if (v == null) return null;
-    return v.substring(v.indexOf('= ') + 2, v.length);
+    return v.substring(v.indexOf('=') + 1, v.length).trim();
   }
 
   bool get hasGetter => _field.getter != null;
