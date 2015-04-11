@@ -1,12 +1,10 @@
 {{>head}}
 
   <section class="multi-line-signature">
-    <code>
-        {{#property}}
-          <span class="returntype">{{{ linkedReturnType }}}</span>
-          <span class="name">{{{ linkedOwner }}}</span>
-        {{/property}}
-    </code>
+    {{#property}}
+      <span class="returntype">{{{ linkedReturnType }}}</span>
+      <span class="name">{{ name }}</span>
+    {{/property}}
   </section>
 
   <div>

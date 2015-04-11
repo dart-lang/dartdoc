@@ -2,15 +2,7 @@
 
     <section class="multi-line-signature">
         {{#function}}
-            <span class="returntype">{{{ linkedReturnType }}}</span>
-            <span class="name">{{{ linkedOwner }}}</span>(
-            {{#hasParameters}}
-            <br>
-            <div class="parameters">
-              {{{linkedParamsLines}}}
-            </div>
-            {{/hasParameters}}
-            )
+            {{>callable_multiline}}
         {{/function}}
     </section>
 

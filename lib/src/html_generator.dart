@@ -32,7 +32,8 @@ class Templates {
       propertyTemplate,
       constantTemplate,
       topLevelConstantTemplate,
-      topLevelPropertyTemplate;
+      topLevelPropertyTemplate,
+      typeDefTemplate;
 
   final Map<String, String> _partialTemplates = {};
 
@@ -51,6 +52,7 @@ class Templates {
         _loadTemplate('templates/top_level_constant.html');
     topLevelPropertyTemplate =
         _loadTemplate('templates/top_level_property.html');
+    typeDefTemplate = _loadTemplate('templates/typedef.html');
   }
 
   String _partial(String name) {
@@ -63,8 +65,8 @@ class Templates {
   }
 
   String _getTemplateFile(String templatePath) {
-    File script = new File(Platform.script.toFilePath());
-    File tmplFile =
+    var script = new File(Platform.script.toFilePath());
+    var tmplFile =
         new File(path.join(script.parent.parent.path, templatePath));
     return tmplFile.readAsStringSync();
   }
@@ -149,6 +151,10 @@ class HtmlGenerator extends Generator {
 
       lib.getFunctions().forEach((function) {
         generateFunction(package, lib, function);
+      });
+
+      lib.getTypedefs().forEach((typeDef) {
+        generateTypeDef(package, lib, typeDef);
       });
     });
     // if (_url != null) {
@@ -264,7 +270,8 @@ class HtmlGenerator extends Generator {
       'documentation': eNum,
       'library': lib,
       'class': eNum,
-      'layoutTitle': _layoutTitle(eNum.name, 'enum')
+      'layoutTitle': _layoutTitle(eNum.name, 'enum'),
+      'htmlBase': '..'
     };
 
     _build(path.joinAll(eNum.href.split('/')), _templates.classTemplate, data);
@@ -405,6 +412,27 @@ class HtmlGenerator extends Generator {
 
     _build(path.joinAll(property.href.split('/')),
         _templates.topLevelConstantTemplate, data);
+  }
+
+  void generateTypeDef(Package package, Library lib, Typedef typeDef) {
+    Map data = {
+      'package': package,
+      'generatedOn': generatedOn,
+      'markdown': renderMarkdown,
+      'documentation': typeDef.documentation,
+      'oneLiner': oneLiner,
+      'library': lib,
+      'typeDef': typeDef,
+      'title': '${typeDef.name} typedef - ${lib.name} library - Dart API',
+      'layoutTitle': _layoutTitle(typeDef.name, 'typedef'),
+      'metaDescription':
+      'API docs for the ${typeDef.name} property from the ${lib.name} library, for the Dart programming language.',
+      'navLinks': [package, lib],
+      'htmlBase': '..'
+    };
+
+    _build(path.joinAll(typeDef.href.split('/')),
+        _templates.typeDefTemplate, data);
   }
 
   void _copyResources() {
