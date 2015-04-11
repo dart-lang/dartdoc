@@ -21,8 +21,23 @@ body {
   padding-top: 50px;
 }
 
-nav {
+/* some of this is to reset bootstrap */
+nav.navbar {
   background-color: inherit;
+  min-height: 56px;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  -webkit-justify-content: center;
+}
+
+header {
+  background-color: #00BCD4;
+  height: 200px;
+  color: white;
 }
 
 header.container-fluid {
@@ -78,12 +93,6 @@ code {
   .container {
     width:768px;
   }
-}
-
-header {
-  background-color: #00BCD4;
-  height: 232px;
-  color: white;
 }
 
 header h1 {
