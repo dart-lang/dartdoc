@@ -233,8 +233,13 @@ ol.breadcrumbs {
 }
 
 section {
-  padding: 32px 0 32px 0;
-  border-bottom: 1px solid #eeeeee;
+  margin-bottom: 64px;
+  padding-top: 64px;
+  border-top: 1px solid #eeeeee;
+}
+
+section.desc {
+  border: 0;
 }
 
 .constructor-modifier {
