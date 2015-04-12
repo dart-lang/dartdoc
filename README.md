@@ -7,6 +7,10 @@ A documentation generator for Dart.
 
 Note: This tool is currently in alpha stage.
 
+## Installing dartdoc
+
+Run `pub global activate dartdoc` to install the `dartdoc` tool.
+
 ## Running dartdoc
 
 ### Generating documentation for a package
