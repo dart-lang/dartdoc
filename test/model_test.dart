@@ -207,7 +207,7 @@ void main() {
 
     test('get operators', () {
       expect(Dog.operators, hasLength(1));
-      expect(Dog.operators[0].name, '==');
+      expect(Dog.operators[0].name, 'operator ==');
     });
 
     test('inherited methods', () {
