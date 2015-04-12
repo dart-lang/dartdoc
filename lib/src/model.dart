@@ -182,24 +182,22 @@ abstract class ModelElement {
   String toString() => '$runtimeType $name';
 
   List<String> get annotations {
-    var node = element.node;
-    if (node is AnnotatedNode) {
-      List<Annotation> annotations = node.metadata;
-      if (annotations.isNotEmpty) {
-        return annotations.map((f) {
-          var annotationString = f.toSource().substring(1);
-          var e = f.element;
-          if (e != null && (e is ConstructorElement)) {
-            var me = new ModelElement.from(
-                e.enclosingElement, new Library(e.library, package));
-            if (me.href != null) {
-              return annotationString.replaceAll(
-                  me.name, '<a href="${me.href}">${me.name}</a>');
-            }
+    List<ElementAnnotation> annotations = element.metadata;
+    if (annotations.isNotEmpty) {
+      return annotations.map((ElementAnnotation a) {
+        //var annotationString = a.element.node.toSource().substring(1);
+        var annotationString = a.element.name;
+        var e = a.element;
+        if (e != null && (e is ConstructorElement)) {
+          var me = new ModelElement.from(
+              e.enclosingElement, new Library(e.library, package));
+          if (me.href != null) {
+            return annotationString.replaceAll(
+                me.name, '<a href="${me.href}">${me.name}</a>');
           }
-          return annotationString;
-        }).toList(growable: false);
-      }
+        }
+        return annotationString;
+      }).toList(growable: false);
     }
     return [];
   }
@@ -324,6 +322,13 @@ abstract class ModelElement {
         Parameter p = params[i];
         if (i > 0) buf.write(', ');
         buf.write('<span class="parameter">');
+        if (p.hasAnnotations) {
+          buf.write('<ol class="comma-separated annotations">');
+          p.annotations.forEach((String annotation) {
+            buf.write('<li class="annotation">@$annotation</li>');
+          });
+          buf.write('</ol> ');
+        }
         if (p.modelType.isFunctionType) {
           buf.write(
               '<span class="type-annotation">${(p.modelType.element as Typedef).linkedReturnType}</span>');
