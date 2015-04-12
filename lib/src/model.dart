@@ -486,11 +486,7 @@ class Library extends ModelElement {
     return source.isInSystemLibrary ? source.encoding : super.name;
   }
 
-  // TODO: this isn't really a fileName
-  String get fileName {
-    if (isInSdk) return name.replaceAll(':', '_');
-    return name;
-  }
+  String get nameForFile => name.replaceAll(':', '_');
 
   bool get isInSdk => _library.isInSdk;
 
@@ -642,7 +638,7 @@ class Library extends ModelElement {
   }
 
   @override
-  String get _href => '$fileName/index.html';
+  String get _href => '$nameForFile/index.html';
 }
 
 class Class extends ModelElement {
@@ -958,7 +954,7 @@ class Class extends ModelElement {
       name.hashCode, library.name.hashCode, library.package.name.hashCode);
 
   @override
-  String get _href => '${library.fileName}/$fileName';
+  String get _href => '${library.nameForFile}/$fileName';
 }
 
 class Enum extends Class {
@@ -984,7 +980,7 @@ class ModelFunction extends ModelElement {
   String get fileName => "$name.html";
 
   @override
-  String get _href => '${library.fileName}/$fileName';
+  String get _href => '${library.nameForFile}/$fileName';
 }
 
 class Typedef extends ModelElement {
@@ -1047,22 +1043,11 @@ class Field extends ModelElement {
 
   String get typeName => "property";
 
-  String get ownerHref {
-    if (element.enclosingElement is ClassElement) {
-      return "${library.getClassByName(_field.enclosingElement.name).href}#${htmlId}";
-    } else if (element.enclosingElement is LibraryElement) {
-      return "${library.fileName}.html#$name";
-    } else {
-      throw new StateError(
-          '$name is not in a class or library, instead a ${element.enclosingElement}');
-    }
-  }
-
   String get _href {
     if (element.enclosingElement is ClassElement) {
-      return '${library.fileName}/${element.enclosingElement.name}/$name.html';
+      return '${library.nameForFile}/${element.enclosingElement.name}/$name.html';
     } else if (element.enclosingElement is LibraryElement) {
-      return '${library.fileName}/$name.html';
+      return '${library.nameForFile}/$name.html';
     } else {
       throw new StateError(
           '$name is not in a class or library, instead a ${element.enclosingElement}');
@@ -1078,12 +1063,9 @@ class Constructor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.fileName}/${_constructor.enclosingElement.name}/$name.html';
+      '${library.nameForFile}/${_constructor.enclosingElement.name}/$name.html';
 
   bool get isConst => _constructor.isConst;
-
-  String get ownerHref =>
-      "${library.getClassByName(_constructor.enclosingElement.name).href}#${htmlId}";
 
   @override
   String get name {
@@ -1134,12 +1116,9 @@ class Method extends ModelElement {
 
   String get fileName => "${name}.html";
 
-  String get ownerHref =>
-      "${library.getClassByName(_method.enclosingElement.name).href}#${htmlId}";
-
   @override
   String get _href =>
-      '${library.fileName}/${_method.enclosingElement.name}/${fileName}';
+      '${library.nameForFile}/${_method.enclosingElement.name}/${fileName}';
 
   bool get isInherited => _isInherited;
 }
@@ -1153,15 +1132,18 @@ class Operator extends Method {
   String get typeName => 'operator';
 
   @override
-  String get fileName => "${_rewriteOperatorName(name)}.html";
-
-  /// Rewrite Operator Names to be friendly.
-  static String _rewriteOperatorName(String op) {
-    if (friendlyNames.containsKey(op)) {
-      return ":${friendlyNames[op]}";
+  String get fileName {
+    var actualName = super.name;
+    if (friendlyNames.containsKey(actualName)) {
+      return "operator_${friendlyNames[actualName]}.html";
     } else {
-      return op;
+      return '$actualName.html';
     }
+  }
+
+  @override
+  String get name {
+    return 'operator ${super.name}';
   }
 
   static const Map<String, String> friendlyNames = const {
@@ -1199,7 +1181,7 @@ class Accessor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.fileName}/${_accessor.enclosingElement.name}.html#${htmlId}';
+      '${library.nameForFile}/${_accessor.enclosingElement.name}.html#${htmlId}';
 }
 
 /// Top-level variables. But also picks up getters and setters?
@@ -1242,7 +1224,7 @@ class TopLevelVariable extends ModelElement {
   bool get hasSetter => _variable.setter != null;
 
   @override
-  String get _href => '${library.fileName}/${name}.html';
+  String get _href => '${library.nameForFile}/${name}.html';
 }
 
 class Parameter extends ModelElement {
@@ -1279,9 +1261,9 @@ class Parameter extends ModelElement {
     var p = _parameter.enclosingElement;
 
     if (p is FunctionElement) {
-      return '${library.fileName}/${p.name}.html';
+      return '${library.nameForFile}/${p.name}.html';
     } else {
-      return '${library.fileName}/${p.enclosingElement.name}/' +
+      return '${library.nameForFile}/${p.enclosingElement.name}/' +
           '${Operator._rewriteOperatorName(p.name)}.html';
     }
   }
@@ -1299,7 +1281,7 @@ class TypeParameter extends ModelElement {
 
   @override
   String get _href =>
-      '${library.fileName}/${_typeParameter.enclosingElement.name}/$name';
+      '${library.nameForFile}/${_typeParameter.enclosingElement.name}/$name';
 }
 
 class ElementType {

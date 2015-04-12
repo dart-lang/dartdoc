@@ -199,7 +199,7 @@ class HtmlGenerator extends Generator {
       'layoutTitle': _layoutTitle(lib.name, 'library')
     };
 
-    _build(path.join(lib.fileName, 'index.html'), _templates.libraryTemplate,
+    _build(path.join(lib.nameForFile, 'index.html'), _templates.libraryTemplate,
         data);
   }
 
