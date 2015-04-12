@@ -1,11 +1,12 @@
 <dt id="{{htmlId}}" class="callable">
-    <span class="name"><a href="{{href}}">{{ name }}</a></span>
+    <span class="name"><a href="{{href}}">{{ name }}</a>
+    {{#isInherited}}<span class="is-inherited">Inherited</span>{{/isInherited}}
+    </span>
     <span class="signature">({{{ linkedParams }}})
         &#8594;
         <span class="returntype">{{{ linkedReturnType }}}</span>
     </span>
 </dt>
 <dd>
-    {{#isInherited}}<div class="is-inherited">Inherited</div>{{/isInherited}}
     {{#oneLiner}}{{ documentation }}{{/oneLiner}}
 </dd>
