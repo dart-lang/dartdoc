@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="prettify.css">
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="material-design-typography.css">
     <link rel="stylesheet" href="styles.css">
 
     <meta name="description" content="{{ metaDescription }}">
@@ -23,11 +22,11 @@
 <header class="container-fluid" id="title">
     <nav class="navbar navbar-fixed-top">
         <div class="container">
-            <ol class="breadcrumbs gt-separated">
-                {{#navLinks}}
-                <li><a class="wsk-navigation__link" href="{{href}}">{{name}}</a></li>
-                {{/navLinks}}
-            </ol>
+                <ol class="breadcrumbs gt-separated">
+                    {{#navLinks}}
+                    <li><a href="{{href}}">{{name}}</a></li>
+                    {{/navLinks}}
+                </ol>
         </div>
     </nav>
     <div class="container">
