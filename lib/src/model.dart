@@ -1274,7 +1274,7 @@ class TypeParameter extends ModelElement {
 
   @override
   String get _href =>
-      '${library.nameForFile}/${_typeParameter.enclosingElement.name}/$name';
+      throw new UnsupportedError('type parameters do not have hrefs');
 }
 
 class ElementType {
@@ -1301,8 +1301,6 @@ class ElementType {
       (_type as ParameterizedType).typeArguments.isNotEmpty;
 
   String get _returnTypeName => (_type as FunctionType).returnType.name;
-
-  bool get _hasReturnType => _type is FunctionType;
 
   ElementType get _returnType {
     var rt = (_type as FunctionType).returnType;

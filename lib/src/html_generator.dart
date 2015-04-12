@@ -156,9 +156,9 @@ class HtmlGenerator extends Generator {
         generateTypeDef(package, lib, typeDef);
       });
     });
-    // if (_url != null) {
-    //   generateSiteMap();
-    // }
+    if (_url != null) {
+      //generateSiteMap();
+    }
   }
 
   void generatePackage() {
@@ -561,7 +561,6 @@ class PlainTextRenderer implements md.NodeVisitor {
 
   StringBuffer buffer;
 
-  @override
   String render(List<md.Node> nodes) {
     buffer = new StringBuffer();
 
