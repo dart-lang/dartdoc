@@ -1258,14 +1258,7 @@ class Parameter extends ModelElement {
 
   @override
   String get _href {
-    var p = _parameter.enclosingElement;
-
-    if (p is FunctionElement) {
-      return '${library.nameForFile}/${p.name}.html';
-    } else {
-      return '${library.nameForFile}/${p.enclosingElement.name}/' +
-          '${Operator._rewriteOperatorName(p.name)}.html';
-    }
+    throw new UnsupportedError('parameters do not have hrefs');
   }
 }
 
