@@ -429,7 +429,6 @@ class HtmlGenerator extends Generator {
       'metaDescription':
           'API docs for the ${typeDef.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib, typeDef],
-      'navLinks': [package, lib],
       'htmlBase': '..'
     };
 
