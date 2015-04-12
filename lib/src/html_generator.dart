@@ -427,7 +427,7 @@ class HtmlGenerator extends Generator {
       'title': '${typeDef.name} typedef - ${lib.name} library - Dart API',
       'layoutTitle': _layoutTitle(typeDef.name, 'typedef'),
       'metaDescription':
-      'API docs for the ${typeDef.name} property from the ${lib.name} library, for the Dart programming language.',
+          'API docs for the ${typeDef.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib, typeDef],
       'navLinks': [package, lib],
       'htmlBase': '..'
