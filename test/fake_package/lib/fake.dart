@@ -261,8 +261,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 }
 
 /// A single optional positional param, no type annotation, no default value.
-
-void onlyPositionalWithNoDefaultNoType([anything]) {}
+@greatAnnotation
+void onlyPositionalWithNoDefaultNoType([@greatestAnnotation anything]) {}
 
 /// Top-level function with 1 param and 2 optional named params, 1 with a
 /// default value.
@@ -276,3 +276,9 @@ thisIsAsync() async => 42;
 
 /// Explicitly returns a Future and is marked async.
 Future thisIsAlsoAsync() async => 43;
+
+/// This is a great thing.
+const greatAnnotation = 'great';
+
+/// This is the greatest thing.
+const greatestAnnotation = 'greatest';

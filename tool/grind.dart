@@ -9,7 +9,7 @@ import 'package:grinder/grinder.dart';
 
 final Directory DOC_DIR = new Directory(DEFAULT_OUTPUT_DIRECTORY);
 
-void main([List<String> args]) {
+main([List<String> args]) {
   task('init', defaultInit);
   task('docitself', testDartdoc, ['init']);
   task('analyze', analyze);
@@ -19,7 +19,7 @@ void main([List<String> args]) {
 /**
  * Run dartdoc and check that the docs are generated.
  */
-void testDartdoc(GrinderContext context) {
+testDartdoc(GrinderContext context) {
   if (DOC_DIR.existsSync()) DOC_DIR.deleteSync(recursive: true);
 
   try {
@@ -35,7 +35,7 @@ void testDartdoc(GrinderContext context) {
   }
 }
 
-void analyze(GrinderContext context) {
+analyze(GrinderContext context) {
   Analyzer.analyzePaths(
       context, ['bin/dartdoc.dart', 'lib/dartdoc.dart', 'test/all.dart'],
       fatalWarnings: true);

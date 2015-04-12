@@ -1,3 +1,12 @@
+{{#hasAnnotations}}
+<div>
+    <ol class="comma-separated metadata-annotations">
+        {{#annotations}}
+        <li class="metadata-annotation">@{{.}}</li>
+        {{/annotations}}
+    </ol>
+</div>
+{{/hasAnnotations}}
 <span class="returntype">{{{ linkedReturnType }}}</span>
 <span class="name">{{ name }}</span>(
 {{#hasParameters}}
