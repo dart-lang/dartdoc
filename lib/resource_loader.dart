@@ -1,0 +1,123 @@
+/// Attempts to make it possible to load
+/// resources, independent of how the Dart
+/// app is run.
+library resource_loader;
+
+import 'dart:io' show Platform, File;
+import 'package:path/path.dart' as path;
+import 'package:pub_cache/pub_cache.dart';
+import 'package:http/http.dart' as http;
+import 'dart:async' show Future;
+
+Future<String> loadAsString(String path) {
+  if (!path.startsWith('package:')) {
+    throw new ArgumentError('path must begin with package:');
+  }
+  return _doLoad(path);
+}
+
+Future<String> _doLoad(final String path) {
+  var scriptUri = Platform.script;
+  if (scriptUri.toString().startsWith('http')) {
+    return _doLoadOverHttp(path);
+  } else if (scriptUri.toString().endsWith('.snapshot')) {
+    return _doLoadWhenSnapshot(path);
+  } else {
+    return _doLoadOverFileFromPackagesDir(path);
+  }
+}
+
+Future<String> _doLoadWhenSnapshot(final String resourcePath) {
+  var scriptFilePath = Platform.script.toFilePath();
+  // Check if we're running as a pub globally installed package
+  // Jump back out to where our source is
+  var cacheDirPath = PubCache.getSystemCacheLocation().path;
+  if (scriptFilePath.startsWith(cacheDirPath)) {
+    // find packages installed with pub
+    var appName = _appNameWhenGloballyInstalled();
+    var installedApplication = new PubCache()
+        .getGlobalApplications()
+        .firstWhere((app) => app.name == appName);
+    if (installedApplication == null) {
+      throw new StateError(
+          'Could not find globally installed app $appName. Are you running as a snapshot from the global_packages directory?');
+    }
+    var resourcePackageName = _packageNameForResource(resourcePath);
+    var resourcePackageRef = installedApplication
+        .getPackageRefs()
+        .firstWhere((ref) => ref.name == resourcePackageName);
+    if (resourcePackageRef == null) {
+      throw new StateError(
+          'Could not find package dependency for $resourcePackageName');
+    }
+    var resourcePackage = resourcePackageRef.resolve();
+    var resourcePackageDir = resourcePackage.location;
+    return _doLoadOverFileFromLocation(resourcePath, resourcePackageDir.path);
+  } else {
+    // maybe we're a snapshot next to a packages/ dir?
+    return _doLoadOverFileFromPackagesDir(resourcePath);
+  }
+}
+
+Future<String> _doLoadOverHttp(final String resourcePath) {
+  var scriptUri = Platform.script;
+  var convertedResourcePath = _convertPackageSchemeToPackagesDir(resourcePath);
+  var segmentsToResource = scriptUri.pathSegments.sublist(
+      0, scriptUri.pathSegments.length - 1)
+    ..addAll(path.split(convertedResourcePath));
+  var fullPath = scriptUri.replace(pathSegments: segmentsToResource);
+
+  return http.read(fullPath);
+}
+
+Future<String> _doLoadOverFileFromLocation(
+    final String resourcePath, final String baseDir) {
+  var convertedPath = _convertPackageSchemeToPackagesDir(resourcePath);
+  // remove 'packages' and package name
+  var pathInsideLib = path.split(convertedPath).sublist(2);
+  // put the baseDir in front
+  pathInsideLib.insert(0, baseDir);
+  // put it all back together
+  var fullPath = path.joinAll(pathInsideLib);
+  return _readFile(resourcePath, fullPath);
+}
+
+// TODO: respect package root
+// Meanwhile, assume packages/ is next to entry point of script
+Future<String> _doLoadOverFileFromPackagesDir(final String resourcePath) {
+  var convertedPath = _convertPackageSchemeToPackagesDir(resourcePath);
+  var scriptFile = new File(Platform.script.toFilePath());
+  var baseDir = path.dirname(scriptFile.path);
+  var fullPath = path.join(baseDir, convertedPath);
+  return _readFile(resourcePath, fullPath);
+}
+
+Future<String> _readFile(final String resourcePath, final String fullPath) {
+  var file = new File(fullPath);
+  if (!file.existsSync()) {
+    throw new ArgumentError('$resourcePath does not exist, tried $fullPath');
+  }
+  return file.readAsString();
+}
+
+String _convertPackageSchemeToPackagesDir(String resourcePath) {
+  var withoutScheme =
+      resourcePath.substring('package:'.length, resourcePath.length);
+  return path.join('packages', withoutScheme);
+}
+
+String _appNameWhenGloballyInstalled() {
+  var parts = path.split(Platform.script.toFilePath());
+  var marker = parts.indexOf('global_packages');
+  if (marker < 0) {
+    throw new StateError(
+        '${Platform.script.toFilePath()} does not include global_packages');
+  }
+  return parts[marker + 1];
+}
+
+String _packageNameForResource(final String resourcePath) {
+  var parts = path.split(_convertPackageSchemeToPackagesDir(resourcePath));
+  // first part is 'packages', second part is the package name
+  return parts[1];
+}

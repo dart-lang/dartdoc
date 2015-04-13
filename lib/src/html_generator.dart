@@ -438,7 +438,7 @@ class HtmlGenerator extends Generator {
 
   void _copyResources() {
     File script = new File(Platform.script.toFilePath());
-    var sourcePath = path.join(script.parent.parent.path, 'resources');
+    var sourcePath = path.join(script.parent.parent.path, 'lib', 'resources');
     if (!new Directory(sourcePath).existsSync()) {
       throw new StateError('resources/ directory not found');
     }

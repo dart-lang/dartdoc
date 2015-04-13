@@ -13,6 +13,8 @@ import 'package:cli_util/cli_util.dart' as cli_util;
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
 void main(List<String> arguments) {
+  exitWhenRunFromSnapshot();
+
   var parser = _createArgsParser();
   var results = parser.parse(arguments);
 
@@ -52,6 +54,16 @@ void main(List<String> arguments) {
   var generators = initGenerators(url, footer);
   new DartDoc(currentDir, excludeLibraries, sdkDir, generators, sdkDocs, readme)
     ..generateDocs();
+}
+
+exitWhenRunFromSnapshot() {
+  var script = Platform.script;
+  print(script);
+  if (script.toString().contains('snapshot')) {
+    print('Cannot run from snapshot when installed via pub global activate.');
+    print('See https://github.com/dart-lang/dartdoc/issues/297');
+    exit(1);
+  }
 }
 
 /// Print help if we are passed the help option or invalid arguments.
