@@ -67,7 +67,7 @@ Future<Uint8List> _doLoadWhenSnapshot(final String resourcePath) {
     var resourcePackageDir = resourcePackage.location;
     var fullPath = resourcePackageDir.path;
     return _doLoadOverFileFromLocation(resourcePath,
-      fullPath.contains("git") ? path.join(fullPath, "lib") : fullPath);
+        fullPath.contains("git") ? path.join(fullPath, "lib") : fullPath);
   } else {
     // maybe we're a snapshot next to a packages/ dir?
     return _doLoadFromFileFromPackagesDir(resourcePath);
