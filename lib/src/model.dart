@@ -1051,7 +1051,8 @@ class Field extends ModelElement {
     if (_field.node == null) return null;
     var v = _field.node.toSource();
     if (v == null) return null;
-    return v.substring(v.indexOf('=') + 1, v.length).trim();
+    var string = v.substring(v.indexOf('= ') + 2, v.length);
+    return string.replaceAll(modelType.name, modelType.linkedName);
   }
 
   bool get hasGetter => _field.getter != null;
@@ -1239,7 +1240,8 @@ class TopLevelVariable extends ModelElement {
   String get constantValue {
     var v = (_variable as ConstTopLevelVariableElementImpl).node.toSource();
     if (v == null) return '';
-    return v.substring(v.indexOf('= ') + 2, v.length);
+    var string = v.substring(v.indexOf('= ') + 2, v.length);
+    return string.replaceAll(modelType.name, modelType.linkedName);
   }
 
   bool get hasGetter => _variable.getter != null;

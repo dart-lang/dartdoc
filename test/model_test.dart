@@ -145,7 +145,7 @@ void main() {
     });
 
     test('correctly finds classes', () {
-      expect(classes, hasLength(12));
+      expect(classes, hasLength(13));
     });
 
     test('docs ', () {
@@ -347,18 +347,24 @@ void main() {
   });
 
   group('Constant', () {
-    TopLevelVariable constant;
+    TopLevelVariable constant, cat;
 
     setUp(() {
       constant = library.getConstants()[0];
+      cat = library.getConstants()[2];
     });
 
-    test('found two constants', () {
-      expect(library.getConstants(), hasLength(2));
+    test('found three constants', () {
+      expect(library.getConstants(), hasLength(3));
     });
 
     test('is constant', () {
       expect(constant.isConst, isTrue);
+    });
+
+    test('is linked', () {
+      expect(cat.constantValue,
+          'const <a href="ex/ConstantCat_class.html">ConstantCat</a>(\'tabby\')');
     });
   });
 
@@ -456,7 +462,7 @@ void main() {
     });
 
     test('C has implementors', () {
-      expect(implC, hasLength(2));
+      expect(implC, hasLength(3));
       expect(implC[0].name, equals('B'));
       expect(implC[1].name, equals('Dog'));
     });

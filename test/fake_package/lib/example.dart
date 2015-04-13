@@ -11,6 +11,7 @@ get y => 2;
 
 const String COLOR = 'red';
 const String COMPLEX_COLOR = 'red' + '-' + 'green' + '-' + 'blue';
+const ConstantCat MY_CAT = const ConstantCat('tabby');
 
 typedef String processMessage(String msg);
 
@@ -117,3 +118,11 @@ abstract class _PrivateAbstractClass {
 }
 
 class PublicClassExtendsPrivateClass extends _PrivateAbstractClass {}
+
+class ConstantCat implements Cat {
+  final String name;
+
+  const ConstantCat(this.name);
+
+  bool get isImplemented => true;
+}
