@@ -9,9 +9,9 @@ double number;
 
 get y => 2;
 
+const String COLOR = 'red';
 const String COLOR_GREEN = 'green';
 const String COLOR_ORANGE = 'orange';
-const String COLOR = 'red';
 const String COMPLEX_COLOR = 'red' + '-' + 'green' + '-' + 'blue';
 const ConstantCat MY_CAT = const ConstantCat('tabby');
 
