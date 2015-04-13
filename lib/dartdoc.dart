@@ -26,7 +26,7 @@ const String DEFAULT_OUTPUT_DIRECTORY = 'docs';
 const String NAME = 'dartdoc';
 
 // Update when pubspec version changes
-const String VERSION = '0.0.1';
+const String VERSION = '0.0.1+1';
 
 /// Initialize and setup the generators
 List<Generator> initGenerators(String url, String footer) {
