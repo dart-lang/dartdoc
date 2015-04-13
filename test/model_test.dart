@@ -347,22 +347,29 @@ void main() {
   });
 
   group('Constant', () {
-    TopLevelVariable constant, cat;
+    TopLevelVariable greenConstant, cat, orangeConstant;
 
     setUp(() {
-      constant = library.getConstants()[0];
-      cat = library.getConstants()[2];
+      greenConstant =
+          library.getConstants().firstWhere((c) => c.name == 'COLOR_GREEN');
+      orangeConstant =
+          library.getConstants().firstWhere((c) => c.name == 'COLOR_ORANGE');
+      cat = library.getConstants().firstWhere((c) => c.name == 'MY_CAT');
     });
 
-    test('found three constants', () {
-      expect(library.getConstants(), hasLength(3));
+    test('found five constants', () {
+      expect(library.getConstants(), hasLength(5));
     });
 
-    test('is constant', () {
-      expect(constant.isConst, isTrue);
+    test('COLOR_GREEN is constant', () {
+      expect(greenConstant.isConst, isTrue);
     });
 
-    test('is linked', () {
+    test('COLOR_ORANGE has correct value', () {
+      expect(orangeConstant.constantValue, "'orange'");
+    });
+
+    test('MY_CAT is linked', () {
       expect(cat.constantValue,
           'const <a href="ex/ConstantCat_class.html">ConstantCat</a>(\'tabby\')');
     });
