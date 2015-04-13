@@ -65,7 +65,7 @@ Future<Uint8List> _doLoadWhenSnapshot(final String resourcePath) {
     }
     var resourcePackage = resourcePackageRef.resolve();
     var resourcePackageDir = resourcePackage.location;
-    return _doLoadOverFileFromLocation(resourcePath, resourcePackageDir.path);
+    return _doLoadOverFileFromLocation(resourcePath, path.join(resourcePackageDir.path, "lib"));
   } else {
     // maybe we're a snapshot next to a packages/ dir?
     return _doLoadFromFileFromPackagesDir(resourcePath);
