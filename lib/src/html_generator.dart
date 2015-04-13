@@ -436,6 +436,7 @@ class HtmlGenerator extends Generator {
         data);
   }
 
+  // TODO: change this to use resource_loader
   void _copyResources() {
     File script = new File(Platform.script.toFilePath());
     var sourcePath = path.join(script.parent.parent.path, 'lib', 'resources');

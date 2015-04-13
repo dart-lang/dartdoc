@@ -1,6 +1,8 @@
 /// Attempts to make it possible to load
 /// resources, independent of how the Dart
 /// app is run.
+///
+/// TODO: consider making this a stand-alone package, if useful
 library resource_loader;
 
 import 'dart:io' show Platform, File;
@@ -9,6 +11,7 @@ import 'package:pub_cache/pub_cache.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async' show Future;
 
+/// Loads a `package:` resource as a String.
 Future<String> loadAsString(String path) {
   if (!path.startsWith('package:')) {
     throw new ArgumentError('path must begin with package:');
@@ -16,6 +19,7 @@ Future<String> loadAsString(String path) {
   return _doLoad(path);
 }
 
+/// Determine how to do the load. HTTP? Snapshotted? From source?
 Future<String> _doLoad(final String path) {
   var scriptUri = Platform.script;
   if (scriptUri.toString().startsWith('http')) {
@@ -23,7 +27,7 @@ Future<String> _doLoad(final String path) {
   } else if (scriptUri.toString().endsWith('.snapshot')) {
     return _doLoadWhenSnapshot(path);
   } else {
-    return _doLoadOverFileFromPackagesDir(path);
+    return _doLoadFromFileFromPackagesDir(path);
   }
 }
 
@@ -55,13 +59,14 @@ Future<String> _doLoadWhenSnapshot(final String resourcePath) {
     return _doLoadOverFileFromLocation(resourcePath, resourcePackageDir.path);
   } else {
     // maybe we're a snapshot next to a packages/ dir?
-    return _doLoadOverFileFromPackagesDir(resourcePath);
+    return _doLoadFromFileFromPackagesDir(resourcePath);
   }
 }
 
 Future<String> _doLoadOverHttp(final String resourcePath) {
   var scriptUri = Platform.script;
   var convertedResourcePath = _convertPackageSchemeToPackagesDir(resourcePath);
+  // strip file name from script uri, append path to resource
   var segmentsToResource = scriptUri.pathSegments.sublist(
       0, scriptUri.pathSegments.length - 1)
     ..addAll(path.split(convertedResourcePath));
@@ -84,7 +89,7 @@ Future<String> _doLoadOverFileFromLocation(
 
 // TODO: respect package root
 // Meanwhile, assume packages/ is next to entry point of script
-Future<String> _doLoadOverFileFromPackagesDir(final String resourcePath) {
+Future<String> _doLoadFromFileFromPackagesDir(final String resourcePath) {
   var convertedPath = _convertPackageSchemeToPackagesDir(resourcePath);
   var scriptFile = new File(Platform.script.toFilePath());
   var baseDir = path.dirname(scriptFile.path);
@@ -106,6 +111,10 @@ String _convertPackageSchemeToPackagesDir(String resourcePath) {
   return path.join('packages', withoutScheme);
 }
 
+/// Tries to determine the app name, which is the same as the directory
+/// name when globally installed.
+///
+/// Only call this if your app is globally installed.
 String _appNameWhenGloballyInstalled() {
   var parts = path.split(Platform.script.toFilePath());
   var marker = parts.indexOf('global_packages');

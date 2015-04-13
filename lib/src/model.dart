@@ -182,6 +182,8 @@ abstract class ModelElement {
   String toString() => '$runtimeType $name';
 
   List<String> get annotations {
+    // Check https://code.google.com/p/dart/issues/detail?id=23181
+    // If that is fixed, this code might get a lot easier
     if (element.node != null && element.node is AnnotatedNode) {
       return (element.node as AnnotatedNode).metadata.map((Annotation a) {
         var annotationString = a.toSource().substring(1); // remove the @

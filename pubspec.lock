@@ -78,12 +78,9 @@ packages:
     source: hosted
     version: "1.3.7"
   pub_cache:
-    description:
-      ref: null
-      resolved-ref: "8703f1073d9f16be3f2b32be731df02128f06898"
-      url: "git@github.com:dart-lang/pub_cache.git"
-    source: git
-    version: "0.0.1+1"
+    description: pub_cache
+    source: hosted
+    version: "0.0.1+2"
   pub_semver:
     description: pub_semver
     source: hosted

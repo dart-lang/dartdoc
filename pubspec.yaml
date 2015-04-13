@@ -17,8 +17,7 @@ dependencies:
   path: '^1.3.0'
   quiver: '>=0.18.0 <0.22.0'
   yaml: '^2.1.0'
-  pub_cache:
-    git: https://github.com/dart-lang/pub_cache.git
+  pub_cache: '0.0.1+2'
   http: '^0.11.2'
 dev_dependencies:
   grinder: '^0.6.0'
