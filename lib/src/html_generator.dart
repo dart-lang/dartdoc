@@ -6,6 +6,8 @@ library dartdoc.html_generator;
 
 import 'dart:io';
 
+import 'dart:async' show Future;
+
 import 'package:intl/intl.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:mustache4dart/mustache_context.dart';
@@ -17,61 +19,74 @@ import 'package:path/path.dart' as path;
 import 'model.dart';
 import 'html_utils.dart';
 import '../generator.dart';
-import 'io_utils.dart';
+import '../resources.g.dart' show RESOURCE_NAMES;
+import '../resource_loader.dart' as loader;
 
 typedef String TemplateRenderer(context,
     {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});
 
 class Templates {
-  TemplateRenderer indexTemplate,
-      libraryTemplate,
-      classTemplate,
-      functionTemplate,
-      methodTemplate,
-      constructorTemplate,
-      propertyTemplate,
-      constantTemplate,
-      topLevelConstantTemplate,
-      topLevelPropertyTemplate,
-      typeDefTemplate;
+  TemplateRenderer indexTemplate;
+  TemplateRenderer libraryTemplate;
+  TemplateRenderer classTemplate;
+  TemplateRenderer functionTemplate;
+  TemplateRenderer methodTemplate;
+  TemplateRenderer constructorTemplate;
+  TemplateRenderer propertyTemplate;
+  TemplateRenderer constantTemplate;
+  TemplateRenderer topLevelConstantTemplate;
+  TemplateRenderer topLevelPropertyTemplate;
+  TemplateRenderer typeDefTemplate;
 
   final Map<String, String> _partialTemplates = {};
 
   String _footer;
 
-  Templates(this._footer) {
-    indexTemplate = _loadTemplate('templates/index.html');
-    libraryTemplate = _loadTemplate('templates/library.html');
-    classTemplate = _loadTemplate('templates/class.html');
-    functionTemplate = _loadTemplate('templates/function.html');
-    methodTemplate = _loadTemplate('templates/method.html');
-    constructorTemplate = _loadTemplate('templates/constructor.html');
-    propertyTemplate = _loadTemplate('templates/property.html');
-    constantTemplate = _loadTemplate('templates/constant.html');
-    topLevelConstantTemplate =
-        _loadTemplate('templates/top_level_constant.html');
-    topLevelPropertyTemplate =
-        _loadTemplate('templates/top_level_property.html');
-    typeDefTemplate = _loadTemplate('templates/typedef.html');
+  Templates(this._footer);
+
+  Future init() async {
+    indexTemplate = await _loadTemplate('index.html');
+    libraryTemplate = await _loadTemplate('library.html');
+    classTemplate = await _loadTemplate('class.html');
+    functionTemplate = await _loadTemplate('function.html');
+    methodTemplate = await _loadTemplate('method.html');
+    constructorTemplate = await _loadTemplate('constructor.html');
+    propertyTemplate = await _loadTemplate('property.html');
+    constantTemplate = await _loadTemplate('constant.html');
+    topLevelConstantTemplate = await _loadTemplate('top_level_constant.html');
+    topLevelPropertyTemplate = await _loadTemplate('top_level_property.html');
+    typeDefTemplate = await _loadTemplate('typedef.html');
+
+    var partials = [
+      'callable',
+      'callable_multiline',
+      'constant',
+      'footer',
+      'head',
+      'property',
+      'styles_and_scripts'
+    ];
+    for (var partial in partials) {
+      _partialTemplates[partial] = await _loadPartial('_$partial.html');
+    }
   }
 
   String _partial(String name) {
-    return _partialTemplates.putIfAbsent(
-        name, () => _loadPartial('templates/_$name.html'));
+    return _partialTemplates[name];
   }
 
-  TemplateRenderer _loadTemplate(String templatePath) {
-    return compile(_getTemplateFile(templatePath), partial: _partial);
+  Future<TemplateRenderer> _loadTemplate(String templatePath) async {
+    var templateContents = await _getTemplateFile(templatePath);
+    return compile(templateContents, partial: _partial) as TemplateRenderer;
   }
 
-  String _getTemplateFile(String templatePath) {
-    var script = new File(Platform.script.toFilePath());
-    var tmplFile = new File(path.join(script.parent.parent.path, templatePath));
-    return tmplFile.readAsStringSync();
+  Future<String> _getTemplateFile(String templatePath) {
+    return loader.loadAsString('package:dartdoc/templates/$templatePath');
   }
 
-  String _loadPartial(String templatePath) {
-    var template = _getTemplateFile(templatePath);
+  Future<String> _loadPartial(String templatePath) async {
+    String template = await _getTemplateFile(templatePath);
+    // TODO: revisit, not sure this is the right place for this logic
     if (templatePath.contains('_footer') && _footer != null) template =
         template.replaceAll('<!-- Footer Placeholder -->', _footer);
     return template;
@@ -95,12 +110,14 @@ class HtmlGenerator extends Generator {
       : generatedOn = new DateFormat('MMMM dd yyyy').format(new DateTime.now()),
         _templates = new Templates(footer);
 
-  void generate(Package package, Directory out) {
+  @override
+  Future generate(Package package, Directory out) async {
+    await _templates.init();
     _package = package;
     _out = out;
     if (!_out.existsSync()) _out.createSync();
     generatePackage();
-    _copyResources();
+
     package.libraries.forEach((Library lib) {
       generateLibrary(package, lib);
 
@@ -159,6 +176,8 @@ class HtmlGenerator extends Generator {
     if (_url != null) {
       //generateSiteMap();
     }
+
+    await _copyResources();
   }
 
   void generatePackage() {
@@ -437,21 +456,18 @@ class HtmlGenerator extends Generator {
   }
 
   // TODO: change this to use resource_loader
-  void _copyResources() {
-    File script = new File(Platform.script.toFilePath());
-    var sourcePath = path.join(script.parent.parent.path, 'lib', 'resources');
-    if (!new Directory(sourcePath).existsSync()) {
-      throw new StateError('resources/ directory not found');
-    }
-    for (var fileName in listDir(sourcePath, recursive: true)) {
-      var destFileName = fileName.substring(sourcePath.length + 1);
-      if (FileSystemEntity.isDirectorySync(fileName)) {
-        new Directory(path.join(out.path, destFileName)).createSync(
-            recursive: true);
-      } else {
-        var destPath = path.join(out.path, destFileName);
-        new File(fileName).copySync(destPath);
+  Future _copyResources() async {
+    final prefix = 'package:dartdoc/resources/';
+    for (var resourcePath in RESOURCE_NAMES) {
+      if (!resourcePath.startsWith(prefix)) {
+        throw new StateError(
+            'Resource paths must start with $prefix, encountered $resourcePath');
       }
+      var destFileName = resourcePath.substring(prefix.length);
+      var destFile = new File(path.join(out.path, destFileName))
+        ..createSync(recursive: true);
+      var resourceBytes = await loader.loadAsBytes(resourcePath);
+      destFile.writeAsBytesSync(resourceBytes);
     }
   }
 

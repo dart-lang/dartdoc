@@ -50,7 +50,7 @@ indexResources(GrinderContext context) {
     throw new StateError('lib/resources directory not found');
   }
   var outDir = new Directory(path.join('lib'));
-  var out = new File(path.join(outDir.path, 'resources.dart'));
+  var out = new File(path.join(outDir.path, 'resources.g.dart'));
   out.createSync(recursive: true);
   var buffer = new StringBuffer()
     ..write('// WARNING: This file is auto-generated.\n\n')

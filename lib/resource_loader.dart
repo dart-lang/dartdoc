@@ -10,9 +10,18 @@ import 'package:path/path.dart' as path;
 import 'package:pub_cache/pub_cache.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async' show Future;
+import 'dart:typed_data';
 
 /// Loads a `package:` resource as a String.
-Future<String> loadAsString(String path) {
+Future<String> loadAsString(String path) async {
+  if (!path.startsWith('package:')) {
+    throw new ArgumentError('path must begin with package:');
+  }
+  Uint8List bytes = await _doLoad(path);
+  return new String.fromCharCodes(bytes);
+}
+
+Future<Uint8List> loadAsBytes(String path) {
   if (!path.startsWith('package:')) {
     throw new ArgumentError('path must begin with package:');
   }
@@ -20,7 +29,7 @@ Future<String> loadAsString(String path) {
 }
 
 /// Determine how to do the load. HTTP? Snapshotted? From source?
-Future<String> _doLoad(final String path) {
+Future<Uint8List> _doLoad(final String path) {
   var scriptUri = Platform.script;
   if (scriptUri.toString().startsWith('http')) {
     return _doLoadOverHttp(path);
@@ -31,7 +40,7 @@ Future<String> _doLoad(final String path) {
   }
 }
 
-Future<String> _doLoadWhenSnapshot(final String resourcePath) {
+Future<Uint8List> _doLoadWhenSnapshot(final String resourcePath) {
   var scriptFilePath = Platform.script.toFilePath();
   // Check if we're running as a pub globally installed package
   // Jump back out to where our source is
@@ -63,7 +72,7 @@ Future<String> _doLoadWhenSnapshot(final String resourcePath) {
   }
 }
 
-Future<String> _doLoadOverHttp(final String resourcePath) {
+Future<Uint8List> _doLoadOverHttp(final String resourcePath) {
   var scriptUri = Platform.script;
   var convertedResourcePath = _convertPackageSchemeToPackagesDir(resourcePath);
   // strip file name from script uri, append path to resource
@@ -72,10 +81,10 @@ Future<String> _doLoadOverHttp(final String resourcePath) {
     ..addAll(path.split(convertedResourcePath));
   var fullPath = scriptUri.replace(pathSegments: segmentsToResource);
 
-  return http.read(fullPath);
+  return http.readBytes(fullPath);
 }
 
-Future<String> _doLoadOverFileFromLocation(
+Future<Uint8List> _doLoadOverFileFromLocation(
     final String resourcePath, final String baseDir) {
   var convertedPath = _convertPackageSchemeToPackagesDir(resourcePath);
   // remove 'packages' and package name
@@ -89,7 +98,7 @@ Future<String> _doLoadOverFileFromLocation(
 
 // TODO: respect package root
 // Meanwhile, assume packages/ is next to entry point of script
-Future<String> _doLoadFromFileFromPackagesDir(final String resourcePath) {
+Future<Uint8List> _doLoadFromFileFromPackagesDir(final String resourcePath) {
   var convertedPath = _convertPackageSchemeToPackagesDir(resourcePath);
   var scriptFile = new File(Platform.script.toFilePath());
   var baseDir = path.dirname(scriptFile.path);
@@ -97,12 +106,14 @@ Future<String> _doLoadFromFileFromPackagesDir(final String resourcePath) {
   return _readFile(resourcePath, fullPath);
 }
 
-Future<String> _readFile(final String resourcePath, final String fullPath) {
+Future<Uint8List> _readFile(
+    final String resourcePath, final String fullPath) async {
   var file = new File(fullPath);
   if (!file.existsSync()) {
     throw new ArgumentError('$resourcePath does not exist, tried $fullPath');
   }
-  return file.readAsString();
+  var bytes = await file.readAsBytes();
+  return new Uint8List.fromList(bytes);
 }
 
 String _convertPackageSchemeToPackagesDir(String resourcePath) {
