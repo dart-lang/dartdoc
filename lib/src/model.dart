@@ -1284,7 +1284,7 @@ class TypeParameter extends ModelElement {
 
   @override
   String get _href =>
-      throw new UnsupportedError('type parameters do not have hrefs');
+      '${library.nameForFile}/${_typeParameter.enclosingElement.name}/$name';
 }
 
 class ElementType {
