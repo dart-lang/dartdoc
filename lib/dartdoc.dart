@@ -5,6 +5,7 @@
 library dartdoc;
 
 import 'dart:io';
+import 'dart:async';
 
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
@@ -26,7 +27,7 @@ const String DEFAULT_OUTPUT_DIRECTORY = 'docs';
 const String NAME = 'dartdoc';
 
 // Update when pubspec version changes
-const String VERSION = '0.0.1';
+const String VERSION = '0.0.1+1';
 
 /// Initialize and setup the generators
 List<Generator> initGenerators(String url, String footer) {
@@ -51,7 +52,7 @@ class DartDoc {
       [this._sdkDocs = false, this.readmeLoc]);
 
   /// Generate the documentation
-  void generateDocs() {
+  Future generateDocs() async {
     stopwatch = new Stopwatch();
     stopwatch.start();
 
@@ -74,7 +75,10 @@ class DartDoc {
 
     Package package = new Package(
         libraries, _rootDir.path, _getSdkVersion(), _sdkDocs, readmeLoc);
-    _generators.forEach((generator) => generator.generate(package, out));
+
+    for (var generator in _generators) {
+      await generator.generate(package, out);
+    }
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');

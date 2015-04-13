@@ -12,8 +12,9 @@ void main() {
   group('Templates', () {
     Templates templates;
 
-    setUp(() {
+    setUp(() async {
       templates = new Templates("<p>User inserted message</p>");
+      await templates.init();
     });
 
     test('index html', () {

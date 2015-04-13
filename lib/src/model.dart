@@ -138,6 +138,10 @@ abstract class ModelElement {
           return (element.node as AnnotatedNode).documentationComment.references;
         }
       } else if (element is LibraryElement) {
+        // handle anonymous libraries
+        if (element.node == null || element.node.parent == null) {
+          return null;
+        }
         var node = element.node.parent.parent;
         if (node is AnnotatedNode) {
           if ((node as AnnotatedNode).documentationComment != null) {
@@ -182,6 +186,8 @@ abstract class ModelElement {
   String toString() => '$runtimeType $name';
 
   List<String> get annotations {
+    // Check https://code.google.com/p/dart/issues/detail?id=23181
+    // If that is fixed, this code might get a lot easier
     if (element.node != null && element.node is AnnotatedNode) {
       return (element.node as AnnotatedNode).metadata.map((Annotation a) {
         var annotationString = a.toSource().substring(1); // remove the @
@@ -462,6 +468,8 @@ class Library extends ModelElement {
   List<TopLevelVariable> _variables;
   List<String> _nameSpace;
 
+  String _name;
+
   LibraryElement get _library => (element as LibraryElement);
 
   Library(LibraryElement element, this.package, [String source])
@@ -482,8 +490,23 @@ class Library extends ModelElement {
   }
 
   String get name {
+    if (_name != null) return _name;
+
+    // handle the case of an anonymous library
+    if (element.name == null || element.name.isEmpty) {
+      _name = _library.definingCompilationUnit.name;
+      if (_name.endsWith('.dart')) {
+        _name = _name.substring(0, _name.length - '.dart'.length);
+      }
+    } else {
+      _name = element.name;
+    }
+
+    // calculate this once, instead on every invocation of name getter
     var source = _library.definingCompilationUnit.source;
-    return source.isInSystemLibrary ? source.encoding : super.name;
+    _name = source.isInSystemLibrary ? source.encoding : _name;
+
+    return _name;
   }
 
   String get nameForFile => name.replaceAll(':', '_');

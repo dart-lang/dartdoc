@@ -5,6 +5,7 @@
 library dartdoc.generator;
 
 import 'dart:io';
+import 'dart:async';
 
 import 'src/model.dart';
 
@@ -19,5 +20,5 @@ abstract class Generator {
 
   /// Generate the documentation for the given package in the
   /// specified directory.
-  void generate(Package package, Directory out);
+  Future generate(Package package, Directory out);
 }
