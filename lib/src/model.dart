@@ -1258,7 +1258,17 @@ class Parameter extends ModelElement {
 
   @override
   String get _href {
-    throw new UnsupportedError('parameters do not have hrefs');
+    var p = _parameter.enclosingElement;
+
+    if (p is FunctionElement) {
+      return '${library.nameForFile}/${p.name}.html';
+    } else {
+      var name = Operator.friendlyNames.containsKey(p.name)
+          ? Operator.friendlyNames[p.name]
+          : p.name;
+      return '${library.nameForFile}/${p.enclosingElement.name}/' +
+          '${name}.html';
+    }
   }
 }
 
@@ -1274,7 +1284,7 @@ class TypeParameter extends ModelElement {
 
   @override
   String get _href =>
-      throw new UnsupportedError('type parameters do not have hrefs');
+      '${library.nameForFile}/${_typeParameter.enclosingElement.name}/$name';
 }
 
 class ElementType {
