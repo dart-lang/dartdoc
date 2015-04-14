@@ -86,7 +86,7 @@ ArgParser _createArgsParser() {
       abbr: 'h', negatable: false, help: 'Show command help.');
   parser.addFlag('version',
       help: 'Display the version for $NAME.', negatable: false);
-  parser.addFlag('sdk-docs', help: 'Generate docs for the Dart SDK.');
+  parser.addFlag('sdk-docs', help: 'Generate ONLY the docs for the Dart SDK.');
   parser.addOption('sdk-readme',
       help: 'Path to the SDK description file. Use if generating Dart SDK docs.');
   parser.addOption('footer',
