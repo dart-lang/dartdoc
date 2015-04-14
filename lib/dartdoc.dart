@@ -39,6 +39,7 @@ class DartDoc {
   final Directory _rootDir;
   final Directory _sdkDir;
   Directory outputDir;
+  Directory inputDir;
   final bool sdkDocs;
   final Set<LibraryElement> libraries = new Set();
   final List<Generator> _generators;
@@ -47,14 +48,15 @@ class DartDoc {
   Stopwatch stopwatch;
 
   DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators,
-      this.outputDir, {this.sdkDocs: false, this.sdkReadmePath});
+      this.outputDir, {this.inputDir, this.sdkDocs: false, this.sdkReadmePath});
 
   /// Generate the documentation
   Future generateDocs() async {
     stopwatch = new Stopwatch();
     stopwatch.start();
 
-    var files = sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
+    if (inputDir == null) inputDir = _rootDir;
+    var files = sdkDocs ? [] : findFilesToDocumentInPackage(inputDir.path);
     List<LibraryElement> libs = [];
     libs.addAll(_parseLibraries(files));
     // remove excluded libraries

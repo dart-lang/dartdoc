@@ -44,6 +44,16 @@ void main(List<String> arguments) {
     exit(1);
   }
 
+  var inputDir;
+  var input_dir = args['input-dir'];
+  if (input_dir != null && input_dir.isNotEmpty) {
+    inputDir = new Directory(input_dir);
+    if (!inputDir.existsSync()) {
+      print("Warning: unable to locate the input directory at ${input_dir}.");
+      exit(1);
+    }
+  }
+
   List<String> excludeLibraries =
       args['exclude'] == null ? [] : args['exclude'].split(',');
   String url = args['hosted-url'];
@@ -63,7 +73,9 @@ void main(List<String> arguments) {
 
   new DartDoc(
       Directory.current, excludeLibraries, sdkDir, generators, outputDir,
-      sdkDocs: sdkDocs, sdkReadmePath: readme)..generateDocs();
+      inputDir: inputDir,
+      sdkDocs: sdkDocs,
+      sdkReadmePath: readme)..generateDocs();
 }
 
 /// Print help if we are passed the help option or invalid arguments.
@@ -76,22 +88,24 @@ void _printUsageAndExit(ArgParser parser) {
 
 ArgParser _createArgsParser() {
   var parser = new ArgParser();
-  parser.addOption('exclude',
-      help: 'Comma-separated list of library names to ignore.');
-  parser.addOption('dart-sdk',
-      help: "Location of the Dart SDK. Use if SDK isn't automatically located.");
-  parser.addOption('hosted-url',
-      help: 'URL where the docs will be hosted (used to generate the sitemap).');
   parser.addFlag('help',
       abbr: 'h', negatable: false, help: 'Show command help.');
   parser.addFlag('version',
       help: 'Display the version for $NAME.', negatable: false);
   parser.addFlag('sdk-docs', help: 'Generate docs for the Dart SDK.');
+  parser.addOption('dart-sdk',
+      help: "Location of the Dart SDK. Use if SDK isn't automatically located.");
   parser.addOption('sdk-readme',
       help: 'Path to the SDK description file. Use if generating Dart SDK docs.');
-  parser.addOption('footer',
-      help: 'Path to an HTML, inserted into the footer of every page.');
+  parser.addOption('input-dir',
+      help: 'Path to source directory, defaults to current directory');
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: 'docs');
+  parser.addOption('footer',
+      help: 'HTML text, inserted into the footer of every page.');
+  parser.addOption('exclude',
+      help: 'Comma-separated list of library names to ignore.');
+  parser.addOption('hosted-url',
+      help: 'URL where the docs will be hosted (used to generate the sitemap).');
   return parser;
 }
