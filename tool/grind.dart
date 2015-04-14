@@ -4,18 +4,18 @@
 
 import 'dart:io';
 
-import 'package:dartdoc/dartdoc.dart';
 import 'package:grinder/grinder.dart';
 import 'package:path/path.dart' as path;
 import 'package:dartdoc/src/io_utils.dart';
 
-final Directory DOC_DIR = new Directory(DEFAULT_OUTPUT_DIRECTORY);
+final Directory DOC_DIR = new Directory('docs');
 
 main([List<String> args]) {
   task('init', defaultInit);
   task('docitself', testDartdoc, ['init']);
   task('analyze', analyze);
   task('indexresources', indexResources);
+  task('buildsdkdocs', buildSdkDocs);
   startGrinder(args);
 }
 
@@ -44,6 +44,20 @@ analyze(GrinderContext context) {
       fatalWarnings: true);
 }
 
+buildSdkDocs(GrinderContext context) {
+  if (DOC_DIR.existsSync()) DOC_DIR.deleteSync(recursive: true);
+  context.log('building SDK docs');
+  try {
+    runDartScript(context, 'bin/dartdoc.dart', arguments: ['--sdk-docs']);
+    var indexHtml = joinFile(DOC_DIR, ['index.html']);
+    if (!indexHtml.existsSync()) {
+      context.fail('no index.html found for SDK docs');
+    }
+  } catch (e) {
+    rethrow;
+  }
+}
+
 indexResources(GrinderContext context) {
   var sourcePath = path.join('lib', 'resources');
   if (!new Directory(sourcePath).existsSync()) {
@@ -58,7 +72,6 @@ indexResources(GrinderContext context) {
     ..write('const List<String> RESOURCE_NAMES = const [\n');
   var packagePaths = [];
   for (var fileName in listDir(sourcePath, recursive: true)) {
-    var destFileName = fileName.substring(sourcePath.length + 1);
     if (!FileSystemEntity.isDirectorySync(fileName)) {
       var packageified = fileName.replaceFirst('lib/', 'package:dartdoc/');
       packagePaths.add(packageified);

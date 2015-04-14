@@ -1,3 +1,3 @@
 // DO NOT give this library a name
 
-String doesStuff() {}
+String doesStuff() => 'hi';

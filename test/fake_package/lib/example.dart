@@ -50,6 +50,7 @@ class B extends Apple with Cat {
   void m1() {
     var a = 6;
     var b = a * 9;
+    b * 2;
   }
 
   void writeMsg(String msg, [String transformMsg(String origMsg, bool flag)]) {

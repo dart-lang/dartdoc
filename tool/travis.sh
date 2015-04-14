@@ -19,6 +19,11 @@ grind analyze
 # Run dartdoc on ourself.
 grind docitself
 
+# Build the SDK docs
+# silence stdout but echo stderr
+echo "Building SDK docs..."
+grind buildsdkdocs 2>&1 >/dev/null | echo
+
 # Another smoke test: Run dartdoc on fake_package.
 cd test/fake_package
 dart ../../bin/dartdoc.dart
