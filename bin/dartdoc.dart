@@ -44,12 +44,12 @@ void main(List<String> arguments) {
     exit(1);
   }
 
-  var inputDir;
-  var input_dir = args['input-dir'];
-  if (input_dir != null && input_dir.isNotEmpty) {
-    inputDir = new Directory(input_dir);
+  Directory inputDir;
+  if (args['input'] != null) {
+    inputDir = new Directory(args['input-dir']);
     if (!inputDir.existsSync()) {
-      print("Warning: unable to locate the input directory at ${input_dir}.");
+      print(
+          "Warning: unable to locate the input directory at ${inputDir.path}.");
       exit(1);
     }
   }
@@ -97,7 +97,7 @@ ArgParser _createArgsParser() {
   parser.addFlag('sdk-docs', help: 'Generate ONLY the docs for the Dart SDK.');
   parser.addOption('sdk-readme',
       help: 'Path to the SDK description file. Use if generating Dart SDK docs.');
-  parser.addOption('input-dir',
+  parser.addOption('input',
       help: 'Path to source directory, defaults to current directory');
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: 'docs');
