@@ -54,7 +54,7 @@ buildSdkDocs(GrinderContext context) {
     if (!indexHtml.existsSync()) {
       context.fail('no index.html found for SDK docs');
     }
-  } catch(e) {
+  } catch (e) {
     rethrow;
   }
 }
