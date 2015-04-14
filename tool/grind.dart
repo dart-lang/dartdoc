@@ -16,6 +16,7 @@ main([List<String> args]) {
   task('docitself', testDartdoc, ['init']);
   task('analyze', analyze);
   task('indexresources', indexResources);
+  task('buildsdkdocs', buildSdkDocs);
   startGrinder(args);
 }
 
@@ -42,6 +43,20 @@ analyze(GrinderContext context) {
   Analyzer.analyzePaths(
       context, ['bin/dartdoc.dart', 'lib/dartdoc.dart', 'test/all.dart'],
       fatalWarnings: true);
+}
+
+buildSdkDocs(GrinderContext context) {
+  if (DOC_DIR.existsSync()) DOC_DIR.deleteSync(recursive: true);
+  context.log('building SDK docs');
+  try {
+    runDartScript(context, 'bin/dartdoc.dart', arguments: ['--sdk-docs']);
+    var indexHtml = joinFile(DOC_DIR, ['index.html']);
+    if (!indexHtml.existsSync()) {
+      context.fail('no index.html found for SDK docs');
+    }
+  } catch(e) {
+    rethrow;
+  }
 }
 
 indexResources(GrinderContext context) {
