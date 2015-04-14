@@ -1,6 +1,7 @@
 # dartdoc
 
-A documentation generator for Dart.
+A documentation generator for Dart. This tool produces static HTML files,
+produced from Dart source code.
 
 [![Build Status](https://travis-ci.org/dart-lang/dartdoc.svg)](https://travis-ci.org/dart-lang/dartdoc)
 [![Coverage Status](https://img.shields.io/coveralls/dart-lang/dartdoc.svg)](https://coveralls.io/r/dart-lang/dartdoc)
@@ -15,8 +16,8 @@ Run `pub global activate dartdoc` to install the `dartdoc` tool.
 
 ### Generating documentation for a package
 
-Run `dartdoc` from the root directory of package. `dartdoc` produces HTML files as documentation for the 
-`.dart` files it finds in the package. The documentation is output to the `docs` directory.
+Run `dartdoc` from the root directory of package. By default, the documentation
+is output to the `docs` directory. You can use `--output` to specify the output directory.
 
 ### Generating documentation for Dart SDK
 
@@ -24,9 +25,10 @@ Run `dartdoc` with the following command line arguments:
 
 - `--dart-sdk /pathTo/dart-sdk`
 - `--sdk-docs`
-- `--readme /pathTo/sdk_readme.md`
+- `--sdk-readme /pathTo/sdk_readme.md`
 
-The documentation for the SDK will be generated in the `docs` folder of the current directory.
+The `sdk-readme` is found in the SDK source repo. Specifically, `$DART_SDK_SOURCE/dart/sdk/api_readme.md`.
+In the future, this file might be included in an SDK distribution (see https://code.google.com/p/dart/issues/detail?id=23203).
 
 ## FAQ
 
