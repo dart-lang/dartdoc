@@ -1023,7 +1023,7 @@ class Typedef extends ModelElement {
       ? modelType.createLinkedReturnTypeName()
       : _typedef.returnType.name;
 
-  String get _href => '${library.name}/$fileName';
+  String get _href => '${library.nameForFile}/$fileName';
 }
 
 class Field extends ModelElement {
