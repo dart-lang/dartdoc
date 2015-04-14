@@ -19,6 +19,9 @@ grind analyze
 # Run dartdoc on ourself.
 grind docitself
 
+# Build the SDK docs
+grind buildsdkdocs
+
 # Another smoke test: Run dartdoc on fake_package.
 cd test/fake_package
 dart ../../bin/dartdoc.dart
