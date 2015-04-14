@@ -46,7 +46,7 @@ void main(List<String> arguments) {
 
   Directory inputDir;
   if (args['input'] != null) {
-    inputDir = new Directory(args['input-dir']);
+    inputDir = new Directory(args['input']);
     if (!inputDir.existsSync()) {
       print(
           "Warning: unable to locate the input directory at ${inputDir.path}.");

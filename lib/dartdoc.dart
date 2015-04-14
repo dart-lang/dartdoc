@@ -73,7 +73,7 @@ class DartDoc {
       outputDir.createSync(recursive: true);
     }
 
-    Package package = new Package(libraries, _rootDir.path,
+    Package package = new Package(libraries, inputDir.path,
         sdkVersion: _getSdkVersion(), isSdk: sdkDocs, readmeLoc: sdkReadmePath);
 
     for (var generator in _generators) {
@@ -93,7 +93,7 @@ class DartDoc {
       new FileUriResolver()
     ];
     JavaFile packagesDir =
-        new JavaFile.relative(new JavaFile(_rootDir.path), 'packages');
+        new JavaFile.relative(new JavaFile(inputDir.path), 'packages');
     if (packagesDir.exists()) {
       resolvers.add(new PackageUriResolver([packagesDir]));
     }
