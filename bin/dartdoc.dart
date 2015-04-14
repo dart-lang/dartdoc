@@ -47,11 +47,11 @@ void main(List<String> arguments) {
   List<String> excludeLibraries =
       args['exclude'] == null ? [] : args['exclude'].split(',');
   String url = args['hosted-url'];
-  String footer = args['footer'];
+  String footer = _resolveTildePath(args['footer']);
 
   var outputDir = new Directory(path.join(Directory.current.path, 'docs'));
   if (args['output'] != null) {
-    outputDir = new Directory(args['output']);
+    outputDir = new Directory(_resolveTildePath(args['output']));
   }
   if (outputDir.existsSync()) {
     print("Warning: output directory exists: ${args['output']}");
@@ -94,4 +94,20 @@ ArgParser _createArgsParser() {
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: 'docs');
   return parser;
+}
+
+String _resolveTildePath(String originalPath) {
+  if (originalPath == null || !originalPath.startsWith('~/')) {
+    return originalPath;
+  }
+
+  String homeDir;
+
+  if (Platform.isWindows) {
+    homeDir = path.absolute(Platform.environment['USERPROFILE']);
+  } else {
+    homeDir = path.absolute(Platform.environment['HOME']);
+  }
+
+  return path.join(homeDir, originalPath.substring(2));
 }
