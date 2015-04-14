@@ -97,8 +97,12 @@ class DartDoc {
     }
     SourceFactory sourceFactory =
         new SourceFactory(/*contentCache,*/ resolvers);
-    AnalysisContext context = AnalysisEngine.instance.createAnalysisContext();
-    context.sourceFactory = sourceFactory;
+
+    var options = new AnalysisOptionsImpl()..analyzeFunctionBodies = false;
+
+    AnalysisContext context = AnalysisEngine.instance.createAnalysisContext()
+      ..analysisOptions = options
+      ..sourceFactory = sourceFactory;
 
     if (sdkDocs) {
       libraries.addAll(getSdkLibrariesToDocument(sdk, context));
