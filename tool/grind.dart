@@ -60,7 +60,11 @@ buildSdkDocs(GrinderContext context) {
         .toList().length;
     if (libsLength != 17) {
       context.fail(
-          'docs not generated for all the SDK libraries, expected 17 directories, generated $libsLength');
+          'docs not generated for all the SDK libraries, expected 17 directories, generated $libsLength directories');
+    }
+    var futureConstFile = joinFile(DOC_DIR, ['dart_async/Future/Future.html']);
+    if (!futureConstFile.existsSync()) {
+      context.fail('no Future.html found for dart:async Future constructor');
     }
   } catch (e) {
     rethrow;
