@@ -54,10 +54,8 @@ buildSdkDocs(GrinderContext context) {
       context.fail('no index.html found for SDK docs');
     }
     // check for the existance of certain files/dirs
-    var libsLength = DOC_DIR
-        .listSync()
-        .where((fs) => fs.path.contains('dart_'))
-        .toList().length;
+    var libsLength =
+        DOC_DIR.listSync().where((fs) => fs.path.contains('dart_')).length;
     if (libsLength != 17) {
       context.fail(
           'docs not generated for all the SDK libraries, expected 17 directories, generated $libsLength directories');
