@@ -111,7 +111,6 @@ class DartDoc {
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
         libraries.add(library);
-        //    libraries.addAll(library.exportedLibraries);
       }
     });
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
