@@ -25,7 +25,7 @@ import 'src/model_utils.dart';
 const String NAME = 'dartdoc';
 
 // Update when pubspec version changes
-const String VERSION = '0.0.1+1';
+const String VERSION = '0.0.1+3';
 
 /// Initialize and setup the generators
 List<Generator> initGenerators(String url, String footer) {
@@ -70,8 +70,8 @@ class DartDoc {
       outputDir.createSync(recursive: true);
     }
 
-    Package package = new Package(
-        libraries, _rootDir.path, _getSdkVersion(), sdkDocs, sdkReadmePath);
+    Package package = new Package(libraries, _rootDir.path,
+        sdkVersion: _getSdkVersion(), isSdk: sdkDocs, readmeLoc: sdkReadmePath);
 
     for (var generator in _generators) {
       await generator.generate(package, outputDir);

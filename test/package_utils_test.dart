@@ -19,13 +19,13 @@ void main() {
 
     test('get package version', () {
       String version = getPackageVersion(Directory.current.path);
-      expect(version != null, true);
+      expect(version, isNotNull);
     });
 
     test('get package description', () {
       String desc = getPackageDescription(
           true, 'fake_package/test_readme.md', Directory.current.path);
-      expect(desc != null, true);
+      expect(desc, isNotNull);
     });
   });
 }
