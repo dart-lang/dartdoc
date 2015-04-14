@@ -22,8 +22,6 @@ import 'src/io_utils.dart';
 import 'src/model.dart';
 import 'src/model_utils.dart';
 
-const String DEFAULT_OUTPUT_DIRECTORY = 'docs';
-
 const String NAME = 'dartdoc';
 
 // Update when pubspec version changes
@@ -40,23 +38,23 @@ class DartDoc {
   final List<String> _excludes;
   final Directory _rootDir;
   final Directory _sdkDir;
-  final bool _sdkDocs;
+  Directory outputDir;
+  final bool sdkDocs;
   final Set<LibraryElement> libraries = new Set();
   final List<Generator> _generators;
-  final String readmeLoc;
+  final String sdkReadmePath;
 
   Stopwatch stopwatch;
-  Directory out;
 
   DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators,
-      [this._sdkDocs = false, this.readmeLoc]);
+      this.outputDir, {this.sdkDocs: false, this.sdkReadmePath});
 
   /// Generate the documentation
   Future generateDocs() async {
     stopwatch = new Stopwatch();
     stopwatch.start();
 
-    var files = _sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
+    var files = sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
     List<LibraryElement> libs = [];
     libs.addAll(_parseLibraries(files));
     // remove excluded libraries
@@ -68,16 +66,15 @@ class DartDoc {
     libraries.addAll(libs);
 
     // create the out directory
-    out = new Directory(DEFAULT_OUTPUT_DIRECTORY);
-    if (!out.existsSync()) {
-      out.createSync(recursive: true);
+    if (!outputDir.existsSync()) {
+      outputDir.createSync(recursive: true);
     }
 
     Package package = new Package(
-        libraries, _rootDir.path, _getSdkVersion(), _sdkDocs, readmeLoc);
+        libraries, _rootDir.path, _getSdkVersion(), sdkDocs, sdkReadmePath);
 
     for (var generator in _generators) {
-      await generator.generate(package, out);
+      await generator.generate(package, outputDir);
     }
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
@@ -102,7 +99,7 @@ class DartDoc {
     AnalysisContext context = AnalysisEngine.instance.createAnalysisContext();
     context.sourceFactory = sourceFactory;
 
-    if (_sdkDocs) {
+    if (sdkDocs) {
       libraries.addAll(getSdkLibrariesToDocument(sdk, context));
     }
     files.forEach((String filePath) {

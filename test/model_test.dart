@@ -273,7 +273,7 @@ void main() {
 
     test('method source', () {
       expect(m2.source,
-          '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n  }');
+          '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n    b * 2;\n  }');
     });
 
     test('method documentation', () {
