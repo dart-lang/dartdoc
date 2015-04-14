@@ -4,12 +4,11 @@
 
 import 'dart:io';
 
-import 'package:dartdoc/dartdoc.dart';
 import 'package:grinder/grinder.dart';
 import 'package:path/path.dart' as path;
 import 'package:dartdoc/src/io_utils.dart';
 
-final Directory DOC_DIR = new Directory(DEFAULT_OUTPUT_DIRECTORY);
+final Directory DOC_DIR = new Directory('docs');
 
 main([List<String> args]) {
   task('init', defaultInit);
@@ -73,7 +72,6 @@ indexResources(GrinderContext context) {
     ..write('const List<String> RESOURCE_NAMES = const [\n');
   var packagePaths = [];
   for (var fileName in listDir(sourcePath, recursive: true)) {
-    var destFileName = fileName.substring(sourcePath.length + 1);
     if (!FileSystemEntity.isDirectorySync(fileName)) {
       var packageified = fileName.replaceFirst('lib/', 'package:dartdoc/');
       packagePaths.add(packageified);

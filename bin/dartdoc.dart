@@ -6,6 +6,7 @@ library dartdoc.bin;
 
 import 'dart:io';
 
+import 'package:path/path.dart' as path;
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:cli_util/cli_util.dart' as cli_util;
@@ -14,13 +15,13 @@ import 'package:cli_util/cli_util.dart' as cli_util;
 /// classes, and members. Uses the current directory to look for libraries.
 void main(List<String> arguments) {
   var parser = _createArgsParser();
-  var results = parser.parse(arguments);
+  var args = parser.parse(arguments);
 
-  if (results['help']) {
+  if (args['help']) {
     _printUsageAndExit(parser);
   }
 
-  if (results['version']) {
+  if (args['version']) {
     print('$NAME version: $VERSION');
     exit(0);
   }
@@ -33,49 +34,64 @@ void main(List<String> arguments) {
   }
 
   bool sdkDocs = false;
-  if (results['sdk-docs']) {
+  if (args['sdk-docs']) {
     sdkDocs = true;
   }
 
-  var readme = results['readme'];
+  var readme = args['sdk-readme'];
   if (readme != null && !(new File(readme).existsSync())) {
-    print(
-        "Warning: invalid path, unable to locate the SDK description file at $readme.");
+    print("Warning: unable to locate the SDK description file at $readme.");
     exit(1);
   }
 
   List<String> excludeLibraries =
-      results['exclude'] == null ? [] : results['exclude'].split(',');
-  String url = results['url'];
-  String footer = results['footer'];
-  var currentDir = Directory.current;
+      args['exclude'] == null ? [] : args['exclude'].split(',');
+  String url = args['hosted-url'];
+  String footer = args['footer'];
+
+  var outputDir = new Directory(path.join(Directory.current.path, 'docs'));
+  if (args['output'] != null) {
+    outputDir = new Directory(args['output']);
+  }
+  if (outputDir.existsSync()) {
+    print("Warning: output directory exists: ${args['output']}");
+    exit(1);
+  }
+  print('Generating docs into $outputDir');
+
   var generators = initGenerators(url, footer);
-  new DartDoc(currentDir, excludeLibraries, sdkDir, generators, sdkDocs, readme)
-    ..generateDocs();
+
+  new DartDoc(
+      Directory.current, excludeLibraries, sdkDir, generators, outputDir,
+      sdkDocs: sdkDocs, sdkReadmePath: readme)..generateDocs();
 }
 
 /// Print help if we are passed the help option or invalid arguments.
 void _printUsageAndExit(ArgParser parser) {
+  print('Generate HTML documentation for Dart libraries.\n');
+  print('Usage: dartdoc [OPTIONS]\n');
   print(parser.usage);
-  print('Usage: dartdoc [OPTIONS]');
   exit(0);
 }
 
 ArgParser _createArgsParser() {
   var parser = new ArgParser();
   parser.addOption('exclude',
-      help: 'a comma-separated list of library names to ignore');
-  parser.addOption('dart-sdk', help: 'the location of the Dart SDK');
-  parser.addOption('url',
-      help: 'the url where the docs will be hosted (used to generate the sitemap)');
+      help: 'Comma-separated list of library names to ignore.');
+  parser.addOption('dart-sdk',
+      help: "Location of the Dart SDK. Use if SDK isn't automatically located.");
+  parser.addOption('hosted-url',
+      help: 'URL where the docs will be hosted (used to generate the sitemap).');
   parser.addFlag('help',
-      abbr: 'h', negatable: false, help: 'show command help');
+      abbr: 'h', negatable: false, help: 'Show command help.');
   parser.addFlag('version',
-      help: 'Display the version for $NAME', negatable: false);
-  parser.addFlag('sdk-docs', help: 'generate docs for the Dart SDK.'
-      ' '
-      'Use "--dart-sdk" option to specify path to sdk');
-  parser.addOption('readme', help: 'path to the SDK description file');
-  parser.addOption('footer', help: 'HTML to insert in the footer');
+      help: 'Display the version for $NAME.', negatable: false);
+  parser.addFlag('sdk-docs', help: 'Generate docs for the Dart SDK.');
+  parser.addOption('sdk-readme',
+      help: 'Path to the SDK description file. Use if generating Dart SDK docs.');
+  parser.addOption('footer',
+      help: 'Path to an HTML, inserted into the footer of every page.');
+  parser.addOption('output',
+      help: 'Path to output directory.', defaultsTo: 'docs');
   return parser;
 }
