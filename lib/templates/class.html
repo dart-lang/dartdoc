@@ -69,8 +69,9 @@
 
         <dl class="constructor-summary-list">
             {{#class.constructors}}
-            <dt id="{{htmlId}}">
-                {{{linkedName}}}({{{linkedParams}}})
+            <dt id="{{htmlId}}" class="callable">
+                <span class="name">{{{linkedName}}}</span>
+                <span class="signature">({{{ linkedParams }}})</span>
             </dt>
             <dd>
                 {{#isConst}}
