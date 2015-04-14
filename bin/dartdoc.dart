@@ -44,6 +44,12 @@ void main(List<String> arguments) {
     exit(1);
   }
 
+  Directory inputDir = new Directory(args['input']);
+  if (!inputDir.existsSync()) {
+    print("Warning: unable to locate the input directory at ${inputDir.path}.");
+    exit(1);
+  }
+
   List<String> excludeLibraries =
       args['exclude'] == null ? [] : args['exclude'].split(',');
   String url = args['hosted-url'];
@@ -61,8 +67,7 @@ void main(List<String> arguments) {
 
   var generators = initGenerators(url, footer);
 
-  new DartDoc(
-      Directory.current, excludeLibraries, sdkDir, generators, outputDir,
+  new DartDoc(inputDir, excludeLibraries, sdkDir, generators, outputDir,
       sdkDocs: sdkDocs, sdkReadmePath: readme)..generateDocs();
 }
 
@@ -76,23 +81,25 @@ void _printUsageAndExit(ArgParser parser) {
 
 ArgParser _createArgsParser() {
   var parser = new ArgParser();
-  parser.addOption('exclude',
-      help: 'Comma-separated list of library names to ignore.');
-  parser.addOption('dart-sdk',
-      help: "Location of the Dart SDK. Use if SDK isn't automatically located.");
-  parser.addOption('hosted-url',
-      help: 'URL where the docs will be hosted (used to generate the sitemap).');
   parser.addFlag('help',
       abbr: 'h', negatable: false, help: 'Show command help.');
   parser.addFlag('version',
       help: 'Display the version for $NAME.', negatable: false);
+  parser.addOption('dart-sdk',
+      help: "Location of the Dart SDK. Use if SDK isn't automatically located.");
   parser.addFlag('sdk-docs', help: 'Generate ONLY the docs for the Dart SDK.');
   parser.addOption('sdk-readme',
       help: 'Path to the SDK description file. Use if generating Dart SDK docs.');
-  parser.addOption('footer',
-      help: 'Path to an HTML, inserted into the footer of every page.');
+  parser.addOption('input',
+      help: 'Path to source directory', defaultsTo: Directory.current.path);
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: 'docs');
+  parser.addOption('footer',
+      help: 'HTML text, inserted into the footer of every page.');
+  parser.addOption('exclude',
+      help: 'Comma-separated list of library names to ignore.');
+  parser.addOption('hosted-url',
+      help: 'URL where the docs will be hosted (used to generate the sitemap).');
   return parser;
 }
 

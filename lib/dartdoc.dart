@@ -54,8 +54,8 @@ class DartDoc {
     stopwatch = new Stopwatch();
     stopwatch.start();
 
-    List<String> files =
-        sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
+    var files = sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
+
     List<LibraryElement> libs = [];
     libs.addAll(_parseLibraries(files));
     // remove excluded libraries
@@ -109,7 +109,6 @@ class DartDoc {
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
         libraries.add(library);
-        //    libraries.addAll(library.exportedLibraries);
       }
     });
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
