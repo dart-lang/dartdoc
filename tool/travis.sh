@@ -20,7 +20,8 @@ grind analyze
 grind docitself
 
 # Build the SDK docs
-grind buildsdkdocs
+# silence stdout but echo stderr
+grind buildsdkdocs 2>&1 >/dev/null | echo
 
 # Another smoke test: Run dartdoc on fake_package.
 cd test/fake_package
