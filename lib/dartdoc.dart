@@ -70,8 +70,8 @@ class DartDoc {
       outputDir.createSync(recursive: true);
     }
 
-    Package package = new Package(
-        libraries, _rootDir.path, _getSdkVersion(), sdkDocs, sdkReadmePath);
+    Package package = new Package(libraries, _rootDir.path,
+        sdkVersion: _getSdkVersion(), isSdk: sdkDocs, readmeLoc: sdkReadmePath);
 
     for (var generator in _generators) {
       await generator.generate(package, outputDir);
