@@ -13,10 +13,10 @@
     <section class="summary" id="classes">
         <h2>Classes</h2>
 
-        <dl class="dl-horizontal">
+        <dl>
             {{#library.classes}}
             <dt id="{{htmlId}}">
-                {{{linkedName}}}
+                <span class="name">{{{linkedName}}}</span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
@@ -96,10 +96,10 @@
     <section class="summary" id="exceptions">
         <h2>Exceptions/Errors</h2>
 
-        <dl class="dl-horizontal">
+        <dl>
             {{#library.exceptions}}
             <dt id="{{htmlId}}">
-                {{{linkedName}}}
+                <span class="name">{{{linkedName}}}</span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}

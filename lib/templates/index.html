@@ -10,10 +10,10 @@
 
       <section class="summary" id="libraries">
         <h2>Libraries</h2>
-        <dl class="dl-horizontal">
+        <dl>
           {{#package.libraries}}
             <dt>
-              <a href="{{nameForFile}}/index.html">{{ name }}</a>
+              <span class="name"><a href="{{nameForFile}}/index.html">{{ name }}</a></span>
             </dt>
             <dd>
               {{#oneLiner}}{{ documentation }}{{/oneLiner}}
