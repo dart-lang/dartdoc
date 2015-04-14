@@ -54,7 +54,8 @@ class DartDoc {
     stopwatch = new Stopwatch();
     stopwatch.start();
 
-    var files = sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
+    List<String> files =
+        sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
     List<LibraryElement> libs = [];
     libs.addAll(_parseLibraries(files));
     // remove excluded libraries
@@ -80,7 +81,7 @@ class DartDoc {
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');
     print(
-        "Documented ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.");
+        "Documented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} in ${seconds.toStringAsFixed(1)} seconds.");
   }
 
   List<LibraryElement> _parseLibraries(List<String> files) {

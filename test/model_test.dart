@@ -33,15 +33,22 @@ void main() {
   var file = new File(path.join(dirPath, 'lib/example.dart'));
   var lib2 = new Library(e, package, file.readAsStringSync());
 
+  Directory sdkDir = cli_util.getSdkDir();
+  if (sdkDir == null) {
+    print("Warning: unable to locate the Dart SDK.");
+    exit(1);
+  }
+
+  var readmeLoc = '${Directory.current.path}/test/test_sdk_readme.md';
+  sdkAsPackage = new Package(
+      getSdkLibrariesToDocument(helper.sdk, helper.context), sdkDir.path,
+      sdkVersion: '1.9.0-dev.3.0', isSdk: true, readmeLoc: readmeLoc);
+
   group('Package', () {
-    var p, p2;
+    Package p;
 
     setUp(() {
       p = new Package([e], Directory.current.path);
-      var readmeLoc =
-          '${Directory.current.path}/test/fake_package/test_readme.md';
-      p2 = new Package([e], Directory.current.path,
-          sdkVersion: '1.9.0-dev.3.0', isSdk: true, readmeLoc: readmeLoc);
     });
 
     test('name', () {
@@ -61,16 +68,16 @@ void main() {
     });
 
     test('sdk name', () {
-      expect(p2.name, 'Dart API Reference');
+      expect(sdkAsPackage.name, 'Dart API Reference');
     });
 
     test('sdk version', () {
-      expect(p2.version, '1.9.0-dev.3.0');
+      expect(sdkAsPackage.version, '1.9.0-dev.3.0');
     });
 
     test('sdk description', () {
-      expect(true, p2.description
-          .startsWith('Welcome to the Dart API reference documentation.'));
+      expect(sdkAsPackage.description,
+          startsWith('Welcome to the Dart API reference documentation.'));
     });
   });
 
@@ -78,14 +85,6 @@ void main() {
     Library dartAsyncLib;
 
     setUp(() {
-      Directory sdkDir = cli_util.getSdkDir();
-      if (sdkDir == null) {
-        print("Warning: unable to locate the Dart SDK.");
-        exit(1);
-      }
-      sdkAsPackage = new Package(
-          getSdkLibrariesToDocument(helper.sdk, helper.context), sdkDir.path,
-          sdkVersion: '0.0.0', isSdk: true);
       dartAsyncLib = new Library(
           getSdkLibrariesToDocument(helper.sdk, helper.context)[0],
           sdkAsPackage);
