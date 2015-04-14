@@ -20,25 +20,35 @@ import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 
+import 'package:cli_util/cli_util.dart' as cli_util;
+
 void main() {
   AnalyzerHelper helper = new AnalyzerHelper();
   String dirPath = path.join(Directory.current.path, 'test/fake_package');
   Source source = helper.addSource(path.join(dirPath, 'lib/example.dart'));
   LibraryElement e = helper.resolve(source);
   Package package = new Package([e], dirPath);
+  Package sdkAsPackage;
   var library = package.libraries[0];
   var file = new File(path.join(dirPath, 'lib/example.dart'));
   var lib2 = new Library(e, package, file.readAsStringSync());
 
+  Directory sdkDir = cli_util.getSdkDir();
+  if (sdkDir == null) {
+    print("Warning: unable to locate the Dart SDK.");
+    exit(1);
+  }
+
+  var readmeLoc = '${Directory.current.path}/test/test_sdk_readme.md';
+  sdkAsPackage = new Package(
+      getSdkLibrariesToDocument(helper.sdk, helper.context), sdkDir.path,
+      sdkVersion: '1.9.0-dev.3.0', isSdk: true, readmeLoc: readmeLoc);
+
   group('Package', () {
-    var p, p2;
+    Package p;
 
     setUp(() {
       p = new Package([e], Directory.current.path);
-      var readmeLoc =
-          '${Directory.current.path}/test/fake_package/test_readme.md';
-      p2 = new Package(
-          [e], Directory.current.path, '1.9.0-dev.3.0', true, readmeLoc);
     });
 
     test('name', () {
@@ -58,33 +68,36 @@ void main() {
     });
 
     test('sdk name', () {
-      expect(p2.name, 'Dart API Reference');
+      expect(sdkAsPackage.name, 'Dart API Reference');
     });
 
     test('sdk version', () {
-      expect(p2.version, '1.9.0-dev.3.0');
+      expect(sdkAsPackage.version, '1.9.0-dev.3.0');
     });
 
     test('sdk description', () {
-      expect(true, p2.description
-          .startsWith('Welcome to the Dart API reference documentation.'));
+      expect(sdkAsPackage.description,
+          startsWith('Welcome to the Dart API reference documentation.'));
     });
   });
 
   group('Library', () {
-    var sdkLib;
+    Library dartAsyncLib;
 
     setUp(() {
-      sdkLib = new Library(
-          getSdkLibrariesToDocument(helper.sdk, helper.context)[0], package);
+      dartAsyncLib = new Library(
+          getSdkLibrariesToDocument(helper.sdk, helper.context)[0],
+          sdkAsPackage);
     });
 
     test('name', () {
       expect(library.name, 'ex');
     });
 
-    test('sdk library name', () {
-      expect(sdkLib.name, 'dart:async');
+    test('sdk library names', () {
+      expect(dartAsyncLib.name, 'dart:async');
+      expect(dartAsyncLib.nameForFile, 'dart_async');
+      expect(dartAsyncLib.href, 'dart_async/index.html');
     });
 
     test('documentation', () {
@@ -92,36 +105,36 @@ void main() {
     });
 
     test('has properties', () {
-      expect(library.hasProperties, true);
+      expect(library.hasProperties, isTrue);
     });
 
     test('has constants', () {
-      expect(library.hasConstants, true);
+      expect(library.hasConstants, isTrue);
     });
 
     test('has exceptions', () {
-      expect(library.hasExceptions, true);
+      expect(library.hasExceptions, isTrue);
     });
 
     test('has enums', () {
-      expect(library.hasEnums, false);
+      expect(library.hasEnums, isFalse);
     });
 
     test('has functions', () {
-      expect(library.hasFunctions, true);
+      expect(library.hasFunctions, isTrue);
     });
 
     test('has typedefs', () {
-      expect(library.hasTypedefs, true);
+      expect(library.hasTypedefs, isTrue);
     });
 
     test('exported class', () {
-      expect(library.getClasses().any((c) => c.name == 'Helper'), true);
+      expect(library.getClasses().any((c) => c.name == 'Helper'), isTrue);
     });
 
     test('exported function', () {
-      expect(
-          library.getFunctions().any((f) => f.name == 'helperFunction'), false);
+      expect(library.getFunctions().any((f) => f.name == 'helperFunction'),
+          isFalse);
     });
   });
 
@@ -159,11 +172,11 @@ void main() {
     });
 
     test('abstract', () {
-      expect(Cat.isAbstract, true);
+      expect(Cat.isAbstract, isTrue);
     });
 
     test('supertype', () {
-      expect(B.hasSupertype, true);
+      expect(B.hasSupertype, isTrue);
     });
 
     test('mixins', () {
@@ -277,7 +290,7 @@ void main() {
     });
 
     test('method documentation', () {
-      expect(m2.documentation, 'this is a method');
+      expect(m2.documentation, equals('this is a method'));
     });
 
     test('can have params', () {
@@ -315,12 +328,12 @@ void main() {
       expect(constField.isConst, isTrue);
     });
 
-    test('is final', () {
-      expect(f1.isFinal, false);
+    test('is not final', () {
+      expect(f1.isFinal, isFalse);
     });
 
-    test('is static', () {
-      expect(f2.isStatic, false);
+    test('is not static', () {
+      expect(f2.isStatic, isFalse);
     });
   });
 
@@ -390,7 +403,7 @@ void main() {
     var f = library.getClasses()[1].instanceProperties[0];
 
     test('parameterized type', () {
-      expect(f.modelType.isParameterizedType, true);
+      expect(f.modelType.isParameterizedType, isTrue);
     });
   });
 
@@ -425,7 +438,7 @@ void main() {
     });
 
     test('is optional', () {
-      expect(p1.isOptional, true);
+      expect(p1.isOptional, isTrue);
     });
 
     test('default value', () {
@@ -433,7 +446,7 @@ void main() {
     });
 
     test('is named', () {
-      expect(p1.isOptionalNamed, true);
+      expect(p1.isOptionalNamed, isTrue);
     });
 
     test('linkedName', () {

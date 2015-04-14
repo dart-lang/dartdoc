@@ -432,7 +432,10 @@ class Package {
   List<Library> get libraries => _libraries;
 
   Package(Iterable<LibraryElement> libraryElements, this._rootDirPath,
-      [this._sdkVersion, this._isSdk = false, this._readmeLoc]) {
+      {String sdkVersion, bool isSdk: false, String readmeLoc})
+      : _sdkVersion = sdkVersion,
+        _isSdk = isSdk,
+        _readmeLoc = readmeLoc {
     libraryElements.forEach((element) {
       //   print('adding lib $element to package $name');
       _libraries.add(new Library(element, this));

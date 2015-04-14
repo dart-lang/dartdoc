@@ -92,9 +92,9 @@ ArgParser _createArgsParser() {
       abbr: 'h', negatable: false, help: 'Show command help.');
   parser.addFlag('version',
       help: 'Display the version for $NAME.', negatable: false);
-  parser.addFlag('sdk-docs', help: 'Generate docs for the Dart SDK.');
   parser.addOption('dart-sdk',
       help: "Location of the Dart SDK. Use if SDK isn't automatically located.");
+  parser.addFlag('sdk-docs', help: 'Generate ONLY the docs for the Dart SDK.');
   parser.addOption('sdk-readme',
       help: 'Path to the SDK description file. Use if generating Dart SDK docs.');
   parser.addOption('input-dir',
