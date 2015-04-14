@@ -39,7 +39,6 @@ class DartDoc {
   final Directory _rootDir;
   final Directory _sdkDir;
   Directory outputDir;
-  Directory inputDir;
   final bool sdkDocs;
   final Set<LibraryElement> libraries = new Set();
   final List<Generator> _generators;
@@ -48,15 +47,14 @@ class DartDoc {
   Stopwatch stopwatch;
 
   DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators,
-      this.outputDir, {this.inputDir, this.sdkDocs: false, this.sdkReadmePath});
+      this.outputDir, {this.sdkDocs: false, this.sdkReadmePath});
 
   /// Generate the documentation
   Future generateDocs() async {
     stopwatch = new Stopwatch();
     stopwatch.start();
 
-    if (inputDir == null) inputDir = _rootDir;
-    var files = sdkDocs ? [] : findFilesToDocumentInPackage(inputDir.path);
+    var files = sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
 
     List<LibraryElement> libs = [];
     libs.addAll(_parseLibraries(files));
@@ -73,7 +71,7 @@ class DartDoc {
       outputDir.createSync(recursive: true);
     }
 
-    Package package = new Package(libraries, inputDir.path,
+    Package package = new Package(libraries, _rootDir.path,
         sdkVersion: _getSdkVersion(), isSdk: sdkDocs, readmeLoc: sdkReadmePath);
 
     for (var generator in _generators) {
@@ -93,7 +91,7 @@ class DartDoc {
       new FileUriResolver()
     ];
     JavaFile packagesDir =
-        new JavaFile.relative(new JavaFile(inputDir.path), 'packages');
+        new JavaFile.relative(new JavaFile(_rootDir.path), 'packages');
     if (packagesDir.exists()) {
       resolvers.add(new PackageUriResolver([packagesDir]));
     }

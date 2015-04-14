@@ -44,14 +44,10 @@ void main(List<String> arguments) {
     exit(1);
   }
 
-  Directory inputDir;
-  if (args['input'] != null) {
-    inputDir = new Directory(args['input']);
-    if (!inputDir.existsSync()) {
-      print(
-          "Warning: unable to locate the input directory at ${inputDir.path}.");
-      exit(1);
-    }
+  Directory inputDir = new Directory(args['input']);
+  if (!inputDir.existsSync()) {
+    print("Warning: unable to locate the input directory at ${inputDir.path}.");
+    exit(1);
   }
 
   List<String> excludeLibraries =
@@ -71,11 +67,8 @@ void main(List<String> arguments) {
 
   var generators = initGenerators(url, footer);
 
-  new DartDoc(
-      Directory.current, excludeLibraries, sdkDir, generators, outputDir,
-      inputDir: inputDir,
-      sdkDocs: sdkDocs,
-      sdkReadmePath: readme)..generateDocs();
+  new DartDoc(inputDir, excludeLibraries, sdkDir, generators, outputDir,
+      sdkDocs: sdkDocs, sdkReadmePath: readme)..generateDocs();
 }
 
 /// Print help if we are passed the help option or invalid arguments.
@@ -98,7 +91,7 @@ ArgParser _createArgsParser() {
   parser.addOption('sdk-readme',
       help: 'Path to the SDK description file. Use if generating Dart SDK docs.');
   parser.addOption('input',
-      help: 'Path to source directory, defaults to current directory');
+      help: 'Path to source directory', defaultsTo: Directory.current.path);
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: 'docs');
   parser.addOption('footer',
