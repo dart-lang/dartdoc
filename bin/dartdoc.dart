@@ -57,7 +57,7 @@ void main(List<String> arguments) {
     print("Warning: output directory exists: ${args['output']}");
     exit(1);
   }
-  print('Generating docs into $outputDir');
+  print('Generating Dart API docs into ${outputDir.path}');
 
   var generators = initGenerators(url, footer);
 
