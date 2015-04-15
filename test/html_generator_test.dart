@@ -13,7 +13,7 @@ void main() {
     Templates templates;
 
     setUp(() async {
-      templates = new Templates("<p>User inserted message</p>");
+      templates = new Templates(null, "<p>User inserted message</p>");
       await templates.init();
     });
 
