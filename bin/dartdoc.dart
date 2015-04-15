@@ -53,7 +53,18 @@ void main(List<String> arguments) {
   List<String> excludeLibraries =
       args['exclude'] == null ? [] : args['exclude'].split(',');
   String url = args['hosted-url'];
-  String footer = _resolveTildePath(args['footer']);
+  String footerFilePath = _resolveTildePath(args['footer']);
+  if (footerFilePath != null && !new File(footerFilePath).existsSync()) {
+    print(
+        "Warning: unable to locate the file with footer at ${footerFilePath}.");
+    exit(1);
+  }
+  String headerFilePath = _resolveTildePath(args['header']);
+  if (headerFilePath != null && !new File(headerFilePath).existsSync()) {
+    print(
+        "Warning: unable to locate the file with footer at ${headerFilePath}.");
+    exit(1);
+  }
 
   var outputDir = new Directory(path.join(Directory.current.path, 'docs'));
   if (args['output'] != null) {
@@ -65,7 +76,7 @@ void main(List<String> arguments) {
   }
   print('Generating Dart API docs into ${outputDir.path}');
 
-  var generators = initGenerators(url, footer);
+  var generators = initGenerators(url, headerFilePath, footerFilePath);
 
   new DartDoc(inputDir, excludeLibraries, sdkDir, generators, outputDir,
       sdkDocs: sdkDocs, sdkReadmePath: readme)..generateDocs();
@@ -94,8 +105,10 @@ ArgParser _createArgsParser() {
       help: 'Path to source directory', defaultsTo: Directory.current.path);
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: 'docs');
+  parser.addOption('header',
+      help: 'path to file containing HTML text, inserted into the header of every page.');
   parser.addOption('footer',
-      help: 'HTML text, inserted into the footer of every page.');
+      help: 'path to file containing HTML text, inserted into the footer of every page.');
   parser.addOption('exclude',
       help: 'Comma-separated list of library names to ignore.');
   parser.addOption('hosted-url',

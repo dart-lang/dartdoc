@@ -41,8 +41,9 @@ class Templates {
   final Map<String, String> _partialTemplates = {};
 
   String _footer;
+  String _header;
 
-  Templates(this._footer);
+  Templates(this._header, this._footer);
 
   Future init() async {
     indexTemplate = await _loadTemplate('index.html');
@@ -87,8 +88,14 @@ class Templates {
   Future<String> _loadPartial(String templatePath) async {
     String template = await _getTemplateFile(templatePath);
     // TODO: revisit, not sure this is the right place for this logic
-    if (templatePath.contains('_footer') && _footer != null) template =
-        template.replaceAll('<!-- Footer Placeholder -->', _footer);
+    if (templatePath.contains('_footer') && _footer != null) {
+      template = template.replaceAll(
+          '<!-- Footer Placeholder -->', new File(_footer).readAsStringSync());
+    }
+    if (templatePath.contains('_head') && _header != null) {
+      template = template.replaceAll(
+          '<!-- Header Placeholder -->', new File(_header).readAsStringSync());
+    }
     return template;
   }
 }
@@ -106,9 +113,9 @@ class HtmlGenerator extends Generator {
 
   final String generatedOn;
 
-  HtmlGenerator(this._url, [String footer])
+  HtmlGenerator(this._url, [String header, String footer])
       : generatedOn = new DateFormat('MMMM dd yyyy').format(new DateTime.now()),
-        _templates = new Templates(footer);
+        _templates = new Templates(header, footer);
 
   @override
   Future generate(Package package, Directory out) async {
