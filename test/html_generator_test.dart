@@ -13,7 +13,7 @@ void main() {
     Templates templates;
 
     setUp(() async {
-      templates = new Templates(null, "<p>User inserted message</p>");
+      templates = new Templates(null, null);
       await templates.init();
     });
 
@@ -60,7 +60,7 @@ void main() {
     test('header and footer', () {
       String content = templates.indexTemplate({},
           assumeNullNonExistingProperty: true, errorOnMissingProperty: false);
-      expect(content.contains('<p>User inserted message</p>'), true);
+      expect(content.contains('<p>User inserted message</p>'), false);
     });
   });
 }
