@@ -55,12 +55,14 @@ void main(List<String> arguments) {
   String url = args['hosted-url'];
   String footerFilePath = _resolveTildePath(args['footer']);
   if (footerFilePath != null && !new File(footerFilePath).existsSync()) {
-    print("Warning: unable to locate the file with footer at ${footerFilePath}.");
+    print(
+        "Warning: unable to locate the file with footer at ${footerFilePath}.");
     exit(1);
   }
   String headerFilePath = _resolveTildePath(args['header']);
   if (headerFilePath != null && !new File(headerFilePath).existsSync()) {
-    print("Warning: unable to locate the file with footer at ${headerFilePath}.");
+    print(
+        "Warning: unable to locate the file with footer at ${headerFilePath}.");
     exit(1);
   }
 
