@@ -25,7 +25,7 @@ import 'src/model_utils.dart';
 const String NAME = 'dartdoc';
 
 // Update when pubspec version changes
-const String VERSION = '0.0.1+4';
+const String VERSION = '0.0.1+5';
 
 /// Initialize and setup the generators
 List<Generator> initGenerators(
