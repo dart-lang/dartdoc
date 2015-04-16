@@ -3,10 +3,12 @@
 // license that can be found in the LICENSE file.
 
 import 'dart:io';
+import 'dart:async' show Future;
 
 import 'package:grinder/grinder.dart';
 import 'package:path/path.dart' as path;
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:librato/librato.dart';
 
 final Directory DOC_DIR = new Directory('docs');
 
@@ -44,11 +46,13 @@ analyze(GrinderContext context) {
       fatalWarnings: true);
 }
 
-buildSdkDocs(GrinderContext context) {
+Future buildSdkDocs(GrinderContext context) async {
   if (DOC_DIR.existsSync()) DOC_DIR.deleteSync(recursive: true);
   context.log('building SDK docs');
   try {
-    runDartScript(context, 'bin/dartdoc.dart', arguments: ['--sdk-docs']);
+    int sdkDocsGenTime = _runTimed(() {
+      runDartScript(context, 'bin/dartdoc.dart', arguments: ['--sdk-docs']);
+    });
     var indexHtml = joinFile(DOC_DIR, ['index.html']);
     if (!indexHtml.existsSync()) {
       context.fail('no index.html found for SDK docs');
@@ -64,6 +68,8 @@ buildSdkDocs(GrinderContext context) {
     if (!futureConstFile.existsSync()) {
       context.fail('no Future.html found for dart:async Future constructor');
     }
+
+    return _uploadStats(context, sdkDocsGenTime);
   } catch (e) {
     rethrow;
   }
@@ -91,4 +97,31 @@ indexResources(GrinderContext context) {
   buffer.write(packagePaths.map((p) => "  '$p'").join(',\n'));
   buffer.write('\n];\n');
   out.writeAsString(buffer.toString());
+}
+
+int _runTimed(callback()) {
+  var stopwatch = new Stopwatch()..start();
+  callback();
+  stopwatch.stop();
+  return stopwatch.elapsedMilliseconds;
+}
+
+Future _uploadStats(GrinderContext context, int sdkDocsGenTime) async {
+  Map env = Platform.environment;
+
+  if (env.containsKey('LIBRATO_USER') && env.containsKey('TRAVIS_COMMIT')) {
+    Librato librato = new Librato.fromEnvVars();
+    context.log('Uploading stats to ${librato.baseUrl}');
+    LibratoStat sdkDocsGenTimeStat =
+        new LibratoStat('sdk-docs-gen-time', sdkDocsGenTime);
+    await librato.postStats([sdkDocsGenTimeStat]);
+    String commit = env['TRAVIS_COMMIT'];
+    LibratoLink link = new LibratoLink(
+        'github', 'https://github.com/dart-lang/dart-pad/commit/${commit}');
+    LibratoAnnotation annotation = new LibratoAnnotation(commit,
+        description: 'Commit ${commit}', links: [link]);
+    return librato.createAnnotation('build_ui', annotation);
+  } else {
+    return true;
+  }
 }
