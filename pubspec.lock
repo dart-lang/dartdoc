@@ -49,6 +49,10 @@ packages:
     description: intl
     source: hosted
     version: "0.12.2"
+  librato:
+    description: librato
+    source: hosted
+    version: "0.0.2+1"
   logging:
     description: logging
     source: hosted
