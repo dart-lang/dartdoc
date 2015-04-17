@@ -310,98 +310,85 @@ abstract class ModelElement {
 
   String get _href;
 
-  // TODO: handle default values
-  String linkedParams({bool showNames: true}) {
-    List<Parameter> allParams = parameters;
-
-    List<Parameter> requiredParams =
-        allParams.where((Parameter p) => !p.isOptional).toList();
-
-    List<Parameter> positionalParams =
-        allParams.where((Parameter p) => p.isOptionalPositional).toList();
-
-    List<Parameter> namedParams =
-        allParams.where((Parameter p) => p.isOptionalNamed).toList();
-
-    StringBuffer buf = new StringBuffer();
-
-    void renderParams(StringBuffer buf, List<Parameter> params) {
-      for (int i = 0; i < params.length; i++) {
-        Parameter p = params[i];
-        if (i > 0) buf.write(', ');
-        buf.write('<span class="parameter">');
-        if (p.hasAnnotations) {
-          buf.write('<ol class="comma-separated metadata-annotations">');
-          p.annotations.forEach((String annotation) {
-            buf.write('<li class="metadata-annotation">@$annotation</li>');
-          });
-          buf.write('</ol> ');
-        }
-        if (p.modelType.isFunctionType) {
-          buf.write(
-              '<span class="type-annotation">${(p.modelType.element as Typedef).linkedReturnType}</span>');
-          if (showNames) {
-            buf.write(' <span class="parameter-name">${p.name}</span>');
-          }
-          buf.write('(');
-          buf.write(p.modelType.element.linkedParams(showNames: showNames));
-          buf.write(')');
-        } else if (p.modelType != null && p.modelType.element != null) {
-          var mt = p.modelType.element.modelType;
-          String typeName = "";
-          if (mt != null) {
-            typeName = mt.linkedName;
-          }
-          if (typeName.isNotEmpty) {
-            buf.write('<span class="type-annotation">$typeName</span> ');
-          }
-          if (showNames) {
-            buf.write('<span class="parameter-name">${p.name}</span>');
-          }
-        }
-
-        if (p.hasDefaultValue) {
-          if (p.isOptionalNamed) {
-            buf.write(': ');
-          } else {
-            buf.write(' = ');
-          }
-          buf.write('<span class="default-value">${p.defaultValue}</span>');
-        }
-        buf.write('</span><!-- end param -->');
+  String linkedParams({bool showNames: true, String separator: ', '}) {
+    String renderParam(Parameter p) {
+      StringBuffer buf = new StringBuffer();
+      buf.write('<span class="parameter">');
+      if (p.hasAnnotations) {
+        buf.write('<ol class="comma-separated metadata-annotations">');
+        p.annotations.forEach((String annotation) {
+          buf.write('<li class="metadata-annotation">@$annotation</li>');
+        });
+        buf.write('</ol> ');
       }
+      if (p.modelType.isFunctionType) {
+        buf.write(
+            '<span class="type-annotation">${(p.modelType.element as Typedef).linkedReturnType}</span>');
+        if (showNames) {
+          buf.write(' <span class="parameter-name">${p.name}</span>');
+        }
+        buf.write('(');
+        buf.write(p.modelType.element.linkedParams(showNames: showNames));
+        buf.write(')');
+      } else if (p.modelType != null && p.modelType.element != null) {
+        var mt = p.modelType.element.modelType;
+        String typeName = "";
+        if (mt != null) {
+          typeName = mt.linkedName;
+        }
+        if (typeName.isNotEmpty) {
+          buf.write('<span class="type-annotation">$typeName</span> ');
+        }
+        if (showNames) {
+          buf.write('<span class="parameter-name">${p.name}</span>');
+        }
+      }
+
+      if (p.hasDefaultValue) {
+        if (p.isOptionalNamed) {
+          buf.write(': ');
+        } else {
+          buf.write(' = ');
+        }
+        buf.write('<span class="default-value">${p.defaultValue}</span>');
+      }
+      buf.write('</span>');
+      return buf.toString();
     }
 
-    renderParams(buf, requiredParams);
+    String renderParams(Iterable<Parameter> params,
+        [String open = '', String close = '']) {
+      return params.map(renderParam).join(separator);
+    }
 
+    Iterable<Parameter> requiredParams =
+        parameters.where((Parameter p) => !p.isOptional);
+    Iterable<Parameter> positionalParams =
+        parameters.where((Parameter p) => p.isOptionalPositional);
+    Iterable<Parameter> namedParams =
+        parameters.where((Parameter p) => p.isOptionalNamed);
+
+    List<String> fragments = [];
+    if (requiredParams.isNotEmpty) {
+      fragments.add(renderParams(requiredParams));
+    }
     if (positionalParams.isNotEmpty) {
-      if (requiredParams.isNotEmpty) {
-        buf.write(', ');
-      }
-      buf.write('[');
-      renderParams(buf, positionalParams);
-      buf.write(']');
+      fragments.add(renderParams(positionalParams, '[', ']'));
     }
-
     if (namedParams.isNotEmpty) {
-      if (requiredParams.isNotEmpty) {
-        buf.write(', ');
-      }
-      buf.write('{');
-      renderParams(buf, namedParams);
-      buf.write('}');
+      fragments.add(renderParams(namedParams, '{', '}'));
     }
 
-    return buf.toString();
+    return fragments.join(separator);
   }
 
   String get linkedParamsNoNames {
     return linkedParams(showNames: false);
   }
 
-  /// End each parameter with a `<br>`
+  /// End each parameter with `<br>`
   String get linkedParamsLines {
-    return linkedParams().replaceAll('<!-- end param -->,', ',<br>');
+    return linkedParams(separator: ',<br>');
   }
 }
 
