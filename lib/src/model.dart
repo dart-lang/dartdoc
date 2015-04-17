@@ -1038,6 +1038,19 @@ class Field extends ModelElement {
   String get linkedReturnType => modelType.linkedName;
 
   String get constantValue {
+    if (name == 'values' && _field.enclosingElement.isEnum) {
+      // get the values for the enum
+      var econsts = _field.enclosingElement.fields
+          .where((f) => f.isConst && f != _field)
+          .toList(growable: false);
+      StringBuffer buf = new StringBuffer();
+      for (int i = 0; i < econsts.length; i++) {
+        var f = econsts[i];
+        buf.write(f.name);
+        if (i != econsts.length - 1) buf.write(', ');
+      }
+      return buf.toString();
+    }
     if (_field.node == null) return null;
     var v = _field.node.toSource();
     if (v == null) return null;

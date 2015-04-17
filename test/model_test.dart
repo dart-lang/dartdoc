@@ -117,7 +117,7 @@ void main() {
     });
 
     test('has enums', () {
-      expect(library.hasEnums, isFalse);
+      expect(library.hasEnums, isTrue);
     });
 
     test('has functions', () {
@@ -231,6 +231,20 @@ void main() {
     test('inherited methods names', () {
       expect(B.inheritedMethods[0].name, 'printMsg');
       expect(B.inheritedMethods[1].name, 'isGreaterThan');
+    });
+  });
+
+  group('Enum', () {
+    Enum animal;
+
+    setUp(() {
+      animal = library.getEnums()[0];
+    });
+
+    test('enum values', () {
+      expect(animal.constants, hasLength(4));
+      var values = animal.constants.firstWhere((f) => f.name == 'values');
+      expect(values.constantValue, 'CAT, DOG, HORSE');
     });
   });
 
