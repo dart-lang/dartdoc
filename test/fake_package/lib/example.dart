@@ -129,3 +129,5 @@ class ConstantCat implements Cat {
 
   bool get isImplemented => true;
 }
+
+enum Animal { CAT, DOG, HORSE }
