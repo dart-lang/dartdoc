@@ -41,8 +41,7 @@ class DartDoc {
   final Directory _sdkDir;
   Directory outputDir;
   final bool sdkDocs;
-  final Set<LibraryElement> libraryElementList = new Set();
-  final Set<Library> libraryList = new Set();
+  final Set<LibraryElement> libraries = new Set();
   final List<Generator> _generators;
   final String sdkReadmePath;
 
@@ -58,33 +57,23 @@ class DartDoc {
 
     var files = sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
 
-    Package package;
-
-    _parseLibraries(files);
-
-    if (sdkDocs) {
-      // remove excluded libraries
-      _excludes.forEach((pattern) =>
-          libraryElementList.removeWhere((l) => l.name.startsWith(pattern)));
-      libraryElementList
-        ..removeWhere(
-            (LibraryElement library) => _excludes.contains(library.name));
-      package = new Package.fromLibraryElement(
-          libraryElementList, _rootDir.path,
-          sdkVersion: _getSdkVersion(),
-          isSdk: sdkDocs,
-          readmeLoc: sdkReadmePath);
-    } else {
-      package = new Package.fromLibrary(libraryList, _rootDir.path,
-          sdkVersion: _getSdkVersion(),
-          isSdk: sdkDocs,
-          readmeLoc: sdkReadmePath);
-    }
+    List<LibraryElement> libs = [];
+    libs.addAll(_parseLibraries(files));
+    // remove excluded libraries
+    _excludes.forEach(
+        (pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
+    libs
+      ..removeWhere(
+          (LibraryElement library) => _excludes.contains(library.name));
+    libraries.addAll(libs);
 
     // create the out directory
     if (!outputDir.existsSync()) {
       outputDir.createSync(recursive: true);
     }
+
+    Package package = new Package(libraries, _rootDir.path,
+        sdkVersion: _getSdkVersion(), isSdk: sdkDocs, readmeLoc: sdkReadmePath);
 
     for (var generator in _generators) {
       await generator.generate(package, outputDir);
@@ -92,14 +81,11 @@ class DartDoc {
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');
-    var length = libraryElementList.isNotEmpty
-        ? libraryElementList.length
-        : libraryList.length;
     print(
-        "Documented ${length} librar${length == 1 ? 'y' : 'ies'} in ${seconds.toStringAsFixed(1)} seconds.");
+        "Documented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} in ${seconds.toStringAsFixed(1)} seconds.");
   }
 
-  void _parseLibraries(List<String> files) {
+  List<LibraryElement> _parseLibraries(List<String> files) {
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_sdkDir.path));
     List<UriResolver> resolvers = [
       new DartUriResolver(sdk),
@@ -120,36 +106,24 @@ class DartDoc {
       ..sourceFactory = sourceFactory;
 
     if (sdkDocs) {
-      var sdkLibs = getSdkLibrariesToDocument(sdk, context);
-      libraryElementList.addAll(sdkLibs);
-    } else {
-      files.forEach((String filePath) {
-        print('parsing ${filePath}...');
-        Source source = new FileBasedSource.con1(new JavaFile(filePath));
-        if (context.computeKindOf(source) == SourceKind.LIBRARY) {
-          LibraryElement library = context.computeLibraryElement(source);
-          if (!_isExcluded(library)) {
-            var sourceString = new File(filePath).readAsStringSync();
-            libraryList.add(new Library(library, null, sourceString));
-          }
-        }
-      });
+      libraries.addAll(getSdkLibrariesToDocument(sdk, context));
     }
+    files.forEach((String filePath) {
+      print('parsing ${filePath}...');
+      Source source = new FileBasedSource.con1(new JavaFile(filePath));
+      if (context.computeKindOf(source) == SourceKind.LIBRARY) {
+        LibraryElement library = context.computeLibraryElement(source);
+        libraries.add(library);
+      }
+    });
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
-    var length = libraryElementList.isNotEmpty
-        ? libraryElementList.length
-        : libraryList.length;
     print(
-        "\nParsed ${length} " "librar${length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.\n");
+        "\nParsed ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.\n");
+    return libraries.toList();
   }
 
   String _getSdkVersion() {
     File versionFile = new File(path.join(_sdkDir.path, 'version'));
     return versionFile.readAsStringSync();
-  }
-
-  bool _isExcluded(LibraryElement library) {
-    return _excludes.any((pattern) => library.name.startsWith(pattern)) ||
-        _excludes.contains(library.name);
   }
 }
