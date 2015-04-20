@@ -41,8 +41,8 @@ class DartDoc {
   final Directory _sdkDir;
   Directory outputDir;
   final bool sdkDocs;
-  final Set<LibraryElement> libraries = new Set();
-  final Set<Library> mlibraries = new Set();
+  final Set<LibraryElement> libraryElementList = new Set();
+  final Set<Library> libraryList = new Set();
   final List<Generator> _generators;
   final String sdkReadmePath;
 
@@ -65,16 +65,16 @@ class DartDoc {
     if (sdkDocs) {
       // remove excluded libraries
       _excludes.forEach((pattern) =>
-          libraries.removeWhere((l) => l.name.startsWith(pattern)));
-      libraries
+          libraryElementList.removeWhere((l) => l.name.startsWith(pattern)));
+      libraryElementList
         ..removeWhere(
             (LibraryElement library) => _excludes.contains(library.name));
-      package = new Package.fromLibraryElement(libraries, _rootDir.path,
+      package = new Package.fromLibraryElement(libraryElementList, _rootDir.path,
           sdkVersion: _getSdkVersion(),
           isSdk: sdkDocs,
           readmeLoc: sdkReadmePath);
     } else {
-      package = new Package.fromLibrary(mlibraries, _rootDir.path,
+      package = new Package.fromLibrary(libraryList, _rootDir.path,
           sdkVersion: _getSdkVersion(),
           isSdk: sdkDocs,
           readmeLoc: sdkReadmePath);
@@ -91,7 +91,7 @@ class DartDoc {
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');
-    var length = libraries.isNotEmpty ? libraries.length : mlibraries.length;
+    var length = libraryElementList.isNotEmpty ? libraryElementList.length : libraryList.length;
     print(
         "Documented ${length} librar${length == 1 ? 'y' : 'ies'} in ${seconds.toStringAsFixed(1)} seconds.");
   }
@@ -118,7 +118,7 @@ class DartDoc {
 
     if (sdkDocs) {
       var sdkLibs = getSdkLibrariesToDocument(sdk, context);
-      libraries.addAll(sdkLibs);
+      libraryElementList.addAll(sdkLibs);
     } else {
       files.forEach((String filePath) {
         print('parsing ${filePath}...');
@@ -127,13 +127,13 @@ class DartDoc {
           LibraryElement library = context.computeLibraryElement(source);
           if (!_isExcluded(library)) {
             var sourceString = new File(filePath).readAsStringSync();
-            mlibraries.add(new Library(library, null, sourceString));
+            libraryList.add(new Library(library, null, sourceString));
           }
         }
       });
     }
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
-    var length = libraries.isNotEmpty ? libraries.length : mlibraries.length;
+    var length = libraryElementList.isNotEmpty ? libraryElementList.length : libraryList.length;
     print(
         "\nParsed ${length} " "librar${length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.\n");
   }
