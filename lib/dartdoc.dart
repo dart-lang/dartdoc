@@ -42,6 +42,7 @@ class DartDoc {
   Directory outputDir;
   final bool sdkDocs;
   final Set<LibraryElement> libraries = new Set();
+  final Set<Library> mlibraries = new Set();
   final List<Generator> _generators;
   final String sdkReadmePath;
 
@@ -57,23 +58,32 @@ class DartDoc {
 
     var files = sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
 
-    List<LibraryElement> libs = [];
-    libs.addAll(_parseLibraries(files));
-    // remove excluded libraries
-    _excludes.forEach(
-        (pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
-    libs
-      ..removeWhere(
-          (LibraryElement library) => _excludes.contains(library.name));
-    libraries.addAll(libs);
+    Package package;
+
+    _parseLibraries(files);
+
+    if (sdkDocs) {
+      // remove excluded libraries
+      _excludes.forEach((pattern) =>
+          libraries.removeWhere((l) => l.name.startsWith(pattern)));
+      libraries
+        ..removeWhere(
+            (LibraryElement library) => _excludes.contains(library.name));
+      package = new Package.fromLibraryElement(libraries, _rootDir.path,
+          sdkVersion: _getSdkVersion(),
+          isSdk: sdkDocs,
+          readmeLoc: sdkReadmePath);
+    } else {
+      package = new Package.fromLibrary(mlibraries, _rootDir.path,
+          sdkVersion: _getSdkVersion(),
+          isSdk: sdkDocs,
+          readmeLoc: sdkReadmePath);
+    }
 
     // create the out directory
     if (!outputDir.existsSync()) {
       outputDir.createSync(recursive: true);
     }
-
-    Package package = new Package(libraries, _rootDir.path,
-        sdkVersion: _getSdkVersion(), isSdk: sdkDocs, readmeLoc: sdkReadmePath);
 
     for (var generator in _generators) {
       await generator.generate(package, outputDir);
@@ -81,11 +91,12 @@ class DartDoc {
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');
+    var length = libraries.isNotEmpty ? libraries.length : mlibraries.length;
     print(
-        "Documented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} in ${seconds.toStringAsFixed(1)} seconds.");
+        "Documented ${length} librar${length == 1 ? 'y' : 'ies'} in ${seconds.toStringAsFixed(1)} seconds.");
   }
 
-  List<LibraryElement> _parseLibraries(List<String> files) {
+  void _parseLibraries(List<String> files) {
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_sdkDir.path));
     List<UriResolver> resolvers = [
       new DartUriResolver(sdk),
@@ -106,24 +117,34 @@ class DartDoc {
       ..sourceFactory = sourceFactory;
 
     if (sdkDocs) {
-      libraries.addAll(getSdkLibrariesToDocument(sdk, context));
+      var sdkLibs = getSdkLibrariesToDocument(sdk, context);
+      libraries.addAll(sdkLibs);
+    } else {
+      files.forEach((String filePath) {
+        print('parsing ${filePath}...');
+        Source source = new FileBasedSource.con1(new JavaFile(filePath));
+        if (context.computeKindOf(source) == SourceKind.LIBRARY) {
+          LibraryElement library = context.computeLibraryElement(source);
+          if (!_isExcluded(library)) {
+            var sourceString = new File(filePath).readAsStringSync();
+            mlibraries.add(new Library(library, null, sourceString));
+          }
+        }
+      });
     }
-    files.forEach((String filePath) {
-      print('parsing ${filePath}...');
-      Source source = new FileBasedSource.con1(new JavaFile(filePath));
-      if (context.computeKindOf(source) == SourceKind.LIBRARY) {
-        LibraryElement library = context.computeLibraryElement(source);
-        libraries.add(library);
-      }
-    });
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
+    var length = libraries.isNotEmpty ? libraries.length : mlibraries.length;
     print(
-        "\nParsed ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.\n");
-    return libraries.toList();
+        "\nParsed ${length} " "librar${length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.\n");
   }
 
   String _getSdkVersion() {
     File versionFile = new File(path.join(_sdkDir.path, 'version'));
     return versionFile.readAsStringSync();
+  }
+
+  bool _isExcluded(LibraryElement library) {
+    return _excludes.any((pattern) => library.name.startsWith(pattern)) ||
+        _excludes.contains(library.name);
   }
 }
