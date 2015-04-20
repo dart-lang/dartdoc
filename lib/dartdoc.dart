@@ -69,7 +69,8 @@ class DartDoc {
       libraryElementList
         ..removeWhere(
             (LibraryElement library) => _excludes.contains(library.name));
-      package = new Package.fromLibraryElement(libraryElementList, _rootDir.path,
+      package = new Package.fromLibraryElement(
+          libraryElementList, _rootDir.path,
           sdkVersion: _getSdkVersion(),
           isSdk: sdkDocs,
           readmeLoc: sdkReadmePath);
@@ -91,7 +92,9 @@ class DartDoc {
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');
-    var length = libraryElementList.isNotEmpty ? libraryElementList.length : libraryList.length;
+    var length = libraryElementList.isNotEmpty
+        ? libraryElementList.length
+        : libraryList.length;
     print(
         "Documented ${length} librar${length == 1 ? 'y' : 'ies'} in ${seconds.toStringAsFixed(1)} seconds.");
   }
@@ -133,7 +136,9 @@ class DartDoc {
       });
     }
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
-    var length = libraryElementList.isNotEmpty ? libraryElementList.length : libraryList.length;
+    var length = libraryElementList.isNotEmpty
+        ? libraryElementList.length
+        : libraryList.length;
     print(
         "\nParsed ${length} " "librar${length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.\n");
   }
