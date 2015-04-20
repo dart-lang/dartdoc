@@ -27,7 +27,7 @@ void main() {
   String dirPath = path.join(Directory.current.path, 'test/fake_package');
   Source source = helper.addSource(path.join(dirPath, 'lib/example.dart'));
   LibraryElement e = helper.resolve(source);
-  Package package = new Package.fromLibraryElement([e], dirPath);
+  Package package = new Package([e], dirPath);
   Package sdkAsPackage;
   var library = package.libraries[0];
   var file = new File(path.join(dirPath, 'lib/example.dart'));
@@ -40,7 +40,7 @@ void main() {
   }
 
   var readmeLoc = '${Directory.current.path}/test/test_sdk_readme.md';
-  sdkAsPackage = new Package.fromLibraryElement(
+  sdkAsPackage = new Package(
       getSdkLibrariesToDocument(helper.sdk, helper.context), sdkDir.path,
       sdkVersion: '1.9.0-dev.3.0', isSdk: true, readmeLoc: readmeLoc);
 
@@ -48,7 +48,7 @@ void main() {
     Package p;
 
     setUp(() {
-      p = new Package.fromLibraryElement([e], Directory.current.path);
+      p = new Package([e], Directory.current.path);
     });
 
     test('name', () {

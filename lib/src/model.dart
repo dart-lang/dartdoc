@@ -418,8 +418,7 @@ class Package {
 
   List<Library> get libraries => _libraries;
 
-  Package.fromLibraryElement(
-      Iterable<LibraryElement> libraryElements, this._rootDirPath,
+  Package(Iterable<LibraryElement> libraryElements, this._rootDirPath,
       {String sdkVersion, bool isSdk: false, String readmeLoc})
       : _sdkVersion = sdkVersion,
         _isSdk = isSdk,
@@ -429,18 +428,6 @@ class Package {
       _libraries.add(new Library(element, this));
     });
     _libraries.forEach((library) {
-      library._allClasses.forEach(_addToImplementors);
-    });
-  }
-
-  Package.fromLibrary(Iterable<Library> libraries, this._rootDirPath,
-      {String sdkVersion, bool isSdk: false, String readmeLoc})
-      : _sdkVersion = sdkVersion,
-        _isSdk = isSdk,
-        _readmeLoc = readmeLoc {
-    _libraries.addAll(libraries.toList());
-    _libraries.forEach((library) {
-      library.package = this;
       library._allClasses.forEach(_addToImplementors);
     });
   }
@@ -614,9 +601,8 @@ class Library extends ModelElement {
     // TODO(keerti): fix source for exported libraries
     elements..removeWhere(isPrivate);
     _functions = elements.map((e) {
-      String eSource = (source != null && e.node != null)
-          ? source.substring(e.node.offset, e.node.end)
-          : null;
+      String eSource =
+          (source != null) ? source.substring(e.node.offset, e.node.end) : null;
       return new ModelFunction(e, this, eSource);
     }).toList(growable: false);
     return _functions;
@@ -820,9 +806,8 @@ class Class extends ModelElement {
     if (_constructors != null) return _constructors;
 
     _constructors = _cls.constructors.where(isPublic).map((e) {
-      var cSource = (source != null && e.node != null)
-          ? source.substring(e.node.offset, e.node.end)
-          : null;
+      var cSource =
+          (source != null) ? source.substring(e.node.offset, e.node.end) : null;
       return new Constructor(e, library, cSource);
     }).toList(growable: true);
 
@@ -835,9 +820,8 @@ class Class extends ModelElement {
     if (_allMethods != null) return _allMethods;
 
     _allMethods = _cls.methods.where(isPublic).map((e) {
-      var mSource = (source != null && e.node != null)
-          ? source.substring(e.node.offset, e.node.end)
-          : null;
+      var mSource =
+          source != null ? source.substring(e.node.offset, e.node.end) : null;
       if (!e.isOperator) {
         return new Method(e, library, mSource);
       } else {
