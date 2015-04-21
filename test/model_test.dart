@@ -143,10 +143,10 @@ void main() {
     Class Apple, B, Cat, Dog, F;
     setUp(() {
       classes = library.getClasses();
-      Apple = classes[0];
-      B = classes[1];
-      Cat = classes[2];
-      Dog = classes[3];
+      Apple = classes.firstWhere((c) => c.name == 'Apple');
+      B = classes.firstWhere((c) => c.name == 'B');
+      Cat = classes.firstWhere((c) => c.name == 'Cat');
+      Dog = classes.firstWhere((c) => c.name == 'Dog');
       F = classes.firstWhere((c) => c.name == 'F');
     });
 
@@ -287,11 +287,16 @@ void main() {
     var c, m, m2, m3, m4;
 
     setUp(() {
-      c = library.getClasses()[1];
+      c = library.getClasses().firstWhere((c) => c.name == 'B');
       m = c.instanceMethods[0];
-      m2 = lib2.getClasses()[1].instanceMethods[0];
-      m3 = library.getClasses()[0].instanceMethods[0];
-      m4 = library.getClasses()[1].instanceMethods[1];
+      m2 =
+          lib2.getClasses().firstWhere((c) => c.name == 'B').instanceMethods[0];
+      m3 = library
+          .getClasses()
+          .firstWhere((c) => c.name == 'Apple').instanceMethods[0];
+      m4 = library
+          .getClasses()
+          .firstWhere((c) => c.name == 'B').instanceMethods[1];
     });
 
     test('overriden method', () {
@@ -328,7 +333,7 @@ void main() {
     var c, f1, f2, constField;
 
     setUp(() {
-      c = library.getClasses()[0];
+      c = library.getClasses().firstWhere((c) => c.name == 'Apple');
       f1 = c.staticProperties[0]; // n
       f2 = c.instanceProperties[0];
       constField = c.constants[0]; // string
@@ -356,8 +361,8 @@ void main() {
     TopLevelVariable v3;
 
     setUp(() {
-      v = library.getProperties()[0];
-      v3 = library.getProperties()[1];
+      v = library.getProperties().firstWhere((p) => p.name == 'number');
+      v3 = library.getProperties().firstWhere((p) => p.name == 'y');
     });
 
     test('found two properties', () {
@@ -405,7 +410,8 @@ void main() {
   group('Constructor', () {
     var c2;
     setUp(() {
-      c2 = lib2.getClasses()[0].constructors[0];
+      c2 = lib2.getClasses().firstWhere((c) => c.name == 'Apple').constructors[
+          0];
     });
 
     test('has source', () {
@@ -414,7 +420,9 @@ void main() {
   });
 
   group('Type', () {
-    var f = library.getClasses()[1].instanceProperties[0];
+    var f = library
+        .getClasses()
+        .firstWhere((c) => c.name == 'B').instanceProperties[0];
 
     test('parameterized type', () {
       expect(f.modelType.isParameterizedType, isTrue);
@@ -443,10 +451,11 @@ void main() {
     Parameter p1;
 
     setUp(() {
-      c = library.getClasses()[0]; // A
-
+      c = library.getClasses().firstWhere((c) => c.name == 'Apple');
       isGreaterThan = c.instanceMethods[2]; // isGreaterThan
-      asyncM = library.getClasses()[3].instanceMethods
+      asyncM = library
+              .getClasses()
+              .firstWhere((c) => c.name == 'Dog').instanceMethods
           .firstWhere((m) => m.name == 'foo');
       p1 = isGreaterThan.parameters[1]; // {int check:5}
     });
@@ -478,10 +487,11 @@ void main() {
     List<Class> implA, implC;
 
     setUp(() {
-      apple = library.getClasses()[0];
-      b = library.getClasses()[1];
+      apple = library.getClasses().firstWhere((c) => c.name == 'Apple');
+      b = library.getClasses().firstWhere((c) => c.name == 'B');
       implA = apple.implementors;
-      implC = library.getClasses()[2].implementors;
+      implC =
+          library.getClasses().firstWhere((c) => c.name == 'Cat').implementors;
     });
 
     test('the first class is Apple', () {
@@ -495,10 +505,12 @@ void main() {
       expect(implA[0].name, equals('B'));
     });
 
-    test('C has implementors', () {
+    test('Cat has implementors', () {
       expect(implC, hasLength(3));
-      expect(implC[0].name, equals('B'));
-      expect(implC[1].name, equals('Dog'));
+      List<String> implementors = ['B', 'Dog', 'ConstantCat'];
+      expect(implementors.contains(implC[0].name), isTrue);
+      expect(implementors.contains(implC[1].name), isTrue);
+      expect(implementors.contains(implC[2].name), isTrue);
     });
 
     test('B does not have implementors', () {
