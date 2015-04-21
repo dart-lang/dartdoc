@@ -440,10 +440,20 @@ class Package {
     if (e is Library) {
       return _libraries.any((lib) => lib.element == e.element);
     } else {
-      return _libraries.any((lib) => lib.element == e.element.library ||
-          (lib.element as LibraryElement).exportedLibraries
-              .contains(e.element.library));
+      if (_libraries
+          .any((lib) => lib.element == e.element.library)) return true;
+      for (Library lib in _libraries) {
+        LibraryElement libElement = lib.element as LibraryElement;
+        if (lib.element == e.element.library ||
+            (libElement).exportedLibraries
+                .contains(e.element.library)) return true;
+        if (isInExportedLibraries(
+            libElement.exportedLibraries, e.element.library)) {
+          return true;
+        }
+      }
     }
+    return false;
   }
 
   String get href => 'index.html';
@@ -456,7 +466,7 @@ class Library extends ModelElement {
   List<ModelFunction> _functions;
   List<Typedef> _typeDefs;
   List<TopLevelVariable> _variables;
-  List<String> _nameSpace;
+  Iterable<Element> _nameSpace;
 
   String _name;
 
@@ -465,18 +475,15 @@ class Library extends ModelElement {
   Library(LibraryElement element, this.package, [String source])
       : super(element, null, source);
 
-  List<String> get _exportedNameSpace {
+  Iterable<Element> get _exportedNameSpace {
     if (_nameSpace == null) _buildExportedNameSpace();
     return _nameSpace;
   }
 
   _buildExportedNameSpace() {
-    _nameSpace = [];
-    for (ExportElement e in _library.exports) {
-      Namespace namespace =
-          new NamespaceBuilder().createExportNamespaceForDirective(e);
-      _nameSpace.addAll(namespace.definedNames.keys);
-    }
+    Namespace namespace =
+        new NamespaceBuilder().createExportNamespaceForLibrary(_library);
+    _nameSpace = namespace.definedNames.values;
   }
 
   String get name {
@@ -506,16 +513,14 @@ class Library extends ModelElement {
   List<TopLevelVariable> _getVariables() {
     if (_variables != null) return _variables;
 
-    List<TopLevelVariableElement> elements = [];
+    Set<TopLevelVariableElement> elements = new Set();
     elements.addAll(_library.definingCompilationUnit.topLevelVariables);
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.topLevelVariables);
     }
-    for (LibraryElement le in _library.exportedLibraries) {
-      elements.addAll(le.definingCompilationUnit.topLevelVariables
-          .where((v) => _exportedNameSpace.contains(v.name))
-          .toList());
-    }
+    _exportedNameSpace.forEach((element) {
+      if (element is PropertyAccessorElement) elements.add(element.variable);
+    });
     elements..removeWhere(isPrivate);
     _variables = elements
         .map((e) => new TopLevelVariable(e, this))
@@ -543,15 +548,8 @@ class Library extends ModelElement {
     if (_enums != null) return _enums;
 
     List<ClassElement> enumClasses = [];
-    enumClasses.addAll(_library.definingCompilationUnit.enums);
-    for (CompilationUnitElement cu in _library.parts) {
-      enumClasses.addAll(cu.enums);
-    }
-    for (LibraryElement le in _library.exportedLibraries) {
-      enumClasses.addAll(le.definingCompilationUnit.enums
-          .where((e) => _exportedNameSpace.contains(e.name))
-          .toList());
-    }
+    enumClasses.addAll(_exportedNameSpace
+        .where((element) => element is ClassElement && element.isEnum));
     _enums = enumClasses
         .where(isPublic)
         .map((e) => new Enum(e, this))
@@ -568,16 +566,14 @@ class Library extends ModelElement {
   List<Typedef> getTypedefs() {
     if (_typeDefs != null) return _typeDefs;
 
-    List<FunctionTypeAliasElement> elements = [];
+    Set<FunctionTypeAliasElement> elements = new Set();
     elements.addAll(_library.definingCompilationUnit.functionTypeAliases);
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functionTypeAliases);
     }
-    for (LibraryElement le in _library.exportedLibraries) {
-      elements.addAll(le.definingCompilationUnit.functionTypeAliases
-          .where((f) => _exportedNameSpace.contains(f.name))
-          .toList());
-    }
+
+    elements.addAll(_exportedNameSpace
+        .where((element) => element is FunctionTypeAliasElement));
     elements..removeWhere(isPrivate);
     _typeDefs = elements.map((e) => new Typedef(e, this)).toList();
     return _typeDefs;
@@ -588,17 +584,14 @@ class Library extends ModelElement {
   List<ModelFunction> getFunctions() {
     if (_functions != null) return _functions;
 
-    List<FunctionElement> elements = [];
+    Set<FunctionElement> elements = new Set();
     elements.addAll(_library.definingCompilationUnit.functions);
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functions);
     }
-    for (LibraryElement le in _library.exportedLibraries) {
-      elements.addAll(le.definingCompilationUnit.functions
-          .where((f) => _exportedNameSpace.contains(f.name))
-          .toList());
-    }
-    // TODO(keerti): fix source for exported libraries
+    elements.addAll(
+        _exportedNameSpace.where((element) => element is FunctionElement));
+
     elements..removeWhere(isPrivate);
     _functions = elements.map((e) {
       String eSource =
@@ -611,7 +604,7 @@ class Library extends ModelElement {
   List<Class> get _allClasses {
     if (_classes != null) return _classes;
 
-    List<ClassElement> types = [];
+    Set<ClassElement> types = new Set();
     types.addAll(_library.definingCompilationUnit.types);
     for (CompilationUnitElement cu in _library.parts) {
       types.addAll(cu.types);
@@ -621,6 +614,10 @@ class Library extends ModelElement {
           .where((t) => _exportedNameSpace.contains(t.name))
           .toList());
     }
+
+    types.addAll(_exportedNameSpace
+        .where((element) => element is ClassElement && !element.isEnum));
+
     _classes = types
         .where(isPublic)
         .map((e) => new Class(
@@ -806,8 +803,9 @@ class Class extends ModelElement {
     if (_constructors != null) return _constructors;
 
     _constructors = _cls.constructors.where(isPublic).map((e) {
-      var cSource =
-          (source != null) ? source.substring(e.node.offset, e.node.end) : null;
+      var cSource = (source != null && e.node != null)
+          ? source.substring(e.node.offset, e.node.end)
+          : null;
       return new Constructor(e, library, cSource);
     }).toList(growable: true);
 
@@ -922,7 +920,7 @@ class Class extends ModelElement {
 
     vs = vs.toSet().toList();
 
-    vs.removeWhere((it) => _instanceFields.any((i) => it.name == i.name));
+    vs.removeWhere((it) => instanceProperties.any((i) => it.name == i.name));
 
     for (var value in vs) {
       if (value != null &&

@@ -33,6 +33,12 @@ List<InterfaceType> getAllSupertypes(ClassElement c) {
   return c.allSupertypes;
 }
 
+bool isInExportedLibraries(
+    List<LibraryElement> libraries, LibraryElement library) {
+  return libraries
+      .any((lib) => lib == library || lib.exportedLibraries.contains(library));
+}
+
 String replaceAllLinks(String str, {var findMatchingLink}) {
   var matchChars = ['[', ']'];
   int lastWritten = 0;
