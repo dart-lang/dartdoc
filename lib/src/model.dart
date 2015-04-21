@@ -162,7 +162,7 @@ abstract class ModelElement {
       try {
         refElement = commentRefs.firstWhere(
             (ref) => ref.identifier.name == codeRef).identifier.staticElement;
-      } on StateError catch (error) {
+      } on StateError catch (_) {
         // do nothing
       }
       if (refElement == null) {
