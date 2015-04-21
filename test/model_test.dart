@@ -252,8 +252,8 @@ void main() {
     ModelFunction f1, f2;
 
     setUp(() {
-      f1 = library.getFunctions()[0];
-      f2 = lib2.getFunctions()[0];
+      f1 = library.getFunctions().single;
+      f2 = lib2.getFunctions().single;
     });
 
     test('name is function1', () {
