@@ -30,8 +30,6 @@ void main() {
   Package package = new Package([e], dirPath);
   Package sdkAsPackage;
   var library = package.libraries[0];
-  var file = new File(path.join(dirPath, 'lib/example.dart'));
-  var lib2 = new Library(e, package, file.readAsStringSync());
 
   Directory sdkDir = cli_util.getSdkDir();
   if (sdkDir == null) {
@@ -253,7 +251,7 @@ void main() {
 
     setUp(() {
       f1 = library.getFunctions().single;
-      f2 = lib2.getFunctions().single;
+      f2 = library.getFunctions().single;
     });
 
     test('name is function1', () {
@@ -276,11 +274,6 @@ void main() {
     test('handles dynamic parameters correctly', () {
       expect(f2.linkedParams(), contains('lastParam'));
     });
-
-    test('has correct source code', () {
-      expect(f2.source,
-          equals('int function1(String s, bool b, lastParam) => 5;'));
-    });
   });
 
   group('Method', () {
@@ -289,8 +282,9 @@ void main() {
     setUp(() {
       c = library.getClasses().firstWhere((c) => c.name == 'B');
       m = c.instanceMethods[0];
-      m2 =
-          lib2.getClasses().firstWhere((c) => c.name == 'B').instanceMethods[0];
+      m2 = library
+          .getClasses()
+          .firstWhere((c) => c.name == 'B').instanceMethods[0];
       m3 = library
           .getClasses()
           .firstWhere((c) => c.name == 'Apple').instanceMethods[0];
@@ -301,11 +295,6 @@ void main() {
 
     test('overriden method', () {
       expect(m.getOverriddenElement().runtimeType.toString(), 'Method');
-    });
-
-    test('method source', () {
-      expect(m2.source,
-          '@override\n  void m1() {\n    var a = 6;\n    var b = a * 9;\n    b * 2;\n  }');
     });
 
     test('method documentation', () {
@@ -410,12 +399,13 @@ void main() {
   group('Constructor', () {
     var c2;
     setUp(() {
-      c2 = lib2.getClasses().firstWhere((c) => c.name == 'Apple').constructors[
-          0];
+      c2 = library
+          .getClasses()
+          .firstWhere((c) => c.name == 'Apple').constructors[0];
     });
 
-    test('has source', () {
-      expect(c2.source, equals('///Constructor\n  Apple();'));
+    test('has contructor', () {
+      expect(c2, isNotNull);
     });
   });
 
