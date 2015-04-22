@@ -47,14 +47,13 @@ void _addToImplementors(Class c) {
 abstract class ModelElement {
   final Element element;
   final Library library;
-  final String source;
 
   ElementType _modelType;
   String _documentation;
 
   List _parameters;
 
-  ModelElement(this.element, this.library, [this.source]);
+  ModelElement(this.element, this.library);
 
   factory ModelElement.from(Element e, Library library) {
     // Also handles enums
@@ -393,8 +392,8 @@ abstract class ModelElement {
 }
 
 class Dynamic extends ModelElement {
-  Dynamic(DynamicElementImpl element, Library library, [String source])
-      : super(element, library, source);
+  Dynamic(DynamicElementImpl element, Library library)
+      : super(element, library);
 
   String get _href => throw new StateError('dynamic should not have an href');
 }
@@ -472,8 +471,7 @@ class Library extends ModelElement {
 
   LibraryElement get _library => (element as LibraryElement);
 
-  Library(LibraryElement element, this.package, [String source])
-      : super(element, null, source);
+  Library(LibraryElement element, this.package) : super(element, null);
 
   Iterable<Element> get _exportedNameSpace {
     if (_nameSpace == null) _buildExportedNameSpace();
@@ -594,9 +592,7 @@ class Library extends ModelElement {
 
     elements..removeWhere(isPrivate);
     _functions = elements.map((e) {
-      String eSource =
-          (source != null) ? source.substring(e.node.offset, e.node.end) : null;
-      return new ModelFunction(e, this, eSource);
+      return new ModelFunction(e, this);
     }).toList(growable: false);
     return _functions;
   }
@@ -620,8 +616,7 @@ class Library extends ModelElement {
 
     _classes = types
         .where(isPublic)
-        .map((e) => new Class(
-            e, this, source)) // is source a bug? it's the library's source
+        .map((e) => new Class(e, this))
         .toList(growable: true);
 
     return _classes;
@@ -669,8 +664,7 @@ class Class extends ModelElement {
 
   ClassElement get _cls => (element as ClassElement);
 
-  Class(ClassElement element, Library library, [String source])
-      : super(element, library, source) {
+  Class(ClassElement element, Library library) : super(element, library) {
     var p = library.package;
     _modelType = new ElementType(_cls.type, this);
 
@@ -803,10 +797,7 @@ class Class extends ModelElement {
     if (_constructors != null) return _constructors;
 
     _constructors = _cls.constructors.where(isPublic).map((e) {
-      var cSource = (source != null && e.node != null)
-          ? source.substring(e.node.offset, e.node.end)
-          : null;
-      return new Constructor(e, library, cSource);
+      return new Constructor(e, library);
     }).toList(growable: true);
 
     return _constructors;
@@ -818,12 +809,10 @@ class Class extends ModelElement {
     if (_allMethods != null) return _allMethods;
 
     _allMethods = _cls.methods.where(isPublic).map((e) {
-      var mSource =
-          source != null ? source.substring(e.node.offset, e.node.end) : null;
       if (!e.isOperator) {
-        return new Method(e, library, mSource);
+        return new Method(e, library);
       } else {
-        return new Operator(e, library, mSource);
+        return new Operator(e, library);
       }
     }).toList(growable: false);
 
@@ -969,16 +958,15 @@ class Class extends ModelElement {
 }
 
 class Enum extends Class {
-  Enum(ClassElement element, Library library, [String source])
-      : super(element, library, source);
+  Enum(ClassElement element, Library library) : super(element, library);
 
   @override
   String get kind => 'enum';
 }
 
 class ModelFunction extends ModelElement {
-  ModelFunction(FunctionElement element, Library library, [String contents])
-      : super(element, library, contents) {
+  ModelFunction(FunctionElement element, Library library)
+      : super(element, library) {
     _modelType = new ElementType(_func.type, this);
   }
 
@@ -1083,8 +1071,8 @@ class Field extends ModelElement {
 class Constructor extends ModelElement {
   ConstructorElement get _constructor => (element as ConstructorElement);
 
-  Constructor(ConstructorElement element, Library library, [String source])
-      : super(element, library, source);
+  Constructor(ConstructorElement element, Library library)
+      : super(element, library);
 
   @override
   String get _href =>
@@ -1109,13 +1097,12 @@ class Method extends ModelElement {
 
   MethodElement get _method => (element as MethodElement);
 
-  Method(MethodElement element, Library library, [String source])
-      : super(element, library, source) {
+  Method(MethodElement element, Library library) : super(element, library) {
     _modelType = new ElementType(_method.type, this);
   }
 
-  Method.inherited(MethodElement element, Library library, [String source])
-      : super(element, library, source) {
+  Method.inherited(MethodElement element, Library library)
+      : super(element, library) {
     _modelType = new ElementType(_method.type, this);
     _isInherited = true;
   }
@@ -1149,8 +1136,7 @@ class Method extends ModelElement {
 }
 
 class Operator extends Method {
-  Operator(MethodElement element, Library library, [String source])
-      : super(element, library, source);
+  Operator(MethodElement element, Library library) : super(element, library);
 
   bool get isOperator => true;
 
