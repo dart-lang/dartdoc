@@ -188,6 +188,7 @@ class HtmlGenerator extends Generator {
   }
 
   void generatePackage() {
+    var type = package.isSdk ? '' : 'package';
     // TODO should we add _this_ to the context and avoid putting stuff
     // in the map?
     Map data = {
@@ -197,7 +198,7 @@ class HtmlGenerator extends Generator {
       'oneLiner': oneLiner,
       'documentation': package.description,
       'title': '${package.name} - Dart API docs',
-      'layoutTitle': _layoutTitle(package.name, 'package'),
+      'layoutTitle': _layoutTitle(package.name, type),
       'metaDescription':
           '${package.name} API docs, for the Dart programming language.',
       'navLinks': [package],

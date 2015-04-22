@@ -431,6 +431,9 @@ class Package {
     });
   }
 
+  /// Does this package represent the SDK?
+  bool get isSdk => _isSdk;
+
   String toString() => 'Package $name, isSdk: $_isSdk';
 
   bool isDocumented(ModelElement e) {
