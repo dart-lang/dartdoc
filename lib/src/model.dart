@@ -356,7 +356,7 @@ abstract class ModelElement {
     }
 
     String renderParams(Iterable<Parameter> params,
-        [String open = '', String close = '']) {
+        {String open: '', String close: ''}) {
       return '$open${params.map(renderParam).join(separator)}$close';
     }
 
@@ -372,10 +372,10 @@ abstract class ModelElement {
       fragments.add(renderParams(requiredParams));
     }
     if (positionalParams.isNotEmpty) {
-      fragments.add(renderParams(positionalParams, '[', ']'));
+      fragments.add(renderParams(positionalParams, open: '[', close: ']'));
     }
     if (namedParams.isNotEmpty) {
-      fragments.add(renderParams(namedParams, '{', '}'));
+      fragments.add(renderParams(namedParams, open: '{', close: '}'));
     }
 
     return fragments.join(separator);
