@@ -357,7 +357,7 @@ abstract class ModelElement {
 
     String renderParams(Iterable<Parameter> params,
         [String open = '', String close = '']) {
-      return params.map(renderParam).join(separator);
+      return '$open${params.map(renderParam).join(separator)}$close';
     }
 
     Iterable<Parameter> requiredParams =
