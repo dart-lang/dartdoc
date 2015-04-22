@@ -534,8 +534,9 @@ String oneLiner(String text, {nestedContext}) {
   var blocks = document.parseLines(lines);
 
   while (blocks.isNotEmpty &&
-      (blocks.first is md.Element &&
-          _oneLinerSkipTags.contains(blocks.first.tag))) {
+      ((blocks.first is md.Element &&
+              _oneLinerSkipTags.contains(blocks.first.tag)) ||
+          blocks.first.isEmpty)) {
     blocks.removeAt(0);
   }
 
