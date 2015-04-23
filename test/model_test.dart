@@ -242,7 +242,7 @@ void main() {
     test('enum values', () {
       expect(animal.constants, hasLength(4));
       var values = animal.constants.firstWhere((f) => f.name == 'values');
-      expect(values.constantValue, equals('const List'));
+      expect(values.constantValue, equals('const List&lt;Animal&gt;'));
       expect(values.documentation, startsWith('A constant List'));
     });
   });

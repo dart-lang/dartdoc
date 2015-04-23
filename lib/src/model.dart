@@ -972,10 +972,13 @@ class Enum extends Class {
   List<EnumField> get constants {
     if (_constants != null) return _constants;
 
+    // is there a better way to get the index during a map() ?
+    var index = 0;
+
     _constants = _cls.fields
         .where(isPublic)
         .where((f) => f.isConst)
-        .map((field) => new EnumField(field, library))
+        .map((field) => new EnumField(index++, field, library))
         .toList(growable: false);
 
     return _constants;
@@ -1082,14 +1085,17 @@ class Field extends ModelElement {
 /// Enum's fields are virtual, so we do a little work to create
 /// usable values for the docs.
 class EnumField extends Field {
-  EnumField(FieldElement element, Library library) : super(element, library);
+  final int index;
+
+  EnumField(this.index, FieldElement element, Library library)
+      : super(element, library);
 
   @override
   String get constantValue {
     if (name == 'values') {
-      return 'const List';
+      return 'const List&lt;${_field.enclosingElement.name}&gt;';
     } else {
-      return super.constantValue;
+      return 'const ${_field.enclosingElement.name}($index)';
     }
   }
 
