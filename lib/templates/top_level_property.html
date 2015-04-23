@@ -4,13 +4,10 @@
     {{#property}}
       <span class="returntype">{{{ linkedReturnType }}}</span>
       <span class="name">{{ name }}</span>
+
+      {{>readable_writable}}
     {{/property}}
   </section>
-
-  <div>
-    <span class="{{#property.hasGetter}}has-it{{/property.hasGetter}} getter">read</span>
-    <span class="{{#property.hasSetter}}has-it{{/property.hasSetter}} setter">write</span>
-  </div>
 
   <section class="desc markdown">
 
