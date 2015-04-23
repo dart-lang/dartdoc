@@ -309,11 +309,12 @@ abstract class ModelElement {
 
   String get _href;
 
-  String linkedParams({bool showNames: true, String separator: ', '}) {
+  String linkedParams(
+      {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
     String renderParam(Parameter p) {
       StringBuffer buf = new StringBuffer();
       buf.write('<span class="parameter">');
-      if (p.hasAnnotations) {
+      if (showMetadata && p.hasAnnotations) {
         buf.write('<ol class="comma-separated metadata-annotations">');
         p.annotations.forEach((String annotation) {
           buf.write('<li class="metadata-annotation">@$annotation</li>');
@@ -327,7 +328,8 @@ abstract class ModelElement {
           buf.write(' <span class="parameter-name">${p.name}</span>');
         }
         buf.write('(');
-        buf.write(p.modelType.element.linkedParams(showNames: showNames));
+        buf.write(p.modelType.element.linkedParams(
+            showNames: showNames, showMetadata: showMetadata));
         buf.write(')');
       } else if (p.modelType != null && p.modelType.element != null) {
         var mt = p.modelType.element.modelType;
@@ -381,9 +383,7 @@ abstract class ModelElement {
     return fragments.join(separator);
   }
 
-  String get linkedParamsNoNames {
-    return linkedParams(showNames: false);
-  }
+  String get linkedParamsNoMetadata => linkedParams(showMetadata: false);
 
   /// End each parameter with `<br>`
   String get linkedParamsLines {
