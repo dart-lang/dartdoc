@@ -9,6 +9,7 @@ import 'package:grinder/grinder.dart';
 import 'package:path/path.dart' as path;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:librato/librato.dart';
+import 'package:den_api/den_api.dart';
 
 final Directory DOC_DIR = new Directory('docs');
 
@@ -18,7 +19,32 @@ main([List<String> args]) {
   task('analyze', analyze);
   task('indexresources', indexResources);
   task('buildsdkdocs', buildSdkDocs);
+  task('bump:build', bumpVersionBuild);
+  task('publish', publish, [bumpVersionBuild]);
   startGrinder(args);
+}
+
+publish(GrinderContext context) async {
+  runProcess(context, 'pub', arguments: ['publish']);
+}
+
+bumpVersionBuild(GrinderContext context) async {
+  Pubspec pubspec = (await Pubspec.load())
+    ..bump(ReleaseType.build)
+    ..save();
+
+  var libCode = new File('lib/dartdoc.dart');
+  if (!libCode.existsSync()) {
+    stderr.write('Cannot find lib/dartdoc.dart');
+    exit(1);
+  }
+  String libCodeContents = libCode.readAsStringSync();
+  libCodeContents = libCodeContents.replaceFirst(
+      new RegExp(r"const String VERSION = '.*';"),
+      "const String VERSION = '${pubspec.version}';");
+  libCode.writeAsString(libCodeContents);
+
+  context.log('Version set to ${pubspec.version}');
 }
 
 /**
