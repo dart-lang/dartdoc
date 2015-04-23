@@ -9,6 +9,10 @@ packages:
     description: args
     source: hosted
     version: "0.12.2+6"
+  barback:
+    description: barback
+    source: hosted
+    version: "0.15.2+4"
   cli_util:
     description: cli_util
     source: hosted
@@ -17,6 +21,10 @@ packages:
     description: collection
     source: hosted
     version: "1.1.0"
+  contrast:
+    description: contrast
+    source: hosted
+    version: "0.1.1"
   crypto:
     description: crypto
     source: hosted
@@ -25,6 +33,14 @@ packages:
     description: csslib
     source: hosted
     version: "0.12.0"
+  den_api:
+    description: den_api
+    source: hosted
+    version: "0.1.0"
+  github:
+    description: github
+    source: hosted
+    version: "2.2.2"
   grinder:
     description: grinder
     source: hosted
@@ -81,10 +97,18 @@ packages:
     description: petitparser
     source: hosted
     version: "1.3.7"
+  pool:
+    description: pool
+    source: hosted
+    version: "1.0.1"
   pub_cache:
     description: pub_cache
     source: hosted
     version: "0.0.1+2"
+  pub_package_data:
+    description: pub_package_data
+    source: hosted
+    version: "0.0.1"
   pub_semver:
     description: pub_semver
     source: hosted
@@ -125,6 +149,10 @@ packages:
     description: which
     source: hosted
     version: "0.1.3"
+  xml:
+    description: xml
+    source: hosted
+    version: "2.2.3"
   yaml:
     description: yaml
     source: hosted

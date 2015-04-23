@@ -1,5 +1,5 @@
 name: dartdoc
-version: 0.0.1+6
+version: 0.0.1+10
 author: Dart Team <misc@dartlang.org>
 description: A documentation generator for Dart.
 homepage: https://github.com/dart-lang/dartdoc
@@ -23,5 +23,6 @@ dev_dependencies:
   grinder: '^0.6.0'
   unittest: '^0.11.0'
   librato: any
+  den_api: '^0.1.0'
 executables:
   dartdoc: null
