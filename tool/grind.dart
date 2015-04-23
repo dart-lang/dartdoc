@@ -20,7 +20,7 @@ main([List<String> args]) {
   task('indexresources', indexResources);
   task('buildsdkdocs', buildSdkDocs);
   task('bump:build', bumpVersionBuild);
-  task('publish', publish, ['bumpVersionBuild']);
+  task('publish', publish, ['bump:build']);
   startGrinder(args);
 }
 
