@@ -47,6 +47,15 @@ yet in the issue tracker, start by opening an issue. Thanks!
 
 Please file reports on the [GitHub Issue Tracker][issues].
 
+## Developing
+
+### Publishing to pub
+
+It's easy to publish to pub. The following command will bump the build version
+and run `pub publish`.
+
+`grinder publish`
+
 ## License
 
 You can view our license
