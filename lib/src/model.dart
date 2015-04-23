@@ -961,10 +961,28 @@ class Class extends ModelElement {
 }
 
 class Enum extends Class {
+  List<EnumField> _constants;
+
   Enum(ClassElement element, Library library) : super(element, library);
 
   @override
   String get kind => 'enum';
+
+  @override
+  List<EnumField> get constants {
+    if (_constants != null) return _constants;
+
+    // is there a better way to get the index during a map() ?
+    var index = 0;
+
+    _constants = _cls.fields
+        .where(isPublic)
+        .where((f) => f.isConst)
+        .map((field) => new EnumField(index++, field, library))
+        .toList(growable: false);
+
+    return _constants;
+  }
 }
 
 class ModelFunction extends ModelElement {
@@ -1006,6 +1024,8 @@ class Typedef extends ModelElement {
 }
 
 class Field extends ModelElement {
+  String _constantValue;
+
   FieldElement get _field => (element as FieldElement);
 
   Field(FieldElement element, Library library) : super(element, library) {
@@ -1027,24 +1047,15 @@ class Field extends ModelElement {
   String get linkedReturnType => modelType.linkedName;
 
   String get constantValue {
-    if (name == 'values' && _field.enclosingElement.isEnum) {
-      // get the values for the enum
-      var econsts = _field.enclosingElement.fields
-          .where((f) => f.isConst && f != _field)
-          .toList(growable: false);
-      StringBuffer buf = new StringBuffer();
-      for (int i = 0; i < econsts.length; i++) {
-        var f = econsts[i];
-        buf.write(f.name);
-        if (i != econsts.length - 1) buf.write(', ');
-      }
-      return buf.toString();
-    }
+    if (_constantValue != null) return _constantValue;
+
     if (_field.node == null) return null;
     var v = _field.node.toSource();
     if (v == null) return null;
     var string = v.substring(v.indexOf('=') + 1, v.length).trim();
-    return string.replaceAll(modelType.name, modelType.linkedName);
+    _constantValue = string.replaceAll(modelType.name, modelType.linkedName);
+
+    return _constantValue;
   }
 
   bool get hasGetter => _field.getter != null;
@@ -1067,6 +1078,33 @@ class Field extends ModelElement {
     } else {
       throw new StateError(
           '$name is not in a class or library, instead a ${element.enclosingElement}');
+    }
+  }
+}
+
+/// Enum's fields are virtual, so we do a little work to create
+/// usable values for the docs.
+class EnumField extends Field {
+  final int index;
+
+  EnumField(this.index, FieldElement element, Library library)
+      : super(element, library);
+
+  @override
+  String get constantValue {
+    if (name == 'values') {
+      return 'const List&lt;${_field.enclosingElement.name}&gt;';
+    } else {
+      return 'const ${_field.enclosingElement.name}($index)';
+    }
+  }
+
+  @override
+  String get documentation {
+    if (name == 'values') {
+      return 'A constant List of the values in this enum, in order of their declaration';
+    } else {
+      return super.documentation;
     }
   }
 }
