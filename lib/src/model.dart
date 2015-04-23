@@ -1107,6 +1107,9 @@ class EnumField extends Field {
       return super.documentation;
     }
   }
+
+  @override
+  String get linkedName => name;
 }
 
 class Constructor extends ModelElement {

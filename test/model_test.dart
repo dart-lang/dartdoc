@@ -245,6 +245,12 @@ void main() {
       expect(values.constantValue, equals('const List&lt;Animal&gt;'));
       expect(values.documentation, startsWith('A constant List'));
     });
+
+    test('enum single value', () {
+      var dog = animal.constants.firstWhere((f) => f.name == 'DOG');
+      expect(dog, isNotNull);
+      expect(dog.linkedName, equals('DOG'));
+    });
   });
 
   group('Function', () {
