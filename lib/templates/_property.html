@@ -3,10 +3,6 @@
     <span class="returntype">{{{ linkedReturnType }}}</span>
 </dt>
 <dd>
-    <div class="readable-writable">
-        {{#readOnly}}read-only{{/readOnly}}
-        {{#writeOnly}}write-only{{/writeOnly}}
-        {{#readWrite}}read/write{{/readWrite}}
-    </div>
+    {{>readable_writable}}
     {{#oneLiner}}{{ documentation }}{{/oneLiner}}
 </dd>

@@ -1,4 +1,6 @@
-// WARNING: This file is auto-generated.library resources;
+// WARNING: This file is auto-generated.
+
+library resources;
 
 const List<String> RESOURCE_NAMES = const [
   'package:dartdoc/resources/prettify.css',
