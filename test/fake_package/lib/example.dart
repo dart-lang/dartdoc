@@ -83,7 +83,9 @@ class Dog implements Cat, E {
 
 abstract class E {}
 
-class F extends Dog with _PrivateAbstractClass {}
+class F extends Dog with _PrivateAbstractClass {
+  void methodWithGenericParam([List<Apple> msgs]) {}
+}
 
 class CatString extends StringBuffer {}
 
