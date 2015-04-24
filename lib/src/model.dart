@@ -332,7 +332,7 @@ abstract class ModelElement {
             showNames: showNames, showMetadata: showMetadata));
         buf.write(')');
       } else if (p.modelType != null && p.modelType.element != null) {
-        var mt = p.modelType.element.modelType;
+        var mt = p.modelType;
         String typeName = "";
         if (mt != null) {
           typeName = mt.linkedName;

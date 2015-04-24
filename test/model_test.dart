@@ -443,8 +443,8 @@ void main() {
   });
 
   group('Parameter', () {
-    Class c;
-    Method isGreaterThan, asyncM;
+    Class c, f;
+    Method isGreaterThan, asyncM, methodWithGenericParam;
     Parameter p1;
 
     setUp(() {
@@ -455,6 +455,8 @@ void main() {
               .firstWhere((c) => c.name == 'Dog').instanceMethods
           .firstWhere((m) => m.name == 'foo');
       p1 = isGreaterThan.parameters[1]; // {int check:5}
+      f = library.getClasses().firstWhere((c) => c.name == 'F');
+      methodWithGenericParam = f.instanceMethods[0];
     });
 
     test('is optional', () {
@@ -475,6 +477,11 @@ void main() {
 
     test('async return type', () {
       expect(asyncM.linkedReturnType, 'Future');
+    });
+
+    test('param with generics', () {
+      var params = methodWithGenericParam.linkedParams();
+      expect(params.contains('List') && params.contains('Apple'), isTrue);
     });
   });
 
