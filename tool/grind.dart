@@ -11,23 +11,20 @@ import 'package:dartdoc/src/io_utils.dart';
 import 'package:librato/librato.dart';
 import 'package:den_api/den_api.dart';
 
-final Directory DOC_DIR = new Directory('docs');
+final Directory TEMP_DIR =
+    new Directory(path.join('${Directory.systemTemp.path}', 'temp'));
 
 main([List<String> args]) {
-  task('init', defaultInit);
-  task('docitself', testDartdoc, ['init']);
-  task('analyze', analyze);
-  task('indexresources', indexResources);
-  task('buildsdkdocs', buildSdkDocs);
-  task('bump:build', bumpVersionBuild);
-  task('publish', publish, ['bump:build']);
-  startGrinder(args);
+  grind(args);
 }
 
+@Task('publish to pub.dartlang')
+@Depends(bumpVersionBuild)
 publish(GrinderContext context) async {
-  runProcess(context, 'pub', arguments: ['publish']);
+  Dart.run('pub', arguments: ['publish']);
 }
 
+@Task('Bump pubspec version and version number in lib/dartdoc.dart')
 bumpVersionBuild(GrinderContext context) async {
   Pubspec pubspec = (await Pubspec.load())
     ..bump(ReleaseType.build)
@@ -47,50 +44,51 @@ bumpVersionBuild(GrinderContext context) async {
   context.log('Version set to ${pubspec.version}');
 }
 
-/**
- * Run dartdoc and check that the docs are generated.
- */
+@Task('Generate docs for dartdoc')
 testDartdoc(GrinderContext context) {
-  if (DOC_DIR.existsSync()) DOC_DIR.deleteSync(recursive: true);
+  if (TEMP_DIR.existsSync()) TEMP_DIR.deleteSync(recursive: true);
 
   try {
     context.log('running dartdoc');
-    runDartScript(context, 'bin/dartdoc.dart');
+    Dart.run('bin/dartdoc.dart', arguments: ['--output ${TEMP_DIR.path}']);
 
-    File indexHtml = joinFile(DOC_DIR, ['index.html']);
+    File indexHtml = joinFile(TEMP_DIR, ['index.html']);
     if (!indexHtml.existsSync()) context.fail('docs not generated');
-    File docFile = joinFile(DOC_DIR, ['dartdoc/index.html']);
+    File docFile = joinFile(TEMP_DIR, ['dartdoc/index.html']);
     if (!docFile.existsSync()) context.fail('docs not generated');
   } catch (e) {
     rethrow;
   }
 }
 
+@Task('Analyze dartdoc to ensure there are no errors and warnings')
 analyze(GrinderContext context) {
-  Analyzer.analyzePaths(
-      context, ['bin/dartdoc.dart', 'lib/dartdoc.dart', 'test/all.dart'],
+  Analyzer.analyzeFiles(
+      ['bin/dartdoc.dart', 'lib/dartdoc.dart', 'test/all.dart'],
       fatalWarnings: true);
 }
 
+@Task('Generate docs for the Dart SDK')
 Future buildSdkDocs(GrinderContext context) async {
-  if (DOC_DIR.existsSync()) DOC_DIR.deleteSync(recursive: true);
+  if (TEMP_DIR.existsSync()) TEMP_DIR.deleteSync(recursive: true);
   context.log('building SDK docs');
   try {
     int sdkDocsGenTime = _runTimed(() {
-      runDartScript(context, 'bin/dartdoc.dart', arguments: ['--sdk-docs']);
+      Dart.run('bin/dartdoc.dart',
+          arguments: ['--output ${TEMP_DIR.path}', '--sdk-docs']);
     });
-    var indexHtml = joinFile(DOC_DIR, ['index.html']);
+    var indexHtml = joinFile(TEMP_DIR, ['index.html']);
     if (!indexHtml.existsSync()) {
       context.fail('no index.html found for SDK docs');
     }
     // check for the existance of certain files/dirs
     var libsLength =
-        DOC_DIR.listSync().where((fs) => fs.path.contains('dart_')).length;
+        TEMP_DIR.listSync().where((fs) => fs.path.contains('dart_')).length;
     if (libsLength != 17) {
       context.fail(
           'docs not generated for all the SDK libraries, expected 17 directories, generated $libsLength directories');
     }
-    var futureConstFile = joinFile(DOC_DIR, ['dart_async/Future/Future.html']);
+    var futureConstFile = joinFile(TEMP_DIR, ['dart_async/Future/Future.html']);
     if (!futureConstFile.existsSync()) {
       context.fail('no Future.html found for dart:async Future constructor');
     }
@@ -101,6 +99,7 @@ Future buildSdkDocs(GrinderContext context) async {
   }
 }
 
+@Task('Make sure all the resource files are present')
 indexResources(GrinderContext context) {
   var sourcePath = path.join('lib', 'resources');
   if (!new Directory(sourcePath).existsSync()) {
