@@ -11,8 +11,8 @@ import 'package:dartdoc/src/io_utils.dart';
 import 'package:librato/librato.dart';
 import 'package:den_api/den_api.dart';
 
-final Directory TEMP_DIR =
-    new Directory(path.join('${Directory.systemTemp.path}', 'temp'));
+final Directory DOCS_DIR =
+    new Directory(path.join('${Directory.systemTemp.path}', 'docs'));
 
 main([List<String> args]) {
   grind(args);
@@ -46,15 +46,15 @@ bumpVersionBuild(GrinderContext context) async {
 
 @Task('Generate docs for dartdoc')
 testDartdoc(GrinderContext context) {
-  if (TEMP_DIR.existsSync()) TEMP_DIR.deleteSync(recursive: true);
+  if (DOCS_DIR.existsSync()) DOCS_DIR.deleteSync(recursive: true);
 
   try {
     context.log('running dartdoc');
-    Dart.run('bin/dartdoc.dart', arguments: ['--output ${TEMP_DIR.path}']);
+    Dart.run('bin/dartdoc.dart', arguments: ['--output', '${DOCS_DIR.path}']);
 
-    File indexHtml = joinFile(TEMP_DIR, ['index.html']);
+    File indexHtml = joinFile(DOCS_DIR, ['index.html']);
     if (!indexHtml.existsSync()) context.fail('docs not generated');
-    File docFile = joinFile(TEMP_DIR, ['dartdoc/index.html']);
+    File docFile = joinFile(DOCS_DIR, ['dartdoc/index.html']);
     if (!docFile.existsSync()) context.fail('docs not generated');
   } catch (e) {
     rethrow;
@@ -70,25 +70,25 @@ analyze(GrinderContext context) {
 
 @Task('Generate docs for the Dart SDK')
 Future buildSdkDocs(GrinderContext context) async {
-  if (TEMP_DIR.existsSync()) TEMP_DIR.deleteSync(recursive: true);
+  if (DOCS_DIR.existsSync()) DOCS_DIR.deleteSync(recursive: true);
   context.log('building SDK docs');
   try {
     int sdkDocsGenTime = _runTimed(() {
       Dart.run('bin/dartdoc.dart',
-          arguments: ['--output ${TEMP_DIR.path}', '--sdk-docs']);
+          arguments: ['--output', '${DOCS_DIR.path}', '--sdk-docs']);
     });
-    var indexHtml = joinFile(TEMP_DIR, ['index.html']);
+    var indexHtml = joinFile(DOCS_DIR, ['index.html']);
     if (!indexHtml.existsSync()) {
       context.fail('no index.html found for SDK docs');
     }
     // check for the existance of certain files/dirs
     var libsLength =
-        TEMP_DIR.listSync().where((fs) => fs.path.contains('dart_')).length;
+        DOCS_DIR.listSync().where((fs) => fs.path.contains('dart_')).length;
     if (libsLength != 17) {
       context.fail(
           'docs not generated for all the SDK libraries, expected 17 directories, generated $libsLength directories');
     }
-    var futureConstFile = joinFile(TEMP_DIR, ['dart_async/Future/Future.html']);
+    var futureConstFile = joinFile(DOCS_DIR, ['dart_async/Future/Future.html']);
     if (!futureConstFile.existsSync()) {
       context.fail('no Future.html found for dart:async Future constructor');
     }

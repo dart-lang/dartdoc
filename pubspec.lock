@@ -41,10 +41,14 @@ packages:
     description: github
     source: hosted
     version: "2.2.2"
+  glob:
+    description: glob
+    source: hosted
+    version: "1.0.4"
   grinder:
     description: grinder
     source: hosted
-    version: "0.6.6+3"
+    version: "0.7.0"
   html:
     description: html
     source: hosted
