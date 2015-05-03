@@ -83,8 +83,11 @@ void main() {
 
     setUp(() {
       dartAsyncLib = new Library(
-          getSdkLibrariesToDocument(helper.sdk, helper.context)[0],
+          getSdkLibrariesToDocument(helper.sdk, helper.context).first,
           sdkAsPackage);
+
+      // Make sure the first library is dart:async
+      expect(dartAsyncLib.name, 'dart:async');
     });
 
     test('name', () {
@@ -159,12 +162,11 @@ void main() {
     });
 
     test('docs ', () {
-      expect(
-          Apple.resolveReferences(Apple.documentation), 'Sample class String');
+      expect(Apple.resolveReferences(), 'Sample class String');
     });
 
     test('docs refs', () {
-      expect(B.resolveReferences(B.documentation),
+      expect(B.resolveReferences(),
           'Extends class <a href=ex/Apple_class.html> Apple</a>');
     });
 

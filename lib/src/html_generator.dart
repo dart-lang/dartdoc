@@ -582,7 +582,7 @@ String resolveDocReferences(String text, MustacheContext nestedContext) {
   var resolvedText;
   var element = _getElement();
   if (element != null) {
-    resolvedText = element.resolveReferences(text);
+    resolvedText = element.resolveReferences(docs: text);
     return resolvedText;
   }
   return text;

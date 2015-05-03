@@ -9,49 +9,46 @@ import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
+const _leftChar = '[';
+const _rightChar = ']';
+
 bool isPrivate(Element e) => e.name.startsWith('_');
 
 bool isPublic(Element e) => !isPrivate(e);
 
-List<LibraryElement> getSdkLibrariesToDocument(
-    DartSdk sdk, AnalysisContext context) {
-  List<LibraryElement> libraries = [];
+Iterable<LibraryElement> getSdkLibrariesToDocument(
+    DartSdk sdk, AnalysisContext context) sync* {
   var sdkApiLibs = sdk.sdkLibraries
       .where((SdkLibrary sdkLib) => !sdkLib.isInternal && sdkLib.isDocumented)
       .toList();
   sdkApiLibs.sort((lib1, lib2) => lib1.shortName.compareTo(lib2.shortName));
-  sdkApiLibs.forEach((SdkLibrary sdkLib) {
+
+  for (var sdkLib in sdkApiLibs) {
     Source source = sdk.mapDartUri(sdkLib.shortName);
     LibraryElement library = context.computeLibraryElement(source);
-    libraries.add(library);
-    libraries.addAll(library.exportedLibraries);
-  });
-  return libraries;
+    yield library;
+    yield* library.exportedLibraries;
+  }
 }
 
-List<InterfaceType> getAllSupertypes(ClassElement c) {
-  return c.allSupertypes;
-}
+List<InterfaceType> getAllSupertypes(ClassElement c) => c.allSupertypes;
 
 bool isInExportedLibraries(
-    List<LibraryElement> libraries, LibraryElement library) {
-  return libraries
-      .any((lib) => lib == library || lib.exportedLibraries.contains(library));
-}
+    List<LibraryElement> libraries, LibraryElement library) => libraries
+    .any((lib) => lib == library || lib.exportedLibraries.contains(library));
 
-String replaceAllLinks(String str, {var findMatchingLink}) {
-  var matchChars = ['[', ']'];
+String replaceAllLinks(String str, String findMatchingLink(String input)) {
   int lastWritten = 0;
-  int index = str.indexOf(matchChars[0]);
+  int index = str.indexOf(_leftChar);
   StringBuffer buf = new StringBuffer();
 
   while (index != -1) {
-    int end = str.indexOf(matchChars[1], index + 1);
+    int end = str.indexOf(_rightChar, index + 1);
     if (end != -1) {
       if (index - lastWritten > 0) {
         buf.write(str.substring(lastWritten, index));
       }
-      String codeRef = str.substring(index + matchChars[0].length, end);
+      String codeRef = str.substring(index + _leftChar.length, end);
       if (codeRef != null) {
         var link = findMatchingLink(codeRef);
         if (link != null) {
@@ -60,11 +57,11 @@ String replaceAllLinks(String str, {var findMatchingLink}) {
           buf.write(codeRef);
         }
       }
-      lastWritten = end + matchChars[1].length;
+      lastWritten = end + _rightChar.length;
     } else {
       break;
     }
-    index = str.indexOf(matchChars[0], end + 1);
+    index = str.indexOf(_leftChar, end + 1);
   }
   if (lastWritten < str.length) {
     buf.write(str.substring(lastWritten, str.length));

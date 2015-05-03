@@ -150,7 +150,12 @@ abstract class ModelElement {
     return null;
   }
 
-  String resolveReferences(String docs) {
+  /// If [docs] is not provided, the [documentation] property is used.
+  String resolveReferences({String docs}) {
+    if (docs == null) {
+      docs = this.documentation;
+    }
+
     var commentRefs = _getCommentRefs();
     if (commentRefs == null || commentRefs.isEmpty) {
       return docs;
@@ -177,7 +182,7 @@ abstract class ModelElement {
       return e.href;
     }
 
-    return replaceAllLinks(docs, findMatchingLink: _getMatchingLink);
+    return replaceAllLinks(docs, _getMatchingLink);
   }
 
   String get htmlId => name;
