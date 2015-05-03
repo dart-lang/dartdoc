@@ -334,7 +334,7 @@ abstract class ModelElement {
       } else if (p.modelType != null && p.modelType.element != null) {
         var mt = p.modelType;
         String typeName = "";
-        if (mt != null) {
+        if (mt != null && !mt.isDynamic) {
           typeName = mt.linkedName;
         }
         if (typeName.isNotEmpty) {
