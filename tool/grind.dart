@@ -18,6 +18,26 @@ main([List<String> args]) {
   grind(args);
 }
 
+@Task('Start observatory for a test run')
+observe(GrinderContext context) async {
+  if (DOCS_DIR.existsSync()) DOCS_DIR.deleteSync(recursive: true);
+  // TODO: Use `Dart.run` when https://github.com/google/grinder.dart/issues/214
+  // is fixed.
+  // TODO: uncomment all this when https://code.google.com/p/dart/issues/detail?id=23359
+  // is fixed
+//  runAsync('dart',
+//      arguments: ['--pause-isolates-on-exit', '--enable-vm-service=7334',
+//      // TODO: we only need --profile on windows
+//      '--profile', 'bin/dartdoc.dart', '--output', '${DOCS_DIR.path}']);
+//  await new Future.delayed(const Duration(seconds: 1));
+//  runAsync('open', arguments: ['http://localhost:7334']);
+
+  print('Copy and paste this into your console:\n');
+  print('open http://localhost:7334');
+  print(
+      'dart --pause-isolates-on-exit --enable-vm-service=7334 --profile bin/dartdoc.dart --output ${DOCS_DIR.path}');
+}
+
 @Task('publish to pub.dartlang')
 @Depends(bumpVersionBuild)
 publish(GrinderContext context) async {
