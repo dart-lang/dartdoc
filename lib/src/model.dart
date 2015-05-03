@@ -119,38 +119,38 @@ abstract class ModelElement {
     return _documentation;
   }
 
-  String resolveReferences(String docs) {
-    NodeList<CommentReference> _getCommentRefs() {
-      if (_documentation == null && canOverride()) {
-        var melement = getOverriddenElement();
-        if (melement != null &&
-            melement.element.node != null &&
-            melement.element.node is AnnotatedNode) {
-          var docComment =
-              (melement.element.node as AnnotatedNode).documentationComment;
-          if (docComment != null) return docComment.references;
-          return null;
-        }
+  NodeList<CommentReference> _getCommentRefs() {
+    if (_documentation == null && canOverride()) {
+      var melement = getOverriddenElement();
+      if (melement != null &&
+          melement.element.node != null &&
+          melement.element.node is AnnotatedNode) {
+        var docComment =
+            (melement.element.node as AnnotatedNode).documentationComment;
+        if (docComment != null) return docComment.references;
+        return null;
       }
-      if (element.node is AnnotatedNode) {
-        if ((element.node as AnnotatedNode).documentationComment != null) {
-          return (element.node as AnnotatedNode).documentationComment.references;
-        }
-      } else if (element is LibraryElement) {
-        // handle anonymous libraries
-        if (element.node == null || element.node.parent == null) {
-          return null;
-        }
-        var node = element.node.parent.parent;
-        if (node is AnnotatedNode) {
-          if ((node as AnnotatedNode).documentationComment != null) {
-            return (node as AnnotatedNode).documentationComment.references;
-          }
-        }
-      }
-      return null;
     }
+    if (element.node is AnnotatedNode) {
+      if ((element.node as AnnotatedNode).documentationComment != null) {
+        return (element.node as AnnotatedNode).documentationComment.references;
+      }
+    } else if (element is LibraryElement) {
+      // handle anonymous libraries
+      if (element.node == null || element.node.parent == null) {
+        return null;
+      }
+      var node = element.node.parent.parent;
+      if (node is AnnotatedNode) {
+        if ((node as AnnotatedNode).documentationComment != null) {
+          return (node as AnnotatedNode).documentationComment.references;
+        }
+      }
+    }
+    return null;
+  }
 
+  String resolveReferences(String docs) {
     var commentRefs = _getCommentRefs();
     if (commentRefs == null || commentRefs.isEmpty) {
       return docs;
