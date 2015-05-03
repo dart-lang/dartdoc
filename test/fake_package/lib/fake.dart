@@ -284,5 +284,7 @@ const greatAnnotation = 'great';
 const greatestAnnotation = 'greatest';
 
 /// This function has two parameters that are functions.
+///
+/// Check out the [number] parameter. It's the first one.
 String functionWithFunctionParameters(int number, void thing(one, two),
     String string, Future asyncThing(three, four, five, six, seven)) => null;

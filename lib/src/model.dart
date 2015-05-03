@@ -313,7 +313,7 @@ abstract class ModelElement {
       {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
     String renderParam(Parameter p) {
       StringBuffer buf = new StringBuffer();
-      buf.write('<span class="parameter">');
+      buf.write('<span class="parameter" id="${p.htmlId}">');
       if (showMetadata && p.hasAnnotations) {
         buf.write('<ol class="comma-separated metadata-annotations">');
         p.annotations.forEach((String annotation) {
@@ -1312,6 +1312,8 @@ class Parameter extends ModelElement {
 
   String toString() => element.name;
 
+  String get htmlId => '${_parameter.enclosingElement.name}-param-${name}';
+
   @override
   String get _href {
     var p = _parameter.enclosingElement;
@@ -1319,11 +1321,12 @@ class Parameter extends ModelElement {
     if (p is FunctionElement) {
       return '${library.nameForFile}/${p.name}.html';
     } else {
+      // TODO: why is this logic here?
       var name = Operator.friendlyNames.containsKey(p.name)
           ? Operator.friendlyNames[p.name]
           : p.name;
       return '${library.nameForFile}/${p.enclosingElement.name}/' +
-          '${name}.html';
+          '${name}.html#${htmlId}';
     }
   }
 }
