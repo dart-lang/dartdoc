@@ -7,7 +7,7 @@ library dartdoc.model_test;
 import 'dart:io';
 
 import 'package:grinder/grinder.dart' as grinder;
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 import 'package:unittest/unittest.dart';
 
 import 'package:analyzer/src/generated/element.dart';
@@ -24,11 +24,10 @@ import 'package:cli_util/cli_util.dart' as cli_util;
 
 void main() {
   AnalyzerHelper helper = new AnalyzerHelper();
-  String dirPath = path.join(Directory.current.path, 'test/fake_package');
-  Source source = helper.addSource(path.join(dirPath, 'lib/example.dart'));
+  String dirPath = p.join(Directory.current.path, 'test/fake_package');
+  Source source = helper.addSource(p.join(dirPath, 'lib/example.dart'));
   LibraryElement e = helper.resolve(source);
   Package package = new Package([e], dirPath);
-  Package sdkAsPackage;
   var library = package.libraries[0];
 
   Directory sdkDir = cli_util.getSdkDir();
@@ -37,8 +36,8 @@ void main() {
     exit(1);
   }
 
-  var readmeLoc = '${Directory.current.path}/test/test_sdk_readme.md';
-  sdkAsPackage = new Package(
+  var readmeLoc = p.join(Directory.current.path, 'test/test_sdk_readme.md');
+  Package sdkAsPackage = new Package(
       getSdkLibrariesToDocument(helper.sdk, helper.context), sdkDir.path,
       sdkVersion: '1.9.0-dev.3.0', isSdk: true, readmeLoc: readmeLoc);
 
@@ -568,10 +567,6 @@ class AnalyzerHelper {
   DartSdk sdk;
 
   AnalyzerHelper() {
-    _initAnalyzer();
-  }
-
-  void _initAnalyzer() {
     Directory sdkDir = grinder.getSdkDir(['']);
     sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
     List<UriResolver> resolvers = [
