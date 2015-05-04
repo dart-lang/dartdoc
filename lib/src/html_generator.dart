@@ -26,7 +26,7 @@ import '../resource_loader.dart' as loader;
 typedef String TemplateRenderer(context,
     {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});
 
-UserTag _HTML_GENERATE = new UserTag('HTML GENERATE');
+final UserTag _HTML_GENERATE = new UserTag('HTML GENERATE');
 
 class Templates {
   TemplateRenderer indexTemplate;
@@ -41,10 +41,10 @@ class Templates {
   TemplateRenderer topLevelPropertyTemplate;
   TemplateRenderer typeDefTemplate;
 
-  final Map<String, String> _partialTemplates = {};
+  final Map<String, String> _partialTemplates = <String, String>{};
 
-  String _footer;
-  String _header;
+  final String _footer;
+  final String _header;
 
   Templates(this._header, this._footer);
 
@@ -76,9 +76,7 @@ class Templates {
     }
   }
 
-  String _partial(String name) {
-    return _partialTemplates[name];
-  }
+  String _partial(String name) => _partialTemplates[name];
 
   Future<TemplateRenderer> _loadTemplate(String templatePath) async {
     var templateContents = await _getTemplateFile(templatePath);
@@ -93,12 +91,14 @@ class Templates {
     String template = await _getTemplateFile(templatePath);
     // TODO: revisit, not sure this is the right place for this logic
     if (templatePath.contains('_footer') && _footer != null) {
-      template = template.replaceAll(
-          '<!-- Footer Placeholder -->', new File(_footer).readAsStringSync());
+      var footerValue = await new File(_footer).readAsString();
+      template =
+          template.replaceAll('<!-- Footer Placeholder -->', footerValue);
     }
     if (templatePath.contains('_head') && _header != null) {
-      template = template.replaceAll(
-          '<!-- Header Placeholder -->', new File(_header).readAsStringSync());
+      var headerValue = await new File(_header).readAsString();
+      template =
+          template.replaceAll('<!-- Header Placeholder -->', headerValue);
     }
     return template;
   }
@@ -560,30 +560,28 @@ String oneLiner(String text, {nestedContext}) {
   return resolveDocReferences(firstPara, nestedContext);
 }
 
-String resolveDocReferences(String text, MustacheContext nestedContext) {
-  ModelElement _getElement() {
-    var obj = (nestedContext as MustacheToString).parent;
-    obj = obj.ctxReflector.m;
-    if (obj != null) {
-      var reflectee = obj.reflectee;
-      if (reflectee is ModelElement) {
-        return reflectee;
-      } else {
-        var objE = reflectee['method'];
-        if (objE == null) objE = reflectee['class'];
-        if (objE == null) objE = reflectee['function'];
-        if (objE == null) objE = reflectee['library'];
-        return objE;
-      }
+ModelElement _getElement(MustacheToString nestedContext) {
+  var obj = nestedContext.parent;
+  obj = obj.ctxReflector.m;
+  if (obj != null) {
+    var reflectee = obj.reflectee;
+    if (reflectee is ModelElement) {
+      return reflectee;
+    } else {
+      var objE = reflectee['method'];
+      if (objE == null) objE = reflectee['class'];
+      if (objE == null) objE = reflectee['function'];
+      if (objE == null) objE = reflectee['library'];
+      return objE;
     }
-    return null;
   }
+  return null;
+}
 
-  var resolvedText;
-  var element = _getElement();
+String resolveDocReferences(String text, MustacheToString nestedContext) {
+  var element = _getElement(nestedContext);
   if (element != null) {
-    resolvedText = element.resolveReferences(text);
-    return resolvedText;
+    return element.resolveReferences(docs: text);
   }
   return text;
 }
@@ -592,21 +590,21 @@ class PlainTextRenderer implements md.NodeVisitor {
   static final _BLOCK_TAGS =
       new RegExp('blockquote|h1|h2|h3|h4|h5|h6|hr|p|pre');
 
-  StringBuffer buffer;
+  StringBuffer _buffer;
 
   String render(List<md.Node> nodes) {
-    buffer = new StringBuffer();
+    _buffer = new StringBuffer();
 
     for (final node in nodes) {
       node.accept(this);
     }
 
-    return buffer.toString();
+    return _buffer.toString();
   }
 
   @override
   void visitText(md.Text text) {
-    buffer.write(text.text);
+    _buffer.write(text.text);
   }
 
   @override
@@ -618,8 +616,8 @@ class PlainTextRenderer implements md.NodeVisitor {
   @override
   void visitElementAfter(md.Element element) {
     // Hackish. Separate block-level elements with newlines.
-    if (!buffer.isEmpty && _BLOCK_TAGS.firstMatch(element.tag) != null) {
-      buffer.write('\n\n');
+    if (!_buffer.isEmpty && _BLOCK_TAGS.firstMatch(element.tag) != null) {
+      _buffer.write('\n\n');
     }
   }
 }

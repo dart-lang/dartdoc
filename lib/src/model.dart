@@ -119,36 +119,41 @@ abstract class ModelElement {
     return _documentation;
   }
 
-  String resolveReferences(String docs) {
-    NodeList<CommentReference> _getCommentRefs() {
-      if (_documentation == null && canOverride()) {
-        var melement = getOverriddenElement();
-        if (melement != null &&
-            melement.element.node != null &&
-            melement.element.node is AnnotatedNode) {
-          var docComment =
-              (melement.element.node as AnnotatedNode).documentationComment;
-          if (docComment != null) return docComment.references;
-          return null;
+  NodeList<CommentReference> _getCommentRefs() {
+    if (_documentation == null && canOverride()) {
+      var melement = getOverriddenElement();
+      if (melement != null &&
+          melement.element.node != null &&
+          melement.element.node is AnnotatedNode) {
+        var docComment =
+            (melement.element.node as AnnotatedNode).documentationComment;
+        if (docComment != null) return docComment.references;
+        return null;
+      }
+    }
+    if (element.node is AnnotatedNode) {
+      if ((element.node as AnnotatedNode).documentationComment != null) {
+        return (element.node as AnnotatedNode).documentationComment.references;
+      }
+    } else if (element is LibraryElement) {
+      // handle anonymous libraries
+      if (element.node == null || element.node.parent == null) {
+        return null;
+      }
+      var node = element.node.parent.parent;
+      if (node is AnnotatedNode) {
+        if ((node as AnnotatedNode).documentationComment != null) {
+          return (node as AnnotatedNode).documentationComment.references;
         }
       }
-      if (element.node is AnnotatedNode) {
-        if ((element.node as AnnotatedNode).documentationComment != null) {
-          return (element.node as AnnotatedNode).documentationComment.references;
-        }
-      } else if (element is LibraryElement) {
-        // handle anonymous libraries
-        if (element.node == null || element.node.parent == null) {
-          return null;
-        }
-        var node = element.node.parent.parent;
-        if (node is AnnotatedNode) {
-          if ((node as AnnotatedNode).documentationComment != null) {
-            return (node as AnnotatedNode).documentationComment.references;
-          }
-        }
-      }
-      return null;
+    }
+    return null;
+  }
+
+  /// If [docs] is not provided, the [documentation] property is used.
+  String resolveReferences({String docs}) {
+    if (docs == null) {
+      docs = this.documentation;
     }
 
     var commentRefs = _getCommentRefs();
@@ -177,7 +182,7 @@ abstract class ModelElement {
       return e.href;
     }
 
-    return replaceAllLinks(docs, findMatchingLink: _getMatchingLink);
+    return replaceAllLinks(docs, _getMatchingLink);
   }
 
   String get htmlId => name;
@@ -399,11 +404,11 @@ class Dynamic extends ModelElement {
 }
 
 class Package {
-  String _rootDirPath;
+  final String _rootDirPath;
   final List<Library> _libraries = [];
-  bool _isSdk;
-  String _sdkVersion;
   final String _readmeLoc;
+  final bool _isSdk;
+  final String _sdkVersion;
 
   String get name =>
       _isSdk ? 'Dart API Reference' : getPackageName(_rootDirPath);
@@ -462,7 +467,7 @@ class Package {
 }
 
 class Library extends ModelElement {
-  Package package;
+  final Package package;
   List<Class> _classes;
   List<Class> _enums;
   List<ModelFunction> _functions;
