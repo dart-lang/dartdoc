@@ -255,16 +255,14 @@ void main() {
   });
 
   group('Function', () {
-    ModelFunction f1, f2;
+    ModelFunction f1;
 
     setUp(() {
       f1 = library.getFunctions().single;
-      f2 = library.getFunctions().single;
     });
 
     test('name is function1', () {
       expect(f1.name, 'function1');
-      expect(f2.name, 'function1');
     });
 
     test('local element', () {
@@ -280,25 +278,21 @@ void main() {
     });
 
     test('handles dynamic parameters correctly', () {
-      expect(f2.linkedParams(), contains('lastParam'));
+      expect(f1.linkedParams(), contains('lastParam'));
     });
   });
 
   group('Method', () {
-    var c, m, m2, m3, m4;
+    Class classB;
+    Method m, m3, m4;
 
     setUp(() {
-      c = library.getClasses().firstWhere((c) => c.name == 'B');
-      m = c.instanceMethods[0];
-      m2 = library
-          .getClasses()
-          .firstWhere((c) => c.name == 'B').instanceMethods[0];
+      classB = library.getClasses().singleWhere((c) => c.name == 'B');
+      m = classB.instanceMethods.first;
       m3 = library
           .getClasses()
-          .firstWhere((c) => c.name == 'Apple').instanceMethods[0];
-      m4 = library
-          .getClasses()
-          .firstWhere((c) => c.name == 'B').instanceMethods[1];
+          .singleWhere((c) => c.name == 'Apple').instanceMethods.first;
+      m4 = classB.instanceMethods[1];
     });
 
     test('overriden method', () {
@@ -306,7 +300,7 @@ void main() {
     });
 
     test('method documentation', () {
-      expect(m2.documentation, equals('this is a method'));
+      expect(m.documentation, equals('this is a method'));
     });
 
     test('can have params', () {
@@ -322,7 +316,8 @@ void main() {
     });
 
     test('parameter is a function', () {
-      expect(m4.parameters[1].modelType.element.linkedReturnType, 'String');
+      var element = m4.parameters[1].modelType.element as Typedef;
+      expect(element.linkedReturnType, 'String');
     });
   });
 
