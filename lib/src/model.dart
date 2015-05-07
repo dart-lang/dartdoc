@@ -1424,15 +1424,13 @@ class ElementType {
 
     // not TypeParameterType or Void or Union type
     if (isParameterizedType) {
-      buf.write('&lt;');
-      for (int i = 0; i < typeArguments.length; i++) {
-        if (i > 0) {
-          buf.write(', ');
-        }
-        ElementType t = typeArguments[i];
-        buf.write(t.linkedName);
+      var list = typeArguments.where((t) => t.linkedName != 'dynamic').toList();
+      if (list.isNotEmpty) {
+        buf.write('&lt;');
+        var string = list.map((t) => t.linkedName).join(',');
+        buf.write(string);
+        buf.write('&gt;');
       }
-      buf.write('&gt;');
     }
     _linkedName = buf.toString();
 

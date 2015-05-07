@@ -208,7 +208,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.instanceMethods, hasLength(2));
+      expect(Dog.instanceMethods, hasLength(3));
     });
 
     test('get operators', () {

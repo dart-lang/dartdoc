@@ -79,6 +79,8 @@ class Dog implements Cat, E {
   operator ==(Dog other) => name == other.name;
 
   foo() async => 42;
+
+  void testMethod(Iterable it) {}
 }
 
 abstract class E {}
