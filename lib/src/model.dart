@@ -17,6 +17,19 @@ import 'package_utils.dart';
 
 final Map<Class, List<Class>> _implementors = new Map();
 
+final Map<String, Library> _libraryMap = new Map();
+
+Library _getLibraryFor(LibraryElement element, Package package) {
+  var key = element == null ? 'null' : element.name;
+
+  if (_libraryMap.containsKey(key)) {
+    return _libraryMap[key];
+  }
+  var library = new Library(element, package);
+  _libraryMap[key] = library;
+  return library;
+}
+
 void _addToImplementors(Class c) {
   _implementors.putIfAbsent(c, () => []);
 
@@ -176,7 +189,7 @@ abstract class ModelElement {
       if (this is Library) {
         refLibrary = this;
       } else {
-        refLibrary = this.library;
+        refLibrary = _getLibraryFor(refElement.library, this.package);
       }
       var e = new ModelElement.from(refElement, refLibrary);
       return e.href;
@@ -198,7 +211,7 @@ abstract class ModelElement {
         var e = a.element;
         if (e != null && (e is ConstructorElement)) {
           var me = new ModelElement.from(
-              e.enclosingElement, new Library(e.library, package));
+              e.enclosingElement, _getLibraryFor(e.library, package));
           if (me.href != null) {
             return annotationString.replaceAll(
                 me.name, '<a href="${me.href}">${me.name}</a>');
@@ -428,8 +441,9 @@ class Package {
         _isSdk = isSdk,
         _readmeLoc = readmeLoc {
     libraryElements.forEach((element) {
-      //   print('adding lib $element to package $name');
-      _libraries.add(new Library(element, this));
+      var lib = new Library(element, this);
+      _libraryMap.putIfAbsent(lib._name, () => lib);
+      _libraries.add(lib);
     });
     _libraries.forEach((library) {
       library._allClasses.forEach(_addToImplementors);
@@ -677,7 +691,7 @@ class Class extends ModelElement {
     _modelType = new ElementType(_cls.type, this);
 
     _mixins = _cls.mixins.map((f) {
-      var lib = new Library(f.element.library, p);
+      var lib = _getLibraryFor(f.element.library, p);
       var t = new ElementType(f, new ModelElement.from(f.element, lib));
       var exclude = t.element.element.isPrivate;
       if (exclude) {
@@ -688,7 +702,7 @@ class Class extends ModelElement {
     }).where((mixin) => mixin != null).toList(growable: false);
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
-      var lib = new Library(_cls.supertype.element.library, p);
+      var lib = _getLibraryFor(_cls.supertype.element.library, p);
       _supertype = new ElementType(
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
 
@@ -706,7 +720,7 @@ class Class extends ModelElement {
     }
 
     _interfaces = _cls.interfaces.map((f) {
-      var lib = new Library(f.element.library, p);
+      var lib = _getLibraryFor(f.element.library, p);
       var t = new ElementType(f, new ModelElement.from(f.element, lib));
       var exclude = t.element.element.isPrivate;
       if (exclude) {
@@ -890,7 +904,7 @@ class Class extends ModelElement {
           value.enclosingElement.name != 'Object') {
         var lib = value.library == library.element
             ? library
-            : new Library(value.library, package);
+            : _getLibraryFor(value.library, package);
         _inheritedMethods.add(new Method.inherited(value, lib));
       }
     }
@@ -931,7 +945,7 @@ class Class extends ModelElement {
         }
         var lib = value.library == library.element
             ? library
-            : new Library(value.library, package);
+            : _getLibraryFor(value.library, package);
         _inheritedProperties.add(new Field(e, lib));
       }
     }
@@ -1036,11 +1050,11 @@ class Field extends ModelElement {
   Field(FieldElement element, Library library) : super(element, library) {
     if (hasGetter) {
       var t = _field.getter.returnType;
-      var lib = new Library(t.element.library, package);
+      var lib = _getLibraryFor(t.element.library, package);
       _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
     } else {
       var s = _field.setter.parameters.first.type;
-      var lib = new Library(s.element.library, package);
+      var lib = _getLibraryFor(s.element.library, package);
       _modelType = new ElementType(s, new ModelElement.from(s.element, lib));
     }
   }
@@ -1252,11 +1266,12 @@ class TopLevelVariable extends ModelElement {
       : super(element, library) {
     if (hasGetter) {
       var t = _variable.getter.returnType;
-      var lib = new Library(t.element.library, package);
+      var lib = new Library(t.element.library,
+          package); //_getLibraryFor(t.element.library, package);
       _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
     } else {
       var s = _variable.setter.parameters.first.type;
-      var lib = new Library(s.element.library, package);
+      var lib = _getLibraryFor(s.element.library, package);
       _modelType = new ElementType(s, new ModelElement.from(s.element, lib));
     }
   }
@@ -1293,7 +1308,7 @@ class Parameter extends ModelElement {
       : super(element, library) {
     var t = _parameter.type;
     _modelType = new ElementType(t, new ModelElement.from(
-        t.element, new Library(t.element.library, library.package)));
+        t.element, _getLibraryFor(t.element.library, library.package)));
   }
 
   ParameterElement get _parameter => element as ParameterElement;
@@ -1379,20 +1394,20 @@ class ElementType {
   ElementType get _returnType {
     var rt = (_type as FunctionType).returnType;
     return new ElementType(rt, new ModelElement.from(
-        rt.element, new Library(rt.element.library, _element.package)));
+        rt.element, _getLibraryFor(rt.element.library, _element.package)));
   }
   ModelElement get returnElement {
     Element e = (_type as FunctionType).returnType.element;
     if (e == null) {
       return null;
     }
-    Library lib = new Library(e.library, _element.package);
+    Library lib = _getLibraryFor(e.library, _element.package);
     return (new ModelElement.from(e, lib));
   }
 
   List<ElementType> get typeArguments =>
       (_type as ParameterizedType).typeArguments.map((f) {
-    var lib = new Library(f.element.library, _element.package);
+    var lib = _getLibraryFor(f.element.library, _element.package);
     return new ElementType(f, new ModelElement.from(f.element, lib));
   }).toList();
 

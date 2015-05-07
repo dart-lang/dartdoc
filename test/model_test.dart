@@ -42,26 +42,20 @@ void main() {
       sdkVersion: '1.9.0-dev.3.0', isSdk: true, readmeLoc: readmeLoc);
 
   group('Package', () {
-    Package p;
-
-    setUp(() {
-      p = new Package([e], Directory.current.path);
-    });
-
     test('name', () {
-      expect(p.name, 'dartdoc');
+      expect(package.name, 'fake');
     });
 
     test('libraries', () {
-      expect(p.libraries, hasLength(1));
+      expect(package.libraries, hasLength(1));
     });
 
     test('is documented', () {
-      expect(p.isDocumented(library), true);
+      expect(package.isDocumented(library), true);
     });
 
     test('description', () {
-      expect(p.description.startsWith('# dartdoc'), true);
+      expect(package.description.startsWith('# Best Package'), true);
     });
 
     test('sdk name', () {
