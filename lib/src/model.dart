@@ -1427,13 +1427,8 @@ class ElementType {
       var list = typeArguments.where((t) => t.linkedName != 'dynamic').toList();
       if (list.isNotEmpty) {
         buf.write('&lt;');
-        for (int i = 0; i < list.length; i++) {
-          if (i > 0) {
-            buf.write(', ');
-          }
-          ElementType t = typeArguments[i];
-          buf.write(t.linkedName);
-        }
+        var string = list.map((t) => t.linkedName).join(',');
+        buf.write(string);
         buf.write('&gt;');
       }
     }
