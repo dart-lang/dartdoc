@@ -946,7 +946,7 @@ class Class extends ModelElement {
         var lib = value.library == library.element
             ? library
             : _getLibraryFor(value.library, package);
-        _inheritedProperties.add(new Field(e, lib));
+        _inheritedProperties.add(new Field.inherited(e, lib));
       }
     }
     return _inheritedProperties;
@@ -955,7 +955,8 @@ class Class extends ModelElement {
   bool get hasMethods =>
       instanceMethods.isNotEmpty || inheritedMethods.isNotEmpty;
 
-  bool get hasInheritedProperties => inheritedProperties.isNotEmpty;
+  bool get hasProperties =>
+      inheritedProperties.isNotEmpty || instanceProperties.isNotEmpty;
 
   bool get isErrorOrException {
     bool _doCheck(InterfaceType type) {
@@ -1044,10 +1045,21 @@ class Typedef extends ModelElement {
 
 class Field extends ModelElement {
   String _constantValue;
+  bool _isInherited = false;
 
   FieldElement get _field => (element as FieldElement);
 
   Field(FieldElement element, Library library) : super(element, library) {
+    _setModelType();
+  }
+
+  Field.inherited(FieldElement element, Library library)
+      : super(element, library) {
+    _isInherited = true;
+    _setModelType();
+  }
+
+  void _setModelType() {
     if (hasGetter) {
       var t = _field.getter.returnType;
       var lib = _getLibraryFor(t.element.library, package);
@@ -1088,6 +1100,8 @@ class Field extends ModelElement {
   bool get readWrite => hasGetter && hasSetter;
 
   String get typeName => "property";
+
+  bool get isInherited => _isInherited;
 
   String get _href {
     if (element.enclosingElement is ClassElement) {
