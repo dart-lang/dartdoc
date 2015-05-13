@@ -32,7 +32,7 @@ packages:
   csslib:
     description: csslib
     source: hosted
-    version: "0.12.0"
+    version: "0.12.0+1"
   den_api:
     description: den_api
     source: hosted
@@ -76,7 +76,7 @@ packages:
   logging:
     description: logging
     source: hosted
-    version: "0.9.3"
+    version: "0.11.1"
   markdown:
     description: markdown
     source: hosted
