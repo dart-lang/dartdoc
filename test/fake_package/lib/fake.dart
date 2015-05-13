@@ -5,6 +5,22 @@
 ///
 /// My favorite class is [Cool].
 ///
+/// ## I am an h2
+///
+/// hello there
+///
+/// ### I am an h3
+///
+/// hello there
+///
+/// #### I am an h4
+///
+/// hello there
+///
+/// ##### I am an h5
+///
+/// hello
+///
 /// *Why should you get this package?*
 ///
 /// * We told you so.
