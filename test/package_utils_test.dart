@@ -24,7 +24,7 @@ void main() {
 
     test('get package description', () {
       String desc = getPackageDescription(
-          true, 'fake_package/test_readme.md', Directory.current.path);
+          true, 'test_package/README.md', Directory.current.path);
       expect(desc, isNotNull);
     });
   });
