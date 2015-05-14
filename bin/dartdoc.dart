@@ -100,8 +100,8 @@ ArgParser _createArgsParser() {
       help: "Location of the Dart SDK. Use if SDK isn't automatically located.",
       defaultsTo: false,
       negatable: false);
-  parser.addOption('sdk-docs',
-      help: 'Generate ONLY the docs for the Dart SDK.');
+  parser.addFlag('sdk-docs',
+      help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
   parser.addOption('sdk-readme',
       help: 'Path to the SDK description file. Use if generating Dart SDK docs.');
   parser.addOption('input',
