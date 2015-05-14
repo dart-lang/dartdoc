@@ -24,10 +24,10 @@ grind test-dartdoc
 echo "Building SDK docs..."
 grind build-sdk-docs 2>&1 >/dev/null | echo
 
-# Another smoke test: Run dartdoc on fake_package.
-cd test/fake_package
-dart ../../bin/dartdoc.dart
-cd ../..
+# Another smoke test: Run dartdoc on test_package.
+cd test_package
+dart ../bin/dartdoc.dart
+cd ..
 
 # Run the tests.
 dart test/all.dart

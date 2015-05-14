@@ -24,7 +24,7 @@ import 'package:cli_util/cli_util.dart' as cli_util;
 
 void main() {
   AnalyzerHelper helper = new AnalyzerHelper();
-  String dirPath = p.join(Directory.current.path, 'test/fake_package');
+  String dirPath = p.join(Directory.current.path, 'test_package');
   Source source = helper.addSource(p.join(dirPath, 'lib/example.dart'));
   LibraryElement e = helper.resolve(source);
   Package package = new Package([e], dirPath);
@@ -43,7 +43,7 @@ void main() {
 
   group('Package', () {
     test('name', () {
-      expect(package.name, 'fake');
+      expect(package.name, 'test_package');
     });
 
     test('libraries', () {
