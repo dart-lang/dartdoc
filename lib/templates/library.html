@@ -1,12 +1,8 @@
 {{>head}}
 
-    <section class="desc markdown" id="description">
-
-        {{#markdown}}
-         {{{ library.documentation }}}
-        {{/markdown}}
-
-    </section>
+    {{#library}}
+    {{>documentation}}
+    {{/library}}
 
 
     {{#library.hasClasses}}

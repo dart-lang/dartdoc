@@ -34,7 +34,7 @@ void main(List<String> arguments) {
   }
 
   bool sdkDocs = false;
-  if (args['sdk-docs']) {
+  if (args['sdk-docs'] != null) {
     sdkDocs = true;
   }
 
@@ -96,8 +96,10 @@ ArgParser _createArgsParser() {
       abbr: 'h', negatable: false, help: 'Show command help.');
   parser.addFlag('version',
       help: 'Display the version for $NAME.', negatable: false);
-  parser.addOption('dart-sdk',
-      help: "Location of the Dart SDK. Use if SDK isn't automatically located.");
+  parser.addFlag('dart-sdk',
+      help: "Location of the Dart SDK. Use if SDK isn't automatically located.",
+      defaultsTo: false,
+      negatable: false);
   parser.addOption('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.');
   parser.addOption('sdk-readme',

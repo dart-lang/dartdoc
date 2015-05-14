@@ -6,12 +6,8 @@
         {{/function}}
     </section>
 
-    <section class="desc markdown">
-
-        {{#markdown}}
-        {{{ function.documentation }}}
-        {{/markdown}}
-
-    </section>
+    {{#function}}
+    {{>documentation}}
+    {{/function}}
 
 {{>footer}}

@@ -12,12 +12,8 @@
         {{/constructor}}
     </section>
 
-    <section class="desc markdown">
-
-        {{#markdown}}
-        {{{ constructor.documentation }}}
-        {{/markdown}}
-
-    </section>
+    {{#constructor}}
+    {{>documentation}}
+    {{/constructor}}
 
 {{>footer}}

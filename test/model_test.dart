@@ -55,7 +55,7 @@ void main() {
     });
 
     test('description', () {
-      expect(package.description.startsWith('# Best Package'), true);
+      expect(package.documentation.startsWith('# Best Package'), true);
     });
 
     test('sdk name', () {
@@ -67,7 +67,7 @@ void main() {
     });
 
     test('sdk description', () {
-      expect(sdkAsPackage.description,
+      expect(sdkAsPackage.documentation,
           startsWith('Welcome to the Dart API reference documentation.'));
     });
   });
