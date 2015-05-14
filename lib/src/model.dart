@@ -132,6 +132,9 @@ abstract class ModelElement {
     return _documentation;
   }
 
+  bool get hasDocumentation =>
+      documentation != null && documentation.isNotEmpty;
+
   NodeList<CommentReference> _getCommentRefs() {
     if (_documentation == null && canOverride()) {
       var melement = getOverriddenElement();
@@ -430,8 +433,11 @@ class Package {
 
   String get sdkVersion => _sdkVersion;
 
-  String get description =>
+  String get documentation =>
       getPackageDescription(_isSdk, _readmeLoc, _rootDirPath);
+
+  bool get hasDocumentation =>
+      documentation != null && documentation.isNotEmpty;
 
   List<Library> get libraries => _libraries;
 

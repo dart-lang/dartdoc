@@ -69,7 +69,8 @@ class Templates {
       'head',
       'property',
       'styles_and_scripts',
-      'readable_writable'
+      'readable_writable',
+      'documentation'
     ];
     for (var partial in partials) {
       _partialTemplates[partial] = await _loadPartial('_$partial.html');
@@ -203,7 +204,7 @@ class HtmlGenerator extends Generator {
       'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
-      'documentation': package.description,
+      'documentation': package.documentation,
       'title': '${package.name} - Dart API docs',
       'layoutTitle': _layoutTitle(package.name, type),
       'metaDescription':
@@ -567,7 +568,7 @@ ModelElement _getElement(MustacheToString nestedContext) {
     var reflectee = obj.reflectee;
     if (reflectee is ModelElement) {
       return reflectee;
-    } else {
+    } else if (reflectee is Map) {
       var objE = reflectee['method'];
       if (objE == null) objE = reflectee['class'];
       if (objE == null) objE = reflectee['function'];

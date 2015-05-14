@@ -9,12 +9,8 @@
         {{/property}}
   </section>
 
-  <section class="desc markdown">
-
-      {{#markdown}}
-          {{{ property.documentation }}}
-      {{/markdown}}
-
-  </section>
+  {{#property}}
+  {{>documentation}}
+  {{/property}}
 
 {{>footer}}

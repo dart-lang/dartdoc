@@ -1,12 +1,8 @@
 {{>head}}
 
-      <section class="desc markdown">
-
-        {{#markdown}}
-          {{{ package.description }}}
-        {{/markdown}}
-
-      </section>
+      {{#package}}
+        {{>documentation}}
+      {{/package}}
 
       <section class="summary" id="libraries">
         <h2>Libraries</h2>
