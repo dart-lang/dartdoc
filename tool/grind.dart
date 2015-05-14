@@ -2,25 +2,23 @@
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-import 'dart:io';
 import 'dart:async' show Future;
+import 'dart:io';
 
-import 'package:grinder/grinder.dart';
-import 'package:path/path.dart' as path;
 import 'package:dartdoc/src/io_utils.dart';
-import 'package:librato/librato.dart';
 import 'package:den_api/den_api.dart';
+import 'package:grinder/grinder.dart';
+import 'package:librato/librato.dart';
+import 'package:path/path.dart' as path;
 
-final Directory DOCS_DIR =
+final Directory docsDir =
     new Directory(path.join('${Directory.systemTemp.path}', 'docs'));
 
-main([List<String> args]) {
-  grind(args);
-}
+main([List<String> args]) => grind(args);
 
 @Task('Start observatory for a test run')
-observe(GrinderContext context) async {
-  if (DOCS_DIR.existsSync()) DOCS_DIR.deleteSync(recursive: true);
+observe() async {
+  delete(docsDir);
   // TODO: Use `Dart.run` when https://github.com/google/grinder.dart/issues/214
   // is fixed.
   // TODO: uncomment all this when https://code.google.com/p/dart/issues/detail?id=23359
@@ -34,26 +32,25 @@ observe(GrinderContext context) async {
 
   print('Copy and paste this into your console:\n');
   print('open http://localhost:7334');
-  print(
-      'dart --pause-isolates-on-exit --enable-vm-service=7334 --profile bin/dartdoc.dart --output ${DOCS_DIR.path}');
+  print('dart --pause-isolates-on-exit --enable-vm-service=7334 '
+      '--profile bin/dartdoc.dart --output ${docsDir.path}');
 }
 
 @Task('publish to pub.dartlang')
 @Depends(bumpVersionBuild)
-publish(GrinderContext context) async {
+publish() async {
   Dart.run('pub', arguments: ['publish']);
 }
 
 @Task('Bump pubspec version and version number in lib/dartdoc.dart')
-bumpVersionBuild(GrinderContext context) async {
+bumpVersionBuild() async {
   Pubspec pubspec = (await Pubspec.load())
     ..bump(ReleaseType.build)
     ..save();
 
   var libCode = new File('lib/dartdoc.dart');
   if (!libCode.existsSync()) {
-    stderr.write('Cannot find lib/dartdoc.dart');
-    exit(1);
+    fail('Cannot find lib/dartdoc.dart');
   }
   String libCodeContents = libCode.readAsStringSync();
   libCodeContents = libCodeContents.replaceFirst(
@@ -61,66 +58,65 @@ bumpVersionBuild(GrinderContext context) async {
       "const String VERSION = '${pubspec.version}';");
   libCode.writeAsString(libCodeContents);
 
-  context.log('Version set to ${pubspec.version}');
+  log('Version set to ${pubspec.version}');
 }
 
 @Task('Generate docs for dartdoc')
-testDartdoc(GrinderContext context) {
-  if (DOCS_DIR.existsSync()) DOCS_DIR.deleteSync(recursive: true);
-
+testDartdoc() {
+  delete(docsDir);
   try {
-    context.log('running dartdoc');
-    Dart.run('bin/dartdoc.dart', arguments: ['--output', '${DOCS_DIR.path}']);
+    log('running dartdoc');
+    Dart.run('bin/dartdoc.dart', arguments: ['--output', '${docsDir.path}']);
 
-    File indexHtml = joinFile(DOCS_DIR, ['index.html']);
-    if (!indexHtml.existsSync()) context.fail('docs not generated');
-    File docFile = joinFile(DOCS_DIR, ['dartdoc/index.html']);
-    if (!docFile.existsSync()) context.fail('docs not generated');
+    File indexHtml = joinFile(docsDir, ['index.html']);
+    if (!indexHtml.existsSync()) fail('docs not generated');
+    File docFile = joinFile(docsDir, ['dartdoc/index.html']);
+    if (!docFile.existsSync()) fail('docs not generated');
   } catch (e) {
     rethrow;
   }
 }
 
 @Task('Analyze dartdoc to ensure there are no errors and warnings')
-analyze(GrinderContext context) {
+analyze() {
   Analyzer.analyzeFiles(
       ['bin/dartdoc.dart', 'lib/dartdoc.dart', 'test/all.dart'],
       fatalWarnings: true);
 }
 
 @Task('Generate docs for the Dart SDK')
-Future buildSdkDocs(GrinderContext context) async {
-  if (DOCS_DIR.existsSync()) DOCS_DIR.deleteSync(recursive: true);
-  context.log('building SDK docs');
+Future buildSdkDocs() async {
+  delete(docsDir);
+  log('building SDK docs');
   try {
     int sdkDocsGenTime = _runTimed(() {
       Dart.run('bin/dartdoc.dart',
-          arguments: ['--output', '${DOCS_DIR.path}', '--sdk-docs']);
+          arguments: ['--output', '${docsDir.path}', '--sdk-docs']);
     });
-    var indexHtml = joinFile(DOCS_DIR, ['index.html']);
+    var indexHtml = joinFile(docsDir, ['index.html']);
     if (!indexHtml.existsSync()) {
-      context.fail('no index.html found for SDK docs');
+      fail('no index.html found for SDK docs');
     }
     // check for the existance of certain files/dirs
     var libsLength =
-        DOCS_DIR.listSync().where((fs) => fs.path.contains('dart_')).length;
+        docsDir.listSync().where((fs) => fs.path.contains('dart_')).length;
     if (libsLength != 17) {
-      context.fail(
-          'docs not generated for all the SDK libraries, expected 17 directories, generated $libsLength directories');
+      fail('docs not generated for all the SDK libraries, '
+          'expected 17 directories, generated $libsLength directories');
     }
-    var futureConstFile = joinFile(DOCS_DIR, ['dart_async/Future/Future.html']);
+    var futureConstFile = joinFile(docsDir, ['dart_async/Future/Future.html']);
     if (!futureConstFile.existsSync()) {
-      context.fail('no Future.html found for dart:async Future constructor');
+      fail('no Future.html found for dart:async Future constructor');
     }
 
-    return _uploadStats(context, sdkDocsGenTime);
+    return _uploadStats(sdkDocsGenTime);
   } catch (e) {
     rethrow;
   }
 }
 
 @Task('Make sure all the resource files are present')
-indexResources(GrinderContext context) {
+indexResources() {
   var sourcePath = path.join('lib', 'resources');
   if (!new Directory(sourcePath).existsSync()) {
     throw new StateError('lib/resources directory not found');
@@ -151,12 +147,12 @@ int _runTimed(callback()) {
   return stopwatch.elapsedMilliseconds;
 }
 
-Future _uploadStats(GrinderContext context, int sdkDocsGenTime) async {
+Future _uploadStats(int sdkDocsGenTime) async {
   Map env = Platform.environment;
 
   if (env.containsKey('LIBRATO_USER') && env.containsKey('TRAVIS_COMMIT')) {
     Librato librato = new Librato.fromEnvVars();
-    context.log('Uploading stats to ${librato.baseUrl}');
+    log('Uploading stats to ${librato.baseUrl}');
     LibratoStat sdkDocsGenTimeStat =
         new LibratoStat('sdk-docs-gen-time', sdkDocsGenTime);
     await librato.postStats([sdkDocsGenTimeStat]);
@@ -167,6 +163,6 @@ Future _uploadStats(GrinderContext context, int sdkDocsGenTime) async {
         description: 'Commit ${commit}', links: [link]);
     return librato.createAnnotation('build_ui', annotation);
   } else {
-    return true;
+    return new Future.value();
   }
 }
