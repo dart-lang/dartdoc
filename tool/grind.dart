@@ -162,7 +162,5 @@ Future _uploadStats(int sdkDocsGenTime) async {
     LibratoAnnotation annotation = new LibratoAnnotation(commit,
         description: 'Commit ${commit}', links: [link]);
     return librato.createAnnotation('build_ui', annotation);
-  } else {
-    return new Future.value();
   }
 }
