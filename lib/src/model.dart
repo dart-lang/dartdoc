@@ -289,6 +289,8 @@ abstract class ModelElement {
 
   bool get isConst => false;
 
+  bool get isDeprecated => element.metadata.any((a) => a.isDeprecated);
+
   ElementType get modelType => _modelType;
 
   /// Returns the [ModelElement] that encloses this.

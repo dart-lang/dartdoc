@@ -79,6 +79,7 @@ const ConstantClass CUSTOM_CLASS = const ConstantClass('custom');
 const String UP = 'up';
 
 /// Dynamic-typed down.
+@deprecated
 const DOWN = 'down';
 
 /// A constant integer value,
@@ -86,6 +87,7 @@ const DOWN = 'down';
 const int ZERO = 0;
 
 /// Takes input, returns output.
+@deprecated
 typedef String FakeProcesses(String input);
 
 /// A typedef with a type parameter.
@@ -108,6 +110,7 @@ abstract class Interface {}
 abstract class AnotherInterface {}
 
 /// A super class, with many powers.
+@deprecated
 class SuperAwesomeClass {
 
   /// In the super class.
@@ -138,6 +141,7 @@ class LongFirstLine extends SuperAwesomeClass with MixMeIn
   static int meaningOfLife = 42;
 
   /// The default constructor.
+  @deprecated
   LongFirstLine();
 
   /// Named constructors are awesome.
@@ -148,6 +152,7 @@ class LongFirstLine extends SuperAwesomeClass with MixMeIn
   LongFirstLine.fromHasGenerics(HasGenerics hg);
 
   /// No params.
+  @deprecated
   void noParams() {}
 
   /// Returns a single string.
@@ -195,6 +200,7 @@ class Oops implements Exception {
 }
 
 /// Also, my bad.
+@deprecated
 class Doh extends Error {}
 
 /// ROYGBIV
@@ -239,6 +245,7 @@ class OtherGenericsThing<A> {
 const double PI = 3.14159;
 
 /// Final property.
+@deprecated
 final int meaningOfLife = 42;
 
 /// Simple property
@@ -271,6 +278,7 @@ get dynamicGetter => 'i could be anything';
 ///     var thing = topLevelFunction(1, true, 3.4);
 ///
 /// Thanks for using this function!
+@deprecated
 String topLevelFunction(int param1, bool param2, Cool coolBeans,
     [double optionalPositional = 0.0]) {
   return null;

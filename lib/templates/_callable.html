@@ -1,5 +1,6 @@
 <dt id="{{htmlId}}" class="callable">
-    <span class="name"><a href="{{href}}">{{ name }}</a>
+    <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">
+    <a href="{{href}}">{{ name }}</a>
     {{#isInherited}}<span class="is-inherited">Inherited</span>{{/isInherited}}
     </span>
     <span class="signature">({{{ linkedParamsNoMetadata }}})
