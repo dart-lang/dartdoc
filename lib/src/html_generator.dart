@@ -556,21 +556,31 @@ String oneLiner(String text, {nestedContext}) {
 }
 
 ModelElement _getElement(MustacheToString nestedContext) {
-  var obj = nestedContext.parent;
-  obj = obj.ctxReflector.m;
-  if (obj != null) {
-    var reflectee = obj.reflectee;
-    if (reflectee is ModelElement) {
-      return reflectee;
-    } else if (reflectee is Map) {
-      var objE = reflectee['method'];
-      if (objE == null) objE = reflectee['class'];
-      if (objE == null) objE = reflectee['function'];
-      if (objE == null) objE = reflectee['library'];
-      return objE;
+  ModelElement _getFromContext(dynamic context) {
+    var obj = context.ctxReflector.m;
+    if (obj != null) {
+      var reflectee = obj.reflectee;
+      if (reflectee is ModelElement) {
+        return reflectee;
+      } else if (reflectee is Map) {
+        var objE = reflectee['method'];
+        if (objE == null) objE = reflectee['class'];
+        if (objE == null) objE = reflectee['function'];
+        if (objE == null) objE = reflectee['library'];
+        return objE;
+      }
     }
+    return null;
   }
-  return null;
+
+  var parent = nestedContext.parent;
+  var obj = _getFromContext(parent);
+  if (obj != null) return obj;
+  parent = parent.parent;
+  if (parent != null) {
+    obj = _getFromContext(parent);
+  }
+  return obj;
 }
 
 String resolveDocReferences(String text, MustacheToString nestedContext) {
