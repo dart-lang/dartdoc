@@ -9,12 +9,11 @@ import 'dart:io';
 import 'dart:async' show Future;
 import 'dart:profiler';
 
-import 'package:intl/intl.dart';
-import 'package:mustache4dart/mustache4dart.dart';
-import 'package:mustache4dart/mustache_context.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' show Document;
 import 'package:markdown/markdown.dart' as md;
+import 'package:mustache4dart/mustache4dart.dart';
+import 'package:mustache4dart/mustache_context.dart';
 import 'package:path/path.dart' as path;
 
 import 'model.dart';
@@ -49,6 +48,8 @@ class Templates {
   Templates(this._header, this._footer);
 
   Future init() async {
+    if (_partialTemplates.isNotEmpty) return;
+
     indexTemplate = await _loadTemplate('index.html');
     libraryTemplate = await _loadTemplate('library.html');
     classTemplate = await _loadTemplate('class.html');
@@ -73,6 +74,7 @@ class Templates {
       'documentation',
       'name_summary'
     ];
+
     for (var partial in partials) {
       _partialTemplates[partial] = await _loadPartial('_$partial.html');
     }
@@ -107,29 +109,32 @@ class Templates {
 }
 
 class HtmlGenerator extends Generator {
-  final String _url;
-  final List<String> _htmlFiles = [];
+  final String url;
   final Templates _templates;
 
-  Package get package => _package;
-  Package _package;
+  HtmlGenerator(this.url, {String header, String footer})
+      : _templates = new Templates(header, footer);
 
-  Directory get out => _out;
-  Directory _out;
+  Future generate(Package package, Directory out) {
+    return new HtmlGeneratorInstance(url, _templates, package, out).generate();
+  }
+}
 
-  final String generatedOn;
+class HtmlGeneratorInstance {
+  final String _url;
+  final Templates _templates;
 
-  HtmlGenerator(this._url, [String header, String footer])
-      : generatedOn = new DateFormat('MMMM dd yyyy').format(new DateTime.now()),
-        _templates = new Templates(header, footer);
+  final Package package;
+  final Directory out;
 
-  @override
-  Future generate(Package package, Directory out) async {
+  final List<String> _htmlFiles = [];
+
+  HtmlGeneratorInstance(this._url, this._templates, this.package, this.out);
+
+  Future generate() async {
     var previousTag = _HTML_GENERATE.makeCurrent();
     await _templates.init();
-    _package = package;
-    _out = out;
-    if (!_out.existsSync()) _out.createSync();
+    if (!out.existsSync()) out.createSync();
     generatePackage();
 
     package.libraries.forEach((Library lib) {
@@ -202,7 +207,6 @@ class HtmlGenerator extends Generator {
     // in the map?
     Map data = {
       'package': package,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'documentation': package.documentation,
@@ -223,7 +227,6 @@ class HtmlGenerator extends Generator {
     Map data = {
       'package': package,
       'library': lib,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'documentation': lib.documentation,
@@ -259,7 +262,6 @@ class HtmlGenerator extends Generator {
   void generateClass(Package package, Library lib, Class clazz) {
     Map data = {
       'package': package,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'documentation': clazz.documentation,
@@ -281,7 +283,6 @@ class HtmlGenerator extends Generator {
       Package package, Library lib, Class clazz, Constructor constructor) {
     Map data = {
       'package': package,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'documentation': constructor.documentation,
@@ -300,7 +301,6 @@ class HtmlGenerator extends Generator {
   void generateEnum(Package package, Library lib, Class eNum) {
     Map data = {
       'package': package,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'documentation': eNum,
@@ -317,7 +317,6 @@ class HtmlGenerator extends Generator {
   void generateFunction(Package package, Library lib, ModelFunction function) {
     Map data = {
       'package': package,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'documentation': function.documentation,
@@ -339,7 +338,6 @@ class HtmlGenerator extends Generator {
       Package package, Library lib, Class clazz, Method method) {
     Map data = {
       'package': package,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'documentation': method.documentation,
@@ -363,7 +361,6 @@ class HtmlGenerator extends Generator {
       Package package, Library lib, Class clazz, Field property) {
     Map data = {
       'package': package,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'documentation': property.documentation,
@@ -387,7 +384,6 @@ class HtmlGenerator extends Generator {
       Package package, Library lib, Class clazz, Field property) {
     Map data = {
       'package': package,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'documentation': property.documentation,
@@ -411,7 +407,6 @@ class HtmlGenerator extends Generator {
       Package package, Library lib, TopLevelVariable property) {
     Map data = {
       'package': package,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'documentation': property.documentation,
@@ -433,7 +428,6 @@ class HtmlGenerator extends Generator {
       Package package, Library lib, TopLevelVariable property) {
     Map data = {
       'package': package,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'documentation': property.documentation,
       'oneLiner': oneLiner,
@@ -454,7 +448,6 @@ class HtmlGenerator extends Generator {
   void generateTypeDef(Package package, Library lib, Typedef typeDef) {
     Map data = {
       'package': package,
-      'generatedOn': generatedOn,
       'markdown': renderMarkdown,
       'documentation': typeDef.documentation,
       'oneLiner': oneLiner,
