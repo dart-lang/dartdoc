@@ -13,7 +13,6 @@ import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-
 import 'package:path/path.dart' as path;
 
 import 'generator.dart';
@@ -24,13 +23,15 @@ import 'src/model_utils.dart';
 
 const String NAME = 'dartdoc';
 
-// Update when pubspec version changes
+// Update when pubspec version changes.
 const String VERSION = '0.0.1+10';
 
-/// Initialize and setup the generators
+/// Initialize and setup the generators.
 List<Generator> initGenerators(
     String url, String headerFilePath, String footerFilePath) {
-  return [new HtmlGenerator(url, headerFilePath, footerFilePath)];
+  return [
+    new HtmlGenerator(url, header: headerFilePath, footer: footerFilePath)
+  ];
 }
 
 /// Generates Dart documentation for all public Dart libraries in the given

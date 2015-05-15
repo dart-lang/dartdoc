@@ -1,16 +1,20 @@
-/// Attempts to make it possible to load
-/// resources, independent of how the Dart
+// Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+/// Attempts to make it possible to load resources, independent of how the Dart
 /// app is run.
 ///
 /// TODO: consider making this a stand-alone package, if useful
 library resource_loader;
 
+import 'dart:async' show Future;
 import 'dart:io' show Platform, File;
+import 'dart:typed_data';
+
+import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:pub_cache/pub_cache.dart';
-import 'package:http/http.dart' as http;
-import 'dart:async' show Future;
-import 'dart:typed_data';
 
 /// Loads a `package:` resource as a String.
 Future<String> loadAsString(String path) async {
