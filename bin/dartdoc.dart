@@ -67,7 +67,8 @@ void main(List<String> arguments) {
     exit(1);
   }
 
-  var outputDir = new Directory(path.join(Directory.current.path, defaultOutDir));
+  var outputDir =
+      new Directory(path.join(Directory.current.path, defaultOutDir));
   if (args['output'] != null) {
     outputDir = new Directory(_resolveTildePath(args['output']));
   }
