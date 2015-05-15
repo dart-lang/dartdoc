@@ -107,7 +107,7 @@ ArgParser _createArgsParser() {
   parser.addOption('input',
       help: 'Path to source directory', defaultsTo: Directory.current.path);
   parser.addOption('output',
-      help: 'Path to output directory.', defaultsTo: 'docs');
+      help: 'Path to output directory.', defaultsTo: defaultOutDir);
   parser.addOption('header',
       help: 'path to file containing HTML text, inserted into the header of every page.');
   parser.addOption('footer',
