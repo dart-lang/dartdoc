@@ -6,10 +6,11 @@ library dartdoc.bin;
 
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
 import 'package:args/args.dart';
-import 'package:dartdoc/dartdoc.dart';
 import 'package:cli_util/cli_util.dart' as cli_util;
+import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/package_utils.dart';
+import 'package:path/path.dart' as path;
 
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
@@ -74,7 +75,12 @@ void main(List<String> arguments) {
     print("Warning: output directory exists: ${args['output']}");
     exit(1);
   }
-  print('Generating Dart API docs into ${outputDir.path}');
+
+  String packageName = getPackageName(inputDir.path);
+
+  print("Generating documentation for '${packageName}' into "
+      "${outputDir.path}${Platform.pathSeparator}.");
+  print('');
 
   var generators = initGenerators(url, headerFilePath, footerFilePath);
 

@@ -4,8 +4,8 @@
 
 library dartdoc;
 
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
@@ -39,7 +39,7 @@ class DartDoc {
   final List<String> _excludes;
   final Directory _rootDir;
   final Directory _sdkDir;
-  Directory outputDir;
+  final Directory outputDir;
   final bool sdkDocs;
   final Set<LibraryElement> libraries = new Set();
   final List<Generator> _generators;
@@ -52,8 +52,7 @@ class DartDoc {
 
   /// Generate the documentation
   Future generateDocs() async {
-    stopwatch = new Stopwatch();
-    stopwatch.start();
+    stopwatch = new Stopwatch()..start();
 
     var files = sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
 
@@ -62,9 +61,7 @@ class DartDoc {
     // remove excluded libraries
     _excludes.forEach(
         (pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
-    libs
-      ..removeWhere(
-          (LibraryElement library) => _excludes.contains(library.name));
+    libs.removeWhere((library) => _excludes.contains(library.name));
     libraries.addAll(libs);
 
     // create the out directory
@@ -80,9 +77,9 @@ class DartDoc {
     }
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
-    print('');
     print(
-        "Documented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} in ${seconds.toStringAsFixed(1)} seconds.");
+        "Documented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} "
+        "in ${seconds.toStringAsFixed(1)} seconds.");
   }
 
   List<LibraryElement> _parseLibraries(List<String> files) {
@@ -111,7 +108,12 @@ class DartDoc {
       libraries.addAll(getSdkLibrariesToDocument(sdk, context));
     }
     files.forEach((String filePath) {
-      print('parsing ${filePath}...');
+      String name = filePath;
+      if (name.startsWith(Directory.current.path)) {
+        name = name.substring(Directory.current.path.length);
+        if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
+      }
+      print('parsing ${name}...');
       Source source = new FileBasedSource.con1(new JavaFile(filePath));
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
@@ -120,7 +122,8 @@ class DartDoc {
     });
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print(
-        "\nParsed ${libraries.length} " "librar${libraries.length == 1 ? 'y' : 'ies'} in " "${seconds.toStringAsFixed(1)} seconds.\n");
+        "Parsed ${libraries.length} " "file${libraries.length == 1 ? '' : 's'} in "
+        "${seconds.toStringAsFixed(1)} seconds.\n");
     return libraries.toList();
   }
 
