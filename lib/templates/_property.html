@@ -1,9 +1,7 @@
 <dt id="{{htmlId}}" class="property">
-    <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">
-      <a href="{{href}}">{{ name }}</a>
-    </span>
+    <a href="{{href}}">{{>name_summary}}</a>
     <span class="returntype">{{{ linkedReturnType }}}</span>
-     {{#isInherited}}<span class="is-inherited">Inherited</span>{{/isInherited}}
+    {{#isInherited}}<span class="is-inherited">Inherited</span>{{/isInherited}}
 </dt>
 <dd>
     {{>readable_writable}}

@@ -3,7 +3,7 @@
     <section class="multi-line-signature">
         {{#constructor}}
         {{#isConst}}const{{/isConst}}
-        <span class="name">{{ name }}</span>({{#hasParameters}}
+        {{>name_summary}}({{#hasParameters}}
         <br>
         <div class="parameters">
             {{{linkedParamsLines}}}
