@@ -683,6 +683,7 @@ class Class extends ModelElement {
   List<Constructor> _constructors;
   List<Method> _allMethods;
   List<Operator> _operators;
+  List<Operator> _inheritedOperators;
   List<Method> _inheritedMethods;
   List<Method> _staticMethods;
   List<Method> _instanceMethods;
@@ -857,7 +858,8 @@ class Class extends ModelElement {
     return _operators;
   }
 
-  bool get hasOperators => operators.isNotEmpty;
+  bool get hasOperators =>
+      operators.isNotEmpty || inheritedOperators.isNotEmpty;
 
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
@@ -918,6 +920,54 @@ class Class extends ModelElement {
     }
 
     return _inheritedMethods;
+  }
+
+  List<Method> get inheritedOperators {
+    if (_inheritedOperators != null) return _inheritedOperators;
+    InheritanceManager manager = new InheritanceManager(element.library);
+    MemberMap cmap = manager.getMapOfMembersInheritedFromClasses(element);
+    MemberMap imap = manager.getMapOfMembersInheritedFromInterfaces(element);
+    operators.forEach((operator) {
+      cmap.remove(operator.element.name);
+      imap.remove(operator.element.name);
+    });
+    _inheritedOperators = [];
+    var vs = {};
+
+    bool _isInheritedOperator(ExecutableElement value) {
+      if (value != null &&
+          value is MethodElement &&
+          !value.isPrivate &&
+          value.isOperator &&
+          value.enclosingElement != null &&
+          value.enclosingElement.name != 'Object') {
+        return true;
+      }
+      return false;
+    }
+
+    for (var i = 0; i < imap.size; i++) {
+      var value = imap.getValue(i);
+      if (_isInheritedOperator(value)) {
+        vs.putIfAbsent(value.name, () => value);
+      }
+    }
+
+    for (var i = 0; i < cmap.size; i++) {
+      var value = cmap.getValue(i);
+      if (_isInheritedOperator(value)) {
+        vs.putIfAbsent(value.name, () => value);
+      }
+    }
+
+    for (var value in vs.values) {
+      var lib = value.library == library.element
+          ? library
+          : _getLibraryFor(value.library, package);
+      _inheritedOperators.add(new Operator.inherited(value, lib));
+    }
+
+    return _inheritedOperators;
   }
 
   bool get hasInheritedMethods => inheritedMethods.isNotEmpty;
@@ -1222,6 +1272,11 @@ class Method extends ModelElement {
 
 class Operator extends Method {
   Operator(MethodElement element, Library library) : super(element, library);
+
+  Operator.inherited(MethodElement element, Library library)
+      : super(element, library) {
+    _isInherited = true;
+  }
 
   bool get isOperator => true;
 
