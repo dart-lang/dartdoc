@@ -78,7 +78,8 @@ class DartDoc {
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
     print('');
-    print("Documented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} "
+    print(
+        "Documented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds.");
   }
 
