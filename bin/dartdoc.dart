@@ -63,17 +63,13 @@ void main(List<String> arguments) {
   String headerFilePath = _resolveTildePath(args['header']);
   if (headerFilePath != null && !new File(headerFilePath).existsSync()) {
     print(
-        "Warning: unable to locate the file with footer at ${headerFilePath}.");
+        "Warning: unable to locate the file with header at ${headerFilePath}.");
     exit(1);
   }
 
-  var outputDir = new Directory(path.join(Directory.current.path, 'docs'));
+  var outputDir = new Directory(path.join(Directory.current.path, defaultOutDir));
   if (args['output'] != null) {
     outputDir = new Directory(_resolveTildePath(args['output']));
-  }
-  if (outputDir.existsSync()) {
-    print("Warning: output directory exists: ${args['output']}");
-    exit(1);
   }
 
   String packageName = getPackageName(inputDir.path);
