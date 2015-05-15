@@ -51,10 +51,11 @@ Please file reports on the [GitHub Issue Tracker][issues].
 
 ### Publishing to pub
 
-It's easy to publish to pub. The following command will bump the build version
-and run `pub publish`.
+It's easy to publish to pub. To bump the build version and run `pub publish`,
+run the following:
 
-`grinder publish`
+    pub global activate grinder
+    grind publish
 
 ## License
 
