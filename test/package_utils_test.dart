@@ -6,9 +6,8 @@ library dartdoc.package_utils_test;
 
 import 'dart:io';
 
-import 'package:unittest/unittest.dart';
-
 import 'package:dartdoc/src/package_utils.dart';
+import 'package:unittest/unittest.dart';
 
 void main() {
   group('package utils test', () {
