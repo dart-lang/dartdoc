@@ -77,7 +77,6 @@ class DartDoc {
     }
 
     double seconds = stopwatch.elapsedMilliseconds / 1000.0;
-    print('');
     print(
         "Documented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds.");
@@ -121,6 +120,10 @@ class DartDoc {
         libraries.add(library);
       }
     });
+    double seconds = stopwatch.elapsedMilliseconds / 1000.0;
+    print(
+        "Parsed ${libraries.length} " "file${libraries.length == 1 ? '' : 's'} in "
+        "${seconds.toStringAsFixed(1)} seconds.\n");
     return libraries.toList();
   }
 
