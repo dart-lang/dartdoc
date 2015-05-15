@@ -70,7 +70,8 @@ class Templates {
       'property',
       'styles_and_scripts',
       'readable_writable',
-      'documentation'
+      'documentation',
+      'name_summary'
     ];
     for (var partial in partials) {
       _partialTemplates[partial] = await _loadPartial('_$partial.html');

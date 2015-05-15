@@ -12,7 +12,7 @@
         <dl>
             {{#library.classes}}
             <dt id="{{htmlId}}">
-                <span class="name">{{{linkedName}}}</span>
+                <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{linkedName}}}</span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
@@ -95,7 +95,7 @@
         <dl>
             {{#library.exceptions}}
             <dt id="{{htmlId}}">
-                <span class="name">{{{linkedName}}}</span>
+                <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{linkedName}}}</span>
             </dt>
             <dd>
                 {{#oneLiner}}{{ documentation }}{{/oneLiner}}
