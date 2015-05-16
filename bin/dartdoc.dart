@@ -9,7 +9,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/package_utils.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 
 /// Analyzes Dart files and generates a representation of included libraries,
@@ -37,12 +37,6 @@ void main(List<String> arguments) {
   bool sdkDocs = false;
   if (args['sdk-docs']) {
     sdkDocs = true;
-  }
-
-  var readme = args['sdk-readme'];
-  if (readme != null && !(new File(readme).existsSync())) {
-    print("Warning: unable to locate the SDK description file at $readme.");
-    exit(1);
   }
 
   Directory inputDir = new Directory(args['input']);
@@ -76,16 +70,17 @@ void main(List<String> arguments) {
     exit(1);
   }
 
-  String packageName = getPackageName(inputDir.path);
+  PackageMeta packageMeta = sdkDocs ?
+      new PackageMeta.fromSdk(sdkDir) :new PackageMeta.fromDir(inputDir);
 
-  print("Generating documentation for '${packageName}' into "
+  print("Generating documentation for '${packageMeta}' into "
       "${outputDir.path}${Platform.pathSeparator}.");
   print('');
 
   var generators = initGenerators(url, headerFilePath, footerFilePath);
 
   new DartDoc(inputDir, excludeLibraries, sdkDir, generators, outputDir,
-      sdkDocs: sdkDocs, sdkReadmePath: readme)..generateDocs();
+      packageMeta)..generateDocs();
 }
 
 /// Print help if we are passed the help option or invalid arguments.
@@ -106,8 +101,6 @@ ArgParser _createArgsParser() {
       help: "Location of the Dart SDK. Use if SDK isn't automatically located.");
   parser.addFlag('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
-  parser.addOption('sdk-readme',
-      help: 'Path to the SDK description file. Use if generating Dart SDK docs.');
   parser.addOption('input',
       help: 'Path to source directory', defaultsTo: Directory.current.path);
   parser.addOption('output',

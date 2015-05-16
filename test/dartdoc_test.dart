@@ -7,14 +7,14 @@ library dartdoc.dartdoc_test;
 import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/package_utils.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:unittest/unittest.dart';
 
 void main() {
   group('dartdoc test', () {
     test('version info', () {
-      String version = getPackageVersion(Directory.current.path);
-      expect(version, VERSION);
+      PackageMeta p = new PackageMeta.fromDir(Directory.current);
+      expect(p.version, VERSION);
     });
   });
 }

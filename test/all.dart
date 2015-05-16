@@ -8,7 +8,7 @@ import 'dartdoc_test.dart' as dartdoc_tests;
 import 'html_generator_test.dart' as html_generator_tests;
 import 'io_utils_test.dart' as io_utils_tests;
 import 'model_test.dart' as model_tests;
-import 'package_utils_test.dart' as package_util_tests;
+import 'package_meta_test.dart' as package_meta_tests;
 import 'template_test.dart' as template_tests;
 
 void main() {
@@ -16,6 +16,6 @@ void main() {
   html_generator_tests.main();
   io_utils_tests.main();
   model_tests.main();
-  package_util_tests.main();
+  package_meta_tests.main();
   template_tests.main();
 }

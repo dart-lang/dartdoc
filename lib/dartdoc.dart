@@ -13,13 +13,13 @@ import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:path/path.dart' as path;
 
 import 'generator.dart';
 import 'src/html_generator.dart';
 import 'src/io_utils.dart';
 import 'src/model.dart';
 import 'src/model_utils.dart';
+import 'src/package_meta.dart';
 
 const String NAME = 'dartdoc';
 
@@ -39,23 +39,23 @@ List<Generator> initGenerators(
 class DartDoc {
   final List<String> _excludes;
   final Directory _rootDir;
-  final Directory _sdkDir;
+  final Directory sdkDir;
   final Directory outputDir;
-  final bool sdkDocs;
+  final PackageMeta packageMeta;
   final Set<LibraryElement> libraries = new Set();
   final List<Generator> _generators;
-  final String sdkReadmePath;
 
   Stopwatch stopwatch;
 
-  DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators,
-      this.outputDir, {this.sdkDocs: false, this.sdkReadmePath});
+  DartDoc(this._rootDir, this._excludes, this.sdkDir, this._generators,
+      this.outputDir, this.packageMeta);
 
   /// Generate the documentation
   Future generateDocs() async {
     stopwatch = new Stopwatch()..start();
 
-    var files = sdkDocs ? [] : findFilesToDocumentInPackage(_rootDir.path);
+    var files = packageMeta.isSdk
+        ? [] : findFilesToDocumentInPackage(_rootDir.path);
 
     List<LibraryElement> libs = [];
     libs.addAll(_parseLibraries(files));
@@ -70,8 +70,7 @@ class DartDoc {
       outputDir.createSync(recursive: true);
     }
 
-    Package package = new Package(libraries, _rootDir.path,
-        sdkVersion: _getSdkVersion(), isSdk: sdkDocs, readmeLoc: sdkReadmePath);
+    Package package = new Package(libraries, packageMeta);
 
     for (var generator in _generators) {
       await generator.generate(package, outputDir);
@@ -84,7 +83,7 @@ class DartDoc {
   }
 
   List<LibraryElement> _parseLibraries(List<String> files) {
-    DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(_sdkDir.path));
+    DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
     List<UriResolver> resolvers = [
       new DartUriResolver(sdk),
       new FileUriResolver()
@@ -105,7 +104,7 @@ class DartDoc {
       ..analysisOptions = options
       ..sourceFactory = sourceFactory;
 
-    if (sdkDocs) {
+    if (packageMeta.isSdk) {
       libraries.addAll(getSdkLibrariesToDocument(sdk, context));
     }
     files.forEach((String filePath) {
@@ -126,10 +125,5 @@ class DartDoc {
         "Parsed ${libraries.length} " "file${libraries.length == 1 ? '' : 's'} in "
         "${seconds.toStringAsFixed(1)} seconds.\n");
     return libraries.toList();
-  }
-
-  String _getSdkVersion() {
-    File versionFile = new File(path.join(_sdkDir.path, 'version'));
-    return versionFile.readAsStringSync();
   }
 }

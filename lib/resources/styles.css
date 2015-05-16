@@ -94,6 +94,10 @@ pre code {
   white-space: pre;
 }
 
+.fixed {
+  white-space: pre;
+}
+
 code {
   font-family: 'Source Code Pro', monospace;
   /* overriding bootstrap */

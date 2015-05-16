@@ -6,7 +6,6 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
-import 'package:grinder/grinder.dart' as grinder;
 import 'package:path/path.dart' as p;
 import 'package:unittest/unittest.dart';
 
@@ -19,6 +18,7 @@ import 'package:analyzer/src/generated/source_io.dart';
 
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
+import 'package:dartdoc/src/package_meta.dart';
 
 import 'package:cli_util/cli_util.dart' as cli_util;
 
@@ -27,19 +27,20 @@ void main() {
   String dirPath = p.join(Directory.current.path, 'test_package');
   Source source = helper.addSource(p.join(dirPath, 'lib/example.dart'));
   LibraryElement e = helper.resolve(source);
-  Package package = new Package([e], dirPath);
-  var library = package.libraries[0];
+  Package package = new Package([e],
+      new PackageMeta.fromDir(new Directory(dirPath)));
+  var library = package.libraries.first;
 
   Directory sdkDir = cli_util.getSdkDir();
+
   if (sdkDir == null) {
     print("Warning: unable to locate the Dart SDK.");
     exit(1);
   }
 
-  var readmeLoc = p.join(Directory.current.path, 'test/test_sdk_readme.md');
   Package sdkAsPackage = new Package(
-      getSdkLibrariesToDocument(helper.sdk, helper.context), sdkDir.path,
-      sdkVersion: '1.9.0-dev.3.0', isSdk: true, readmeLoc: readmeLoc);
+      getSdkLibrariesToDocument(helper.sdk, helper.context),
+      new PackageMeta.fromSdk(sdkDir));
 
   group('Package', () {
     test('name', () {
@@ -63,12 +64,15 @@ void main() {
     });
 
     test('sdk version', () {
-      expect(sdkAsPackage.version, '1.9.0-dev.3.0');
+      expect(sdkAsPackage.version, isNotNull);
     });
 
     test('sdk description', () {
-      expect(sdkAsPackage.documentation,
-          startsWith('Welcome to the Dart API reference documentation.'));
+      // TODO: This is null for SDK 1.10.
+      if (sdkAsPackage.hasDocumentation) {
+        expect(sdkAsPackage.documentation,
+            startsWith('Welcome to the Dart API reference documentation.'));
+      }
     });
   });
 
@@ -558,7 +562,7 @@ class AnalyzerHelper {
   DartSdk sdk;
 
   AnalyzerHelper() {
-    Directory sdkDir = grinder.getSdkDir(['']);
+    Directory sdkDir = cli_util.getSdkDir();
     sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
     List<UriResolver> resolvers = [
       new DartUriResolver(sdk),

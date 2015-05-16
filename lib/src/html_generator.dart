@@ -18,6 +18,7 @@ import 'package:path/path.dart' as path;
 
 import 'model.dart';
 import 'html_utils.dart';
+import 'package_meta.dart';
 import '../generator.dart';
 import '../resources.g.dart' show RESOURCE_NAMES;
 import '../resource_loader.dart' as loader;
@@ -202,21 +203,24 @@ class HtmlGeneratorInstance {
   }
 
   void generatePackage() {
-    var type = package.isSdk ? '' : 'package';
-    // TODO should we add _this_ to the context and avoid putting stuff
-    // in the map?
+    // TODO: Should we add _this_ to the context and avoid putting stuff in the
+    // map?
     Map data = {
       'package': package,
-      'markdown': renderMarkdown,
       'oneLiner': oneLiner,
       'documentation': package.documentation,
       'title': '${package.name} - Dart API docs',
-      'layoutTitle': _layoutTitle(package.name, type),
+      'layoutTitle': _layoutTitle(package.name, package.isSdk ? '' : 'package'),
       'metaDescription':
           '${package.name} API docs, for the Dart programming language.',
       'navLinks': [package],
       'htmlBase': '.'
     };
+
+    if (package.hasDocumentation) {
+      FileContents readme = package.documentationFile;
+      data['markdown'] =  readme.isMarkdown ? renderMarkdown : renderPlainText;
+    }
 
     _build('index.html', _templates.indexTemplate, data);
   }
@@ -502,13 +506,14 @@ class HtmlGeneratorInstance {
   }
 }
 
-String _layoutTitle(String name, String kind) {
-  return '$name <span class="kind">$kind</span>';
-}
+String _layoutTitle(String name, String kind) =>
+    kind.isEmpty ? name : '$name <span class="kind">$kind</span>';
 
-/// Converts a markdown formatted string into HTML,
-/// and removes any script tags. Returns the HTML as a string.
+/// Converts a markdown formatted string into HTML, and removes any script tags.
+/// Returns the HTML as a string.
 String renderMarkdown(String markdown, {nestedContext}) {
+  if (markdown == null) return '';
+
   String mustached = render(markdown.trim(), nestedContext,
       assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
@@ -521,6 +526,13 @@ String renderMarkdown(String markdown, {nestedContext}) {
     e.classes.addAll(['prettyprint', 'lang-dart']);
   });
   return doc.body.innerHtml;
+}
+
+/// Convert the given plain text into HTML.
+String renderPlainText(String text) {
+  if (text == null) return '';
+
+  return "<code class='fixed'>${text.trim()}</code>";
 }
 
 const List<String> _oneLinerSkipTags = const ["code", "pre"];
