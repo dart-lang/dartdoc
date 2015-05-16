@@ -37,32 +37,33 @@ List<Generator> initGenerators(
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
 class DartDoc {
-  final List<String> _excludes;
-  final Directory _rootDir;
+  final Directory rootDir;
+  final List<String> excludes;
   final Directory sdkDir;
+  final List<Generator> generators;
   final Directory outputDir;
   final PackageMeta packageMeta;
+
   final Set<LibraryElement> libraries = new Set();
-  final List<Generator> _generators;
 
-  Stopwatch stopwatch;
+  Stopwatch _stopwatch;
 
-  DartDoc(this._rootDir, this._excludes, this.sdkDir, this._generators,
+  DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
       this.outputDir, this.packageMeta);
 
-  /// Generate the documentation
-  Future generateDocs() async {
-    stopwatch = new Stopwatch()..start();
+  /// Generate the documentation.
+  Future<DartDocResults> generateDocs() async {
+    _stopwatch = new Stopwatch()..start();
 
     var files =
-        packageMeta.isSdk ? [] : findFilesToDocumentInPackage(_rootDir.path);
+        packageMeta.isSdk ? [] : findFilesToDocumentInPackage(rootDir.path);
 
     List<LibraryElement> libs = [];
     libs.addAll(_parseLibraries(files));
     // remove excluded libraries
-    _excludes.forEach(
+    excludes.forEach(
         (pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
-    libs.removeWhere((library) => _excludes.contains(library.name));
+    libs.removeWhere((library) => excludes.contains(library.name));
     libraries.addAll(libs);
 
     // create the out directory
@@ -72,14 +73,16 @@ class DartDoc {
 
     Package package = new Package(libraries, packageMeta);
 
-    for (var generator in _generators) {
+    for (var generator in generators) {
       await generator.generate(package, outputDir);
     }
 
-    double seconds = stopwatch.elapsedMilliseconds / 1000.0;
+    double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print(
         "Documented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds.");
+
+    return new DartDocResults(packageMeta, package, outputDir);
   }
 
   List<LibraryElement> _parseLibraries(List<String> files) {
@@ -89,7 +92,7 @@ class DartDoc {
       new FileUriResolver()
     ];
     JavaFile packagesDir =
-        new JavaFile.relative(new JavaFile(_rootDir.path), 'packages');
+        new JavaFile.relative(new JavaFile(rootDir.path), 'packages');
     if (packagesDir.exists()) {
       resolvers.add(new PackageUriResolver([packagesDir]));
     }
@@ -120,10 +123,18 @@ class DartDoc {
         libraries.add(library);
       }
     });
-    double seconds = stopwatch.elapsedMilliseconds / 1000.0;
+    double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print(
         "Parsed ${libraries.length} " "file${libraries.length == 1 ? '' : 's'} in "
         "${seconds.toStringAsFixed(1)} seconds.\n");
     return libraries.toList();
   }
+}
+
+class DartDocResults {
+  final PackageMeta packageMeta;
+  final Package package;
+  final Directory outDir;
+
+  DartDocResults(this.packageMeta, this.package, this.outDir);
 }

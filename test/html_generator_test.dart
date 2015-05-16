@@ -63,4 +63,9 @@ void main() {
       expect(content.contains('<p>User inserted message</p>'), false);
     });
   });
+
+  group('HtmlGenerator', () {
+    // TODO: Run the HtmlGenerator and validate important constraints.
+
+  });
 }

@@ -16,8 +16,8 @@ import 'package:mustache4dart/mustache4dart.dart';
 import 'package:mustache4dart/mustache_context.dart';
 import 'package:path/path.dart' as path;
 
-import 'model.dart';
 import 'html_utils.dart';
+import 'model.dart';
 import 'package_meta.dart';
 import '../generator.dart';
 import '../resources.g.dart' show RESOURCE_NAMES;
