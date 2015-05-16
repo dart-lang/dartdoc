@@ -76,7 +76,7 @@ class _FilePackageMeta extends PackageMeta {
 }
 
 File _locate(Directory dir, List<String> fileNames) {
-  List<File> files = dir.listSync().where((f) => f is File);
+  List<File> files = dir.listSync().where((f) => f is File).toList();
 
   for (String name in fileNames) {
     for (File f in files) {
