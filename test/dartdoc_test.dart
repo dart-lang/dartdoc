@@ -29,7 +29,8 @@ void main() {
 
     test('generateDocs', () {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
-      DartDoc dartdoc = new DartDoc(testPackageDir, [], getSdkDir(), [], tempDir, meta);
+      DartDoc dartdoc =
+          new DartDoc(testPackageDir, [], getSdkDir(), [], tempDir, meta);
 
       return dartdoc.generateDocs().then((DartDocResults results) {
         expect(results.package, isNotNull);
