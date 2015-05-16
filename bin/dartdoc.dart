@@ -70,8 +70,9 @@ void main(List<String> arguments) {
     exit(1);
   }
 
-  PackageMeta packageMeta = sdkDocs ?
-      new PackageMeta.fromSdk(sdkDir) :new PackageMeta.fromDir(inputDir);
+  PackageMeta packageMeta = sdkDocs
+      ? new PackageMeta.fromSdk(sdkDir)
+      : new PackageMeta.fromDir(inputDir);
 
   print("Generating documentation for '${packageMeta}' into "
       "${outputDir.path}${Platform.pathSeparator}.");
@@ -79,8 +80,9 @@ void main(List<String> arguments) {
 
   var generators = initGenerators(url, headerFilePath, footerFilePath);
 
-  new DartDoc(inputDir, excludeLibraries, sdkDir, generators, outputDir,
-      packageMeta)..generateDocs();
+  new DartDoc(
+      inputDir, excludeLibraries, sdkDir, generators, outputDir, packageMeta)
+    ..generateDocs();
 }
 
 /// Print help if we are passed the help option or invalid arguments.

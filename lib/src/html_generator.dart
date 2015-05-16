@@ -219,7 +219,7 @@ class HtmlGeneratorInstance {
 
     if (package.hasDocumentation) {
       FileContents readme = package.documentationFile;
-      data['markdown'] =  readme.isMarkdown ? renderMarkdown : renderPlainText;
+      data['markdown'] = readme.isMarkdown ? renderMarkdown : renderPlainText;
     }
 
     _build('index.html', _templates.indexTemplate, data);

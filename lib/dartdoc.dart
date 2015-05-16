@@ -54,8 +54,8 @@ class DartDoc {
   Future generateDocs() async {
     stopwatch = new Stopwatch()..start();
 
-    var files = packageMeta.isSdk
-        ? [] : findFilesToDocumentInPackage(_rootDir.path);
+    var files =
+        packageMeta.isSdk ? [] : findFilesToDocumentInPackage(_rootDir.path);
 
     List<LibraryElement> libs = [];
     libs.addAll(_parseLibraries(files));

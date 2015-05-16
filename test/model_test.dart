@@ -27,8 +27,8 @@ void main() {
   String dirPath = p.join(Directory.current.path, 'test_package');
   Source source = helper.addSource(p.join(dirPath, 'lib/example.dart'));
   LibraryElement e = helper.resolve(source);
-  Package package = new Package([e],
-      new PackageMeta.fromDir(new Directory(dirPath)));
+  Package package =
+      new Package([e], new PackageMeta.fromDir(new Directory(dirPath)));
   var library = package.libraries.first;
 
   Directory sdkDir = cli_util.getSdkDir();

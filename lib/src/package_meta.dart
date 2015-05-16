@@ -10,24 +10,24 @@ import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
 abstract class PackageMeta {
-   final Directory dir;
+  final Directory dir;
 
-   PackageMeta(this.dir);
+  PackageMeta(this.dir);
 
-   factory PackageMeta.fromDir(Directory dir) => new _FilePackageMeta(dir);
-   factory PackageMeta.fromSdk(Directory sdkDir) => new _SdkMeta(sdkDir);
+  factory PackageMeta.fromDir(Directory dir) => new _FilePackageMeta(dir);
+  factory PackageMeta.fromSdk(Directory sdkDir) => new _SdkMeta(sdkDir);
 
-   bool get isSdk;
+  bool get isSdk;
 
-   String get name;
-   String get version;
-   String get description;
-   String get homepage;
+  String get name;
+  String get version;
+  String get description;
+  String get homepage;
 
-   FileContents getReadmeContents();
-   FileContents getLicenseContents();
+  FileContents getReadmeContents();
+  FileContents getLicenseContents();
 
-   String toString() => name;
+  String toString() => name;
 }
 
 class FileContents {
@@ -51,7 +51,7 @@ class _FilePackageMeta extends PackageMeta {
   _FilePackageMeta(Directory dir) : super(dir) {
     File f = new File(path.join(dir.path, 'pubspec.yaml'));
     if (f.existsSync()) {
-      _pubspec =  loadYaml(f.readAsStringSync());
+      _pubspec = loadYaml(f.readAsStringSync());
     } else {
       _pubspec = {};
     }
@@ -65,11 +65,13 @@ class _FilePackageMeta extends PackageMeta {
   String get homepage => _pubspec['homepage'];
 
   FileContents getReadmeContents() {
-    return new FileContents(_locate(dir, ['readme.md', 'readme.txt', 'readme']));
+    return new FileContents(
+        _locate(dir, ['readme.md', 'readme.txt', 'readme']));
   }
 
   FileContents getLicenseContents() {
-    return new FileContents(_locate(dir, ['license.md', 'license.txt', 'license']));
+    return new FileContents(
+        _locate(dir, ['license.md', 'license.txt', 'license']));
   }
 }
 
@@ -101,7 +103,8 @@ class _SdkMeta extends PackageMeta {
   String get name => 'Dart API Reference';
   String get version =>
       new File(path.join(dir.path, 'version')).readAsStringSync().trim();
-  String get description => 'The Dart SDK is a set of tools and libraries for the '
+  String get description =>
+      'The Dart SDK is a set of tools and libraries for the '
       'Dart programming language.';
   String get homepage => 'https://github.com/dart-lang/sdk';
 
