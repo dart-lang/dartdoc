@@ -51,7 +51,7 @@ class DartDoc {
   DartDoc(this._rootDir, this._excludes, this._sdkDir, this._generators,
       this.outputDir, {this.sdkDocs: false, this.sdkReadmePath});
 
-  /// Generate the documentation
+  /// Generate the documentation.
   Future generateDocs() async {
     stopwatch = new Stopwatch()..start();
 

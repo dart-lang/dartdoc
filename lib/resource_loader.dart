@@ -25,6 +25,7 @@ Future<String> loadAsString(String path) async {
   return new String.fromCharCodes(bytes);
 }
 
+/// Loads a `package:` resource as an [Uint8List].
 Future<Uint8List> loadAsBytes(String path) {
   if (!path.startsWith('package:')) {
     throw new ArgumentError('path must begin with package:');
