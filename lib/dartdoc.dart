@@ -22,9 +22,10 @@ import 'src/model_utils.dart';
 import 'src/package_meta.dart';
 
 const String NAME = 'dartdoc';
-
 // Update when pubspec version changes.
 const String VERSION = '0.0.1+10';
+
+const String defaultOutDir = 'docs';
 
 /// Initialize and setup the generators.
 List<Generator> initGenerators(
@@ -66,12 +67,10 @@ class DartDoc {
     libs.removeWhere((library) => excludes.contains(library.name));
     libraries.addAll(libs);
 
-    // create the out directory
-    if (!outputDir.existsSync()) {
-      outputDir.createSync(recursive: true);
-    }
-
     Package package = new Package(libraries, packageMeta);
+
+    // Create the out directory.
+    if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
 
     for (var generator in generators) {
       await generator.generate(package, outputDir);

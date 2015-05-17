@@ -5,6 +5,7 @@
 import 'dart:async' show Future;
 import 'dart:io';
 
+import 'package:dartdoc/dartdoc.dart' show defaultOutDir;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:den_api/den_api.dart';
 import 'package:grinder/grinder.dart';
@@ -12,7 +13,7 @@ import 'package:librato/librato.dart';
 import 'package:path/path.dart' as path;
 
 final Directory docsDir =
-    new Directory(path.join('${Directory.systemTemp.path}', 'docs'));
+    new Directory(path.join('${Directory.systemTemp.path}', defaultOutDir));
 
 main([List<String> args]) => grind(args);
 
