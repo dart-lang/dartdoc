@@ -27,19 +27,18 @@ void main() {
       delete(tempDir);
     });
 
-    test('generateDocs', () {
+    test('generateDocs', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc =
           new DartDoc(testPackageDir, [], getSdkDir(), [], tempDir, meta);
 
-      return dartdoc.generateDocs().then((DartDocResults results) {
-        expect(results.package, isNotNull);
+      DartDocResults results = await dartdoc.generateDocs();
+      expect(results.package, isNotNull);
 
-        Package p = results.package;
-        expect(p.name, 'test_package');
-        expect(p.hasDocumentation, true);
-        expect(p.libraries.length, 3);
-      });
+      Package p = results.package;
+      expect(p.name, 'test_package');
+      expect(p.hasDocumentation, true);
+      expect(p.libraries.length, 3);
     });
   });
 }
