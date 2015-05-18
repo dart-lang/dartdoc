@@ -15,7 +15,8 @@ abstract class PackageMeta {
   PackageMeta(this.dir);
 
   factory PackageMeta.fromDir(Directory dir) => new _FilePackageMeta(dir);
-  factory PackageMeta.fromSdk(Directory sdkDir) => new _SdkMeta(sdkDir);
+  factory PackageMeta.fromSdk(Directory sdkDir, {String sdkReadmePath}) =>
+      new _SdkMeta(sdkDir, sdkReadmePath: sdkReadmePath);
 
   bool get isSdk;
 
@@ -96,7 +97,9 @@ File _locate(Directory dir, List<String> fileNames) {
 }
 
 class _SdkMeta extends PackageMeta {
-  _SdkMeta(Directory dir) : super(dir);
+  final String sdkReadmePath;
+
+  _SdkMeta(Directory dir, {this.sdkReadmePath}) : super(dir);
 
   bool get isSdk => true;
 
@@ -109,7 +112,9 @@ class _SdkMeta extends PackageMeta {
   String get homepage => 'https://github.com/dart-lang/sdk';
 
   FileContents getReadmeContents() {
-    File f = new File(path.join(dir.path, 'lib', 'api_readme.md'));
+    File f = sdkReadmePath != null
+        ? new File(sdkReadmePath)
+        : new File(path.join(dir.path, 'lib', 'api_readme.md'));
     return f.existsSync() ? new FileContents(f) : null;
   }
 

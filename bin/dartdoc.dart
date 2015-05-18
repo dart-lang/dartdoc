@@ -39,6 +39,12 @@ void main(List<String> arguments) {
     sdkDocs = true;
   }
 
+  var readme = args['sdk-readme'];
+  if (readme != null && !(new File(readme).existsSync())) {
+    print("Warning: unable to locate the SDK description file at $readme.");
+    exit(1);
+  }
+
   Directory inputDir = new Directory(args['input']);
   if (!inputDir.existsSync()) {
     print("Warning: unable to locate the input directory at ${inputDir.path}.");
@@ -68,7 +74,7 @@ void main(List<String> arguments) {
   }
 
   PackageMeta packageMeta = sdkDocs
-      ? new PackageMeta.fromSdk(sdkDir)
+      ? new PackageMeta.fromSdk(sdkDir, sdkReadmePath: readme)
       : new PackageMeta.fromDir(inputDir);
 
   print("Generating documentation for '${packageMeta}' into "
@@ -100,6 +106,8 @@ ArgParser _createArgsParser() {
       help: "Location of the Dart SDK. Use if SDK isn't automatically located.");
   parser.addFlag('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
+  parser.addOption('sdk-readme',
+      help: 'Path to the SDK description file. Use if generating Dart SDK docs.');
   parser.addOption('input',
       help: 'Path to source directory', defaultsTo: Directory.current.path);
   parser.addOption('output',
