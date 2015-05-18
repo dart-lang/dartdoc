@@ -54,7 +54,7 @@ class HtmlPrinter {
   }
 
   void startTag(String tag, {String attributes, String classes, bool newLine: true}) {
-    if (classes != null) {
+    if (classes != null && classes.isNotEmpty) {
       if (attributes == null) {
         attributes = 'class="${classes}"';
       } else {
@@ -86,7 +86,7 @@ class HtmlPrinter {
     if (attributes == null) attributes = '';
     if (contents == null) contents = '';
 
-    if (classes != null) attributes += ' class="${classes}"';
+    if (classes != null && classes.isNotEmpty) attributes += ' class="${classes}"';
     if (href != null) attributes += ' href="${href}"';
 
     if (attributes.isNotEmpty) attributes = ' ' + attributes.trim();
