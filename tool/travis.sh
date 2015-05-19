@@ -26,11 +26,11 @@ grind build-sdk-docs 2>&1 >/dev/null | echo
 
 # Another smoke test: Run dartdoc on test_package.
 cd test_package
-dart ../bin/dartdoc.dart
+dart -c ../bin/dartdoc.dart
 cd ..
 
 # Run the tests.
-dart test/all.dart
+dart -c test/all.dart
 
 # Gather and send coverage data.
 if [ "$REPO_TOKEN" ]; then

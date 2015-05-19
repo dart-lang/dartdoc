@@ -25,10 +25,6 @@ Run `dartdoc` with the following command line arguments:
 
 - `--dart-sdk /pathTo/dart-sdk`
 - `--sdk-docs`
-- `--sdk-readme /pathTo/sdk_readme.md`
-
-The `sdk-readme` is found in the SDK source repo. Specifically, `$DART_SDK_SOURCE/dart/sdk/api_readme.md`.
-In the future, this file might be included in an SDK distribution (see https://code.google.com/p/dart/issues/detail?id=23203).
 
 ## FAQ
 

@@ -9,7 +9,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/package_utils.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 
 /// Analyzes Dart files and generates a representation of included libraries,
@@ -73,16 +73,19 @@ void main(List<String> arguments) {
     outputDir = new Directory(_resolveTildePath(args['output']));
   }
 
-  String packageName = getPackageName(inputDir.path);
+  PackageMeta packageMeta = sdkDocs
+      ? new PackageMeta.fromSdk(sdkDir, sdkReadmePath: readme)
+      : new PackageMeta.fromDir(inputDir);
 
-  print("Generating documentation for '${packageName}' into "
+  print("Generating documentation for '${packageMeta}' into "
       "${outputDir.path}${Platform.pathSeparator}.");
   print('');
 
   var generators = initGenerators(url, headerFilePath, footerFilePath);
 
-  new DartDoc(inputDir, excludeLibraries, sdkDir, generators, outputDir,
-      sdkDocs: sdkDocs, sdkReadmePath: readme)..generateDocs();
+  new DartDoc(
+      inputDir, excludeLibraries, sdkDir, generators, outputDir, packageMeta)
+    ..generateDocs();
 }
 
 /// Print help if we are passed the help option or invalid arguments.

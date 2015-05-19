@@ -114,9 +114,7 @@ class HtmlPrinter {
     endTag();
   }
 
-  String toString() {
-    return _buffer.toString();
-  }
+  String toString() => _buffer.toString();
 
   void write(String str) {
     if (_startOfLine) {
