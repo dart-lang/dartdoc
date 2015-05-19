@@ -53,7 +53,8 @@ class HtmlPrinter {
     writeln();
   }
 
-  void startTag(String tag, {String attributes, String classes, bool newLine: true}) {
+  void startTag(String tag,
+      {String attributes, String classes, bool newLine: true}) {
     if (classes != null && classes.isNotEmpty) {
       if (attributes == null) {
         attributes = 'class="${classes}"';
@@ -82,11 +83,13 @@ class HtmlPrinter {
     _tags.add(tag);
   }
 
-  void tag(String tag, {String contents, String classes, String href, String attributes}) {
+  void tag(String tag,
+      {String contents, String classes, String href, String attributes}) {
     if (attributes == null) attributes = '';
     if (contents == null) contents = '';
 
-    if (classes != null && classes.isNotEmpty) attributes += ' class="${classes}"';
+    if (classes != null && classes.isNotEmpty) attributes +=
+        ' class="${classes}"';
     if (href != null) attributes += ' href="${href}"';
 
     if (attributes.isNotEmpty) attributes = ' ' + attributes.trim();
