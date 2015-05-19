@@ -45,7 +45,7 @@ String stripComments(String str) {
     }
     str = str.trim();
     for (String line in str.split('\n')) {
-      line = ltrim(line);
+      line = line.trimLeft();
       if (line.startsWith('* ')) {
         buf.write('${line.substring(2)}\n');
       } else if (line.startsWith('*')) {
@@ -56,13 +56,6 @@ String stripComments(String str) {
     }
   }
   return buf.toString().trim();
-}
-
-String ltrim(String str) {
-  while (str.length > 0 && (str[0] == ' ' || str[0] == '\t')) {
-    str = str.substring(1);
-  }
-  return str;
 }
 
 const _escapeMap = const {

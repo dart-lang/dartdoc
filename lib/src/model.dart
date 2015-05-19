@@ -13,7 +13,7 @@ import 'package:quiver/core.dart';
 
 import 'html_utils.dart';
 import 'model_utils.dart';
-import 'package_utils.dart';
+import 'package_meta.dart';
 
 final Map<Class, List<Class>> _implementors = new Map();
 
@@ -422,32 +422,25 @@ class Dynamic extends ModelElement {
 }
 
 class Package {
-  final String _rootDirPath;
   final List<Library> _libraries = [];
-  final String _readmeLoc;
-  final bool _isSdk;
-  final String _sdkVersion;
+  final PackageMeta packageMeta;
 
-  String get name =>
-      _isSdk ? 'Dart API Reference' : getPackageName(_rootDirPath);
+  String get name => packageMeta.name;
 
-  String get version => _isSdk ? _sdkVersion : getPackageVersion(_rootDirPath);
+  String get version => packageMeta.version;
 
-  String get sdkVersion => _sdkVersion;
+  bool get hasDocumentation => documentationFile != null;
 
+  FileContents get documentationFile => packageMeta.getReadmeContents();
+
+  // TODO: Clients should use [documentationFile] so they can act differently on
+  // plain text or markdown.
   String get documentation =>
-      getPackageDescription(_isSdk, _readmeLoc, _rootDirPath);
-
-  bool get hasDocumentation =>
-      documentation != null && documentation.isNotEmpty;
+      hasDocumentation ? documentationFile.contents : null;
 
   List<Library> get libraries => _libraries;
 
-  Package(Iterable<LibraryElement> libraryElements, this._rootDirPath,
-      {String sdkVersion, bool isSdk: false, String readmeLoc})
-      : _sdkVersion = sdkVersion,
-        _isSdk = isSdk,
-        _readmeLoc = readmeLoc {
+  Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {
     libraryElements.forEach((element) {
       var lib = new Library(element, this);
       _libraryMap.putIfAbsent(lib._name, () => lib);
@@ -459,9 +452,9 @@ class Package {
   }
 
   /// Does this package represent the SDK?
-  bool get isSdk => _isSdk;
+  bool get isSdk => packageMeta.isSdk;
 
-  String toString() => 'Package $name, isSdk: $_isSdk';
+  String toString() => isSdk ? 'SDK' : 'Package $name';
 
   bool isDocumented(ModelElement e) {
     // TODO: review this logic. I'm compensating for what's probably a bug
@@ -655,7 +648,7 @@ class Library extends ModelElement {
   }
 
   List<Class> getClasses() {
-    if (package._isSdk) {
+    if (package.isSdk) {
       return _allClasses;
     }
 
