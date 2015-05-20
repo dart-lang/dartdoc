@@ -30,7 +30,6 @@ abstract class PackageMeta {
   FileContents getChangelogContents();
 
   String toString() => name;
-
 }
 
 class FileContents {
@@ -128,5 +127,5 @@ class _SdkMeta extends PackageMeta {
   FileContents getLicenseContents() => null;
 
   // TODO: The changelog doesn't seem to be available in the sdk.
-  FileContents getChangelogContents()  => null;
+  FileContents getChangelogContents() => null;
 }
