@@ -173,23 +173,23 @@ class HtmlGeneratorInstance {
         });
       });
 
-      lib.getEnums().forEach((eNum) {
+      lib.enums.forEach((eNum) {
         generateEnum(package, lib, eNum);
       });
 
-      lib.getConstants().forEach((constant) {
+      lib.constants.forEach((constant) {
         generateTopLevelConstant(package, lib, constant);
       });
 
-      lib.getProperties().forEach((property) {
+      lib.properties.forEach((property) {
         generateTopLevelProperty(package, lib, property);
       });
 
-      lib.getFunctions().forEach((function) {
+      lib.functions.forEach((function) {
         generateFunction(package, lib, function);
       });
 
-      lib.getTypedefs().forEach((typeDef) {
+      lib.typedefs.forEach((typeDef) {
         generateTypeDef(package, lib, typeDef);
       });
     });

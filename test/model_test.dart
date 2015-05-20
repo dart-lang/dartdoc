@@ -127,11 +127,11 @@ void main() {
     });
 
     test('exported class', () {
-      expect(library.getClasses().any((c) => c.name == 'Helper'), isTrue);
+      expect(library.classes.any((c) => c.name == 'Helper'), isTrue);
     });
 
     test('exported function', () {
-      expect(library.getFunctions().any((f) => f.name == 'helperFunction'),
+      expect(library.functions.any((f) => f.name == 'helperFunction'),
           isFalse);
     });
   });
@@ -140,7 +140,7 @@ void main() {
     List<Class> classes;
     Class Apple, B, Cat, Dog, F;
     setUp(() {
-      classes = library.getClasses();
+      classes = library.classes;
       Apple = classes.firstWhere((c) => c.name == 'Apple');
       B = classes.firstWhere((c) => c.name == 'B');
       Cat = classes.firstWhere((c) => c.name == 'Cat');
@@ -235,7 +235,7 @@ void main() {
     Enum animal;
 
     setUp(() {
-      animal = library.getEnums()[0];
+      animal = library.enums[0];
     });
 
     test('enum values', () {
@@ -256,7 +256,7 @@ void main() {
     ModelFunction f1;
 
     setUp(() {
-      f1 = library.getFunctions().single;
+      f1 = library.functions.single;
     });
 
     test('name is function1', () {
@@ -285,16 +285,16 @@ void main() {
     Method m, m3, m4;
 
     setUp(() {
-      classB = library.getClasses().singleWhere((c) => c.name == 'B');
+      classB = library.classes.singleWhere((c) => c.name == 'B');
       m = classB.instanceMethods.first;
       m3 = library
-          .getClasses()
+          .classes
           .singleWhere((c) => c.name == 'Apple').instanceMethods.first;
       m4 = classB.instanceMethods[1];
     });
 
     test('overriden method', () {
-      expect(m.getOverriddenElement().runtimeType.toString(), 'Method');
+      expect(m.overriddenElement.runtimeType.toString(), 'Method');
     });
 
     test('method documentation', () {
@@ -323,7 +323,7 @@ void main() {
     var c, f1, f2, constField;
 
     setUp(() {
-      c = library.getClasses().firstWhere((c) => c.name == 'Apple');
+      c = library.classes.firstWhere((c) => c.name == 'Apple');
       f1 = c.staticProperties[0]; // n
       f2 = c.instanceProperties[0];
       constField = c.constants[0]; // string
@@ -351,12 +351,12 @@ void main() {
     TopLevelVariable v3;
 
     setUp(() {
-      v = library.getProperties().firstWhere((p) => p.name == 'number');
-      v3 = library.getProperties().firstWhere((p) => p.name == 'y');
+      v = library.properties.firstWhere((p) => p.name == 'number');
+      v3 = library.properties.firstWhere((p) => p.name == 'y');
     });
 
     test('found two properties', () {
-      expect(library.getProperties(), hasLength(2));
+      expect(library.properties, hasLength(2));
     });
 
     test('linked return type is a double', () {
@@ -373,14 +373,14 @@ void main() {
 
     setUp(() {
       greenConstant =
-          library.getConstants().firstWhere((c) => c.name == 'COLOR_GREEN');
+          library.constants.firstWhere((c) => c.name == 'COLOR_GREEN');
       orangeConstant =
-          library.getConstants().firstWhere((c) => c.name == 'COLOR_ORANGE');
-      cat = library.getConstants().firstWhere((c) => c.name == 'MY_CAT');
+          library.constants.firstWhere((c) => c.name == 'COLOR_ORANGE');
+      cat = library.constants.firstWhere((c) => c.name == 'MY_CAT');
     });
 
     test('found five constants', () {
-      expect(library.getConstants(), hasLength(5));
+      expect(library.constants, hasLength(5));
     });
 
     test('COLOR_GREEN is constant', () {
@@ -401,7 +401,7 @@ void main() {
     var c2;
     setUp(() {
       c2 = library
-          .getClasses()
+          .classes
           .firstWhere((c) => c.name == 'Apple').constructors[0];
     });
 
@@ -412,7 +412,7 @@ void main() {
 
   group('Type', () {
     var f = library
-        .getClasses()
+        .classes
         .firstWhere((c) => c.name == 'B').instanceProperties[0];
 
     test('parameterized type', () {
@@ -424,7 +424,7 @@ void main() {
     var t;
 
     setUp(() {
-      t = library.getTypedefs()[0];
+      t = library.typedefs[0];
     });
 
     test('docs', () {
@@ -442,14 +442,14 @@ void main() {
     Parameter p1;
 
     setUp(() {
-      c = library.getClasses().firstWhere((c) => c.name == 'Apple');
+      c = library.classes.firstWhere((c) => c.name == 'Apple');
       isGreaterThan = c.instanceMethods[2]; // isGreaterThan
       asyncM = library
-              .getClasses()
+              .classes
               .firstWhere((c) => c.name == 'Dog').instanceMethods
           .firstWhere((m) => m.name == 'foo');
       p1 = isGreaterThan.parameters[1]; // {int check:5}
-      f = library.getClasses().firstWhere((c) => c.name == 'F');
+      f = library.classes.firstWhere((c) => c.name == 'F');
       methodWithGenericParam = f.instanceMethods[0];
     });
 
@@ -485,11 +485,11 @@ void main() {
     List<Class> implA, implC;
 
     setUp(() {
-      apple = library.getClasses().firstWhere((c) => c.name == 'Apple');
-      b = library.getClasses().firstWhere((c) => c.name == 'B');
+      apple = library.classes.firstWhere((c) => c.name == 'Apple');
+      b = library.classes.firstWhere((c) => c.name == 'B');
       implA = apple.implementors;
       implC =
-          library.getClasses().firstWhere((c) => c.name == 'Cat').implementors;
+          library.classes.firstWhere((c) => c.name == 'Cat').implementors;
     });
 
     test('the first class is Apple', () {
@@ -526,7 +526,7 @@ void main() {
       'MyExceptionImplements'
     ];
     test('library has the exact errors/exceptions we expect', () {
-      expect(library.getExceptions().map((e) => e.name),
+      expect(library.exceptions().map((e) => e.name),
           unorderedEquals(expectedNames));
     });
   });
@@ -535,8 +535,8 @@ void main() {
     Class forAnnotation, dog;
     setUp(() {
       forAnnotation =
-          library.getClasses().firstWhere((c) => c.name == 'HasAnnotation');
-      dog = library.getClasses().firstWhere((c) => c.name == 'Dog');
+          library.classes.firstWhere((c) => c.name == 'HasAnnotation');
+      dog = library.classes.firstWhere((c) => c.name == 'Dog');
     });
 
     test('is not null', () => expect(forAnnotation, isNotNull));
