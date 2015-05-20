@@ -131,8 +131,7 @@ void main() {
     });
 
     test('exported function', () {
-      expect(library.functions.any((f) => f.name == 'helperFunction'),
-          isFalse);
+      expect(library.functions.any((f) => f.name == 'helperFunction'), isFalse);
     });
   });
 
@@ -287,8 +286,7 @@ void main() {
     setUp(() {
       classB = library.classes.singleWhere((c) => c.name == 'B');
       m = classB.instanceMethods.first;
-      m3 = library
-          .classes
+      m3 = library.classes
           .singleWhere((c) => c.name == 'Apple').instanceMethods.first;
       m4 = classB.instanceMethods[1];
     });
@@ -400,9 +398,7 @@ void main() {
   group('Constructor', () {
     var c2;
     setUp(() {
-      c2 = library
-          .classes
-          .firstWhere((c) => c.name == 'Apple').constructors[0];
+      c2 = library.classes.firstWhere((c) => c.name == 'Apple').constructors[0];
     });
 
     test('has contructor', () {
@@ -411,9 +407,8 @@ void main() {
   });
 
   group('Type', () {
-    var f = library
-        .classes
-        .firstWhere((c) => c.name == 'B').instanceProperties[0];
+    var f =
+        library.classes.firstWhere((c) => c.name == 'B').instanceProperties[0];
 
     test('parameterized type', () {
       expect(f.modelType.isParameterizedType, isTrue);
@@ -444,8 +439,7 @@ void main() {
     setUp(() {
       c = library.classes.firstWhere((c) => c.name == 'Apple');
       isGreaterThan = c.instanceMethods[2]; // isGreaterThan
-      asyncM = library
-              .classes
+      asyncM = library.classes
               .firstWhere((c) => c.name == 'Dog').instanceMethods
           .firstWhere((m) => m.name == 'foo');
       p1 = isGreaterThan.parameters[1]; // {int check:5}
@@ -488,8 +482,7 @@ void main() {
       apple = library.classes.firstWhere((c) => c.name == 'Apple');
       b = library.classes.firstWhere((c) => c.name == 'B');
       implA = apple.implementors;
-      implC =
-          library.classes.firstWhere((c) => c.name == 'Cat').implementors;
+      implC = library.classes.firstWhere((c) => c.name == 'Cat').implementors;
     });
 
     test('the first class is Apple', () {
@@ -526,7 +519,7 @@ void main() {
       'MyExceptionImplements'
     ];
     test('library has the exact errors/exceptions we expect', () {
-      expect(library.exceptions().map((e) => e.name),
+      expect(library.exceptions.map((e) => e.name),
           unorderedEquals(expectedNames));
     });
   });
