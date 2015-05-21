@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+/// A library containing an abstract documentation generator.
 library dartdoc.generator;
 
 import 'dart:async';
@@ -13,8 +14,6 @@ import 'src/model.dart' show Package;
 /// a given package. Generators can generate documentation in different formats:
 /// html, json etc.
 abstract class Generator {
-  Generator();
-
   /// Generate the documentation for the given package in the specified
   /// directory.
   Future generate(Package package, Directory out);

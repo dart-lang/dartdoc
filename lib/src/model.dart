@@ -496,6 +496,8 @@ class Library extends ModelElement {
 
   Library(LibraryElement element, this.package) : super(element, null);
 
+  Library get library => this;
+
   Iterable<Element> get _exportedNameSpace {
     if (_nameSpace == null) _buildExportedNameSpace();
     return _nameSpace;
