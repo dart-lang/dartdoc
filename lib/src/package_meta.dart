@@ -27,6 +27,7 @@ abstract class PackageMeta {
 
   FileContents getReadmeContents();
   FileContents getLicenseContents();
+  FileContents getChangelogContents();
 
   String toString() => name;
 }
@@ -74,6 +75,11 @@ class _FilePackageMeta extends PackageMeta {
     return new FileContents(
         _locate(dir, ['license.md', 'license.txt', 'license']));
   }
+
+  FileContents getChangelogContents() {
+    return new FileContents(
+        _locate(dir, ['changelog.md', 'changelog.txt', 'changelog']));
+  }
 }
 
 File _locate(Directory dir, List<String> fileNames) {
@@ -119,4 +125,7 @@ class _SdkMeta extends PackageMeta {
   }
 
   FileContents getLicenseContents() => null;
+
+  // TODO: The changelog doesn't seem to be available in the sdk.
+  FileContents getChangelogContents() => null;
 }
