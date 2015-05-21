@@ -37,9 +37,13 @@ void main() {
     test('getLicenseContents()', () {
       expect(p.getLicenseContents(), isNotNull);
     });
+
+    test('getChangelogContents()', () {
+      expect(p.getChangelogContents(), isNotNull);
+    });
   });
 
-  group('PackageMeta.fromDir', () {
+  group('PackageMeta.fromSdk', () {
     PackageMeta p = new PackageMeta.fromSdk(getSdkDir());
 
     test('name', () {

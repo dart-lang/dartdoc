@@ -121,7 +121,7 @@ abstract class ModelElement {
     _documentation = element.computeDocumentationComment();
 
     if (_documentation == null && canOverride()) {
-      var overrideElement = getOverriddenElement();
+      var overrideElement = overriddenElement;
       if (overrideElement != null) {
         _documentation = overrideElement.documentation;
       }
@@ -137,7 +137,7 @@ abstract class ModelElement {
 
   NodeList<CommentReference> _getCommentRefs() {
     if (_documentation == null && canOverride()) {
-      var melement = getOverriddenElement();
+      var melement = overriddenElement;
       if (melement != null &&
           melement.element.node != null &&
           melement.element.node is AnnotatedNode) {
@@ -234,7 +234,7 @@ abstract class ModelElement {
 
   bool canOverride() => element is ClassMemberElement;
 
-  ModelElement getOverriddenElement() => null;
+  ModelElement get overriddenElement => null;
 
   String get name => element.name;
 
@@ -294,7 +294,7 @@ abstract class ModelElement {
   ElementType get modelType => _modelType;
 
   /// Returns the [ModelElement] that encloses this.
-  ModelElement getEnclosingElement() {
+  ModelElement get enclosingElement {
     // A class's enclosing element is a library, and there isn't a
     // modelelement for a library.
     if (element.enclosingElement != null &&
@@ -315,7 +315,7 @@ abstract class ModelElement {
     if (name.startsWith('_')) {
       return htmlEscape(name);
     }
-    Class c = getEnclosingElement();
+    Class c = enclosingElement;
     if (c != null && c.name.startsWith('_')) {
       return '${c.name}.${htmlEscape(name)}';
     }
@@ -555,19 +555,19 @@ class Library extends ModelElement {
   bool get hasProperties => _getVariables().any((v) => !v.isConst);
 
   /// All variables ("properties") except constants.
-  List<TopLevelVariable> getProperties() {
+  List<TopLevelVariable> get properties {
     return _getVariables().where((v) => !v.isConst).toList(growable: false);
   }
 
   bool get hasConstants => _getVariables().any((v) => v.isConst);
 
-  List<TopLevelVariable> getConstants() {
+  List<TopLevelVariable> get constants {
     return _getVariables().where((v) => v.isConst).toList(growable: false);
   }
 
-  bool get hasEnums => getEnums().isNotEmpty;
+  bool get hasEnums => enums.isNotEmpty;
 
-  List<Class> getEnums() {
+  List<Class> get enums {
     if (_enums != null) return _enums;
 
     List<ClassElement> enumClasses = [];
@@ -584,9 +584,9 @@ class Library extends ModelElement {
     return _allClasses.firstWhere((it) => it.name == name, orElse: () => null);
   }
 
-  bool get hasTypedefs => getTypedefs().isNotEmpty;
+  bool get hasTypedefs => typedefs.isNotEmpty;
 
-  List<Typedef> getTypedefs() {
+  List<Typedef> get typedefs {
     if (_typeDefs != null) return _typeDefs;
 
     Set<FunctionTypeAliasElement> elements = new Set();
@@ -602,9 +602,9 @@ class Library extends ModelElement {
     return _typeDefs;
   }
 
-  bool get hasFunctions => getFunctions().isNotEmpty;
+  bool get hasFunctions => functions.isNotEmpty;
 
-  List<ModelFunction> getFunctions() {
+  List<ModelFunction> get functions {
     if (_functions != null) return _functions;
 
     Set<FunctionElement> elements = new Set();
@@ -647,22 +647,23 @@ class Library extends ModelElement {
     return _classes;
   }
 
-  List<Class> getClasses() {
+  /// if SDK, return all classes
+  /// if package, return classes that are not [Error] or [Exception]
+  List<Class> get classes {
     if (package.isSdk) {
       return _allClasses;
     }
-
     return _allClasses.where((c) => !c.isErrorOrException).toList(
         growable: false);
   }
 
   List<Class> get allClasses => _allClasses;
 
-  bool get hasClasses => getClasses().isNotEmpty;
+  bool get hasClasses => classes.isNotEmpty;
 
   bool get hasExceptions => _allClasses.any((c) => c.isErrorOrException);
 
-  List<Class> getExceptions() {
+  List<Class> get exceptions {
     return _allClasses.where((c) => c.isErrorOrException).toList(
         growable: false);
   }
@@ -1213,7 +1214,7 @@ class Constructor extends ModelElement {
   @override
   String get name {
     String constructorName = element.name;
-    Class c = getEnclosingElement();
+    Class c = enclosingElement;
     if (constructorName.isEmpty) {
       return c.name;
     } else {
@@ -1237,7 +1238,7 @@ class Method extends ModelElement {
     _isInherited = true;
   }
 
-  Method getOverriddenElement() {
+  Method get overriddenElement {
     ClassElement parent = element.enclosingElement;
     for (InterfaceType t in getAllSupertypes(parent)) {
       if (t.getMethod(element.name) != null) {

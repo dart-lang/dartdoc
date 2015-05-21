@@ -23,9 +23,9 @@ import 'src/package_meta.dart';
 
 const String NAME = 'dartdoc';
 // Update when pubspec version changes.
-const String VERSION = '0.0.1+10';
+const String VERSION = '0.0.2';
 
-const String defaultOutDir = 'docs';
+const String defaultOutDir = 'doc/api';
 
 /// Initialize and setup the generators.
 List<Generator> initGenerators(
