@@ -25,7 +25,7 @@ import 'package:cli_util/cli_util.dart' as cli_util;
 void main() {
   AnalyzerHelper helper = new AnalyzerHelper();
   String dirPath = p.join(Directory.current.path, 'test_package');
-  List<LibraryElement> libElements = [
+  Iterable<LibraryElement> libElements = [
     'lib/example.dart',
     'lib/two_exports.dart'
   ].map((libFile) {

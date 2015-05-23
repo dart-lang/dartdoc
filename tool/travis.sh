@@ -30,7 +30,7 @@ dart -c ../bin/dartdoc.dart
 cd ..
 
 # Run the tests.
-dart -c test/all.dart
+grind test
 
 # Gather and send coverage data.
 if [ "$REPO_TOKEN" ]; then
