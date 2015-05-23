@@ -38,7 +38,7 @@ void main() {
       Package p = results.package;
       expect(p.name, 'test_package');
       expect(p.hasDocumentation, true);
-      expect(p.libraries.length, 3);
+      expect(p.libraries.length, 4);
     });
   });
 }
