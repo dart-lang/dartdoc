@@ -173,7 +173,7 @@ abstract class ModelElement {
       docs = this.documentation;
     }
 
-    var commentRefs = _getCommentRefs();
+    NodeList<CommentReference> commentRefs = _getCommentRefs();
     if (commentRefs == null || commentRefs.isEmpty) {
       return docs;
     }
