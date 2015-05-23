@@ -52,7 +52,7 @@ String replaceAllLinks(String str, String findMatchingLink(String input)) {
       if (codeRef != null) {
         var link = findMatchingLink(codeRef);
         if (link != null) {
-          buf.write('<a href=$link> $codeRef</a>');
+          buf.write('<a href="$link">$codeRef</a>');
         } else {
           buf.write(codeRef);
         }

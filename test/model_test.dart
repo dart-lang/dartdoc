@@ -25,10 +25,12 @@ import 'package:cli_util/cli_util.dart' as cli_util;
 void main() {
   AnalyzerHelper helper = new AnalyzerHelper();
   String dirPath = p.join(Directory.current.path, 'test_package');
-  Source source = helper.addSource(p.join(dirPath, 'lib/example.dart'));
-  LibraryElement e = helper.resolve(source);
+  List<LibraryElement> libElements = ['lib/example.dart', 'lib/two_exports.dart'].map((libFile) {
+    Source source = helper.addSource(p.join(dirPath, libFile));
+    return helper.resolve(source);
+  });
   Package package =
-      new Package([e], new PackageMeta.fromDir(new Directory(dirPath)));
+      new Package(libElements, new PackageMeta.fromDir(new Directory(dirPath)));
   var library = package.libraries.first;
 
   Directory sdkDir = cli_util.getSdkDir();
@@ -48,7 +50,7 @@ void main() {
     });
 
     test('libraries', () {
-      expect(package.libraries, hasLength(1));
+      expect(package.libraries, hasLength(2));
     });
 
     test('is documented', () {
@@ -164,7 +166,7 @@ void main() {
 
     test('docs refs', () {
       expect(B.resolveReferences(),
-          'Extends class <a href=ex/Apple_class.html> Apple</a>');
+          'Extends class <a href="ex/Apple_class.html">Apple</a>');
     });
 
     test('abstract', () {
@@ -521,6 +523,25 @@ void main() {
     test('library has the exact errors/exceptions we expect', () {
       expect(library.exceptions.map((e) => e.name),
           unorderedEquals(expectedNames));
+    });
+  });
+
+  group('dartdoc references', () {
+    Library twoExportsLib;
+    Class extendedClass;
+
+    setUp(() {
+      twoExportsLib = package.libraries.firstWhere((lib) => lib.name == 'two_exports');
+      assert(twoExportsLib != null);
+      extendedClass = twoExportsLib.allClasses.firstWhere((clazz) => clazz.name == 'ExtendingClass');
+    });
+
+    test('references are correct', () {
+      expect(twoExportsLib, isNotNull);
+      expect(extendedClass, isNotNull);
+      String resolved = extendedClass.resolveReferences();
+      expect(resolved, isNotNull);
+      expect(resolved, contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
     });
   });
 
