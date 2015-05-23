@@ -25,7 +25,10 @@ import 'package:cli_util/cli_util.dart' as cli_util;
 void main() {
   AnalyzerHelper helper = new AnalyzerHelper();
   String dirPath = p.join(Directory.current.path, 'test_package');
-  List<LibraryElement> libElements = ['lib/example.dart', 'lib/two_exports.dart'].map((libFile) {
+  List<LibraryElement> libElements = [
+    'lib/example.dart',
+    'lib/two_exports.dart'
+  ].map((libFile) {
     Source source = helper.addSource(p.join(dirPath, libFile));
     return helper.resolve(source);
   });
@@ -531,9 +534,11 @@ void main() {
     Class extendedClass;
 
     setUp(() {
-      twoExportsLib = package.libraries.firstWhere((lib) => lib.name == 'two_exports');
+      twoExportsLib =
+          package.libraries.firstWhere((lib) => lib.name == 'two_exports');
       assert(twoExportsLib != null);
-      extendedClass = twoExportsLib.allClasses.firstWhere((clazz) => clazz.name == 'ExtendingClass');
+      extendedClass = twoExportsLib.allClasses
+          .firstWhere((clazz) => clazz.name == 'ExtendingClass');
     });
 
     test('references are correct', () {
@@ -541,7 +546,8 @@ void main() {
       expect(extendedClass, isNotNull);
       String resolved = extendedClass.resolveReferences();
       expect(resolved, isNotNull);
-      expect(resolved, contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
+      expect(resolved,
+          contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
     });
   });
 
