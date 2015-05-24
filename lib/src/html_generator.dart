@@ -478,7 +478,7 @@ class HtmlGeneratorInstance {
             'Resource paths must start with $prefix, encountered $resourcePath');
       }
       var destFileName = resourcePath.substring(prefix.length);
-      var destFile = new File(path.join(out.path, destFileName))
+      var destFile = new File(path.join(out.path, 'const', destFileName))
         ..createSync(recursive: true);
       var resourceBytes = await loader.loadAsBytes(resourcePath);
       destFile.writeAsBytesSync(resourceBytes);

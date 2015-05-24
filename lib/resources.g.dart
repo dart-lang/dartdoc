@@ -16,8 +16,5 @@ const List<String> RESOURCE_NAMES = const [
   'package:dartdoc/resources/fonts/glyphicons-halflings-regular.svg',
   'package:dartdoc/resources/fonts/glyphicons-halflings-regular.ttf',
   'package:dartdoc/resources/fonts/glyphicons-halflings-regular.woff',
-  'package:dartdoc/resources/fonts/glyphicons-halflings-regular.woff2',
-  'package:dartdoc/resources/js/bootstrap.js',
-  'package:dartdoc/resources/js/bootstrap.min.js',
-  'package:dartdoc/resources/js/npm.js'
+  'package:dartdoc/resources/fonts/glyphicons-halflings-regular.woff2'
 ];
