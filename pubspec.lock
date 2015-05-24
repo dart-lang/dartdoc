@@ -52,7 +52,7 @@ packages:
   grinder:
     description: grinder
     source: hosted
-    version: "0.7.1+2"
+    version: "0.7.1+3"
   html:
     description: html
     source: hosted
