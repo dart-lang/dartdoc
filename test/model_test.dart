@@ -548,6 +548,7 @@ void main() {
       expect(resolved, isNotNull);
       expect(resolved,
           contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
+      expect(resolved, contains('linking over to Apple.'));
     });
   });
 
