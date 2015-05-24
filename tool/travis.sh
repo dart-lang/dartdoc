@@ -34,10 +34,11 @@ grind test
 
 # Gather and send coverage data.
 if [ "$REPO_TOKEN" ]; then
-  pub global activate dart_coveralls
+  pub global activate --source git https://github.com/kevmoo/dart_coveralls_hacking.git
   pub global run dart_coveralls report \
     --token $REPO_TOKEN \
     --retry 2 \
     --exclude-test-files \
+    --debug \
     test/all.dart
 fi
