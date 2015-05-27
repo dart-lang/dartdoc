@@ -3,6 +3,8 @@
 /// If you don't have this package yet, get it.
 /// Don't ask questions.
 ///
+/// Testing string escaping: `var s = 'I am a string'`
+///
 /// My favorite class is [Cool].
 ///
 /// ## I am an h2
