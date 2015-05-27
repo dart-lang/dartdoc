@@ -1,4 +1,4 @@
-/// a library
+/// a library. testing string escaping: `var s = 'a string'` <cool>
 library ex;
 
 export 'src/mylib.dart' show Helper;
