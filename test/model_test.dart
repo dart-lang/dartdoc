@@ -104,7 +104,8 @@ void main() {
     });
 
     test('documentation', () {
-      expect(library.documentation, 'a library');
+      expect(library.documentation,
+          'a library. testing string escaping: `var s = \'a string\'` <cool>');
     });
 
     test('has properties', () {
