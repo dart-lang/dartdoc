@@ -1457,7 +1457,6 @@ class ElementType {
     return _linkedName;
   }
 
-  // TODO: why does this method exist? Why can't we just use linkedName ?
   String createLinkedReturnTypeName() {
     if ((_type as FunctionType).returnType.element == null ||
         (_type as FunctionType).returnType.element.library == null) {

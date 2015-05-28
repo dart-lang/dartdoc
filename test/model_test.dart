@@ -344,7 +344,8 @@ void main() {
 
     test('async function', () {
       expect(thisIsAsync.isAsynchronous, isTrue);
-      expect(thisIsAsync.linkedReturnType, equals('Future'));
+      expect(thisIsAsync.linkedReturnType,
+          equals('<a href="dart_async/Future_class.html">Future</a>'));
       expect(thisIsAsync.documentation, equals(
           'An async function. It should look like I return a [Future].'));
       expect(thisIsAsync.documentationAsHtml, equals(
