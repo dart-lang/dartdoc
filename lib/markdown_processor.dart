@@ -127,7 +127,7 @@ String _replaceAllLinks(ModelElement element, String str,
       String codeRef = str.substring(index + _leftChar.length, end);
       if (codeRef != null) {
         var link;
-        // support for [new Constructor]
+        // support for [new Constructor] and [new Class.namedCtr]
         var refs = codeRef.split(' ');
         if (refs.length == 2 && refs.first == 'new') {
           link = findMatchingLink(refs[1], isConstructor: true);

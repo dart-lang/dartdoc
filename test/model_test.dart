@@ -179,6 +179,18 @@ void main() {
           contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
       expect(resolved, contains('linking over to Apple.'));
     });
+
+    test('references to class and constructors', () {
+      String comment = B.documentationAsHtml;
+      expect(comment.contains(
+          'Extends class <a href="ex/Apple_class.html">Apple</a>'), true);
+      expect(
+          comment.contains('use <a href="ex/Apple/Apple.html">new Apple</a>'),
+          true);
+      expect(comment.contains(
+              '<a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'),
+          true);
+    });
   });
 
   group('Class', () {
@@ -229,7 +241,7 @@ void main() {
     });
 
     test('get constructors', () {
-      expect(Apple.constructors, hasLength(1));
+      expect(Apple.constructors, hasLength(2));
     });
 
     test('get static fields', () {
