@@ -145,6 +145,10 @@ indexResources() {
   out.writeAsString(buffer.toString());
 }
 
+@Task('analyze, test, and self-test dartdoc')
+@Depends(analyze, test, testDartdoc)
+buildbot() => null;
+
 int _runTimed(callback()) {
   var stopwatch = new Stopwatch()..start();
   callback();
