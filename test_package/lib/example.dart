@@ -17,6 +17,9 @@ const ConstantCat MY_CAT = const ConstantCat('tabby');
 
 typedef String processMessage(String msg);
 
+/// This should [not work].
+const incorrectDocReference = 'doh';
+
 /// Sample class [String]
 class Apple {
   static const int n = 5;

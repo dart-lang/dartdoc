@@ -6,15 +6,7 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
 import 'package:unittest/unittest.dart';
-
-import 'package:analyzer/src/generated/element.dart';
-import 'package:analyzer/src/generated/engine.dart';
-import 'package:analyzer/src/generated/java_io.dart';
-import 'package:analyzer/src/generated/sdk.dart';
-import 'package:analyzer/src/generated/sdk_io.dart';
-import 'package:analyzer/src/generated/source_io.dart';
 
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
@@ -22,18 +14,12 @@ import 'package:dartdoc/src/package_meta.dart';
 
 import 'package:cli_util/cli_util.dart' as cli_util;
 
+import 'test_utils.dart' as testUtils;
+
 void main() {
-  AnalyzerHelper helper = new AnalyzerHelper();
-  String dirPath = p.join(Directory.current.path, 'test_package');
-  Iterable<LibraryElement> libElements = [
-    'lib/example.dart',
-    'lib/two_exports.dart'
-  ].map((libFile) {
-    Source source = helper.addSource(p.join(dirPath, libFile));
-    return helper.resolve(source);
-  });
-  Package package =
-      new Package(libElements, new PackageMeta.fromDir(new Directory(dirPath)));
+  testUtils.init();
+
+  Package package = testUtils.testPackage;
   var library = package.libraries.first;
 
   Directory sdkDir = cli_util.getSdkDir();
@@ -43,8 +29,8 @@ void main() {
     exit(1);
   }
 
-  Package sdkAsPackage = new Package(
-      getSdkLibrariesToDocument(helper.sdk, helper.context),
+  Package sdkAsPackage = new Package(getSdkLibrariesToDocument(
+          testUtils.sdkDir, testUtils.analyzerHelper.context),
       new PackageMeta.fromSdk(sdkDir));
 
   group('Package', () {
@@ -85,8 +71,8 @@ void main() {
     Library dartAsyncLib;
 
     setUp(() {
-      dartAsyncLib = new Library(
-          getSdkLibrariesToDocument(helper.sdk, helper.context).first,
+      dartAsyncLib = new Library(getSdkLibrariesToDocument(
+              testUtils.sdkDir, testUtils.analyzerHelper.context).first,
           sdkAsPackage);
 
       // Make sure the first library is dart:async
@@ -141,9 +127,35 @@ void main() {
     });
   });
 
+  group('Resolving doc references', () {
+    Class Apple, B;
+    TopLevelVariable incorrectReference;
+
+    setUp(() {
+      incorrectReference = library.constants
+          .firstWhere((c) => c.name == 'incorrectDocReference');
+      B = library.classes.firstWhere((c) => c.name == 'B');
+      Apple = library.classes.firstWhere((c) => c.name == 'Apple');
+    });
+
+    test('doc refs ignore incorrect references', () {
+      expect(incorrectReference.resolveReferences(), 'This should [not work].');
+    });
+
+    test('no references', () {
+      expect(Apple.resolveReferences(), 'Sample class String');
+    });
+
+    test('single ref to class', () {
+      expect(B.resolveReferences(),
+          'Extends class <a href="ex/Apple_class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a>');
+    });
+  });
+
   group('Class', () {
     List<Class> classes;
     Class Apple, B, Cat, Dog, F;
+
     setUp(() {
       classes = library.classes;
       Apple = classes.firstWhere((c) => c.name == 'Apple');
@@ -162,15 +174,6 @@ void main() {
 
     test('correctly finds classes', () {
       expect(classes, hasLength(13));
-    });
-
-    test('docs ', () {
-      expect(Apple.resolveReferences(), 'Sample class String');
-    });
-
-    test('docs refs', () {
-      expect(B.resolveReferences(),
-          'Extends class <a href="ex/Apple_class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a>');
     });
 
     test('abstract', () {
@@ -384,7 +387,7 @@ void main() {
     });
 
     test('found five constants', () {
-      expect(library.constants, hasLength(5));
+      expect(library.constants, hasLength(6));
     });
 
     test('COLOR_GREEN is constant', () {
@@ -577,33 +580,4 @@ void main() {
       expect(dog.instanceMethods.first.annotations.first, equals('deprecated'));
     });
   });
-}
-
-class AnalyzerHelper {
-  AnalysisContext context;
-  DartSdk sdk;
-
-  AnalyzerHelper() {
-    Directory sdkDir = cli_util.getSdkDir();
-    sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
-    List<UriResolver> resolvers = [
-      new DartUriResolver(sdk),
-      new FileUriResolver()
-    ];
-
-    SourceFactory sourceFactory = new SourceFactory(resolvers);
-    context = AnalysisEngine.instance.createAnalysisContext();
-    context.sourceFactory = sourceFactory;
-  }
-
-  Source addSource(String filePath) {
-    Source source = new FileBasedSource.con1(new JavaFile(filePath));
-    ChangeSet changeSet = new ChangeSet();
-    changeSet.addedSource(source);
-    context.applyChanges(changeSet);
-    return source;
-  }
-
-  LibraryElement resolve(Source librarySource) =>
-      context.computeLibraryElement(librarySource);
 }
