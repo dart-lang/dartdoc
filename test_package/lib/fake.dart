@@ -3,6 +3,10 @@
 /// If you don't have this package yet, get it.
 /// Don't ask questions.
 ///
+/// Testing code [:true:] and [:false:]
+///
+/// Testing string escaping: `var s = 'I am a string'`
+///
 /// My favorite class is [Cool].
 ///
 /// ## I am an h2
@@ -312,3 +316,6 @@ const greatestAnnotation = 'greatest';
 /// Check out the [number] parameter. It's the first one.
 String functionWithFunctionParameters(int number, void thing(one, two),
     String string, Future asyncThing(three, four, five, six, seven)) => null;
+
+/// These are code syntaxes: [:true:] and [:false:]
+const testingCodeSyntaxInOneLiners = 'fantastic';

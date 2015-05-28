@@ -43,6 +43,11 @@ publish() async {
   Dart.run('pub', arguments: ['publish']);
 }
 
+@Task('Run all the tests.')
+test() {
+  Dart.runAsync('test/all.dart', vmArgs: ['--checked']);
+}
+
 @Task('Bump pubspec version and version number in lib/dartdoc.dart')
 bumpVersionBuild() async {
   Pubspec pubspec = (await Pubspec.load())

@@ -9,10 +9,10 @@
     <base href="{{htmlBase}}">
 
     <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="prettify.css">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="const/prettify.css">
+    <link rel="stylesheet" href="const/css/bootstrap.min.css">
+    <link rel="stylesheet" href="const/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="const/styles.css">
 
     <meta name="description" content="{{ metaDescription }}">
     
@@ -38,7 +38,7 @@
                 {{{ layoutTitle }}}
             </h1>
             <p>
-                {{#oneLiner}}{{ documentation }}{{/oneLiner}}
+                {{#oneLiner}}{{{ documentation }}}{{/oneLiner}}
             </p>
         </div>
     </div>

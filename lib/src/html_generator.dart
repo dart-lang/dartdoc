@@ -478,7 +478,7 @@ class HtmlGeneratorInstance {
             'Resource paths must start with $prefix, encountered $resourcePath');
       }
       var destFileName = resourcePath.substring(prefix.length);
-      var destFile = new File(path.join(out.path, destFileName))
+      var destFile = new File(path.join(out.path, 'const', destFileName))
         ..createSync(recursive: true);
       var resourceBytes = await loader.loadAsBytes(resourcePath);
       destFile.writeAsBytesSync(resourceBytes);
@@ -537,14 +537,14 @@ String renderPlainText(String text) {
 
 const List<String> _oneLinerSkipTags = const ["code", "pre"];
 
-String oneLiner(String text, {nestedContext}) {
+String oneLiner(String text, {MustacheToString nestedContext}) {
   String mustached = render(text.trim(), nestedContext,
           assumeNullNonExistingProperty: false, errorOnMissingProperty: true)
       .trim();
   if (mustached == null || mustached.trim().isEmpty) return '';
   // Parse with Markdown, but only care about the first block or paragraph.
   var lines = mustached.replaceAll('\r\n', '\n').split('\n');
-  var document = new md.Document();
+  var document = new md.Document(inlineSyntaxes: MARKDOWN_SYNTAXES);
   document.parseRefLinks(lines);
   var blocks = document.parseLines(lines);
 
@@ -564,7 +564,7 @@ String oneLiner(String text, {nestedContext}) {
     firstPara = firstPara.substring(0, 200) + '...';
   }
 
-  return resolveDocReferences(firstPara, nestedContext);
+  return resolveDocReferences(firstPara, nestedContext).trim();
 }
 
 ModelElement _getElement(MustacheToString nestedContext) {
@@ -582,6 +582,10 @@ ModelElement _getElement(MustacheToString nestedContext) {
         return objE;
       }
     }
+    return null;
+  }
+
+  if (nestedContext == null) {
     return null;
   }
 

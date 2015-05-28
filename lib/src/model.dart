@@ -19,6 +19,7 @@ final Map<Class, List<Class>> _implementors = new Map();
 
 final Map<String, Library> _libraryMap = new Map();
 
+// TODO: should this be a factory constructor on Library ?
 Library _getLibraryFor(LibraryElement element, Package package) {
   var key = element == null ? 'null' : element.name;
 
@@ -172,7 +173,7 @@ abstract class ModelElement {
       docs = this.documentation;
     }
 
-    var commentRefs = _getCommentRefs();
+    NodeList<CommentReference> commentRefs = _getCommentRefs();
     if (commentRefs == null || commentRefs.isEmpty) {
       return docs;
     }
@@ -182,7 +183,7 @@ abstract class ModelElement {
       try {
         refElement = commentRefs.firstWhere(
             (ref) => ref.identifier.name == codeRef).identifier.staticElement;
-      } on StateError catch (_) {
+      } on StateError {
         // do nothing
       }
       if (refElement == null) {
@@ -192,7 +193,7 @@ abstract class ModelElement {
       if (this is Library) {
         refLibrary = this;
       } else {
-        refLibrary = _getLibraryFor(refElement.library, this.package);
+        refLibrary = _getLibraryFor(library._library, this.package);
       }
       var e = new ModelElement.from(refElement, refLibrary);
       return e.href;
