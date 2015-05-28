@@ -30,6 +30,10 @@ class Apple {
   ///Constructor
   Apple();
 
+  Apple.fromString(String s) {
+    _s2 = s;
+  }
+
   String get s => _s2;
 
   /// this is a method
@@ -43,7 +47,7 @@ class Apple {
     return number > check;
   }
 }
-/// Extends class [Apple], use [new Apple]
+/// Extends class [Apple], use [new Apple] or [new Apple.fromString]
 class B extends Apple with Cat {
   List<String> list;
 
