@@ -178,7 +178,7 @@ abstract class ModelElement {
       return docs;
     }
 
-    String _getMatchingLink(String codeRef, [bool isConstructor = false]) {
+    String _getMatchingLink(String codeRef, {bool isConstructor: false}) {
       var refElement;
       for (CommentReference ref in commentRefs) {
         if (ref.identifier.name == codeRef) {

@@ -38,7 +38,7 @@ bool isInExportedLibraries(
     .any((lib) => lib == library || lib.exportedLibraries.contains(library));
 
 String replaceAllLinks(
-    String str, String findMatchingLink(String input, [bool isContructor])) {
+    String str, String findMatchingLink(String input, {bool isConstructor})) {
   int lastWritten = 0;
   int index = str.indexOf(_leftChar);
   StringBuffer buf = new StringBuffer();
@@ -55,7 +55,7 @@ String replaceAllLinks(
         // support for [new Constructor]
         var refs = codeRef.split(' ');
         if (refs.length == 2 && refs.first == 'new') {
-          link = findMatchingLink(refs[1], true);
+          link = findMatchingLink(refs[1], isConstructor: true);
         } else {
           link = findMatchingLink(codeRef);
         }
