@@ -319,3 +319,6 @@ String functionWithFunctionParameters(int number, void thing(one, two),
 
 /// These are code syntaxes: [:true:] and [:false:]
 const testingCodeSyntaxInOneLiners = 'fantastic';
+
+/// Referencing something that [doesn't exist].
+const incorrectDocReference = 'doh';
