@@ -14,7 +14,7 @@ void main() {
   group('io utils', () {
     test('find files to document', () {
       var files = findFilesToDocumentInPackage(Directory.current.path);
-      expect(files.length, 4);
+      expect(files.length, 5);
     });
 
     test('check file name', () {

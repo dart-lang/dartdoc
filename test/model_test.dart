@@ -134,15 +134,20 @@ void main() {
 
     Library twoExportsLib;
     Class extendedClass;
+    TopLevelVariable testingCodeSyntaxInOneLiners;
 
     setUp(() {
+      var fakePackage =
+          package.libraries.firstWhere((lib) => lib.name == 'fake');
+
       incorrectReference = library.constants
           .firstWhere((c) => c.name == 'incorrectDocReference');
       B = library.classes.firstWhere((c) => c.name == 'B');
       Apple = library.classes.firstWhere((c) => c.name == 'Apple');
-      thisIsAsync = package.libraries
-              .firstWhere((lib) => lib.name == 'fake').functions
-          .firstWhere((f) => f.name == 'thisIsAsync');
+      thisIsAsync =
+          fakePackage.functions.firstWhere((f) => f.name == 'thisIsAsync');
+      testingCodeSyntaxInOneLiners = fakePackage.constants
+          .firstWhere((c) => c.name == 'testingCodeSyntaxInOneLiners');
 
       twoExportsLib =
           package.libraries.firstWhere((lib) => lib.name == 'two_exports');
@@ -162,7 +167,7 @@ void main() {
 
     test('single ref to class', () {
       expect(B.documentationAsHtml,
-          '<p>Extends class <a href="ex/Apple_class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a></p>');
+          '<p>Extends class <a href="ex/Apple_class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a> or <a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>');
     });
 
     test('doc ref to class in SDK does not render as link', () {
@@ -190,6 +195,11 @@ void main() {
       expect(comment.contains(
               '<a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'),
           true);
+    });
+
+    test('legacy code blocks render correctly', () {
+      expect(testingCodeSyntaxInOneLiners.oneLineDoc,
+          equals('These are code syntaxes: true and false'));
     });
   });
 
