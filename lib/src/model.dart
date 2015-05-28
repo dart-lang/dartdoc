@@ -178,13 +178,18 @@ abstract class ModelElement {
       return docs;
     }
 
-    String _getMatchingLink(String codeRef) {
+    String _getMatchingLink(String codeRef, [bool isConstructor = false]) {
       var refElement;
-      try {
-        refElement = commentRefs.firstWhere(
-            (ref) => ref.identifier.name == codeRef).identifier.staticElement;
-      } on StateError {
-        // do nothing
+      for (CommentReference ref in commentRefs) {
+        if (ref.identifier.name == codeRef) {
+          var isConstrElement =
+              ref.identifier.staticElement is ConstructorElement;
+          if (isConstructor && isConstrElement ||
+              !isConstructor && !isConstrElement) {
+            refElement = ref.identifier.staticElement;
+            break;
+          }
+        }
       }
       if (refElement == null) {
         return null;

@@ -37,7 +37,8 @@ bool isInExportedLibraries(
     List<LibraryElement> libraries, LibraryElement library) => libraries
     .any((lib) => lib == library || lib.exportedLibraries.contains(library));
 
-String replaceAllLinks(String str, String findMatchingLink(String input)) {
+String replaceAllLinks(
+    String str, String findMatchingLink(String input, [bool isContructor])) {
   int lastWritten = 0;
   int index = str.indexOf(_leftChar);
   StringBuffer buf = new StringBuffer();
@@ -50,7 +51,16 @@ String replaceAllLinks(String str, String findMatchingLink(String input)) {
       }
       String codeRef = str.substring(index + _leftChar.length, end);
       if (codeRef != null) {
-        var link = findMatchingLink(codeRef);
+        var link;
+        // support for [new Constructor]
+        var refs = codeRef.split(' ');
+        if (refs.length == 2 && refs[0] == 'new') {
+          buf.write('${refs[0]} ');
+          codeRef = refs[1];
+          link = findMatchingLink(codeRef, true);
+        } else {
+          link = findMatchingLink(codeRef);
+        }
         if (link != null) {
           buf.write('<a href="$link">$codeRef</a>');
         } else {
