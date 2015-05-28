@@ -170,7 +170,7 @@ void main() {
 
     test('docs refs', () {
       expect(B.resolveReferences(),
-          'Extends class <a href="ex/Apple_class.html">Apple</a>');
+          'Extends class <a href="ex/Apple_class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a>');
     });
 
     test('abstract', () {
