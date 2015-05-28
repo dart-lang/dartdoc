@@ -39,7 +39,7 @@ void main() {
     });
 
     test('libraries', () {
-      expect(package.libraries, hasLength(2));
+      expect(package.libraries, hasLength(3));
     });
 
     test('is documented', () {
@@ -127,28 +127,57 @@ void main() {
     });
   });
 
-  group('Resolving doc references', () {
+  group('Docs as HTML', () {
     Class Apple, B;
     TopLevelVariable incorrectReference;
+    ModelFunction thisIsAsync;
+
+    Library twoExportsLib;
+    Class extendedClass;
 
     setUp(() {
       incorrectReference = library.constants
           .firstWhere((c) => c.name == 'incorrectDocReference');
       B = library.classes.firstWhere((c) => c.name == 'B');
       Apple = library.classes.firstWhere((c) => c.name == 'Apple');
+      thisIsAsync = package.libraries
+              .firstWhere((lib) => lib.name == 'fake').functions
+          .firstWhere((f) => f.name == 'thisIsAsync');
+
+      twoExportsLib =
+          package.libraries.firstWhere((lib) => lib.name == 'two_exports');
+      assert(twoExportsLib != null);
+      extendedClass = twoExportsLib.allClasses
+          .firstWhere((clazz) => clazz.name == 'ExtendingClass');
     });
 
     test('doc refs ignore incorrect references', () {
-      expect(incorrectReference.resolveReferences(), 'This should [not work].');
+      expect(incorrectReference.documentationAsHtml,
+          '<p>This should [not work].</p>');
     });
 
     test('no references', () {
-      expect(Apple.resolveReferences(), 'Sample class String');
+      expect(Apple.documentationAsHtml, '<p>Sample class String</p>');
     });
 
     test('single ref to class', () {
-      expect(B.resolveReferences(),
-          'Extends class <a href="ex/Apple_class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a>');
+      expect(B.documentationAsHtml,
+          '<p>Extends class <a href="ex/Apple_class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a></p>');
+    });
+
+    test('doc ref to class in SDK does not render as link', () {
+      expect(thisIsAsync.documentationAsHtml, equals(
+          '<p>An async function. It should look like I return a Future.</p>'));
+    });
+
+    test('references are correct in exported libraries', () {
+      expect(twoExportsLib, isNotNull);
+      expect(extendedClass, isNotNull);
+      String resolved = extendedClass.documentationAsHtml;
+      expect(resolved, isNotNull);
+      expect(resolved,
+          contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
+      expect(resolved, contains('linking over to Apple.'));
     });
   });
 
@@ -262,9 +291,13 @@ void main() {
 
   group('Function', () {
     ModelFunction f1;
+    ModelFunction thisIsAsync;
 
     setUp(() {
       f1 = library.functions.single;
+      thisIsAsync = package.libraries
+              .firstWhere((lib) => lib.name == 'fake').functions
+          .firstWhere((f) => f.name == 'thisIsAsync');
     });
 
     test('name is function1', () {
@@ -285,6 +318,15 @@ void main() {
 
     test('handles dynamic parameters correctly', () {
       expect(f1.linkedParams(), contains('lastParam'));
+    });
+
+    test('async function', () {
+      expect(thisIsAsync.isAsynchronous, isTrue);
+      expect(thisIsAsync.linkedReturnType, equals('Future'));
+      expect(thisIsAsync.documentation, equals(
+          'An async function. It should look like I return a [Future].'));
+      expect(thisIsAsync.documentationAsHtml, equals(
+          '<p>An async function. It should look like I return a Future.</p>'));
     });
   });
 
@@ -530,29 +572,6 @@ void main() {
     test('library has the exact errors/exceptions we expect', () {
       expect(library.exceptions.map((e) => e.name),
           unorderedEquals(expectedNames));
-    });
-  });
-
-  group('dartdoc references', () {
-    Library twoExportsLib;
-    Class extendedClass;
-
-    setUp(() {
-      twoExportsLib =
-          package.libraries.firstWhere((lib) => lib.name == 'two_exports');
-      assert(twoExportsLib != null);
-      extendedClass = twoExportsLib.allClasses
-          .firstWhere((clazz) => clazz.name == 'ExtendingClass');
-    });
-
-    test('references are correct', () {
-      expect(twoExportsLib, isNotNull);
-      expect(extendedClass, isNotNull);
-      String resolved = extendedClass.resolveReferences();
-      expect(resolved, isNotNull);
-      expect(resolved,
-          contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
-      expect(resolved, contains('linking over to Apple.'));
     });
   });
 

@@ -9,14 +9,10 @@ import 'dart:io';
 import 'dart:async' show Future;
 import 'dart:profiler';
 
-import 'package:html/parser.dart' show parse;
-import 'package:html/dom.dart' show Document;
-import 'package:markdown/markdown.dart' as md;
 import 'package:mustache4dart/mustache4dart.dart';
-import 'package:mustache4dart/mustache_context.dart';
 import 'package:path/path.dart' as path;
 
-import 'html_utils.dart';
+import '../markdown_processor.dart';
 import 'model.dart';
 import 'package_meta.dart';
 import '../generator.dart';
@@ -207,7 +203,6 @@ class HtmlGeneratorInstance {
     // map?
     Map data = {
       'package': package,
-      'oneLiner': oneLiner,
       'documentation': package.documentation,
       'title': '${package.name} - Dart API docs',
       'layoutTitle': _layoutTitle(package.name, package.isSdk ? '' : 'package'),
@@ -232,7 +227,6 @@ class HtmlGeneratorInstance {
       'package': package,
       'library': lib,
       'markdown': renderMarkdown,
-      'oneLiner': oneLiner,
       'documentation': lib.documentation,
       'title': '${lib.name} library - Dart API',
       'htmlBase': '..',
@@ -267,7 +261,6 @@ class HtmlGeneratorInstance {
     Map data = {
       'package': package,
       'markdown': renderMarkdown,
-      'oneLiner': oneLiner,
       'documentation': clazz.documentation,
       'library': lib,
       'class': clazz,
@@ -288,7 +281,6 @@ class HtmlGeneratorInstance {
     Map data = {
       'package': package,
       'markdown': renderMarkdown,
-      'oneLiner': oneLiner,
       'documentation': constructor.documentation,
       'library': lib,
       'class': clazz,
@@ -306,7 +298,6 @@ class HtmlGeneratorInstance {
     Map data = {
       'package': package,
       'markdown': renderMarkdown,
-      'oneLiner': oneLiner,
       'documentation': eNum,
       'library': lib,
       'class': eNum,
@@ -322,7 +313,6 @@ class HtmlGeneratorInstance {
     Map data = {
       'package': package,
       'markdown': renderMarkdown,
-      'oneLiner': oneLiner,
       'documentation': function.documentation,
       'library': lib,
       'function': function,
@@ -343,7 +333,6 @@ class HtmlGeneratorInstance {
     Map data = {
       'package': package,
       'markdown': renderMarkdown,
-      'oneLiner': oneLiner,
       'documentation': method.documentation,
       'library': lib,
       'class': clazz,
@@ -366,7 +355,6 @@ class HtmlGeneratorInstance {
     Map data = {
       'package': package,
       'markdown': renderMarkdown,
-      'oneLiner': oneLiner,
       'documentation': property.documentation,
       'library': lib,
       'class': clazz,
@@ -389,7 +377,6 @@ class HtmlGeneratorInstance {
     Map data = {
       'package': package,
       'markdown': renderMarkdown,
-      'oneLiner': oneLiner,
       'documentation': property.documentation,
       'library': lib,
       'class': clazz,
@@ -412,7 +399,6 @@ class HtmlGeneratorInstance {
     Map data = {
       'package': package,
       'markdown': renderMarkdown,
-      'oneLiner': oneLiner,
       'documentation': property.documentation,
       'library': lib,
       'property': property,
@@ -434,7 +420,6 @@ class HtmlGeneratorInstance {
       'package': package,
       'markdown': renderMarkdown,
       'documentation': property.documentation,
-      'oneLiner': oneLiner,
       'library': lib,
       'property': property,
       'title': '${property.name} property - ${lib.name} library - Dart API',
@@ -454,7 +439,6 @@ class HtmlGeneratorInstance {
       'package': package,
       'markdown': renderMarkdown,
       'documentation': typeDef.documentation,
-      'oneLiner': oneLiner,
       'library': lib,
       'typeDef': typeDef,
       'title': '${typeDef.name} typedef - ${lib.name} library - Dart API',
@@ -511,21 +495,8 @@ String _layoutTitle(String name, String kind) =>
 
 /// Converts a markdown formatted string into HTML, and removes any script tags.
 /// Returns the HTML as a string.
-String renderMarkdown(String markdown, {nestedContext}) {
-  if (markdown == null) return '';
-
-  String mustached = render(markdown.trim(), nestedContext,
-      assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
-
-  // reflector.
-  String html = md.markdownToHtml(mustached, inlineSyntaxes: MARKDOWN_SYNTAXES);
-  html = resolveDocReferences(html, nestedContext);
-  Document doc = parse(html);
-  doc.querySelectorAll('script').forEach((s) => s.remove());
-  doc.querySelectorAll('pre > code').forEach((e) {
-    e.classes.addAll(['prettyprint', 'lang-dart']);
-  });
-  return doc.body.innerHtml;
+String renderMarkdown(String markdown) {
+  return renderMarkdownToHtml(markdown);
 }
 
 /// Convert the given plain text into HTML.
@@ -533,128 +504,4 @@ String renderPlainText(String text) {
   if (text == null) return '';
 
   return "<code class='fixed'>${text.trim()}</code>";
-}
-
-const List<String> _oneLinerSkipTags = const ["code", "pre"];
-
-String oneLiner(String text, {MustacheToString nestedContext}) {
-  String mustached = render(text.trim(), nestedContext,
-          assumeNullNonExistingProperty: false, errorOnMissingProperty: true)
-      .trim();
-  if (mustached == null || mustached.trim().isEmpty) return '';
-  // Parse with Markdown, but only care about the first block or paragraph.
-  var lines = mustached.replaceAll('\r\n', '\n').split('\n');
-  var document = new md.Document(inlineSyntaxes: MARKDOWN_SYNTAXES);
-  document.parseRefLinks(lines);
-  var blocks = document.parseLines(lines);
-
-  while (blocks.isNotEmpty &&
-      ((blocks.first is md.Element &&
-              _oneLinerSkipTags.contains(blocks.first.tag)) ||
-          blocks.first.isEmpty)) {
-    blocks.removeAt(0);
-  }
-
-  if (blocks.isEmpty) {
-    return '';
-  }
-
-  var firstPara = new PlainTextRenderer().render([blocks.first]);
-  if (firstPara.length > 200) {
-    firstPara = firstPara.substring(0, 200) + '...';
-  }
-
-  return resolveDocReferences(firstPara, nestedContext).trim();
-}
-
-ModelElement _getElement(MustacheToString nestedContext) {
-  ModelElement _getFromContext(dynamic context) {
-    var obj = context.ctxReflector.m;
-    if (obj != null) {
-      var reflectee = obj.reflectee;
-      if (reflectee is ModelElement) {
-        return reflectee;
-      } else if (reflectee is Map) {
-        var objE = reflectee['method'];
-        if (objE == null) objE = reflectee['class'];
-        if (objE == null) objE = reflectee['function'];
-        if (objE == null) objE = reflectee['library'];
-        return objE;
-      }
-    }
-    return null;
-  }
-
-  if (nestedContext == null) {
-    return null;
-  }
-
-  var parent = nestedContext.parent;
-  var obj = _getFromContext(parent);
-  if (obj != null) return obj;
-  parent = parent.parent;
-  if (parent != null) {
-    obj = _getFromContext(parent);
-  }
-  return obj;
-}
-
-String resolveDocReferences(String text, MustacheToString nestedContext) {
-  var element = _getElement(nestedContext);
-  if (element != null) {
-    return element.resolveReferences(docs: text);
-  }
-  return text;
-}
-
-class PlainTextRenderer implements md.NodeVisitor {
-  static final _BLOCK_TAGS =
-      new RegExp('blockquote|h1|h2|h3|h4|h5|h6|hr|p|pre');
-
-  StringBuffer _buffer;
-
-  String render(List<md.Node> nodes) {
-    _buffer = new StringBuffer();
-
-    for (final node in nodes) {
-      node.accept(this);
-    }
-
-    return _buffer.toString();
-  }
-
-  @override
-  void visitText(md.Text text) {
-    _buffer.write(text.text);
-  }
-
-  @override
-  bool visitElementBefore(md.Element element) {
-    // do nothing
-    return true;
-  }
-
-  @override
-  void visitElementAfter(md.Element element) {
-    // Hackish. Separate block-level elements with newlines.
-    if (!_buffer.isEmpty && _BLOCK_TAGS.firstMatch(element.tag) != null) {
-      _buffer.write('\n\n');
-    }
-  }
-}
-
-final List<md.InlineSyntax> MARKDOWN_SYNTAXES = [new InlineCodeSyntax()];
-
-class InlineCodeSyntax extends md.InlineSyntax {
-  InlineCodeSyntax() : super(r'\[:\s?((?:.|\n)*?)\s?:\]');
-
-  @override
-  bool onMatch(md.InlineParser parser, Match match) {
-    var element = new md.Element.text('code', htmlEscape(match[1]));
-    var c = element.attributes.putIfAbsent("class", () => "");
-    c = (c.isEmpty ? "" : " ") + "prettyprint";
-    element.attributes["class"] = c;
-    parser.addNode(element);
-    return true;
-  }
 }
