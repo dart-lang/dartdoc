@@ -80,8 +80,7 @@ testDartdoc() {
 
 @Task('Analyze dartdoc to ensure there are no errors and warnings')
 analyze() {
-  Analyzer.analyze(
-      ['bin/dartdoc.dart', 'lib/dartdoc.dart', 'test/all.dart'],
+  Analyzer.analyze(['bin/dartdoc.dart', 'lib/dartdoc.dart', 'test/all.dart'],
       fatalWarnings: true);
 }
 
