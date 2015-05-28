@@ -54,10 +54,8 @@ String replaceAllLinks(
         var link;
         // support for [new Constructor]
         var refs = codeRef.split(' ');
-        if (refs.length == 2 && refs[0] == 'new') {
-          buf.write('${refs[0]} ');
-          codeRef = refs[1];
-          link = findMatchingLink(codeRef, true);
+        if (refs.length == 2 && refs.first == 'new') {
+          link = findMatchingLink(refs[1], true);
         } else {
           link = findMatchingLink(codeRef);
         }
