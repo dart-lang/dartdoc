@@ -40,7 +40,7 @@ class Apple {
     return number > check;
   }
 }
-/// Extends class [Apple]
+/// Extends class [Apple], use [new Apple]
 class B extends Apple with Cat {
   List<String> list;
 
