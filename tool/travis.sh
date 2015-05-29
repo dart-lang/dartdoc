@@ -19,12 +19,17 @@ grind analyze
 # Run dartdoc on ourself.
 grind test-dartdoc
 
-if ["$GEN_SDK_DOCS" = "true"]
+if [ "$GEN_SDK_DOCS" = "true" ]
 then
 	# Build the SDK docs
 	# silence stdout but echo stderr
+	echo ""
 	echo "Building SDK docs..."
 	grind build-sdk-docs 2>&1 >/dev/null | echo
+else
+	echo ""
+    echo "Skipping SDK docs, because GEN_SDK_DOCS is $GEN_SDK_DOCS"
+    echo ""
 fi
 
 # Another smoke test: Run dartdoc on test_package.
