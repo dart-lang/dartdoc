@@ -14,7 +14,7 @@ import 'package:path/path.dart' as path;
 
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
-void main(List<String> arguments) {
+main(List<String> arguments) async {
   var parser = _createArgsParser();
   var args = parser.parse(arguments);
 
@@ -83,9 +83,11 @@ void main(List<String> arguments) {
 
   var generators = initGenerators(url, headerFilePath, footerFilePath);
 
-  new DartDoc(
-      inputDir, excludeLibraries, sdkDir, generators, outputDir, packageMeta)
-    ..generateDocs();
+  var dartdoc = new DartDoc(
+      inputDir, excludeLibraries, sdkDir, generators, outputDir, packageMeta);
+  DartDocResults results = await dartdoc.generateDocs();
+
+  print('\nSuccess! Open file://${results.outDir.absolute.path}/index.html');
 }
 
 /// Print help if we are passed the help option or invalid arguments.
