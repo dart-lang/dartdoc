@@ -137,8 +137,7 @@ String _replaceAllLinks(ModelElement element, String str,
         if (link != null) {
           buf.write('<a href="$link">$codeRef</a>');
         } else {
-          print(
-              "WARNING: $element from ${element.enclosingElement} contains unknown doc reference [$codeRef]");
+          print("WARNING: $element contains unknown doc reference [$codeRef]");
           buf.write(codeRef);
         }
       }
@@ -174,8 +173,6 @@ String _resolveDocReferences(String docsAfterMarkdown, ModelElement element) {
       }
     }
     if (refElement == null) {
-      print(
-          "WARNING: $element from ${element.enclosingElement} contains unknown doc reference [$codeRef]");
       return null;
     }
     var refLibrary;
