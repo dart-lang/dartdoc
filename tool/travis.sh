@@ -19,10 +19,13 @@ grind analyze
 # Run dartdoc on ourself.
 grind test-dartdoc
 
-# Build the SDK docs
-# silence stdout but echo stderr
-echo "Building SDK docs..."
-grind build-sdk-docs 2>&1 >/dev/null | echo
+if ["$GEN_SDK_DOCS" = "true"]
+then
+	# Build the SDK docs
+	# silence stdout but echo stderr
+	echo "Building SDK docs..."
+	grind build-sdk-docs 2>&1 >/dev/null | echo
+fi
 
 # Another smoke test: Run dartdoc on test_package.
 cd test_package
