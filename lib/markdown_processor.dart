@@ -2,7 +2,7 @@ library markdown_processor;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart'
-    show LibraryElement, ConstructorElement;
+    show LibraryElement, ConstructorElement, ClassMemberElement;
 import 'src/html_utils.dart' show htmlEscape;
 import 'package:markdown/markdown.dart' as md;
 import 'package:html/parser.dart' show parse;
@@ -182,13 +182,18 @@ String _resolveDocReferences(String docsAfterMarkdown, ModelElement element) {
       return null;
     }
     var refLibrary;
-    if (element is Library) {
-      refLibrary = element;
-    } else {
-      refLibrary = new Library(element.library.element, element.package);
+    try {
+      var e = refElement is ClassMemberElement
+          ? refElement.enclosingElement
+          : refElement;
+      refLibrary =
+          element.package.libraries.firstWhere((lib) => lib.hasInNamespace(e));
+    } on StateError {}
+    if (refLibrary != null) {
+      var e = new ModelElement.from(refElement, refLibrary);
+      return e.href;
     }
-    var e = new ModelElement.from(refElement, refLibrary);
-    return e.href;
+    return null;
   }
 
   return _replaceAllLinks(element, docsAfterMarkdown, _getMatchingLink);

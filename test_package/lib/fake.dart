@@ -113,7 +113,7 @@ abstract class Interface {}
 /// Yet another interface that can be implemented.
 abstract class AnotherInterface {}
 
-/// A super class, with many powers.
+/// A super class, with many powers. Link to [Apple] from another library.
 @deprecated
 class SuperAwesomeClass {
 

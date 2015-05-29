@@ -427,8 +427,8 @@ class Library extends ModelElement {
   List<ModelFunction> _functions;
   List<Typedef> _typeDefs;
   List<TopLevelVariable> _variables;
-  Iterable<Element> _nameSpace;
-
+  Iterable<Element> _nameSpaceElements;
+  Namespace _namespace;
   String _name;
 
   LibraryElement get _library => (element as LibraryElement);
@@ -449,15 +449,21 @@ class Library extends ModelElement {
 
   Library get library => this;
 
-  Iterable<Element> get _exportedNameSpace {
-    if (_nameSpace == null) _buildExportedNameSpace();
-    return _nameSpace;
+  Iterable<Element> get _exportedNamespace {
+    if (_nameSpaceElements == null) _buildExportedNamespace();
+    return _nameSpaceElements;
   }
 
-  _buildExportedNameSpace() {
-    Namespace namespace =
+  _buildExportedNamespace() {
+    _namespace =
         new NamespaceBuilder().createExportNamespaceForLibrary(_library);
-    _nameSpace = namespace.definedNames.values;
+    _nameSpaceElements = _namespace.definedNames.values;
+  }
+
+  bool hasInNamespace(Element element) {
+    if (_namespace == null) _buildExportedNamespace();
+    var e = _namespace.get(element.name);
+    return e == element;
   }
 
   String get name {
@@ -492,7 +498,7 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.topLevelVariables);
     }
-    _exportedNameSpace.forEach((element) {
+    _exportedNamespace.forEach((element) {
       if (element is PropertyAccessorElement) elements.add(element.variable);
     });
     elements..removeWhere(isPrivate);
@@ -522,7 +528,7 @@ class Library extends ModelElement {
     if (_enums != null) return _enums;
 
     List<ClassElement> enumClasses = [];
-    enumClasses.addAll(_exportedNameSpace
+    enumClasses.addAll(_exportedNamespace
         .where((element) => element is ClassElement && element.isEnum));
     _enums = enumClasses
         .where(isPublic)
@@ -546,7 +552,7 @@ class Library extends ModelElement {
       elements.addAll(cu.functionTypeAliases);
     }
 
-    elements.addAll(_exportedNameSpace
+    elements.addAll(_exportedNamespace
         .where((element) => element is FunctionTypeAliasElement));
     elements..removeWhere(isPrivate);
     _typeDefs = elements.map((e) => new Typedef(e, this)).toList();
@@ -564,7 +570,7 @@ class Library extends ModelElement {
       elements.addAll(cu.functions);
     }
     elements.addAll(
-        _exportedNameSpace.where((element) => element is FunctionElement));
+        _exportedNamespace.where((element) => element is FunctionElement));
 
     elements..removeWhere(isPrivate);
     _functions = elements.map((e) {
@@ -583,11 +589,11 @@ class Library extends ModelElement {
     }
     for (LibraryElement le in _library.exportedLibraries) {
       types.addAll(le.definingCompilationUnit.types
-          .where((t) => _exportedNameSpace.contains(t.name))
+          .where((t) => _exportedNamespace.contains(t.name))
           .toList());
     }
 
-    types.addAll(_exportedNameSpace
+    types.addAll(_exportedNamespace
         .where((element) => element is ClassElement && !element.isEnum));
 
     _classes = types
