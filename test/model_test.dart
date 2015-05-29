@@ -197,20 +197,17 @@ void main() {
 
     test('references to class and constructors', () {
       String comment = B.documentationAsHtml;
-      expect(comment.contains(
-          'Extends class <a href="ex/Apple_class.html">Apple</a>'), isTrue);
+      expect(comment,
+          contains('Extends class <a href="ex/Apple_class.html">Apple</a>'));
       expect(
-          comment.contains('use <a href="ex/Apple/Apple.html">new Apple</a>'),
-          true);
-      expect(comment.contains(
-              '<a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'),
-          true);
+          comment, contains('use <a href="ex/Apple/Apple.html">new Apple</a>'));
+      expect(comment, contains(
+          '<a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'));
     });
 
     test('reference to class from another library', () {
       String comment = superAwesomeClass.documentationAsHtml;
-      expect(
-          comment.contains('<a href="ex/Apple_class.html">Apple</a>'), isTrue);
+      expect(comment, contains('<a href="ex/Apple_class.html">Apple</a>'));
     });
 
     test('legacy code blocks render correctly', () {
