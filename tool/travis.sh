@@ -7,14 +7,10 @@
 # Fast fail the script on failures.
 set -e
 
-$(dirname -- "$0")/ensure_dartfmt.sh
-
 # Globally install grinder.
 pub global activate grinder
 export PATH="$PATH":"~/.pub-cache/bin"
 
-# Verify that the libraries are error free.
-grind analyze
 
 if [ "$GEN_SDK_DOCS" = "true" ]
 then
@@ -28,22 +24,27 @@ else
 	echo ""
     echo "Skipping SDK docs, because GEN_SDK_DOCS is $GEN_SDK_DOCS"
     echo ""
-fi
 
-# Another smoke test: Run dartdoc on test_package.
-cd test_package
-dart -c ../bin/dartdoc.dart
-cd ..
+    $(dirname -- "$0")/ensure_dartfmt.sh
 
-# Run the tests.
-grind test
+    # Verify that the libraries are error free.
+    grind analyze
 
-# Gather and send coverage data.
-if [ "$REPO_TOKEN" ]; then
-  pub global activate dart_coveralls
-  pub global run dart_coveralls report \
-    --token $REPO_TOKEN \
-    --retry 2 \
-    --exclude-test-files \
-    test/all.dart
+    # Another smoke test: Run dartdoc on test_package.
+	cd test_package
+	dart -c ../bin/dartdoc.dart
+	cd ..
+
+	# Run the tests.
+	grind test
+
+	# Gather and send coverage data.
+	if [ "$REPO_TOKEN" ]; then
+	  pub global activate dart_coveralls
+	  pub global run dart_coveralls report \
+	    --token $REPO_TOKEN \
+	    --retry 2 \
+	    --exclude-test-files \
+	    test/all.dart
+	fi
 fi
