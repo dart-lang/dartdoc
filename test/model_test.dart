@@ -136,7 +136,7 @@ void main() {
   });
 
   group('Docs as HTML', () {
-    Class Apple, B;
+    Class Apple, B, superAwesomeClass;
     TopLevelVariable incorrectReference;
     ModelFunction thisIsAsync;
 
@@ -145,18 +145,20 @@ void main() {
     TopLevelVariable testingCodeSyntaxInOneLiners;
 
     setUp(() {
-      var fakePackage =
+      var fakeLibrary =
           package.libraries.firstWhere((lib) => lib.name == 'fake');
 
       incorrectReference = library.constants
           .firstWhere((c) => c.name == 'incorrectDocReference');
       B = library.classes.firstWhere((c) => c.name == 'B');
       Apple = library.classes.firstWhere((c) => c.name == 'Apple');
-      thisIsAsync =
-          fakePackage.functions.firstWhere((f) => f.name == 'thisIsAsync');
-      testingCodeSyntaxInOneLiners = fakePackage.constants
-          .firstWhere((c) => c.name == 'testingCodeSyntaxInOneLiners');
 
+      thisIsAsync =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsAsync');
+      testingCodeSyntaxInOneLiners = fakeLibrary.constants
+          .firstWhere((c) => c.name == 'testingCodeSyntaxInOneLiners');
+      superAwesomeClass = fakeLibrary.classes
+          .firstWhere((cls) => cls.name == 'SuperAwesomeClass');
       twoExportsLib =
           package.libraries.firstWhere((lib) => lib.name == 'two_exports');
       assert(twoExportsLib != null);
@@ -203,6 +205,11 @@ void main() {
       expect(comment.contains(
               '<a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'),
           true);
+    });
+
+    test('reference to class from another library', () {
+      String comment = superAwesomeClass.documentationAsHtml;
+      expect(comment.contains('<a href="ex/Apple_class.html">Apple</a>'), true);
     });
 
     test('legacy code blocks render correctly', () {
