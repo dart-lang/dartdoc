@@ -300,7 +300,7 @@ void soIntense(anything, {bool flag: true, int value}) {}
 void paramFromAnotherLib(Apple thing) {}
 
 /// An async function. It should look like I return a [Future].
-Future thisIsAsync() async => 42;
+thisIsAsync() async => 42;
 
 /// Explicitly returns a Future and is marked async.
 Future thisIsAlsoAsync() async => 43;
