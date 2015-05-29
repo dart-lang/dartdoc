@@ -145,6 +145,10 @@ indexResources() {
   out.writeAsString(buffer.toString());
 }
 
+@Task('analyze, test, and self-test dartdoc')
+@Depends(analyze, test, testDartdoc)
+buildbot() => null;
+
 Future<int> _runAsyncTimed(Future callback()) async {
   var stopwatch = new Stopwatch()..start();
   await callback();

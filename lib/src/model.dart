@@ -11,10 +11,10 @@ import 'package:analyzer/src/generated/resolver.dart';
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:quiver/core.dart';
 
-import 'package:dartdoc/markdown_processor.dart';
 import 'html_utils.dart';
 import 'model_utils.dart';
 import 'package_meta.dart';
+import '../markdown_processor.dart';
 
 final Map<Class, List<Class>> _implementors = new Map();
 
