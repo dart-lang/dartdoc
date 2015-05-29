@@ -4,6 +4,7 @@ A documentation generator for Dart. This tool creates static HTML files
 generated from Dart source code.
 
 [![Build Status](https://travis-ci.org/dart-lang/dartdoc.svg)](https://travis-ci.org/dart-lang/dartdoc)
+[![Build status](https://ci.appveyor.com/api/projects/status/pvswmxjfgnh0cyyg?svg=true)](https://ci.appveyor.com/project/devoncarew/dartdoc)
 [![Coverage Status](https://img.shields.io/coveralls/dart-lang/dartdoc.svg)](https://coveralls.io/r/dart-lang/dartdoc)
 
 ## Installing dartdoc
