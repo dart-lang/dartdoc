@@ -28,7 +28,8 @@ init() {
   String dirPath = p.join(Directory.current.path, 'test_package');
   Iterable<LibraryElement> libElements = [
     'lib/example.dart',
-    'lib/two_exports.dart'
+    'lib/two_exports.dart',
+    'lib/fake.dart'
   ].map((libFile) {
     Source source = analyzerHelper.addSource(p.join(dirPath, libFile));
     return analyzerHelper.resolve(source);

@@ -11,25 +11,12 @@ import 'package:analyzer/src/generated/resolver.dart';
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:quiver/core.dart';
 
+import 'package:dartdoc/markdown_processor.dart';
 import 'html_utils.dart';
 import 'model_utils.dart';
 import 'package_meta.dart';
 
 final Map<Class, List<Class>> _implementors = new Map();
-
-final Map<String, Library> _libraryMap = new Map();
-
-// TODO: should this be a factory constructor on Library ?
-Library _getLibraryFor(LibraryElement element, Package package) {
-  var key = element == null ? 'null' : element.name;
-
-  if (_libraryMap.containsKey(key)) {
-    return _libraryMap[key];
-  }
-  var library = new Library(element, package);
-  _libraryMap[key] = library;
-  return library;
-}
 
 void _addToImplementors(Class c) {
   _implementors.putIfAbsent(c, () => []);
@@ -64,6 +51,7 @@ abstract class ModelElement {
 
   ElementType _modelType;
   String _documentation;
+  String _documentationAsHtml;
 
   List _parameters;
 
@@ -136,76 +124,15 @@ abstract class ModelElement {
   bool get hasDocumentation =>
       documentation != null && documentation.isNotEmpty;
 
-  NodeList<CommentReference> _getCommentRefs() {
-    if (_documentation == null && canOverride()) {
-      var melement = overriddenElement;
-      if (melement != null &&
-          melement.element.node != null &&
-          melement.element.node is AnnotatedNode) {
-        var docComment =
-            (melement.element.node as AnnotatedNode).documentationComment;
-        if (docComment != null) return docComment.references;
-        return null;
-      }
-    }
-    if (element.node is AnnotatedNode) {
-      if ((element.node as AnnotatedNode).documentationComment != null) {
-        return (element.node as AnnotatedNode).documentationComment.references;
-      }
-    } else if (element is LibraryElement) {
-      // handle anonymous libraries
-      if (element.node == null || element.node.parent == null) {
-        return null;
-      }
-      var node = element.node.parent.parent;
-      if (node is AnnotatedNode) {
-        if ((node as AnnotatedNode).documentationComment != null) {
-          return (node as AnnotatedNode).documentationComment.references;
-        }
-      }
-    }
-    return null;
+  String get documentationAsHtml {
+    if (_documentationAsHtml != null) return _documentationAsHtml;
+
+    _documentationAsHtml = processDocsAsMarkdown(this);
+
+    return _documentationAsHtml;
   }
 
-  /// If [docs] is not provided, the [documentation] property is used.
-  String resolveReferences({String docs}) {
-    if (docs == null) {
-      docs = this.documentation;
-    }
-
-    NodeList<CommentReference> commentRefs = _getCommentRefs();
-    if (commentRefs == null || commentRefs.isEmpty) {
-      return docs;
-    }
-
-    String _getMatchingLink(String codeRef, {bool isConstructor: false}) {
-      var refElement;
-      for (CommentReference ref in commentRefs) {
-        if (ref.identifier.name == codeRef) {
-          var isConstrElement =
-              ref.identifier.staticElement is ConstructorElement;
-          if (isConstructor && isConstrElement ||
-              !isConstructor && !isConstrElement) {
-            refElement = ref.identifier.staticElement;
-            break;
-          }
-        }
-      }
-      if (refElement == null) {
-        return null;
-      }
-      var refLibrary;
-      if (this is Library) {
-        refLibrary = this;
-      } else {
-        refLibrary = _getLibraryFor(library._library, this.package);
-      }
-      var e = new ModelElement.from(refElement, refLibrary);
-      return e.href;
-    }
-
-    return replaceAllLinks(docs, _getMatchingLink);
-  }
+  String get oneLineDoc => oneLiner(this);
 
   String get htmlId => name;
 
@@ -220,7 +147,7 @@ abstract class ModelElement {
         var e = a.element;
         if (e != null && (e is ConstructorElement)) {
           var me = new ModelElement.from(
-              e.enclosingElement, _getLibraryFor(e.library, package));
+              e.enclosingElement, new Library(e.library, package));
           if (me.href != null) {
             return annotationString.replaceAll(
                 me.name, '<a href="${me.href}">${me.name}</a>');
@@ -444,12 +371,16 @@ class Package {
   String get documentation =>
       hasDocumentation ? documentationFile.contents : null;
 
+  String get documentationAsHtml => renderMarkdownToHtml(documentation);
+
+  String get oneLineDoc => oneLinerWithoutReferences(documentation);
+
   List<Library> get libraries => _libraries;
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {
     libraryElements.forEach((element) {
       var lib = new Library(element, this);
-      _libraryMap.putIfAbsent(lib._name, () => lib);
+      Library._libraryMap.putIfAbsent(lib._name, () => lib);
       _libraries.add(lib);
     });
     _libraries.forEach((library) {
@@ -488,6 +419,8 @@ class Package {
 }
 
 class Library extends ModelElement {
+  static final Map<String, Library> _libraryMap = <String, Library>{};
+
   final Package package;
   List<Class> _classes;
   List<Class> _enums;
@@ -500,7 +433,19 @@ class Library extends ModelElement {
 
   LibraryElement get _library => (element as LibraryElement);
 
-  Library(LibraryElement element, this.package) : super(element, null);
+  Library._(LibraryElement element, this.package) : super(element, null);
+
+  factory Library(LibraryElement element, Package package) {
+    var key = element == null ? 'null' : element.name;
+
+    if (_libraryMap.containsKey(key)) {
+      return _libraryMap[key];
+    }
+    var library = new Library._(element, package);
+    _libraryMap[key] = library;
+
+    return library;
+  }
 
   Library get library => this;
 
@@ -702,7 +647,7 @@ class Class extends ModelElement {
     _modelType = new ElementType(_cls.type, this);
 
     _mixins = _cls.mixins.map((f) {
-      var lib = _getLibraryFor(f.element.library, p);
+      var lib = new Library(f.element.library, p);
       var t = new ElementType(f, new ModelElement.from(f.element, lib));
       var exclude = t.element.element.isPrivate;
       if (exclude) {
@@ -713,7 +658,7 @@ class Class extends ModelElement {
     }).where((mixin) => mixin != null).toList(growable: false);
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
-      var lib = _getLibraryFor(_cls.supertype.element.library, p);
+      var lib = new Library(_cls.supertype.element.library, p);
       _supertype = new ElementType(
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
 
@@ -731,7 +676,7 @@ class Class extends ModelElement {
     }
 
     _interfaces = _cls.interfaces.map((f) {
-      var lib = _getLibraryFor(f.element.library, p);
+      var lib = new Library(f.element.library, p);
       var t = new ElementType(f, new ModelElement.from(f.element, lib));
       var exclude = t.element.element.isPrivate;
       if (exclude) {
@@ -916,7 +861,7 @@ class Class extends ModelElement {
           value.enclosingElement.name != 'Object') {
         var lib = value.library == library.element
             ? library
-            : _getLibraryFor(value.library, package);
+            : new Library(value.library, package);
         _inheritedMethods.add(new Method.inherited(value, lib));
       }
     }
@@ -965,7 +910,7 @@ class Class extends ModelElement {
     for (var value in vs.values) {
       var lib = value.library == library.element
           ? library
-          : _getLibraryFor(value.library, package);
+          : new Library(value.library, package);
       _inheritedOperators.add(new Operator.inherited(value, lib));
     }
 
@@ -1005,7 +950,7 @@ class Class extends ModelElement {
         }
         var lib = value.library == library.element
             ? library
-            : _getLibraryFor(value.library, package);
+            : new Library(value.library, package);
         _inheritedProperties.add(new Field.inherited(e, lib));
       }
     }
@@ -1122,11 +1067,11 @@ class Field extends ModelElement {
   void _setModelType() {
     if (hasGetter) {
       var t = _field.getter.returnType;
-      var lib = _getLibraryFor(t.element.library, package);
+      var lib = new Library(t.element.library, package);
       _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
     } else {
       var s = _field.setter.parameters.first.type;
-      var lib = _getLibraryFor(s.element.library, package);
+      var lib = new Library(s.element.library, package);
       _modelType = new ElementType(s, new ModelElement.from(s.element, lib));
     }
   }
@@ -1350,7 +1295,7 @@ class TopLevelVariable extends ModelElement {
       _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
     } else {
       var s = _variable.setter.parameters.first.type;
-      var lib = _getLibraryFor(s.element.library, package);
+      var lib = new Library(s.element.library, package);
       _modelType = new ElementType(s, new ModelElement.from(s.element, lib));
     }
   }
@@ -1387,7 +1332,7 @@ class Parameter extends ModelElement {
       : super(element, library) {
     var t = _parameter.type;
     _modelType = new ElementType(t, new ModelElement.from(
-        t.element, _getLibraryFor(t.element.library, library.package)));
+        t.element, new Library(t.element.library, library.package)));
   }
 
   ParameterElement get _parameter => element as ParameterElement;
@@ -1473,20 +1418,20 @@ class ElementType {
   ElementType get _returnType {
     var rt = (_type as FunctionType).returnType;
     return new ElementType(rt, new ModelElement.from(
-        rt.element, _getLibraryFor(rt.element.library, _element.package)));
+        rt.element, new Library(rt.element.library, _element.package)));
   }
   ModelElement get returnElement {
     Element e = (_type as FunctionType).returnType.element;
     if (e == null) {
       return null;
     }
-    Library lib = _getLibraryFor(e.library, _element.package);
+    Library lib = new Library(e.library, _element.package);
     return (new ModelElement.from(e, lib));
   }
 
   List<ElementType> get typeArguments =>
       (_type as ParameterizedType).typeArguments.map((f) {
-    var lib = _getLibraryFor(f.element.library, _element.package);
+    var lib = new Library(f.element.library, _element.package);
     return new ElementType(f, new ModelElement.from(f.element, lib));
   }).toList();
 
@@ -1516,7 +1461,6 @@ class ElementType {
     return _linkedName;
   }
 
-  // TODO: why does this method exist? Why can't we just use linkedName ?
   String createLinkedReturnTypeName() {
     if ((_type as FunctionType).returnType.element == null ||
         (_type as FunctionType).returnType.element.library == null) {

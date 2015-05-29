@@ -39,15 +39,23 @@ void main() {
     });
 
     test('libraries', () {
-      expect(package.libraries, hasLength(2));
+      expect(package.libraries, hasLength(3));
     });
 
-    test('is documented', () {
+    test('is documented in library', () {
       expect(package.isDocumented(library), true);
     });
 
-    test('description', () {
+    test('documentation exists', () {
       expect(package.documentation.startsWith('# Best Package'), true);
+    });
+
+    test('documentation can be rendered as HTML', () {
+      expect(package.documentationAsHtml, contains('<h1>Best Package</h1>'));
+    });
+
+    test('one line doc', () {
+      expect(package.oneLineDoc, equals('Best Package'));
     });
 
     test('sdk name', () {
@@ -127,27 +135,66 @@ void main() {
     });
   });
 
-  group('Resolving doc references', () {
+  group('Docs as HTML', () {
     Class Apple, B;
     TopLevelVariable incorrectReference;
+    ModelFunction thisIsAsync;
+
+    Library twoExportsLib;
+    Class extendedClass;
+    TopLevelVariable testingCodeSyntaxInOneLiners;
 
     setUp(() {
+      var fakePackage =
+          package.libraries.firstWhere((lib) => lib.name == 'fake');
+
       incorrectReference = library.constants
           .firstWhere((c) => c.name == 'incorrectDocReference');
       B = library.classes.firstWhere((c) => c.name == 'B');
       Apple = library.classes.firstWhere((c) => c.name == 'Apple');
+      thisIsAsync =
+          fakePackage.functions.firstWhere((f) => f.name == 'thisIsAsync');
+      testingCodeSyntaxInOneLiners = fakePackage.constants
+          .firstWhere((c) => c.name == 'testingCodeSyntaxInOneLiners');
+
+      twoExportsLib =
+          package.libraries.firstWhere((lib) => lib.name == 'two_exports');
+      assert(twoExportsLib != null);
+      extendedClass = twoExportsLib.allClasses
+          .firstWhere((clazz) => clazz.name == 'ExtendingClass');
     });
 
     test('doc refs ignore incorrect references', () {
-      expect(incorrectReference.resolveReferences(), 'This should [not work].');
+      expect(incorrectReference.documentationAsHtml,
+          '<p>This should [not work].</p>');
     });
 
     test('no references', () {
-      expect(Apple.resolveReferences(), 'Sample class String');
+      expect(Apple.documentationAsHtml, '<p>Sample class String</p>');
+    });
+
+    test('single ref to class', () {
+      expect(B.documentationAsHtml,
+          '<p>Extends class <a href="ex/Apple_class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a> or <a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>');
+    });
+
+    test('doc ref to class in SDK does not render as link', () {
+      expect(thisIsAsync.documentationAsHtml, equals(
+          '<p>An async function. It should look like I return a Future.</p>'));
+    });
+
+    test('references are correct in exported libraries', () {
+      expect(twoExportsLib, isNotNull);
+      expect(extendedClass, isNotNull);
+      String resolved = extendedClass.documentationAsHtml;
+      expect(resolved, isNotNull);
+      expect(resolved,
+          contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
+      expect(resolved, contains('linking over to Apple.'));
     });
 
     test('references to class and constructors', () {
-      String comment = B.resolveReferences();
+      String comment = B.documentationAsHtml;
       expect(comment.contains(
           'Extends class <a href="ex/Apple_class.html">Apple</a>'), true);
       expect(
@@ -156,6 +203,11 @@ void main() {
       expect(comment.contains(
               '<a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'),
           true);
+    });
+
+    test('legacy code blocks render correctly', () {
+      expect(testingCodeSyntaxInOneLiners.oneLineDoc,
+          equals('These are code syntaxes: true and false'));
     });
   });
 
@@ -269,9 +321,13 @@ void main() {
 
   group('Function', () {
     ModelFunction f1;
+    ModelFunction thisIsAsync;
 
     setUp(() {
       f1 = library.functions.single;
+      thisIsAsync = package.libraries
+              .firstWhere((lib) => lib.name == 'fake').functions
+          .firstWhere((f) => f.name == 'thisIsAsync');
     });
 
     test('name is function1', () {
@@ -292,6 +348,16 @@ void main() {
 
     test('handles dynamic parameters correctly', () {
       expect(f1.linkedParams(), contains('lastParam'));
+    });
+
+    test('async function', () {
+      expect(thisIsAsync.isAsynchronous, isTrue);
+      expect(thisIsAsync.linkedReturnType,
+          equals('<a href="dart_async/Future_class.html">Future</a>'));
+      expect(thisIsAsync.documentation, equals(
+          'An async function. It should look like I return a [Future].'));
+      expect(thisIsAsync.documentationAsHtml, equals(
+          '<p>An async function. It should look like I return a Future.</p>'));
     });
   });
 
@@ -537,29 +603,6 @@ void main() {
     test('library has the exact errors/exceptions we expect', () {
       expect(library.exceptions.map((e) => e.name),
           unorderedEquals(expectedNames));
-    });
-  });
-
-  group('dartdoc references', () {
-    Library twoExportsLib;
-    Class extendedClass;
-
-    setUp(() {
-      twoExportsLib =
-          package.libraries.firstWhere((lib) => lib.name == 'two_exports');
-      assert(twoExportsLib != null);
-      extendedClass = twoExportsLib.allClasses
-          .firstWhere((clazz) => clazz.name == 'ExtendingClass');
-    });
-
-    test('references are correct', () {
-      expect(twoExportsLib, isNotNull);
-      expect(extendedClass, isNotNull);
-      String resolved = extendedClass.resolveReferences();
-      expect(resolved, isNotNull);
-      expect(resolved,
-          contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
-      expect(resolved, contains('linking over to Apple.'));
     });
   });
 
