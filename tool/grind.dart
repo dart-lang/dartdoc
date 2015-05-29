@@ -94,15 +94,15 @@ Future buildSdkDocs() async {
   delete(docsDir);
   log('building SDK docs');
   try {
-    int sdkDocsGenTime = _runTimed(() {
-      Dart.run('bin/dartdoc.dart',
+    int sdkDocsGenTime = await _runAsyncTimed(() {
+      return Dart.runAsync('bin/dartdoc.dart',
           arguments: ['--output', '${docsDir.path}', '--sdk-docs']);
     });
     var indexHtml = joinFile(docsDir, ['index.html']);
     if (!indexHtml.existsSync()) {
       fail('no index.html found for SDK docs');
     }
-    // check for the existance of certain files/dirs
+    // check for the existence of certain files/dirs
     var libsLength =
         docsDir.listSync().where((fs) => fs.path.contains('dart_')).length;
     if (libsLength != 17) {
@@ -145,9 +145,13 @@ indexResources() {
   out.writeAsString(buffer.toString());
 }
 
-int _runTimed(callback()) {
+@Task('analyze, test, and self-test dartdoc')
+@Depends(analyze, test, testDartdoc)
+buildbot() => null;
+
+Future<int> _runAsyncTimed(Future callback()) async {
   var stopwatch = new Stopwatch()..start();
-  callback();
+  await callback();
   stopwatch.stop();
   return stopwatch.elapsedMilliseconds;
 }

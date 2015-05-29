@@ -1,0 +1,15 @@
+# Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
+# for details. All rights reserved. Use of this source code is governed by a
+# BSD-style license that can be found in the LICENSE file.
+
+install:
+  # Investigate scoop?
+  - choco install -y dart-sdk -version 1.10.0
+  - set PATH=%PATH%;C:\tools\dart-sdk\bin
+  - set PATH=%PATH%;%APPDATA%\Pub\Cache\bin
+  - pub get
+
+build: off
+
+test_script:
+  - pub run grinder buildbot

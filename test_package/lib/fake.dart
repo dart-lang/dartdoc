@@ -296,10 +296,10 @@ void onlyPositionalWithNoDefaultNoType([@greatestAnnotation anything]) {}
 /// default value.
 void soIntense(anything, {bool flag: true, int value}) {}
 
-/// [A] comes from another library.
+/// [FooBar] comes from another library.
 void paramFromAnotherLib(Apple thing) {}
 
-/// An async function. It should look like I return a Future.
+/// An async function. It should look like I return a [Future].
 thisIsAsync() async => 42;
 
 /// Explicitly returns a Future and is marked async.

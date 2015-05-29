@@ -25,7 +25,7 @@ const String NAME = 'dartdoc';
 // Update when pubspec version changes.
 const String VERSION = '0.0.2';
 
-const String defaultOutDir = 'doc/api';
+final String defaultOutDir = 'doc${Platform.pathSeparator}api';
 
 /// Initialize and setup the generators.
 List<Generator> initGenerators(
