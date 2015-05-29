@@ -47,6 +47,7 @@ class _InlineCodeSyntax extends md.InlineSyntax {
 const List<String> _oneLinerSkipTags = const ["code", "pre"];
 
 String oneLinerWithoutReferences(String text) {
+  if (text == null) return '';
   // Parse with Markdown, but only care about the first block or paragraph.
   var lines = text.replaceAll('\r\n', '\n').split('\n');
   var document = new md.Document(inlineSyntaxes: MARKDOWN_SYNTAXES);
