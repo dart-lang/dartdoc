@@ -371,6 +371,10 @@ class Package {
   String get documentation =>
       hasDocumentation ? documentationFile.contents : null;
 
+  String get documentationAsHtml => renderMarkdownToHtml(documentation);
+
+  String get oneLineDoc => oneLinerWithoutReferences(documentation);
+
   List<Library> get libraries => _libraries;
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {

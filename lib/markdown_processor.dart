@@ -46,13 +46,9 @@ class _InlineCodeSyntax extends md.InlineSyntax {
 
 const List<String> _oneLinerSkipTags = const ["code", "pre"];
 
-String oneLiner(ModelElement element) {
-  if (element == null ||
-      element.documentation == null ||
-      element.documentation.isEmpty) return '';
-
+String oneLinerWithoutReferences(String text) {
   // Parse with Markdown, but only care about the first block or paragraph.
-  var lines = element.documentation.replaceAll('\r\n', '\n').split('\n');
+  var lines = text.replaceAll('\r\n', '\n').split('\n');
   var document = new md.Document(inlineSyntaxes: MARKDOWN_SYNTAXES);
   document.parseRefLinks(lines);
   var blocks = document.parseLines(lines);
@@ -73,7 +69,16 @@ String oneLiner(ModelElement element) {
     firstPara = firstPara.substring(0, 200) + '...';
   }
 
-  return _resolveDocReferences(firstPara, element).trim();
+  return firstPara.trim();
+}
+
+String oneLiner(ModelElement element) {
+  if (element == null ||
+      element.documentation == null ||
+      element.documentation.isEmpty) return '';
+
+  return _resolveDocReferences(
+      oneLinerWithoutReferences(element.documentation), element).trim();
 }
 
 class PlainTextRenderer implements md.NodeVisitor {

@@ -42,12 +42,20 @@ void main() {
       expect(package.libraries, hasLength(3));
     });
 
-    test('is documented', () {
+    test('is documented in library', () {
       expect(package.isDocumented(library), true);
     });
 
-    test('description', () {
+    test('documentation exists', () {
       expect(package.documentation.startsWith('# Best Package'), true);
+    });
+
+    test('documentation can be rendered as HTML', () {
+      expect(package.documentationAsHtml, contains('<h1>Best Package</h1>'));
+    });
+
+    test('one line doc', () {
+      expect(package.oneLineDoc, equals('Best Package'));
     });
 
     test('sdk name', () {
