@@ -17,6 +17,9 @@ const ConstantCat MY_CAT = const ConstantCat('tabby');
 
 typedef String processMessage(String msg);
 
+/// This should [not work].
+const incorrectDocReference = 'doh';
+
 /// Sample class [String]
 class Apple {
   static const int n = 5;
@@ -26,6 +29,10 @@ class Apple {
 
   ///Constructor
   Apple();
+
+  Apple.fromString(String s) {
+    _s2 = s;
+  }
 
   String get s => _s2;
 
@@ -40,7 +47,7 @@ class Apple {
     return number > check;
   }
 }
-/// Extends class [Apple]
+/// Extends class [Apple], use [new Apple] or [new Apple.fromString]
 class B extends Apple with Cat {
   List<String> list;
 

@@ -296,11 +296,11 @@ void onlyPositionalWithNoDefaultNoType([@greatestAnnotation anything]) {}
 /// default value.
 void soIntense(anything, {bool flag: true, int value}) {}
 
-/// [A] comes from another library.
+/// [FooBar] comes from another library.
 void paramFromAnotherLib(Apple thing) {}
 
-/// An async function. It should look like I return a Future.
-thisIsAsync() async => 42;
+/// An async function. It should look like I return a [Future].
+Future thisIsAsync() async => 42;
 
 /// Explicitly returns a Future and is marked async.
 Future thisIsAlsoAsync() async => 43;
@@ -319,3 +319,6 @@ String functionWithFunctionParameters(int number, void thing(one, two),
 
 /// These are code syntaxes: [:true:] and [:false:]
 const testingCodeSyntaxInOneLiners = 'fantastic';
+
+/// Referencing something that [doesn't exist].
+const incorrectDocReference = 'doh';

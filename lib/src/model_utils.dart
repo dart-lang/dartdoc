@@ -9,9 +9,6 @@ import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
-const _leftChar = '[';
-const _rightChar = ']';
-
 bool isPrivate(Element e) => e.name.startsWith('_');
 
 bool isPublic(Element e) => !isPrivate(e);
@@ -36,35 +33,3 @@ List<InterfaceType> getAllSupertypes(ClassElement c) => c.allSupertypes;
 bool isInExportedLibraries(
     List<LibraryElement> libraries, LibraryElement library) => libraries
     .any((lib) => lib == library || lib.exportedLibraries.contains(library));
-
-String replaceAllLinks(String str, String findMatchingLink(String input)) {
-  int lastWritten = 0;
-  int index = str.indexOf(_leftChar);
-  StringBuffer buf = new StringBuffer();
-
-  while (index != -1) {
-    int end = str.indexOf(_rightChar, index + 1);
-    if (end != -1) {
-      if (index - lastWritten > 0) {
-        buf.write(str.substring(lastWritten, index));
-      }
-      String codeRef = str.substring(index + _leftChar.length, end);
-      if (codeRef != null) {
-        var link = findMatchingLink(codeRef);
-        if (link != null) {
-          buf.write('<a href="$link">$codeRef</a>');
-        } else {
-          buf.write(codeRef);
-        }
-      }
-      lastWritten = end + _rightChar.length;
-    } else {
-      break;
-    }
-    index = str.indexOf(_leftChar, end + 1);
-  }
-  if (lastWritten < str.length) {
-    buf.write(str.substring(lastWritten, str.length));
-  }
-  return buf.toString();
-}

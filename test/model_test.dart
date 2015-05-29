@@ -6,15 +6,7 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
 import 'package:unittest/unittest.dart';
-
-import 'package:analyzer/src/generated/element.dart';
-import 'package:analyzer/src/generated/engine.dart';
-import 'package:analyzer/src/generated/java_io.dart';
-import 'package:analyzer/src/generated/sdk.dart';
-import 'package:analyzer/src/generated/sdk_io.dart';
-import 'package:analyzer/src/generated/source_io.dart';
 
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
@@ -22,18 +14,12 @@ import 'package:dartdoc/src/package_meta.dart';
 
 import 'package:cli_util/cli_util.dart' as cli_util;
 
+import 'test_utils.dart' as testUtils;
+
 void main() {
-  AnalyzerHelper helper = new AnalyzerHelper();
-  String dirPath = p.join(Directory.current.path, 'test_package');
-  Iterable<LibraryElement> libElements = [
-    'lib/example.dart',
-    'lib/two_exports.dart'
-  ].map((libFile) {
-    Source source = helper.addSource(p.join(dirPath, libFile));
-    return helper.resolve(source);
-  });
-  Package package =
-      new Package(libElements, new PackageMeta.fromDir(new Directory(dirPath)));
+  testUtils.init();
+
+  Package package = testUtils.testPackage;
   var library = package.libraries.first;
 
   Directory sdkDir = cli_util.getSdkDir();
@@ -43,8 +29,8 @@ void main() {
     exit(1);
   }
 
-  Package sdkAsPackage = new Package(
-      getSdkLibrariesToDocument(helper.sdk, helper.context),
+  Package sdkAsPackage = new Package(getSdkLibrariesToDocument(
+          testUtils.sdkDir, testUtils.analyzerHelper.context),
       new PackageMeta.fromSdk(sdkDir));
 
   group('Package', () {
@@ -53,15 +39,23 @@ void main() {
     });
 
     test('libraries', () {
-      expect(package.libraries, hasLength(2));
+      expect(package.libraries, hasLength(3));
     });
 
-    test('is documented', () {
+    test('is documented in library', () {
       expect(package.isDocumented(library), true);
     });
 
-    test('description', () {
+    test('documentation exists', () {
       expect(package.documentation.startsWith('# Best Package'), true);
+    });
+
+    test('documentation can be rendered as HTML', () {
+      expect(package.documentationAsHtml, contains('<h1>Best Package</h1>'));
+    });
+
+    test('one line doc', () {
+      expect(package.oneLineDoc, equals('Best Package'));
     });
 
     test('sdk name', () {
@@ -85,8 +79,8 @@ void main() {
     Library dartAsyncLib;
 
     setUp(() {
-      dartAsyncLib = new Library(
-          getSdkLibrariesToDocument(helper.sdk, helper.context).first,
+      dartAsyncLib = new Library(getSdkLibrariesToDocument(
+              testUtils.sdkDir, testUtils.analyzerHelper.context).first,
           sdkAsPackage);
 
       // Make sure the first library is dart:async
@@ -141,9 +135,86 @@ void main() {
     });
   });
 
+  group('Docs as HTML', () {
+    Class Apple, B;
+    TopLevelVariable incorrectReference;
+    ModelFunction thisIsAsync;
+
+    Library twoExportsLib;
+    Class extendedClass;
+    TopLevelVariable testingCodeSyntaxInOneLiners;
+
+    setUp(() {
+      var fakePackage =
+          package.libraries.firstWhere((lib) => lib.name == 'fake');
+
+      incorrectReference = library.constants
+          .firstWhere((c) => c.name == 'incorrectDocReference');
+      B = library.classes.firstWhere((c) => c.name == 'B');
+      Apple = library.classes.firstWhere((c) => c.name == 'Apple');
+      thisIsAsync =
+          fakePackage.functions.firstWhere((f) => f.name == 'thisIsAsync');
+      testingCodeSyntaxInOneLiners = fakePackage.constants
+          .firstWhere((c) => c.name == 'testingCodeSyntaxInOneLiners');
+
+      twoExportsLib =
+          package.libraries.firstWhere((lib) => lib.name == 'two_exports');
+      assert(twoExportsLib != null);
+      extendedClass = twoExportsLib.allClasses
+          .firstWhere((clazz) => clazz.name == 'ExtendingClass');
+    });
+
+    test('doc refs ignore incorrect references', () {
+      expect(incorrectReference.documentationAsHtml,
+          '<p>This should [not work].</p>');
+    });
+
+    test('no references', () {
+      expect(Apple.documentationAsHtml, '<p>Sample class String</p>');
+    });
+
+    test('single ref to class', () {
+      expect(B.documentationAsHtml,
+          '<p>Extends class <a href="ex/Apple_class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a> or <a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>');
+    });
+
+    test('doc ref to class in SDK does not render as link', () {
+      expect(thisIsAsync.documentationAsHtml, equals(
+          '<p>An async function. It should look like I return a Future.</p>'));
+    });
+
+    test('references are correct in exported libraries', () {
+      expect(twoExportsLib, isNotNull);
+      expect(extendedClass, isNotNull);
+      String resolved = extendedClass.documentationAsHtml;
+      expect(resolved, isNotNull);
+      expect(resolved,
+          contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
+      expect(resolved, contains('linking over to Apple.'));
+    });
+
+    test('references to class and constructors', () {
+      String comment = B.documentationAsHtml;
+      expect(comment.contains(
+          'Extends class <a href="ex/Apple_class.html">Apple</a>'), true);
+      expect(
+          comment.contains('use <a href="ex/Apple/Apple.html">new Apple</a>'),
+          true);
+      expect(comment.contains(
+              '<a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'),
+          true);
+    });
+
+    test('legacy code blocks render correctly', () {
+      expect(testingCodeSyntaxInOneLiners.oneLineDoc,
+          equals('These are code syntaxes: true and false'));
+    });
+  });
+
   group('Class', () {
     List<Class> classes;
     Class Apple, B, Cat, Dog, F;
+
     setUp(() {
       classes = library.classes;
       Apple = classes.firstWhere((c) => c.name == 'Apple');
@@ -162,15 +233,6 @@ void main() {
 
     test('correctly finds classes', () {
       expect(classes, hasLength(13));
-    });
-
-    test('docs ', () {
-      expect(Apple.resolveReferences(), 'Sample class String');
-    });
-
-    test('docs refs', () {
-      expect(B.resolveReferences(),
-          'Extends class <a href="ex/Apple_class.html">Apple</a>');
     });
 
     test('abstract', () {
@@ -197,7 +259,7 @@ void main() {
     });
 
     test('get constructors', () {
-      expect(Apple.constructors, hasLength(1));
+      expect(Apple.constructors, hasLength(2));
     });
 
     test('get static fields', () {
@@ -259,9 +321,13 @@ void main() {
 
   group('Function', () {
     ModelFunction f1;
+    ModelFunction thisIsAsync;
 
     setUp(() {
       f1 = library.functions.single;
+      thisIsAsync = package.libraries
+              .firstWhere((lib) => lib.name == 'fake').functions
+          .firstWhere((f) => f.name == 'thisIsAsync');
     });
 
     test('name is function1', () {
@@ -282,6 +348,16 @@ void main() {
 
     test('handles dynamic parameters correctly', () {
       expect(f1.linkedParams(), contains('lastParam'));
+    });
+
+    test('async function', () {
+      expect(thisIsAsync.isAsynchronous, isTrue);
+      expect(thisIsAsync.linkedReturnType,
+          equals('<a href="dart_async/Future_class.html">Future</a>'));
+      expect(thisIsAsync.documentation, equals(
+          'An async function. It should look like I return a [Future].'));
+      expect(thisIsAsync.documentationAsHtml, equals(
+          '<p>An async function. It should look like I return a Future.</p>'));
     });
   });
 
@@ -384,7 +460,7 @@ void main() {
     });
 
     test('found five constants', () {
-      expect(library.constants, hasLength(5));
+      expect(library.constants, hasLength(6));
     });
 
     test('COLOR_GREEN is constant', () {
@@ -530,29 +606,6 @@ void main() {
     });
   });
 
-  group('dartdoc references', () {
-    Library twoExportsLib;
-    Class extendedClass;
-
-    setUp(() {
-      twoExportsLib =
-          package.libraries.firstWhere((lib) => lib.name == 'two_exports');
-      assert(twoExportsLib != null);
-      extendedClass = twoExportsLib.allClasses
-          .firstWhere((clazz) => clazz.name == 'ExtendingClass');
-    });
-
-    test('references are correct', () {
-      expect(twoExportsLib, isNotNull);
-      expect(extendedClass, isNotNull);
-      String resolved = extendedClass.resolveReferences();
-      expect(resolved, isNotNull);
-      expect(resolved,
-          contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
-      expect(resolved, contains('linking over to Apple.'));
-    });
-  });
-
   group('Annotations', () {
     Class forAnnotation, dog;
     setUp(() {
@@ -577,33 +630,4 @@ void main() {
       expect(dog.instanceMethods.first.annotations.first, equals('deprecated'));
     });
   });
-}
-
-class AnalyzerHelper {
-  AnalysisContext context;
-  DartSdk sdk;
-
-  AnalyzerHelper() {
-    Directory sdkDir = cli_util.getSdkDir();
-    sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
-    List<UriResolver> resolvers = [
-      new DartUriResolver(sdk),
-      new FileUriResolver()
-    ];
-
-    SourceFactory sourceFactory = new SourceFactory(resolvers);
-    context = AnalysisEngine.instance.createAnalysisContext();
-    context.sourceFactory = sourceFactory;
-  }
-
-  Source addSource(String filePath) {
-    Source source = new FileBasedSource.con1(new JavaFile(filePath));
-    ChangeSet changeSet = new ChangeSet();
-    changeSet.addedSource(source);
-    context.applyChanges(changeSet);
-    return source;
-  }
-
-  LibraryElement resolve(Source librarySource) =>
-      context.computeLibraryElement(librarySource);
 }

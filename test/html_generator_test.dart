@@ -68,12 +68,4 @@ void main() {
     // TODO: Run the HtmlGenerator and validate important constraints.
 
   });
-
-  group('one liners', () {
-    test('legacy code blocks render correctly', () {
-      var doc = 'This has a [:code block:]';
-      var results = oneLiner(doc);
-      expect(results, equals('This has a code block'));
-    });
-  });
 }
