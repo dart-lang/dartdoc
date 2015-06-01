@@ -7,10 +7,6 @@ env:
   - GEN_SDK_DOCS=true
   - GEN_SDK_DOCS=false
 script: ./tool/travis.sh
-matrix:
-  fast_finish: true
-  allow_failures:
-    - GEN_SDK_DOCS: true
 branches:
   only:
     - master
