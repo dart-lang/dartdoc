@@ -109,8 +109,12 @@ List<FileSystemEntity> _packageDirList(Directory dir) {
   }
 }
 
+/// Converts `.` and `:` into `-`.
+///
+/// For example:
+///
+/// * dart.dartdoc => dart_dartdoc
+/// * dart:core => dart_core
 String getFileNameFor(String name) {
-  // dart.dartdoc => dart_dartdoc
-  // dart:core => dart_core
-  return '${name.replaceAll('.', '_').replaceAll(':', '_')}.html';
+  return '${name.replaceAll(new RegExp('[.:]'), '-')}.html';
 }

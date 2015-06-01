@@ -17,11 +17,12 @@ void main() {
       expect(files.length, 5);
     });
 
-    test('check file name', () {
-      var fileName = getFileNameFor('dart:io');
-      expect(fileName, 'dart_io.html');
-      fileName = getFileNameFor('dartdoc.generator');
-      expect(fileName, 'dartdoc_generator.html');
+    test('converts : to -', () {
+      expect(getFileNameFor('dart:io'), 'dart-io.html');
+    });
+
+    test('converts . to -', () {
+      expect(getFileNameFor('dartdoc.generator'), 'dartdoc-generator.html');
     });
   });
 }
