@@ -76,8 +76,7 @@ testDartdoc() {
 
     File indexHtml = joinFile(docsDir, ['index.html']);
     if (!indexHtml.existsSync()) fail('docs not generated');
-    File docFile =
-        joinFile(docsDir, ['dartdoc${Platform.pathSeparator}index.html']);
+    File docFile = joinFile(docsDir, ['index.html']);
     if (!docFile.existsSync()) fail('docs not generated');
   } catch (e) {
     rethrow;
