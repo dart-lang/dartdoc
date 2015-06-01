@@ -76,7 +76,8 @@ testDartdoc() {
 
     File indexHtml = joinFile(docsDir, ['index.html']);
     if (!indexHtml.existsSync()) fail('docs not generated');
-    File docFile = joinFile(docsDir, ['dartdoc/index.html']);
+    File docFile =
+        joinFile(docsDir, ['dartdoc${Platform.pathSeparator}index.html']);
     if (!docFile.existsSync()) fail('docs not generated');
   } catch (e) {
     rethrow;
@@ -109,7 +110,9 @@ Future buildSdkDocs() async {
       fail('docs not generated for all the SDK libraries, '
           'expected 17 directories, generated $libsLength directories');
     }
-    var futureConstFile = joinFile(docsDir, ['dart_async/Future/Future.html']);
+    var futureConstFile = joinFile(docsDir, [
+      'dart_async${Platform.pathSeparator}Future${Platform.pathSeparator}Future.html'
+    ]);
     if (!futureConstFile.existsSync()) {
       fail('no Future.html found for dart:async Future constructor');
     }
