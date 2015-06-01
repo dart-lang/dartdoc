@@ -109,9 +109,8 @@ Future buildSdkDocs() async {
       fail('docs not generated for all the SDK libraries, '
           'expected 17 directories, generated $libsLength directories');
     }
-    var futureConstFile = joinFile(docsDir, [
-      'dart_async${Platform.pathSeparator}Future${Platform.pathSeparator}Future.html'
-    ]);
+    var futureConstFile =
+        joinFile(docsDir, [path.join('dart_async', 'Future', 'Future.html')]);
     if (!futureConstFile.existsSync()) {
       fail('no Future.html found for dart:async Future constructor');
     }
