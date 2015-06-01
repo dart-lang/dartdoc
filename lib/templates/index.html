@@ -9,7 +9,7 @@
         <dl>
           {{#package.libraries}}
             <dt>
-              <span class="name"><a href="{{nameForFile}}/index.html">{{ name }}</a></span>
+              <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}"><a href="{{nameForFile}}/index.html">{{ name }}</a></span>
             </dt>
             <dd>
                 {{{ oneLineDoc }}}

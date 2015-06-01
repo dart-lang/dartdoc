@@ -235,7 +235,7 @@ class HtmlGeneratorInstance {
       'metaDescription':
           '${lib.name} library API docs, for the Dart programming language.',
       'navLinks': [package, lib],
-      'layoutTitle': _layoutTitle(lib.name, 'library')
+      'layoutTitle': _layoutTitle(lib.name, 'library', lib.isDeprecated)
     };
 
     _build(path.join(lib.nameForFile, 'index.html'), _templates.libraryTemplate,
@@ -271,7 +271,8 @@ class HtmlGeneratorInstance {
       'title': '${clazz.name} ${clazz.kind} - ${lib.name} library - Dart API',
       'metaDescription':
           'API docs for the ${clazz.name} ${clazz.kind} from the ${lib.name} library, for the Dart programming language.',
-      'layoutTitle': _layoutTitle(clazz.nameWithGenerics, clazz.kind),
+      'layoutTitle':
+          _layoutTitle(clazz.nameWithGenerics, clazz.kind, clazz.isDeprecated),
       'navLinks': [package, lib, clazz],
       'htmlBase': '..'
     };
@@ -289,7 +290,8 @@ class HtmlGeneratorInstance {
       'library': lib,
       'class': clazz,
       'constructor': constructor,
-      'layoutTitle': _layoutTitle(constructor.name, 'constructor'),
+      'layoutTitle': _layoutTitle(
+          constructor.name, 'constructor', constructor.isDeprecated),
       'navLinks': [package, lib, clazz, constructor],
       'htmlBase': '../..'
     };
@@ -306,7 +308,7 @@ class HtmlGeneratorInstance {
       'oneLineDoc': eNum.oneLineDoc,
       'library': lib,
       'class': eNum,
-      'layoutTitle': _layoutTitle(eNum.name, 'enum'),
+      'layoutTitle': _layoutTitle(eNum.name, 'enum', eNum.isDeprecated),
       'navLinks': [package, lib, eNum],
       'htmlBase': '..'
     };
@@ -323,7 +325,8 @@ class HtmlGeneratorInstance {
       'library': lib,
       'function': function,
       'title': '${function.name} function - ${lib.name} library - Dart API',
-      'layoutTitle': _layoutTitle(function.name, 'function'),
+      'layoutTitle':
+          _layoutTitle(function.name, 'function', function.isDeprecated),
       'metaDescription':
           'API docs for the ${function.name} function from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib, function],
@@ -346,7 +349,7 @@ class HtmlGeneratorInstance {
       'method': method,
       'title':
           '${method.name} method - ${clazz.name} class - ${lib.name} library - Dart API',
-      'layoutTitle': _layoutTitle(method.name, 'method'),
+      'layoutTitle': _layoutTitle(method.name, 'method', method.isDeprecated),
       'metaDescription':
           'API docs for the ${method.name} method from the ${clazz.name} class, for the Dart programming language.',
       'navLinks': [package, lib, clazz, method],
@@ -369,7 +372,8 @@ class HtmlGeneratorInstance {
       'property': property,
       'title':
           '${property.name} constant - ${clazz.name} class - ${lib.name} library - Dart API',
-      'layoutTitle': _layoutTitle(property.name, 'constant'),
+      'layoutTitle':
+          _layoutTitle(property.name, 'constant', property.isDeprecated),
       'metaDescription':
           'API docs for the ${property.name} constant from the ${clazz.name} class, for the Dart programming language.',
       'navLinks': [package, lib, clazz, property],
@@ -392,7 +396,8 @@ class HtmlGeneratorInstance {
       'property': property,
       'title':
           '${property.name} property - ${clazz.name} class - ${lib.name} library - Dart API',
-      'layoutTitle': _layoutTitle(property.name, 'property'),
+      'layoutTitle':
+          _layoutTitle(property.name, 'property', property.isDeprecated),
       'metaDescription':
           'API docs for the ${property.name} property from the ${clazz.name} class, for the Dart programming language.',
       'navLinks': [package, lib, clazz, property],
@@ -413,7 +418,8 @@ class HtmlGeneratorInstance {
       'library': lib,
       'property': property,
       'title': '${property.name} property - ${lib.name} library - Dart API',
-      'layoutTitle': _layoutTitle(property.name, 'property'),
+      'layoutTitle':
+          _layoutTitle(property.name, 'property', property.isDeprecated),
       'metaDescription':
           'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib, property],
@@ -434,7 +440,8 @@ class HtmlGeneratorInstance {
       'library': lib,
       'property': property,
       'title': '${property.name} property - ${lib.name} library - Dart API',
-      'layoutTitle': _layoutTitle(property.name, 'constant'),
+      'layoutTitle':
+          _layoutTitle(property.name, 'constant', property.isDeprecated),
       'metaDescription':
           'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib, property],
@@ -454,7 +461,8 @@ class HtmlGeneratorInstance {
       'library': lib,
       'typeDef': typeDef,
       'title': '${typeDef.name} typedef - ${lib.name} library - Dart API',
-      'layoutTitle': _layoutTitle(typeDef.name, 'typedef'),
+      'layoutTitle':
+          _layoutTitle(typeDef.name, 'typedef', typeDef.isDeprecated),
       'metaDescription':
           'API docs for the ${typeDef.name} property from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib, typeDef],
@@ -502,8 +510,10 @@ class HtmlGeneratorInstance {
   }
 }
 
-String _layoutTitle(String name, String kind) =>
-    kind.isEmpty ? name : '$name <span class="kind">$kind</span>';
+String _layoutTitle(String name, String kind,
+    [bool isDeprecated = false]) => kind.isEmpty
+    ? name
+    : '<span class="${isDeprecated ? 'deprecated' : ''}">$name</span> <span class="kind">$kind</span>';
 
 /// Converts a markdown formatted string into HTML, and removes any script tags.
 /// Returns the HTML as a string.
