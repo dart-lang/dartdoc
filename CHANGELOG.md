@@ -5,7 +5,7 @@
 * fixed resolving references in library comments
 * generate docs even when output directory exists
 * show inherited operators
-* visually indicate depricated api 
+* visually indicate deprecated api 
 
 ##0.0.2+1
 
