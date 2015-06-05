@@ -15,3 +15,8 @@
 * link to exported library in comment references
 * visually show library is deprecated
 * fixed one liner documentation
+
+##0.0.2+1
+ 
+ * add a --package-root option
+ * resource handler support for package root
