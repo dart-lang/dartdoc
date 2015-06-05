@@ -30,7 +30,7 @@ void main() {
     test('generateDocs', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc =
-          new DartDoc(testPackageDir, [], getSdkDir(), [], tempDir, meta);
+          new DartDoc(testPackageDir, [], getSdkDir(), [], tempDir, null, meta);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.package, isNotNull);

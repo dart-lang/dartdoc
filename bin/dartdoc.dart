@@ -73,6 +73,11 @@ main(List<String> arguments) async {
     outputDir = new Directory(_resolveTildePath(args['output']));
   }
 
+  var packageRootDir;
+  if (args['package-root'] != null) {
+    packageRootDir = new Directory(_resolveTildePath(args['package-root']));
+  }
+
   PackageMeta packageMeta = sdkDocs
       ? new PackageMeta.fromSdk(sdkDir, sdkReadmePath: readme)
       : new PackageMeta.fromDir(inputDir);
@@ -83,8 +88,8 @@ main(List<String> arguments) async {
 
   var generators = initGenerators(url, headerFilePath, footerFilePath);
 
-  var dartdoc = new DartDoc(
-      inputDir, excludeLibraries, sdkDir, generators, outputDir, packageMeta);
+  var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
+      outputDir, packageRootDir, packageMeta);
   DartDocResults results = await dartdoc.generateDocs();
 
   print('\nSuccess! Open file://${results.outDir.absolute.path}/index.html');
@@ -118,6 +123,7 @@ ArgParser _createArgsParser() {
       help: 'path to file containing HTML text, inserted into the header of every page.');
   parser.addOption('footer',
       help: 'path to file containing HTML text, inserted into the footer of every page.');
+  parser.addOption('package-root', help: 'The path to the package root.');
   parser.addOption('exclude',
       help: 'Comma-separated list of library names to ignore.');
   parser.addOption('hosted-url',
