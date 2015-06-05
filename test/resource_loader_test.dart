@@ -4,7 +4,6 @@
 
 library dartdoc.resource_loader_test;
 
-import 'dart:async';
 import 'dart:io';
 
 import 'package:path/path.dart';
