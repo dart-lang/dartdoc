@@ -67,13 +67,13 @@ main(List<String> arguments) async {
     exit(1);
   }
 
-  var outputDir =
+  Directory outputDir =
       new Directory(path.join(Directory.current.path, defaultOutDir));
   if (args['output'] != null) {
     outputDir = new Directory(_resolveTildePath(args['output']));
   }
 
-  var packageRootDir;
+  Directory packageRootDir;
   if (args['package-root'] != null) {
     packageRootDir = new Directory(_resolveTildePath(args['package-root']));
   }
