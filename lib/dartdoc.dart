@@ -15,6 +15,7 @@ import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
 import 'generator.dart';
+import 'resource_loader.dart';
 import 'src/html_generator.dart';
 import 'src/io_utils.dart';
 import 'src/model.dart';
@@ -43,6 +44,7 @@ class DartDoc {
   final Directory sdkDir;
   final List<Generator> generators;
   final Directory outputDir;
+  final Directory packageRootDir;
   final PackageMeta packageMeta;
 
   final Set<LibraryElement> libraries = new Set();
@@ -50,11 +52,13 @@ class DartDoc {
   Stopwatch _stopwatch;
 
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
-      this.outputDir, this.packageMeta);
+      this.outputDir, this.packageRootDir, this.packageMeta);
 
   /// Generate the documentation.
   Future<DartDocResults> generateDocs() async {
     _stopwatch = new Stopwatch()..start();
+
+    if (packageRootDir != null) packageRootPath = packageRootDir.path;
 
     var files =
         packageMeta.isSdk ? [] : findFilesToDocumentInPackage(rootDir.path);
@@ -90,8 +94,9 @@ class DartDoc {
       new DartUriResolver(sdk),
       new FileUriResolver()
     ];
-    JavaFile packagesDir =
-        new JavaFile.relative(new JavaFile(rootDir.path), 'packages');
+    JavaFile packagesDir = packageRootDir == null
+        ? new JavaFile.relative(new JavaFile(rootDir.path), 'packages')
+        : new JavaFile(packageRootDir.path);
     if (packagesDir.exists()) {
       resolvers.add(new PackageUriResolver([packagesDir]));
     }

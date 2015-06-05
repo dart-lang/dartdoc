@@ -16,6 +16,15 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
 import 'package:pub_cache/pub_cache.dart';
 
+String _packageRootPath;
+
+/// The path to package root
+void set packageRootPath(String path) {
+  _packageRootPath = path;
+}
+
+String get packageRootPath => _packageRootPath;
+
 /// Loads a `package:` resource as a String.
 Future<String> loadAsString(String path) async {
   if (!path.startsWith('package:')) {
@@ -107,9 +116,16 @@ Future<Uint8List> _doLoadOverFileFromLocation(
 // Meanwhile, assume packages/ is next to entry point of script
 Future<Uint8List> _doLoadFromFileFromPackagesDir(final String resourcePath) {
   var convertedPath = _convertPackageSchemeToPackagesDir(resourcePath);
-  var scriptFile = new File(Platform.script.toFilePath());
-  var baseDir = path.dirname(scriptFile.path);
-  var fullPath = path.join(baseDir, convertedPath);
+  var fullPath;
+  if (packageRootPath != null) {
+    var list = path.split(convertedPath)..removeAt(0);
+    fullPath = packageRootPath;
+    list.forEach((segment) => fullPath = path.join(fullPath, segment));
+  } else {
+    var scriptFile = new File(Platform.script.toFilePath());
+    var baseDir = path.dirname(scriptFile.path);
+    fullPath = path.join(baseDir, convertedPath);
+  }
   return _readFile(resourcePath, fullPath);
 }
 
