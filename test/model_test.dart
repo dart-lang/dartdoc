@@ -20,7 +20,9 @@ void main() {
   testUtils.init();
 
   Package package = testUtils.testPackage;
-  var library = package.libraries.first;
+  Library exLibrary = package.libraries.firstWhere((lib) => lib.name == 'ex');
+  Library fakeLibrary =
+      package.libraries.firstWhere((lib) => lib.name == 'fake');
 
   Directory sdkDir = cli_util.getSdkDir();
 
@@ -43,7 +45,7 @@ void main() {
     });
 
     test('is documented in library', () {
-      expect(package.isDocumented(library), true);
+      expect(package.isDocumented(exLibrary), true);
     });
 
     test('documentation exists', () {
@@ -88,7 +90,7 @@ void main() {
     });
 
     test('name', () {
-      expect(library.name, 'ex');
+      expect(exLibrary.name, 'ex');
     });
 
     test('sdk library names', () {
@@ -98,40 +100,41 @@ void main() {
     });
 
     test('documentation', () {
-      expect(library.documentation,
+      expect(exLibrary.documentation,
           'a library. testing string escaping: `var s = \'a string\'` <cool>');
     });
 
     test('has properties', () {
-      expect(library.hasProperties, isTrue);
+      expect(exLibrary.hasProperties, isTrue);
     });
 
     test('has constants', () {
-      expect(library.hasConstants, isTrue);
+      expect(exLibrary.hasConstants, isTrue);
     });
 
     test('has exceptions', () {
-      expect(library.hasExceptions, isTrue);
+      expect(exLibrary.hasExceptions, isTrue);
     });
 
     test('has enums', () {
-      expect(library.hasEnums, isTrue);
+      expect(exLibrary.hasEnums, isTrue);
     });
 
     test('has functions', () {
-      expect(library.hasFunctions, isTrue);
+      expect(exLibrary.hasFunctions, isTrue);
     });
 
     test('has typedefs', () {
-      expect(library.hasTypedefs, isTrue);
+      expect(exLibrary.hasTypedefs, isTrue);
     });
 
     test('exported class', () {
-      expect(library.classes.any((c) => c.name == 'Helper'), isTrue);
+      expect(exLibrary.classes.any((c) => c.name == 'Helper'), isTrue);
     });
 
     test('exported function', () {
-      expect(library.functions.any((f) => f.name == 'helperFunction'), isFalse);
+      expect(
+          exLibrary.functions.any((f) => f.name == 'helperFunction'), isFalse);
     });
   });
 
@@ -139,20 +142,20 @@ void main() {
     Class Apple, B, superAwesomeClass;
     TopLevelVariable incorrectReference;
     ModelFunction thisIsAsync;
+    ModelFunction topLevelFunction;
 
     Library twoExportsLib;
     Class extendedClass;
     TopLevelVariable testingCodeSyntaxInOneLiners;
 
     setUp(() {
-      var fakeLibrary =
-          package.libraries.firstWhere((lib) => lib.name == 'fake');
-
-      incorrectReference = library.constants
+      incorrectReference = exLibrary.constants
           .firstWhere((c) => c.name == 'incorrectDocReference');
-      B = library.classes.firstWhere((c) => c.name == 'B');
-      Apple = library.classes.firstWhere((c) => c.name == 'Apple');
+      B = exLibrary.classes.firstWhere((c) => c.name == 'B');
+      Apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
 
+      topLevelFunction =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
       thisIsAsync =
           fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsAsync');
       testingCodeSyntaxInOneLiners = fakeLibrary.constants
@@ -164,6 +167,11 @@ void main() {
       assert(twoExportsLib != null);
       extendedClass = twoExportsLib.allClasses
           .firstWhere((clazz) => clazz.name == 'ExtendingClass');
+    });
+
+    test('still has brackets inside code blocks', () {
+      expect(topLevelFunction.documentationAsHtml,
+          contains("['hello from dart']"));
     });
 
     test('doc refs ignore incorrect references', () {
@@ -221,7 +229,7 @@ void main() {
     Class Apple, B, Cat, Dog, F;
 
     setUp(() {
-      classes = library.classes;
+      classes = exLibrary.classes;
       Apple = classes.firstWhere((c) => c.name == 'Apple');
       B = classes.firstWhere((c) => c.name == 'B');
       Cat = classes.firstWhere((c) => c.name == 'Cat');
@@ -307,7 +315,7 @@ void main() {
     Enum animal;
 
     setUp(() {
-      animal = library.enums[0];
+      animal = exLibrary.enums[0];
     });
 
     test('enum values', () {
@@ -327,12 +335,14 @@ void main() {
   group('Function', () {
     ModelFunction f1;
     ModelFunction thisIsAsync;
+    ModelFunction topLevelFunction;
 
     setUp(() {
-      f1 = library.functions.single;
-      thisIsAsync = package.libraries
-              .firstWhere((lib) => lib.name == 'fake').functions
-          .firstWhere((f) => f.name == 'thisIsAsync');
+      f1 = exLibrary.functions.single;
+      thisIsAsync =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsAsync');
+      topLevelFunction =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
     });
 
     test('name is function1', () {
@@ -363,6 +373,10 @@ void main() {
       expect(thisIsAsync.documentationAsHtml, equals(
           '<p>An async function. It should look like I return a Future.</p>'));
     });
+
+    test('docs do not lose brackets in code blocks', () {
+      expect(topLevelFunction.documentation, contains("['hello from dart']"));
+    });
   });
 
   group('Method', () {
@@ -370,9 +384,9 @@ void main() {
     Method m, m3, m4;
 
     setUp(() {
-      classB = library.classes.singleWhere((c) => c.name == 'B');
+      classB = exLibrary.classes.singleWhere((c) => c.name == 'B');
       m = classB.instanceMethods.first;
-      m3 = library.classes
+      m3 = exLibrary.classes
           .singleWhere((c) => c.name == 'Apple').instanceMethods.first;
       m4 = classB.instanceMethods[1];
     });
@@ -407,7 +421,7 @@ void main() {
     var c, f1, f2, constField;
 
     setUp(() {
-      c = library.classes.firstWhere((c) => c.name == 'Apple');
+      c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       f1 = c.staticProperties[0]; // n
       f2 = c.instanceProperties[0];
       constField = c.constants[0]; // string
@@ -435,12 +449,12 @@ void main() {
     TopLevelVariable v3;
 
     setUp(() {
-      v = library.properties.firstWhere((p) => p.name == 'number');
-      v3 = library.properties.firstWhere((p) => p.name == 'y');
+      v = exLibrary.properties.firstWhere((p) => p.name == 'number');
+      v3 = exLibrary.properties.firstWhere((p) => p.name == 'y');
     });
 
     test('found two properties', () {
-      expect(library.properties, hasLength(2));
+      expect(exLibrary.properties, hasLength(2));
     });
 
     test('linked return type is a double', () {
@@ -457,14 +471,14 @@ void main() {
 
     setUp(() {
       greenConstant =
-          library.constants.firstWhere((c) => c.name == 'COLOR_GREEN');
+          exLibrary.constants.firstWhere((c) => c.name == 'COLOR_GREEN');
       orangeConstant =
-          library.constants.firstWhere((c) => c.name == 'COLOR_ORANGE');
-      cat = library.constants.firstWhere((c) => c.name == 'MY_CAT');
+          exLibrary.constants.firstWhere((c) => c.name == 'COLOR_ORANGE');
+      cat = exLibrary.constants.firstWhere((c) => c.name == 'MY_CAT');
     });
 
     test('found five constants', () {
-      expect(library.constants, hasLength(6));
+      expect(exLibrary.constants, hasLength(6));
     });
 
     test('COLOR_GREEN is constant', () {
@@ -484,7 +498,8 @@ void main() {
   group('Constructor', () {
     var c2;
     setUp(() {
-      c2 = library.classes.firstWhere((c) => c.name == 'Apple').constructors[0];
+      c2 = exLibrary.classes.firstWhere((c) => c.name == 'Apple').constructors[
+          0];
     });
 
     test('has contructor', () {
@@ -493,8 +508,8 @@ void main() {
   });
 
   group('Type', () {
-    var f =
-        library.classes.firstWhere((c) => c.name == 'B').instanceProperties[0];
+    var f = exLibrary.classes
+        .firstWhere((c) => c.name == 'B').instanceProperties[0];
 
     test('parameterized type', () {
       expect(f.modelType.isParameterizedType, isTrue);
@@ -505,7 +520,7 @@ void main() {
     var t;
 
     setUp(() {
-      t = library.typedefs[0];
+      t = exLibrary.typedefs[0];
     });
 
     test('docs', () {
@@ -523,13 +538,13 @@ void main() {
     Parameter p1;
 
     setUp(() {
-      c = library.classes.firstWhere((c) => c.name == 'Apple');
+      c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       isGreaterThan = c.instanceMethods[2]; // isGreaterThan
-      asyncM = library.classes
+      asyncM = exLibrary.classes
               .firstWhere((c) => c.name == 'Dog').instanceMethods
           .firstWhere((m) => m.name == 'foo');
       p1 = isGreaterThan.parameters[1]; // {int check:5}
-      f = library.classes.firstWhere((c) => c.name == 'F');
+      f = exLibrary.classes.firstWhere((c) => c.name == 'F');
       methodWithGenericParam = f.instanceMethods[0];
     });
 
@@ -565,10 +580,10 @@ void main() {
     List<Class> implA, implC;
 
     setUp(() {
-      apple = library.classes.firstWhere((c) => c.name == 'Apple');
-      b = library.classes.firstWhere((c) => c.name == 'B');
+      apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
+      b = exLibrary.classes.firstWhere((c) => c.name == 'B');
       implA = apple.implementors;
-      implC = library.classes.firstWhere((c) => c.name == 'Cat').implementors;
+      implC = exLibrary.classes.firstWhere((c) => c.name == 'Cat').implementors;
     });
 
     test('the first class is Apple', () {
@@ -605,7 +620,7 @@ void main() {
       'MyExceptionImplements'
     ];
     test('library has the exact errors/exceptions we expect', () {
-      expect(library.exceptions.map((e) => e.name),
+      expect(exLibrary.exceptions.map((e) => e.name),
           unorderedEquals(expectedNames));
     });
   });
@@ -614,8 +629,8 @@ void main() {
     Class forAnnotation, dog;
     setUp(() {
       forAnnotation =
-          library.classes.firstWhere((c) => c.name == 'HasAnnotation');
-      dog = library.classes.firstWhere((c) => c.name == 'Dog');
+          exLibrary.classes.firstWhere((c) => c.name == 'HasAnnotation');
+      dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
     });
 
     test('is not null', () => expect(forAnnotation, isNotNull));
