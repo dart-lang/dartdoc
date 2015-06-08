@@ -14,7 +14,7 @@ const _rightChar = ']';
 
 final List<md.InlineSyntax> MARKDOWN_SYNTAXES = [new _InlineCodeSyntax()];
 
-String renderMarkdownToHtml(String text, ModelElement element) {
+String renderMarkdownToHtml(String text, [ModelElement element = null]) {
   // TODO(keertip): use this for the one liner.
   md.Node _linkResolver(String name) {
     NodeList<CommentReference> commentRefs = _getCommentRefs(element);
