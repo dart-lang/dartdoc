@@ -14,14 +14,35 @@ const _rightChar = ']';
 
 final List<md.InlineSyntax> MARKDOWN_SYNTAXES = [new _InlineCodeSyntax()];
 
-String renderMarkdownToHtml(String text) {
-  return md.markdownToHtml(text, inlineSyntaxes: MARKDOWN_SYNTAXES);
+String renderMarkdownToHtml(String text, ModelElement element) {
+  md.Node _linkResolver(String name) {
+    NodeList<CommentReference> commentRefs = _getCommentRefs(element);
+    if (commentRefs == null || commentRefs.isEmpty) {
+      return new md.Text('[$name]');
+    }
+    // support for [new Constructor] and [new Class.namedCtr]
+    var link;
+    var refs = name.split(' ');
+    if (refs.length == 2 && refs.first == 'new') {
+      link =
+          _getMatchingLink(refs[1], element, commentRefs, isConstructor: true);
+    } else {
+      link = _getMatchingLink(name, element, commentRefs);
+    }
+    if (link != null) {
+      return new md.Text('<a href="$link">$name</a>');
+    }
+    return new md.Text('$name');
+  }
+
+  return md.markdownToHtml(text,
+      inlineSyntaxes: MARKDOWN_SYNTAXES, linkResolver: _linkResolver);
 }
 
 String processDocsAsMarkdown(ModelElement element) {
   if (element == null || element.documentation == null) return '';
-  String html = renderMarkdownToHtml(element.documentation);
-  html = _resolveDocReferences(html, element);
+  String html = renderMarkdownToHtml(element.documentation, element);
+//  html = _resolveDocReferences(html, element);
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
   doc.querySelectorAll('pre > code').forEach((e) {
@@ -200,6 +221,7 @@ String _resolveDocReferences(String docsAfterMarkdown, ModelElement element) {
 }
 
 NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
+  if (modelElement == null) return null;
   if (modelElement.documentation == null && modelElement.canOverride()) {
     var melement = modelElement.overriddenElement;
     if (melement != null &&
@@ -228,6 +250,39 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
         return (node as AnnotatedNode).documentationComment.references;
       }
     }
+  }
+  return null;
+}
+
+String _getMatchingLink(
+    String codeRef, ModelElement element, List<CommentReference> commentRefs,
+    {bool isConstructor: false}) {
+  var refElement;
+
+  for (CommentReference ref in commentRefs) {
+    if (ref.identifier.name == codeRef) {
+      var isConstrElement = ref.identifier.staticElement is ConstructorElement;
+      if (isConstructor && isConstrElement ||
+          !isConstructor && !isConstrElement) {
+        refElement = ref.identifier.staticElement;
+        break;
+      }
+    }
+  }
+  if (refElement == null) {
+    return null;
+  }
+  var refLibrary;
+  try {
+    var e = refElement is ClassMemberElement
+        ? refElement.enclosingElement
+        : refElement;
+    refLibrary =
+        element.package.libraries.firstWhere((lib) => lib.hasInNamespace(e));
+  } on StateError {}
+  if (refLibrary != null) {
+    var e = new ModelElement.from(refElement, refLibrary);
+    return e.href;
   }
   return null;
 }

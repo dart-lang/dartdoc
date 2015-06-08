@@ -371,7 +371,7 @@ class Package {
   String get documentation =>
       hasDocumentation ? documentationFile.contents : null;
 
-  String get documentationAsHtml => renderMarkdownToHtml(documentation);
+  String get documentationAsHtml => renderMarkdownToHtml(documentation, null);
 
   String get oneLineDoc => oneLinerWithoutReferences(documentation);
 
