@@ -281,6 +281,10 @@ get dynamicGetter => 'i could be anything';
 ///
 ///     var thing = topLevelFunction(1, true, 3.4);
 ///
+/// This snippet has brackets in parameters:
+///
+///     callMe('alert', ['hello from dart']);
+///
 /// Thanks for using this function!
 @deprecated
 String topLevelFunction(int param1, bool param2, Cool coolBeans,
