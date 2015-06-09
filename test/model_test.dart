@@ -95,8 +95,8 @@ void main() {
 
     test('sdk library names', () {
       expect(dartAsyncLib.name, 'dart:async');
-      expect(dartAsyncLib.nameForFile, 'dart_async');
-      expect(dartAsyncLib.href, 'dart_async/index.html');
+      expect(dartAsyncLib.nameForFile, 'dart-async');
+      expect(dartAsyncLib.href, 'dart-async/index.html');
     });
 
     test('documentation', () {
