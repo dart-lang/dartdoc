@@ -15,6 +15,7 @@ void main() {
     test('find files to document', () {
       var files = findFilesToDocumentInPackage(Directory.current.path);
       expect(files.length, 5);
+      expect(new File(files[0]).existsSync(), isTrue);
     });
 
     test('converts : to -', () {

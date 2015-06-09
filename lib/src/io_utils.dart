@@ -79,8 +79,7 @@ List<String> findFilesToDocumentInPackage(String packageDir) {
 
       if (contents.contains(new RegExp('\npart of ')) ||
           contents.startsWith(new RegExp('part of '))) {} else {
-        var uri = new Uri.file(path.normalize(path.absolute(lib)));
-        libraries.add(uri.path);
+        libraries.add(lib);
       }
     }
   });
