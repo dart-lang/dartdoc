@@ -142,3 +142,15 @@ class ConstantCat implements Cat {
 }
 
 enum Animal { CAT, DOG, HORSE }
+
+/// A class
+class Klass {
+/// A method
+  method() {}
+
+/// Another method
+  another() {}
+
+/// A shadowed method
+  toString() {}
+}
