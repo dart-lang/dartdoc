@@ -486,7 +486,7 @@ class Library extends ModelElement {
     return _name;
   }
 
-  String get nameForFile => name.replaceAll(':', '_');
+  String get nameForFile => name.replaceAll(':', '-');
 
   bool get isInSdk => _library.isInSdk;
 
