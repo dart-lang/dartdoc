@@ -245,7 +245,7 @@ void main() {
     });
 
     test('correctly finds classes', () {
-      expect(classes, hasLength(13));
+      expect(classes, hasLength(14));
     });
 
     test('abstract', () {
@@ -380,15 +380,18 @@ void main() {
   });
 
   group('Method', () {
-    Class classB;
-    Method m, m3, m4;
+    Class classB, klass;
+    Method m, m3, m4, m5, m6;
 
     setUp(() {
+      klass = exLibrary.classes.singleWhere((c) => c.name == 'Klass');
       classB = exLibrary.classes.singleWhere((c) => c.name == 'B');
       m = classB.instanceMethods.first;
       m3 = exLibrary.classes
           .singleWhere((c) => c.name == 'Apple').instanceMethods.first;
       m4 = classB.instanceMethods[1];
+      m5 = klass.instanceMethods.singleWhere((m) => m.name == 'another');
+      m6 = klass.instanceMethods.singleWhere((m) => m.name == 'toString');
     });
 
     test('overriden method', () {
@@ -414,6 +417,13 @@ void main() {
     test('parameter is a function', () {
       var element = m4.parameters[1].modelType.element as Typedef;
       expect(element.linkedReturnType, 'String');
+    });
+
+    test('doc for method with no return type', () {
+      var comment = m5.documentation;
+      var comment2 = m6.documentation;
+      expect(comment, equals('Another method'));
+      expect(comment2, equals('A shadowed method'));
     });
   });
 

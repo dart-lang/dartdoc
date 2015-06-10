@@ -63,6 +63,9 @@ class B extends Apple with Cat {
   void writeMsg(String msg, [String transformMsg(String origMsg, bool flag)]) {
     // do nothing
   }
+
+  /// method has no return type
+  noReturnType() {}
 }
 
 // Do NOT add a doc comment to C. Testing blank comments.
@@ -142,3 +145,15 @@ class ConstantCat implements Cat {
 }
 
 enum Animal { CAT, DOG, HORSE }
+
+/// A class
+class Klass {
+/// A method
+  method() {}
+
+/// Another method
+  another() {}
+
+/// A shadowed method
+  toString() {}
+}

@@ -103,9 +103,7 @@ class DartDoc {
     SourceFactory sourceFactory =
         new SourceFactory(/*contentCache,*/ resolvers);
 
-    var options = new AnalysisOptionsImpl()
-      ..analyzeFunctionBodies = false
-      ..cacheSize = 512;
+    var options = new AnalysisOptionsImpl()..cacheSize = 512;
 
     AnalysisContext context = AnalysisEngine.instance.createAnalysisContext()
       ..analysisOptions = options
