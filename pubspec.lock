@@ -61,6 +61,10 @@ packages:
     description: http
     source: hosted
     version: "0.11.2"
+  http_multi_server:
+    description: http_multi_server
+    source: hosted
+    version: "1.3.2"
   http_parser:
     description: http_parser
     source: hosted
@@ -129,6 +133,26 @@ packages:
     description: quiver
     source: hosted
     version: "0.21.3+1"
+  shelf:
+    description: shelf
+    source: hosted
+    version: "0.6.1+2"
+  shelf_static:
+    description: shelf_static
+    source: hosted
+    version: "0.2.2"
+  shelf_web_socket:
+    description: shelf_web_socket
+    source: hosted
+    version: "0.0.1+2"
+  source_map_stack_trace:
+    description: source_map_stack_trace
+    source: hosted
+    version: "1.0.4"
+  source_maps:
+    description: source_maps
+    source: hosted
+    version: "0.10.1"
   source_span:
     description: source_span
     source: hosted
@@ -145,10 +169,10 @@ packages:
     description: supports_color
     source: hosted
     version: "0.1.1"
-  unittest:
-    description: unittest
+  test:
+    description: test
     source: hosted
-    version: "0.11.6+1"
+    version: "0.12.3"
   unscripted:
     description: unscripted
     source: hosted

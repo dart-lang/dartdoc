@@ -8,7 +8,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:dartdoc/resource_loader.dart' as loader;
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('Resource Loader', () {

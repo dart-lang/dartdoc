@@ -4,7 +4,7 @@
 
 library dartdoc.html_generator_test;
 
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 import 'package:dartdoc/src/html_generator.dart';
 

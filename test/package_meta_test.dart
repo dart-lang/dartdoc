@@ -8,7 +8,7 @@ import 'dart:io';
 
 import 'package:cli_util/cli_util.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('PackageMeta.fromDir', () {
