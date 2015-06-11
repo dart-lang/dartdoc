@@ -154,6 +154,8 @@ buildbot() => null;
 firebase() {
   Map env = Platform.environment;
 
+  print('TRAVIS_BRANCH = ${env['TRAVIS_BRANCH']}');
+
   if (env['TRAVIS_BRANCH'] != 'master') return;
   if (env['FIREBASE_USER'] == null) return;
   if (env['TRAVIS_DART_VERSION'] != 'stable') return;
@@ -164,7 +166,7 @@ firebase() {
   // Install the firebase tools.
   run('npm', arguments: ['install', '-g', 'firebase-tools']);
 
-  print('has pass = ' + (env['FIREBASE_PASS'] != null));
+  print('has pass = ${env['FIREBASE_PASS'] != null}');
 
   // Authenticate with firebase.
   run('firebase',
