@@ -55,7 +55,10 @@ class DartDoc {
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
       this.outputDir, this.packageRootDir, this.packageMeta);
 
-  /// Generate the documentation.
+  /// Generate the documentation. [DartDocResults] is returned if dartdoc
+  /// succeeds. [DartDocFailure] is thrown if dartdoc fails in an expected way,
+  /// for instance if there is an anaysis error in the code. Any other exception
+  /// can be throw if there is an unexpected failure.
   Future<DartDocResults> generateDocs() async {
     _stopwatch = new Stopwatch()..start();
 
@@ -155,11 +158,10 @@ class DartDoc {
         "${seconds.toStringAsFixed(1)} seconds.\n");
 
     if (errors.isNotEmpty) {
-      print(
-          "Encountered ${errors.length} analysis error${errors.length == 1 ? '' : 's'}:");
       errors.forEach(print);
-      // TODO: Should we `exit()` directly, or pass an error condition back?
-      exit(1);
+      int len = errors.length;
+      throw new DartDocFailure(
+          "encountered ${len} analysis error${len == 1 ? '' : 's'}");
     }
 
     return libraries.toList();
@@ -172,6 +174,16 @@ class DartDocResults {
   final Directory outDir;
 
   DartDocResults(this.packageMeta, this.package, this.outDir);
+}
+
+/// This class is returned if dartdoc fails in an expected way (for instance, if
+/// there is an analysis error in the library).
+class DartDocFailure {
+  final String message;
+
+  DartDocFailure(this.message);
+
+  String toString() => message;
 }
 
 class _Error implements Comparable {
