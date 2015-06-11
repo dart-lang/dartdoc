@@ -147,7 +147,7 @@ class DartDoc {
     List<_Error> errors = errorInfos.expand((AnalysisErrorInfo info) {
       return info.errors.map(
           (error) => new _Error(error, info.lineInfo, packageMeta.dir.path));
-    }).where((_Error error) => error.severity == ErrorSeverity.ERROR).toList();
+    }).where((_Error error) => error.isError).toList();
     errors.sort();
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
@@ -182,7 +182,8 @@ class _Error implements Comparable {
 
   _Error(this.error, this.lineInfo, this.projectPath);
 
-  ErrorSeverity get severity => error.errorCode.errorSeverity;
+  int get severity => error.errorCode.errorSeverity.ordinal;
+  bool get isError => error.errorCode.errorSeverity == ErrorSeverity.ERROR;
   String get severityName => error.errorCode.errorSeverity.displayName;
   String get message => error.message;
   String get description => '${message} at ${location}, line ${line}.';
