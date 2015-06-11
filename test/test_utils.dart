@@ -29,7 +29,9 @@ init() {
   Iterable<LibraryElement> libElements = [
     'lib/example.dart',
     'lib/two_exports.dart',
-    'lib/fake.dart'
+    'lib/fake.dart',
+    'lib/anonymous_library.dart',
+    'lib/another_anonymous_lib.dart'
   ].map((libFile) {
     Source source = analyzerHelper.addSource(p.join(dirPath, libFile));
     return analyzerHelper.resolve(source);

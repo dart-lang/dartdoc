@@ -1,20 +1,26 @@
+// Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 library markdown_processor;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart'
     show LibraryElement, ConstructorElement, ClassMemberElement;
-import 'src/html_utils.dart' show htmlEscape;
-import 'package:markdown/markdown.dart' as md;
-import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' show Document;
+import 'package:html/parser.dart' show parse;
+import 'package:markdown/markdown.dart' as md;
+
+import 'src/html_utils.dart' show htmlEscape;
 import 'src/model.dart';
 
 const _leftChar = '[';
 const _rightChar = ']';
 
-final List<md.InlineSyntax> MARKDOWN_SYNTAXES = [new _InlineCodeSyntax()];
+final List<md.InlineSyntax> _markdown_syntaxes = [new _InlineCodeSyntax()];
 
-String renderMarkdownToHtml(String text, [ModelElement element = null]) {
+String renderMarkdownToHtml(String text, [ModelElement element]) {
+  // TODO: `renderMarkdownToHtml` is never called with an element arg.
   // TODO(keertip): use this for the one liner.
   md.Node _linkResolver(String name) {
     NodeList<CommentReference> commentRefs = _getCommentRefs(element);
@@ -37,7 +43,7 @@ String renderMarkdownToHtml(String text, [ModelElement element = null]) {
   }
 
   return md.markdownToHtml(text,
-      inlineSyntaxes: MARKDOWN_SYNTAXES, linkResolver: _linkResolver);
+      inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
 }
 
 String processDocsAsMarkdown(ModelElement element) {
@@ -71,7 +77,7 @@ String oneLinerWithoutReferences(String text) {
   if (text == null) return '';
   // Parse with Markdown, but only care about the first block or paragraph.
   var lines = text.replaceAll('\r\n', '\n').split('\n');
-  var document = new md.Document(inlineSyntaxes: MARKDOWN_SYNTAXES);
+  var document = new md.Document(inlineSyntaxes: _markdown_syntaxes);
   document.parseRefLinks(lines);
   var blocks = document.parseLines(lines);
 
