@@ -147,9 +147,7 @@ class DartDoc {
     List<_Error> errors = errorInfos.expand((AnalysisErrorInfo info) {
       return info.errors.map(
           (error) => new _Error(error, info.lineInfo, packageMeta.dir.path));
-    }).toList();
-    errors.sort();
-    errors = errors.where((_Error error) => error.isError).toList();
+    }).where((_Error error) => error.isError).toList()..sort();
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print(
