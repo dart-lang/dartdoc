@@ -144,13 +144,10 @@ class DartDoc {
       errorInfos.add(context.getErrors(source));
     }
 
-    List<_Error> errors = errorInfos
-        .expand((AnalysisErrorInfo info) {
-          return info.errors.map((error)
-              => new _Error(error, info.lineInfo, packageMeta.dir.path));
-        })
-        .where((_Error error) => error.severity == ErrorSeverity.ERROR)
-        .toList();
+    List<_Error> errors = errorInfos.expand((AnalysisErrorInfo info) {
+      return info.errors.map(
+          (error) => new _Error(error, info.lineInfo, packageMeta.dir.path));
+    }).where((_Error error) => error.severity == ErrorSeverity.ERROR).toList();
     errors.sort();
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
@@ -159,7 +156,8 @@ class DartDoc {
         "${seconds.toStringAsFixed(1)} seconds.\n");
 
     if (errors.isNotEmpty) {
-      print("Encountered ${errors.length} analysis error${errors.length == 1 ? '' : 's'}:");
+      print(
+          "Encountered ${errors.length} analysis error${errors.length == 1 ? '' : 's'}:");
       errors.forEach(print);
       // TODO: Should we `exit()` directly, or pass an error condition back?
       exit(1);
