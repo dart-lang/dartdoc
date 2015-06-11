@@ -22,9 +22,9 @@ import 'src/model.dart';
 import 'src/model_utils.dart';
 import 'src/package_meta.dart';
 
-const String NAME = 'dartdoc';
+const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String VERSION = '0.0.2+2';
+const String version = '0.0.2+2';
 
 final String defaultOutDir = 'doc${Platform.pathSeparator}api';
 
