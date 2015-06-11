@@ -150,6 +150,33 @@ indexResources() {
 @Depends(analyze, test, testDartdoc)
 buildbot() => null;
 
+@Task('Push a copy of the dartdoc docs to firebase')
+firebase() {
+  Map env = Platform.environment;
+
+  if (env['TRAVIS_BRANCH'] != 'master') return;
+  if (env['FIREBASE_USER'] == null) return;
+
+  log('TRAVIS_DART_VERSION = ${env['TRAVIS_DART_VERSION']}');
+
+  // Build the docs.
+  Dart.run('bin/dartdoc.dart');
+
+  // Install the firebase tools.
+  run('npm', arguments: ['install', '-g', 'firebase-tools']);
+
+  // Authenticate with firebase.
+  run('firebase',
+      arguments: [
+        'login',
+        '--email', env['FIREBASE_USER'],
+        '--password', env['FIREBASE_PASS']],
+      quiet: true);
+
+  // Deploy to firebase.
+  run('firebase', arguments: ['deploy', '-s', '-m', env['TRAVIS_COMMIT']]);
+}
+
 Future<int> _runAsyncTimed(Future callback()) async {
   var stopwatch = new Stopwatch()..start();
   await callback();

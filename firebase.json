@@ -1,0 +1,9 @@
+{
+  "firebase": "dartdoc",
+  "public": "doc/api",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ]
+}
