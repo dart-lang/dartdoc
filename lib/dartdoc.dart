@@ -9,6 +9,7 @@ import 'dart:io';
 
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
+import 'package:analyzer/src/generated/error.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
@@ -54,7 +55,10 @@ class DartDoc {
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
       this.outputDir, this.packageRootDir, this.packageMeta);
 
-  /// Generate the documentation.
+  /// Generate the documentation. [DartDocResults] is returned if dartdoc
+  /// succeeds. [DartDocFailure] is thrown if dartdoc fails in an expected way,
+  /// for instance if there is an anaysis error in the code. Any other exception
+  /// can be throw if there is an unexpected failure.
   Future<DartDocResults> generateDocs() async {
     _stopwatch = new Stopwatch()..start();
 
@@ -112,6 +116,9 @@ class DartDoc {
     if (packageMeta.isSdk) {
       libraries.addAll(getSdkLibrariesToDocument(sdk, context));
     }
+
+    List<Source> sources = [];
+
     files.forEach((String filePath) {
       String name = filePath;
       if (name.startsWith(Directory.current.path)) {
@@ -120,15 +127,43 @@ class DartDoc {
       }
       print('parsing ${name}...');
       Source source = new FileBasedSource.con1(new JavaFile(filePath));
+      sources.add(source);
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
         libraries.add(library);
       }
     });
+
+    // Ensure that the analysis engine performs all remaining work.
+    AnalysisResult result = context.performAnalysisTask();
+    while (result.hasMoreWork) {
+      result = context.performAnalysisTask();
+    }
+
+    List<AnalysisErrorInfo> errorInfos = [];
+
+    for (Source source in sources) {
+      context.computeErrors(source);
+      errorInfos.add(context.getErrors(source));
+    }
+
+    List<_Error> errors = errorInfos.expand((AnalysisErrorInfo info) {
+      return info.errors.map(
+          (error) => new _Error(error, info.lineInfo, packageMeta.dir.path));
+    }).where((_Error error) => error.isError).toList()..sort();
+
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print(
         "Parsed ${libraries.length} " "file${libraries.length == 1 ? '' : 's'} in "
         "${seconds.toStringAsFixed(1)} seconds.\n");
+
+    if (errors.isNotEmpty) {
+      errors.forEach(print);
+      int len = errors.length;
+      throw new DartDocFailure(
+          "encountered ${len} analysis error${len == 1 ? '' : 's'}");
+    }
+
     return libraries.toList();
   }
 }
@@ -139,4 +174,47 @@ class DartDocResults {
   final Directory outDir;
 
   DartDocResults(this.packageMeta, this.package, this.outDir);
+}
+
+/// This class is returned if dartdoc fails in an expected way (for instance, if
+/// there is an analysis error in the library).
+class DartDocFailure {
+  final String message;
+
+  DartDocFailure(this.message);
+
+  String toString() => message;
+}
+
+class _Error implements Comparable {
+  final AnalysisError error;
+  final LineInfo lineInfo;
+  final String projectPath;
+
+  _Error(this.error, this.lineInfo, this.projectPath);
+
+  int get severity => error.errorCode.errorSeverity.ordinal;
+  bool get isError => error.errorCode.errorSeverity == ErrorSeverity.ERROR;
+  String get severityName => error.errorCode.errorSeverity.displayName;
+  String get description => '${error.message} at ${location}, line ${line}.';
+  int get line => lineInfo.getLocation(error.offset).lineNumber;
+
+  String get location {
+    String path = error.source.fullName;
+    if (path.startsWith(projectPath)) {
+      path = path.substring(projectPath.length + 1);
+    }
+    return path;
+  }
+
+  int compareTo(_Error other) {
+    if (severity == other.severity) {
+      int cmp = error.source.fullName.compareTo(other.error.source.fullName);
+      return cmp == 0 ? line - other.line : cmp;
+    } else {
+      return other.severity - severity;
+    }
+  }
+
+  String toString() => '[${severityName}] ${description}';
 }

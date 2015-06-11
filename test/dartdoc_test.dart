@@ -27,7 +27,7 @@ void main() {
       delete(tempDir);
     });
 
-    test('generateDocs', () async {
+    test('generateDocs ${path.basename(testPackageDir.path)}', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc =
           new DartDoc(testPackageDir, [], getSdkDir(), [], tempDir, null, meta);
@@ -39,6 +39,19 @@ void main() {
       expect(p.name, 'test_package');
       expect(p.hasDocumentation, true);
       expect(p.libraries.length, 7);
+    });
+
+    test('generateDocs ${path.basename(testPackageBadDir.path)}', () async {
+      PackageMeta meta = new PackageMeta.fromDir(testPackageBadDir);
+      DartDoc dartdoc = new DartDoc(
+          testPackageBadDir, [], getSdkDir(), [], tempDir, null, meta);
+
+      try {
+        await dartdoc.generateDocs();
+        fail('dartdoc should fail on analysis errors');
+      } catch (e) {
+        expect(e is DartDocFailure, true);
+      }
     });
   });
 }

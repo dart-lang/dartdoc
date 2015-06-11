@@ -90,9 +90,19 @@ main(List<String> arguments) async {
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageRootDir, packageMeta);
-  DartDocResults results = await dartdoc.generateDocs();
 
-  print('\nSuccess! Open file://${results.outDir.absolute.path}/index.html');
+  try {
+    DartDocResults results = await dartdoc.generateDocs();
+    print('\nSuccess! Open file://${results.outDir.absolute.path}/index.html');
+  } catch (e, st) {
+    if (e is DartDocFailure) {
+      stderr.writeln('Generation failed: ${e}.');
+      exit(1);
+    } else {
+      stderr.writeln('Generation failed: ${e}\n${st}');
+      exit(255);
+    }
+  }
 }
 
 /// Print help if we are passed the help option or invalid arguments.
