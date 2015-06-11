@@ -41,7 +41,7 @@ void main() {
     });
 
     test('libraries', () {
-      expect(package.libraries, hasLength(3));
+      expect(package.libraries, hasLength(5));
     });
 
     test('is documented in library', () {
@@ -135,6 +135,14 @@ void main() {
     test('exported function', () {
       expect(
           exLibrary.functions.any((f) => f.name == 'helperFunction'), isFalse);
+    });
+
+    test('anonymous libraries', () {
+      expect(package.libraries.where((lib) => lib.name == 'anonymous_library'),
+          hasLength(1));
+      expect(
+          package.libraries.where((lib) => lib.name == 'another_anonymous_lib'),
+          hasLength(1));
     });
   });
 

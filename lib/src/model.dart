@@ -380,7 +380,7 @@ class Package {
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {
     libraryElements.forEach((element) {
       var lib = new Library(element, this);
-      Library._libraryMap.putIfAbsent(lib._name, () => lib);
+      Library._libraryMap.putIfAbsent(lib.name, () => lib);
       _libraries.add(lib);
     });
     _libraries.forEach((library) {
@@ -437,6 +437,11 @@ class Library extends ModelElement {
 
   factory Library(LibraryElement element, Package package) {
     var key = element == null ? 'null' : element.name;
+
+    if (key.isEmpty) {
+      var name = element.definingCompilationUnit.name;
+      key = name.substring(0, name.length - '.dart'.length);
+    }
 
     if (_libraryMap.containsKey(key)) {
       return _libraryMap[key];
