@@ -156,14 +156,15 @@ firebase() {
 
   if (env['TRAVIS_BRANCH'] != 'master') return;
   if (env['FIREBASE_USER'] == null) return;
-
-  log('TRAVIS_DART_VERSION = ${env['TRAVIS_DART_VERSION']}');
+  if (env['TRAVIS_DART_VERSION'] != 'stable') return;
 
   // Build the docs.
   Dart.run('bin/dartdoc.dart');
 
   // Install the firebase tools.
   run('npm', arguments: ['install', '-g', 'firebase-tools']);
+
+  print('has pass = ' + (env['FIREBASE_PASS'] != null));
 
   // Authenticate with firebase.
   run('firebase',
@@ -172,12 +173,14 @@ firebase() {
     '--email',
     env['FIREBASE_USER'],
     '--password',
-    env['FIREBASE_PASS']
+    env['FIREBASE_PASS'],
+    '-s'
   ],
       quiet: true);
 
   // Deploy to firebase.
-  run('firebase', arguments: ['deploy', '-s', '-m', env['TRAVIS_COMMIT']]);
+  run('firebase',
+      arguments: ['deploy', '-s', '--message', env['TRAVIS_COMMIT']]);
 }
 
 Future<int> _runAsyncTimed(Future callback()) async {
