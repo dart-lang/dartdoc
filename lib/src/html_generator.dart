@@ -12,11 +12,11 @@ import 'dart:profiler';
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:path/path.dart' as path;
 
-import '../markdown_processor.dart';
 import 'model.dart';
 import 'package_meta.dart';
 import '../generator.dart';
-import '../resources.g.dart' show RESOURCE_NAMES;
+import '../markdown_processor.dart';
+import '../resources.g.dart' show resource_names;
 import '../resource_loader.dart' as loader;
 
 typedef String TemplateRenderer(context,
@@ -476,7 +476,7 @@ class HtmlGeneratorInstance {
   // TODO: change this to use resource_loader
   Future _copyResources() async {
     final prefix = 'package:dartdoc/resources/';
-    for (var resourcePath in RESOURCE_NAMES) {
+    for (var resourcePath in resource_names) {
       if (!resourcePath.startsWith(prefix)) {
         throw new StateError(
             'Resource paths must start with $prefix, encountered $resourcePath');
@@ -517,9 +517,7 @@ String _layoutTitle(String name, String kind,
 
 /// Converts a markdown formatted string into HTML, and removes any script tags.
 /// Returns the HTML as a string.
-String renderMarkdown(String markdown) {
-  return renderMarkdownToHtml(markdown);
-}
+String renderMarkdown(String markdown) => renderMarkdownToHtml(markdown);
 
 /// Convert the given plain text into HTML.
 String renderPlainText(String text) {

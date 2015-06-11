@@ -23,7 +23,7 @@ main(List<String> arguments) async {
   }
 
   if (args['version']) {
-    print('$NAME version: $VERSION');
+    print('$name version: $version');
     exit(0);
   }
 
@@ -108,7 +108,7 @@ ArgParser _createArgsParser() {
   parser.addFlag('help',
       abbr: 'h', negatable: false, help: 'Show command help.');
   parser.addFlag('version',
-      help: 'Display the version for $NAME.', negatable: false);
+      help: 'Display the version for $name.', negatable: false);
   parser.addOption('dart-sdk',
       help: "Location of the Dart SDK. Use if SDK isn't automatically located.");
   parser.addFlag('sdk-docs',
