@@ -9,6 +9,7 @@ import 'dart:io';
 
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
+import 'package:analyzer/src/generated/error.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
@@ -112,6 +113,9 @@ class DartDoc {
     if (packageMeta.isSdk) {
       libraries.addAll(getSdkLibrariesToDocument(sdk, context));
     }
+
+    List<Source> sources = [];
+
     files.forEach((String filePath) {
       String name = filePath;
       if (name.startsWith(Directory.current.path)) {
@@ -120,15 +124,47 @@ class DartDoc {
       }
       print('parsing ${name}...');
       Source source = new FileBasedSource.con1(new JavaFile(filePath));
+      sources.add(source);
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
         libraries.add(library);
       }
     });
+
+    // Ensure that the analysis engine performs all remaining work.
+    AnalysisResult result = context.performAnalysisTask();
+    while (result.hasMoreWork) {
+      result = context.performAnalysisTask();
+    }
+
+    List<AnalysisErrorInfo> errorInfos = [];
+
+    for (Source source in sources) {
+      context.computeErrors(source);
+      errorInfos.add(context.getErrors(source));
+    }
+
+    List<_Error> errors = errorInfos
+        .expand((AnalysisErrorInfo info) {
+          return info.errors.map((error)
+              => new _Error(error, info.lineInfo, packageMeta.dir.path));
+        })
+        .where((_Error error) => error.severity == ErrorSeverity.ERROR)
+        .toList();
+    errors.sort();
+
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print(
         "Parsed ${libraries.length} " "file${libraries.length == 1 ? '' : 's'} in "
         "${seconds.toStringAsFixed(1)} seconds.\n");
+
+    if (errors.isNotEmpty) {
+      print("Encountered ${errors.length} analysis error${errors.length == 1 ? '' : 's'}:");
+      errors.forEach(print);
+      // TODO: Should we `exit()` directly, or pass an error condition back?
+      exit(1);
+    }
+
     return libraries.toList();
   }
 }
@@ -139,4 +175,37 @@ class DartDocResults {
   final Directory outDir;
 
   DartDocResults(this.packageMeta, this.package, this.outDir);
+}
+
+class _Error implements Comparable {
+  final AnalysisError error;
+  final LineInfo lineInfo;
+  final String projectPath;
+
+  _Error(this.error, this.lineInfo, this.projectPath);
+
+  ErrorSeverity get severity => error.errorCode.errorSeverity;
+  String get severityName => error.errorCode.errorSeverity.displayName;
+  String get message => error.message;
+  String get description => '${message} at ${location}, line ${line}.';
+  int get line => lineInfo.getLocation(error.offset).lineNumber;
+
+  String get location {
+    String path = error.source.fullName;
+    if (path.startsWith(projectPath)) {
+      path = path.substring(projectPath.length + 1);
+    }
+    return path;
+  }
+
+  int compareTo(_Error other) {
+    if (severity == other.severity) {
+      int cmp = error.source.fullName.compareTo(other.error.source.fullName);
+      return cmp == 0 ? line - other.line : cmp;
+    } else {
+      return other.severity - severity;
+    }
+  }
+
+  String toString() => '[${severityName}] ${description}';
 }
