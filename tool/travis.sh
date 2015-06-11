@@ -46,4 +46,7 @@ else
       --exclude-test-files \
       test/all.dart
   fi
+
+  # Push a copy of the dartdoc docs to firebase.
+  grind firebase
 fi
