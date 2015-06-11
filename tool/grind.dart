@@ -168,9 +168,12 @@ firebase() {
   // Authenticate with firebase.
   run('firebase',
       arguments: [
-        'login',
-        '--email', env['FIREBASE_USER'],
-        '--password', env['FIREBASE_PASS']],
+    'login',
+    '--email',
+    env['FIREBASE_USER'],
+    '--password',
+    env['FIREBASE_PASS']
+  ],
       quiet: true);
 
   // Deploy to firebase.
