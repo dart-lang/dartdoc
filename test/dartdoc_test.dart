@@ -43,8 +43,8 @@ void main() {
 
     test('generateDocs ${path.basename(testPackageBadDir.path)}', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageBadDir);
-      DartDoc dartdoc =
-          new DartDoc(testPackageBadDir, [], getSdkDir(), [], tempDir, null, meta);
+      DartDoc dartdoc = new DartDoc(
+          testPackageBadDir, [], getSdkDir(), [], tempDir, null, meta);
 
       try {
         await dartdoc.generateDocs();
