@@ -163,9 +163,6 @@ firebase() {
   // Install the firebase tools.
   run('npm', arguments: ['install', '-g', 'firebase-tools']);
 
-  print('has user = ${env['FIREBASE_USER'] != null}');
-  print('has pass = ${env['FIREBASE_TOKEN'] != null}');
-
   // Authenticate with firebase.
   run('firebase',
       arguments: [
