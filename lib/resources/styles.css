@@ -161,13 +161,8 @@ dt .name {
 }
 
 dl dt.callable .name {
-  display: block;
   float: none;
   width: auto;
-}
-
-dl dt.callable .signature {
-  display:block;
 }
 
 .signature a {
