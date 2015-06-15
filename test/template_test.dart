@@ -8,7 +8,7 @@ import 'dart:io';
 
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:path/path.dart' as p;
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('template', () {

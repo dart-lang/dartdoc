@@ -45,6 +45,8 @@ publish() async {
 
 @Task('Run all the tests.')
 test() {
+  // this is 5 seconds faster than `pub run test`, so
+  // using straight-up VM here
   Dart.runAsync('test/all.dart', vmArgs: ['--checked']);
 }
 

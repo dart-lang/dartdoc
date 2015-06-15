@@ -16,7 +16,7 @@ import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
 import 'generator.dart';
-import 'resource_loader.dart';
+import 'resource_loader.dart' as loader;
 import 'src/html_generator.dart';
 import 'src/io_utils.dart';
 import 'src/model.dart';
@@ -62,7 +62,7 @@ class DartDoc {
   Future<DartDocResults> generateDocs() async {
     _stopwatch = new Stopwatch()..start();
 
-    if (packageRootDir != null) packageRootPath = packageRootDir.path;
+    if (packageRootDir != null) loader.packageRootPath = packageRootDir.path;
 
     var files =
         packageMeta.isSdk ? [] : findFilesToDocumentInPackage(rootDir.path);

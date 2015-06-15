@@ -6,7 +6,7 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';

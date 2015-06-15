@@ -9,11 +9,11 @@
 library resource_loader;
 
 import 'dart:async' show Future;
-import 'dart:io' show Platform, File;
+import 'dart:io' show Platform, File, Directory;
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as p;
 import 'package:pub_cache/pub_cache.dart';
 
 /// Optional package root path.
@@ -43,6 +43,8 @@ Future<Uint8List> _doLoad(final String path) {
     return _doLoadOverHttp(path);
   } else if (scriptUri.toString().endsWith('.snapshot')) {
     return _doLoadWhenSnapshot(path);
+  } else if (packageRootPath != null) {
+    return _doLoadFromPackageRoot(path);
   } else {
     return _doLoadFromFileFromPackagesDir(path);
   }
@@ -74,8 +76,7 @@ Future<Uint8List> _doLoadWhenSnapshot(final String resourcePath) {
     var resourcePackage = resourcePackageRef.resolve();
     var resourcePackageDir = resourcePackage.location;
     var fullPath = resourcePackageDir.path;
-    return _doLoadOverFileFromLocation(
-        resourcePath, path.join(fullPath, "lib"));
+    return _doLoadOverFileFromLocation(resourcePath, p.join(fullPath, "lib"));
   } else {
     // maybe we're a snapshot next to a packages/ dir?
     return _doLoadFromFileFromPackagesDir(resourcePath);
@@ -88,7 +89,7 @@ Future<Uint8List> _doLoadOverHttp(final String resourcePath) {
   // strip file name from script uri, append path to resource
   var segmentsToResource = scriptUri.pathSegments.sublist(
       0, scriptUri.pathSegments.length - 1)
-    ..addAll(path.split(convertedResourcePath));
+    ..addAll(p.split(convertedResourcePath));
   var fullPath = scriptUri.replace(pathSegments: segmentsToResource);
 
   return http.readBytes(fullPath);
@@ -98,28 +99,34 @@ Future<Uint8List> _doLoadOverFileFromLocation(
     final String resourcePath, final String baseDir) {
   var convertedPath = _convertPackageSchemeToPackagesDir(resourcePath);
   // remove 'packages' and package name
-  var pathInsideLib = path.split(convertedPath).sublist(2);
+  var pathInsideLib = p.split(convertedPath).sublist(2);
   // put the baseDir in front
   pathInsideLib.insert(0, baseDir);
   // put it all back together
-  var fullPath = path.joinAll(pathInsideLib);
+  var fullPath = p.joinAll(pathInsideLib);
   return _readFile(resourcePath, fullPath);
 }
 
-// TODO: respect package root
-// Meanwhile, assume packages/ is next to entry point of script
+/// First, try a packages/ dir next to the entry point (Platform.script).
+/// If that doesn't exist, try a packages/ dir inside of the current
+/// working directory.
 Future<Uint8List> _doLoadFromFileFromPackagesDir(final String resourcePath) {
   var convertedPath = _convertPackageSchemeToPackagesDir(resourcePath);
-  String fullPath;
-  if (packageRootPath != null) {
-    var list = path.split(convertedPath)..removeAt(0);
-    fullPath = packageRootPath;
-    list.forEach((segment) => fullPath = path.join(fullPath, segment));
-  } else {
-    var scriptFile = new File(Platform.script.toFilePath());
-    var baseDir = path.dirname(scriptFile.path);
-    fullPath = path.join(baseDir, convertedPath);
+  var scriptFile = new File(Platform.script.toFilePath());
+  String baseDir = p.dirname(scriptFile.path);
+
+  if (!new Directory(p.join(baseDir, 'packages')).existsSync()) {
+    // try CWD
+    baseDir = Directory.current.path;
   }
+
+  var fullPath = p.join(baseDir, convertedPath);
+  return _readFile(resourcePath, fullPath);
+}
+
+Future<Uint8List> _doLoadFromPackageRoot(final String resourcePath) {
+  var withoutScheme = _removePackageScheme(resourcePath);
+  var fullPath = p.join(packageRootPath, withoutScheme);
   return _readFile(resourcePath, fullPath);
 }
 
@@ -134,9 +141,12 @@ Future<Uint8List> _readFile(
 }
 
 String _convertPackageSchemeToPackagesDir(String resourcePath) {
-  var withoutScheme =
-      resourcePath.substring('package:'.length, resourcePath.length);
-  return path.join('packages', withoutScheme);
+  var withoutScheme = _removePackageScheme(resourcePath);
+  return p.join('packages', withoutScheme);
+}
+
+String _removePackageScheme(final String resourcePath) {
+  return resourcePath.substring('package:'.length, resourcePath.length);
 }
 
 /// Tries to determine the app name, which is the same as the directory
@@ -144,7 +154,7 @@ String _convertPackageSchemeToPackagesDir(String resourcePath) {
 ///
 /// Only call this if your app is globally installed.
 String _appNameWhenGloballyInstalled() {
-  var parts = path.split(Platform.script.toFilePath());
+  var parts = p.split(Platform.script.toFilePath());
   var marker = parts.indexOf('global_packages');
   if (marker < 0) {
     throw new StateError(
@@ -154,7 +164,7 @@ String _appNameWhenGloballyInstalled() {
 }
 
 String _packageNameForResource(final String resourcePath) {
-  var parts = path.split(_convertPackageSchemeToPackagesDir(resourcePath));
+  var parts = p.split(_convertPackageSchemeToPackagesDir(resourcePath));
   // first part is 'packages', second part is the package name
   return parts[1];
 }
