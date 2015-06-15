@@ -92,7 +92,7 @@ class Dog implements Cat, E {
 
 abstract class E {}
 
-class F extends Dog with _PrivateAbstractClass {
+class F<T extends String> extends Dog with _PrivateAbstractClass {
   void methodWithGenericParam([List<Apple> msgs]) {}
 }
 

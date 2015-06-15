@@ -258,6 +258,10 @@ void main() {
       expect(Dog.name, equals('Dog'));
     });
 
+    test('class name with generics', () {
+      expect(F.nameWithGenerics, contains('T extends String'));
+    });
+
     test('correctly finds classes', () {
       expect(classes, hasLength(15));
     });
