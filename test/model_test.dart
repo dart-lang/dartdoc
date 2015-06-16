@@ -259,7 +259,7 @@ void main() {
     });
 
     test('class name with generics', () {
-      expect(F.nameWithGenerics, contains('T extends String'));
+      expect(F.nameWithGenerics, equals('F&ltT extends String&gt'));
     });
 
     test('correctly finds classes', () {

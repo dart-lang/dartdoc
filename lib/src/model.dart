@@ -705,7 +705,7 @@ class Class extends ModelElement {
 
   List<TypeParameter> get _typeParameters => _cls.typeParameters.map((f) {
     var lib = new Library(f.enclosingElement.library, package);
-    return new TypeParameter(f, new ModelElement.from(f.enclosingElement, lib));
+    return new TypeParameter(f, lib);
   }).toList();
 
   String get kind => 'class';
