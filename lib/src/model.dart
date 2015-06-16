@@ -700,8 +700,13 @@ class Class extends ModelElement {
 
   String get nameWithGenerics {
     if (!modelType.isParameterizedType) return name;
-    return '$name<${modelType.typeArguments.map((t) => t.name).join(', ')}>';
+    return '$name&lt${_typeParameters.map((t) => t.name).join(', ')}&gt';
   }
+
+  List<TypeParameter> get _typeParameters => _cls.typeParameters.map((f) {
+    var lib = new Library(f.enclosingElement.library, package);
+    return new TypeParameter(f, lib);
+  }).toList();
 
   String get kind => 'class';
 
@@ -1395,6 +1400,13 @@ class TypeParameter extends ModelElement {
   TypeParameterElement get _typeParameter => element as TypeParameterElement;
 
   String toString() => element.name;
+
+  String get name {
+    var bound = _typeParameter.bound;
+    return bound != null
+        ? '${_typeParameter.name} extends ${bound.name}'
+        : _typeParameter.name;
+  }
 
   @override
   String get _href =>
