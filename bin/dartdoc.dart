@@ -19,7 +19,7 @@ main(List<String> arguments) async {
   var args = parser.parse(arguments);
 
   if (args['help']) {
-    _printUsageAndExit(parser);
+    _printHelp(parser);
   }
 
   if (args['version']) {
@@ -29,7 +29,7 @@ main(List<String> arguments) async {
 
   Directory sdkDir = cli_util.getSdkDir(arguments);
   if (sdkDir == null) {
-    print("Warning: unable to locate the Dart SDK. Please use the --dart-sdk "
+    print("Error: unable to locate the Dart SDK. Please use the --dart-sdk "
         "command line option or set the DART_SDK environment variable.");
     exit(1);
   }
@@ -41,13 +41,13 @@ main(List<String> arguments) async {
 
   var readme = args['sdk-readme'];
   if (readme != null && !(new File(readme).existsSync())) {
-    print("Warning: unable to locate the SDK description file at $readme.");
+    print("Error: unable to locate the SDK description file at $readme.");
     exit(1);
   }
 
   Directory inputDir = new Directory(args['input']);
   if (!inputDir.existsSync()) {
-    print("Warning: unable to locate the input directory at ${inputDir.path}.");
+    print("Error: unable to locate the input directory at ${inputDir.path}.");
     exit(1);
   }
 
@@ -56,14 +56,12 @@ main(List<String> arguments) async {
   String url = args['hosted-url'];
   String footerFilePath = _resolveTildePath(args['footer']);
   if (footerFilePath != null && !new File(footerFilePath).existsSync()) {
-    print(
-        "Warning: unable to locate the file with footer at ${footerFilePath}.");
+    print("Error: unable to locate the file with footer at ${footerFilePath}.");
     exit(1);
   }
   String headerFilePath = _resolveTildePath(args['header']);
   if (headerFilePath != null && !new File(headerFilePath).existsSync()) {
-    print(
-        "Warning: unable to locate the file with header at ${headerFilePath}.");
+    print("Error: unable to locate the file with header at ${headerFilePath}.");
     exit(1);
   }
 
@@ -76,6 +74,12 @@ main(List<String> arguments) async {
   Directory packageRootDir;
   if (args['package-root'] != null) {
     packageRootDir = new Directory(_resolveTildePath(args['package-root']));
+  }
+
+  if (args.rest.isNotEmpty) {
+    var unknownArgs = args.rest.join(' ');
+    print('Error: detected unknown command-line argument(s): $unknownArgs');
+    _printUsageAndExit(parser, exitCode: 1);
   }
 
   PackageMeta packageMeta = sdkDocs
@@ -105,12 +109,16 @@ main(List<String> arguments) async {
   }
 }
 
-/// Print help if we are passed the help option or invalid arguments.
-void _printUsageAndExit(ArgParser parser) {
+/// Print help if we are passed the help option.
+void _printHelp(ArgParser parser, {int exitCode: 0}) {
   print('Generate HTML documentation for Dart libraries.\n');
+  _printUsageAndExit(parser, exitCode: exitCode);
+}
+
+void _printUsageAndExit(ArgParser parser, {int exitCode: 0}) {
   print('Usage: dartdoc [OPTIONS]\n');
   print(parser.usage);
-  exit(0);
+  exit(exitCode);
 }
 
 ArgParser _createArgsParser() {
