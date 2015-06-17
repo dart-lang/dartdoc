@@ -5,7 +5,7 @@
 library dartdoc.html_generator;
 
 import 'dart:io';
-import 'dart:developer';
+import 'dart:profiler';
 import 'dart:async' show Future;
 
 import 'package:mustache4dart/mustache4dart.dart';
