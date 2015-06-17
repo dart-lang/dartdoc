@@ -6,7 +6,11 @@ library markdown_processor;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart'
-    show LibraryElement, ConstructorElement, ClassMemberElement;
+    show
+        LibraryElement,
+        ConstructorElement,
+        ClassMemberElement,
+        ExecutableElement;
 import 'package:html/dom.dart' show Document;
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
@@ -251,7 +255,7 @@ String _getMatchingLink(
   }
   var refLibrary;
   try {
-    var e = refElement is ClassMemberElement
+    var e = refElement is ClassMemberElement || refElement is ExecutableElement
         ? refElement.enclosingElement
         : refElement;
     refLibrary =

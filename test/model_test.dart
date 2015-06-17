@@ -147,7 +147,7 @@ void main() {
   });
 
   group('Docs as HTML', () {
-    Class Apple, B, superAwesomeClass;
+    Class Apple, B, superAwesomeClass, foo2;
     TopLevelVariable incorrectReference;
     ModelFunction thisIsAsync;
     ModelFunction topLevelFunction;
@@ -170,6 +170,7 @@ void main() {
           .firstWhere((c) => c.name == 'testingCodeSyntaxInOneLiners');
       superAwesomeClass = fakeLibrary.classes
           .firstWhere((cls) => cls.name == 'SuperAwesomeClass');
+      foo2 = fakeLibrary.classes.firstWhere((cls) => cls.name == 'Foo2');
       twoExportsLib =
           package.libraries.firstWhere((lib) => lib.name == 'two_exports');
       assert(twoExportsLib != null);
@@ -229,6 +230,12 @@ void main() {
       test('reference to class from another library', () {
         String comment = superAwesomeClass.documentationAsHtml;
         expect(comment, contains('<a href="ex/Apple_class.html">Apple</a>'));
+      });
+
+      test('reference to method', () {
+        String comment = foo2.documentationAsHtml;
+        expect(comment, equals(
+            '<p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>'));
       });
     }
 

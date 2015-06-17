@@ -221,6 +221,7 @@ enum Color {
   VIOLET
 }
 
+/// link to method from class [Apple.m]
 class Foo2 {
   final int index;
   const Foo2(this.index);
