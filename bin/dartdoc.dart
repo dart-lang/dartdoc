@@ -19,7 +19,7 @@ main(List<String> arguments) async {
   var args = parser.parse(arguments);
 
   if (args['help']) {
-    _printUsageAndExit(parser);
+    _printHelp(parser);
   }
 
   if (args['version']) {
@@ -78,6 +78,11 @@ main(List<String> arguments) async {
     packageRootDir = new Directory(_resolveTildePath(args['package-root']));
   }
 
+  if (args.rest.isNotEmpty) {
+    print('Error: detected unknown command-line argument(s)');
+    _printUsageAndExit(parser, exitCode: 1);
+  }
+
   PackageMeta packageMeta = sdkDocs
       ? new PackageMeta.fromSdk(sdkDir, sdkReadmePath: readme)
       : new PackageMeta.fromDir(inputDir);
@@ -105,12 +110,16 @@ main(List<String> arguments) async {
   }
 }
 
-/// Print help if we are passed the help option or invalid arguments.
-void _printUsageAndExit(ArgParser parser) {
+/// Print help if we are passed the help option.
+void _printHelp(ArgParser parser, {int exitCode: 0}) {
   print('Generate HTML documentation for Dart libraries.\n');
+  _printUsageAndExit(parser, exitCode: exitCode);
+}
+
+void _printUsageAndExit(ArgParser parser, {int exitCode: 0}) {
   print('Usage: dartdoc [OPTIONS]\n');
   print(parser.usage);
-  exit(0);
+  exit(exitCode);
 }
 
 ArgParser _createArgsParser() {
