@@ -231,13 +231,13 @@ void main() {
         String comment = superAwesomeClass.documentationAsHtml;
         expect(comment, contains('<a href="ex/Apple_class.html">Apple</a>'));
       });
-    }
 
-    test('reference to method', () {
-      String comment = foo2.documentationAsHtml;
-      expect(comment, equals(
-          '<p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>'));
-    });
+      test('reference to method', () {
+        String comment = foo2.documentationAsHtml;
+        expect(comment, equals(
+            '<p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>'));
+      });
+    }
 
     test('legacy code blocks render correctly', () {
       expect(testingCodeSyntaxInOneLiners.oneLineDoc,
