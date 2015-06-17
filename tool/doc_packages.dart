@@ -52,8 +52,7 @@ ArgParser _createArgsParser() {
   var parser = new ArgParser();
   parser.addFlag('help',
       abbr: 'h', negatable: false, help: 'Show command help.');
-  parser.addFlag('list',
-      help: 'Show available pub packages', negatable: false);
+  parser.addFlag('list', help: 'Show available pub packages', negatable: false);
   parser.addFlag('generate',
       help: 'Generate docs for available pub packages.', negatable: false);
   parser.addOption('page',
