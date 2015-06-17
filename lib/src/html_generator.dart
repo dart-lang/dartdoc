@@ -5,9 +5,8 @@
 library dartdoc.html_generator;
 
 import 'dart:io';
-
+import 'dart:developer';
 import 'dart:async' show Future;
-import 'dart:profiler';
 
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:path/path.dart' as path;
@@ -482,7 +481,8 @@ class HtmlGeneratorInstance {
             'Resource paths must start with $prefix, encountered $resourcePath');
       }
       var destFileName = resourcePath.substring(prefix.length);
-      var destFile = new File(path.join(out.path, 'const', destFileName))
+      var destFile =
+          new File(path.join(out.path, 'static-assets', destFileName))
         ..createSync(recursive: true);
       var resourceBytes = await loader.loadAsBytes(resourcePath);
       destFile.writeAsBytesSync(resourceBytes);
