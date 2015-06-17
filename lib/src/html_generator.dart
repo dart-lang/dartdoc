@@ -221,6 +221,8 @@ class HtmlGeneratorInstance {
   }
 
   void generateLibrary(Package package, Library lib) {
+    print('generating docs for library ${lib.path}...');
+
     // TODO should we add _this_ to the context and avoid putting stuff
     // in the map?
     Map data = {
@@ -276,6 +278,7 @@ class HtmlGeneratorInstance {
       'htmlBase': '..'
     };
 
+    // TODO: `clazz.href` can be null here.
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
 
@@ -493,7 +496,6 @@ class HtmlGeneratorInstance {
     File f = new File(path.join(out.path, filename));
     if (!f.existsSync()) f.createSync(recursive: true);
     _htmlFiles.add(filename);
-    print('generating ${f.path}');
     return f;
   }
 

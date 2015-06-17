@@ -12,7 +12,7 @@ packages:
   args:
     description: args
     source: hosted
-    version: "0.13.1"
+    version: "0.13.2"
   barback:
     description: barback
     source: hosted
@@ -68,7 +68,7 @@ packages:
   http_parser:
     description: http_parser
     source: hosted
-    version: "0.0.2+6"
+    version: "0.0.2+7"
   http_server:
     description: http_server
     source: hosted
@@ -132,7 +132,7 @@ packages:
   quiver:
     description: quiver
     source: hosted
-    version: "0.21.3+1"
+    version: "0.21.4"
   shelf:
     description: shelf
     source: hosted
@@ -160,7 +160,7 @@ packages:
   stack_trace:
     description: stack_trace
     source: hosted
-    version: "1.3.2"
+    version: "1.3.3"
   string_scanner:
     description: string_scanner
     source: hosted
@@ -184,7 +184,7 @@ packages:
   watcher:
     description: watcher
     source: hosted
-    version: "0.9.5"
+    version: "0.9.6"
   webkit_inspection_protocol:
     description: webkit_inspection_protocol
     source: hosted
@@ -204,4 +204,4 @@ packages:
   yaml:
     description: yaml
     source: hosted
-    version: "2.1.2"
+    version: "2.1.3"

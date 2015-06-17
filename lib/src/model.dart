@@ -491,6 +491,8 @@ class Library extends ModelElement {
     return _name;
   }
 
+  String get path => _library.definingCompilationUnit.name;
+
   String get nameForFile => name.replaceAll(':', '-');
 
   bool get isInSdk => _library.isInSdk;
