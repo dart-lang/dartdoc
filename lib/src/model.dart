@@ -1295,7 +1295,7 @@ class Accessor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.nameForFile}/${_accessor.enclosingElement.name}.html#${htmlId}';
+      '${library.nameForFile}/${_accessor.enclosingElement.name}/${name}.html';
 }
 
 /// Top-level variables. But also picks up getters and setters?
