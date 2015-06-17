@@ -76,23 +76,21 @@ const List<String> _oneLinerSkipTags = const ["code", "pre"];
 String oneLinerWithoutReferences(String text) {
   if (text == null) return '';
   // Parse with Markdown, but only care about the first block or paragraph.
-  var lines = text.replaceAll('\r\n', '\n').split('\n');
-  var document = new md.Document(inlineSyntaxes: _markdown_syntaxes);
+  Iterable<String> lines = text.replaceAll('\r\n', '\n').split('\n');
+  md.Document document = new md.Document(inlineSyntaxes: _markdown_syntaxes);
   document.parseRefLinks(lines);
-  var blocks = document.parseLines(lines);
+  List blocks = document.parseLines(lines);
 
   while (blocks.isNotEmpty &&
       ((blocks.first is md.Element &&
               _oneLinerSkipTags.contains(blocks.first.tag)) ||
-          blocks.first.isEmpty)) {
+          (blocks.first is md.Text && blocks.first.text.isEmpty))) {
     blocks.removeAt(0);
   }
 
-  if (blocks.isEmpty) {
-    return '';
-  }
+  if (blocks.isEmpty) return '';
 
-  var firstPara = new PlainTextRenderer().render([blocks.first]);
+  String firstPara = new PlainTextRenderer().render([blocks.first]);
   if (firstPara.length > 200) {
     firstPara = firstPara.substring(0, 200) + '...';
   }
