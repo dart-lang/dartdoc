@@ -399,7 +399,8 @@ class Package {
     }
 
     Element el;
-    if (e.element is ClassMemberElement || e.element is ExecutableElement) {
+    if (e.element is ClassMemberElement ||
+        e.element is PropertyAccessorElement) {
       el = e.element.enclosingElement;
     } else if (e.element is TopLevelVariableElement) {
       TopLevelVariableElement variable = (e.element as TopLevelVariableElement);
