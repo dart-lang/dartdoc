@@ -247,7 +247,7 @@ void main() {
 
   group('Class', () {
     List<Class> classes;
-    Class Apple, B, Cat, Dog, F;
+    Class Apple, B, Cat, Dog, F, DT;
 
     setUp(() {
       classes = exLibrary.classes;
@@ -256,6 +256,7 @@ void main() {
       Cat = classes.firstWhere((c) => c.name == 'Cat');
       Dog = classes.firstWhere((c) => c.name == 'Dog');
       F = classes.firstWhere((c) => c.name == 'F');
+      DT = classes.firstWhere((c) => c.name == 'DateTime');
     });
 
     test('we got the classes we expect', () {
@@ -270,7 +271,7 @@ void main() {
     });
 
     test('correctly finds classes', () {
-      expect(classes, hasLength(15));
+      expect(classes, hasLength(16));
     });
 
     test('abstract', () {
@@ -333,6 +334,12 @@ void main() {
     test('inherited methods names', () {
       expect(B.inheritedMethods[0].name, 'printMsg');
       expect(B.inheritedMethods[1].name, 'isGreaterThan');
+    });
+
+    test('get exported class hrefs', () {
+      expect(DT.href, isNotNull);
+      expect(DT.instanceMethods[0].href, isNotNull);
+      expect(DT.instanceProperties[0].href, isNotNull);
     });
   });
 

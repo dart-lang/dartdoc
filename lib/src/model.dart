@@ -394,25 +394,22 @@ class Package {
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
   bool isDocumented(ModelElement e) {
-    // TODO: review this logic. I'm compensating for what's probably a bug
-    // see also ElementType and how an elementType is linked to a library
     if (e is Library) {
       return _libraries.any((lib) => lib.element == e.element);
-    } else {
-      if (_libraries
-          .any((lib) => lib.element == e.element.library)) return true;
-      for (Library lib in _libraries) {
-        LibraryElement libElement = lib.element as LibraryElement;
-        if (lib.element == e.element.library ||
-            (libElement).exportedLibraries
-                .contains(e.element.library)) return true;
-        if (isInExportedLibraries(
-            libElement.exportedLibraries, e.element.library)) {
-          return true;
-        }
-      }
     }
-    return false;
+
+    Element el;
+    if (e.element is ClassMemberElement || e.element is ExecutableElement) {
+      el = e.element.enclosingElement;
+    } else if (e.element is TopLevelVariableElement) {
+      TopLevelVariableElement variable = (e.element as TopLevelVariableElement);
+      if (variable.getter != null) el = variable.getter;
+      else if (variable.setter != null) el = variable.setter;
+      else el = variable;
+    } else {
+      el = e.element;
+    }
+    return _libraries.any((lib) => lib.hasInNamespace(el));
   }
 
   String get href => 'index.html';
