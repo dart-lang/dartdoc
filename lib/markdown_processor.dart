@@ -10,7 +10,7 @@ import 'package:analyzer/src/generated/element.dart'
         LibraryElement,
         ConstructorElement,
         ClassMemberElement,
-        ExecutableElement;
+        PropertyAccessorElement;
 import 'package:html/dom.dart' show Document;
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
@@ -255,7 +255,8 @@ String _getMatchingLink(
   }
   var refLibrary;
   try {
-    var e = refElement is ClassMemberElement || refElement is ExecutableElement
+    var e = refElement is ClassMemberElement ||
+            refElement is PropertyAccessorElement
         ? refElement.enclosingElement
         : refElement;
     refLibrary =

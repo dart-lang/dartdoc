@@ -2,6 +2,7 @@
 library ex;
 
 export 'src/mylib.dart' show Helper;
+export 'dart:core' show DateTime;
 
 int function1(String s, bool b, lastParam) => 5;
 
