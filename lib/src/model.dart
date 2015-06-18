@@ -404,9 +404,13 @@ class Package {
       el = e.element.enclosingElement;
     } else if (e.element is TopLevelVariableElement) {
       TopLevelVariableElement variable = (e.element as TopLevelVariableElement);
-      if (variable.getter != null) el = variable.getter;
-      else if (variable.setter != null) el = variable.setter;
-      else el = variable;
+      if (variable.getter != null) {
+        el = variable.getter;
+      } else if (variable.setter != null) {
+        el = variable.setter;
+      } else {
+        el = variable;
+      }
     } else {
       el = e.element;
     }
