@@ -23,7 +23,7 @@
  
 ##0.0.2+3
 
-* show brackets in comments that are not references
+* do not drop brackets in comments
 * replace ':' in library names with '-'
 * support multiple anonymous libraries
 * show generic information for classes
