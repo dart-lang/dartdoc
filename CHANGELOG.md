@@ -16,7 +16,18 @@
 * visually show library is deprecated
 * fixed one liner documentation
 
-##0.0.2+1
+##0.0.2+2
  
- * add a --package-root option
- * resource handler support for package root
+* add a --package-root option
+* resource handler support for package root
+ 
+##0.0.2+3
+
+* show brackets in comments that are not references
+* replace ':' in library names with '-'
+* support multiple anonymous libraries
+* show generic information for classes
+* signature of method on same line as name
+* error if command line argument is not recognized
+* fixed href for property accesssor
+* fixed generation of docs for exported libraries
