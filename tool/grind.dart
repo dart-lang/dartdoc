@@ -15,6 +15,8 @@ import 'package:path/path.dart' as path;
 final Directory docsDir =
     new Directory(path.join('${Directory.systemTemp.path}', defaultOutDir));
 
+final String sep = Platform.pathSeparator;
+
 main([List<String> args]) => grind(args);
 
 @Task('Start observatory for a test run')
@@ -130,12 +132,12 @@ indexResources() {
     throw new StateError('lib/resources directory not found');
   }
   var outDir = new Directory(path.join('lib'));
-  var out = new File(path.join(outDir.path, 'resources.g.dart'));
+  var out = new File(path.join(outDir.path, 'src${sep}resources.g.dart'));
   out.createSync(recursive: true);
   var buffer = new StringBuffer()
     ..write('// WARNING: This file is auto-generated.\n\n')
     ..write('library resources;\n\n')
-    ..write('const List<String> RESOURCE_NAMES = const [\n');
+    ..write('const List<String> resource_names = const [\n');
   var packagePaths = [];
   for (var fileName in listDir(sourcePath, recursive: true)) {
     if (!FileSystemEntity.isDirectorySync(fileName)) {

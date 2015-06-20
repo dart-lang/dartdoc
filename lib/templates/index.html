@@ -12,7 +12,8 @@
               <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}"><a href="{{nameForFile}}/index.html">{{ name }}</a></span>
             </dt>
             <dd>
-                {{{ oneLineDoc }}}
+              {{#isNotDocumented}}<span class="undocumented">Library not documented.</span>{{/isNotDocumented}}
+              {{{ oneLineDoc }}}
             </dd>
           {{/package.libraries}}
         </dl>
