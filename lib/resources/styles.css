@@ -98,11 +98,13 @@ a {
 pre {
   font-family: 'Source Code Pro', monospace;
   color: black;
-  border-radius: 0;
-  font-size: 12px;
-  width: 80ch;
+  border-radius: 4px;
+  font-size: 14px;
   word-wrap: normal;
   line-height: 1.4;
+  border: 1px solid #f0f0f0;
+  margin: 16px;
+  padding: 8px;
 }
 
 pre code {
@@ -116,7 +118,7 @@ pre code {
 code {
   font-family: 'Source Code Pro', monospace;
   /* overriding bootstrap */
-  font-size: inherit;
+  font-size: 14px;
   color: inherit;
   border-radius: 0;
   padding: 0;
@@ -170,11 +172,11 @@ dt .name {
 
 @media (min-width: 768px) {
   .dl-horizontal dd {
-    margin-left: 320px;
+    margin-left: 160px;
   }
 
   .dl-horizontal dt {
-    width: 320px;
+    width: 160px;
   }
 }
 

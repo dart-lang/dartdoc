@@ -5,9 +5,10 @@
         <div class="container">
             <!-- TODO: change to ordered list -->
             <p class="text-center">
-                <span class="version">{{package.name}} {{ package.version }}</span> |
+                <span class="version">{{package.name}} {{package.version}}</span>
+                &bull;
                 <span class="copyright">
-                    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
+                    <a href="http://creativecommons.org/licenses/by-sa/4.0/">creative commons</a>
                 </span>
             </p>
         </div>
@@ -16,9 +17,26 @@
 
 <script src="static-assets/prettify.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        prettyPrint();
+function initScroller() {
+    window.addEventListener('scroll', function(e){
+        var header = document.querySelector("header");
+
+        if (header != null) {
+          var position = window.pageYOffset || document.documentElement.scrollTop;
+
+          if (position >= 56) {
+              header.classes.add("header-fixed");
+          } else if (header.classes.contains("header-fixed")) {
+              header.classes.remove("header-fixed");
+          }
+        }
     });
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    prettyPrint();
+    initScroller();
+});
 </script>
 <!-- Do not remove placeholder -->
 <!-- Footer Placeholder -->

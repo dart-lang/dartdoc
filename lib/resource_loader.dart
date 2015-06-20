@@ -4,8 +4,7 @@
 
 // TODO: Consider making this a stand-alone package, if useful.
 
-/// Attempts to make it possible to load resources, independent of how the Dart
-/// app is run.
+/// Make it possible to load resources, independent of how the Dart app is run.
 library resource_loader;
 
 import 'dart:async' show Future;

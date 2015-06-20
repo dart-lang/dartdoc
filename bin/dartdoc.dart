@@ -87,7 +87,7 @@ main(List<String> arguments) async {
       : new PackageMeta.fromDir(inputDir);
 
   print("Generating documentation for '${packageMeta}' into "
-      "${outputDir.absolute.path}${Platform.pathSeparator}.");
+      "${outputDir.absolute.path}${Platform.pathSeparator}");
   print('');
 
   var generators = initGenerators(url, headerFilePath, footerFilePath);
