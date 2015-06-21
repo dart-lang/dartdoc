@@ -8,7 +8,7 @@
     <section>
         <dl class="dl-horizontal">
         {{#class.hasAnnotations}}
-        <dt>Annotated by:</dt>
+        <dt>Annotated by</dt>
         <dd><ul class="comma-separated class-relationships">
             {{#class.annotations}}
             <li>{{{.}}}</li>
@@ -17,17 +17,18 @@
         {{/class.hasAnnotations}}
 
         {{#class.hasSupertype}}
-        <dt>Extends:</dt>
+        <dt>Extends</dt>
         <dd><ul class="gt-separated class-relationships">
-            {{#class.superChain}}
-            <li>{{{linkedName}}}</li>
-            {{/class.superChain}}
             <li>{{{linkedObjectType}}}</li>
+            {{#class.superChainReversed}}
+            <li>{{{linkedName}}}</li>
+            {{/class.superChainReversed}}
+            <li>{{{name}}}</li>
         </ul></dd>
         {{/class.hasSupertype}}
 
         {{#class.hasInterfaces}}
-        <dt>Implements:</dt>
+        <dt>Implements</dt>
             <dd>
         <ul class="comma-separated class-relationships">
             {{#class.interfaces}}
@@ -38,7 +39,7 @@
         {{/class.hasInterfaces}}
 
         {{#class.hasMixins}}
-        <dt>Mixes-in:</dt>
+        <dt>Mixes-in</dt>
         <dd><ul class="comma-separated class-relationships">
             {{#class.mixins}}
             <li>{{{linkedName}}}</li>

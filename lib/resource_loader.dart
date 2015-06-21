@@ -5,7 +5,7 @@
 // TODO: Consider making this a stand-alone package, if useful.
 
 /// Make it possible to load resources, independent of how the Dart app is run.
-library resource_loader;
+library dartdoc.resource_loader;
 
 import 'dart:async' show Future;
 import 'dart:io' show Platform, File, Directory;

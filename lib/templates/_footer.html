@@ -3,12 +3,13 @@
 <footer>
     <div class="container-fluid">
         <div class="container">
-            <!-- TODO: change to ordered list -->
             <p class="text-center">
-                <span class="version">{{package.name}} {{package.version}}</span>
+                <span class="no-break">{{^package.isSdk}}package{{/package.isSdk}} {{package.name}}</span>
                 &bull;
-                <span class="copyright">
-                    <a href="http://creativecommons.org/licenses/by-sa/4.0/">creative commons</a>
+                <span class="no-break">version {{package.version}}</span>
+                &bull;
+                <span class="copyright no-break">
+                    <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
                 </span>
             </p>
         </div>
@@ -21,13 +22,13 @@ function initScroller() {
     window.addEventListener('scroll', function(e){
         var header = document.querySelector("header");
 
-        if (header != null) {
+        if (header) {
           var position = window.pageYOffset || document.documentElement.scrollTop;
 
-          if (position >= 56) {
-              header.classes.add("header-fixed");
-          } else if (header.classes.contains("header-fixed")) {
-              header.classes.remove("header-fixed");
+          if (position >= 128) {
+              header.classList.add("header-fixed");
+          } else if (header.classList.contains("header-fixed")) {
+              header.classList.remove("header-fixed");
           }
         }
     });
