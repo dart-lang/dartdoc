@@ -5,6 +5,11 @@
 // TODO: Consider making this a stand-alone package, if useful.
 
 /// Make it possible to load resources, independent of how the Dart app is run.
+///
+///     Future<String> getTemplateFile(String templatePath) {
+///       return loadAsString('package:dartdoc/templates/$templatePath');
+///     }
+///
 library dartdoc.resource_loader;
 
 import 'dart:async' show Future;
