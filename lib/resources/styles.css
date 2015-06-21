@@ -89,7 +89,7 @@ h2 {
 }
 
 .subtitle {
-  font-size: 16px;
+  font-size: 17px;
   min-height: 1.4em;
 }
 
@@ -199,8 +199,8 @@ section.summary dd {
 }
 
 section.summary dt {
-  margin-left: 2em;
-  text-indent: -2em;
+  margin-left: 24px;
+  text-indent: -24px;
 }
 
 dl.dl-horizontal dt {
@@ -209,7 +209,7 @@ dl.dl-horizontal dt {
 }
 
 dt .name {
-  font-size: 16px;
+  font-size: 17px;
 }
 
 dl dt.callable .name {
@@ -311,13 +311,13 @@ footer .container-fluid {
 }
 
 .multi-line-signature {
-  font-size: 18px;
+  font-size: 17px;
 }
 
 .breadcrumbs {
   padding: 0;
   margin: 8px 0 8px 0;
-  font-size: 16px;
+  font-size: 17px;
 }
 
 .comma-separated {
@@ -359,5 +359,5 @@ section {
 }
 
 section.multi-line-signature div.parameters {
-  margin-left: 16px;
+  margin-left: 24px;
 }
