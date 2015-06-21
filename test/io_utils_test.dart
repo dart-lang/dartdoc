@@ -14,7 +14,7 @@ void main() {
   group('io utils', () {
     test('find files to document', () {
       var files = findFilesToDocumentInPackage(Directory.current.path);
-      expect(files.length, 5);
+      expect(files.length, 4);
       expect(new File(files[0]).existsSync(), isTrue);
     });
 
