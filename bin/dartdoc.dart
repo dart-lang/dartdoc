@@ -76,6 +76,21 @@ main(List<String> arguments) async {
     packageRootDir = new Directory(_resolveTildePath(args['package-root']));
   }
 
+  Map<String, String> urlMappings;
+  if (args['url-mapping'] != null) {
+    urlMappings = new Map<String, String>();
+    for (String mapping in args['url-mapping']) {
+      int commaIndex = mapping.indexOf(',');
+      if (commaIndex == -1) {
+        print('Error: URL mapping "$mapping" does not contain a comma.');
+        exit(1);
+      }
+      String url = mapping.substring(0, commaIndex);
+      String path = mapping.substring(commaIndex + 1);
+      urlMappings[url] = path;
+    }
+  }
+
   if (args.rest.isNotEmpty) {
     var unknownArgs = args.rest.join(' ');
     print('Error: detected unknown command-line argument(s): $unknownArgs');
@@ -93,7 +108,7 @@ main(List<String> arguments) async {
   var generators = initGenerators(url, headerFilePath, footerFilePath);
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
-      outputDir, packageRootDir, packageMeta);
+      outputDir, packageRootDir, packageMeta, urlMappings);
 
   try {
     DartDocResults results = await dartdoc.generateDocs();
@@ -142,6 +157,11 @@ ArgParser _createArgsParser() {
   parser.addOption('footer',
       help: 'path to file containing HTML text, inserted into the footer of every page.');
   parser.addOption('package-root', help: 'The path to the package root.');
+  parser.addOption('url-mapping',
+      help: '--url-mapping=libraryUri,/path/to/library.dart directs dartdoc to '
+      'use "library.dart" as the source for an import of "libraryUri"',
+      allowMultiple: true,
+      splitCommas: false);
   parser.addOption('exclude',
       help: 'Comma-separated list of library names to ignore.');
   parser.addOption('hosted-url',

@@ -29,8 +29,8 @@ void main() {
 
     test('generateDocs ${path.basename(testPackageDir.path)}', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
-      DartDoc dartdoc =
-          new DartDoc(testPackageDir, [], getSdkDir(), [], tempDir, null, meta);
+      DartDoc dartdoc = new DartDoc(
+          testPackageDir, [], getSdkDir(), [], tempDir, null, meta, null);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.package, isNotNull);
@@ -44,7 +44,7 @@ void main() {
     test('generateDocs ${path.basename(testPackageBadDir.path)}', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageBadDir);
       DartDoc dartdoc = new DartDoc(
-          testPackageBadDir, [], getSdkDir(), [], tempDir, null, meta);
+          testPackageBadDir, [], getSdkDir(), [], tempDir, null, meta, null);
 
       try {
         await dartdoc.generateDocs();

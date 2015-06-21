@@ -13,6 +13,7 @@ import 'package:analyzer/src/generated/error.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
+import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
 import 'generator.dart';
@@ -47,13 +48,14 @@ class DartDoc {
   final Directory outputDir;
   final Directory packageRootDir;
   final PackageMeta packageMeta;
+  final Map<String, String> urlMappings;
 
   final Set<LibraryElement> libraries = new Set();
 
   Stopwatch _stopwatch;
 
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
-      this.outputDir, this.packageRootDir, this.packageMeta);
+      this.outputDir, this.packageRootDir, this.packageMeta, this.urlMappings);
 
   /// Generate the documentation. [DartDocResults] is returned if dartdoc
   /// succeeds. [DartDocFailure] is thrown if dartdoc fails in an expected way,
@@ -98,6 +100,8 @@ class DartDoc {
       new DartUriResolver(sdk),
       new FileUriResolver()
     ];
+    if (urlMappings != null) resolvers.insert(
+        0, new CustomUriResolver(urlMappings));
     JavaFile packagesDir = packageRootDir == null
         ? new JavaFile.relative(new JavaFile(rootDir.path), 'packages')
         : new JavaFile(packageRootDir.path);
