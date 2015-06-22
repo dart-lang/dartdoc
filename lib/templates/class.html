@@ -8,8 +8,8 @@
     <section>
         <dl class="dl-horizontal">
         {{#class.hasAnnotations}}
-        <dt>Annotated by</dt>
-        <dd><ul class="comma-separated class-relationships">
+        <dt>Annotations</dt>
+        <dd><ul class="annotation-list class-relationships">
             {{#class.annotations}}
             <li>{{{.}}}</li>
             {{/class.annotations}}
@@ -48,7 +48,7 @@
         {{/class.hasMixins}}
 
         {{#class.hasImplementors}}
-        <dt>Implementors</dt>
+        <dt>Implemented by</dt>
         <dd><ul class="comma-separated class-relationships">
             {{#class.implementors}}
             <li>{{{linkedName}}}</li>

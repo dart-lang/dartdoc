@@ -75,7 +75,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 300;
+  font-weight: normal;
   margin: 0;
 }
 
@@ -93,8 +93,14 @@ h2 {
   min-height: 1.4em;
 }
 
+.title-description .subtitle {
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
 p {
-  margin-bottom: 8px;
+  margin-bottom: 1em;
 }
 
 p,
@@ -178,9 +184,9 @@ header li {
   color: white;
 }
 
-header h1 .kind {
+/*header h1 .kind {
   font-weight: 300;
-}
+}*/
 
 dt {
   font-weight: normal;
@@ -290,7 +296,11 @@ footer .container-fluid {
 
 .markdown h4 {
   font-size: 16px;
-  margin-bottom: 8px;
+  margin-bottom: 0;
+}
+
+.markdown li p {
+  margin: 0;
 }
 
 .gt-separated {
@@ -323,6 +333,20 @@ footer .container-fluid {
   padding: 0;
   margin: 8px 0 8px 0;
   font-size: 17px;
+}
+
+.annotation-list {
+  list-style: none;
+  padding: 0;
+  display: inline;
+}
+
+.annotation-list li {
+  display: inline;
+}
+
+.annotation-list li:before {
+  content: "@";
 }
 
 .comma-separated {

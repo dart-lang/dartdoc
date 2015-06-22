@@ -396,6 +396,7 @@ class Package {
       library._allClasses.forEach(_addToImplementors);
     });
 
+    _libraries.sort();
     _implementors.values.forEach((l) => l.sort());
   }
 
