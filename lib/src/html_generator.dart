@@ -222,8 +222,13 @@ class HtmlGeneratorInstance {
   void generateLibrary(Package package, Library lib) {
     print('generating docs for library ${lib.path}...');
 
-    // TODO should we add _this_ to the context and avoid putting stuff
-    // in the map?
+    if (!lib.hasDocumentation) {
+      print(
+          "  warning: library '${lib.name}' has no documentation; consider adding some");
+    }
+
+    // TODO: Should we add _this_ to the context and avoid putting stuff in the
+    // map?
     Map data = {
       'package': package,
       'library': lib,
