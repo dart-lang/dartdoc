@@ -172,7 +172,7 @@ String _replaceAllLinks(ModelElement element, String str,
         if (link != null) {
           buf.write('<a href="$link">$codeRef</a>');
         } else {
-          print("WARNING: $element contains unknown doc reference [$codeRef]");
+          print("  warning: unresolved doc reference '$codeRef' (in $element)");
           buf.write(codeRef);
         }
       }
