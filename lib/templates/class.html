@@ -8,8 +8,8 @@
     <section>
         <dl class="dl-horizontal">
         {{#class.hasAnnotations}}
-        <dt>Annotated by:</dt>
-        <dd><ul class="comma-separated class-relationships">
+        <dt>Annotations</dt>
+        <dd><ul class="annotation-list class-relationships">
             {{#class.annotations}}
             <li>{{{.}}}</li>
             {{/class.annotations}}
@@ -17,17 +17,18 @@
         {{/class.hasAnnotations}}
 
         {{#class.hasSupertype}}
-        <dt>Extends:</dt>
+        <dt>Extends</dt>
         <dd><ul class="gt-separated class-relationships">
-            {{#class.superChain}}
-            <li>{{{linkedName}}}</li>
-            {{/class.superChain}}
             <li>{{{linkedObjectType}}}</li>
+            {{#class.superChainReversed}}
+            <li>{{{linkedName}}}</li>
+            {{/class.superChainReversed}}
+            <li>{{{name}}}</li>
         </ul></dd>
         {{/class.hasSupertype}}
 
         {{#class.hasInterfaces}}
-        <dt>Implements:</dt>
+        <dt>Implements</dt>
             <dd>
         <ul class="comma-separated class-relationships">
             {{#class.interfaces}}
@@ -38,7 +39,7 @@
         {{/class.hasInterfaces}}
 
         {{#class.hasMixins}}
-        <dt>Mixes-in:</dt>
+        <dt>Mixes-in</dt>
         <dd><ul class="comma-separated class-relationships">
             {{#class.mixins}}
             <li>{{{linkedName}}}</li>
@@ -47,7 +48,7 @@
         {{/class.hasMixins}}
 
         {{#class.hasImplementors}}
-        <dt>Implementors</dt>
+        <dt>Implemented by</dt>
         <dd><ul class="comma-separated class-relationships">
             {{#class.implementors}}
             <li>{{{linkedName}}}</li>
@@ -66,8 +67,7 @@
         <dl class="constructor-summary-list">
             {{#class.constructors}}
             <dt id="{{htmlId}}" class="callable">
-                <span class="name">{{{linkedName}}}</span>
-                <span class="signature">( {{{ linkedParams }}} )</span>
+                <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
             </dt>
             <dd>
                 {{#isConst}}

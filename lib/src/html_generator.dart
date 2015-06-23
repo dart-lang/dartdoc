@@ -15,7 +15,7 @@ import 'model.dart';
 import 'package_meta.dart';
 import '../generator.dart';
 import '../markdown_processor.dart';
-import '../resources.g.dart' show resource_names;
+import 'resources.g.dart' as resources;
 import '../resource_loader.dart' as loader;
 
 typedef String TemplateRenderer(context,
@@ -203,7 +203,6 @@ class HtmlGeneratorInstance {
     Map data = {
       'package': package,
       'documentation': package.documentation,
-      'oneLineDoc': package.oneLineDoc,
       'title': '${package.name} - Dart API docs',
       'layoutTitle': _layoutTitle(package.name, package.isSdk ? '' : 'package'),
       'metaDescription':
@@ -478,7 +477,7 @@ class HtmlGeneratorInstance {
   // TODO: change this to use resource_loader
   Future _copyResources() async {
     final prefix = 'package:dartdoc/resources/';
-    for (var resourcePath in resource_names) {
+    for (var resourcePath in resources.resource_names) {
       if (!resourcePath.startsWith(prefix)) {
         throw new StateError(
             'Resource paths must start with $prefix, encountered $resourcePath');

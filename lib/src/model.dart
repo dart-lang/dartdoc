@@ -45,7 +45,7 @@ void _addToImplementors(Class c) {
   }
 }
 
-abstract class ModelElement {
+abstract class ModelElement implements Comparable {
   final Element element;
   final Library library;
 
@@ -96,6 +96,14 @@ abstract class ModelElement {
       return new Parameter(e, library);
     }
     throw "Unknown type ${e.runtimeType}";
+  }
+
+  int compareTo(dynamic other) {
+    if (other is ModelElement) {
+      return name.toLowerCase().compareTo(other.name.toLowerCase());
+    } else {
+      return 0;
+    }
   }
 
   String get documentation {
@@ -383,9 +391,13 @@ class Package {
       Library._libraryMap.putIfAbsent(lib.name, () => lib);
       _libraries.add(lib);
     });
+
     _libraries.forEach((library) {
       library._allClasses.forEach(_addToImplementors);
     });
+
+    _libraries.sort();
+    _implementors.values.forEach((l) => l.sort());
   }
 
   /// Does this package represent the SDK?
@@ -498,6 +510,8 @@ class Library extends ModelElement {
   String get nameForFile => name.replaceAll(':', '-');
 
   bool get isInSdk => _library.isInSdk;
+
+  bool get isNotDocumented => oneLineDoc.isEmpty;
 
   List<TopLevelVariable> _getVariables() {
     if (_variables != null) return _variables;
@@ -738,6 +752,8 @@ class Class extends ModelElement {
     return typeChain;
   }
 
+  List<ElementType> get superChainReversed => superChain.reversed.toList();
+
   List<ElementType> get mixins => _mixins;
 
   bool get hasMixins => mixins.isNotEmpty;
@@ -748,7 +764,7 @@ class Class extends ModelElement {
 
   /// Returns all the implementors of the class specified.
   List<Class> get implementors =>
-      _implementors[this] != null ? _implementors[this] : new List(0);
+      _implementors[this] != null ? _implementors[this] : [];
 
   bool get hasImplementors => implementors.isNotEmpty;
 

@@ -2,7 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library markdown_processor;
+/// Utility code to convert markdown comments to html.
+library dartdoc.markdown_processor;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart'
@@ -95,10 +96,6 @@ String oneLinerWithoutReferences(String text) {
   if (blocks.isEmpty) return '';
 
   String firstPara = new PlainTextRenderer().render([blocks.first]);
-  if (firstPara.length > 200) {
-    firstPara = firstPara.substring(0, 200) + '...';
-  }
-
   return firstPara.trim();
 }
 

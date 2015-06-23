@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+/// A documentation generator for Dart.
 library dartdoc;
 
 import 'dart:async';
@@ -23,6 +24,9 @@ import 'src/io_utils.dart';
 import 'src/model.dart';
 import 'src/model_utils.dart';
 import 'src/package_meta.dart';
+
+export 'src/model.dart';
+export 'src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
@@ -57,10 +61,12 @@ class DartDoc {
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
       this.outputDir, this.packageRootDir, this.packageMeta, this.urlMappings);
 
-  /// Generate the documentation. [DartDocResults] is returned if dartdoc
-  /// succeeds. [DartDocFailure] is thrown if dartdoc fails in an expected way,
-  /// for instance if there is an anaysis error in the code. Any other exception
-  /// can be throw if there is an unexpected failure.
+  /// Generate DartDoc documentation.
+  ///
+  /// [DartDocResults] is returned if dartdoc succeeds. [DartDocFailure] is
+  /// thrown if dartdoc fails in an expected way, for example if there is an
+  /// anaysis error in the code. Any other exception can be throw if there is an
+  /// unexpected failure.
   Future<DartDocResults> generateDocs() async {
     _stopwatch = new Stopwatch()..start();
 
@@ -172,6 +178,7 @@ class DartDoc {
   }
 }
 
+/// The results of a [DartDoc.generateDocs] call.
 class DartDocResults {
   final PackageMeta packageMeta;
   final Package package;

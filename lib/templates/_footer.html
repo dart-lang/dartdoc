@@ -3,11 +3,13 @@
 <footer>
     <div class="container-fluid">
         <div class="container">
-            <!-- TODO: change to ordered list -->
             <p class="text-center">
-                <span class="version">{{package.name}} {{ package.version }}</span> |
-                <span class="copyright">
-                    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>
+                <span class="no-break">{{^package.isSdk}}package{{/package.isSdk}} {{package.name}}</span>
+                &bull;
+                <span class="no-break">version {{package.version}}</span>
+                &bull;
+                <span class="copyright no-break">
+                    <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
                 </span>
             </p>
         </div>
@@ -16,9 +18,26 @@
 
 <script src="static-assets/prettify.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        prettyPrint();
+function initScroller() {
+    window.addEventListener('scroll', function(e){
+        var header = document.querySelector("header");
+
+        if (header) {
+          var position = window.pageYOffset || document.documentElement.scrollTop;
+
+          if (position >= 128) {
+              header.classList.add("header-fixed");
+          } else if (header.classList.contains("header-fixed")) {
+              header.classList.remove("header-fixed");
+          }
+        }
     });
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    prettyPrint();
+    initScroller();
+});
 </script>
 <!-- Do not remove placeholder -->
 <!-- Footer Placeholder -->

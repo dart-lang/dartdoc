@@ -2,11 +2,15 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/// Attempts to make it possible to load resources, independent of how the Dart
-/// app is run.
+// TODO: Consider making this a stand-alone package, if useful.
+
+/// Make it possible to load resources, independent of how the Dart app is run.
 ///
-/// TODO: consider making this a stand-alone package, if useful
-library resource_loader;
+///     Future<String> getTemplateFile(String templatePath) {
+///       return loadAsString('package:dartdoc/templates/$templatePath');
+///     }
+///
+library dartdoc.resource_loader;
 
 import 'dart:async' show Future;
 import 'dart:io' show Platform, File, Directory;

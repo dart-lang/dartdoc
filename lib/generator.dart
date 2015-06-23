@@ -11,7 +11,9 @@ import 'dart:io';
 import 'src/model.dart' show Package;
 
 /// An abstract class that defines a generator that generates documentation for
-/// a given package. Generators can generate documentation in different formats:
+/// a given package.
+///
+/// Generators can generate documentation in different formats:
 /// html, json etc.
 abstract class Generator {
   /// Generate the documentation for the given package in the specified
