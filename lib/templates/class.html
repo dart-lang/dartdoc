@@ -30,11 +30,11 @@
         {{#class.hasInterfaces}}
         <dt>Implements</dt>
             <dd>
-        <ul class="comma-separated class-relationships">
-            {{#class.interfaces}}
-            <li>{{{linkedName}}}</li>
-            {{/class.interfaces}}
-        </ul>
+                <ul class="comma-separated class-relationships">
+                    {{#class.interfaces}}
+                    <li>{{{linkedName}}}</li>
+                    {{/class.interfaces}}
+                </ul>
             </dd>
         {{/class.hasInterfaces}}
 
@@ -56,7 +56,6 @@
         </ul></dd>
         {{/class.hasImplementors}}
         </dl>
-
     </section>
     {{/class.hasModifiers}}
 
@@ -79,7 +78,6 @@
             </dd>
             {{/class.constructors}}
         </dl>
-
     </section>
     {{/class.hasConstructors}}
 
@@ -160,7 +158,6 @@
             {{#class.inheritedOperators}}
             {{>callable}}
             {{/class.inheritedOperators}}
-
         </dl>
     </section>
     {{/class.hasOperators}}
