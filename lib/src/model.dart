@@ -1368,10 +1368,8 @@ class Parameter extends ModelElement {
       : super(element, library) {
     var t = _parameter.type;
     var lib;
-    try {
-      lib = library.package.libraries
-          .firstWhere((l) => l.hasInNamespace(t.element));
-    } on StateError {}
+    lib = library.package.libraries.firstWhere(
+        (l) => l.hasInNamespace(t.element), orElse: () => null);
     if (lib == null) {
       lib = new Library(t.element.library, library.package);
     }
