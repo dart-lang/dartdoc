@@ -1367,8 +1367,15 @@ class Parameter extends ModelElement {
   Parameter(ParameterElement element, Library library)
       : super(element, library) {
     var t = _parameter.type;
-    _modelType = new ElementType(t, new ModelElement.from(
-        t.element, new Library(t.element.library, library.package)));
+    var lib;
+    try {
+      lib = library.package.libraries
+          .firstWhere((l) => l.hasInNamespace(t.element));
+    } on StateError {}
+    if (lib == null) {
+      lib = new Library(t.element.library, library.package);
+    }
+    _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
   }
 
   ParameterElement get _parameter => element as ParameterElement;

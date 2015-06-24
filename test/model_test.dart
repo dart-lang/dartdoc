@@ -327,7 +327,7 @@ void main() {
     });
 
     test('inherited methods', () {
-      expect(B.inheritedMethods, hasLength(2));
+      expect(B.inheritedMethods, hasLength(3));
       expect(B.hasInheritedMethods, isTrue);
     });
 
@@ -576,12 +576,13 @@ void main() {
 
   group('Parameter', () {
     Class c, f;
-    Method isGreaterThan, asyncM, methodWithGenericParam;
+    Method isGreaterThan, asyncM, methodWithGenericParam, paramFromExportLib;
     Parameter p1;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       isGreaterThan = c.instanceMethods[2]; // isGreaterThan
+      paramFromExportLib = c.instanceMethods[3];
       asyncM = exLibrary.classes
               .firstWhere((c) => c.name == 'Dog').instanceMethods
           .firstWhere((m) => m.name == 'foo');
@@ -613,6 +614,11 @@ void main() {
     test('param with generics', () {
       var params = methodWithGenericParam.linkedParams();
       expect(params.contains('List') && params.contains('Apple'), isTrue);
+    });
+
+    test('param exported in library', () {
+      var param = paramFromExportLib.parameters[0];
+      expect(param.library.name, equals('ex'));
     });
   });
 

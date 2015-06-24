@@ -1,6 +1,7 @@
 /// a library. testing string escaping: `var s = 'a string'` <cool>
 library ex;
 
+import 'src/mylib.dart' show Helper;
 export 'src/mylib.dart' show Helper;
 export 'dart:core' show DateTime;
 
@@ -47,6 +48,8 @@ class Apple {
   bool isGreaterThan(int number, {int check: 5}) {
     return number > check;
   }
+
+  void paramFromExportLib(Helper helper) {}
 }
 /// Extends class [Apple], use [new Apple] or [new Apple.fromString]
 class B extends Apple with Cat {
