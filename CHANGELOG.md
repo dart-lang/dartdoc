@@ -36,6 +36,6 @@
 
 * tweaks to margins, fonts and header
 * mobile ui improvements
-* support user defined library mapping, the --url-mapping option
+* support user defined library mapping using --url-mapping option
 * warning if library is undocumented
 * fixed linking for parameters 
