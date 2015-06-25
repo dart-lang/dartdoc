@@ -31,3 +31,11 @@
 * error if command line argument is not recognized
 * fixed href for property accesssor
 * fixed generation of docs for exported libraries
+
+##0.0.3
+
+* tweaks to margins, fonts and header
+* mobile ui improvements
+* support user defined library mapping, the --url-mapping option
+* warning if library is undocumented
+* fixed linking for parameters 
