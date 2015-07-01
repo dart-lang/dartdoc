@@ -224,7 +224,7 @@ class HtmlGeneratorInstance {
 
     if (!lib.hasDocumentation) {
       print(
-          "  warning: library '${lib.name}' has no documentation; consider adding some");
+          "  warning: library '${lib.name}' has no documentation");
     }
 
     // TODO: Should we add _this_ to the context and avoid putting stuff in the
