@@ -24,6 +24,9 @@ const _rightChar = ']';
 
 final List<md.InlineSyntax> _markdown_syntaxes = [new _InlineCodeSyntax()];
 
+// We don't emit warnings currently: #572.
+const bool _emitWarning = false;
+
 String renderMarkdownToHtml(String text, [ModelElement element]) {
   // TODO: `renderMarkdownToHtml` is never called with an element arg.
   // TODO(keertip): use this for the one liner.
@@ -172,7 +175,10 @@ String _replaceAllLinks(ModelElement element, String str,
         if (link != null) {
           buf.write('<a href="$link">$codeRef</a>');
         } else {
-          print("  warning: unresolved doc reference '$codeRef' (in $element)");
+          if (_emitWarning) {
+            print(
+                "  warning: unresolved doc reference '$codeRef' (in $element)");
+          }
           buf.write(codeRef);
         }
       }
