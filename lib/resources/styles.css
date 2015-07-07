@@ -179,6 +179,7 @@ header h1 {
 }
 
 header a,
+header a:hover,
 header p,
 header li {
   color: white;

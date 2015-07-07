@@ -4,22 +4,53 @@
     {{>documentation}}
     {{/library}}
 
-    {{#library.hasClasses}}
-    <section class="summary" id="classes">
-        <h2>Classes</h2>
+    {{#library.hasConstants}}
+    <section class="summary" id="constants">
+        <h2>Constants</h2>
 
-        <dl>
-            {{#library.classes}}
-            <dt id="{{htmlId}}">
-                <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{linkedName}}}</span>
-            </dt>
-            <dd>
-                {{{ oneLineDoc }}}
-            </dd>
-            {{/library.classes}}
+        <dl class="properties">
+            {{#library.constants}}
+            {{>constant}}
+            {{/library.constants}}
         </dl>
     </section>
-    {{/library.hasClasses}}
+    {{/library.hasConstants}}
+
+    {{#library.hasTypedefs}}
+    <section class="summary" id="typedefs">
+        <h2>Typedefs</h2>
+
+        <dl class="callables">
+            {{#library.typedefs}}
+            {{>callable}}
+            {{/library.typedefs}}
+        </dl>
+    </section>
+    {{/library.hasTypedefs}}
+
+    {{#library.hasProperties}}
+    <section class="summary" id="properties">
+        <h2>Properties</h2>
+
+        <dl class="properties">
+            {{#library.properties}}
+            {{>property}}
+            {{/library.properties}}
+        </dl>
+    </section>
+    {{/library.hasProperties}}
+
+    {{#library.hasFunctions}}
+    <section class="summary" id="functions">
+        <h2>Functions</h2>
+
+        <dl class="callables">
+            {{#library.functions}}
+            {{>callable}}
+            {{/library.functions}}
+        </dl>
+    </section>
+    {{/library.hasFunctions}}
 
     {{#library.hasEnums}}
     <section class="summary" id="enums">
@@ -38,53 +69,22 @@
     </section>
     {{/library.hasEnums}}
 
-    {{#library.hasProperties}}
-    <section class="summary" id="properties">
-        <h2>Properties</h2>
+    {{#library.hasClasses}}
+    <section class="summary" id="classes">
+        <h2>Classes</h2>
 
-        <dl class="properties">
-            {{#library.properties}}
-            {{>property}}
-            {{/library.properties}}
+        <dl>
+            {{#library.classes}}
+            <dt id="{{htmlId}}">
+                <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{linkedName}}}</span>
+            </dt>
+            <dd>
+                {{{ oneLineDoc }}}
+            </dd>
+            {{/library.classes}}
         </dl>
     </section>
-    {{/library.hasProperties}}
-
-    {{#library.hasConstants}}
-    <section class="summary" id="constants">
-        <h2>Constants</h2>
-
-        <dl class="properties">
-            {{#library.constants}}
-            {{>constant}}
-            {{/library.constants}}
-        </dl>
-    </section>
-    {{/library.hasConstants}}
-
-    {{#library.hasFunctions}}
-    <section class="summary" id="functions">
-        <h2>Functions</h2>
-
-        <dl class="callables">
-            {{#library.functions}}
-            {{>callable}}
-            {{/library.functions}}
-        </dl>
-    </section>
-    {{/library.hasFunctions}}
-
-    {{#library.hasTypedefs}}
-    <section class="summary" id="typedefs">
-        <h2>Typedefs</h2>
-
-        <dl class="callables">
-            {{#library.typedefs}}
-            {{>callable}}
-            {{/library.typedefs}}
-        </dl>
-    </section>
-    {{/library.hasTypedefs}}
+    {{/library.hasClasses}}
 
     {{#library.hasExceptions}}
     <section class="summary" id="exceptions">

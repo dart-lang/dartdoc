@@ -6,6 +6,7 @@ packages
 .buildlog
 .pub
 .idea
+.packages
 .settings/
 .DS_Store
 

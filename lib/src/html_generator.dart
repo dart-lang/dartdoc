@@ -4,24 +4,42 @@
 
 library dartdoc.html_generator;
 
+import 'dart:async' show Future;
 import 'dart:io';
 import 'dart:profiler';
-import 'dart:async' show Future;
 
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:path/path.dart' as path;
 
 import 'model.dart';
 import 'package_meta.dart';
+import 'resources.g.dart' as resources;
 import '../generator.dart';
 import '../markdown_processor.dart';
-import 'resources.g.dart' as resources;
 import '../resource_loader.dart' as loader;
 
 typedef String TemplateRenderer(context,
     {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});
 
 final UserTag _HTML_GENERATE = new UserTag('HTML GENERATE');
+
+// Generation order for libraries:
+//   constants
+//   typedefs
+//   properties
+//   functions
+//   enums
+//   classes
+//   exceptions
+//
+// Generation order for classes:
+//   constants
+//   static properties
+//   static methods
+//   properties
+//   constructors
+//   operators
+//   methods
 
 class Templates {
   TemplateRenderer indexTemplate;
@@ -188,9 +206,8 @@ class HtmlGeneratorInstance {
         generateTypeDef(package, lib, typeDef);
       });
     });
-    if (_url != null) {
-      //generateSiteMap();
-    }
+
+    //if (_url != null) generateSiteMap();
 
     await _copyResources();
 
@@ -281,7 +298,6 @@ class HtmlGeneratorInstance {
       'htmlBase': '..'
     };
 
-    // TODO: `clazz.href` can be null here.
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
 
