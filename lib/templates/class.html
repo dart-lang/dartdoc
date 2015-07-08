@@ -1,9 +1,5 @@
 {{>head}}
 
-    {{#class}}
-    {{>documentation}}
-    {{/class}}
-
     {{#class.hasModifiers}}
     <section>
         <dl class="dl-horizontal">
@@ -59,6 +55,10 @@
     </section>
     {{/class.hasModifiers}}
 
+    {{#class}}
+    {{>documentation}}
+    {{/class}}
+
     {{#class.hasConstants}}
     <section class="summary" id="constants">
         <h2>Constants</h2>
@@ -84,7 +84,7 @@
     {{/class.hasStaticProperties}}
 
     {{#class.hasStaticMethods}}
-    <section id="static-methods-summary" class="summary">
+    <section class="summary" id="static-methods">
         <h2>Static Methods</h2>
         <dl class="callables">
             {{#class.staticMethods}}
@@ -133,7 +133,7 @@
     {{/class.hasConstructors}}
 
     {{#class.hasOperators}}
-    <section id="operators-summary" class="summary">
+    <section class="summary" id="operators">
         <h2>Operators</h2>
         <dl class="callables">
             {{#class.operators}}
@@ -148,7 +148,7 @@
     {{/class.hasOperators}}
 
     {{#class.hasMethods}}
-    <section id="instance-methods-summary" class="summary">
+    <section class="summary" id="instance-methods">
         <h2>Methods</h2>
         <dl class="callables">
             {{#class.instanceMethods}}
