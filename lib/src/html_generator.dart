@@ -221,7 +221,8 @@ class HtmlGeneratorInstance {
       'package': package,
       'documentation': package.documentation,
       'title': '${package.name} - Dart API docs',
-      'layoutTitle': _layoutTitle(package.name, package.isSdk ? '' : 'package', false),
+      'layoutTitle':
+          _layoutTitle(package.name, package.isSdk ? '' : 'package', false),
       'metaDescription':
           '${package.name} API docs, for the Dart programming language.',
       'navLinks': [package],
@@ -545,13 +546,17 @@ class Subnav {
 List<Subnav> _gatherSubnavForLibrary(Library lib) {
   List<Subnav> navs = [];
 
-  if (lib.hasConstants) navs.add(new Subnav('Constants', '${lib.href}#constants'));
+  if (lib.hasConstants) navs
+      .add(new Subnav('Constants', '${lib.href}#constants'));
   if (lib.hasTypedefs) navs.add(new Subnav('Typedefs', '${lib.href}#typedefs'));
-  if (lib.hasProperties) navs.add(new Subnav('Properties', '${lib.href}#properties'));
-  if (lib.hasFunctions) navs.add(new Subnav('Functions', '${lib.href}#functions'));
+  if (lib.hasProperties) navs
+      .add(new Subnav('Properties', '${lib.href}#properties'));
+  if (lib.hasFunctions) navs
+      .add(new Subnav('Functions', '${lib.href}#functions'));
   if (lib.hasEnums) navs.add(new Subnav('Enums', '${lib.href}#enums'));
   if (lib.hasClasses) navs.add(new Subnav('Classes', '${lib.href}#classes'));
-  if (lib.hasExceptions) navs.add(new Subnav('Exceptions', '${lib.href}#exceptions'));
+  if (lib.hasExceptions) navs
+      .add(new Subnav('Exceptions', '${lib.href}#exceptions'));
 
   return navs;
 }
@@ -559,13 +564,20 @@ List<Subnav> _gatherSubnavForLibrary(Library lib) {
 List<Subnav> _gatherSubnavForClass(Class clazz) {
   List<Subnav> navs = [];
 
-  if (clazz.hasConstants) navs.add(new Subnav('Constants', '${clazz.href}#constants'));
-  if (clazz.hasStaticProperties) navs.add(new Subnav('Static Properties', '${clazz.href}#static-properties'));
-  if (clazz.hasStaticMethods) navs.add(new Subnav('Static Methods', '${clazz.href}#static-methods'));
-  if (clazz.hasInstanceProperties) navs.add(new Subnav('Properties', '${clazz.href}#instance-properties'));
-  if (clazz.hasConstructors) navs.add(new Subnav('Constructors', '${clazz.href}#constructors'));
-  if (clazz.hasOperators) navs.add(new Subnav('Operators', '${clazz.href}#operators'));
-  if (clazz.hasInstanceMethods) navs.add(new Subnav('Methods', '${clazz.href}#instance-methods'));
+  if (clazz.hasConstants) navs
+      .add(new Subnav('Constants', '${clazz.href}#constants'));
+  if (clazz.hasStaticProperties) navs
+      .add(new Subnav('Static Properties', '${clazz.href}#static-properties'));
+  if (clazz.hasStaticMethods) navs
+      .add(new Subnav('Static Methods', '${clazz.href}#static-methods'));
+  if (clazz.hasInstanceProperties) navs
+      .add(new Subnav('Properties', '${clazz.href}#instance-properties'));
+  if (clazz.hasConstructors) navs
+      .add(new Subnav('Constructors', '${clazz.href}#constructors'));
+  if (clazz.hasOperators) navs
+      .add(new Subnav('Operators', '${clazz.href}#operators'));
+  if (clazz.hasInstanceMethods) navs
+      .add(new Subnav('Methods', '${clazz.href}#instance-methods'));
 
   return navs;
 }
