@@ -507,7 +507,7 @@ class Library extends ModelElement {
 
   String get path => _library.definingCompilationUnit.name;
 
-  String get nameForFile => name.replaceAll(':', '-');
+  String get fileName => name.replaceAll(':', '-');
 
   bool get isInSdk => _library.isInSdk;
 
@@ -649,7 +649,7 @@ class Library extends ModelElement {
   }
 
   @override
-  String get _href => '$nameForFile/index.html';
+  String get _href => '$fileName/$fileName-library.html';
 }
 
 class Class extends ModelElement {
@@ -728,7 +728,7 @@ class Class extends ModelElement {
 
   String get kind => 'class';
 
-  String get fileName => "${name}_class.html";
+  String get fileName => "${name}-class.html";
 
   bool get isAbstract => _cls.isAbstract;
 
@@ -1018,7 +1018,7 @@ class Class extends ModelElement {
       name.hashCode, library.name.hashCode, library.package.name.hashCode);
 
   @override
-  String get _href => '${library.nameForFile}/$fileName';
+  String get _href => '${library.fileName}/$fileName';
 }
 
 class Enum extends Class {
@@ -1061,7 +1061,7 @@ class ModelFunction extends ModelElement {
   String get fileName => "$name.html";
 
   @override
-  String get _href => '${library.nameForFile}/$fileName';
+  String get _href => '${library.fileName}/$fileName';
 }
 
 class Typedef extends ModelElement {
@@ -1081,7 +1081,7 @@ class Typedef extends ModelElement {
       ? modelType.createLinkedReturnTypeName()
       : _typedef.returnType.name;
 
-  String get _href => '${library.nameForFile}/$fileName';
+  String get _href => '${library.fileName}/$fileName';
 }
 
 class Field extends ModelElement {
@@ -1146,9 +1146,9 @@ class Field extends ModelElement {
 
   String get _href {
     if (element.enclosingElement is ClassElement) {
-      return '${library.nameForFile}/${element.enclosingElement.name}/$name.html';
+      return '${library.fileName}/${element.enclosingElement.name}/$name.html';
     } else if (element.enclosingElement is LibraryElement) {
-      return '${library.nameForFile}/$name.html';
+      return '${library.fileName}/$name.html';
     } else {
       throw new StateError(
           '$name is not in a class or library, instead a ${element.enclosingElement}');
@@ -1194,7 +1194,7 @@ class Constructor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.nameForFile}/${_constructor.enclosingElement.name}/$name.html';
+      '${library.fileName}/${_constructor.enclosingElement.name}/$name.html';
 
   bool get isConst => _constructor.isConst;
 
@@ -1248,7 +1248,7 @@ class Method extends ModelElement {
 
   @override
   String get _href =>
-      '${library.nameForFile}/${_method.enclosingElement.name}/${fileName}';
+      '${library.fileName}/${_method.enclosingElement.name}/${fileName}';
 
   bool get isInherited => _isInherited;
 }
@@ -1315,7 +1315,7 @@ class Accessor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.nameForFile}/${_accessor.enclosingElement.name}/${name}.html';
+      '${library.fileName}/${_accessor.enclosingElement.name}/${name}.html';
 }
 
 /// Top-level variables. But also picks up getters and setters?
@@ -1360,7 +1360,7 @@ class TopLevelVariable extends ModelElement {
   bool get hasSetter => _variable.setter != null;
 
   @override
-  String get _href => '${library.nameForFile}/${name}.html';
+  String get _href => '${library.fileName}/${name}.html';
 }
 
 class Parameter extends ModelElement {
@@ -1404,13 +1404,13 @@ class Parameter extends ModelElement {
     var p = _parameter.enclosingElement;
 
     if (p is FunctionElement) {
-      return '${library.nameForFile}/${p.name}.html';
+      return '${library.fileName}/${p.name}.html';
     } else {
       // TODO: why is this logic here?
       var name = Operator.friendlyNames.containsKey(p.name)
           ? Operator.friendlyNames[p.name]
           : p.name;
-      return '${library.nameForFile}/${p.enclosingElement.name}/' +
+      return '${library.fileName}/${p.enclosingElement.name}/' +
           '${name}.html#${htmlId}';
     }
   }
@@ -1435,7 +1435,7 @@ class TypeParameter extends ModelElement {
 
   @override
   String get _href =>
-      '${library.nameForFile}/${_typeParameter.enclosingElement.name}/$name';
+      '${library.fileName}/${_typeParameter.enclosingElement.name}/$name';
 }
 
 class ElementType {
