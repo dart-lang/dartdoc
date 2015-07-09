@@ -430,6 +430,15 @@ class Package {
   }
 
   String get href => 'index.html';
+
+  Library _getLibraryFor(Element e) {
+    var lib;
+    lib = libraries.firstWhere((l) => l.hasInNamespace(e), orElse: () => null);
+    if (lib == null) {
+      lib = new Library(e.library, this);
+    }
+    return lib;
+  }
 }
 
 class Library extends ModelElement {
@@ -1105,12 +1114,12 @@ class Field extends ModelElement {
   void _setModelType() {
     if (hasGetter) {
       var t = _field.getter.returnType;
-      var lib = new Library(t.element.library, package);
-      _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
+      _modelType = new ElementType(t,
+          new ModelElement.from(t.element, package._getLibraryFor(t.element)));
     } else {
       var s = _field.setter.parameters.first.type;
-      var lib = new Library(s.element.library, package);
-      _modelType = new ElementType(s, new ModelElement.from(s.element, lib));
+      _modelType = new ElementType(s,
+          new ModelElement.from(s.element, package._getLibraryFor(s.element)));
     }
   }
 
@@ -1328,13 +1337,13 @@ class TopLevelVariable extends ModelElement {
       : super(element, library) {
     if (hasGetter) {
       var t = _variable.getter.returnType;
-      var lib = new Library(t.element.library,
-          package); //_getLibraryFor(t.element.library, package);
-      _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
+
+      _modelType = new ElementType(t,
+          new ModelElement.from(t.element, package._getLibraryFor(t.element)));
     } else {
       var s = _variable.setter.parameters.first.type;
-      var lib = new Library(s.element.library, package);
-      _modelType = new ElementType(s, new ModelElement.from(s.element, lib));
+      _modelType = new ElementType(s,
+          new ModelElement.from(s.element, package._getLibraryFor(s.element)));
     }
   }
 
@@ -1369,13 +1378,8 @@ class Parameter extends ModelElement {
   Parameter(ParameterElement element, Library library)
       : super(element, library) {
     var t = _parameter.type;
-    var lib;
-    lib = library.package.libraries.firstWhere(
-        (l) => l.hasInNamespace(t.element), orElse: () => null);
-    if (lib == null) {
-      lib = new Library(t.element.library, library.package);
-    }
-    _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
+    _modelType = new ElementType(
+        t, new ModelElement.from(t.element, package._getLibraryFor(t.element)));
   }
 
   ParameterElement get _parameter => element as ParameterElement;
