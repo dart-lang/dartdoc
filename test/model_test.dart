@@ -509,7 +509,7 @@ void main() {
   });
 
   group('Constant', () {
-    TopLevelVariable greenConstant, cat, orangeConstant;
+    TopLevelVariable greenConstant, cat, orangeConstant, deprecated;
 
     setUp(() {
       greenConstant =
@@ -517,10 +517,12 @@ void main() {
       orangeConstant =
           exLibrary.constants.firstWhere((c) => c.name == 'COLOR_ORANGE');
       cat = exLibrary.constants.firstWhere((c) => c.name == 'MY_CAT');
+      deprecated =
+          exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
     });
 
     test('found five constants', () {
-      expect(exLibrary.constants, hasLength(6));
+      expect(exLibrary.constants, hasLength(7));
     });
 
     test('COLOR_GREEN is constant', () {
@@ -534,6 +536,10 @@ void main() {
     test('MY_CAT is linked', () {
       expect(cat.constantValue,
           'const <a href="ex/ConstantCat-class.html">ConstantCat</a>(\'tabby\')');
+    });
+
+    test('exported property', () {
+      expect(deprecated.library.name, equals('ex'));
     });
   });
 
