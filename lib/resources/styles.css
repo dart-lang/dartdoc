@@ -398,3 +398,7 @@ section {
 section.multi-line-signature div.parameters {
   margin-left: 24px;
 }
+
+dt.constant span.type {
+  opacity: 0.6;
+}
