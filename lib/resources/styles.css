@@ -390,3 +390,14 @@ section.multi-line-signature div.parameters {
 span.top-level-variable-type {
   opacity: 0.6;
 }
+
+@media(max-width: 768px) {
+  span.top-level-variable-type {
+    display:block;
+  }
+
+  section.summary dt {
+    margin-left: 0;
+    text-indent: inherit;
+  }
+}
