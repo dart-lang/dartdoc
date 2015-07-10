@@ -300,17 +300,17 @@ footer .container-fluid {
 
 .gt-separated li {
   display: inline;
-  margin-right: 8px;
-}
-
-.gt-separated li a {
-  margin-right: 8px;
 }
 
 .gt-separated li:after {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path fill='#FFFFFF' d='M6.7,4L5.7,4.9L8.8,8l-3.1,3.1L6.7,12l4-4L6.7,4z'/></svg>");
   background-position: center;
   content: " ";
+  padding-left: 16px;
+}
+
+.gt-separated.dark li:after {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path fill='#000000' d='M6.7,4L5.7,4.9L8.8,8l-3.1,3.1L6.7,12l4-4L6.7,4z'/></svg>");
 }
 
 .gt-separated li:last-child:after {
