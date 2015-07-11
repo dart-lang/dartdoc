@@ -207,7 +207,7 @@ class Oops implements Exception {
 @deprecated
 class Doh extends Error {}
 
-/// ROYGBIV
+/// An `enum` for ROYGBIV constants.
 enum Color {
   /// Red
   RED,
