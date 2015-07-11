@@ -425,6 +425,15 @@ class Package {
   }
 
   String get href => 'index.html';
+
+  Library _getLibraryFor(Element e) {
+    var lib;
+    lib = libraries.firstWhere((l) => l.hasInNamespace(e), orElse: () => null);
+    if (lib == null) {
+      lib = new Library(e.library, this);
+    }
+    return lib;
+  }
 }
 
 class Library extends ModelElement {
@@ -502,7 +511,9 @@ class Library extends ModelElement {
 
   String get path => _library.definingCompilationUnit.name;
 
-  String get nameForFile => name.replaceAll(':', '-');
+  String get dirName => name.replaceAll(':', '-');
+
+  String get fileName => '$dirName-library.html';
 
   bool get isInSdk => _library.isInSdk;
 
@@ -644,7 +655,7 @@ class Library extends ModelElement {
   }
 
   @override
-  String get _href => '$nameForFile/index.html';
+  String get _href => '$dirName/$fileName';
 }
 
 class Class extends ModelElement {
@@ -723,7 +734,7 @@ class Class extends ModelElement {
 
   String get kind => 'class';
 
-  String get fileName => "${name}_class.html";
+  String get fileName => "${name}-class.html";
 
   bool get isAbstract => _cls.isAbstract;
 
@@ -1013,7 +1024,7 @@ class Class extends ModelElement {
       name.hashCode, library.name.hashCode, library.package.name.hashCode);
 
   @override
-  String get _href => '${library.nameForFile}/$fileName';
+  String get _href => '${library.dirName}/$fileName';
 }
 
 class Enum extends Class {
@@ -1056,7 +1067,7 @@ class ModelFunction extends ModelElement {
   String get fileName => "$name.html";
 
   @override
-  String get _href => '${library.nameForFile}/$fileName';
+  String get _href => '${library.dirName}/$fileName';
 }
 
 class Typedef extends ModelElement {
@@ -1076,7 +1087,7 @@ class Typedef extends ModelElement {
       ? modelType.createLinkedReturnTypeName()
       : _typedef.returnType.name;
 
-  String get _href => '${library.nameForFile}/$fileName';
+  String get _href => '${library.dirName}/$fileName';
 }
 
 class Field extends ModelElement {
@@ -1098,12 +1109,12 @@ class Field extends ModelElement {
   void _setModelType() {
     if (hasGetter) {
       var t = _field.getter.returnType;
-      var lib = new Library(t.element.library, package);
-      _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
+      _modelType = new ElementType(t,
+          new ModelElement.from(t.element, package._getLibraryFor(t.element)));
     } else {
       var s = _field.setter.parameters.first.type;
-      var lib = new Library(s.element.library, package);
-      _modelType = new ElementType(s, new ModelElement.from(s.element, lib));
+      _modelType = new ElementType(s,
+          new ModelElement.from(s.element, package._getLibraryFor(s.element)));
     }
   }
 
@@ -1141,9 +1152,9 @@ class Field extends ModelElement {
 
   String get _href {
     if (element.enclosingElement is ClassElement) {
-      return '${library.nameForFile}/${element.enclosingElement.name}/$name.html';
+      return '${library.dirName}/${element.enclosingElement.name}/$name.html';
     } else if (element.enclosingElement is LibraryElement) {
-      return '${library.nameForFile}/$name.html';
+      return '${library.dirName}/$name.html';
     } else {
       throw new StateError(
           '$name is not in a class or library, instead a ${element.enclosingElement}');
@@ -1189,7 +1200,7 @@ class Constructor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.nameForFile}/${_constructor.enclosingElement.name}/$name.html';
+      '${library.dirName}/${_constructor.enclosingElement.name}/$name.html';
 
   bool get isConst => _constructor.isConst;
 
@@ -1243,7 +1254,7 @@ class Method extends ModelElement {
 
   @override
   String get _href =>
-      '${library.nameForFile}/${_method.enclosingElement.name}/${fileName}';
+      '${library.dirName}/${_method.enclosingElement.name}/${fileName}';
 
   bool get isInherited => _isInherited;
 }
@@ -1310,7 +1321,7 @@ class Accessor extends ModelElement {
 
   @override
   String get _href =>
-      '${library.nameForFile}/${_accessor.enclosingElement.name}/${name}.html';
+      '${library.dirName}/${_accessor.enclosingElement.name}/${name}.html';
 }
 
 /// Top-level variables. But also picks up getters and setters?
@@ -1321,13 +1332,13 @@ class TopLevelVariable extends ModelElement {
       : super(element, library) {
     if (hasGetter) {
       var t = _variable.getter.returnType;
-      var lib = new Library(t.element.library,
-          package); //_getLibraryFor(t.element.library, package);
-      _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
+
+      _modelType = new ElementType(t,
+          new ModelElement.from(t.element, package._getLibraryFor(t.element)));
     } else {
       var s = _variable.setter.parameters.first.type;
-      var lib = new Library(s.element.library, package);
-      _modelType = new ElementType(s, new ModelElement.from(s.element, lib));
+      _modelType = new ElementType(s,
+          new ModelElement.from(s.element, package._getLibraryFor(s.element)));
     }
   }
 
@@ -1355,20 +1366,15 @@ class TopLevelVariable extends ModelElement {
   bool get hasSetter => _variable.setter != null;
 
   @override
-  String get _href => '${library.nameForFile}/${name}.html';
+  String get _href => '${library.dirName}/${name}.html';
 }
 
 class Parameter extends ModelElement {
   Parameter(ParameterElement element, Library library)
       : super(element, library) {
     var t = _parameter.type;
-    var lib;
-    lib = library.package.libraries.firstWhere(
-        (l) => l.hasInNamespace(t.element), orElse: () => null);
-    if (lib == null) {
-      lib = new Library(t.element.library, library.package);
-    }
-    _modelType = new ElementType(t, new ModelElement.from(t.element, lib));
+    _modelType = new ElementType(
+        t, new ModelElement.from(t.element, package._getLibraryFor(t.element)));
   }
 
   ParameterElement get _parameter => element as ParameterElement;
@@ -1399,13 +1405,13 @@ class Parameter extends ModelElement {
     var p = _parameter.enclosingElement;
 
     if (p is FunctionElement) {
-      return '${library.nameForFile}/${p.name}.html';
+      return '${library.dirName}/${p.name}.html';
     } else {
       // TODO: why is this logic here?
       var name = Operator.friendlyNames.containsKey(p.name)
           ? Operator.friendlyNames[p.name]
           : p.name;
-      return '${library.nameForFile}/${p.enclosingElement.name}/' +
+      return '${library.dirName}/${p.enclosingElement.name}/' +
           '${name}.html#${htmlId}';
     }
   }
@@ -1430,7 +1436,7 @@ class TypeParameter extends ModelElement {
 
   @override
   String get _href =>
-      '${library.nameForFile}/${_typeParameter.enclosingElement.name}/$name';
+      '${library.dirName}/${_typeParameter.enclosingElement.name}/$name';
 }
 
 class ElementType {

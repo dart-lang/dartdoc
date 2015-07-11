@@ -95,8 +95,8 @@ void main() {
 
     test('sdk library names', () {
       expect(dartAsyncLib.name, 'dart:async');
-      expect(dartAsyncLib.nameForFile, 'dart-async');
-      expect(dartAsyncLib.href, 'dart-async/index.html');
+      expect(dartAsyncLib.dirName, 'dart-async');
+      expect(dartAsyncLib.href, 'dart-async/dart-async-library.html');
     });
 
     test('documentation', () {
@@ -194,7 +194,7 @@ void main() {
 
     test('single ref to class', () {
       expect(B.documentationAsHtml,
-          '<p>Extends class <a href="ex/Apple_class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a> or <a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>');
+          '<p>Extends class <a href="ex/Apple-class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a> or <a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>');
     });
 
     test('doc ref to class in SDK does not render as link', () {
@@ -208,14 +208,14 @@ void main() {
       String resolved = extendedClass.documentationAsHtml;
       expect(resolved, isNotNull);
       expect(resolved,
-          contains('<a href="two_exports/BaseClass_class.html">BaseClass</a>'));
+          contains('<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
       expect(resolved, contains('linking over to Apple.'));
     });
 
     test('references to class and constructors', () {
       String comment = B.documentationAsHtml;
       expect(comment,
-          contains('Extends class <a href="ex/Apple_class.html">Apple</a>'));
+          contains('Extends class <a href="ex/Apple-class.html">Apple</a>'));
       expect(
           comment, contains('use <a href="ex/Apple/Apple.html">new Apple</a>'));
       expect(comment, contains(
@@ -229,7 +229,7 @@ void main() {
     if (!Platform.isWindows) {
       test('reference to class from another library', () {
         String comment = superAwesomeClass.documentationAsHtml;
-        expect(comment, contains('<a href="ex/Apple_class.html">Apple</a>'));
+        expect(comment, contains('<a href="ex/Apple-class.html">Apple</a>'));
       });
 
       test('reference to method', () {
@@ -509,7 +509,7 @@ void main() {
   });
 
   group('Constant', () {
-    TopLevelVariable greenConstant, cat, orangeConstant;
+    TopLevelVariable greenConstant, cat, orangeConstant, deprecated;
 
     setUp(() {
       greenConstant =
@@ -517,10 +517,12 @@ void main() {
       orangeConstant =
           exLibrary.constants.firstWhere((c) => c.name == 'COLOR_ORANGE');
       cat = exLibrary.constants.firstWhere((c) => c.name == 'MY_CAT');
+      deprecated =
+          exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
     });
 
     test('found five constants', () {
-      expect(exLibrary.constants, hasLength(6));
+      expect(exLibrary.constants, hasLength(7));
     });
 
     test('COLOR_GREEN is constant', () {
@@ -533,7 +535,11 @@ void main() {
 
     test('MY_CAT is linked', () {
       expect(cat.constantValue,
-          'const <a href="ex/ConstantCat_class.html">ConstantCat</a>(\'tabby\')');
+          'const <a href="ex/ConstantCat-class.html">ConstantCat</a>(\'tabby\')');
+    });
+
+    test('exported property', () {
+      expect(deprecated.library.name, equals('ex'));
     });
   });
 
@@ -690,7 +696,7 @@ void main() {
 
     test('has the right annotation', () {
       expect(forAnnotation.annotations.first, equals(
-          '<a href="ex/ForAnnotation_class.html">ForAnnotation</a>(\'my value\')'));
+          '<a href="ex/ForAnnotation-class.html">ForAnnotation</a>(\'my value\')'));
     });
 
     test('methods has the right annotation', () {

@@ -261,8 +261,8 @@ class HtmlGeneratorInstance {
       'layoutTitle': _layoutTitle(lib.name, 'library', lib.isDeprecated)
     };
 
-    _build(path.join(lib.nameForFile, 'index.html'), _templates.libraryTemplate,
-        data);
+    _build(path.join(lib.dirName, '${lib.fileName}'),
+        _templates.libraryTemplate, data);
   }
 
   Class get objectType {

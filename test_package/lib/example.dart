@@ -3,7 +3,7 @@ library ex;
 
 import 'src/mylib.dart' show Helper;
 export 'src/mylib.dart' show Helper;
-export 'dart:core' show DateTime;
+export 'dart:core' show deprecated, DateTime;
 
 int function1(String s, bool b, lastParam) => 5;
 
