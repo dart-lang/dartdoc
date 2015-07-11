@@ -421,13 +421,17 @@ ul.subnav li a:hover {
   text-decoration: none;
 }
 
-ul.subnav li + li {
-  margin-left: 24px;
+ul.subnav li {
+  margin-right: 24px;
+}
+
+ul.subnav li:last-of-type {
+  margin-right: 0;
 }
 
 @media(max-width: 768px) {
-  ul.subnav li + li {
-    margin-left: 16px;
+  ul.subnav li {
+    margin-right: 16px;
   }
 }
 
