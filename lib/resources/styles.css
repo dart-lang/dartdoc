@@ -123,7 +123,7 @@ pre code {
 code {
   font-family: 'Source Code Pro', monospace;
   /* overriding bootstrap */
-  font-size: 14px;
+  font-size: 15px;
   color: inherit;
   border-radius: 0;
   padding: 0;
