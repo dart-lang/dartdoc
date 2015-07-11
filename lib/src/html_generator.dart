@@ -135,7 +135,7 @@ class HtmlGenerator extends Generator {
 }
 
 class HtmlGeneratorInstance {
-  final String _url;
+  final String url;
   final Templates _templates;
 
   final Package package;
@@ -143,7 +143,7 @@ class HtmlGeneratorInstance {
 
   final List<String> _htmlFiles = [];
 
-  HtmlGeneratorInstance(this._url, this._templates, this.package, this.out);
+  HtmlGeneratorInstance(this.url, this._templates, this.package, this.out);
 
   Future generate() async {
     var previousTag = _HTML_GENERATE.makeCurrent();
@@ -207,7 +207,7 @@ class HtmlGeneratorInstance {
       });
     });
 
-    //if (_url != null) generateSiteMap();
+    //if (url != null) generateSiteMap();
 
     await _copyResources();
 
