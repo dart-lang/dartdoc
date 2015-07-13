@@ -264,12 +264,7 @@ abstract class ModelElement implements Comparable {
     return '<a href="${href}">$name</a>';
   }
 
-  String get href {
-    if (!package.isDocumented(this)) {
-      return null;
-    }
-    return _href;
-  }
+  String get href => package.isDocumented(this) ? _href : null;
 
   String get _href;
 

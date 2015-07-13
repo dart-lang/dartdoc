@@ -25,11 +25,11 @@
 <header class="container-fluid" id="title">
     <nav class="navbar navbar-fixed-top">
         <div class="container">
-                <ol class="breadcrumbs gt-separated">
-                    {{#navLinks}}
-                    <li><a href="{{href}}">{{name}}</a></li>
-                    {{/navLinks}}
-                </ol>
+            <ol class="breadcrumbs gt-separated">
+                {{#navLinks}}
+                <li><a href="{{href}}">{{name}}</a></li>
+                {{/navLinks}}
+            </ol>
         </div>
     </nav>
     <div class="container">
@@ -37,10 +37,15 @@
             <h1 class="title">
                 {{{ layoutTitle }}}
             </h1>
-            <p class="subtitle">
+            <!-- p class="subtitle">
                 {{{ oneLineDoc }}}
-            </p>
+            </p -->
         </div>
+        <ul class="subnav">
+            {{#subnavItems}}
+            <li><a href="{{href}}">{{name}}</a></li>
+            {{/subnavItems}}
+        </ul>
     </div>
 </header>
 

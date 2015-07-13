@@ -221,7 +221,8 @@ class HtmlGeneratorInstance {
       'package': package,
       'documentation': package.documentation,
       'title': '${package.name} - Dart API docs',
-      'layoutTitle': _layoutTitle(package.name, package.isSdk ? '' : 'package'),
+      'layoutTitle':
+          _layoutTitle(package.name, package.isSdk ? '' : 'package', false),
       'metaDescription':
           '${package.name} API docs, for the Dart programming language.',
       'navLinks': [package],
@@ -256,6 +257,7 @@ class HtmlGeneratorInstance {
       'metaDescription':
           '${lib.name} library API docs, for the Dart programming language.',
       'navLinks': [package, lib],
+      'subnavItems': _gatherSubnavForLibrary(lib),
       'layoutTitle': _layoutTitle(lib.name, 'library', lib.isDeprecated)
     };
 
@@ -295,6 +297,7 @@ class HtmlGeneratorInstance {
       'layoutTitle':
           _layoutTitle(clazz.nameWithGenerics, clazz.kind, clazz.isDeprecated),
       'navLinks': [package, lib, clazz],
+      'subnavItems': _gatherSubnavForClass(clazz),
       'htmlBase': '..'
     };
 
@@ -531,10 +534,60 @@ class HtmlGeneratorInstance {
   }
 }
 
-String _layoutTitle(String name, String kind,
-    [bool isDeprecated = false]) => kind.isEmpty
-    ? name
-    : '<span class="${isDeprecated ? 'deprecated' : ''}">$name</span> <span class="kind">$kind</span>';
+class Subnav {
+  final String name;
+  final String href;
+
+  Subnav(this.name, this.href);
+
+  String toString() => name;
+}
+
+List<Subnav> _gatherSubnavForLibrary(Library lib) {
+  List<Subnav> navs = [];
+
+  if (lib.hasConstants) navs
+      .add(new Subnav('Constants', '${lib.href}#constants'));
+  if (lib.hasTypedefs) navs.add(new Subnav('Typedefs', '${lib.href}#typedefs'));
+  if (lib.hasProperties) navs
+      .add(new Subnav('Properties', '${lib.href}#properties'));
+  if (lib.hasFunctions) navs
+      .add(new Subnav('Functions', '${lib.href}#functions'));
+  if (lib.hasEnums) navs.add(new Subnav('Enums', '${lib.href}#enums'));
+  if (lib.hasClasses) navs.add(new Subnav('Classes', '${lib.href}#classes'));
+  if (lib.hasExceptions) navs
+      .add(new Subnav('Exceptions', '${lib.href}#exceptions'));
+
+  return navs;
+}
+
+List<Subnav> _gatherSubnavForClass(Class clazz) {
+  List<Subnav> navs = [];
+
+  if (clazz.hasConstants) navs
+      .add(new Subnav('Constants', '${clazz.href}#constants'));
+  if (clazz.hasStaticProperties) navs
+      .add(new Subnav('Static Properties', '${clazz.href}#static-properties'));
+  if (clazz.hasStaticMethods) navs
+      .add(new Subnav('Static Methods', '${clazz.href}#static-methods'));
+  if (clazz.hasInstanceProperties) navs
+      .add(new Subnav('Properties', '${clazz.href}#instance-properties'));
+  if (clazz.hasConstructors) navs
+      .add(new Subnav('Constructors', '${clazz.href}#constructors'));
+  if (clazz.hasOperators) navs
+      .add(new Subnav('Operators', '${clazz.href}#operators'));
+  if (clazz.hasInstanceMethods) navs
+      .add(new Subnav('Methods', '${clazz.href}#instance-methods'));
+
+  return navs;
+}
+
+String _layoutTitle(String name, String kind, bool isDeprecated) {
+  if (kind.isEmpty) return name;
+  String str = '<div class="kind">$kind</div>';
+  if (!isDeprecated) return '${str} ${name}';
+  return '${str} <span class="deprecated">$name</span>';
+}
 
 /// Converts a markdown formatted string into HTML, and removes any script tags.
 /// Returns the HTML as a string.

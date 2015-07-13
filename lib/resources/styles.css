@@ -158,11 +158,16 @@ code {
   .dl-horizontal dt {
     width: 128px;
   }
+
+  ul.subnav li {
+    font-size: 110%;
+  }
 }
 
 header h1 {
-  margin-top: 64px;
+  margin-top: 40px;
   font-weight: 400;
+  margin-bottom: 16px;
 }
 
 header a,
@@ -172,9 +177,11 @@ header li {
   color: white;
 }
 
-/*header h1 .kind {
-  font-weight: 300;
-}*/
+header h1 .kind {
+  color: #CFD8DC;
+  text-transform: uppercase;
+  font-size: 13px;
+}
 
 dt {
   font-weight: normal;
@@ -188,7 +195,7 @@ dd {
 section.summary h2 {
   color: #727272;
   margin-bottom: 16px;
-  border-bottom: 1px solid #B6B6B6;
+  border-bottom: 1px solid #CFD8DC;
 }
 
 section.summary dd {
@@ -201,6 +208,10 @@ section.summary dd {
 section.summary dt {
   margin-left: 24px;
   text-indent: -24px;
+}
+
+section.desc {
+  padding-top: 16px;
 }
 
 dl.dl-horizontal dt {
@@ -386,6 +397,43 @@ section {
 
 section.multi-line-signature div.parameters {
   margin-left: 24px;
+}
+
+/* subnav styles */
+
+ul.subnav {
+  overflow: auto;
+  white-space: nowrap;
+  padding-left: 0;
+  min-height: 24px;
+}
+
+ul.subnav li {
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+ul.subnav li a {
+  color: #CFD8DC;
+}
+
+ul.subnav li a:hover {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+ul.subnav li {
+  margin-right: 24px;
+}
+
+ul.subnav li:last-of-type {
+  margin-right: 0;
+}
+
+@media(max-width: 768px) {
+  ul.subnav li {
+    margin-right: 16px;
+  }
 }
 
 span.top-level-variable-type {
