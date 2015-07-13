@@ -545,9 +545,7 @@ class Subnav {
 }
 
 List<Subnav> _gatherSubnavForPackage(Package package) {
-  return [
-    new Subnav('Libraries', '${package.href}#libraries')
-  ];
+  return [new Subnav('Libraries', '${package.href}#libraries')];
 }
 
 List<Subnav> _gatherSubnavForLibrary(Library lib) {
