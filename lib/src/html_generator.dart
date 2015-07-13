@@ -226,6 +226,7 @@ class HtmlGeneratorInstance {
       'metaDescription':
           '${package.name} API docs, for the Dart programming language.',
       'navLinks': [package],
+      'subnavItems': _gatherSubnavForPackage(package),
       'htmlBase': '.'
     };
 
@@ -541,6 +542,10 @@ class Subnav {
   Subnav(this.name, this.href);
 
   String toString() => name;
+}
+
+List<Subnav> _gatherSubnavForPackage(Package package) {
+  return [new Subnav('Libraries', '${package.href}#libraries')];
 }
 
 List<Subnav> _gatherSubnavForLibrary(Library lib) {
