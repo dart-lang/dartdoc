@@ -1187,7 +1187,7 @@ class EnumField extends Field {
   @override
   String get documentation {
     if (name == 'values') {
-      return 'A constant List of the values in this enum, in order of their declaration';
+      return 'A constant List of the values in this enum, in order of their declaration.';
     } else {
       return super.documentation;
     }
