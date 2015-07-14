@@ -5,49 +5,49 @@
   <div class="col-xs-6 col-sm-3 sidebar-offcanvas">
     <ol id="sidebar">
       {{#library.hasConstants}}
-      <li class="section-title"><a href="#constants">Constants</a></li>
+      <li class="section-title"><a href="{{library.href}}#constants">Constants</a></li>
       {{#library.constants}}
       <li><a href="{{library.href}}#{{htmlId}}">{{name}}</a></li>
       {{/library.constants}}
       {{/library.hasConstants}}
 
       {{#library.hasTypedefs}}
-      <li class="section-title"><a href="#typedefs">Typedefs</a></li>
+      <li class="section-title"><a href="{{library.href}}#typedefs">Typedefs</a></li>
       {{#library.typedefs}}
       <li><a href="{{library.href}}#{{htmlId}}">{{name}}</a></li>
       {{/library.typedefs}}
       {{/library.hasTypedefs}}
 
       {{#library.hasProperties}}
-      <li class="section-title"><a href="#properties">Properties</a></li>
+      <li class="section-title"><a href="{{library.href}}#properties">Properties</a></li>
       {{#library.properties}}
       <li><a href="{{library.href}}#{{htmlId}}">{{name}}</a></li>
       {{/library.properties}}
       {{/library.hasProperties}}
 
       {{#library.hasFunctions}}
-      <li class="section-title"><a href="#functions">Functions</a></li>
+      <li class="section-title"><a href="{{library.href}}#functions">Functions</a></li>
       {{#library.functions}}
       <li><a href="{{library.href}}#{{htmlId}}">{{name}}</a></li>
       {{/library.functions}}
       {{/library.hasFunctions}}
 
       {{#library.hasEnums}}
-      <li class="section-title"><a href="#enums">Enums</a></li>
+      <li class="section-title"><a href="{{library.href}}#enums">Enums</a></li>
       {{#library.enums}}
       <li><a href="{{library.href}}#{{htmlId}}">{{name}}</a></li>
       {{/library.enums}}
       {{/library.hasEnums}}
 
       {{#library.hasClasses}}
-      <li class="section-title"><a href="#classes">Classes</a></li>
+      <li class="section-title"><a href="{{library.href}}#classes">Classes</a></li>
       {{#library.classes}}
       <li><a href="{{library.href}}#{{htmlId}}">{{name}}</a></li>
       {{/library.classes}}
       {{/library.hasClasses}}
 
       {{#library.hasExceptions}}
-      <li class="section-title"><a href="#exceptions">Exceptions</a></li>
+      <li class="section-title"><a href="{{library.href}}#exceptions">Exceptions</a></li>
       {{#library.exceptions}}
       <li><a href="{{library.href}}#{{htmlId}}">{{name}}</a></li>
       {{/library.exceptions}}
@@ -62,7 +62,7 @@
     {{/library}}
 
     {{#library.hasConstants}}
-    <section class="summary" id="constants">
+    <section class="summary offset-anchor" id="constants">
         <h2>Constants</h2>
 
         <dl class="properties">
@@ -74,7 +74,7 @@
     {{/library.hasConstants}}
 
     {{#library.hasTypedefs}}
-    <section class="summary" id="typedefs">
+    <section class="summary offset-anchor" id="typedefs">
         <h2>Typedefs</h2>
 
         <dl class="callables">
@@ -86,7 +86,7 @@
     {{/library.hasTypedefs}}
 
     {{#library.hasProperties}}
-    <section class="summary" id="properties">
+    <section class="summary offset-anchor" id="properties">
         <h2>Properties</h2>
 
         <dl class="properties">
@@ -98,7 +98,7 @@
     {{/library.hasProperties}}
 
     {{#library.hasFunctions}}
-    <section class="summary" id="functions">
+    <section class="summary offset-anchor" id="functions">
         <h2>Functions</h2>
 
         <dl class="callables">
@@ -110,7 +110,7 @@
     {{/library.hasFunctions}}
 
     {{#library.hasEnums}}
-    <section class="summary" id="enums">
+    <section class="summary offset-anchor" id="enums">
         <h2>Enums</h2>
 
         <dl>
@@ -127,7 +127,7 @@
     {{/library.hasEnums}}
 
     {{#library.hasClasses}}
-    <section class="summary" id="classes">
+    <section class="summary offset-anchor" id="classes">
         <h2>Classes</h2>
 
         <dl>
@@ -144,7 +144,7 @@
     {{/library.hasClasses}}
 
     {{#library.hasExceptions}}
-    <section class="summary" id="exceptions">
+    <section class="summary offset-anchor" id="exceptions">
         <h2>Exceptions / Errors</h2>
 
         <dl>
