@@ -18,6 +18,7 @@
 
 <script src="static-assets/prettify.js"></script>
 <script>
+// adds a shadow for the top nav when the masthead is scrolled off the top
 function initScroller() {
     window.addEventListener('scroll', function(e){
         var header = document.querySelector("header");
@@ -34,9 +35,22 @@ function initScroller() {
     });
 }
 
+function initSideNav() {
+  var button = document.getElementById('sidenav-toggle');
+  if (button) {
+    button.addEventListener('click', function(e) {
+      var elems = document.querySelectorAll('.row-offcanvas');
+      for (var i = 0; i < elems.length; i++) {
+        elems[i].classList.toggle('active');
+      }
+    });
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     prettyPrint();
     initScroller();
+    initSideNav();
 });
 </script>
 <!-- Do not remove placeholder -->
