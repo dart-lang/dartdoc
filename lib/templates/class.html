@@ -64,7 +64,11 @@
     </ol>
   </div><!--/.sidebar-offcanvas-->
 
-  <div class="col-xs-12 col-sm-9">
+  <div class="col-xs-12 col-sm-9 main-content">
+
+    {{#class}}
+    {{>documentation}}
+    {{/class}}
 
     {{#class.hasModifiers}}
     <section>
@@ -120,10 +124,6 @@
         </dl>
     </section>
     {{/class.hasModifiers}}
-
-    {{#class}}
-    {{>documentation}}
-    {{/class}}
 
     {{#class.hasConstants}}
     <section class="summary" id="constants">
