@@ -77,10 +77,6 @@ packages:
     description: http_server
     source: hosted
     version: "0.9.5+1"
-  intl:
-    description: intl
-    source: hosted
-    version: "0.12.4"
   librato:
     description: librato
     source: hosted
