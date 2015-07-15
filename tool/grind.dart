@@ -11,6 +11,7 @@ import 'package:den_api/den_api.dart';
 import 'package:grinder/grinder.dart';
 import 'package:librato/librato.dart';
 import 'package:path/path.dart' as path;
+import 'package:yaml/yaml.dart' as yaml;
 
 final Directory docsDir =
     new Directory(path.join('${Directory.systemTemp.path}', defaultOutDir));
@@ -18,6 +19,38 @@ final Directory docsDir =
 final String sep = Platform.pathSeparator;
 
 main([List<String> args]) => grind(args);
+
+@Task('Find transformers used by this project')
+findTransformers() async {
+  var dotPackages = new File('.packages');
+  if (!dotPackages.existsSync()) {
+    print('No .packages file found in ${Directory.current}');
+    exit(1);
+  }
+
+  var foundAnyTransformers = false;
+
+  dotPackages
+      .readAsLinesSync()
+      .where((line) => !line.startsWith('#'))
+      .map((line) => line.split(':file://'))
+      .forEach((List<String> mapping) {
+    var pubspec = new File(mapping.last.replaceFirst('lib/', 'pubspec.yaml'));
+    if (pubspec.existsSync()) {
+      var yamlDoc = yaml.loadYaml(pubspec.readAsStringSync());
+      if (yamlDoc['transformers'] != null) {
+        print('${mapping.first} has transformers!');
+        foundAnyTransformers = true;
+      }
+    } else {
+      print('No pubspec found for ${mapping.first}, tried ${pubspec}');
+    }
+  });
+
+  if (!foundAnyTransformers) {
+    print('No transformers found');
+  }
+}
 
 @Task('Start observatory for a test run')
 observe() async {
