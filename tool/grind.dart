@@ -73,11 +73,44 @@ observe() async {
 }
 
 @Task('publish to pub.dartlang')
-@Depends(bumpVersionBuild)
+@Depends(checkChangelogHasVersion, checkVersionMatches)
 publish() async {
-  // TODO: check if CHANGELOG has a mention of the version
+  return Dart.run('pub', arguments: ['publish']);
+}
 
-  Dart.run('pub', arguments: ['publish']);
+@Task('Checks that version is matched in relevant places')
+checkVersionMatches() async {
+  Pubspec pubspec = await Pubspec.load();
+
+  var libCode = new File('lib/dartdoc.dart');
+  if (!libCode.existsSync()) {
+    fail('Cannot find lib/dartdoc.dart in ${Directory.current}');
+  }
+  String libCodeContents = libCode.readAsStringSync();
+
+  if (!libCodeContents
+      .contains("const String version = '${pubspec.version}';")) {
+    fail('Version string for ${pubspec.version} not found in lib/dartdoc.dart');
+  }
+}
+
+@Task('Checks that CHANGELOG mentions current version')
+checkChangelogHasVersion() async {
+  // TODO: use fail() when
+  // https://github.com/google/grinder.dart/issues/288 lands
+
+  var changelog = new File('CHANGELOG.md');
+  if (!changelog.existsSync()) {
+    print('ERROR: No CHANGELOG.md found in ${Directory.current}');
+    exit(1);
+  }
+
+  Pubspec pubspec = await Pubspec.load();
+
+  if (!changelog.readAsLinesSync().contains('## ${pubspec.version}')) {
+    print('ERROR: CHANGELOG.md does not mention version ${pubspec.version}');
+    exit(1);
+  }
 }
 
 @Task('Run all the tests.')
@@ -95,13 +128,13 @@ bumpVersionBuild() async {
 
   var libCode = new File('lib/dartdoc.dart');
   if (!libCode.existsSync()) {
-    fail('Cannot find lib/dartdoc.dart');
+    fail('Cannot find lib/dartdoc.dart in ${Directory.current}');
   }
   String libCodeContents = libCode.readAsStringSync();
   libCodeContents = libCodeContents.replaceFirst(
       new RegExp(r"const String version = '.*';"),
       "const String version = '${pubspec.version}';");
-  libCode.writeAsString(libCodeContents);
+  libCode.writeAsStringSync(libCodeContents);
 
   log('Version set to ${pubspec.version}');
 }

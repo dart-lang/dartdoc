@@ -1,3 +1,7 @@
+## 0.1.0+3
+
+* bump version of grinder
+
 ## 0.1.0+2
 
 * bump version of pub_cache
