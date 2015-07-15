@@ -16,6 +16,10 @@ Run `pub global activate dartdoc` to install `dartdoc`.
 Run `dartdoc` from the root directory of package. By default, the documentation
 is generated to the `doc/api/` directory.
 
+## Status
+
+Ready for testing, but has many known issues.
+
 ## FAQ
 
 #### What about `docgen` / `dartdocgen` / `dartdoc-viewer`?
