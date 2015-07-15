@@ -75,7 +75,7 @@ observe() async {
 @Task('publish to pub.dartlang')
 @Depends(checkChangelogHasVersion, checkVersionMatches)
 publish() async {
-  return Dart.run('pub', arguments: ['publish']);
+  return run('pub', arguments: ['publish']);
 }
 
 @Task('Checks that version is matched in relevant places')
