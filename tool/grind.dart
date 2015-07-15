@@ -42,6 +42,8 @@ observe() async {
 @Task('publish to pub.dartlang')
 @Depends(bumpVersionBuild)
 publish() async {
+  // TODO: check if CHANGELOG has a mention of the version
+
   Dart.run('pub', arguments: ['publish']);
 }
 
@@ -52,7 +54,7 @@ test() {
   Dart.runAsync('test/all.dart', vmArgs: ['--checked']);
 }
 
-@Task('Bump pubspec version and version number in lib/dartdoc.dart')
+@Task('Bump build num in pubspec and lib/dartdoc.dart')
 bumpVersionBuild() async {
   Pubspec pubspec = (await Pubspec.load())
     ..bump(ReleaseType.build)

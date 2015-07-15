@@ -1,3 +1,7 @@
+## 0.1.0+1
+
+* remove unused dependencies (http and intl)
+
 ## 0.1.0
 
 * display a left-hand nav for classes and libraries
