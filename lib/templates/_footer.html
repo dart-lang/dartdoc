@@ -18,21 +18,21 @@
 
 <script src="static-assets/prettify.js"></script>
 <script>
-// adds a shadow for the top nav when the masthead is scrolled off the top
+// Adds a shadow for the top nav when the masthead is scrolled off the top.
 function initScroller() {
-    window.addEventListener('scroll', function(e){
-        var header = document.querySelector("header");
+  window.addEventListener('scroll', function(e){
+    var header = document.querySelector("header");
 
-        if (header) {
-          var position = window.pageYOffset || document.documentElement.scrollTop;
+    if (header) {
+      var position = window.pageYOffset || document.documentElement.scrollTop;
 
-          if (position >= 136) {
-              header.classList.add("header-fixed");
-          } else if (header.classList.contains("header-fixed")) {
-              header.classList.remove("header-fixed");
-          }
-        }
-    });
+      if (position >= 136) {
+        header.classList.add("header-fixed");
+      } else if (header.classList.contains("header-fixed")) {
+        header.classList.remove("header-fixed");
+      }
+    }
+  });
 }
 
 function initSideNav() {
@@ -47,6 +47,7 @@ function initSideNav() {
   }
 }
 
+// Make sure the anchors scroll past the fixed page header (#648).
 function shiftWindow() {
   scrollBy(0, -68);
 }
@@ -55,6 +56,8 @@ document.addEventListener("DOMContentLoaded", function() {
   prettyPrint();
   initScroller();
   initSideNav();
+
+  // Make sure the anchors scroll past the fixed page header (#648).
   if (location.hash) shiftWindow();
   window.addEventListener("hashchange", shiftWindow);
 });
