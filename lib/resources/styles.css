@@ -402,6 +402,10 @@ ul.subnav {
   min-height: 24px;
 }
 
+ul.subnav::-webkit-scrollbar {
+  display: none;
+}
+
 ul.subnav li {
   display: inline-block;
   text-transform: uppercase;
