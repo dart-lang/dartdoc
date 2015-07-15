@@ -47,10 +47,16 @@ function initSideNav() {
   }
 }
 
+function shiftWindow() {
+  scrollBy(0, -68);
+}
+
 document.addEventListener("DOMContentLoaded", function() {
-    prettyPrint();
-    initScroller();
-    initSideNav();
+  prettyPrint();
+  initScroller();
+  initSideNav();
+  if (location.hash) shiftWindow();
+  window.addEventListener("hashchange", shiftWindow);
 });
 </script>
 <!-- Do not remove placeholder -->
