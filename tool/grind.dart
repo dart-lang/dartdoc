@@ -66,8 +66,8 @@ bumpVersionBuild() async {
   }
   String libCodeContents = libCode.readAsStringSync();
   libCodeContents = libCodeContents.replaceFirst(
-      new RegExp(r"const String VERSION = '.*';"),
-      "const String VERSION = '${pubspec.version}';");
+      new RegExp(r"const String version = '.*';"),
+      "const String version = '${pubspec.version}';");
   libCode.writeAsString(libCodeContents);
 
   log('Version set to ${pubspec.version}');

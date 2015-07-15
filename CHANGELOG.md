@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* bump version of pub_cache
+
 ## 0.1.0+1
 
 * remove unused dependencies (http and intl)

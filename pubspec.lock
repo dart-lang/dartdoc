@@ -128,7 +128,7 @@ packages:
   pub_cache:
     description: pub_cache
     source: hosted
-    version: "0.0.1+2"
+    version: "0.1.0"
   pub_package_data:
     description: pub_package_data
     source: hosted
