@@ -1,5 +1,20 @@
 {{>head}}
 
+<div class="row row-offcanvas row-offcanvas-left">
+
+  <div class="col-xs-6 col-sm-3 sidebar-offcanvas">
+
+    <ol id="sidebar">
+      <li class="section-title"><a href="{{package.href}}#libraries">Libraries</a></li>
+      {{#package.libraries}}
+      <li><a href="{{package.href}}#{{htmlId}}">{{name}}</a></li>
+      {{/package.libraries}}
+    </ol>
+
+  </div><!--/.sidebar-offcanvas-->
+
+  <div class="col-xs-12 col-sm-9 main-content">
+
     {{#package}}
       {{>documentation}}
     {{/package}}
@@ -8,7 +23,7 @@
       <h2>Libraries</h2>
       <dl>
         {{#package.libraries}}
-          <dt>
+          <dt id="{{htmlId}}">
             <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}"><a href="{{href}}">{{ name }}</a></span>
           </dt>
           <dd>
@@ -19,4 +34,7 @@
       </dl>
     </section>
 
+  </div> <!-- /.col-xs-12.col-sm-9 -->
+
+</div> <!-- /.row-offcanvas -->
 {{>footer}}
