@@ -238,6 +238,10 @@ dl dt.callable .name {
   font-style: italic;
 }
 
+.is-const {
+  font-style: italic;
+}
+
 .deprecated {
   text-decoration: line-through;
 }
