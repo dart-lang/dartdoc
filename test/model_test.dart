@@ -286,10 +286,6 @@ void main() {
       expect(Apple.mixins, hasLength(0));
     });
 
-    test('implementors', () {
-      expect(Apple.implementors, hasLength(1));
-    });
-
     test('mixins not private', () {
       expect(F.mixins, hasLength(0));
     });

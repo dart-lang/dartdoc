@@ -43,7 +43,6 @@ library fake;
 import 'dart:async';
 
 import 'example.dart';
-export 'example.dart' show B;
 
 /// Useful for annotations.
 class Annotation {
