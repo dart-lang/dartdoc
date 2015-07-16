@@ -18,7 +18,7 @@ is generated to the `doc/api/` directory.
 
 ## Status
 
-Ready for testing, but has many known issues.
+Ready for testing, but has [known issues](https://github.com/dart-lang/dartdoc/issues).
 
 ## FAQ
 
