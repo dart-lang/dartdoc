@@ -25,7 +25,7 @@ void _addToImplementors(Class c) {
     _implementors.putIfAbsent(key, () => []);
     List list = _implementors[key];
 
-    if (!list.contains(implClass)) {
+    if (!list.any((l) => l.element == c.element)) {
       list.add(implClass);
     }
   }
