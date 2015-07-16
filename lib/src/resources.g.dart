@@ -3,6 +3,7 @@
 library resources;
 
 const List<String> resource_names = const [
+  'package:dartdoc/resources/favicon.png',
   'package:dartdoc/resources/prettify.css',
   'package:dartdoc/resources/prettify.js',
   'package:dartdoc/resources/styles.css',
