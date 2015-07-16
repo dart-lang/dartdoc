@@ -61,7 +61,7 @@ void main() {
     });
 
     test('sdk name', () {
-      expect(sdkAsPackage.name, 'Dart API Reference');
+      expect(sdkAsPackage.name, 'Dart SDK');
     });
 
     test('sdk version', () {

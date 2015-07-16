@@ -109,7 +109,7 @@ class _SdkMeta extends PackageMeta {
 
   bool get isSdk => true;
 
-  String get name => 'Dart API Reference';
+  String get name => 'Dart SDK';
   String get version =>
       new File(path.join(dir.path, 'version')).readAsStringSync().trim();
   String get description =>
