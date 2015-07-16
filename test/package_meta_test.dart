@@ -47,7 +47,7 @@ void main() {
     PackageMeta p = new PackageMeta.fromSdk(getSdkDir());
 
     test('name', () {
-      expect(p.name, 'Dart API Reference');
+      expect(p.name, 'Dart SDK');
     });
 
     test('version', () {
