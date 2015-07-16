@@ -1204,6 +1204,14 @@ class Constructor extends ModelElement {
 
   bool get isConst => _constructor.isConst;
 
+  String get shortName {
+    if (name.contains('.')) {
+      return name.substring(_constructor.enclosingElement.name.length + 1);
+    } else {
+      return name;
+    }
+  }
+
   @override
   String get name {
     String constructorName = element.name;
