@@ -72,9 +72,11 @@ observe() async {
       '--profile bin/dartdoc.dart --output ${docsDir.path}');
 }
 
-@Task('Preflight checks to publish to pub.dartlang')
+@Task('Publish to pub.dartlang')
 @Depends(checkChangelogHasVersion, checkVersionMatches)
-publishPreflight() {}
+publish() async {
+  await run('pub', arguments: ['publish', '--force']);
+}
 
 @Task('Checks that version is matched in relevant places')
 checkVersionMatches() async {
