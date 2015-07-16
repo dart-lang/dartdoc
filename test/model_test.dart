@@ -544,14 +544,24 @@ void main() {
   });
 
   group('Constructor', () {
-    var c2;
+    Constructor appleDefaultConstructor;
+    Constructor appleConstructorFromString;
     setUp(() {
-      c2 = exLibrary.classes.firstWhere((c) => c.name == 'Apple').constructors[
-          0];
+      Class apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
+      appleDefaultConstructor =
+          apple.constructors.firstWhere((c) => c.name == 'Apple');
+      appleConstructorFromString =
+          apple.constructors.firstWhere((c) => c.name == 'Apple.fromString');
     });
 
     test('has contructor', () {
-      expect(c2, isNotNull);
+      expect(appleDefaultConstructor, isNotNull);
+      expect(appleDefaultConstructor.name, equals('Apple'));
+      expect(appleDefaultConstructor.shortName, equals('Apple'));
+    });
+
+    test('shortName', () {
+      expect(appleConstructorFromString.shortName, equals('fromString'));
     });
   });
 
