@@ -225,9 +225,10 @@ class HtmlGeneratorInstance {
           _layoutTitle(package.name, package.isSdk ? '' : 'package', false),
       'metaDescription':
           '${package.name} API docs, for the Dart programming language.',
-      'navLinks': [package],
+      'navLinks': [], // we're at the root
       'subnavItems': _gatherSubnavForPackage(package),
-      'htmlBase': '.'
+      'htmlBase': '.',
+      'self': package
     };
 
     if (package.hasDocumentation) {
@@ -257,9 +258,10 @@ class HtmlGeneratorInstance {
       'htmlBase': '..',
       'metaDescription':
           '${lib.name} library API docs, for the Dart programming language.',
-      'navLinks': [package, lib],
+      'navLinks': [package],
       'subnavItems': _gatherSubnavForLibrary(lib),
-      'layoutTitle': _layoutTitle(lib.name, 'library', lib.isDeprecated)
+      'layoutTitle': _layoutTitle(lib.name, 'library', lib.isDeprecated),
+      'self': lib
     };
 
     _build(path.join(lib.dirName, '${lib.fileName}'),
@@ -297,9 +299,10 @@ class HtmlGeneratorInstance {
           'API docs for the ${clazz.name} ${clazz.kind} from the ${lib.name} library, for the Dart programming language.',
       'layoutTitle':
           _layoutTitle(clazz.nameWithGenerics, clazz.kind, clazz.isDeprecated),
-      'navLinks': [package, lib, clazz],
+      'navLinks': [package, lib],
       'subnavItems': _gatherSubnavForClass(clazz),
-      'htmlBase': '..'
+      'htmlBase': '..',
+      'self': clazz
     };
 
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
@@ -317,8 +320,9 @@ class HtmlGeneratorInstance {
       'constructor': constructor,
       'layoutTitle': _layoutTitle(
           constructor.name, 'constructor', constructor.isDeprecated),
-      'navLinks': [package, lib, clazz, constructor],
-      'htmlBase': '../..'
+      'navLinks': [package, lib, clazz],
+      'htmlBase': '../..',
+      'self': constructor
     };
 
     _build(path.joinAll(constructor.href.split('/')),
@@ -334,8 +338,9 @@ class HtmlGeneratorInstance {
       'library': lib,
       'class': eNum,
       'layoutTitle': _layoutTitle(eNum.name, 'enum', eNum.isDeprecated),
-      'navLinks': [package, lib, eNum],
-      'htmlBase': '..'
+      'navLinks': [package, lib],
+      'htmlBase': '..',
+      'self': eNum
     };
 
     _build(path.joinAll(eNum.href.split('/')), _templates.classTemplate, data);
@@ -354,8 +359,9 @@ class HtmlGeneratorInstance {
           _layoutTitle(function.name, 'function', function.isDeprecated),
       'metaDescription':
           'API docs for the ${function.name} function from the ${lib.name} library, for the Dart programming language.',
-      'navLinks': [package, lib, function],
-      'htmlBase': '..'
+      'navLinks': [package, lib],
+      'htmlBase': '..',
+      'self': function
     };
 
     _build(path.joinAll(function.href.split('/')), _templates.functionTemplate,
@@ -377,8 +383,9 @@ class HtmlGeneratorInstance {
       'layoutTitle': _layoutTitle(method.name, 'method', method.isDeprecated),
       'metaDescription':
           'API docs for the ${method.name} method from the ${clazz.name} class, for the Dart programming language.',
-      'navLinks': [package, lib, clazz, method],
-      'htmlBase': '../..'
+      'navLinks': [package, lib, clazz],
+      'htmlBase': '../..',
+      'self': method
     };
 
     _build(
@@ -401,8 +408,9 @@ class HtmlGeneratorInstance {
           _layoutTitle(property.name, 'constant', property.isDeprecated),
       'metaDescription':
           'API docs for the ${property.name} constant from the ${clazz.name} class, for the Dart programming language.',
-      'navLinks': [package, lib, clazz, property],
-      'htmlBase': '../..'
+      'navLinks': [package, lib, clazz],
+      'htmlBase': '../..',
+      'self': property
     };
 
     _build(path.joinAll(property.href.split('/')), _templates.constantTemplate,
@@ -425,8 +433,9 @@ class HtmlGeneratorInstance {
           _layoutTitle(property.name, 'property', property.isDeprecated),
       'metaDescription':
           'API docs for the ${property.name} property from the ${clazz.name} class, for the Dart programming language.',
-      'navLinks': [package, lib, clazz, property],
-      'htmlBase': '../..'
+      'navLinks': [package, lib, clazz],
+      'htmlBase': '../..',
+      'self': property
     };
 
     _build(path.joinAll(property.href.split('/')), _templates.propertyTemplate,
@@ -447,8 +456,9 @@ class HtmlGeneratorInstance {
           _layoutTitle(property.name, 'property', property.isDeprecated),
       'metaDescription':
           'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
-      'navLinks': [package, lib, property],
-      'htmlBase': '..'
+      'navLinks': [package, lib],
+      'htmlBase': '..',
+      'self': property
     };
 
     _build(path.joinAll(property.href.split('/')),
@@ -469,8 +479,9 @@ class HtmlGeneratorInstance {
           _layoutTitle(property.name, 'constant', property.isDeprecated),
       'metaDescription':
           'API docs for the ${property.name} property from the ${lib.name} library, for the Dart programming language.',
-      'navLinks': [package, lib, property],
-      'htmlBase': '..'
+      'navLinks': [package, lib],
+      'htmlBase': '..',
+      'self': property
     };
 
     _build(path.joinAll(property.href.split('/')),
@@ -490,8 +501,9 @@ class HtmlGeneratorInstance {
           _layoutTitle(typeDef.name, 'typedef', typeDef.isDeprecated),
       'metaDescription':
           'API docs for the ${typeDef.name} property from the ${lib.name} library, for the Dart programming language.',
-      'navLinks': [package, lib, typeDef],
-      'htmlBase': '..'
+      'navLinks': [package, lib],
+      'htmlBase': '..',
+      'self': typeDef
     };
 
     _build(path.joinAll(typeDef.href.split('/')), _templates.typeDefTemplate,

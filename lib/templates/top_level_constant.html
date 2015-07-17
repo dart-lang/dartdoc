@@ -1,15 +1,78 @@
 {{>head}}
 
-  <section class="multi-line-signature">
-    {{#property}}
-        {{>name_summary}}
-        =
-        <span class="constant-value">{{{ constantValue }}}</span>
-    {{/property}}
-  </section>
+<div class="row row-offcanvas row-offcanvas-left">
 
-  {{#property}}
-    {{>documentation}}
-  {{/property}}
+  <div class="col-xs-6 col-sm-3 sidebar-offcanvas">
+    <h5>{{{library.linkedName}}}</h5>
+
+    <ol id="sidebar">
+      {{#library.hasConstants}}
+      <li class="section-title"><a href="{{library.href}}#constants">Constants</a></li>
+      {{#library.constants}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/library.constants}}
+      {{/library.hasConstants}}
+
+      {{#library.hasTypedefs}}
+      <li class="section-title"><a href="{{library.href}}#typedefs">Typedefs</a></li>
+      {{#library.typedefs}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/library.typedefs}}
+      {{/library.hasTypedefs}}
+
+      {{#library.hasProperties}}
+      <li class="section-title"><a href="{{library.href}}#properties">Properties</a></li>
+      {{#library.properties}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/library.properties}}
+      {{/library.hasProperties}}
+
+      {{#library.hasFunctions}}
+      <li class="section-title"><a href="{{library.href}}#functions">Functions</a></li>
+      {{#library.functions}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/library.functions}}
+      {{/library.hasFunctions}}
+
+      {{#library.hasEnums}}
+      <li class="section-title"><a href="{{library.href}}#enums">Enums</a></li>
+      {{#library.enums}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/library.enums}}
+      {{/library.hasEnums}}
+
+      {{#library.hasClasses}}
+      <li class="section-title"><a href="{{library.href}}#classes">Classes</a></li>
+      {{#library.classes}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/library.classes}}
+      {{/library.hasClasses}}
+
+      {{#library.hasExceptions}}
+      <li class="section-title"><a href="{{library.href}}#exceptions">Exceptions</a></li>
+      {{#library.exceptions}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/library.exceptions}}
+      {{/library.hasExceptions}}
+    </ol>
+  </div><!--/.sidebar-offcanvas-->
+
+  <div class="col-xs-12 col-sm-9">
+
+    <section class="multi-line-signature">
+      {{#property}}
+          {{>name_summary}}
+          =
+          <span class="constant-value">{{{ constantValue }}}</span>
+      {{/property}}
+    </section>
+
+    {{#property}}
+      {{>documentation}}
+    {{/property}}
+
+  </div> <!-- /.col-xs-12.col-sm-9 -->
+
+</div> <!-- /.row-offcanvas -->
 
 {{>footer}}

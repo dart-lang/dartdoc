@@ -1,16 +1,89 @@
 {{>head}}
 
-  <section class="multi-line-signature">
+<div class="row row-offcanvas row-offcanvas-left">
+
+  <div class="col-xs-6 col-sm-3 sidebar-offcanvas">
+
+    <h5>{{{class.linkedName}}}</h5>
+
+    <ol id="sidebar">
+      {{#class.hasConstants}}
+      <li class="section-title"><a href="#constants">Constants</a></li>
+      {{#class.constants}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/class.constants}}
+      {{/class.hasConstants}}
+
+      {{#class.hasStaticProperties}}
+      <li class="section-title"><a href="#static-properties">Static properties</a></li>
+      {{#class.staticProperties}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/class.staticProperties}}
+      {{/class.hasStaticProperties}}
+
+      {{#class.hasStaticMethods}}
+      <li class="section-title"><a href="#static-methods">Static methods</a></li>
+      {{#class.staticMethods}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/class.staticMethods}}
+      {{/class.hasStaticMethods}}
+
+      {{#class.hasInstanceProperties}}
+      <li class="section-title"><a href="#instance-properties">Properties</a></li>
+      {{#class.instanceProperties}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/class.instanceProperties}}
+      {{#class.inheritedProperties}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/class.inheritedProperties}}
+      {{/class.hasInstanceProperties}}
+
+      {{#class.hasConstructors}}
+      <li class="section-title"><a href="#constructors">Constructors</a></li>
+      {{#class.constructors}}
+      <li><a href="{{href}}">{{shortName}}</a></li>
+      {{/class.constructors}}
+      {{/class.hasConstructors}}
+
+      {{#class.hasOperators}}
+      <li class="section-title"><a href="#operators">Operators</a></li>
+      {{#class.operators}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/class.operators}}
+      {{#class.inheritedOperators}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/class.inheritedOperators}}
+      {{/class.hasOperators}}
+
+      {{#class.hasMethods}}
+      <li class="section-title"><a href="#methods">Methods</a></li>
+      {{#class.instanceMethods}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/class.instanceMethods}}
+      {{#class.inheritedMethods}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/class.inheritedMethods}}
+      {{/class.hasMethods}}
+    </ol>
+
+  </div><!--/.sidebar-offcanvas-->
+
+  <div class="col-xs-12 col-sm-9">
+
+    <section class="multi-line-signature">
+      {{#property}}
+        <span class="returntype">{{{ linkedReturnType }}}</span>
+        {{>name_summary}}
+
+        {{>readable_writable}}
+      {{/property}}
+    </section>
+
     {{#property}}
-      <span class="returntype">{{{ linkedReturnType }}}</span>
-      {{>name_summary}}
-
-      {{>readable_writable}}
+      {{>documentation}}
     {{/property}}
-  </section>
 
-  {{#property}}
-    {{>documentation}}
-  {{/property}}
+  </div> <!-- /.col-xs-12.col-sm-9 -->
 
+</div> <!-- /.row-offcanvas -->
 {{>footer}}
