@@ -52,7 +52,7 @@ header.container-fluid {
 }
 
 .body {
-  margin-top: 16px;
+  margin-top: 24px;
 }
 
 section {
@@ -489,7 +489,8 @@ ol#sidebar li.section-title a {
 ol#sidebar li.section-title {
   font-size: 12px;
   text-transform: uppercase;
-  font-weight: bold;
+  line-height: 20px;
+  margin-top: 24px;
 }
 
 ol#sidebar li:first-child {
