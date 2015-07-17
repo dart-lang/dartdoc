@@ -51,6 +51,14 @@ header.container-fluid {
   padding: 0;
 }
 
+.body {
+  margin-top: 16px;
+}
+
+section {
+  margin-bottom: 36px;
+}
+
 dl {
   margin: 0;
 }
@@ -74,6 +82,10 @@ h2 {
   font-size: 32px;
 }
 
+h5 {
+  font-size: 16px;
+}
+
 .subtitle {
   font-size: 17px;
   min-height: 1.4em;
@@ -93,6 +105,10 @@ p,
 ul,
 li {
   color: #727272;
+}
+
+p.no-docs {
+  font-style: italic;
 }
 
 a {
@@ -202,10 +218,6 @@ section.summary dd {
 section.summary dt {
   margin-left: 24px;
   text-indent: -24px;
-}
-
-section.desc {
-  padding-top: 16px;
 }
 
 dl.dl-horizontal dt {
@@ -341,6 +353,10 @@ footer .container-fluid {
   font-size: 17px;
 }
 
+.breadcrumbs li.self-crumb {
+  color: #CFD8DC;
+}
+
 .annotation-list {
   list-style: none;
   padding: 0;
@@ -375,10 +391,6 @@ footer .container-fluid {
 
 .end-with-period li:last-child:after {
   content: ".";
-}
-
-section {
-  padding-top: 32px;
 }
 
 .container > section:first-child {
@@ -455,10 +467,13 @@ span.top-level-variable-type {
 
 /* sidebar styles */
 
+.sidebar-offcanvas h5 {
+  margin-bottom: 16px;
+}
+
 ol#sidebar {
   list-style: none;
   padding: 0;
-  margin-top: 16px;
   font-size: 14px;
   overflow: hidden;
 }
@@ -475,7 +490,6 @@ ol#sidebar li.section-title {
   font-size: 12px;
   text-transform: uppercase;
   font-weight: bold;
-  padding-top: 16px;
 }
 
 ol#sidebar li:first-child {
