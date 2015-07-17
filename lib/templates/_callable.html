@@ -3,8 +3,12 @@
         &#8594;
         <span class="returntype">{{{ linkedReturnType }}}</span>
     </span>
-    {{#isInherited}}<span class="is-inherited">inherited</span>{{/isInherited}}
 </dt>
 <dd>
+    {{#isInherited}}
+    <div>
+      <span class="is-inherited">inherited</span>
+    </div>
+    {{/isInherited}}
     {{{ oneLineDoc }}}
 </dd>
