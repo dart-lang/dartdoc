@@ -86,7 +86,8 @@ class Templates {
       'styles_and_scripts',
       'readable_writable',
       'documentation',
-      'name_summary'
+      'name_summary',
+      'sidebar_for_class'
     ];
 
     for (var partial in partials) {
