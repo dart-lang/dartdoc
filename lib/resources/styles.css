@@ -478,10 +478,6 @@ ol#sidebar {
   overflow: hidden;
 }
 
-ol#sidebar li {
-  margin-top: 8px;
-}
-
 ol#sidebar li.section-title a {
   color: inherit;
 }
