@@ -327,3 +327,17 @@ const testingCodeSyntaxInOneLiners = 'fantastic';
 
 /// Referencing something that [doesn't exist].
 const incorrectDocReference = 'doh';
+
+/// Tests a single field with explict getter and setter.
+class WithGetterAndSetter {
+
+  /// Returns a length.
+  ///
+  /// Throws some exception if used in the fourth dimension.
+  int get length => 1;
+
+  /// Sets the length.
+  ///
+  /// Throws if set to an imaginary number.
+  void set length(int _length) {}
+}
