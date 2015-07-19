@@ -460,13 +460,19 @@ void main() {
   });
 
   group('Field', () {
-    var c, f1, f2, constField;
+    var c, f1, f2, constField, dynamicGetter, onlySetter, LongFirstLine;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       f1 = c.staticProperties[0]; // n
       f2 = c.instanceProperties[0];
       constField = c.constants[0]; // string
+      LongFirstLine =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'LongFirstLine');
+      dynamicGetter = LongFirstLine.instanceProperties
+          .firstWhere((p) => p.name == 'dynamicGetter');
+      onlySetter = LongFirstLine.instanceProperties
+          .firstWhere((p) => p.name == 'onlySetter');
     });
 
     test('is not const', () {
@@ -484,15 +490,29 @@ void main() {
     test('is not static', () {
       expect(f2.isStatic, isFalse);
     });
+
+    test('getter documentation', () {
+      expect(dynamicGetter.documentation,
+          equals('Dynamic getter. Readable only.'));
+    });
+
+    test('setter documentation', () {
+      expect(onlySetter.documentation,
+          equals('Only a setter, with a single param, of type double.'));
+    });
   });
 
   group('Variable', () {
     TopLevelVariable v;
-    TopLevelVariable v3;
+    TopLevelVariable v3, justGetter, justSetter;
 
     setUp(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
       v3 = exLibrary.properties.firstWhere((p) => p.name == 'y');
+      justGetter =
+          fakeLibrary.properties.firstWhere((p) => p.name == 'justGetter');
+      justSetter =
+          fakeLibrary.properties.firstWhere((p) => p.name == 'justSetter');
     });
 
     test('found two properties', () {
@@ -505,6 +525,16 @@ void main() {
 
     test('linked return type is dynamic', () {
       expect(v3.linkedReturnType, 'dynamic');
+    });
+
+    test('getter documentation', () {
+      expect(justGetter.documentation,
+          equals('Just a getter. No partner setter.'));
+    });
+
+    test('setter documentation', () {
+      expect(justSetter.documentation,
+          equals('Just a setter. No partner getter.'));
     });
   });
 
