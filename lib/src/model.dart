@@ -106,6 +106,9 @@ abstract class ModelElement implements Comparable {
     }
   }
 
+  String get _computeDocumentationComment =>
+      element.computeDocumentationComment();
+
   String get documentation {
     if (_documentation != null) {
       return _documentation;
@@ -115,7 +118,7 @@ abstract class ModelElement implements Comparable {
       return null;
     }
 
-    _documentation = element.computeDocumentationComment();
+    _documentation = _computeDocumentationComment;
 
     if (_documentation == null && canOverride()) {
       var overrideElement = overriddenElement;
@@ -1106,6 +1109,16 @@ class Field extends ModelElement {
     _setModelType();
   }
 
+  @override
+  String get _computeDocumentationComment {
+    if (hasGetter) {
+      return _field.getter.computeDocumentationComment();
+    } else if (hasSetter) {
+      return _field.setter.computeDocumentationComment();
+    }
+    return _field.computeDocumentationComment();
+  }
+
   void _setModelType() {
     if (hasGetter) {
       var t = _field.getter.returnType;
@@ -1361,6 +1374,16 @@ class TopLevelVariable extends ModelElement {
   bool get readWrite => hasGetter && hasSetter;
 
   String get linkedReturnType => modelType.linkedName;
+
+  @override
+  String get _computeDocumentationComment {
+    if (hasGetter) {
+      return _variable.getter.computeDocumentationComment();
+    } else if (hasSetter) {
+      return _variable.setter.computeDocumentationComment();
+    }
+    return _variable.computeDocumentationComment();
+  }
 
   String get constantValue {
     var v = (_variable as ConstTopLevelVariableElementImpl).node.toSource();
