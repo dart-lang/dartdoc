@@ -22,12 +22,9 @@
 
     {{#class.hasInstanceProperties}}
     <li class="section-title"><a href="{{class.href}}#instance-properties">Properties</a></li>
-    {{#class.instanceProperties}}
+    {{#class.allInstanceProperties}}
     <li><a href="{{href}}">{{name}}</a></li>
-    {{/class.instanceProperties}}
-    {{#class.inheritedProperties}}
-    <li><a href="{{href}}">{{name}}</a></li>
-    {{/class.inheritedProperties}}
+    {{/class.allInstanceProperties}}
     {{/class.hasInstanceProperties}}
 
     {{#class.hasConstructors}}
@@ -39,21 +36,15 @@
 
     {{#class.hasOperators}}
     <li class="section-title"><a href="{{class.href}}#operators">Operators</a></li>
-    {{#class.operators}}
+    {{#class.allOperators}}
     <li><a href="{{href}}">{{name}}</a></li>
-    {{/class.operators}}
-    {{#class.inheritedOperators}}
-    <li><a href="{{href}}">{{name}}</a></li>
-    {{/class.inheritedOperators}}
+    {{/class.allOperators}}
     {{/class.hasOperators}}
 
     {{#class.hasMethods}}
     <li class="section-title"><a href="{{class.href}}#methods">Methods</a></li>
-    {{#class.instanceMethods}}
+    {{#class.allInstanceMethods}}
     <li><a href="{{href}}">{{name}}</a></li>
-    {{/class.instanceMethods}}
-    {{#class.inheritedMethods}}
-    <li><a href="{{href}}">{{name}}</a></li>
-    {{/class.inheritedMethods}}
+    {{/class.allInstanceMethods}}
     {{/class.hasMethods}}
   </ol>

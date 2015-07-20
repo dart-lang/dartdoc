@@ -107,13 +107,9 @@
         <h2>Properties</h2>
 
         <dl class="properties">
-            {{#class.instanceProperties}}
+            {{#class.allInstanceProperties}}
             {{>property}}
-            {{/class.instanceProperties}}
-
-            {{#class.inheritedProperties}}
-            {{>property}}
-            {{/class.inheritedProperties}}
+            {{/class.allInstanceProperties}}
         </dl>
     </section>
     {{/class.hasProperties}}
@@ -144,13 +140,9 @@
       <section class="summary" id="operators">
           <h2>Operators</h2>
           <dl class="callables">
-              {{#class.operators}}
+              {{#class.allOperators}}
               {{>callable}}
-              {{/class.operators}}
-
-              {{#class.inheritedOperators}}
-              {{>callable}}
-              {{/class.inheritedOperators}}
+              {{/class.allOperators}}
           </dl>
       </section>
       {{/class.hasOperators}}
@@ -159,13 +151,9 @@
       <section class="summary" id="instance-methods">
           <h2>Methods</h2>
           <dl class="callables">
-              {{#class.instanceMethods}}
+              {{#class.allInstanceMethods}}
               {{>callable}}
-              {{/class.instanceMethods}}
-
-              {{#class.inheritedMethods}}
-              {{>callable}}
-              {{/class.inheritedMethods}}
+              {{/class.allInstanceMethods}}
           </dl>
       </section>
       {{/class.hasMethods}}
