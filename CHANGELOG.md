@@ -73,4 +73,11 @@
 * add dart identity to page
 * left nav links to dedicated page for element
 
+## 0.1.0+5
+
+* show peers in left navigation bar
+* show inherited on a separate line
+* fix links to anchors
+* fix comments for properties
+
 
