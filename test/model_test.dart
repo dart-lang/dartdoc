@@ -635,36 +635,45 @@ void main() {
   });
 
   group('Parameter', () {
-    Class c, f;
+    Class c, fClass;
     Method isGreaterThan, asyncM, methodWithGenericParam, paramFromExportLib;
-    Parameter p1;
+    Parameter intNumber, intCheckOptional;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
-      isGreaterThan = c.instanceMethods[2]; // isGreaterThan
-      paramFromExportLib = c.instanceMethods[3];
+      paramFromExportLib =
+          c.instanceMethods.singleWhere((m) => m.name == 'paramFromExportLib');
+      isGreaterThan =
+          c.instanceMethods.singleWhere((m) => m.name == 'isGreaterThan');
       asyncM = exLibrary.classes
               .firstWhere((c) => c.name == 'Dog').instanceMethods
           .firstWhere((m) => m.name == 'foo');
-      p1 = isGreaterThan.parameters[1]; // {int check:5}
-      f = exLibrary.classes.firstWhere((c) => c.name == 'F');
-      methodWithGenericParam = f.instanceMethods[0];
+      intNumber = isGreaterThan.parameters.first;
+      intCheckOptional = isGreaterThan.parameters.last;
+      fClass = exLibrary.classes.firstWhere((c) => c.name == 'F');
+      methodWithGenericParam = fClass.instanceMethods
+          .singleWhere((m) => m.name == 'methodWithGenericParam');
+    });
+
+    test('has parameters', () {
+      expect(isGreaterThan.parameters, hasLength(2));
     });
 
     test('is optional', () {
-      expect(p1.isOptional, isTrue);
+      expect(intCheckOptional.isOptional, isTrue);
+      expect(intNumber.isOptional, isFalse);
     });
 
     test('default value', () {
-      expect(p1.defaultValue, '5');
+      expect(intCheckOptional.defaultValue, '5');
     });
 
     test('is named', () {
-      expect(p1.isOptionalNamed, isTrue);
+      expect(intCheckOptional.isOptionalNamed, isTrue);
     });
 
     test('linkedName', () {
-      expect(p1.modelType.linkedName, 'int');
+      expect(intCheckOptional.modelType.linkedName, 'int');
     });
 
     test('async return type', () {
@@ -678,6 +687,7 @@ void main() {
 
     test('param exported in library', () {
       var param = paramFromExportLib.parameters[0];
+      expect(param.name, equals('helper'));
       expect(param.library.name, equals('ex'));
     });
   });
@@ -754,7 +764,9 @@ void main() {
     });
 
     test('methods has the right annotation', () {
-      expect(dog.instanceMethods.first.annotations.first, equals('deprecated'));
+      var m = dog.instanceMethods.singleWhere((m) => m.name == 'getClassA');
+      expect(m.hasAnnotations, isTrue);
+      expect(m.annotations.first, equals('deprecated'));
     });
   });
 }
