@@ -1,0 +1,6 @@
+# Analyzer options file.
+
+analyzer:
+  exclude:
+    - test_package_bad/
+    - doc/api/
