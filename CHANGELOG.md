@@ -1,5 +1,22 @@
+## 0.1.0+5
+
+* show peers in left navigation bar
+* show inherited on a separate line
+* fix links to anchors
+* fix comments for properties
+
+## 0.1.0+4
+
+* display only named constructor in left nav
+* do not show duplicates in implementors
+* add dart identity to page
+* left nav links to dedicated page for element
+
 ## 0.1.0+3
 
+* added top navigation bar
+* add left navigation section
+* package page lists libraries in left nav
 * bump version of grinder
 
 ## 0.1.0+2
@@ -59,25 +76,3 @@
 * support user defined library mapping using --url-mapping option
 * warning if library is undocumented
 * fixed linking for parameters
-
-## 0.1.0+3
-
-* added top navigation bar 
-* add left navigation section
-* package page lists libraries in left nav 
-
-## 0.1.0+4
-
-* display only named constructor in left nav
-* do not show duplicates in implementors
-* add dart identity to page
-* left nav links to dedicated page for element
-
-## 0.1.0+5
-
-* show peers in left navigation bar
-* show inherited on a separate line
-* fix links to anchors
-* fix comments for properties
-
-
