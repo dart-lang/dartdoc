@@ -16,6 +16,8 @@ import 'model_utils.dart';
 import 'package_meta.dart';
 import '../markdown_processor.dart';
 
+int byName(a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase());
+
 final Map<Class, List<Class>> _implementors = new Map();
 
 void _addToImplementors(Class c) {
@@ -536,7 +538,7 @@ class Library extends ModelElement {
     elements..removeWhere(isPrivate);
     _variables = elements
         .map((e) => new TopLevelVariable(e, this))
-        .toList(growable: false);
+        .toList(growable: false)..sort(byName);
 
     return _variables;
   }
@@ -545,13 +547,15 @@ class Library extends ModelElement {
 
   /// All variables ("properties") except constants.
   List<TopLevelVariable> get properties {
-    return _getVariables().where((v) => !v.isConst).toList(growable: false);
+    return _getVariables().where((v) => !v.isConst).toList(growable: false)
+      ..sort(byName);
   }
 
   bool get hasConstants => _getVariables().any((v) => v.isConst);
 
   List<TopLevelVariable> get constants {
-    return _getVariables().where((v) => v.isConst).toList(growable: false);
+    return _getVariables().where((v) => v.isConst).toList(growable: false)
+      ..sort(byName);
   }
 
   bool get hasEnums => enums.isNotEmpty;
@@ -565,7 +569,7 @@ class Library extends ModelElement {
     _enums = enumClasses
         .where(isPublic)
         .map((e) => new Enum(e, this))
-        .toList(growable: false);
+        .toList(growable: false)..sort((a, b) => a.name.compareTo(b.name));
     return _enums;
   }
 
@@ -587,7 +591,9 @@ class Library extends ModelElement {
     elements.addAll(_exportedNamespace
         .where((element) => element is FunctionTypeAliasElement));
     elements..removeWhere(isPrivate);
-    _typeDefs = elements.map((e) => new Typedef(e, this)).toList();
+    _typeDefs = elements
+        .map((e) => new Typedef(e, this))
+        .toList(growable: false)..sort(byName);
     return _typeDefs;
   }
 
@@ -607,7 +613,7 @@ class Library extends ModelElement {
     elements..removeWhere(isPrivate);
     _functions = elements.map((e) {
       return new ModelFunction(e, this);
-    }).toList(growable: false);
+    }).toList(growable: false)..sort(byName);
     return _functions;
   }
 
@@ -631,7 +637,7 @@ class Library extends ModelElement {
     _classes = types
         .where(isPublic)
         .map((e) => new Class(e, this))
-        .toList(growable: true);
+        .toList(growable: false)..sort(byName);
 
     return _classes;
   }
@@ -654,7 +660,7 @@ class Library extends ModelElement {
 
   List<Class> get exceptions {
     return _allClasses.where((c) => c.isErrorOrException).toList(
-        growable: false);
+        growable: false)..sort(byName);
   }
 
   @override
@@ -669,14 +675,17 @@ class Class extends ModelElement {
   List<Method> _allMethods;
   List<Operator> _operators;
   List<Operator> _inheritedOperators;
+  List<Operator> _allOperators;
   List<Method> _inheritedMethods;
   List<Method> _staticMethods;
   List<Method> _instanceMethods;
+  List<Method> _allInstanceMethods;
   List<Field> _fields;
   List<Field> _staticFields;
   List<Field> _constants;
   List<Field> _instanceFields;
   List<Field> _inheritedProperties;
+  List<Field> _allInstanceProperties;
 
   ClassElement get _cls => (element as ClassElement);
 
@@ -783,7 +792,7 @@ class Class extends ModelElement {
     _fields = _cls.fields
         .where(isPublic)
         .map((e) => new Field(e, library))
-        .toList(growable: false);
+        .toList(growable: false)..sort(byName);
 
     return _fields;
   }
@@ -793,20 +802,24 @@ class Class extends ModelElement {
     _staticFields = _allFields
         .where((f) => f.isStatic)
         .where((f) => !f.isConst)
-        .toList(growable: false);
+        .toList(growable: false)..sort(byName);
     return _staticFields;
   }
 
+  bool get hasInstanceProperties => instanceProperties.isNotEmpty;
+
   List<Field> get instanceProperties {
     if (_instanceFields != null) return _instanceFields;
-    _instanceFields =
-        _allFields.where((f) => !f.isStatic).toList(growable: false);
+    _instanceFields = _allFields
+        .where((f) => !f.isStatic)
+        .toList(growable: false)..sort(byName);
     return _instanceFields;
   }
 
   List<Field> get constants {
     if (_constants != null) return _constants;
-    _constants = _allFields.where((f) => f.isConst).toList(growable: false);
+    _constants = _allFields.where((f) => f.isConst).toList(growable: false)
+      ..sort((a, b) => a.name.compareTo(b.name));
     return _constants;
   }
 
@@ -814,14 +827,12 @@ class Class extends ModelElement {
 
   bool get hasStaticProperties => staticProperties.isNotEmpty;
 
-  bool get hasInstanceProperties => instanceProperties.isNotEmpty;
-
   List<Constructor> get constructors {
     if (_constructors != null) return _constructors;
 
     _constructors = _cls.constructors.where(isPublic).map((e) {
       return new Constructor(e, library);
-    }).toList(growable: true);
+    }).toList(growable: true)..sort(byName);
 
     return _constructors;
   }
@@ -837,7 +848,7 @@ class Class extends ModelElement {
       } else {
         return new Operator(e, library);
       }
-    }).toList(growable: false);
+    }).toList(growable: false)..sort(byName);
 
     return _allMethods;
   }
@@ -845,7 +856,8 @@ class Class extends ModelElement {
   List<Operator> get operators {
     if (_operators != null) return _operators;
 
-    _operators = _methods.where((m) => m.isOperator).toList(growable: false);
+    _operators = _methods.where((m) => m.isOperator).toList(growable: false)
+      ..sort(byName);
 
     return _operators;
   }
@@ -853,10 +865,20 @@ class Class extends ModelElement {
   bool get hasOperators =>
       operators.isNotEmpty || inheritedOperators.isNotEmpty;
 
+  List<Operator> get allOperators {
+    if (_allOperators != null) return _allOperators;
+    _allOperators = []
+      ..addAll(operators)
+      ..addAll(inheritedOperators)
+      ..sort(byName);
+    return _allOperators;
+  }
+
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
 
-    _staticMethods = _methods.where((m) => m.isStatic).toList(growable: false);
+    _staticMethods = _methods.where((m) => m.isStatic).toList(growable: false)
+      ..sort(byName);
 
     return _staticMethods;
   }
@@ -868,7 +890,7 @@ class Class extends ModelElement {
 
     _instanceMethods = _methods
         .where((m) => !m.isStatic && !m.isOperator)
-        .toList(growable: false);
+        .toList(growable: false)..sort(byName);
 
     return _instanceMethods;
   }
@@ -911,7 +933,18 @@ class Class extends ModelElement {
       }
     }
 
+    _inheritedMethods..sort(byName);
+
     return _inheritedMethods;
+  }
+
+  List<Method> get allInstanceMethods {
+    if (_allInstanceMethods != null) return _allInstanceMethods;
+    _allInstanceMethods = []
+      ..addAll(instanceMethods)
+      ..addAll(inheritedMethods)
+      ..sort(byName);
+    return _allInstanceMethods;
   }
 
   List<Method> get inheritedOperators {
@@ -959,6 +992,8 @@ class Class extends ModelElement {
       _inheritedOperators.add(new Operator.inherited(value, lib));
     }
 
+    _inheritedOperators..sort(byName);
+
     return _inheritedOperators;
   }
 
@@ -999,6 +1034,9 @@ class Class extends ModelElement {
         _inheritedProperties.add(new Field.inherited(e, lib));
       }
     }
+
+    _inheritedProperties..sort(byName);
+
     return _inheritedProperties;
   }
 
@@ -1007,6 +1045,18 @@ class Class extends ModelElement {
 
   bool get hasProperties =>
       inheritedProperties.isNotEmpty || instanceProperties.isNotEmpty;
+
+  List<Field> get allInstanceProperties {
+    if (_allInstanceProperties != null) return _allInstanceProperties;
+
+    // TODO best way to make this a fixed length list?
+    _allInstanceProperties = []
+      ..addAll(instanceProperties)
+      ..addAll(inheritedProperties)
+      ..sort(byName);
+
+    return _allInstanceProperties;
+  }
 
   bool get isErrorOrException {
     bool _doCheck(InterfaceType type) {
@@ -1049,7 +1099,7 @@ class Enum extends Class {
         .where(isPublic)
         .where((f) => f.isConst)
         .map((field) => new EnumField(index++, field, library))
-        .toList(growable: false);
+        .toList(growable: false)..sort(byName);
 
     return _constants;
   }
