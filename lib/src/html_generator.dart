@@ -601,7 +601,8 @@ List<Subnav> _gatherSubnavForClass(Class clazz) {
 }
 
 String _layoutTitle(String name, String kind, bool isDeprecated) {
-  if (kind.isEmpty) return name;
+  if (kind.isEmpty) kind =
+      '&nbsp;'; // Ugly. fixes https://github.com/dart-lang/dartdoc/issues/695
   String str = '<div class="kind">$kind</div>';
   if (!isDeprecated) return '${str} ${name}';
   return '${str} <span class="deprecated">$name</span>';
