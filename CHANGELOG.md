@@ -1,3 +1,9 @@
+## 0.2.0
+
+* fix: inconsistent heights in masthead
+* new: alphabetize lists of names
+* fix: fields w/ getters and setters were not displaying docs
+
 ## 0.1.0+5
 
 * show peers in left navigation bar
