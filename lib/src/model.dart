@@ -1161,12 +1161,21 @@ class Field extends ModelElement {
 
   @override
   String get _computeDocumentationComment {
+    var buffer = new StringBuffer();
     if (hasGetter) {
-      return _field.getter.computeDocumentationComment();
-    } else if (hasSetter) {
-      return _field.setter.computeDocumentationComment();
+      buffer.write(_field.getter.computeDocumentationComment());
     }
-    return _field.computeDocumentationComment();
+
+    if (hasSetter) {
+      if (buffer.isNotEmpty) buffer.write('\n\n');
+      buffer.write(_field.setter.computeDocumentationComment());
+    }
+
+    if (buffer.isEmpty) {
+      buffer.write(_field.computeDocumentationComment());
+    } else {
+      return buffer.toString();
+    }
   }
 
   void _setModelType() {

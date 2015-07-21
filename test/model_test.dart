@@ -469,7 +469,9 @@ void main() {
   });
 
   group('Field', () {
-    var c, f1, f2, constField, dynamicGetter, onlySetter, LongFirstLine;
+    Class c, LongFirstLine;
+    Field f1, f2, constField, dynamicGetter, onlySetter;
+    Field lengthX;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
@@ -482,6 +484,10 @@ void main() {
           .firstWhere((p) => p.name == 'dynamicGetter');
       onlySetter = LongFirstLine.instanceProperties
           .firstWhere((p) => p.name == 'onlySetter');
+
+      lengthX = fakeLibrary.classes.firstWhere(
+              (c) => c.name == 'WithGetterAndSetter').allInstanceProperties
+          .firstWhere((c) => c.name == 'lengthX');
     });
 
     test('is not const', () {
@@ -508,6 +514,11 @@ void main() {
     test('setter documentation', () {
       expect(onlySetter.documentation,
           equals('Only a setter, with a single param, of type double.'));
+    });
+
+    test('explicit getter and setter docs are unified', () {
+      expect(lengthX.documentation, contains('Sets the length.'));
+      expect(lengthX.documentation, contains('Returns a length.'));
     });
   });
 

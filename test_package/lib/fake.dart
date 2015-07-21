@@ -334,10 +334,10 @@ class WithGetterAndSetter {
   /// Returns a length.
   ///
   /// Throws some exception if used in the fourth dimension.
-  int get length => 1;
+  int get lengthX => 1;
 
   /// Sets the length.
   ///
   /// Throws if set to an imaginary number.
-  void set length(int _length) {}
+  void set lengthX(int _length) {}
 }
