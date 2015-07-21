@@ -121,7 +121,15 @@ class SuperAwesomeClass {
   List<String> powers;
 
   /// In the super class.
-  void fly(int height, Cool superCool, {String msg}) {}
+  ///
+  /// Another comment line.
+  void fly(int height, Cool superCool, {String msg}) {
+    var x = null;
+    int i, y;
+    for (int z = 0; z < 100; z++) {
+      print('hi');
+    }
+  }
 
   SuperAwesomeClass operator -(other) {
     return null;
@@ -239,6 +247,7 @@ class HasGenerics<X, Y, Z> {
 
   Z doStuff(String s, X x) => null;
 
+  /// Converts itself to a map.
   Map<X, Y> convertToMap() => null;
 }
 

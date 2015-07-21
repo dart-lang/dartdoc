@@ -1106,7 +1106,26 @@ class Enum extends Class {
   }
 }
 
-class ModelFunction extends ModelElement {
+abstract class SourceCodeMixin {
+  String get sourceCode {
+    String contents = element.source.contents.data;
+    var node = element.node; // TODO: computeNode once we go to 0.25.2
+    // find the start of the line, so that we can line up all the indents
+    int i = node.offset;
+    while (i > 0) {
+      i -= 1;
+      if (contents[i] == '\n' || contents[i] == '\r') {
+        i += 1;
+        break;
+      }
+    }
+    return contents.substring(node.offset - (node.offset - i), node.end);
+  }
+
+  Element get element;
+}
+
+class ModelFunction extends ModelElement with SourceCodeMixin {
   ModelFunction(FunctionElement element, Library library)
       : super(element, library) {
     _modelType = new ElementType(_func.type, this);
@@ -1301,7 +1320,7 @@ class Constructor extends ModelElement {
   }
 }
 
-class Method extends ModelElement {
+class Method extends ModelElement with SourceCodeMixin {
   bool _isInherited = false;
 
   MethodElement get _method => (element as MethodElement);

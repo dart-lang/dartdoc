@@ -58,10 +58,26 @@ function shiftWindow() {
   scrollBy(0, -68);
 }
 
+function initSourceToggle() {
+  var toggle = document.querySelector('.source-code h4');
+  var toggleArrow = document.querySelector('.source-code-toggle');
+  var code = document.querySelector('.source-code pre');
+
+  if (toggle && toggleArrow && code) {
+    toggle.addEventListener('click', function(e) {
+      var closed = toggleArrow.classList.contains('closed');
+      toggleArrow.classList.toggle('closed', !closed);
+      toggleArrow.classList.toggle('open', closed);
+      code.style.display = closed ? 'block' : 'none';
+    });
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
   prettyPrint();
   initScroller();
   initSideNav();
+  initSourceToggle();
 
   // Make sure the anchors scroll past the fixed page header (#648).
   if (location.hash) shiftWindow();
