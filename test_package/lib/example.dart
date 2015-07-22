@@ -51,6 +51,7 @@ class Apple {
 
   void paramFromExportLib(Helper helper) {}
 }
+
 /// Extends class [Apple], use [new Apple] or [new Apple.fromString]
 class B extends Apple with Cat {
   List<String> list;

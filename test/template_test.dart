@@ -25,7 +25,7 @@ void main() {
       });
 
       test('render', () {
-        expect(sitemap({'links': [{'name': 'somefile.html'}]}), '''
+        expect(_normalize(sitemap({'links': [{'name': 'somefile.html'}]})), '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -36,9 +36,9 @@ void main() {
       });
 
       test('substitute multiple links', () {
-        expect(sitemap({
+        expect(_normalize(sitemap({
           'links': [{'name': 'somefile.html'}, {'name': 'asecondfile.html'}]
-        }), '''
+        })), '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -52,10 +52,10 @@ void main() {
       });
 
       test('url and file name', () {
-        expect(sitemap({
+        expect(_normalize(sitemap({
           'url': 'http://mydoc.com',
           'links': [{'name': 'somefile.html'}]
-        }), '''
+        })), '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -67,3 +67,5 @@ void main() {
     });
   });
 }
+
+String _normalize(String str) => str.replaceAll('\r\n', '\n');

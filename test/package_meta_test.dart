@@ -63,8 +63,7 @@ void main() {
     });
 
     test('getReadmeContents()', () {
-      // TODO: This is null for SDK 1.10.
-      //expect(p.getReadmeContents(), isNotNull);
+      expect(p.getReadmeContents(), isNotNull);
     });
 
     test('getLicenseContents()', () {

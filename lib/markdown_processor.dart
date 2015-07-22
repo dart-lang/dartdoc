@@ -253,21 +253,18 @@ String _getMatchingLink(
       }
     }
   }
-  if (refElement == null) {
-    return null;
-  }
+
+  if (refElement == null) return null;
+
   var refLibrary;
-  try {
-    var e = refElement is ClassMemberElement ||
-            refElement is PropertyAccessorElement
-        ? refElement.enclosingElement
-        : refElement;
-    refLibrary =
-        element.package.libraries.firstWhere((lib) => lib.hasInNamespace(e));
-  } on StateError {}
+  var e = refElement is ClassMemberElement ||
+          refElement is PropertyAccessorElement
+      ? refElement.enclosingElement
+      : refElement;
+  refLibrary = element.package.libraries.firstWhere(
+      (lib) => lib.hasInNamespace(e), orElse: () => null);
   if (refLibrary != null) {
-    var e = new ModelElement.from(refElement, refLibrary);
-    return e.href;
+    return new ModelElement.from(refElement, refLibrary).href;
   }
   return null;
 }

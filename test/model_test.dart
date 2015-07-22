@@ -222,22 +222,16 @@ void main() {
           '<a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'));
     });
 
-    // On Windows, this test fails due to not being able to find the library that
-    // contains class Apple, checking in namespace does not work.
-    // TODO(keertip): figure out why the element returned from namespace is not
-    // the same as the one we are checking for.
-    if (!Platform.isWindows) {
-      test('reference to class from another library', () {
-        String comment = superAwesomeClass.documentationAsHtml;
-        expect(comment, contains('<a href="ex/Apple-class.html">Apple</a>'));
-      });
+    test('reference to class from another library', () {
+      String comment = superAwesomeClass.documentationAsHtml;
+      expect(comment, contains('<a href="ex/Apple-class.html">Apple</a>'));
+    });
 
-      test('reference to method', () {
-        String comment = foo2.documentationAsHtml;
-        expect(comment, equals(
-            '<p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>'));
-      });
-    }
+    test('reference to method', () {
+      String comment = foo2.documentationAsHtml;
+      expect(comment, equals(
+          '<p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>'));
+    });
 
     test('legacy code blocks render correctly', () {
       expect(testingCodeSyntaxInOneLiners.oneLineDoc,
