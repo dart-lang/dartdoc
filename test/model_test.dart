@@ -408,15 +408,27 @@ void main() {
     test('docs do not lose brackets in code blocks', () {
       expect(topLevelFunction.documentation, contains("['hello from dart']"));
     });
+
+    test('has source code', () {
+      expect(topLevelFunction.sourceCode, startsWith(
+          '/// Top-level function 3 params and 1 optional positional param.'));
+      expect(topLevelFunction.sourceCode, endsWith('''
+String topLevelFunction(int param1, bool param2, Cool coolBeans,
+    [double optionalPositional = 0.0]) {
+  return null;
+}'''));
+    });
   });
 
   group('Method', () {
-    Class classB, klass;
-    Method m, isGreaterThan, m4, m5, m6;
+    Class classB, klass, HasGenerics;
+    Method m, isGreaterThan, m4, m5, m6, convertToMap;
 
     setUp(() {
       klass = exLibrary.classes.singleWhere((c) => c.name == 'Klass');
       classB = exLibrary.classes.singleWhere((c) => c.name == 'B');
+      HasGenerics =
+          fakeLibrary.classes.singleWhere((c) => c.name == 'HasGenerics');
       m = classB.instanceMethods.first;
       isGreaterThan = exLibrary.classes
               .singleWhere((c) => c.name == 'Apple').instanceMethods
@@ -424,6 +436,8 @@ void main() {
       m4 = classB.instanceMethods[1];
       m5 = klass.instanceMethods.singleWhere((m) => m.name == 'another');
       m6 = klass.instanceMethods.singleWhere((m) => m.name == 'toString');
+      convertToMap = HasGenerics.instanceMethods
+          .singleWhere((m) => m.name == 'convertToMap');
     });
 
     test('overriden method', () {
@@ -456,6 +470,11 @@ void main() {
       var comment2 = m6.documentation;
       expect(comment, equals('Another method'));
       expect(comment2, equals('A shadowed method'));
+    });
+
+    test('method source code indents correctly', () {
+      expect(convertToMap.sourceCode,
+          startsWith('  /// Converts itself to a map.'));
     });
   });
 
