@@ -473,8 +473,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('method source code indents correctly', () {
-      expect(convertToMap.sourceCode,
-          startsWith('  /// Converts itself to a map.'));
+      expect(
+          convertToMap.sourceCode, startsWith('/// Converts itself to a map.'));
     });
   });
 

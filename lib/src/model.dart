@@ -1119,7 +1119,15 @@ abstract class SourceCodeMixin {
         break;
       }
     }
-    return contents.substring(node.offset - (node.offset - i), node.end);
+
+    // Trim the common indent from the source snippet.
+    String source =
+        contents.substring(node.offset - (node.offset - i), node.end);
+    String remainer = source.trimLeft();
+    String indent = source.substring(0, source.length - remainer.length);
+    return source.split('\n').map((line) {
+      return line.startsWith(indent) ? line.substring(indent.length) : line;
+    }).join('\n');
   }
 
   Element get element;
