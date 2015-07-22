@@ -475,6 +475,11 @@ ol#sidebar {
   list-style: none;
   padding: 0;
   font-size: 14px;
+  line-height: 24px;
+}
+
+ol#sidebar li {
+  text-overflow: ellipsis;
   overflow: hidden;
 }
 
@@ -490,8 +495,8 @@ ol#sidebar li.section-title {
 }
 
 ol#sidebar li:first-child {
-  padding-top: 0px;
-  margin-top: 0px;
+  padding-top: 0;
+  margin-top: 0;
 }
 
 #sidenav-toggle {
