@@ -69,11 +69,8 @@ void main() {
     });
 
     test('sdk description', () {
-      // TODO: This is null for SDK 1.10.
-      if (sdkAsPackage.hasDocumentation) {
-        expect(sdkAsPackage.documentation,
-            startsWith('Welcome to the Dart API reference doc'));
-      }
+      expect(sdkAsPackage.documentation,
+          startsWith('Welcome to the Dart API reference doc'));
     });
   });
 
