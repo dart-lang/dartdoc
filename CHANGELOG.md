@@ -1,3 +1,6 @@
+## 0.2.1
+* fix: documentation for fields was sometimes `null`
+
 ## 0.2.0
 
 * fix: inconsistent heights in masthead
