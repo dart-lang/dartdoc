@@ -139,9 +139,7 @@ abstract class ModelElement implements Comparable {
 
   String get documentationAsHtml {
     if (_documentationAsHtml != null) return _documentationAsHtml;
-
     _documentationAsHtml = processDocsAsMarkdown(this);
-
     return _documentationAsHtml;
   }
 
@@ -491,7 +489,10 @@ class Library extends ModelElement {
   bool hasInNamespace(Element element) {
     if (_namespace == null) _buildExportedNamespace();
     var e = _namespace.get(element.name);
-    return e == element;
+    // Fix for #587, comparison between elements isn't reliable.
+    //return e == element;
+    return e.runtimeType == element.runtimeType &&
+        e.nameOffset == element.nameOffset;
   }
 
   String get name {
@@ -1163,19 +1164,23 @@ class Field extends ModelElement {
   String get _computeDocumentationComment {
     var buffer = new StringBuffer();
     if (hasGetter) {
-      buffer.write(_field.getter.computeDocumentationComment());
+      String docs = _field.getter.computeDocumentationComment();
+      if (docs != null) buffer.write(docs);
     }
 
     if (hasSetter) {
-      if (buffer.isNotEmpty) buffer.write('\n\n');
-      buffer.write(_field.setter.computeDocumentationComment());
+      String docs = _field.setter.computeDocumentationComment();
+      if (docs != null) {
+        if (buffer.isNotEmpty) buffer.write('\n\n');
+        buffer.write(docs);
+      }
     }
 
-    if (buffer.isEmpty) {
-      buffer.write(_field.computeDocumentationComment());
-    } else {
-      return buffer.toString();
-    }
+    if (hasGetter || hasSetter) return buffer.toString();
+
+    String docs = _field.computeDocumentationComment();
+    if (docs != null) buffer.write(docs);
+    return buffer.toString();
   }
 
   void _setModelType() {
