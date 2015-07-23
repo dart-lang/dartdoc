@@ -53,6 +53,9 @@ main(List<String> arguments) async {
 
   List<String> excludeLibraries =
       args['exclude'] == null ? [] : args['exclude'].split(',');
+  List<String> includeLibraries =
+      args['include'] == null ? [] : args['include'].split(',');
+
   String url = args['hosted-url'];
   String footerFilePath = _resolveTildePath(args['footer']);
   if (footerFilePath != null && !new File(footerFilePath).existsSync()) {
@@ -108,7 +111,7 @@ main(List<String> arguments) async {
   var generators = initGenerators(url, headerFilePath, footerFilePath);
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
-      outputDir, packageRootDir, packageMeta, urlMappings);
+      outputDir, packageRootDir, packageMeta, urlMappings, includeLibraries);
 
   try {
     DartDocResults results = await dartdoc.generateDocs();
@@ -164,6 +167,8 @@ ArgParser _createArgsParser() {
       splitCommas: false);
   parser.addOption('exclude',
       help: 'Comma-separated list of library names to ignore.');
+  parser.addOption('include',
+      help: 'Comma-separated list of library names to generate docs for.');
   parser.addOption('hosted-url',
       help: 'URL where the docs will be hosted (used to generate the sitemap).');
   return parser;

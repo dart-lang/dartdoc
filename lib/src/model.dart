@@ -368,14 +368,14 @@ class Package {
 
   String get version => packageMeta.version;
 
-  bool get hasDocumentation => documentationFile != null;
+  bool get hasDocumentationFile => documentationFile != null;
 
   FileContents get documentationFile => packageMeta.getReadmeContents();
 
   // TODO: Clients should use [documentationFile] so they can act differently on
   // plain text or markdown.
   String get documentation =>
-      hasDocumentation ? documentationFile.contents : null;
+      hasDocumentationFile ? documentationFile.contents : null;
 
   String get documentationAsHtml => renderMarkdownToHtml(documentation);
 
@@ -508,7 +508,11 @@ class Library extends ModelElement {
       _name = element.name;
     }
 
-    // calculate this once, instead on every invocation of name getter
+    // So, if the library is a system library, it's name is not
+    // dart:___, it's dart.___. Apparently the way to get to the dart:___
+    // name is to get source.encoding.
+    // This may be wrong or misleading, but developers expect the name
+    // of dart:____
     var source = _library.definingCompilationUnit.source;
     _name = source.isInSystemLibrary ? source.encoding : _name;
 
@@ -643,12 +647,7 @@ class Library extends ModelElement {
     return _classes;
   }
 
-  /// if SDK, return all classes
-  /// if package, return classes that are not [Error] or [Exception]
   List<Class> get classes {
-    if (package.isSdk) {
-      return _allClasses;
-    }
     return _allClasses.where((c) => !c.isErrorOrException).toList(
         growable: false);
   }
@@ -1064,6 +1063,9 @@ class Class extends ModelElement {
       return (type.element.library.isDartCore &&
           (type.name == 'Exception' || type.name == 'Error'));
     }
+
+    // if this class is itself Error or Exception, return true
+    if (_doCheck(_cls.type)) return true;
 
     return _cls.allSupertypes.any(_doCheck);
   }
