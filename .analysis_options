@@ -3,6 +3,7 @@
 analyzer:
   exclude:
     - test_package/doc/api
+    - test_package_small/doc/api
     - test_package_bad/
     - doc/api/
     - pub.dartlang.org/
