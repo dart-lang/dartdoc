@@ -233,7 +233,7 @@ class HtmlGeneratorInstance {
       'self': package
     };
 
-    if (package.hasDocumentation) {
+    if (package.hasDocumentationFile) {
       FileContents readme = package.documentationFile;
       data['markdown'] = readme.isMarkdown ? renderMarkdown : renderPlainText;
     }
@@ -242,7 +242,7 @@ class HtmlGeneratorInstance {
   }
 
   void generateLibrary(Package package, Library lib) {
-    print('generating docs for library ${lib.path}...');
+    print('generating docs for library ${lib.name} from ${lib.path}...');
 
     if (!lib.hasDocumentation) {
       print("  warning: library '${lib.name}' has no documentation");

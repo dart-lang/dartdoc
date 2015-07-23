@@ -8,6 +8,7 @@ import 'dart:io';
 
 final Directory testPackageDir = new Directory('test_package');
 final Directory testPackageBadDir = new Directory('test_package_bad');
+final Directory testPackageWithNoReadme = new Directory('test_package_small');
 
 void delete(Directory dir) {
   if (dir.existsSync()) dir.deleteSync(recursive: true);

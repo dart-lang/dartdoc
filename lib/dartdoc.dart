@@ -53,13 +53,13 @@ class DartDoc {
   final Directory packageRootDir;
   final PackageMeta packageMeta;
   final Map<String, String> urlMappings;
-
-  final Set<LibraryElement> libraries = new Set();
+  final List<String> includes;
 
   Stopwatch _stopwatch;
 
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
-      this.outputDir, this.packageRootDir, this.packageMeta, this.urlMappings);
+      this.outputDir, this.packageRootDir, this.packageMeta, this.urlMappings,
+      this.includes);
 
   /// Generate DartDoc documentation.
   ///
@@ -72,16 +72,30 @@ class DartDoc {
 
     if (packageRootDir != null) loader.packageRootPath = packageRootDir.path;
 
-    var files =
+    List<String> files =
         packageMeta.isSdk ? [] : findFilesToDocumentInPackage(rootDir.path);
 
-    List<LibraryElement> libs = [];
-    libs.addAll(_parseLibraries(files));
-    // remove excluded libraries
-    excludes.forEach(
-        (pattern) => libs.removeWhere((l) => l.name.startsWith(pattern)));
-    libs.removeWhere((library) => excludes.contains(library.name));
-    libraries.addAll(libs);
+    List<LibraryElement> libraries = _parseLibraries(files);
+
+    if (includes != null && includes.isNotEmpty) {
+      Set notFound = new Set.from(includes)
+          .difference(new Set.from(libraries.map((l) => l.name)));
+      if (notFound.isNotEmpty) {
+        return new Future.error('Some libraries not found: $notFound');
+      }
+      libraries.removeWhere((lib) => !includes.contains(lib.name));
+    } else {
+      // remove excluded libraries
+      excludes.forEach((pattern) {
+        libraries.removeWhere((lib) {
+          return lib.name.startsWith(pattern) || lib.name == pattern;
+        });
+      });
+    }
+
+    if (includes.isNotEmpty || excludes.isNotEmpty) {
+      print('Generating docs for libraries ${libraries.join(', ')}\n');
+    }
 
     Package package = new Package(libraries, packageMeta);
 
@@ -101,6 +115,7 @@ class DartDoc {
   }
 
   List<LibraryElement> _parseLibraries(List<String> files) {
+    Set<LibraryElement> libraries = new Set();
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
     List<UriResolver> resolvers = [
       new DartUriResolver(sdk),

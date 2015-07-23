@@ -27,31 +27,77 @@ void main() {
       delete(tempDir);
     });
 
-    test('generateDocs ${path.basename(testPackageDir.path)}', () async {
+    test('generate docs for ${path.basename(testPackageDir.path)} works',
+        () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc = new DartDoc(
-          testPackageDir, [], getSdkDir(), [], tempDir, null, meta, null);
+          testPackageDir, [], getSdkDir(), [], tempDir, null, meta, null, []);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.package, isNotNull);
 
       Package p = results.package;
       expect(p.name, 'test_package');
-      expect(p.hasDocumentation, true);
-      expect(p.libraries.length, 7);
+      expect(p.hasDocumentationFile, isTrue);
+      expect(p.libraries, hasLength(7));
     });
 
-    test('generateDocs ${path.basename(testPackageBadDir.path)}', () async {
+    test('generate docs for ${path.basename(testPackageBadDir.path)} fails',
+        () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageBadDir);
-      DartDoc dartdoc = new DartDoc(
-          testPackageBadDir, [], getSdkDir(), [], tempDir, null, meta, null);
+      DartDoc dartdoc = new DartDoc(testPackageBadDir, [], getSdkDir(), [],
+          tempDir, null, meta, null, []);
 
       try {
         await dartdoc.generateDocs();
         fail('dartdoc should fail on analysis errors');
       } catch (e) {
-        expect(e is DartDocFailure, true);
+        expect(e is DartDocFailure, isTrue);
       }
+    });
+
+    test('generate docs for a package that does not have a readme', () async {
+      PackageMeta meta = new PackageMeta.fromDir(testPackageWithNoReadme);
+      DartDoc dartdoc = new DartDoc(testPackageWithNoReadme, [], getSdkDir(),
+          [], tempDir, null, meta, null, []);
+
+      DartDocResults results = await dartdoc.generateDocs();
+      expect(results.package, isNotNull);
+
+      Package p = results.package;
+      expect(p.name, 'test_package_small');
+      expect(p.hasDocumentationFile, isFalse);
+      expect(p.libraries, hasLength(1));
+    });
+
+    test('generate docs including a single library', () async {
+      PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
+      DartDoc dartdoc = new DartDoc(testPackageDir, [], getSdkDir(), [],
+          tempDir, null, meta, null, ['fake']);
+
+      DartDocResults results = await dartdoc.generateDocs();
+      expect(results.package, isNotNull);
+
+      Package p = results.package;
+      expect(p.name, 'test_package');
+      expect(p.hasDocumentationFile, isTrue);
+      expect(p.libraries, hasLength(1));
+      expect(p.libraries.map((lib) => lib.name), contains('fake'));
+    });
+
+    test('generate docs excluding a single library', () async {
+      PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
+      DartDoc dartdoc = new DartDoc(testPackageDir, ['fake'], getSdkDir(), [],
+          tempDir, null, meta, null, []);
+
+      DartDocResults results = await dartdoc.generateDocs();
+      expect(results.package, isNotNull);
+
+      Package p = results.package;
+      expect(p.name, 'test_package');
+      expect(p.hasDocumentationFile, isTrue);
+      expect(p.libraries, hasLength(6));
+      expect(p.libraries.map((lib) => lib.name).contains('fake'), isFalse);
     });
   });
 }
