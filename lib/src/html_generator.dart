@@ -323,6 +323,7 @@ class HtmlGeneratorInstance {
       'layoutTitle': _layoutTitle(
           constructor.name, 'constructor', constructor.isDeprecated),
       'navLinks': [package, lib, clazz],
+      'subnavItems': _gatherSubnavForInvokable(constructor),
       'htmlBase': '../..',
       'self': constructor
     };
@@ -362,6 +363,7 @@ class HtmlGeneratorInstance {
       'metaDescription':
           'API docs for the ${function.name} function from the ${lib.name} library, for the Dart programming language.',
       'navLinks': [package, lib],
+      'subnavItems': _gatherSubnavForInvokable(function),
       'htmlBase': '..',
       'self': function
     };
@@ -386,6 +388,7 @@ class HtmlGeneratorInstance {
       'metaDescription':
           'API docs for the ${method.name} method from the ${clazz.name} class, for the Dart programming language.',
       'navLinks': [package, lib, clazz],
+      'subnavItems': _gatherSubnavForInvokable(method),
       'htmlBase': '../..',
       'self': method
     };
@@ -599,6 +602,15 @@ List<Subnav> _gatherSubnavForClass(Class clazz) {
       .add(new Subnav('Methods', '${clazz.href}#instance-methods'));
 
   return navs;
+}
+
+List<Subnav> _gatherSubnavForInvokable(ModelElement element) {
+  if (element is SourceCodeMixin &&
+      (element as SourceCodeMixin).hasSourceCode) {
+    return [new Subnav('Source', '${element.href}#source')];
+  } else {
+    return [];
+  }
 }
 
 String _layoutTitle(String name, String kind, bool isDeprecated) {

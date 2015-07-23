@@ -1,16 +1,31 @@
 {{>head}}
+<div class="row row-offcanvas row-offcanvas-left">
 
-  <section class="multi-line-signature">
-        {{#property}}
-            <span class="returntype">{{{ linkedReturnType }}}</span>
-            {{>name_summary}}
-            =
-            <span class="constant-value">{{{ constantValue }}}</span>
-        {{/property}}
-  </section>
+  <div class="col-xs-6 col-sm-3 sidebar-offcanvas">
 
-  {{#property}}
-  {{>documentation}}
-  {{/property}}
+    <h5>{{{class.linkedName}}}</h5>
+
+    {{>sidebar_for_class}}
+
+  </div><!--/.sidebar-offcanvas-->
+
+  <div class="col-xs-12 col-sm-9">
+
+    <section class="multi-line-signature">
+          {{#property}}
+              <span class="returntype">{{{ linkedReturnType }}}</span>
+              {{>name_summary}}
+              =
+              <span class="constant-value">{{{ constantValue }}}</span>
+          {{/property}}
+    </section>
+
+    {{#property}}
+    {{>documentation}}
+    {{/property}}
+
+  </div> <!-- /.col-xs-12.col-sm-9 -->
+
+</div> <!-- /.row-offcanvas -->
 
 {{>footer}}
