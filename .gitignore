@@ -2,6 +2,7 @@
 build/
 doc/api/
 test_package/doc
+test_package_small/doc
 packages
 .buildlog
 .pub

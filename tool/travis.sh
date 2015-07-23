@@ -29,8 +29,13 @@ else
   # Verify that the libraries are error free.
   grind analyze
 
-  # Another smoke test: Run dartdoc on test_package.
+  # Run dartdoc on test_package.
   cd test_package
+  dart -c ../bin/dartdoc.dart
+  cd ..
+
+  # And on test_package_small.
+  cd test_package_small
   dart -c ../bin/dartdoc.dart
   cd ..
 
