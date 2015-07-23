@@ -59,7 +59,7 @@ String processDocsAsMarkdown(ModelElement element) {
   String html = renderMarkdownToHtml(element.documentation, element);
   Document doc = parse(html);
   doc.querySelectorAll('script').forEach((s) => s.remove());
-  doc.querySelectorAll('pre > code').forEach((e) {
+  doc.querySelectorAll('code').forEach((e) {
     e.classes.addAll(['prettyprint', 'lang-dart']);
   });
   return doc.body.innerHtml;
