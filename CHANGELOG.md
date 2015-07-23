@@ -1,3 +1,7 @@
+## 0.2.2
+* new: show the source code for methods, functions, and constructors
+* fix: fixed an npe when generating docs for projects without readmes
+
 ## 0.2.1
 * fix: documentation for fields was sometimes `null`
 
