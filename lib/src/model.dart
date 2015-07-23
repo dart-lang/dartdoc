@@ -1126,9 +1126,12 @@ abstract class SourceCodeMixin {
     String remainer = source.trimLeft();
     String indent = source.substring(0, source.length - remainer.length);
     return source.split('\n').map((line) {
+      line = line.trimRight();
       return line.startsWith(indent) ? line.substring(indent.length) : line;
     }).join('\n');
   }
+
+  bool get hasSourceCode => sourceCode.trim().isNotEmpty;
 
   Element get element;
 }
