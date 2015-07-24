@@ -36,41 +36,57 @@ void main() {
       new PackageMeta.fromSdk(sdkDir));
 
   group('Package', () {
-    test('name', () {
-      expect(package.name, 'test_package');
+    group('test package', () {
+      test('name', () {
+        expect(package.name, 'test_package');
+      });
+
+      test('libraries', () {
+        expect(package.libraries, hasLength(5));
+      });
+
+      test('is documented in library', () {
+        expect(package.isDocumented(exLibrary), isTrue);
+      });
+
+      test('has documentation', () {
+        expect(package.hasDocumentationFile, isTrue);
+        expect(package.hasDocumentation, isTrue);
+      });
+
+      test('documentation exists', () {
+        expect(package.documentation.startsWith('# Best Package'), isTrue);
+      });
+
+      test('documentation can be rendered as HTML', () {
+        expect(package.documentationAsHtml, contains('<h1>Best Package</h1>'));
+      });
+
+      test('one line doc', () {
+        expect(package.oneLineDoc, equals('Best Package'));
+      });
+
+      test('sdk name', () {
+        expect(sdkAsPackage.name, equals('Dart SDK'));
+      });
+
+      test('sdk version', () {
+        expect(sdkAsPackage.version, isNotNull);
+      });
+
+      test('sdk description', () {
+        expect(sdkAsPackage.documentation,
+            startsWith('Welcome to the Dart API reference doc'));
+      });
     });
 
-    test('libraries', () {
-      expect(package.libraries, hasLength(5));
-    });
-
-    test('is documented in library', () {
-      expect(package.isDocumented(exLibrary), true);
-    });
-
-    test('documentation exists', () {
-      expect(package.documentation.startsWith('# Best Package'), true);
-    });
-
-    test('documentation can be rendered as HTML', () {
-      expect(package.documentationAsHtml, contains('<h1>Best Package</h1>'));
-    });
-
-    test('one line doc', () {
-      expect(package.oneLineDoc, equals('Best Package'));
-    });
-
-    test('sdk name', () {
-      expect(sdkAsPackage.name, 'Dart SDK');
-    });
-
-    test('sdk version', () {
-      expect(sdkAsPackage.version, isNotNull);
-    });
-
-    test('sdk description', () {
-      expect(sdkAsPackage.documentation,
-          startsWith('Welcome to the Dart API reference doc'));
+    group('test small package', () {
+      test('does not have documentation', () {
+        expect(testUtils.testPackageSmall.hasDocumentation, isFalse);
+        expect(testUtils.testPackageSmall.hasDocumentationFile, isFalse);
+        expect(testUtils.testPackageSmall.documentationFile, isNull);
+        expect(testUtils.testPackageSmall.documentation, isNull);
+      });
     });
   });
 

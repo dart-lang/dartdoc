@@ -88,7 +88,8 @@ class Templates {
       'documentation',
       'name_summary',
       'sidebar_for_class',
-      'source_code'
+      'source_code',
+      'sidebar_for_library'
     ];
 
     for (var partial in partials) {

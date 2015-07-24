@@ -11,62 +11,71 @@ import 'package:dartdoc/src/package_meta.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('PackageMeta.fromDir', () {
+  group('PackageMeta.fromDir for this package', () {
     PackageMeta p = new PackageMeta.fromDir(Directory.current);
 
-    test('name', () {
+    test('has a name', () {
       expect(p.name, 'dartdoc');
     });
 
-    test('version', () {
+    test('has a version', () {
       expect(p.version, isNotNull);
     });
 
-    test('description', () {
-      expect(p.description, isNotNull);
+    test('has a description', () {
+      expect(p.description, equals('A documentation generator for Dart.'));
     });
 
-    test('homepage', () {
-      expect(p.homepage, isNotNull);
+    test('has a homepage', () {
+      expect(p.homepage, equals('https://github.com/dart-lang/dartdoc'));
     });
 
-    test('getReadmeContents()', () {
+    test('has a readme', () {
       expect(p.getReadmeContents(), isNotNull);
+      expect(p.getReadmeContents().contents, contains('''
+A documentation generator for Dart. This tool creates static HTML files
+generated from Dart source code.'''));
     });
 
-    test('getLicenseContents()', () {
+    test('has a license', () {
       expect(p.getLicenseContents(), isNotNull);
+      expect(p.getLicenseContents().contents,
+          contains('Copyright 2014, the Dart project authors.'));
     });
 
-    test('getChangelogContents()', () {
+    test('has a changelog', () {
       expect(p.getChangelogContents(), isNotNull);
+      expect(p.getChangelogContents().contents, contains('## 0.2.2'));
     });
   });
 
   group('PackageMeta.fromSdk', () {
     PackageMeta p = new PackageMeta.fromSdk(getSdkDir());
 
-    test('name', () {
+    test('has a name', () {
       expect(p.name, 'Dart SDK');
     });
 
-    test('version', () {
+    test('has a version', () {
       expect(p.version, isNotNull);
     });
 
-    test('description', () {
-      expect(p.description, isNotNull);
+    test('has a description', () {
+      expect(p.description, equals(
+          'The Dart SDK is a set of tools and libraries for the Dart programming language.'));
     });
 
-    test('homepage', () {
-      expect(p.homepage, isNotNull);
+    test('has a homepage', () {
+      expect(p.homepage, equals('https://github.com/dart-lang/sdk'));
     });
 
-    test('getReadmeContents()', () {
+    test('has a readme', () {
       expect(p.getReadmeContents(), isNotNull);
+      expect(p.getReadmeContents().contents,
+          startsWith('Welcome to the Dart API reference documentation'));
     });
 
-    test('getLicenseContents()', () {
+    test('does not have a license', () {
       expect(p.getLicenseContents(), isNull);
     });
   });
