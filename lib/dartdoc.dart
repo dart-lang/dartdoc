@@ -30,7 +30,7 @@ export 'src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.2.2';
+const String version = '0.3.0';
 
 final String defaultOutDir = 'doc${Platform.pathSeparator}api';
 

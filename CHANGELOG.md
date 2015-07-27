@@ -1,3 +1,9 @@
+## 0.3.0
+* new: left nav now animates in on mobile
+* new: white list certain libraries from the command line
+* fix: syntax highlighting of inline code
+* fix: exceptions and errors are not includes in the list of classes
+
 ## 0.2.2
 * new: show the source code for methods, functions, and constructors
 * fix: fixed an npe when generating docs for projects without readmes
