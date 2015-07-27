@@ -489,30 +489,31 @@ span.top-level-variable-type {
   background-color: #f7f7f7;
 }
 
-ol.sidebar {
+.sidebar ol {
   list-style: none;
   padding: 16px 0 16px 0;
   font-size: 14px;
   line-height: 24px;
+  margin-bottom: 0;
 }
 
-ol.sidebar li {
+.sidebar ol li {
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
-ol.sidebar li.section-title a {
+.sidebar ol li.section-title a {
   color: inherit;
 }
 
-ol.sidebar li.section-title {
+.sidebar ol li.section-title {
   font-size: 12px;
   text-transform: uppercase;
   line-height: 20px;
   margin-top: 24px;
 }
 
-ol.sidebar li:first-child {
+.sidebar ol li:first-child {
   padding-top: 0;
   margin-top: 0;
 }
@@ -575,38 +576,19 @@ button {
   }
 }
 
-.sidebar-offcanvas-right h5 {
+.sidebar h5 {
   color: #727272;
 }
 
-/* the right nav disappears out of view */
-/* THIS IS TOTALLY BROKEN... WILL REDO RIGHT-NAV */
+.sidebar-offcanvas-left h5 {
+  margin-top: 16px;
+}
+
+/* the right nav disappears out of view when the window shrinks */
 @media screen and (max-width: 992px) {
   .sidebar-offcanvas-right{
-    right:-66%;
-    position:fixed;
-    -webkit-transition:all .25s ease-out;
-    -o-transition:all .25s ease-out;
-    transition:all .25s ease-out;
-    z-index: 2000;
-    top:0;
-    width:50%;
-    padding: 0;
-  }
-
-  /* this mumbo jumbo disables scroll bars */
-  .sidebar-offcanvas-right {
-    overflow-y: auto;
-    visibility: hidden;
-  }
-
-  .sidebar-offcanvas-right ol {
-    visibility: visible;
-    background-color: white;
-  }
-  /* /insanity */
-
-  .sidebar-offcanvas-right.active{right:0;}
+     display: none;
+   }
 }
 
 /* source code method bodies */
