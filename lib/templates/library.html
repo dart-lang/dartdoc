@@ -1,7 +1,8 @@
 {{>head}}
 
-  <div class="col-xs-6 col-sm-3 col-md-3 sidebar-offcanvas-left">
-    <ol class="sidebar">
+  <div class="col-xs-6 col-sm-3 col-md-3 sidebar sidebar-offcanvas-left">
+    <h5>{{package.name}}</h5>
+    <ol>
       <li class="section-title"><a href="index.html">Libraries</a></li>
       {{#package.libraries}}
       <li><a href="{{href}}">{{name}}</a></li>
@@ -116,7 +117,7 @@
 
   </div> <!-- /.main-content -->
 
-  <div class="col-xs-6 col-sm-6 col-md-3 sidebar-offcanvas-right">
+  <div class="col-xs-6 col-sm-6 col-md-3 sidebar sidebar-offcanvas-right">
     <h5>{{self.name}}</h5>
     {{>sidebar_for_library}}
   </div><!--/sidebar-offcanvas-right-->
