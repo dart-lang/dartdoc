@@ -1,3 +1,6 @@
+## Unreleased
+* Print the name of the thing above the right nav list
+
 ## 0.3.0
 * new: left nav now animates in on mobile
 * new: white list certain libraries from the command line

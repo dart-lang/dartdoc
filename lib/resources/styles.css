@@ -575,6 +575,10 @@ button {
   }
 }
 
+.sidebar-offcanvas-right h5 {
+  color: #727272;
+}
+
 /* the right nav disappears out of view */
 /* THIS IS TOTALLY BROKEN... WILL REDO RIGHT-NAV */
 @media screen and (max-width: 992px) {
