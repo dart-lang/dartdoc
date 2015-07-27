@@ -25,16 +25,23 @@
 <header class="container-fluid" id="title">
     <nav class="navbar navbar-fixed-top">
         <div class="container">
-            <button id="sidenav-toggle" type="button"> </button>
-            <ol class="breadcrumbs gt-separated">
+            <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+            <ol class="breadcrumbs gt-separated hidden-xs">
                 {{#navLinks}}
                 <li><a href="{{href}}">{{name}}</a></li>
                 {{/navLinks}}
                 <li class="self-crumb">{{self.name}}</li>
             </ol>
+            <div class="self-name">{{self.name}}</div>
         </div>
     </nav>
-    <div class="container">
+    <div class="container masthead">
+        <ol class="breadcrumbs gt-separated visible-xs">
+            {{#navLinks}}
+            <li><a href="{{href}}">{{name}}</a></li>
+            {{/navLinks}}
+            <li class="self-crumb">{{self.name}}</li>
+        </ol>
         <div class="title-description">
             <h1 class="title">
                 {{{ layoutTitle }}}

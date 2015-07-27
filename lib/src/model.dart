@@ -368,14 +368,18 @@ class Package {
 
   String get version => packageMeta.version;
 
+  bool get hasDocumentation =>
+      documentationFile != null && documentationFile.contents.isNotEmpty;
+
   bool get hasDocumentationFile => documentationFile != null;
 
   FileContents get documentationFile => packageMeta.getReadmeContents();
 
   // TODO: Clients should use [documentationFile] so they can act differently on
   // plain text or markdown.
-  String get documentation =>
-      hasDocumentationFile ? documentationFile.contents : null;
+  String get documentation {
+    return hasDocumentationFile ? documentationFile.contents : null;
+  }
 
   String get documentationAsHtml => renderMarkdownToHtml(documentation);
 

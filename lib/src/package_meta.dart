@@ -48,6 +48,9 @@ class FileContents {
 }
 
 class _FilePackageMeta extends PackageMeta {
+  FileContents _readme;
+  FileContents _license;
+  FileContents _changelog;
   Map _pubspec;
 
   _FilePackageMeta(Directory dir) : super(dir) {
@@ -67,18 +70,24 @@ class _FilePackageMeta extends PackageMeta {
   String get homepage => _pubspec['homepage'];
 
   FileContents getReadmeContents() {
-    return new FileContents(
-        _locate(dir, ['readme.md', 'readme.txt', 'readme']));
+    if (_readme != null) return _readme;
+    _readme =
+        new FileContents(_locate(dir, ['readme.md', 'readme.txt', 'readme']));
+    return _readme;
   }
 
   FileContents getLicenseContents() {
-    return new FileContents(
+    if (_license != null) return _license;
+    _license = new FileContents(
         _locate(dir, ['license.md', 'license.txt', 'license']));
+    return _license;
   }
 
   FileContents getChangelogContents() {
-    return new FileContents(
+    if (_changelog != null) return _changelog;
+    _changelog = new FileContents(
         _locate(dir, ['changelog.md', 'changelog.txt', 'changelog']));
+    return _changelog;
   }
 }
 
@@ -89,12 +98,6 @@ File _locate(Directory dir, List<String> fileNames) {
     for (File f in files) {
       String baseName = path.basename(f.path).toLowerCase();
       if (baseName == name) return f;
-    }
-  }
-
-  for (String name in fileNames) {
-    for (File f in files) {
-      String baseName = path.basename(f.path).toLowerCase();
       if (baseName.startsWith(name)) return f;
     }
   }

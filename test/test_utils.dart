@@ -20,25 +20,34 @@ import 'package:dartdoc/src/package_meta.dart';
 DartSdk sdkDir;
 AnalyzerHelper analyzerHelper;
 Package testPackage;
+Package testPackageSmall;
 
 init() {
   sdkDir = new DirectoryBasedDartSdk(new JavaFile(cli_util.getSdkDir().path));
 
   analyzerHelper = new AnalyzerHelper();
-  String dirPath = p.join(Directory.current.path, 'test_package');
-  Iterable<LibraryElement> libElements = [
+  var pathsForTestLib = [
     'lib/example.dart',
     'lib/two_exports.dart',
     'lib/fake.dart',
     'lib/anonymous_library.dart',
     'lib/another_anonymous_lib.dart'
-  ].map((libFile) {
-    Source source = analyzerHelper.addSource(p.join(dirPath, libFile));
+  ];
+
+  testPackage = _bootPackage(pathsForTestLib, 'test_package');
+
+  testPackageSmall = _bootPackage(['lib/main.dart'], 'test_package_small');
+}
+
+Package _bootPackage(Iterable<String> libPaths, String dirPath) {
+  String fullDirPath = p.join(Directory.current.path, dirPath);
+  Iterable<LibraryElement> libElements = libPaths.map((libFile) {
+    Source source = analyzerHelper.addSource(p.join(fullDirPath, libFile));
     return analyzerHelper.resolve(source);
   });
 
-  testPackage =
-      new Package(libElements, new PackageMeta.fromDir(new Directory(dirPath)));
+  return new Package(
+      libElements, new PackageMeta.fromDir(new Directory(dirPath)));
 }
 
 class AnalyzerHelper {
