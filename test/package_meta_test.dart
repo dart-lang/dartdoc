@@ -9,8 +9,28 @@ import 'dart:io';
 import 'package:cli_util/cli_util.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:test/test.dart';
+import 'package:path/path.dart' as path;
 
 void main() {
+  group('PackageMeta for a directory without a pubspec', () {
+    PackageMeta p;
+
+    setUp(() {
+      var d = new Directory(
+          path.join(Directory.current.path, 'test_package_not_valid'));
+      if (!d.existsSync()) {
+        throw "$d cannot be found";
+      }
+      p = new PackageMeta.fromDir(d);
+    });
+
+    test('is not valid', () {
+      expect(p.isValid, isFalse);
+      expect(p.getInvalidReasons(), isNotEmpty);
+      expect(p.getInvalidReasons(), contains('No pubspec.yaml found'));
+    });
+  });
+
   group('PackageMeta.fromDir for this package', () {
     PackageMeta p = new PackageMeta.fromDir(Directory.current);
 
@@ -28,6 +48,11 @@ void main() {
 
     test('has a homepage', () {
       expect(p.homepage, equals('https://github.com/dart-lang/dartdoc'));
+    });
+
+    test('is valid', () {
+      expect(p.isValid, isTrue);
+      expect(p.getInvalidReasons(), isEmpty);
     });
 
     test('has a readme', () {
@@ -54,6 +79,11 @@ generated from Dart source code.'''));
 
     test('has a name', () {
       expect(p.name, 'Dart SDK');
+    });
+
+    test('is valid', () {
+      expect(p.isValid, isTrue);
+      expect(p.getInvalidReasons(), isEmpty);
     });
 
     test('has a version', () {

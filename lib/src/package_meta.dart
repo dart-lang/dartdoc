@@ -29,6 +29,15 @@ abstract class PackageMeta {
   FileContents getLicenseContents();
   FileContents getChangelogContents();
 
+  /// Returns true if we are a valid package, valid enough to generate docs.
+  bool get isValid;
+
+  /// Returns a list of reasons this package is invalid, or an
+  /// empty list if no reasons found.
+  ///
+  /// If the list is empty, this package is valid.
+  List<String> getInvalidReasons();
+
   String toString() => name;
 }
 
@@ -89,6 +98,22 @@ class _FilePackageMeta extends PackageMeta {
         _locate(dir, ['changelog.md', 'changelog.txt', 'changelog']));
     return _changelog;
   }
+
+  @override
+  bool get isValid => getInvalidReasons().isEmpty;
+
+  /// Returns a list of reasons this package is invalid, or an
+  /// empty list if no reasons found.
+  @override
+  List<String> getInvalidReasons() {
+    var reasons = [];
+    if (_pubspec == null || _pubspec.isEmpty) {
+      reasons.add('No pubspec.yaml found');
+    } else if (!_pubspec.containsKey('name')) {
+      reasons.add('No name found in pubspec.yaml');
+    }
+    return reasons;
+  }
 }
 
 File _locate(Directory dir, List<String> fileNames) {
@@ -126,6 +151,12 @@ class _SdkMeta extends PackageMeta {
         : new File(path.join(dir.path, 'lib', 'api_readme.md'));
     return f.existsSync() ? new FileContents(f) : null;
   }
+
+  @override
+  bool get isValid => true;
+
+  @override
+  List<String> getInvalidReasons() => [];
 
   FileContents getLicenseContents() => null;
 

@@ -350,3 +350,6 @@ class WithGetterAndSetter {
   /// Throws if set to an imaginary number.
   void set lengthX(int _length) {}
 }
+
+/// I have a generic and it extends [Foo2]
+class HasGenericWithExtends<T extends Foo2> {}

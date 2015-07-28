@@ -104,6 +104,12 @@ main(List<String> arguments) async {
       ? new PackageMeta.fromSdk(sdkDir, sdkReadmePath: readme)
       : new PackageMeta.fromDir(inputDir);
 
+  if (!packageMeta.isValid) {
+    print('Unable to generate documentation.');
+    packageMeta.getInvalidReasons().map((r) => '* $r').forEach(print);
+    exit(1);
+  }
+
   print("Generating documentation for '${packageMeta}' into "
       "${outputDir.absolute.path}${Platform.pathSeparator}");
   print('');
