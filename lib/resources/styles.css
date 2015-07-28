@@ -119,6 +119,10 @@ li {
   color: #727272;
 }
 
+ul {
+  padding: 0;
+}
+
 p.no-docs {
   font-style: italic;
 }
