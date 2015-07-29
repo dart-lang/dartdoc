@@ -1,8 +1,13 @@
 {{>head}}
 
   <div class="col-xs-6 col-sm-3 col-md-3 sidebar sidebar-offcanvas-left">
-    <h5>{{library.name}}</h5>
-    {{>sidebar_for_library}}
+    <div class="wrapper">
+      {{#navLinks}}
+      <h5><a href="{{href}}">{{name}}</a></h5>
+      {{/navLinks}}
+
+      {{>sidebar_for_library}}
+    </div>
   </div>
 
   <div class="col-xs-12 col-sm-9 col-md-6 main-content">
