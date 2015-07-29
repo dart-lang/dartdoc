@@ -27,7 +27,9 @@
 <header class="container-fluid" id="title">
     <nav class="navbar navbar-fixed-top">
         <div class="container">
+            {{^navLinks.isEmpty}}
             <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+            {{/navLinks.isEmpty}}
             <ol class="breadcrumbs gt-separated hidden-xs">
                 {{#navLinks}}
                 <li><a href="{{href}}">{{name}}</a></li>
@@ -42,7 +44,9 @@
             {{#navLinks}}
             <li><a href="{{href}}">{{name}}</a></li>
             {{/navLinks}}
+            {{^navLinks.isEmpty}}
             <li class="self-crumb">{{self.name}}</li>
+            {{/navLinks.isEmpty}}
         </ol>
         <div class="title-description">
             <h1 class="title">
