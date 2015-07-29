@@ -1,7 +1,10 @@
 {{>head}}
 
   <div class="col-xs-6 col-sm-3 col-md-3 sidebar sidebar-offcanvas-left">
-    <h5>{{package.name}}</h5>
+    {{#navLinks}}
+    <h5><a href="{{href}}">{{name}}</a></h5>
+    {{/navLinks}}
+
     <ol>
       <li class="section-title"><a href="index.html">Libraries</a></li>
       {{#package.libraries}}

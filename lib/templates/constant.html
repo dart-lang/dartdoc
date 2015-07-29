@@ -2,7 +2,9 @@
 
   <div class="col-xs-6 col-sm-3 sidebar sidebar-offcanvas-left">
 
-    <h5>{{class.name}}</h5>
+    {{#navLinks}}
+    <h5><a href="{{href}}">{{name}}</a></h5>
+    {{/navLinks}}
 
     {{>sidebar_for_class}}
 

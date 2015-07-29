@@ -320,6 +320,7 @@ footer .container-fluid {
 
 .gt-separated {
   list-style: none;
+  padding: 0;
 }
 
 .gt-separated li {
@@ -487,14 +488,19 @@ span.top-level-variable-type {
 
 .sidebar-offcanvas-left {
   background-color: #f7f7f7;
+  padding: 0;
 }
 
 .sidebar ol {
   list-style: none;
-  padding: 16px 0 16px 0;
   font-size: 14px;
   line-height: 24px;
   margin-bottom: 0;
+  padding: 0;
+}
+
+.sidebar-offcanvas-left ol {
+  padding: 16px;
 }
 
 .sidebar ol li {
@@ -564,7 +570,6 @@ button {
     transition:all .25s ease-out;
     z-index: 2000;
     top:0;
-    padding-left: 15px;
     width: 280px; /* works all the way down to an iphone 4 */
     height: 100%;
     background-color: white;
@@ -578,10 +583,17 @@ button {
 
 .sidebar h5 {
   color: #727272;
+  padding-bottom: 16px;
 }
 
 .sidebar-offcanvas-left h5 {
-  margin-top: 16px;
+  border-bottom: 1px solid #dddddd;
+  padding: 16px;
+}
+
+.sidebar-offcanvas-left h5:last-of-type {
+  border: 0;
+  padding: 16px 16px 0 16px;
 }
 
 /* the right nav disappears out of view when the window shrinks */
