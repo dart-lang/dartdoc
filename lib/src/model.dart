@@ -901,29 +901,46 @@ class Class extends ModelElement {
 
   bool get hasInstanceMethods => instanceMethods.isNotEmpty;
 
+  // TODO: make this method smarter about hierarchies and overrides. Right
+  // now, we're creating a flat list. We're not paying attention to where
+  // these methods are actually coming from. This might turn out to be a
+  // problem if we want to show that info later.
   List<Method> get inheritedMethods {
     if (_inheritedMethods != null) return _inheritedMethods;
+
     InheritanceManager manager = new InheritanceManager(element.library);
     MemberMap cmap = manager.getMapOfMembersInheritedFromClasses(element);
     MemberMap imap = manager.getMapOfMembersInheritedFromInterfaces(element);
+
+    // remove methods that exist on this class
     _methods.forEach((method) {
       cmap.remove(method.name);
       imap.remove(method.name);
     });
+
     _inheritedMethods = [];
-    var vs = [];
+    List<ExecutableElement> vs = [];
+    Set<String> uniqueNames = new Set();
 
     for (var i = 0; i < cmap.size; i++) {
+      // XXX: if we care about showing a hierarchy with our inherited methods,
+      // then don't do this
+      if (uniqueNames.contains(cmap.getKey(i))) continue;
+
+      uniqueNames.add(cmap.getKey(i));
       vs.add(cmap.getValue(i));
     }
 
     for (var i = 0; i < imap.size; i++) {
+      // XXX: if we care about showing a hierarchy with our inherited methods,
+      // then don't do this
+      if (uniqueNames.contains(imap.getKey(i))) continue;
+
+      uniqueNames.add(imap.getKey(i));
       vs.add(imap.getValue(i));
     }
 
-    vs = vs.toSet().toList();
-
-    for (var value in vs) {
+    for (ExecutableElement value in vs) {
       if (value != null &&
           value is MethodElement &&
           !value.isPrivate &&
@@ -1003,22 +1020,38 @@ class Class extends ModelElement {
 
   bool get hasInheritedMethods => inheritedMethods.isNotEmpty;
 
+  // TODO: make this method smarter about hierarchies and overrides. Right
+  // now, we're creating a flat list. We're not paying attention to where
+  // these methods are actually coming from. This might turn out to be a
+  // problem if we want to show that info later.
   List<Field> get inheritedProperties {
     if (_inheritedProperties != null) return _inheritedProperties;
+
     InheritanceManager manager = new InheritanceManager(element.library);
     MemberMap cmap = manager.getMapOfMembersInheritedFromClasses(element);
     MemberMap imap = manager.getMapOfMembersInheritedFromInterfaces(element);
+
     _inheritedProperties = [];
-    var vs = [];
+    List<ExecutableElement> vs = [];
+    Set<String> uniqueNames = new Set();
+
     for (var i = 0; i < cmap.size; i++) {
+      // XXX: if we care about showing a hierarchy with our inherited methods,
+      // then don't do this
+      if (uniqueNames.contains(cmap.getKey(i))) continue;
+
+      uniqueNames.add(cmap.getKey(i));
       vs.add(cmap.getValue(i));
     }
 
     for (var i = 0; i < imap.size; i++) {
+      // XXX: if we care about showing a hierarchy with our inherited methods,
+      // then don't do this
+      if (uniqueNames.contains(imap.getKey(i))) continue;
+
+      uniqueNames.add(imap.getKey(i));
       vs.add(imap.getValue(i));
     }
-
-    vs = vs.toSet().toList();
 
     vs.removeWhere((it) => instanceProperties.any((i) => it.name == i.name));
 
