@@ -89,7 +89,8 @@ class Templates {
       'name_summary',
       'sidebar_for_class',
       'source_code',
-      'sidebar_for_library'
+      'sidebar_for_library',
+      'name_link'
     ];
 
     for (var partial in partials) {

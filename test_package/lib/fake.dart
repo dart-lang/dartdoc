@@ -368,3 +368,6 @@ class SpecialList<E> extends ListBase<E> {
 
   void operator []=(int index, E value) {}
 }
+
+/// This inherits operators.
+class ExtraSpecialList<E> extends SpecialList {}

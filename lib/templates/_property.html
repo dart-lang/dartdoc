@@ -1,6 +1,6 @@
 <dt id="{{htmlId}}" class="property">
     <span class="top-level-variable-type">{{{ linkedReturnType }}}</span>
-    <a href="{{href}}">{{>name_summary}}</a>
+    {{#isInherited}}{{>name_summary}}{{/isInherited}}{{^isInherited}}<a href="{{href}}">{{>name_summary}}</a>{{/isInherited}}
 </dt>
 <dd>
     {{>readable_writable}}
