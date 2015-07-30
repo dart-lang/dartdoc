@@ -353,10 +353,19 @@ void main() {
           isNotNull);
     });
 
-    test('get exported class hrefs', () {
-      expect(DT.href, isNotNull);
-      expect(DT.instanceMethods[0].href, isNotNull);
-      expect(DT.instanceProperties[0].href, isNotNull);
+    test('exported class should have hrefs from the current library', () {
+      expect(DT.href, equals('ex/DateTime-class.html'));
+      expect(DT.instanceMethods[0].href, equals('ex/DateTime/add.html'));
+      expect(DT.instanceProperties[0].href, equals('ex/DateTime/day.html'));
+    });
+
+    test('exported class should have linkedReturnType for the current library',
+        () {
+      Method toUTC = DT.instanceMethods.firstWhere((m) => m.name == 'toUtc',
+          orElse: () => null);
+      expect(toUTC, isNotNull);
+      expect(toUTC.linkedReturnType,
+          equals('<a href="ex/DateTime-class.html">DateTime</a>'));
     });
 
     test('F has a single instance method', () {

@@ -1632,8 +1632,9 @@ class ElementType {
   ElementType get _returnType {
     var rt = (_type as FunctionType).returnType;
     return new ElementType(rt, new ModelElement.from(
-        rt.element, new Library(rt.element.library, _element.package)));
+        rt.element, new Library(_element.library.element, _element.package)));
   }
+
   ModelElement get returnElement {
     Element e = (_type as FunctionType).returnType.element;
     if (e == null) {
