@@ -254,7 +254,7 @@ void main() {
 
   group('Class', () {
     List<Class> classes;
-    Class Apple, B, Cat, Dog, F, DT;
+    Class Apple, B, Cat, Dog, F, DT, SpecialList;
 
     setUp(() {
       classes = exLibrary.classes;
@@ -264,6 +264,8 @@ void main() {
       Dog = classes.firstWhere((c) => c.name == 'Dog');
       F = classes.firstWhere((c) => c.name == 'F');
       DT = classes.firstWhere((c) => c.name == 'DateTime');
+      SpecialList =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList');
     });
 
     test('we got the classes we expect', () {
@@ -355,6 +357,37 @@ void main() {
       expect(DT.href, isNotNull);
       expect(DT.instanceMethods[0].href, isNotNull);
       expect(DT.instanceProperties[0].href, isNotNull);
+    });
+
+    test('F has a single instance method', () {
+      expect(F.instanceMethods, hasLength(1));
+      expect(F.instanceMethods.first.name, equals('methodWithGenericParam'));
+    });
+
+    test('F has many inherited methods', () {
+      expect(F.inheritedMethods, hasLength(4));
+      expect(F.inheritedMethods.map((im) => im.name),
+          equals(['foo', 'getClassA', 'test', 'testMethod']));
+    });
+
+    test('F has zero instance properties', () {
+      expect(F.instanceProperties, hasLength(0));
+    });
+
+    test('F has a few inherited properties', () {
+      expect(F.inheritedProperties, hasLength(2));
+      expect(F.inheritedProperties.map((ip) => ip.name),
+          equals(['isImplemented', 'name']));
+    });
+
+    test('SpecialList has zero instance methods', () {
+      expect(SpecialList.instanceMethods, hasLength(0));
+    });
+
+    test('SpecialList has many inherited methods', () {
+      expect(SpecialList.inheritedMethods, hasLength(43));
+      expect(SpecialList.inheritedMethods.first.name, equals('add'));
+      expect(SpecialList.inheritedMethods[1].name, equals('addAll'));
     });
   });
 

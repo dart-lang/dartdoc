@@ -42,6 +42,8 @@ library fake;
 
 import 'dart:async';
 
+import 'dart:collection';
+
 import 'example.dart';
 
 /// Useful for annotations.
@@ -353,3 +355,16 @@ class WithGetterAndSetter {
 
 /// I have a generic and it extends [Foo2]
 class HasGenericWithExtends<T extends Foo2> {}
+
+/// Extends [ListBase]
+class SpecialList<E> extends ListBase<E> {
+  E operator [](int index) {
+    return null;
+  }
+
+  int get length => 0;
+
+  void set length(int length) {}
+
+  void operator []=(int index, E value) {}
+}
