@@ -34,6 +34,9 @@ else
   dart -c ../bin/dartdoc.dart
   cd ..
 
+  # checks the test_package results
+  grind check-links
+
   # And on test_package_small.
   cd test_package_small
   dart -c ../bin/dartdoc.dart

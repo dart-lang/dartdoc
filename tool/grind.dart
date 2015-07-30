@@ -277,6 +277,7 @@ Future _uploadStats(int sdkDocsGenTime) async {
   }
 }
 
+// TODO: check http links, check links in <link>
 @Task('Check links')
 checkLinks() {
   bool foundError = false;
