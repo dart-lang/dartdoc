@@ -1152,7 +1152,8 @@ class Enum extends Class {
   @override
   List<EnumField> get instanceProperties {
     return super.instanceProperties
-        .map((Field p) => new EnumField(p.element, p.library));
+        .map((Field p) => new EnumField(p.element, p.library))
+        .toList(growable: false);
   }
 }
 
