@@ -268,7 +268,6 @@ abstract class ModelElement implements Comparable {
   }
 
   String get href => package.isDocumented(this) ? _href : null;
-  //String get href => _href;
 
   String get _href;
 
@@ -818,6 +817,7 @@ class Class extends ModelElement {
     _instanceFields = _allFields
         .where((f) => !f.isStatic)
         .toList(growable: false)..sort(byName);
+
     return _instanceFields;
   }
 
@@ -1139,10 +1139,16 @@ class Enum extends Class {
     _constants = _cls.fields
         .where(isPublic)
         .where((f) => f.isConst)
-        .map((field) => new EnumField(index++, field, library))
+        .map((field) => new EnumField.forConstant(index++, field, library))
         .toList(growable: false)..sort(byName);
 
     return _constants;
+  }
+
+  @override
+  List<EnumField> get instanceProperties {
+    return super.instanceProperties
+        .map((Field p) => new EnumField(p.element, p.library));
   }
 }
 
@@ -1312,17 +1318,19 @@ class Field extends ModelElement {
 /// Enum's fields are virtual, so we do a little work to create
 /// usable values for the docs.
 class EnumField extends Field {
-  final int index;
+  int _index;
 
-  EnumField(this.index, FieldElement element, Library library)
+  EnumField.forConstant(this._index, FieldElement element, Library library)
       : super(element, library);
+
+  EnumField(FieldElement element, Library library) : super(element, library);
 
   @override
   String get constantValue {
     if (name == 'values') {
       return 'const List&lt;${_field.enclosingElement.name}&gt;';
     } else {
-      return 'const ${_field.enclosingElement.name}($index)';
+      return 'const ${_field.enclosingElement.name}($_index)';
     }
   }
 

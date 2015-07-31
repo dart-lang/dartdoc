@@ -404,20 +404,35 @@ void main() {
     Enum animal;
 
     setUp(() {
-      animal = exLibrary.enums[0];
+      animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
     });
 
-    test('enum values', () {
+    test('has correct number of constants', () {
       expect(animal.constants, hasLength(4));
+    });
+
+    test("has a (synthetic) values constant", () {
       var values = animal.constants.firstWhere((f) => f.name == 'values');
+      expect(values, isNotNull);
       expect(values.constantValue, equals('const List&lt;Animal&gt;'));
       expect(values.documentation, startsWith('A constant List'));
     });
 
-    test('enum single value', () {
+    test('has a constant that does not link anywhere', () {
       var dog = animal.constants.firstWhere((f) => f.name == 'DOG');
-      expect(dog, isNotNull);
       expect(dog.linkedName, equals('DOG'));
+      expect(dog.isConst, isTrue);
+      expect(dog.constantValue, equals('const Animal(2)'));
+    });
+
+    test('has a single `index` property', () {
+      expect(animal.instanceProperties, hasLength(1));
+      expect(animal.instanceProperties.first, isNotNull);
+      expect(animal.instanceProperties.first.name, equals('index'));
+    });
+
+    test('has a single `index` property that is not linked', () {
+      expect(animal.instanceProperties.first.linkedName, equals('index'));
     });
   });
 
