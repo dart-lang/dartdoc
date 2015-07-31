@@ -709,11 +709,7 @@ class Class extends ModelElement {
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
       Library lib = package._getLibraryFor(_cls.supertype.element);
-      // if (package._getLibraryFor(_cls.supertype.element)) {
-      //   lib = library;
-      // } else {
-      //   lib = new Library(_cls.supertype.element.library, p);
-      // }
+
       _supertype = new ElementType(
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
 
