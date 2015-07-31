@@ -19,10 +19,13 @@ import 'test_utils.dart' as testUtils;
 void main() {
   testUtils.init();
 
-  Package package = testUtils.testPackage;
-  Library exLibrary = package.libraries.firstWhere((lib) => lib.name == 'ex');
-  Library fakeLibrary =
+  final Package package = testUtils.testPackage;
+  final Library exLibrary =
+      package.libraries.firstWhere((lib) => lib.name == 'ex');
+  final Library fakeLibrary =
       package.libraries.firstWhere((lib) => lib.name == 'fake');
+  final Library twoExportsLib =
+      package.libraries.firstWhere((lib) => lib.name == 'two_exports');
 
   Directory sdkDir = cli_util.getSdkDir();
 
@@ -46,7 +49,7 @@ void main() {
       });
 
       test('is documented in library', () {
-        expect(package.isDocumented(exLibrary), isTrue);
+        expect(package.isDocumented(exLibrary.element), isTrue);
       });
 
       test('has documentation', () {
@@ -165,7 +168,6 @@ void main() {
     ModelFunction thisIsAsync;
     ModelFunction topLevelFunction;
 
-    Library twoExportsLib;
     Class extendedClass;
     TopLevelVariable testingCodeSyntaxInOneLiners;
 
@@ -184,8 +186,6 @@ void main() {
       superAwesomeClass = fakeLibrary.classes
           .firstWhere((cls) => cls.name == 'SuperAwesomeClass');
       foo2 = fakeLibrary.classes.firstWhere((cls) => cls.name == 'Foo2');
-      twoExportsLib =
-          package.libraries.firstWhere((lib) => lib.name == 'two_exports');
       assert(twoExportsLib != null);
       extendedClass = twoExportsLib.allClasses
           .firstWhere((clazz) => clazz.name == 'ExtendingClass');
@@ -255,6 +255,7 @@ void main() {
   group('Class', () {
     List<Class> classes;
     Class Apple, B, Cat, Dog, F, DT, SpecialList;
+    Class ExtendingClass;
 
     setUp(() {
       classes = exLibrary.classes;
@@ -266,6 +267,8 @@ void main() {
       DT = classes.firstWhere((c) => c.name == 'DateTime');
       SpecialList =
           fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList');
+      ExtendingClass =
+          twoExportsLib.classes.firstWhere((c) => c.name == 'ExtendingClass');
     });
 
     test('we got the classes we expect', () {
@@ -397,6 +400,28 @@ void main() {
       expect(SpecialList.inheritedMethods, hasLength(43));
       expect(SpecialList.inheritedMethods.first.name, equals('add'));
       expect(SpecialList.inheritedMethods[1].name, equals('addAll'));
+    });
+
+    test('ExtendingClass is in the right library', () {
+      expect(ExtendingClass.library.name, equals('two_exports'));
+    });
+
+    // because both the sub and super classes, though from different libraries,
+    // are exported out through one library
+    test('ExtendingClass has a super class that is also in the same library',
+        () {
+      expect(ExtendingClass.supertype.name, equals('BaseClass'));
+      expect(
+          ExtendingClass.supertype.element.library.name, equals('two_exports'));
+    });
+
+    test(
+        "ExtendingClass's super class has a library that is not in two_exports",
+        () {
+      expect(
+          ExtendingClass.superChain.last.name, equals('WithGetterAndSetter'));
+      expect(
+          ExtendingClass.superChain.last.element.library.name, equals('fake'));
     });
   });
 

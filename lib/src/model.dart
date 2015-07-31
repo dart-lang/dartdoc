@@ -253,7 +253,7 @@ abstract class ModelElement implements Comparable {
       (this is Library) ? (this as Library).package : this.library.package;
 
   String get linkedName {
-    if (!package.isDocumented(this)) {
+    if (!package.isDocumented(this.element)) {
       return htmlEscape(name);
     }
     if (name.startsWith('_')) {
@@ -267,7 +267,7 @@ abstract class ModelElement implements Comparable {
     return '<a href="${href}">$name</a>';
   }
 
-  String get href => package.isDocumented(this) ? _href : null;
+  String get href => package.isDocumented(this.element) ? _href : null;
 
   String get _href;
 
@@ -407,17 +407,16 @@ class Package {
 
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
-  bool isDocumented(ModelElement e) {
-    if (e is Library) {
-      return _libraries.any((lib) => lib.element == e.element);
+  bool isDocumented(Element element) {
+    if (element is LibraryElement) {
+      return _libraries.any((lib) => lib.element == element);
     }
 
     Element el;
-    if (e.element is ClassMemberElement ||
-        e.element is PropertyAccessorElement) {
-      el = e.element.enclosingElement;
-    } else if (e.element is TopLevelVariableElement) {
-      TopLevelVariableElement variable = (e.element as TopLevelVariableElement);
+    if (element is ClassMemberElement || element is PropertyAccessorElement) {
+      el = element.enclosingElement;
+    } else if (element is TopLevelVariableElement) {
+      TopLevelVariableElement variable = (element as TopLevelVariableElement);
       if (variable.getter != null) {
         el = variable.getter;
       } else if (variable.setter != null) {
@@ -426,7 +425,7 @@ class Package {
         el = variable;
       }
     } else {
-      el = e.element;
+      el = element;
     }
     return _libraries.any((lib) => lib.hasInNamespace(el));
   }
@@ -709,7 +708,12 @@ class Class extends ModelElement {
     }).where((mixin) => mixin != null).toList(growable: false);
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
-      var lib = new Library(_cls.supertype.element.library, p);
+      Library lib = package._getLibraryFor(_cls.supertype.element);
+      // if (package._getLibraryFor(_cls.supertype.element)) {
+      //   lib = library;
+      // } else {
+      //   lib = new Library(_cls.supertype.element.library, p);
+      // }
       _supertype = new ElementType(
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
 

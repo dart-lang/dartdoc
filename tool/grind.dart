@@ -9,11 +9,11 @@ import 'package:dartdoc/dartdoc.dart' show defaultOutDir;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:den_api/den_api.dart';
 import 'package:grinder/grinder.dart';
+import 'package:html/dom.dart';
+import 'package:html/parser.dart' show parse;
 import 'package:librato/librato.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart' as yaml;
-import 'package:html/parser.dart' show parse;
-import 'package:html/dom.dart';
 
 final Directory docsDir =
     new Directory(path.join('${Directory.systemTemp.path}', defaultOutDir));
@@ -278,6 +278,7 @@ Future _uploadStats(int sdkDocsGenTime) async {
 }
 
 // TODO: check http links, check links in <link>
+// Also TODO: put a guard for infinite link checking
 @Task('Check links')
 checkLinks() {
   bool foundError = false;
