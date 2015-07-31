@@ -253,7 +253,7 @@ abstract class ModelElement implements Comparable {
       (this is Library) ? (this as Library).package : this.library.package;
 
   String get linkedName {
-    if (!package.isDocumented(this)) {
+    if (!package.isDocumented(this.element)) {
       return htmlEscape(name);
     }
     if (name.startsWith('_')) {
@@ -267,7 +267,7 @@ abstract class ModelElement implements Comparable {
     return '<a href="${href}">$name</a>';
   }
 
-  String get href => package.isDocumented(this) ? _href : null;
+  String get href => package.isDocumented(this.element) ? _href : null;
 
   String get _href;
 
@@ -407,17 +407,16 @@ class Package {
 
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
-  bool isDocumented(ModelElement e) {
-    if (e is Library) {
-      return _libraries.any((lib) => lib.element == e.element);
+  bool isDocumented(Element element) {
+    if (element is LibraryElement) {
+      return _libraries.any((lib) => lib.element == element);
     }
 
     Element el;
-    if (e.element is ClassMemberElement ||
-        e.element is PropertyAccessorElement) {
-      el = e.element.enclosingElement;
-    } else if (e.element is TopLevelVariableElement) {
-      TopLevelVariableElement variable = (e.element as TopLevelVariableElement);
+    if (element is ClassMemberElement || element is PropertyAccessorElement) {
+      el = element.enclosingElement;
+    } else if (element is TopLevelVariableElement) {
+      TopLevelVariableElement variable = (element as TopLevelVariableElement);
       if (variable.getter != null) {
         el = variable.getter;
       } else if (variable.setter != null) {
@@ -426,7 +425,7 @@ class Package {
         el = variable;
       }
     } else {
-      el = e.element;
+      el = element;
     }
     return _libraries.any((lib) => lib.hasInNamespace(el));
   }
@@ -709,7 +708,8 @@ class Class extends ModelElement {
     }).where((mixin) => mixin != null).toList(growable: false);
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
-      var lib = new Library(_cls.supertype.element.library, p);
+      Library lib = package._getLibraryFor(_cls.supertype.element);
+
       _supertype = new ElementType(
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
 
@@ -817,6 +817,7 @@ class Class extends ModelElement {
     _instanceFields = _allFields
         .where((f) => !f.isStatic)
         .toList(growable: false)..sort(byName);
+
     return _instanceFields;
   }
 
@@ -1138,10 +1139,17 @@ class Enum extends Class {
     _constants = _cls.fields
         .where(isPublic)
         .where((f) => f.isConst)
-        .map((field) => new EnumField(index++, field, library))
+        .map((field) => new EnumField.forConstant(index++, field, library))
         .toList(growable: false)..sort(byName);
 
     return _constants;
+  }
+
+  @override
+  List<EnumField> get instanceProperties {
+    return super.instanceProperties
+        .map((Field p) => new EnumField(p.element, p.library))
+        .toList(growable: false);
   }
 }
 
@@ -1311,17 +1319,19 @@ class Field extends ModelElement {
 /// Enum's fields are virtual, so we do a little work to create
 /// usable values for the docs.
 class EnumField extends Field {
-  final int index;
+  int _index;
 
-  EnumField(this.index, FieldElement element, Library library)
+  EnumField.forConstant(this._index, FieldElement element, Library library)
       : super(element, library);
+
+  EnumField(FieldElement element, Library library) : super(element, library);
 
   @override
   String get constantValue {
     if (name == 'values') {
       return 'const List&lt;${_field.enclosingElement.name}&gt;';
     } else {
-      return 'const ${_field.enclosingElement.name}($index)';
+      return 'const ${_field.enclosingElement.name}($_index)';
     }
   }
 
@@ -1631,8 +1641,9 @@ class ElementType {
   ElementType get _returnType {
     var rt = (_type as FunctionType).returnType;
     return new ElementType(rt, new ModelElement.from(
-        rt.element, new Library(rt.element.library, _element.package)));
+        rt.element, new Library(_element.library.element, _element.package)));
   }
+
   ModelElement get returnElement {
     Element e = (_type as FunctionType).returnType.element;
     if (e == null) {

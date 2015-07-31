@@ -19,10 +19,13 @@ import 'test_utils.dart' as testUtils;
 void main() {
   testUtils.init();
 
-  Package package = testUtils.testPackage;
-  Library exLibrary = package.libraries.firstWhere((lib) => lib.name == 'ex');
-  Library fakeLibrary =
+  final Package package = testUtils.testPackage;
+  final Library exLibrary =
+      package.libraries.firstWhere((lib) => lib.name == 'ex');
+  final Library fakeLibrary =
       package.libraries.firstWhere((lib) => lib.name == 'fake');
+  final Library twoExportsLib =
+      package.libraries.firstWhere((lib) => lib.name == 'two_exports');
 
   Directory sdkDir = cli_util.getSdkDir();
 
@@ -46,7 +49,7 @@ void main() {
       });
 
       test('is documented in library', () {
-        expect(package.isDocumented(exLibrary), isTrue);
+        expect(package.isDocumented(exLibrary.element), isTrue);
       });
 
       test('has documentation', () {
@@ -165,7 +168,6 @@ void main() {
     ModelFunction thisIsAsync;
     ModelFunction topLevelFunction;
 
-    Library twoExportsLib;
     Class extendedClass;
     TopLevelVariable testingCodeSyntaxInOneLiners;
 
@@ -184,8 +186,6 @@ void main() {
       superAwesomeClass = fakeLibrary.classes
           .firstWhere((cls) => cls.name == 'SuperAwesomeClass');
       foo2 = fakeLibrary.classes.firstWhere((cls) => cls.name == 'Foo2');
-      twoExportsLib =
-          package.libraries.firstWhere((lib) => lib.name == 'two_exports');
       assert(twoExportsLib != null);
       extendedClass = twoExportsLib.allClasses
           .firstWhere((clazz) => clazz.name == 'ExtendingClass');
@@ -255,6 +255,7 @@ void main() {
   group('Class', () {
     List<Class> classes;
     Class Apple, B, Cat, Dog, F, DT, SpecialList;
+    Class ExtendingClass;
 
     setUp(() {
       classes = exLibrary.classes;
@@ -266,6 +267,8 @@ void main() {
       DT = classes.firstWhere((c) => c.name == 'DateTime');
       SpecialList =
           fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList');
+      ExtendingClass =
+          twoExportsLib.classes.firstWhere((c) => c.name == 'ExtendingClass');
     });
 
     test('we got the classes we expect', () {
@@ -353,10 +356,19 @@ void main() {
           isNotNull);
     });
 
-    test('get exported class hrefs', () {
-      expect(DT.href, isNotNull);
-      expect(DT.instanceMethods[0].href, isNotNull);
-      expect(DT.instanceProperties[0].href, isNotNull);
+    test('exported class should have hrefs from the current library', () {
+      expect(DT.href, equals('ex/DateTime-class.html'));
+      expect(DT.instanceMethods[0].href, equals('ex/DateTime/add.html'));
+      expect(DT.instanceProperties[0].href, equals('ex/DateTime/day.html'));
+    });
+
+    test('exported class should have linkedReturnType for the current library',
+        () {
+      Method toUTC = DT.instanceMethods.firstWhere((m) => m.name == 'toUtc',
+          orElse: () => null);
+      expect(toUTC, isNotNull);
+      expect(toUTC.linkedReturnType,
+          equals('<a href="ex/DateTime-class.html">DateTime</a>'));
     });
 
     test('F has a single instance method', () {
@@ -389,26 +401,63 @@ void main() {
       expect(SpecialList.inheritedMethods.first.name, equals('add'));
       expect(SpecialList.inheritedMethods[1].name, equals('addAll'));
     });
+
+    test('ExtendingClass is in the right library', () {
+      expect(ExtendingClass.library.name, equals('two_exports'));
+    });
+
+    // because both the sub and super classes, though from different libraries,
+    // are exported out through one library
+    test('ExtendingClass has a super class that is also in the same library',
+        () {
+      expect(ExtendingClass.supertype.name, equals('BaseClass'));
+      expect(
+          ExtendingClass.supertype.element.library.name, equals('two_exports'));
+    });
+
+    test(
+        "ExtendingClass's super class has a library that is not in two_exports",
+        () {
+      expect(
+          ExtendingClass.superChain.last.name, equals('WithGetterAndSetter'));
+      expect(
+          ExtendingClass.superChain.last.element.library.name, equals('fake'));
+    });
   });
 
   group('Enum', () {
     Enum animal;
 
     setUp(() {
-      animal = exLibrary.enums[0];
+      animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
     });
 
-    test('enum values', () {
+    test('has correct number of constants', () {
       expect(animal.constants, hasLength(4));
+    });
+
+    test("has a (synthetic) values constant", () {
       var values = animal.constants.firstWhere((f) => f.name == 'values');
+      expect(values, isNotNull);
       expect(values.constantValue, equals('const List&lt;Animal&gt;'));
       expect(values.documentation, startsWith('A constant List'));
     });
 
-    test('enum single value', () {
+    test('has a constant that does not link anywhere', () {
       var dog = animal.constants.firstWhere((f) => f.name == 'DOG');
-      expect(dog, isNotNull);
       expect(dog.linkedName, equals('DOG'));
+      expect(dog.isConst, isTrue);
+      expect(dog.constantValue, equals('const Animal(2)'));
+    });
+
+    test('has a single `index` property', () {
+      expect(animal.instanceProperties, hasLength(1));
+      expect(animal.instanceProperties.first, isNotNull);
+      expect(animal.instanceProperties.first.name, equals('index'));
+    });
+
+    test('has a single `index` property that is not linked', () {
+      expect(animal.instanceProperties.first.linkedName, equals('index'));
     });
   });
 

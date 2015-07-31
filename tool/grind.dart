@@ -9,6 +9,8 @@ import 'package:dartdoc/dartdoc.dart' show defaultOutDir;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:den_api/den_api.dart';
 import 'package:grinder/grinder.dart';
+import 'package:html/dom.dart';
+import 'package:html/parser.dart' show parse;
 import 'package:librato/librato.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart' as yaml;
@@ -273,4 +275,52 @@ Future _uploadStats(int sdkDocsGenTime) async {
         description: 'Commit ${commit}', links: [link]);
     return librato.createAnnotation('build_ui', annotation);
   }
+}
+
+// TODO: check http links, check links in <link>
+// Also TODO: put a guard for infinite link checking
+@Task('Check links')
+checkLinks() {
+  bool foundError = false;
+  Set<String> visited = new Set();
+  final origin = 'test_package/doc/api/';
+  var start = 'index.html';
+
+  doCheck(String pathToCheck, [String source]) {
+    var fullPath = path.normalize("$origin$pathToCheck");
+    if (visited.contains(fullPath)) return;
+    visited.add(fullPath);
+    //print("Visiting $fullPath");
+
+    File file = new File("$fullPath");
+    if (!file.existsSync()) {
+      foundError = true;
+      print('  * Not found: $fullPath from $source');
+      return;
+    }
+    Document doc = parse(file.readAsStringSync());
+    Element base = doc.querySelector('base');
+    String baseHref;
+    if (base != null) {
+      baseHref = base.attributes['href'];
+    }
+    //print("  Base is $baseHref");
+    List<Element> links = doc.querySelectorAll('a');
+    links
+        .map((link) => link.attributes['href'])
+        .where((href) => href != null)
+        .forEach((href) {
+      if (!href.startsWith('http') && !href.contains('#')) {
+        //print("  Found link: $href");
+        var full = '${path.dirname(pathToCheck)}/$baseHref/$href';
+        var normalized = path.normalize(full);
+        //print("    => $full\n      => $normalized");
+        doCheck(normalized, pathToCheck);
+      }
+    });
+  }
+
+  doCheck(start);
+
+  if (foundError) exit(1);
 }

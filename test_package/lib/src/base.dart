@@ -1,3 +1,5 @@
 library two_exports.src.base;
 
-class BaseClass {}
+import '../fake.dart';
+
+class BaseClass extends WithGetterAndSetter {}
