@@ -371,3 +371,17 @@ class SpecialList<E> extends ListBase<E> {
 
 /// This inherits operators.
 class ExtraSpecialList<E> extends SpecialList {}
+
+class BaseForDocComments {
+  /// Takes a [value] and returns a String.
+  ///
+  /// This methods is inside of [BaseForDocComments]
+  String doAwesomeStuff(int value) => null;
+}
+
+/// Testing if docs for inherited method are correct.
+class SubForDocComments extends BaseForDocComments {
+
+  /// Reference to [foo] and [bar]
+  void localMethod(String foo, bar) {}
+}

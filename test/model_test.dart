@@ -65,10 +65,6 @@ void main() {
         expect(package.documentationAsHtml, contains('<h1>Best Package</h1>'));
       });
 
-      test('one line doc', () {
-        expect(package.oneLineDoc, equals('Best Package'));
-      });
-
       test('sdk name', () {
         expect(sdkAsPackage.name, equals('Dart SDK'));
       });
@@ -171,11 +167,16 @@ void main() {
     Class extendedClass;
     TopLevelVariable testingCodeSyntaxInOneLiners;
 
+    Class specialList;
+    Class subForDocComments;
+
     setUp(() {
       incorrectReference = exLibrary.constants
           .firstWhere((c) => c.name == 'incorrectDocReference');
       B = exLibrary.classes.firstWhere((c) => c.name == 'B');
       Apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
+      specialList =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList');
 
       topLevelFunction =
           fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
@@ -189,6 +190,9 @@ void main() {
       assert(twoExportsLib != null);
       extendedClass = twoExportsLib.allClasses
           .firstWhere((clazz) => clazz.name == 'ExtendingClass');
+
+      subForDocComments =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'SubForDocComments');
     });
 
     test('still has brackets inside code blocks', () {
@@ -196,13 +200,31 @@ void main() {
           contains("['hello from dart']"));
     });
 
-    test('doc refs ignore incorrect references', () {
+    test('oneLine doc references in inherited methods should not have brackets',
+        () {
+      Method add =
+          specialList.allInstanceMethods.firstWhere((m) => m.name == 'add');
+      expect(add.oneLineDoc, equals(
+          'Adds <code class="prettyprint lang-dart">value</code> to the end of this list,\nextending the length by one.'));
+    });
+
+    test(
+        'full documentation references from inherited methods should not have brackets',
+        () {
+      Method add =
+          specialList.allInstanceMethods.firstWhere((m) => m.name == 'add');
+      expect(add.documentationAsHtml, startsWith(
+          '<p>Adds <code class="prettyprint lang-dart">value</code> to the end of this list,\nextending the length by one.'));
+    });
+
+    test('incorrect doc references are still wrapped in code blocks', () {
       expect(incorrectReference.documentationAsHtml,
-          '<p>This should [not work].</p>');
+          '<p>This should <code class="prettyprint lang-dart">not work</code>.</p>');
     });
 
     test('no references', () {
-      expect(Apple.documentationAsHtml, '<p>Sample class String</p>');
+      expect(Apple.documentationAsHtml,
+          '<p>Sample class <code class="prettyprint lang-dart">String</code></p>');
     });
 
     test('single ref to class', () {
@@ -212,7 +234,7 @@ void main() {
 
     test('doc ref to class in SDK does not render as link', () {
       expect(thisIsAsync.documentationAsHtml, equals(
-          '<p>An async function. It should look like I return a Future.</p>'));
+          '<p>An async function. It should look like I return a <code class="prettyprint lang-dart">Future</code>.</p>'));
     });
 
     test('references are correct in exported libraries', () {
@@ -222,7 +244,8 @@ void main() {
       expect(resolved, isNotNull);
       expect(resolved,
           contains('<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
-      expect(resolved, contains('linking over to Apple.'));
+      expect(resolved, contains(
+          'linking over to <code class="prettyprint lang-dart">Apple</code>.'));
     });
 
     test('references to class and constructors', () {
@@ -247,8 +270,17 @@ void main() {
     });
 
     test('legacy code blocks render correctly', () {
-      expect(testingCodeSyntaxInOneLiners.oneLineDoc,
-          equals('These are code syntaxes: true and false'));
+      expect(testingCodeSyntaxInOneLiners.oneLineDoc, equals(
+          'These are code syntaxes: <code class="prettyprint lang-dart">true</code> and <code class="prettyprint lang-dart">false</code>'));
+    });
+
+    test('doc comments to parameters are marked as code', () {
+      Method localMethod = subForDocComments.instanceMethods
+          .firstWhere((m) => m.name == 'localMethod');
+      expect(localMethod.documentationAsHtml,
+          contains('<code class="prettyprint lang-dart">foo</code>'));
+      expect(localMethod.documentationAsHtml,
+          contains('<code class="prettyprint lang-dart">bar</code>'));
     });
   });
 
@@ -500,7 +532,7 @@ void main() {
       expect(thisIsAsync.documentation, equals(
           'An async function. It should look like I return a [Future].'));
       expect(thisIsAsync.documentationAsHtml, equals(
-          '<p>An async function. It should look like I return a Future.</p>'));
+          '<p>An async function. It should look like I return a <code class="prettyprint lang-dart">Future</code>.</p>'));
     });
 
     test('docs do not lose brackets in code blocks', () {
@@ -738,18 +770,18 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Typedef', () {
-    var t;
+    Typedef t;
 
     setUp(() {
-      t = exLibrary.typedefs[0];
+      t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
     });
 
     test('docs', () {
-      expect(t.documentation, null);
+      expect(t.documentation, equals(''));
     });
 
     test('linked return type', () {
-      expect(t.linkedReturnType, 'String');
+      expect(t.linkedReturnType, equals('String'));
     });
   });
 
