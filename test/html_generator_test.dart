@@ -18,49 +18,49 @@ void main() {
     });
 
     test('index html', () {
-      expect(templates.indexTemplate != null, true);
+      expect(templates.indexTemplate, isNotNull);
     });
 
     test('library', () {
-      expect(templates.libraryTemplate != null, true);
+      expect(templates.libraryTemplate, isNotNull);
     });
 
     test('class', () {
-      expect(templates.classTemplate != null, true);
+      expect(templates.classTemplate, isNotNull);
     });
 
     test('function', () {
-      expect(templates.functionTemplate != null, true);
+      expect(templates.functionTemplate, isNotNull);
     });
 
     test('constructor', () {
-      expect(templates.constructorTemplate != null, true);
+      expect(templates.constructorTemplate, isNotNull);
     });
 
     test('method', () {
-      expect(templates.methodTemplate != null, true);
+      expect(templates.methodTemplate, isNotNull);
     });
 
     test('constant', () {
-      expect(templates.constantTemplate != null, true);
+      expect(templates.constantTemplate, isNotNull);
     });
 
     test('property', () {
-      expect(templates.propertyTemplate != null, true);
+      expect(templates.propertyTemplate, isNotNull);
     });
 
     test('top level constant', () {
-      expect(templates.topLevelConstantTemplate != null, true);
+      expect(templates.topLevelConstantTemplate, isNotNull);
     });
 
     test('top level property', () {
-      expect(templates.topLevelPropertyTemplate != null, true);
+      expect(templates.topLevelPropertyTemplate, isNotNull);
     });
 
     test('header and footer', () {
       String content = templates.indexTemplate({},
           assumeNullNonExistingProperty: true, errorOnMissingProperty: false);
-      expect(content.contains('<p>User inserted message</p>'), false);
+      expect(content.contains('<p>User inserted message</p>'), isFalse);
     });
   });
 
