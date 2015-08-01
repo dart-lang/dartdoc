@@ -20,8 +20,6 @@ import 'package:markdown/markdown.dart' as md;
 import 'src/html_utils.dart' show htmlEscape;
 import 'src/model.dart';
 
-import 'dart:developer';
-
 const _leftChar = '[';
 const _rightChar = ']';
 
