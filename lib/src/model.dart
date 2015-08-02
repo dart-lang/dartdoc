@@ -52,11 +52,13 @@ abstract class ModelElement implements Comparable {
   final Library library;
 
   ElementType _modelType;
-  String _documentation;
-  String _documentationAsHtml;
-
+  String _rawDocs;
+  Documentation _documentation;
   List _parameters;
 
+  // WARNING: putting anything into the body of this seems
+  // to lead to stack overflows. Need to make a registry of ModelElements
+  // somehow.
   ModelElement(this.element, this.library);
 
   factory ModelElement.from(Element e, Library library) {
@@ -112,38 +114,38 @@ abstract class ModelElement implements Comparable {
       element.computeDocumentationComment();
 
   String get documentation {
-    if (_documentation != null) {
-      return _documentation;
-    }
+    if (_rawDocs != null) return _rawDocs;
 
-    if (element == null) {
-      return null;
-    }
+    _rawDocs = _computeDocumentationComment;
 
-    _documentation = _computeDocumentationComment;
-
-    if (_documentation == null && canOverride()) {
+    if (_rawDocs == null && canOverride()) {
       var overrideElement = overriddenElement;
       if (overrideElement != null) {
-        _documentation = overrideElement.documentation;
+        _rawDocs = overrideElement.documentation;
       }
     }
 
-    _documentation = stripComments(_documentation);
+    _rawDocs = stripComments(_rawDocs);
 
-    return _documentation;
+    if (_rawDocs == null) _rawDocs = '';
+
+    return _rawDocs;
   }
 
   bool get hasDocumentation =>
       documentation != null && documentation.isNotEmpty;
 
   String get documentationAsHtml {
-    if (_documentationAsHtml != null) return _documentationAsHtml;
-    _documentationAsHtml = processDocsAsMarkdown(this);
-    return _documentationAsHtml;
+    if (_documentation != null) return _documentation.asHtml;
+    _documentation = new Documentation(this);
+    return _documentation.asHtml;
   }
 
-  String get oneLineDoc => oneLiner(this);
+  String get oneLineDoc {
+    if (_documentation != null) return _documentation.asOneLiner;
+    _documentation = new Documentation(this);
+    return _documentation.asOneLiner;
+  }
 
   String get htmlId => name;
 
@@ -363,6 +365,7 @@ class Dynamic extends ModelElement {
 class Package {
   final List<Library> _libraries = [];
   final PackageMeta packageMeta;
+  String _docsAsHtml;
 
   String get name => packageMeta.name;
 
@@ -381,9 +384,13 @@ class Package {
     return hasDocumentationFile ? documentationFile.contents : null;
   }
 
-  String get documentationAsHtml => renderMarkdownToHtml(documentation);
+  String get documentationAsHtml {
+    if (_docsAsHtml != null) return _docsAsHtml;
 
-  String get oneLineDoc => oneLinerWithoutReferences(documentation);
+    _docsAsHtml = renderMarkdownToHtml(documentation);
+
+    return _docsAsHtml;
+  }
 
   List<Library> get libraries => _libraries;
 

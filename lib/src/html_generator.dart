@@ -6,7 +6,6 @@ library dartdoc.html_generator;
 
 import 'dart:async' show Future;
 import 'dart:io';
-//import 'dart:profiler';
 
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:path/path.dart' as path;
@@ -20,8 +19,6 @@ import '../resource_loader.dart' as loader;
 
 typedef String TemplateRenderer(context,
     {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});
-
-//final UserTag _HTML_GENERATE = new UserTag('HTML GENERATE');
 
 // Generation order for libraries:
 //   constants
@@ -150,7 +147,6 @@ class HtmlGeneratorInstance {
   HtmlGeneratorInstance(this.url, this._templates, this.package, this.out);
 
   Future generate() async {
-    //var previousTag = _HTML_GENERATE.makeCurrent();
     await _templates.init();
     if (!out.existsSync()) out.createSync();
     generatePackage();
@@ -212,10 +208,6 @@ class HtmlGeneratorInstance {
     });
 
     //if (url != null) generateSiteMap();
-
-    await _copyResources();
-
-    //previousTag.makeCurrent();
   }
 
   void generatePackage() {

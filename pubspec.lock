@@ -4,7 +4,7 @@ packages:
   analyzer:
     description: analyzer
     source: hosted
-    version: "0.25.0"
+    version: "0.25.2"
   ansicolor:
     description: ansicolor
     source: hosted
@@ -20,7 +20,11 @@ packages:
   barback:
     description: barback
     source: hosted
-    version: "0.15.2+5"
+    version: "0.15.2+6"
+  charcode:
+    description: charcode
+    source: hosted
+    version: "1.1.0"
   cli_util:
     description: cli_util
     source: hosted
@@ -101,6 +105,10 @@ packages:
     description: mustache4dart
     source: hosted
     version: "1.0.10"
+  package_config:
+    description: package_config
+    source: hosted
+    version: "0.1.1"
   path:
     description: path
     source: hosted
@@ -109,6 +117,10 @@ packages:
     description: petitparser
     source: hosted
     version: "1.4.3"
+  plugin:
+    description: plugin
+    source: hosted
+    version: "0.1.0"
   pool:
     description: pool
     source: hosted
@@ -168,7 +180,7 @@ packages:
   test:
     description: test
     source: hosted
-    version: "0.12.3+7"
+    version: "0.12.3+8"
   unscripted:
     description: unscripted
     source: hosted

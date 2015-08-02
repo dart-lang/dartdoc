@@ -9,6 +9,7 @@ import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart'
     show
         LibraryElement,
+        Element,
         ConstructorElement,
         ClassMemberElement,
         PropertyAccessorElement;
@@ -27,42 +28,69 @@ final List<md.InlineSyntax> _markdown_syntaxes = [new _InlineCodeSyntax()];
 // We don't emit warnings currently: #572.
 const bool _emitWarning = false;
 
+String _linkDocReference(String reference, ModelElement element,
+    NodeList<CommentReference> commentRefs) {
+  String link;
+  // support for [new Constructor] and [new Class.namedCtr]
+  var refs = reference.split(' ');
+  if (refs.length == 2 && refs.first == 'new') {
+    link = _getMatchingLink(refs[1], element, commentRefs, isConstructor: true);
+  } else {
+    link = _getMatchingLink(reference, element, commentRefs);
+  }
+  if (link != null && link.isNotEmpty) {
+    return '<a href="$link">$reference</a>';
+  } else {
+    if (_emitWarning) {
+      print("  warning: unresolved doc reference '$reference' (in $element)");
+    }
+    return '<code>$reference</code>';
+  }
+}
+
+class Documentation {
+  final ModelElement element;
+  String _asHtml;
+  String _asOneLiner;
+  Document _asHtmlDocument;
+
+  Documentation(this.element) {
+    _processDocsAsMarkdown();
+  }
+
+  String get raw => this.element.documentation;
+
+  String get asHtml => _asHtml;
+
+  Document get asHtmlDocument => _asHtmlDocument;
+
+  String get asOneLiner => _asOneLiner;
+
+  void _processDocsAsMarkdown() {
+    String tempHtml = renderMarkdownToHtml(raw, element);
+    _asHtmlDocument = parse(tempHtml);
+    _asHtmlDocument.querySelectorAll('script').forEach((s) => s.remove());
+    _asHtmlDocument.querySelectorAll('code').forEach((e) {
+      e.classes.addAll(['prettyprint', 'lang-dart']);
+    });
+    _asHtml = _asHtmlDocument.body.innerHtml;
+
+    if (_asHtmlDocument.body.children.isEmpty) {
+      _asOneLiner = '';
+    } else {
+      _asOneLiner = _asHtmlDocument.body.children.first.innerHtml;
+    }
+  }
+}
+
 String renderMarkdownToHtml(String text, [ModelElement element]) {
-  // TODO: `renderMarkdownToHtml` is never called with an element arg.
-  // TODO(keertip): use this for the one liner.
   md.Node _linkResolver(String name) {
     NodeList<CommentReference> commentRefs = _getCommentRefs(element);
-    if (commentRefs == null || commentRefs.isEmpty) {
-      return new md.Text('[$name]');
-    }
-    // support for [new Constructor] and [new Class.namedCtr]
-    var link;
-    var refs = name.split(' ');
-    if (refs.length == 2 && refs.first == 'new') {
-      link =
-          _getMatchingLink(refs[1], element, commentRefs, isConstructor: true);
-    } else {
-      link = _getMatchingLink(name, element, commentRefs);
-    }
-    if (link != null) {
-      return new md.Text('<a href="$link">$name</a>');
-    }
-    return new md.Text('$name');
+    return new md.Text(_linkDocReference(name, element, commentRefs));
   }
 
   return md.markdownToHtml(text,
       inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
-}
-
-String processDocsAsMarkdown(ModelElement element) {
-  if (element == null || element.documentation == null) return '';
-  String html = renderMarkdownToHtml(element.documentation, element);
-  Document doc = parse(html);
-  doc.querySelectorAll('script').forEach((s) => s.remove());
-  doc.querySelectorAll('code').forEach((e) {
-    e.classes.addAll(['prettyprint', 'lang-dart']);
-  });
-  return doc.body.innerHtml;
 }
 
 class _InlineCodeSyntax extends md.InlineSyntax {
@@ -80,129 +108,6 @@ class _InlineCodeSyntax extends md.InlineSyntax {
 }
 
 const List<String> _oneLinerSkipTags = const ["code", "pre"];
-
-String oneLinerWithoutReferences(String text) {
-  if (text == null) return '';
-  // Parse with Markdown, but only care about the first block or paragraph.
-  Iterable<String> lines = text.replaceAll('\r\n', '\n').split('\n');
-  md.Document document = new md.Document(inlineSyntaxes: _markdown_syntaxes);
-  document.parseRefLinks(lines);
-  List blocks = document.parseLines(lines);
-
-  while (blocks.isNotEmpty &&
-      ((blocks.first is md.Element &&
-              _oneLinerSkipTags.contains(blocks.first.tag)) ||
-          (blocks.first is md.Text && blocks.first.text.isEmpty))) {
-    blocks.removeAt(0);
-  }
-
-  if (blocks.isEmpty) return '';
-
-  String firstPara = new PlainTextRenderer().render([blocks.first]);
-  return firstPara.trim();
-}
-
-String oneLiner(ModelElement element) {
-  if (element == null ||
-      element.documentation == null ||
-      element.documentation.isEmpty) return '';
-
-  return _resolveDocReferences(
-      oneLinerWithoutReferences(element.documentation), element).trim();
-}
-
-class PlainTextRenderer implements md.NodeVisitor {
-  static final _BLOCK_TAGS =
-      new RegExp('blockquote|h1|h2|h3|h4|h5|h6|hr|p|pre');
-
-  StringBuffer _buffer;
-
-  String render(List<md.Node> nodes) {
-    _buffer = new StringBuffer();
-
-    for (final node in nodes) {
-      node.accept(this);
-    }
-
-    return _buffer.toString();
-  }
-
-  @override
-  void visitText(md.Text text) {
-    _buffer.write(text.text);
-  }
-
-  @override
-  bool visitElementBefore(md.Element element) {
-    // do nothing
-    return true;
-  }
-
-  @override
-  void visitElementAfter(md.Element element) {
-    // Hackish. Separate block-level elements with newlines.
-    if (!_buffer.isEmpty && _BLOCK_TAGS.firstMatch(element.tag) != null) {
-      _buffer.write('\n\n');
-    }
-  }
-}
-
-String _replaceAllLinks(ModelElement element, String str,
-    List<CommentReference> commentRefs, String findMatchingLink(
-        String input, ModelElement element, List<CommentReference> commentRefs,
-        {bool isConstructor})) {
-  int lastWritten = 0;
-  int index = str.indexOf(_leftChar);
-  StringBuffer buf = new StringBuffer();
-
-  while (index != -1) {
-    int end = str.indexOf(_rightChar, index + 1);
-    if (end != -1) {
-      if (index - lastWritten > 0) {
-        buf.write(str.substring(lastWritten, index));
-      }
-      String codeRef = str.substring(index + _leftChar.length, end);
-      if (codeRef != null) {
-        var link;
-        // support for [new Constructor] and [new Class.namedCtr]
-        var refs = codeRef.split(' ');
-        if (refs.length == 2 && refs.first == 'new') {
-          link = findMatchingLink(refs[1], element, commentRefs,
-              isConstructor: true);
-        } else {
-          link = findMatchingLink(codeRef, element, commentRefs);
-        }
-        if (link != null) {
-          buf.write('<a href="$link">$codeRef</a>');
-        } else {
-          if (_emitWarning) {
-            print(
-                "  warning: unresolved doc reference '$codeRef' (in $element)");
-          }
-          buf.write(codeRef);
-        }
-      }
-      lastWritten = end + _rightChar.length;
-    } else {
-      break;
-    }
-    index = str.indexOf(_leftChar, end + 1);
-  }
-  if (lastWritten < str.length) {
-    buf.write(str.substring(lastWritten, str.length));
-  }
-  return buf.toString();
-}
-
-String _resolveDocReferences(String docsAfterMarkdown, ModelElement element) {
-  NodeList<CommentReference> commentRefs = _getCommentRefs(element);
-  if (commentRefs == null || commentRefs.isEmpty) {
-    return docsAfterMarkdown;
-  }
-
-  return _replaceAllLinks(
-      element, docsAfterMarkdown, commentRefs, _getMatchingLink);
-}
 
 NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
   if (modelElement == null) return null;
@@ -238,14 +143,17 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
   return null;
 }
 
+/// Returns null if element is a parameter.
 String _getMatchingLink(
     String codeRef, ModelElement element, List<CommentReference> commentRefs,
     {bool isConstructor: false}) {
-  var refElement;
+  if (commentRefs == null) return null;
+
+  Element refElement;
 
   for (CommentReference ref in commentRefs) {
     if (ref.identifier.name == codeRef) {
-      var isConstrElement = ref.identifier.staticElement is ConstructorElement;
+      bool isConstrElement = ref.identifier.staticElement is ConstructorElement;
       if (isConstructor && isConstrElement ||
           !isConstructor && !isConstrElement) {
         refElement = ref.identifier.staticElement;
@@ -256,14 +164,19 @@ String _getMatchingLink(
 
   if (refElement == null) return null;
 
-  var refLibrary;
+  Library refLibrary;
   var e = refElement is ClassMemberElement ||
           refElement is PropertyAccessorElement
       ? refElement.enclosingElement
       : refElement;
+
+  // If e is a ParameterElement, it's
+  // never going to be in a library. So refLibrary is going to be null.
   refLibrary = element.package.libraries.firstWhere(
       (lib) => lib.hasInNamespace(e), orElse: () => null);
   if (refLibrary != null) {
+    // Is there a way to pull this from a registry of known elements?
+    // Seems like we're creating too many objects this way.
     return new ModelElement.from(refElement, refLibrary).href;
   }
   return null;
