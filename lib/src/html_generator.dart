@@ -208,6 +208,8 @@ class HtmlGeneratorInstance {
     });
 
     //if (url != null) generateSiteMap();
+
+    await _copyResources();
   }
 
   void generatePackage() {
