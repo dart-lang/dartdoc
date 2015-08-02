@@ -423,7 +423,7 @@ class Package {
     if (element is ClassMemberElement || element is PropertyAccessorElement) {
       el = element.enclosingElement;
     } else if (element is TopLevelVariableElement) {
-      TopLevelVariableElement variable = (element as TopLevelVariableElement);
+      TopLevelVariableElement variable = element;
       if (variable.getter != null) {
         el = variable.getter;
       } else if (variable.setter != null) {
