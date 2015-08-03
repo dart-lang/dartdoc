@@ -87,17 +87,35 @@ void main() {
       test('resources are put into the right place', () {
         Directory output =
             new Directory(p.join(tempOutput.path, 'static-assets'));
-        expect(output.existsSync(), isTrue);
+        expect(output, doesExist);
         new Directory(p.join('lib', 'resources'))
             .listSync(recursive: true)
             .forEach((FileSystemEntity f) {
           if (f.statSync().type == FileSystemEntityType.FILE) {
             String subPath =
                 f.path.substring(p.join('lib', 'resources').length + 1);
-            expect(new File(p.join(output.path, subPath)).existsSync(), isTrue);
+            expect(new File(p.join(output.path, subPath)), doesExist);
           }
         });
       });
     });
   });
+}
+
+const Matcher doesExist = const _DoesExist();
+
+class _DoesExist extends Matcher {
+  const _DoesExist();
+  bool matches(item, Map matchState) => item.existsSync();
+  Description describe(Description description) => description.add('exists');
+  Description describeMismatch(
+      item, Description mismatchDescription, Map matchState, bool verbose) {
+    if (item is! File && item is! Directory) {
+      return mismatchDescription
+          .addDescriptionOf(item)
+          .add('is not a file or directory');
+    } else {
+      return mismatchDescription.add(' does not exist');
+    }
+  }
 }
