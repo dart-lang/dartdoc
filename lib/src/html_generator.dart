@@ -124,9 +124,12 @@ class Templates {
 }
 
 class HtmlGenerator extends Generator {
+  /// Optional URL for where the docs will be hosted.
   final String url;
   final Templates _templates;
 
+  /// [url] can be null.
+  // TODO: make url an optional parameter
   HtmlGenerator(this.url, {String header, String footer})
       : _templates = new Templates(header, footer);
 
@@ -149,6 +152,19 @@ class HtmlGeneratorInstance {
   Future generate() async {
     await _templates.init();
     if (!out.existsSync()) out.createSync();
+
+    if (package != null) {
+      _generateDocs();
+    }
+
+    //if (url != null) generateSiteMap();
+
+    await _copyResources();
+  }
+
+  void _generateDocs() {
+    if (package == null) return;
+
     generatePackage();
 
     package.libraries.forEach((Library lib) {
@@ -206,10 +222,6 @@ class HtmlGeneratorInstance {
         generateTypeDef(package, lib, typeDef);
       });
     });
-
-    //if (url != null) generateSiteMap();
-
-    await _copyResources();
   }
 
   void generatePackage() {

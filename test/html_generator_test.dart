@@ -4,8 +4,10 @@
 
 library dartdoc.html_generator_test;
 
-import 'package:test/test.dart';
+import 'dart:io' show File, Directory, FileSystemEntity, FileSystemEntityType;
 
+import 'package:path/path.dart' as p;
+import 'package:test/test.dart';
 import 'package:dartdoc/src/html_generator.dart';
 
 void main() {
@@ -66,6 +68,54 @@ void main() {
 
   group('HtmlGenerator', () {
     // TODO: Run the HtmlGenerator and validate important constraints.
+    group('for a null package', () {
+      HtmlGenerator generator;
+      Directory tempOutput;
 
+      setUp(() async {
+        generator = new HtmlGenerator(null);
+        tempOutput = Directory.systemTemp.createTempSync('doc_test_temp');
+        return generator.generate(null, tempOutput);
+      });
+
+      tearDown(() {
+        if (tempOutput != null) {
+          tempOutput.deleteSync(recursive: true);
+        }
+      });
+
+      test('resources are put into the right place', () {
+        Directory output =
+            new Directory(p.join(tempOutput.path, 'static-assets'));
+        expect(output, doesExist);
+        new Directory(p.join('lib', 'resources'))
+            .listSync(recursive: true)
+            .forEach((FileSystemEntity f) {
+          if (f.statSync().type == FileSystemEntityType.FILE) {
+            String subPath =
+                f.path.substring(p.join('lib', 'resources').length + 1);
+            expect(new File(p.join(output.path, subPath)), doesExist);
+          }
+        });
+      });
+    });
   });
+}
+
+const Matcher doesExist = const _DoesExist();
+
+class _DoesExist extends Matcher {
+  const _DoesExist();
+  bool matches(item, Map matchState) => item.existsSync();
+  Description describe(Description description) => description.add('exists');
+  Description describeMismatch(
+      item, Description mismatchDescription, Map matchState, bool verbose) {
+    if (item is! File && item is! Directory) {
+      return mismatchDescription
+          .addDescriptionOf(item)
+          .add('is not a file or directory');
+    } else {
+      return mismatchDescription.add(' does not exist');
+    }
+  }
 }
