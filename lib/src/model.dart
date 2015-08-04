@@ -14,6 +14,7 @@ import 'package:quiver/core.dart';
 import 'html_utils.dart';
 import 'model_utils.dart';
 import 'package_meta.dart';
+import 'debug.dart';
 import '../markdown_processor.dart';
 
 int byName(a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase());
@@ -84,11 +85,11 @@ abstract class ModelElement implements Comparable {
     if (e is MethodElement && !e.isOperator) {
       return new Method(e, library);
     }
-    if (e is PropertyAccessorElement) {
-      return new Accessor(e, library);
-    }
     if (e is TopLevelVariableElement) {
       return new TopLevelVariable(e, library);
+    }
+    if (e is PropertyAccessorElement) {
+      return new Accessor(e, library);
     }
     if (e is TypeParameterElement) {
       return new TypeParameter(e, library);
@@ -414,28 +415,41 @@ class Package {
 
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
-  bool isDocumented(Element element) {
+  Library findLibraryFor(final Element element) {
     if (element is LibraryElement) {
-      return _libraries.any((lib) => lib.element == element);
+      // will equality work here? or should we check names?
+      return _libraries.firstWhere((lib) => lib.element == element,
+          orElse: () => null);
     }
 
     Element el;
     if (element is ClassMemberElement || element is PropertyAccessorElement) {
-      el = element.enclosingElement;
-    } else if (element is TopLevelVariableElement) {
-      TopLevelVariableElement variable = element;
-      if (variable.getter != null) {
-        el = variable.getter;
-      } else if (variable.setter != null) {
-        el = variable.setter;
+      if (element.enclosingElement is! CompilationUnitElement) {
+        el = element.enclosingElement;
       } else {
-        el = variable;
+        // in this case, element is an accessor for a library-level variable,
+        // likely a const. We, in this case, actually don't want the enclosing
+        // element because it's a compilation unit, whatever that is.
+        el = element;
+      }
+    } else if (element is TopLevelVariableElement) {
+      final TopLevelVariableElement variableElement = element;
+      if (variableElement.getter != null) {
+        el = variableElement.getter;
+      } else if (variableElement.setter != null) {
+        el = variableElement.setter;
+      } else {
+        el = variableElement;
       }
     } else {
       el = element;
     }
-    return _libraries.any((lib) => lib.hasInNamespace(el));
+    debugger(when: element.name == 'NAME_SINGLEUNDERSCORE');
+    return _libraries.firstWhere((lib) => lib.hasInNamespace(el),
+        orElse: () => null);
   }
+
+  bool isDocumented(Element element) => findLibraryFor(element) != null;
 
   String get href => 'index.html';
 

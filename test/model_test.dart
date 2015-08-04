@@ -170,6 +170,8 @@ void main() {
     Class specialList;
     Class subForDocComments;
 
+    ModelFunction short;
+
     setUp(() {
       incorrectReference = exLibrary.constants
           .firstWhere((c) => c.name == 'incorrectDocReference');
@@ -193,6 +195,17 @@ void main() {
 
       subForDocComments =
           fakeLibrary.classes.firstWhere((c) => c.name == 'SubForDocComments');
+
+      short = fakeLibrary.functions.firstWhere((f) => f.name == 'short');
+    });
+
+    test('multi-underscore names in brackets do not become italicized', () {
+      expect(short.documentation, contains('[NAME_WITH_TWO_UNDERSCORES]'));
+      expect(short.documentation, contains('[NAME_SINGLEUNDERSCORE]'));
+      expect(short.documentationAsHtml, contains(
+          '<a href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
+      expect(short.documentationAsHtml, contains(
+          '<a href="fake/NAME_SINGLEUNDERSCORE.html">NAME_SINGLEUNDERSCORE</a>'));
     });
 
     test('still has brackets inside code blocks', () {

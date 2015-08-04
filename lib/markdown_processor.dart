@@ -11,7 +11,9 @@ import 'package:analyzer/src/generated/element.dart'
         LibraryElement,
         Element,
         ConstructorElement,
+        CompilationUnitElement,
         ClassMemberElement,
+        TopLevelVariableElement,
         PropertyAccessorElement;
 import 'package:html/dom.dart' show Document;
 import 'package:html/parser.dart' show parse;
@@ -20,8 +22,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'src/html_utils.dart' show htmlEscape;
 import 'src/model.dart';
 
-const _leftChar = '[';
-const _rightChar = ']';
+import 'src/debug.dart';
 
 final List<md.InlineSyntax> _markdown_syntaxes = [new _InlineCodeSyntax()];
 
@@ -85,6 +86,7 @@ class Documentation {
 
 String renderMarkdownToHtml(String text, [ModelElement element]) {
   md.Node _linkResolver(String name) {
+    //debugger(when: element != null && element.name == 'doAwesomeStuff');
     NodeList<CommentReference> commentRefs = _getCommentRefs(element);
     return new md.Text(_linkDocReference(name, element, commentRefs));
   }
@@ -147,6 +149,8 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
 String _getMatchingLink(
     String codeRef, ModelElement element, List<CommentReference> commentRefs,
     {bool isConstructor: false}) {
+  debugger(when: element.name == 'short');
+
   if (commentRefs == null) return null;
 
   Element refElement;
@@ -164,16 +168,15 @@ String _getMatchingLink(
 
   if (refElement == null) return null;
 
-  Library refLibrary;
-  var e = refElement is ClassMemberElement ||
-          refElement is PropertyAccessorElement
-      ? refElement.enclosingElement
-      : refElement;
+  if (refElement is PropertyAccessorElement &&
+      refElement.enclosingElement is CompilationUnitElement) {
+    // yay we found an accessor that wraps a const, but we really
+    // want the top-level field itself
+    refElement = (refElement as PropertyAccessorElement).variable;
+  }
 
-  // If e is a ParameterElement, it's
-  // never going to be in a library. So refLibrary is going to be null.
-  refLibrary = element.package.libraries.firstWhere(
-      (lib) => lib.hasInNamespace(e), orElse: () => null);
+  Library refLibrary = element.package.findLibraryFor(refElement);
+
   if (refLibrary != null) {
     // Is there a way to pull this from a registry of known elements?
     // Seems like we're creating too many objects this way.

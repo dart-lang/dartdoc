@@ -84,6 +84,15 @@ const ConstantClass CUSTOM_CLASS = const ConstantClass('custom');
 /// Getting up in the morning can be hard.
 const String UP = 'up';
 
+const String NAME_SINGLEUNDERSCORE = 'yay bug hunting';
+
+const String NAME_WITH_TWO_UNDERSCORES = 'episode seven better be good';
+
+/// Testing [NAME_WITH_TWO_UNDERSCORES] should not be italicized.
+///
+/// This name should link correctly: [NAME_SINGLEUNDERSCORE]
+void short() {}
+
 /// Dynamic-typed down.
 @deprecated
 const DOWN = 'down';
@@ -376,6 +385,8 @@ class BaseForDocComments {
   /// Takes a [value] and returns a String.
   ///
   /// This methods is inside of [BaseForDocComments]
+  ///
+  /// Also [NAME_WITH_TWO_UNDERSCORES]
   String doAwesomeStuff(int value) => null;
 }
 

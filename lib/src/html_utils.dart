@@ -8,19 +8,6 @@ import 'dart:convert';
 
 String htmlEscape(String text) => HTML_ESCAPE.convert(text);
 
-String escapeBrackets(String text) {
-  return text.replaceAll('>', '_').replaceAll('<', '_');
-}
-
-String stringEscape(String text, String quoteType) {
-  return text
-      .replaceAll('\\', r'\\')
-      .replaceAll(quoteType, "\\${quoteType}")
-      .replaceAllMapped(_escapeRegExp, (m) {
-    return _escapeMap[m.input];
-  });
-}
-
 String stripComments(String str) {
   if (str == null) return null;
 
