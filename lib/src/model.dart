@@ -240,13 +240,13 @@ abstract class ModelElement implements Comparable {
 
   ElementType get modelType => _modelType;
 
-  /// Returns the [ModelElement] that encloses this.
-  ModelElement get enclosingElement {
+  /// Returns the [ClassElement] that encloses this.
+  Class get enclosingClass {
     // A class's enclosing element is a library, and there isn't a
     // modelelement for a library.
     if (element.enclosingElement != null &&
         element.enclosingElement is ClassElement) {
-      return new ModelElement.from(element.enclosingElement, library);
+      return new ModelElement.from(element.enclosingElement, library) as Class;
     } else {
       return null;
     }
@@ -259,10 +259,13 @@ abstract class ModelElement implements Comparable {
     if (!package.isDocumented(this.element)) {
       return htmlEscape(name);
     }
+
     if (name.startsWith('_')) {
       return htmlEscape(name);
     }
-    Class c = enclosingElement;
+
+    // this smells like it's in the wrong place
+    Class c = enclosingClass;
     if (c != null && c.name.startsWith('_')) {
       return '${c.name}.${htmlEscape(name)}';
     }
@@ -444,7 +447,7 @@ class Package {
     } else {
       el = element;
     }
-    debugger(when: element.name == 'NAME_SINGLEUNDERSCORE');
+    //debugger(when: element.name == 'NAME_WITH_TWO_UNDERSCORES');
     return _libraries.firstWhere((lib) => lib.hasInNamespace(el),
         orElse: () => null);
   }
@@ -1392,7 +1395,7 @@ class Constructor extends ModelElement {
   @override
   String get name {
     String constructorName = element.name;
-    Class c = enclosingElement;
+    Class c = enclosingClass;
     if (constructorName.isEmpty) {
       return c.name;
     } else {

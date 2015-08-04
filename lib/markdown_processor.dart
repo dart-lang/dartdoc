@@ -86,7 +86,7 @@ class Documentation {
 
 String renderMarkdownToHtml(String text, [ModelElement element]) {
   md.Node _linkResolver(String name) {
-    //debugger(when: element != null && element.name == 'doAwesomeStuff');
+    debugger(when: element != null && element.name == 'doAwesomeStuff');
     NodeList<CommentReference> commentRefs = _getCommentRefs(element);
     return new md.Text(_linkDocReference(name, element, commentRefs));
   }
@@ -149,8 +149,7 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
 String _getMatchingLink(
     String codeRef, ModelElement element, List<CommentReference> commentRefs,
     {bool isConstructor: false}) {
-  debugger(when: element.name == 'short');
-
+  debugger(when: element != null && element.name == 'doAwesomeStuff');
   if (commentRefs == null) return null;
 
   Element refElement;
