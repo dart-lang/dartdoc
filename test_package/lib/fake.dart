@@ -46,6 +46,8 @@ import 'dart:collection';
 
 import 'example.dart';
 
+import 'css.dart' as css;
+
 /// Useful for annotations.
 class Annotation {
   final String value;
@@ -384,10 +386,26 @@ class ExtraSpecialList<E> extends SpecialList {}
 class BaseForDocComments {
   /// Takes a [value] and returns a String.
   ///
-  /// This methods is inside of [BaseForDocComments]
+  /// This methods is inside of [BaseForDocComments] class
   ///
-  /// Also [NAME_WITH_TWO_UNDERSCORES]
+  /// Also [NAME_WITH_TWO_UNDERSCORES] which is a top-level const
+  ///
+  /// Returns a [String]
+  ///
+  /// Reference to another method in this class [anotherMethod]
+  ///
+  /// Reference to a top-level function in this library [topLevelFunction]
+  ///
+  /// Reference to a top-level function in another library (example lib) [function1]
+  ///
+  /// Reference to a class in example lib [Apple]
+  ///
+  /// Reference to a top-level const in another library [incorrectDocReference]
+  ///
+  /// Reference to prefixed-name from another lib [css.theOnlyThingInTheLibrary]
   String doAwesomeStuff(int value) => null;
+
+  void anotherMethod() {}
 }
 
 /// Testing if docs for inherited method are correct.
