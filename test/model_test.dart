@@ -168,7 +168,11 @@ void main() {
     TopLevelVariable testingCodeSyntaxInOneLiners;
 
     Class specialList;
+    Class baseForDocComments;
+    Method doAwesomeStuff;
     Class subForDocComments;
+
+    ModelFunction short;
 
     setUp(() {
       incorrectReference = exLibrary.constants
@@ -193,6 +197,80 @@ void main() {
 
       subForDocComments =
           fakeLibrary.classes.firstWhere((c) => c.name == 'SubForDocComments');
+
+      baseForDocComments =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'BaseForDocComments');
+      doAwesomeStuff = baseForDocComments.instanceMethods
+          .firstWhere((m) => m.name == 'doAwesomeStuff');
+
+      short = fakeLibrary.functions.firstWhere((f) => f.name == 'short');
+    });
+
+    group('doc references', () {
+      String docsAsHtml;
+
+      setUp(() {
+        docsAsHtml = doAwesomeStuff.documentationAsHtml;
+      });
+
+      test('codeifies a class from the SDK', () {
+        expect(docsAsHtml,
+            contains('<code class="prettyprint lang-dart">String</code>'));
+      });
+
+      test('codeifies a reference to its parameter', () {
+        expect(docsAsHtml,
+            contains('<code class="prettyprint lang-dart">value</code>'));
+      });
+
+      test('links to a reference to its class', () {
+        expect(docsAsHtml, contains(
+            '<a href="fake/BaseForDocComments-class.html">BaseForDocComments</a>'));
+      });
+
+      test('links to a reference to a top-level const', () {
+        expect(
+            docsAsHtml, contains('<a href="">NAME_WITH_TWO_UNDERSCORES</a>'));
+      });
+
+      test('links to a method in this class', () {
+        expect(docsAsHtml, contains(
+            '<a href="fake/BaseForDocComments/anotherMethod.html">anotherMethod</a>'));
+      });
+
+      test('links to a top-level function in this library', () {
+        expect(docsAsHtml, contains(
+            '<a href="fake/topLevelFunction.html">topLevelFunction</a>'));
+      });
+
+      test('links to top-level function from an imported library', () {
+        expect(
+            docsAsHtml, contains('<a href="ex/function1.html">function1</a>'));
+      });
+
+      test('links to a class from an imported lib', () {
+        expect(docsAsHtml, contains('<a href="ex/Apple-class.html">Apple</a>'));
+      });
+
+      test('links to a top-level const from an imported lib', () {
+        expect(docsAsHtml, contains(
+            '<a href="fake/incorrectDocReference.html">incorrectDocReference</a>'));
+      });
+
+      test('links to a top-level variable with a prefix from an imported lib',
+          () {
+        expect(docsAsHtml,
+            contains('<a href="">css.theOnlyThingInTheLibrary</a>'));
+      });
+    });
+
+    test('multi-underscore names in brackets do not become italicized', () {
+      expect(short.documentation, contains('[NAME_WITH_TWO_UNDERSCORES]'));
+      expect(short.documentation, contains('[NAME_SINGLEUNDERSCORE]'));
+      expect(short.documentationAsHtml, contains(
+          '<a href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
+      expect(short.documentationAsHtml, contains(
+          '<a href="fake/NAME_SINGLEUNDERSCORE.html">NAME_SINGLEUNDERSCORE</a>'));
     });
 
     test('still has brackets inside code blocks', () {
