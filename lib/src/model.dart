@@ -296,8 +296,8 @@ abstract class ModelElement implements Comparable {
           buf.write(' <span class="parameter-name">${p.name}</span>');
         }
         buf.write('(');
-        buf.write(p.modelType.element.linkedParams(
-            showNames: showNames, showMetadata: showMetadata));
+        buf.write(p.modelType.element
+            .linkedParams(showNames: showNames, showMetadata: showMetadata));
         buf.write(')');
       } else if (p.modelType != null && p.modelType.element != null) {
         var mt = p.modelType;
@@ -570,7 +570,10 @@ class Library extends ModelElement {
     elements..removeWhere(isPrivate);
     _variables = elements
         .map((e) => new TopLevelVariable(e, this))
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_variables.isNotEmpty) _variables.sort(byName);
 
     return _variables;
   }
@@ -579,15 +582,22 @@ class Library extends ModelElement {
 
   /// All variables ("properties") except constants.
   List<TopLevelVariable> get properties {
-    return _getVariables().where((v) => !v.isConst).toList(growable: false)
-      ..sort(byName);
+    List temp =
+        _getVariables().where((v) => !v.isConst).toList(growable: false);
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (temp.isNotEmpty) temp.sort(byName);
+    return temp;
   }
 
   bool get hasConstants => _getVariables().any((v) => v.isConst);
 
   List<TopLevelVariable> get constants {
-    return _getVariables().where((v) => v.isConst).toList(growable: false)
-      ..sort(byName);
+    List temp = _getVariables().where((v) => v.isConst).toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (temp.isNotEmpty) temp.sort(byName);
+
+    return temp;
   }
 
   bool get hasEnums => enums.isNotEmpty;
@@ -601,7 +611,11 @@ class Library extends ModelElement {
     _enums = enumClasses
         .where(isPublic)
         .map((e) => new Enum(e, this))
-        .toList(growable: false)..sort((a, b) => a.name.compareTo(b.name));
+        .toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_enums.isNotEmpty) _enums.sort(byName);
+
     return _enums;
   }
 
@@ -623,9 +637,12 @@ class Library extends ModelElement {
     elements.addAll(_exportedNamespace
         .where((element) => element is FunctionTypeAliasElement));
     elements..removeWhere(isPrivate);
-    _typeDefs = elements
-        .map((e) => new Typedef(e, this))
-        .toList(growable: false)..sort(byName);
+    _typeDefs =
+        elements.map((e) => new Typedef(e, this)).toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_typeDefs.isNotEmpty) _typeDefs.sort(byName);
+
     return _typeDefs;
   }
 
@@ -645,7 +662,11 @@ class Library extends ModelElement {
     elements..removeWhere(isPrivate);
     _functions = elements.map((e) {
       return new ModelFunction(e, this);
-    }).toList(growable: false)..sort(byName);
+    }).toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_functions.isNotEmpty) _functions.sort(byName);
+
     return _functions;
   }
 
@@ -669,14 +690,18 @@ class Library extends ModelElement {
     _classes = types
         .where(isPublic)
         .map((e) => new Class(e, this))
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_classes.isNotEmpty) _classes.sort(byName);
 
     return _classes;
   }
 
   List<Class> get classes {
-    return _allClasses.where((c) => !c.isErrorOrException).toList(
-        growable: false);
+    return _allClasses
+        .where((c) => !c.isErrorOrException)
+        .toList(growable: false);
   }
 
   List<Class> get allClasses => _allClasses;
@@ -686,8 +711,13 @@ class Library extends ModelElement {
   bool get hasExceptions => _allClasses.any((c) => c.isErrorOrException);
 
   List<Class> get exceptions {
-    return _allClasses.where((c) => c.isErrorOrException).toList(
-        growable: false)..sort(byName);
+    List temp =
+        _allClasses.where((c) => c.isErrorOrException).toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (temp.isNotEmpty) temp.sort(byName);
+
+    return temp;
   }
 
   @override
@@ -768,9 +798,9 @@ class Class extends ModelElement {
   }
 
   List<TypeParameter> get _typeParameters => _cls.typeParameters.map((f) {
-    var lib = new Library(f.enclosingElement.library, package);
-    return new TypeParameter(f, lib);
-  }).toList();
+        var lib = new Library(f.enclosingElement.library, package);
+        return new TypeParameter(f, lib);
+      }).toList();
 
   String get kind => 'class';
 
@@ -820,7 +850,10 @@ class Class extends ModelElement {
     _fields = _cls.fields
         .where(isPublic)
         .map((e) => new Field(e, library))
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_fields.isNotEmpty) _fields.sort(byName);
 
     return _fields;
   }
@@ -830,7 +863,11 @@ class Class extends ModelElement {
     _staticFields = _allFields
         .where((f) => f.isStatic)
         .where((f) => !f.isConst)
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_staticFields.isNotEmpty) _staticFields.sort(byName);
+
     return _staticFields;
   }
 
@@ -838,17 +875,22 @@ class Class extends ModelElement {
 
   List<Field> get instanceProperties {
     if (_instanceFields != null) return _instanceFields;
-    _instanceFields = _allFields
-        .where((f) => !f.isStatic)
-        .toList(growable: false)..sort(byName);
+    _instanceFields =
+        _allFields.where((f) => !f.isStatic).toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_instanceFields.isNotEmpty) _instanceFields.sort(byName);
 
     return _instanceFields;
   }
 
   List<Field> get constants {
     if (_constants != null) return _constants;
-    _constants = _allFields.where((f) => f.isConst).toList(growable: false)
-      ..sort((a, b) => a.name.compareTo(b.name));
+    _constants = _allFields.where((f) => f.isConst).toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_constants.isNotEmpty) _constants.sort(byName);
+
     return _constants;
   }
 
@@ -861,7 +903,10 @@ class Class extends ModelElement {
 
     _constructors = _cls.constructors.where(isPublic).map((e) {
       return new Constructor(e, library);
-    }).toList(growable: true)..sort(byName);
+    }).toList(growable: true);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_constructors.isNotEmpty) _constructors.sort(byName);
 
     return _constructors;
   }
@@ -877,7 +922,10 @@ class Class extends ModelElement {
       } else {
         return new Operator(e, library);
       }
-    }).toList(growable: false)..sort(byName);
+    }).toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_allMethods.isNotEmpty) _allMethods.sort(byName);
 
     return _allMethods;
   }
@@ -885,8 +933,10 @@ class Class extends ModelElement {
   List<Operator> get operators {
     if (_operators != null) return _operators;
 
-    _operators = _methods.where((m) => m.isOperator).toList(growable: false)
-      ..sort(byName);
+    _operators = _methods.where((m) => m.isOperator).toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_operators.isNotEmpty) _operators.sort(byName);
 
     return _operators;
   }
@@ -906,8 +956,10 @@ class Class extends ModelElement {
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
 
-    _staticMethods = _methods.where((m) => m.isStatic).toList(growable: false)
-      ..sort(byName);
+    _staticMethods = _methods.where((m) => m.isStatic).toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_staticMethods.isNotEmpty) _staticMethods.sort(byName);
 
     return _staticMethods;
   }
@@ -919,7 +971,10 @@ class Class extends ModelElement {
 
     _instanceMethods = _methods
         .where((m) => !m.isStatic && !m.isOperator)
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_instanceMethods.isNotEmpty) _instanceMethods.sort(byName);
 
     return _instanceMethods;
   }
@@ -979,7 +1034,7 @@ class Class extends ModelElement {
       }
     }
 
-    _inheritedMethods..sort(byName);
+    _inheritedMethods.sort(byName);
 
     return _inheritedMethods;
   }
@@ -1038,7 +1093,7 @@ class Class extends ModelElement {
       _inheritedOperators.add(new Operator.inherited(value, lib));
     }
 
-    _inheritedOperators..sort(byName);
+    _inheritedOperators.sort(byName);
 
     return _inheritedOperators;
   }
@@ -1097,7 +1152,7 @@ class Class extends ModelElement {
       }
     }
 
-    _inheritedProperties..sort(byName);
+    _inheritedProperties.sort(byName);
 
     return _inheritedProperties;
   }
@@ -1164,14 +1219,18 @@ class Enum extends Class {
         .where(isPublic)
         .where((f) => f.isConst)
         .map((field) => new EnumField.forConstant(index++, field, library))
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false);
+
+    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
+    if (_constants.isNotEmpty) _constants.sort(byName);
 
     return _constants;
   }
 
   @override
   List<EnumField> get instanceProperties {
-    return super.instanceProperties
+    return super
+        .instanceProperties
         .map((Field p) => new EnumField(p.element, p.library))
         .toList(growable: false);
   }
@@ -1664,8 +1723,10 @@ class ElementType {
 
   ElementType get _returnType {
     var rt = (_type as FunctionType).returnType;
-    return new ElementType(rt, new ModelElement.from(
-        rt.element, new Library(_element.library.element, _element.package)));
+    return new ElementType(
+        rt,
+        new ModelElement.from(rt.element,
+            new Library(_element.library.element, _element.package)));
   }
 
   ModelElement get returnElement {
@@ -1679,9 +1740,9 @@ class ElementType {
 
   List<ElementType> get typeArguments =>
       (_type as ParameterizedType).typeArguments.map((f) {
-    var lib = new Library(f.element.library, _element.package);
-    return new ElementType(f, new ModelElement.from(f.element, lib));
-  }).toList();
+        var lib = new Library(f.element.library, _element.package);
+        return new ElementType(f, new ModelElement.from(f.element, lib));
+      }).toList();
 
   String get linkedName {
     if (_linkedName != null) return _linkedName;

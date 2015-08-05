@@ -91,9 +91,9 @@ Future<Uint8List> _doLoadOverHttp(final String resourcePath) {
   var scriptUri = Platform.script;
   var convertedResourcePath = _convertPackageSchemeToPackagesDir(resourcePath);
   // strip file name from script uri, append path to resource
-  var segmentsToResource = scriptUri.pathSegments.sublist(
-      0, scriptUri.pathSegments.length - 1)
-    ..addAll(p.split(convertedResourcePath));
+  var segmentsToResource = scriptUri.pathSegments
+      .sublist(0, scriptUri.pathSegments.length - 1)
+        ..addAll(p.split(convertedResourcePath));
   var fullPath = scriptUri.replace(pathSegments: segmentsToResource);
 
   return http.readBytes(fullPath);
