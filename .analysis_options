@@ -1,7 +1,8 @@
 analyzer:
   exclude:
+    - 'doc/api/**'
+    - 'lib/templates/*.html'
+    - 'pub.dartlang.org/**'
     - 'test_package/**'
     - 'test_package_small/**'
     - 'test_package_bad/**'
-    - 'doc/api/**'
-    - 'pub.dartlang.org/**'
