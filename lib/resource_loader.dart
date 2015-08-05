@@ -24,20 +24,21 @@ import 'package:pub_cache/pub_cache.dart';
 String packageRootPath;
 
 /// Loads a `package:` resource as a String.
-Future<String> loadAsString(String path) async {
+Future<String> loadAsString(String path) {
   if (!path.startsWith('package:')) {
     throw new ArgumentError('path must begin with package:');
   }
-  Uint8List bytes = await _doLoad(path);
-  return new String.fromCharCodes(bytes);
+  return new Resource(path).readAsString();
+  // Uint8List bytes = await _doLoad(path);
+  // return new String.fromCharCodes(bytes);
 }
 
-/// Loads a `package:` resource as an [Uint8List].
-Future<Uint8List> loadAsBytes(String path) {
+/// Loads a `package:` resource as an [List<int>].
+Future<List<int>> loadAsBytes(String path) {
   if (!path.startsWith('package:')) {
     throw new ArgumentError('path must begin with package:');
   }
-  return _doLoad(path);
+  return new Resource(path).readAsBytes();
 }
 
 /// Determine how to do the load. HTTP? Snapshotted? From source?
@@ -91,9 +92,9 @@ Future<Uint8List> _doLoadOverHttp(final String resourcePath) {
   var scriptUri = Platform.script;
   var convertedResourcePath = _convertPackageSchemeToPackagesDir(resourcePath);
   // strip file name from script uri, append path to resource
-  var segmentsToResource = scriptUri.pathSegments.sublist(
-      0, scriptUri.pathSegments.length - 1)
-    ..addAll(p.split(convertedResourcePath));
+  var segmentsToResource = scriptUri.pathSegments
+      .sublist(0, scriptUri.pathSegments.length - 1)
+        ..addAll(p.split(convertedResourcePath));
   var fullPath = scriptUri.replace(pathSegments: segmentsToResource);
 
   return http.readBytes(fullPath);
