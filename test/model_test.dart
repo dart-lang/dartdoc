@@ -261,6 +261,11 @@ void main() {
           () {
         expect(docsAsHtml,
             contains('<a href="">css.theOnlyThingInTheLibrary</a>'));
+      }, skip: 'Wait for https://github.com/dart-lang/dartdoc/issues/767 to be fixed');
+
+      test('codeifies a prefixed top-level variable an imported lib', () {
+        expect(docsAsHtml, contains(
+            '<code class="prettyprint lang-dart">css.theOnlyThingInTheLibrary</code>'));
       });
     });
 
