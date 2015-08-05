@@ -24,21 +24,20 @@ import 'package:pub_cache/pub_cache.dart';
 String packageRootPath;
 
 /// Loads a `package:` resource as a String.
-Future<String> loadAsString(String path) {
+Future<String> loadAsString(String path) async {
   if (!path.startsWith('package:')) {
     throw new ArgumentError('path must begin with package:');
   }
-  return new Resource(path).readAsString();
-  // Uint8List bytes = await _doLoad(path);
-  // return new String.fromCharCodes(bytes);
+  Uint8List bytes = await _doLoad(path);
+  return new String.fromCharCodes(bytes);
 }
 
-/// Loads a `package:` resource as an [List<int>].
-Future<List<int>> loadAsBytes(String path) {
+/// Loads a `package:` resource as an [Uint8List].
+Future<Uint8List> loadAsBytes(String path) {
   if (!path.startsWith('package:')) {
     throw new ArgumentError('path must begin with package:');
   }
-  return new Resource(path).readAsBytes();
+  return _doLoad(path);
 }
 
 /// Determine how to do the load. HTTP? Snapshotted? From source?
