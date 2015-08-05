@@ -11,9 +11,11 @@ import 'package:analyzer/src/generated/resolver.dart';
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:quiver/core.dart';
 
+import 'debug.dart';
 import 'html_utils.dart';
 import 'model_utils.dart';
 import 'package_meta.dart';
+
 import '../markdown_processor.dart';
 
 int byName(a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase());
@@ -84,11 +86,11 @@ abstract class ModelElement implements Comparable {
     if (e is MethodElement && !e.isOperator) {
       return new Method(e, library);
     }
-    if (e is PropertyAccessorElement) {
-      return new Accessor(e, library);
-    }
     if (e is TopLevelVariableElement) {
       return new TopLevelVariable(e, library);
+    }
+    if (e is PropertyAccessorElement) {
+      return new Accessor(e, library);
     }
     if (e is TypeParameterElement) {
       return new TypeParameter(e, library);
@@ -239,13 +241,13 @@ abstract class ModelElement implements Comparable {
 
   ElementType get modelType => _modelType;
 
-  /// Returns the [ModelElement] that encloses this.
-  ModelElement get enclosingElement {
+  /// Returns the [ClassElement] that encloses this.
+  Class get enclosingClass {
     // A class's enclosing element is a library, and there isn't a
     // modelelement for a library.
     if (element.enclosingElement != null &&
         element.enclosingElement is ClassElement) {
-      return new ModelElement.from(element.enclosingElement, library);
+      return new ModelElement.from(element.enclosingElement, library) as Class;
     } else {
       return null;
     }
@@ -258,10 +260,13 @@ abstract class ModelElement implements Comparable {
     if (!package.isDocumented(this.element)) {
       return htmlEscape(name);
     }
+
     if (name.startsWith('_')) {
       return htmlEscape(name);
     }
-    Class c = enclosingElement;
+
+    // this smells like it's in the wrong place
+    Class c = enclosingClass;
     if (c != null && c.name.startsWith('_')) {
       return '${c.name}.${htmlEscape(name)}';
     }
@@ -292,8 +297,8 @@ abstract class ModelElement implements Comparable {
           buf.write(' <span class="parameter-name">${p.name}</span>');
         }
         buf.write('(');
-        buf.write(p.modelType.element
-            .linkedParams(showNames: showNames, showMetadata: showMetadata));
+        buf.write(p.modelType.element.linkedParams(
+            showNames: showNames, showMetadata: showMetadata));
         buf.write(')');
       } else if (p.modelType != null && p.modelType.element != null) {
         var mt = p.modelType;
@@ -414,28 +419,41 @@ class Package {
 
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
-  bool isDocumented(Element element) {
+  Library findLibraryFor(final Element element) {
     if (element is LibraryElement) {
-      return _libraries.any((lib) => lib.element == element);
+      // will equality work here? or should we check names?
+      return _libraries.firstWhere((lib) => lib.element == element,
+          orElse: () => null);
     }
 
     Element el;
     if (element is ClassMemberElement || element is PropertyAccessorElement) {
-      el = element.enclosingElement;
-    } else if (element is TopLevelVariableElement) {
-      TopLevelVariableElement variable = element;
-      if (variable.getter != null) {
-        el = variable.getter;
-      } else if (variable.setter != null) {
-        el = variable.setter;
+      if (element.enclosingElement is! CompilationUnitElement) {
+        el = element.enclosingElement;
       } else {
-        el = variable;
+        // in this case, element is an accessor for a library-level variable,
+        // likely a const. We, in this case, actually don't want the enclosing
+        // element because it's a compilation unit, whatever that is.
+        el = element;
+      }
+    } else if (element is TopLevelVariableElement) {
+      final TopLevelVariableElement variableElement = element;
+      if (variableElement.getter != null) {
+        el = variableElement.getter;
+      } else if (variableElement.setter != null) {
+        el = variableElement.setter;
+      } else {
+        el = variableElement;
       }
     } else {
       el = element;
     }
-    return _libraries.any((lib) => lib.hasInNamespace(el));
+    //debugger(when: element.name == 'NAME_WITH_TWO_UNDERSCORES');
+    return _libraries.firstWhere((lib) => lib.hasInNamespace(el),
+        orElse: () => null);
   }
+
+  bool isDocumented(Element element) => findLibraryFor(element) != null;
 
   String get href => 'index.html';
 
@@ -682,9 +700,8 @@ class Library extends ModelElement {
   }
 
   List<Class> get classes {
-    return _allClasses
-        .where((c) => !c.isErrorOrException)
-        .toList(growable: false);
+    return _allClasses.where((c) => !c.isErrorOrException).toList(
+        growable: false);
   }
 
   List<Class> get allClasses => _allClasses;
@@ -781,9 +798,9 @@ class Class extends ModelElement {
   }
 
   List<TypeParameter> get _typeParameters => _cls.typeParameters.map((f) {
-        var lib = new Library(f.enclosingElement.library, package);
-        return new TypeParameter(f, lib);
-      }).toList();
+    var lib = new Library(f.enclosingElement.library, package);
+    return new TypeParameter(f, lib);
+  }).toList();
 
   String get kind => 'class';
 
@@ -1212,8 +1229,7 @@ class Enum extends Class {
 
   @override
   List<EnumField> get instanceProperties {
-    return super
-        .instanceProperties
+    return super.instanceProperties
         .map((Field p) => new EnumField(p.element, p.library))
         .toList(growable: false);
   }
@@ -1437,7 +1453,7 @@ class Constructor extends ModelElement {
   @override
   String get name {
     String constructorName = element.name;
-    Class c = enclosingElement;
+    Class c = enclosingClass;
     if (constructorName.isEmpty) {
       return c.name;
     } else {
@@ -1706,10 +1722,8 @@ class ElementType {
 
   ElementType get _returnType {
     var rt = (_type as FunctionType).returnType;
-    return new ElementType(
-        rt,
-        new ModelElement.from(rt.element,
-            new Library(_element.library.element, _element.package)));
+    return new ElementType(rt, new ModelElement.from(
+        rt.element, new Library(_element.library.element, _element.package)));
   }
 
   ModelElement get returnElement {
@@ -1723,9 +1737,9 @@ class ElementType {
 
   List<ElementType> get typeArguments =>
       (_type as ParameterizedType).typeArguments.map((f) {
-        var lib = new Library(f.element.library, _element.package);
-        return new ElementType(f, new ModelElement.from(f.element, lib));
-      }).toList();
+    var lib = new Library(f.element.library, _element.package);
+    return new ElementType(f, new ModelElement.from(f.element, lib));
+  }).toList();
 
   String get linkedName {
     if (_linkedName != null) return _linkedName;

@@ -24,7 +24,8 @@ else
   echo "Skipping SDK docs, because GEN_SDK_DOCS is $GEN_SDK_DOCS"
   echo ""
 
-  $(dirname -- "$0")/ensure_dartfmt.sh
+  # Turn this back on for dartdoc > 0.4.0
+  #$(dirname -- "$0")/ensure_dartfmt.sh
 
   # Verify that the libraries are error free.
   grind analyze

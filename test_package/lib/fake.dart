@@ -46,6 +46,8 @@ import 'dart:collection';
 
 import 'example.dart';
 
+import 'css.dart' as css;
+
 /// Useful for annotations.
 class Annotation {
   final String value;
@@ -83,6 +85,15 @@ const ConstantClass CUSTOM_CLASS = const ConstantClass('custom');
 ///
 /// Getting up in the morning can be hard.
 const String UP = 'up';
+
+const String NAME_SINGLEUNDERSCORE = 'yay bug hunting';
+
+const String NAME_WITH_TWO_UNDERSCORES = 'episode seven better be good';
+
+/// Testing [NAME_WITH_TWO_UNDERSCORES] should not be italicized.
+///
+/// This name should link correctly: [NAME_SINGLEUNDERSCORE]
+void short() {}
 
 /// Dynamic-typed down.
 @deprecated
@@ -375,8 +386,28 @@ class ExtraSpecialList<E> extends SpecialList {}
 class BaseForDocComments {
   /// Takes a [value] and returns a String.
   ///
-  /// This methods is inside of [BaseForDocComments]
+  /// This methods is inside of [BaseForDocComments] class xx
+  ///
+  /// Also [NAME_WITH_TWO_UNDERSCORES] which is a top-level const xx
+  ///
+  /// Also a single underscore: [NAME_SINGLEUNDERSCORE]
+  ///
+  /// Returns a [String] xx
+  ///
+  /// Reference to another method in this class [anotherMethod] xx
+  ///
+  /// Reference to a top-level function in this library [topLevelFunction] xx
+  ///
+  /// Reference to a top-level function in another library (example lib) [function1] xx
+  ///
+  /// Reference to a class in example lib [Apple] xx
+  ///
+  /// Reference to a top-level const in another library [incorrectDocReference] xx
+  ///
+  /// Reference to prefixed-name from another lib [css.theOnlyThingInTheLibrary] xx
   String doAwesomeStuff(int value) => null;
+
+  void anotherMethod() {}
 }
 
 /// Testing if docs for inherited method are correct.
