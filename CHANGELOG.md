@@ -1,5 +1,13 @@
-## Unreleased
+## 0.4.0
 * Print the name of the thing above the right nav list
+* Numerous fixes, tests, and cleanups to the code
+* fix: top-level consts are linked correctly from doc references
+* fix: if a doc comment cannot be resolved, it is wrapped in a code element
+* fix: links generated on the Enum page
+* fix: background is dark when left drawer is open
+* fix: better error message when running dartdoc on empty directory
+* fix: don't show left drawer toggle on homescreen
+* fix: docs for a class that extends List showed double methods
 
 ## 0.3.0
 * new: left nav now animates in on mobile
