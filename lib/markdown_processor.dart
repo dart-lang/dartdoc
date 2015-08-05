@@ -22,8 +22,6 @@ import 'package:markdown/markdown.dart' as md;
 import 'src/html_utils.dart' show htmlEscape;
 import 'src/model.dart';
 
-import 'src/debug.dart';
-
 final List<md.InlineSyntax> _markdown_syntaxes = [new _InlineCodeSyntax()];
 
 // We don't emit warnings currently: #572.
@@ -86,7 +84,6 @@ class Documentation {
 
 String renderMarkdownToHtml(String text, [ModelElement element]) {
   md.Node _linkResolver(String name) {
-    debugger(when: element != null && element.name == 'doAwesomeStuff');
     NodeList<CommentReference> commentRefs = _getCommentRefs(element);
     return new md.Text(_linkDocReference(name, element, commentRefs));
   }
@@ -149,7 +146,6 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
 String _getMatchingLink(
     String codeRef, ModelElement element, List<CommentReference> commentRefs,
     {bool isConstructor: false}) {
-  debugger(when: element != null && element.name == 'doAwesomeStuff');
   if (commentRefs == null) return null;
 
   Element refElement;

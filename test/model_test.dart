@@ -228,9 +228,19 @@ void main() {
             '<a href="fake/BaseForDocComments-class.html">BaseForDocComments</a>'));
       });
 
-      test('links to a reference to a top-level const', () {
+      test(
+          'links to a reference to a top-level const with multiple underscores',
+          () {
         expect(
             docsAsHtml, contains('<a href="">NAME_WITH_TWO_UNDERSCORES</a>'));
+      }, skip: 'Wait for https://github.com/dart-lang/dartdoc/issues/768');
+
+      // remove this test when the above is fixed. just here to track when
+      // the behavior changes
+      test(
+          'literally renders a reference to a top-level const with multiple underscores',
+          () {
+        expect(docsAsHtml, contains('[NAME_WITH_TWO_UNDERSCORES]'));
       });
 
       test('links to a method in this class', () {
@@ -263,20 +273,24 @@ void main() {
             contains('<a href="">css.theOnlyThingInTheLibrary</a>'));
       }, skip: 'Wait for https://github.com/dart-lang/dartdoc/issues/767 to be fixed');
 
+      // remove this test when the above test is fixed. just here to
+      // track when the behavior changes
       test('codeifies a prefixed top-level variable an imported lib', () {
         expect(docsAsHtml, contains(
             '<code class="prettyprint lang-dart">css.theOnlyThingInTheLibrary</code>'));
+      });
+
+      test('links to a name with a single underscore', () {
+        expect(docsAsHtml, contains(
+            '<a href="fake/NAME_SINGLEUNDERSCORE.html">NAME_SINGLEUNDERSCORE</a>'));
       });
     });
 
     test('multi-underscore names in brackets do not become italicized', () {
       expect(short.documentation, contains('[NAME_WITH_TWO_UNDERSCORES]'));
-      expect(short.documentation, contains('[NAME_SINGLEUNDERSCORE]'));
       expect(short.documentationAsHtml, contains(
           '<a href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
-      expect(short.documentationAsHtml, contains(
-          '<a href="fake/NAME_SINGLEUNDERSCORE.html">NAME_SINGLEUNDERSCORE</a>'));
-    });
+    }, skip: 'Wait for https://github.com/dart-lang/dartdoc/issues/768');
 
     test('still has brackets inside code blocks', () {
       expect(topLevelFunction.documentationAsHtml,

@@ -386,23 +386,25 @@ class ExtraSpecialList<E> extends SpecialList {}
 class BaseForDocComments {
   /// Takes a [value] and returns a String.
   ///
-  /// This methods is inside of [BaseForDocComments] class
+  /// This methods is inside of [BaseForDocComments] class xx
   ///
-  /// Also [NAME_WITH_TWO_UNDERSCORES] which is a top-level const
+  /// Also [NAME_WITH_TWO_UNDERSCORES] which is a top-level const xx
   ///
-  /// Returns a [String]
+  /// Also a single underscore: [NAME_SINGLEUNDERSCORE]
   ///
-  /// Reference to another method in this class [anotherMethod]
+  /// Returns a [String] xx
   ///
-  /// Reference to a top-level function in this library [topLevelFunction]
+  /// Reference to another method in this class [anotherMethod] xx
   ///
-  /// Reference to a top-level function in another library (example lib) [function1]
+  /// Reference to a top-level function in this library [topLevelFunction] xx
   ///
-  /// Reference to a class in example lib [Apple]
+  /// Reference to a top-level function in another library (example lib) [function1] xx
   ///
-  /// Reference to a top-level const in another library [incorrectDocReference]
+  /// Reference to a class in example lib [Apple] xx
   ///
-  /// Reference to prefixed-name from another lib [css.theOnlyThingInTheLibrary]
+  /// Reference to a top-level const in another library [incorrectDocReference] xx
+  ///
+  /// Reference to prefixed-name from another lib [css.theOnlyThingInTheLibrary] xx
   String doAwesomeStuff(int value) => null;
 
   void anotherMethod() {}
