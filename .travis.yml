@@ -1,8 +1,8 @@
 language: dart
 sudo: false
-dart: 
+dart:
   - dev
-  - stable
+#  - stable
 env:
   - GEN_SDK_DOCS=true
   - GEN_SDK_DOCS=false

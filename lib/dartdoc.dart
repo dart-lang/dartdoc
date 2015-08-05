@@ -18,7 +18,6 @@ import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
 import 'generator.dart';
-import 'resource_loader.dart' as loader;
 import 'src/html_generator.dart';
 import 'src/io_utils.dart';
 import 'src/model.dart';
@@ -69,8 +68,6 @@ class DartDoc {
   /// unexpected failure.
   Future<DartDocResults> generateDocs() async {
     _stopwatch = new Stopwatch()..start();
-
-    if (packageRootDir != null) loader.packageRootPath = packageRootDir.path;
 
     List<String> files =
         packageMeta.isSdk ? [] : findFilesToDocumentInPackage(rootDir.path);
@@ -151,7 +148,7 @@ class DartDoc {
         if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
       }
       print('parsing ${name}...');
-      Source source = new FileBasedSource.con1(new JavaFile(filePath));
+      Source source = new FileBasedSource(new JavaFile(filePath));
       sources.add(source);
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);

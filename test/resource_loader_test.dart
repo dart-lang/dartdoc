@@ -4,29 +4,12 @@
 
 library dartdoc.resource_loader_test;
 
-import 'dart:io';
-
-import 'package:path/path.dart';
 import 'package:dartdoc/resource_loader.dart' as loader;
 import 'package:test/test.dart';
 
 void main() {
   group('Resource Loader', () {
     test('load from packages', () async {
-      var contents =
-          await loader.loadAsString('package:dartdoc/templates/index.html');
-      expect(contents, isNotNull);
-    });
-
-    test('package root setting', () {
-      var root = Directory.current;
-      loader.packageRootPath = root.path;
-      expect(loader.packageRootPath, equals(root.path));
-    });
-
-    test('load from packages with package root setting', () async {
-      var root = Directory.current;
-      loader.packageRootPath = join(root.path, 'packages');
       var contents =
           await loader.loadAsString('package:dartdoc/templates/index.html');
       expect(contents, isNotNull);
