@@ -227,19 +227,7 @@ class HtmlGeneratorInstance {
   void generatePackage() {
     // TODO: Should we add _this_ to the context and avoid putting stuff in the
     // map?
-    Map data = {
-      'package': package,
-      'documentation': package.documentation,
-      'title': '${package.name} - Dart API docs',
-      'layoutTitle':
-          _layoutTitle(package.name, package.isSdk ? '' : 'package', false),
-      'metaDescription':
-          '${package.name} API docs, for the Dart programming language.',
-      'navLinks': [], // we're at the root
-      'subnavItems': _gatherSubnavForPackage(package),
-      'htmlBase': '.',
-      'self': package
-    };
+    var data = new PackageTemplateData(package);
 
     if (package.hasDocumentationFile) {
       FileContents readme = package.documentationFile;
@@ -256,85 +244,21 @@ class HtmlGeneratorInstance {
       print("  warning: library '${lib.name}' has no documentation");
     }
 
-    // TODO: Should we add _this_ to the context and avoid putting stuff in the
-    // map?
-    Map data = {
-      'package': package,
-      'library': lib,
-      'markdown': renderMarkdown,
-      'documentation': lib.documentation,
-      'oneLineDoc': lib.oneLineDoc,
-      'title': '${lib.name} library - Dart API',
-      'htmlBase': '..',
-      'metaDescription':
-          '${lib.name} library API docs, for the Dart programming language.',
-      'navLinks': [package],
-      'subnavItems': _gatherSubnavForLibrary(lib),
-      'layoutTitle': _layoutTitle(lib.name, 'library', lib.isDeprecated),
-      'self': lib
-    };
+    var data = new LibraryTemplateData(package, lib);
 
     _build(path.join(lib.dirName, '${lib.fileName}'),
         _templates.libraryTemplate, data);
   }
 
-  Class get objectType {
-    if (_objectType != null) {
-      return _objectType;
-    }
-
-    Library dc = package.libraries.firstWhere((it) => it.name == "dart:core",
-        orElse: () => null);
-
-    if (dc == null) {
-      return _objectType = null;
-    }
-
-    return _objectType = dc.getClassByName("Object");
-  }
-
-  Class _objectType;
-
   void generateClass(Package package, Library lib, Class clazz) {
-    Map data = {
-      'package': package,
-      'markdown': renderMarkdown,
-      'documentation': clazz.documentation,
-      'oneLineDoc': clazz.oneLineDoc,
-      'library': lib,
-      'class': clazz,
-      'linkedObjectType': objectType == null ? 'Object' : objectType.linkedName,
-      'title': '${clazz.name} ${clazz.kind} - ${lib.name} library - Dart API',
-      'metaDescription':
-          'API docs for the ${clazz.name} ${clazz.kind} from the ${lib.name} library, for the Dart programming language.',
-      'layoutTitle':
-          _layoutTitle(clazz.nameWithGenerics, clazz.kind, clazz.isDeprecated),
-      'navLinks': [package, lib],
-      'subnavItems': _gatherSubnavForClass(clazz),
-      'htmlBase': '..',
-      'self': clazz
-    };
+    var data = new ClassTemplateData(package, lib, clazz);
 
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
 
   void generateConstructor(
       Package package, Library lib, Class clazz, Constructor constructor) {
-    Map data = {
-      'package': package,
-      'markdown': renderMarkdown,
-      'documentation': constructor.documentation,
-      'oneLineDoc': constructor.oneLineDoc,
-      'library': lib,
-      'class': clazz,
-      'constructor': constructor,
-      'layoutTitle': _layoutTitle(
-          constructor.name, 'constructor', constructor.isDeprecated),
-      'navLinks': [package, lib, clazz],
-      'subnavItems': _gatherSubnavForInvokable(constructor),
-      'htmlBase': '../..',
-      'self': constructor
-    };
+    var data = new ConstructorTemplateData(package, lib, clazz, constructor);
 
     _build(path.joinAll(constructor.href.split('/')),
         _templates.constructorTemplate, data);
@@ -534,7 +458,7 @@ class HtmlGeneratorInstance {
       var destFileName = resourcePath.substring(prefix.length);
       var destFile =
           new File(path.join(out.path, 'static-assets', destFileName))
-        ..createSync(recursive: true);
+            ..createSync(recursive: true);
       var resourceBytes = await loader.loadAsBytes(resourcePath);
       destFile.writeAsBytesSync(resourceBytes);
     }
@@ -569,28 +493,6 @@ class Subnav {
   String toString() => name;
 }
 
-List<Subnav> _gatherSubnavForPackage(Package package) {
-  return [new Subnav('Libraries', '${package.href}#libraries')];
-}
-
-List<Subnav> _gatherSubnavForLibrary(Library lib) {
-  List<Subnav> navs = [];
-
-  if (lib.hasConstants) navs
-      .add(new Subnav('Constants', '${lib.href}#constants'));
-  if (lib.hasTypedefs) navs.add(new Subnav('Typedefs', '${lib.href}#typedefs'));
-  if (lib.hasProperties) navs
-      .add(new Subnav('Properties', '${lib.href}#properties'));
-  if (lib.hasFunctions) navs
-      .add(new Subnav('Functions', '${lib.href}#functions'));
-  if (lib.hasEnums) navs.add(new Subnav('Enums', '${lib.href}#enums'));
-  if (lib.hasClasses) navs.add(new Subnav('Classes', '${lib.href}#classes'));
-  if (lib.hasExceptions) navs
-      .add(new Subnav('Exceptions', '${lib.href}#exceptions'));
-
-  return navs;
-}
-
 List<Subnav> _gatherSubnavForClass(Class clazz) {
   List<Subnav> navs = [];
 
@@ -621,14 +523,6 @@ List<Subnav> _gatherSubnavForInvokable(ModelElement element) {
   }
 }
 
-String _layoutTitle(String name, String kind, bool isDeprecated) {
-  if (kind.isEmpty) kind =
-      '&nbsp;'; // Ugly. fixes https://github.com/dart-lang/dartdoc/issues/695
-  String str = '<div class="kind">$kind</div>';
-  if (!isDeprecated) return '${str} ${name}';
-  return '${str} <span class="deprecated">$name</span>';
-}
-
 /// Converts a markdown formatted string into HTML, and removes any script tags.
 /// Returns the HTML as a string.
 String renderMarkdown(String markdown) => renderMarkdownToHtml(markdown);
@@ -638,4 +532,161 @@ String renderPlainText(String text) {
   if (text == null) return '';
 
   return "<code class='fixed'>${text.trim()}</code>";
+}
+
+abstract class TemplateData {
+  Package _package;
+
+  TemplateData(this._package);
+
+  Package get package => _package;
+  String get documentation => self.documentation;
+  String get oneLineDoc => self.oneLineDoc;
+  String get title;
+  String get layoutTitle;
+  String get metaDescription;
+  List get navLinks => [];
+  List<Subnav> get subnavItems;
+  String get htmlBase;
+  dynamic get self;
+  String get version => '';
+  Function get markdown => renderMarkdown;
+
+  String _layoutTitle(String name, String kind, bool isDeprecated) {
+    if (kind.isEmpty) kind =
+        '&nbsp;'; // Ugly. fixes https://github.com/dart-lang/dartdoc/issues/695
+    String str = '<div class="kind">$kind</div>';
+    if (!isDeprecated) return '${str} ${name}';
+    return '${str} <span class="deprecated">$name</span>';
+  }
+}
+
+class PackageTemplateData extends TemplateData {
+  PackageTemplateData(Package package) : super(package);
+
+  String get title => '${package.name} - Dart API docs';
+  Package get self => package;
+  String get layoutTitle =>
+      _layoutTitle(package.name, package.isSdk ? '' : 'package', false);
+  String get metaDescription =>
+      '${package.name} API docs, for the Dart programming language.';
+  List<Subnav> get subnavItems =>
+      [new Subnav('Libraries', '${package.href}#libraries')];
+  String get htmlBase => '.';
+}
+
+class LibraryTemplateData extends TemplateData {
+  Library _library;
+
+  LibraryTemplateData(Package package, this._library) : super(package);
+
+  String get title => '${_library.name} library - Dart API';
+  Library get library => _library;
+  String get documentation => _library.documentation;
+  String get htmlBase => '..';
+  String get metaDescription =>
+      '${_library.name} library API docs, for the Dart programming language.';
+  List get navLinks => [package];
+  List<Subnav> get subnavItems {
+    List<Subnav> navs = [];
+
+    if (_library.hasConstants) navs
+        .add(new Subnav('Constants', '${_library.href}#constants'));
+    if (_library.hasTypedefs) navs
+        .add(new Subnav('Typedefs', '${_library.href}#typedefs'));
+    if (_library.hasProperties) navs
+        .add(new Subnav('Properties', '${_library.href}#properties'));
+    if (_library.hasFunctions) navs
+        .add(new Subnav('Functions', '${_library.href}#functions'));
+    if (_library.hasEnums) navs
+        .add(new Subnav('Enums', '${_library.href}#enums'));
+    if (_library.hasClasses) navs
+        .add(new Subnav('Classes', '${_library.href}#classes'));
+    if (_library.hasExceptions) navs
+        .add(new Subnav('Exceptions', '${_library.href}#exceptions'));
+
+    return navs;
+  }
+
+  String get layoutTitle =>
+      _layoutTitle(_library.name, 'library', _library.isDeprecated);
+  Library get self => _library;
+}
+
+class ClassTemplateData extends TemplateData {
+  Class _clazz;
+  Library _library;
+  Class _objectType;
+
+  ClassTemplateData(Package package, this._library, this._clazz)
+      : super(package);
+
+  Class get self => _clazz;
+  Library get library => _library;
+  Class get clazz => _clazz;
+  String get linkedObjectType =>
+      objectType == null ? 'Object' : objectType.linkedName;
+  String get title =>
+      '${clazz.name} ${clazz.kind} - ${_library.name} library - Dart API';
+  String get metaDescription =>
+      'API docs for the ${clazz.name} ${clazz.kind} from the ${_library.name} library, for the Dart programming language.';
+  String get layoutTitle =>
+      _layoutTitle(clazz.nameWithGenerics, clazz.kind, clazz.isDeprecated);
+  List get navLinks => [package, _library];
+  String get htmlBase => '..';
+  List<Subnav> get subnavItems {
+    List<Subnav> navs = [];
+
+    if (clazz.hasConstants) navs
+        .add(new Subnav('Constants', '${clazz.href}#constants'));
+    if (clazz.hasStaticProperties) navs.add(
+        new Subnav('Static Properties', '${clazz.href}#static-properties'));
+    if (clazz.hasStaticMethods) navs
+        .add(new Subnav('Static Methods', '${clazz.href}#static-methods'));
+    if (clazz.hasInstanceProperties) navs
+        .add(new Subnav('Properties', '${clazz.href}#instance-properties'));
+    if (clazz.hasConstructors) navs
+        .add(new Subnav('Constructors', '${clazz.href}#constructors'));
+    if (clazz.hasOperators) navs
+        .add(new Subnav('Operators', '${clazz.href}#operators'));
+    if (clazz.hasInstanceMethods) navs
+        .add(new Subnav('Methods', '${clazz.href}#instance-methods'));
+
+    return navs;
+  }
+
+  Class get objectType {
+    if (_objectType != null) {
+      return _objectType;
+    }
+
+    Library dc = package.libraries
+        .firstWhere((it) => it.name == "dart:core", orElse: () => null);
+
+    if (dc == null) {
+      return _objectType = null;
+    }
+
+    return _objectType = dc.getClassByName("Object");
+  }
+}
+
+class ConstructorTemplateData extends TemplateData {
+  Library _library;
+  Class _class;
+  Constructor _constructor;
+
+  ConstructorTemplateData(
+      Package package, this._library, this._class, this._constructor)
+      : super(package);
+
+  Constructor get self => _constructor;
+  Library get library => _library;
+  Class get clazz => _class;
+  Constructor get constructor => _constructor;
+  String get layoutTitle =>
+      _layoutTitle(constructor.name, 'constructor', constructor.isDeprecated);
+  List get navLinks => [package, _library, clazz];
+  List<Subnav> get subnavLinks => _gatherSubnavForInvokable(constructor);
+  String get htmlBase => '../..';
 }
