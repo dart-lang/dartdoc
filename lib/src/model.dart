@@ -11,7 +11,6 @@ import 'package:analyzer/src/generated/resolver.dart';
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:quiver/core.dart';
 
-import 'debug.dart';
 import 'html_utils.dart';
 import 'model_utils.dart';
 import 'package_meta.dart';

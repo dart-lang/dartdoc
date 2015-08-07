@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// TODO: Consider making this a stand-alone package, if useful.
-
 /// Make it possible to load resources, independent of how the Dart app is run.
 ///
 ///     Future<String> getTemplateFile(String templatePath) {
@@ -14,7 +12,7 @@ library dartdoc.resource_loader;
 
 import 'dart:async' show Future;
 import 'dart:io' show Platform, File, Directory;
-import 'dart:typed_data';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
@@ -24,20 +22,27 @@ import 'package:pub_cache/pub_cache.dart';
 String packageRootPath;
 
 /// Loads a `package:` resource as a String.
-Future<String> loadAsString(String path) async {
+Future<String> loadAsString(String path) {
   if (!path.startsWith('package:')) {
     throw new ArgumentError('path must begin with package:');
   }
-  Uint8List bytes = await _doLoad(path);
-  return new String.fromCharCodes(bytes);
+  return new Resource(path).readAsString().catchError((_) async {
+    // TODO: Remove once https://github.com/dart-lang/pub/issues/22 is fixed.
+    var bytes = await _doLoad(path);
+    return new String.fromCharCodes(bytes);
+  });
 }
 
-/// Loads a `package:` resource as an [Uint8List].
-Future<Uint8List> loadAsBytes(String path) {
+/// Loads a `package:` resource as an [List<int>].
+Future<List<int>> loadAsBytes(String path) {
   if (!path.startsWith('package:')) {
     throw new ArgumentError('path must begin with package:');
   }
-  return _doLoad(path);
+
+  return new Resource(path).readAsBytes().catchError((_) {
+    // TODO: Remove once https://github.com/dart-lang/pub/issues/22 is fixed.
+    return _doLoad(path);
+  });
 }
 
 /// Determine how to do the load. HTTP? Snapshotted? From source?
