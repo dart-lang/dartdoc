@@ -297,8 +297,8 @@ abstract class ModelElement implements Comparable {
           buf.write(' <span class="parameter-name">${p.name}</span>');
         }
         buf.write('(');
-        buf.write(p.modelType.element.linkedParams(
-            showNames: showNames, showMetadata: showMetadata));
+        buf.write(p.modelType.element
+            .linkedParams(showNames: showNames, showMetadata: showMetadata));
         buf.write(')');
       } else if (p.modelType != null && p.modelType.element != null) {
         var mt = p.modelType;
@@ -638,11 +638,9 @@ class Library extends ModelElement {
     elements.addAll(_exportedNamespace
         .where((element) => element is FunctionTypeAliasElement));
     elements..removeWhere(isPrivate);
-    _typeDefs =
-        elements.map((e) => new Typedef(e, this)).toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_typeDefs.isNotEmpty) _typeDefs.sort(byName);
+    _typeDefs = elements
+        .map((e) => new Typedef(e, this))
+        .toList(growable: false)..sort(byName);
 
     return _typeDefs;
   }
@@ -663,10 +661,7 @@ class Library extends ModelElement {
     elements..removeWhere(isPrivate);
     _functions = elements.map((e) {
       return new ModelFunction(e, this);
-    }).toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_functions.isNotEmpty) _functions.sort(byName);
+    }).toList(growable: false)..sort(byName);
 
     return _functions;
   }
@@ -700,8 +695,9 @@ class Library extends ModelElement {
   }
 
   List<Class> get classes {
-    return _allClasses.where((c) => !c.isErrorOrException).toList(
-        growable: false);
+    return _allClasses
+        .where((c) => !c.isErrorOrException)
+        .toList(growable: false);
   }
 
   List<Class> get allClasses => _allClasses;
@@ -798,9 +794,9 @@ class Class extends ModelElement {
   }
 
   List<TypeParameter> get _typeParameters => _cls.typeParameters.map((f) {
-    var lib = new Library(f.enclosingElement.library, package);
-    return new TypeParameter(f, lib);
-  }).toList();
+        var lib = new Library(f.enclosingElement.library, package);
+        return new TypeParameter(f, lib);
+      }).toList();
 
   String get kind => 'class';
 
@@ -1229,7 +1225,8 @@ class Enum extends Class {
 
   @override
   List<EnumField> get instanceProperties {
-    return super.instanceProperties
+    return super
+        .instanceProperties
         .map((Field p) => new EnumField(p.element, p.library))
         .toList(growable: false);
   }
@@ -1722,8 +1719,10 @@ class ElementType {
 
   ElementType get _returnType {
     var rt = (_type as FunctionType).returnType;
-    return new ElementType(rt, new ModelElement.from(
-        rt.element, new Library(_element.library.element, _element.package)));
+    return new ElementType(
+        rt,
+        new ModelElement.from(rt.element,
+            new Library(_element.library.element, _element.package)));
   }
 
   ModelElement get returnElement {
@@ -1737,9 +1736,9 @@ class ElementType {
 
   List<ElementType> get typeArguments =>
       (_type as ParameterizedType).typeArguments.map((f) {
-    var lib = new Library(f.element.library, _element.package);
-    return new ElementType(f, new ModelElement.from(f.element, lib));
-  }).toList();
+        var lib = new Library(f.element.library, _element.package);
+        return new ElementType(f, new ModelElement.from(f.element, lib));
+      }).toList();
 
   String get linkedName {
     if (_linkedName != null) return _linkedName;
