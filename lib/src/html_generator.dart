@@ -687,6 +687,10 @@ class ConstructorTemplateData extends TemplateData {
   String get layoutTitle =>
       _layoutTitle(constructor.name, 'constructor', constructor.isDeprecated);
   List get navLinks => [package, _library, clazz];
-  List<Subnav> get subnavLinks => _gatherSubnavForInvokable(constructor);
+  List<Subnav> get subnavItems => _gatherSubnavForInvokable(constructor);
   String get htmlBase => '../..';
+  String get title =>
+      '${constructor.name} constructor - ${clazz.name} class - ${_library.name} library - Dart API';
+  String get metaDescription =>
+      'API docs for the ${constructor.name} constructor from the ${clazz} class from the ${_library.name} library, for the Dart programming language.';
 }
