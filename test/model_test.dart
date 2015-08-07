@@ -34,7 +34,8 @@ void main() {
     exit(1);
   }
 
-  Package sdkAsPackage = new Package(getSdkLibrariesToDocument(
+  Package sdkAsPackage = new Package(
+      getSdkLibrariesToDocument(
           testUtils.sdkDir, testUtils.analyzerHelper.context),
       new PackageMeta.fromSdk(sdkDir));
 
@@ -93,7 +94,8 @@ void main() {
     Library dartAsyncLib;
 
     setUp(() {
-      dartAsyncLib = new Library(getSdkLibrariesToDocument(
+      dartAsyncLib = new Library(
+          getSdkLibrariesToDocument(
               testUtils.sdkDir, testUtils.analyzerHelper.context).first,
           sdkAsPackage);
 
@@ -224,33 +226,33 @@ void main() {
       });
 
       test('links to a reference to its class', () {
-        expect(docsAsHtml, contains(
-            '<a href="fake/BaseForDocComments-class.html">BaseForDocComments</a>'));
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="fake/BaseForDocComments-class.html">BaseForDocComments</a>'));
       });
 
       test(
           'links to a reference to a top-level const with multiple underscores',
           () {
         expect(
-            docsAsHtml, contains('<a href="">NAME_WITH_TWO_UNDERSCORES</a>'));
-      }, skip: 'Wait for https://github.com/dart-lang/dartdoc/issues/768');
-
-      // remove this test when the above is fixed. just here to track when
-      // the behavior changes
-      test(
-          'literally renders a reference to a top-level const with multiple underscores',
-          () {
-        expect(docsAsHtml, contains('[NAME_WITH_TWO_UNDERSCORES]'));
+            docsAsHtml,
+            contains(
+                '<a href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
       });
 
       test('links to a method in this class', () {
-        expect(docsAsHtml, contains(
-            '<a href="fake/BaseForDocComments/anotherMethod.html">anotherMethod</a>'));
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="fake/BaseForDocComments/anotherMethod.html">anotherMethod</a>'));
       });
 
       test('links to a top-level function in this library', () {
-        expect(docsAsHtml, contains(
-            '<a href="fake/topLevelFunction.html">topLevelFunction</a>'));
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="fake/topLevelFunction.html">topLevelFunction</a>'));
       });
 
       test('links to top-level function from an imported library', () {
@@ -263,34 +265,44 @@ void main() {
       });
 
       test('links to a top-level const from an imported lib', () {
-        expect(docsAsHtml, contains(
-            '<a href="fake/incorrectDocReference.html">incorrectDocReference</a>'));
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="fake/incorrectDocReference.html">incorrectDocReference</a>'));
       });
 
       test('links to a top-level variable with a prefix from an imported lib',
           () {
         expect(docsAsHtml,
             contains('<a href="">css.theOnlyThingInTheLibrary</a>'));
-      }, skip: 'Wait for https://github.com/dart-lang/dartdoc/issues/767 to be fixed');
+      },
+          skip:
+              'Wait for https://github.com/dart-lang/dartdoc/issues/767 to be fixed');
 
       // remove this test when the above test is fixed. just here to
       // track when the behavior changes
       test('codeifies a prefixed top-level variable an imported lib', () {
-        expect(docsAsHtml, contains(
-            '<code class="prettyprint lang-dart">css.theOnlyThingInTheLibrary</code>'));
+        expect(
+            docsAsHtml,
+            contains(
+                '<code class="prettyprint lang-dart">css.theOnlyThingInTheLibrary</code>'));
       });
 
       test('links to a name with a single underscore', () {
-        expect(docsAsHtml, contains(
-            '<a href="fake/NAME_SINGLEUNDERSCORE.html">NAME_SINGLEUNDERSCORE</a>'));
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="fake/NAME_SINGLEUNDERSCORE.html">NAME_SINGLEUNDERSCORE</a>'));
       });
     });
 
     test('multi-underscore names in brackets do not become italicized', () {
       expect(short.documentation, contains('[NAME_WITH_TWO_UNDERSCORES]'));
-      expect(short.documentationAsHtml, contains(
-          '<a href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
-    }, skip: 'Wait for https://github.com/dart-lang/dartdoc/issues/768');
+      expect(
+          short.documentationAsHtml,
+          contains(
+              '<a href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
+    });
 
     test('still has brackets inside code blocks', () {
       expect(topLevelFunction.documentationAsHtml,
@@ -301,8 +313,10 @@ void main() {
         () {
       Method add =
           specialList.allInstanceMethods.firstWhere((m) => m.name == 'add');
-      expect(add.oneLineDoc, equals(
-          'Adds <code class="prettyprint lang-dart">value</code> to the end of this list,\nextending the length by one.'));
+      expect(
+          add.oneLineDoc,
+          equals(
+              'Adds <code class="prettyprint lang-dart">value</code> to the end of this list,\nextending the length by one.'));
     });
 
     test(
@@ -310,8 +324,10 @@ void main() {
         () {
       Method add =
           specialList.allInstanceMethods.firstWhere((m) => m.name == 'add');
-      expect(add.documentationAsHtml, startsWith(
-          '<p>Adds <code class="prettyprint lang-dart">value</code> to the end of this list,\nextending the length by one.'));
+      expect(
+          add.documentationAsHtml,
+          startsWith(
+              '<p>Adds <code class="prettyprint lang-dart">value</code> to the end of this list,\nextending the length by one.'));
     });
 
     test('incorrect doc references are still wrapped in code blocks', () {
@@ -330,8 +346,10 @@ void main() {
     });
 
     test('doc ref to class in SDK does not render as link', () {
-      expect(thisIsAsync.documentationAsHtml, equals(
-          '<p>An async function. It should look like I return a <code class="prettyprint lang-dart">Future</code>.</p>'));
+      expect(
+          thisIsAsync.documentationAsHtml,
+          equals(
+              '<p>An async function. It should look like I return a <code class="prettyprint lang-dart">Future</code>.</p>'));
     });
 
     test('references are correct in exported libraries', () {
@@ -341,8 +359,10 @@ void main() {
       expect(resolved, isNotNull);
       expect(resolved,
           contains('<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
-      expect(resolved, contains(
-          'linking over to <code class="prettyprint lang-dart">Apple</code>.'));
+      expect(
+          resolved,
+          contains(
+              'linking over to <code class="prettyprint lang-dart">Apple</code>.'));
     });
 
     test('references to class and constructors', () {
@@ -351,8 +371,10 @@ void main() {
           contains('Extends class <a href="ex/Apple-class.html">Apple</a>'));
       expect(
           comment, contains('use <a href="ex/Apple/Apple.html">new Apple</a>'));
-      expect(comment, contains(
-          '<a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'));
+      expect(
+          comment,
+          contains(
+              '<a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'));
     });
 
     test('reference to class from another library', () {
@@ -362,13 +384,17 @@ void main() {
 
     test('reference to method', () {
       String comment = foo2.documentationAsHtml;
-      expect(comment, equals(
-          '<p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>'));
+      expect(
+          comment,
+          equals(
+              '<p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>'));
     });
 
     test('legacy code blocks render correctly', () {
-      expect(testingCodeSyntaxInOneLiners.oneLineDoc, equals(
-          'These are code syntaxes: <code class="prettyprint lang-dart">true</code> and <code class="prettyprint lang-dart">false</code>'));
+      expect(
+          testingCodeSyntaxInOneLiners.oneLineDoc,
+          equals(
+              'These are code syntaxes: <code class="prettyprint lang-dart">true</code> and <code class="prettyprint lang-dart">false</code>'));
     });
 
     test('doc comments to parameters are marked as code', () {
@@ -493,8 +519,8 @@ void main() {
 
     test('exported class should have linkedReturnType for the current library',
         () {
-      Method toUTC = DT.instanceMethods.firstWhere((m) => m.name == 'toUtc',
-          orElse: () => null);
+      Method toUTC = DT.instanceMethods
+          .firstWhere((m) => m.name == 'toUtc', orElse: () => null);
       expect(toUTC, isNotNull);
       expect(toUTC.linkedReturnType,
           equals('<a href="ex/DateTime-class.html">DateTime</a>'));
@@ -626,10 +652,14 @@ void main() {
     test('async function', () {
       expect(thisIsAsync.isAsynchronous, isTrue);
       expect(thisIsAsync.linkedReturnType, equals('Future'));
-      expect(thisIsAsync.documentation, equals(
-          'An async function. It should look like I return a [Future].'));
-      expect(thisIsAsync.documentationAsHtml, equals(
-          '<p>An async function. It should look like I return a <code class="prettyprint lang-dart">Future</code>.</p>'));
+      expect(
+          thisIsAsync.documentation,
+          equals(
+              'An async function. It should look like I return a [Future].'));
+      expect(
+          thisIsAsync.documentationAsHtml,
+          equals(
+              '<p>An async function. It should look like I return a <code class="prettyprint lang-dart">Future</code>.</p>'));
     });
 
     test('docs do not lose brackets in code blocks', () {
@@ -637,8 +667,10 @@ void main() {
     });
 
     test('has source code', () {
-      expect(topLevelFunction.sourceCode, startsWith(
-          '/// Top-level function 3 params and 1 optional positional param.'));
+      expect(
+          topLevelFunction.sourceCode,
+          startsWith(
+              '/// Top-level function 3 params and 1 optional positional param.'));
       expect(topLevelFunction.sourceCode, endsWith('''
 String topLevelFunction(int param1, bool param2, Cool coolBeans,
     [double optionalPositional = 0.0]) {
@@ -658,7 +690,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.classes.singleWhere((c) => c.name == 'HasGenerics');
       m = classB.instanceMethods.first;
       isGreaterThan = exLibrary.classes
-              .singleWhere((c) => c.name == 'Apple').instanceMethods
+          .singleWhere((c) => c.name == 'Apple')
+          .instanceMethods
           .singleWhere((m) => m.name == 'isGreaterThan');
       m4 = classB.instanceMethods[1];
       m5 = klass.instanceMethods.singleWhere((m) => m.name == 'another');
@@ -722,8 +755,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       onlySetter = LongFirstLine.instanceProperties
           .firstWhere((p) => p.name == 'onlySetter');
 
-      lengthX = fakeLibrary.classes.firstWhere(
-              (c) => c.name == 'WithGetterAndSetter').allInstanceProperties
+      lengthX = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'WithGetterAndSetter')
+          .allInstanceProperties
           .firstWhere((c) => c.name == 'lengthX');
     });
 
@@ -857,7 +891,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     setUp(() {
       fList = exLibrary.classes
-              .firstWhere((c) => c.name == 'B').instanceProperties
+          .firstWhere((c) => c.name == 'B')
+          .instanceProperties
           .singleWhere((p) => p.name == 'list');
     });
 
@@ -894,7 +929,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       isGreaterThan =
           c.instanceMethods.singleWhere((m) => m.name == 'isGreaterThan');
       asyncM = exLibrary.classes
-              .firstWhere((c) => c.name == 'Dog').instanceMethods
+          .firstWhere((c) => c.name == 'Dog')
+          .instanceMethods
           .firstWhere((m) => m.name == 'foo');
       intNumber = isGreaterThan.parameters.first;
       intCheckOptional = isGreaterThan.parameters.last;
@@ -1007,8 +1043,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () => expect(forAnnotation.annotations, hasLength(1)));
 
     test('has the right annotation', () {
-      expect(forAnnotation.annotations.first, equals(
-          '<a href="ex/ForAnnotation-class.html">ForAnnotation</a>(\'my value\')'));
+      expect(
+          forAnnotation.annotations.first,
+          equals(
+              '<a href="ex/ForAnnotation-class.html">ForAnnotation</a>(\'my value\')'));
     });
 
     test('methods has the right annotation', () {
