@@ -14,7 +14,7 @@ library dartdoc.resource_loader;
 
 import 'dart:async' show Future;
 import 'dart:io' show Platform, File, Directory;
-import 'dart:typed_data';
+import 'dart:typed_data' show Uint8List;
 
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
