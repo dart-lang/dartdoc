@@ -4,7 +4,7 @@
 
 install:
   # Investigate scoop?
-  - choco install -y dart-sdk -version 1.11.0
+  - choco install -y dart-sdk -version 1.11.1
   - set PATH=%PATH%;C:\tools\dart-sdk\bin
   - set PATH=%PATH%;%APPDATA%\Pub\Cache\bin
   - pub get
