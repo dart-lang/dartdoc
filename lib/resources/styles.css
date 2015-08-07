@@ -131,11 +131,12 @@ pre {
   font-family: 'Source Code Pro', monospace;
   color: black;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 13px;
   word-wrap: normal;
   line-height: 1.4;
+  background: #f7f7f7;
   border: 1px solid #f0f0f0;
-  margin: 16px;
+  margin: 16px 0 16px 0;
   padding: 8px;
 }
 
@@ -606,10 +607,6 @@ button {
 }
 
 /* source code method bodies */
-
-.source-code pre {
-  margin: 16px 0 16px 0;
-}
 
 #overlay-under-drawer {
   display: none;
