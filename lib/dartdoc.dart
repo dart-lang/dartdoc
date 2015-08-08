@@ -159,7 +159,7 @@ class DartDoc {
         if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
       }
       print('parsing ${name}...');
-      Source source = new FileBasedSource.con1(new JavaFile(filePath));
+      Source source = new FileBasedSource(new JavaFile(filePath));
       sources.add(source);
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
