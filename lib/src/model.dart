@@ -525,6 +525,8 @@ class Library extends ModelElement {
         e.nameOffset == element.nameOffset;
   }
 
+  bool get isAnonymous => element.name == null || element.name.isEmpty;
+
   String get name {
     if (_name != null) return _name;
 

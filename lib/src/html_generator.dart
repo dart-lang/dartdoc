@@ -251,7 +251,7 @@ class HtmlGeneratorInstance {
   void generateLibrary(Package package, Library lib) {
     print('generating docs for library ${lib.name} from ${lib.path}...');
 
-    if (!lib.hasDocumentation) {
+    if (!lib.isAnonymous && !lib.hasDocumentation) {
       print("  warning: library '${lib.name}' has no documentation");
     }
 

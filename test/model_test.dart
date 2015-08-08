@@ -78,6 +78,16 @@ void main() {
         expect(sdkAsPackage.documentation,
             startsWith('Welcome to the Dart API reference doc'));
       });
+
+      test('has anonymous libraries', () {
+        expect(
+            package.libraries.where((lib) => lib.name == 'anonymous_library'),
+            hasLength(1));
+        expect(
+            package.libraries
+                .where((lib) => lib.name == 'another_anonymous_lib'),
+            hasLength(1));
+      });
     });
 
     group('test small package', () {
@@ -91,13 +101,16 @@ void main() {
   });
 
   group('Library', () {
-    Library dartAsyncLib;
+    Library dartAsyncLib, anonLib;
 
     setUp(() {
       dartAsyncLib = new Library(
           getSdkLibrariesToDocument(
               testUtils.sdkDir, testUtils.analyzerHelper.context).first,
           sdkAsPackage);
+
+      anonLib = package.libraries
+          .firstWhere((lib) => lib.name == 'anonymous_library');
 
       // Make sure the first library is dart:async
       expect(dartAsyncLib.name, 'dart:async');
@@ -151,12 +164,8 @@ void main() {
           exLibrary.functions.any((f) => f.name == 'helperFunction'), isFalse);
     });
 
-    test('anonymous libraries', () {
-      expect(package.libraries.where((lib) => lib.name == 'anonymous_library'),
-          hasLength(1));
-      expect(
-          package.libraries.where((lib) => lib.name == 'another_anonymous_lib'),
-          hasLength(1));
+    test('anonymous lib', () {
+      expect(anonLib.isAnonymous, isTrue);
     });
   });
 
