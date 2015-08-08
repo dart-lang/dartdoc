@@ -9,7 +9,12 @@ install:
   - set PATH=%PATH%;%APPDATA%\Pub\Cache\bin
   - pub get
 
+# this doesn't seem to be working
 build: off
+
+branches:
+  only:
+    - disable_builds_for_now
 
 test_script:
   - pub run grinder buildbot
