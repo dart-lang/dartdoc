@@ -19,7 +19,7 @@ import 'package:analyzer/src/generated/source_io.dart';
 
 import 'generator.dart';
 import 'resource_loader.dart' as loader;
-import 'src/html_generator.dart';
+import 'src/html_generator.dart' show dartdocVersion, HtmlGenerator;
 import 'src/io_utils.dart';
 import 'src/model.dart';
 import 'src/model_utils.dart';
@@ -37,6 +37,7 @@ final String defaultOutDir = 'doc${Platform.pathSeparator}api';
 /// Initialize and setup the generators.
 List<Generator> initGenerators(
     String url, String headerFilePath, String footerFilePath) {
+  dartdocVersion = version;
   return [
     new HtmlGenerator(url, header: headerFilePath, footer: footerFilePath)
   ];
@@ -57,8 +58,15 @@ class DartDoc {
 
   Stopwatch _stopwatch;
 
-  DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
-      this.outputDir, this.packageRootDir, this.packageMeta, this.urlMappings,
+  DartDoc(
+      this.rootDir,
+      this.excludes,
+      this.sdkDir,
+      this.generators,
+      this.outputDir,
+      this.packageRootDir,
+      this.packageMeta,
+      this.urlMappings,
       this.includes);
 
   /// Generate DartDoc documentation.
@@ -178,8 +186,8 @@ class DartDoc {
     }).where((_Error error) => error.isError).toList()..sort();
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
-    print(
-        "Parsed ${libraries.length} " "file${libraries.length == 1 ? '' : 's'} in "
+    print("Parsed ${libraries.length} "
+        "file${libraries.length == 1 ? '' : 's'} in "
         "${seconds.toStringAsFixed(1)} seconds.\n");
 
     if (errors.isNotEmpty) {
