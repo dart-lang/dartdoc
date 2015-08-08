@@ -5,7 +5,8 @@
 library dartdoc.html_generator;
 
 import 'dart:async' show Future;
-import 'dart:io';
+import 'dart:io' show Directory, File;
+import 'dart:convert' show JSON;
 import 'dart:typed_data' show Uint8List;
 
 import 'package:mustache4dart/mustache4dart.dart';
@@ -17,6 +18,7 @@ import 'resources.g.dart' as resources;
 import '../generator.dart';
 import '../markdown_processor.dart';
 import '../resource_loader.dart' as loader;
+import 'io_utils.dart' show createOutputFile;
 
 String dartdocVersion = 'unknown';
 
@@ -156,7 +158,7 @@ class HtmlGeneratorInstance {
   final Package package;
   final Directory out;
 
-  final List<String> _htmlFiles = [];
+  final List<ModelElement> documentedElements = [];
 
   HtmlGeneratorInstance(this.url, this._templates, this.package, this.out);
 
@@ -166,11 +168,23 @@ class HtmlGeneratorInstance {
 
     if (package != null) {
       _generateDocs();
+      _generateJson();
+      // TODO: generate sitemap
     }
 
-    //if (url != null) generateSiteMap();
-
     await _copyResources();
+  }
+
+  void _generateJson() {
+    File jsonFile = createOutputFile(out, 'index.json');
+    String json = JSON.encode(documentedElements.map((ModelElement e) {
+      Map data = {'name': e.name, 'href': e.href};
+      if (e is EnclosedElement) {
+        data['enclosedElementName'] =
+            (e as EnclosedElement).enclosingElement.name;
+      }
+    }).toList());
+    jsonFile.writeAsStringSync(json);
   }
 
   void _generateDocs() {
@@ -354,22 +368,16 @@ class HtmlGeneratorInstance {
     }
   }
 
-  File _createOutputFile(String filename) {
-    File f = new File(path.join(out.path, filename));
-    if (!f.existsSync()) f.createSync(recursive: true);
-    _htmlFiles.add(filename);
-    return f;
-  }
-
   void _build(String filename, TemplateRenderer template, TemplateData data) {
     String content = template(data,
         assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
     _writeFile(filename, content);
+    if (data.self is ModelElement) documentedElements.add(data.self);
   }
 
   void _writeFile(String filename, String content) {
-    File f = _createOutputFile(filename);
+    File f = createOutputFile(out, filename);
     f.writeAsStringSync(content);
   }
 }

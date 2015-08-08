@@ -9,6 +9,12 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 
+File createOutputFile(Directory destination, String filename) {
+  File f = new File(path.join(destination.path, filename));
+  if (!f.existsSync()) f.createSync(recursive: true);
+  return f;
+}
+
 /// Lists the contents of [dir].
 ///
 /// If [recursive] is `true`, lists subdirectory contents (defaults to `false`).
