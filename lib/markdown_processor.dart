@@ -98,9 +98,6 @@ class _InlineCodeSyntax extends md.InlineSyntax {
   @override
   bool onMatch(md.InlineParser parser, Match match) {
     var element = new md.Element.text('code', htmlEscape(match[1]));
-    // var c = element.attributes.putIfAbsent("class", () => "");
-    // c = (c.isEmpty ? "" : " ") + "prettyprint";
-    // element.attributes["class"] = c;
     parser.addNode(element);
     return true;
   }
