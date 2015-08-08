@@ -69,7 +69,7 @@ class Documentation {
     String tempHtml = renderMarkdownToHtml(raw, element);
     _asHtmlDocument = parse(tempHtml);
     _asHtmlDocument.querySelectorAll('script').forEach((s) => s.remove());
-    _asHtmlDocument.querySelectorAll('code').forEach((e) {
+    _asHtmlDocument.querySelectorAll('pre').forEach((e) {
       e.classes.addAll(['prettyprint', 'lang-dart']);
     });
     _asHtml = _asHtmlDocument.body.innerHtml;
@@ -98,9 +98,9 @@ class _InlineCodeSyntax extends md.InlineSyntax {
   @override
   bool onMatch(md.InlineParser parser, Match match) {
     var element = new md.Element.text('code', htmlEscape(match[1]));
-    var c = element.attributes.putIfAbsent("class", () => "");
-    c = (c.isEmpty ? "" : " ") + "prettyprint";
-    element.attributes["class"] = c;
+    // var c = element.attributes.putIfAbsent("class", () => "");
+    // c = (c.isEmpty ? "" : " ") + "prettyprint";
+    // element.attributes["class"] = c;
     parser.addNode(element);
     return true;
   }
@@ -124,7 +124,9 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
   if (modelElement.element.node is AnnotatedNode) {
     if ((modelElement.element.node as AnnotatedNode).documentationComment !=
         null) {
-      return (modelElement.element.node as AnnotatedNode).documentationComment.references;
+      return (modelElement.element.node as AnnotatedNode)
+          .documentationComment
+          .references;
     }
   } else if (modelElement.element is LibraryElement) {
     // handle anonymous libraries
