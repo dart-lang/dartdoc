@@ -122,7 +122,7 @@ a, a:hover {
   color: #1976D2;
 }
 
-pre {
+pre.prettyprint {
   font-family: 'Source Code Pro', monospace;
   color: black;
   border-radius: 4px;
@@ -146,11 +146,8 @@ pre code {
 code {
   font-family: 'Source Code Pro', monospace;
   /* overriding bootstrap */
-  font-size: 15px;
   color: inherit;
-  border-radius: 0;
-  padding: 0;
-  background-color: inherit;
+  background-color: #f7f7f7;
 }
 
 @media(max-width: 768px) {
