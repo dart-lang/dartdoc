@@ -178,11 +178,20 @@ class HtmlGeneratorInstance {
   void _generateJson() {
     File jsonFile = createOutputFile(out, 'index.json');
     String json = JSON.encode(documentedElements.map((ModelElement e) {
-      Map data = {'name': e.name, 'href': e.href};
+      // TODO: find a better string for type
+      Map data = {
+        'name': e.name,
+        'href': e.href,
+        'type': e.runtimeType.toString()
+      };
       if (e is EnclosedElement) {
-        data['enclosedElementName'] =
-            (e as EnclosedElement).enclosingElement.name;
+        EnclosedElement ee = e as EnclosedElement;
+        data['enclosedBy'] = {
+          'name': ee.enclosingElement.name,
+          'type': ee.enclosingElement.runtimeType.toString()
+        };
       }
+      return data;
     }).toList());
     jsonFile.writeAsStringSync(json);
   }
