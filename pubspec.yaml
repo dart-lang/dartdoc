@@ -5,9 +5,9 @@ author: Dart Team <misc@dartlang.org>
 description: A documentation generator for Dart.
 homepage: https://github.com/dart-lang/dartdoc
 environment:
-  sdk: '>=1.9.0 <2.0.0' # when we go to 1.12, bump analyzer version
+  sdk: '>=1.12.0-dev.5.0 <2.0.0'
 dependencies:
-  analyzer: '>=0.25.0 <0.27.0'
+  analyzer: '>=0.26.0 <0.27.0'
   args: ^0.13.0
   cli_util: ^0.0.1
   html: ^0.12.1

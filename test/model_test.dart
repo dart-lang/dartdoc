@@ -78,6 +78,16 @@ void main() {
         expect(sdkAsPackage.documentation,
             startsWith('Welcome to the Dart API reference doc'));
       });
+
+      test('has anonymous libraries', () {
+        expect(
+            package.libraries.where((lib) => lib.name == 'anonymous_library'),
+            hasLength(1));
+        expect(
+            package.libraries
+                .where((lib) => lib.name == 'another_anonymous_lib'),
+            hasLength(1));
+      });
     });
 
     group('test small package', () {
@@ -91,13 +101,16 @@ void main() {
   });
 
   group('Library', () {
-    Library dartAsyncLib;
+    Library dartAsyncLib, anonLib;
 
     setUp(() {
       dartAsyncLib = new Library(
           getSdkLibrariesToDocument(
               testUtils.sdkDir, testUtils.analyzerHelper.context).first,
           sdkAsPackage);
+
+      anonLib = package.libraries
+          .firstWhere((lib) => lib.name == 'anonymous_library');
 
       // Make sure the first library is dart:async
       expect(dartAsyncLib.name, 'dart:async');
@@ -151,12 +164,8 @@ void main() {
           exLibrary.functions.any((f) => f.name == 'helperFunction'), isFalse);
     });
 
-    test('anonymous libraries', () {
-      expect(package.libraries.where((lib) => lib.name == 'anonymous_library'),
-          hasLength(1));
-      expect(
-          package.libraries.where((lib) => lib.name == 'another_anonymous_lib'),
-          hasLength(1));
+    test('anonymous lib', () {
+      expect(anonLib.isAnonymous, isTrue);
     });
   });
 
@@ -216,13 +225,11 @@ void main() {
       });
 
       test('codeifies a class from the SDK', () {
-        expect(docsAsHtml,
-            contains('<code class="prettyprint lang-dart">String</code>'));
+        expect(docsAsHtml, contains('<code>String</code>'));
       });
 
       test('codeifies a reference to its parameter', () {
-        expect(docsAsHtml,
-            contains('<code class="prettyprint lang-dart">value</code>'));
+        expect(docsAsHtml, contains('<code>value</code>'));
       });
 
       test('links to a reference to its class', () {
@@ -283,9 +290,7 @@ void main() {
       // track when the behavior changes
       test('codeifies a prefixed top-level variable an imported lib', () {
         expect(
-            docsAsHtml,
-            contains(
-                '<code class="prettyprint lang-dart">css.theOnlyThingInTheLibrary</code>'));
+            docsAsHtml, contains('<code>css.theOnlyThingInTheLibrary</code>'));
       });
 
       test('links to a name with a single underscore', () {
@@ -316,7 +321,7 @@ void main() {
       expect(
           add.oneLineDoc,
           equals(
-              'Adds <code class="prettyprint lang-dart">value</code> to the end of this list,\nextending the length by one.'));
+              'Adds <code>value</code> to the end of this list,\nextending the length by one.'));
     });
 
     test(
@@ -327,17 +332,17 @@ void main() {
       expect(
           add.documentationAsHtml,
           startsWith(
-              '<p>Adds <code class="prettyprint lang-dart">value</code> to the end of this list,\nextending the length by one.'));
+              '<p>Adds <code>value</code> to the end of this list,\nextending the length by one.'));
     });
 
     test('incorrect doc references are still wrapped in code blocks', () {
       expect(incorrectReference.documentationAsHtml,
-          '<p>This should <code class="prettyprint lang-dart">not work</code>.</p>');
+          '<p>This should <code>not work</code>.</p>');
     });
 
     test('no references', () {
-      expect(Apple.documentationAsHtml,
-          '<p>Sample class <code class="prettyprint lang-dart">String</code></p>');
+      expect(
+          Apple.documentationAsHtml, '<p>Sample class <code>String</code></p>');
     });
 
     test('single ref to class', () {
@@ -349,7 +354,7 @@ void main() {
       expect(
           thisIsAsync.documentationAsHtml,
           equals(
-              '<p>An async function. It should look like I return a <code class="prettyprint lang-dart">Future</code>.</p>'));
+              '<p>An async function. It should look like I return a <code>Future</code>.</p>'));
     });
 
     test('references are correct in exported libraries', () {
@@ -359,10 +364,7 @@ void main() {
       expect(resolved, isNotNull);
       expect(resolved,
           contains('<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
-      expect(
-          resolved,
-          contains(
-              'linking over to <code class="prettyprint lang-dart">Apple</code>.'));
+      expect(resolved, contains('linking over to <code>Apple</code>.'));
     });
 
     test('references to class and constructors', () {
@@ -394,16 +396,14 @@ void main() {
       expect(
           testingCodeSyntaxInOneLiners.oneLineDoc,
           equals(
-              'These are code syntaxes: <code class="prettyprint lang-dart">true</code> and <code class="prettyprint lang-dart">false</code>'));
+              'These are code syntaxes: <code>true</code> and <code>false</code>'));
     });
 
     test('doc comments to parameters are marked as code', () {
       Method localMethod = subForDocComments.instanceMethods
           .firstWhere((m) => m.name == 'localMethod');
-      expect(localMethod.documentationAsHtml,
-          contains('<code class="prettyprint lang-dart">foo</code>'));
-      expect(localMethod.documentationAsHtml,
-          contains('<code class="prettyprint lang-dart">bar</code>'));
+      expect(localMethod.documentationAsHtml, contains('<code>foo</code>'));
+      expect(localMethod.documentationAsHtml, contains('<code>bar</code>'));
     });
   });
 
@@ -659,7 +659,7 @@ void main() {
       expect(
           thisIsAsync.documentationAsHtml,
           equals(
-              '<p>An async function. It should look like I return a <code class="prettyprint lang-dart">Future</code>.</p>'));
+              '<p>An async function. It should look like I return a <code>Future</code>.</p>'));
     });
 
     test('docs do not lose brackets in code blocks', () {

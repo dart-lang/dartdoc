@@ -10,6 +10,7 @@ packages
 .packages
 .settings/
 .DS_Store
+*.iml
 
 pub.dartlang.org/
 

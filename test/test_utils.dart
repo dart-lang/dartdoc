@@ -65,7 +65,7 @@ class AnalyzerHelper {
   }
 
   Source addSource(String filePath) {
-    Source source = new FileBasedSource.con1(new JavaFile(filePath));
+    Source source = new FileBasedSource(new JavaFile(filePath));
     ChangeSet changeSet = new ChangeSet();
     changeSet.addedSource(source);
     context.applyChanges(changeSet);
