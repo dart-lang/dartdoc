@@ -8,6 +8,9 @@ library dartdoc;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:analyzer/file_system/file_system.dart' hide File;
+import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:analyzer/source/sdk_ext.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/error.dart';
@@ -16,6 +19,7 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:path/path.dart' as p;
 
 import 'generator.dart';
 import 'resource_loader.dart' as loader;
@@ -129,8 +133,14 @@ class DartDoc {
       new DartUriResolver(sdk),
       new FileUriResolver()
     ];
-    if (urlMappings != null) resolvers.insert(
-        0, new CustomUriResolver(urlMappings));
+    if (urlMappings != null) {
+      resolvers.insert(0, new CustomUriResolver(urlMappings));
+    }
+    Directory packageDir = new Directory('packages');
+    if (packageDir.existsSync()) {
+      resolvers.add(
+        new SdkExtUriResolver(_createPackagesFolderPackageMap(packageDir)));
+    }
     JavaFile packagesDir = packageRootDir == null
         ? new JavaFile.relative(new JavaFile(rootDir.path), 'packages')
         : new JavaFile(packageRootDir.path);
@@ -198,6 +208,20 @@ class DartDoc {
     }
 
     return libraries.toList();
+  }
+
+  Map<String, List<Folder>> _createPackagesFolderPackageMap(Directory packageDir) {
+    Map<String, List<Folder>> m = {};
+
+    for (FileSystemEntity entity in packageDir.listSync(followLinks: false)) {
+      if (entity is Link) {
+        String name = p.basename(entity.path);
+        String target = entity.targetSync();
+        m[name] = [PhysicalResourceProvider.INSTANCE.getFolder(target)];
+      }
+    }
+
+    return m;
   }
 }
 
