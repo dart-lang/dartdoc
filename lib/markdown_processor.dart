@@ -110,28 +110,29 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
   if (modelElement.documentation == null && modelElement.canOverride()) {
     var melement = modelElement.overriddenElement;
     if (melement != null &&
-        melement.element.node != null &&
-        melement.element.node is AnnotatedNode) {
-      var docComment =
-          (melement.element.node as AnnotatedNode).documentationComment;
+        melement.element.computeNode() != null &&
+        melement.element.computeNode() is AnnotatedNode) {
+      var docComment = (melement.element.computeNode() as AnnotatedNode)
+          .documentationComment;
       if (docComment != null) return docComment.references;
       return null;
     }
   }
-  if (modelElement.element.node is AnnotatedNode) {
-    if ((modelElement.element.node as AnnotatedNode).documentationComment !=
+  if (modelElement.element.computeNode() is AnnotatedNode) {
+    if ((modelElement.element.computeNode() as AnnotatedNode)
+            .documentationComment !=
         null) {
-      return (modelElement.element.node as AnnotatedNode)
+      return (modelElement.element.computeNode() as AnnotatedNode)
           .documentationComment
           .references;
     }
   } else if (modelElement.element is LibraryElement) {
     // handle anonymous libraries
-    if (modelElement.element.node == null ||
-        modelElement.element.node.parent == null) {
+    if (modelElement.element.computeNode() == null ||
+        modelElement.element.computeNode().parent == null) {
       return null;
     }
-    var node = modelElement.element.node.parent.parent;
+    var node = modelElement.element.computeNode().parent.parent;
     if (node is AnnotatedNode) {
       if ((node as AnnotatedNode).documentationComment != null) {
         return (node as AnnotatedNode).documentationComment.references;

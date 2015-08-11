@@ -155,8 +155,11 @@ abstract class ModelElement implements Comparable {
   List<String> get annotations {
     // Check https://code.google.com/p/dart/issues/detail?id=23181
     // If that is fixed, this code might get a lot easier
-    if (element.node != null && element.node is AnnotatedNode) {
-      return (element.node as AnnotatedNode).metadata.map((Annotation a) {
+    if (element.computeNode() != null &&
+        element.computeNode() is AnnotatedNode) {
+      return (element.computeNode() as AnnotatedNode)
+          .metadata
+          .map((Annotation a) {
         var annotationString = a.toSource().substring(1); // remove the @
         var e = a.element;
         if (e != null && (e is ConstructorElement)) {
@@ -1244,7 +1247,7 @@ class Enum extends Class {
 abstract class SourceCodeMixin {
   String get sourceCode {
     String contents = element.source.contents.data;
-    var node = element.node; // TODO: computeNode once we go to 0.25.2
+    var node = element.computeNode(); // TODO: computeNode once we go to 0.25.2
     // find the start of the line, so that we can line up all the indents
     int i = node.offset;
     while (i > 0) {
@@ -1369,8 +1372,8 @@ class Field extends ModelElement {
   String get constantValue {
     if (_constantValue != null) return _constantValue;
 
-    if (_field.node == null) return null;
-    var v = _field.node.toSource();
+    if (_field.computeNode() == null) return null;
+    var v = _field.computeNode().toSource();
     if (v == null) return null;
     var string = v.substring(v.indexOf('=') + 1, v.length).trim();
     _constantValue = string.replaceAll(modelType.name, modelType.linkedName);
@@ -1617,7 +1620,9 @@ class TopLevelVariable extends ModelElement {
   }
 
   String get constantValue {
-    var v = (_variable as ConstTopLevelVariableElementImpl).node.toSource();
+    var v = (_variable as ConstTopLevelVariableElementImpl)
+        .computeNode()
+        .toSource();
     if (v == null) return '';
     var string = v.substring(v.indexOf('=') + 1, v.length).trim();
     return string.replaceAll(modelType.name, modelType.linkedName);
