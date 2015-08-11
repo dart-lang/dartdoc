@@ -656,6 +656,8 @@ button {
   right:0;
   left: inherit !important;
   width: 422px;
+  max-height: 250px;
+  overflow-y: auto;
   margin: 0;
   padding: 8px 0;
   background-color: #fff;
