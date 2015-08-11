@@ -205,8 +205,15 @@ dt {
 }
 
 dd {
-  margin-bottom: 16px;
-  color: #727272;
+  color: #212121;
+}
+
+dd.callable, dd.constant, dd.property {
+  margin-bottom: 24px;
+}
+
+dd p {
+  margin-top: 4px;
 }
 
 section.summary h2 {
@@ -229,6 +236,7 @@ dl.dl-horizontal dt {
 
 dt .name {
   font-size: 17px;
+  font-weight: 500;
 }
 
 dl dt.callable .name {
@@ -240,8 +248,13 @@ dl dt.callable .name {
   white-space: nowrap;
 }
 
+.signature {
+  color: #727272;
+}
+
 .signature a {
-  color: rgb(51, 51, 51);
+  /* 50% mix of default-primary-color and primary-text-color. */
+  color: #4674a2;
 }
 
 .optional {
@@ -341,9 +354,12 @@ footer .container-fluid {
   margin: 0;
 }
 
-.is-inherited {
-  color: #727272;
+/* The little slug line under a declaration for things like "const",
+   "read-only", etc. */
+.features {
+  font-size: 14px;
   font-style: italic;
+  color: #727272;
 }
 
 .multi-line-signature {
@@ -420,10 +436,6 @@ nav .self-name {
 }
 
 .constructor-modifier {
-  font-style: italic;
-}
-
-.readable-writable {
   font-style: italic;
 }
 
