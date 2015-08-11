@@ -99,6 +99,10 @@ h5 {
   font-size: 16px;
 }
 
+strong {
+  font-weight: 500;
+}
+
 .subtitle {
   font-size: 17px;
   min-height: 1.4em;
@@ -612,7 +616,6 @@ button {
   width: 396px;
   height: 30px;
   padding: 8px 12px;
-  font-size: 24px;
   line-height: 30px;
   outline: none;
 }
@@ -636,15 +639,14 @@ button {
 }
 
 .tt-menu {
+  right:0;
+  left: inherit !important;
   width: 422px;
-  margin: 12px 0;
+  margin: 0;
   padding: 8px 0;
   background-color: #fff;
   border: 1px solid #ccc;
   border: 1px solid rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 8px;
-     -moz-border-radius: 8px;
-          border-radius: 8px;
   -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
      -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
           box-shadow: 0 5px 10px rgba(0,0,0,.2);
@@ -652,7 +654,6 @@ button {
 
 .tt-suggestion {
   padding: 3px 20px;
-  font-size: 18px;
   line-height: 24px;
   color: #212121;
 }
