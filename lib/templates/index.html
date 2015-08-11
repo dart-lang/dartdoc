@@ -1,5 +1,16 @@
 {{>head}}
 
+  <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    <h5>{{self.name}}</h5>
+
+    <ol>
+      <li class="section-title"><a href="{{package.href}}#libraries">Libraries</a></li>
+      {{#package.libraries}}
+      <li><a href="{{href}}">{{name}}</a></li>
+      {{/package.libraries}}
+    </ol>
+  </div>
+
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
 
     {{#package}}
@@ -24,15 +35,6 @@
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-
-    <h5>{{self.name}}</h5>
-
-    <ol>
-      <li class="section-title"><a href="{{package.href}}#libraries">Libraries</a></li>
-      {{#package.libraries}}
-      <li><a href="{{href}}">{{name}}</a></li>
-      {{/package.libraries}}
-    </ol>
 
   </div><!--/.sidebar-offcanvas-right-->
 
