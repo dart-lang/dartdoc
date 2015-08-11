@@ -8,6 +8,12 @@ library dartdoc;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:analyzer/file_system/file_system.dart' as fileSystem;
+import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:analyzer/source/package_map_provider.dart';
+import 'package:analyzer/source/package_map_resolver.dart';
+import 'package:analyzer/source/pub_package_map_provider.dart';
+import 'package:analyzer/source/sdk_ext.dart';
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/error.dart';
@@ -131,12 +137,20 @@ class DartDoc {
     ];
     if (urlMappings != null) resolvers.insert(
         0, new CustomUriResolver(urlMappings));
-    JavaFile packagesDir = packageRootDir == null
-        ? new JavaFile.relative(new JavaFile(rootDir.path), 'packages')
-        : new JavaFile(packageRootDir.path);
-    if (packagesDir.exists()) {
-      resolvers.add(new PackageUriResolver([packagesDir]));
+
+    fileSystem.Resource cwd =
+        PhysicalResourceProvider.INSTANCE.getResource('.');
+    PubPackageMapProvider pubPackageMapProvider =
+        new PubPackageMapProvider(PhysicalResourceProvider.INSTANCE, sdk);
+    PackageMapInfo packageMapInfo =
+        pubPackageMapProvider.computePackageMap(cwd);
+    Map<String, List<fileSystem.Folder>> packageMap = packageMapInfo.packageMap;
+    if (packageMap != null) {
+      resolvers.add(new SdkExtUriResolver(packageMap));
+      resolvers.add(new PackageMapUriResolver(
+          PhysicalResourceProvider.INSTANCE, packageMap));
     }
+
     SourceFactory sourceFactory =
         new SourceFactory(/*contentCache,*/ resolvers);
 
