@@ -658,6 +658,7 @@ button {
   width: 422px;
   max-height: 250px;
   overflow-y: auto;
+  font-size: 14px;
   margin: 0;
   padding: 8px 0;
   background-color: #fff;
@@ -670,7 +671,6 @@ button {
 
 .tt-suggestion {
   padding: 3px 20px;
-  line-height: 24px;
   color: #212121;
 }
 
@@ -680,10 +680,17 @@ button {
   background-color: #0097cf;
 }
 
+.tt-suggestion:hover .search-from-lib {
+  color: #ddd;
+}
+
 .tt-suggestion.tt-cursor {
   color: #fff;
   background-color: #0097cf;
+}
 
+.tt-suggestion.tt-cursor .search-from-lib {
+  color: #ddd;
 }
 
 .tt-suggestion p {
