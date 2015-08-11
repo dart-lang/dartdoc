@@ -210,6 +210,9 @@ dd.callable, dd.constant, dd.property {
 
 dd p {
   margin-top: 4px;
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 section.summary h2 {
@@ -503,6 +506,7 @@ span.top-level-variable-type {
   padding: 16px;
 }
 
+.sidebar h5,
 .sidebar ol li {
   text-overflow: ellipsis;
   overflow: hidden;
@@ -553,7 +557,7 @@ button {
   }
 
   #overlay-under-drawer.active {
-    opacity: 0.7;
+    opacity: 0.4;
     height: 100%;
     z-index: 1999;
     position: fixed;
