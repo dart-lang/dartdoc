@@ -168,14 +168,14 @@ class HtmlGeneratorInstance {
 
     if (package != null) {
       _generateDocs();
-      _generateJson();
+      _generateSearchIndex();
       // TODO: generate sitemap
     }
 
     await _copyResources();
   }
 
-  void _generateJson() {
+  void _generateSearchIndex() {
     File jsonFile = createOutputFile(out, 'index.json');
     String json = JSON.encode(documentedElements.map((ModelElement e) {
       // TODO: find a better string for type
