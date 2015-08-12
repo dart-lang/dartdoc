@@ -46,31 +46,32 @@
           </div> <!-- /row -->
         </div> <!-- /container -->
     </nav>
+
     <div class="container masthead">
       <div class="row">
-        <ol class="breadcrumbs gt-separated visible-xs">
-            {{#navLinks}}
-            <li><a href="{{href}}">{{name}}</a></li>
-            {{/navLinks}}
-            {{^navLinks.isEmpty}}
-            <li class="self-crumb">{{self.name}}</li>
-            {{/navLinks.isEmpty}}
-        </ol>
-        <div class="title-description">
-            <h1 class="title">
-                {{{ layoutTitle }}}
-            </h1>
-            <!-- p class="subtitle">
-                {{{ oneLineDoc }}}
-            </p -->
-        </div>
-        <ul class="subnav">
-            {{#subnavItems}}
-            <li><a href="{{href}}">{{name}}</a></li>
-            {{/subnavItems}}
-        </ul>
+        <div class="col-sm-12 contents">
+          <ol class="breadcrumbs gt-separated visible-xs">
+              {{#navLinks}}
+              <li><a href="{{href}}">{{name}}</a></li>
+              {{/navLinks}}
+              {{^navLinks.isEmpty}}
+              <li class="self-crumb">{{self.name}}</li>
+              {{/navLinks.isEmpty}}
+          </ol>
+          <div class="title-description">
+              <h1 class="title">
+                  {{{ layoutTitle }}}
+              </h1>
+          </div>
+          <ul class="subnav">
+              {{#subnavItems}}
+              <li><a href="{{href}}">{{name}}</a></li>
+              {{/subnavItems}}
+          </ul>
+        </div> <!-- /col -->
       </div> <!-- /row -->
     </div> <!-- /container -->
+    
 </header>
 
 <div class="container body">
