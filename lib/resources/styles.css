@@ -44,6 +44,12 @@ nav .container {
   white-space: nowrap;
 }
 
+@media screen and (min-width: 500px) and (max-width: 768px) {
+  .navbar-right {
+      float: right!important;
+  }
+}
+
 header {
   background-color: #2196F3;
   color: white;
@@ -62,12 +68,12 @@ header .masthead {
   padding-top: 64px;
 }
 
-header .masthead .contents {
+header .contents {
   padding: 0;
 }
 
 @media screen and (max-width:768px) {
-  header .masthead .contents {
+  header .contents {
     padding-left: 15px;
     padding-right: 15px;
   }
@@ -638,6 +644,12 @@ button {
 
 form.search {
   display: inline;
+}
+
+@media screen and (max-width: 500px) {
+  form.search {
+    display: none;
+  }
 }
 
 .typeahead,

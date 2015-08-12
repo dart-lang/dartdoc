@@ -28,19 +28,21 @@
     <nav class="navbar navbar-fixed-top">
         <div class="container">
           <div class="row">
-            {{^navLinks.isEmpty}}
-            <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-            {{/navLinks.isEmpty}}
-            <ol class="breadcrumbs gt-separated hidden-xs">
-                {{#navLinks}}
-                <li><a href="{{href}}">{{name}}</a></li>
-                {{/navLinks}}
-                <li class="self-crumb">{{self.name}}</li>
-            </ol>
-            <div class="self-name">{{self.name}}</div>
-            <form class="search navbar-right" role="search">
-              <input type="text" id="search-box" disabled class="form-control typeahead" placeholder="Search">
-            </form>
+            <div class="col-sm-12 contents">
+              {{^navLinks.isEmpty}}
+              <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+              {{/navLinks.isEmpty}}
+              <ol class="breadcrumbs gt-separated hidden-xs">
+                  {{#navLinks}}
+                  <li><a href="{{href}}">{{name}}</a></li>
+                  {{/navLinks}}
+                  <li class="self-crumb">{{self.name}}</li>
+              </ol>
+              <div class="self-name">{{self.name}}</div>
+              <form class="search navbar-right" role="search">
+                <input type="text" id="search-box" disabled class="form-control typeahead" placeholder="Search">
+              </form>
+            </div> <!-- /col -->
           </div> <!-- /row -->
         </div> <!-- /container -->
     </nav>
