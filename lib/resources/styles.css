@@ -32,8 +32,12 @@ nav {
 /* some of this is to reset bootstrap */
 nav.navbar {
   background-color: inherit;
-  min-height: 56px;
+  min-height: 48px;
   border: 0;
+}
+
+nav.navbar .row {
+  padding-top: 8px;
 }
 
 nav .container {
@@ -382,10 +386,6 @@ footer .container-fluid {
   line-height: 1;
 }
 
-nav ol.breadcrumbs {
-  line-height: 30px; /* matches the input field */
-}
-
 @media screen and (min-width: 768px) {
   nav ol.breadcrumbs {
     float: left;
@@ -639,7 +639,7 @@ button {
 .typeahead,
 .tt-query,
 .tt-hint {
-  width: 396px;
+  width: 200px;
   height: 30px;
   padding: 8px 12px;
   line-height: 30px;
