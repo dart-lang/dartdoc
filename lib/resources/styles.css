@@ -34,12 +34,6 @@ nav.navbar {
   background-color: inherit;
   min-height: 56px;
   border: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  display: -webkit-flex;
-  -webkit-flex-direction: column;
-  -webkit-justify-content: center;
 }
 
 nav .container {
@@ -375,6 +369,10 @@ footer .container-fluid {
   font-size: 17px;
   white-space: nowrap;
   line-height: 1;
+}
+
+nav ol.breadcrumbs {
+  line-height: 30px; /* matches the input field */
 }
 
 @media screen and (min-width: 768px) {

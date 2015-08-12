@@ -27,6 +27,7 @@
 <header class="container-fluid" id="title">
     <nav class="navbar navbar-fixed-top">
         <div class="container">
+          <div class="row">
             {{^navLinks.isEmpty}}
             <button id="sidenav-left-toggle" type="button">&nbsp;</button>
             {{/navLinks.isEmpty}}
@@ -42,9 +43,11 @@
                 <input type="text" id="search-box" disabled class="form-control typeahead" placeholder="Search">
               </div>
             </form>
-        </div>
+          </div> <!-- /row -->
+        </div> <!-- /container -->
     </nav>
     <div class="container masthead">
+      <div class="row">
         <ol class="breadcrumbs gt-separated visible-xs">
             {{#navLinks}}
             <li><a href="{{href}}">{{name}}</a></li>
@@ -66,7 +69,8 @@
             <li><a href="{{href}}">{{name}}</a></li>
             {{/subnavItems}}
         </ul>
-    </div>
+      </div> <!-- /row -->
+    </div> <!-- /container -->
 </header>
 
 <div class="container body">
