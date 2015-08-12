@@ -125,6 +125,9 @@ abstract class ModelElement implements Comparable, Nameable {
     }
   }
 
+  /// A human-friendly name for the kind of element this is.
+  String get kind;
+
   String get _computeDocumentationComment =>
       element.computeDocumentationComment();
 
@@ -381,6 +384,9 @@ class Dynamic extends ModelElement {
   ModelElement get enclosingElement => throw new UnsupportedError('');
 
   String get _href => throw new StateError('dynamic should not have an href');
+
+  @override
+  String get kind => 'dynamic';
 }
 
 class Package implements Nameable {
@@ -519,6 +525,9 @@ class Library extends ModelElement {
 
     return library;
   }
+
+  @override
+  String get kind => 'library';
 
   /// Libraries are not enclosed by anything.
   ModelElement get enclosingElement => null;
@@ -830,6 +839,7 @@ class Class extends ModelElement implements EnclosedElement {
         return new TypeParameter(f, lib);
       }).toList();
 
+  @override
   String get kind => 'class';
 
   String get fileName => "${name}-class.html";
@@ -1313,6 +1323,9 @@ class ModelFunction extends ModelElement
   String get fileName => "$name.html";
 
   @override
+  String get kind => 'function';
+
+  @override
   String get _href => '${library.dirName}/$fileName';
 }
 
@@ -1328,6 +1341,9 @@ class Typedef extends ModelElement implements EnclosedElement {
   }
 
   @override
+  String get kind => 'typedef';
+
+  @override
   ModelElement get enclosingElement => library;
 
   String get fileName => '$name.html';
@@ -1339,6 +1355,7 @@ class Typedef extends ModelElement implements EnclosedElement {
   String get _href => '${library.dirName}/$fileName';
 }
 
+// TODO: rename this to property
 class Field extends ModelElement implements EnclosedElement {
   String _constantValue;
   bool _isInherited = false;
@@ -1354,6 +1371,9 @@ class Field extends ModelElement implements EnclosedElement {
     _isInherited = true;
     _setModelType();
   }
+
+  @override
+  String get kind => 'property';
 
   @override
   ModelElement get enclosingElement =>
@@ -1477,6 +1497,9 @@ class Constructor extends ModelElement implements EnclosedElement {
       : super(element, library);
 
   @override
+  String get kind => 'constructor';
+
+  @override
   ModelElement get enclosingElement =>
       new ModelElement.from(_constructor.enclosingElement, library);
 
@@ -1522,6 +1545,9 @@ class Method extends ModelElement
     _modelType = new ElementType(_method.type, this);
     _isInherited = true;
   }
+
+  @override
+  String get kind => 'method';
 
   @override
   ModelElement get enclosingElement =>
@@ -1614,6 +1640,9 @@ class Accessor extends ModelElement implements EnclosedElement {
       : super(element, library);
 
   @override
+  String get kind => 'accessor';
+
+  @override
   ModelElement get enclosingElement =>
       new ModelElement.from(_accessor.enclosingElement, library);
 
@@ -1641,6 +1670,9 @@ class TopLevelVariable extends ModelElement implements EnclosedElement {
           new ModelElement.from(s.element, package._getLibraryFor(s.element)));
     }
   }
+
+  @override
+  String get kind => 'top-level property';
 
   @override
   ModelElement get enclosingElement => library;
@@ -1691,6 +1723,9 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
+  String get kind => 'parameter';
+
+  @override
   ModelElement get enclosingElement =>
       new ModelElement.from(_parameter.enclosingElement, library);
 
@@ -1739,6 +1774,9 @@ class TypeParameter extends ModelElement {
       : super(element, library) {
     _modelType = new ElementType(_typeParameter.type, this);
   }
+
+  @override
+  String get kind => 'type parameter';
 
   TypeParameterElement get _typeParameter => element as TypeParameterElement;
 
