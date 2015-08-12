@@ -636,6 +636,10 @@ button {
   border: 0;
 }
 
+form.search {
+  display: inline;
+}
+
 .typeahead,
 .tt-query,
 .tt-hint {
