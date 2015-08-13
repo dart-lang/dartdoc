@@ -5,19 +5,21 @@
 /// The models used to represent Dart code
 library dartdoc.models;
 
-import 'package:analyzer/src/generated/ast.dart';
+import 'package:analyzer/src/generated/ast.dart' show AnnotatedNode, Annotation;
 import 'package:analyzer/src/generated/element.dart';
-import 'package:analyzer/src/generated/resolver.dart';
+import 'package:analyzer/src/generated/resolver.dart'
+    show Namespace, NamespaceBuilder, InheritanceManager, MemberMap;
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
-import 'package:quiver/core.dart';
+import 'package:quiver/core.dart' show hash3;
 
-import 'html_utils.dart';
-import 'model_utils.dart';
-import 'package_meta.dart';
+import 'html_utils.dart' show stripComments, htmlEscape;
+import 'model_utils.dart' show isPrivate, isPublic, getAllSupertypes;
+import 'package_meta.dart' show PackageMeta, FileContents;
 
-import '../markdown_processor.dart';
+import '../markdown_processor.dart' show Documentation, renderMarkdownToHtml;
 
-int byName(a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase());
+int byName(Nameable a, Nameable b) =>
+    a.name.toUpperCase().compareTo(b.name.toUpperCase());
 
 final Map<Class, List<Class>> _implementors = new Map();
 
@@ -48,7 +50,19 @@ void _addToImplementors(Class c) {
   }
 }
 
-abstract class ModelElement implements Comparable {
+/// An element that is enclosed by some other element.
+///
+/// Libraries are not enclosed.
+abstract class EnclosedElement {
+  ModelElement get enclosingElement;
+}
+
+/// Something that has a name.
+abstract class Nameable {
+  String get name;
+}
+
+abstract class ModelElement implements Comparable, Nameable {
   final Element element;
   final Library library;
 
@@ -110,6 +124,9 @@ abstract class ModelElement implements Comparable {
       return 0;
     }
   }
+
+  /// A human-friendly name for the kind of element this is.
+  String get kind;
 
   String get _computeDocumentationComment =>
       element.computeDocumentationComment();
@@ -362,14 +379,20 @@ abstract class ModelElement implements Comparable {
   }
 }
 
+// TODO: how do we get rid of this class?
 class Dynamic extends ModelElement {
   Dynamic(DynamicElementImpl element, Library library)
       : super(element, library);
 
+  ModelElement get enclosingElement => throw new UnsupportedError('');
+
   String get _href => throw new StateError('dynamic should not have an href');
+
+  @override
+  String get kind => 'dynamic';
 }
 
-class Package {
+class Package implements Nameable {
   final List<Library> _libraries = [];
   final PackageMeta packageMeta;
   String _docsAsHtml;
@@ -505,6 +528,12 @@ class Library extends ModelElement {
 
     return library;
   }
+
+  @override
+  String get kind => 'library';
+
+  /// Libraries are not enclosed by anything.
+  ModelElement get enclosingElement => null;
 
   Library get library => this;
 
@@ -732,7 +761,7 @@ class Library extends ModelElement {
   String get _href => '$dirName/$fileName';
 }
 
-class Class extends ModelElement {
+class Class extends ModelElement implements EnclosedElement {
   List<ElementType> _mixins;
   ElementType _supertype;
   List<ElementType> _interfaces;
@@ -800,6 +829,9 @@ class Class extends ModelElement {
     }).where((it) => it != null).toList(growable: false);
   }
 
+  /// Returns the library that encloses this element.
+  ModelElement get enclosingElement => library;
+
   String get nameWithGenerics {
     if (!modelType.isParameterizedType) return name;
     return '$name&lt${_typeParameters.map((t) => t.name).join(', ')}&gt';
@@ -810,6 +842,7 @@ class Class extends ModelElement {
         return new TypeParameter(f, lib);
       }).toList();
 
+  @override
   String get kind => 'class';
 
   String get fileName => "${name}-class.html";
@@ -1274,11 +1307,15 @@ abstract class SourceCodeMixin {
   Element get element;
 }
 
-class ModelFunction extends ModelElement with SourceCodeMixin {
+class ModelFunction extends ModelElement
+    with SourceCodeMixin
+    implements EnclosedElement {
   ModelFunction(FunctionElement element, Library library)
       : super(element, library) {
     _modelType = new ElementType(_func.type, this);
   }
+
+  ModelElement get enclosingElement => library;
 
   FunctionElement get _func => (element as FunctionElement);
 
@@ -1289,10 +1326,13 @@ class ModelFunction extends ModelElement with SourceCodeMixin {
   String get fileName => "$name.html";
 
   @override
+  String get kind => 'function';
+
+  @override
   String get _href => '${library.dirName}/$fileName';
 }
 
-class Typedef extends ModelElement {
+class Typedef extends ModelElement implements EnclosedElement {
   FunctionTypeAliasElement get _typedef =>
       (element as FunctionTypeAliasElement);
 
@@ -1303,6 +1343,12 @@ class Typedef extends ModelElement {
     }
   }
 
+  @override
+  String get kind => 'typedef';
+
+  @override
+  ModelElement get enclosingElement => library;
+
   String get fileName => '$name.html';
 
   String get linkedReturnType => modelType != null
@@ -1312,7 +1358,8 @@ class Typedef extends ModelElement {
   String get _href => '${library.dirName}/$fileName';
 }
 
-class Field extends ModelElement {
+// TODO: rename this to property
+class Field extends ModelElement implements EnclosedElement {
   String _constantValue;
   bool _isInherited = false;
 
@@ -1327,6 +1374,13 @@ class Field extends ModelElement {
     _isInherited = true;
     _setModelType();
   }
+
+  @override
+  String get kind => 'property';
+
+  @override
+  ModelElement get enclosingElement =>
+      new ModelElement.from(_field.enclosingElement, library);
 
   @override
   String get _computeDocumentationComment {
@@ -1439,11 +1493,18 @@ class EnumField extends Field {
   String get linkedName => name;
 }
 
-class Constructor extends ModelElement {
+class Constructor extends ModelElement implements EnclosedElement {
   ConstructorElement get _constructor => (element as ConstructorElement);
 
   Constructor(ConstructorElement element, Library library)
       : super(element, library);
+
+  @override
+  String get kind => 'constructor';
+
+  @override
+  ModelElement get enclosingElement =>
+      new ModelElement.from(_constructor.enclosingElement, library);
 
   @override
   String get _href =>
@@ -1471,7 +1532,9 @@ class Constructor extends ModelElement {
   }
 }
 
-class Method extends ModelElement with SourceCodeMixin {
+class Method extends ModelElement
+    with SourceCodeMixin
+    implements EnclosedElement {
   bool _isInherited = false;
 
   MethodElement get _method => (element as MethodElement);
@@ -1485,6 +1548,13 @@ class Method extends ModelElement with SourceCodeMixin {
     _modelType = new ElementType(_method.type, this);
     _isInherited = true;
   }
+
+  @override
+  String get kind => 'method';
+
+  @override
+  ModelElement get enclosingElement =>
+      new ModelElement.from(_method.enclosingElement, library);
 
   Method get overriddenElement {
     ClassElement parent = element.enclosingElement;
@@ -1566,11 +1636,18 @@ class Operator extends Method {
 }
 
 /// Getters and setters.
-class Accessor extends ModelElement {
+class Accessor extends ModelElement implements EnclosedElement {
   PropertyAccessorElement get _accessor => (element as PropertyAccessorElement);
 
   Accessor(PropertyAccessorElement element, Library library)
       : super(element, library);
+
+  @override
+  String get kind => 'accessor';
+
+  @override
+  ModelElement get enclosingElement =>
+      new ModelElement.from(_accessor.enclosingElement, library);
 
   bool get isGetter => _accessor.isGetter;
 
@@ -1580,7 +1657,7 @@ class Accessor extends ModelElement {
 }
 
 /// Top-level variables. But also picks up getters and setters?
-class TopLevelVariable extends ModelElement {
+class TopLevelVariable extends ModelElement implements EnclosedElement {
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 
   TopLevelVariable(TopLevelVariableElement element, Library library)
@@ -1596,6 +1673,12 @@ class TopLevelVariable extends ModelElement {
           new ModelElement.from(s.element, package._getLibraryFor(s.element)));
     }
   }
+
+  @override
+  String get kind => 'top-level property';
+
+  @override
+  ModelElement get enclosingElement => library;
 
   bool get isFinal => _variable.isFinal;
 
@@ -1636,13 +1719,20 @@ class TopLevelVariable extends ModelElement {
   String get _href => '${library.dirName}/${name}.html';
 }
 
-class Parameter extends ModelElement {
+class Parameter extends ModelElement implements EnclosedElement {
   Parameter(ParameterElement element, Library library)
       : super(element, library) {
     var t = _parameter.type;
     _modelType = new ElementType(
         t, new ModelElement.from(t.element, package._getLibraryFor(t.element)));
   }
+
+  @override
+  String get kind => 'parameter';
+
+  @override
+  ModelElement get enclosingElement =>
+      new ModelElement.from(_parameter.enclosingElement, library);
 
   ParameterElement get _parameter => element as ParameterElement;
 
@@ -1689,6 +1779,9 @@ class TypeParameter extends ModelElement {
       : super(element, library) {
     _modelType = new ElementType(_typeParameter.type, this);
   }
+
+  @override
+  String get kind => 'type parameter';
 
   TypeParameterElement get _typeParameter => element as TypeParameterElement;
 

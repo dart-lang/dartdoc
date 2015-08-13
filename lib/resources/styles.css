@@ -32,18 +32,22 @@ nav {
 /* some of this is to reset bootstrap */
 nav.navbar {
   background-color: inherit;
-  min-height: 56px;
+  min-height: 48px;
   border: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  display: -webkit-flex;
-  -webkit-flex-direction: column;
-  -webkit-justify-content: center;
+}
+
+nav.navbar .row {
+  padding-top: 8px;
 }
 
 nav .container {
   white-space: nowrap;
+}
+
+@media screen and (min-width: 500px) and (max-width: 768px) {
+  .navbar-right {
+      float: right!important;
+  }
 }
 
 header {
@@ -62,6 +66,17 @@ header.container-fluid {
 
 header .masthead {
   padding-top: 64px;
+}
+
+header .contents {
+  padding: 0;
+}
+
+@media screen and (max-width:768px) {
+  header .contents {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 }
 
 .body {
@@ -97,6 +112,10 @@ h2 {
 
 h5 {
   font-size: 16px;
+}
+
+strong {
+  font-weight: 500;
 }
 
 .subtitle {
@@ -373,6 +392,12 @@ footer .container-fluid {
   line-height: 1;
 }
 
+@media screen and (min-width: 768px) {
+  nav ol.breadcrumbs {
+    float: left;
+  }
+}
+
 @media screen and (max-width: 768px) {
   .breadcrumbs {
     margin: 0 0 24px 0;
@@ -541,11 +566,6 @@ button {
 
 /* left-nav disappears, and can transition in from the left */
 @media screen and (max-width:768px) {
-  .main-content {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
   #sidenav-left-toggle {
     display: inline;
     background: no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path fill='#FFFFFF' d='M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z'/></svg>");
@@ -610,8 +630,99 @@ button {
    }
 }
 
-/* source code method bodies */
-
 #overlay-under-drawer {
   display: none;
+}
+
+/* find-as-you-type search box */
+
+/* override bootstrap defaults */
+.form-control {
+  border-radius: 0;
+  border: 0;
+}
+
+form.search {
+  display: inline;
+}
+
+@media screen and (max-width: 500px) {
+  form.search {
+    display: none;
+  }
+}
+
+.typeahead,
+.tt-query,
+.tt-hint {
+  width: 200px;
+  height: 30px;
+  padding: 8px 12px;
+  line-height: 30px;
+  outline: none;
+}
+
+.typeahead {
+  background-color: #fff;
+  border-radius: 2px;
+}
+
+.tt-query {
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+.tt-hint {
+  color: #999
+}
+
+.tt-menu {
+  right:0;
+  left: inherit !important;
+  width: 422px;
+  max-height: 250px;
+  overflow-y: auto;
+  font-size: 14px;
+  margin: 0;
+  padding: 8px 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  -webkit-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+     -moz-box-shadow: 0 5px 10px rgba(0,0,0,.2);
+          box-shadow: 0 5px 10px rgba(0,0,0,.2);
+}
+
+.tt-suggestion {
+  padding: 3px 20px;
+  color: #212121;
+}
+
+.tt-suggestion:hover {
+  cursor: pointer;
+  color: #fff;
+  background-color: #0097cf;
+}
+
+.tt-suggestion:hover .search-from-lib {
+  color: #ddd;
+}
+
+.tt-suggestion.tt-cursor {
+  color: #fff;
+  background-color: #0097cf;
+}
+
+.tt-suggestion.tt-cursor .search-from-lib {
+  color: #ddd;
+}
+
+.tt-suggestion p {
+  margin: 0;
+}
+
+.search-from-lib {
+  font-style: italic;
+  color: gray;
 }

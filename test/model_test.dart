@@ -433,6 +433,10 @@ void main() {
       expect(Dog.name, equals('Dog'));
     });
 
+    test('has enclosing element', () {
+      expect(Apple.enclosingElement.name, equals(exLibrary.name));
+    });
+
     test('class name with generics', () {
       expect(F.nameWithGenerics, equals('F&ltT extends String&gt'));
     });
@@ -587,6 +591,10 @@ void main() {
       animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
     });
 
+    test('has enclosing element', () {
+      expect(animal.enclosingElement.name, equals(exLibrary.name));
+    });
+
     test('has correct number of constants', () {
       expect(animal.constants, hasLength(4));
     });
@@ -627,6 +635,10 @@ void main() {
           fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsAsync');
       topLevelFunction =
           fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
+    });
+
+    test('has enclosing element', () {
+      expect(f1.enclosingElement.name, equals(exLibrary.name));
     });
 
     test('name is function1', () {
@@ -700,6 +712,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'convertToMap');
     });
 
+    test('has enclosing element', () {
+      expect(m.enclosingElement.name, equals(classB.name));
+    });
+
     test('overriden method', () {
       expect(m.overriddenElement.runtimeType.toString(), 'Method');
     });
@@ -761,6 +777,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'lengthX');
     });
 
+    test('has enclosing element', () {
+      expect(f1.enclosingElement.name, equals(c.name));
+    });
+
     test('is not const', () {
       expect(f1.isConst, isFalse);
     });
@@ -793,7 +813,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
   });
 
-  group('Variable', () {
+  group('Top-level Variable', () {
     TopLevelVariable v;
     TopLevelVariable v3, justGetter, justSetter;
 
@@ -804,6 +824,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.properties.firstWhere((p) => p.name == 'justGetter');
       justSetter =
           fakeLibrary.properties.firstWhere((p) => p.name == 'justSetter');
+    });
+
+    test('has enclosing element', () {
+      expect(v.enclosingElement.name, equals(exLibrary.name));
     });
 
     test('found two properties', () {
@@ -842,6 +866,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
     });
 
+    test('has enclosing element', () {
+      expect(greenConstant.enclosingElement.name, equals(exLibrary.name));
+    });
+
     test('found five constants', () {
       expect(exLibrary.constants, hasLength(7));
     });
@@ -867,12 +895,17 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Constructor', () {
     Constructor appleDefaultConstructor;
     Constructor appleConstructorFromString;
+    Class apple;
     setUp(() {
-      Class apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
+      apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       appleDefaultConstructor =
           apple.constructors.firstWhere((c) => c.name == 'Apple');
       appleConstructorFromString =
           apple.constructors.firstWhere((c) => c.name == 'Apple.fromString');
+    });
+
+    test('has enclosing element', () {
+      expect(appleDefaultConstructor.enclosingElement.name, equals(apple.name));
     });
 
     test('has contructor', () {
@@ -886,7 +919,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
   });
 
-  group('Type', () {
+  group('ModelType', () {
     Field fList;
 
     setUp(() {
@@ -906,6 +939,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     setUp(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
+    });
+
+    test('has enclosing element', () {
+      expect(t.enclosingElement.name, equals(exLibrary.name));
     });
 
     test('docs', () {

@@ -27,41 +27,52 @@
 <header class="container-fluid" id="title">
     <nav class="navbar navbar-fixed-top">
         <div class="container">
-            {{^navLinks.isEmpty}}
-            <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-            {{/navLinks.isEmpty}}
-            <ol class="breadcrumbs gt-separated hidden-xs">
-                {{#navLinks}}
-                <li><a href="{{href}}">{{name}}</a></li>
-                {{/navLinks}}
-                <li class="self-crumb">{{self.name}}</li>
-            </ol>
-            <div class="self-name">{{self.name}}</div>
-        </div>
+          <div class="row">
+            <div class="col-sm-12 contents">
+              {{^navLinks.isEmpty}}
+              <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+              {{/navLinks.isEmpty}}
+              <ol class="breadcrumbs gt-separated hidden-xs">
+                  {{#navLinks}}
+                  <li><a href="{{href}}">{{name}}</a></li>
+                  {{/navLinks}}
+                  <li class="self-crumb">{{self.name}}</li>
+              </ol>
+              <div class="self-name">{{self.name}}</div>
+              <form class="search navbar-right" role="search">
+                <input type="text" id="search-box" disabled class="form-control typeahead" placeholder="Search">
+              </form>
+            </div> <!-- /col -->
+          </div> <!-- /row -->
+        </div> <!-- /container -->
     </nav>
+
     <div class="container masthead">
-        <ol class="breadcrumbs gt-separated visible-xs">
-            {{#navLinks}}
-            <li><a href="{{href}}">{{name}}</a></li>
-            {{/navLinks}}
-            {{^navLinks.isEmpty}}
-            <li class="self-crumb">{{self.name}}</li>
-            {{/navLinks.isEmpty}}
-        </ol>
-        <div class="title-description">
-            <h1 class="title">
-                {{{ layoutTitle }}}
-            </h1>
-            <!-- p class="subtitle">
-                {{{ oneLineDoc }}}
-            </p -->
-        </div>
-        <ul class="subnav">
-            {{#subnavItems}}
-            <li><a href="{{href}}">{{name}}</a></li>
-            {{/subnavItems}}
-        </ul>
-    </div>
+      <div class="row">
+        <div class="col-sm-12 contents">
+          <ol class="breadcrumbs gt-separated visible-xs">
+              {{#navLinks}}
+              <li><a href="{{href}}">{{name}}</a></li>
+              {{/navLinks}}
+              {{^navLinks.isEmpty}}
+              <li class="self-crumb">{{self.name}}</li>
+              {{/navLinks.isEmpty}}
+          </ol>
+          <div class="title-description">
+              <h1 class="title">
+                  {{{ layoutTitle }}}
+              </h1>
+          </div>
+          <ul class="subnav">
+              {{#subnavItems}}
+              <li><a href="{{href}}">{{name}}</a></li>
+              {{/subnavItems}}
+          </ul>
+        </div> <!-- /col -->
+      </div> <!-- /row -->
+    </div> <!-- /container -->
+
 </header>
 
 <div class="container body">
+  <div class="row">
