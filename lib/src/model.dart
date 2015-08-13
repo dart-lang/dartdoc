@@ -607,10 +607,7 @@ class Library extends ModelElement {
     elements..removeWhere(isPrivate);
     _variables = elements
         .map((e) => new TopLevelVariable(e, this))
-        .toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_variables.isNotEmpty) _variables.sort(byName);
+        .toList(growable: false)..sort(byName);
 
     return _variables;
   }
@@ -619,22 +616,15 @@ class Library extends ModelElement {
 
   /// All variables ("properties") except constants.
   List<TopLevelVariable> get properties {
-    List temp =
-        _getVariables().where((v) => !v.isConst).toList(growable: false);
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (temp.isNotEmpty) temp.sort(byName);
-    return temp;
+    return _getVariables().where((v) => !v.isConst).toList(growable: false)
+      ..sort(byName);
   }
 
   bool get hasConstants => _getVariables().any((v) => v.isConst);
 
   List<TopLevelVariable> get constants {
-    List temp = _getVariables().where((v) => v.isConst).toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (temp.isNotEmpty) temp.sort(byName);
-
-    return temp;
+    return _getVariables().where((v) => v.isConst).toList(growable: false)
+      ..sort(byName);
   }
 
   bool get hasEnums => enums.isNotEmpty;
@@ -648,10 +638,7 @@ class Library extends ModelElement {
     _enums = enumClasses
         .where(isPublic)
         .map((e) => new Enum(e, this))
-        .toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_enums.isNotEmpty) _enums.sort(byName);
+        .toList(growable: false)..sort(byName);
 
     return _enums;
   }
@@ -674,11 +661,9 @@ class Library extends ModelElement {
     elements.addAll(_exportedNamespace
         .where((element) => element is FunctionTypeAliasElement));
     elements..removeWhere(isPrivate);
-    _typeDefs =
-        elements.map((e) => new Typedef(e, this)).toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_typeDefs.isNotEmpty) _typeDefs.sort(byName);
+    _typeDefs = elements
+        .map((e) => new Typedef(e, this))
+        .toList(growable: false)..sort(byName);
 
     return _typeDefs;
   }
@@ -699,10 +684,7 @@ class Library extends ModelElement {
     elements..removeWhere(isPrivate);
     _functions = elements.map((e) {
       return new ModelFunction(e, this);
-    }).toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_functions.isNotEmpty) _functions.sort(byName);
+    }).toList(growable: false)..sort(byName);
 
     return _functions;
   }
@@ -727,10 +709,7 @@ class Library extends ModelElement {
     _classes = types
         .where(isPublic)
         .map((e) => new Class(e, this))
-        .toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_classes.isNotEmpty) _classes.sort(byName);
+        .toList(growable: false)..sort(byName);
 
     return _classes;
   }
@@ -748,13 +727,9 @@ class Library extends ModelElement {
   bool get hasExceptions => _allClasses.any((c) => c.isErrorOrException);
 
   List<Class> get exceptions {
-    List temp =
-        _allClasses.where((c) => c.isErrorOrException).toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (temp.isNotEmpty) temp.sort(byName);
-
-    return temp;
+    return _allClasses
+        .where((c) => c.isErrorOrException)
+        .toList(growable: false)..sort(byName);
   }
 
   @override
@@ -891,10 +866,7 @@ class Class extends ModelElement implements EnclosedElement {
     _fields = _cls.fields
         .where(isPublic)
         .map((e) => new Field(e, library))
-        .toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_fields.isNotEmpty) _fields.sort(byName);
+        .toList(growable: false)..sort(byName);
 
     return _fields;
   }
@@ -904,10 +876,7 @@ class Class extends ModelElement implements EnclosedElement {
     _staticFields = _allFields
         .where((f) => f.isStatic)
         .where((f) => !f.isConst)
-        .toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_staticFields.isNotEmpty) _staticFields.sort(byName);
+        .toList(growable: false)..sort(byName);
 
     return _staticFields;
   }
@@ -916,21 +885,17 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<Field> get instanceProperties {
     if (_instanceFields != null) return _instanceFields;
-    _instanceFields =
-        _allFields.where((f) => !f.isStatic).toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_instanceFields.isNotEmpty) _instanceFields.sort(byName);
+    _instanceFields = _allFields
+        .where((f) => !f.isStatic)
+        .toList(growable: false)..sort(byName);
 
     return _instanceFields;
   }
 
   List<Field> get constants {
     if (_constants != null) return _constants;
-    _constants = _allFields.where((f) => f.isConst).toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_constants.isNotEmpty) _constants.sort(byName);
+    _constants = _allFields.where((f) => f.isConst).toList(growable: false)
+      ..sort(byName);
 
     return _constants;
   }
@@ -944,10 +909,7 @@ class Class extends ModelElement implements EnclosedElement {
 
     _constructors = _cls.constructors.where(isPublic).map((e) {
       return new Constructor(e, library);
-    }).toList(growable: true);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_constructors.isNotEmpty) _constructors.sort(byName);
+    }).toList(growable: true)..sort(byName);
 
     return _constructors;
   }
@@ -963,10 +925,7 @@ class Class extends ModelElement implements EnclosedElement {
       } else {
         return new Operator(e, library);
       }
-    }).toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_allMethods.isNotEmpty) _allMethods.sort(byName);
+    }).toList(growable: false)..sort(byName);
 
     return _allMethods;
   }
@@ -974,10 +933,8 @@ class Class extends ModelElement implements EnclosedElement {
   List<Operator> get operators {
     if (_operators != null) return _operators;
 
-    _operators = _methods.where((m) => m.isOperator).toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_operators.isNotEmpty) _operators.sort(byName);
+    _operators = _methods.where((m) => m.isOperator).toList(growable: false)
+      ..sort(byName);
 
     return _operators;
   }
@@ -997,10 +954,8 @@ class Class extends ModelElement implements EnclosedElement {
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
 
-    _staticMethods = _methods.where((m) => m.isStatic).toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_staticMethods.isNotEmpty) _staticMethods.sort(byName);
+    _staticMethods = _methods.where((m) => m.isStatic).toList(growable: false)
+      ..sort(byName);
 
     return _staticMethods;
   }
@@ -1012,10 +967,7 @@ class Class extends ModelElement implements EnclosedElement {
 
     _instanceMethods = _methods
         .where((m) => !m.isStatic && !m.isOperator)
-        .toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_instanceMethods.isNotEmpty) _instanceMethods.sort(byName);
+        .toList(growable: false)..sort(byName);
 
     return _instanceMethods;
   }
@@ -1260,10 +1212,7 @@ class Enum extends Class {
         .where(isPublic)
         .where((f) => f.isConst)
         .map((field) => new EnumField.forConstant(index++, field, library))
-        .toList(growable: false);
-
-    // XXX working around a VM SDK issue. Once fixed, you can chain the sort()
-    if (_constants.isNotEmpty) _constants.sort(byName);
+        .toList(growable: false)..sort(byName);
 
     return _constants;
   }
