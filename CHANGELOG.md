@@ -1,3 +1,20 @@
+## 0.5.0
+* [health] remove calls to deprecated methods
+* [health] remove workaround when sorting empty iterable
+* [sdk] now requires Dart SDK 1.12-dev or greater
+* [bug] homepage column widths now add up to 12
+* [enhancement] display ellipse when text overflows out the one-liners
+* [enhancement] section titles are larger, lighter
+* [health] testing on Windows + 1.12-dev SDK
+* [enhancement] property types are now on the right
+* [enhancement] other various style tweaks
+* [enhancement] main text is darker, links are more contrasty
+* [enhancement] include dartdoc version in generated docs, as HTML comment
+* [enhancement] remove empty-doc warnings for unnamed libraries
+* [enhancement] dartdoc understands "sdk extensions"
+* [enhancement] find-as-you-type search
+* [bug] doc references to names with multiple underscores now link correctly
+
 ## 0.4.0
 * Print the name of the thing above the right nav list
 * Numerous fixes, tests, and cleanups to the code
