@@ -26,11 +26,15 @@ Future<String> loadAsString(String path) {
   if (!path.startsWith('package:')) {
     throw new ArgumentError('path must begin with package:');
   }
-  return new Resource(path).readAsString().catchError((_) async {
-    // TODO: Remove once https://github.com/dart-lang/pub/issues/22 is fixed.
-    var bytes = await _doLoad(path);
-    return new String.fromCharCodes(bytes);
-  });
+
+  try {
+    return new Resource(path).readAsString().catchError((_) {
+      // TODO: Remove once https://github.com/dart-lang/pub/issues/22 is fixed.
+      return _doLoad(path).then((bytes) => new String.fromCharCodes(bytes));
+    });
+  } catch (_) {
+    return _doLoad(path).then((bytes) => new String.fromCharCodes(bytes));
+  }
 }
 
 /// Loads a `package:` resource as an [List<int>].
@@ -39,10 +43,12 @@ Future<List<int>> loadAsBytes(String path) {
     throw new ArgumentError('path must begin with package:');
   }
 
-  return new Resource(path).readAsBytes().catchError((_) {
+  try {
     // TODO: Remove once https://github.com/dart-lang/pub/issues/22 is fixed.
+    return new Resource(path).readAsBytes().catchError((_) => _doLoad(path));
+  } catch (_) {
     return _doLoad(path);
-  });
+  }
 }
 
 /// Determine how to do the load. HTTP? Snapshotted? From source?
