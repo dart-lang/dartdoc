@@ -1,3 +1,6 @@
+## 0.5.0+1
+* [bug] fixed an issue running dartdoc as a pub global activated snapshot
+
 ## 0.5.0
 * [health] remove calls to deprecated methods
 * [health] remove workaround when sorting empty iterable
