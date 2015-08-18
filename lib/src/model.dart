@@ -1334,12 +1334,13 @@ class Field extends ModelElement implements EnclosedElement {
   @override
   String get _computeDocumentationComment {
     var buffer = new StringBuffer();
+
     if (hasGetter) {
       String docs = _field.getter.computeDocumentationComment();
       if (docs != null) buffer.write(docs);
     }
 
-    if (hasSetter) {
+    if (hasSetter && !_field.setter.isSynthetic) {
       String docs = _field.setter.computeDocumentationComment();
       if (docs != null) {
         if (buffer.isNotEmpty) buffer.write('\n\n');
@@ -1347,7 +1348,7 @@ class Field extends ModelElement implements EnclosedElement {
       }
     }
 
-    if (hasGetter || hasSetter) return buffer.toString();
+    if (buffer.isNotEmpty) return buffer.toString();
 
     String docs = _field.computeDocumentationComment();
     if (docs != null) buffer.write(docs);

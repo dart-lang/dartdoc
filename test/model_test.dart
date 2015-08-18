@@ -405,6 +405,16 @@ void main() {
       expect(localMethod.documentationAsHtml, contains('<code>foo</code>'));
       expect(localMethod.documentationAsHtml, contains('<code>bar</code>'));
     });
+
+    test(
+        'a property with no explicit getters and setters does not duplicate docs',
+        () {
+      Field powers = superAwesomeClass.instanceProperties
+          .firstWhere((p) => p.name == 'powers');
+      Iterable<Match> matches = new RegExp('In the super class')
+          .allMatches(powers.documentationAsHtml);
+      expect(matches, hasLength(1));
+    });
   });
 
   group('Class', () {
