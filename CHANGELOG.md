@@ -1,3 +1,6 @@
+## 0.5.0+3
+* [bug] fixed issue with duplicate docs for properties
+
 ## 0.5.0+1
 * [bug] fixed an issue running dartdoc as a pub global activated snapshot
 
