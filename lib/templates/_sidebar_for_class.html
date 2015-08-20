@@ -1,48 +1,48 @@
 <ol>
   {{#clazz.hasConstants}}
-  <li class="section-title"><a href="{{class.href}}#constants">Constants</a></li>
+  <li class="section-title"><a href="{{clazz.href}}#constants">Constants</a></li>
   {{#clazz.constants}}
   <li>{{{linkedName}}}</li>
   {{/clazz.constants}}
   {{/clazz.hasConstants}}
 
   {{#clazz.hasStaticProperties}}
-  <li class="section-title"><a href="{{class.href}}#static-properties">Static properties</a></li>
+  <li class="section-title"><a href="{{clazz.href}}#static-properties">Static properties</a></li>
   {{#clazz.staticProperties}}
   <li><a href="{{href}}">{{name}}</a></li>
   {{/clazz.staticProperties}}
   {{/clazz.hasStaticProperties}}
 
   {{#clazz.hasStaticMethods}}
-  <li class="section-title"><a href="{{class.href}}#static-methods">Static methods</a></li>
+  <li class="section-title"><a href="{{clazz.href}}#static-methods">Static methods</a></li>
   {{#clazz.staticMethods}}
   <li><a href="{{href}}">{{name}}</a></li>
   {{/clazz.staticMethods}}
   {{/clazz.hasStaticMethods}}
 
   {{#clazz.hasInstanceProperties}}
-  <li class="section-title"><a href="{{class.href}}#instance-properties">Properties</a></li>
+  <li class="section-title"><a href="{{clazz.href}}#instance-properties">Properties</a></li>
   {{#clazz.allInstanceProperties}}
   <li>{{>name_link}}</li>
   {{/clazz.allInstanceProperties}}
   {{/clazz.hasInstanceProperties}}
 
   {{#clazz.hasConstructors}}
-  <li class="section-title"><a href="{{class.href}}#constructors">Constructors</a></li>
+  <li class="section-title"><a href="{{clazz.href}}#constructors">Constructors</a></li>
   {{#clazz.constructors}}
   <li><a href="{{href}}">{{shortName}}</a></li>
   {{/clazz.constructors}}
   {{/clazz.hasConstructors}}
 
   {{#clazz.hasOperators}}
-  <li class="section-title"><a href="{{class.href}}#operators">Operators</a></li>
+  <li class="section-title"><a href="{{clazz.href}}#operators">Operators</a></li>
   {{#clazz.allOperators}}
   <li>{{>name_link}}</li>
   {{/clazz.allOperators}}
   {{/clazz.hasOperators}}
 
   {{#clazz.hasMethods}}
-  <li class="section-title"><a href="{{class.href}}#methods">Methods</a></li>
+  <li class="section-title"><a href="{{clazz.href}}#instance-methods">Methods</a></li>
   {{#clazz.allInstanceMethods}}
   <li>{{>name_link}}</li>
   {{/clazz.allInstanceMethods}}
