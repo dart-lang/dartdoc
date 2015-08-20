@@ -1308,7 +1308,9 @@ class Typedef extends ModelElement implements EnclosedElement {
 }
 
 // TODO: rename this to property
-class Field extends ModelElement implements EnclosedElement {
+class Field extends ModelElement
+    with GetterSetterCombo
+    implements EnclosedElement {
   String _constantValue;
   bool _isInherited = false;
 
@@ -1330,30 +1332,6 @@ class Field extends ModelElement implements EnclosedElement {
   @override
   ModelElement get enclosingElement =>
       new ModelElement.from(_field.enclosingElement, library);
-
-  @override
-  String get _computeDocumentationComment {
-    var buffer = new StringBuffer();
-
-    if (hasGetter) {
-      String docs = _field.getter.computeDocumentationComment();
-      if (docs != null) buffer.write(docs);
-    }
-
-    if (hasSetter && !_field.setter.isSynthetic) {
-      String docs = _field.setter.computeDocumentationComment();
-      if (docs != null) {
-        if (buffer.isNotEmpty) buffer.write('\n\n');
-        buffer.write(docs);
-      }
-    }
-
-    if (buffer.isNotEmpty) return buffer.toString();
-
-    String docs = _field.computeDocumentationComment();
-    if (docs != null) buffer.write(docs);
-    return buffer.toString();
-  }
 
   void _setModelType() {
     if (hasGetter) {
@@ -1388,6 +1366,11 @@ class Field extends ModelElement implements EnclosedElement {
   bool get hasGetter => _field.getter != null;
 
   bool get hasSetter => _field.setter != null;
+
+  PropertyAccessorElement get getter => _field.getter;
+  PropertyAccessorElement get setter => _field.setter;
+
+  String computeDocumentationComment() => _field.computeDocumentationComment();
 
   bool get readOnly => hasGetter && !hasSetter;
 
@@ -1606,8 +1589,44 @@ class Accessor extends ModelElement implements EnclosedElement {
       '${library.dirName}/${_accessor.enclosingElement.name}/${name}.html';
 }
 
+/// Mixin for top-level variables and fields (aka properties)
+abstract class GetterSetterCombo {
+  bool get hasGetter;
+  bool get hasSetter;
+
+  PropertyAccessorElement get getter;
+  PropertyAccessorElement get setter;
+
+  String computeDocumentationComment();
+
+  String get _computeDocumentationComment {
+    var buffer = new StringBuffer();
+
+    if (hasGetter) {
+      String docs = getter.computeDocumentationComment();
+      if (docs != null) buffer.write(docs);
+    }
+
+    if (hasSetter && !setter.isSynthetic) {
+      String docs = setter.computeDocumentationComment();
+      if (docs != null) {
+        if (buffer.isNotEmpty) buffer.write('\n\n');
+        buffer.write(docs);
+      }
+    }
+
+    if (buffer.isNotEmpty) return buffer.toString();
+
+    String docs = computeDocumentationComment();
+    if (docs != null) buffer.write(docs);
+    return buffer.toString();
+  }
+}
+
 /// Top-level variables. But also picks up getters and setters?
-class TopLevelVariable extends ModelElement implements EnclosedElement {
+class TopLevelVariable extends ModelElement
+    with GetterSetterCombo
+    implements EnclosedElement {
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 
   TopLevelVariable(TopLevelVariableElement element, Library library)
@@ -1642,13 +1661,13 @@ class TopLevelVariable extends ModelElement implements EnclosedElement {
 
   String get linkedReturnType => modelType.linkedName;
 
-  @override
-  String get _computeDocumentationComment {
-    if (hasGetter) {
-      return _variable.getter.computeDocumentationComment();
-    } else if (hasSetter) {
-      return _variable.setter.computeDocumentationComment();
-    }
+  bool get hasGetter => _variable.getter != null;
+  bool get hasSetter => _variable.setter != null;
+
+  PropertyAccessorElement get getter => _variable.getter;
+  PropertyAccessorElement get setter => _variable.setter;
+
+  String computeDocumentationComment() {
     return _variable.computeDocumentationComment();
   }
 
@@ -1660,10 +1679,6 @@ class TopLevelVariable extends ModelElement implements EnclosedElement {
     var string = v.substring(v.indexOf('=') + 1, v.length).trim();
     return string.replaceAll(modelType.name, modelType.linkedName);
   }
-
-  bool get hasGetter => _variable.getter != null;
-
-  bool get hasSetter => _variable.setter != null;
 
   @override
   String get _href => '${library.dirName}/${name}.html';

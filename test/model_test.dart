@@ -826,6 +826,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Top-level Variable', () {
     TopLevelVariable v;
     TopLevelVariable v3, justGetter, justSetter;
+    TopLevelVariable setAndGet;
 
     setUp(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
@@ -834,6 +835,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.properties.firstWhere((p) => p.name == 'justGetter');
       justSetter =
           fakeLibrary.properties.firstWhere((p) => p.name == 'justSetter');
+      setAndGet =
+          fakeLibrary.properties.firstWhere((p) => p.name == 'setAndGet');
     });
 
     test('has enclosing element', () {
@@ -860,6 +863,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('setter documentation', () {
       expect(justSetter.documentation,
           equals('Just a setter. No partner getter.'));
+    });
+
+    test('a distinct getter and setters docs appear in the propertys docs', () {
+      expect(setAndGet.documentation, contains('The getter for setAndGet.'));
+      expect(setAndGet.documentation, contains('The setter for setAndGet.'));
     });
   });
 
