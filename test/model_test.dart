@@ -768,6 +768,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class c, LongFirstLine;
     Field f1, f2, constField, dynamicGetter, onlySetter;
     Field lengthX;
+    Field sFromApple;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
@@ -785,6 +786,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'WithGetterAndSetter')
           .allInstanceProperties
           .firstWhere((c) => c.name == 'lengthX');
+
+      sFromApple = exLibrary.allClasses
+          .firstWhere((c) => c.name == 'Apple')
+          .allInstanceProperties
+          .firstWhere((p) => p.name == 's');
     });
 
     test('has enclosing element', () {
@@ -821,11 +827,18 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(lengthX.documentation, contains('Sets the length.'));
       expect(lengthX.documentation, contains('Returns a length.'));
     });
+
+    test(
+        'property with setter and getter and comments with asterixes do not show asterixes',
+        () {
+      expect(sFromApple.documentationAsHtml.contains('/**'), isFalse);
+    });
   });
 
   group('Top-level Variable', () {
     TopLevelVariable v;
     TopLevelVariable v3, justGetter, justSetter;
+    TopLevelVariable setAndGet;
 
     setUp(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
@@ -834,6 +847,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.properties.firstWhere((p) => p.name == 'justGetter');
       justSetter =
           fakeLibrary.properties.firstWhere((p) => p.name == 'justSetter');
+      setAndGet =
+          fakeLibrary.properties.firstWhere((p) => p.name == 'setAndGet');
     });
 
     test('has enclosing element', () {
@@ -860,6 +875,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('setter documentation', () {
       expect(justSetter.documentation,
           equals('Just a setter. No partner getter.'));
+    });
+
+    test('a distinct getter and setters docs appear in the propertys docs', () {
+      expect(setAndGet.documentation, contains('The getter for setAndGet.'));
+      expect(setAndGet.documentation, contains('The setter for setAndGet.'));
     });
   });
 

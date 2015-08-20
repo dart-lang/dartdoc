@@ -8,6 +8,7 @@ import 'dart:convert';
 
 String htmlEscape(String text) => HTML_ESCAPE.convert(text);
 
+// TODO: move this elsewhere. Not really an HTML util.
 String stripComments(String str) {
   if (str == null) return null;
 

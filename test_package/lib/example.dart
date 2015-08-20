@@ -36,7 +36,17 @@ class Apple {
     _s2 = s;
   }
 
+  /**
+   * The getter for `s`
+   */
   String get s => _s2;
+
+  /**
+   * The setter for `s`
+   */
+  void set s(String something) {
+    _s2 = something;
+  }
 
   /// this is a method
   void m1() {}
@@ -150,13 +160,13 @@ enum Animal { CAT, DOG, HORSE }
 
 /// A class
 class Klass {
-/// A method
+  /// A method
   method() {}
 
-/// Another method
+  /// Another method
   another() {}
 
-/// A shadowed method
+  /// A shadowed method
   toString() {}
 }
 
