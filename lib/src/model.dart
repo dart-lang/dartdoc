@@ -1603,12 +1603,12 @@ abstract class GetterSetterCombo {
     var buffer = new StringBuffer();
 
     if (hasGetter) {
-      String docs = getter.computeDocumentationComment();
+      String docs = stripComments(getter.computeDocumentationComment());
       if (docs != null) buffer.write(docs);
     }
 
     if (hasSetter && !setter.isSynthetic) {
-      String docs = setter.computeDocumentationComment();
+      String docs = stripComments(setter.computeDocumentationComment());
       if (docs != null) {
         if (buffer.isNotEmpty) buffer.write('\n\n');
         buffer.write(docs);
@@ -1617,9 +1617,8 @@ abstract class GetterSetterCombo {
 
     if (buffer.isNotEmpty) return buffer.toString();
 
-    String docs = computeDocumentationComment();
-    if (docs != null) buffer.write(docs);
-    return buffer.toString();
+    // TODO: check that we'd ever get here. Doesn't seem like we would.
+    return computeDocumentationComment();
   }
 }
 

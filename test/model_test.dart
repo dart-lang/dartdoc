@@ -768,6 +768,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class c, LongFirstLine;
     Field f1, f2, constField, dynamicGetter, onlySetter;
     Field lengthX;
+    Field sFromApple;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
@@ -785,6 +786,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'WithGetterAndSetter')
           .allInstanceProperties
           .firstWhere((c) => c.name == 'lengthX');
+
+      sFromApple = exLibrary.allClasses
+          .firstWhere((c) => c.name == 'Apple')
+          .allInstanceProperties
+          .firstWhere((p) => p.name == 's');
     });
 
     test('has enclosing element', () {
@@ -820,6 +826,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('explicit getter and setter docs are unified', () {
       expect(lengthX.documentation, contains('Sets the length.'));
       expect(lengthX.documentation, contains('Returns a length.'));
+    });
+
+    test(
+        'property with setter and getter and comments with asterixes do not show asterixes',
+        () {
+      expect(sFromApple.documentationAsHtml.contains('/**'), isFalse);
     });
   });
 
