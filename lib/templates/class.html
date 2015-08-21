@@ -17,54 +17,54 @@
     {{#clazz.hasModifiers}}
     <section>
         <dl class="dl-horizontal">
-        {{#clazz.hasAnnotations}}
-        <dt>Annotations</dt>
-        <dd><ul class="annotation-list clazz-relationships">
-            {{#clazz.annotations}}
-            <li>{{{.}}}</li>
-            {{/clazz.annotations}}
-        </ul></dd>
-        {{/clazz.hasAnnotations}}
+          {{#clazz.hasSupertype}}
+          <dt>Inheritance</dt>
+          <dd><ul class="gt-separated dark clazz-relationships">
+              <li>{{{linkedObjectType}}}</li>
+              {{#clazz.superChainReversed}}
+              <li>{{{linkedName}}}</li>
+              {{/clazz.superChainReversed}}
+              <li>{{{name}}}</li>
+          </ul></dd>
+          {{/clazz.hasSupertype}}
 
-        {{#clazz.hasSupertype}}
-        <dt>Extends</dt>
-        <dd><ul class="gt-separated dark clazz-relationships">
-            <li>{{{linkedObjectType}}}</li>
-            {{#clazz.superChainReversed}}
-            <li>{{{linkedName}}}</li>
-            {{/clazz.superChainReversed}}
-            <li>{{{name}}}</li>
-        </ul></dd>
-        {{/clazz.hasSupertype}}
+          {{#clazz.hasInterfaces}}
+          <dt>Implements</dt>
+              <dd>
+                  <ul class="comma-separated clazz-relationships">
+                      {{#clazz.interfaces}}
+                      <li>{{{linkedName}}}</li>
+                      {{/clazz.interfaces}}
+                  </ul>
+              </dd>
+          {{/clazz.hasInterfaces}}
 
-        {{#clazz.hasInterfaces}}
-        <dt>Implements</dt>
-            <dd>
-                <ul class="comma-separated clazz-relationships">
-                    {{#clazz.interfaces}}
-                    <li>{{{linkedName}}}</li>
-                    {{/clazz.interfaces}}
-                </ul>
-            </dd>
-        {{/clazz.hasInterfaces}}
+          {{#clazz.hasMixins}}
+          <dt>Mixes-in</dt>
+          <dd><ul class="comma-separated clazz-relationships">
+              {{#clazz.mixins}}
+              <li>{{{linkedName}}}</li>
+              {{/clazz.mixins}}
+          </ul></dd>
+          {{/clazz.hasMixins}}
 
-        {{#clazz.hasMixins}}
-        <dt>Mixes-in</dt>
-        <dd><ul class="comma-separated clazz-relationships">
-            {{#clazz.mixins}}
-            <li>{{{linkedName}}}</li>
-            {{/clazz.mixins}}
-        </ul></dd>
-        {{/clazz.hasMixins}}
+          {{#clazz.hasImplementors}}
+          <dt>Implemented by</dt>
+          <dd><ul class="comma-separated clazz-relationships">
+              {{#clazz.implementors}}
+              <li>{{{linkedName}}}</li>
+              {{/clazz.implementors}}
+          </ul></dd>
+          {{/clazz.hasImplementors}}
 
-        {{#clazz.hasImplementors}}
-        <dt>Implemented by</dt>
-        <dd><ul class="comma-separated clazz-relationships">
-            {{#clazz.implementors}}
-            <li>{{{linkedName}}}</li>
-            {{/clazz.implementors}}
-        </ul></dd>
-        {{/clazz.hasImplementors}}
+          {{#clazz.hasAnnotations}}
+          <dt>Annotations</dt>
+          <dd><ul class="annotation-list clazz-relationships">
+              {{#clazz.annotations}}
+              <li>{{{.}}}</li>
+              {{/clazz.annotations}}
+          </ul></dd>
+          {{/clazz.hasAnnotations}}
         </dl>
     </section>
     {{/clazz.hasModifiers}}
