@@ -131,10 +131,7 @@ class DartDoc {
   List<LibraryElement> _parseLibraries(List<String> files) {
     Set<LibraryElement> libraries = new Set();
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
-    List<UriResolver> resolvers = [
-      new DartUriResolver(sdk),
-      new FileUriResolver()
-    ];
+    List<UriResolver> resolvers = [new DartUriResolver(sdk)];
     if (urlMappings != null) resolvers.insert(
         0, new CustomUriResolver(urlMappings));
 
@@ -150,7 +147,7 @@ class DartDoc {
       resolvers.add(new PackageMapUriResolver(
           PhysicalResourceProvider.INSTANCE, packageMap));
     }
-
+    resolvers.add(new FileUriResolver());
     SourceFactory sourceFactory =
         new SourceFactory(/*contentCache,*/ resolvers);
 
@@ -173,7 +170,12 @@ class DartDoc {
         if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
       }
       print('parsing ${name}...');
+      JavaFile javaFile = new JavaFile(filePath);
       Source source = new FileBasedSource(new JavaFile(filePath));
+      Uri uri = context.sourceFactory.restoreUri(source);
+      if (uri != null) {
+        source = new FileBasedSource(javaFile, uri);
+      }
       sources.add(source);
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
