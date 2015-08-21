@@ -131,10 +131,7 @@ class DartDoc {
   List<LibraryElement> _parseLibraries(List<String> files) {
     Set<LibraryElement> libraries = new Set();
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
-    List<UriResolver> resolvers = [
-      new DartUriResolver(sdk),
-      new FileUriResolver()
-    ];
+    List<UriResolver> resolvers = [new DartUriResolver(sdk)];
     if (urlMappings != null) resolvers.insert(
         0, new CustomUriResolver(urlMappings));
 
@@ -150,7 +147,7 @@ class DartDoc {
       resolvers.add(new PackageMapUriResolver(
           PhysicalResourceProvider.INSTANCE, packageMap));
     }
-
+    resolvers.add(new FileUriResolver());
     SourceFactory sourceFactory =
         new SourceFactory(/*contentCache,*/ resolvers);
 
