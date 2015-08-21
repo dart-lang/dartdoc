@@ -250,6 +250,11 @@ section.summary dt {
 dl.dl-horizontal dt {
   font-style: normal;
   text-align: left;
+  color: #727272;
+}
+
+dl.dl-horizontal dt::after {
+  content: ':';
 }
 
 dt .name {
@@ -349,6 +354,7 @@ footer .container-fluid {
 .gt-separated {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .gt-separated li {
