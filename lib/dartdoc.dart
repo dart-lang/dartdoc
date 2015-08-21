@@ -92,10 +92,12 @@ class DartDoc {
     List<LibraryElement> libraries = _parseLibraries(files);
 
     if (includes != null && includes.isNotEmpty) {
-      Set notFound = new Set.from(includes)
-          .difference(new Set.from(libraries.map((l) => l.name)));
+      Iterable knownLibraryNames = libraries.map((l) => l.name);
+      Set notFound =
+          new Set.from(includes).difference(new Set.from(knownLibraryNames));
       if (notFound.isNotEmpty) {
-        return new Future.error('Some libraries not found: $notFound');
+        return new Future.error('Did not find: [${notFound.join(', ')}] in ' +
+            'known libraries: [${knownLibraryNames.join(', ')}]');
       }
       libraries.removeWhere((lib) => !includes.contains(lib.name));
     } else {
