@@ -26,7 +26,10 @@
           </dt>
           <dd>
             {{#isNotDocumented}}<span class="undocumented">Library not documented.</span>{{/isNotDocumented}}
-            <p>{{{ oneLineDoc }}}</p>
+            <p>
+              {{{ oneLineDoc }}}
+              {{>has_more_docs}}
+            </p>
           </dd>
         {{/package.libraries}}
       </dl>

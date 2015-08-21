@@ -116,19 +116,31 @@ void main() {
       expect(dartAsyncLib.name, 'dart:async');
     });
 
-    test('name', () {
+    test('has a name', () {
       expect(exLibrary.name, 'ex');
     });
 
-    test('sdk library names', () {
+    test('sdk library have formatted names', () {
       expect(dartAsyncLib.name, 'dart:async');
       expect(dartAsyncLib.dirName, 'dart-async');
       expect(dartAsyncLib.href, 'dart-async/dart-async-library.html');
     });
 
-    test('documentation', () {
+    test('has documentation', () {
       expect(exLibrary.documentation,
           'a library. testing string escaping: `var s = \'a string\'` <cool>');
+    });
+
+    test('has one line docs', () {
+      expect(
+          fakeLibrary.oneLineDoc,
+          equals(
+              'WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a>'));
+    });
+
+    test('has more than one line docs (or not)', () {
+      expect(fakeLibrary.hasMoreThanOneLineDocs, true);
+      expect(exLibrary.hasMoreThanOneLineDocs, false);
     });
 
     test('has properties', () {

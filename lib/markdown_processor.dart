@@ -47,6 +47,7 @@ String _linkDocReference(String reference, ModelElement element,
   }
 }
 
+// TODO: this is in the wrong place
 class Documentation {
   final ModelElement element;
   String _asHtml;
@@ -64,6 +65,8 @@ class Documentation {
   Document get asHtmlDocument => _asHtmlDocument;
 
   String get asOneLiner => _asOneLiner;
+
+  bool get hasMoreThanOneLineDocs => _asHtmlDocument.body.children.length > 1;
 
   void _processDocsAsMarkdown() {
     String tempHtml = renderMarkdownToHtml(raw, element);
