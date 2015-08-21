@@ -1324,7 +1324,7 @@ class Typedef extends ModelElement implements EnclosedElement {
   String get _href => '${library.dirName}/$fileName';
 }
 
-// TODO: rename this to property
+// TODO: rename this to Property
 class Field extends ModelElement
     with GetterSetterCombo
     implements EnclosedElement {
@@ -1635,8 +1635,13 @@ abstract class GetterSetterCombo {
     if (buffer.isNotEmpty) return buffer.toString();
 
     // TODO: check that we'd ever get here. Doesn't seem like we would.
+    // This is old.
     return computeDocumentationComment();
   }
+
+  String get getterDocsAsHtml => '';
+
+  String get setterDocsAsHtml => '';
 }
 
 /// Top-level variables. But also picks up getters and setters?
