@@ -62,13 +62,23 @@ abstract class Nameable {
   String get name;
 }
 
-abstract class ModelElement implements Comparable, Nameable {
+/// Bridges the gap between model elements and packages,
+/// both of which have documentation.
+abstract class Documentable {
+  String get oneLineDoc;
+  String get documentation;
+  String get documentationAsHtml;
+  bool get hasMoreThanOneLineDocs;
+  bool get hasDocumentation;
+}
+
+abstract class ModelElement implements Comparable, Nameable, Documentable {
   final Element element;
   final Library library;
 
   ElementType _modelType;
   String _rawDocs;
-  Documentation _documentation;
+  Documentation __documentation;
   List _parameters;
 
   // WARNING: putting anything into the body of this seems
@@ -150,20 +160,24 @@ abstract class ModelElement implements Comparable, Nameable {
     return _rawDocs;
   }
 
+  Documentation get _documentation {
+    if (__documentation != null) return __documentation;
+    __documentation = new Documentation(this);
+    return __documentation;
+  }
+
+  @override
   bool get hasDocumentation =>
       documentation != null && documentation.isNotEmpty;
 
-  String get documentationAsHtml {
-    if (_documentation != null) return _documentation.asHtml;
-    _documentation = new Documentation(this);
-    return _documentation.asHtml;
-  }
+  @override
+  String get documentationAsHtml => _documentation.asHtml;
 
-  String get oneLineDoc {
-    if (_documentation != null) return _documentation.asOneLiner;
-    _documentation = new Documentation(this);
-    return _documentation.asOneLiner;
-  }
+  @override
+  String get oneLineDoc => _documentation.asOneLiner;
+
+  @override
+  bool get hasMoreThanOneLineDocs => _documentation.hasMoreThanOneLineDocs;
 
   String get htmlId => name;
 
@@ -392,7 +406,7 @@ class Dynamic extends ModelElement {
   String get kind => 'dynamic';
 }
 
-class Package implements Nameable {
+class Package implements Nameable, Documentable {
   final List<Library> _libraries = [];
   final PackageMeta packageMeta;
   String _docsAsHtml;
@@ -424,6 +438,9 @@ class Package implements Nameable {
 
     return _docsAsHtml;
   }
+
+  // TODO: make this work
+  bool get hasMoreThanOneLineDocs => true;
 
   List<Library> get libraries => _libraries;
 
@@ -1307,7 +1324,7 @@ class Typedef extends ModelElement implements EnclosedElement {
   String get _href => '${library.dirName}/$fileName';
 }
 
-// TODO: rename this to property
+// TODO: rename this to Property
 class Field extends ModelElement
     with GetterSetterCombo
     implements EnclosedElement {
@@ -1618,8 +1635,13 @@ abstract class GetterSetterCombo {
     if (buffer.isNotEmpty) return buffer.toString();
 
     // TODO: check that we'd ever get here. Doesn't seem like we would.
+    // This is old.
     return computeDocumentationComment();
   }
+
+  String get getterDocsAsHtml => '';
+
+  String get setterDocsAsHtml => '';
 }
 
 /// Top-level variables. But also picks up getters and setters?

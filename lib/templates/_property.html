@@ -5,5 +5,5 @@
 </dt>
 <dd>
     {{>readable_writable}}
-    <p>{{{ oneLineDoc }}}</p>
+    <p>{{{ oneLineDoc }}}{{^isInherited}}{{>has_more_docs}}{{/isInherited}}</p>
 </dd>
