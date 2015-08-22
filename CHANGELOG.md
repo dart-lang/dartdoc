@@ -1,3 +1,14 @@
+## 0.6.0
+* [enhancement] / key activates the search bar
+* [bug] combined getter/setter docs were mangled
+* [enhancement] exact matches in search now rank higher
+* [enhancement] search box starts with "Loading..."
+* [enhancement] provide a hint that there are more docs than the one-liner
+* [sdk] bundle dartdoc with SDK
+* [bug] links in right column of MapBase did not work
+* [enhancement] reorder details about a class, like inheritance
+* [sdk] fix links in SDK's front page README
+
 ## 0.5.0+3
 * [bug] fixed issue with duplicate docs for properties
 
