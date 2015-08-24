@@ -1622,13 +1622,11 @@ abstract class GetterSetterCombo {
   PropertyAccessorElement get _setter;
 
   Accessor get getter {
-    if (_getter == null) return null;
-    return new ModelElement.from(_getter, library);
+    return _getter == null ? null : new ModelElement.from(_getter, library);
   }
 
   Accessor get setter {
-    if (_setter == null) return null;
-    return new ModelElement.from(_setter, library);
+    return _setter == null ? null : new ModelElement.from(_setter, library);
   }
 
   // TODO: now that we have explicit getter and setters, we probably
