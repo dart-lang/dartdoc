@@ -25,7 +25,7 @@ else
   echo ""
 
   # Turn this back on for dartdoc > 0.4.0
-  #$(dirname -- "$0")/ensure_dartfmt.sh
+  $(dirname -- "$0")/ensure_dartfmt.sh
 
   # Verify that the libraries are error free.
   grind analyze
