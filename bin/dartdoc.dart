@@ -121,7 +121,7 @@ main(List<String> arguments) async {
 
   try {
     DartDocResults results = await dartdoc.generateDocs();
-    print('\nSuccess! Open file://${results.outDir.absolute.path}/index.html');
+    print('\nSuccess! Docs generated into ${results.outDir.absolute.path}');
   } catch (e, st) {
     if (e is DartDocFailure) {
       stderr.writeln('Generation failed: ${e}.');
@@ -152,23 +152,27 @@ ArgParser _createArgsParser() {
   parser.addFlag('version',
       help: 'Display the version for $name.', negatable: false);
   parser.addOption('dart-sdk',
-      help: "Location of the Dart SDK. Use if SDK isn't automatically located.");
+      help:
+          "Location of the Dart SDK. Use if SDK isn't automatically located.");
   parser.addFlag('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
   parser.addOption('sdk-readme',
-      help: 'Path to the SDK description file. Use if generating Dart SDK docs.');
+      help:
+          'Path to the SDK description file. Use if generating Dart SDK docs.');
   parser.addOption('input',
       help: 'Path to source directory', defaultsTo: Directory.current.path);
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
   parser.addOption('header',
-      help: 'path to file containing HTML text, inserted into the header of every page.');
+      help:
+          'path to file containing HTML text, inserted into the header of every page.');
   parser.addOption('footer',
-      help: 'path to file containing HTML text, inserted into the footer of every page.');
+      help:
+          'path to file containing HTML text, inserted into the footer of every page.');
   parser.addOption('package-root', help: 'The path to the package root.');
   parser.addOption('url-mapping',
       help: '--url-mapping=libraryUri,/path/to/library.dart directs dartdoc to '
-      'use "library.dart" as the source for an import of "libraryUri"',
+          'use "library.dart" as the source for an import of "libraryUri"',
       allowMultiple: true,
       splitCommas: false);
   parser.addOption('exclude',
@@ -176,7 +180,8 @@ ArgParser _createArgsParser() {
   parser.addOption('include',
       help: 'Comma-separated list of library names to generate docs for.');
   parser.addOption('hosted-url',
-      help: 'URL where the docs will be hosted (used to generate the sitemap).');
+      help:
+          'URL where the docs will be hosted (used to generate the sitemap).');
   return parser;
 }
 
