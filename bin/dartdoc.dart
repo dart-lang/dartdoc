@@ -74,11 +74,6 @@ main(List<String> arguments) async {
     outputDir = new Directory(_resolveTildePath(args['output']));
   }
 
-  Directory packageRootDir;
-  if (args['package-root'] != null) {
-    packageRootDir = new Directory(_resolveTildePath(args['package-root']));
-  }
-
   Map<String, String> urlMappings;
   if (args['url-mapping'] != null) {
     urlMappings = new Map<String, String>();
@@ -117,7 +112,7 @@ main(List<String> arguments) async {
   var generators = initGenerators(url, headerFilePath, footerFilePath);
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
-      outputDir, packageRootDir, packageMeta, urlMappings, includeLibraries);
+      outputDir, packageMeta, urlMappings, includeLibraries);
 
   try {
     DartDocResults results = await dartdoc.generateDocs();
@@ -165,7 +160,6 @@ ArgParser _createArgsParser() {
       help: 'path to file containing HTML text, inserted into the header of every page.');
   parser.addOption('footer',
       help: 'path to file containing HTML text, inserted into the footer of every page.');
-  parser.addOption('package-root', help: 'The path to the package root.');
   parser.addOption('url-mapping',
       help: '--url-mapping=libraryUri,/path/to/library.dart directs dartdoc to '
       'use "library.dart" as the source for an import of "libraryUri"',

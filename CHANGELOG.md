@@ -1,3 +1,9 @@
+## unreleased
+* Removed the `--package-root` option. Dartdoc now uses the `--input` flag as
+  the place to start looking for an analysis root. This better supports the
+  `.packages` file and use cases where dartdoc is invoked from locations other
+  than the project directory.
+
 ## 0.6.0+1
 * [bug] fix for getting uri for sources in lib folder
 
