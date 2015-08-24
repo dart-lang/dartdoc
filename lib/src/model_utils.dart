@@ -31,5 +31,6 @@ Iterable<LibraryElement> getSdkLibrariesToDocument(
 List<InterfaceType> getAllSupertypes(ClassElement c) => c.allSupertypes;
 
 bool isInExportedLibraries(
-    List<LibraryElement> libraries, LibraryElement library) => libraries
-    .any((lib) => lib == library || lib.exportedLibraries.contains(library));
+        List<LibraryElement> libraries, LibraryElement library) =>
+    libraries.any(
+        (lib) => lib == library || lib.exportedLibraries.contains(library));
