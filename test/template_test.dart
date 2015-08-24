@@ -25,7 +25,13 @@ void main() {
       });
 
       test('render', () {
-        expect(_normalize(sitemap({'links': [{'name': 'somefile.html'}]})), '''
+        expect(
+            _normalize(sitemap({
+              'links': [
+                {'name': 'somefile.html'}
+              ]
+            })),
+            '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -36,9 +42,14 @@ void main() {
       });
 
       test('substitute multiple links', () {
-        expect(_normalize(sitemap({
-          'links': [{'name': 'somefile.html'}, {'name': 'asecondfile.html'}]
-        })), '''
+        expect(
+            _normalize(sitemap({
+              'links': [
+                {'name': 'somefile.html'},
+                {'name': 'asecondfile.html'}
+              ]
+            })),
+            '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -52,10 +63,14 @@ void main() {
       });
 
       test('url and file name', () {
-        expect(_normalize(sitemap({
-          'url': 'http://mydoc.com',
-          'links': [{'name': 'somefile.html'}]
-        })), '''
+        expect(
+            _normalize(sitemap({
+              'url': 'http://mydoc.com',
+              'links': [
+                {'name': 'somefile.html'}
+              ]
+            })),
+            '''
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>

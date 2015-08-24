@@ -91,8 +91,10 @@ generated from Dart source code.'''));
     });
 
     test('has a description', () {
-      expect(p.description, equals(
-          'The Dart SDK is a set of tools and libraries for the Dart programming language.'));
+      expect(
+          p.description,
+          equals(
+              'The Dart SDK is a set of tools and libraries for the Dart programming language.'));
     });
 
     test('has a homepage', () {
