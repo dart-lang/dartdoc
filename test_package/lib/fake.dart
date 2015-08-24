@@ -129,7 +129,6 @@ abstract class AnotherInterface {}
 /// A super class, with many powers. Link to [Apple] from another library.
 @deprecated
 class SuperAwesomeClass {
-
   /// In the super class.
   List<String> powers;
 
@@ -154,7 +153,8 @@ class SuperAwesomeClass {
 ///
 /// The rest of this is not in the first paragraph.
 @Annotation('value')
-class LongFirstLine extends SuperAwesomeClass with MixMeIn
+class LongFirstLine extends SuperAwesomeClass
+    with MixMeIn
     implements Interface, AnotherInterface {
   static const THING = 'yup';
   static const int ANSWER = 42;
@@ -342,7 +342,8 @@ const greatestAnnotation = 'greatest';
 ///
 /// Check out the [number] parameter. It's the first one.
 String functionWithFunctionParameters(int number, void thing(one, two),
-    String string, Future asyncThing(three, four, five, six, seven)) => null;
+        String string, Future asyncThing(three, four, five, six, seven)) =>
+    null;
 
 /// These are code syntaxes: [:true:] and [:false:]
 const testingCodeSyntaxInOneLiners = 'fantastic';
@@ -352,7 +353,6 @@ const incorrectDocReference = 'doh';
 
 /// Tests a single field with explict getter and setter.
 class WithGetterAndSetter {
-
   /// Returns a length.
   ///
   /// Throws some exception if used in the fourth dimension.
@@ -412,7 +412,6 @@ class BaseForDocComments {
 
 /// Testing if docs for inherited method are correct.
 class SubForDocComments extends BaseForDocComments {
-
   /// Reference to [foo] and [bar]
   void localMethod(String foo, bar) {}
 }

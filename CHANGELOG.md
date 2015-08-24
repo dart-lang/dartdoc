@@ -1,8 +1,12 @@
-## unreleased
+## 0.6.1
 * Removed the `--package-root` option. Dartdoc now uses the `--input` flag as
   the place to start looking for an analysis root. This better supports the
   `.packages` file and use cases where dartdoc is invoked from locations other
   than the project directory.
+* Search box displays message when it fails to load its index
+* Changed message printed when dartdoc finishes, pointing to path instead of URI
+* Reduced color saturation in header and links
+* Improved display of getters and setters on property pages
 
 ## 0.6.0+1
 * [bug] fix for getting uri for sources in lib folder

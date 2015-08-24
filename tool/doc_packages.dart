@@ -193,7 +193,9 @@ Future<bool> _generateFor(PackageInfo package) async {
   }
 }
 
-Future _exec(String command, List<String> args, {String cwd, bool quiet: false,
+Future _exec(String command, List<String> args,
+    {String cwd,
+    bool quiet: false,
     Duration timeout: const Duration(seconds: 60)}) {
   return Process
       .start(command, args, workingDirectory: cwd)
