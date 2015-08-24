@@ -141,6 +141,12 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   String get _computeDocumentationComment =>
       element.computeDocumentationComment();
 
+  /// Returns the docs, stripped of their
+  /// leading comments syntax.
+  ///
+  /// This getter will walk up the inheritance hierarchy
+  /// to find docs, if the current class doesn't have docs
+  /// for this element.
   String get documentation {
     if (_rawDocs != null) return _rawDocs;
 
@@ -1384,8 +1390,8 @@ class Field extends ModelElement
 
   bool get hasSetter => _field.setter != null;
 
-  PropertyAccessorElement get getter => _field.getter;
-  PropertyAccessorElement get setter => _field.setter;
+  PropertyAccessorElement get _getter => _field.getter;
+  PropertyAccessorElement get _setter => _field.setter;
 
   String computeDocumentationComment() => _field.computeDocumentationComment();
 
@@ -1610,38 +1616,42 @@ class Accessor extends ModelElement implements EnclosedElement {
 abstract class GetterSetterCombo {
   bool get hasGetter;
   bool get hasSetter;
+  Library get library;
 
-  PropertyAccessorElement get getter;
-  PropertyAccessorElement get setter;
+  PropertyAccessorElement get _getter;
+  PropertyAccessorElement get _setter;
 
-  String computeDocumentationComment();
+  Accessor get getter {
+    if (_getter == null) return null;
+    return new ModelElement.from(_getter, library);
+  }
 
+  Accessor get setter {
+    if (_setter == null) return null;
+    return new ModelElement.from(_setter, library);
+  }
+
+  // TODO: now that we have explicit getter and setters, we probably
+  // want a cleaner way to do this. Only the one-liner is using this
+  // now. The detail pages should be using getter and setter directly.
   String get _computeDocumentationComment {
     var buffer = new StringBuffer();
 
     if (hasGetter) {
-      String docs = stripComments(getter.computeDocumentationComment());
+      String docs = stripComments(_getter.computeDocumentationComment());
       if (docs != null) buffer.write(docs);
     }
 
-    if (hasSetter && !setter.isSynthetic) {
-      String docs = stripComments(setter.computeDocumentationComment());
+    if (hasSetter && !_setter.isSynthetic) {
+      String docs = stripComments(_setter.computeDocumentationComment());
       if (docs != null) {
         if (buffer.isNotEmpty) buffer.write('\n\n');
         buffer.write(docs);
       }
     }
 
-    if (buffer.isNotEmpty) return buffer.toString();
-
-    // TODO: check that we'd ever get here. Doesn't seem like we would.
-    // This is old.
-    return computeDocumentationComment();
+    return buffer.toString();
   }
-
-  String get getterDocsAsHtml => '';
-
-  String get setterDocsAsHtml => '';
 }
 
 /// Top-level variables. But also picks up getters and setters?
@@ -1685,8 +1695,8 @@ class TopLevelVariable extends ModelElement
   bool get hasGetter => _variable.getter != null;
   bool get hasSetter => _variable.setter != null;
 
-  PropertyAccessorElement get getter => _variable.getter;
-  PropertyAccessorElement get setter => _variable.setter;
+  PropertyAccessorElement get _getter => _variable.getter;
+  PropertyAccessorElement get _setter => _variable.setter;
 
   String computeDocumentationComment() {
     return _variable.computeDocumentationComment();

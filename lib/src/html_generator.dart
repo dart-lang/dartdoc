@@ -97,7 +97,9 @@ class Templates {
       'source_code',
       'sidebar_for_library',
       'name_link',
-      'has_more_docs'
+      'has_more_docs',
+      'accessor_getter',
+      'accessor_setter'
     ];
 
     for (String partial in partials) {
