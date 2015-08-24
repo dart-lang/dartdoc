@@ -845,6 +845,45 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       expect(sFromApple.documentationAsHtml.contains('/**'), isFalse);
     });
+
+    test('explicit getter/setter has a getter accessor', () {
+      expect(lengthX.getter, isNotNull);
+      expect(lengthX.getter.name, equals('lengthX'));
+    });
+
+    test('explicit getter/setter has a setter accessor', () {
+      expect(lengthX.setter, isNotNull);
+      expect(lengthX.setter.name, equals('lengthX='));
+    });
+
+    test('a stand-alone setter does not have a getter', () {
+      expect(onlySetter.getter, isNull);
+    });
+  });
+
+  group('Accessor', () {
+    Accessor onlyGetterGetter,
+        onlyGetterSetter,
+        onlySetterGetter,
+        onlySetterSetter;
+
+    setUp(() {
+      TopLevelVariable justGetter =
+          fakeLibrary.properties.firstWhere((p) => p.name == 'justGetter');
+      onlyGetterGetter = justGetter.getter;
+      onlyGetterSetter = justGetter.setter;
+      TopLevelVariable justSetter =
+          fakeLibrary.properties.firstWhere((p) => p.name == 'justSetter');
+      onlySetterSetter = justSetter.setter;
+      onlySetterGetter = justSetter.getter;
+    });
+
+    test('are available on top-level variables', () {
+      expect(onlyGetterGetter.name, equals('justGetter'));
+      expect(onlyGetterSetter, isNull);
+      expect(onlySetterGetter, isNull);
+      expect(onlySetterSetter.name, equals('justSetter='));
+    });
   });
 
   group('Top-level Variable', () {
@@ -879,12 +918,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(v3.linkedReturnType, 'dynamic');
     });
 
-    test('getter documentation', () {
+    test('just a getter has documentation', () {
       expect(justGetter.documentation,
           equals('Just a getter. No partner setter.'));
     });
 
-    test('setter documentation', () {
+    test('just a setter has documentation', () {
       expect(justSetter.documentation,
           equals('Just a setter. No partner getter.'));
     });
@@ -892,6 +931,16 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('a distinct getter and setters docs appear in the propertys docs', () {
       expect(setAndGet.documentation, contains('The getter for setAndGet.'));
       expect(setAndGet.documentation, contains('The setter for setAndGet.'));
+    });
+
+    test('has a getter accessor', () {
+      expect(setAndGet.getter, isNotNull);
+      expect(setAndGet.getter.name, equals('setAndGet'));
+    });
+
+    test('has a setter accessor', () {
+      expect(setAndGet.setter, isNotNull);
+      expect(setAndGet.setter.name, equals('setAndGet='));
     });
   });
 
