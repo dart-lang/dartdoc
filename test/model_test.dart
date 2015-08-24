@@ -10,6 +10,7 @@ import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/config.dart';
 import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
@@ -853,6 +854,21 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('method source code indents correctly', () {
       expect(convertToMap.sourceCode, 'Map<X, Y> convertToMap() => null;');
+    });
+
+    group(".crossdartHtmlTag()", () {
+      test('it returns a Crossdart link when Crossdart support is enabled', () {
+        initializeConfig(addCrossdart: true);
+        String packageName = m1.library.package.name;
+        String packageVersion = m1.library.package.version;
+        expect(m1.crossdartHtmlTag,
+            contains("//crossdart.info/p/$packageName/$packageVersion"));
+      });
+
+      test('it returns an empty string when Crossdart support is disabled', () {
+        initializeConfig(addCrossdart: false);
+        expect(m1.crossdartHtmlTag, "");
+      });
     });
   });
 

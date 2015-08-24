@@ -25,6 +25,14 @@ abstract class PackageMeta {
   String get description;
   String get homepage;
 
+  String _resolvedDir;
+  String get resolvedDir {
+    if (_resolvedDir == null) {
+      _resolvedDir = dir.resolveSymbolicLinksSync();
+    }
+    return _resolvedDir;
+  }
+
   FileContents getReadmeContents();
   FileContents getLicenseContents();
   FileContents getChangelogContents();
