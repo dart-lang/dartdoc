@@ -24,7 +24,6 @@ import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
 import 'generator.dart';
-import 'resource_loader.dart' as loader;
 import 'src/html_generator.dart' show dartdocVersion, HtmlGenerator;
 import 'src/io_utils.dart';
 import 'src/model.dart';
@@ -57,23 +56,14 @@ class DartDoc {
   final Directory sdkDir;
   final List<Generator> generators;
   final Directory outputDir;
-  final Directory packageRootDir;
   final PackageMeta packageMeta;
   final Map<String, String> urlMappings;
   final List<String> includes;
 
   Stopwatch _stopwatch;
 
-  DartDoc(
-      this.rootDir,
-      this.excludes,
-      this.sdkDir,
-      this.generators,
-      this.outputDir,
-      this.packageRootDir,
-      this.packageMeta,
-      this.urlMappings,
-      this.includes);
+  DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
+      this.outputDir, this.packageMeta, this.urlMappings, this.includes);
 
   /// Generate DartDoc documentation.
   ///
@@ -83,8 +73,6 @@ class DartDoc {
   /// unexpected failure.
   Future<DartDocResults> generateDocs() async {
     _stopwatch = new Stopwatch()..start();
-
-    if (packageRootDir != null) loader.packageRootPath = packageRootDir.path;
 
     List<String> files =
         packageMeta.isSdk ? [] : findFilesToDocumentInPackage(rootDir.path);
@@ -134,11 +122,12 @@ class DartDoc {
     Set<LibraryElement> libraries = new Set();
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
     List<UriResolver> resolvers = [new DartUriResolver(sdk)];
-    if (urlMappings != null) resolvers.insert(
-        0, new CustomUriResolver(urlMappings));
+    if (urlMappings != null) {
+      resolvers.insert(0, new CustomUriResolver(urlMappings));
+    }
 
     fileSystem.Resource cwd =
-        PhysicalResourceProvider.INSTANCE.getResource('.');
+        PhysicalResourceProvider.INSTANCE.getResource(rootDir.path);
     PubPackageMapProvider pubPackageMapProvider =
         new PubPackageMapProvider(PhysicalResourceProvider.INSTANCE, sdk);
     PackageMapInfo packageMapInfo =
@@ -150,8 +139,8 @@ class DartDoc {
           PhysicalResourceProvider.INSTANCE, packageMap));
     }
     resolvers.add(new FileUriResolver());
-    SourceFactory sourceFactory =
-        new SourceFactory(/*contentCache,*/ resolvers);
+
+    SourceFactory sourceFactory = new SourceFactory(resolvers);
 
     var options = new AnalysisOptionsImpl()..cacheSize = 512;
 

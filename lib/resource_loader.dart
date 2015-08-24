@@ -18,9 +18,6 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:pub_cache/pub_cache.dart';
 
-/// Optional package root path.
-String packageRootPath;
-
 /// Loads a `package:` resource as a String.
 Future<String> loadAsString(String path) {
   if (!path.startsWith('package:')) {
@@ -29,10 +26,10 @@ Future<String> loadAsString(String path) {
 
   // TODO: Remove once https://github.com/dart-lang/pub/issues/22 is fixed.
   return _doLoad(path)
-    .then((bytes) => new String.fromCharCodes(bytes))
-    .catchError((_) {
-      return new Resource(path).readAsString();
-    });
+      .then((bytes) => new String.fromCharCodes(bytes))
+      .catchError((_) {
+    return new Resource(path).readAsString();
+  });
 }
 
 /// Loads a `package:` resource as an [List<int>].
@@ -52,8 +49,6 @@ Future<Uint8List> _doLoad(final String path) {
     return _doLoadOverHttp(path);
   } else if (scriptUri.toString().endsWith('.snapshot')) {
     return _doLoadWhenSnapshot(path);
-  } else if (packageRootPath != null) {
-    return _doLoadFromPackageRoot(path);
   } else {
     return _doLoadFromFileFromPackagesDir(path);
   }
@@ -130,12 +125,6 @@ Future<Uint8List> _doLoadFromFileFromPackagesDir(final String resourcePath) {
   }
 
   var fullPath = p.join(baseDir, convertedPath);
-  return _readFile(resourcePath, fullPath);
-}
-
-Future<Uint8List> _doLoadFromPackageRoot(final String resourcePath) {
-  var withoutScheme = _removePackageScheme(resourcePath);
-  var fullPath = p.join(packageRootPath, withoutScheme);
   return _readFile(resourcePath, fullPath);
 }
 
