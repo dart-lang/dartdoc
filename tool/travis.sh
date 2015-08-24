@@ -7,8 +7,11 @@
 # Fast fail the script on failures.
 set -e
 
-# Globally install grinder.
 pub global activate grinder
+
+pub global activate dart_style
+
+# add globally activated packages to the path
 export PATH="$PATH":"~/.pub-cache/bin"
 
 if [ "$GEN_SDK_DOCS" = "true" ]
@@ -24,7 +27,6 @@ else
   echo "Skipping SDK docs, because GEN_SDK_DOCS is $GEN_SDK_DOCS"
   echo ""
 
-  # Turn this back on for dartdoc > 0.4.0
   $(dirname -- "$0")/ensure_dartfmt.sh
 
   # Verify that the libraries are error free.
