@@ -1,3 +1,6 @@
+## 0.6.0+1
+* [bug] fix for getting uri for sources in lib folder
+
 ## 0.6.0
 * [enhancement] / key activates the search bar
 * [bug] combined getter/setter docs were mangled
