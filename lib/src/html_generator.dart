@@ -224,7 +224,7 @@ class HtmlGeneratorInstance {
           generateProperty(package, lib, clazz, property);
         });
 
-        clazz.instanceMethods.forEach((method) {
+        clazz.allInstanceMethods.forEach((method) {
           generateMethod(package, lib, clazz, method);
         });
 

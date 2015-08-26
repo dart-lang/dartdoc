@@ -714,15 +714,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Method', () {
-    Class classB, klass, HasGenerics;
-    Method m, isGreaterThan, m4, m5, m6, convertToMap;
+    Class classB, klass, HasGenerics, CatString;
+    Method m1, isGreaterThan, m4, m5, m6, convertToMap;
+    Method inheritedClear;
 
     setUp(() {
       klass = exLibrary.classes.singleWhere((c) => c.name == 'Klass');
       classB = exLibrary.classes.singleWhere((c) => c.name == 'B');
       HasGenerics =
           fakeLibrary.classes.singleWhere((c) => c.name == 'HasGenerics');
-      m = classB.instanceMethods.first;
+      CatString = exLibrary.classes.singleWhere((c) => c.name == 'CatString');
+      inheritedClear =
+          CatString.inheritedMethods.singleWhere((m) => m.name == 'clear');
+      m1 = classB.instanceMethods.singleWhere((m) => m.name == 'm1');
       isGreaterThan = exLibrary.classes
           .singleWhere((c) => c.name == 'Apple')
           .instanceMethods
@@ -734,16 +738,27 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'convertToMap');
     });
 
+    test('an inherited method has the inheriting class as the enclosing class',
+        () {
+      expect(inheritedClear.enclosingElement.name, equals('CatString'));
+    });
+
+    test(
+        'an inherited method from the core SDK has a href local to the inheriting class',
+        () {
+      expect(inheritedClear.href, equals('dart-core/CatString/clear.html'));
+    });
+
     test('has enclosing element', () {
-      expect(m.enclosingElement.name, equals(classB.name));
+      expect(m1.enclosingElement.name, equals(classB.name));
     });
 
     test('overriden method', () {
-      expect(m.overriddenElement.runtimeType.toString(), 'Method');
+      expect(m1.overriddenElement.runtimeType.toString(), 'Method');
     });
 
     test('method documentation', () {
-      expect(m.documentation, equals('this is a method'));
+      expect(m1.documentation, equals('this is a method'));
     });
 
     test('can have params', () {

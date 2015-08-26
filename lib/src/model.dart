@@ -281,6 +281,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   ElementType get modelType => _modelType;
 
   /// Returns the [ClassElement] that encloses this.
+  /// TODO: this is in the wrong place. Not all ModelElements have
+  /// an enclosing class.
   Class get enclosingClass {
     // A class's enclosing element is a library, and there isn't a
     // modelelement for a library.
@@ -313,9 +315,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return '<a href="${href}">$name</a>';
   }
 
-  String get href => package.isDocumented(this.element) ? _href : null;
-
-  String get _href;
+  String get href;
 
   String linkedParams(
       {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
@@ -406,7 +406,8 @@ class Dynamic extends ModelElement {
 
   ModelElement get enclosingElement => throw new UnsupportedError('');
 
-  String get _href => throw new StateError('dynamic should not have an href');
+  @override
+  String get href => throw new StateError('dynamic should not have an href');
 
   @override
   String get kind => 'dynamic';
@@ -756,7 +757,7 @@ class Library extends ModelElement {
   }
 
   @override
-  String get _href => '$dirName/$fileName';
+  String get href => '$dirName/$fileName';
 }
 
 class Class extends ModelElement implements EnclosedElement {
@@ -1046,7 +1047,7 @@ class Class extends ModelElement implements EnclosedElement {
         var lib = value.library == library.element
             ? library
             : new Library(value.library, package);
-        _inheritedMethods.add(new Method.inherited(value, lib));
+        _inheritedMethods.add(new Method.inherited(value, this, lib));
       }
     }
 
@@ -1213,7 +1214,7 @@ class Class extends ModelElement implements EnclosedElement {
       name.hashCode, library.name.hashCode, library.package.name.hashCode);
 
   @override
-  String get _href => '${library.dirName}/$fileName';
+  String get href => '${library.dirName}/$fileName';
 }
 
 class Enum extends Class {
@@ -1301,7 +1302,7 @@ class ModelFunction extends ModelElement
   String get kind => 'function';
 
   @override
-  String get _href => '${library.dirName}/$fileName';
+  String get href => '${library.dirName}/$fileName';
 }
 
 class Typedef extends ModelElement implements EnclosedElement {
@@ -1327,7 +1328,8 @@ class Typedef extends ModelElement implements EnclosedElement {
       ? modelType.createLinkedReturnTypeName()
       : _typedef.returnType.name;
 
-  String get _href => '${library.dirName}/$fileName';
+  @override
+  String get href => '${library.dirName}/$fileName';
 }
 
 // TODO: rename this to Property
@@ -1405,7 +1407,8 @@ class Field extends ModelElement
 
   bool get isInherited => _isInherited;
 
-  String get _href {
+  @override
+  String get href {
     if (element.enclosingElement is ClassElement) {
       return '${library.dirName}/${element.enclosingElement.name}/$name.html';
     } else if (element.enclosingElement is LibraryElement) {
@@ -1463,7 +1466,7 @@ class Constructor extends ModelElement implements EnclosedElement {
       new ModelElement.from(_constructor.enclosingElement, library);
 
   @override
-  String get _href =>
+  String get href =>
       '${library.dirName}/${_constructor.enclosingElement.name}/$name.html';
 
   bool get isConst => _constructor.isConst;
@@ -1492,6 +1495,7 @@ class Method extends ModelElement
     with SourceCodeMixin
     implements EnclosedElement {
   bool _isInherited = false;
+  ModelElement _enclosingElement;
 
   MethodElement get _method => (element as MethodElement);
 
@@ -1499,8 +1503,9 @@ class Method extends ModelElement
     _modelType = new ElementType(_method.type, this);
   }
 
-  Method.inherited(MethodElement element, Library library)
+  Method.inherited(MethodElement element, Class enclosingClass, Library library)
       : super(element, library) {
+    _enclosingElement = enclosingClass;
     _modelType = new ElementType(_method.type, this);
     _isInherited = true;
   }
@@ -1509,8 +1514,13 @@ class Method extends ModelElement
   String get kind => 'method';
 
   @override
-  ModelElement get enclosingElement =>
-      new ModelElement.from(_method.enclosingElement, library);
+  ModelElement get enclosingElement {
+    if (_enclosingElement == null) {
+      return new ModelElement.from(_method.enclosingElement, library);
+    } else {
+      return new ModelElement.from(_enclosingElement.element, library);
+    }
+  }
 
   Method get overriddenElement {
     ClassElement parent = element.enclosingElement;
@@ -1534,8 +1544,7 @@ class Method extends ModelElement
   String get fileName => "${name}.html";
 
   @override
-  String get _href =>
-      '${library.dirName}/${_method.enclosingElement.name}/${fileName}';
+  String get href => '${library.dirName}/${enclosingElement.name}/${fileName}';
 
   bool get isInherited => _isInherited;
 }
@@ -1608,7 +1617,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   bool get isGetter => _accessor.isGetter;
 
   @override
-  String get _href =>
+  String get href =>
       '${library.dirName}/${_accessor.enclosingElement.name}/${name}.html';
 }
 
@@ -1710,7 +1719,7 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  String get _href => '${library.dirName}/${name}.html';
+  String get href => '${library.dirName}/${name}.html';
 }
 
 class Parameter extends ModelElement implements EnclosedElement {
@@ -1752,7 +1761,7 @@ class Parameter extends ModelElement implements EnclosedElement {
   String get htmlId => '${_parameter.enclosingElement.name}-param-${name}';
 
   @override
-  String get _href {
+  String get href {
     var p = _parameter.enclosingElement;
 
     if (p is FunctionElement) {
@@ -1789,7 +1798,7 @@ class TypeParameter extends ModelElement {
   }
 
   @override
-  String get _href =>
+  String get href =>
       '${library.dirName}/${_typeParameter.enclosingElement.name}/$name';
 }
 
