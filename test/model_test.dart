@@ -763,7 +763,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('an inherited method has a linkedName that includes an HTML link', () {
-      expect(inheritedClear.linkedName, equals('<a href="ex/CatString/clear.html">clear</a>'));
+      expect(inheritedClear.linkedName,
+          equals('<a href="ex/CatString/clear.html">clear</a>'));
     });
 
     test('has enclosing element', () {
@@ -823,7 +824,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       LongFirstLine =
           fakeLibrary.classes.firstWhere((c) => c.name == 'LongFirstLine');
       CatString = exLibrary.classes.firstWhere((c) => c.name == 'CatString');
-      isEmpty = CatString.allInstanceProperties.firstWhere((p) => p.name == 'isEmpty');
+      isEmpty = CatString.allInstanceProperties
+          .firstWhere((p) => p.name == 'isEmpty');
       dynamicGetter = LongFirstLine.instanceProperties
           .firstWhere((p) => p.name == 'dynamicGetter');
       onlySetter = LongFirstLine.instanceProperties
@@ -841,10 +843,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('inherited property has a linked name', () {
-      expect(isEmpty.linkedName, equals('<a href="ex/CatString/isEmpty.html">isEmpty</a>'));
+      expect(isEmpty.linkedName,
+          equals('<a href="ex/CatString/isEmpty.html">isEmpty</a>'));
     });
 
-    test('inherited property has the inheriting class as the enclosing class', () {
+    test('inherited property has the inheriting class as the enclosing class',
+        () {
       expect(isEmpty.enclosingClass.name, equals('CatString'));
       expect(isEmpty.enclosingElement.name, equals('CatString'));
     });

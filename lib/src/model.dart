@@ -299,7 +299,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       (this is Library) ? (this as Library).package : this.library.package;
 
   String get linkedName {
-    if (enclosingClass != null && !package.isDocumented(enclosingClass.element)) {
+    if (enclosingClass != null &&
+        !package.isDocumented(enclosingClass.element)) {
       return htmlEscape(name);
     } else if (enclosingClass == null && !package.isDocumented(this.element)) {
       return htmlEscape(name);
