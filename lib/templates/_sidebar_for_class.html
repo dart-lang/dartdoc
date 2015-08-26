@@ -20,12 +20,12 @@
   {{/clazz.staticMethods}}
   {{/clazz.hasStaticMethods}}
 
-  {{#clazz.hasInstanceProperties}}
+  {{#clazz.hasProperties}}
   <li class="section-title"><a href="{{clazz.href}}#instance-properties">Properties</a></li>
   {{#clazz.allInstanceProperties}}
   <li>{{>name_link}}</li>
   {{/clazz.allInstanceProperties}}
-  {{/clazz.hasInstanceProperties}}
+  {{/clazz.hasProperties}}
 
   {{#clazz.hasConstructors}}
   <li class="section-title"><a href="{{clazz.href}}#constructors">Constructors</a></li>

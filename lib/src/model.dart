@@ -283,6 +283,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   /// Returns the [ClassElement] that encloses this.
   /// TODO: this is in the wrong place. Not all ModelElements have
   /// an enclosing class.
+  /// Why is this here?
   Class get enclosingClass {
     // A class's enclosing element is a library, and there isn't a
     // modelelement for a library.
@@ -298,7 +299,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       (this is Library) ? (this as Library).package : this.library.package;
 
   String get linkedName {
-    if (!package.isDocumented(this.element)) {
+    if (enclosingClass != null && !package.isDocumented(enclosingClass.element)) {
+      return htmlEscape(name);
+    } else if (enclosingClass == null && !package.isDocumented(this.element)) {
       return htmlEscape(name);
     }
 
@@ -1044,10 +1047,7 @@ class Class extends ModelElement implements EnclosedElement {
           !value.isOperator &&
           value.enclosingElement != null &&
           value.enclosingElement.name != 'Object') {
-        var lib = value.library == library.element
-            ? library
-            : new Library(value.library, package);
-        _inheritedMethods.add(new Method.inherited(value, this, lib));
+        _inheritedMethods.add(new Method.inherited(value, this, this.library));
       }
     }
 
@@ -1158,14 +1158,12 @@ class Class extends ModelElement implements EnclosedElement {
           !value.isPrivate &&
           value.enclosingElement != null &&
           value.enclosingElement.name != 'Object') {
+        // TODO: why is this here?
         var e = value.variable;
         if (_inheritedProperties.any((f) => f.element == e)) {
           continue;
         }
-        var lib = value.library == library.element
-            ? library
-            : new Library(value.library, package);
-        _inheritedProperties.add(new Field.inherited(e, lib));
+        _inheritedProperties.add(new Field.inherited(e, this, this.library));
       }
     }
 
@@ -1338,6 +1336,7 @@ class Field extends ModelElement
     implements EnclosedElement {
   String _constantValue;
   bool _isInherited = false;
+  Class _enclosingClass;
 
   FieldElement get _field => (element as FieldElement);
 
@@ -1345,7 +1344,7 @@ class Field extends ModelElement
     _setModelType();
   }
 
-  Field.inherited(FieldElement element, Library library)
+  Field.inherited(FieldElement element, this._enclosingClass, Library library)
       : super(element, library) {
     _isInherited = true;
     _setModelType();
@@ -1355,8 +1354,16 @@ class Field extends ModelElement
   String get kind => 'property';
 
   @override
-  ModelElement get enclosingElement =>
-      new ModelElement.from(_field.enclosingElement, library);
+  Class get enclosingClass => _enclosingClass;
+
+  @override
+  ModelElement get enclosingElement {
+    if (_enclosingClass == null) {
+      return new ModelElement.from(_field.enclosingElement, library);
+    } else {
+      return new ModelElement.from(_enclosingClass.element, library);
+    }
+  }
 
   void _setModelType() {
     if (hasGetter) {
@@ -1409,13 +1416,13 @@ class Field extends ModelElement
 
   @override
   String get href {
-    if (element.enclosingElement is ClassElement) {
-      return '${library.dirName}/${element.enclosingElement.name}/$name.html';
-    } else if (element.enclosingElement is LibraryElement) {
+    if (enclosingElement.element is ClassElement) {
+      return '${library.dirName}/${enclosingElement.name}/$name.html';
+    } else if (enclosingElement.element is LibraryElement) {
       return '${library.dirName}/$name.html';
     } else {
       throw new StateError(
-          '$name is not in a class or library, instead a ${element.enclosingElement}');
+          '$name is not in a class or library, instead it is a ${enclosingElement.element}');
     }
   }
 }
@@ -1495,7 +1502,7 @@ class Method extends ModelElement
     with SourceCodeMixin
     implements EnclosedElement {
   bool _isInherited = false;
-  ModelElement _enclosingElement;
+  Class _enclosingClass;
 
   MethodElement get _method => (element as MethodElement);
 
@@ -1503,22 +1510,24 @@ class Method extends ModelElement
     _modelType = new ElementType(_method.type, this);
   }
 
-  Method.inherited(MethodElement element, Class enclosingClass, Library library)
+  Method.inherited(MethodElement element, this._enclosingClass, Library library)
       : super(element, library) {
-    _enclosingElement = enclosingClass;
     _modelType = new ElementType(_method.type, this);
     _isInherited = true;
   }
+
+  @override
+  Class get enclosingClass => _enclosingClass;
 
   @override
   String get kind => 'method';
 
   @override
   ModelElement get enclosingElement {
-    if (_enclosingElement == null) {
+    if (_enclosingClass == null) {
       return new ModelElement.from(_method.enclosingElement, library);
     } else {
-      return new ModelElement.from(_enclosingElement.element, library);
+      return new ModelElement.from(_enclosingClass.element, library);
     }
   }
 

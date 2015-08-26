@@ -432,7 +432,7 @@ void main() {
   group('Class', () {
     List<Class> classes;
     Class Apple, B, Cat, Dog, F, DT, SpecialList;
-    Class ExtendingClass;
+    Class ExtendingClass, CatString;
 
     setUp(() {
       classes = exLibrary.classes;
@@ -446,6 +446,7 @@ void main() {
           fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList');
       ExtendingClass =
           twoExportsLib.classes.firstWhere((c) => c.name == 'ExtendingClass');
+      CatString = exLibrary.classes.firstWhere((c) => c.name == 'CatString');
     });
 
     test('we got the classes we expect', () {
@@ -453,6 +454,13 @@ void main() {
       expect(B.name, equals('B'));
       expect(Cat.name, equals('Cat'));
       expect(Dog.name, equals('Dog'));
+    });
+
+    test('a class with only inherited properties has some properties', () {
+      expect(CatString.hasInstanceProperties, isFalse);
+      expect(CatString.instanceProperties, isEmpty);
+      expect(CatString.hasProperties, isTrue);
+      expect(CatString.allInstanceProperties, isNotEmpty);
     });
 
     test('has enclosing element', () {
@@ -741,12 +749,21 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('an inherited method has the inheriting class as the enclosing class',
         () {
       expect(inheritedClear.enclosingElement.name, equals('CatString'));
+      expect(inheritedClear.enclosingClass.name, equals('CatString'));
+    });
+
+    test('inherited method has the inheriting class library', () {
+      expect(inheritedClear.library.name, equals('ex'));
     });
 
     test(
         'an inherited method from the core SDK has a href local to the inheriting class',
         () {
-      expect(inheritedClear.href, equals('dart-core/CatString/clear.html'));
+      expect(inheritedClear.href, equals('ex/CatString/clear.html'));
+    });
+
+    test('an inherited method has a linkedName that includes an HTML link', () {
+      expect(inheritedClear.linkedName, equals('<a href="ex/CatString/clear.html">clear</a>'));
     });
 
     test('has enclosing element', () {
@@ -792,10 +809,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Field', () {
-    Class c, LongFirstLine;
+    Class c, LongFirstLine, CatString;
     Field f1, f2, constField, dynamicGetter, onlySetter;
     Field lengthX;
     Field sFromApple;
+    Field isEmpty;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
@@ -804,6 +822,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       constField = c.constants[0]; // string
       LongFirstLine =
           fakeLibrary.classes.firstWhere((c) => c.name == 'LongFirstLine');
+      CatString = exLibrary.classes.firstWhere((c) => c.name == 'CatString');
+      isEmpty = CatString.allInstanceProperties.firstWhere((p) => p.name == 'isEmpty');
       dynamicGetter = LongFirstLine.instanceProperties
           .firstWhere((p) => p.name == 'dynamicGetter');
       onlySetter = LongFirstLine.instanceProperties
@@ -818,6 +838,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'Apple')
           .allInstanceProperties
           .firstWhere((p) => p.name == 's');
+    });
+
+    test('inherited property has a linked name', () {
+      expect(isEmpty.linkedName, equals('<a href="ex/CatString/isEmpty.html">isEmpty</a>'));
+    });
+
+    test('inherited property has the inheriting class as the enclosing class', () {
+      expect(isEmpty.enclosingClass.name, equals('CatString'));
+      expect(isEmpty.enclosingElement.name, equals('CatString'));
+    });
+
+    test('inherited property has the inheriting class library', () {
+      expect(isEmpty.library.name, equals('ex'));
     });
 
     test('has enclosing element', () {

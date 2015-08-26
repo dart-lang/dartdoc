@@ -220,7 +220,7 @@ class HtmlGeneratorInstance {
           generateProperty(package, lib, clazz, property);
         });
 
-        clazz.instanceProperties.forEach((property) {
+        clazz.allInstanceProperties.forEach((property) {
           generateProperty(package, lib, clazz, property);
         });
 
