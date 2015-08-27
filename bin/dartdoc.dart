@@ -112,7 +112,8 @@ main(List<String> arguments) async {
   var generators = initGenerators(url, headerFilePath, footerFilePath);
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
-      outputDir, packageMeta, urlMappings, includeLibraries);
+      outputDir, packageMeta, urlMappings, includeLibraries,
+      onProgress: _onProgress);
 
   try {
     DartDocResults results = await dartdoc.generateDocs();
@@ -126,6 +127,10 @@ main(List<String> arguments) async {
       exit(255);
     }
   }
+}
+
+void _onProgress(File file) {
+  stdout.write('.');
 }
 
 /// Print help if we are passed the help option.

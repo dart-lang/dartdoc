@@ -415,6 +415,9 @@ class Dynamic extends ModelElement {
 
   @override
   String get kind => 'dynamic';
+
+  @override
+  String get linkedName => 'dynamic';
 }
 
 class Package implements Nameable, Documentable {
@@ -475,7 +478,7 @@ class Package implements Nameable, Documentable {
 
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
-  Library findLibraryFor(final Element element) {
+  Library findLibraryFor(final Element element, {final Element scopedTo}) {
     if (element is LibraryElement) {
       // will equality work here? or should we check names?
       return _libraries.firstWhere((lib) => lib.element == element,
@@ -504,9 +507,47 @@ class Package implements Nameable, Documentable {
     } else {
       el = element;
     }
-    //debugger(when: element.name == 'NAME_WITH_TWO_UNDERSCORES');
-    return _libraries.firstWhere((lib) => lib.hasInNamespace(el),
+
+    if (scopedTo != null) {
+      Library tryMe = new Library(scopedTo.library, this);
+
+      if (tryMe.hasInExportedNamespace(el)) {
+        return tryMe;
+      }
+    }
+
+    Library tryMe = _libraries.firstWhere(
+        (lib) => lib.hasInExportedNamespace(el),
         orElse: () => null);
+
+    if (tryMe != null) return tryMe;
+
+    if (_libraries.any((lib) => lib.element == element.library)) {
+      return new Library(element.library, this);
+    } else {
+      return null;
+    }
+
+    // if (scopedTo != null) {
+    //   if (scopedTo.library == null) {
+    //     throw 'library is null for ${scopedTo}';
+    //   }
+    //   Library tryMe = new Library(scopedTo.library, this);
+    //   if (tryMe != null) {
+    //     if (tryMe.hasInExportedNamespace(el)) {
+    //       return tryMe;
+    //     } else {
+    //       print(
+    //           'looking for ${el.name} in ${tryMe._exportedNamespace.definedNames.keys.join(',')}\n\n');
+    //       return null;
+    //     }
+    //   } else {
+    //     throw 'did not find a library to match ${scopedTo.library} known in package, in ${libraries}';
+    //   }
+    // } else {
+    //   return _libraries.firstWhere((lib) => lib.hasInExportedNamespace(el),
+    //       orElse: () => null);
+    // }
   }
 
   bool isDocumented(Element element) => findLibraryFor(element) != null;
@@ -514,12 +555,18 @@ class Package implements Nameable, Documentable {
   String get href => 'index.html';
 
   Library _getLibraryFor(Element e) {
-    var lib;
-    lib = libraries.firstWhere((l) => l.hasInNamespace(e), orElse: () => null);
-    if (lib == null) {
-      lib = new Library(e.library, this);
+    // Library lib = libraries.firstWhere((l) => l.hasInExportedNamespace(e),
+    //     orElse: () => null);
+    // // e.library can be null for dynamic
+    // if (lib == null && e.library != null) {
+    //   lib = new Library(e.library, this);
+    // }
+    // return lib;
+    if (e.library != null) {
+      return new Library(e.library, this);
+    } else {
+      return null;
     }
-    return lib;
   }
 }
 
@@ -532,13 +579,16 @@ class Library extends ModelElement {
   List<ModelFunction> _functions;
   List<Typedef> _typeDefs;
   List<TopLevelVariable> _variables;
-  Iterable<Element> _nameSpaceElements;
-  Namespace _namespace;
+  Namespace _exportedNamespace;
   String _name;
 
   LibraryElement get _library => (element as LibraryElement);
 
-  Library._(LibraryElement element, this.package) : super(element, null);
+  Library._(LibraryElement element, this.package) : super(element, null) {
+    if (element == null) throw new ArgumentError.notNull('element');
+    _exportedNamespace =
+        new NamespaceBuilder().createExportNamespaceForLibrary(element);
+  }
 
   factory Library(LibraryElement element, Package package) {
     var key = element == null ? 'null' : element.name;
@@ -565,24 +615,12 @@ class Library extends ModelElement {
 
   Library get library => this;
 
-  Iterable<Element> get _exportedNamespace {
-    if (_nameSpaceElements == null) _buildExportedNamespace();
-    return _nameSpaceElements;
-  }
-
-  _buildExportedNamespace() {
-    _namespace =
-        new NamespaceBuilder().createExportNamespaceForLibrary(_library);
-    _nameSpaceElements = _namespace.definedNames.values;
-  }
-
-  bool hasInNamespace(Element element) {
-    if (_namespace == null) _buildExportedNamespace();
-    var e = _namespace.get(element.name);
+  bool hasInExportedNamespace(Element element) {
+    return _exportedNamespace.get(element.name) != null;
     // Fix for #587, comparison between elements isn't reliable.
     //return e == element;
-    return e.runtimeType == element.runtimeType &&
-        e.nameOffset == element.nameOffset;
+    // return e.runtimeType == element.runtimeType &&
+    //     e.nameOffset == element.nameOffset;
   }
 
   bool get isAnonymous => element.name == null || element.name.isEmpty;
@@ -629,7 +667,7 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.topLevelVariables);
     }
-    _exportedNamespace.forEach((element) {
+    _exportedNamespace.definedNames.values.forEach((element) {
       if (element is PropertyAccessorElement) elements.add(element.variable);
     });
     elements..removeWhere(isPrivate);
@@ -661,7 +699,7 @@ class Library extends ModelElement {
     if (_enums != null) return _enums;
 
     List<ClassElement> enumClasses = [];
-    enumClasses.addAll(_exportedNamespace
+    enumClasses.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is ClassElement && element.isEnum));
     _enums = enumClasses
         .where(isPublic)
@@ -686,7 +724,7 @@ class Library extends ModelElement {
       elements.addAll(cu.functionTypeAliases);
     }
 
-    elements.addAll(_exportedNamespace
+    elements.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is FunctionTypeAliasElement));
     elements..removeWhere(isPrivate);
     _typeDefs = elements
@@ -706,8 +744,8 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functions);
     }
-    elements.addAll(
-        _exportedNamespace.where((element) => element is FunctionElement));
+    elements.addAll(_exportedNamespace.definedNames.values
+        .where((element) => element is FunctionElement));
 
     elements..removeWhere(isPrivate);
     _functions = elements.map((e) {
@@ -727,11 +765,11 @@ class Library extends ModelElement {
     }
     for (LibraryElement le in _library.exportedLibraries) {
       types.addAll(le.definingCompilationUnit.types
-          .where((t) => _exportedNamespace.contains(t.name))
+          .where((t) => _exportedNamespace.definedNames.values.contains(t.name))
           .toList());
     }
 
-    types.addAll(_exportedNamespace
+    types.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is ClassElement && !element.isEnum));
 
     _classes = types

@@ -20,7 +20,10 @@ const ConstantCat MY_CAT = const ConstantCat('tabby');
 typedef String processMessage(String msg);
 
 /// This should [not work].
-const incorrectDocReference = 'doh';
+const incorrectDocReferenceFromEx = 'doh';
+
+/// This is the same name as a top-level const from the fake lib.
+const incorrectDocReference = 'same name as const from fake';
 
 /// Sample class [String]
 class Apple {

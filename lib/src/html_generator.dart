@@ -5,7 +5,7 @@
 library dartdoc.html_generator;
 
 import 'dart:async' show Future;
-import 'dart:io' show Directory, File;
+import 'dart:io' show Directory, File, stdout;
 import 'dart:convert' show JSON;
 import 'dart:typed_data' show Uint8List;
 
@@ -151,8 +151,10 @@ class HtmlGenerator extends Generator {
   HtmlGenerator(this.url, {String header, String footer})
       : _templates = new Templates(header, footer) {}
 
-  Future generate(Package package, Directory out) {
-    return new HtmlGeneratorInstance(url, _templates, package, out).generate();
+  Future generate(Package package, Directory out,
+      {ProgressCallback onProgress}) {
+    return new HtmlGeneratorInstance(url, _templates, package, out,
+        onProgress: onProgress).generate();
   }
 }
 
@@ -163,9 +165,12 @@ class HtmlGeneratorInstance {
   final Package package;
   final Directory out;
 
+  final ProgressCallback onProgress;
+
   final List<ModelElement> documentedElements = [];
 
-  HtmlGeneratorInstance(this.url, this._templates, this.package, this.out);
+  HtmlGeneratorInstance(this.url, this._templates, this.package, this.out,
+      {this.onProgress});
 
   Future generate() async {
     await _templates.init();
@@ -267,13 +272,16 @@ class HtmlGeneratorInstance {
       markdown = readme.isMarkdown ? renderMarkdown : renderPlainText;
     }
 
+    stdout.write('documenting ${package.name}');
+
     TemplateData data = new PackageTemplateData(package, markdown: markdown);
 
     _build('index.html', _templates.indexTemplate, data);
   }
 
   void generateLibrary(Package package, Library lib) {
-    print('generating docs for library ${lib.name} from ${lib.path}...');
+    stdout
+        .write('\ngenerating docs for library ${lib.name} from ${lib.path}...');
 
     if (!lib.isAnonymous && !lib.hasDocumentation) {
       print("  warning: library '${lib.name}' has no documentation");
@@ -389,6 +397,7 @@ class HtmlGeneratorInstance {
   void _writeFile(String filename, String content) {
     File f = createOutputFile(out, filename);
     f.writeAsStringSync(content);
+    if (onProgress != null) onProgress(f);
   }
 }
 

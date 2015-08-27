@@ -59,11 +59,14 @@ class DartDoc {
   final PackageMeta packageMeta;
   final Map<String, String> urlMappings;
   final List<String> includes;
+  final ProgressCallback _onProgress;
 
   Stopwatch _stopwatch;
 
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
-      this.outputDir, this.packageMeta, this.urlMappings, this.includes);
+      this.outputDir, this.packageMeta, this.urlMappings, this.includes,
+      {ProgressCallback onProgress})
+      : _onProgress = onProgress;
 
   /// Generate DartDoc documentation.
   ///
@@ -107,12 +110,12 @@ class DartDoc {
     if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
 
     for (var generator in generators) {
-      await generator.generate(package, outputDir);
+      await generator.generate(package, outputDir, onProgress: _onProgress);
     }
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print(
-        "Documented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} "
+        "\nDocumented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds.");
 
     return new DartDocResults(packageMeta, package, outputDir);

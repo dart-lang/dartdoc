@@ -402,7 +402,10 @@ class BaseForDocComments {
   ///
   /// Reference to a class in example lib [Apple] xx
   ///
-  /// Reference to a top-level const in another library [incorrectDocReference] xx
+  /// Reference to a top-level const in this library that shares the same
+  /// name as a top-level name in another library [incorrectDocReference] xx
+  ///
+  /// Reference to a top-level const in another library [incorrectDocReferenceFromEx]
   ///
   /// Reference to prefixed-name from another lib [css.theOnlyThingInTheLibrary] xx
   String doAwesomeStuff(int value) => null;

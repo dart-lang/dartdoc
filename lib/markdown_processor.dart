@@ -173,7 +173,14 @@ String _getMatchingLink(
     refElement = (refElement as PropertyAccessorElement).variable;
   }
 
-  Library refLibrary = element.package.findLibraryFor(refElement);
+  // bug! this can fail to find the right library name if the element's name
+  // we're looking for is the same as a name that comes in from an imported
+  // library.
+  //
+  // Don't search through all libraries in the package, actually search
+  // in the current scope.
+  Library refLibrary =
+      element.package.findLibraryFor(refElement, scopedTo: element);
 
   if (refLibrary != null) {
     // Is there a way to pull this from a registry of known elements?

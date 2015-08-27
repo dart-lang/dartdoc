@@ -183,7 +183,7 @@ void main() {
 
   group('Docs as HTML', () {
     Class Apple, B, superAwesomeClass, foo2;
-    TopLevelVariable incorrectReference;
+    TopLevelVariable incorrectDocReferenceFromEx;
     ModelFunction thisIsAsync;
     ModelFunction topLevelFunction;
 
@@ -198,8 +198,8 @@ void main() {
     ModelFunction short;
 
     setUp(() {
-      incorrectReference = exLibrary.constants
-          .firstWhere((c) => c.name == 'incorrectDocReference');
+      incorrectDocReferenceFromEx = exLibrary.constants
+          .firstWhere((c) => c.name == 'incorrectDocReferenceFromEx');
       B = exLibrary.classes.firstWhere((c) => c.name == 'B');
       Apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       specialList =
@@ -283,11 +283,20 @@ void main() {
         expect(docsAsHtml, contains('<a href="ex/Apple-class.html">Apple</a>'));
       });
 
-      test('links to a top-level const from an imported lib', () {
+      test(
+          'links to a top-level const from same lib (which also has the same name as a const from an imported lib)',
+          () {
         expect(
             docsAsHtml,
             contains(
                 '<a href="fake/incorrectDocReference.html">incorrectDocReference</a>'));
+      });
+
+      test('links to a top-level const from an imported lib', () {
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="ex/incorrectDocReferenceFromEx.html">incorrectDocReferenceFromEx</a>'));
       });
 
       test('links to a top-level variable with a prefix from an imported lib',
@@ -348,7 +357,7 @@ void main() {
     });
 
     test('incorrect doc references are still wrapped in code blocks', () {
-      expect(incorrectReference.documentationAsHtml,
+      expect(incorrectDocReferenceFromEx.documentationAsHtml,
           '<p>This should <code>not work</code>.</p>');
     });
 
@@ -1049,8 +1058,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(greenConstant.enclosingElement.name, equals(exLibrary.name));
     });
 
-    test('found five constants', () {
-      expect(exLibrary.constants, hasLength(7));
+    test('found all the constants', () {
+      expect(exLibrary.constants, hasLength(8));
     });
 
     test('COLOR_GREEN is constant', () {
