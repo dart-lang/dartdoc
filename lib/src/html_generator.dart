@@ -228,7 +228,7 @@ class HtmlGeneratorInstance {
           generateMethod(package, lib, clazz, method);
         });
 
-        clazz.operators.forEach((operator) {
+        clazz.allOperators.forEach((operator) {
           generateMethod(package, lib, clazz, operator);
         });
 

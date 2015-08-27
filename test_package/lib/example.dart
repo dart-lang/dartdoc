@@ -183,3 +183,9 @@ class ShapeType extends _RetainedEnum {
 
   const ShapeType._internal(String name) : super(name);
 }
+
+/// For testing a class that extends a class
+/// that has some operators
+class SpecializedDuration extends Duration {
+
+}

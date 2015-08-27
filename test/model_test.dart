@@ -471,8 +471,8 @@ void main() {
       expect(F.nameWithGenerics, equals('F&ltT extends String&gt'));
     });
 
-    test('correctly finds classes', () {
-      expect(classes, hasLength(16));
+    test('correctly finds all the classes', () {
+      expect(classes, hasLength(17));
     });
 
     test('abstract', () {
@@ -806,6 +806,37 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('method source code indents correctly', () {
       expect(
           convertToMap.sourceCode, startsWith('/// Converts itself to a map.'));
+    });
+  });
+
+  group('Operators', () {
+    Class SpecializedDuration;
+    Operator plus;
+
+    setUp(() {
+      SpecializedDuration = exLibrary.classes.firstWhere((c) => c.name == 'SpecializedDuration');
+      plus = SpecializedDuration.allOperators.firstWhere((o) => o.name == 'operator +');
+    });
+
+    test('can be inherited', () {
+      expect(plus.isInherited, isTrue);
+    });
+
+    test('if inherited, has the inheriting class', () {
+      expect(plus.enclosingClass.name, equals('SpecializedDuration'));
+      expect(plus.enclosingElement.name, equals('SpecializedDuration'));
+    });
+
+    test("if inherited, has the inheriting class's library", () {
+      expect(plus.library, equals(SpecializedDuration.library));
+    });
+
+    test('if inherited, has a href relative to inheriting class', () {
+      expect(plus.href, equals('ex/SpecializedDuration/operator_plus.html'));
+    });
+
+    test('if inherited, has a linkedName', () {
+      expect(plus.linkedName, equals('<a href="ex/SpecializedDuration/operator_plus.html">operator +</a>'));
     });
   });
 

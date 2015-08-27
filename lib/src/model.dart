@@ -1076,7 +1076,7 @@ class Class extends ModelElement implements EnclosedElement {
       imap.remove(operator.element.name);
     });
     _inheritedOperators = [];
-    var vs = {};
+    Map<String, ExecutableElement> vs = {};
 
     bool _isInheritedOperator(ExecutableElement value) {
       if (value != null &&
@@ -1090,25 +1090,22 @@ class Class extends ModelElement implements EnclosedElement {
       return false;
     }
 
-    for (var i = 0; i < imap.size; i++) {
-      var value = imap.getValue(i);
+    for (int i = 0; i < imap.size; i++) {
+      ExecutableElement value = imap.getValue(i);
       if (_isInheritedOperator(value)) {
         vs.putIfAbsent(value.name, () => value);
       }
     }
 
-    for (var i = 0; i < cmap.size; i++) {
-      var value = cmap.getValue(i);
+    for (int i = 0; i < cmap.size; i++) {
+      ExecutableElement value = cmap.getValue(i);
       if (_isInheritedOperator(value)) {
         vs.putIfAbsent(value.name, () => value);
       }
     }
 
-    for (var value in vs.values) {
-      var lib = value.library == library.element
-          ? library
-          : new Library(value.library, package);
-      _inheritedOperators.add(new Operator.inherited(value, lib));
+    for (ExecutableElement value in vs.values) {
+      _inheritedOperators.add(new Operator.inherited(value, this, this.library));
     }
 
     _inheritedOperators.sort(byName);
@@ -1562,8 +1559,8 @@ class Method extends ModelElement
 class Operator extends Method {
   Operator(MethodElement element, Library library) : super(element, library);
 
-  Operator.inherited(MethodElement element, Library library)
-      : super(element, library) {
+  Operator.inherited(MethodElement element, Class enclosingClass, Library library)
+      : super.inherited(element, enclosingClass, library) {
     _isInherited = true;
   }
 
