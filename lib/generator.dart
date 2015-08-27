@@ -21,5 +21,6 @@ typedef void ProgressCallback(File file);
 abstract class Generator {
   /// Generate the documentation for the given package in the specified
   /// directory. Completes the returned future when done.
-  Future generate(Package package, Directory out, {ProgressCallback onProgress});
+  Future generate(Package package, Directory out,
+      {ProgressCallback onProgress});
 }
