@@ -20,7 +20,7 @@ then
   # silence stdout but echo stderr
   echo ""
   echo "Building SDK docs..."
-  grind build-sdk-docs 2>&1 >/dev/null | echo
+  travis_wait grind build-sdk-docs
   echo "SDK docs process finished"
 else
   echo ""
