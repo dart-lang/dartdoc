@@ -186,6 +186,4 @@ class ShapeType extends _RetainedEnum {
 
 /// For testing a class that extends a class
 /// that has some operators
-class SpecializedDuration extends Duration {
-
-}
+class SpecializedDuration extends Duration {}

@@ -814,8 +814,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Operator plus;
 
     setUp(() {
-      SpecializedDuration = exLibrary.classes.firstWhere((c) => c.name == 'SpecializedDuration');
-      plus = SpecializedDuration.allOperators.firstWhere((o) => o.name == 'operator +');
+      SpecializedDuration =
+          exLibrary.classes.firstWhere((c) => c.name == 'SpecializedDuration');
+      plus = SpecializedDuration.allOperators
+          .firstWhere((o) => o.name == 'operator +');
     });
 
     test('can be inherited', () {
@@ -836,7 +838,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('if inherited, has a linkedName', () {
-      expect(plus.linkedName, equals('<a href="ex/SpecializedDuration/operator_plus.html">operator +</a>'));
+      expect(
+          plus.linkedName,
+          equals(
+              '<a href="ex/SpecializedDuration/operator_plus.html">operator +</a>'));
     });
   });
 

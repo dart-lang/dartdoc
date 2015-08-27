@@ -1105,7 +1105,8 @@ class Class extends ModelElement implements EnclosedElement {
     }
 
     for (ExecutableElement value in vs.values) {
-      _inheritedOperators.add(new Operator.inherited(value, this, this.library));
+      _inheritedOperators
+          .add(new Operator.inherited(value, this, this.library));
     }
 
     _inheritedOperators.sort(byName);
@@ -1559,7 +1560,8 @@ class Method extends ModelElement
 class Operator extends Method {
   Operator(MethodElement element, Library library) : super(element, library);
 
-  Operator.inherited(MethodElement element, Class enclosingClass, Library library)
+  Operator.inherited(
+      MethodElement element, Class enclosingClass, Library library)
       : super.inherited(element, enclosingClass, library) {
     _isInherited = true;
   }
