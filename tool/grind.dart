@@ -167,8 +167,8 @@ Future buildSdkDocs() async {
   log('building SDK docs');
   try {
     int sdkDocsGenTime = await _runAsyncTimed(() {
-      return Dart.runAsync('bin/dartdoc.dart',
-          arguments: ['--output', '${docsDir.path}', '--sdk-docs']);
+      return Dart.runAsync('bin/dartdoc.dart', arguments:
+          ['--output', '${docsDir.path}', '--sdk-docs', '--show-progress']);
     });
     var indexHtml = joinFile(docsDir, ['index.html']);
     if (!indexHtml.existsSync()) {
