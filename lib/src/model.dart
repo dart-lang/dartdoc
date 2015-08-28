@@ -587,7 +587,6 @@ class Library extends ModelElement {
   List<Typedef> _typeDefs;
   List<TopLevelVariable> _variables;
   Namespace _exportedNamespace;
-  Map<String, Element> _exportedElements;
   String _name;
 
   LibraryElement get _library => (element as LibraryElement);
@@ -596,7 +595,6 @@ class Library extends ModelElement {
     if (element == null) throw new ArgumentError.notNull('element');
     _exportedNamespace =
         new NamespaceBuilder().createExportNamespaceForLibrary(element);
-    _exportedElements = _exportedNamespace.definedNames;
   }
 
   factory Library(LibraryElement element, Package package) {
@@ -626,7 +624,14 @@ class Library extends ModelElement {
 
   bool hasInExportedNamespace(Element element) {
     Element found = _exportedNamespace.get(element.name);
-    return (found == element); // this checks more than just the name
+    if (found == null) return false;
+    if (found == element) return true; // this checks more than just the name
+
+    // Fix for #587, comparison between elements isn't reliable on windows.
+    // for some reason. sigh.
+
+    return found.runtimeType == element.runtimeType &&
+        found.nameOffset == element.nameOffset;
   }
 
   bool get isAnonymous => element.name == null || element.name.isEmpty;
