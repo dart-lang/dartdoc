@@ -284,7 +284,7 @@ class HtmlGeneratorInstance {
         .write('\ngenerating docs for library ${lib.name} from ${lib.path}...');
 
     if (!lib.isAnonymous && !lib.hasDocumentation) {
-      print("  warning: library '${lib.name}' has no documentation");
+      print("\n  warning: library '${lib.name}' has no documentation");
     }
 
     TemplateData data = new LibraryTemplateData(package, lib);
