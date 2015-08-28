@@ -19,8 +19,9 @@ then
  # Build the SDK docs
   # silence stdout but echo stderr
   echo ""
-  echo "Building SDK docs..."
+  echo "Building and validating SDK docs..."
   grind build-sdk-docs
+  grind validate-sdk-docs
   echo "SDK docs process finished"
 else
   echo ""
