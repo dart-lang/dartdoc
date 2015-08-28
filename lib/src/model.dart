@@ -559,19 +559,14 @@ class Package implements Nameable, Documentable {
 
   String get href => 'index.html';
 
+  /// Will try to find the library that exports the element.
+  /// Can return null if not appropriate library can be found.
   Library _getLibraryFor(Element e) {
-    // Library lib = libraries.firstWhere((l) => l.hasInExportedNamespace(e),
-    //     orElse: () => null);
-    // // e.library can be null for dynamic
-    // if (lib == null && e.library != null) {
-    //   lib = new Library(e.library, this);
-    // }
-    // return lib;
-    if (e.library != null) {
-      return new Library(e.library, this);
-    } else {
-      return null;
-    }
+    // can be null if e is for dynamic
+    if (e.library == null) return null;
+
+    return libraries.firstWhere((l) => l.hasInExportedNamespace(e),
+        orElse: () => null);
   }
 }
 
