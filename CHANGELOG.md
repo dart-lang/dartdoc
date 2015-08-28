@@ -1,3 +1,10 @@
+## 0.6.2
+* Instructions on contributing moved to CONTRIBUTOR.md
+* Fixed bug with doc comment with name in both current and imported
+  library might be incorrectly linked
+* Now linking to detail pages for inherited methods, operators, properties
+* Strike-through deprecated names more often (e.g. on the sidebar)
+
 ## 0.6.1
 * Removed the `--package-root` option. Dartdoc now uses the `--input` flag as
   the place to start looking for an analysis root. This better supports the
