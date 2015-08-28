@@ -57,9 +57,10 @@ void main() {
 
     test('has a readme', () {
       expect(p.getReadmeContents(), isNotNull);
-      expect(p.getReadmeContents().contents, contains('''
-A documentation generator for Dart. This tool creates static HTML files
-generated from Dart source code.'''));
+      expect(
+          p.getReadmeContents().contents,
+          contains(
+              'Use _dartdoc_ to generate HTML documentaton for your Dart package.'));
     });
 
     test('has a license', () {
