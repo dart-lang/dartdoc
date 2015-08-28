@@ -96,7 +96,6 @@ class Templates {
       'sidebar_for_class',
       'source_code',
       'sidebar_for_library',
-      'name_link',
       'has_more_docs',
       'accessor_getter',
       'accessor_setter'

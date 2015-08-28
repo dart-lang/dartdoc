@@ -203,8 +203,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
           var me = new ModelElement.from(
               e.enclosingElement, new Library(e.library, package));
           if (me.href != null) {
-            return annotationString.replaceAll(
-                me.name, '<a href="${me.href}">${me.name}</a>');
+            return annotationString.replaceAll(me.name, me.linkedName);
           }
         }
         return annotationString;
@@ -316,7 +315,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       return '${c.name}.${htmlEscape(name)}';
     }
 
-    return '<a href="${href}">$name</a>';
+    return '<a class="${isDeprecated ? 'deprecated' : ''}" href="${href}">$name</a>';
   }
 
   String get href;

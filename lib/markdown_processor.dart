@@ -30,16 +30,19 @@ const bool _emitWarning = false;
 
 String _linkDocReference(String reference, ModelElement element,
     NodeList<CommentReference> commentRefs) {
-  String link;
+  ModelElement linkedElement;
   // support for [new Constructor] and [new Class.namedCtr]
   var refs = reference.split(' ');
   if (refs.length == 2 && refs.first == 'new') {
-    link = _getMatchingLink(refs[1], element, commentRefs, isConstructor: true);
+    linkedElement = _getMatchingLinkElement(refs[1], element, commentRefs,
+        isConstructor: true);
   } else {
-    link = _getMatchingLink(reference, element, commentRefs);
+    linkedElement = _getMatchingLinkElement(reference, element, commentRefs);
   }
-  if (link != null && link.isNotEmpty) {
-    return '<a href="$link">$reference</a>';
+  if (linkedElement != null) {
+    // this would be linkedElement.linkedName, but link bodies are slightly
+    // different for doc references. sigh.
+    return '<a class="${linkedElement.isDeprecated ? 'deprecated' : ''}" href="${linkedElement.href}">$reference</a>';
   } else {
     if (_emitWarning) {
       print("  warning: unresolved doc reference '$reference' (in $element)");
@@ -147,7 +150,7 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
 }
 
 /// Returns null if element is a parameter.
-String _getMatchingLink(
+ModelElement _getMatchingLinkElement(
     String codeRef, ModelElement element, List<CommentReference> commentRefs,
     {bool isConstructor: false}) {
   if (commentRefs == null) return null;
@@ -189,7 +192,7 @@ String _getMatchingLink(
   if (refLibrary != null) {
     // Is there a way to pull this from a registry of known elements?
     // Seems like we're creating too many objects this way.
-    return new ModelElement.from(refElement, refLibrary).href;
+    return new ModelElement.from(refElement, refLibrary);
   }
   return null;
 }

@@ -9,21 +9,21 @@
   {{#clazz.hasStaticProperties}}
   <li class="section-title"><a href="{{clazz.href}}#static-properties">Static properties</a></li>
   {{#clazz.staticProperties}}
-  <li><a href="{{href}}">{{name}}</a></li>
+  <li>{{{ linkedName }}}</li>
   {{/clazz.staticProperties}}
   {{/clazz.hasStaticProperties}}
 
   {{#clazz.hasStaticMethods}}
   <li class="section-title"><a href="{{clazz.href}}#static-methods">Static methods</a></li>
   {{#clazz.staticMethods}}
-  <li><a href="{{href}}">{{name}}</a></li>
+  <li>{{{ linkedName }}}</li>
   {{/clazz.staticMethods}}
   {{/clazz.hasStaticMethods}}
 
   {{#clazz.hasProperties}}
   <li class="section-title"><a href="{{clazz.href}}#instance-properties">Properties</a></li>
   {{#clazz.allInstanceProperties}}
-  <li>{{>name_link}}</li>
+  <li>{{{ linkedName }}}</li>
   {{/clazz.allInstanceProperties}}
   {{/clazz.hasProperties}}
 
@@ -37,14 +37,14 @@
   {{#clazz.hasOperators}}
   <li class="section-title"><a href="{{clazz.href}}#operators">Operators</a></li>
   {{#clazz.allOperators}}
-  <li>{{>name_link}}</li>
+  <li>{{{ linkedName }}}</li>
   {{/clazz.allOperators}}
   {{/clazz.hasOperators}}
 
   {{#clazz.hasMethods}}
   <li class="section-title"><a href="{{clazz.href}}#instance-methods">Methods</a></li>
   {{#clazz.allInstanceMethods}}
-  <li>{{>name_link}}</li>
+  <li>{{{ linkedName }}}</li>
   {{/clazz.allInstanceMethods}}
   {{/clazz.hasMethods}}
 </ol>
