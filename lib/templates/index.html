@@ -6,7 +6,7 @@
     <ol>
       <li class="section-title"><a href="{{package.href}}#libraries">Libraries</a></li>
       {{#package.libraries}}
-      <li><a href="{{href}}">{{name}}</a></li>
+      <li>{{{linkedName}}}</li>
       {{/package.libraries}}
     </ol>
   </div>
@@ -22,7 +22,7 @@
       <dl>
         {{#package.libraries}}
           <dt id="{{htmlId}}">
-            <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}"><a href="{{href}}">{{ name }}</a></span>
+            <span class="name">{{{ linkedName }}}</span>
           </dt>
           <dd>
             {{#isNotDocumented}}<span class="undocumented">Library not documented.</span>{{/isNotDocumented}}

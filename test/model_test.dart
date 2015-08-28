@@ -46,7 +46,7 @@ void main() {
       });
 
       test('libraries', () {
-        expect(package.libraries, hasLength(5));
+        expect(package.libraries, hasLength(6));
       });
 
       test('is documented in library', () {
@@ -101,7 +101,7 @@ void main() {
   });
 
   group('Library', () {
-    Library dartAsyncLib, anonLib;
+    Library dartAsyncLib, anonLib, isDeprecated;
 
     setUp(() {
       dartAsyncLib = new Library(
@@ -112,12 +112,24 @@ void main() {
       anonLib = package.libraries
           .firstWhere((lib) => lib.name == 'anonymous_library');
 
+      isDeprecated =
+          package.libraries.firstWhere((lib) => lib.name == 'is_deprecated');
+
       // Make sure the first library is dart:async
       expect(dartAsyncLib.name, 'dart:async');
     });
 
     test('has a name', () {
       expect(exLibrary.name, 'ex');
+    });
+
+    test('can be deprecated', () {
+      expect(isDeprecated.isDeprecated, isTrue);
+      expect(anonLib.isDeprecated, isFalse);
+    });
+
+    test('that is deprecated has a deprecated css class in linkedName', () {
+      expect(isDeprecated.linkedName, contains('class="deprecated"'));
     });
 
     test('sdk library have formatted names', () {
@@ -248,7 +260,7 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="fake/BaseForDocComments-class.html">BaseForDocComments</a>'));
+                '<a class="" href="fake/BaseForDocComments-class.html">BaseForDocComments</a>'));
       });
 
       test(
@@ -263,7 +275,7 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
+                '<a class="" href="two_exports/BaseClass-class.html">BaseClass</a>'));
       });
 
       test(
@@ -272,30 +284,31 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
+                '<a class="" href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
       });
 
       test('links to a method in this class', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="fake/BaseForDocComments/anotherMethod.html">anotherMethod</a>'));
+                '<a class="" href="fake/BaseForDocComments/anotherMethod.html">anotherMethod</a>'));
       });
 
       test('links to a top-level function in this library', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="fake/topLevelFunction.html">topLevelFunction</a>'));
+                '<a class="deprecated" href="fake/topLevelFunction.html">topLevelFunction</a>'));
       });
 
       test('links to top-level function from an imported library', () {
-        expect(
-            docsAsHtml, contains('<a href="ex/function1.html">function1</a>'));
+        expect(docsAsHtml,
+            contains('<a class="" href="ex/function1.html">function1</a>'));
       });
 
       test('links to a class from an imported lib', () {
-        expect(docsAsHtml, contains('<a href="ex/Apple-class.html">Apple</a>'));
+        expect(docsAsHtml,
+            contains('<a class="" href="ex/Apple-class.html">Apple</a>'));
       });
 
       test(
@@ -304,20 +317,20 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="fake/incorrectDocReference.html">incorrectDocReference</a>'));
+                '<a class="" href="fake/incorrectDocReference.html">incorrectDocReference</a>'));
       });
 
       test('links to a top-level const from an imported lib', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="ex/incorrectDocReferenceFromEx.html">incorrectDocReferenceFromEx</a>'));
+                '<a class="" href="ex/incorrectDocReferenceFromEx.html">incorrectDocReferenceFromEx</a>'));
       });
 
       test('links to a top-level variable with a prefix from an imported lib',
           () {
         expect(docsAsHtml,
-            contains('<a href="">css.theOnlyThingInTheLibrary</a>'));
+            contains('<a class="" href="">css.theOnlyThingInTheLibrary</a>'));
       },
           skip:
               'Wait for https://github.com/dart-lang/dartdoc/issues/767 to be fixed');
@@ -333,7 +346,7 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="fake/NAME_SINGLEUNDERSCORE.html">NAME_SINGLEUNDERSCORE</a>'));
+                '<a class="" href="fake/NAME_SINGLEUNDERSCORE.html">NAME_SINGLEUNDERSCORE</a>'));
       });
     });
 
@@ -342,7 +355,7 @@ void main() {
       expect(
           short.documentationAsHtml,
           contains(
-              '<a href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
+              '<a class="" href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
     });
 
     test('still has brackets inside code blocks', () {
@@ -383,7 +396,7 @@ void main() {
 
     test('single ref to class', () {
       expect(B.documentationAsHtml,
-          '<p>Extends class <a href="ex/Apple-class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a> or <a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>');
+          '<p>Extends class <a class="" href="ex/Apple-class.html">Apple</a>, use <a class="" href="ex/Apple/Apple.html">new Apple</a> or <a class="" href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>');
     });
 
     test('doc ref to class in SDK does not render as link', () {
@@ -398,26 +411,31 @@ void main() {
       expect(extendedClass, isNotNull);
       String resolved = extendedClass.documentationAsHtml;
       expect(resolved, isNotNull);
-      expect(resolved,
-          contains('<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
+      expect(
+          resolved,
+          contains(
+              '<a class="" href="two_exports/BaseClass-class.html">BaseClass</a>'));
       expect(resolved, contains('linking over to <code>Apple</code>.'));
     });
 
     test('references to class and constructors', () {
       String comment = B.documentationAsHtml;
-      expect(comment,
-          contains('Extends class <a href="ex/Apple-class.html">Apple</a>'));
-      expect(
-          comment, contains('use <a href="ex/Apple/Apple.html">new Apple</a>'));
       expect(
           comment,
           contains(
-              '<a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'));
+              'Extends class <a class="" href="ex/Apple-class.html">Apple</a>'));
+      expect(comment,
+          contains('use <a class="" href="ex/Apple/Apple.html">new Apple</a>'));
+      expect(
+          comment,
+          contains(
+              '<a class="" href="ex/Apple/Apple.fromString.html">new Apple.fromString</a>'));
     });
 
     test('reference to class from another library', () {
       String comment = superAwesomeClass.documentationAsHtml;
-      expect(comment, contains('<a href="ex/Apple-class.html">Apple</a>'));
+      expect(comment,
+          contains('<a class="" href="ex/Apple-class.html">Apple</a>'));
     });
 
     test('reference to method', () {
@@ -425,7 +443,7 @@ void main() {
       expect(
           comment,
           equals(
-              '<p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>'));
+              '<p>link to method from class <a class="" href="ex/Apple/m.html">Apple.m</a></p>'));
     });
 
     test('legacy code blocks render correctly', () {
@@ -581,7 +599,7 @@ void main() {
           .firstWhere((m) => m.name == 'toUtc', orElse: () => null);
       expect(toUTC, isNotNull);
       expect(toUTC.linkedReturnType,
-          equals('<a href="ex/DateTime-class.html">DateTime</a>'));
+          equals('<a class="" href="ex/DateTime-class.html">DateTime</a>'));
     });
 
     test('F has a single instance method', () {
@@ -788,7 +806,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('an inherited method has a linkedName that includes an HTML link', () {
       expect(inheritedClear.linkedName,
-          equals('<a href="ex/CatString/clear.html">clear</a>'));
+          equals('<a class="" href="ex/CatString/clear.html">clear</a>'));
     });
 
     test('has enclosing element', () {
@@ -865,7 +883,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           plus.linkedName,
           equals(
-              '<a href="ex/SpecializedDuration/operator_plus.html">operator +</a>'));
+              '<a class="" href="ex/SpecializedDuration/operator_plus.html">operator +</a>'));
     });
   });
 
@@ -904,7 +922,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('inherited property has a linked name', () {
       expect(isEmpty.linkedName,
-          equals('<a href="ex/CatString/isEmpty.html">isEmpty</a>'));
+          equals('<a class="" href="ex/CatString/isEmpty.html">isEmpty</a>'));
     });
 
     test('inherited property has the inheriting class as the enclosing class',
@@ -1097,7 +1115,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('MY_CAT is linked', () {
       expect(cat.constantValue,
-          'const <a href="ex/ConstantCat-class.html">ConstantCat</a>(\'tabby\')');
+          'const <a class="" href="ex/ConstantCat-class.html">ConstantCat</a>(\'tabby\')');
     });
 
     test('exported property', () {
@@ -1296,7 +1314,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           forAnnotation.annotations.first,
           equals(
-              '<a href="ex/ForAnnotation-class.html">ForAnnotation</a>(\'my value\')'));
+              '<a class="" href="ex/ForAnnotation-class.html">ForAnnotation</a>(\'my value\')'));
     });
 
     test('methods has the right annotation', () {
