@@ -59,5 +59,6 @@ else
   fi
 
   # Push a copy of the dartdoc docs to firebase.
-  grind firebase
+  # This was timing out
+  # grind firebase
 fi
