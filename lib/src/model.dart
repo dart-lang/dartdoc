@@ -87,6 +87,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   ModelElement(this.element, this.library);
 
   factory ModelElement.from(Element e, Library library) {
+    if (e is DynamicElementImpl) {
+      return new Dynamic(e, library);
+    }
     // Also handles enums
     if (e is ClassElement) {
       return new Class(e, library);
@@ -117,9 +120,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     }
     if (e is TypeParameterElement) {
       return new TypeParameter(e, library);
-    }
-    if (e is DynamicElementImpl) {
-      return new Dynamic(e, library);
     }
     if (e is ParameterElement) {
       return new Parameter(e, library);
@@ -563,10 +563,16 @@ class Package implements Nameable, Documentable {
   /// Can return null if not appropriate library can be found.
   Library _getLibraryFor(Element e) {
     // can be null if e is for dynamic
-    if (e.library == null) return null;
+    if (e.library == null) {
+      return null;
+    }
 
-    return libraries.firstWhere((l) => l.hasInExportedNamespace(e),
-        orElse: () => null);
+    return libraries.firstWhere((l) => l.hasInExportedNamespace(e), orElse: () {
+      // TODO: this is almost certainly a bug: we shouldn't be setting
+      // the library's package to this, because e.library could be a core Dart
+      // library.
+      return new Library(e.library, this);
+    });
   }
 }
 
@@ -827,13 +833,13 @@ class Class extends ModelElement implements EnclosedElement {
   ClassElement get _cls => (element as ClassElement);
 
   Class(ClassElement element, Library library) : super(element, library) {
-    var p = library.package;
+    Package p = library.package;
     _modelType = new ElementType(_cls.type, this);
 
     _mixins = _cls.mixins.map((f) {
-      var lib = new Library(f.element.library, p);
-      var t = new ElementType(f, new ModelElement.from(f.element, lib));
-      var exclude = t.element.element.isPrivate;
+      Library lib = new Library(f.element.library, p);
+      ElementType t = new ElementType(f, new ModelElement.from(f.element, lib));
+      bool exclude = t.element.element.isPrivate;
       if (exclude) {
         return null;
       } else {
