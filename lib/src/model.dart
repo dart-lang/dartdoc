@@ -510,49 +510,6 @@ class Package implements Nameable, Documentable {
 
     return _libraries.firstWhere((lib) => lib.hasInExportedNamespace(el),
         orElse: () => null);
-
-    // if (scopedTo != null) {
-    //   Library tryMe = scopedTo.library;
-    //
-    //   if (tryMe.hasInExportedNamespace(el)) {
-    //     return tryMe;
-    //   }
-    //
-    //   // try searching all libraries imported by scopedTo?
-    // }
-    //
-    // Library tryMe = _libraries.firstWhere(
-    //     (lib) => lib.hasInExportedNamespace(el),
-    //     orElse: () => null);
-    //
-    // if (tryMe != null) return tryMe;
-    //
-    // if (_libraries.any((lib) => lib.element == element.library)) {
-    //   return new Library(element.library, this);
-    // } else {
-    //   return null;
-    // }
-
-    // if (scopedTo != null) {
-    //   if (scopedTo.library == null) {
-    //     throw 'library is null for ${scopedTo}';
-    //   }
-    //   Library tryMe = new Library(scopedTo.library, this);
-    //   if (tryMe != null) {
-    //     if (tryMe.hasInExportedNamespace(el)) {
-    //       return tryMe;
-    //     } else {
-    //       print(
-    //           'looking for ${el.name} in ${tryMe._exportedNamespace.definedNames.keys.join(',')}\n\n');
-    //       return null;
-    //     }
-    //   } else {
-    //     throw 'did not find a library to match ${scopedTo.library} known in package, in ${libraries}';
-    //   }
-    // } else {
-    //   return _libraries.firstWhere((lib) => lib.hasInExportedNamespace(el),
-    //       orElse: () => null);
-    // }
   }
 
   bool isDocumented(Element element) => findLibraryFor(element) != null;
