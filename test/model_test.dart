@@ -1001,7 +1001,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Top-level Variable', () {
     TopLevelVariable v;
     TopLevelVariable v3, justGetter, justSetter;
-    TopLevelVariable setAndGet;
+    TopLevelVariable setAndGet, mapWithDynamicKeys;
 
     setUp(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
@@ -1012,6 +1012,16 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.properties.firstWhere((p) => p.name == 'justSetter');
       setAndGet =
           fakeLibrary.properties.firstWhere((p) => p.name == 'setAndGet');
+      mapWithDynamicKeys = fakeLibrary.properties
+          .firstWhere((p) => p.name == 'mapWithDynamicKeys');
+    });
+
+    test('type arguments are correct', () {
+      expect(mapWithDynamicKeys.modelType.typeArguments, hasLength(2));
+      expect(mapWithDynamicKeys.modelType.typeArguments.first.name,
+          equals('dynamic'));
+      expect(mapWithDynamicKeys.modelType.typeArguments.last.name,
+          equals('String'));
     });
 
     test('has enclosing element', () {

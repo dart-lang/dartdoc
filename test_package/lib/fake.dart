@@ -50,6 +50,8 @@ import 'css.dart' as css;
 
 import 'two_exports.dart' show BaseClass;
 
+Map<dynamic, String> mapWithDynamicKeys = {};
+
 /// Useful for annotations.
 class Annotation {
   final String value;

@@ -597,17 +597,17 @@ class Library extends ModelElement {
   }
 
   factory Library(LibraryElement element, Package package) {
-    var key = element == null ? 'null' : element.name;
+    String key = element == null ? 'null' : element.name;
 
     if (key.isEmpty) {
-      var name = element.definingCompilationUnit.name;
+      String name = element.definingCompilationUnit.name;
       key = name.substring(0, name.length - '.dart'.length);
     }
 
     if (_libraryMap.containsKey(key)) {
       return _libraryMap[key];
     }
-    var library = new Library._(element, package);
+    Library library = new Library._(element, package);
     _libraryMap[key] = library;
 
     return library;
@@ -1901,7 +1901,11 @@ class ElementType {
 
   List<ElementType> get typeArguments =>
       (_type as ParameterizedType).typeArguments.map((f) {
-        var lib = new Library(f.element.library, _element.package);
+        Library lib;
+        // can happen if element is dynamic
+        if (f.element.library != null) {
+          lib = new Library(f.element.library, _element.package);
+        }
         return new ElementType(f, new ModelElement.from(f.element, lib));
       }).toList();
 
