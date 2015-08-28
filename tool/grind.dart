@@ -160,7 +160,11 @@ Future buildSdkDocs() async {
 }
 
 @Task('Validate the SDK doc build.')
-@Depends(buildSdkDocs)
+//@Depends(buildSdkDocs) unfortunately this doesn't work, because
+// I get Uncaught Error: Bad state: StreamSink is bound to a stream
+// if I run grind validate-sdk-docs. However, everything works
+// if I run grind build-sdk-docs manually.
+// See https://github.com/google/grinder.dart/issues/291
 validateSdkDocs() {
   const expectedLibCount = 18;
   var indexHtml = joinFile(docsDir, ['index.html']);
