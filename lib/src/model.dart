@@ -560,6 +560,7 @@ class Package implements Nameable, Documentable {
   String get href => 'index.html';
 
   /// Will try to find the library that exports the element.
+  /// Checks if a library exports a name.
   /// Can return null if not appropriate library can be found.
   Library _getLibraryFor(Element e) {
     // can be null if e is for dynamic
@@ -586,6 +587,7 @@ class Library extends ModelElement {
   List<Typedef> _typeDefs;
   List<TopLevelVariable> _variables;
   Namespace _exportedNamespace;
+  Map<String, Element> _exportedElements;
   String _name;
 
   LibraryElement get _library => (element as LibraryElement);
@@ -594,6 +596,7 @@ class Library extends ModelElement {
     if (element == null) throw new ArgumentError.notNull('element');
     _exportedNamespace =
         new NamespaceBuilder().createExportNamespaceForLibrary(element);
+    _exportedElements = _exportedNamespace.definedNames;
   }
 
   factory Library(LibraryElement element, Package package) {
@@ -622,13 +625,8 @@ class Library extends ModelElement {
   Library get library => this;
 
   bool hasInExportedNamespace(Element element) {
-    return _exportedNamespace.definedNames.values.contains(element);
-    //return _exportedNamespace.get(element.name) != null;
-
-    // Fix for #587, comparison between elements isn't reliable.
-    //return e == element;
-    // return e.runtimeType == element.runtimeType &&
-    //     e.nameOffset == element.nameOffset;
+    Element found = _exportedNamespace.get(element.name);
+    return (found == element); // this checks more than just the name
   }
 
   bool get isAnonymous => element.name == null || element.name.isEmpty;
