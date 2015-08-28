@@ -252,6 +252,21 @@ void main() {
       });
 
       test(
+          'link to a name in another library in this package, but is not imported into this library, is codeified',
+          () {
+        expect(docsAsHtml, contains('<code>doesStuff</code>'));
+      });
+
+      test(
+          'link to a name of a class from an imported library that exports the name',
+          () {
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
+      });
+
+      test(
           'links to a reference to a top-level const with multiple underscores',
           () {
         expect(

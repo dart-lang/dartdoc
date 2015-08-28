@@ -478,7 +478,7 @@ class Package implements Nameable, Documentable {
 
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
-  Library findLibraryFor(final Element element, {final Element scopedTo}) {
+  Library findLibraryFor(final Element element, {final ModelElement scopedTo}) {
     if (element is LibraryElement) {
       // will equality work here? or should we check names?
       return _libraries.firstWhere((lib) => lib.element == element,
@@ -508,25 +508,30 @@ class Package implements Nameable, Documentable {
       el = element;
     }
 
-    if (scopedTo != null) {
-      Library tryMe = new Library(scopedTo.library, this);
-
-      if (tryMe.hasInExportedNamespace(el)) {
-        return tryMe;
-      }
-    }
-
-    Library tryMe = _libraries.firstWhere(
-        (lib) => lib.hasInExportedNamespace(el),
+    return _libraries.firstWhere((lib) => lib.hasInExportedNamespace(el),
         orElse: () => null);
 
-    if (tryMe != null) return tryMe;
-
-    if (_libraries.any((lib) => lib.element == element.library)) {
-      return new Library(element.library, this);
-    } else {
-      return null;
-    }
+    // if (scopedTo != null) {
+    //   Library tryMe = scopedTo.library;
+    //
+    //   if (tryMe.hasInExportedNamespace(el)) {
+    //     return tryMe;
+    //   }
+    //
+    //   // try searching all libraries imported by scopedTo?
+    // }
+    //
+    // Library tryMe = _libraries.firstWhere(
+    //     (lib) => lib.hasInExportedNamespace(el),
+    //     orElse: () => null);
+    //
+    // if (tryMe != null) return tryMe;
+    //
+    // if (_libraries.any((lib) => lib.element == element.library)) {
+    //   return new Library(element.library, this);
+    // } else {
+    //   return null;
+    // }
 
     // if (scopedTo != null) {
     //   if (scopedTo.library == null) {
@@ -616,7 +621,9 @@ class Library extends ModelElement {
   Library get library => this;
 
   bool hasInExportedNamespace(Element element) {
-    return _exportedNamespace.get(element.name) != null;
+    return _exportedNamespace.definedNames.values.contains(element);
+    //return _exportedNamespace.get(element.name) != null;
+
     // Fix for #587, comparison between elements isn't reliable.
     //return e == element;
     // return e.runtimeType == element.runtimeType &&
