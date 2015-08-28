@@ -160,7 +160,7 @@ Future buildSdkDocs() async {
 }
 
 @Task('Validate the SDK doc build.')
-//@Depends(buildSdkDocs)
+@Depends(buildSdkDocs)
 validateSdkDocs() {
   const expectedLibCount = 18;
   var indexHtml = joinFile(docsDir, ['index.html']);
