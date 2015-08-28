@@ -15,7 +15,7 @@ about _using_ the dartdoc tool.
 
 [Download the Dart SDK](https://www.dartlang.org/downloads/),
 version 1.12-dev.5.10 or later.
-Ensure the SDK's `bin` directory to your PATH.
+If not already added, add the SDK's `bin` directory to your PATH.
 
 ### From pub.dartlang.org
 
@@ -23,9 +23,9 @@ You can install the latest version of dartdoc with `pub`:
 
 $ pub global activate dartdoc
 
-Note: to ensure that this version is run when you type `dartdoc` on
-the command line, ensure that `~/.pub-cache/bin` is on your PATH,
-and before the path to the Dart SDK.
+Note: to ensure that this version is run when you type dartdoc on
+the command line, make sure that ~/.pub-cache/bin is on your PATH, and
+before the path to the Dart SDK.
 
 ## Running dartdoc
 

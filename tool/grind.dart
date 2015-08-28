@@ -54,26 +54,6 @@ findTransformers() async {
   }
 }
 
-@Task('Start observatory for a test run')
-observe() async {
-  delete(docsDir);
-  // TODO: Use `Dart.run` when https://github.com/google/grinder.dart/issues/214
-  // is fixed.
-  // TODO: uncomment all this when https://code.google.com/p/dart/issues/detail?id=23359
-  // is fixed
-//  runAsync('dart',
-//      arguments: ['--pause-isolates-on-exit', '--enable-vm-service=7334',
-//      // TODO: we only need --profile on windows
-//      '--profile', 'bin/dartdoc.dart', '--output', '${DOCS_DIR.path}']);
-//  await new Future.delayed(const Duration(seconds: 1));
-//  runAsync('open', arguments: ['http://localhost:7334']);
-
-  print('Copy and paste this into your console:\n');
-  print('open http://localhost:7334');
-  print('dart --pause-isolates-on-exit --enable-vm-service=7334 '
-      '--profile bin/dartdoc.dart --output ${docsDir.path}');
-}
-
 @Task('Publish to pub.dartlang')
 @Depends(checkChangelogHasVersion, checkVersionMatches)
 publish() async {
@@ -165,31 +145,39 @@ analyze() {
 Future buildSdkDocs() async {
   delete(docsDir);
   log('building SDK docs');
-  try {
-    int sdkDocsGenTime = await _runAsyncTimed(() {
-      return Dart.runAsync('bin/dartdoc.dart', arguments:
-          ['--output', '${docsDir.path}', '--sdk-docs', '--show-progress']);
-    });
-    var indexHtml = joinFile(docsDir, ['index.html']);
-    if (!indexHtml.existsSync()) {
-      fail('no index.html found for SDK docs');
-    }
-    // check for the existence of certain files/dirs
-    var libsLength =
-        docsDir.listSync().where((fs) => fs.path.contains('dart_')).length;
-    if (libsLength != 17) {
-      fail('docs not generated for all the SDK libraries, '
-          'expected 17 directories, generated $libsLength directories');
-    }
-    var futureConstFile =
-        joinFile(docsDir, [path.join('dart_async', 'Future', 'Future.html')]);
-    if (!futureConstFile.existsSync()) {
-      fail('no Future.html found for dart:async Future constructor');
-    }
+  int sdkDocsGenTime = await _runAsyncTimed(() async {
+    var process = await Process.start('dart', [
+      'bin/dartdoc.dart',
+      '--output',
+      '${docsDir.path}',
+      '--sdk-docs',
+      '--show-progress'
+    ]);
+    stdout.addStream(process.stdout);
+    stderr.addStream(process.stderr);
+  });
+  return _uploadStats(sdkDocsGenTime);
+}
 
-    return _uploadStats(sdkDocsGenTime);
-  } catch (e) {
-    rethrow;
+@Task('Validate the SDK doc build.')
+//@Depends(buildSdkDocs)
+validateSdkDocs() {
+  const expectedLibCount = 18;
+  var indexHtml = joinFile(docsDir, ['index.html']);
+  if (!indexHtml.existsSync()) {
+    fail('no index.html found for SDK docs');
+  }
+  // check for the existence of certain files/dirs
+  var libsLength =
+      docsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
+  if (libsLength != expectedLibCount) {
+    fail('docs not generated for all the SDK libraries, '
+        'expected $expectedLibCount directories, generated $libsLength directories');
+  }
+  var futureConstFile =
+      joinFile(docsDir, [path.join('dart-async', 'Future', 'Future.html')]);
+  if (!futureConstFile.existsSync()) {
+    fail('no Future.html found for dart:async Future constructor');
   }
 }
 
