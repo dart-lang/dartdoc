@@ -74,8 +74,9 @@ Navigate to `localhost:8080` in your browser. The search function should now wor
 
 Command-line options for dartdoc include:
 
-`-h` or `--help`
-: Display help.
+<dl>
+<dt><code>`-h`</code> or <code>`--help`</code></dt>
+<dd>Display help.</dd>
 
 <dt><code>--header=&lt;<em>file</em>&gt;</code></dt>
 <dd>
