@@ -10,6 +10,9 @@ import 'dart:io';
 
 import 'src/model.dart' show Package;
 
+/// Called when the generator has generated a file for a thing.
+typedef void ProgressCallback(File file);
+
 /// An abstract class that defines a generator that generates documentation for
 /// a given package.
 ///
@@ -17,6 +20,7 @@ import 'src/model.dart' show Package;
 /// html, json etc.
 abstract class Generator {
   /// Generate the documentation for the given package in the specified
-  /// directory.
-  Future generate(Package package, Directory out);
+  /// directory. Completes the returned future when done.
+  Future generate(Package package, Directory out,
+      {ProgressCallback onProgress});
 }

@@ -12,6 +12,8 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 
+bool _showProgress = false;
+
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
 main(List<String> arguments) async {
@@ -37,6 +39,10 @@ main(List<String> arguments) async {
   bool sdkDocs = false;
   if (args['sdk-docs']) {
     sdkDocs = true;
+  }
+
+  if (args['show-progress']) {
+    _showProgress = true;
   }
 
   var readme = args['sdk-readme'];
@@ -112,7 +118,8 @@ main(List<String> arguments) async {
   var generators = initGenerators(url, headerFilePath, footerFilePath);
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
-      outputDir, packageMeta, urlMappings, includeLibraries);
+      outputDir, packageMeta, urlMappings, includeLibraries,
+      onProgress: _onProgress);
 
   try {
     DartDocResults results = await dartdoc.generateDocs();
@@ -126,6 +133,10 @@ main(List<String> arguments) async {
       exit(255);
     }
   }
+}
+
+void _onProgress(File file) {
+  if (_showProgress) stdout.write('.');
 }
 
 /// Print help if we are passed the help option.
@@ -151,6 +162,8 @@ ArgParser _createArgsParser() {
           "Location of the Dart SDK. Use if SDK isn't automatically located.");
   parser.addFlag('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
+  parser.addFlag('show-progress',
+      help: 'Display progress indications to console stdout', negatable: false);
   parser.addOption('sdk-readme',
       help:
           'Path to the SDK description file. Use if generating Dart SDK docs.');

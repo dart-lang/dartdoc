@@ -183,7 +183,7 @@ void main() {
 
   group('Docs as HTML', () {
     Class Apple, B, superAwesomeClass, foo2;
-    TopLevelVariable incorrectReference;
+    TopLevelVariable incorrectDocReferenceFromEx;
     ModelFunction thisIsAsync;
     ModelFunction topLevelFunction;
 
@@ -198,8 +198,8 @@ void main() {
     ModelFunction short;
 
     setUp(() {
-      incorrectReference = exLibrary.constants
-          .firstWhere((c) => c.name == 'incorrectDocReference');
+      incorrectDocReferenceFromEx = exLibrary.constants
+          .firstWhere((c) => c.name == 'incorrectDocReferenceFromEx');
       B = exLibrary.classes.firstWhere((c) => c.name == 'B');
       Apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       specialList =
@@ -252,6 +252,21 @@ void main() {
       });
 
       test(
+          'link to a name in another library in this package, but is not imported into this library, is codeified',
+          () {
+        expect(docsAsHtml, contains('<code>doesStuff</code>'));
+      });
+
+      test(
+          'link to a name of a class from an imported library that exports the name',
+          () {
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
+      });
+
+      test(
           'links to a reference to a top-level const with multiple underscores',
           () {
         expect(
@@ -283,11 +298,20 @@ void main() {
         expect(docsAsHtml, contains('<a href="ex/Apple-class.html">Apple</a>'));
       });
 
-      test('links to a top-level const from an imported lib', () {
+      test(
+          'links to a top-level const from same lib (which also has the same name as a const from an imported lib)',
+          () {
         expect(
             docsAsHtml,
             contains(
                 '<a href="fake/incorrectDocReference.html">incorrectDocReference</a>'));
+      });
+
+      test('links to a top-level const from an imported lib', () {
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="ex/incorrectDocReferenceFromEx.html">incorrectDocReferenceFromEx</a>'));
       });
 
       test('links to a top-level variable with a prefix from an imported lib',
@@ -348,7 +372,7 @@ void main() {
     });
 
     test('incorrect doc references are still wrapped in code blocks', () {
-      expect(incorrectReference.documentationAsHtml,
+      expect(incorrectDocReferenceFromEx.documentationAsHtml,
           '<p>This should <code>not work</code>.</p>');
     });
 
@@ -432,7 +456,7 @@ void main() {
   group('Class', () {
     List<Class> classes;
     Class Apple, B, Cat, Dog, F, DT, SpecialList;
-    Class ExtendingClass;
+    Class ExtendingClass, CatString;
 
     setUp(() {
       classes = exLibrary.classes;
@@ -446,6 +470,7 @@ void main() {
           fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList');
       ExtendingClass =
           twoExportsLib.classes.firstWhere((c) => c.name == 'ExtendingClass');
+      CatString = exLibrary.classes.firstWhere((c) => c.name == 'CatString');
     });
 
     test('we got the classes we expect', () {
@@ -453,6 +478,13 @@ void main() {
       expect(B.name, equals('B'));
       expect(Cat.name, equals('Cat'));
       expect(Dog.name, equals('Dog'));
+    });
+
+    test('a class with only inherited properties has some properties', () {
+      expect(CatString.hasInstanceProperties, isFalse);
+      expect(CatString.instanceProperties, isEmpty);
+      expect(CatString.hasProperties, isTrue);
+      expect(CatString.allInstanceProperties, isNotEmpty);
     });
 
     test('has enclosing element', () {
@@ -463,8 +495,8 @@ void main() {
       expect(F.nameWithGenerics, equals('F&ltT extends String&gt'));
     });
 
-    test('correctly finds classes', () {
-      expect(classes, hasLength(16));
+    test('correctly finds all the classes', () {
+      expect(classes, hasLength(17));
     });
 
     test('abstract', () {
@@ -714,15 +746,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Method', () {
-    Class classB, klass, HasGenerics;
-    Method m, isGreaterThan, m4, m5, m6, convertToMap;
+    Class classB, klass, HasGenerics, CatString;
+    Method m1, isGreaterThan, m4, m5, m6, convertToMap;
+    Method inheritedClear;
 
     setUp(() {
       klass = exLibrary.classes.singleWhere((c) => c.name == 'Klass');
       classB = exLibrary.classes.singleWhere((c) => c.name == 'B');
       HasGenerics =
           fakeLibrary.classes.singleWhere((c) => c.name == 'HasGenerics');
-      m = classB.instanceMethods.first;
+      CatString = exLibrary.classes.singleWhere((c) => c.name == 'CatString');
+      inheritedClear =
+          CatString.inheritedMethods.singleWhere((m) => m.name == 'clear');
+      m1 = classB.instanceMethods.singleWhere((m) => m.name == 'm1');
       isGreaterThan = exLibrary.classes
           .singleWhere((c) => c.name == 'Apple')
           .instanceMethods
@@ -734,16 +770,37 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'convertToMap');
     });
 
+    test('an inherited method has the inheriting class as the enclosing class',
+        () {
+      expect(inheritedClear.enclosingElement.name, equals('CatString'));
+      expect(inheritedClear.enclosingClass.name, equals('CatString'));
+    });
+
+    test('inherited method has the inheriting class library', () {
+      expect(inheritedClear.library.name, equals('ex'));
+    });
+
+    test(
+        'an inherited method from the core SDK has a href local to the inheriting class',
+        () {
+      expect(inheritedClear.href, equals('ex/CatString/clear.html'));
+    });
+
+    test('an inherited method has a linkedName that includes an HTML link', () {
+      expect(inheritedClear.linkedName,
+          equals('<a href="ex/CatString/clear.html">clear</a>'));
+    });
+
     test('has enclosing element', () {
-      expect(m.enclosingElement.name, equals(classB.name));
+      expect(m1.enclosingElement.name, equals(classB.name));
     });
 
     test('overriden method', () {
-      expect(m.overriddenElement.runtimeType.toString(), 'Method');
+      expect(m1.overriddenElement.runtimeType.toString(), 'Method');
     });
 
     test('method documentation', () {
-      expect(m.documentation, equals('this is a method'));
+      expect(m1.documentation, equals('this is a method'));
     });
 
     test('can have params', () {
@@ -776,11 +833,48 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
   });
 
+  group('Operators', () {
+    Class SpecializedDuration;
+    Operator plus;
+
+    setUp(() {
+      SpecializedDuration =
+          exLibrary.classes.firstWhere((c) => c.name == 'SpecializedDuration');
+      plus = SpecializedDuration.allOperators
+          .firstWhere((o) => o.name == 'operator +');
+    });
+
+    test('can be inherited', () {
+      expect(plus.isInherited, isTrue);
+    });
+
+    test('if inherited, has the inheriting class', () {
+      expect(plus.enclosingClass.name, equals('SpecializedDuration'));
+      expect(plus.enclosingElement.name, equals('SpecializedDuration'));
+    });
+
+    test("if inherited, has the inheriting class's library", () {
+      expect(plus.library, equals(SpecializedDuration.library));
+    });
+
+    test('if inherited, has a href relative to inheriting class', () {
+      expect(plus.href, equals('ex/SpecializedDuration/operator_plus.html'));
+    });
+
+    test('if inherited, has a linkedName', () {
+      expect(
+          plus.linkedName,
+          equals(
+              '<a href="ex/SpecializedDuration/operator_plus.html">operator +</a>'));
+    });
+  });
+
   group('Field', () {
-    Class c, LongFirstLine;
+    Class c, LongFirstLine, CatString;
     Field f1, f2, constField, dynamicGetter, onlySetter;
     Field lengthX;
     Field sFromApple;
+    Field isEmpty;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
@@ -789,6 +883,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       constField = c.constants[0]; // string
       LongFirstLine =
           fakeLibrary.classes.firstWhere((c) => c.name == 'LongFirstLine');
+      CatString = exLibrary.classes.firstWhere((c) => c.name == 'CatString');
+      isEmpty = CatString.allInstanceProperties
+          .firstWhere((p) => p.name == 'isEmpty');
       dynamicGetter = LongFirstLine.instanceProperties
           .firstWhere((p) => p.name == 'dynamicGetter');
       onlySetter = LongFirstLine.instanceProperties
@@ -803,6 +900,21 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'Apple')
           .allInstanceProperties
           .firstWhere((p) => p.name == 's');
+    });
+
+    test('inherited property has a linked name', () {
+      expect(isEmpty.linkedName,
+          equals('<a href="ex/CatString/isEmpty.html">isEmpty</a>'));
+    });
+
+    test('inherited property has the inheriting class as the enclosing class',
+        () {
+      expect(isEmpty.enclosingClass.name, equals('CatString'));
+      expect(isEmpty.enclosingElement.name, equals('CatString'));
+    });
+
+    test('inherited property has the inheriting class library', () {
+      expect(isEmpty.library.name, equals('ex'));
     });
 
     test('has enclosing element', () {
@@ -889,7 +1001,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Top-level Variable', () {
     TopLevelVariable v;
     TopLevelVariable v3, justGetter, justSetter;
-    TopLevelVariable setAndGet;
+    TopLevelVariable setAndGet, mapWithDynamicKeys;
 
     setUp(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
@@ -900,6 +1012,16 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.properties.firstWhere((p) => p.name == 'justSetter');
       setAndGet =
           fakeLibrary.properties.firstWhere((p) => p.name == 'setAndGet');
+      mapWithDynamicKeys = fakeLibrary.properties
+          .firstWhere((p) => p.name == 'mapWithDynamicKeys');
+    });
+
+    test('type arguments are correct', () {
+      expect(mapWithDynamicKeys.modelType.typeArguments, hasLength(2));
+      expect(mapWithDynamicKeys.modelType.typeArguments.first.name,
+          equals('dynamic'));
+      expect(mapWithDynamicKeys.modelType.typeArguments.last.name,
+          equals('String'));
     });
 
     test('has enclosing element', () {
@@ -961,8 +1083,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(greenConstant.enclosingElement.name, equals(exLibrary.name));
     });
 
-    test('found five constants', () {
-      expect(exLibrary.constants, hasLength(7));
+    test('found all the constants', () {
+      expect(exLibrary.constants, hasLength(8));
     });
 
     test('COLOR_GREEN is constant', () {

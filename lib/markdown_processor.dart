@@ -14,6 +14,7 @@ import 'package:analyzer/src/generated/element.dart'
         CompilationUnitElement,
         ClassMemberElement,
         TopLevelVariableElement,
+        ParameterElement,
         PropertyAccessorElement;
 import 'package:html/dom.dart' show Document;
 import 'package:html/parser.dart' show parse;
@@ -164,6 +165,7 @@ String _getMatchingLink(
     }
   }
 
+  // Did not find an element in scope
   if (refElement == null) return null;
 
   if (refElement is PropertyAccessorElement &&
@@ -173,7 +175,16 @@ String _getMatchingLink(
     refElement = (refElement as PropertyAccessorElement).variable;
   }
 
-  Library refLibrary = element.package.findLibraryFor(refElement);
+  if (refElement is ParameterElement) return null;
+
+  // bug! this can fail to find the right library name if the element's name
+  // we're looking for is the same as a name that comes in from an imported
+  // library.
+  //
+  // Don't search through all libraries in the package, actually search
+  // in the current scope.
+  Library refLibrary =
+      element.package.findLibraryFor(refElement, scopedTo: element);
 
   if (refLibrary != null) {
     // Is there a way to pull this from a registry of known elements?

@@ -48,6 +48,10 @@ import 'example.dart';
 
 import 'css.dart' as css;
 
+import 'two_exports.dart' show BaseClass;
+
+Map<dynamic, String> mapWithDynamicKeys = {};
+
 /// Useful for annotations.
 class Annotation {
   final String value;
@@ -398,13 +402,22 @@ class BaseForDocComments {
   ///
   /// Reference to a top-level function in this library [topLevelFunction] xx
   ///
-  /// Reference to a top-level function in another library (example lib) [function1] xx
+  /// Reference to a top-level function in another library that is imported into this library (example lib) [function1] xx
   ///
   /// Reference to a class in example lib [Apple] xx
   ///
-  /// Reference to a top-level const in another library [incorrectDocReference] xx
+  /// Reference to a top-level const in this library that shares the same
+  /// name as a top-level name in another library [incorrectDocReference] xx
+  ///
+  /// Reference to a top-level const in another library [incorrectDocReferenceFromEx]
   ///
   /// Reference to prefixed-name from another lib [css.theOnlyThingInTheLibrary] xx
+  ///
+  /// Reference to a name that exists in this package, but is not imported
+  /// in this library [doesStuff] xx
+  ///
+  /// Reference to a name of a class from an import of a library that exported
+  /// the name [BaseClass] xx
   String doAwesomeStuff(int value) => null;
 
   void anotherMethod() {}

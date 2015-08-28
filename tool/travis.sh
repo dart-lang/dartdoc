@@ -20,7 +20,7 @@ then
   # silence stdout but echo stderr
   echo ""
   echo "Building SDK docs..."
-  grind build-sdk-docs 2>&1 >/dev/null | echo
+  grind build-sdk-docs
   echo "SDK docs process finished"
 else
   echo ""
@@ -59,5 +59,6 @@ else
   fi
 
   # Push a copy of the dartdoc docs to firebase.
-  grind firebase
+  # This was timing out
+  # grind firebase
 fi

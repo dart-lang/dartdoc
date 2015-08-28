@@ -87,6 +87,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   ModelElement(this.element, this.library);
 
   factory ModelElement.from(Element e, Library library) {
+    if (e is DynamicElementImpl) {
+      return new Dynamic(e, library);
+    }
     // Also handles enums
     if (e is ClassElement) {
       return new Class(e, library);
@@ -117,9 +120,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     }
     if (e is TypeParameterElement) {
       return new TypeParameter(e, library);
-    }
-    if (e is DynamicElementImpl) {
-      return new Dynamic(e, library);
     }
     if (e is ParameterElement) {
       return new Parameter(e, library);
@@ -281,6 +281,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   ElementType get modelType => _modelType;
 
   /// Returns the [ClassElement] that encloses this.
+  /// TODO: this is in the wrong place. Not all ModelElements have
+  /// an enclosing class.
+  /// Why is this here?
   Class get enclosingClass {
     // A class's enclosing element is a library, and there isn't a
     // modelelement for a library.
@@ -296,7 +299,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       (this is Library) ? (this as Library).package : this.library.package;
 
   String get linkedName {
-    if (!package.isDocumented(this.element)) {
+    if (enclosingClass != null &&
+        !package.isDocumented(enclosingClass.element)) {
+      return htmlEscape(name);
+    } else if (enclosingClass == null && !package.isDocumented(this.element)) {
       return htmlEscape(name);
     }
 
@@ -313,9 +319,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return '<a href="${href}">$name</a>';
   }
 
-  String get href => package.isDocumented(this.element) ? _href : null;
-
-  String get _href;
+  String get href;
 
   String linkedParams(
       {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
@@ -406,10 +410,14 @@ class Dynamic extends ModelElement {
 
   ModelElement get enclosingElement => throw new UnsupportedError('');
 
-  String get _href => throw new StateError('dynamic should not have an href');
+  @override
+  String get href => throw new StateError('dynamic should not have an href');
 
   @override
   String get kind => 'dynamic';
+
+  @override
+  String get linkedName => 'dynamic';
 }
 
 class Package implements Nameable, Documentable {
@@ -470,7 +478,7 @@ class Package implements Nameable, Documentable {
 
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
-  Library findLibraryFor(final Element element) {
+  Library findLibraryFor(final Element element, {final ModelElement scopedTo}) {
     if (element is LibraryElement) {
       // will equality work here? or should we check names?
       return _libraries.firstWhere((lib) => lib.element == element,
@@ -499,8 +507,8 @@ class Package implements Nameable, Documentable {
     } else {
       el = element;
     }
-    //debugger(when: element.name == 'NAME_WITH_TWO_UNDERSCORES');
-    return _libraries.firstWhere((lib) => lib.hasInNamespace(el),
+
+    return _libraries.firstWhere((lib) => lib.hasInExportedNamespace(el),
         orElse: () => null);
   }
 
@@ -508,13 +516,21 @@ class Package implements Nameable, Documentable {
 
   String get href => 'index.html';
 
+  /// Will try to find the library that exports the element.
+  /// Checks if a library exports a name.
+  /// Can return null if not appropriate library can be found.
   Library _getLibraryFor(Element e) {
-    var lib;
-    lib = libraries.firstWhere((l) => l.hasInNamespace(e), orElse: () => null);
-    if (lib == null) {
-      lib = new Library(e.library, this);
+    // can be null if e is for dynamic
+    if (e.library == null) {
+      return null;
     }
-    return lib;
+
+    return libraries.firstWhere((l) => l.hasInExportedNamespace(e), orElse: () {
+      // TODO: this is almost certainly a bug: we shouldn't be setting
+      // the library's package to this, because e.library could be a core Dart
+      // library.
+      return new Library(e.library, this);
+    });
   }
 }
 
@@ -527,26 +543,29 @@ class Library extends ModelElement {
   List<ModelFunction> _functions;
   List<Typedef> _typeDefs;
   List<TopLevelVariable> _variables;
-  Iterable<Element> _nameSpaceElements;
-  Namespace _namespace;
+  Namespace _exportedNamespace;
   String _name;
 
   LibraryElement get _library => (element as LibraryElement);
 
-  Library._(LibraryElement element, this.package) : super(element, null);
+  Library._(LibraryElement element, this.package) : super(element, null) {
+    if (element == null) throw new ArgumentError.notNull('element');
+    _exportedNamespace =
+        new NamespaceBuilder().createExportNamespaceForLibrary(element);
+  }
 
   factory Library(LibraryElement element, Package package) {
-    var key = element == null ? 'null' : element.name;
+    String key = element == null ? 'null' : element.name;
 
     if (key.isEmpty) {
-      var name = element.definingCompilationUnit.name;
+      String name = element.definingCompilationUnit.name;
       key = name.substring(0, name.length - '.dart'.length);
     }
 
     if (_libraryMap.containsKey(key)) {
       return _libraryMap[key];
     }
-    var library = new Library._(element, package);
+    Library library = new Library._(element, package);
     _libraryMap[key] = library;
 
     return library;
@@ -560,24 +579,16 @@ class Library extends ModelElement {
 
   Library get library => this;
 
-  Iterable<Element> get _exportedNamespace {
-    if (_nameSpaceElements == null) _buildExportedNamespace();
-    return _nameSpaceElements;
-  }
+  bool hasInExportedNamespace(Element element) {
+    Element found = _exportedNamespace.get(element.name);
+    if (found == null) return false;
+    if (found == element) return true; // this checks more than just the name
 
-  _buildExportedNamespace() {
-    _namespace =
-        new NamespaceBuilder().createExportNamespaceForLibrary(_library);
-    _nameSpaceElements = _namespace.definedNames.values;
-  }
+    // Fix for #587, comparison between elements isn't reliable on windows.
+    // for some reason. sigh.
 
-  bool hasInNamespace(Element element) {
-    if (_namespace == null) _buildExportedNamespace();
-    var e = _namespace.get(element.name);
-    // Fix for #587, comparison between elements isn't reliable.
-    //return e == element;
-    return e.runtimeType == element.runtimeType &&
-        e.nameOffset == element.nameOffset;
+    return found.runtimeType == element.runtimeType &&
+        found.nameOffset == element.nameOffset;
   }
 
   bool get isAnonymous => element.name == null || element.name.isEmpty;
@@ -624,7 +635,7 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.topLevelVariables);
     }
-    _exportedNamespace.forEach((element) {
+    _exportedNamespace.definedNames.values.forEach((element) {
       if (element is PropertyAccessorElement) elements.add(element.variable);
     });
     elements..removeWhere(isPrivate);
@@ -656,7 +667,7 @@ class Library extends ModelElement {
     if (_enums != null) return _enums;
 
     List<ClassElement> enumClasses = [];
-    enumClasses.addAll(_exportedNamespace
+    enumClasses.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is ClassElement && element.isEnum));
     _enums = enumClasses
         .where(isPublic)
@@ -681,7 +692,7 @@ class Library extends ModelElement {
       elements.addAll(cu.functionTypeAliases);
     }
 
-    elements.addAll(_exportedNamespace
+    elements.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is FunctionTypeAliasElement));
     elements..removeWhere(isPrivate);
     _typeDefs = elements
@@ -701,8 +712,8 @@ class Library extends ModelElement {
     for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functions);
     }
-    elements.addAll(
-        _exportedNamespace.where((element) => element is FunctionElement));
+    elements.addAll(_exportedNamespace.definedNames.values
+        .where((element) => element is FunctionElement));
 
     elements..removeWhere(isPrivate);
     _functions = elements.map((e) {
@@ -722,11 +733,11 @@ class Library extends ModelElement {
     }
     for (LibraryElement le in _library.exportedLibraries) {
       types.addAll(le.definingCompilationUnit.types
-          .where((t) => _exportedNamespace.contains(t.name))
+          .where((t) => _exportedNamespace.definedNames.values.contains(t.name))
           .toList());
     }
 
-    types.addAll(_exportedNamespace
+    types.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is ClassElement && !element.isEnum));
 
     _classes = types
@@ -756,7 +767,7 @@ class Library extends ModelElement {
   }
 
   @override
-  String get _href => '$dirName/$fileName';
+  String get href => '$dirName/$fileName';
 }
 
 class Class extends ModelElement implements EnclosedElement {
@@ -782,13 +793,13 @@ class Class extends ModelElement implements EnclosedElement {
   ClassElement get _cls => (element as ClassElement);
 
   Class(ClassElement element, Library library) : super(element, library) {
-    var p = library.package;
+    Package p = library.package;
     _modelType = new ElementType(_cls.type, this);
 
     _mixins = _cls.mixins.map((f) {
-      var lib = new Library(f.element.library, p);
-      var t = new ElementType(f, new ModelElement.from(f.element, lib));
-      var exclude = t.element.element.isPrivate;
+      Library lib = new Library(f.element.library, p);
+      ElementType t = new ElementType(f, new ModelElement.from(f.element, lib));
+      bool exclude = t.element.element.isPrivate;
       if (exclude) {
         return null;
       } else {
@@ -1043,10 +1054,7 @@ class Class extends ModelElement implements EnclosedElement {
           !value.isOperator &&
           value.enclosingElement != null &&
           value.enclosingElement.name != 'Object') {
-        var lib = value.library == library.element
-            ? library
-            : new Library(value.library, package);
-        _inheritedMethods.add(new Method.inherited(value, lib));
+        _inheritedMethods.add(new Method.inherited(value, this, this.library));
       }
     }
 
@@ -1074,7 +1082,7 @@ class Class extends ModelElement implements EnclosedElement {
       imap.remove(operator.element.name);
     });
     _inheritedOperators = [];
-    var vs = {};
+    Map<String, ExecutableElement> vs = {};
 
     bool _isInheritedOperator(ExecutableElement value) {
       if (value != null &&
@@ -1088,25 +1096,23 @@ class Class extends ModelElement implements EnclosedElement {
       return false;
     }
 
-    for (var i = 0; i < imap.size; i++) {
-      var value = imap.getValue(i);
+    for (int i = 0; i < imap.size; i++) {
+      ExecutableElement value = imap.getValue(i);
       if (_isInheritedOperator(value)) {
         vs.putIfAbsent(value.name, () => value);
       }
     }
 
-    for (var i = 0; i < cmap.size; i++) {
-      var value = cmap.getValue(i);
+    for (int i = 0; i < cmap.size; i++) {
+      ExecutableElement value = cmap.getValue(i);
       if (_isInheritedOperator(value)) {
         vs.putIfAbsent(value.name, () => value);
       }
     }
 
-    for (var value in vs.values) {
-      var lib = value.library == library.element
-          ? library
-          : new Library(value.library, package);
-      _inheritedOperators.add(new Operator.inherited(value, lib));
+    for (ExecutableElement value in vs.values) {
+      _inheritedOperators
+          .add(new Operator.inherited(value, this, this.library));
     }
 
     _inheritedOperators.sort(byName);
@@ -1157,14 +1163,12 @@ class Class extends ModelElement implements EnclosedElement {
           !value.isPrivate &&
           value.enclosingElement != null &&
           value.enclosingElement.name != 'Object') {
+        // TODO: why is this here?
         var e = value.variable;
         if (_inheritedProperties.any((f) => f.element == e)) {
           continue;
         }
-        var lib = value.library == library.element
-            ? library
-            : new Library(value.library, package);
-        _inheritedProperties.add(new Field.inherited(e, lib));
+        _inheritedProperties.add(new Field.inherited(e, this, this.library));
       }
     }
 
@@ -1213,7 +1217,7 @@ class Class extends ModelElement implements EnclosedElement {
       name.hashCode, library.name.hashCode, library.package.name.hashCode);
 
   @override
-  String get _href => '${library.dirName}/$fileName';
+  String get href => '${library.dirName}/$fileName';
 }
 
 class Enum extends Class {
@@ -1301,7 +1305,7 @@ class ModelFunction extends ModelElement
   String get kind => 'function';
 
   @override
-  String get _href => '${library.dirName}/$fileName';
+  String get href => '${library.dirName}/$fileName';
 }
 
 class Typedef extends ModelElement implements EnclosedElement {
@@ -1327,7 +1331,8 @@ class Typedef extends ModelElement implements EnclosedElement {
       ? modelType.createLinkedReturnTypeName()
       : _typedef.returnType.name;
 
-  String get _href => '${library.dirName}/$fileName';
+  @override
+  String get href => '${library.dirName}/$fileName';
 }
 
 // TODO: rename this to Property
@@ -1336,6 +1341,7 @@ class Field extends ModelElement
     implements EnclosedElement {
   String _constantValue;
   bool _isInherited = false;
+  Class _enclosingClass;
 
   FieldElement get _field => (element as FieldElement);
 
@@ -1343,7 +1349,7 @@ class Field extends ModelElement
     _setModelType();
   }
 
-  Field.inherited(FieldElement element, Library library)
+  Field.inherited(FieldElement element, this._enclosingClass, Library library)
       : super(element, library) {
     _isInherited = true;
     _setModelType();
@@ -1353,8 +1359,16 @@ class Field extends ModelElement
   String get kind => 'property';
 
   @override
-  ModelElement get enclosingElement =>
-      new ModelElement.from(_field.enclosingElement, library);
+  Class get enclosingClass => _enclosingClass;
+
+  @override
+  ModelElement get enclosingElement {
+    if (_enclosingClass == null) {
+      return new ModelElement.from(_field.enclosingElement, library);
+    } else {
+      return new ModelElement.from(_enclosingClass.element, library);
+    }
+  }
 
   void _setModelType() {
     if (hasGetter) {
@@ -1405,14 +1419,15 @@ class Field extends ModelElement
 
   bool get isInherited => _isInherited;
 
-  String get _href {
-    if (element.enclosingElement is ClassElement) {
-      return '${library.dirName}/${element.enclosingElement.name}/$name.html';
-    } else if (element.enclosingElement is LibraryElement) {
+  @override
+  String get href {
+    if (enclosingElement.element is ClassElement) {
+      return '${library.dirName}/${enclosingElement.name}/$name.html';
+    } else if (enclosingElement.element is LibraryElement) {
       return '${library.dirName}/$name.html';
     } else {
       throw new StateError(
-          '$name is not in a class or library, instead a ${element.enclosingElement}');
+          '$name is not in a class or library, instead it is a ${enclosingElement.element}');
     }
   }
 }
@@ -1463,7 +1478,7 @@ class Constructor extends ModelElement implements EnclosedElement {
       new ModelElement.from(_constructor.enclosingElement, library);
 
   @override
-  String get _href =>
+  String get href =>
       '${library.dirName}/${_constructor.enclosingElement.name}/$name.html';
 
   bool get isConst => _constructor.isConst;
@@ -1492,6 +1507,7 @@ class Method extends ModelElement
     with SourceCodeMixin
     implements EnclosedElement {
   bool _isInherited = false;
+  Class _enclosingClass;
 
   MethodElement get _method => (element as MethodElement);
 
@@ -1499,18 +1515,26 @@ class Method extends ModelElement
     _modelType = new ElementType(_method.type, this);
   }
 
-  Method.inherited(MethodElement element, Library library)
+  Method.inherited(MethodElement element, this._enclosingClass, Library library)
       : super(element, library) {
     _modelType = new ElementType(_method.type, this);
     _isInherited = true;
   }
 
   @override
+  Class get enclosingClass => _enclosingClass;
+
+  @override
   String get kind => 'method';
 
   @override
-  ModelElement get enclosingElement =>
-      new ModelElement.from(_method.enclosingElement, library);
+  ModelElement get enclosingElement {
+    if (_enclosingClass == null) {
+      return new ModelElement.from(_method.enclosingElement, library);
+    } else {
+      return new ModelElement.from(_enclosingClass.element, library);
+    }
+  }
 
   Method get overriddenElement {
     ClassElement parent = element.enclosingElement;
@@ -1534,8 +1558,7 @@ class Method extends ModelElement
   String get fileName => "${name}.html";
 
   @override
-  String get _href =>
-      '${library.dirName}/${_method.enclosingElement.name}/${fileName}';
+  String get href => '${library.dirName}/${enclosingElement.name}/${fileName}';
 
   bool get isInherited => _isInherited;
 }
@@ -1543,8 +1566,9 @@ class Method extends ModelElement
 class Operator extends Method {
   Operator(MethodElement element, Library library) : super(element, library);
 
-  Operator.inherited(MethodElement element, Library library)
-      : super(element, library) {
+  Operator.inherited(
+      MethodElement element, Class enclosingClass, Library library)
+      : super.inherited(element, enclosingClass, library) {
     _isInherited = true;
   }
 
@@ -1608,7 +1632,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   bool get isGetter => _accessor.isGetter;
 
   @override
-  String get _href =>
+  String get href =>
       '${library.dirName}/${_accessor.enclosingElement.name}/${name}.html';
 }
 
@@ -1710,7 +1734,7 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  String get _href => '${library.dirName}/${name}.html';
+  String get href => '${library.dirName}/${name}.html';
 }
 
 class Parameter extends ModelElement implements EnclosedElement {
@@ -1752,7 +1776,7 @@ class Parameter extends ModelElement implements EnclosedElement {
   String get htmlId => '${_parameter.enclosingElement.name}-param-${name}';
 
   @override
-  String get _href {
+  String get href {
     var p = _parameter.enclosingElement;
 
     if (p is FunctionElement) {
@@ -1789,7 +1813,7 @@ class TypeParameter extends ModelElement {
   }
 
   @override
-  String get _href =>
+  String get href =>
       '${library.dirName}/${_typeParameter.enclosingElement.name}/$name';
 }
 
@@ -1837,7 +1861,11 @@ class ElementType {
 
   List<ElementType> get typeArguments =>
       (_type as ParameterizedType).typeArguments.map((f) {
-        var lib = new Library(f.element.library, _element.package);
+        Library lib;
+        // can happen if element is dynamic
+        if (f.element.library != null) {
+          lib = new Library(f.element.library, _element.package);
+        }
         return new ElementType(f, new ModelElement.from(f.element, lib));
       }).toList();
 
