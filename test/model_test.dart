@@ -852,13 +852,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Operators', () {
-    Class SpecializedDuration;
+    Class specializedDuration;
     Operator plus;
 
     setUp(() {
-      SpecializedDuration =
+      specializedDuration =
           exLibrary.classes.firstWhere((c) => c.name == 'SpecializedDuration');
-      plus = SpecializedDuration.allOperators
+      plus = specializedDuration.allOperators
           .firstWhere((o) => o.name == 'operator +');
     });
 
@@ -872,7 +872,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test("if inherited, has the inheriting class's library", () {
-      expect(plus.library, equals(SpecializedDuration.library));
+      expect(plus.library, equals(specializedDuration.library));
     });
 
     test('if inherited, has a href relative to inheriting class', () {
