@@ -219,8 +219,7 @@ firebase() {
   Map env = Platform.environment;
 
   if (env['FIREBASE_USER'] == null) return;
-  // TODO: Change this check back to 'stable' once #827 is addressed.
-  if (env['TRAVIS_DART_VERSION'] != 'dev') return;
+  if (env['TRAVIS_DART_VERSION'] != 'stable') return;
 
   // Build the docs.
   Dart.run('bin/dartdoc.dart');
