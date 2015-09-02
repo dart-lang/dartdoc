@@ -6,16 +6,16 @@ Note: As of Dart 1.12-dev.5.10, `dartdoc` is shipped with the Dart SDK and
 replaces `docgen` and `dartdoc-viewer`.
 
 If you want to _contribute_ to the dartdoc project, see the
-[contributor docs](CONTRIBUTOR.md). This page contains information
-about _using_ the dartdoc tool.
+[contributor docs][contributing]. This page contains information about _using_
+the dartdoc tool.
 
 ## Installing dartdoc
 
 ### From the Dart SDK
 
-[Download the Dart SDK](https://www.dartlang.org/downloads/),
-version 1.12-dev.5.10 or later.
-If not already added, add the SDK's `bin` directory to your PATH.
+[Download the Dart SDK](https://www.dartlang.org/downloads/), version
+1.12-dev.5.10 or later. If not already added, add the SDK's `bin` directory to
+your PATH.
 
 ### From pub.dartlang.org
 
@@ -23,9 +23,9 @@ You can install the latest version of dartdoc with `pub`:
 
 $ pub global activate dartdoc
 
-Note: to ensure that this version is run when you type dartdoc on
-the command line, make sure that ~/.pub-cache/bin is on your PATH, and
-before the path to the Dart SDK.
+Note: to ensure that this version is run when you type dartdoc on the command
+line, make sure that ~/.pub-cache/bin is on your PATH, and before the path to
+the Dart SDK.
 
 ## Running dartdoc
 
@@ -52,13 +52,13 @@ Documented 4 libraries in 9.6 seconds.
 Success! Open file:///<path-to-server-code-lab>/server_code_lab/doc/api/index.html
 ```
 
-By default, the documentation is generated to the `doc/api` directory as static HTML files.
+By default, the documentation is generated to the `doc/api` directory as static
+HTML files.
 
 ### Viewing docs
 
-You can view the generated docs directly from the file system,
-but if you want to use the search
-function, you must load them with an HTTP server.
+You can view the generated docs directly from the file system, but if you want
+to use the search function, you must load them with an HTTP server.
 
 An easy way to run an HTTP server locally is to use the
 `simple_http_server` package. For example:
@@ -68,82 +68,30 @@ $ pub global activate simple_http_server
 $ dhttpd --path doc/api
 ```
 
-Navigate to `localhost:8080` in your browser. The search function should now work.
+Navigate to `localhost:8080` in your browser. The search function should now
+work.
 
 ## Options
 
 Command-line options for dartdoc include:
 
-<dl>
-<dt><code>`-h`</code> or <code>`--help`</code></dt>
-<dd>Display help.</dd>
-
-<dt><code>--header=&lt;<em>file</em>&gt;</code></dt>
-<dd>
-Insert the specified file, which contains HTML code, into the footer of every page.
-</dd>
-
-<dt><code>--footer=&lt;<em>file</em>&gt;</code></dt>
-<dd>
-Insert the specifing file, which contains HTML code, into the header of every page.
-</dd>
-
-<dt><code>--input=&lt;<em>directory</em>&gt;</code></dt>
-<dd>
-Generate the docs from the specified directory. If not specified, it defaults to
+- `-h` or `--help` Display help.
+- `--header=<file>` Insert the specified file, which contains HTML code, into the footer of every page.
+- `--footer=<file>` Insert the specifying file, which contains HTML code, into the header of every page.
+- `--input=<directory>` Generate the docs from the specified directory. If not specified, it defaults to
 the current directory.
-</dd>
-
-<dt><code>--output=&lt;<em>directory</em>&gt;</code></dt>
-<dd>
-Generate the output to the specified directory. If not specified, it defaults to
+- `--output=<directory>` Generate the output to the specified directory. If not specified, it defaults to
 `doc/api`.
-</dd>
-
-<dt><code>--package-root=&lt;<em>directory</em>&gt;</code></dt>
-<dd>
-Specify the package root of the library.
-</dd>
-
-<dt><code>--exclude=&lt;<em>lib1</em>,<em>lib2</em>,<em>lib3</em>,...&gt;</code></dt>
-<dd>
-Exclude the specified libraries from the generated docs.
-</dd>
-
-<dt><code>--include=&lt;<em>lib1</em>,<em>lib2</em>,<em>lib3</em>,...&gt;</code></dt>
-<dd>
-Generate docs for the specified libraries.
-</dd>
-
-<dt><code>--hosted-url=&lt;<em>url</em>&gt;</code></dt>
-<dd>
-Build a docs sitemap using the specified URL for your website.
-</dd>
-
-<dt><code>--url-mapping=&lt;<em>libraryUri</em>&gt;,&lt;<em>path-to-library</em>&gt;/&lt;<em>lib</em>&gt;.dart</code></dt>
-<dd>
-Use the specified library as the source for that particular import.
-</dd>
-</dl>
+- `--package-root=<directory>` Specify the package root of the library.
+- `--exclude=<lib1,lib2,lib3,...>` Exclude the specified libraries from the generated docs.
+- `--include=<lib1,lib2,lib3,...>` Generate docs for the specified libraries.
+- `--hosted-url=<url>` Build a docs sitemap using the specified URL for your website.
+- `--url-mapping=<libraryUri>,<path-to-library>/<lib>.dart` Use the specified library as the source for that particular import.
 
 The following options are used only when generating docs for Dart SDK.
-
-<dl>
-<dt><code>--dart-sdk=&lt;<em>path</em>&gt;</code></dt>
-<dd>
-Specify the location of the Dart SDK, if it can't be detected automatically.
-</dd>
-
-<dt><code>--sdk-docs</code></dt>
-<dd>
-Generate only docs for the Dart SDK.
-</dd>
-
-<dt><code>--sdk-readme=&lt;<em>file</em>&gt;</code></dt>
-<dd>
-Specify the README file for the SDK.
-</dd>
-</dl>
+- `--dart-sdk=<path>` Specify the location of the Dart SDK, if it can't be detected automatically.
+- `--sdk-docs` Generate only docs for the Dart SDK.
+- `--sdk-readme=<file>` Specify the README file for the SDK.
 
 ## Issues and bugs
 
@@ -154,3 +102,4 @@ Please file reports on the [GitHub Issue Tracker][issues].
 Please see the [dartdoc license](https://github.com/dart-lang/dartdoc/blob/master/LICENSE).
 
 [issues]: https://github.com/dart-lang/dartdoc/issues
+[contributing]: https://github.com/dart-lang/dartdoc/blob/master/CONTRIBUTOR.md
