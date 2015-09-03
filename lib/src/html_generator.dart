@@ -224,15 +224,15 @@ class HtmlGeneratorInstance {
           generateProperty(package, lib, clazz, property);
         });
 
-        clazz.allInstanceProperties.forEach((property) {
+        clazz.propertiesForPages.forEach((property) {
           generateProperty(package, lib, clazz, property);
         });
 
-        clazz.allInstanceMethods.forEach((method) {
+        clazz.methodsForPages.forEach((method) {
           generateMethod(package, lib, clazz, method);
         });
 
-        clazz.allOperators.forEach((operator) {
+        clazz.operatorsForPages.forEach((operator) {
           generateMethod(package, lib, clazz, operator);
         });
 
