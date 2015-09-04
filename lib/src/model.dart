@@ -1136,6 +1136,11 @@ class Class extends ModelElement implements EnclosedElement {
     List<ExecutableElement> vs = [];
     Set<String> uniqueNames = new Set();
 
+    instanceProperties.forEach((f) {
+      if (f._setter != null) uniqueNames.add(f._setter.name);
+      if (f._getter != null) uniqueNames.add(f._getter.name);
+    });
+
     for (var i = 0; i < cmap.size; i++) {
       // XXX: if we care about showing a hierarchy with our inherited methods,
       // then don't do this
