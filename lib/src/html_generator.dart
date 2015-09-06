@@ -185,7 +185,7 @@ class HtmlGeneratorInstance {
   }
 
   void _generateSearchIndex() {
-    File jsonFile = createOutputFile(out, 'index.json');
+    File jsonFile = createOutputFile(out, 'index.js');
     String json = JSON.encode(documentedElements.map((ModelElement e) {
       // TODO: find a better string for type
       Map data = {'name': e.name, 'href': e.href, 'type': e.kind};
@@ -198,7 +198,8 @@ class HtmlGeneratorInstance {
       }
       return data;
     }).toList());
-    jsonFile.writeAsStringSync(json);
+    String js = 'var searchIndex = $json';
+    jsonFile.writeAsStringSync(js);
   }
 
   void _generateDocs() {
