@@ -1212,8 +1212,7 @@ class Class extends ModelElement implements EnclosedElement {
     // TODO best way to make this a fixed length list?
     _allInstanceProperties = []
       ..addAll(instanceProperties)
-      ..addAll(inheritedProperties
-        ..where((f) => f.enclosingElement == this).toList())
+      ..addAll(inheritedProperties)
       ..sort(byName);
 
     return _allInstanceProperties;
