@@ -279,40 +279,23 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   ElementType get modelType => _modelType;
 
-  /// Returns the [ClassElement] that encloses this.
-  /// TODO: this is in the wrong place. Not all ModelElements have
-  /// an enclosing class.
-  /// Why is this here?
-  Class get enclosingClass {
-    // A class's enclosing element is a library, and there isn't a
-    // modelelement for a library.
-    if (element.enclosingElement != null &&
-        element.enclosingElement is ClassElement) {
-      return new ModelElement.from(element.enclosingElement, library) as Class;
-    } else {
-      return null;
-    }
-  }
-
   Package get package =>
       (this is Library) ? (this as Library).package : this.library.package;
 
   String get linkedName {
-    if (enclosingClass != null &&
-        !package.isDocumented(enclosingClass.element)) {
-      return htmlEscape(name);
-    } else if (enclosingClass == null && !package.isDocumented(this.element)) {
-      return htmlEscape(name);
-    }
-
     if (name.startsWith('_')) {
       return htmlEscape(name);
     }
+    if (!(this is Method || this is Field) && !package.isDocumented(element)) {
+      return htmlEscape(name);
+    }
 
-    // this smells like it's in the wrong place
-    Class c = enclosingClass;
-    if (c != null && c.name.startsWith('_')) {
-      return '${c.name}.${htmlEscape(name)}';
+    ModelElement c = (this is EnclosedElement)
+        ? (this as EnclosedElement).enclosingElement
+        : null;
+    if (c != null) {
+      if (!package.isDocumented(c.element)) return htmlEscape(name);
+      if (c.name.startsWith('_')) return '${c.name}.${htmlEscape(name)}';
     }
 
     return '<a class="${isDeprecated ? 'deprecated' : ''}" href="${href}">$name</a>';
@@ -422,6 +405,7 @@ class Dynamic extends ModelElement {
 class Package implements Nameable, Documentable {
   final List<Library> _libraries = [];
   final PackageMeta packageMeta;
+  final Map<String, Library> elementLibaryMap = {};
   String _docsAsHtml;
 
   String get name => packageMeta.name;
@@ -461,6 +445,7 @@ class Package implements Nameable, Documentable {
     libraryElements.forEach((element) {
       var lib = new Library(element, this);
       Library._libraryMap.putIfAbsent(lib.name, () => lib);
+      elementLibaryMap.putIfAbsent('${lib.kind}.${lib.name}', () => lib);
       _libraries.add(lib);
     });
 
@@ -489,10 +474,8 @@ class Package implements Nameable, Documentable {
       if (element.enclosingElement is! CompilationUnitElement) {
         el = element.enclosingElement;
       } else {
-        // in this case, element is an accessor for a library-level variable,
-        // likely a const. We, in this case, actually don't want the enclosing
-        // element because it's a compilation unit, whatever that is.
-        el = element;
+        // get the library
+        el = element.enclosingElement.enclosingElement;
       }
     } else if (element is TopLevelVariableElement) {
       final TopLevelVariableElement variableElement = element;
@@ -506,7 +489,6 @@ class Package implements Nameable, Documentable {
     } else {
       el = element;
     }
-
     return _libraries.firstWhere((lib) => lib.hasInExportedNamespace(el),
         orElse: () => null);
   }
@@ -524,12 +506,15 @@ class Package implements Nameable, Documentable {
       return null;
     }
 
-    return libraries.firstWhere((l) => l.hasInExportedNamespace(e), orElse: () {
-      // TODO: this is almost certainly a bug: we shouldn't be setting
-      // the library's package to this, because e.library could be a core Dart
-      // library.
-      return new Library(e.library, this);
-    });
+    Library lib = elementLibaryMap['${e.kind}.${e.name}'];
+    if (lib != null) return lib;
+    lib = libraries.firstWhere((l) => l.hasInExportedNamespace(e),
+        orElse: () {});
+    if (lib != null) {
+      elementLibaryMap.putIfAbsent('${e.kind}.${e.name}', () => lib);
+      return lib;
+    }
+    return new Library(e.library, this);
   }
 }
 
@@ -778,16 +763,19 @@ class Class extends ModelElement implements EnclosedElement {
   List<Operator> _operators;
   List<Operator> _inheritedOperators;
   List<Operator> _allOperators;
+  List<Operator> _genPageOperators = [];
   List<Method> _inheritedMethods;
   List<Method> _staticMethods;
   List<Method> _instanceMethods;
   List<Method> _allInstanceMethods;
+  List<Method> _genPageMethods = [];
   List<Field> _fields;
   List<Field> _staticFields;
   List<Field> _constants;
   List<Field> _instanceFields;
   List<Field> _inheritedProperties;
   List<Field> _allInstanceProperties;
+  List<Field> _genPageProperties = [];
 
   ClassElement get _cls => (element as ClassElement);
 
@@ -922,6 +910,7 @@ class Class extends ModelElement implements EnclosedElement {
         .where((f) => !f.isStatic)
         .toList(growable: false)..sort(byName);
 
+    _genPageProperties.addAll(_instanceFields);
     return _instanceFields;
   }
 
@@ -968,6 +957,7 @@ class Class extends ModelElement implements EnclosedElement {
 
     _operators = _methods.where((m) => m.isOperator).toList(growable: false)
       ..sort(byName);
+    _genPageOperators.addAll(_operators);
 
     return _operators;
   }
@@ -1002,6 +992,7 @@ class Class extends ModelElement implements EnclosedElement {
         .where((m) => !m.isStatic && !m.isOperator)
         .toList(growable: false)..sort(byName);
 
+    _genPageMethods.addAll(_instanceMethods);
     return _instanceMethods;
   }
 
@@ -1028,6 +1019,11 @@ class Class extends ModelElement implements EnclosedElement {
     List<ExecutableElement> vs = [];
     Set<String> uniqueNames = new Set();
 
+    instanceProperties.forEach((f) {
+      if (f._setter != null) uniqueNames.add(f._setter.name);
+      if (f._getter != null) uniqueNames.add(f._getter.name);
+    });
+
     for (var i = 0; i < cmap.size; i++) {
       // XXX: if we care about showing a hierarchy with our inherited methods,
       // then don't do this
@@ -1053,7 +1049,15 @@ class Class extends ModelElement implements EnclosedElement {
           !value.isOperator &&
           value.enclosingElement != null &&
           value.enclosingElement.name != 'Object') {
-        _inheritedMethods.add(new Method.inherited(value, this, this.library));
+        if (!package.isDocumented(value.enclosingElement)) {
+          Method m = new Method.inherited(value, this, library);
+          _inheritedMethods.add(m);
+          _genPageMethods.add(m);
+        } else {
+          Library lib = package._getLibraryFor(value.enclosingElement);
+          _inheritedMethods.add(new Method.inherited(
+              value, new Class(value.enclosingElement, lib), lib));
+        }
       }
     }
 
@@ -1110,8 +1114,15 @@ class Class extends ModelElement implements EnclosedElement {
     }
 
     for (ExecutableElement value in vs.values) {
-      _inheritedOperators
-          .add(new Operator.inherited(value, this, this.library));
+      if (!package.isDocumented(value.enclosingElement)) {
+        Operator o = new Operator.inherited(value, this, library);
+        _inheritedOperators.add(o);
+        _genPageOperators.add(o);
+      } else {
+        Library lib = package._getLibraryFor(value.enclosingElement);
+        _inheritedOperators.add(new Operator.inherited(
+            value, new Class(value.enclosingElement, lib), lib));
+      }
     }
 
     _inheritedOperators.sort(byName);
@@ -1172,7 +1183,15 @@ class Class extends ModelElement implements EnclosedElement {
         if (_inheritedProperties.any((f) => f.element == e)) {
           continue;
         }
-        _inheritedProperties.add(new Field.inherited(e, this, this.library));
+        if (!package.isDocumented(value.enclosingElement)) {
+          Field f = new Field.inherited(e, this, library);
+          _inheritedProperties.add(f);
+          _genPageProperties.add(f);
+        } else {
+          Library lib = package._getLibraryFor(e.enclosingElement);
+          _inheritedProperties.add(
+              new Field.inherited(e, new Class(e.enclosingElement, lib), lib));
+        }
       }
     }
 
@@ -1198,6 +1217,12 @@ class Class extends ModelElement implements EnclosedElement {
 
     return _allInstanceProperties;
   }
+
+  List<Field> get propertiesForPages => _genPageProperties;
+
+  List<Method> get methodsForPages => _genPageMethods;
+
+  List<Operator> get operatorsForPages => _genPageOperators;
 
   bool get isErrorOrException {
     bool _doCheck(InterfaceType type) {
@@ -1363,15 +1388,11 @@ class Field extends ModelElement
   String get kind => 'property';
 
   @override
-  Class get enclosingClass => _enclosingClass;
-
-  @override
   ModelElement get enclosingElement {
     if (_enclosingClass == null) {
-      return new ModelElement.from(_field.enclosingElement, library);
-    } else {
-      return new ModelElement.from(_enclosingClass.element, library);
+      _enclosingClass = new ModelElement.from(_field.enclosingElement, library);
     }
+    return _enclosingClass;
   }
 
   void _setModelType() {
@@ -1425,9 +1446,9 @@ class Field extends ModelElement
 
   @override
   String get href {
-    if (enclosingElement.element is ClassElement) {
+    if (enclosingElement is Class) {
       return '${library.dirName}/${enclosingElement.name}/$name.html';
-    } else if (enclosingElement.element is LibraryElement) {
+    } else if (enclosingElement is Library) {
       return '${library.dirName}/$name.html';
     } else {
       throw new StateError(
@@ -1498,7 +1519,7 @@ class Constructor extends ModelElement implements EnclosedElement {
   @override
   String get name {
     String constructorName = element.name;
-    Class c = enclosingClass;
+    Class c = new ModelElement.from(element.enclosingElement, library) as Class;
     if (constructorName.isEmpty) {
       return c.name;
     } else {
@@ -1526,18 +1547,15 @@ class Method extends ModelElement
   }
 
   @override
-  Class get enclosingClass => _enclosingClass;
-
-  @override
   String get kind => 'method';
 
   @override
   ModelElement get enclosingElement {
     if (_enclosingClass == null) {
-      return new ModelElement.from(_method.enclosingElement, library);
-    } else {
-      return new ModelElement.from(_enclosingClass.element, library);
+      _enclosingClass =
+          new ModelElement.from(_method.enclosingElement, library);
     }
+    return _enclosingClass;
   }
 
   Method get overriddenElement {
@@ -1630,8 +1648,14 @@ class Accessor extends ModelElement implements EnclosedElement {
   String get kind => 'accessor';
 
   @override
-  ModelElement get enclosingElement =>
-      new ModelElement.from(_accessor.enclosingElement, library);
+  ModelElement get enclosingElement {
+    if (_accessor.enclosingElement is CompilationUnitElement) {
+      return package
+          ._getLibraryFor(_accessor.enclosingElement.enclosingElement);
+    }
+
+    return new ModelElement.from(_accessor.enclosingElement, library);
+  }
 
   bool get isGetter => _accessor.isGetter;
 

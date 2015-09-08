@@ -788,23 +788,27 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'convertToMap');
     });
 
-    test('an inherited method has the inheriting class as the enclosing class',
+    test(
+        'an inherited method has class as the enclosing class, when superclass not in package',
         () {
       expect(inheritedClear.enclosingElement.name, equals('CatString'));
-      expect(inheritedClear.enclosingClass.name, equals('CatString'));
     });
 
-    test('inherited method has the inheriting class library', () {
+    test(
+        'inherited method has the current library, when superclass library not in package',
+        () {
       expect(inheritedClear.library.name, equals('ex'));
     });
 
     test(
-        'an inherited method from the core SDK has a href local to the inheriting class',
+        'an inherited method from the core SDK has a href relative to the package class',
         () {
       expect(inheritedClear.href, equals('ex/CatString/clear.html'));
     });
 
-    test('an inherited method has a linkedName that includes an HTML link', () {
+    test(
+        'an inherited method has linked to enclosed class name when superclass not in package',
+        () {
       expect(inheritedClear.linkedName,
           equals('<a class="" href="ex/CatString/clear.html">clear</a>'));
     });
@@ -866,20 +870,20 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(plus.isInherited, isTrue);
     });
 
-    test('if inherited, has the inheriting class', () {
-      expect(plus.enclosingClass.name, equals('SpecializedDuration'));
+    test('if inherited, and superclass not in package', () {
       expect(plus.enclosingElement.name, equals('SpecializedDuration'));
     });
 
-    test("if inherited, has the inheriting class's library", () {
-      expect(plus.library, equals(specializedDuration.library));
+    test("if inherited, has the class's library", () {
+      expect(plus.library.name, 'ex');
     });
 
-    test('if inherited, has a href relative to inheriting class', () {
+    test('if inherited, has a href relative to enclosed class', () {
       expect(plus.href, equals('ex/SpecializedDuration/operator_plus.html'));
     });
 
-    test('if inherited, has a linkedName', () {
+    test('if inherited and superclass not in package, link to enclosed class',
+        () {
       expect(
           plus.linkedName,
           equals(
@@ -891,7 +895,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class c, LongFirstLine, CatString;
     Field f1, f2, constField, dynamicGetter, onlySetter;
     Field lengthX;
-    Field sFromApple;
+    Field sFromApple, mInB;
+    ;
     Field isEmpty;
 
     setUp(() {
@@ -918,20 +923,29 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'Apple')
           .allInstanceProperties
           .firstWhere((p) => p.name == 's');
+      mInB = exLibrary.allClasses
+          .firstWhere((c) => c.name == 'B')
+          .allInstanceProperties
+          .firstWhere((p) => p.name == 'm');
     });
 
-    test('inherited property has a linked name', () {
+    test('inherited property has a linked name to superclass in package', () {
+      expect(
+          mInB.linkedName, equals('<a class="" href="ex/Apple/m.html">m</a>'));
+    });
+
+    test(
+        'inherited property has linked name to enclosed class, if superclass is not in package',
+        () {
       expect(isEmpty.linkedName,
           equals('<a class="" href="ex/CatString/isEmpty.html">isEmpty</a>'));
     });
 
-    test('inherited property has the inheriting class as the enclosing class',
-        () {
-      expect(isEmpty.enclosingClass.name, equals('CatString'));
+    test('inherited property has the enclosing class', () {
       expect(isEmpty.enclosingElement.name, equals('CatString'));
     });
 
-    test('inherited property has the inheriting class library', () {
+    test('inherited property has the enclosing class library', () {
       expect(isEmpty.library.name, equals('ex'));
     });
 
