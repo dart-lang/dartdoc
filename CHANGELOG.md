@@ -1,3 +1,10 @@
+## 0.6.3
+* [bug] remove duplicate property enteries 
+* [enhancement] better distinction between getters and setters for properties
+* [enchancement] link inherited elements to superclass pages if available
+* [bug] fix README.md not rendering correctly on pub.dartlang
+* [health] resume testing on stable channel
+
 ## 0.6.2
 * Instructions on contributing moved to CONTRIBUTOR.md
 * Fixed bug with doc comment with name in both current and imported
