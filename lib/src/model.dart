@@ -309,9 +309,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       StringBuffer buf = new StringBuffer();
       buf.write('<span class="parameter" id="${p.htmlId}">');
       if (showMetadata && p.hasAnnotations) {
-        buf.write('<ol class="comma-separated metadata-annotations">');
+        buf.write('<ol class="annotation-list">');
         p.annotations.forEach((String annotation) {
-          buf.write('<li class="metadata-annotation">@$annotation</li>');
+          buf.write('<li>$annotation</li>');
         });
         buf.write('</ol> ');
       }
