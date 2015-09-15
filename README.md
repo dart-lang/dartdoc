@@ -6,8 +6,8 @@ Note: As of Dart 1.12-dev.5.10, `dartdoc` is shipped with the Dart SDK and
 replaces `docgen` and `dartdoc-viewer`.
 
 If you want to _contribute_ to the dartdoc project, see the
-[contributor docs][contributing]. This page contains information about _using_
-the dartdoc tool.
+[contributor docs][]. This page contains information about _using_ the dartdoc
+tool.
 
 ## Installing dartdoc
 
@@ -15,17 +15,17 @@ the dartdoc tool.
 
 [Download the Dart SDK](https://www.dartlang.org/downloads/), version
 1.12-dev.5.10 or later. If not already added, add the SDK's `bin` directory to
-your PATH.
+your `PATH`.
 
 ### From pub.dartlang.org
 
 You can install the latest version of dartdoc with `pub`:
 
-$ pub global activate dartdoc
+    $ pub global activate dartdoc
 
-Note: to ensure that this version is run when you type dartdoc on the command
-line, make sure that ~/.pub-cache/bin is on your PATH, and before the path to
-the Dart SDK.
+Note: to ensure that this version is run when you type `dartdoc` on the command
+line, make sure that `~/.pub-cache/bin` is on your `PATH`, and before the path
+to the Dart SDK.
 
 ## Running dartdoc
 
@@ -76,30 +76,38 @@ work.
 Command-line options for dartdoc include:
 
 - `-h` or `--help` Display help.
-- `--header=<file>` Insert the specified file, which contains HTML code, into the footer of every page.
-- `--footer=<file>` Insert the specifying file, which contains HTML code, into the header of every page.
-- `--input=<directory>` Generate the docs from the specified directory. If not specified, it defaults to
-the current directory.
-- `--output=<directory>` Generate the output to the specified directory. If not specified, it defaults to
-`doc/api`.
+- `--header=<file>` Insert the specified file, which contains HTML code, into
+  the footer of every page.
+- `--footer=<file>` Insert the specifying file, which contains HTML code, into
+  the header of every page.
+- `--input=<directory>` Generate the docs from the specified directory. If not
+  specified, it defaults to the current directory.
+- `--output=<directory>` Generate the output to the specified directory. If not
+  specified, it defaults to `doc/api`.
 - `--package-root=<directory>` Specify the package root of the library.
-- `--exclude=<lib1,lib2,lib3,...>` Exclude the specified libraries from the generated docs.
+- `--exclude=<lib1,lib2,lib3,...>` Exclude the specified libraries from the
+  generated docs.
 - `--include=<lib1,lib2,lib3,...>` Generate docs for the specified libraries.
-- `--hosted-url=<url>` Build a docs sitemap using the specified URL for your website.
-- `--url-mapping=<libraryUri>,<path-to-library>/<lib>.dart` Use the specified library as the source for that particular import.
+- `--hosted-url=<url>` Build a docs sitemap using the specified URL for your
+  website.
+- `--url-mapping=<libraryUri>,<path-to-library>/<lib>.dart` Use the specified
+  library as the source for that particular import.
 
-The following options are used only when generating docs for Dart SDK.
-- `--dart-sdk=<path>` Specify the location of the Dart SDK, if it can't be detected automatically.
+The following options are used only when generating docs for the Dart SDK.
+
+- `--dart-sdk=<path>` Specify the location of the Dart SDK, if it can't be
+  detected automatically.
 - `--sdk-docs` Generate only docs for the Dart SDK.
-- `--sdk-readme=<file>` Specify the README file for the SDK.
+- `--sdk-readme=<file>` Specify the README file for the Dart SDK.
 
 ## Issues and bugs
 
-Please file reports on the [GitHub Issue Tracker][issues].
+Please file reports on the [GitHub Issue Tracker][].
 
 ## License
 
-Please see the [dartdoc license](https://github.com/dart-lang/dartdoc/blob/master/LICENSE).
+Please see the [dartdoc license][].
 
-[issues]: https://github.com/dart-lang/dartdoc/issues
-[contributing]: https://github.com/dart-lang/dartdoc/blob/master/CONTRIBUTOR.md
+[GitHub Issue Tracker]: https://github.com/dart-lang/dartdoc/issues
+[contributor docs]: https://github.com/dart-lang/dartdoc/blob/master/CONTRIBUTING.md
+[dartdoc license]: https://github.com/dart-lang/dartdoc/blob/master/LICENSE
