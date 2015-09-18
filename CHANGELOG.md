@@ -1,3 +1,9 @@
+## 0.6.4
+* [upgrade] markdown ^0.8.0
+* [health] clean up markdown files
+* [enhancement] change callable metadata to be the same as class
+* [enhancement] print annotations on separate lines
+
 ## 0.6.3
 * [bug] remove duplicate property enteries 
 * [enhancement] better distinction between getters and setters for properties
