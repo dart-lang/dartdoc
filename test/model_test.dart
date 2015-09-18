@@ -390,8 +390,8 @@ void main() {
     });
 
     test('no references', () {
-      expect(
-          Apple.documentationAsHtml, '<p>Sample class <code>String</code></p>\n');
+      expect(Apple.documentationAsHtml,
+          '<p>Sample class <code>String</code></p>\n');
     });
 
     test('single ref to class', () {
