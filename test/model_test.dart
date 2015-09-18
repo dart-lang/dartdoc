@@ -386,24 +386,24 @@ void main() {
 
     test('incorrect doc references are still wrapped in code blocks', () {
       expect(incorrectDocReferenceFromEx.documentationAsHtml,
-          '<p>This should <code>not work</code>.</p>');
+          '<p>This should <code>not work</code>.</p>\n');
     });
 
     test('no references', () {
       expect(
-          Apple.documentationAsHtml, '<p>Sample class <code>String</code></p>');
+          Apple.documentationAsHtml, '<p>Sample class <code>String</code></p>\n');
     });
 
     test('single ref to class', () {
       expect(B.documentationAsHtml,
-          '<p>Extends class <a class="" href="ex/Apple-class.html">Apple</a>, use <a class="" href="ex/Apple/Apple.html">new Apple</a> or <a class="" href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>');
+          '<p>Extends class <a class="" href="ex/Apple-class.html">Apple</a>, use <a class="" href="ex/Apple/Apple.html">new Apple</a> or <a class="" href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>\n');
     });
 
     test('doc ref to class in SDK does not render as link', () {
       expect(
           thisIsAsync.documentationAsHtml,
           equals(
-              '<p>An async function. It should look like I return a <code>Future</code>.</p>'));
+              '<p>An async function. It should look like I return a <code>Future</code>.</p>\n'));
     });
 
     test('references are correct in exported libraries', () {
@@ -443,7 +443,7 @@ void main() {
       expect(
           comment,
           equals(
-              '<p>link to method from class <a class="" href="ex/Apple/m.html">Apple.m</a></p>'));
+              '<p>link to method from class <a class="" href="ex/Apple/m.html">Apple.m</a></p>\n'));
     });
 
     test('legacy code blocks render correctly', () {
@@ -743,7 +743,7 @@ void main() {
       expect(
           thisIsAsync.documentationAsHtml,
           equals(
-              '<p>An async function. It should look like I return a <code>Future</code>.</p>'));
+              '<p>An async function. It should look like I return a <code>Future</code>.</p>\n'));
     });
 
     test('docs do not lose brackets in code blocks', () {
