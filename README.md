@@ -1,9 +1,9 @@
 # dartdoc
 
-Use _dartdoc_ to generate HTML documentaton for your Dart package.
+Use `dartdoc` to generate HTML documentaton for your Dart package.
 
-Note: As of Dart 1.12-dev.5.10, `dartdoc` is shipped with the Dart SDK and
-replaces `docgen` and `dartdoc-viewer`.
+Note: As of Dart 1.12, `dartdoc` is shipped with the Dart SDK and replaces the
+older `docgen` tool.
 
 If you want to _contribute_ to the dartdoc project, see the
 [contributor docs][]. This page contains information about _using_ the dartdoc
@@ -49,7 +49,7 @@ generating docs for library pirate.utils from utils.dart...
 generating docs for library server_code_lab.piratesApi.client from piratesapi.dart...
 Documented 4 libraries in 9.6 seconds.
 
-Success! Open file:///<path-to-server-code-lab>/server_code_lab/doc/api/index.html
+Success! Docs generated into <path-to-server-code-lab>/server_code_lab/doc/api/index.html
 ```
 
 By default, the documentation is generated to the `doc/api` directory as static
@@ -60,8 +60,8 @@ HTML files.
 You can view the generated docs directly from the file system, but if you want
 to use the search function, you must load them with an HTTP server.
 
-An easy way to run an HTTP server locally is to use the
-`simple_http_server` package. For example:
+An easy way to run an HTTP server locally is to use the `simple_http_server`
+package. For example:
 
 ```
 $ pub global activate simple_http_server
