@@ -149,17 +149,23 @@ pre.prettyprint {
   word-wrap: normal;
   line-height: 1.4;
   background: #f7f7f7;
-  border: 1px solid #f0f0f0;
+  border: 1px solid #ddd;
   margin: 16px 0 16px 0;
   padding: 8px;
 }
 
 pre code {
   white-space: pre;
+  word-wrap: initial;
 }
 
 .fixed {
   white-space: pre;
+}
+
+pre {
+  border: 1px solid #ddd;
+  background-color: #f7f7f7;
 }
 
 code {

@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/// The models used to represent Dart code
+/// The models used to represent Dart code.
 library dartdoc.models;
 
 import 'package:analyzer/src/generated/ast.dart' show AnnotatedNode, Annotation;
@@ -1285,8 +1285,10 @@ class Enum extends Class {
 abstract class SourceCodeMixin {
   String get sourceCode {
     String contents = element.source.contents.data;
-    var node = element.computeNode(); // TODO: computeNode once we go to 0.25.2
-    // find the start of the line, so that we can line up all the indents
+    var node = element.computeNode();
+    if (node == null) return '';
+
+    // Find the start of the line, so that we can line up all the indents.
     int i = node.offset;
     while (i > 0) {
       i -= 1;
@@ -1489,7 +1491,9 @@ class EnumField extends Field {
   String get linkedName => name;
 }
 
-class Constructor extends ModelElement implements EnclosedElement {
+class Constructor extends ModelElement
+    with SourceCodeMixin
+    implements EnclosedElement {
   ConstructorElement get _constructor => (element as ConstructorElement);
 
   Constructor(ConstructorElement element, Library library)

@@ -60,16 +60,16 @@ HTML files.
 You can view the generated docs directly from the file system, but if you want
 to use the search function, you must load them with an HTTP server.
 
-An easy way to run an HTTP server locally is to use the `simple_http_server`
-package. For example:
+An easy way to run an HTTP server locally is to use the `dhttpd` package. For
+example:
 
 ```
-$ pub global activate simple_http_server
+$ pub global activate dhttpd
 $ dhttpd --path doc/api
 ```
 
-Navigate to `localhost:8080` in your browser. The search function should now
-work.
+Navigate to `http://localhost:8080` in your browser; the search function should
+now work.
 
 ## Options
 
