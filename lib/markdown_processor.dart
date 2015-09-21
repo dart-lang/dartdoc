@@ -174,7 +174,6 @@ ModelElement _getMatchingLinkElement(
   if (refElement == null) return null;
 
   if (refElement is PropertyAccessorElement) {
-    //     refElement.enclosingElement is CompilationUnitElement) {
     // yay we found an accessor that wraps a const, but we really
     // want the top-level field itself
     refElement = (refElement as PropertyAccessorElement).variable;
