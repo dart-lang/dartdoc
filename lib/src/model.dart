@@ -13,7 +13,7 @@ import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:quiver/core.dart' show hash3;
 
 import 'html_utils.dart' show stripComments, htmlEscape;
-import 'model_utils.dart' show isPrivate, isPublic, getAllSupertypes;
+import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
 
 import '../markdown_processor.dart' show Documentation, renderMarkdownToHtml;
@@ -1299,12 +1299,9 @@ abstract class SourceCodeMixin {
     // Trim the common indent from the source snippet.
     String source =
         contents.substring(node.offset - (node.offset - i), node.end);
-    String remainer = source.trimLeft();
-    String indent = source.substring(0, source.length - remainer.length);
-    return source.split('\n').map((line) {
-      line = line.trimRight();
-      return line.startsWith(indent) ? line.substring(indent.length) : line;
-    }).join('\n');
+    source = stripIndentFromSource(source);
+    source = stripDartdocCommentsFromSource(source);
+    return source;
   }
 
   bool get hasSourceCode => sourceCode.trim().isNotEmpty;

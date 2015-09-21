@@ -31,6 +31,41 @@ Iterable<LibraryElement> getSdkLibrariesToDocument(
 List<InterfaceType> getAllSupertypes(ClassElement c) => c.allSupertypes;
 
 bool isInExportedLibraries(
-        List<LibraryElement> libraries, LibraryElement library) =>
-    libraries.any(
-        (lib) => lib == library || lib.exportedLibraries.contains(library));
+    List<LibraryElement> libraries, LibraryElement library) {
+  return libraries
+      .any((lib) => lib == library || lib.exportedLibraries.contains(library));
+}
+
+/// Strip the common indent from the given source fragment.
+String stripIndentFromSource(String source) {
+  String remainer = source.trimLeft();
+  String indent = source.substring(0, source.length - remainer.length);
+  return source.split('\n').map((line) {
+    line = line.trimRight();
+    return line.startsWith(indent) ? line.substring(indent.length) : line;
+  }).join('\n');
+}
+
+/// Strip leading dartdoc comments from the given source code.
+String stripDartdocCommentsFromSource(String source) {
+  String remainer = source.trimLeft();
+  bool lineComments = remainer.startsWith('///');
+  bool blockComments = remainer.startsWith('/**');
+
+  return source.split('\n').where((String line) {
+    if (lineComments) {
+      if (line.startsWith('///')) return false;
+      lineComments = false;
+      return true;
+    } else if (blockComments) {
+      if (line.contains('*/')) {
+        blockComments = false;
+        return false;
+      }
+      if (line.startsWith('/**')) return false;
+      return false;
+    }
+
+    return true;
+  }).join('\n');
+}
