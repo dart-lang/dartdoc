@@ -115,11 +115,15 @@ main(List<String> arguments) async {
       "${outputDir.absolute.path}${Platform.pathSeparator}");
   print('');
 
-  var generators = initGenerators(url, headerFilePath, footerFilePath);
+  var generators = initGenerators(
+      url, headerFilePath, footerFilePath, args['rel-canonical-prefix']);
+
+  for (var generator in generators) {
+    generator.onFileCreated.listen(_onProgress);
+  }
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
-      outputDir, packageMeta, urlMappings, includeLibraries,
-      onProgress: _onProgress);
+      outputDir, packageMeta, urlMappings, includeLibraries);
 
   try {
     DartDocResults results = await dartdoc.generateDocs();
@@ -189,6 +193,9 @@ ArgParser _createArgsParser() {
   parser.addOption('hosted-url',
       help:
           'URL where the docs will be hosted (used to generate the sitemap).');
+  parser.addOption('rel-canonical-prefix',
+      help:
+          'If provided, add a rel="canonical" prefixed with provided value. Consider using if building many versions of the docs for public SEO. Learn more at https://goo.gl/gktN6F');
   return parser;
 }
 

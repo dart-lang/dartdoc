@@ -4,7 +4,7 @@
 
 library dartdoc.html_generator;
 
-import 'dart:async' show Future;
+import 'dart:async' show Future, StreamController, Stream;
 import 'dart:io' show Directory, File, stdout;
 import 'dart:convert' show JSON;
 import 'dart:typed_data' show Uint8List;
@@ -141,35 +141,43 @@ class Templates {
 }
 
 class HtmlGenerator extends Generator {
+  StreamController<File> _onFileCreated = new StreamController(sync: true);
+
   /// Optional URL for where the docs will be hosted.
   final String url;
+  final String relCanonicalPrefix;
   final Templates _templates;
 
   /// [url] can be null.
   // TODO: make url an optional parameter
-  HtmlGenerator(this.url, {String header, String footer})
+  HtmlGenerator(this.url,
+      {String header, String footer, this.relCanonicalPrefix})
       : _templates = new Templates(header, footer) {}
 
-  Future generate(Package package, Directory out,
-      {ProgressCallback onProgress}) {
-    return new HtmlGeneratorInstance(url, _templates, package, out,
-        onProgress: onProgress).generate();
+  Future generate(Package package, Directory out) {
+    return new _HtmlGeneratorInstance(
+            url, _templates, package, out, _onFileCreated, relCanonicalPrefix)
+        .generate();
   }
+
+  Stream<File> get onFileCreated => _onFileCreated.stream;
 }
 
-class HtmlGeneratorInstance {
+abstract class HtmlOptions {
+  String get relCanonicalPrefix;
+}
+
+class _HtmlGeneratorInstance implements HtmlOptions {
   final String url;
   final Templates _templates;
-
   final Package package;
   final Directory out;
-
-  final ProgressCallback onProgress;
-
   final List<ModelElement> documentedElements = [];
+  final StreamController<File> _onFileCreated;
+  final String relCanonicalPrefix;
 
-  HtmlGeneratorInstance(this.url, this._templates, this.package, this.out,
-      {this.onProgress});
+  _HtmlGeneratorInstance(this.url, this._templates, this.package, this.out,
+      this._onFileCreated, this.relCanonicalPrefix);
 
   Future generate() async {
     await _templates.init();
@@ -273,7 +281,8 @@ class HtmlGeneratorInstance {
 
     stdout.write('documenting ${package.name}');
 
-    TemplateData data = new PackageTemplateData(package, markdown: markdown);
+    TemplateData data =
+        new PackageTemplateData(this, package, markdown: markdown);
 
     _build('index.html', _templates.indexTemplate, data);
   }
@@ -286,14 +295,14 @@ class HtmlGeneratorInstance {
       print("\n  warning: library '${lib.name}' has no documentation");
     }
 
-    TemplateData data = new LibraryTemplateData(package, lib);
+    TemplateData data = new LibraryTemplateData(this, package, lib);
 
     _build(path.join(lib.dirName, '${lib.fileName}'),
         _templates.libraryTemplate, data);
   }
 
   void generateClass(Package package, Library lib, Class clazz) {
-    TemplateData data = new ClassTemplateData(package, lib, clazz);
+    TemplateData data = new ClassTemplateData(this, package, lib, clazz);
 
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
@@ -301,20 +310,20 @@ class HtmlGeneratorInstance {
   void generateConstructor(
       Package package, Library lib, Class clazz, Constructor constructor) {
     TemplateData data =
-        new ConstructorTemplateData(package, lib, clazz, constructor);
+        new ConstructorTemplateData(this, package, lib, clazz, constructor);
 
     _build(path.joinAll(constructor.href.split('/')),
         _templates.constructorTemplate, data);
   }
 
   void generateEnum(Package package, Library lib, Class eNum) {
-    TemplateData data = new EnumTemplateData(package, lib, eNum);
+    TemplateData data = new EnumTemplateData(this, package, lib, eNum);
 
     _build(path.joinAll(eNum.href.split('/')), _templates.classTemplate, data);
   }
 
   void generateFunction(Package package, Library lib, ModelFunction function) {
-    TemplateData data = new FunctionTemplateData(package, lib, function);
+    TemplateData data = new FunctionTemplateData(this, package, lib, function);
 
     _build(path.joinAll(function.href.split('/')), _templates.functionTemplate,
         data);
@@ -322,7 +331,8 @@ class HtmlGeneratorInstance {
 
   void generateMethod(
       Package package, Library lib, Class clazz, Method method) {
-    TemplateData data = new MethodTemplateData(package, lib, clazz, method);
+    TemplateData data =
+        new MethodTemplateData(this, package, lib, clazz, method);
 
     _build(
         path.joinAll(method.href.split('/')), _templates.methodTemplate, data);
@@ -330,7 +340,8 @@ class HtmlGeneratorInstance {
 
   void generateConstant(
       Package package, Library lib, Class clazz, Field property) {
-    TemplateData data = new ConstantTemplateData(package, lib, clazz, property);
+    TemplateData data =
+        new ConstantTemplateData(this, package, lib, clazz, property);
 
     _build(path.joinAll(property.href.split('/')), _templates.constantTemplate,
         data);
@@ -338,7 +349,8 @@ class HtmlGeneratorInstance {
 
   void generateProperty(
       Package package, Library lib, Class clazz, Field property) {
-    TemplateData data = new PropertyTemplateData(package, lib, clazz, property);
+    TemplateData data =
+        new PropertyTemplateData(this, package, lib, clazz, property);
 
     _build(path.joinAll(property.href.split('/')), _templates.propertyTemplate,
         data);
@@ -347,7 +359,7 @@ class HtmlGeneratorInstance {
   void generateTopLevelProperty(
       Package package, Library lib, TopLevelVariable property) {
     TemplateData data =
-        new TopLevelPropertyTemplateData(package, lib, property);
+        new TopLevelPropertyTemplateData(this, package, lib, property);
 
     _build(path.joinAll(property.href.split('/')),
         _templates.topLevelPropertyTemplate, data);
@@ -355,14 +367,15 @@ class HtmlGeneratorInstance {
 
   void generateTopLevelConstant(
       Package package, Library lib, TopLevelVariable property) {
-    TemplateData data = new TopLevelConstTemplateData(package, lib, property);
+    TemplateData data =
+        new TopLevelConstTemplateData(this, package, lib, property);
 
     _build(path.joinAll(property.href.split('/')),
         _templates.topLevelConstantTemplate, data);
   }
 
   void generateTypeDef(Package package, Library lib, Typedef typeDef) {
-    TemplateData data = new TypedefTemplateData(package, lib, typeDef);
+    TemplateData data = new TypedefTemplateData(this, package, lib, typeDef);
 
     _build(path.joinAll(typeDef.href.split('/')), _templates.typeDefTemplate,
         data);
@@ -396,7 +409,7 @@ class HtmlGeneratorInstance {
   void _writeFile(String filename, String content) {
     File f = createOutputFile(out, filename);
     f.writeAsStringSync(content);
-    if (onProgress != null) onProgress(f);
+    _onFileCreated.add(f);
   }
 }
 
@@ -423,8 +436,10 @@ String renderPlainText(String text) {
 abstract class TemplateData {
   Package _package;
   Function _markdown = renderMarkdown;
+  final HtmlOptions htmlOptions;
 
-  TemplateData(this._package, {Renderer markdown}) : _markdown = markdown;
+  TemplateData(this.htmlOptions, this._package, {Renderer markdown})
+      : _markdown = markdown;
 
   Package get package => _package;
   String get documentation => self.documentation;
@@ -438,6 +453,7 @@ abstract class TemplateData {
   dynamic get self;
   String get version => dartdocVersion;
   Function get markdown => _markdown;
+  String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
 
   String _layoutTitle(String name, String kind, bool isDeprecated) {
     if (kind.isEmpty) kind =
@@ -458,8 +474,9 @@ abstract class TemplateData {
 }
 
 class PackageTemplateData extends TemplateData {
-  PackageTemplateData(Package package, {Renderer markdown})
-      : super(package, markdown: markdown);
+  PackageTemplateData(HtmlOptions htmlOptions, Package package,
+      {Renderer markdown})
+      : super(htmlOptions, package, markdown: markdown);
 
   List get navLinks => [];
   String get title => '${package.name} - Dart API docs';
@@ -476,7 +493,8 @@ class PackageTemplateData extends TemplateData {
 class LibraryTemplateData extends TemplateData {
   Library _library;
 
-  LibraryTemplateData(Package package, this._library) : super(package);
+  LibraryTemplateData(HtmlOptions htmlOptions, Package package, this._library)
+      : super(htmlOptions, package);
 
   String get title => '${_library.name} library - Dart API';
   Library get library => _library;
@@ -516,8 +534,9 @@ class ClassTemplateData extends TemplateData {
   Library _library;
   Class _objectType;
 
-  ClassTemplateData(Package package, this._library, this._clazz)
-      : super(package);
+  ClassTemplateData(
+      HtmlOptions htmlOptions, Package package, this._library, this._clazz)
+      : super(htmlOptions, package);
 
   Class get self => _clazz;
   Library get library => _library;
@@ -574,9 +593,9 @@ class ConstructorTemplateData extends TemplateData {
   Class _class;
   Constructor _constructor;
 
-  ConstructorTemplateData(
-      Package package, this._library, this._class, this._constructor)
-      : super(package);
+  ConstructorTemplateData(HtmlOptions htmlOptions, Package package,
+      this._library, this._class, this._constructor)
+      : super(htmlOptions, package);
 
   Constructor get self => _constructor;
   Library get library => _library;
@@ -597,7 +616,9 @@ class EnumTemplateData extends TemplateData {
   Library _library;
   Enum _enum;
 
-  EnumTemplateData(Package package, this._library, this._enum) : super(package);
+  EnumTemplateData(
+      HtmlOptions htmlOptions, Package package, this._library, this._enum)
+      : super(htmlOptions, package);
 
   Library get library => _library;
   Enum get clazz => _enum;
@@ -621,8 +642,9 @@ class FunctionTemplateData extends TemplateData {
   ModelFunction _function;
   Library _library;
 
-  FunctionTemplateData(Package package, this._library, this._function)
-      : super(package);
+  FunctionTemplateData(
+      HtmlOptions htmlOptions, Package package, this._library, this._function)
+      : super(htmlOptions, package);
 
   ModelFunction get self => _function;
   ModelFunction get function => _function;
@@ -643,8 +665,9 @@ class MethodTemplateData extends TemplateData {
   Method _method;
   Class _class;
 
-  MethodTemplateData(Package package, this._library, this._class, this._method)
-      : super(package);
+  MethodTemplateData(HtmlOptions htmlOptions, Package package, this._library,
+      this._class, this._method)
+      : super(htmlOptions, package);
 
   Library get library => _library;
   Class get clazz => _class;
@@ -666,9 +689,9 @@ class PropertyTemplateData extends TemplateData {
   Class _class;
   Field _property;
 
-  PropertyTemplateData(
-      Package package, this._library, this._class, this._property)
-      : super(package);
+  PropertyTemplateData(HtmlOptions htmlOptions, Package package, this._library,
+      this._class, this._property)
+      : super(htmlOptions, package);
 
   Library get library => _library;
   Class get clazz => _class;
@@ -689,9 +712,9 @@ class PropertyTemplateData extends TemplateData {
 }
 
 class ConstantTemplateData extends PropertyTemplateData {
-  ConstantTemplateData(
-      Package package, Library library, Class clazz, Field property)
-      : super(package, library, clazz, property);
+  ConstantTemplateData(HtmlOptions htmlOptions, Package package,
+      Library library, Class clazz, Field property)
+      : super(htmlOptions, package, library, clazz, property);
 
   String get type => 'constant';
 }
@@ -700,8 +723,9 @@ class TypedefTemplateData extends TemplateData {
   Library _library;
   Typedef _typeDef;
 
-  TypedefTemplateData(Package package, this._library, this._typeDef)
-      : super(package);
+  TypedefTemplateData(
+      HtmlOptions htmlOptions, Package package, this._library, this._typeDef)
+      : super(htmlOptions, package);
 
   Library get library => _library;
   Typedef get self => _typeDef;
@@ -722,8 +746,9 @@ class TopLevelPropertyTemplateData extends TemplateData {
   Library _library;
   TopLevelVariable _property;
 
-  TopLevelPropertyTemplateData(Package package, this._library, this._property)
-      : super(package);
+  TopLevelPropertyTemplateData(
+      HtmlOptions htmlOptions, Package package, this._library, this._property)
+      : super(htmlOptions, package);
 
   Library get library => _library;
   TopLevelVariable get self => _property;
@@ -743,9 +768,9 @@ class TopLevelPropertyTemplateData extends TemplateData {
 }
 
 class TopLevelConstTemplateData extends TopLevelPropertyTemplateData {
-  TopLevelConstTemplateData(
-      Package package, Library library, TopLevelVariable property)
-      : super(package, library, property);
+  TopLevelConstTemplateData(HtmlOptions htmlOptions, Package package,
+      Library library, TopLevelVariable property)
+      : super(htmlOptions, package, library, property);
 
   String get _type => 'constant';
 }

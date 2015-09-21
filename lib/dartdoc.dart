@@ -40,11 +40,14 @@ const String version = '0.6.4';
 final String defaultOutDir = 'doc${Platform.pathSeparator}api';
 
 /// Initialize and setup the generators.
-List<Generator> initGenerators(
-    String url, String headerFilePath, String footerFilePath) {
+List<Generator> initGenerators(String url, String headerFilePath,
+    String footerFilePath, String relCanonicalPrefix) {
   dartdocVersion = version;
   return [
-    new HtmlGenerator(url, header: headerFilePath, footer: footerFilePath)
+    new HtmlGenerator(url,
+        header: headerFilePath,
+        footer: footerFilePath,
+        relCanonicalPrefix: relCanonicalPrefix)
   ];
 }
 
@@ -59,14 +62,11 @@ class DartDoc {
   final PackageMeta packageMeta;
   final Map<String, String> urlMappings;
   final List<String> includes;
-  final ProgressCallback _onProgress;
 
   Stopwatch _stopwatch;
 
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
-      this.outputDir, this.packageMeta, this.urlMappings, this.includes,
-      {ProgressCallback onProgress})
-      : _onProgress = onProgress;
+      this.outputDir, this.packageMeta, this.urlMappings, this.includes);
 
   /// Generate DartDoc documentation.
   ///
@@ -110,7 +110,7 @@ class DartDoc {
     if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
 
     for (var generator in generators) {
-      await generator.generate(package, outputDir, onProgress: _onProgress);
+      await generator.generate(package, outputDir);
     }
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;

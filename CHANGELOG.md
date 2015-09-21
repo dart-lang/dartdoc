@@ -1,3 +1,7 @@
+## upcoming
+* [new] --rel-canonical-prefix to help with SEO for many
+        versions of the same docs
+
 ## 0.6.4
 * [upgrade] markdown ^0.8.0
 * [health] clean up markdown files

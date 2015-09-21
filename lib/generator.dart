@@ -5,13 +5,10 @@
 /// A library containing an abstract documentation generator.
 library dartdoc.generator;
 
-import 'dart:async';
-import 'dart:io';
+import 'dart:async' show Stream, Future;
+import 'dart:io' show Directory, File;
 
 import 'src/model.dart' show Package;
-
-/// Called when the generator has generated a file for a thing.
-typedef void ProgressCallback(File file);
 
 /// An abstract class that defines a generator that generates documentation for
 /// a given package.
@@ -20,6 +17,8 @@ typedef void ProgressCallback(File file);
 abstract class Generator {
   /// Generate the documentation for the given package in the specified
   /// directory. Completes the returned future when done.
-  Future generate(Package package, Directory out,
-      {ProgressCallback onProgress});
+  Future generate(Package package, Directory out);
+
+  /// Fires when a file is created.
+  Stream<File> get onFileCreated;
 }
