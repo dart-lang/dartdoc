@@ -316,6 +316,7 @@ footer {
 
 footer p {
   margin: 0;
+  color: #555;
 }
 
 footer .no-break {
@@ -329,7 +330,7 @@ footer .container-fluid {
 }
 
 .copyright a {
-  color: #212121;
+  color: #555;
 }
 
 .markdown h1 {
