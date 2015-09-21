@@ -1,4 +1,4 @@
-// WARNING: This file is auto-generated.
+// WARNING: This file is auto-generated. Do not taunt.
 
 library resources;
 
