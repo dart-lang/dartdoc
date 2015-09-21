@@ -6,20 +6,18 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
-import 'package:test/test.dart';
-
+import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:test/test.dart';
 
-import 'package:cli_util/cli_util.dart' as cli_util;
-
-import 'test_utils.dart' as testUtils;
+import 'src/utils.dart' as utils;
 
 void main() {
-  testUtils.init();
+  utils.init();
 
-  final Package package = testUtils.testPackage;
+  final Package package = utils.testPackage;
   final Library exLibrary =
       package.libraries.firstWhere((lib) => lib.name == 'ex');
   final Library fakeLibrary =
@@ -35,8 +33,7 @@ void main() {
   }
 
   Package sdkAsPackage = new Package(
-      getSdkLibrariesToDocument(
-          testUtils.sdkDir, testUtils.analyzerHelper.context),
+      getSdkLibrariesToDocument(utils.sdkDir, utils.analyzerHelper.context),
       new PackageMeta.fromSdk(sdkDir));
 
   group('Package', () {
@@ -92,10 +89,10 @@ void main() {
 
     group('test small package', () {
       test('does not have documentation', () {
-        expect(testUtils.testPackageSmall.hasDocumentation, isFalse);
-        expect(testUtils.testPackageSmall.hasDocumentationFile, isFalse);
-        expect(testUtils.testPackageSmall.documentationFile, isNull);
-        expect(testUtils.testPackageSmall.documentation, isNull);
+        expect(utils.testPackageSmall.hasDocumentation, isFalse);
+        expect(utils.testPackageSmall.hasDocumentationFile, isFalse);
+        expect(utils.testPackageSmall.documentationFile, isNull);
+        expect(utils.testPackageSmall.documentation, isNull);
       });
     });
   });
@@ -105,8 +102,8 @@ void main() {
 
     setUp(() {
       dartAsyncLib = new Library(
-          getSdkLibrariesToDocument(
-              testUtils.sdkDir, testUtils.analyzerHelper.context).first,
+          getSdkLibrariesToDocument(utils.sdkDir, utils.analyzerHelper.context)
+              .first,
           sdkAsPackage);
 
       anonLib = package.libraries
@@ -751,10 +748,7 @@ void main() {
     });
 
     test('has source code', () {
-      expect(
-          topLevelFunction.sourceCode,
-          startsWith(
-              '/// Top-level function 3 params and 1 optional positional param.'));
+      expect(topLevelFunction.sourceCode, startsWith('@deprecated'));
       expect(topLevelFunction.sourceCode, endsWith('''
 String topLevelFunction(int param1, bool param2, Cool coolBeans,
     [double optionalPositional = 0.0]) {
@@ -850,8 +844,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('method source code indents correctly', () {
-      expect(
-          convertToMap.sourceCode, startsWith('/// Converts itself to a map.'));
+      expect(convertToMap.sourceCode, 'Map<X, Y> convertToMap() => null;');
     });
   });
 
