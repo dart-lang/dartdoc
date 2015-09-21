@@ -1486,6 +1486,10 @@ class EnumField extends Field {
 
   @override
   String get linkedName => name;
+
+  @override
+  String get href =>
+      '${library.dirName}/${(enclosingElement as Class).fileName}';
 }
 
 class Constructor extends ModelElement
@@ -1873,10 +1877,11 @@ class ElementType {
 
   ElementType get _returnType {
     var rt = (_type as FunctionType).returnType;
-    return new ElementType(
-        rt,
-        new ModelElement.from(rt.element,
-            new Library(_element.library.element, _element.package)));
+    Library lib = _element.package.findLibraryFor(rt.element);
+    if (lib == null) {
+      lib = new Library(rt.element.library, _element.package);
+    }
+    return new ElementType(rt, new ModelElement.from(rt.element, lib));
   }
 
   ModelElement get returnElement {
@@ -1884,7 +1889,10 @@ class ElementType {
     if (e == null) {
       return null;
     }
-    Library lib = new Library(e.library, _element.package);
+    Library lib = _element.package.findLibraryFor(e);
+    if (lib == null) {
+      lib = new Library(e.library, _element.package);
+    }
     return (new ModelElement.from(e, lib));
   }
 
@@ -1892,7 +1900,8 @@ class ElementType {
       (_type as ParameterizedType).typeArguments.map((f) {
         Library lib;
         // can happen if element is dynamic
-        if (f.element.library != null) {
+        lib = _element.package.findLibraryFor(f.element);
+        if (lib == null && f.element.library != null) {
           lib = new Library(f.element.library, _element.package);
         }
         return new ElementType(f, new ModelElement.from(f.element, lib));
