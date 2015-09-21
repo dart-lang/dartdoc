@@ -12,6 +12,7 @@ import 'package:analyzer/src/generated/element.dart'
         Element,
         ConstructorElement,
         CompilationUnitElement,
+        ClassElement,
         ClassMemberElement,
         TopLevelVariableElement,
         ParameterElement,
@@ -156,6 +157,7 @@ ModelElement _getMatchingLinkElement(
   if (commentRefs == null) return null;
 
   Element refElement;
+  bool isEnum = false;
 
   for (CommentReference ref in commentRefs) {
     if (ref.identifier.name == codeRef) {
@@ -171,11 +173,14 @@ ModelElement _getMatchingLinkElement(
   // Did not find an element in scope
   if (refElement == null) return null;
 
-  if (refElement is PropertyAccessorElement &&
-      refElement.enclosingElement is CompilationUnitElement) {
+  if (refElement is PropertyAccessorElement) {
     // yay we found an accessor that wraps a const, but we really
     // want the top-level field itself
     refElement = (refElement as PropertyAccessorElement).variable;
+    if (refElement.enclosingElement is ClassElement &&
+        (refElement.enclosingElement as ClassElement).isEnum) {
+      isEnum = true;
+    }
   }
 
   if (refElement is ParameterElement) return null;
@@ -192,6 +197,9 @@ ModelElement _getMatchingLinkElement(
   if (refLibrary != null) {
     // Is there a way to pull this from a registry of known elements?
     // Seems like we're creating too many objects this way.
+    if (isEnum) {
+      return new EnumField(refElement, refLibrary);
+    }
     return new ModelElement.from(refElement, refLibrary);
   }
   return null;

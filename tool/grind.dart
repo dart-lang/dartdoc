@@ -278,41 +278,54 @@ checkLinks() {
   final origin = 'test_package/doc/api/';
   var start = 'index.html';
 
-  doCheck(String pathToCheck, [String source]) {
-    var fullPath = path.normalize("$origin$pathToCheck");
-    if (visited.contains(fullPath)) return;
-    visited.add(fullPath);
-    //print("Visiting $fullPath");
+  _doCheck(origin, visited, start, foundError);
 
-    File file = new File("$fullPath");
-    if (!file.existsSync()) {
-      foundError = true;
-      print('  * Not found: $fullPath from $source');
-      return;
-    }
-    Document doc = parse(file.readAsStringSync());
-    Element base = doc.querySelector('base');
-    String baseHref;
-    if (base != null) {
-      baseHref = base.attributes['href'];
-    }
-    //print("  Base is $baseHref");
-    List<Element> links = doc.querySelectorAll('a');
-    links
-        .map((link) => link.attributes['href'])
-        .where((href) => href != null)
-        .forEach((href) {
-      if (!href.startsWith('http') && !href.contains('#')) {
-        //print("  Found link: $href");
-        var full = '${path.dirname(pathToCheck)}/$baseHref/$href';
-        var normalized = path.normalize(full);
-        //print("    => $full\n      => $normalized");
-        doCheck(normalized, pathToCheck);
-      }
-    });
+  if (foundError) exit(1);
+}
+
+_doCheck(String origin, Set<String> visited, String pathToCheck, bool error,
+    [String source]) {
+  var fullPath = path.normalize("$origin$pathToCheck");
+  if (visited.contains(fullPath)) return;
+  visited.add(fullPath);
+  //print("Visiting $fullPath");
+
+  File file = new File("$fullPath");
+  if (!file.existsSync()) {
+    error = true;
+    print('  * Not found: $fullPath from $source');
+    return;
   }
+  Document doc = parse(file.readAsStringSync());
+  Element base = doc.querySelector('base');
+  String baseHref;
+  if (base != null) {
+    baseHref = base.attributes['href'];
+  }
+  //print("  Base is $baseHref");
+  List<Element> links = doc.querySelectorAll('a');
+  links
+      .map((link) => link.attributes['href'])
+      .where((href) => href != null)
+      .forEach((href) {
+    if (!href.startsWith('http') && !href.contains('#')) {
+      //print("  Found link: $href");
+      var full = '${path.dirname(pathToCheck)}/$baseHref/$href';
+      var normalized = path.normalize(full);
+      //print("    => $full\n      => $normalized");
+      _doCheck(origin, visited, normalized, error, pathToCheck);
+    }
+  });
+}
 
-  doCheck(start);
+@Task('Check sdk links')
+checkSdkLinks() {
+  bool foundError = false;
+  Set<String> visited = new Set();
+  final origin = '${docsDir.path}/';
+  var start = 'index.html';
+
+  _doCheck(origin, visited, start, foundError);
 
   if (foundError) exit(1);
 }
