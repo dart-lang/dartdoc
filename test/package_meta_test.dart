@@ -60,7 +60,7 @@ void main() {
       expect(
           p.getReadmeContents().contents,
           contains(
-              'Use _dartdoc_ to generate HTML documentaton for your Dart package.'));
+              'Use `dartdoc` to generate HTML documentaton for your Dart package.'));
     });
 
     test('has a license', () {

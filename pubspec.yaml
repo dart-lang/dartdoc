@@ -5,7 +5,7 @@ author: Dart Team <misc@dartlang.org>
 description: A documentation generator for Dart.
 homepage: https://github.com/dart-lang/dartdoc
 environment:
-  sdk: '>=1.12.0-dev.5.0 <2.0.0'
+  sdk: '>=1.12.0 <2.0.0'
 dependencies:
   analyzer: '>=0.26.0 <0.27.0'
   args: ^0.13.0
@@ -22,7 +22,7 @@ dependencies:
 dev_dependencies:
   den_api: ^0.1.0
   grinder: ^0.7.2
-  librato: any
+  librato: ^0.0.3
   pub_semver: ^1.0.0
   test: ^0.12.0
 executables:
