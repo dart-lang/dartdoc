@@ -12,17 +12,21 @@
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
 
-    <section class="multi-line-signature">
-        {{#constructor}}
-        {{#isConst}}const{{/isConst}}
-        {{>name_summary}}({{#hasParameters}}
-        <br>
-        <div class="parameters">
+    {{#constructor}}
+      {{^hasSourceCode}}
+        <section class="multi-line-signature">
+          {{#constructor}}
+          {{#isConst}}const{{/isConst}}
+          {{>name_summary}}({{#hasParameters}}
+          <br>
+          <div class="parameters">
             {{{linkedParamsLines}}}
-        </div>
-        {{/hasParameters}})
-        {{/constructor}}
-    </section>
+          </div>
+          {{/hasParameters}})
+          {{/constructor}}
+        </section>
+      {{/hasSourceCode}}
+    {{/constructor}}
 
     {{#constructor}}
     {{>documentation}}
