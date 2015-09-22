@@ -1,6 +1,11 @@
-## upcoming
+## 0.6.5
 * [new] --rel-canonical-prefix to help with SEO for many
         versions of the same docs
+* [bug] fixed linking in the sdk docs
+* [enhancement] do not display comments with actual source code
+* [enhancement] show source code for constructors
+* [style] tweaks to the footer
+* [health] re-enable uploading dartdoc docs to firebase
 
 ## 0.6.4
 * [upgrade] markdown ^0.8.0
