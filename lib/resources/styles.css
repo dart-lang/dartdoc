@@ -199,7 +199,7 @@ code {
   }
 
   ul.subnav li {
-    font-size: 110%;
+    font-size: 17px;
   }
 }
 
@@ -216,9 +216,15 @@ header li {
 }
 
 header h1 .kind {
-  color: #DDDDDD;
+  color: #ddd;
   text-transform: uppercase;
-  font-size: 13px;
+  font-size: 15px;
+}
+
+@media screen and (max-width: 768px) {
+  header h1 .kind {
+    font-size: 14px;
+  }
 }
 
 dt {
@@ -227,6 +233,7 @@ dt {
 
 dd {
   color: #212121;
+  margin-bottom: 1em;
 }
 
 dd.callable, dd.constant, dd.property {
@@ -234,17 +241,17 @@ dd.callable, dd.constant, dd.property {
 }
 
 dd p {
-  margin-top: 4px;
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 0;
 }
 
 section.summary h2 {
   color: #727272;
   margin-bottom: 16px;
   padding-bottom: 4px;
-  border-bottom: 1px solid #DDDDDD;
+  border-bottom: 1px solid #ddd;
 }
 
 /* indents wrapped lines */
@@ -264,7 +271,6 @@ dl.dl-horizontal dt::after {
 }
 
 dt .name {
-  font-size: 17px;
   font-weight: 500;
 }
 
@@ -385,10 +391,8 @@ footer .container-fluid {
   margin: 0;
 }
 
-/* The little slug line under a declaration for things like "const",
-   "read-only", etc. */
+/* The slug line under a declaration for things like "const", "read-only", etc. */
 .features {
-  font-size: 14px;
   font-style: italic;
   color: #727272;
 }
@@ -414,15 +418,16 @@ footer .container-fluid {
 @media screen and (max-width: 768px) {
   .breadcrumbs {
     margin: 0 0 24px 0;
+    overflow-x: hidden;
   }
 }
 
 .self-crumb {
-  color: #DDDDDD;
+  color: #ddd;
 }
 
 nav .self-name {
-  color: #DDDDDD;
+  color: #ddd;
   display: none;
 }
 
@@ -623,7 +628,7 @@ button {
 }
 
 .sidebar-offcanvas-left h5 {
-  border-bottom: 1px solid #dddddd;
+  border-bottom: 1px solid #ddd;
   padding: 16px;
 }
 
@@ -737,6 +742,6 @@ form.search {
 }
 
 section#setter {
-  border-top: 1px solid #dddddd;
+  border-top: 1px solid #ddd;
   padding-top: 36px;
 }
