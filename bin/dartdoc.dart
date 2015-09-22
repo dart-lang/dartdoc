@@ -194,8 +194,9 @@ ArgParser _createArgsParser() {
       help:
           'URL where the docs will be hosted (used to generate the sitemap).');
   parser.addOption('rel-canonical-prefix',
-      help:
-          'If provided, add a rel="canonical" prefixed with provided value. Consider using if building many versions of the docs for public SEO. Learn more at https://goo.gl/gktN6F');
+      help: 'If provided, add a rel="canonical" prefixed with provided value. '
+          'Consider using if building many versions of the docs for public SEO. '
+          'Learn more at https://goo.gl/gktN6F');
   return parser;
 }
 
