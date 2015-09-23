@@ -1,3 +1,7 @@
+## 0.6.6
+* [style] reduce number of fonts and styles used on a page
+* [enhancement] do not show method signature for methods with source
+
 ## 0.6.5
 * [new] --rel-canonical-prefix to help with SEO for many
         versions of the same docs
