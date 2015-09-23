@@ -1,12 +1,11 @@
 <dt id="{{htmlId}}" class="callable">
     <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{linkedName}}}</span><span class="signature">(<wbr>{{{ linkedParamsNoMetadata }}})
-        &#8594;
-        <span class="returntype">{{{ linkedReturnType }}}</span>
+        <span class="returntype parameter">&#8594; {{{ linkedReturnType }}}</span>
     </span>
 </dt>
 <dd>
+    <p>{{{ oneLineDoc }}}{{>has_more_docs}}</p>
     {{#isInherited}}
     <div class="features">inherited</div>
     {{/isInherited}}
-    <p>{{{ oneLineDoc }}}{{>has_more_docs}}</p>
 </dd>
