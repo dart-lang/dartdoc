@@ -60,13 +60,12 @@ class DartDoc {
   final List<Generator> generators;
   final Directory outputDir;
   final PackageMeta packageMeta;
-  final Map<String, String> urlMappings;
   final List<String> includes;
 
   Stopwatch _stopwatch;
 
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
-      this.outputDir, this.packageMeta, this.urlMappings, this.includes);
+      this.outputDir, this.packageMeta, this.includes);
 
   /// Generate DartDoc documentation.
   ///
@@ -125,9 +124,6 @@ class DartDoc {
     Set<LibraryElement> libraries = new Set();
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
     List<UriResolver> resolvers = [new DartUriResolver(sdk)];
-    if (urlMappings != null) {
-      resolvers.insert(0, new CustomUriResolver(urlMappings));
-    }
 
     fileSystem.Resource cwd =
         PhysicalResourceProvider.INSTANCE.getResource(rootDir.path);

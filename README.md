@@ -90,8 +90,7 @@ Command-line options for dartdoc include:
 - `--include=<lib1,lib2,lib3,...>` Generate docs for the specified libraries.
 - `--hosted-url=<url>` Build a docs sitemap using the specified URL for your
   website.
-- `--url-mapping=<libraryUri>,<path-to-library>/<lib>.dart` Use the specified
-  library as the source for that particular import.
+  
 
 The following options are used only when generating docs for the Dart SDK.
 
