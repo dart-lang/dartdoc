@@ -30,8 +30,8 @@ void main() {
     test('generate docs for ${path.basename(testPackageDir.path)} works',
         () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
-      DartDoc dartdoc = new DartDoc(
-          testPackageDir, [], getSdkDir(), [], tempDir, meta, null, []);
+      DartDoc dartdoc =
+          new DartDoc(testPackageDir, [], getSdkDir(), [], tempDir, meta, []);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.package, isNotNull);
@@ -46,7 +46,7 @@ void main() {
         () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageBadDir);
       DartDoc dartdoc = new DartDoc(
-          testPackageBadDir, [], getSdkDir(), [], tempDir, meta, null, []);
+          testPackageBadDir, [], getSdkDir(), [], tempDir, meta, []);
 
       try {
         await dartdoc.generateDocs();
@@ -58,8 +58,8 @@ void main() {
 
     test('generate docs for a package that does not have a readme', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageWithNoReadme);
-      DartDoc dartdoc = new DartDoc(testPackageWithNoReadme, [], getSdkDir(),
-          [], tempDir, meta, null, []);
+      DartDoc dartdoc = new DartDoc(
+          testPackageWithNoReadme, [], getSdkDir(), [], tempDir, meta, []);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.package, isNotNull);
@@ -73,7 +73,7 @@ void main() {
     test('generate docs including a single library', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc = new DartDoc(
-          testPackageDir, [], getSdkDir(), [], tempDir, meta, null, ['fake']);
+          testPackageDir, [], getSdkDir(), [], tempDir, meta, ['fake']);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.package, isNotNull);
@@ -88,7 +88,7 @@ void main() {
     test('generate docs excluding a single library', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc = new DartDoc(
-          testPackageDir, ['fake'], getSdkDir(), [], tempDir, meta, null, []);
+          testPackageDir, ['fake'], getSdkDir(), [], tempDir, meta, []);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.package, isNotNull);

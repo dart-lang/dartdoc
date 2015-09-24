@@ -1,3 +1,7 @@
+## unreleased
+* [health] remove --url-mappings option, the analyzer picks up sdk extensions
+  from the package
+
 ## 0.6.6
 * [style] reduce number of fonts and styles used on a page
 * [enhancement] do not show method signature for methods with source
