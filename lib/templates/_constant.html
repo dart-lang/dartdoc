@@ -1,9 +1,11 @@
 <dt id="{{htmlId}}" class="constant">
-    <span class="top-level-variable-type">{{{ linkedReturnType }}}</span>
     <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{ linkedName }}}</span>
-    <span class="signature">= {{{ constantValue }}}</span>
+    <span class="signature">&#8594; {{{ linkedReturnType }}}</span>
 </dt>
 <dd>
     <p>{{{ oneLineDoc }}}{{>has_more_docs}}</p>
-    <div class="features">const</div>
+    <div>
+      <!-- span class="features">const</span -->
+      <span class="signature"><code>{{{ constantValue }}}</code><span>
+    </div>
 </dd>
