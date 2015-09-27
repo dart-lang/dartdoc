@@ -1,6 +1,7 @@
 ## unreleased
 * [health] remove --url-mappings option, the analyzer picks up sdk extensions
   from the package
+* [style] changed how we display constant values
 
 ## 0.6.6
 * [style] reduce number of fonts and styles used on a page
@@ -22,7 +23,7 @@
 * [enhancement] print annotations on separate lines
 
 ## 0.6.3
-* [bug] remove duplicate property enteries 
+* [bug] remove duplicate property enteries
 * [enhancement] better distinction between getters and setters for properties
 * [enchancement] link inherited elements to superclass pages if available
 * [bug] fix README.md not rendering correctly on pub.dartlang
