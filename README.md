@@ -71,6 +71,27 @@ $ dhttpd --path doc/api
 Navigate to `http://localhost:8080` in your browser; the search function should
 now work.
 
+## Link structure
+
+dartdoc produces static files with a predictable link structure.
+
+```
+index.html                          # homepage
+index.json                          # machine-readable index
+library-name/                       # : is turned into a - e.g. dart:core => dart-core
+  ClassName-class.html              # "homepage" for a class (and enum)
+  ClassName/
+    ClassName.html                  # constructor
+    ClassName.namedConstructor.html # named constructor
+    method.html
+    property.html
+  CONSTANT.html
+  property.html
+  top-level-function.html
+```
+
+File names are _case-sensitive_.
+
 ## Options
 
 Command-line options for dartdoc include:
@@ -90,7 +111,6 @@ Command-line options for dartdoc include:
 - `--include=<lib1,lib2,lib3,...>` Generate docs for the specified libraries.
 - `--hosted-url=<url>` Build a docs sitemap using the specified URL for your
   website.
-  
 
 The following options are used only when generating docs for the Dart SDK.
 
