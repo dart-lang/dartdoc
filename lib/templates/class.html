@@ -126,12 +126,10 @@
                 <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
             </dt>
             <dd>
-                {{#isConst}}
-                <div class="constructor-modifier">
-                    const
-                </div>
-                {{/isConst}}
                 <p>{{{ oneLineDoc }}}{{>has_more_docs}}</p>
+                {{#isConst}}
+                <div class="constructor-modifier features">const</div>
+                {{/isConst}}
             </dd>
             {{/clazz.constructors}}
         </dl>

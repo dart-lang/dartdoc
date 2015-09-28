@@ -511,21 +511,6 @@ ul.subnav li:last-of-type {
   }
 }
 
-span.top-level-variable-type {
-  color: #727272;
-}
-
-@media (max-width: 768px) {
-  dl.properties span.top-level-variable-type {
-    display: block;
-  }
-
-  section.summary dl.properties dt {
-    margin-left: 0;
-    text-indent: inherit;
-  }
-}
-
 /* sidebar styles */
 
 .sidebar-offcanvas-left {
