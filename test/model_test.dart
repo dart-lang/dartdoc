@@ -553,8 +553,8 @@ void main() {
       expect(Apple.instanceProperties, hasLength(2));
     });
 
-    test('get inherited properties', () {
-      expect(B.inheritedProperties, hasLength(2));
+    test('get inherited properties, including properties of Object', () {
+      expect(B.inheritedProperties, hasLength(4));
     });
 
     test('get methods', () {
@@ -566,8 +566,8 @@ void main() {
       expect(Dog.operators[0].name, 'operator ==');
     });
 
-    test('inherited methods', () {
-      expect(B.inheritedMethods, hasLength(3));
+    test('inherited methods,including from Object ', () {
+      expect(B.inheritedMethods, hasLength(5));
       expect(B.hasInheritedMethods, isTrue);
     });
 
@@ -605,9 +605,17 @@ void main() {
     });
 
     test('F has many inherited methods', () {
-      expect(F.inheritedMethods, hasLength(4));
-      expect(F.inheritedMethods.map((im) => im.name),
-          equals(['foo', 'getClassA', 'test', 'testMethod']));
+      expect(F.inheritedMethods, hasLength(6));
+      expect(
+          F.inheritedMethods.map((im) => im.name),
+          equals([
+            'foo',
+            'getClassA',
+            'noSuchMethod',
+            'test',
+            'testMethod',
+            'toString'
+          ]));
     });
 
     test('F has zero instance properties', () {
@@ -615,9 +623,9 @@ void main() {
     });
 
     test('F has a few inherited properties', () {
-      expect(F.inheritedProperties, hasLength(2));
+      expect(F.inheritedProperties, hasLength(4));
       expect(F.inheritedProperties.map((ip) => ip.name),
-          equals(['isImplemented', 'name']));
+          equals(['hashCode', 'isImplemented', 'name', 'runtimeType']));
     });
 
     test('SpecialList has zero instance methods', () {
@@ -625,7 +633,7 @@ void main() {
     });
 
     test('SpecialList has many inherited methods', () {
-      expect(SpecialList.inheritedMethods, hasLength(43));
+      expect(SpecialList.inheritedMethods, hasLength(44));
       expect(SpecialList.inheritedMethods.first.name, equals('add'));
       expect(SpecialList.inheritedMethods[1].name, equals('addAll'));
     });
