@@ -5,16 +5,21 @@
 /// The models used to represent Dart code.
 library dartdoc.models;
 
-import 'package:analyzer/src/generated/ast.dart' show AnnotatedNode, Annotation;
+import 'package:analyzer/src/generated/ast.dart'
+    show AnnotatedNode, Annotation, Declaration;
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/resolver.dart'
     show Namespace, NamespaceBuilder, InheritanceManager, MemberMap;
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:quiver/core.dart' show hash3;
 
+import 'config.dart';
+
 import 'html_utils.dart' show stripComments, htmlEscape;
 import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
+
+import 'cache.dart';
 
 import '../markdown_processor.dart' show Documentation, renderMarkdownToHtml;
 
@@ -1303,8 +1308,53 @@ abstract class SourceCodeMixin {
     return source;
   }
 
+  String get crossdartHtmlTag {
+    if (config != null && config.addCrossdart && _crossdartUrl != null) {
+      return "<a class='crossdart' href='${_crossdartUrl}'>Link to Crossdart</a>";
+    } else {
+      return "";
+    }
+  }
+
+  int get _lineNumber {
+    var node = element.computeNode();
+    if (node is Declaration && (node as Declaration).element != null) {
+      return cache.lineNumber(
+          (node as Declaration).element.source.fullName, node.offset);
+    } else {
+      return null;
+    }
+  }
+
+  String get _crossdartUrl {
+    if (_lineNumber != null && _sourceFilePath != null) {
+      String packageName = library.package.isSdk ? "sdk" : library.package.name;
+      String packageVersion = library.package.version;
+      var root = library.package.packageMeta.resolvedDir.replaceAll("\\", "/");
+      var sourceFilePath = _sourceFilePath
+          .replaceAll("\\", "/")
+          .replaceAll(root, "")
+          .replaceAll(new RegExp(r"^/*"), "");
+      String url =
+          "//crossdart.info/p/$packageName/$packageVersion/$sourceFilePath.html";
+      return "${url}#line-${_lineNumber}";
+    } else {
+      return null;
+    }
+  }
+
+  String get _sourceFilePath {
+    var node = element.computeNode();
+    if (node is Declaration && (node as Declaration).element != null) {
+      return (node as Declaration).element.source.uri.path;
+    } else {
+      return null;
+    }
+  }
+
   bool get hasSourceCode => sourceCode.trim().isNotEmpty;
 
+  Library get library;
   Element get element;
 }
 

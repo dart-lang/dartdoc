@@ -111,6 +111,8 @@ Command-line options for dartdoc include:
 - `--include=<lib1,lib2,lib3,...>` Generate docs for the specified libraries.
 - `--hosted-url=<url>` Build a docs sitemap using the specified URL for your
   website.
+- `--add-crossdart` Add links to [Crossdart](//crossdart.info) to the
+  Source Code sections.
 
 The following options are used only when generating docs for the Dart SDK.
 

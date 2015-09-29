@@ -175,6 +175,12 @@ code {
   background-color: #f7f7f7;
 }
 
+h2 .crossdart {
+  float: right;
+  font-size: 0.5em;
+  margin-top: 1em;
+}
+
 @media(max-width: 768px) {
   nav .container {
     width: 100%

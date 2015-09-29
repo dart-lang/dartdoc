@@ -10,6 +10,7 @@ import 'package:args/args.dart';
 import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/config.dart';
 import 'package:path/path.dart' as path;
 
 bool _showProgress = false;
@@ -43,6 +44,11 @@ main(List<String> arguments) async {
 
   if (args['show-progress']) {
     _showProgress = true;
+  }
+
+  bool addCrossdart = false;
+  if (args['add-crossdart']) {
+    addCrossdart = true;
   }
 
   var readme = args['sdk-readme'];
@@ -107,6 +113,8 @@ main(List<String> arguments) async {
     generator.onFileCreated.listen(_onProgress);
   }
 
+  initializeConfig(addCrossdart: addCrossdart);
+
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries);
 
@@ -146,6 +154,8 @@ ArgParser _createArgsParser() {
       abbr: 'h', negatable: false, help: 'Show command help.');
   parser.addFlag('version',
       help: 'Display the version for $name.', negatable: false);
+  parser.addFlag('add-crossdart',
+      help: 'Add Crossdart links to the source code pieces', negatable: false);
   parser.addOption('dart-sdk',
       help:
           "Location of the Dart SDK. Use if SDK isn't automatically located.");
