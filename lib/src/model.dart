@@ -1047,8 +1047,7 @@ class Class extends ModelElement implements EnclosedElement {
           value is MethodElement &&
           !value.isPrivate &&
           !value.isOperator &&
-          value.enclosingElement != null &&
-          value.enclosingElement.name != 'Object') {
+          value.enclosingElement != null) {
         if (!package.isDocumented(value.enclosingElement)) {
           Method m = new Method.inherited(value, this, library);
           _inheritedMethods.add(m);
@@ -1092,8 +1091,7 @@ class Class extends ModelElement implements EnclosedElement {
           value is MethodElement &&
           !value.isPrivate &&
           value.isOperator &&
-          value.enclosingElement != null &&
-          value.enclosingElement.name != 'Object') {
+          value.enclosingElement != null) {
         return true;
       }
       return false;
@@ -1176,8 +1174,7 @@ class Class extends ModelElement implements EnclosedElement {
       if (value != null &&
           value is PropertyAccessorElement &&
           !value.isPrivate &&
-          value.enclosingElement != null &&
-          value.enclosingElement.name != 'Object') {
+          value.enclosingElement != null) {
         // TODO: why is this here?
         var e = value.variable;
         if (_inheritedProperties.any((f) => f.element == e)) {
