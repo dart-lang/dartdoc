@@ -1917,10 +1917,13 @@ class ElementType {
 
     // not TypeParameterType or Void or Union type
     if (isParameterizedType) {
-      var list = typeArguments.where((t) => t.linkedName != 'dynamic').toList();
-      if (list.isNotEmpty) {
+      if (typeArguments.every((t) => t.linkedName == 'dynamic')) {
+        _linkedName = '';
+        return _linkedName;
+      }
+      if (typeArguments.isNotEmpty) {
         buf.write('&lt;');
-        var string = list.map((t) => t.linkedName).join(',');
+        var string = typeArguments.map((t) => t.linkedName).join(',');
         buf.write(string);
         buf.write('&gt;');
       }

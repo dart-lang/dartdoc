@@ -106,6 +106,8 @@ class Dog implements Cat, E {
   foo() async => 42;
 
   void testMethod(Iterable it) {}
+
+  void testGeneric(Map<String, dynamic> args) {}
 }
 
 abstract class E {}
