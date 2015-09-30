@@ -1973,8 +1973,7 @@ class ElementType {
       }
       if (typeArguments.isNotEmpty) {
         buf.write('&lt;');
-        var string = typeArguments.map((t) => t.linkedName).join(', ');
-        buf.write(string);
+        buf.writeAll(typeArguments.map((t) => t.linkedName), ', ');
         buf.write('&gt;');
       }
     }
