@@ -559,7 +559,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.instanceMethods, hasLength(3));
+      expect(Dog.instanceMethods, hasLength(4));
     });
 
     test('get operators', () {
@@ -606,7 +606,7 @@ void main() {
     });
 
     test('F has many inherited methods', () {
-      expect(F.inheritedMethods, hasLength(6));
+      expect(F.inheritedMethods, hasLength(7));
       expect(
           F.inheritedMethods.map((im) => im.name),
           equals([
@@ -614,6 +614,7 @@ void main() {
             'getClassA',
             'noSuchMethod',
             'test',
+            'testGeneric',
             'testMethod',
             'toString'
           ]));
@@ -769,7 +770,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Method', () {
     Class classB, klass, HasGenerics, CatString;
     Method m1, isGreaterThan, m4, m5, m6, convertToMap;
-    Method inheritedClear;
+    Method inheritedClear, testGeneric;
 
     setUp(() {
       klass = exLibrary.classes.singleWhere((c) => c.name == 'Klass');
@@ -787,6 +788,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       m4 = classB.instanceMethods[1];
       m5 = klass.instanceMethods.singleWhere((m) => m.name == 'another');
       m6 = klass.instanceMethods.singleWhere((m) => m.name == 'toString');
+      testGeneric = exLibrary.classes
+          .singleWhere((c) => c.name == 'Dog')
+          .instanceMethods
+          .singleWhere((m) => m.name == 'testGeneric');
       convertToMap = HasGenerics.instanceMethods
           .singleWhere((m) => m.name == 'convertToMap');
     });
@@ -838,6 +843,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('return type', () {
       expect(isGreaterThan.modelType.createLinkedReturnTypeName(), 'bool');
+    });
+
+    test('parameter has generics in signature', () {
+      expect(testGeneric.parameters[0].modelType.linkedName,
+          'Map&lt;String, dynamic&gt;');
     });
 
     test('parameter is a function', () {
