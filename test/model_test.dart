@@ -846,7 +846,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('parameter has generics in signature', () {
       expect(testGeneric.parameters[0].modelType.linkedName,
-          'Map&lt;String,dynamic&gt;');
+          'Map&lt;String, dynamic&gt;');
     });
 
     test('parameter is a function', () {
