@@ -1,5 +1,6 @@
 ## 0.7.0
-* [feature] flag to add links to http://crossdart.info in the source code section
+* [feature] --add-crossdart flag to add links to http://crossdart.info in 
+  the source code section
 * [bug] show type information for Map with generics 
 * [bug] show methods/properties inherited from Object
 * [health] remove --url-mappings option, the analyzer picks up sdk extensions
