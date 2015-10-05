@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 import 'dart:async' show Future;
-import 'dart:io';
+import 'dart:io' hide ProcessException;
 
 import 'package:dartdoc/dartdoc.dart' show defaultOutDir;
 import 'package:dartdoc/src/io_utils.dart';
@@ -239,9 +239,13 @@ firebase() {
       ],
       quiet: true);
 
-  // Deploy to firebase.
-  run('firebase',
-      arguments: ['deploy', '-s', '--message', env['TRAVIS_COMMIT']]);
+  try {
+    // Deploy to firebase.
+    run('firebase',
+        arguments: ['deploy', '-s', '--message', env['TRAVIS_COMMIT']]);
+  } on ProcessException catch (e) {
+    log('Error uploading to firebase: ${e}');
+  }
 }
 
 Future<int> _runAsyncTimed(Future callback()) async {
