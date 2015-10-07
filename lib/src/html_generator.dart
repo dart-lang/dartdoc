@@ -547,8 +547,13 @@ class ClassTemplateData extends TemplateData {
       '${clazz.name} ${clazz.kind} - ${_library.name} library - Dart API';
   String get metaDescription =>
       'API docs for the ${clazz.name} ${clazz.kind} from the ${_library.name} library, for the Dart programming language.';
+  String get _fullkind {
+    if (_clazz.isAbstract) return 'abstract ${_clazz.kind}';
+    return _clazz.kind;
+  }
+
   String get layoutTitle =>
-      _layoutTitle(clazz.nameWithGenerics, clazz.kind, clazz.isDeprecated);
+      _layoutTitle(clazz.nameWithGenerics, _fullkind, clazz.isDeprecated);
   List get navLinks => [package, _library];
   String get htmlBase => '..';
   List<Subnav> get subnavItems {
