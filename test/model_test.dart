@@ -538,6 +538,14 @@ void main() {
       expect(interfaces[1].name, 'E');
     });
 
+    test('class title has abstract keyword', () {
+      expect(Cat.fullkind, 'abstract class');
+    });
+
+    test('class title has  no abstract keyword', () {
+      expect(Dog.fullkind, 'class');
+    });
+
     test('get constructors', () {
       expect(Apple.constructors, hasLength(2));
     });
@@ -1165,11 +1173,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Constructor', () {
-    Constructor appleDefaultConstructor;
+    Constructor appleDefaultConstructor, constCatConstructor;
     Constructor appleConstructorFromString;
-    Class apple;
+    Class apple, constCat;
     setUp(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
+      constCat = exLibrary.classes.firstWhere((c) => c.name == 'ConstantCat');
+      constCatConstructor = constCat.constructors[0];
       appleDefaultConstructor =
           apple.constructors.firstWhere((c) => c.name == 'Apple');
       appleConstructorFromString =
@@ -1184,6 +1194,18 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(appleDefaultConstructor, isNotNull);
       expect(appleDefaultConstructor.name, equals('Apple'));
       expect(appleDefaultConstructor.shortName, equals('Apple'));
+    });
+
+    test('title has factory qualifier', () {
+      expect(appleConstructorFromString.fullKind, 'factory constructor');
+    });
+
+    test('title has const qualifier', () {
+      expect(constCatConstructor.fullKind, 'const constructor');
+    });
+
+    test('title has no qualifiers', () {
+      expect(appleDefaultConstructor.fullKind, 'constructor');
     });
 
     test('shortName', () {

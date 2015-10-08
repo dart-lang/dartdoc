@@ -130,6 +130,9 @@
                 {{#isConst}}
                 <div class="constructor-modifier features">const</div>
                 {{/isConst}}
+                {{#isFactory}}
+                <div class="constructor-modifier features">factory</div>
+                {{/isFactory}}
             </dd>
             {{/clazz.constructors}}
         </dl>

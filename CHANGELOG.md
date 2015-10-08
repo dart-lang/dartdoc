@@ -1,3 +1,7 @@
+## unreleased
+* [enhancement] indicate when a class is an abstract class
+* [enhancement] indicate when a constructor is a factory cosntructor
+
 ## 0.7.0
 * [feature] --add-crossdart flag to add links to http://crossdart.info in 
   the source code section
