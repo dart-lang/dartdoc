@@ -35,9 +35,11 @@ class Apple {
   ///Constructor
   Apple();
 
-  Apple.fromString(String s) {
-    _s2 = s;
+  factory Apple.fromString(String s) {
+    return new Apple._internal(s);
   }
+
+  Apple._internal(this._s2);
 
   /**
    * The getter for `s`

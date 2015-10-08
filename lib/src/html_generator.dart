@@ -547,13 +547,9 @@ class ClassTemplateData extends TemplateData {
       '${clazz.name} ${clazz.kind} - ${_library.name} library - Dart API';
   String get metaDescription =>
       'API docs for the ${clazz.name} ${clazz.kind} from the ${_library.name} library, for the Dart programming language.';
-  String get _fullkind {
-    if (_clazz.isAbstract) return 'abstract ${_clazz.kind}';
-    return _clazz.kind;
-  }
 
   String get layoutTitle =>
-      _layoutTitle(clazz.nameWithGenerics, _fullkind, clazz.isDeprecated);
+      _layoutTitle(clazz.nameWithGenerics, clazz.fullkind, clazz.isDeprecated);
   List get navLinks => [package, _library];
   String get htmlBase => '..';
   List<Subnav> get subnavItems {
@@ -606,8 +602,8 @@ class ConstructorTemplateData extends TemplateData {
   Library get library => _library;
   Class get clazz => _class;
   Constructor get constructor => _constructor;
-  String get layoutTitle =>
-      _layoutTitle(constructor.name, 'constructor', constructor.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+      constructor.name, constructor.fullKind, constructor.isDeprecated);
   List get navLinks => [package, _library, clazz];
   List<Subnav> get subnavItems => _gatherSubnavForInvokable(constructor);
   String get htmlBase => '../..';

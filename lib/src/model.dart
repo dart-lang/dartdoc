@@ -846,6 +846,11 @@ class Class extends ModelElement implements EnclosedElement {
   @override
   String get kind => 'class';
 
+  String get fullkind {
+    if (isAbstract) return 'abstract $kind';
+    return kind;
+  }
+
   String get fileName => "${name}-class.html";
 
   bool get isAbstract => _cls.isAbstract;
@@ -1550,6 +1555,12 @@ class Constructor extends ModelElement
   @override
   String get kind => 'constructor';
 
+  String get fullKind {
+    if (isConst) return 'const $kind';
+    if (isFactory) return 'factory $kind';
+    return kind;
+  }
+
   @override
   ModelElement get enclosingElement =>
       new ModelElement.from(_constructor.enclosingElement, library);
@@ -1559,6 +1570,8 @@ class Constructor extends ModelElement
       '${library.dirName}/${_constructor.enclosingElement.name}/$name.html';
 
   bool get isConst => _constructor.isConst;
+
+  bool get isFactory => _constructor.isFactory;
 
   String get shortName {
     if (name.contains('.')) {
