@@ -196,13 +196,20 @@ class _HtmlGeneratorInstance implements HtmlOptions {
     File jsonFile = createOutputFile(out, 'index.json');
     String json = JSON.encode(documentedElements.map((ModelElement e) {
       // TODO: find a better string for type
-      Map data = {'name': e.name, 'href': e.href, 'type': e.kind};
+      Map data = {
+        'name': e.name,
+        'qualifiedName': e.name,
+        'href': e.href,
+        'type': e.kind
+      };
       if (e is EnclosedElement) {
         EnclosedElement ee = e as EnclosedElement;
         data['enclosedBy'] = {
           'name': ee.enclosingElement.name,
           'type': ee.enclosingElement.kind
         };
+
+        data['qualifiedName'] = e.fullyQualifiedName;
       }
       return data;
     }).toList());

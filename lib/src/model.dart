@@ -86,6 +86,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   Documentation __documentation;
   List _parameters;
 
+  String _fullyQualifiedName;
+
   // WARNING: putting anything into the body of this seems
   // to lead to stack overflows. Need to make a registry of ModelElements
   // somehow.
@@ -228,6 +230,25 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   ModelElement get overriddenElement => null;
 
   String get name => element.name;
+
+  /// Returns the fully qualified name.
+  ///
+  /// For example: libraryName.className.methodName
+  String get fullyQualifiedName {
+    return (_fullyQualifiedName ??= _buildFullyQualifiedName());
+  }
+
+  String _buildFullyQualifiedName([ModelElement e, String fqName]) {
+    e ??= this;
+    fqName ??= e.name;
+
+    if (e is! EnclosedElement) {
+      return fqName;
+    }
+
+    ModelElement parent = (e as EnclosedElement).enclosingElement;
+    return _buildFullyQualifiedName(parent, '${parent.name}.$fqName');
+  }
 
   bool get canHaveParameters =>
       element is ExecutableElement || element is FunctionTypeAliasElement;
@@ -1562,6 +1583,9 @@ class Constructor extends ModelElement
   }
 
   @override
+  String get fullyQualifiedName => '${library.name}.$name';
+
+  @override
   ModelElement get enclosingElement =>
       new ModelElement.from(_constructor.enclosingElement, library);
 
@@ -1672,6 +1696,10 @@ class Operator extends Method {
       return '$actualName.html';
     }
   }
+
+  @override
+  String get fullyQualifiedName =>
+      '${library.name}.${enclosingElement.name}.${super.name}';
 
   @override
   String get name {
