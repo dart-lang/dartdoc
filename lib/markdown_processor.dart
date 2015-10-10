@@ -82,6 +82,9 @@ class Documentation {
     });
     _asHtml = _asHtmlDocument.body.innerHtml;
 
+    // Fixes issue with line ending differences between mac and windows, affecting tests
+    if (_asHtml != null) _asHtml.trim();
+
     if (_asHtmlDocument.body.children.isEmpty) {
       _asOneLiner = '';
     } else {
