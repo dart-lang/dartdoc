@@ -8,11 +8,4 @@
 </div>
 {{/hasAnnotations}}
 <span class="returntype">{{{ linkedReturnType }}}</span>
-{{>name_summary}}(
-{{#hasParameters}}
-<br>
-<div class="parameters">
-    {{{linkedParamsLines}}}
-</div>
-{{/hasParameters}}
-)
+{{>name_summary}}(<wbr>{{#hasParameters}}{{{linkedParamsLines}}}{{/hasParameters}})

@@ -145,7 +145,7 @@ pre.prettyprint {
   font-family: 'Source Code Pro', monospace;
   color: black;
   border-radius: 4px;
-  font-size: 13px;
+  font-size: 14px;
   word-wrap: normal;
   line-height: 1.4;
   background: #f7f7f7;
@@ -166,6 +166,7 @@ pre code {
 pre {
   border: 1px solid #ddd;
   background-color: #f7f7f7;
+  font-size: 14px;
 }
 
 code {
@@ -405,6 +406,9 @@ footer .container-fluid {
 
 .multi-line-signature {
   font-size: 17px;
+  color: #727272;
+  margin-left: 24px;
+  text-indent: -24px;
 }
 
 .breadcrumbs {
