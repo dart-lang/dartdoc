@@ -405,10 +405,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   String get linkedParamsNoMetadata => linkedParams(showMetadata: false);
 
-  /// End each parameter with `<br>`
-  String get linkedParamsLines {
-    return linkedParams(separator: ',<br>');
-  }
+  String get linkedParamsLines => linkedParams().trim();
 }
 
 // TODO: how do we get rid of this class?
