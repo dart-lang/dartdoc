@@ -16,6 +16,7 @@ String stripComments(String str) {
 
   if (str.startsWith('///')) {
     for (String line in str.split('\n')) {
+      line = line.trimLeft();
       if (line.startsWith('/// ')) {
         buf.write('${line.substring(4)}\n');
       } else if (line.startsWith('///')) {
