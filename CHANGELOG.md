@@ -1,4 +1,8 @@
-## unreleased
+## 0.7.1
+* [enhancement] restore the method signature at the top of 
+  method/ctor/function/operator pages
+* [enhancement] search using fully qualified names
+* [enhancement] better messaging when library itself lacks comments 
 * [enhancement] indicate when a class is an abstract class
 * [enhancement] indicate when a constructor is a factory cosntructor
 
