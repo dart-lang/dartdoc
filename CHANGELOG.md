@@ -1,3 +1,6 @@
+## 0.7.2
+* [bug] do not show '///' in doc output
+
 ## 0.7.1
 * [enhancement] restore the method signature at the top of 
   method/ctor/function/operator pages
