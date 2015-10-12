@@ -121,6 +121,10 @@ void main() {
       expect(exLibrary.name, 'ex');
     });
 
+    test('has a fully qualified name', () {
+      expect(exLibrary.fullyQualifiedName, 'ex');
+    });
+
     test('can be deprecated', () {
       expect(isDeprecated.isDeprecated, isTrue);
       expect(anonLib.isDeprecated, isFalse);
@@ -384,24 +388,24 @@ void main() {
 
     test('incorrect doc references are still wrapped in code blocks', () {
       expect(incorrectDocReferenceFromEx.documentationAsHtml,
-          '<p>This should <code>not work</code>.</p>\n');
+          '<p>This should <code>not work</code>.</p>');
     });
 
     test('no references', () {
-      expect(Apple.documentationAsHtml,
-          '<p>Sample class <code>String</code></p>\n');
+      expect(
+          Apple.documentationAsHtml, '<p>Sample class <code>String</code></p>');
     });
 
     test('single ref to class', () {
       expect(B.documentationAsHtml,
-          '<p>Extends class <a class="" href="ex/Apple-class.html">Apple</a>, use <a class="" href="ex/Apple/Apple.html">new Apple</a> or <a class="" href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>\n');
+          '<p>Extends class <a class="" href="ex/Apple-class.html">Apple</a>, use <a class="" href="ex/Apple/Apple.html">new Apple</a> or <a class="" href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>');
     });
 
     test('doc ref to class in SDK does not render as link', () {
       expect(
           thisIsAsync.documentationAsHtml,
           equals(
-              '<p>An async function. It should look like I return a <code>Future</code>.</p>\n'));
+              '<p>An async function. It should look like I return a <code>Future</code>.</p>'));
     });
 
     test('references are correct in exported libraries', () {
@@ -441,7 +445,7 @@ void main() {
       expect(
           comment,
           equals(
-              '<p>link to method from class <a class="" href="ex/Apple/m.html">Apple.m</a></p>\n'));
+              '<p>link to method from class <a class="" href="ex/Apple/m.html">Apple.m</a></p>'));
     });
 
     test('legacy code blocks render correctly', () {
@@ -487,6 +491,10 @@ void main() {
       ExtendingClass =
           twoExportsLib.classes.firstWhere((c) => c.name == 'ExtendingClass');
       CatString = exLibrary.classes.firstWhere((c) => c.name == 'CatString');
+    });
+
+    test('has a fully qualified name', () {
+      expect(Apple.fullyQualifiedName, 'ex.Apple');
     });
 
     test('we got the classes we expect', () {
@@ -678,6 +686,10 @@ void main() {
       animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
     });
 
+    test('has a fully qualified name', () {
+      expect(animal.fullyQualifiedName, 'ex.Animal');
+    });
+
     test('has enclosing element', () {
       expect(animal.enclosingElement.name, equals(exLibrary.name));
     });
@@ -724,6 +736,10 @@ void main() {
           fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
     });
 
+    test('has a fully qualified name', () {
+      expect(thisIsAsync.fullyQualifiedName, 'fake.thisIsAsync');
+    });
+
     test('has enclosing element', () {
       expect(f1.enclosingElement.name, equals(exLibrary.name));
     });
@@ -758,7 +774,7 @@ void main() {
       expect(
           thisIsAsync.documentationAsHtml,
           equals(
-              '<p>An async function. It should look like I return a <code>Future</code>.</p>\n'));
+              '<p>An async function. It should look like I return a <code>Future</code>.</p>'));
     });
 
     test('docs do not lose brackets in code blocks', () {
@@ -802,6 +818,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'testGeneric');
       convertToMap = HasGenerics.instanceMethods
           .singleWhere((m) => m.name == 'convertToMap');
+    });
+
+    test('has a fully qualified name', () {
+      expect(m1.fullyQualifiedName, 'ex.B.m1');
     });
 
     test(
@@ -901,6 +921,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((o) => o.name == 'operator +');
     });
 
+    test('has a fully qualified name', () {
+      expect(plus.fullyQualifiedName, 'ex.SpecializedDuration.+');
+    });
+
     test('can be inherited', () {
       expect(plus.isInherited, isTrue);
     });
@@ -962,6 +986,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'B')
           .allInstanceProperties
           .firstWhere((p) => p.name == 'm');
+    });
+
+    test('has a fully qualified name', () {
+      expect(lengthX.fullyQualifiedName, 'fake.WithGetterAndSetter.lengthX');
     });
 
     test('inherited property has a linked name to superclass in package', () {
@@ -1083,6 +1111,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((p) => p.name == 'mapWithDynamicKeys');
     });
 
+    test('has a fully qualified name', () {
+      expect(justGetter.fullyQualifiedName, 'fake.justGetter');
+    });
+
     test('type arguments are correct', () {
       expect(mapWithDynamicKeys.modelType.typeArguments, hasLength(2));
       expect(mapWithDynamicKeys.modelType.typeArguments.first.name,
@@ -1146,6 +1178,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
     });
 
+    test('has a fully qualified name', () {
+      expect(greenConstant.fullyQualifiedName, 'ex.COLOR_GREEN');
+    });
+
     test('has enclosing element', () {
       expect(greenConstant.enclosingElement.name, equals(exLibrary.name));
     });
@@ -1184,6 +1220,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           apple.constructors.firstWhere((c) => c.name == 'Apple');
       appleConstructorFromString =
           apple.constructors.firstWhere((c) => c.name == 'Apple.fromString');
+    });
+
+    test('has a fully qualified name', () {
+      expect(
+          appleConstructorFromString.fullyQualifiedName, 'ex.Apple.fromString');
     });
 
     test('has enclosing element', () {
@@ -1233,6 +1274,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     setUp(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
+    });
+
+    test('has a fully qualified name', () {
+      expect(t.fullyQualifiedName, 'ex.processMessage');
     });
 
     test('has enclosing element', () {
