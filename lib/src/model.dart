@@ -22,6 +22,7 @@ import 'package_meta.dart' show PackageMeta, FileContents;
 import 'cache.dart';
 
 import '../markdown_processor.dart' show Documentation, renderMarkdownToHtml;
+import 'package:analyzer/src/generated/source_io.dart';
 
 int byName(Nameable a, Nameable b) =>
     a.name.toUpperCase().compareTo(b.name.toUpperCase());
@@ -1353,7 +1354,8 @@ abstract class SourceCodeMixin {
     if (_lineNumber != null && _sourceFilePath != null) {
       String packageName = library.package.isSdk ? "sdk" : library.package.name;
       String packageVersion = library.package.version;
-      var root = library.package.packageMeta.resolvedDir.replaceAll("\\", "/");
+      var root = "${library.package.packageMeta.resolvedDir}/lib"
+          .replaceAll("\\", "/");
       var sourceFilePath = _sourceFilePath
           .replaceAll("\\", "/")
           .replaceAll(root, "")
@@ -1369,7 +1371,9 @@ abstract class SourceCodeMixin {
   String get _sourceFilePath {
     var node = element.computeNode();
     if (node is Declaration && (node as Declaration).element != null) {
-      return (node as Declaration).element.source.uri.path;
+      return ((node as Declaration).element.source as FileBasedSource)
+          .file
+          .toString();
     } else {
       return null;
     }
