@@ -858,7 +858,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('method documentation', () {
-      expect(m1.documentation, equals('this is a method'));
+      expect(m1.documentation,
+          equals('This is a method.\n\n    new Apple().m1();'));
     });
 
     test('can have params', () {

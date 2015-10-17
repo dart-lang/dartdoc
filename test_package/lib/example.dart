@@ -53,7 +53,9 @@ class Apple {
     _s2 = something;
   }
 
-  /// this is a method
+  /// This is a method.
+  ///
+  ///     new Apple().m1();
   void m1() {}
 
   operator *(Apple other) => this;
