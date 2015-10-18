@@ -114,12 +114,12 @@ List<FileSystemEntity> _packageDirList(Directory dir) {
   }
 }
 
-/// Converts `.` and `:` into `-`.
+/// Converts `.` and `:` into `-`, adding a ".html" extension.
 ///
 /// For example:
 ///
-/// * dart.dartdoc => dart_dartdoc
-/// * dart:core => dart_core
+/// * dart.dartdoc => dart_dartdoc.html
+/// * dart:core => dart_core.html
 String getFileNameFor(String name) {
   return '${name.replaceAll(new RegExp('[.:]'), '-')}.html';
 }
