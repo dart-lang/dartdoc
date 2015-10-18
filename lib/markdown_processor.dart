@@ -21,8 +21,8 @@ import 'package:html/dom.dart' show Document;
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 
-import 'src/html_utils.dart' show htmlEscape;
 import 'src/model.dart';
+import 'src/utils.dart' show htmlEscape;
 
 final List<md.InlineSyntax> _markdown_syntaxes = [new _InlineCodeSyntax()];
 
