@@ -1501,7 +1501,12 @@ class Field extends ModelElement
   PropertyAccessorElement get _getter => _field.getter;
   PropertyAccessorElement get _setter => _field.setter;
 
-  String computeDocumentationComment() => _field.computeDocumentationComment();
+  @override
+  String get _computeDocumentationComment {
+    String docs = getterSetterDocumentationComment;
+    if (docs.isEmpty) return _field.computeDocumentationComment();
+    return docs;
+  }
 
   bool get readOnly => hasGetter && !hasSetter;
 
@@ -1774,10 +1779,10 @@ abstract class GetterSetterCombo {
   // TODO: now that we have explicit getter and setters, we probably
   // want a cleaner way to do this. Only the one-liner is using this
   // now. The detail pages should be using getter and setter directly.
-  String get _computeDocumentationComment {
+  String get getterSetterDocumentationComment {
     var buffer = new StringBuffer();
 
-    if (hasGetter) {
+    if (hasGetter && !_getter.isSynthetic) {
       String docs = stripComments(_getter.computeDocumentationComment());
       if (docs != null) buffer.write(docs);
     }
@@ -1789,7 +1794,6 @@ abstract class GetterSetterCombo {
         buffer.write(docs);
       }
     }
-
     return buffer.toString();
   }
 }
@@ -1838,8 +1842,11 @@ class TopLevelVariable extends ModelElement
   PropertyAccessorElement get _getter => _variable.getter;
   PropertyAccessorElement get _setter => _variable.setter;
 
-  String computeDocumentationComment() {
-    return _variable.computeDocumentationComment();
+  @override
+  String get _computeDocumentationComment {
+    String docs = getterSetterDocumentationComment;
+    if (docs.isEmpty) return _variable.computeDocumentationComment();
+    return docs;
   }
 
   String get constantValue {
