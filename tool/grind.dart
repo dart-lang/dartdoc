@@ -166,6 +166,7 @@ Future buildSdkDocs() async {
 // if I run grind build-sdk-docs manually.
 // See https://github.com/google/grinder.dart/issues/291
 validateSdkDocs() {
+  // TODO(keertip): change this to 17 once 1.13 is stable
   const expectedLibCount = 18;
   var indexHtml = joinFile(docsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
@@ -174,7 +175,7 @@ validateSdkDocs() {
   // check for the existence of certain files/dirs
   var libsLength =
       docsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
-  if (libsLength != expectedLibCount) {
+  if (libsLength != expectedLibCount || libsLength != 17) {
     fail('docs not generated for all the SDK libraries, '
         'expected $expectedLibCount directories, generated $libsLength directories');
   }
