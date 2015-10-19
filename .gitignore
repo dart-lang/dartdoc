@@ -8,6 +8,7 @@ packages
 .pub
 .idea
 .packages
+pubspec.lock
 .settings/
 .DS_Store
 *.iml

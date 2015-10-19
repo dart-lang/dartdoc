@@ -166,7 +166,8 @@ Future buildSdkDocs() async {
 // if I run grind build-sdk-docs manually.
 // See https://github.com/google/grinder.dart/issues/291
 validateSdkDocs() {
-  const expectedLibCount = 18;
+  var minLibCount = 17; // Dart 1.13
+  var maxLibCount = 18; // Dart 1.12
   var indexHtml = joinFile(docsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
     fail('no index.html found for SDK docs');
@@ -174,9 +175,10 @@ validateSdkDocs() {
   // check for the existence of certain files/dirs
   var libsLength =
       docsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
-  if (libsLength != expectedLibCount) {
+  if (libsLength < minLibCount || libsLength > maxLibCount) {
     fail('docs not generated for all the SDK libraries, '
-        'expected $expectedLibCount directories, generated $libsLength directories');
+        'expected between $minLibCount and $maxLibCount directories'
+        ', generated $libsLength directories');
   }
   var futureConstFile =
       joinFile(docsDir, [path.join('dart-async', 'Future', 'Future.html')]);
