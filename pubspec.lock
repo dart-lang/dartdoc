@@ -4,7 +4,7 @@ packages:
   analyzer:
     description: analyzer
     source: hosted
-    version: "0.26.0"
+    version: "0.26.1+12"
   ansicolor:
     description: ansicolor
     source: hosted
@@ -16,11 +16,11 @@ packages:
   async:
     description: async
     source: hosted
-    version: "1.2.0"
+    version: "1.3.0"
   barback:
     description: barback
     source: hosted
-    version: "0.15.2+6"
+    version: "0.15.2+7"
   charcode:
     description: charcode
     source: hosted
@@ -32,7 +32,7 @@ packages:
   collection:
     description: collection
     source: hosted
-    version: "1.1.1"
+    version: "1.1.3"
   contrast:
     description: contrast
     source: hosted
@@ -40,11 +40,11 @@ packages:
   crypto:
     description: crypto
     source: hosted
-    version: "0.9.0"
+    version: "0.9.1"
   csslib:
     description: csslib
     source: hosted
-    version: "0.12.1"
+    version: "0.12.2"
   den_api:
     description: den_api
     source: hosted
@@ -52,7 +52,7 @@ packages:
   github:
     description: github
     source: hosted
-    version: "2.2.3+1"
+    version: "2.3.0"
   glob:
     description: glob
     source: hosted
@@ -64,11 +64,11 @@ packages:
   html:
     description: html
     source: hosted
-    version: "0.12.1+2"
+    version: "0.12.2"
   http:
     description: http
     source: hosted
-    version: "0.11.3"
+    version: "0.11.3+2"
   http_multi_server:
     description: http_multi_server
     source: hosted
@@ -76,7 +76,7 @@ packages:
   http_parser:
     description: http_parser
     source: hosted
-    version: "0.0.2+8"
+    version: "1.0.0"
   librato:
     description: librato
     source: hosted
@@ -84,7 +84,7 @@ packages:
   logging:
     description: logging
     source: hosted
-    version: "0.11.1"
+    version: "0.11.2"
   markdown:
     description: markdown
     source: hosted
@@ -108,7 +108,7 @@ packages:
   package_config:
     description: package_config
     source: hosted
-    version: "0.1.1"
+    version: "0.1.3"
   path:
     description: path
     source: hosted
@@ -116,7 +116,7 @@ packages:
   petitparser:
     description: petitparser
     source: hosted
-    version: "1.4.3"
+    version: "1.5.0"
   plugin:
     description: plugin
     source: hosted
@@ -124,7 +124,7 @@ packages:
   pool:
     description: pool
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   pub_cache:
     description: pub_cache
     source: hosted
@@ -136,7 +136,7 @@ packages:
   pub_semver:
     description: pub_semver
     source: hosted
-    version: "1.2.1"
+    version: "1.2.2"
   quiver:
     description: quiver
     source: hosted
@@ -144,15 +144,15 @@ packages:
   shelf:
     description: shelf
     source: hosted
-    version: "0.6.2"
+    version: "0.6.3"
   shelf_static:
     description: shelf_static
     source: hosted
-    version: "0.2.3"
+    version: "0.2.3+1"
   shelf_web_socket:
     description: shelf_web_socket
     source: hosted
-    version: "0.0.1+2"
+    version: "0.0.1+4"
   source_map_stack_trace:
     description: source_map_stack_trace
     source: hosted
@@ -164,15 +164,15 @@ packages:
   source_span:
     description: source_span
     source: hosted
-    version: "1.1.2"
+    version: "1.2.1"
   stack_trace:
     description: stack_trace
     source: hosted
-    version: "1.3.4"
+    version: "1.4.2"
   string_scanner:
     description: string_scanner
     source: hosted
-    version: "0.1.3+1"
+    version: "0.1.4"
   supports_color:
     description: supports_color
     source: hosted
@@ -180,7 +180,7 @@ packages:
   test:
     description: test
     source: hosted
-    version: "0.12.3+9"
+    version: "0.12.5+1"
   unscripted:
     description: unscripted
     source: hosted
@@ -204,8 +204,8 @@ packages:
   xml:
     description: xml
     source: hosted
-    version: "2.3.2"
+    version: "2.4.0"
   yaml:
     description: yaml
     source: hosted
-    version: "2.1.3"
+    version: "2.1.7"
