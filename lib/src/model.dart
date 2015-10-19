@@ -145,7 +145,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   /// A human-friendly name for the kind of element this is.
   String get kind;
 
-  String get _computeDocumentationComment => element.computeDocumentationComment();
+  String get _computeDocumentationComment =>
+      element.computeDocumentationComment();
 
   /// Returns the docs, stripped of their
   /// leading comments syntax.
