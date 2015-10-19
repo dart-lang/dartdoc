@@ -15,9 +15,9 @@ import 'package:quiver/core.dart' show hash3;
 
 import 'config.dart';
 
-import 'html_utils.dart' show stripComments, htmlEscape;
 import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
+import 'utils.dart' show stripComments, htmlEscape;
 
 import 'cache.dart';
 

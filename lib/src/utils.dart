@@ -2,13 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-library dartdoc.html_utils;
+library dartdoc.utils;
 
 import 'dart:convert';
 
 String htmlEscape(String text) => HTML_ESCAPE.convert(text);
 
-// TODO: move this elsewhere. Not really an HTML util.
 String stripComments(String str) {
   if (str == null) return null;
 
@@ -45,22 +44,4 @@ String stripComments(String str) {
     }
   }
   return buf.toString().trim();
-}
-
-const _escapeMap = const {
-  '\n': r'\n',
-  '\r': r'\r',
-  '\f': r'\f',
-  '\b': r'\b',
-  '\t': r'\t',
-  '\v': r'\v',
-};
-
-final _escapeStr = "[" + _escapeMap.keys.map(_getHexLiteral).join() + "]";
-
-final _escapeRegExp = new RegExp(_escapeStr);
-
-String _getHexLiteral(String input) {
-  int rune = input.runes.single;
-  return r'\x' + rune.toRadixString(16).padLeft(2, '0');
 }
