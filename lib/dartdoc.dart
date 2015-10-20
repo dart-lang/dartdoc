@@ -86,8 +86,8 @@ class DartDoc {
       Set notFound =
           new Set.from(includes).difference(new Set.from(knownLibraryNames));
       if (notFound.isNotEmpty) {
-        return new Future.error('Did not find: [${notFound.join(', ')}] in ' +
-            'known libraries: [${knownLibraryNames.join(', ')}]');
+        throw 'Did not find: [${notFound.join(', ')}] in '
+            'known libraries: [${knownLibraryNames.join(', ')}]';
       }
       libraries.removeWhere((lib) => !includes.contains(lib.name));
     } else {
