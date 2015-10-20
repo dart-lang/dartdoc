@@ -12,6 +12,7 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/config.dart';
 import 'package:path/path.dart' as path;
+import 'package:stack_trace/stack_trace.dart';
 
 bool _showProgress = false;
 
@@ -127,18 +128,18 @@ main(List<String> arguments) async {
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries);
 
-  try {
+  Chain.capture(() async {
     DartDocResults results = await dartdoc.generateDocs();
     print('\nSuccess! Docs generated into ${results.outDir.absolute.path}');
-  } catch (e, st) {
+  }, onError: (e, Chain chain) {
     if (e is DartDocFailure) {
       stderr.writeln('Generation failed: ${e}.');
       exit(1);
     } else {
-      stderr.writeln('Generation failed: ${e}\n${st}');
+      stderr.writeln('Generation failed: ${e}\n${chain.terse}');
       exit(255);
     }
-  }
+  });
 }
 
 void _onProgress(File file) {

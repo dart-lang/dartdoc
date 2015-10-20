@@ -1,6 +1,8 @@
 ## 0.7.3
 * [bug] Add missing close `span` in accessor setter template
 * [enhancement] Print usage if an invalid argument is provided
+* [enhancement] Improve the output of asynchronous stack traces when an
+  unhandled exception is thrown
 
 ## 0.7.2
 * [bug] do not show '///' in doc output
