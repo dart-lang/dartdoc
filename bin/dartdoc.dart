@@ -19,7 +19,16 @@ bool _showProgress = false;
 /// classes, and members. Uses the current directory to look for libraries.
 main(List<String> arguments) async {
   var parser = _createArgsParser();
-  var args = parser.parse(arguments);
+  ArgResults args;
+  try {
+    args = parser.parse(arguments);
+  } on FormatException catch (e) {
+    print(e.message);
+    print('');
+    // http://linux.die.net/include/sysexits.h
+    // #define EX_USAGE	64	/* command line usage error */
+    _printUsageAndExit(parser, exitCode: 64);
+  }
 
   if (args['help']) {
     _printHelp(parser);
