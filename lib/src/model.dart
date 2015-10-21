@@ -857,7 +857,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   String get nameWithGenerics {
     if (!modelType.isParameterizedType) return name;
-    return '$name&lt${_typeParameters.map((t) => t.name).join(', ')}&gt';
+    return '$name&lt;${_typeParameters.map((t) => t.name).join(', ')}&gt;';
   }
 
   List<TypeParameter> get _typeParameters => _cls.typeParameters.map((f) {
