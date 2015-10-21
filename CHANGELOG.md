@@ -1,3 +1,6 @@
+## 0.7.3
+* [bug] Add missing close `span` in accessor setter template
+
 ## 0.7.2
 * [bug] do not show '///' in doc output
 
