@@ -299,8 +299,8 @@ class _HtmlGeneratorInstance implements HtmlOptions {
         .write('\ngenerating docs for library ${lib.name} from ${lib.path}...');
 
     if (!lib.isAnonymous && !lib.hasDocumentation) {
-      print(
-          "\n  warning: library '${lib.name}' itself has no documentation comments");
+      stdout.write(
+          "\n  warning: '${lib.name}' has no library level documentation comments");
     }
 
     TemplateData data = new LibraryTemplateData(this, package, lib);
