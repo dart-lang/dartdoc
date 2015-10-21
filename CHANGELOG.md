@@ -3,6 +3,9 @@
 * [enhancement] Print usage if an invalid argument is provided
 * [enhancement] Improve the output of asynchronous stack traces when an
   unhandled exception is thrown
+* [health] removed doc uploads to firebase
+* [bug] fixed incorrect 'link to Crossdart' links
+* [health] upgraded packages, modified pubspec.lock
 
 ## 0.7.2
 * [bug] do not show '///' in doc output
