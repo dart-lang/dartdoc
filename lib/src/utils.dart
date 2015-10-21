@@ -4,10 +4,6 @@
 
 library dartdoc.utils;
 
-import 'dart:convert';
-
-String htmlEscape(String text) => HTML_ESCAPE.convert(text);
-
 String stripComments(String str) {
   if (str == null) return null;
 

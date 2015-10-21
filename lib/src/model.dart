@@ -5,6 +5,8 @@
 /// The models used to represent Dart code.
 library dartdoc.models;
 
+import 'dart:convert';
+
 import 'package:analyzer/src/generated/ast.dart'
     show AnnotatedNode, Annotation, Declaration;
 import 'package:analyzer/src/generated/element.dart';
@@ -17,7 +19,7 @@ import 'config.dart';
 
 import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
-import 'utils.dart' show stripComments, htmlEscape;
+import 'utils.dart' show stripComments;
 
 import 'cache.dart';
 
@@ -311,18 +313,19 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   String get linkedName {
     if (name.startsWith('_')) {
-      return htmlEscape(name);
+      return HTML_ESCAPE.convert(name);
     }
     if (!(this is Method || this is Field) && !package.isDocumented(element)) {
-      return htmlEscape(name);
+      return HTML_ESCAPE.convert(name);
     }
 
     ModelElement c = (this is EnclosedElement)
         ? (this as EnclosedElement).enclosingElement
         : null;
     if (c != null) {
-      if (!package.isDocumented(c.element)) return htmlEscape(name);
-      if (c.name.startsWith('_')) return '${c.name}.${htmlEscape(name)}';
+      if (!package.isDocumented(c.element)) return HTML_ESCAPE.convert(name);
+      if (c.name
+          .startsWith('_')) return '${c.name}.${HTML_ESCAPE.convert(name)}';
     }
 
     return '<a class="${isDeprecated ? 'deprecated' : ''}" href="${href}">$name</a>';

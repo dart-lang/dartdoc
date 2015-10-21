@@ -5,6 +5,8 @@
 /// Utility code to convert markdown comments to html.
 library dartdoc.markdown_processor;
 
+import 'dart:convert';
+
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:analyzer/src/generated/element.dart'
     show
@@ -22,7 +24,6 @@ import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 
 import 'src/model.dart';
-import 'src/utils.dart' show htmlEscape;
 
 final List<md.InlineSyntax> _markdown_syntaxes = [new _InlineCodeSyntax()];
 
@@ -108,7 +109,7 @@ class _InlineCodeSyntax extends md.InlineSyntax {
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
-    var element = new md.Element.text('code', htmlEscape(match[1]));
+    var element = new md.Element.text('code', HTML_ESCAPE.convert(match[1]));
     parser.addNode(element);
     return true;
   }
