@@ -165,14 +165,12 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (_rawDocs == null && canOverride()) {
       var overrideElement = overriddenElement;
       if (overrideElement != null) {
-        _rawDocs = overrideElement.documentation;
+        _rawDocs = overrideElement.documentation ?? '';
+        return _rawDocs;
       }
     }
 
-    _rawDocs = stripComments(_rawDocs);
-
-    if (_rawDocs == null) _rawDocs = '';
-
+    _rawDocs = stripComments(_rawDocs) ?? '';
     return _rawDocs;
   }
 
