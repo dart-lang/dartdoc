@@ -956,7 +956,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Field f1, f2, constField, dynamicGetter, onlySetter;
     Field lengthX;
     Field sFromApple, mInB;
-    ;
     Field isEmpty;
 
     setUp(() {
