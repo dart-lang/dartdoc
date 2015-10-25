@@ -11,6 +11,7 @@
 library dartdoc.resource_loader;
 
 import 'dart:async' show Future;
+import 'dart:convert' show UTF8;
 import 'dart:io' show Platform, File, Directory;
 import 'dart:typed_data' show Uint8List;
 
@@ -19,17 +20,10 @@ import 'package:path/path.dart' as p;
 import 'package:pub_cache/pub_cache.dart';
 
 /// Loads a `package:` resource as a String.
-Future<String> loadAsString(String path) {
-  if (!path.startsWith('package:')) {
-    throw new ArgumentError('path must begin with package:');
-  }
+Future<String> loadAsString(String path) async {
+  var bytes = await loadAsBytes(path);
 
-  // TODO: Remove once https://github.com/dart-lang/pub/issues/22 is fixed.
-  return _doLoad(path)
-      .then((bytes) => new String.fromCharCodes(bytes))
-      .catchError((_) {
-    return new Resource(path).readAsString();
-  });
+  return UTF8.decode(bytes);
 }
 
 /// Loads a `package:` resource as an [List<int>].
