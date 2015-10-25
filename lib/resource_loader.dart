@@ -33,13 +33,17 @@ Future<String> loadAsString(String path) {
 }
 
 /// Loads a `package:` resource as an [List<int>].
-Future<List<int>> loadAsBytes(String path) {
+Future<List<int>> loadAsBytes(String path) async {
   if (!path.startsWith('package:')) {
     throw new ArgumentError('path must begin with package:');
   }
 
   // TODO: Remove once https://github.com/dart-lang/pub/issues/22 is fixed.
-  return _doLoad(path).catchError((_) => new Resource(path).readAsBytes());
+  try {
+    return await _doLoad(path);
+  } catch (_) {
+    return new Resource(path).readAsBytes();
+  }
 }
 
 /// Determine how to do the load. HTTP? Snapshotted? From source?
