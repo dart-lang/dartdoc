@@ -954,7 +954,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class c, LongFirstLine, CatString;
     Field f1, f2, constField, dynamicGetter, onlySetter;
     Field lengthX;
-    Field sFromApple, mInB;
+    Field sFromApple, mFromApple, mInB;
     Field isEmpty;
 
     setUp(() {
@@ -977,10 +977,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .allInstanceProperties
           .firstWhere((c) => c.name == 'lengthX');
 
-      sFromApple = exLibrary.allClasses
-          .firstWhere((c) => c.name == 'Apple')
+      var appleClass = exLibrary.allClasses
+          .firstWhere((c) => c.name == 'Apple');
+
+      sFromApple = appleClass
           .allInstanceProperties
           .firstWhere((p) => p.name == 's');
+      mFromApple = appleClass.allInstanceProperties.singleWhere((p) => p.name == 'm');
+
       mInB = exLibrary.allClasses
           .firstWhere((c) => c.name == 'B')
           .allInstanceProperties
@@ -989,6 +993,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has a fully qualified name', () {
       expect(lengthX.fullyQualifiedName, 'fake.WithGetterAndSetter.lengthX');
+    });
+
+    test('has valid documentation', () {
+      expect(mFromApple.hasDocumentation, isTrue);
+      expect(mFromApple.documentation, "The read-write field `m`.");
     });
 
     test('inherited property has a linked name to superclass in package', () {

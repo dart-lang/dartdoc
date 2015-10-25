@@ -30,6 +30,8 @@ class Apple {
   static const int n = 5;
   static String string = 'hello';
   String _s2;
+
+  /// The read-write field `m`.
   int m = 0;
 
   ///Constructor
