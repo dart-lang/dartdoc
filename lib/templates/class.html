@@ -104,18 +104,6 @@
     </section>
     {{/clazz.hasStaticMethods}}
 
-    {{#clazz.hasProperties}}
-    <section class="summary offset-anchor" id="instance-properties">
-      <h2>Properties</h2>
-
-      <dl class="properties">
-        {{#clazz.allInstanceProperties}}
-        {{>property}}
-        {{/clazz.allInstanceProperties}}
-      </dl>
-    </section>
-    {{/clazz.hasProperties}}
-
     {{#clazz.hasConstructors}}
     <section class="summary offset-anchor" id="constructors">
       <h2>Constructors</h2>
@@ -138,6 +126,18 @@
       </dl>
     </section>
     {{/clazz.hasConstructors}}
+
+    {{#clazz.hasProperties}}
+    <section class="summary offset-anchor" id="instance-properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        {{#clazz.allInstanceProperties}}
+        {{>property}}
+        {{/clazz.allInstanceProperties}}
+      </dl>
+    </section>
+    {{/clazz.hasProperties}}
 
     {{#clazz.hasOperators}}
     <section class="summary offset-anchor" id="operators">
