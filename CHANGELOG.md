@@ -1,3 +1,6 @@
+## 0.7.4
+* [bug] In class documentation, move constructors before instance properties.
+
 ## 0.7.3
 * [bug] Add missing close `span` in accessor setter template
 * [enhancement] Print usage if an invalid argument is provided
