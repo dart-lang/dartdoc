@@ -16,152 +16,152 @@
 
     {{#clazz.hasModifiers}}
     <section>
-        <dl class="dl-horizontal">
-          {{#clazz.hasSupertype}}
-          <dt>Inheritance</dt>
-          <dd><ul class="gt-separated dark clazz-relationships">
-              <li>{{{linkedObjectType}}}</li>
-              {{#clazz.superChainReversed}}
-              <li>{{{linkedName}}}</li>
-              {{/clazz.superChainReversed}}
-              <li>{{{name}}}</li>
-          </ul></dd>
-          {{/clazz.hasSupertype}}
+      <dl class="dl-horizontal">
+        {{#clazz.hasSupertype}}
+        <dt>Inheritance</dt>
+        <dd><ul class="gt-separated dark clazz-relationships">
+          <li>{{{linkedObjectType}}}</li>
+          {{#clazz.superChainReversed}}
+          <li>{{{linkedName}}}</li>
+          {{/clazz.superChainReversed}}
+          <li>{{{name}}}</li>
+        </ul></dd>
+        {{/clazz.hasSupertype}}
 
-          {{#clazz.hasInterfaces}}
-          <dt>Implements</dt>
-              <dd>
-                  <ul class="comma-separated clazz-relationships">
-                      {{#clazz.interfaces}}
-                      <li>{{{linkedName}}}</li>
-                      {{/clazz.interfaces}}
-                  </ul>
-              </dd>
-          {{/clazz.hasInterfaces}}
+        {{#clazz.hasInterfaces}}
+        <dt>Implements</dt>
+        <dd>
+          <ul class="comma-separated clazz-relationships">
+            {{#clazz.interfaces}}
+            <li>{{{linkedName}}}</li>
+            {{/clazz.interfaces}}
+          </ul>
+        </dd>
+        {{/clazz.hasInterfaces}}
 
-          {{#clazz.hasMixins}}
-          <dt>Mixes-in</dt>
-          <dd><ul class="comma-separated clazz-relationships">
-              {{#clazz.mixins}}
-              <li>{{{linkedName}}}</li>
-              {{/clazz.mixins}}
-          </ul></dd>
-          {{/clazz.hasMixins}}
+        {{#clazz.hasMixins}}
+        <dt>Mixes-in</dt>
+        <dd><ul class="comma-separated clazz-relationships">
+          {{#clazz.mixins}}
+          <li>{{{linkedName}}}</li>
+          {{/clazz.mixins}}
+        </ul></dd>
+        {{/clazz.hasMixins}}
 
-          {{#clazz.hasImplementors}}
-          <dt>Implemented by</dt>
-          <dd><ul class="comma-separated clazz-relationships">
-              {{#clazz.implementors}}
-              <li>{{{linkedName}}}</li>
-              {{/clazz.implementors}}
-          </ul></dd>
-          {{/clazz.hasImplementors}}
+        {{#clazz.hasImplementors}}
+        <dt>Implemented by</dt>
+        <dd><ul class="comma-separated clazz-relationships">
+          {{#clazz.implementors}}
+          <li>{{{linkedName}}}</li>
+          {{/clazz.implementors}}
+        </ul></dd>
+        {{/clazz.hasImplementors}}
 
-          {{#clazz.hasAnnotations}}
-          <dt>Annotations</dt>
-          <dd><ul class="annotation-list clazz-relationships">
-              {{#clazz.annotations}}
-              <li>{{{.}}}</li>
-              {{/clazz.annotations}}
-          </ul></dd>
-          {{/clazz.hasAnnotations}}
-        </dl>
+        {{#clazz.hasAnnotations}}
+        <dt>Annotations</dt>
+        <dd><ul class="annotation-list clazz-relationships">
+          {{#clazz.annotations}}
+          <li>{{{.}}}</li>
+          {{/clazz.annotations}}
+        </ul></dd>
+        {{/clazz.hasAnnotations}}
+      </dl>
     </section>
     {{/clazz.hasModifiers}}
 
     {{#clazz.hasConstants}}
     <section class="summary offset-anchor" id="constants">
-        <h2>Constants</h2>
+      <h2>Constants</h2>
 
-        <dl class="properties">
-            {{#clazz.constants}}
-            {{>constant}}
-            {{/clazz.constants}}
-        </dl>
+      <dl class="properties">
+        {{#clazz.constants}}
+        {{>constant}}
+        {{/clazz.constants}}
+      </dl>
     </section>
     {{/clazz.hasConstants}}
 
     {{#clazz.hasStaticProperties}}
     <section class="summary offset-anchor" id="static-properties">
-        <h2>Static Properties</h2>
+      <h2>Static Properties</h2>
 
-        <dl class="properties">
-            {{#clazz.staticProperties}}
-            {{>property}}
-            {{/clazz.staticProperties}}
-        </dl>
+      <dl class="properties">
+        {{#clazz.staticProperties}}
+        {{>property}}
+        {{/clazz.staticProperties}}
+      </dl>
     </section>
     {{/clazz.hasStaticProperties}}
 
     {{#clazz.hasStaticMethods}}
     <section class="summary offset-anchor" id="static-methods">
-        <h2>Static Methods</h2>
-        <dl class="callables">
-            {{#clazz.staticMethods}}
-            {{>callable}}
-            {{/clazz.staticMethods}}
-        </dl>
+      <h2>Static Methods</h2>
+      <dl class="callables">
+        {{#clazz.staticMethods}}
+        {{>callable}}
+        {{/clazz.staticMethods}}
+      </dl>
     </section>
     {{/clazz.hasStaticMethods}}
 
     {{#clazz.hasProperties}}
     <section class="summary offset-anchor" id="instance-properties">
-        <h2>Properties</h2>
+      <h2>Properties</h2>
 
-        <dl class="properties">
-            {{#clazz.allInstanceProperties}}
-            {{>property}}
-            {{/clazz.allInstanceProperties}}
-        </dl>
+      <dl class="properties">
+        {{#clazz.allInstanceProperties}}
+        {{>property}}
+        {{/clazz.allInstanceProperties}}
+      </dl>
     </section>
     {{/clazz.hasProperties}}
 
     {{#clazz.hasConstructors}}
     <section class="summary offset-anchor" id="constructors">
-        <h2>Constructors</h2>
+      <h2>Constructors</h2>
 
-        <dl class="constructor-summary-list">
-            {{#clazz.constructors}}
-            <dt id="{{htmlId}}" class="callable">
-                <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
-            </dt>
-            <dd>
-                <p>{{{ oneLineDoc }}}{{>has_more_docs}}</p>
-                {{#isConst}}
-                <div class="constructor-modifier features">const</div>
-                {{/isConst}}
-                {{#isFactory}}
-                <div class="constructor-modifier features">factory</div>
-                {{/isFactory}}
-            </dd>
-            {{/clazz.constructors}}
-        </dl>
-      </section>
-      {{/clazz.hasConstructors}}
+      <dl class="constructor-summary-list">
+        {{#clazz.constructors}}
+        <dt id="{{htmlId}}" class="callable">
+          <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
+        </dt>
+        <dd>
+          <p>{{{ oneLineDoc }}}{{>has_more_docs}}</p>
+          {{#isConst}}
+          <div class="constructor-modifier features">const</div>
+          {{/isConst}}
+          {{#isFactory}}
+          <div class="constructor-modifier features">factory</div>
+          {{/isFactory}}
+        </dd>
+        {{/clazz.constructors}}
+      </dl>
+    </section>
+    {{/clazz.hasConstructors}}
 
-      {{#clazz.hasOperators}}
-      <section class="summary offset-anchor" id="operators">
-          <h2>Operators</h2>
-          <dl class="callables">
-              {{#clazz.allOperators}}
-              {{>callable}}
-              {{/clazz.allOperators}}
-          </dl>
-      </section>
-      {{/clazz.hasOperators}}
+    {{#clazz.hasOperators}}
+    <section class="summary offset-anchor" id="operators">
+      <h2>Operators</h2>
+      <dl class="callables">
+        {{#clazz.allOperators}}
+        {{>callable}}
+        {{/clazz.allOperators}}
+      </dl>
+    </section>
+    {{/clazz.hasOperators}}
 
-      {{#clazz.hasMethods}}
-      <section class="summary offset-anchor" id="instance-methods">
-          <h2>Methods</h2>
-          <dl class="callables">
-              {{#clazz.allInstanceMethods}}
-              {{>callable}}
-              {{/clazz.allInstanceMethods}}
-          </dl>
-      </section>
-      {{/clazz.hasMethods}}
+    {{#clazz.hasMethods}}
+    <section class="summary offset-anchor" id="instance-methods">
+      <h2>Methods</h2>
+      <dl class="callables">
+        {{#clazz.allInstanceMethods}}
+        {{>callable}}
+        {{/clazz.allInstanceMethods}}
+      </dl>
+    </section>
+    {{/clazz.hasMethods}}
 
-    </div> <!-- /.main-content -->
+  </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
     <h5>{{self.name}}</h5>
