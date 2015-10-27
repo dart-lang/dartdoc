@@ -74,8 +74,8 @@ Iterable<String> findFilesToDocumentInPackage(String packageDir) sync* {
         // Only add the file if it does not contain 'part of'
         var contents = new File(lib).readAsStringSync();
 
-        if (contents.contains(new RegExp('\npart of ')) ||
-            contents.startsWith(new RegExp('part of '))) {
+        if (contents.contains(_newLinePartOfRegexp) ||
+            contents.startsWith(_partOfRegexp)) {
           // NOOP: it's a part file
         } else {
           yield lib;
@@ -113,6 +113,9 @@ Iterable<FileSystemEntity> _packageDirList(Directory dir) sync* {
 ///
 /// * dart.dartdoc => dart_dartdoc.html
 /// * dart:core => dart_core.html
-String getFileNameFor(String name) {
-  return '${name.replaceAll(new RegExp('[.:]'), '-')}.html';
-}
+String getFileNameFor(String name) =>
+    '${name.replaceAll(_libraryNameRegexp, '-')}.html';
+
+final _libraryNameRegexp = new RegExp('[.:]');
+final _partOfRegexp = new RegExp('part of ');
+final _newLinePartOfRegexp = new RegExp('\npart of ');
