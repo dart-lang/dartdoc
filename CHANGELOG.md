@@ -1,5 +1,7 @@
 ## 0.7.4
 * [bug] In class documentation, move constructors before instance properties.
+* [bug] fix property pages to show documentation if not a setter/getter
+* [bug] show indented code blocks in comments as code 
 
 ## 0.7.3
 * [bug] Add missing close `span` in accessor setter template
