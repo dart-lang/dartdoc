@@ -12,7 +12,7 @@ import 'package:test/test.dart';
 void main() {
   group('io utils', () {
     test('find files to document', () {
-      var files = findFilesToDocumentInPackage(Directory.current.path);
+      var files = findFilesToDocumentInPackage(Directory.current.path).toList();
       expect(files.length, 4);
       expect(new File(files[0]).existsSync(), isTrue);
     });

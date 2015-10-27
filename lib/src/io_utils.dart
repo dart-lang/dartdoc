@@ -22,81 +22,74 @@ File createOutputFile(Directory destination, String filename) {
 /// Excludes files and directories beginning with `.`
 ///
 /// The returned paths are guaranteed to begin with [dir].
-List<String> listDir(String dir,
-    {bool recursive: false, List<FileSystemEntity> listDir(Directory dir)}) {
+Iterable<String> listDir(String dir,
+    {bool recursive: false,
+    Iterable<FileSystemEntity> listDir(Directory dir)}) {
   if (listDir == null) listDir = (Directory dir) => dir.listSync();
 
   return _doList(dir, new Set<String>(), recursive, listDir);
 }
 
-List<String> _doList(String dir, Set<String> listedDirectories, bool recurse,
-    List<FileSystemEntity> listDir(Directory dir)) {
-  var contents = <String>[];
-
+Iterable<String> _doList(String dir, Set<String> listedDirectories,
+    bool recurse, Iterable<FileSystemEntity> listDir(Directory dir)) sync* {
   // Avoid recursive symlinks.
   var resolvedPath = new Directory(dir).resolveSymbolicLinksSync();
-  if (listedDirectories.contains(resolvedPath)) return [];
+  if (!listedDirectories.contains(resolvedPath)) {
+    listedDirectories = new Set<String>.from(listedDirectories);
+    listedDirectories.add(resolvedPath);
 
-  listedDirectories = new Set<String>.from(listedDirectories);
-  listedDirectories.add(resolvedPath);
+    for (var entity in listDir(new Directory(dir))) {
+      // Skip hidden files and directories
+      if (path.basename(entity.path).startsWith('.')) {
+        continue;
+      }
 
-  var children = <String>[];
-  for (var entity in listDir(new Directory(dir))) {
-    // Skip hidden files and directories
-    if (path.basename(entity.path).startsWith('.')) {
-      continue;
-    }
-
-    contents.add(entity.path);
-    if (entity is Directory) {
-      if (recurse) {
-        children
-            .addAll(_doList(entity.path, listedDirectories, recurse, listDir));
+      yield entity.path;
+      if (entity is Directory) {
+        if (recurse) {
+          yield* _doList(entity.path, listedDirectories, recurse, listDir);
+        }
       }
     }
   }
-
-  contents.addAll(children);
-  return contents;
 }
 
 /// Given a package name, explore the directory and pull out all top level
 /// library files in the "lib" directory to document.
-List<String> findFilesToDocumentInPackage(String packageDir) {
-  var libraries = [];
-  // To avoid analyzing package files twice, only files with paths not
-  // containing '/packages' will be added. The only exception is if the file
-  // to analyze already has a '/package' in its path.
-  var files = listDir(packageDir, recursive: true, listDir: _packageDirList)
-      .where((f) => f.endsWith('.dart') &&
-          (!f.contains('${path.separator}packages') ||
-              packageDir.contains('${path.separator}packages')))
-      .toList();
-
+Iterable<String> findFilesToDocumentInPackage(String packageDir) sync* {
   var packageLibDir = path.join(packageDir, 'lib');
   var packageLibSrcDir = path.join(packageLibDir, 'src');
 
-  files.forEach((String lib) {
-    // Only include libraries within the lib dir that are not in lib/src
-    if (path.isWithin(packageLibDir, lib) &&
-        !path.isWithin(packageLibSrcDir, lib)) {
-      // Only add the file if it does not contain 'part of'
-      var contents = new File(lib).readAsStringSync();
+  // To avoid analyzing package files twice, only files with paths not
+  // containing '/packages' will be added. The only exception is if the file
+  // to analyze already has a '/package' in its path.
+  for (var lib
+      in listDir(packageDir, recursive: true, listDir: _packageDirList)) {
+    if (lib.endsWith('.dart') &&
+        (!lib.contains('${path.separator}packages') ||
+            packageDir.contains('${path.separator}packages'))) {
+      // Only include libraries within the lib dir that are not in lib/src
+      if (path.isWithin(packageLibDir, lib) &&
+          !path.isWithin(packageLibSrcDir, lib)) {
+        // Only add the file if it does not contain 'part of'
+        var contents = new File(lib).readAsStringSync();
 
-      if (contents.contains(new RegExp('\npart of ')) ||
-          contents.startsWith(new RegExp('part of '))) {} else {
-        libraries.add(lib);
+        if (contents.contains(new RegExp('\npart of ')) ||
+            contents.startsWith(new RegExp('part of '))) {
+          // NOOP: it's a part file
+        } else {
+          yield lib;
+        }
       }
     }
-  });
-  return libraries;
+  }
 }
 
 /// If [dir] contains both a `lib` directory and a `pubspec.yaml` file treat
 /// it like a package and only return the `lib` dir.
 ///
 /// This ensures that packages don't have non-`lib` content documented.
-List<FileSystemEntity> _packageDirList(Directory dir) {
+Iterable<FileSystemEntity> _packageDirList(Directory dir) sync* {
   var entities = dir.listSync();
 
   var pubspec = entities.firstWhere(
@@ -108,9 +101,9 @@ List<FileSystemEntity> _packageDirList(Directory dir) {
       orElse: () => null);
 
   if (pubspec != null && libDir != null) {
-    return [libDir];
+    yield libDir;
   } else {
-    return entities;
+    yield* entities;
   }
 }
 
