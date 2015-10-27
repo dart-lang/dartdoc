@@ -221,61 +221,61 @@ class _HtmlGeneratorInstance implements HtmlOptions {
 
     generatePackage();
 
-    package.libraries.forEach((Library lib) {
+    for (var lib in package.libraries) {
       generateLibrary(package, lib);
 
-      lib.allClasses.forEach((Class clazz) {
+      for (var clazz in lib.allClasses) {
         generateClass(package, lib, clazz);
 
-        clazz.constructors.forEach((constructor) {
+        for (var constructor in clazz.constructors) {
           generateConstructor(package, lib, clazz, constructor);
-        });
+        }
 
-        clazz.constants.forEach((constant) {
+        for (var constant in clazz.constants) {
           generateConstant(package, lib, clazz, constant);
-        });
+        }
 
-        clazz.staticProperties.forEach((property) {
+        for (var property in clazz.staticProperties) {
           generateProperty(package, lib, clazz, property);
-        });
+        }
 
-        clazz.propertiesForPages.forEach((property) {
+        for (var property in clazz.propertiesForPages) {
           generateProperty(package, lib, clazz, property);
-        });
+        }
 
-        clazz.methodsForPages.forEach((method) {
+        for (var method in clazz.methodsForPages) {
           generateMethod(package, lib, clazz, method);
-        });
+        }
 
-        clazz.operatorsForPages.forEach((operator) {
+        for (var operator in clazz.operatorsForPages) {
           generateMethod(package, lib, clazz, operator);
-        });
+        }
 
-        clazz.staticMethods.forEach((method) {
+        for (var method in clazz.staticMethods) {
           generateMethod(package, lib, clazz, method);
-        });
-      });
+        }
+      }
 
-      lib.enums.forEach((eNum) {
+      for (var eNum in lib.enums) {
         generateEnum(package, lib, eNum);
-      });
+      }
 
-      lib.constants.forEach((constant) {
+      for (var constant in lib.constants) {
         generateTopLevelConstant(package, lib, constant);
-      });
+      }
 
-      lib.properties.forEach((property) {
+      for (var property in lib.properties) {
         generateTopLevelProperty(package, lib, property);
-      });
+      }
 
-      lib.functions.forEach((function) {
+      for (var function in lib.functions) {
         generateFunction(package, lib, function);
-      });
+      }
 
-      lib.typedefs.forEach((typeDef) {
+      for (var typeDef in lib.typedefs) {
         generateTypeDef(package, lib, typeDef);
-      });
-    });
+      }
+    }
   }
 
   void generatePackage() {

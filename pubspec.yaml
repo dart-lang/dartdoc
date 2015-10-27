@@ -1,6 +1,6 @@
 name: dartdoc
 # Also update the `version` field in lib/dartdoc.dart.
-version: 0.7.4
+version: 0.7.5-dev
 author: Dart Team <misc@dartlang.org>
 description: A documentation generator for Dart.
 homepage: https://github.com/dart-lang/dartdoc
