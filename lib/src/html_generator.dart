@@ -299,8 +299,8 @@ class _HtmlGeneratorInstance implements HtmlOptions {
         .write('\ngenerating docs for library ${lib.name} from ${lib.path}...');
 
     if (!lib.isAnonymous && !lib.hasDocumentation) {
-      stdout.write(
-          "\n  warning: '${lib.name}' has no library level documentation comments");
+      stdout.write("\n  warning: '${lib.name}' has no library level "
+          "documentation comments");
     }
 
     TemplateData data = new LibraryTemplateData(this, package, lib);
@@ -394,8 +394,8 @@ class _HtmlGeneratorInstance implements HtmlOptions {
     final prefix = 'package:dartdoc/resources/';
     for (String resourcePath in resources.resource_names) {
       if (!resourcePath.startsWith(prefix)) {
-        throw new StateError(
-            'Resource paths must start with $prefix, encountered $resourcePath');
+        throw new StateError('Resource paths must start with $prefix, '
+            'encountered $resourcePath');
       }
       String destFileName = resourcePath.substring(prefix.length);
       File destFile =
@@ -554,7 +554,8 @@ class ClassTemplateData extends TemplateData {
   String get title =>
       '${clazz.name} ${clazz.kind} - ${_library.name} library - Dart API';
   String get metaDescription =>
-      'API docs for the ${clazz.name} ${clazz.kind} from the ${_library.name} library, for the Dart programming language.';
+      'API docs for the ${clazz.name} ${clazz.kind} from the '
+      '${_library.name} library, for the Dart programming language.';
 
   String get layoutTitle =>
       _layoutTitle(clazz.nameWithGenerics, clazz.fullkind, clazz.isDeprecated);
@@ -615,10 +616,12 @@ class ConstructorTemplateData extends TemplateData {
   List get navLinks => [package, _library, clazz];
   List<Subnav> get subnavItems => _gatherSubnavForInvokable(constructor);
   String get htmlBase => '../..';
-  String get title =>
-      '${constructor.name} constructor - ${clazz.name} class - ${_library.name} library - Dart API';
+  String get title => '${constructor.name} constructor - ${clazz.name} class - '
+      '${_library.name} library - Dart API';
   String get metaDescription =>
-      'API docs for the ${constructor.name} constructor from the ${clazz} class from the ${_library.name} library, for the Dart programming language.';
+      'API docs for the ${constructor.name} constructor from the '
+      '${clazz} class from the ${_library.name} library, '
+      'for the Dart programming language.';
 }
 
 class EnumTemplateData extends TemplateData {
@@ -636,7 +639,8 @@ class EnumTemplateData extends TemplateData {
       _layoutTitle(_enum.name, 'enum', _enum.isDeprecated);
   String get title => '${self.name} enum - ${_library.name} library - Dart API';
   String get metaDescription =>
-      'API docs for the ${_enum.name} enum from the ${_library.name} library, for the Dart programming language.';
+      'API docs for the ${_enum.name} enum from the ${_library.name} library, '
+      'for the Dart programming language.';
   List get navLinks => [package, _library];
   String get htmlBase => '..';
   List<Subnav> get subnavItems {
@@ -663,7 +667,8 @@ class FunctionTemplateData extends TemplateData {
   String get layoutTitle =>
       _layoutTitle(function.name, 'function', function.isDeprecated);
   String get metaDescription =>
-      'API docs for the ${function.name} function from the ${_library.name} library, for the Dart programming language.';
+      'API docs for the ${function.name} function from the '
+      '${_library.name} library, for the Dart programming language.';
   List get navLinks => [package, _library];
   List<Subnav> get subnavItems => _gatherSubnavForInvokable(function);
   String get htmlBase => '..';
@@ -682,12 +687,13 @@ class MethodTemplateData extends TemplateData {
   Class get clazz => _class;
   Method get self => _method;
   Method get method => _method;
-  String get title =>
-      '${method.name} method - ${clazz.name} class - ${_library.name} library - Dart API';
+  String get title => '${method.name} method - ${clazz.name} class - '
+      '${_library.name} library - Dart API';
   String get layoutTitle =>
       _layoutTitle(method.name, 'method', method.isDeprecated);
   String get metaDescription =>
-      'API docs for the ${method.name} method from the ${clazz.name} class, for the Dart programming language.';
+      'API docs for the ${method.name} method from the ${clazz.name} class, '
+      'for the Dart programming language.';
   List get navLinks => [package, _library, clazz];
   List<Subnav> get subnavItems => _gatherSubnavForInvokable(method);
   String get htmlBase => '../..';
@@ -707,13 +713,14 @@ class PropertyTemplateData extends TemplateData {
   Field get self => _property;
   Field get property => _property;
 
-  String get title =>
-      '${property.name} $type - ${clazz.name} class - ${_library.name} library - Dart API';
+  String get title => '${property.name} $type - ${clazz.name} class - '
+      '${_library.name} library - Dart API';
   String get layoutTitle =>
       _layoutTitle(property.name, type, property.isDeprecated);
   String get metaDescription =>
-      'API docs for the ${property.name} $type from the ${clazz.name} class, for the Dart programming language.';
-  List get navLinks => [package, _library, clazz];
+      'API docs for the ${property.name} $type from the ${clazz.name} class, '
+      'for the Dart programming language.';
+  List get navLinks => [package, library, clazz];
   List get subnavItems => [];
   String get htmlBase => '../..';
 
@@ -745,7 +752,8 @@ class TypedefTemplateData extends TemplateData {
   String get layoutTitle =>
       _layoutTitle(typeDef.name, 'typedef', typeDef.isDeprecated);
   String get metaDescription =>
-      'API docs for the ${typeDef.name} property from the ${library.name} library, for the Dart programming language.';
+      'API docs for the ${typeDef.name} property from the '
+      '${library.name} library, for the Dart programming language.';
   List get navLinks => [package, library];
   String get htmlBase => '..';
   List get subnavItems => [];
@@ -768,7 +776,8 @@ class TopLevelPropertyTemplateData extends TemplateData {
   String get layoutTitle =>
       _layoutTitle(property.name, _type, property.isDeprecated);
   String get metaDescription =>
-      'API docs for the ${property.name} $_type from the ${library.name} library, for the Dart programming language.';
+      'API docs for the ${property.name} $_type from the '
+      '${library.name} library, for the Dart programming language.';
   List get navLinks => [package, library];
   String get htmlBase => '..';
   List get subnavItems => [];
