@@ -1519,12 +1519,6 @@ class Field extends ModelElement
 
   bool get readWrite => hasGetter && hasSetter;
 
-  bool get hasExplicitSetter => hasSetter && !_setter.isSynthetic;
-
-  bool get hasExplicitGetter => hasGetter && !_getter.isSynthetic;
-
-  bool get hasNoGetterSetter => !hasExplicitGetter && !hasExplicitSetter;
-
   String get typeName => "property";
 
   bool get isInherited => _isInherited;
@@ -1786,6 +1780,12 @@ abstract class GetterSetterCombo {
   Accessor get setter {
     return _setter == null ? null : new ModelElement.from(_setter, library);
   }
+
+  bool get hasExplicitSetter => hasSetter && !_setter.isSynthetic;
+
+  bool get hasExplicitGetter => hasGetter && !_getter.isSynthetic;
+
+  bool get hasNoGetterSetter => !hasExplicitGetter && !hasExplicitSetter;
 
   // TODO: now that we have explicit getter and setters, we probably
   // want a cleaner way to do this. Only the one-liner is using this
