@@ -476,7 +476,7 @@ abstract class TemplateData {
         (element as SourceCodeMixin).hasSourceCode) {
       return [new Subnav('Source', '${element.href}#source')];
     } else {
-      return [];
+      return const [];
     }
   }
 }
