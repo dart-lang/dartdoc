@@ -73,6 +73,21 @@ class Apple {
 
 /// Extends class [Apple], use [new Apple] or [new Apple.fromString]
 class B extends Apple with Cat {
+  /**
+   * Whether the [HttpServer] should compress the content, if possible.
+   *
+   * The content can only be compressed when the response is using
+   * chunked Transfer-Encoding and the incoming request has `gzip`
+   * as an accepted encoding in the Accept-Encoding header.
+   *
+   * The default value is `false` (compression disabled).
+   * To enable, set `autoCompress` to `true`.
+   */
+  bool autoCompress;
+
+  /**
+   * A list of Strings
+   */
   List<String> list;
 
   bool get isImplemented => false;

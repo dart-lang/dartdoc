@@ -1519,6 +1519,12 @@ class Field extends ModelElement
 
   bool get readWrite => hasGetter && hasSetter;
 
+  bool get hasExplicitSetter => hasSetter && !_setter.isSynthetic;
+
+  bool get hasExplicitGetter => hasGetter && !_getter.isSynthetic;
+
+  bool get hasNoGetterSetter => !hasExplicitGetter && !hasExplicitSetter;
+
   String get typeName => "property";
 
   bool get isInherited => _isInherited;
