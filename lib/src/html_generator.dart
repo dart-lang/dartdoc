@@ -141,7 +141,8 @@ class Templates {
 }
 
 class HtmlGenerator extends Generator {
-  StreamController<File> _onFileCreated = new StreamController(sync: true);
+  final StreamController<File> _onFileCreated =
+      new StreamController(sync: true);
 
   /// Optional URL for where the docs will be hosted.
   final String url;
@@ -442,14 +443,13 @@ String renderPlainText(String text) {
 }
 
 abstract class TemplateData {
-  Package _package;
+  final Package package;
   Function _markdown = renderMarkdown;
   final HtmlOptions htmlOptions;
 
-  TemplateData(this.htmlOptions, this._package, {Renderer markdown})
+  TemplateData(this.htmlOptions, this.package, {Renderer markdown})
       : _markdown = markdown;
 
-  Package get package => _package;
   String get documentation => self.documentation;
   String get oneLineDoc => self.oneLineDoc;
   String get title;
@@ -499,67 +499,64 @@ class PackageTemplateData extends TemplateData {
 }
 
 class LibraryTemplateData extends TemplateData {
-  Library _library;
+  final Library library;
 
-  LibraryTemplateData(HtmlOptions htmlOptions, Package package, this._library)
+  LibraryTemplateData(HtmlOptions htmlOptions, Package package, this.library)
       : super(htmlOptions, package);
 
-  String get title => '${_library.name} library - Dart API';
-  Library get library => _library;
-  String get documentation => _library.documentation;
+  String get title => '${library.name} library - Dart API';
+  String get documentation => library.documentation;
   String get htmlBase => '..';
   String get metaDescription =>
-      '${_library.name} library API docs, for the Dart programming language.';
+      '${library.name} library API docs, for the Dart programming language.';
   List get navLinks => [package];
   List<Subnav> get subnavItems {
     List<Subnav> navs = [];
 
-    if (_library.hasConstants) navs
-        .add(new Subnav('Constants', '${_library.href}#constants'));
-    if (_library.hasTypedefs) navs
-        .add(new Subnav('Typedefs', '${_library.href}#typedefs'));
-    if (_library.hasProperties) navs
-        .add(new Subnav('Properties', '${_library.href}#properties'));
-    if (_library.hasFunctions) navs
-        .add(new Subnav('Functions', '${_library.href}#functions'));
-    if (_library.hasEnums) navs
-        .add(new Subnav('Enums', '${_library.href}#enums'));
-    if (_library.hasClasses) navs
-        .add(new Subnav('Classes', '${_library.href}#classes'));
-    if (_library.hasExceptions) navs
-        .add(new Subnav('Exceptions', '${_library.href}#exceptions'));
+    if (library.hasConstants) navs
+        .add(new Subnav('Constants', '${library.href}#constants'));
+    if (library.hasTypedefs) navs
+        .add(new Subnav('Typedefs', '${library.href}#typedefs'));
+    if (library.hasProperties) navs
+        .add(new Subnav('Properties', '${library.href}#properties'));
+    if (library.hasFunctions) navs
+        .add(new Subnav('Functions', '${library.href}#functions'));
+    if (library.hasEnums) navs
+        .add(new Subnav('Enums', '${library.href}#enums'));
+    if (library.hasClasses) navs
+        .add(new Subnav('Classes', '${library.href}#classes'));
+    if (library.hasExceptions) navs
+        .add(new Subnav('Exceptions', '${library.href}#exceptions'));
 
     return navs;
   }
 
   String get layoutTitle =>
-      _layoutTitle(_library.name, 'library', _library.isDeprecated);
-  Library get self => _library;
+      _layoutTitle(library.name, 'library', library.isDeprecated);
+  Library get self => library;
 }
 
 class ClassTemplateData extends TemplateData {
-  Class _clazz;
-  Library _library;
+  final Class clazz;
+  final Library library;
   Class _objectType;
 
   ClassTemplateData(
-      HtmlOptions htmlOptions, Package package, this._library, this._clazz)
+      HtmlOptions htmlOptions, Package package, this.library, this.clazz)
       : super(htmlOptions, package);
 
-  Class get self => _clazz;
-  Library get library => _library;
-  Class get clazz => _clazz;
+  Class get self => clazz;
   String get linkedObjectType =>
       objectType == null ? 'Object' : objectType.linkedName;
   String get title =>
-      '${clazz.name} ${clazz.kind} - ${_library.name} library - Dart API';
+      '${clazz.name} ${clazz.kind} - ${library.name} library - Dart API';
   String get metaDescription =>
       'API docs for the ${clazz.name} ${clazz.kind} from the '
-      '${_library.name} library, for the Dart programming language.';
+      '${library.name} library, for the Dart programming language.';
 
   String get layoutTitle =>
       _layoutTitle(clazz.nameWithGenerics, clazz.fullkind, clazz.isDeprecated);
-  List get navLinks => [package, _library];
+  List get navLinks => [package, library];
   String get htmlBase => '..';
   List<Subnav> get subnavItems {
     List<Subnav> navs = [];
@@ -599,122 +596,108 @@ class ClassTemplateData extends TemplateData {
 }
 
 class ConstructorTemplateData extends TemplateData {
-  Library _library;
-  Class _class;
-  Constructor _constructor;
+  final Library library;
+  final Class clazz;
+  final Constructor constructor;
 
   ConstructorTemplateData(HtmlOptions htmlOptions, Package package,
-      this._library, this._class, this._constructor)
+      this.library, this.clazz, this.constructor)
       : super(htmlOptions, package);
 
-  Constructor get self => _constructor;
-  Library get library => _library;
-  Class get clazz => _class;
-  Constructor get constructor => _constructor;
+  Constructor get self => constructor;
   String get layoutTitle => _layoutTitle(
       constructor.name, constructor.fullKind, constructor.isDeprecated);
-  List get navLinks => [package, _library, clazz];
+  List get navLinks => [package, library, clazz];
   List<Subnav> get subnavItems => _gatherSubnavForInvokable(constructor);
   String get htmlBase => '../..';
   String get title => '${constructor.name} constructor - ${clazz.name} class - '
-      '${_library.name} library - Dart API';
+      '${library.name} library - Dart API';
   String get metaDescription =>
       'API docs for the ${constructor.name} constructor from the '
-      '${clazz} class from the ${_library.name} library, '
+      '${clazz} class from the ${library.name} library, '
       'for the Dart programming language.';
 }
 
 class EnumTemplateData extends TemplateData {
-  Library _library;
-  Enum _enum;
-
   EnumTemplateData(
-      HtmlOptions htmlOptions, Package package, this._library, this._enum)
+      HtmlOptions htmlOptions, Package package, this.library, this.clazz)
       : super(htmlOptions, package);
 
-  Library get library => _library;
-  Enum get clazz => _enum;
-  Enum get self => _enum;
+  final Library library;
+  final Enum clazz;
+  Enum get self => clazz;
   String get layoutTitle =>
-      _layoutTitle(_enum.name, 'enum', _enum.isDeprecated);
-  String get title => '${self.name} enum - ${_library.name} library - Dart API';
+      _layoutTitle(clazz.name, 'enum', clazz.isDeprecated);
+  String get title => '${self.name} enum - ${library.name} library - Dart API';
   String get metaDescription =>
-      'API docs for the ${_enum.name} enum from the ${_library.name} library, '
+      'API docs for the ${clazz.name} enum from the ${library.name} library, '
       'for the Dart programming language.';
-  List get navLinks => [package, _library];
+  List get navLinks => [package, library];
   String get htmlBase => '..';
   List<Subnav> get subnavItems {
     return [
-      new Subnav('Constants', '${_enum.href}#constants'),
-      new Subnav('Properties', '${_enum.href}#properties')
+      new Subnav('Constants', '${clazz.href}#constants'),
+      new Subnav('Properties', '${clazz.href}#properties')
     ];
   }
 }
 
 class FunctionTemplateData extends TemplateData {
-  ModelFunction _function;
-  Library _library;
+  final ModelFunction function;
+  final Library library;
 
   FunctionTemplateData(
-      HtmlOptions htmlOptions, Package package, this._library, this._function)
+      HtmlOptions htmlOptions, Package package, this.library, this.function)
       : super(htmlOptions, package);
 
-  ModelFunction get self => _function;
-  ModelFunction get function => _function;
-  Library get library => _library;
+  ModelFunction get self => function;
   String get title =>
-      '${function.name} function - ${_library.name} library - Dart API';
+      '${function.name} function - ${library.name} library - Dart API';
   String get layoutTitle =>
       _layoutTitle(function.name, 'function', function.isDeprecated);
   String get metaDescription =>
       'API docs for the ${function.name} function from the '
-      '${_library.name} library, for the Dart programming language.';
-  List get navLinks => [package, _library];
+      '${library.name} library, for the Dart programming language.';
+  List get navLinks => [package, library];
   List<Subnav> get subnavItems => _gatherSubnavForInvokable(function);
   String get htmlBase => '..';
 }
 
 class MethodTemplateData extends TemplateData {
-  Library _library;
-  Method _method;
-  Class _class;
+  final Library library;
+  final Method method;
+  final Class clazz;
 
-  MethodTemplateData(HtmlOptions htmlOptions, Package package, this._library,
-      this._class, this._method)
+  MethodTemplateData(HtmlOptions htmlOptions, Package package, this.library,
+      this.clazz, this.method)
       : super(htmlOptions, package);
 
-  Library get library => _library;
-  Class get clazz => _class;
-  Method get self => _method;
-  Method get method => _method;
+  Method get self => method;
   String get title => '${method.name} method - ${clazz.name} class - '
-      '${_library.name} library - Dart API';
+      '${library.name} library - Dart API';
   String get layoutTitle =>
       _layoutTitle(method.name, 'method', method.isDeprecated);
   String get metaDescription =>
       'API docs for the ${method.name} method from the ${clazz.name} class, '
       'for the Dart programming language.';
-  List get navLinks => [package, _library, clazz];
+  List get navLinks => [package, library, clazz];
   List<Subnav> get subnavItems => _gatherSubnavForInvokable(method);
   String get htmlBase => '../..';
 }
 
 class PropertyTemplateData extends TemplateData {
-  Library _library;
-  Class _class;
-  Field _property;
+  final Library library;
+  final Class clazz;
+  final Field property;
 
-  PropertyTemplateData(HtmlOptions htmlOptions, Package package, this._library,
-      this._class, this._property)
+  PropertyTemplateData(HtmlOptions htmlOptions, Package package, this.library,
+      this.clazz, this.property)
       : super(htmlOptions, package);
 
-  Library get library => _library;
-  Class get clazz => _class;
-  Field get self => _property;
-  Field get property => _property;
+  Field get self => property;
 
   String get title => '${property.name} $type - ${clazz.name} class - '
-      '${_library.name} library - Dart API';
+      '${library.name} library - Dart API';
   String get layoutTitle =>
       _layoutTitle(property.name, type, property.isDeprecated);
   String get metaDescription =>
@@ -736,16 +719,14 @@ class ConstantTemplateData extends PropertyTemplateData {
 }
 
 class TypedefTemplateData extends TemplateData {
-  Library _library;
-  Typedef _typeDef;
+  final Library library;
+  final Typedef typeDef;
 
   TypedefTemplateData(
-      HtmlOptions htmlOptions, Package package, this._library, this._typeDef)
+      HtmlOptions htmlOptions, Package package, this.library, this.typeDef)
       : super(htmlOptions, package);
 
-  Library get library => _library;
-  Typedef get self => _typeDef;
-  Typedef get typeDef => _typeDef;
+  Typedef get self => typeDef;
 
   String get title =>
       '${typeDef.name} typedef - ${library.name} library - Dart API';
@@ -760,16 +741,14 @@ class TypedefTemplateData extends TemplateData {
 }
 
 class TopLevelPropertyTemplateData extends TemplateData {
-  Library _library;
-  TopLevelVariable _property;
+  final Library library;
+  final TopLevelVariable property;
 
   TopLevelPropertyTemplateData(
-      HtmlOptions htmlOptions, Package package, this._library, this._property)
+      HtmlOptions htmlOptions, Package package, this.library, this.property)
       : super(htmlOptions, package);
 
-  Library get library => _library;
-  TopLevelVariable get self => _property;
-  TopLevelVariable get property => _property;
+  TopLevelVariable get self => property;
 
   String get title =>
       '${property.name} $_type - ${library.name} library - Dart API';
