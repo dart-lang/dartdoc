@@ -788,19 +788,19 @@ class Class extends ModelElement implements EnclosedElement {
   List<Operator> _operators;
   List<Operator> _inheritedOperators;
   List<Operator> _allOperators;
-  List<Operator> _genPageOperators = [];
+  final List<Operator> _genPageOperators = <Operator>[];
   List<Method> _inheritedMethods;
   List<Method> _staticMethods;
   List<Method> _instanceMethods;
   List<Method> _allInstanceMethods;
-  List<Method> _genPageMethods = [];
+  final List<Method> _genPageMethods = <Method>[];
   List<Field> _fields;
   List<Field> _staticFields;
   List<Field> _constants;
   List<Field> _instanceFields;
   List<Field> _inheritedProperties;
   List<Field> _allInstanceProperties;
-  List<Field> _genPageProperties = [];
+  final List<Field> _genPageProperties = <Field>[];
 
   ClassElement get _cls => (element as ClassElement);
 
