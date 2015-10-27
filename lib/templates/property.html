@@ -10,15 +10,29 @@
   </div><!--/.sidebar-offcanvas-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+  
+    {{#property.hasNoGetterSetter}}
+      <section class="multi-line-signature">     
+        <span class="returntype">{{{ linkedReturnType }}}</span>
+          {{>name_summary}}
+          {{>readable_writable}}
+      </section>
+  	
+      {{>documentation}}
+    {{/property.hasNoGetterSetter}}
+    
+    {{#property.hasExplicitGetter}}
+	  {{#property.getter}}
+        {{>accessor_getter}}
+      {{/property.getter}}
+    {{/property.hasExplicitGetter}}
 
-    {{#property.getter}}
-      {{>accessor_getter}}
-    {{/property.getter}}
-
-    {{#property.setter}}
-      {{>accessor_setter}}
-    {{/property.setter}}
-
+    {{#property.hasExplicitSetter}}
+      {{#property.setter}}
+        {{>accessor_setter}}
+      {{/property.setter}}
+    {{/property.hasExplicitSetter}}
+    
   </div> <!-- /.main-content -->
 
 {{>footer}}

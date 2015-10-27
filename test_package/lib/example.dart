@@ -73,6 +73,15 @@ class Apple {
 
 /// Extends class [Apple], use [new Apple] or [new Apple.fromString]
 class B extends Apple with Cat {
+  /**
+   * The default value is `false` (compression disabled).
+   * To enable, set `autoCompress` to `true`.
+   */
+  bool autoCompress;
+
+  /**
+   * A list of Strings
+   */
   List<String> list;
 
   bool get isImplemented => false;

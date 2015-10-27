@@ -955,7 +955,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class c, LongFirstLine, CatString;
     Field f1, f2, constField, dynamicGetter, onlySetter;
     Field lengthX;
-    Field sFromApple, mFromApple, mInB;
+    Field sFromApple, mFromApple, mInB, autoCompress;
     Field isEmpty;
 
     setUp(() {
@@ -990,6 +990,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'B')
           .allInstanceProperties
           .firstWhere((p) => p.name == 'm');
+      autoCompress = exLibrary.allClasses
+          .firstWhere((c) => c.name == 'B')
+          .allInstanceProperties
+          .firstWhere((p) => p.name == 'autoCompress');
     });
 
     test('has a fully qualified name', () {
@@ -1054,6 +1058,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('explicit getter and setter docs are unified', () {
       expect(lengthX.documentation, contains('Sets the length.'));
       expect(lengthX.documentation, contains('Returns a length.'));
+    });
+
+    test('Field with no explicit getter/setter has documentation', () {
+      expect(autoCompress.documentation,
+          contains('To enable, set `autoCompress` to `true`'));
     });
 
     test(
