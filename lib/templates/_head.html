@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ title }}</title>
-    {{ #relCanonicalPrefix }}
-    <link rel="canonical" href="{{relCanonicalPrefix}}/{{self.href}}">
-    {{ /relCanonicalPrefix}}
-    <!-- required because all the links are pseudo-absolute -->
-    <base href="{{htmlBase}}">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }}</title>
+  {{ #relCanonicalPrefix }}
+  <link rel="canonical" href="{{relCanonicalPrefix}}/{{self.href}}">
+  {{ /relCanonicalPrefix}}
+  <!-- required because all the links are pseudo-absolute -->
+  <base href="{{htmlBase}}">
 
-    <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="static-assets/prettify.css">
-    <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="static-assets/styles.css">
+  <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="static-assets/prettify.css">
+  <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="static-assets/styles.css">
 
-    <meta name="description" content="{{ metaDescription }}">
-    <link rel="icon" href="static-assets/favicon.png">
+  <meta name="description" content="{{ metaDescription }}">
+  <link rel="icon" href="static-assets/favicon.png">
 
-    <!-- Do not remove placeholder -->
-    <!-- Header Placeholder -->
+  <!-- Do not remove placeholder -->
+  <!-- Header Placeholder -->
 </head>
 
 <body>
@@ -28,52 +28,52 @@
 <div id="overlay-under-drawer"></div>
 
 <header class="container-fluid" id="title">
-    <nav class="navbar navbar-fixed-top">
-        <div class="container">
-          <div class="row">
-            <div class="col-sm-12 contents">
-              {{^navLinks.isEmpty}}
-              <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-              {{/navLinks.isEmpty}}
-              <ol class="breadcrumbs gt-separated hidden-xs">
-                  {{#navLinks}}
-                  <li><a href="{{href}}">{{name}}</a></li>
-                  {{/navLinks}}
-                  <li class="self-crumb">{{self.name}}</li>
-              </ol>
-              <div class="self-name">{{self.name}}</div>
-              <form class="search navbar-right" role="search">
-                <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-              </form>
-            </div> <!-- /col -->
-          </div> <!-- /row -->
-        </div> <!-- /container -->
-    </nav>
-
-    <div class="container masthead">
+  <nav class="navbar navbar-fixed-top">
+    <div class="container">
       <div class="row">
         <div class="col-sm-12 contents">
-          <ol class="breadcrumbs gt-separated visible-xs">
-              {{#navLinks}}
-              <li><a href="{{href}}">{{name}}</a></li>
-              {{/navLinks}}
-              {{^navLinks.isEmpty}}
-              <li class="self-crumb">{{self.name}}</li>
-              {{/navLinks.isEmpty}}
+          {{^navLinks.isEmpty}}
+          <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+          {{/navLinks.isEmpty}}
+          <ol class="breadcrumbs gt-separated hidden-xs">
+            {{#navLinks}}
+            <li><a href="{{href}}">{{name}}</a></li>
+            {{/navLinks}}
+            <li class="self-crumb">{{self.name}}</li>
           </ol>
-          <div class="title-description">
-              <h1 class="title">
-                  {{{ layoutTitle }}}
-              </h1>
-          </div>
-          <ul class="subnav">
-              {{#subnavItems}}
-              <li><a href="{{href}}">{{name}}</a></li>
-              {{/subnavItems}}
-          </ul>
+          <div class="self-name">{{self.name}}</div>
+          <form class="search navbar-right" role="search">
+            <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+          </form>
         </div> <!-- /col -->
       </div> <!-- /row -->
     </div> <!-- /container -->
+  </nav>
+
+  <div class="container masthead">
+    <div class="row">
+      <div class="col-sm-12 contents">
+        <ol class="breadcrumbs gt-separated visible-xs">
+          {{#navLinks}}
+          <li><a href="{{href}}">{{name}}</a></li>
+          {{/navLinks}}
+          {{^navLinks.isEmpty}}
+          <li class="self-crumb">{{self.name}}</li>
+          {{/navLinks.isEmpty}}
+        </ol>
+        <div class="title-description">
+          <h1 class="title">
+            {{{ layoutTitle }}}
+          </h1>
+        </div>
+        <ul class="subnav">
+          {{#subnavItems}}
+          <li><a href="{{href}}">{{name}}</a></li>
+          {{/subnavItems}}
+        </ul>
+      </div> <!-- /col -->
+    </div> <!-- /row -->
+  </div> <!-- /container -->
 
 </header>
 
