@@ -934,6 +934,14 @@ class Class extends ModelElement implements EnclosedElement {
 
   bool get hasInstanceProperties => instanceProperties.isNotEmpty;
 
+  bool get allInstancePropertiesInherited =>
+      instanceProperties.every((f) => f.isInherited);
+
+  bool get allOperatorsInherited => operators.every((f) => f.isInherited);
+
+  bool get allInstanceMethodsInherited =>
+      instanceMethods.every((f) => f.isInherited);
+
   List<Field> get instanceProperties {
     if (_instanceFields != null) return _instanceFields;
     _instanceFields = _allFields

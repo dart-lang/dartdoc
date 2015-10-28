@@ -128,7 +128,7 @@
     {{/clazz.hasConstructors}}
 
     {{#clazz.hasProperties}}
-    <section class="summary offset-anchor" id="instance-properties">
+    <section class="summary offset-anchor{{ #allInstancePropertiesInherited }} inherited{{ /allInstancePropertiesInherited }}" id="instance-properties">
       <h2>Properties</h2>
 
       <dl class="properties">
@@ -140,7 +140,7 @@
     {{/clazz.hasProperties}}
 
     {{#clazz.hasOperators}}
-    <section class="summary offset-anchor" id="operators">
+    <section class="summary offset-anchor{{ #allOperatorsInherited }} inherited{{ /allOperatorsInherited}}" id="operators">
       <h2>Operators</h2>
       <dl class="callables">
         {{#clazz.allOperators}}
@@ -151,7 +151,7 @@
     {{/clazz.hasOperators}}
 
     {{#clazz.hasMethods}}
-    <section class="summary offset-anchor" id="instance-methods">
+    <section class="summary offset-anchor{{ #allInstanceMethodsInherited }} inherited{{ /allInstanceMethodsInherited }}" id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">
         {{#clazz.allInstanceMethods}}
