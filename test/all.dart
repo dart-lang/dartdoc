@@ -4,6 +4,7 @@
 
 library dartdoc.all_tests;
 
+import 'compare_output_test.dart' as compare_output_tests;
 import 'dartdoc_test.dart' as dartdoc_tests;
 import 'html_generator_test.dart' as html_generator_tests;
 import 'io_utils_test.dart' as io_utils_tests;
@@ -14,6 +15,7 @@ import 'resource_loader_test.dart' as resource_loader_tests;
 import 'template_test.dart' as template_tests;
 
 void main() {
+  compare_output_tests.main();
   dartdoc_tests.main();
   html_generator_tests.main();
   io_utils_tests.main();

@@ -299,3 +299,22 @@ checkSdkLinks() {
 
   if (foundError) exit(1);
 }
+
+@Task('update test_package_docs')
+updateTestPackageDocs() {
+  var options = new RunOptions(workingDirectory: 'test_package');
+
+  var dir = new Directory('test_package_docs');
+
+  if (dir.existsSync()) {
+    dir.deleteSync(recursive: true);
+  }
+
+  // NOTE: excluding `fake` library because it contains exported code
+  //       from the SDK that has changed between 1.12 and 1.13
+  // This must match the content in `compare_output_test`
+
+  Dart.run('../bin/dartdoc.dart',
+      arguments: ['--output', '../test_package_docs', '--exclude', 'fake',],
+      runOptions: options);
+}
