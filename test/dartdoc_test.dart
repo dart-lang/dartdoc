@@ -20,7 +20,7 @@ void main() {
     Directory tempDir;
 
     setUp(() {
-      tempDir = new Directory(path.join(Directory.systemTemp.path, 'temp'));
+      tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
     });
 
     tearDown(() {
