@@ -28,23 +28,25 @@
   {{/clazz.hasConstructors}}
 
   {{#clazz.hasProperties}}
-  <li class="section-title"><a href="{{clazz.href}}#instance-properties">Properties</a></li>
+  <li class="section-title{{ #allInstancePropertiesInherited }} inherited{{ /allInstancePropertiesInherited }}">
+    <a href="{{clazz.href}}#instance-properties">Properties</a>
+  </li>
   {{#clazz.allInstanceProperties}}
-  <li>{{{ linkedName }}}</li>
+  <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
   {{/clazz.allInstanceProperties}}
   {{/clazz.hasProperties}}
 
   {{#clazz.hasOperators}}
-  <li class="section-title"><a href="{{clazz.href}}#operators">Operators</a></li>
+  <li class="section-title{{ #allOperatorsInherited }} inherited{{ /allOperatorsInherited}}"><a href="{{clazz.href}}#operators">Operators</a></li>
   {{#clazz.allOperators}}
-  <li>{{{ linkedName }}}</li>
+  <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
   {{/clazz.allOperators}}
   {{/clazz.hasOperators}}
 
   {{#clazz.hasMethods}}
-  <li class="section-title"><a href="{{clazz.href}}#instance-methods">Methods</a></li>
+  <li class="section-title{{ #allInstanceMethodsInherited }} inherited{{ /allInstanceMethodsInherited }}"><a href="{{clazz.href}}#instance-methods">Methods</a></li>
   {{#clazz.allInstanceMethods}}
-  <li>{{{ linkedName }}}</li>
+  <li{{ #isInherited }} class="inherited"{{ /isInherited}}q>{{{ linkedName }}}</li>
   {{/clazz.allInstanceMethods}}
   {{/clazz.hasMethods}}
 </ol>
