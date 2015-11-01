@@ -20,19 +20,19 @@
   {{/clazz.staticMethods}}
   {{/clazz.hasStaticMethods}}
 
-  {{#clazz.hasProperties}}
-  <li class="section-title"><a href="{{clazz.href}}#instance-properties">Properties</a></li>
-  {{#clazz.allInstanceProperties}}
-  <li>{{{ linkedName }}}</li>
-  {{/clazz.allInstanceProperties}}
-  {{/clazz.hasProperties}}
-
   {{#clazz.hasConstructors}}
   <li class="section-title"><a href="{{clazz.href}}#constructors">Constructors</a></li>
   {{#clazz.constructors}}
   <li><a href="{{href}}">{{shortName}}</a></li>
   {{/clazz.constructors}}
   {{/clazz.hasConstructors}}
+
+  {{#clazz.hasProperties}}
+  <li class="section-title"><a href="{{clazz.href}}#instance-properties">Properties</a></li>
+  {{#clazz.allInstanceProperties}}
+  <li>{{{ linkedName }}}</li>
+  {{/clazz.allInstanceProperties}}
+  {{/clazz.hasProperties}}
 
   {{#clazz.hasOperators}}
   <li class="section-title"><a href="{{clazz.href}}#operators">Operators</a></li>
