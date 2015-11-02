@@ -740,3 +740,15 @@ section#setter {
   border-top: 1px solid #ddd;
   padding-top: 36px;
 }
+
+.inherited {
+  transition: opacity .5s;
+}
+
+.inherited-dim {
+  opacity: 0.35;
+}
+
+.inherited-hide {
+  display: none;
+}

@@ -66,6 +66,21 @@
             {{{ layoutTitle }}}
           </h1>
         </div>
+        <div class="radio" style='float: right;'>
+          Inherited members:
+          <label class='radio-inline'>
+            <input type="radio" name="inherited-view" value="inherited-show" checked>
+            SHOW
+          </label>
+          <label class='radio-inline'>
+            <input type="radio" name="inherited-view" value="inherited-dim">
+            DIM
+          </label>
+          <label class='radio-inline'>
+            <input type="radio" name="inherited-view" value="inherited-hide">
+            HIDE
+          </label>
+        </div>
         <ul class="subnav">
           {{#subnavItems}}
           <li><a href="{{href}}">{{name}}</a></li>
