@@ -809,10 +809,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((c) => c.name == 'Apple')
           .instanceMethods
           .singleWhere((m) => m.name == 'isGreaterThan');
-      m4 = classB.instanceMethods.singleWhere((m)=> m.name == 'writeMsg');
+      m4 = classB.instanceMethods.singleWhere((m) => m.name == 'writeMsg');
       m5 = klass.instanceMethods.singleWhere((m) => m.name == 'another');
       m6 = klass.instanceMethods.singleWhere((m) => m.name == 'toString');
-      m7 = classB.instanceMethods.singleWhere((m)=> m.name == 'doNothing');
+      m7 = classB.instanceMethods.singleWhere((m) => m.name == 'doNothing');
       testGeneric = exLibrary.classes
           .singleWhere((c) => c.name == 'Dog')
           .instanceMethods
@@ -875,7 +875,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(isGreaterThan.modelType.createLinkedReturnTypeName(), 'bool');
     });
 
-    test('return type has Future', (){
+    test('return type has Future', () {
       expect(m7.linkedReturnType, contains('Future'));
     });
 

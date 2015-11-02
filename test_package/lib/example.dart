@@ -98,7 +98,7 @@ class B extends Apple with Cat {
     // do nothing
   }
 
-  Future doNothing(){}
+  Future doNothing() {}
 }
 
 // Do NOT add a doc comment to C. Testing blank comments.
