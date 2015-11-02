@@ -793,7 +793,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
   group('Method', () {
     Class classB, klass, HasGenerics, CatString;
-    Method m1, isGreaterThan, m4, m5, m6, convertToMap;
+    Method m1, isGreaterThan, m4, m5, m6, m7, convertToMap;
     Method inheritedClear, testGeneric;
 
     setUp(() {
@@ -809,9 +809,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((c) => c.name == 'Apple')
           .instanceMethods
           .singleWhere((m) => m.name == 'isGreaterThan');
-      m4 = classB.instanceMethods[1];
+      m4 = classB.instanceMethods.singleWhere((m)=> m.name == 'writeMsg');
       m5 = klass.instanceMethods.singleWhere((m) => m.name == 'another');
       m6 = klass.instanceMethods.singleWhere((m) => m.name == 'toString');
+      m7 = classB.instanceMethods.singleWhere((m)=> m.name == 'doNothing');
       testGeneric = exLibrary.classes
           .singleWhere((c) => c.name == 'Dog')
           .instanceMethods
@@ -872,6 +873,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('return type', () {
       expect(isGreaterThan.modelType.createLinkedReturnTypeName(), 'bool');
+    });
+
+    test('return type has Future', (){
+      expect(m7.linkedReturnType, contains('Future'));
     });
 
     test('parameter has generics in signature', () {

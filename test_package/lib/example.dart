@@ -1,6 +1,7 @@
 /// a library. testing string escaping: `var s = 'a string'` <cool>
 library ex;
 
+import 'dart:async';
 import 'src/mylib.dart' show Helper;
 export 'src/mylib.dart' show Helper;
 export 'dart:core' show deprecated, DateTime;
@@ -96,6 +97,8 @@ class B extends Apple with Cat {
   void writeMsg(String msg, [String transformMsg(String origMsg, bool flag)]) {
     // do nothing
   }
+
+  Future doNothing(){}
 }
 
 // Do NOT add a doc comment to C. Testing blank comments.
