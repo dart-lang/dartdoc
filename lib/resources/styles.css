@@ -737,3 +737,55 @@ section#setter {
   border-top: 1px solid #ddd;
   padding-top: 36px;
 }
+
+.inherited {
+  transition: opacity .5s;
+}
+
+.inherited-dim {
+  opacity: 0.35;
+}
+
+.inherited-hide {
+  display: none;
+}
+
+.inherited-view-wrapper {
+  position: relative;
+  width: 200px;
+  margin-right: 10px!important;
+}
+
+/* Use custom arrow */
+.inherited-view-wrapper select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  background-color: transparent;
+  width: 100%;
+  padding: 4px 0;
+  font-size: 16px;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Remove focus */
+.inherited-view-wrapper select:focus {
+  outline: none;
+}
+
+.inherited-view-wrapper:after {
+  position: absolute;
+  top: 0.75em;
+  right: 0.5em;
+  /* Styling the down arrow */
+  width: 0;
+  height: 0;
+  padding: 0;
+  content: '';
+  border-left: .25em solid transparent;
+  border-right: .25em solid transparent;
+  border-top: 0.375em solid rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
