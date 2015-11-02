@@ -2032,7 +2032,7 @@ class ElementType {
     // not TypeParameterType or Void or Union type
     if (isParameterizedType) {
       if (typeArguments.every((t) => t.linkedName == 'dynamic')) {
-        _linkedName = '';
+        _linkedName = buf.toString();
         return _linkedName;
       }
       if (typeArguments.isNotEmpty) {
