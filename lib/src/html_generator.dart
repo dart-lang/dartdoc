@@ -27,6 +27,27 @@ typedef String Renderer(String input);
 typedef String TemplateRenderer(context,
     {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});
 
+// TODO: if we can ever enumerate the contents of a package, we
+// won't need this.
+const _partials = const <String>[
+  'callable',
+  'callable_multiline',
+  'constant',
+  'footer',
+  'head',
+  'property',
+  'styles_and_scripts',
+  'readable_writable',
+  'documentation',
+  'name_summary',
+  'sidebar_for_class',
+  'source_code',
+  'sidebar_for_library',
+  'has_more_docs',
+  'accessor_getter',
+  'accessor_setter'
+];
+
 // Generation order for libraries:
 //   constants
 //   typedefs
@@ -80,28 +101,7 @@ class Templates {
     topLevelPropertyTemplate = await _loadTemplate('top_level_property.html');
     typeDefTemplate = await _loadTemplate('typedef.html');
 
-    // TODO: if we can ever enumerate the contents of a package, we
-    // won't need this.
-    List<String> partials = [
-      'callable',
-      'callable_multiline',
-      'constant',
-      'footer',
-      'head',
-      'property',
-      'styles_and_scripts',
-      'readable_writable',
-      'documentation',
-      'name_summary',
-      'sidebar_for_class',
-      'source_code',
-      'sidebar_for_library',
-      'has_more_docs',
-      'accessor_getter',
-      'accessor_setter'
-    ];
-
-    for (String partial in partials) {
+    for (String partial in _partials) {
       _partialTemplates[partial] = await _loadPartial('_$partial.html');
     }
   }
