@@ -73,7 +73,7 @@ void main() {
       Directory tempOutput;
 
       setUp(() async {
-        generator = await HtmlGenerator.create(null);
+        generator = await HtmlGenerator.create();
         tempOutput = Directory.systemTemp.createTempSync('doc_test_temp');
         return generator.generate(null, tempOutput);
       });

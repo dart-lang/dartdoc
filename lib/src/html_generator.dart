@@ -51,16 +51,17 @@ class HtmlGenerator extends Generator {
   final String relCanonicalPrefix;
   final Templates _templates;
 
-  static Future<HtmlGenerator> create(String url,
-      {String header, String footer, String relCanonicalPrefix}) async {
+  static Future<HtmlGenerator> create(
+      {String url,
+      String header,
+      String footer,
+      String relCanonicalPrefix}) async {
     var templates =
         await Templates.create(headerPath: header, footerPath: footer);
 
     return new HtmlGenerator._(url, relCanonicalPrefix, templates);
   }
 
-  /// [url] can be null.
-  // TODO: make url an optional parameter
   HtmlGenerator._(this.url, this.relCanonicalPrefix, this._templates);
 
   Future generate(Package package, Directory out) {

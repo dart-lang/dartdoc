@@ -44,7 +44,8 @@ Future<List<Generator>> initGenerators(String url, String headerFilePath,
     String footerFilePath, String relCanonicalPrefix) async {
   dartdocVersion = version;
   return [
-    await HtmlGenerator.create(url,
+    await HtmlGenerator.create(
+        url: url,
         header: headerFilePath,
         footer: footerFilePath,
         relCanonicalPrefix: relCanonicalPrefix)
