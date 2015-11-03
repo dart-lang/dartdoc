@@ -67,83 +67,104 @@ const _partials = const <String>[
 //   methods
 
 class Templates {
-  TemplateRenderer indexTemplate;
-  TemplateRenderer libraryTemplate;
-  TemplateRenderer classTemplate;
-  TemplateRenderer functionTemplate;
-  TemplateRenderer methodTemplate;
-  TemplateRenderer constructorTemplate;
-  TemplateRenderer propertyTemplate;
-  TemplateRenderer constantTemplate;
-  TemplateRenderer topLevelConstantTemplate;
-  TemplateRenderer topLevelPropertyTemplate;
-  TemplateRenderer typeDefTemplate;
-
-  final Map<String, String> _partialTemplates = <String, String>{};
-
-  final String _footer;
-  final String _header;
+  final TemplateRenderer indexTemplate;
+  final TemplateRenderer libraryTemplate;
+  final TemplateRenderer classTemplate;
+  final TemplateRenderer functionTemplate;
+  final TemplateRenderer methodTemplate;
+  final TemplateRenderer constructorTemplate;
+  final TemplateRenderer propertyTemplate;
+  final TemplateRenderer constantTemplate;
+  final TemplateRenderer topLevelConstantTemplate;
+  final TemplateRenderer topLevelPropertyTemplate;
+  final TemplateRenderer typeDefTemplate;
 
   static Future<Templates> create({String header, String footer}) async {
-    var templates = new Templates._(header, footer);
-    await templates._init();
-    return templates;
+    var partials = await _loadPartials(header, footer);
+
+    String _partial(String name) {
+      String partial = partials[name];
+      if (partial == null || partial.isEmpty) {
+        throw new StateError('Did not find partial "$name"');
+      }
+      return partial;
+    }
+
+    Future<TemplateRenderer> _loadTemplate(String templatePath) async {
+      String templateContents = await _getTemplateFile(templatePath);
+      return compile(templateContents, partial: _partial) as TemplateRenderer;
+    }
+
+    var indexTemplate = await _loadTemplate('index.html');
+    var libraryTemplate = await _loadTemplate('library.html');
+    var classTemplate = await _loadTemplate('class.html');
+    var functionTemplate = await _loadTemplate('function.html');
+    var methodTemplate = await _loadTemplate('method.html');
+    var constructorTemplate = await _loadTemplate('constructor.html');
+    var propertyTemplate = await _loadTemplate('property.html');
+    var constantTemplate = await _loadTemplate('constant.html');
+    var topLevelConstantTemplate =
+        await _loadTemplate('top_level_constant.html');
+    var topLevelPropertyTemplate =
+        await _loadTemplate('top_level_property.html');
+    var typeDefTemplate = await _loadTemplate('typedef.html');
+
+    return new Templates._(
+        indexTemplate,
+        libraryTemplate,
+        classTemplate,
+        functionTemplate,
+        methodTemplate,
+        constructorTemplate,
+        propertyTemplate,
+        constantTemplate,
+        topLevelConstantTemplate,
+        topLevelPropertyTemplate,
+        typeDefTemplate);
   }
 
-  Templates._(this._header, this._footer);
+  Templates._(
+      this.indexTemplate,
+      this.libraryTemplate,
+      this.classTemplate,
+      this.functionTemplate,
+      this.methodTemplate,
+      this.constructorTemplate,
+      this.propertyTemplate,
+      this.constantTemplate,
+      this.topLevelConstantTemplate,
+      this.topLevelPropertyTemplate,
+      this.typeDefTemplate);
 
-  Future _init() async {
-    if (_partialTemplates.isNotEmpty) return;
+  static Future<Map<String, String>> _loadPartials(
+      String header, String footer) async {
+    var partials = <String, String>{};
 
-    indexTemplate = await _loadTemplate('index.html');
-    libraryTemplate = await _loadTemplate('library.html');
-    classTemplate = await _loadTemplate('class.html');
-    functionTemplate = await _loadTemplate('function.html');
-    methodTemplate = await _loadTemplate('method.html');
-    constructorTemplate = await _loadTemplate('constructor.html');
-    propertyTemplate = await _loadTemplate('property.html');
-    constantTemplate = await _loadTemplate('constant.html');
-    topLevelConstantTemplate = await _loadTemplate('top_level_constant.html');
-    topLevelPropertyTemplate = await _loadTemplate('top_level_property.html');
-    typeDefTemplate = await _loadTemplate('typedef.html');
+    Future<String> _loadPartial(String templatePath) async {
+      String template = await _getTemplateFile(templatePath);
+      // TODO: revisit, not sure this is the right place for this logic
+      if (templatePath.contains('_footer') && footer != null) {
+        String footerValue = await new File(footer).readAsString();
+        template =
+            template.replaceAll('<!-- Footer Placeholder -->', footerValue);
+      }
+      if (templatePath.contains('_head') && header != null) {
+        String headerValue = await new File(header).readAsString();
+        template =
+            template.replaceAll('<!-- Header Placeholder -->', headerValue);
+      }
+      return template;
+    }
 
     for (String partial in _partials) {
-      _partialTemplates[partial] = await _loadPartial('_$partial.html');
+      partials[partial] = await _loadPartial('_$partial.html');
     }
+
+    return partials;
   }
 
-  String _partial(String name) {
-    String partial = _partialTemplates[name];
-    if (partial == null || partial.isEmpty) {
-      throw new StateError('Did not find partial "$name"');
-    }
-    return partial;
-  }
-
-  Future<TemplateRenderer> _loadTemplate(String templatePath) async {
-    String templateContents = await _getTemplateFile(templatePath);
-    return compile(templateContents, partial: _partial) as TemplateRenderer;
-  }
-
-  Future<String> _getTemplateFile(String templatePath) {
-    return loader.loadAsString('package:dartdoc/templates/$templatePath');
-  }
-
-  Future<String> _loadPartial(String templatePath) async {
-    String template = await _getTemplateFile(templatePath);
-    // TODO: revisit, not sure this is the right place for this logic
-    if (templatePath.contains('_footer') && _footer != null) {
-      String footerValue = await new File(_footer).readAsString();
-      template =
-          template.replaceAll('<!-- Footer Placeholder -->', footerValue);
-    }
-    if (templatePath.contains('_head') && _header != null) {
-      String headerValue = await new File(_header).readAsString();
-      template =
-          template.replaceAll('<!-- Header Placeholder -->', headerValue);
-    }
-    return template;
-  }
+  static Future<String> _getTemplateFile(String templateFileName) =>
+      loader.loadAsString('package:dartdoc/templates/$templateFileName');
 }
 
 class HtmlGenerator extends Generator {
@@ -192,7 +213,6 @@ class _HtmlGeneratorInstance implements HtmlOptions {
       this._onFileCreated, this.relCanonicalPrefix);
 
   Future generate() async {
-    await _templates._init();
     if (!out.existsSync()) out.createSync();
 
     if (package != null) {
