@@ -634,7 +634,7 @@ class Library extends ModelElement {
 
   bool get isInSdk => _library.isInSdk;
 
-  bool get isNotDocumented => oneLineDoc.isEmpty;
+  bool get isDocumented => oneLineDoc.isNotEmpty;
 
   List<TopLevelVariable> _getVariables() {
     if (_variables != null) return _variables;

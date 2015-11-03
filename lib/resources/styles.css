@@ -133,10 +133,6 @@ p {
   margin-bottom: 1em;
 }
 
-p.no-docs {
-  font-style: italic;
-}
-
 a, a:hover {
   color: rgb(0, 102, 152);
 }

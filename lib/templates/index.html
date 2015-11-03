@@ -25,11 +25,12 @@
             <span class="name">{{{ linkedName }}}</span>
           </dt>
           <dd>
-            {{#isNotDocumented}}<span class="undocumented">Library not documented.</span>{{/isNotDocumented}}
+            {{#isDocumented}}
             <p>
               {{{ oneLineDoc }}}
               {{>has_more_docs}}
             </p>
+            {{/isDocumented}}
           </dd>
         {{/package.libraries}}
       </dl>
