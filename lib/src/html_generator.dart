@@ -43,13 +43,15 @@ typedef String Renderer(String input);
 //   methods
 
 class HtmlGenerator extends Generator {
-  final StreamController<File> _onFileCreated =
-      new StreamController(sync: true);
-
   /// Optional URL for where the docs will be hosted.
   final String url;
   final String relCanonicalPrefix;
   final Templates _templates;
+
+  final StreamController<File> _onFileCreated =
+      new StreamController(sync: true);
+
+  Stream<File> get onFileCreated => _onFileCreated.stream;
 
   static Future<HtmlGenerator> create(
       {String url,
@@ -69,8 +71,6 @@ class HtmlGenerator extends Generator {
             url, _templates, package, out, _onFileCreated, relCanonicalPrefix)
         .generate();
   }
-
-  Stream<File> get onFileCreated => _onFileCreated.stream;
 }
 
 abstract class HtmlOptions {
