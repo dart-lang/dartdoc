@@ -53,7 +53,8 @@ class HtmlGenerator extends Generator {
 
   static Future<HtmlGenerator> create(String url,
       {String header, String footer, String relCanonicalPrefix}) async {
-    var templates = await Templates.create(header: header, footer: footer);
+    var templates =
+        await Templates.create(headerPath: header, footerPath: footer);
 
     return new HtmlGenerator._(url, relCanonicalPrefix, templates);
   }

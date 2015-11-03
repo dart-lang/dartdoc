@@ -30,19 +30,20 @@ const _partials = const <String>[
   'accessor_setter'
 ];
 
-Future<Map<String, String>> _loadPartials(String header, String footer) async {
+Future<Map<String, String>> _loadPartials(
+    String headerPath, String footerPath) async {
   var partials = <String, String>{};
 
   Future<String> _loadPartial(String templatePath) async {
     String template = await _getTemplateFile(templatePath);
     // TODO: revisit, not sure this is the right place for this logic
-    if (templatePath.contains('_footer') && footer != null) {
-      String footerValue = await new File(footer).readAsString();
+    if (templatePath.contains('_footer') && footerPath != null) {
+      String footerValue = await new File(footerPath).readAsString();
       template =
           template.replaceAll('<!-- Footer Placeholder -->', footerValue);
     }
-    if (templatePath.contains('_head') && header != null) {
-      String headerValue = await new File(header).readAsString();
+    if (templatePath.contains('_head') && headerPath != null) {
+      String headerValue = await new File(headerPath).readAsString();
       template =
           template.replaceAll('<!-- Header Placeholder -->', headerValue);
     }
@@ -72,8 +73,9 @@ class Templates {
   final TemplateRenderer topLevelPropertyTemplate;
   final TemplateRenderer typeDefTemplate;
 
-  static Future<Templates> create({String header, String footer}) async {
-    var partials = await _loadPartials(header, footer);
+  static Future<Templates> create(
+      {String headerPath, String footerPath}) async {
+    var partials = await _loadPartials(headerPath, footerPath);
 
     String _partial(String name) {
       String partial = partials[name];
