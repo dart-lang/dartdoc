@@ -466,7 +466,7 @@ abstract class TemplateData {
   String _layoutTitle(String name, String kind, bool isDeprecated) {
     if (kind.isEmpty) kind =
         '&nbsp;'; // Ugly. fixes https://github.com/dart-lang/dartdoc/issues/695
-    String str = '<div class="kind">$kind</div>';
+    String str = '<span class="kind">$kind</span>';
     if (!isDeprecated) return '${str} ${name}';
     return '${str} <span class="deprecated">$name</span>';
   }
