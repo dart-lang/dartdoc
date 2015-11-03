@@ -7,6 +7,7 @@ library dartdoc.html_generator_test;
 import 'dart:io' show File, Directory, FileSystemEntity, FileSystemEntityType;
 
 import 'package:dartdoc/src/html_generator.dart';
+import 'package:dartdoc/src/templates.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
