@@ -84,9 +84,15 @@ class Templates {
   final String _footer;
   final String _header;
 
-  Templates(this._header, this._footer);
+  static Future<Templates> create({String header, String footer}) async {
+    var templates = new Templates._(header, footer);
+    await templates._init();
+    return templates;
+  }
 
-  Future init() async {
+  Templates._(this._header, this._footer);
+
+  Future _init() async {
     if (_partialTemplates.isNotEmpty) return;
 
     indexTemplate = await _loadTemplate('index.html');
@@ -149,11 +155,16 @@ class HtmlGenerator extends Generator {
   final String relCanonicalPrefix;
   final Templates _templates;
 
+  static Future<HtmlGenerator> create(String url,
+      {String header, String footer, String relCanonicalPrefix}) async {
+    var templates = await Templates.create(header: header, footer: footer);
+
+    return new HtmlGenerator._(url, relCanonicalPrefix, templates);
+  }
+
   /// [url] can be null.
   // TODO: make url an optional parameter
-  HtmlGenerator(this.url,
-      {String header, String footer, this.relCanonicalPrefix})
-      : _templates = new Templates(header, footer) {}
+  HtmlGenerator._(this.url, this.relCanonicalPrefix, this._templates);
 
   Future generate(Package package, Directory out) {
     return new _HtmlGeneratorInstance(
@@ -181,7 +192,7 @@ class _HtmlGeneratorInstance implements HtmlOptions {
       this._onFileCreated, this.relCanonicalPrefix);
 
   Future generate() async {
-    await _templates.init();
+    await _templates._init();
     if (!out.existsSync()) out.createSync();
 
     if (package != null) {

@@ -1,3 +1,6 @@
+## 0.8.0
+* **BREAKING** `initGenerators` is now async. It returns `Future<List<Generator>>`.
+
 ## 0.7.4
 * [bug] In class documentation, move constructors before instance properties.
 * [bug] fix property pages to show documentation if not a setter/getter

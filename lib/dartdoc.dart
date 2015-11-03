@@ -35,16 +35,16 @@ export 'src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.7.5-dev';
+const String version = '0.8.0-dev';
 
 final String defaultOutDir = 'doc${Platform.pathSeparator}api';
 
 /// Initialize and setup the generators.
-List<Generator> initGenerators(String url, String headerFilePath,
-    String footerFilePath, String relCanonicalPrefix) {
+Future<List<Generator>> initGenerators(String url, String headerFilePath,
+    String footerFilePath, String relCanonicalPrefix) async {
   dartdocVersion = version;
   return [
-    new HtmlGenerator(url,
+    await HtmlGenerator.create(url,
         header: headerFilePath,
         footer: footerFilePath,
         relCanonicalPrefix: relCanonicalPrefix)

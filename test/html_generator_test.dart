@@ -15,8 +15,7 @@ void main() {
     Templates templates;
 
     setUp(() async {
-      templates = new Templates(null, null);
-      await templates.init();
+      templates = await Templates.create();
     });
 
     test('index html', () {
@@ -73,7 +72,7 @@ void main() {
       Directory tempOutput;
 
       setUp(() async {
-        generator = new HtmlGenerator(null);
+        generator = await HtmlGenerator.create(null);
         tempOutput = Directory.systemTemp.createTempSync('doc_test_temp');
         return generator.generate(null, tempOutput);
       });

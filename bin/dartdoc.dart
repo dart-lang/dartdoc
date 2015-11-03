@@ -116,7 +116,7 @@ main(List<String> arguments) async {
       "${outputDir.absolute.path}${Platform.pathSeparator}");
   print('');
 
-  var generators = initGenerators(
+  var generators = await initGenerators(
       url, headerFilePath, footerFilePath, args['rel-canonical-prefix']);
 
   for (var generator in generators) {
