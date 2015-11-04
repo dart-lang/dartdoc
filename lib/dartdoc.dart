@@ -42,13 +42,13 @@ final String defaultOutDir = 'doc${Platform.pathSeparator}api';
 /// Initialize and setup the generators.
 Future<List<Generator>> initGenerators(String url, String headerFilePath,
     String footerFilePath, String relCanonicalPrefix) async {
-  dartdocVersion = version;
   return [
     await HtmlGenerator.create(
         url: url,
         header: headerFilePath,
         footer: footerFilePath,
-        relCanonicalPrefix: relCanonicalPrefix)
+        relCanonicalPrefix: relCanonicalPrefix,
+        toolVersion: version)
   ];
 }
 
