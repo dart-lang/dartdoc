@@ -16,8 +16,8 @@ import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:quiver/core.dart' show hash3;
 
-import 'cache.dart';
 import 'config.dart';
+import 'line_number_cache.dart';
 import 'markdown_processor.dart' show Documentation, renderMarkdownToHtml;
 import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
@@ -1349,7 +1349,7 @@ abstract class SourceCodeMixin {
   int get _lineNumber {
     var node = element.computeNode();
     if (node is Declaration && (node as Declaration).element != null) {
-      return cache.lineNumber(
+      return lineNumberCache.lineNumber(
           (node as Declaration).element.source.fullName, node.offset);
     } else {
       return null;
