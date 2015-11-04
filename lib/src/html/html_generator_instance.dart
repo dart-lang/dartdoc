@@ -9,11 +9,10 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:path/path.dart' as path;
 
-import '../resource_loader.dart' as loader;
-import 'io_utils.dart' show createOutputFile;
-import 'model.dart';
-import 'package_meta.dart';
+import '../model.dart';
+import '../package_meta.dart';
 import 'resources.g.dart' as resources;
+import 'resource_loader.dart' as loader;
 import 'templates.dart';
 import 'template_data.dart';
 
@@ -43,7 +42,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void _generateSearchIndex() {
-    File jsonFile = createOutputFile(out, 'index.json');
+    File jsonFile = _createOutputFile(out, 'index.json');
     String json = JSON.encode(documentedElements.map((ModelElement e) {
       // TODO: find a better string for type
       Map data = {
@@ -133,7 +132,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
     if (package.hasDocumentationFile) {
       FileContents readme = package.documentationFile;
-      markdownRenderer = readme.isMarkdown ? renderMarkdown : renderPlainText;
+      markdownRenderer = readme.isMarkdown ? renderMarkdown : _renderPlainText;
     }
 
     stdout.write('documenting ${package.name}');
@@ -265,15 +264,21 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void _writeFile(String filename, String content) {
-    File f = createOutputFile(out, filename);
+    File f = _createOutputFile(out, filename);
     f.writeAsStringSync(content);
     _onFileCreated.add(f);
   }
 }
 
 /// Convert the given plain text into HTML.
-String renderPlainText(String text) {
+String _renderPlainText(String text) {
   if (text == null) return '';
 
   return "<code class='fixed'>${text.trim()}</code>";
+}
+
+File _createOutputFile(Directory destination, String filename) {
+  File f = new File(path.join(destination.path, filename));
+  if (!f.existsSync()) f.createSync(recursive: true);
+  return f;
 }

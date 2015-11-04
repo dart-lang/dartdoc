@@ -23,7 +23,7 @@ import 'package:html/dom.dart' show Document;
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 
-import 'src/model.dart';
+import 'model.dart';
 
 final List<md.InlineSyntax> _markdown_syntaxes = [new _InlineCodeSyntax()];
 

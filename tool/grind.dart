@@ -18,8 +18,6 @@ import 'package:yaml/yaml.dart' as yaml;
 final Directory docsDir =
     new Directory(path.join('${Directory.systemTemp.path}', defaultOutDir));
 
-final String sep = Platform.pathSeparator;
-
 main([List<String> args]) => grind(args);
 
 @Task('Find transformers used by this project')
@@ -193,11 +191,11 @@ indexResources() {
     throw new StateError('lib/resources directory not found');
   }
   var outDir = new Directory(path.join('lib'));
-  var out = new File(path.join(outDir.path, 'src${sep}resources.g.dart'));
+  var out = new File(path.join(outDir.path, 'src', 'html', 'resources.g.dart'));
   out.createSync(recursive: true);
   var buffer = new StringBuffer()
-    ..write('// WARNING: This file is auto-generated.\n\n')
-    ..write('library resources;\n\n')
+    ..write('// WARNING: This file is auto-generated. Do not taunt.\n\n')
+    ..write('library dartdoc.html.resources;\n\n')
     ..write('const List<String> resource_names = const [\n');
   var packagePaths = [];
   for (var fileName in listDir(sourcePath, recursive: true)) {
@@ -206,6 +204,7 @@ indexResources() {
       packagePaths.add(packageified);
     }
   }
+  packagePaths.sort();
   buffer.write(packagePaths.map((p) => "  '$p'").join(',\n'));
   buffer.write('\n];\n');
   out.writeAsString(buffer.toString());

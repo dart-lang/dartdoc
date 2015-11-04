@@ -8,8 +8,8 @@ import 'dart:async' show Future, StreamController, Stream;
 import 'dart:io' show Directory, File, stdout;
 
 import '../generator.dart';
+import '../model.dart';
 import 'html_generator_instance.dart';
-import 'model.dart';
 import 'templates.dart';
 
 String dartdocVersion = 'unknown';

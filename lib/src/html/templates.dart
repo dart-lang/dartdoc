@@ -4,7 +4,8 @@ import 'dart:async' show Future, StreamController, Stream;
 import 'dart:io' show Directory, File, stdout;
 
 import 'package:mustache4dart/mustache4dart.dart';
-import '../resource_loader.dart' as loader;
+
+import 'resource_loader.dart' as loader;
 
 typedef String TemplateRenderer(context,
     {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});

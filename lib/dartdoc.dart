@@ -23,13 +23,14 @@ import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
-import 'generator.dart';
-import 'src/html_generator.dart' show dartdocVersion, HtmlGenerator;
+import 'src/generator.dart';
+import 'src/html/html_generator.dart';
 import 'src/io_utils.dart';
 import 'src/model.dart';
 import 'src/model_utils.dart';
 import 'src/package_meta.dart';
 
+export 'src/generator.dart';
 export 'src/model.dart';
 export 'src/package_meta.dart';
 

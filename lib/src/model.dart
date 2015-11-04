@@ -13,18 +13,15 @@ import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/resolver.dart'
     show Namespace, NamespaceBuilder, InheritanceManager, MemberMap;
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
+import 'package:analyzer/src/generated/source_io.dart';
 import 'package:quiver/core.dart' show hash3;
 
+import 'cache.dart';
 import 'config.dart';
-
+import 'markdown_processor.dart' show Documentation, renderMarkdownToHtml;
 import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
 import 'utils.dart' show stripComments;
-
-import 'cache.dart';
-
-import '../markdown_processor.dart' show Documentation, renderMarkdownToHtml;
-import 'package:analyzer/src/generated/source_io.dart';
 
 int byName(Nameable a, Nameable b) =>
     a.name.toUpperCase().compareTo(b.name.toUpperCase());
