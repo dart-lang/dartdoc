@@ -4,7 +4,7 @@
 
 library dartdoc.resource_loader_test;
 
-import 'package:dartdoc/resource_loader.dart' as loader;
+import 'package:dartdoc/src/html/resource_loader.dart' as loader;
 import 'package:test/test.dart';
 
 void main() {

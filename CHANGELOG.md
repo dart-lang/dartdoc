@@ -1,5 +1,10 @@
 ## 0.8.0
 * **BREAKING** `initGenerators` is now async. It returns `Future<List<Generator>>`.
+* **BREAKING** `markdown_processor.dart` and `resource_loader.dart` are no
+  longer exposed as public libraries.
+  Use of these libraries by third-party code is no longer supported.
+* **BREAKING** `generator.dart` is no longer exposed as a stand-alone library.
+  You can access the `Generator` class by importing `dartdoc.dart`.
 
 ## 0.7.4
 * [bug] In class documentation, move constructors before instance properties.
