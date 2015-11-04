@@ -23,6 +23,8 @@ import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 
+import 'package:path/path.dart' as p;
+
 import 'src/generator.dart';
 import 'src/html/html_generator.dart';
 import 'src/io_utils.dart';
@@ -38,7 +40,7 @@ const String name = 'dartdoc';
 // Update when pubspec version changes.
 const String version = '0.8.0-dev';
 
-final String defaultOutDir = 'doc${Platform.pathSeparator}api';
+final String defaultOutDir = p.join('doc', 'api');
 
 /// Initialize and setup the generators.
 Future<List<Generator>> initGenerators(String url, String headerFilePath,
