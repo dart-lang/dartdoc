@@ -4,7 +4,7 @@ library ex;
 import 'dart:async';
 import 'src/mylib.dart' show Helper;
 export 'src/mylib.dart' show Helper;
-export 'dart:core' show deprecated, DateTime;
+export 'dart:core' show deprecated, Deprecated, DateTime;
 
 int function1(String s, bool b, lastParam) => 5;
 
@@ -98,6 +98,7 @@ class B extends Apple with Cat {
     // do nothing
   }
 
+  @deprecated
   Future doNothing() {}
 }
 
@@ -110,6 +111,15 @@ abstract class Cat {
 /// implements [Cat], [E]
 class Dog implements Cat, E {
   String name;
+
+  Dog();
+
+  Dog.create(this.name);
+
+  @Deprecated("Internal use")
+  static Dog createDog(String s) {
+    return new Dog.create(s);
+  }
 
   @deprecated
   List<Apple> getClassA() {

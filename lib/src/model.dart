@@ -206,7 +206,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         var e = a.element;
         if (e != null && (e is ConstructorElement)) {
           var me = new ModelElement.from(
-              e.enclosingElement, new Library(e.library, package));
+              e.enclosingElement, package._getLibraryFor(e.enclosingElement));
           if (me.href != null) {
             return annotationString.replaceAll(me.name, me.linkedName);
           }

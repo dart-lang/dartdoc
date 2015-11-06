@@ -520,7 +520,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(17));
+      expect(classes, hasLength(18));
     });
 
     test('abstract', () {
@@ -1428,10 +1428,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
   group('Annotations', () {
     Class forAnnotation, dog;
+    Method ctr;
     setUp(() {
       forAnnotation =
           exLibrary.classes.firstWhere((c) => c.name == 'HasAnnotation');
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
+      ctr = dog.staticMethods.firstWhere((c) => c.name == 'createDog');
     });
 
     test('is not null', () => expect(forAnnotation, isNotNull));
@@ -1452,6 +1454,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var m = dog.instanceMethods.singleWhere((m) => m.name == 'getClassA');
       expect(m.hasAnnotations, isTrue);
       expect(m.annotations.first, equals('deprecated'));
+    });
+
+    test('method annotations have the right link', () {
+      expect(
+          ctr.annotations[0],
+          equals(
+              '<a class="" href="ex/Deprecated-class.html">Deprecated</a>("Internal use")'));
     });
   });
 }
