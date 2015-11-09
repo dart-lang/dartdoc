@@ -23,8 +23,73 @@ import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
 import 'utils.dart' show stripComments;
 
-int byName(Nameable a, Nameable b) =>
-    a.name.toUpperCase().compareTo(b.name.toUpperCase());
+int byName(Nameable a, Nameable b) => _compareNames(a.name, b.name);
+
+/// Compares identifiers (`[$_a-zA-Z][$_a-zA-Z0-9]*`) alhabetically with
+/// lexicographical comparison for digit sequences (longer sequences
+/// sort after shorter sequences, same-length sequences sort normally).
+/// This means that "002" sorts after "10" but before "010". It's not
+/// *numerical* ordering because we want to distinguish different strings,
+/// even if they only differ by leading zeros (which will be rare in actual
+/// names).
+/// Treats all letters as upper-case.
+int _compareNames(String a, String b) {
+  for (int i = 0; i < a.length; i++) {
+    if (i >= b.length) return 1;
+    var aChar = a.codeUnitAt(i);
+    var bChar = b.codeUnitAt(i);
+    if (aChar == bChar) continue;
+    // Do toUpperCase but preserve the location of all other characters.
+    // In particular, '_' is between upper-case and lower-case letters.
+    const int char_a = 0x61;
+    const int char_z = 0x7a;
+    if (aChar >= char_a && aChar <= char_z) aChar -= 0x20;
+    if (bChar >= char_a && bChar <= char_z) bChar -= 0x20;
+    var charDelta = aChar - bChar;
+    if (charDelta == 0) continue;
+
+    // Definitely a difference at this index. Check for number sequences
+    var aIsDigit = (aChar ^ 0x30) <= 9;
+    var bIsDigit = (bChar ^ 0x30) <= 9;
+    if (aIsDigit) {
+      if (bIsDigit) {
+        // Both digits, find number length. If length differs, sort by that
+        // otherwise default to numeric/alphabetical order already discovered
+        // by charDelta.
+        int aNumberEnd = _skipDigits(a, i);
+        int bNumberEnd = _skipDigits(b, i);
+        int lengthDelta = aNumberEnd - bNumberEnd;
+        if (lengthDelta != 0) {
+          return lengthDelta.sign;
+        }
+      } else {
+        // This may continue number in `a` but not in `b`, and if so,
+        // 'a' should compare greater than `b`.
+        if (i > 0 && (a.codeUnitAt(i - 1) ^ 0x30) <= 9) {
+          // Longest number is in a.
+          return 1;
+        }
+      }
+    } else if (bIsDigit) {
+      // Check if previous character was digit too.
+      if (i > 0 && (a.codeUnitAt(i - 1) ^ 0x30) <= 9) {
+        // Longest number is in b.
+        return -1;
+      }
+    }
+    return charDelta.sign;
+  }
+  if (a.length < b.length) return -1;
+  return 0;
+}
+
+int _skipDigits(String string, int index) {
+  while (++index < string.length) {
+    int char = string.codeUnitAt(index) ^ 0x30;
+    if (char > 9) break;
+  }
+  return index;
+}
 
 final Map<Class, List<Class>> _implementors = new Map();
 

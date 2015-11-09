@@ -1463,4 +1463,48 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
               '<a class="" href="ex/Deprecated-class.html">Deprecated</a>("Internal use")'));
     });
   });
+
+  group('Sorting by name', () {
+    // Order by uppercased lexical ordering for non-digits,
+    // lexicographical ordering of embedded digit sequences.
+    var names = [
+      r"",
+      r"$",
+      r"0",
+      r"0a",
+      r"1",
+      r"00",
+      r"01",
+      r"a",
+      r"aaab",
+      r"aab",
+      r"Ab",
+      r"B",
+      r"bA",
+      r"x0$",
+      r"x1$",
+      r"x01$",
+      r"x10$",
+      r"x001$",
+      r"x010$",
+      r"x100$",
+      r"_",
+    ];
+    for (var i = 1; i < names.length; i++) {
+      var a = new StringName(names[i - 1]);
+      var b = new StringName(names[i]);
+      test('"$a" < "$b"', () {
+        expect(byName(a, a), 0);
+        expect(byName(b, b), 0);
+        expect(byName(a, b), -1);
+        expect(byName(b, a), 1);
+      });
+    }
+  });
+}
+
+class StringName implements Nameable {
+  final String name;
+  StringName(this.name);
+  String toString() => name;
 }
