@@ -1,4 +1,9 @@
 ## 0.8.0
+* [bug] fix annotation shown as raw HTML in constructors
+* [bug] fix missing return type when Future
+* [enhancement] do not show "Not documented." message for members without doc comments
+* [enhancement] show constructors before properties in right side bar
+* [enhancement] sort names with embedded integers lexicograpically
 * **BREAKING** `initGenerators` is now async. It returns `Future<List<Generator>>`.
 * **BREAKING** `markdown_processor.dart` and `resource_loader.dart` are no
   longer exposed as public libraries.
@@ -7,7 +12,7 @@
   You can access the `Generator` class by importing `dartdoc.dart`.
 
 ## 0.7.4
-* [bug] In class documentation, move constructors before instance properties.
+* [bug] In class documentation, move constructors before instance properties
 * [bug] fix property pages to show documentation if not a setter/getter
 * [bug] show indented code blocks in comments as code 
 
