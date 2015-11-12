@@ -77,7 +77,9 @@ class PackageTemplateData extends TemplateData {
       '${package.name} API docs, for the Dart programming language.';
   List<Subnav> get subnavItems =>
       [new Subnav('Libraries', '${package.href}#libraries')];
-  String get htmlBase => '.';
+
+  /// `null` for packages because they are at the root – not needed
+  String get htmlBase => null;
 }
 
 class LibraryTemplateData extends TemplateData {

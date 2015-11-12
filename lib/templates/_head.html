@@ -9,8 +9,10 @@
   {{ #relCanonicalPrefix }}
   <link rel="canonical" href="{{relCanonicalPrefix}}/{{self.href}}">
   {{ /relCanonicalPrefix}}
+  {{#htmlBase}}
   <!-- required because all the links are pseudo-absolute -->
   <base href="{{htmlBase}}">
+  {{/htmlBase}}
 
   <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="static-assets/prettify.css">
