@@ -141,7 +141,7 @@ which complies with a subset of ISO 8601.
 Note that hours are specified between 0 and 23,
 as in a 24-hour clock.
 For example:</p>
-<pre class="prettyprint lang-dart"><code>DateTime now = new DateTime.now();
+<pre><code class="language-dart prettyprint">DateTime now = new DateTime.now();
 DateTime berlinWallFell = new DateTime(1989, 11, 9);
 DateTime moonLanding = DateTime.parse("1969-07-20 20:18:00");  // 8:18pm
 </code></pre>
@@ -152,14 +152,14 @@ when the object is created.</p>
 of a DateTime object may be changed.</p>
 <p>You can use properties to get
 the individual units of a DateTime object.</p>
-<pre class="prettyprint lang-dart"><code>assert(berlinWallFell.month == 11);
+<pre><code class="language-dart prettyprint">assert(berlinWallFell.month == 11);
 assert(moonLanding.hour == 20);
 </code></pre>
 <p>For convenience and readability,
 the DateTime class provides a constant for each day and month
 name—for example, <a class="" href="ex/DateTime/AUGUST.html">AUGUST</a> and <a class="" href="ex/DateTime/FRIDAY.html">FRIDAY</a>.
 You can use these constants to improve code readibility:</p>
-<pre class="prettyprint lang-dart"><code>DateTime berlinWallFell = new DateTime(1989, DateTime.NOVEMBER, 9);
+<pre><code class="language-dart prettyprint">DateTime berlinWallFell = new DateTime(1989, DateTime.NOVEMBER, 9);
 assert(berlinWallFell.weekday == DateTime.THURSDAY);
 </code></pre>
 <p>Day and month values begin at 1, and the week starts on Monday.
@@ -167,7 +167,7 @@ That is, the constants <a class="" href="ex/DateTime/JANUARY.html">JANUARY</a> a
 <h2>Working with UTC and local time</h2>
 <p>A DateTime object is in the local time zone
 unless explicitly created in the UTC time zone.</p>
-<pre class="prettyprint lang-dart"><code>DateTime dDay = new DateTime.utc(1944, 6, 6);
+<pre><code class="language-dart prettyprint">DateTime dDay = new DateTime.utc(1944, 6, 6);
 </code></pre>
 <p>Use <a class="" href="ex/DateTime/isUtc.html">isUtc</a> to determine whether a DateTime object is based in UTC.
 Use the methods <a class="" href="ex/DateTime/toLocal.html">toLocal</a> and <a class="" href="ex/DateTime/toUtc.html">toUtc</a>
@@ -181,19 +181,19 @@ call <a class="" href="ex/DateTime/timeZoneOffset.html">timeZoneOffset</a>.</p>
 <p>The DateTime class contains several handy methods,
 such as <a class="" href="ex/DateTime/isAfter.html">isAfter</a>, <a class="" href="ex/DateTime/isBefore.html">isBefore</a>, and <a class="" href="ex/DateTime/isAtSameMomentAs.html">isAtSameMomentAs</a>,
 for comparing DateTime objects.</p>
-<pre class="prettyprint lang-dart"><code>assert(berlinWallFell.isAfter(moonLanding) == true);
+<pre><code class="language-dart prettyprint">assert(berlinWallFell.isAfter(moonLanding) == true);
 assert(berlinWallFell.isBefore(moonLanding) == false);
 </code></pre>
 <h2>Using DateTime with Duration</h2>
 <p>Use the <a class="" href="ex/DateTime/add.html">add</a> and <a class="" href="ex/DateTime/subtract.html">subtract</a> methods with a <code>Duration</code> object
 to create a new DateTime object based on another.
 For example, to find the date that is sixty days after today, write:</p>
-<pre class="prettyprint lang-dart"><code>DateTime today = new DateTime.now();
+<pre><code class="language-dart prettyprint">DateTime today = new DateTime.now();
 DateTime sixtyDaysFromNow = today.add(new Duration(days: 60));
 </code></pre>
 <p>To find out how much time is between two DateTime objects use
 <a class="" href="ex/DateTime/difference.html">difference</a>, which returns a <code>Duration</code> object:</p>
-<pre class="prettyprint lang-dart"><code>Duration difference = berlinWallFell.difference(moonLanding)
+<pre><code class="language-dart prettyprint">Duration difference = berlinWallFell.difference(moonLanding)
 assert(difference.inDays == 7416);
 </code></pre>
 <p>The difference between two dates in different time zones

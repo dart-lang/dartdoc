@@ -66,8 +66,14 @@ class Documentation {
     for (var s in asHtmlDocument.querySelectorAll('script')) {
       s.remove();
     }
-    for (var e in asHtmlDocument.querySelectorAll('pre')) {
-      e.classes.addAll(['prettyprint', 'lang-dart']);
+    for (var e in asHtmlDocument.querySelectorAll('pre code')) {
+      // only "assume" the user intended dart if there are no other classes
+      // present
+      if (e.classes.isEmpty) {
+        e.classes.add('language-dart');
+      }
+
+      e.classes.add('prettyprint');
     }
     var asHtml = asHtmlDocument.body.innerHtml;
 
