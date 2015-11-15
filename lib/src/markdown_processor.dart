@@ -56,42 +56,45 @@ String _linkDocReference(String reference, ModelElement element,
 // TODO: this is in the wrong place
 class Documentation {
   final ModelElement element;
-  String _asHtml;
-  String _asOneLiner;
-  Document _asHtmlDocument;
+  final String asHtml;
+  final String asOneLiner;
+  final Document asHtmlDocument;
 
-  Documentation(this.element) {
-    _processDocsAsMarkdown();
+  factory Documentation(ModelElement element) {
+    String tempHtml = renderMarkdownToHtml(element.documentation, element);
+    var asHtmlDocument = parse(tempHtml);
+    for (var s in asHtmlDocument.querySelectorAll('script')) {
+      s.remove();
+    }
+    for (var e in asHtmlDocument.querySelectorAll('pre code')) {
+      // only "assume" the user intended dart if there are no other classes
+      // present
+      if (e.classes.isEmpty) {
+        e.classes.add('language-dart');
+      }
+
+      e.classes.add('prettyprint');
+    }
+    var asHtml = asHtmlDocument.body.innerHtml;
+
+    // Fixes issue with line ending differences between mac and windows, affecting tests
+    if (asHtml != null) asHtml = asHtml.trim();
+
+    var asOneLiner = '';
+
+    if (asHtmlDocument.body.children.isNotEmpty) {
+      asOneLiner = asHtmlDocument.body.children.first.innerHtml;
+    }
+
+    return new Documentation._(element, asHtml, asHtmlDocument, asOneLiner);
   }
+
+  Documentation._(
+      this.element, this.asHtml, this.asHtmlDocument, this.asOneLiner);
 
   String get raw => this.element.documentation;
 
-  String get asHtml => _asHtml;
-
-  Document get asHtmlDocument => _asHtmlDocument;
-
-  String get asOneLiner => _asOneLiner;
-
-  bool get hasMoreThanOneLineDocs => _asHtmlDocument.body.children.length > 1;
-
-  void _processDocsAsMarkdown() {
-    String tempHtml = renderMarkdownToHtml(raw, element);
-    _asHtmlDocument = parse(tempHtml);
-    _asHtmlDocument.querySelectorAll('script').forEach((s) => s.remove());
-    _asHtmlDocument.querySelectorAll('pre').forEach((e) {
-      e.classes.addAll(['prettyprint', 'lang-dart']);
-    });
-    _asHtml = _asHtmlDocument.body.innerHtml;
-
-    // Fixes issue with line ending differences between mac and windows, affecting tests
-    if (_asHtml != null) _asHtml = _asHtml.trim();
-
-    if (_asHtmlDocument.body.children.isEmpty) {
-      _asOneLiner = '';
-    } else {
-      _asOneLiner = _asHtmlDocument.body.children.first.innerHtml;
-    }
-  }
+  bool get hasMoreThanOneLineDocs => asHtmlDocument.body.children.length > 1;
 }
 
 String renderMarkdownToHtml(String text, [ModelElement element]) {
