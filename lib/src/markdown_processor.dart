@@ -63,10 +63,12 @@ class Documentation {
   factory Documentation(ModelElement element) {
     String tempHtml = renderMarkdownToHtml(element.documentation, element);
     var asHtmlDocument = parse(tempHtml);
-    asHtmlDocument.querySelectorAll('script').forEach((s) => s.remove());
-    asHtmlDocument.querySelectorAll('pre').forEach((e) {
+    for (var s in asHtmlDocument.querySelectorAll('script')) {
+      s.remove();
+    }
+    for (var e in asHtmlDocument.querySelectorAll('pre')) {
       e.classes.addAll(['prettyprint', 'lang-dart']);
-    });
+    }
     var asHtml = asHtmlDocument.body.innerHtml;
 
     // Fixes issue with line ending differences between mac and windows, affecting tests
