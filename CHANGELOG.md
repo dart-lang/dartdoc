@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ## 0.8.0
 * [bug] fix annotation shown as raw HTML in constructors
 * [bug] fix missing return type when Future
@@ -10,6 +11,7 @@
   Use of these libraries by third-party code is no longer supported.
 * **BREAKING** `generator.dart` is no longer exposed as a stand-alone library.
   You can access the `Generator` class by importing `dartdoc.dart`.
+* [enhancement] Add UI to show, hide, or dim inherited class members.
 
 ## 0.7.4
 * [bug] In class documentation, move constructors before instance properties
