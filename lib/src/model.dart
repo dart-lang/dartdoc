@@ -523,7 +523,7 @@ class Package implements Nameable, Documentable {
   String get documentationAsHtml {
     if (_docsAsHtml != null) return _docsAsHtml;
 
-    _docsAsHtml = renderMarkdownToHtml(documentation);
+    _docsAsHtml = new Documentation(documentation).asHtml;
 
     return _docsAsHtml;
   }

@@ -63,8 +63,13 @@ class Documentation {
   final String asOneLiner;
   final bool hasMoreThanOneLineDocs;
 
+  factory Documentation(String markdown) {
+    String tempHtml = _renderMarkdownToHtml(markdown);
+    return new Documentation._internal(markdown, tempHtml);
+  }
+
   factory Documentation.forElement(ModelElement element) {
-    String tempHtml = renderMarkdownToHtml(element.documentation, element);
+    String tempHtml = _renderMarkdownToHtml(element.documentation, element);
     return new Documentation._internal(element.documentation, tempHtml);
   }
 
@@ -112,7 +117,7 @@ class Documentation {
       this.raw, this.asHtml, this.hasMoreThanOneLineDocs, this.asOneLiner);
 }
 
-String renderMarkdownToHtml(String text, [ModelElement element]) {
+String _renderMarkdownToHtml(String text, [ModelElement element]) {
   md.Node _linkResolver(String name) {
     NodeList<CommentReference> commentRefs = _getCommentRefs(element);
     return new md.Text(_linkDocReference(name, element, commentRefs));
