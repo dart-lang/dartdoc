@@ -2,14 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import '../markdown_processor.dart';
 import '../model.dart';
-
-typedef String MarkdownRenderer(String input);
-
-/// Converts a markdown formatted string into HTML, and removes any script tags.
-/// Returns the HTML as a string.
-String renderMarkdown(String markdown) => renderMarkdownToHtml(markdown);
 
 abstract class HtmlOptions {
   String get relCanonicalPrefix;
@@ -27,11 +20,9 @@ class Subnav {
 
 abstract class TemplateData {
   final Package package;
-  final MarkdownRenderer markdownRenderer;
   final HtmlOptions htmlOptions;
 
-  TemplateData(this.htmlOptions, this.package, {MarkdownRenderer markdown})
-      : this.markdownRenderer = markdown == null ? renderMarkdown : markdown;
+  TemplateData(this.htmlOptions, this.package);
 
   String get documentation => self.documentation;
   String get oneLineDoc => self.oneLineDoc;
@@ -64,9 +55,8 @@ abstract class TemplateData {
 }
 
 class PackageTemplateData extends TemplateData {
-  PackageTemplateData(HtmlOptions htmlOptions, Package package,
-      {MarkdownRenderer markdown})
-      : super(htmlOptions, package, markdown: markdown);
+  PackageTemplateData(HtmlOptions htmlOptions, Package package)
+      : super(htmlOptions, package);
 
   List get navLinks => [];
   String get title => '${package.name} - Dart API docs';

@@ -10,7 +10,6 @@ import 'dart:typed_data' show Uint8List;
 import 'package:path/path.dart' as path;
 
 import '../model.dart';
-import '../package_meta.dart';
 import 'resources.g.dart' as resources;
 import 'resource_loader.dart' as loader;
 import 'templates.dart';
@@ -128,17 +127,9 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void generatePackage() {
-    MarkdownRenderer markdownRenderer = renderMarkdown;
-
-    if (package.hasDocumentationFile) {
-      FileContents readme = package.documentationFile;
-      markdownRenderer = readme.isMarkdown ? renderMarkdown : _renderPlainText;
-    }
-
     stdout.write('documenting ${package.name}');
 
-    TemplateData data =
-        new PackageTemplateData(this, package, markdown: markdownRenderer);
+    TemplateData data = new PackageTemplateData(this, package);
 
     _build('index.html', _templates.indexTemplate, data);
   }
@@ -268,13 +259,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
     f.writeAsStringSync(content);
     _onFileCreated.add(f);
   }
-}
-
-/// Convert the given plain text into HTML.
-String _renderPlainText(String text) {
-  if (text == null) return '';
-
-  return "<code class='fixed'>${text.trim()}</code>";
 }
 
 File _createOutputFile(Directory destination, String filename) {
