@@ -42,9 +42,13 @@ String _linkDocReference(String reference, ModelElement element,
     linkedElement = _getMatchingLinkElement(reference, element, commentRefs);
   }
   if (linkedElement != null) {
+    var classContent = '';
+    if (linkedElement.isDeprecated) {
+      classContent = 'class="deprecated" ';
+    }
     // this would be linkedElement.linkedName, but link bodies are slightly
     // different for doc references. sigh.
-    return '<a class="${linkedElement.isDeprecated ? 'deprecated' : ''}" href="${linkedElement.href}">$reference</a>';
+    return '<a ${classContent}href="${linkedElement.href}">$reference</a>';
   } else {
     if (_emitWarning) {
       print("  warning: unresolved doc reference '$reference' (in $element)");

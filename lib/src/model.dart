@@ -388,7 +388,12 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
           .startsWith('_')) return '${c.name}.${HTML_ESCAPE.convert(name)}';
     }
 
-    return '<a class="${isDeprecated ? 'deprecated' : ''}" href="${href}">$name</a>';
+    var classContent = '';
+    if (isDeprecated) {
+      classContent = 'class="deprecated" ';
+    }
+
+    return '<a ${classContent}href="${href}">$name</a>';
   }
 
   String get href;
