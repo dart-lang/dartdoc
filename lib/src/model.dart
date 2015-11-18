@@ -238,7 +238,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   Documentation get _documentation {
     if (__documentation != null) return __documentation;
-    __documentation = new Documentation(this);
+    __documentation = new Documentation.forElement(this);
     return __documentation;
   }
 

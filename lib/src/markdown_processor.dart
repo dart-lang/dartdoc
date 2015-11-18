@@ -19,7 +19,6 @@ import 'package:analyzer/src/generated/element.dart'
         TopLevelVariableElement,
         ParameterElement,
         PropertyAccessorElement;
-import 'package:html/dom.dart' show Document;
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 
@@ -59,19 +58,39 @@ String _linkDocReference(String reference, ModelElement element,
 
 // TODO: this is in the wrong place
 class Documentation {
-  final ModelElement element;
+  final String raw;
   final String asHtml;
   final String asOneLiner;
-  final Document asHtmlDocument;
+  final bool hasMoreThanOneLineDocs;
 
-  factory Documentation(ModelElement element) {
+  factory Documentation.forElement(ModelElement element) {
     String tempHtml = renderMarkdownToHtml(element.documentation, element);
-    var asHtmlDocument = parse(tempHtml);
+    return new Documentation._internal(element.documentation, tempHtml);
+  }
+
+  factory Documentation._internal(String markdown, String rawHtml) {
+    var asHtmlDocument = parse(rawHtml);
     for (var s in asHtmlDocument.querySelectorAll('script')) {
       s.remove();
     }
     for (var e in asHtmlDocument.querySelectorAll('pre')) {
-      e.classes.addAll(['prettyprint', 'lang-dart']);
+      if (e.children.length != 1 && e.children.first.localName != 'code') {
+        continue;
+      }
+
+      // TODO(kevmoo): This should be applied to <code>, not <pre>
+      //   Waiting on pkg/markdown v0.10
+      //   See https://github.com/dart-lang/markdown/commit/a7bf3dd
+      e.classes.add('prettyprint');
+
+      // only "assume" the user intended dart if there are no other classes
+      // present
+      // TODO(kevmoo): This should be `language-dart`.
+      //   Waiting on pkg/markdown v0.10
+      //   See https://github.com/dart-lang/markdown/commit/a7bf3dd
+      if (e.classes.length == 1) {
+        e.classes.add('lang-dart');
+      }
     }
     var asHtml = asHtmlDocument.body.innerHtml;
 
@@ -79,20 +98,18 @@ class Documentation {
     if (asHtml != null) asHtml = asHtml.trim();
 
     var asOneLiner = '';
+    var moreThanOneLineDoc = asHtmlDocument.body.children.length > 1;
 
     if (asHtmlDocument.body.children.isNotEmpty) {
       asOneLiner = asHtmlDocument.body.children.first.innerHtml;
     }
 
-    return new Documentation._(element, asHtml, asHtmlDocument, asOneLiner);
+    return new Documentation._(
+        markdown, asHtml, moreThanOneLineDoc, asOneLiner);
   }
 
   Documentation._(
-      this.element, this.asHtml, this.asHtmlDocument, this.asOneLiner);
-
-  String get raw => this.element.documentation;
-
-  bool get hasMoreThanOneLineDocs => asHtmlDocument.body.children.length > 1;
+      this.raw, this.asHtml, this.hasMoreThanOneLineDocs, this.asOneLiner);
 }
 
 String renderMarkdownToHtml(String text, [ModelElement element]) {
