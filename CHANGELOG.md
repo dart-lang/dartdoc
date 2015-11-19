@@ -1,9 +1,15 @@
+## 0.8.1
+* [bug] No longer includes `<base>` element in the package root.
+* [bug] Eliminates a number of empty `class` attributes.
+* [bug] Show deprecated libraries the same way in both package and library view.
+* [bug] Process `readme.md` Markdown with the process that is used in document comments.
+
 ## 0.8.0
 * [bug] fix annotation shown as raw HTML in constructors
 * [bug] fix missing return type when Future
 * [enhancement] do not show "Not documented." message for members without doc comments
 * [enhancement] show constructors before properties in right side bar
-* [enhancement] sort names with embedded integers lexicograpically
+* [enhancement] sort names with embedded integers lexicographically
 * **BREAKING** `initGenerators` is now async. It returns `Future<List<Generator>>`.
 * **BREAKING** `markdown_processor.dart` and `resource_loader.dart` are no
   longer exposed as public libraries.
@@ -14,7 +20,7 @@
 ## 0.7.4
 * [bug] In class documentation, move constructors before instance properties
 * [bug] fix property pages to show documentation if not a setter/getter
-* [bug] show indented code blocks in comments as code 
+* [bug] show indented code blocks in comments as code
 
 ## 0.7.3
 * [bug] Add missing close `span` in accessor setter template
@@ -29,19 +35,19 @@
 * [bug] do not show '///' in doc output
 
 ## 0.7.1
-* [enhancement] restore the method signature at the top of 
+* [enhancement] restore the method signature at the top of
   method/ctor/function/operator pages
 * [enhancement] search using fully qualified names
-* [enhancement] better messaging when library itself lacks comments 
+* [enhancement] better messaging when library itself lacks comments
 * [enhancement] indicate when a class is an abstract class
-* [enhancement] indicate when a constructor is a factory cosntructor
+* [enhancement] indicate when a constructor is a factory constructor
 
 ## 0.7.0
-* [feature] --add-crossdart flag to add links to http://crossdart.info in 
+* [feature] --add-crossdart flag to add links to http://crossdart.info in
   the source code section
-* [bug] show type information for Map with generics 
+* [bug] show type information for Map with generics
 * [bug] show methods/properties inherited from Object
-* [health] remove --url-mappings option, the analyzer picks up sdk extensions
+* [health] remove --url-mappings option, the analyzer picks up SDK extensions
   from the package
 * [style] changed how we display constant values
 
@@ -52,7 +58,7 @@
 ## 0.6.5
 * [new] --rel-canonical-prefix to help with SEO for many
         versions of the same docs
-* [bug] fixed linking in the sdk docs
+* [bug] fixed linking in the SDK docs
 * [enhancement] do not display comments with actual source code
 * [enhancement] show source code for constructors
 * [style] tweaks to the footer
@@ -65,9 +71,9 @@
 * [enhancement] print annotations on separate lines
 
 ## 0.6.3
-* [bug] remove duplicate property enteries
+* [bug] remove duplicate property entries
 * [enhancement] better distinction between getters and setters for properties
-* [enchancement] link inherited elements to superclass pages if available
+* [enhancement] link inherited elements to superclass pages if available
 * [bug] fix README.md not rendering correctly on pub.dartlang
 * [health] resume testing on stable channel
 
@@ -89,7 +95,7 @@
 * Improved display of getters and setters on property pages
 
 ## 0.6.0+1
-* [bug] fix for getting uri for sources in lib folder
+* [bug] fix for getting URI for sources in lib folder
 
 ## 0.6.0
 * [enhancement] / key activates the search bar
