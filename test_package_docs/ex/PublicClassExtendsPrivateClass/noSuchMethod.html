@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="generator" content="made with love by dartdoc 0.8.2">
+  <meta name="generator" content="made with love by dartdoc 0.8.3-dev">
   <title>noSuchMethod method - PublicClassExtendsPrivateClass class - ex library - Dart API</title>
   <!-- required because all the links are pseudo-absolute -->
   <base href="../..">
@@ -109,13 +109,10 @@
     </section>
 
     <section class="desc markdown">
-      <p><code>noSuchMethod</code> is invoked when users invoke a non-existent method
-on an object. The name of the method and the arguments of the
-invocation are passed to <code>noSuchMethod</code> in an <code>Invocation</code>.
-If <code>noSuchMethod</code> returns a value, that value becomes the result of
-the original invocation.</p>
-<p>The default behavior of <code>noSuchMethod</code> is to throw a
-<code>NoSuchMethodError</code>.</p>
+      <p>Invoked when a non-existent method or property is accessed.</p>
+<p>Classes can override <code>noSuchMethod</code> to provide custom behavior.</p>
+<p>If a value is returned, it becomes the result of the original invocation.</p>
+<p>The default behavior is to throw a <code>NoSuchMethodError</code>.</p>
     </section>
     
     <section class="summary source-code" id="source">
