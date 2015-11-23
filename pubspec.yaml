@@ -10,6 +10,7 @@ dependencies:
   analyzer: '>=0.26.0 <0.27.0'
   args: ^0.13.0
   cli_util: ^0.0.1
+  collection: ^1.2.0
   html: ^0.12.1
   http: ^0.11.0
   logging: '>=0.9.0 <0.12.0'
