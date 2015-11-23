@@ -411,8 +411,13 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         buf.write('</ol> ');
       }
       if (p.modelType.isFunctionType) {
-        buf.write(
-            '<span class="type-annotation">${(p.modelType.element as Typedef).linkedReturnType}</span>');
+        var returnTypeName;
+        if (p.modelType.element is Typedef) {
+          returnTypeName = p.modelType.name;
+        } else {
+          returnTypeName = p.modelType.createLinkedReturnTypeName();
+        }
+        buf.write('<span class="type-annotation">${returnTypeName}</span>');
         if (showNames) {
           buf.write(' <span class="parameter-name">${p.name}</span>');
         }

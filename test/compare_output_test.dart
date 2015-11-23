@@ -81,7 +81,6 @@ void main() {
       var message = <String>["There were differences:"];
 
       things.forEach((k, v) {
-        message.add("$v\t$k");
         if (v == 'M') {
           // If the discovered diff is a modification of a file, then
           // run `git diff` and add the output to the fail message.
@@ -94,9 +93,16 @@ void main() {
           ];
           result = Process.runSync(gitPath, args);
           assert(result.exitCode != 0);
-          message.add(result.stdout);
+          // TODO(keertip): remove once 1.14 is stable; noSuchMethod documentation
+          // has changed from 1.13 to 1.14.
+          if (!result.stdout.contains('noSuchMethod')) {
+            message.add("$v\t$k");
+            message.add(result.stdout);
+          }
         }
       });
+
+      if (message.length == 1) return;
 
       message.addAll([
         '',
