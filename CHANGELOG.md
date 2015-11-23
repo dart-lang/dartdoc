@@ -1,3 +1,7 @@
+## 0.8.2
+* [bug] fix exception due to change in analyzer, function types in parameters are no
+  longer treated as typedefs.
+
 ## 0.8.1
 * [bug] No longer includes `<base>` element in the package root.
 * [bug] Eliminates a number of empty `class` attributes.
