@@ -38,6 +38,12 @@ void main() {
     });
 
     test("Validate html output of test_package", () async {
+      if (Platform.isWindows) {
+        print("Tests are being run via `all.dart`, which means onPlatform "
+            "argument is ignored. Skipping on Windows to avoid parsing git output");
+        return;
+      }
+
       var dartdocBin =
           p.fromUri(_currentFileUri.resolve('../bin/dartdoc.dart'));
 
@@ -112,7 +118,7 @@ void main() {
 
       fail(message.join('\n'));
     });
-  });
+  }, onPlatform: {'windows': new Skip('Avoiding parsing git output')});
 }
 
 Map<String, String> _parseOutput(
@@ -130,11 +136,11 @@ Map<String, String> _parseOutput(
 
     if (type == 'A') {
       expect(p.isWithin(tempPath, path), isTrue,
-          reason: '"${path} should be within ${tempPath}');
+          reason: '`${path}` should be within ${tempPath}');
       path = p.relative(path, from: tempPath);
     } else {
       expect(p.isWithin(sourcePath, path), isTrue,
-          reason: '"${path} should be within ${sourcePath}');
+          reason: '`${path}` should be within ${sourcePath}');
       path = p.relative(path, from: sourcePath);
     }
 
