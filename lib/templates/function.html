@@ -9,20 +9,15 @@
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
 
+    {{#function}}
     <section class="multi-line-signature">
-      {{#function}}
         {{>callable_multiline}}
-      {{/function}}
     </section>
-
-    {{#function}}
     {{>documentation}}
-    {{/function}}
 
-    {{#function}}
     {{>source_code}}
-    {{/function}}
 
+    {{/function}}
   </div> <!-- /.main-content -->
 
 {{>footer}}

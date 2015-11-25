@@ -10,21 +10,15 @@
   </div><!--/.sidebar-offcanvas-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
-
+    {{#method}}
     <section class="multi-line-signature">
-      {{#method}}
-        {{>callable_multiline}}
-      {{/method}}
+      {{>callable_multiline}}
     </section>
-
-    {{#method}}
     {{>documentation}}
-    {{/method}}
 
-    {{#method}}
     {{>source_code}}
-    {{/method}}
 
+    {{/method}}
   </div> <!-- /.main-content -->
 
 {{>footer}}
