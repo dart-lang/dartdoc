@@ -69,11 +69,13 @@
             {{{ layoutTitle }}}
           </h1>
         </div>
+        {{#hasSubNav}}
         <ul class="subnav">
           {{#subnavItems}}
           <li><a href="{{href}}">{{name}}</a></li>
           {{/subnavItems}}
         </ul>
+        {{/hasSubNav}}
       </div> <!-- /col -->
     </div> <!-- /row -->
   </div> <!-- /container -->

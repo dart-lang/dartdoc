@@ -18,9 +18,11 @@ class Subnav {
   String toString() => name;
 }
 
-abstract class TemplateData {
+abstract class TemplateData<T extends Documentable> {
   final Package package;
   final HtmlOptions htmlOptions;
+
+  List<Subnav> _subNameItemCache;
 
   TemplateData(this.htmlOptions, this.package);
 
@@ -30,11 +32,22 @@ abstract class TemplateData {
   String get layoutTitle;
   String get metaDescription;
   List get navLinks;
-  List<Subnav> get subnavItems;
+
+  bool get hasSubNav => subnavItems.isNotEmpty;
+
+  List<Subnav> get subnavItems {
+    if (_subNameItemCache == null) {
+      _subNameItemCache = getSubNavItems().toList();
+    }
+    return _subNameItemCache;
+  }
+
   String get htmlBase;
-  dynamic get self;
+  T get self;
   String get version => htmlOptions.toolVersion;
   String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
+
+  Iterable<Subnav> getSubNavItems() => const Iterable<Subnav>.empty();
 
   String _layoutTitle(String name, String kind, bool isDeprecated) {
     if (kind.isEmpty) kind =
@@ -44,17 +57,15 @@ abstract class TemplateData {
     return '${str} <span class="deprecated">$name</span>';
   }
 
-  List<Subnav> _gatherSubnavForInvokable(ModelElement element) {
+  Iterable<Subnav> _gatherSubnavForInvokable(ModelElement element) sync* {
     if (element is SourceCodeMixin &&
         (element as SourceCodeMixin).hasSourceCode) {
-      return [new Subnav('Source', '${element.href}#source')];
-    } else {
-      return const [];
+      yield new Subnav('Source', '${element.href}#source');
     }
   }
 }
 
-class PackageTemplateData extends TemplateData {
+class PackageTemplateData extends TemplateData<Package> {
   PackageTemplateData(HtmlOptions htmlOptions, Package package)
       : super(htmlOptions, package);
 
@@ -65,14 +76,15 @@ class PackageTemplateData extends TemplateData {
       _layoutTitle(package.name, package.isSdk ? '' : 'package', false);
   String get metaDescription =>
       '${package.name} API docs, for the Dart programming language.';
-  List<Subnav> get subnavItems =>
-      [new Subnav('Libraries', '${package.href}#libraries')];
+  Iterable<Subnav> getSubNavItems() sync* {
+    yield new Subnav('Libraries', '${package.href}#libraries');
+  }
 
   /// `null` for packages because they are at the root – not needed
   String get htmlBase => null;
 }
 
-class LibraryTemplateData extends TemplateData {
+class LibraryTemplateData extends TemplateData<Library> {
   final Library library;
 
   LibraryTemplateData(HtmlOptions htmlOptions, Package package, this.library)
@@ -84,25 +96,20 @@ class LibraryTemplateData extends TemplateData {
   String get metaDescription =>
       '${library.name} library API docs, for the Dart programming language.';
   List get navLinks => [package];
-  List<Subnav> get subnavItems {
-    List<Subnav> navs = [];
-
-    if (library.hasConstants) navs
-        .add(new Subnav('Constants', '${library.href}#constants'));
-    if (library.hasTypedefs) navs
-        .add(new Subnav('Typedefs', '${library.href}#typedefs'));
-    if (library.hasProperties) navs
-        .add(new Subnav('Properties', '${library.href}#properties'));
-    if (library.hasFunctions) navs
-        .add(new Subnav('Functions', '${library.href}#functions'));
-    if (library.hasEnums) navs
-        .add(new Subnav('Enums', '${library.href}#enums'));
-    if (library.hasClasses) navs
-        .add(new Subnav('Classes', '${library.href}#classes'));
-    if (library.hasExceptions) navs
-        .add(new Subnav('Exceptions', '${library.href}#exceptions'));
-
-    return navs;
+  Iterable<Subnav> getSubNavItems() sync* {
+    if (library.hasConstants) yield new Subnav(
+        'Constants', '${library.href}#constants');
+    if (library.hasTypedefs) yield new Subnav(
+        'Typedefs', '${library.href}#typedefs');
+    if (library.hasProperties) yield new Subnav(
+        'Properties', '${library.href}#properties');
+    if (library.hasFunctions) yield new Subnav(
+        'Functions', '${library.href}#functions');
+    if (library.hasEnums) yield new Subnav('Enums', '${library.href}#enums');
+    if (library.hasClasses) yield new Subnav(
+        'Classes', '${library.href}#classes');
+    if (library.hasExceptions) yield new Subnav(
+        'Exceptions', '${library.href}#exceptions');
   }
 
   String get layoutTitle =>
@@ -110,7 +117,7 @@ class LibraryTemplateData extends TemplateData {
   Library get self => library;
 }
 
-class ClassTemplateData extends TemplateData {
+class ClassTemplateData extends TemplateData<Class> {
   final Class clazz;
   final Library library;
   Class _objectType;
@@ -132,25 +139,21 @@ class ClassTemplateData extends TemplateData {
       _layoutTitle(clazz.nameWithGenerics, clazz.fullkind, clazz.isDeprecated);
   List get navLinks => [package, library];
   String get htmlBase => '..';
-  List<Subnav> get subnavItems {
-    List<Subnav> navs = [];
-
-    if (clazz.hasConstants) navs
-        .add(new Subnav('Constants', '${clazz.href}#constants'));
-    if (clazz.hasStaticProperties) navs.add(
-        new Subnav('Static Properties', '${clazz.href}#static-properties'));
-    if (clazz.hasStaticMethods) navs
-        .add(new Subnav('Static Methods', '${clazz.href}#static-methods'));
-    if (clazz.hasInstanceProperties) navs
-        .add(new Subnav('Properties', '${clazz.href}#instance-properties'));
-    if (clazz.hasConstructors) navs
-        .add(new Subnav('Constructors', '${clazz.href}#constructors'));
-    if (clazz.hasOperators) navs
-        .add(new Subnav('Operators', '${clazz.href}#operators'));
-    if (clazz.hasInstanceMethods) navs
-        .add(new Subnav('Methods', '${clazz.href}#instance-methods'));
-
-    return navs;
+  Iterable<Subnav> getSubNavItems() sync* {
+    if (clazz.hasConstants) yield new Subnav(
+        'Constants', '${clazz.href}#constants');
+    if (clazz.hasStaticProperties) yield new Subnav(
+        'Static Properties', '${clazz.href}#static-properties');
+    if (clazz.hasStaticMethods) yield new Subnav(
+        'Static Methods', '${clazz.href}#static-methods');
+    if (clazz.hasInstanceProperties) yield new Subnav(
+        'Properties', '${clazz.href}#instance-properties');
+    if (clazz.hasConstructors) yield new Subnav(
+        'Constructors', '${clazz.href}#constructors');
+    if (clazz.hasOperators) yield new Subnav(
+        'Operators', '${clazz.href}#operators');
+    if (clazz.hasInstanceMethods) yield new Subnav(
+        'Methods', '${clazz.href}#instance-methods');
   }
 
   Class get objectType {
@@ -169,7 +172,7 @@ class ClassTemplateData extends TemplateData {
   }
 }
 
-class ConstructorTemplateData extends TemplateData {
+class ConstructorTemplateData extends TemplateData<Constructor> {
   final Library library;
   final Class clazz;
   final Constructor constructor;
@@ -182,7 +185,7 @@ class ConstructorTemplateData extends TemplateData {
   String get layoutTitle => _layoutTitle(
       constructor.name, constructor.fullKind, constructor.isDeprecated);
   List get navLinks => [package, library, clazz];
-  List<Subnav> get subnavItems => _gatherSubnavForInvokable(constructor);
+  Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(constructor);
   String get htmlBase => '../..';
   String get title => '${constructor.name} constructor - ${clazz.name} class - '
       '${library.name} library - Dart API';
@@ -192,7 +195,7 @@ class ConstructorTemplateData extends TemplateData {
       'for the Dart programming language.';
 }
 
-class EnumTemplateData extends TemplateData {
+class EnumTemplateData extends TemplateData<Enum> {
   EnumTemplateData(
       HtmlOptions htmlOptions, Package package, this.library, this.clazz)
       : super(htmlOptions, package);
@@ -208,15 +211,13 @@ class EnumTemplateData extends TemplateData {
       'for the Dart programming language.';
   List get navLinks => [package, library];
   String get htmlBase => '..';
-  List<Subnav> get subnavItems {
-    return [
-      new Subnav('Constants', '${clazz.href}#constants'),
-      new Subnav('Properties', '${clazz.href}#properties')
-    ];
-  }
+  Iterable<Subnav> getSubNavItems() => [
+        new Subnav('Constants', '${clazz.href}#constants'),
+        new Subnav('Properties', '${clazz.href}#properties')
+      ];
 }
 
-class FunctionTemplateData extends TemplateData {
+class FunctionTemplateData extends TemplateData<ModelFunction> {
   final ModelFunction function;
   final Library library;
 
@@ -233,11 +234,11 @@ class FunctionTemplateData extends TemplateData {
       'API docs for the ${function.name} function from the '
       '${library.name} library, for the Dart programming language.';
   List get navLinks => [package, library];
-  List<Subnav> get subnavItems => _gatherSubnavForInvokable(function);
+  Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(function);
   String get htmlBase => '..';
 }
 
-class MethodTemplateData extends TemplateData {
+class MethodTemplateData extends TemplateData<Method> {
   final Library library;
   final Method method;
   final Class clazz;
@@ -255,11 +256,11 @@ class MethodTemplateData extends TemplateData {
       'API docs for the ${method.name} method from the ${clazz.name} class, '
       'for the Dart programming language.';
   List get navLinks => [package, library, clazz];
-  List<Subnav> get subnavItems => _gatherSubnavForInvokable(method);
+  Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(method);
   String get htmlBase => '../..';
 }
 
-class PropertyTemplateData extends TemplateData {
+class PropertyTemplateData extends TemplateData<Field> {
   final Library library;
   final Class clazz;
   final Field property;
@@ -278,7 +279,6 @@ class PropertyTemplateData extends TemplateData {
       'API docs for the ${property.name} $type from the ${clazz.name} class, '
       'for the Dart programming language.';
   List get navLinks => [package, library, clazz];
-  List get subnavItems => [];
   String get htmlBase => '../..';
 
   String get type => 'property';
@@ -292,7 +292,7 @@ class ConstantTemplateData extends PropertyTemplateData {
   String get type => 'constant';
 }
 
-class TypedefTemplateData extends TemplateData {
+class TypedefTemplateData extends TemplateData<Typedef> {
   final Library library;
   final Typedef typeDef;
 
@@ -311,10 +311,9 @@ class TypedefTemplateData extends TemplateData {
       '${library.name} library, for the Dart programming language.';
   List get navLinks => [package, library];
   String get htmlBase => '..';
-  List get subnavItems => [];
 }
 
-class TopLevelPropertyTemplateData extends TemplateData {
+class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
   final Library library;
   final TopLevelVariable property;
 
@@ -333,7 +332,6 @@ class TopLevelPropertyTemplateData extends TemplateData {
       '${library.name} library, for the Dart programming language.';
   List get navLinks => [package, library];
   String get htmlBase => '..';
-  List get subnavItems => [];
 
   String get _type => 'property';
 }
