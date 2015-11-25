@@ -61,7 +61,6 @@
           </h1>
         </div>
         <ul class="subnav">
-          <li><a href="ex/DateTime/operator_equals.html#source">Source</a></li>
         </ul>
       </div> <!-- /col -->
     </div> <!-- /row -->
@@ -165,14 +164,7 @@ assert(dDayUtc.isAtSameMomentAs(dDayLocal) == false);
 <p>See <a href="ex/DateTime/isAtSameMomentAs.html">isAtSameMomentAs</a> for a comparison that adjusts for time zone.</p>
     </section>
     
-    <section class="summary source-code" id="source">
-      <h2><span>Source</span> </h2>
-      <pre><code class="prettyprint lang-dart">bool operator ==(other) {
-  if (!(other is DateTime)) return false;
-  return (millisecondsSinceEpoch == other.millisecondsSinceEpoch &amp;&amp;
-          isUtc == other.isUtc);
-}</code></pre>
-    </section>
+    
 
   </div> <!-- /.main-content -->
 

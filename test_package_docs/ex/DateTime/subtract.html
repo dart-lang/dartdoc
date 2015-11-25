@@ -61,7 +61,6 @@
           </h1>
         </div>
         <ul class="subnav">
-          <li><a href="ex/DateTime/subtract.html#source">Source</a></li>
         </ul>
       </div> <!-- /col -->
     </div> <!-- /row -->
@@ -161,14 +160,7 @@ DateTime sixtyDaysAgo = today.subtract(new Duration(days: 60));
 </code></pre>
     </section>
     
-    <section class="summary source-code" id="source">
-      <h2><span>Source</span> </h2>
-      <pre><code class="prettyprint lang-dart">DateTime subtract(Duration duration) {
-  int ms = millisecondsSinceEpoch;
-  return new DateTime.fromMillisecondsSinceEpoch(
-      ms - duration.inMilliseconds, isUtc: isUtc);
-}</code></pre>
-    </section>
+    
 
   </div> <!-- /.main-content -->
 

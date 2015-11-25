@@ -315,6 +315,12 @@ updateTestPackageDocs() {
   // This must match the content in `compare_output_test`
 
   Dart.run('../bin/dartdoc.dart',
-      arguments: ['--output', '../test_package_docs', '--exclude', 'fake',],
+      arguments: [
+        '--no-include-source',
+        '--output',
+        '../test_package_docs',
+        '--exclude',
+        'fake',
+      ],
       runOptions: options);
 }

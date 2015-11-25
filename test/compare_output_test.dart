@@ -53,6 +53,7 @@ void main() {
 
       var args = <String>[
         dartdocBin,
+        '--no-include-source',
         '--output',
         tempDir.path,
         '--exclude',
@@ -62,7 +63,12 @@ void main() {
       var result =
           Process.runSync('dart', args, workingDirectory: _testPackagePath);
 
-      expect(result.exitCode, 0);
+      if (result.exitCode != 0) {
+        print(result.exitCode);
+        print(result.stdout);
+        print(result.stderr);
+        fail('dartdoc failed');
+      }
 
       var gitPath = await _gitBinPath();
 

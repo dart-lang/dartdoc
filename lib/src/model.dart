@@ -1331,7 +1331,7 @@ abstract class SourceCodeMixin {
 
   String _sourceCodeCache;
 
-  bool get hasSourceCode => sourceCode.isNotEmpty;
+  bool get hasSourceCode => config.includeSource && sourceCode.isNotEmpty;
 
   String get sourceCode {
     if (_sourceCodeCache == null) {
