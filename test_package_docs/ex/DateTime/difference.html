@@ -166,8 +166,7 @@ assert(difference.inDays == 16592);
     
     <section class="summary source-code" id="source">
       <h2><span>Source</span> </h2>
-      <pre><code class="prettyprint lang-dart">
-Duration difference(DateTime other) {
+      <pre><code class="prettyprint lang-dart">Duration difference(DateTime other) {
   int ms = millisecondsSinceEpoch;
   int otherMs = other.millisecondsSinceEpoch;
   return new Duration(milliseconds: ms - otherMs);

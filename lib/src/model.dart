@@ -1326,27 +1326,41 @@ class Enum extends Class {
 }
 
 abstract class SourceCodeMixin {
-  String get sourceCode {
-    String contents = element.source.contents.data;
-    var node = element.computeNode();
-    if (node == null) return '';
+  Library get library;
+  Element get element;
 
-    // Find the start of the line, so that we can line up all the indents.
-    int i = node.offset;
-    while (i > 0) {
-      i -= 1;
-      if (contents[i] == '\n' || contents[i] == '\r') {
-        i += 1;
-        break;
+  String _sourceCodeCache;
+
+  bool get hasSourceCode => sourceCode.isNotEmpty;
+
+  String get sourceCode {
+    if (_sourceCodeCache == null) {
+      String contents = element.source.contents.data;
+      var node = element.computeNode();
+      if (node != null) {
+        // Find the start of the line, so that we can line up all the indents.
+        int i = node.offset;
+        while (i > 0) {
+          i -= 1;
+          if (contents[i] == '\n' || contents[i] == '\r') {
+            i += 1;
+            break;
+          }
+        }
+
+        // Trim the common indent from the source snippet.
+        String source =
+            contents.substring(node.offset - (node.offset - i), node.end);
+        source = stripIndentFromSource(source);
+        source = stripDartdocCommentsFromSource(source);
+
+        _sourceCodeCache = source.trim();
+      } else {
+        _sourceCodeCache = '';
       }
     }
 
-    // Trim the common indent from the source snippet.
-    String source =
-        contents.substring(node.offset - (node.offset - i), node.end);
-    source = stripIndentFromSource(source);
-    source = stripDartdocCommentsFromSource(source);
-    return source;
+    return _sourceCodeCache;
   }
 
   String get crossdartHtmlTag {
@@ -1395,11 +1409,6 @@ abstract class SourceCodeMixin {
       return null;
     }
   }
-
-  bool get hasSourceCode => sourceCode.trim().isNotEmpty;
-
-  Library get library;
-  Element get element;
 }
 
 class ModelFunction extends ModelElement
