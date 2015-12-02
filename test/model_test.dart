@@ -879,8 +879,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('parameter is a function', () {
-      var element = m4.parameters[1].modelType.element as Typedef;
-      expect(element.linkedReturnType, 'String');
+      var functionArgParam = m4.parameters[1];
+      expect(functionArgParam.modelType.createLinkedReturnTypeName(), 'String');
     });
 
     test('doc for method with no return type', () {
