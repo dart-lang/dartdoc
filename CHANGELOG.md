@@ -1,5 +1,6 @@
 ## 0.8.3
 * [enhancement] Added `--[no-]include-source` option.
+* [enhancement] Dimmed inherited members in the right sidebar.
 
 ## 0.8.2
 * [bug] fix exception due to change in analyzer, function types in parameters are no
