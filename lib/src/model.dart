@@ -320,9 +320,12 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         ? (this as EnclosedElement).enclosingElement
         : null;
     if (c != null) {
-      if (!package.isDocumented(c.element)) return HTML_ESCAPE.convert(name);
-      if (c.name
-          .startsWith('_')) return '${c.name}.${HTML_ESCAPE.convert(name)}';
+      if (!package.isDocumented(c.element)) {
+        return HTML_ESCAPE.convert(name);
+      }
+      if (c.name.startsWith('_')) {
+        return '${c.name}.${HTML_ESCAPE.convert(name)}';
+      }
     }
 
     var classContent = '';
