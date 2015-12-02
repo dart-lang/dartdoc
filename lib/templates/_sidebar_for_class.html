@@ -23,7 +23,7 @@
   {{#clazz.hasConstructors}}
   <li class="section-title"><a href="{{clazz.href}}#constructors">Constructors</a></li>
   {{#clazz.constructors}}
-  <li><a href="{{href}}">{{shortName}}</a></li>
+  <li><a{{#isDeprecated}} class="deprecated"{{/isDeprecated}} href="{{href}}">{{shortName}}</a></li>
   {{/clazz.constructors}}
   {{/clazz.hasConstructors}}
 
