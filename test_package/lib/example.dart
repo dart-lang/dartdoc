@@ -114,11 +114,12 @@ class Dog implements Cat, E {
 
   Dog();
 
-  Dog.create(this.name);
+  @deprecated
+  Dog.deprecatedCreate(this.name);
 
   @Deprecated("Internal use")
   static Dog createDog(String s) {
-    return new Dog.create(s);
+    return new Dog.deprecatedCreate(s);
   }
 
   @deprecated
