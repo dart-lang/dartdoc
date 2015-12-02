@@ -32,6 +32,7 @@ import 'src/model.dart';
 import 'src/model_utils.dart';
 import 'src/package_meta.dart';
 
+export 'src/element_type.dart';
 export 'src/generator.dart';
 export 'src/model.dart';
 export 'src/package_meta.dart';

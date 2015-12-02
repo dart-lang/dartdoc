@@ -18,6 +18,7 @@ import 'package:collection/collection.dart';
 import 'package:quiver/core.dart' show hash3;
 
 import 'config.dart';
+import 'element_type.dart';
 import 'line_number_cache.dart';
 import 'markdown_processor.dart' show Documentation, renderMarkdownToHtml;
 import 'model_utils.dart';
@@ -1976,107 +1977,4 @@ class TypeParameter extends ModelElement {
   @override
   String get href =>
       '${library.dirName}/${_typeParameter.enclosingElement.name}/$name';
-}
-
-class ElementType {
-  DartType _type;
-  ModelElement _element;
-  String _linkedName;
-
-  ElementType(this._type, this._element);
-
-  String toString() => "$_type";
-
-  bool get isDynamic => _type.isDynamic;
-
-  bool get isParameterType => (_type is TypeParameterType);
-
-  bool get isFunctionType => (_type is FunctionType);
-
-  ModelElement get element => _element;
-
-  String get name => _type.name;
-
-  // TODO: this is probably a bug. Apparently, EVERYTHING is a parameterized type?
-  bool get isParameterizedType => (_type is ParameterizedType) &&
-      (_type as ParameterizedType).typeArguments.isNotEmpty;
-
-  String get _returnTypeName => (_type as FunctionType).returnType.name;
-
-  ElementType get _returnType {
-    var rt = (_type as FunctionType).returnType;
-    Library lib = _element.package.findLibraryFor(rt.element);
-    if (lib == null) {
-      lib = new Library(rt.element.library, _element.package);
-    }
-    return new ElementType(rt, new ModelElement.from(rt.element, lib));
-  }
-
-  ModelElement get returnElement {
-    Element e = (_type as FunctionType).returnType.element;
-    if (e == null) {
-      return null;
-    }
-    Library lib = _element.package.findLibraryFor(e);
-    if (lib == null) {
-      lib = new Library(e.library, _element.package);
-    }
-    return (new ModelElement.from(e, lib));
-  }
-
-  List<ElementType> get typeArguments =>
-      (_type as ParameterizedType).typeArguments.map((f) {
-        Library lib;
-        // can happen if element is dynamic
-        lib = _element.package.findLibraryFor(f.element);
-        if (lib == null && f.element.library != null) {
-          lib = new Library(f.element.library, _element.package);
-        }
-        return new ElementType(f, new ModelElement.from(f.element, lib));
-      }).toList();
-
-  String get linkedName {
-    if (_linkedName != null) return _linkedName;
-
-    StringBuffer buf = new StringBuffer();
-
-    if (isParameterType) {
-      buf.write(name);
-    } else {
-      buf.write(element.linkedName);
-    }
-
-    // not TypeParameterType or Void or Union type
-    if (isParameterizedType) {
-      if (typeArguments.every((t) => t.linkedName == 'dynamic')) {
-        _linkedName = buf.toString();
-        return _linkedName;
-      }
-      if (typeArguments.isNotEmpty) {
-        buf.write('&lt;');
-        buf.writeAll(typeArguments.map((t) => t.linkedName), ', ');
-        buf.write('&gt;');
-      }
-    }
-    _linkedName = buf.toString();
-
-    return _linkedName;
-  }
-
-  String createLinkedReturnTypeName() {
-    if ((_type as FunctionType).returnType.element == null ||
-        (_type as FunctionType).returnType.element.library == null) {
-      if (_returnTypeName != null) {
-        if (_returnTypeName == 'dynamic' && element.isAsynchronous) {
-          // TODO(keertip): for SDK docs it should be a link
-          return 'Future';
-        }
-        return _returnTypeName;
-      } else {
-        return '';
-      }
-    } else {
-      return _returnType.linkedName;
-    }
-  }
 }
