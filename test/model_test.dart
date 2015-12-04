@@ -638,9 +638,18 @@ void main() {
     });
 
     test('F has a few inherited properties', () {
-      expect(F.inheritedProperties, hasLength(4));
-      expect(F.inheritedProperties.map((ip) => ip.name),
-          equals(['hashCode', 'isImplemented', 'name', 'runtimeType']));
+      expect(F.inheritedProperties, hasLength(7));
+      expect(
+          F.inheritedProperties.map((ip) => ip.name),
+          equals([
+            'deprecatedField',
+            'deprecatedGetter',
+            'deprecatedSetter',
+            'hashCode',
+            'isImplemented',
+            'name',
+            'runtimeType'
+          ]));
     });
 
     test('SpecialList has zero instance methods', () {
@@ -1147,7 +1156,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('found two properties', () {
-      expect(exLibrary.properties, hasLength(2));
+      expect(exLibrary.properties, hasLength(5));
     });
 
     test('linked return type is a double', () {

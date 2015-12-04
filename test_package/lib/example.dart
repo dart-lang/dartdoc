@@ -27,6 +27,15 @@ const incorrectDocReferenceFromEx = 'doh';
 /// This is the same name as a top-level const from the fake lib.
 const incorrectDocReference = 'same name as const from fake';
 
+@deprecated
+int get deprecatedGetter => null;
+
+@deprecated
+void set deprecatedSetter(int value) {}
+
+@deprecated
+int deprecatedField;
+
 /// Sample class [String]
 class Apple {
   static const int n = 5;
@@ -100,7 +109,7 @@ class B extends Apple with Cat {
   }
 
   @deprecated
-  Future doNothing() {}
+  Future doNothing() async {}
 }
 
 // Do NOT add a doc comment to C. Testing blank comments.
@@ -114,6 +123,15 @@ class Dog implements Cat, E {
   String name;
 
   Dog();
+
+  @deprecated
+  int get deprecatedGetter => null;
+
+  @deprecated
+  void set deprecatedSetter(int value) {}
+
+  @deprecated
+  int deprecatedField;
 
   @deprecated
   Dog.deprecatedCreate(this.name);
