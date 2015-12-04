@@ -7,6 +7,7 @@
   {{#includeVersion}}
   <meta name="generator" content="made with love by dartdoc {{version}}">
   {{/includeVersion}}
+  <meta name="description" content="{{ metaDescription }}">
   <title>{{ title }}</title>
   {{ #relCanonicalPrefix }}
   <link rel="canonical" href="{{relCanonicalPrefix}}/{{self.href}}">
@@ -16,12 +17,10 @@
   <base href="{{htmlBase}}">
   {{/htmlBase}}
 
-  <link href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' rel='stylesheet' type='text/css'>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' type='text/css'>
   <link rel="stylesheet" href="static-assets/prettify.css">
   <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
-
-  <meta name="description" content="{{ metaDescription }}">
   <link rel="icon" href="static-assets/favicon.png">
 
   <!-- Do not remove placeholder -->
