@@ -302,7 +302,29 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   bool get isConst => false;
 
-  bool get isDeprecated => element.metadata.any((a) => a.isDeprecated);
+  bool get isDeprecated {
+    // If element.metadata is empty, it might be because this is a property
+    // where the metadata belongs to the individual getter/setter
+    if (element.metadata.isEmpty && element is PropertyInducingElement) {
+      var pie = element as PropertyInducingElement;
+
+      // The getter or the setter might be null – so the stored value may be
+      // `true`, `false`, or `null`
+      var getterDeprecated = pie.getter?.metadata?.any((a) => a.isDeprecated);
+      var setterDeprecated = pie.setter?.metadata?.any((a) => a.isDeprecated);
+
+      var deprecatedValues =
+          [getterDeprecated, setterDeprecated].where((a) => a != null).toList();
+
+      // At least one of these should be non-null. Otherwise things are weird
+      assert(deprecatedValues.isNotEmpty);
+
+      // If there are both a setter and getter, only show the property as
+      // deprecated if both are deprecated.
+      return deprecatedValues.every((d) => d);
+    }
+    return element.metadata.any((a) => a.isDeprecated);
+  }
 
   ElementType get modelType => _modelType;
 

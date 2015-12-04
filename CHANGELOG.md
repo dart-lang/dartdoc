@@ -1,5 +1,6 @@
 ## 0.8.4
 * [enhancement] Only include generator metadata in the package `index.html` file.
+* [bug] Fixed the display of deprecated properties.
 
 ## 0.8.3
 * [enhancement] Added `--[no-]include-source` option.
