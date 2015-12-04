@@ -1,3 +1,6 @@
+## 0.8.4
+* [enhancement] Only include generator metadata in the package `index.html` file.
+
 ## 0.8.3
 * [enhancement] Added `--[no-]include-source` option.
 * [enhancement] Dimmed inherited members in the right sidebar.

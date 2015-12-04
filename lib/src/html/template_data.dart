@@ -32,6 +32,7 @@ abstract class TemplateData<T extends Documentable> {
   String get layoutTitle;
   String get metaDescription;
   List get navLinks;
+  bool get includeVersion => false;
 
   bool get hasSubNav => subnavItems.isNotEmpty;
 
@@ -70,6 +71,7 @@ class PackageTemplateData extends TemplateData<Package> {
   PackageTemplateData(HtmlOptions htmlOptions, Package package)
       : super(htmlOptions, package);
 
+  bool get includeVersion => true;
   List get navLinks => [];
   String get title => '${package.name} - Dart API docs';
   Package get self => package;
