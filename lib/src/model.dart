@@ -87,6 +87,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   String _rawDocs;
   Documentation __documentation;
   List _parameters;
+  String _linkedName;
 
   String _fullyQualifiedName;
 
@@ -309,6 +310,13 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       (this is Library) ? (this as Library).package : this.library.package;
 
   String get linkedName {
+    if (_linkedName == null) {
+      _linkedName = _calculateLinkedName();
+    }
+    return _linkedName;
+  }
+
+  String _calculateLinkedName() {
     if (name.startsWith('_')) {
       return HTML_ESCAPE.convert(name);
     }
