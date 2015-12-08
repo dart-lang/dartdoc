@@ -1498,6 +1498,16 @@ class Typedef extends ModelElement implements EnclosedElement {
 
   String get fileName => '$name.html';
 
+  String get nameWithGenerics {
+    if (!modelType.isParameterizedType) return name;
+    String n = '$name&lt;${_typeParameters.map((t) => t.name).join(', ')}&gt;';
+    return '$name&lt;${_typeParameters.map((t) => t.name).join(', ')}&gt;';
+  }
+
+  List<TypeParameter> get _typeParameters => _typedef.typeParameters.map((f) {
+        return new TypeParameter(f, library);
+      }).toList();
+
   String get linkedReturnType => modelType != null
       ? modelType.createLinkedReturnTypeName()
       : _typedef.returnType.name;
