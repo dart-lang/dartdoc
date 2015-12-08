@@ -11,6 +11,9 @@ int function1(String s, bool b, lastParam) => 5;
 
 double number;
 
+/// top level var <nodoc>
+const DO_NOT_DOCUMENT = 'not documented';
+
 get y => 2;
 
 const String COLOR = 'red';
@@ -36,6 +39,13 @@ void set deprecatedSetter(int value) {}
 @deprecated
 int deprecatedField;
 
+/**
+ * class <nodoc>
+ */
+class unDocumented {
+  String s;
+}
+
 /// Sample class [String]
 class Apple {
   static const int n = 5;
@@ -44,6 +54,9 @@ class Apple {
 
   /// The read-write field `m`.
   int m = 0;
+
+  /// <nodoc> no docs
+  int notDocumented;
 
   ///Constructor
   Apple();
@@ -70,6 +83,11 @@ class Apple {
   ///
   ///     new Apple().m1();
   void m1() {}
+
+  /**
+   * <nodoc> method not documented
+   */
+  void notAPublicMethod() {}
 
   operator *(Apple other) => this;
 

@@ -510,10 +510,13 @@ class Package implements Nameable, Documentable {
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {
     libraryElements.forEach((element) {
-      var lib = new Library(element, this);
-      Library._libraryMap.putIfAbsent(lib.name, () => lib);
-      elementLibaryMap.putIfAbsent('${lib.kind}.${lib.name}', () => lib);
-      _libraries.add(lib);
+      // add only if the element should be included in the public api
+      if (isPublic(element)) {
+        var lib = new Library(element, this);
+        Library._libraryMap.putIfAbsent(lib.name, () => lib);
+        elementLibaryMap.putIfAbsent('${lib.kind}.${lib.name}', () => lib);
+        _libraries.add(lib);
+      }
     });
 
     _libraries.forEach((library) {
@@ -689,8 +692,8 @@ class Library extends ModelElement {
     _exportedNamespace.definedNames.values.forEach((element) {
       if (element is PropertyAccessorElement) elements.add(element.variable);
     });
-    elements..removeWhere(isPrivate);
     _variables = elements
+        .where(isPublic)
         .map((e) => new TopLevelVariable(e, this))
         .toList(growable: false)..sort(byName);
 
@@ -766,8 +769,7 @@ class Library extends ModelElement {
     elements.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is FunctionElement));
 
-    elements..removeWhere(isPrivate);
-    _functions = elements.map((e) {
+    _functions = elements.where(isPublic).map((e) {
       return new ModelFunction(e, this);
     }).toList(growable: false)..sort(byName);
 
@@ -1133,7 +1135,7 @@ class Class extends ModelElement implements EnclosedElement {
     for (ExecutableElement value in vs) {
       if (value != null &&
           value is MethodElement &&
-          !value.isPrivate &&
+          isPublic(value) &&
           !value.isOperator &&
           value.enclosingElement != null) {
         if (!package.isDocumented(value.enclosingElement)) {
@@ -1261,7 +1263,7 @@ class Class extends ModelElement implements EnclosedElement {
     for (var value in vs) {
       if (value != null &&
           value is PropertyAccessorElement &&
-          !value.isPrivate &&
+          isPublic(value) &&
           value.enclosingElement != null) {
         // TODO: why is this here?
         var e = value.variable;
