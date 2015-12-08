@@ -67,6 +67,7 @@ class HtmlGenerator extends Generator {
 
   Future generate(Package package, Directory out) {
     return new HtmlGeneratorInstance(_toolVersion, _url, _templates, package,
-        out, _onFileCreated, _relCanonicalPrefix).generate();
+            out, _onFileCreated, _relCanonicalPrefix)
+        .generate();
   }
 }

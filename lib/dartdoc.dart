@@ -39,7 +39,7 @@ export 'src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.8.3';
+const String version = '0.8.4-dev';
 
 final String defaultOutDir = p.join('doc', 'api');
 
@@ -192,10 +192,13 @@ class DartDoc {
       errorInfos.add(context.getErrors(source));
     }
 
-    List<_Error> errors = errorInfos.expand((AnalysisErrorInfo info) {
-      return info.errors.map(
-          (error) => new _Error(error, info.lineInfo, packageMeta.dir.path));
-    }).where((_Error error) => error.isError).toList()..sort();
+    List<_Error> errors = errorInfos
+        .expand((AnalysisErrorInfo info) {
+          return info.errors.map((error) =>
+              new _Error(error, info.lineInfo, packageMeta.dir.path));
+        })
+        .where((_Error error) => error.isError)
+        .toList()..sort();
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print("Parsed ${libraries.length} "
