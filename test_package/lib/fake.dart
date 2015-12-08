@@ -119,7 +119,9 @@ typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,
     when, converted, to, html, documentation);
 
 /// This class is cool!
-class Cool {}
+class Cool {
+  Cool returnCool() {}
+}
 
 /// Perfect for mix-ins.
 abstract class MixMeIn {}

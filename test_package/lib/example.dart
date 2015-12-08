@@ -4,7 +4,8 @@ library ex;
 import 'dart:async';
 import 'src/mylib.dart' show Helper;
 export 'src/mylib.dart' show Helper;
-export 'dart:core' show deprecated, Deprecated, DateTime;
+export 'dart:core' show deprecated, Deprecated;
+export 'fake.dart' show Cool;
 
 int function1(String s, bool b, lastParam) => 5;
 
