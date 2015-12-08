@@ -50,8 +50,9 @@ abstract class TemplateData<T extends Documentable> {
   Iterable<Subnav> getSubNavItems() => const Iterable<Subnav>.empty();
 
   String _layoutTitle(String name, String kind, bool isDeprecated) {
-    if (kind.isEmpty) kind =
-        '&nbsp;'; // Ugly. fixes https://github.com/dart-lang/dartdoc/issues/695
+    if (kind.isEmpty)
+      kind =
+          '&nbsp;'; // Ugly. fixes https://github.com/dart-lang/dartdoc/issues/695
     String str = '<span class="kind">$kind</span>';
     if (!isDeprecated) return '${str} ${name}';
     return '${str} <span class="deprecated">$name</span>';
@@ -97,19 +98,19 @@ class LibraryTemplateData extends TemplateData<Library> {
       '${library.name} library API docs, for the Dart programming language.';
   List get navLinks => [package];
   Iterable<Subnav> getSubNavItems() sync* {
-    if (library.hasConstants) yield new Subnav(
-        'Constants', '${library.href}#constants');
-    if (library.hasTypedefs) yield new Subnav(
-        'Typedefs', '${library.href}#typedefs');
-    if (library.hasProperties) yield new Subnav(
-        'Properties', '${library.href}#properties');
-    if (library.hasFunctions) yield new Subnav(
-        'Functions', '${library.href}#functions');
+    if (library.hasConstants)
+      yield new Subnav('Constants', '${library.href}#constants');
+    if (library.hasTypedefs)
+      yield new Subnav('Typedefs', '${library.href}#typedefs');
+    if (library.hasProperties)
+      yield new Subnav('Properties', '${library.href}#properties');
+    if (library.hasFunctions)
+      yield new Subnav('Functions', '${library.href}#functions');
     if (library.hasEnums) yield new Subnav('Enums', '${library.href}#enums');
-    if (library.hasClasses) yield new Subnav(
-        'Classes', '${library.href}#classes');
-    if (library.hasExceptions) yield new Subnav(
-        'Exceptions', '${library.href}#exceptions');
+    if (library.hasClasses)
+      yield new Subnav('Classes', '${library.href}#classes');
+    if (library.hasExceptions)
+      yield new Subnav('Exceptions', '${library.href}#exceptions');
   }
 
   String get layoutTitle =>
@@ -140,20 +141,20 @@ class ClassTemplateData extends TemplateData<Class> {
   List get navLinks => [package, library];
   String get htmlBase => '..';
   Iterable<Subnav> getSubNavItems() sync* {
-    if (clazz.hasConstants) yield new Subnav(
-        'Constants', '${clazz.href}#constants');
-    if (clazz.hasStaticProperties) yield new Subnav(
-        'Static Properties', '${clazz.href}#static-properties');
-    if (clazz.hasStaticMethods) yield new Subnav(
-        'Static Methods', '${clazz.href}#static-methods');
-    if (clazz.hasInstanceProperties) yield new Subnav(
-        'Properties', '${clazz.href}#instance-properties');
-    if (clazz.hasConstructors) yield new Subnav(
-        'Constructors', '${clazz.href}#constructors');
-    if (clazz.hasOperators) yield new Subnav(
-        'Operators', '${clazz.href}#operators');
-    if (clazz.hasInstanceMethods) yield new Subnav(
-        'Methods', '${clazz.href}#instance-methods');
+    if (clazz.hasConstants)
+      yield new Subnav('Constants', '${clazz.href}#constants');
+    if (clazz.hasStaticProperties)
+      yield new Subnav('Static Properties', '${clazz.href}#static-properties');
+    if (clazz.hasStaticMethods)
+      yield new Subnav('Static Methods', '${clazz.href}#static-methods');
+    if (clazz.hasInstanceProperties)
+      yield new Subnav('Properties', '${clazz.href}#instance-properties');
+    if (clazz.hasConstructors)
+      yield new Subnav('Constructors', '${clazz.href}#constructors');
+    if (clazz.hasOperators)
+      yield new Subnav('Operators', '${clazz.href}#operators');
+    if (clazz.hasInstanceMethods)
+      yield new Subnav('Methods', '${clazz.href}#instance-methods');
   }
 
   Class get objectType {

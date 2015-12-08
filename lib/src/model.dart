@@ -545,8 +545,8 @@ class Package implements Nameable, Documentable {
 
     Library lib = elementLibaryMap['${e.kind}.${e.name}'];
     if (lib != null) return lib;
-    lib = libraries.firstWhere((l) => l.hasInExportedNamespace(e),
-        orElse: () {});
+    lib =
+        libraries.firstWhere((l) => l.hasInExportedNamespace(e), orElse: () {});
     if (lib != null) {
       elementLibaryMap.putIfAbsent('${e.kind}.${e.name}', () => lib);
       return lib;
@@ -820,16 +820,20 @@ class Class extends ModelElement implements EnclosedElement {
     Package p = library.package;
     _modelType = new ElementType(_cls.type, this);
 
-    _mixins = _cls.mixins.map((f) {
-      Library lib = new Library(f.element.library, p);
-      ElementType t = new ElementType(f, new ModelElement.from(f.element, lib));
-      bool exclude = t.element.element.isPrivate;
-      if (exclude) {
-        return null;
-      } else {
-        return t;
-      }
-    }).where((mixin) => mixin != null).toList(growable: false);
+    _mixins = _cls.mixins
+        .map((f) {
+          Library lib = new Library(f.element.library, p);
+          ElementType t =
+              new ElementType(f, new ModelElement.from(f.element, lib));
+          bool exclude = t.element.element.isPrivate;
+          if (exclude) {
+            return null;
+          } else {
+            return t;
+          }
+        })
+        .where((mixin) => mixin != null)
+        .toList(growable: false);
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
       Library lib = package._getLibraryFor(_cls.supertype.element);
@@ -850,16 +854,19 @@ class Class extends ModelElement implements EnclosedElement {
       }
     }
 
-    _interfaces = _cls.interfaces.map((f) {
-      var lib = new Library(f.element.library, p);
-      var t = new ElementType(f, new ModelElement.from(f.element, lib));
-      var exclude = t.element.element.isPrivate;
-      if (exclude) {
-        return null;
-      } else {
-        return t;
-      }
-    }).where((it) => it != null).toList(growable: false);
+    _interfaces = _cls.interfaces
+        .map((f) {
+          var lib = new Library(f.element.library, p);
+          var t = new ElementType(f, new ModelElement.from(f.element, lib));
+          var exclude = t.element.element.isPrivate;
+          if (exclude) {
+            return null;
+          } else {
+            return t;
+          }
+        })
+        .where((it) => it != null)
+        .toList(growable: false);
   }
 
   /// Returns the library that encloses this element.
@@ -889,7 +896,8 @@ class Class extends ModelElement implements EnclosedElement {
 
   bool get hasSupertype => supertype != null;
 
-  bool get hasModifiers => hasMixins ||
+  bool get hasModifiers =>
+      hasMixins ||
       hasAnnotations ||
       hasInterfaces ||
       hasSupertype ||
@@ -1283,7 +1291,8 @@ class Class extends ModelElement implements EnclosedElement {
     return _cls.allSupertypes.any(_doCheck);
   }
 
-  bool operator ==(o) => o is Class &&
+  bool operator ==(o) =>
+      o is Class &&
       name == o.name &&
       o.library.name == library.name &&
       o.library.package.name == library.package.name;

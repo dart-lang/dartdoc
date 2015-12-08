@@ -29,7 +29,8 @@ class ElementType {
   DartType get _returnTypeCore => (_type as FunctionType).returnType;
 
   // TODO: this is probably a bug. Apparently, EVERYTHING is a parameterized type?
-  bool get isParameterizedType => (_type is ParameterizedType) &&
+  bool get isParameterizedType =>
+      (_type is ParameterizedType) &&
       (_type as ParameterizedType).typeArguments.isNotEmpty;
 
   String get _returnTypeName => _returnTypeCore.name;
