@@ -4,7 +4,7 @@ packages:
   analyzer:
     description: analyzer
     source: hosted
-    version: "0.26.3"
+    version: "0.27.0"
   ansicolor:
     description: ansicolor
     source: hosted
@@ -184,7 +184,7 @@ packages:
   test:
     description: test
     source: hosted
-    version: "0.12.6"
+    version: "0.12.6+1"
   typed_data:
     description: typed_data
     source: hosted

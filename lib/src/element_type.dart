@@ -28,10 +28,14 @@ class ElementType {
 
   DartType get _returnTypeCore => (_type as FunctionType).returnType;
 
-  // TODO: this is probably a bug. Apparently, EVERYTHING is a parameterized type?
-  bool get isParameterizedType =>
-      (_type is ParameterizedType) &&
-      (_type as ParameterizedType).typeArguments.isNotEmpty;
+  bool get isParameterizedType {
+    if (_type is FunctionType) {
+      return (_type as FunctionType).boundTypeParameters.isNotEmpty;
+    } else if (_type is ParameterizedType) {
+      return (_type as ParameterizedType).typeArguments.isNotEmpty;
+    }
+    return false;
+  }
 
   String get _returnTypeName => _returnTypeCore.name;
 
@@ -56,16 +60,29 @@ class ElementType {
     return (new ModelElement.from(e, lib));
   }
 
-  List<ElementType> get typeArguments =>
-      (_type as ParameterizedType).typeArguments.map((f) {
-        Library lib;
-        // can happen if element is dynamic
-        lib = element.package.findLibraryFor(f.element);
-        if (lib == null && f.element.library != null) {
-          lib = new Library(f.element.library, element.package);
-        }
-        return new ElementType(f, new ModelElement.from(f.element, lib));
-      }).toList();
+  List<ElementType> get typeArguments {
+    if (_type is FunctionType) {
+      return (_type as FunctionType)
+          .boundTypeParameters
+          .map((f) => _getElementTypeFrom(f))
+          .toList();
+    } else {
+      return (_type as ParameterizedType)
+          .typeArguments
+          .map((f) => _getElementTypeFrom(f))
+          .toList();
+    }
+  }
+
+  ElementType _getElementTypeFrom(DartType f) {
+    Library lib;
+    // can happen if element is dynamic
+    lib = element.package.findLibraryFor(f.element);
+    if (lib == null && f.element.library != null) {
+      lib = new Library(f.element.library, element.package);
+    }
+    return new ElementType(f, new ModelElement.from(f.element, lib));
+  }
 
   String get linkedName {
     if (_linkedName != null) return _linkedName;

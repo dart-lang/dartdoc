@@ -69,6 +69,7 @@ class AnalyzerHelper {
     ];
 
     SourceFactory sourceFactory = new SourceFactory(resolvers);
+    AnalysisEngine.instance.processRequiredPlugins();
     context = AnalysisEngine.instance.createAnalysisContext();
     context.sourceFactory = sourceFactory;
   }
