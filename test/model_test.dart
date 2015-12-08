@@ -286,7 +286,7 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
+                '<a href="fake/NAME_WITH_TWO_UNDERSCORES-constant.html">NAME_WITH_TWO_UNDERSCORES</a>'));
       });
 
       test('links to a method in this class', () {
@@ -318,14 +318,14 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="fake/incorrectDocReference.html">incorrectDocReference</a>'));
+                '<a href="fake/incorrectDocReference-constant.html">incorrectDocReference</a>'));
       });
 
       test('links to a top-level const from an imported lib', () {
         expect(
             docsAsHtml,
             contains(
-                '<a href="ex/incorrectDocReferenceFromEx.html">incorrectDocReferenceFromEx</a>'));
+                '<a href="ex/incorrectDocReferenceFromEx-constant.html">incorrectDocReferenceFromEx</a>'));
       });
 
       test('links to a top-level variable with a prefix from an imported lib',
@@ -347,7 +347,7 @@ void main() {
         expect(
             docsAsHtml,
             contains(
-                '<a href="fake/NAME_SINGLEUNDERSCORE.html">NAME_SINGLEUNDERSCORE</a>'));
+                '<a href="fake/NAME_SINGLEUNDERSCORE-constant.html">NAME_SINGLEUNDERSCORE</a>'));
       });
     });
 
@@ -356,7 +356,7 @@ void main() {
       expect(
           short.documentationAsHtml,
           contains(
-              '<a href="fake/NAME_WITH_TWO_UNDERSCORES.html">NAME_WITH_TWO_UNDERSCORES</a>'));
+              '<a href="fake/NAME_WITH_TWO_UNDERSCORES-constant.html">NAME_WITH_TWO_UNDERSCORES</a>'));
     });
 
     test('still has brackets inside code blocks', () {
@@ -469,7 +469,7 @@ void main() {
 
   group('Class', () {
     List<Class> classes;
-    Class Apple, B, Cat, Dog, F, DT, SpecialList;
+    Class Apple, B, Cat, Cool, Dog, F, Dep, SpecialList;
     Class ExtendingClass, CatString;
 
     setUp(() {
@@ -479,7 +479,8 @@ void main() {
       Cat = classes.firstWhere((c) => c.name == 'Cat');
       Dog = classes.firstWhere((c) => c.name == 'Dog');
       F = classes.firstWhere((c) => c.name == 'F');
-      DT = classes.firstWhere((c) => c.name == 'DateTime');
+      Dep = classes.firstWhere((c) => c.name == 'Deprecated');
+      Cool = classes.firstWhere((c) => c.name == 'Cool');
       SpecialList =
           fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList');
       ExtendingClass =
@@ -596,18 +597,20 @@ void main() {
     });
 
     test('exported class should have hrefs from the current library', () {
-      expect(DT.href, equals('ex/DateTime-class.html'));
-      expect(DT.instanceMethods[0].href, equals('ex/DateTime/add.html'));
-      expect(DT.instanceProperties[0].href, equals('ex/DateTime/day.html'));
+      expect(Dep.href, equals('ex/Deprecated-class.html'));
+      expect(
+          Dep.instanceMethods[0].href, equals('ex/Deprecated/toString.html'));
+      expect(
+          Dep.instanceProperties[0].href, equals('ex/Deprecated/expires.html'));
     });
 
     test('exported class should have linkedReturnType for the current library',
         () {
-      Method toUTC = DT.instanceMethods
-          .firstWhere((m) => m.name == 'toUtc', orElse: () => null);
-      expect(toUTC, isNotNull);
-      expect(toUTC.linkedReturnType,
-          equals('<a href="ex/DateTime-class.html">DateTime</a>'));
+      Method returnCool = Cool.instanceMethods
+          .firstWhere((m) => m.name == 'returnCool', orElse: () => null);
+      expect(returnCool, isNotNull);
+      expect(returnCool.linkedReturnType,
+          equals('<a href="ex/Cool-class.html">Cool</a>'));
     });
 
     test('F has a single instance method', () {

@@ -1552,12 +1552,14 @@ class Field extends ModelElement
 
   bool get isInherited => _isInherited;
 
+  String get _fileName => isConst ? '$name-constant.html' : '$name.html';
+
   @override
   String get href {
     if (enclosingElement is Class) {
-      return '${library.dirName}/${enclosingElement.name}/$name.html';
+      return '${library.dirName}/${enclosingElement.name}/$_fileName';
     } else if (enclosingElement is Library) {
-      return '${library.dirName}/$name.html';
+      return '${library.dirName}/$_fileName';
     } else {
       throw new StateError(
           '$name is not in a class or library, instead it is a ${enclosingElement.element}');
@@ -1882,6 +1884,8 @@ class TopLevelVariable extends ModelElement
   PropertyAccessorElement get _getter => _variable.getter;
   PropertyAccessorElement get _setter => _variable.setter;
 
+  String get _fileName => isConst ? '$name-constant.html' : '$name.html';
+
   @override
   String get _computeDocumentationComment {
     String docs = getterSetterDocumentationComment;
@@ -1899,7 +1903,7 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  String get href => '${library.dirName}/${name}.html';
+  String get href => '${library.dirName}/$_fileName';
 }
 
 class Parameter extends ModelElement implements EnclosedElement {
