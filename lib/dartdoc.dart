@@ -149,6 +149,8 @@ class DartDoc {
 
     var options = new AnalysisOptionsImpl()..cacheSize = 512;
 
+    AnalysisEngine.instance.processRequiredPlugins();
+
     AnalysisContext context = AnalysisEngine.instance.createAnalysisContext()
       ..analysisOptions = options
       ..sourceFactory = sourceFactory;

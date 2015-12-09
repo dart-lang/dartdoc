@@ -3,6 +3,7 @@
 * [bug] Fixed the display of deprecated properties.
 * [bug] show generics for typedefs
 * [bug] cleanly unzip docs on Mac
+* [health] upgrade to latest analyzer package
 
 ## 0.8.3
 * [enhancement] Added `--[no-]include-source` option.
