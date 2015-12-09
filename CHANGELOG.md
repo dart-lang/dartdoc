@@ -1,6 +1,8 @@
 ## 0.8.4
 * [enhancement] Only include generator metadata in the package `index.html` file.
 * [bug] Fixed the display of deprecated properties.
+* [bug] show generics for typedefs
+* [bug] cleanly unzip docs on Mac
 
 ## 0.8.3
 * [enhancement] Added `--[no-]include-source` option.

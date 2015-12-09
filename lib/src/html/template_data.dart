@@ -308,7 +308,7 @@ class TypedefTemplateData extends TemplateData<Typedef> {
   String get title =>
       '${typeDef.name} typedef - ${library.name} library - Dart API';
   String get layoutTitle =>
-      _layoutTitle(typeDef.name, 'typedef', typeDef.isDeprecated);
+      _layoutTitle(typeDef.nameWithGenerics, 'typedef', typeDef.isDeprecated);
   String get metaDescription =>
       'API docs for the ${typeDef.name} property from the '
       '${library.name} library, for the Dart programming language.';

@@ -19,7 +19,7 @@ const String COLOR_ORANGE = 'orange';
 const String COMPLEX_COLOR = 'red' + '-' + 'green' + '-' + 'blue';
 const ConstantCat MY_CAT = const ConstantCat('tabby');
 
-typedef String processMessage(String msg);
+typedef String processMessage<T>(String msg);
 
 /// This should [not work].
 const incorrectDocReferenceFromEx = 'doh';
