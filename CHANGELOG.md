@@ -1,3 +1,6 @@
+## 0.8.5
+* [enhancement] do not document if there is a <nodoc> in the doc comment.
+
 ## 0.8.4
 * [enhancement] Only include generator metadata in the package `index.html` file.
 * [bug] Fixed the display of deprecated properties.

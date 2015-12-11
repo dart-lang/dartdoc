@@ -11,7 +11,27 @@ import 'package:analyzer/src/generated/source_io.dart';
 
 bool isPrivate(Element e) => e.name.startsWith('_');
 
-bool isPublic(Element e) => !isPrivate(e);
+bool isPublic(Element e) {
+  if (isPrivate(e)) return false;
+  // check to see if element is part of the public api, that is it does not
+  // have a '#nodoc' in the documentation comment
+  if (e is PropertyAccessorElement && e.isSynthetic) {
+    var accessor = (e as PropertyAccessorElement);
+    if (accessor.correspondingSetter != null &&
+        !accessor.correspondingSetter.isSynthetic) {
+      e = accessor.correspondingSetter;
+    } else if (accessor.correspondingGetter != null &&
+        !accessor.correspondingGetter.isSynthetic) {
+      e = accessor.correspondingGetter;
+    } else {
+      e = accessor.variable;
+    }
+  }
+
+  var docComment = e.computeDocumentationComment();
+  if (docComment != null && docComment.contains('<nodoc>')) return false;
+  return true;
+}
 
 Iterable<LibraryElement> getSdkLibrariesToDocument(
     DartSdk sdk, AnalysisContext context) sync* {
