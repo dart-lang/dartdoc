@@ -98,9 +98,9 @@ Command-line options for dartdoc include:
 
 - `-h` or `--help` Display help.
 - `--header=<file>` Insert the specified file, which contains HTML code, into
-  the footer of every page.
-- `--footer=<file>` Insert the specifying file, which contains HTML code, into
   the header of every page.
+- `--footer=<file>` Insert the specified file, which contains HTML code, into
+  the footer of every page.
 - `--input=<directory>` Generate the docs from the specified directory. If not
   specified, it defaults to the current directory.
 - `--output=<directory>` Generate the output to the specified directory. If not
