@@ -1380,7 +1380,7 @@ abstract class SourceCodeMixin {
 
   String get sourceCode {
     if (_sourceCodeCache == null) {
-      String contents = element.source.contents.data;
+      String contents = getFileContentsFor(element);
       var node = element.computeNode();
       if (node != null) {
         // Find the start of the line, so that we can line up all the indents.
