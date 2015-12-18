@@ -47,26 +47,42 @@ bool isInExportedLibraries(
 
 bool isPrivate(Element e) => e.name.startsWith('_');
 
+final _privacyExpando = new Expando<bool>();
+
 bool isPublic(Element e) {
-  if (isPrivate(e)) return false;
-  // check to see if element is part of the public api, that is it does not
-  // have a '#nodoc' in the documentation comment
-  if (e is PropertyAccessorElement && e.isSynthetic) {
-    var accessor = (e as PropertyAccessorElement);
-    if (accessor.correspondingSetter != null &&
-        !accessor.correspondingSetter.isSynthetic) {
-      e = accessor.correspondingSetter;
-    } else if (accessor.correspondingGetter != null &&
-        !accessor.correspondingGetter.isSynthetic) {
-      e = accessor.correspondingGetter;
+  var cachedVal = _privacyExpando[e];
+
+  if (cachedVal != null) {
+    return cachedVal;
+  }
+
+  if (isPrivate(e)) {
+    cachedVal = false;
+  } else {
+    // check to see if element is part of the public api, that is it does not
+    // have a '#nodoc' in the documentation comment
+    if (e is PropertyAccessorElement && e.isSynthetic) {
+      var accessor = (e as PropertyAccessorElement);
+      if (accessor.correspondingSetter != null &&
+          !accessor.correspondingSetter.isSynthetic) {
+        e = accessor.correspondingSetter;
+      } else if (accessor.correspondingGetter != null &&
+          !accessor.correspondingGetter.isSynthetic) {
+        e = accessor.correspondingGetter;
+      } else {
+        e = accessor.variable;
+      }
+    }
+
+    var docComment = e.computeDocumentationComment();
+    if (docComment != null && docComment.contains('<nodoc>')) {
+      cachedVal = false;
     } else {
-      e = accessor.variable;
+      cachedVal = true;
     }
   }
 
-  var docComment = e.computeDocumentationComment();
-  if (docComment != null && docComment.contains('<nodoc>')) return false;
-  return true;
+  return _privacyExpando[e] = cachedVal;
 }
 
 /// Strip leading dartdoc comments from the given source code.
