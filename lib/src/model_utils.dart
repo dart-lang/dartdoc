@@ -59,12 +59,12 @@ bool isPublic(Element e) {
     } else if (accessor.correspondingGetter != null &&
         !accessor.correspondingGetter.isSynthetic) {
       e = accessor.correspondingGetter;
-    } else {
+    } else if (accessor.variable != null) {
       e = accessor.variable;
     }
   }
 
-  var docComment = e.computeDocumentationComment();
+  var docComment = e.documentationComment;
   if (docComment != null && docComment.contains('<nodoc>')) return false;
   return true;
 }
