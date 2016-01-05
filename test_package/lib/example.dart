@@ -2,33 +2,35 @@
 library ex;
 
 import 'dart:async';
+
 import 'src/mylib.dart' show Helper;
-export 'src/mylib.dart' show Helper;
+
 export 'dart:core' show deprecated, Deprecated;
+
 export 'fake.dart' show Cool;
+export 'src/mylib.dart' show Helper;
 
-int function1(String s, bool b, lastParam) => 5;
+const String COLOR = 'red';
 
-double number;
+const String COLOR_GREEN = 'green';
+
+const String COLOR_ORANGE = 'orange';
+
+const String COMPLEX_COLOR = 'red' + '-' + 'green' + '-' + 'blue';
 
 /// top level var <nodoc>
 const DO_NOT_DOCUMENT = 'not documented';
 
-get y => 2;
-
-const String COLOR = 'red';
-const String COLOR_GREEN = 'green';
-const String COLOR_ORANGE = 'orange';
-const String COMPLEX_COLOR = 'red' + '-' + 'green' + '-' + 'blue';
-const ConstantCat MY_CAT = const ConstantCat('tabby');
-
-typedef String processMessage<T>(String msg);
+/// This is the same name as a top-level const from the fake lib.
+const incorrectDocReference = 'same name as const from fake';
 
 /// This should [not work].
 const incorrectDocReferenceFromEx = 'doh';
+const ConstantCat MY_CAT = const ConstantCat('tabby');
+@deprecated
+int deprecatedField;
 
-/// This is the same name as a top-level const from the fake lib.
-const incorrectDocReference = 'same name as const from fake';
+double number;
 
 @deprecated
 int get deprecatedGetter => null;
@@ -36,17 +38,23 @@ int get deprecatedGetter => null;
 @deprecated
 void set deprecatedSetter(int value) {}
 
-@deprecated
-int deprecatedField;
+get y => 2;
+
+int function1(String s, bool b, lastParam) => 5;
+
+typedef String processMessage<T>(String msg);
+
+enum Animal { CAT, DOG, HORSE }
 
 /**
- * class <nodoc>
+ * Sample class [String]
+ *
+ * <pre>
+ *   A
+ *    B
+ * </pre>
  */
-class unDocumented {
-  String s;
-}
 
-/// Sample class [String]
 class Apple {
   static const int n = 5;
   static String string = 'hello';
@@ -79,28 +87,35 @@ class Apple {
     _s2 = something;
   }
 
+  operator *(Apple other) => this;
+
+  bool isGreaterThan(int number, {int check: 5}) {
+    return number > check;
+  }
+
   /// This is a method.
   ///
   ///     new Apple().m1();
   void m1() {}
+
+  void methodWithTypedefParam(processMessage p) {}
 
   /**
    * <nodoc> method not documented
    */
   void notAPublicMethod() {}
 
-  operator *(Apple other) => this;
+  void paramFromExportLib(Helper helper) {}
 
   void printMsg(String msg, [bool linebreak]) {}
-
-  bool isGreaterThan(int number, {int check: 5}) {
-    return number > check;
-  }
-
-  void paramFromExportLib(Helper helper) {}
 }
 
 /// Extends class [Apple], use [new Apple] or [new Apple.fromString]
+///
+/// <pre>
+///  B extends A
+///  B implements C
+///  </pre>
 class B extends Apple with Cat {
   /**
    * The default value is `false` (compression disabled).
@@ -115,6 +130,9 @@ class B extends Apple with Cat {
 
   bool get isImplemented => false;
 
+  @deprecated
+  Future doNothing() async {}
+
   @override
   void m1() {
     var a = 6;
@@ -125,9 +143,6 @@ class B extends Apple with Cat {
   void writeMsg(String msg, [String transformMsg(String origMsg, bool flag)]) {
     // do nothing
   }
-
-  @deprecated
-  Future doNothing() async {}
 }
 
 // Do NOT add a doc comment to C. Testing blank comments.
@@ -136,88 +151,7 @@ abstract class Cat {
   bool get isImplemented;
 }
 
-/// implements [Cat], [E]
-class Dog implements Cat, E {
-  String name;
-
-  Dog();
-
-  @deprecated
-  int get deprecatedGetter => null;
-
-  @deprecated
-  void set deprecatedSetter(int value) {}
-
-  @deprecated
-  int deprecatedField;
-
-  @deprecated
-  Dog.deprecatedCreate(this.name);
-
-  @Deprecated("Internal use")
-  static Dog createDog(String s) {
-    return new Dog.deprecatedCreate(s);
-  }
-
-  @deprecated
-  List<Apple> getClassA() {
-    return [new Apple()];
-  }
-
-  @override
-  bool get isImplemented => true;
-
-  operator ==(Dog other) => name == other.name;
-
-  foo() async => 42;
-
-  void testMethod(Iterable it) {}
-
-  void testGeneric(Map<String, dynamic> args) {}
-}
-
-abstract class E {}
-
-class F<T extends String> extends Dog with _PrivateAbstractClass {
-  void methodWithGenericParam([List<Apple> msgs]) {}
-}
-
 class CatString extends StringBuffer {}
-
-class MyError extends Error {}
-
-class MyException implements Exception {}
-
-class MyErrorImplements implements Error {
-  StackTrace get stackTrace => null;
-}
-
-class MyExceptionImplements implements Exception {}
-
-class ForAnnotation {
-  final String value;
-  const ForAnnotation(this.value);
-}
-
-@ForAnnotation('my value')
-class HasAnnotation {}
-
-abstract class _PrivateInterface {
-  void test();
-}
-
-class PublicClassImplementsPrivateInterface implements _PrivateInterface {
-  @override
-  void test() {}
-}
-
-abstract class _PrivateAbstractClass {
-  void test() {
-    print("Hello World");
-  }
-}
-
-class PublicClassExtendsPrivateClass extends _PrivateAbstractClass {}
 
 class ConstantCat implements Cat {
   final String name;
@@ -227,25 +161,87 @@ class ConstantCat implements Cat {
   bool get isImplemented => true;
 }
 
-enum Animal { CAT, DOG, HORSE }
+/// implements [Cat], [E]
+class Dog implements Cat, E {
+  String name;
+
+  @deprecated
+  int deprecatedField;
+
+  Dog();
+
+  @deprecated
+  Dog.deprecatedCreate(this.name);
+
+  @deprecated
+  int get deprecatedGetter => null;
+
+  @deprecated
+  void set deprecatedSetter(int value) {}
+
+  @override
+  bool get isImplemented => true;
+
+  operator ==(Dog other) => name == other.name;
+
+  foo() async => 42;
+
+  @deprecated
+  List<Apple> getClassA() {
+    return [new Apple()];
+  }
+
+  void testGeneric(Map<String, dynamic> args) {}
+
+  void testMethod(Iterable it) {}
+
+  @Deprecated("Internal use")
+  static Dog createDog(String s) {
+    return new Dog.deprecatedCreate(s);
+  }
+}
+
+abstract class E {}
+
+class F<T extends String> extends Dog with _PrivateAbstractClass {
+  void methodWithGenericParam([List<Apple> msgs]) {}
+}
+
+class ForAnnotation {
+  final String value;
+  const ForAnnotation(this.value);
+}
+
+@ForAnnotation('my value')
+class HasAnnotation {}
 
 /// A class
 class Klass {
-  /// A method
-  method() {}
-
   /// Another method
   another() {}
+
+  /// A method
+  method() {}
 
   /// A shadowed method
   toString() {}
 }
 
-class _RetainedEnum {
-  final String name;
+class MyError extends Error {}
 
-  const _RetainedEnum(this.name);
-  String toString() => name;
+class MyErrorImplements implements Error {
+  StackTrace get stackTrace => null;
+}
+
+class MyException implements Exception {}
+
+class MyExceptionImplements implements Exception {}
+
+class PublicClassExtendsPrivateClass extends _PrivateAbstractClass {}
+
+class PublicClassImplementsPrivateInterface implements _PrivateInterface {
+  @override
+  void test() {}
 }
 
 class ShapeType extends _RetainedEnum {
@@ -258,3 +254,27 @@ class ShapeType extends _RetainedEnum {
 /// For testing a class that extends a class
 /// that has some operators
 class SpecializedDuration extends Duration {}
+
+/**
+ * class <nodoc>
+ */
+class unDocumented {
+  String s;
+}
+
+abstract class _PrivateAbstractClass {
+  void test() {
+    print("Hello World");
+  }
+}
+
+abstract class _PrivateInterface {
+  void test();
+}
+
+class _RetainedEnum {
+  final String name;
+
+  const _RetainedEnum(this.name);
+  String toString() => name;
+}

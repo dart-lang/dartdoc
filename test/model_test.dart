@@ -7,10 +7,10 @@ library dartdoc.model_test;
 import 'dart:io';
 
 import 'package:cli_util/cli_util.dart' as cli_util;
+import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/config.dart';
 import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
@@ -392,12 +392,17 @@ void main() {
 
     test('no references', () {
       expect(
-          Apple.documentationAsHtml, '<p>Sample class <code>String</code></p>');
+          Apple.documentationAsHtml,
+          '<p>Sample class <code>String</code></p><pre class="prettyprint lang-dart">  A\n'
+          '   B\n'
+          '</pre>');
     });
 
     test('single ref to class', () {
-      expect(B.documentationAsHtml,
-          '<p>Extends class <a href="ex/Apple-class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a> or <a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>');
+      expect(
+          B.documentationAsHtml.contains(
+              '<p>Extends class <a href="ex/Apple-class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a> or <a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>'),
+          isTrue);
     });
 
     test('doc ref to class in SDK does not render as link', () {
@@ -579,7 +584,7 @@ void main() {
     });
 
     test('inherited methods,including from Object ', () {
-      expect(B.inheritedMethods, hasLength(5));
+      expect(B.inheritedMethods, hasLength(6));
       expect(B.hasInheritedMethods, isTrue);
     });
 
@@ -1323,7 +1328,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
   group('Parameter', () {
     Class c, fClass;
-    Method isGreaterThan, asyncM, methodWithGenericParam, paramFromExportLib;
+    Method isGreaterThan,
+        asyncM,
+        methodWithGenericParam,
+        paramFromExportLib,
+        methodWithTypedefParam;
     Parameter intNumber, intCheckOptional;
 
     setUp(() {
@@ -1341,6 +1350,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       fClass = exLibrary.classes.firstWhere((c) => c.name == 'F');
       methodWithGenericParam = fClass.instanceMethods
           .singleWhere((m) => m.name == 'methodWithGenericParam');
+      methodWithTypedefParam = c.instanceMethods
+          .singleWhere((m) => m.name == 'methodWithTypedefParam');
     });
 
     test('has parameters', () {
@@ -1377,6 +1388,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var param = paramFromExportLib.parameters[0];
       expect(param.name, equals('helper'));
       expect(param.library.name, equals('ex'));
+    });
+
+    test('typdef param is linked', () {
+      var params = methodWithTypedefParam.linkedParams();
+      expect(params.contains('<a href="ex/processMessage.html">'), isTrue);
     });
   });
 
