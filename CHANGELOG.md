@@ -1,5 +1,9 @@
 ## 0.8.5
-* [enhancement] do not document if there is a <nodoc> in the doc comment.
+* [enhancement] do not document if there is a &lt;nodoc> in the doc comment.
+* [bug]link typdefs when used as parameters
+* [bug] fix issue with processing &lt;pre> tags
+* [health] run tests only once on travis
+* [health] speed up dartdoc with caching and upgrade to latest analyzer package
 
 ## 0.8.4
 * [enhancement] Only include generator metadata in the package `index.html` file.
