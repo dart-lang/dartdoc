@@ -121,6 +121,11 @@ The following options are used only when generating docs for the Dart SDK.
 - `--sdk-docs` Generate only docs for the Dart SDK.
 - `--sdk-readme=<file>` Specify the README file for the Dart SDK.
 
+## Excluding from documentation
+
+dartdoc will not generate documentation for a Dart element and its children that has
+the `<nodoc>` tag in the documentation comment.
+
 ## Issues and bugs
 
 Please file reports on the [GitHub Issue Tracker][].

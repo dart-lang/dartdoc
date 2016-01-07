@@ -22,7 +22,6 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-
 import 'package:path/path.dart' as p;
 
 import 'src/generator.dart';
@@ -39,7 +38,7 @@ export 'src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.8.4-dev';
+const String version = '0.8.5';
 
 final String defaultOutDir = p.join('doc', 'api');
 
@@ -218,15 +217,6 @@ class DartDoc {
   }
 }
 
-/// The results of a [DartDoc.generateDocs] call.
-class DartDocResults {
-  final PackageMeta packageMeta;
-  final Package package;
-  final Directory outDir;
-
-  DartDocResults(this.packageMeta, this.package, this.outDir);
-}
-
 /// This class is returned if dartdoc fails in an expected way (for instance, if
 /// there is an analysis error in the library).
 class DartDocFailure {
@@ -237,6 +227,15 @@ class DartDocFailure {
   String toString() => message;
 }
 
+/// The results of a [DartDoc.generateDocs] call.
+class DartDocResults {
+  final PackageMeta packageMeta;
+  final Package package;
+  final Directory outDir;
+
+  DartDocResults(this.packageMeta, this.package, this.outDir);
+}
+
 class _Error implements Comparable {
   final AnalysisError error;
   final LineInfo lineInfo;
@@ -244,12 +243,9 @@ class _Error implements Comparable {
 
   _Error(this.error, this.lineInfo, this.projectPath);
 
-  int get severity => error.errorCode.errorSeverity.ordinal;
-  bool get isError => error.errorCode.errorSeverity == ErrorSeverity.ERROR;
-  String get severityName => error.errorCode.errorSeverity.displayName;
   String get description => '${error.message} at ${location}, line ${line}.';
+  bool get isError => error.errorCode.errorSeverity == ErrorSeverity.ERROR;
   int get line => lineInfo.getLocation(error.offset).lineNumber;
-
   String get location {
     String path = error.source.fullName;
     if (path.startsWith(projectPath)) {
@@ -257,6 +253,10 @@ class _Error implements Comparable {
     }
     return path;
   }
+
+  int get severity => error.errorCode.errorSeverity.ordinal;
+
+  String get severityName => error.errorCode.errorSeverity.displayName;
 
   int compareTo(_Error other) {
     if (severity == other.severity) {
