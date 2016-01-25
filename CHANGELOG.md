@@ -1,3 +1,7 @@
+## unreleased
+* [bug] modify showing constants so that there is no double `const` shown in
+  value.
+
 ## 0.8.5
 * [enhancement] do not document if there is a &lt;nodoc> in the doc comment.
 * [bug]link typdefs when used as parameters
