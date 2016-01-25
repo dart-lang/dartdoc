@@ -16,17 +16,9 @@ class ElementType {
 
   ElementType(this._type, this.element);
 
-  String toString() => "$_type";
-
   bool get isDynamic => _type.isDynamic;
 
-  bool get isParameterType => (_type is TypeParameterType);
-
   bool get isFunctionType => (_type is FunctionType);
-
-  String get name => _type.name;
-
-  DartType get _returnTypeCore => (_type as FunctionType).returnType;
 
   bool get isParameterizedType {
     if (_type is FunctionType) {
@@ -37,52 +29,7 @@ class ElementType {
     return false;
   }
 
-  String get _returnTypeName => _returnTypeCore.name;
-
-  ElementType get _returnType {
-    var rt = _returnTypeCore;
-    Library lib = element.package.findLibraryFor(rt.element);
-    if (lib == null) {
-      lib = new Library(rt.element.library, element.package);
-    }
-    return new ElementType(rt, new ModelElement.from(rt.element, lib));
-  }
-
-  ModelElement get returnElement {
-    Element e = _returnTypeCore.element;
-    if (e == null) {
-      return null;
-    }
-    Library lib = element.package.findLibraryFor(e);
-    if (lib == null) {
-      lib = new Library(e.library, element.package);
-    }
-    return (new ModelElement.from(e, lib));
-  }
-
-  List<ElementType> get typeArguments {
-    if (_type is FunctionType) {
-      return (_type as FunctionType)
-          .boundTypeParameters
-          .map((f) => _getElementTypeFrom(f))
-          .toList();
-    } else {
-      return (_type as ParameterizedType)
-          .typeArguments
-          .map((f) => _getElementTypeFrom(f))
-          .toList();
-    }
-  }
-
-  ElementType _getElementTypeFrom(DartType f) {
-    Library lib;
-    // can happen if element is dynamic
-    lib = element.package.findLibraryFor(f.element);
-    if (lib == null && f.element.library != null) {
-      lib = new Library(f.element.library, element.package);
-    }
-    return new ElementType(f, new ModelElement.from(f.element, lib));
-  }
+  bool get isParameterType => (_type is TypeParameterType);
 
   String get linkedName {
     if (_linkedName != null) return _linkedName;
@@ -112,6 +59,47 @@ class ElementType {
     return _linkedName;
   }
 
+  String get name => _type.name;
+
+  ModelElement get returnElement {
+    Element e = _returnTypeCore.element;
+    if (e == null) {
+      return null;
+    }
+    Library lib = element.package.findLibraryFor(e);
+    if (lib == null) {
+      lib = new Library(e.library, element.package);
+    }
+    return (new ModelElement.from(e, lib));
+  }
+
+  List<ElementType> get typeArguments {
+    if (_type is FunctionType) {
+      return (_type as FunctionType)
+          .boundTypeParameters
+          .map((f) => _getElementTypeFrom(f.type))
+          .toList();
+    } else {
+      return (_type as ParameterizedType)
+          .typeArguments
+          .map((f) => _getElementTypeFrom(f))
+          .toList();
+    }
+  }
+
+  ElementType get _returnType {
+    var rt = _returnTypeCore;
+    Library lib = element.package.findLibraryFor(rt.element);
+    if (lib == null) {
+      lib = new Library(rt.element.library, element.package);
+    }
+    return new ElementType(rt, new ModelElement.from(rt.element, lib));
+  }
+
+  DartType get _returnTypeCore => (_type as FunctionType).returnType;
+
+  String get _returnTypeName => _returnTypeCore.name;
+
   String createLinkedReturnTypeName() {
     if (_returnTypeCore.element == null ||
         _returnTypeCore.element.library == null) {
@@ -127,5 +115,17 @@ class ElementType {
     } else {
       return _returnType.linkedName;
     }
+  }
+
+  String toString() => "$_type";
+
+  ElementType _getElementTypeFrom(DartType f) {
+    Library lib;
+    // can happen if element is dynamic
+    lib = element.package.findLibraryFor(f.element);
+    if (lib == null && f.element.library != null) {
+      lib = new Library(f.element.library, element.package);
+    }
+    return new ElementType(f, new ModelElement.from(f.element, lib));
   }
 }

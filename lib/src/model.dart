@@ -827,7 +827,7 @@ class Field extends ModelElement
   @override
   String get _computeDocumentationComment {
     String docs = getterSetterDocumentationComment;
-    if (docs.isEmpty) return _field.computeDocumentationComment();
+    if (docs.isEmpty) return _field.documentationComment;
     return docs;
   }
 
@@ -862,12 +862,12 @@ abstract class GetterSetterCombo {
     var buffer = new StringBuffer();
 
     if (hasGetter && !_getter.isSynthetic) {
-      String docs = stripComments(_getter.computeDocumentationComment());
+      String docs = stripComments(_getter.documentationComment);
       if (docs != null) buffer.write(docs);
     }
 
     if (hasSetter && !_setter.isSynthetic) {
-      String docs = stripComments(_setter.computeDocumentationComment());
+      String docs = stripComments(_setter.documentationComment);
       if (docs != null) {
         if (buffer.isNotEmpty) buffer.write('\n\n');
         buffer.write(docs);
@@ -1963,7 +1963,7 @@ class TopLevelVariable extends ModelElement
   @override
   String get _computeDocumentationComment {
     String docs = getterSetterDocumentationComment;
-    if (docs.isEmpty) return _variable.computeDocumentationComment();
+    if (docs.isEmpty) return _variable.documentationComment;
     return docs;
   }
 
@@ -2001,7 +2001,6 @@ class Typedef extends ModelElement implements EnclosedElement {
 
   String get nameWithGenerics {
     if (!modelType.isParameterizedType) return name;
-    String n = '$name&lt;${_typeParameters.map((t) => t.name).join(', ')}&gt;';
     return '$name&lt;${_typeParameters.map((t) => t.name).join(', ')}&gt;';
   }
 
