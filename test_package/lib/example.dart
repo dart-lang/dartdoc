@@ -7,8 +7,9 @@ import 'src/mylib.dart' show Helper;
 
 export 'dart:core' show deprecated, Deprecated;
 
-export 'fake.dart' show Cool;
-export 'src/mylib.dart' show Helper;
+// export a class, a field, and a typedef
+export 'fake.dart' show Cool, mapWithDynamicKeys, FakeProcesses, short;
+export 'src/mylib.dart' show Helper, topLevelVar, DoThing, helperFunction;
 
 const String COLOR = 'red';
 
