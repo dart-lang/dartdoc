@@ -82,7 +82,9 @@
       <li><a href="code_in_comments/code_in_comments-library.html">code_in_comments</a></li>
       <li><a href="css/css-library.html">css</a></li>
       <li><a href="ex/ex-library.html">ex</a></li>
+      <li><a href="exporter/exporter-library.html">exporter</a></li>
       <li><a class="deprecated" href="is_deprecated/is_deprecated-library.html">is_deprecated</a></li>
+      <li><a href="to_be_exported/to_be_exported-library.html">to_be_exported</a></li>
       <li><a href="two_exports/two_exports-library.html">two_exports</a></li>
     </ol>
   </div>
@@ -184,6 +186,30 @@
       <h2>Typedefs</h2>
 
       <dl class="callables">
+        <dt id="DoThing" class="callable">
+          <span class="name"><a href="ex/DoThing.html">DoThing</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          <p></p>
+        </dd>
+        <dt id="ExportedTypeDef" class="callable">
+          <span class="name"><a href="to_be_exported/ExportedTypeDef.html">ExportedTypeDef</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          <p></p>
+        </dd>
+        <dt id="FakeProcesses" class="callable">
+          <span class="name deprecated"><a class="deprecated" href="ex/FakeProcesses.html">FakeProcesses</a></span><span class="signature">(<wbr><span class="parameter" id="FakeProcesses-param-input"><span class="type-annotation">String</span> <span class="parameter-name">input</span></span>)
+            <span class="returntype parameter">&#8594; String</span>
+          </span>
+        </dt>
+        <dd>
+          <p>Takes input, returns output.</p>
+        </dd>
         <dt id="processMessage" class="callable">
           <span class="name"><a href="ex/processMessage.html">processMessage</a></span><span class="signature">(<wbr><span class="parameter" id="processMessage-param-msg"><span class="type-annotation">String</span> <span class="parameter-name">msg</span></span>)
             <span class="returntype parameter">&#8594; String</span>
@@ -229,9 +255,39 @@
     write-only
   </div>
 </dd>
+        <dt id="exportedField" class="property">
+          <span class="name"><a href="to_be_exported/exportedField.html">exportedField</a></span>
+          <span class="signature">&#8594; String</span>
+        </dt>
+        <dd>
+          <p></p>
+          <div class="features">
+    read / write
+  </div>
+</dd>
+        <dt id="mapWithDynamicKeys" class="property">
+          <span class="name"><a href="ex/mapWithDynamicKeys.html">mapWithDynamicKeys</a></span>
+          <span class="signature">&#8594; Map&lt;dynamic, String&gt;</span>
+        </dt>
+        <dd>
+          <p></p>
+          <div class="features">
+    read / write
+  </div>
+</dd>
         <dt id="number" class="property">
           <span class="name"><a href="ex/number.html">number</a></span>
           <span class="signature">&#8594; double</span>
+        </dt>
+        <dd>
+          <p></p>
+          <div class="features">
+    read / write
+  </div>
+</dd>
+        <dt id="topLevelVar" class="property">
+          <span class="name"><a href="ex/topLevelVar.html">topLevelVar</a></span>
+          <span class="signature">&#8594; String</span>
         </dt>
         <dd>
           <p></p>
@@ -256,6 +312,14 @@
       <h2>Functions</h2>
 
       <dl class="callables">
+        <dt id="exportedFunction" class="callable">
+          <span class="name"><a href="to_be_exported/exportedFunction.html">exportedFunction</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          <p></p>
+        </dd>
         <dt id="function1" class="callable">
           <span class="name"><a href="ex/function1.html">function1</a></span><span class="signature">(<wbr><span class="parameter" id="function1-param-s"><span class="type-annotation">String</span> <span class="parameter-name">s</span></span>, <span class="parameter" id="function1-param-b"><span class="type-annotation">bool</span> <span class="parameter-name">b</span></span>, <span class="parameter" id="function1-param-lastParam"><span class="parameter-name">lastParam</span></span>)
             <span class="returntype parameter">&#8594; int</span>
@@ -263,6 +327,23 @@
         </dt>
         <dd>
           <p></p>
+        </dd>
+        <dt id="helperFunction" class="callable">
+          <span class="name"><a href="ex/helperFunction.html">helperFunction</a></span><span class="signature">(<wbr><span class="parameter" id="helperFunction-param-message"><span class="type-annotation">String</span> <span class="parameter-name">message</span></span>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          <p></p>
+        </dd>
+        <dt id="short" class="callable">
+          <span class="name"><a href="ex/short.html">short</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          <p>Testing <code>NAME_WITH_TWO_UNDERSCORES</code> should not be italicized.<a href="ex/short.html">&hellip;</a>
+</p>
         </dd>
       </dl>
     </section>
@@ -273,6 +354,18 @@
       <dl>
         <dt id="Animal">
           <a href="ex/Animal-class.html">Animal</a>
+        </dt>
+        <dd>
+          <p></p>
+        </dd>
+        <dt id="Color">
+          <a href="ex/Color-class.html">Color</a>
+        </dt>
+        <dd>
+          <p>An <code>enum</code> for ROYGBIV constants.</p>
+        </dd>
+        <dt id="ExportedEnum">
+          <a href="to_be_exported/ExportedEnum-class.html">ExportedEnum</a>
         </dt>
         <dd>
           <p></p>
@@ -341,6 +434,12 @@
         <dd>
           <p></p>
         </dd>
+        <dt id="ExportedClass">
+          <span class="name "><a href="to_be_exported/ExportedClass-class.html">ExportedClass</a></span>
+        </dt>
+        <dd>
+          <p></p>
+        </dd>
         <dt id="F">
           <span class="name "><a href="ex/F-class.html">F</a></span>
         </dt>
@@ -363,7 +462,7 @@
           <span class="name "><a href="ex/Helper-class.html">Helper</a></span>
         </dt>
         <dd>
-          <p></p>
+          <p>A helper class in an internal src library.</p>
         </dd>
         <dt id="Klass">
           <span class="name "><a href="ex/Klass-class.html">Klass</a></span>
@@ -446,20 +545,31 @@ that has some operators</p>
       <li><a href="ex/MY_CAT-constant.html">MY_CAT</a></li>
     
       <li class="section-title"><a href="ex/ex-library.html#typedefs">Typedefs</a></li>
+      <li><a href="ex/DoThing.html">DoThing</a></li>
+      <li><a href="to_be_exported/ExportedTypeDef.html">ExportedTypeDef</a></li>
+      <li><a class="deprecated" href="ex/FakeProcesses.html">FakeProcesses</a></li>
       <li><a href="ex/processMessage.html">processMessage</a></li>
     
       <li class="section-title"><a href="ex/ex-library.html#properties">Properties</a></li>
       <li><a class="deprecated" href="ex/deprecatedField.html">deprecatedField</a></li>
       <li><a class="deprecated" href="ex/deprecatedGetter.html">deprecatedGetter</a></li>
       <li><a class="deprecated" href="ex/deprecatedSetter.html">deprecatedSetter</a></li>
+      <li><a href="to_be_exported/exportedField.html">exportedField</a></li>
+      <li><a href="ex/mapWithDynamicKeys.html">mapWithDynamicKeys</a></li>
       <li><a href="ex/number.html">number</a></li>
+      <li><a href="ex/topLevelVar.html">topLevelVar</a></li>
       <li><a href="ex/y.html">y</a></li>
     
       <li class="section-title"><a href="ex/ex-library.html#functions">Functions</a></li>
+      <li><a href="to_be_exported/exportedFunction.html">exportedFunction</a></li>
       <li><a href="ex/function1.html">function1</a></li>
+      <li><a href="ex/helperFunction.html">helperFunction</a></li>
+      <li><a href="ex/short.html">short</a></li>
     
       <li class="section-title"><a href="ex/ex-library.html#enums">Enums</a></li>
       <li><a href="ex/Animal-class.html">Animal</a></li>
+      <li><a href="ex/Color-class.html">Color</a></li>
+      <li><a href="to_be_exported/ExportedEnum-class.html">ExportedEnum</a></li>
     
       <li class="section-title"><a href="ex/ex-library.html#classes">Classes</a></li>
       <li><a href="ex/Apple-class.html">Apple</a></li>
@@ -471,6 +581,7 @@ that has some operators</p>
       <li><a href="ex/Deprecated-class.html">Deprecated</a></li>
       <li><a href="ex/Dog-class.html">Dog</a></li>
       <li><a href="ex/E-class.html">E</a></li>
+      <li><a href="to_be_exported/ExportedClass-class.html">ExportedClass</a></li>
       <li><a href="ex/F-class.html">F</a></li>
       <li><a href="ex/ForAnnotation-class.html">ForAnnotation</a></li>
       <li><a href="ex/HasAnnotation-class.html">HasAnnotation</a></li>

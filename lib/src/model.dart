@@ -217,6 +217,9 @@ class Class extends ModelElement implements EnclosedElement {
   }
 
   /// Returns the library that encloses this element.
+  ///
+  /// If this class is exported by a library, this returns
+  /// the exporting library.
   ModelElement get enclosingElement => library;
 
   String get fileName => "${name}-class.html";
@@ -320,7 +323,7 @@ class Class extends ModelElement implements EnclosedElement {
           isPublic(value) &&
           !value.isOperator &&
           value.enclosingElement != null) {
-        if (!package.isDocumented(value.enclosingElement)) {
+        if (!package.isInLibraryAndExported(value.enclosingElement)) {
           Method m = new Method.inherited(value, this, library);
           _inheritedMethods.add(m);
           _genPageMethods.add(m);
@@ -375,7 +378,7 @@ class Class extends ModelElement implements EnclosedElement {
     }
 
     for (ExecutableElement value in vs.values) {
-      if (!package.isDocumented(value.enclosingElement)) {
+      if (!package.isInLibraryAndExported(value.enclosingElement)) {
         Operator o = new Operator.inherited(value, this, library);
         _inheritedOperators.add(o);
         _genPageOperators.add(o);
@@ -437,7 +440,7 @@ class Class extends ModelElement implements EnclosedElement {
         if (_inheritedProperties.any((f) => f.element == e)) {
           continue;
         }
-        if (!package.isDocumented(value.enclosingElement)) {
+        if (!package.isInLibraryAndExported(value.enclosingElement)) {
           Field f = new Field.inherited(e, this, library);
           _inheritedProperties.add(f);
           _genPageProperties.add(f);
@@ -681,6 +684,8 @@ class Dynamic extends ModelElement {
 ///
 /// Libraries are not enclosed.
 abstract class EnclosedElement {
+  /// Returns the enclosing element, or null
+  /// if this is a library.
   ModelElement get enclosingElement;
 }
 
@@ -958,10 +963,15 @@ class Library extends ModelElement {
     List<ClassElement> enumClasses = [];
     enumClasses.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is ClassElement && element.isEnum));
-    _enums = enumClasses
-        .where(isPublic)
-        .map((e) => new Enum(e, this))
-        .toList(growable: false)..sort(byName);
+    _enums = enumClasses.where(isPublic).map((e) {
+      if (e.library != this._library &&
+          _exportedNamespace.definedNames.values.contains(e) &&
+          package._libraryElements.contains(e.library)) {
+        return new Enum(e, new Library(e.library, this.package));
+      } else {
+        return new Enum(e, this.library);
+      }
+    }).toList(growable: false)..sort(byName);
 
     return _enums;
   }
@@ -986,7 +996,13 @@ class Library extends ModelElement {
         .where((element) => element is FunctionElement));
 
     _functions = elements.where(isPublic).map((e) {
-      return new ModelFunction(e, this);
+      if (e.library != this._library &&
+          _exportedNamespace.definedNames.values.contains(e) &&
+          package._libraryElements.contains(e.library)) {
+        return new ModelFunction(e, new Library(e.library, this.package));
+      } else {
+        return new ModelFunction(e, this.library);
+      }
     }).toList(growable: false)..sort(byName);
 
     return _functions;
@@ -1061,12 +1077,19 @@ class Library extends ModelElement {
       elements.addAll(cu.functionTypeAliases);
     }
 
-    elements.addAll(_exportedNamespace.definedNames.values
-        .where((element) => element is FunctionTypeAliasElement));
-    elements..removeWhere(isPrivate);
-    _typeDefs = elements
-        .map((e) => new Typedef(e, this))
-        .toList(growable: false)..sort(byName);
+    elements
+      ..addAll(_exportedNamespace.definedNames.values
+          .where((element) => element is FunctionTypeAliasElement))
+      ..removeWhere(isPrivate);
+    _typeDefs = elements.map((e) {
+      if (e.library != this._library &&
+          _exportedNamespace.definedNames.values.contains(e) &&
+          package._libraryElements.contains(e.library)) {
+        return new Typedef(e, new Library(e.library, this.package));
+      } else {
+        return new Typedef(e, this.library);
+      }
+    }).toList(growable: false)..sort(byName);
 
     return _typeDefs;
   }
@@ -1080,20 +1103,46 @@ class Library extends ModelElement {
       types.addAll(cu.types);
     }
     for (LibraryElement le in _library.exportedLibraries) {
-      types.addAll(le.definingCompilationUnit.types
-          .where((t) => _exportedNamespace.definedNames.values.contains(t.name))
-          .toList());
+      types.addAll(le.definingCompilationUnit.types.where(
+          (t) => _exportedNamespace.definedNames.values.contains(t.name)));
     }
 
+    // TODO: does this code duplicate the above loop through exportedLibraries?
     types.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is ClassElement && !element.isEnum));
 
-    _classes = types
-        .where(isPublic)
-        .map((e) => new Class(e, this))
-        .toList(growable: false)..sort(byName);
+    _classes = types.where(isPublic).map((e) {
+      if (e.name == 'ExportedClass') _getOriginalPublicContainingLibrary(e);
+      if (e.library != this._library &&
+          _exportedNamespace.definedNames.values.contains(e) &&
+          package._libraryElements.contains(e.library)) {
+        return new Class(e, new Library(e.library, this.package));
+      } else {
+        return new Class(e, this.library);
+      }
+    }).toList(growable: false)..sort(byName);
 
     return _classes;
+  }
+
+  void _getOriginalPublicContainingLibrary(Element e) {
+    // _library.exportedLibraries.forEach((lib) {
+    //   if (lib.publicNamespace.definedNames.isNotEmpty &&
+    //       lib.publicNamespace.definedNames.values.contains(e)) {
+    //     print("YYYY ${lib.name} has ${e.name}");
+    //   }
+    //   var ns = new NamespaceBuilder().createExportNamespaceForLibrary(lib);
+    //   var ns2 = new NamespaceBuilder().createPublicNamespaceForLibrary(lib);
+    //   print("XXX ${lib.name} public namespace: [" +
+    //       lib.publicNamespace.definedNames.keys.join(', ') +
+    //       "] and export ns [${ns.definedNames.keys.join(', ')}] " +
+    //       " and total public namespace is [${ns2.definedNames.keys.join(', ')}]");
+    // });
+    _library.exports.forEach((export) {
+      print(
+          "XXX ${_library.name} has export ${export.exportedLibrary.name} ${package._libraryElements.contains(export.exportedLibrary)} with NS "
+          '${new NamespaceBuilder().createExportNamespaceForDirective(export).definedNames.keys.join(', ')}');
+    });
   }
 
   LibraryElement get _library => (element as LibraryElement);
@@ -1105,13 +1154,15 @@ class Library extends ModelElement {
   bool hasInExportedNamespace(Element element) {
     Element found = _exportedNamespace.get(element.name);
     if (found == null) return false;
-    if (found == element) return true; // this checks more than just the name
 
     // Fix for #587, comparison between elements isn't reliable on windows.
     // for some reason. sigh.
 
-    return found.runtimeType == element.runtimeType &&
-        found.nameOffset == element.nameOffset;
+    bool isSame = (found == element) ||
+        found.runtimeType == element.runtimeType &&
+            found.nameOffset == element.nameOffset;
+
+    return isSame;
   }
 
   List<TopLevelVariable> _getVariables() {
@@ -1125,10 +1176,14 @@ class Library extends ModelElement {
     _exportedNamespace.definedNames.values.forEach((element) {
       if (element is PropertyAccessorElement) elements.add(element.variable);
     });
-    _variables = elements
-        .where(isPublic)
-        .map((e) => new TopLevelVariable(e, this))
-        .toList(growable: false)..sort(byName);
+    _variables = elements.where(isPublic).map((e) {
+      if (e.library == this._library ||
+          !package._libraryElements.contains(e.library)) {
+        return new TopLevelVariable(e, this);
+      } else {
+        return new TopLevelVariable(e, new Library(e.library, this.package));
+      }
+    }).toList(growable: false)..sort(byName);
 
     return _variables;
   }
@@ -1539,15 +1594,17 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (name.startsWith('_')) {
       return HTML_ESCAPE.convert(name);
     }
-    if (!(this is Method || this is Field) && !package.isDocumented(element)) {
+    if (!(this is Method || this is Field) &&
+        !package.isInLibraryAndExported(element)) {
       return HTML_ESCAPE.convert(name);
     }
 
+    // TODO: get the library that is exporting this class, not just containing it
     ModelElement c = (this is EnclosedElement)
         ? (this as EnclosedElement).enclosingElement
         : null;
     if (c != null) {
-      if (!package.isDocumented(c.element)) {
+      if (!package.isInLibraryAndExported(c.element)) {
         return HTML_ESCAPE.convert(name);
       }
       if (c.name.startsWith('_')) {
@@ -1651,12 +1708,14 @@ class Operator extends Method {
 }
 
 class Package implements Nameable, Documentable {
+  final List<LibraryElement> _libraryElements = [];
   final List<Library> _libraries = [];
   final PackageMeta packageMeta;
   final Map<String, Library> elementLibaryMap = {};
   String _docsAsHtml;
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {
+    _libraryElements.addAll(libraryElements);
     libraryElements.forEach((element) {
       // add only if the element should be included in the public api
       if (isPublic(element)) {
@@ -1740,11 +1799,14 @@ class Package implements Nameable, Documentable {
     } else {
       el = element;
     }
+
     return _libraries.firstWhere((lib) => lib.hasInExportedNamespace(el),
         orElse: () => null);
   }
 
-  bool isDocumented(Element element) => findLibraryFor(element) != null;
+  /// Returns true if element is found in a library in this package.
+  bool isInLibraryAndExported(Element element) =>
+      findLibraryFor(element) != null;
 
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
