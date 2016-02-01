@@ -45,8 +45,8 @@ void main() {
         expect(package.name, 'test_package');
       });
 
-      test('libraries', () {
-        expect(package.libraries, hasLength(7));
+      test('has all the libraries', () {
+        expect(package.libraries, hasLength(8));
       });
 
       test('is documented in library', () {
@@ -482,11 +482,12 @@ void main() {
     List<Class> classes;
     Class Apple, B, Cat, Cool, Dog, F, Dep, SpecialList;
     Class ExtendingClass, CatString;
-    Class Helper, CoolFromExporter;
+    Class Helper, CoolFromExporter, ExportedClass;
 
     setUp(() {
       classes = exLibrary.classes;
       CoolFromExporter = classes.firstWhere((c) => c.name == 'Cool');
+      ExportedClass = classes.firstWhere((c) => c.name == 'ExportedClass');
       Helper = classes.firstWhere((c) => c.name == 'Helper');
       Apple = classes.firstWhere((c) => c.name == 'Apple');
       B = classes.firstWhere((c) => c.name == 'B');
@@ -529,7 +530,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(18));
+      expect(classes, hasLength(19));
     });
 
     test('abstract', () {
@@ -619,20 +620,27 @@ void main() {
     });
 
     test(
-        'exported class from a src library should have linkedName with a link to the exporting class library',
-        () {
+        'exported class from a src library should have linkedName with a '
+        'link to the exporting class library', () {
       expect(Helper.linkedName, startsWith('<a href="ex'));
     });
 
     test(
-        'exported class from a public library should have linkedName with a link to origin library',
-        () {
+        'exported class from a public library should have linkedName '
+        'with a link to origin library', () {
       expect(Cool.linkedName, startsWith('<a href="fake/'));
     });
 
     test(
-        'exported class from a public library two levels deep should have linkedName with a link to origin library',
-        () {
+        'exported class, without a show, from a public library '
+        'should have linkedName with a link to origin library', () {
+      expect(ExportedClass.linkedName,
+          startsWith('<a href="to_be_exported/ExportedClass'));
+    });
+
+    test(
+        'exported class from a public library two levels deep should have '
+        'linkedName with a link to origin library', () {
       expect(CoolFromExporter.linkedName, startsWith('<a href="fake/Cool'));
     });
 
@@ -718,10 +726,33 @@ void main() {
   });
 
   group('Enum', () {
-    Enum animal;
+    Enum animal, Color, ExportedEnum;
 
     setUp(() {
       animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
+      Color = exLibrary.enums.firstWhere((e) => e.name == 'Color');
+      ExportedEnum =
+          exLibrary.enums.firstWhere((e) => e.name == 'ExportedEnum');
+    });
+
+    test(
+        'exported enum with a show from a public library should have '
+        'linkedName with a link to origin library', () {
+      expect(Color.linkedName, startsWith('<a href="fake/Color'));
+    });
+
+    test(
+        'exported enum without a show from a public library should '
+        'have linkedName '
+        'with a link to origin library', () {
+      expect(ExportedEnum.linkedName,
+          startsWith('<a href="to_be_exported/ExportedEnum'));
+    });
+
+    test(
+        'should have linkedName '
+        'with a link to this library', () {
+      expect(animal.linkedName, startsWith('<a href="ex/Animal'));
     });
 
     test('has a fully qualified name', () {
@@ -765,10 +796,12 @@ void main() {
     ModelFunction f1;
     ModelFunction thisIsAsync;
     ModelFunction topLevelFunction;
-    ModelFunction short, helperFunction;
+    ModelFunction short, helperFunction, exportedFunction;
 
     setUp(() {
       short = exLibrary.functions.firstWhere((f) => f.name == 'short');
+      exportedFunction =
+          exLibrary.functions.firstWhere((f) => f.name == 'exportedFunction');
       helperFunction =
           exLibrary.functions.firstWhere((f) => f.name == 'helperFunction');
       f1 = exLibrary.functions.firstWhere((f) => f.name == 'function1');
@@ -779,9 +812,16 @@ void main() {
     });
 
     test(
-        'exported function from a public library should have linkedName with a link to origin library',
-        () {
-      expect(short.linkedName, startsWith('<a href="fake/'));
+        'exported function with a show from a public library should have '
+        'linkedName with a link to origin library', () {
+      expect(short.linkedName, startsWith('<a href="fake/short'));
+    });
+
+    test(
+        'exported function without a show from a public library should have '
+        'linkedName with a link to origin library', () {
+      expect(exportedFunction.linkedName,
+          startsWith('<a href="to_be_exported/exportedFunction'));
     });
 
     test(
@@ -1172,7 +1212,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Top-level Variable', () {
     TopLevelVariable v;
     TopLevelVariable v3, justGetter, justSetter;
-    TopLevelVariable setAndGet, mapWithDynamicKeys, topLevelVar;
+    TopLevelVariable setAndGet, mapWithDynamicKeys, topLevelVar, exportedField;
 
     setUp(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
@@ -1187,6 +1227,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((p) => p.name == 'mapWithDynamicKeys');
       topLevelVar =
           exLibrary.properties.firstWhere((p) => p.name == 'topLevelVar');
+      exportedField =
+          exLibrary.properties.firstWhere((p) => p.name == 'exportedField');
     });
 
     test('has a fully qualified name', () {
@@ -1201,9 +1243,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           equals('String'));
     });
 
-    test('linkedName for exported variable has origin library', () {
+    test('linkedName for exported variable via show has origin library', () {
       expect(mapWithDynamicKeys.linkedName,
           contains('href="fake/mapWithDynamicKeys.html"'));
+    });
+
+    test('linkedName for exported variable via show has origin library', () {
+      expect(exportedField.linkedName,
+          contains('href="to_be_exported/exportedField.html"'));
     });
 
     test(
@@ -1216,8 +1263,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(v.enclosingElement.name, equals(exLibrary.name));
     });
 
-    test('found six properties', () {
-      expect(exLibrary.properties, hasLength(7));
+    test('found eight properties', () {
+      expect(exLibrary.properties, hasLength(8));
     });
 
     test('linked return type is a double', () {
@@ -1359,13 +1406,15 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Typedef', () {
-    Typedef t, FakeProcesses, DoThing;
+    Typedef t, FakeProcesses, DoThing, ExportedTypeDef;
 
     setUp(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
       FakeProcesses =
           exLibrary.typedefs.firstWhere((t) => t.name == 'FakeProcesses');
       DoThing = exLibrary.typedefs.firstWhere((t) => t.name == 'DoThing');
+      ExportedTypeDef =
+          exLibrary.typedefs.firstWhere((t) => t.name == 'ExportedTypeDef');
     });
 
     test('has a fully qualified name', () {
@@ -1384,9 +1433,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(t.linkedReturnType, equals('String'));
     });
 
-    test('linkedName for exported typedef is origin library', () {
+    test('linkedName for exported via show typedef is origin library', () {
       expect(
           FakeProcesses.linkedName, contains('href="fake/FakeProcesses.html"'));
+    });
+
+    test('linkedName for exported without show typedef is origin library', () {
+      expect(ExportedTypeDef.linkedName,
+          contains('href="to_be_exported/ExportedTypeDef.html"'));
     });
 
     test('linkedName for private exported typedef is exporting library', () {

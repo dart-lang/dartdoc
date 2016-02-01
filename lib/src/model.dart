@@ -963,10 +963,15 @@ class Library extends ModelElement {
     List<ClassElement> enumClasses = [];
     enumClasses.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is ClassElement && element.isEnum));
-    _enums = enumClasses
-        .where(isPublic)
-        .map((e) => new Enum(e, this))
-        .toList(growable: false)..sort(byName);
+    _enums = enumClasses.where(isPublic).map((e) {
+      if (e.library != this._library &&
+          _exportedNamespace.definedNames.values.contains(e) &&
+          package._libraryElements.contains(e.library)) {
+        return new Enum(e, new Library(e.library, this.package));
+      } else {
+        return new Enum(e, this.library);
+      }
+    }).toList(growable: false)..sort(byName);
 
     return _enums;
   }
@@ -991,12 +996,12 @@ class Library extends ModelElement {
         .where((element) => element is FunctionElement));
 
     _functions = elements.where(isPublic).map((e) {
-      // TODO: port this logic to all names that come from exported libraries
-      if (e.library == this._library ||
-          !package._libraryElements.contains(e.library)) {
-        return new ModelFunction(e, this);
-      } else {
+      if (e.library != this._library &&
+          _exportedNamespace.definedNames.values.contains(e) &&
+          package._libraryElements.contains(e.library)) {
         return new ModelFunction(e, new Library(e.library, this.package));
+      } else {
+        return new ModelFunction(e, this.library);
       }
     }).toList(growable: false)..sort(byName);
 
@@ -1077,12 +1082,12 @@ class Library extends ModelElement {
           .where((element) => element is FunctionTypeAliasElement))
       ..removeWhere(isPrivate);
     _typeDefs = elements.map((e) {
-      // TODO: port this logic to all names that come from exported libraries
-      if (e.library == this._library ||
-          !package._libraryElements.contains(e.library)) {
-        return new Typedef(e, this);
-      } else {
+      if (e.library != this._library &&
+          _exportedNamespace.definedNames.values.contains(e) &&
+          package._libraryElements.contains(e.library)) {
         return new Typedef(e, new Library(e.library, this.package));
+      } else {
+        return new Typedef(e, this.library);
       }
     }).toList(growable: false)..sort(byName);
 
@@ -1107,12 +1112,12 @@ class Library extends ModelElement {
         .where((element) => element is ClassElement && !element.isEnum));
 
     _classes = types.where(isPublic).map((e) {
-      // TODO: port this logic to all names that come from exported libraries
-      if (e.library == this._library ||
-          !package._libraryElements.contains(e.library)) {
-        return new Class(e, this);
-      } else {
+      if (e.library != this._library &&
+          _exportedNamespace.definedNames.values.contains(e) &&
+          package._libraryElements.contains(e.library)) {
         return new Class(e, new Library(e.library, this.package));
+      } else {
+        return new Class(e, this.library);
       }
     }).toList(growable: false)..sort(byName);
 
@@ -1151,7 +1156,6 @@ class Library extends ModelElement {
       if (element is PropertyAccessorElement) elements.add(element.variable);
     });
     _variables = elements.where(isPublic).map((e) {
-      // TODO: port this logic to all names that come from exported libraries
       if (e.library == this._library ||
           !package._libraryElements.contains(e.library)) {
         return new TopLevelVariable(e, this);

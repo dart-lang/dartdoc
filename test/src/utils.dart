@@ -41,7 +41,8 @@ void init() {
     'lib/anonymous_library.dart',
     'lib/another_anonymous_lib.dart',
     'lib/is_deprecated.dart',
-    'lib/exporter.dart'
+    'lib/exporter.dart',
+    'lib/to_be_exported.dart'
   ];
 
   testPackage = _bootPackage(pathsForTestLib, 'test_package');
