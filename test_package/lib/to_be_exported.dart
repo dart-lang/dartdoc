@@ -1,11 +1,4 @@
 library to_be_exported;
 
-String exportedField;
-
-void exportedFunction() {}
-
-typedef void ExportedTypeDef();
-
-class ExportedClass {}
-
-enum ExportedEnum { ONE, TWO, THREE }
+// testing a library that is made up of "private" libraries
+export 'src/for_exporting.dart';

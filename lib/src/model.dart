@@ -1112,6 +1112,7 @@ class Library extends ModelElement {
         .where((element) => element is ClassElement && !element.isEnum));
 
     _classes = types.where(isPublic).map((e) {
+      if (e.name == 'ExportedClass') _getOriginalPublicContainingLibrary(e);
       if (e.library != this._library &&
           _exportedNamespace.definedNames.values.contains(e) &&
           package._libraryElements.contains(e.library)) {
@@ -1122,6 +1123,26 @@ class Library extends ModelElement {
     }).toList(growable: false)..sort(byName);
 
     return _classes;
+  }
+
+  void _getOriginalPublicContainingLibrary(Element e) {
+    // _library.exportedLibraries.forEach((lib) {
+    //   if (lib.publicNamespace.definedNames.isNotEmpty &&
+    //       lib.publicNamespace.definedNames.values.contains(e)) {
+    //     print("YYYY ${lib.name} has ${e.name}");
+    //   }
+    //   var ns = new NamespaceBuilder().createExportNamespaceForLibrary(lib);
+    //   var ns2 = new NamespaceBuilder().createPublicNamespaceForLibrary(lib);
+    //   print("XXX ${lib.name} public namespace: [" +
+    //       lib.publicNamespace.definedNames.keys.join(', ') +
+    //       "] and export ns [${ns.definedNames.keys.join(', ')}] " +
+    //       " and total public namespace is [${ns2.definedNames.keys.join(', ')}]");
+    // });
+    _library.exports.forEach((export) {
+      print(
+          "XXX ${_library.name} has export ${export.exportedLibrary.name} ${package._libraryElements.contains(export.exportedLibrary)} with NS "
+          '${new NamespaceBuilder().createExportNamespaceForDirective(export).definedNames.keys.join(', ')}');
+    });
   }
 
   LibraryElement get _library => (element as LibraryElement);
