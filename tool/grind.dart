@@ -310,17 +310,7 @@ updateTestPackageDocs() {
     dir.deleteSync(recursive: true);
   }
 
-  // NOTE: excluding `fake` library because it contains exported code
-  //       from the SDK that has changed between 1.12 and 1.13
-  // This must match the content in `compare_output_test`
-
   Dart.run('../bin/dartdoc.dart',
-      arguments: [
-        '--no-include-source',
-        '--output',
-        '../test_package_docs',
-        '--exclude',
-        'fake',
-      ],
+      arguments: ['--no-include-source', '--output', '../test_package_docs'],
       runOptions: options);
 }

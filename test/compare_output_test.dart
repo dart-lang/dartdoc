@@ -47,17 +47,11 @@ void main() {
       var dartdocBin =
           p.fromUri(_currentFileUri.resolve('../bin/dartdoc.dart'));
 
-      // NOTE: excluding `fake` library because it contains exported code
-      //       from the SDK that has changed between 1.12 and 1.13
-      // This must match the content in `grind to update test_package_docs`
-
       var args = <String>[
         dartdocBin,
         '--no-include-source',
         '--output',
-        tempDir.path,
-        '--exclude',
-        'fake'
+        tempDir.path
       ];
 
       var result =
