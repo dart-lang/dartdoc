@@ -1,4 +1,4 @@
-## unreleased
+## 0.8.6
 * [bug] modify showing constants so that there is no double `const` shown in
   value.
 
