@@ -99,5 +99,22 @@ void main() {
       expect(p.libraries, hasLength(7));
       expect(p.libraries.map((lib) => lib.name).contains('fake'), isFalse);
     });
+
+    test('generate docs for package with embedder yaml', () async {
+      PackageMeta meta = new PackageMeta.fromDir(testPackageWithEmbedderYaml);
+      DartDoc dartdoc = new DartDoc(
+          testPackageWithEmbedderYaml, [], getSdkDir(), [], tempDir, meta, []);
+
+      DartDocResults results = await dartdoc.generateDocs();
+      expect(results.package, isNotNull);
+
+      Package p = results.package;
+      expect(p.name, 'test_package_embedder_yaml');
+      expect(p.hasDocumentationFile, isFalse);
+      expect(p.libraries, hasLength(3));
+      expect(p.libraries.map((lib) => lib.name).contains('dart:core'), isTrue);
+      expect(p.libraries.map((lib) => lib.name).contains('dart:async'), isTrue);
+      expect(p.libraries.map((lib) => lib.name).contains('grizzly'), isTrue);
+    });
   });
 }

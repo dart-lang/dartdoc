@@ -17,14 +17,16 @@ import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as p;
 
-final Directory testPackageDir = new Directory('test_package');
-final Directory testPackageBadDir = new Directory('test_package_bad');
-final Directory testPackageWithNoReadme = new Directory('test_package_small');
-
-DartSdk sdkDir;
 AnalyzerHelper analyzerHelper;
+DartSdk sdkDir;
 Package testPackage;
+final Directory testPackageBadDir = new Directory('test_package_bad');
+
+final Directory testPackageDir = new Directory('test_package');
 Package testPackageSmall;
+final Directory testPackageWithEmbedderYaml =
+    new Directory('test_package_embedder_yaml');
+final Directory testPackageWithNoReadme = new Directory('test_package_small');
 
 void delete(Directory dir) {
   if (dir.existsSync()) dir.deleteSync(recursive: true);
