@@ -182,8 +182,8 @@ class DartDoc {
         if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
       }
       print('parsing ${name}...');
-      JavaFile javaFile = new JavaFile(filePath);
-      Source source = new FileBasedSource(new JavaFile(filePath));
+      JavaFile javaFile = new JavaFile(filePath).getAbsoluteFile();
+      Source source = new FileBasedSource(javaFile);
       Uri uri = context.sourceFactory.restoreUri(source);
       if (uri != null) {
         source = new FileBasedSource(javaFile, uri);
