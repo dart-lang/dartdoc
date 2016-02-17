@@ -1,4 +1,8 @@
-## 0.8.6
+## 0.9.0
+* **BREAKING** works with Dart SDK 1.14.0 and above
+* [health] use package resource
+* [enhancement] add support for packages with `_embedder.yaml`  
+* [bug] fix generating docs when input == '.'
 * [bug] modify showing constants so that there is no double `const` shown in
   value.
 
