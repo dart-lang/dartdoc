@@ -138,12 +138,13 @@ class DartDoc {
     PackageMapInfo packageMapInfo =
         pubPackageMapProvider.computePackageMap(cwd);
     Map<String, List<fileSystem.Folder>> packageMap = packageMapInfo.packageMap;
+    EmbedderUriResolver embedderUriResolver;
     if (packageMap != null) {
       resolvers.add(new SdkExtUriResolver(packageMap));
       resolvers.add(new PackageMapUriResolver(
           PhysicalResourceProvider.INSTANCE, packageMap));
 
-      EmbedderUriResolver embedderUriResolver = new EmbedderUriResolver(
+      embedderUriResolver = new EmbedderUriResolver(
           new EmbedderYamlLocator(packageMap).embedderYamls);
       if (embedderUriResolver.length == 0) {
         // The embedder uri resolver has no mappings. Use the default Dart SDK
@@ -175,7 +176,7 @@ class DartDoc {
 
     List<Source> sources = [];
 
-    files.forEach((String filePath) {
+    void processLibrary(String filePath) {
       String name = filePath;
       if (name.startsWith(Directory.current.path)) {
         name = name.substring(Directory.current.path.length);
@@ -193,7 +194,16 @@ class DartDoc {
         LibraryElement library = context.computeLibraryElement(source);
         libraries.add(library);
       }
-    });
+    }
+
+    files.forEach(processLibrary);
+
+    if ((embedderUriResolver != null) && (embedderUriResolver.length > 0)) {
+      embedderUriResolver.dartSdk.uris.forEach((String dartUri) {
+        Source source = embedderUriResolver.dartSdk.mapDartUri(dartUri);
+        processLibrary(source.fullName);
+      });
+    }
 
     // Ensure that the analysis engine performs all remaining work.
     AnalysisResult result = context.performAnalysisTask();
