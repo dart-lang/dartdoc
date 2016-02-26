@@ -114,7 +114,14 @@ void main() {
       expect(p.libraries, hasLength(3));
       expect(p.libraries.map((lib) => lib.name).contains('dart:core'), isTrue);
       expect(p.libraries.map((lib) => lib.name).contains('dart:async'), isTrue);
-      expect(p.libraries.map((lib) => lib.name).contains('grizzly'), isTrue);
+      expect(p.libraries.map((lib) => lib.name).contains('dart:bear'), isTrue);
+      // Ensure that we actually parsed some source by checking for
+      // the 'Bear' class.
+      Library dart_bear =
+          p.libraries.firstWhere((lib) => lib.name == 'dart:bear');
+      expect(dart_bear, isNotNull);
+      expect(dart_bear.allClasses.map((cls) => cls.name).contains('Bear'),
+             isTrue);
     });
   });
 }
