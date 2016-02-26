@@ -120,8 +120,8 @@ void main() {
       Library dart_bear =
           p.libraries.firstWhere((lib) => lib.name == 'dart:bear');
       expect(dart_bear, isNotNull);
-      expect(dart_bear.allClasses.map((cls) => cls.name).contains('Bear'),
-             isTrue);
+      expect(
+          dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
     });
   });
 }
