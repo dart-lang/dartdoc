@@ -1,3 +1,6 @@
+##0.9.1
+* [bug] fix generating docs for packages with _embedder.yaml
+
 ## 0.9.0
 * **BREAKING** works with Dart SDK 1.14.0 and above
 * [health] use package resource
