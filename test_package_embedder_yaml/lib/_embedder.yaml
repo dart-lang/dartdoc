@@ -1,4 +1,4 @@
 embedded_libs:
-  "dart:bear": "grizzly.dart"
-  "dart:core": "core.dart"
-  "dart:async": "async.dart"
+  "dart:bear": "../sdk/grizzly.dart"
+  "dart:core": "../sdk/core.dart"
+  "dart:async": "../sdk/async.dart"
