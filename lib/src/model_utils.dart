@@ -45,7 +45,11 @@ bool isInExportedLibraries(
       .any((lib) => lib == library || lib.exportedLibraries.contains(library));
 }
 
-bool isPrivate(Element e) => e.name.startsWith('_');
+bool isPrivate(Element e) =>
+    e.name.startsWith('_') ||
+    (e is LibraryElement &&
+        (e.identifier == 'dart:_internal' ||
+            e.identifier == 'dart:nativewrappers'));
 
 bool isPublic(Element e) {
   if (isPrivate(e)) return false;
