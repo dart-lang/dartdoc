@@ -123,6 +123,11 @@ class DartDoc {
         "\nDocumented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds.");
 
+    if (libraries.isEmpty) {
+      print(
+          "\ndartdoc could not find any libraries to document. Run `pub get` and try again.");
+    }
+
     return new DartDocResults(packageMeta, package, outputDir);
   }
 
