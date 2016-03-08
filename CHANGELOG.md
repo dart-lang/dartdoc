@@ -1,3 +1,9 @@
+## 0.9.2
+* [bug] do not generate docs for `dart:_internal` and `dart:nativewrappers`, when defined
+  in the `_embedder.yaml` file. 
+* [enhancement] print message to run pub if dartdoc does not find any libraries to
+  document.
+
 ## 0.9.1
 * [bug] fix generating docs for packages with _embedder.yaml
 
