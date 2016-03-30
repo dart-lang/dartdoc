@@ -1,3 +1,8 @@
+## 0.9.3
+* [enhancement] Added support for URL-based search. If a query parameter named
+  "search" is passed, the page navigates to the first search result for its
+  value.
+
 ## 0.9.2
 * [bug] do not generate docs for `dart:_internal` and `dart:nativewrappers`, when defined
   in the `_embedder.yaml` file. 
