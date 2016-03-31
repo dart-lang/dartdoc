@@ -72,7 +72,7 @@ function initSearch() {
     'constructor' : 4
   };
 
-  function findMatches(q, cb) {
+  function findMatches(q) {
     var allMatches = []; // list of matches
 
     function score(element, num) {
@@ -137,10 +137,19 @@ function initSearch() {
       sortedMatches.push(allMatches[i].e);
     }
 
-    cb(sortedMatches);
+    return sortedMatches;
   };
 
   function initTypeahead() {
+    var search = new URI().query(true)["search"];
+    if (search) {
+      var matches = findMatches(search);
+      if (matches.length != 0) {
+        window.location = matches[0].href;
+        return;
+      }
+    }
+
     $('#search-box').prop('disabled', false);
     $('#search-box').prop('placeholder', 'Search');
     $(document).keypress(function(event) {
@@ -158,7 +167,7 @@ function initSearch() {
     {
       name: 'elements',
       limit: 10,
-      source: findMatches,
+      source: function(q, cb) { cb(findMatches(q)); },
       display: function(element) { return element.name; },
       templates: {
         suggestion: function(match) {
