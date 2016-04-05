@@ -1,9 +1,8 @@
 # dartdoc
 
-Use `dartdoc` to generate HTML documentaton for your Dart package.
+[![Build Status](https://travis-ci.org/dart-lang/dartdoc.svg?branch=master)](https://travis-ci.org/dart-lang/dartdoc)
 
-Note: As of Dart 1.12, `dartdoc` is shipped with the Dart SDK and replaces the
-older `docgen` tool.
+Use `dartdoc` to generate HTML documentaton for your Dart package.
 
 If you want to _contribute_ to the dartdoc project, see the
 [contributor docs][]. This page contains information about _using_ the dartdoc
@@ -131,6 +130,11 @@ when authoring doc comments for Dart with dartdoc.
 
 dartdoc will not generate documentation for a Dart element and its children that has
 the `<nodoc>` tag in the documentation comment.
+
+## Older versions
+
+As of Dart 1.12, `dartdoc` is shipped with the Dart SDK and replaces the
+older `docgen` tool.
 
 ## Issues and bugs
 
