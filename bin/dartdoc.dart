@@ -70,6 +70,7 @@ main(List<String> arguments) async {
 
   List<String> excludeLibraries = args['exclude'];
   List<String> includeLibraries = args['include'];
+  List<String> includeExternals = args['include-external'];
 
   String url = args['hosted-url'];
   List<String> footerFilePaths = args['footer'].map(_resolveTildePath).toList();
@@ -126,7 +127,8 @@ main(List<String> arguments) async {
   initializeConfig(addCrossdart: addCrossdart, includeSource: includeSource);
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
-      outputDir, packageMeta, includeLibraries);
+      outputDir, packageMeta, includeLibraries,
+      includeExternals: includeExternals);
 
   Chain.capture(() async {
     DartDocResults results = await dartdoc.generateDocs();
@@ -190,6 +192,8 @@ ArgParser _createArgsParser() {
       allowMultiple: true, help: 'library names to ignore');
   parser.addOption('include',
       allowMultiple: true, help: 'library names to generate docs for');
+  parser.addOption('include-external',
+      allowMultiple: true, help: 'additional (external) libraries to include');
   parser.addOption('hosted-url',
       help:
           'URL where the docs will be hosted (used to generate the sitemap).');

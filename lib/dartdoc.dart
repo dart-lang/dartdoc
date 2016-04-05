@@ -60,17 +60,19 @@ Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
 /// directory.
 class DartDoc {
   final Directory rootDir;
-  final List<String> excludes;
   final Directory sdkDir;
   final List<Generator> generators;
   final Directory outputDir;
   final PackageMeta packageMeta;
   final List<String> includes;
+  final List<String> includeExternals;
+  final List<String> excludes;
 
   Stopwatch _stopwatch;
 
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
-      this.outputDir, this.packageMeta, this.includes);
+      this.outputDir, this.packageMeta, this.includes,
+      {this.includeExternals: const []});
 
   /// Generate DartDoc documentation.
   ///
@@ -85,14 +87,25 @@ class DartDoc {
         ? const []
         : findFilesToDocumentInPackage(rootDir.path).toList();
 
-    List<LibraryElement> libraries = _parseLibraries(files, includes);
+    List<LibraryElement> libraries = _parseLibraries(files, includeExternals);
 
-    // remove excluded libraries
-    excludes.forEach((pattern) {
-      libraries.removeWhere((lib) {
-        return lib.name.startsWith(pattern) || lib.name == pattern;
+    if (includes != null && includes.isNotEmpty) {
+      Iterable knownLibraryNames = libraries.map((l) => l.name);
+      Set notFound =
+          new Set.from(includes).difference(new Set.from(knownLibraryNames));
+      if (notFound.isNotEmpty) {
+        throw 'Did not find: [${notFound.join(', ')}] in '
+            'known libraries: [${knownLibraryNames.join(', ')}]';
+      }
+      libraries.removeWhere((lib) => !includes.contains(lib.name));
+    } else {
+      // remove excluded libraries
+      excludes.forEach((pattern) {
+        libraries.removeWhere((lib) {
+          return lib.name.startsWith(pattern) || lib.name == pattern;
+        });
       });
-    });
+    }
 
     if (includes.isNotEmpty || excludes.isNotEmpty) {
       print('generating docs for libraries ${libraries.join(', ')}\n');
@@ -121,7 +134,7 @@ class DartDoc {
   }
 
   List<LibraryElement> _parseLibraries(
-      List<String> files, List<String> includes) {
+      List<String> files, List<String> includeExternals) {
     Set<LibraryElement> libraries = new Set();
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
     List<UriResolver> resolvers = [];
@@ -206,10 +219,10 @@ class DartDoc {
       result = context.performAnalysisTask();
     }
 
-    // Use the includes.
+    // Use the includeExternals.
     for (Source source in context.librarySources) {
       LibraryElement library = context.computeLibraryElement(source);
-      if (includes.contains(Library.getLibraryName(library))) {
+      if (includeExternals.contains(Library.getLibraryName(library))) {
         libraries.add(library);
       }
     }

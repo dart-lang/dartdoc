@@ -3,8 +3,8 @@
   "search" is passed, the page navigates to the first search result for its
   value.
 * [enhancement] added support for passing more than one `--header` or `--footer`
-* [enhancement] added the ability to `--include` libraries referenced by (but
-  not directly inside) the project
+* [enhancement] added the ability to include libraries referenced by (but not
+  directly inside) the project (`--include-external`)
 * [bug] rev the analyzer version used to fix an issue generating docs for
   Flutter
 
