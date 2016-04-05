@@ -74,15 +74,21 @@ main(List<String> arguments) async {
       args['include'] == null ? [] : args['include'].split(',');
 
   String url = args['hosted-url'];
-  String footerFilePath = _resolveTildePath(args['footer']);
-  if (footerFilePath != null && !new File(footerFilePath).existsSync()) {
-    print("Error: unable to locate the file with footer at ${footerFilePath}.");
-    exit(1);
+  List<String> footerFilePaths = args['footer'].map(_resolveTildePath).toList();
+  print(footerFilePaths);
+  for (String footerFilePath in footerFilePaths) {
+    if (!new File(footerFilePath).existsSync()) {
+      print("Error: unable to locate footer file: ${footerFilePath}.");
+      exit(1);
+    }
   }
-  String headerFilePath = _resolveTildePath(args['header']);
-  if (headerFilePath != null && !new File(headerFilePath).existsSync()) {
-    print("Error: unable to locate the file with header at ${headerFilePath}.");
-    exit(1);
+  List<String> headerFilePaths = args['header'].map(_resolveTildePath).toList();
+  print(headerFilePaths);
+  for (String headerFilePath in footerFilePaths) {
+    if (!new File(headerFilePath).existsSync()) {
+      print("Error: unable to locate header file: ${headerFilePath}.");
+      exit(1);
+    }
   }
 
   Directory outputDir =
@@ -112,7 +118,7 @@ main(List<String> arguments) async {
   print('');
 
   var generators = await initGenerators(
-      url, headerFilePath, footerFilePath, args['rel-canonical-prefix']);
+      url, headerFilePaths, footerFilePaths, args['rel-canonical-prefix']);
 
   for (var generator in generators) {
     generator.onFileCreated.listen(_onProgress);
@@ -163,7 +169,7 @@ ArgParser _createArgsParser() {
   parser.addFlag('version',
       help: 'Display the version for $name.', negatable: false);
   parser.addFlag('add-crossdart',
-      help: 'Add Crossdart links to the source code pieces',
+      help: 'Add Crossdart links to the source code pieces.',
       negatable: false,
       defaultsTo: false);
   parser.addOption('dart-sdk',
@@ -181,11 +187,11 @@ ArgParser _createArgsParser() {
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
   parser.addOption('header',
-      help:
-          'path to file containing HTML text, inserted into the header of every page.');
+      allowMultiple: true,
+      help: 'path to file containing HTML text.');
   parser.addOption('footer',
-      help:
-          'path to file containing HTML text, inserted into the footer of every page.');
+      allowMultiple: true,
+      help: 'path to file containing HTML text.');
   parser.addOption('exclude',
       help: 'Comma-separated list of library names to ignore.');
   parser.addOption('include',
@@ -194,9 +200,9 @@ ArgParser _createArgsParser() {
       help:
           'URL where the docs will be hosted (used to generate the sitemap).');
   parser.addOption('rel-canonical-prefix',
-      help: 'If provided, add a rel="canonical" prefixed with provided value. '
+      help: 'If provided, add a rel="canonical" prefixed with provided value. \n'
           'Consider using if building many versions of the docs for public SEO. '
-          'Learn more at https://goo.gl/gktN6F');
+          'Learn more at https://goo.gl/gktN6F.');
   parser.addFlag('include-source',
       help: 'If source code blocks should be shown, if they exist.',
       negatable: true,

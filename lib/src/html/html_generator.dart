@@ -48,12 +48,12 @@ class HtmlGenerator extends Generator {
   /// [url] - optional URL for where the docs will be hosted.
   static Future<HtmlGenerator> create(
       {String url,
-      String header,
-      String footer,
+      List<String> headers,
+      List<String> footers,
       String relCanonicalPrefix,
       String toolVersion}) async {
     var templates =
-        await Templates.create(headerPath: header, footerPath: footer);
+        await Templates.create(headerPaths: headers, footerPaths: footers);
 
     if (toolVersion == null) {
       toolVersion = 'unknown';
