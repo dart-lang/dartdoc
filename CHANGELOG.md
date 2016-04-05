@@ -1,3 +1,6 @@
+## 0.9.3+1
+* [bug] fix an issue with including duplicated libraries
+
 ## 0.9.3
 * [enhancement] added support for URL-based search. If a query parameter named
   "search" is passed, the page navigates to the first search result for its

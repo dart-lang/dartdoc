@@ -39,7 +39,7 @@ export 'src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.9.3';
+const String version = '0.9.3+1';
 
 final String defaultOutDir = p.join('doc', 'api');
 
@@ -135,7 +135,7 @@ class DartDoc {
 
   List<LibraryElement> _parseLibraries(
       List<String> files, List<String> includeExternals) {
-    Set<LibraryElement> libraries = new Set();
+    List<LibraryElement> libraries = [];
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
     List<UriResolver> resolvers = [];
 
@@ -222,7 +222,11 @@ class DartDoc {
     // Use the includeExternals.
     for (Source source in context.librarySources) {
       LibraryElement library = context.computeLibraryElement(source);
-      if (includeExternals.contains(Library.getLibraryName(library))) {
+      String libraryName = Library.getLibraryName(library);
+      if (includeExternals.contains(libraryName)) {
+        if (libraries.map(Library.getLibraryName).contains(libraryName)) {
+          continue;
+        }
         libraries.add(library);
       }
     }
