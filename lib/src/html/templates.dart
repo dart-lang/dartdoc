@@ -32,21 +32,31 @@ const _partials = const <String>[
 ];
 
 Future<Map<String, String>> _loadPartials(
-    String headerPath, String footerPath) async {
+    List<String> headerPaths, List<String> footerPaths) async {
+  headerPaths ??= [];
+  footerPaths ??= [];
+
   var partials = <String, String>{};
 
   Future<String> _loadPartial(String templatePath) async {
     String template = await _getTemplateFile(templatePath);
-    // TODO: revisit, not sure this is the right place for this logic
-    if (templatePath.contains('_footer') && footerPath != null) {
-      String footerValue = await new File(footerPath).readAsString();
-      template =
-          template.replaceAll('<!-- Footer Placeholder -->', footerValue);
-    }
-    if (templatePath.contains('_head') && headerPath != null) {
-      String headerValue = await new File(headerPath).readAsString();
+    if (templatePath.contains('_head') && headerPaths.isNotEmpty) {
+      String headerValue = headerPaths
+          .map((path) => new File(path).readAsStringSync())
+          .join('\n');
       template =
           template.replaceAll('<!-- Header Placeholder -->', headerValue);
+      template =
+          template.replaceAll('  <!-- Do not remove placeholder -->\n', '');
+    }
+    if (templatePath.contains('_footer') && footerPaths.isNotEmpty) {
+      String footerValue = footerPaths
+          .map((path) => new File(path).readAsStringSync())
+          .join('\n');
+      template =
+          template.replaceAll('<!-- Footer Placeholder -->', footerValue);
+      template =
+          template.replaceAll('  <!-- Do not remove placeholder -->\n', '');
     }
     return template;
   }
@@ -75,8 +85,8 @@ class Templates {
   final TemplateRenderer typeDefTemplate;
 
   static Future<Templates> create(
-      {String headerPath, String footerPath}) async {
-    var partials = await _loadPartials(headerPath, footerPath);
+      {List<String> headerPaths, List<String> footerPaths}) async {
+    var partials = await _loadPartials(headerPaths, footerPaths);
 
     String _partial(String name) {
       String partial = partials[name];

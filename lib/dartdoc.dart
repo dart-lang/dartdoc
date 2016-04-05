@@ -15,7 +15,7 @@ import 'package:analyzer/source/package_map_provider.dart';
 import 'package:analyzer/source/package_map_resolver.dart';
 import 'package:analyzer/source/pub_package_map_provider.dart';
 import 'package:analyzer/source/sdk_ext.dart';
-import 'package:analyzer/src/generated/element.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/error.dart';
 import 'package:analyzer/src/generated/java_io.dart';
@@ -44,13 +44,13 @@ const String version = '0.9.2';
 final String defaultOutDir = p.join('doc', 'api');
 
 /// Initialize and setup the generators.
-Future<List<Generator>> initGenerators(String url, String headerFilePath,
-    String footerFilePath, String relCanonicalPrefix) async {
+Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
+    List<String> footerFilePaths, String relCanonicalPrefix) async {
   return [
     await HtmlGenerator.create(
         url: url,
-        header: headerFilePath,
-        footer: footerFilePath,
+        headers: headerFilePaths,
+        footers: footerFilePaths,
         relCanonicalPrefix: relCanonicalPrefix,
         toolVersion: version)
   ];
@@ -60,17 +60,19 @@ Future<List<Generator>> initGenerators(String url, String headerFilePath,
 /// directory.
 class DartDoc {
   final Directory rootDir;
-  final List<String> excludes;
   final Directory sdkDir;
   final List<Generator> generators;
   final Directory outputDir;
   final PackageMeta packageMeta;
   final List<String> includes;
+  final List<String> includeExternals;
+  final List<String> excludes;
 
   Stopwatch _stopwatch;
 
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
-      this.outputDir, this.packageMeta, this.includes);
+      this.outputDir, this.packageMeta, this.includes,
+      {this.includeExternals: const []});
 
   /// Generate DartDoc documentation.
   ///
@@ -85,7 +87,7 @@ class DartDoc {
         ? const []
         : findFilesToDocumentInPackage(rootDir.path).toList();
 
-    List<LibraryElement> libraries = _parseLibraries(files);
+    List<LibraryElement> libraries = _parseLibraries(files, includeExternals);
 
     if (includes != null && includes.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
@@ -106,7 +108,7 @@ class DartDoc {
     }
 
     if (includes.isNotEmpty || excludes.isNotEmpty) {
-      print('Generating docs for libraries ${libraries.join(', ')}\n');
+      print('generating docs for libraries ${libraries.join(', ')}\n');
     }
 
     Package package = new Package(libraries, packageMeta);
@@ -131,7 +133,8 @@ class DartDoc {
     return new DartDocResults(packageMeta, package, outputDir);
   }
 
-  List<LibraryElement> _parseLibraries(List<String> files) {
+  List<LibraryElement> _parseLibraries(
+      List<String> files, List<String> includeExternals) {
     Set<LibraryElement> libraries = new Set();
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
     List<UriResolver> resolvers = [];
@@ -214,6 +217,14 @@ class DartDoc {
     AnalysisResult result = context.performAnalysisTask();
     while (result.hasMoreWork) {
       result = context.performAnalysisTask();
+    }
+
+    // Use the includeExternals.
+    for (Source source in context.librarySources) {
+      LibraryElement library = context.computeLibraryElement(source);
+      if (includeExternals.contains(Library.getLibraryName(library))) {
+        libraries.add(library);
+      }
     }
 
     List<AnalysisErrorInfo> errorInfos = [];

@@ -9,8 +9,8 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/config.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:stack_trace/stack_trace.dart';
 
@@ -68,21 +68,24 @@ main(List<String> arguments) async {
     exit(1);
   }
 
-  List<String> excludeLibraries =
-      args['exclude'] == null ? [] : args['exclude'].split(',');
-  List<String> includeLibraries =
-      args['include'] == null ? [] : args['include'].split(',');
+  List<String> excludeLibraries = args['exclude'];
+  List<String> includeLibraries = args['include'];
+  List<String> includeExternals = args['include-external'];
 
   String url = args['hosted-url'];
-  String footerFilePath = _resolveTildePath(args['footer']);
-  if (footerFilePath != null && !new File(footerFilePath).existsSync()) {
-    print("Error: unable to locate the file with footer at ${footerFilePath}.");
-    exit(1);
+  List<String> footerFilePaths = args['footer'].map(_resolveTildePath).toList();
+  for (String footerFilePath in footerFilePaths) {
+    if (!new File(footerFilePath).existsSync()) {
+      print("Error: unable to locate footer file: ${footerFilePath}.");
+      exit(1);
+    }
   }
-  String headerFilePath = _resolveTildePath(args['header']);
-  if (headerFilePath != null && !new File(headerFilePath).existsSync()) {
-    print("Error: unable to locate the file with header at ${headerFilePath}.");
-    exit(1);
+  List<String> headerFilePaths = args['header'].map(_resolveTildePath).toList();
+  for (String headerFilePath in footerFilePaths) {
+    if (!new File(headerFilePath).existsSync()) {
+      print("Error: unable to locate header file: ${headerFilePath}.");
+      exit(1);
+    }
   }
 
   Directory outputDir =
@@ -112,7 +115,7 @@ main(List<String> arguments) async {
   print('');
 
   var generators = await initGenerators(
-      url, headerFilePath, footerFilePath, args['rel-canonical-prefix']);
+      url, headerFilePaths, footerFilePaths, args['rel-canonical-prefix']);
 
   for (var generator in generators) {
     generator.onFileCreated.listen(_onProgress);
@@ -124,7 +127,8 @@ main(List<String> arguments) async {
   initializeConfig(addCrossdart: addCrossdart, includeSource: includeSource);
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
-      outputDir, packageMeta, includeLibraries);
+      outputDir, packageMeta, includeLibraries,
+      includeExternals: includeExternals);
 
   Chain.capture(() async {
     DartDocResults results = await dartdoc.generateDocs();
@@ -163,7 +167,7 @@ ArgParser _createArgsParser() {
   parser.addFlag('version',
       help: 'Display the version for $name.', negatable: false);
   parser.addFlag('add-crossdart',
-      help: 'Add Crossdart links to the source code pieces',
+      help: 'Add Crossdart links to the source code pieces.',
       negatable: false,
       defaultsTo: false);
   parser.addOption('dart-sdk',
@@ -181,26 +185,25 @@ ArgParser _createArgsParser() {
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
   parser.addOption('header',
-      help:
-          'path to file containing HTML text, inserted into the header of every page.');
+      allowMultiple: true, help: 'path to file containing HTML text.');
   parser.addOption('footer',
-      help:
-          'path to file containing HTML text, inserted into the footer of every page.');
+      allowMultiple: true, help: 'path to file containing HTML text.');
   parser.addOption('exclude',
-      help: 'Comma-separated list of library names to ignore.');
+      allowMultiple: true, help: 'library names to ignore');
   parser.addOption('include',
-      help: 'Comma-separated list of library names to generate docs for.');
+      allowMultiple: true, help: 'library names to generate docs for');
+  parser.addOption('include-external',
+      allowMultiple: true, help: 'additional (external) libraries to include');
   parser.addOption('hosted-url',
       help:
           'URL where the docs will be hosted (used to generate the sitemap).');
   parser.addOption('rel-canonical-prefix',
-      help: 'If provided, add a rel="canonical" prefixed with provided value. '
+      help:
+          'If provided, add a rel="canonical" prefixed with provided value. \n'
           'Consider using if building many versions of the docs for public SEO. '
-          'Learn more at https://goo.gl/gktN6F');
+          'Learn more at https://goo.gl/gktN6F.');
   parser.addFlag('include-source',
-      help: 'If source code blocks should be shown, if they exist.',
-      negatable: true,
-      defaultsTo: true);
+      help: 'Show source code blocks', negatable: true, defaultsTo: true);
   return parser;
 }
 
