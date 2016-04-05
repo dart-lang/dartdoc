@@ -97,7 +97,7 @@ checkChangelogHasVersion() async {
 test() {
   // this is 5 seconds faster than `pub run test`, so
   // using straight-up VM here
-  Dart.runAsync('test/all.dart', vmArgs: ['--checked']);
+  return Dart.runAsync('test/all.dart', vmArgs: ['--checked']);
 }
 
 @Task('Bump build num in pubspec and lib/dartdoc.dart')
