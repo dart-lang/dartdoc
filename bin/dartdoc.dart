@@ -9,8 +9,8 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/config.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:stack_trace/stack_trace.dart';
 
@@ -68,14 +68,11 @@ main(List<String> arguments) async {
     exit(1);
   }
 
-  List<String> excludeLibraries =
-      args['exclude'] == null ? [] : args['exclude'].split(',');
-  List<String> includeLibraries =
-      args['include'] == null ? [] : args['include'].split(',');
+  List<String> excludeLibraries = args['exclude'];
+  List<String> includeLibraries = args['include'];
 
   String url = args['hosted-url'];
   List<String> footerFilePaths = args['footer'].map(_resolveTildePath).toList();
-  print(footerFilePaths);
   for (String footerFilePath in footerFilePaths) {
     if (!new File(footerFilePath).existsSync()) {
       print("Error: unable to locate footer file: ${footerFilePath}.");
@@ -83,7 +80,6 @@ main(List<String> arguments) async {
     }
   }
   List<String> headerFilePaths = args['header'].map(_resolveTildePath).toList();
-  print(headerFilePaths);
   for (String headerFilePath in footerFilePaths) {
     if (!new File(headerFilePath).existsSync()) {
       print("Error: unable to locate header file: ${headerFilePath}.");
@@ -187,26 +183,23 @@ ArgParser _createArgsParser() {
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
   parser.addOption('header',
-      allowMultiple: true,
-      help: 'path to file containing HTML text.');
+      allowMultiple: true, help: 'path to file containing HTML text.');
   parser.addOption('footer',
-      allowMultiple: true,
-      help: 'path to file containing HTML text.');
+      allowMultiple: true, help: 'path to file containing HTML text.');
   parser.addOption('exclude',
-      help: 'Comma-separated list of library names to ignore.');
+      allowMultiple: true, help: 'library names to ignore');
   parser.addOption('include',
-      help: 'Comma-separated list of library names to generate docs for.');
+      allowMultiple: true, help: 'library names to generate docs for');
   parser.addOption('hosted-url',
       help:
           'URL where the docs will be hosted (used to generate the sitemap).');
   parser.addOption('rel-canonical-prefix',
-      help: 'If provided, add a rel="canonical" prefixed with provided value. \n'
+      help:
+          'If provided, add a rel="canonical" prefixed with provided value. \n'
           'Consider using if building many versions of the docs for public SEO. '
           'Learn more at https://goo.gl/gktN6F.');
   parser.addFlag('include-source',
-      help: 'If source code blocks should be shown, if they exist.',
-      negatable: true,
-      defaultsTo: true);
+      help: 'Show source code blocks', negatable: true, defaultsTo: true);
   return parser;
 }
 

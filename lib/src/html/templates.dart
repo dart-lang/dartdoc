@@ -41,16 +41,23 @@ Future<Map<String, String>> _loadPartials(
   Future<String> _loadPartial(String templatePath) async {
     String template = await _getTemplateFile(templatePath);
     if (templatePath.contains('_head') && headerPaths.isNotEmpty) {
-      String headerValue = headerPaths.map((path) => new File(path).readAsStringSync()).join('\n');
+      String headerValue = headerPaths
+          .map((path) => new File(path).readAsStringSync())
+          .join('\n');
       template =
           template.replaceAll('<!-- Header Placeholder -->', headerValue);
+      template =
+          template.replaceAll('  <!-- Do not remove placeholder -->\n', '');
     }
     if (templatePath.contains('_footer') && footerPaths.isNotEmpty) {
-      String footerValue = footerPaths.map((path) => new File(path).readAsStringSync()).join('\n');
+      String footerValue = footerPaths
+          .map((path) => new File(path).readAsStringSync())
+          .join('\n');
       template =
           template.replaceAll('<!-- Footer Placeholder -->', footerValue);
+      template =
+          template.replaceAll('  <!-- Do not remove placeholder -->\n', '');
     }
-    template = template.replaceAll('  <!-- Do not remove placeholder -->\n', '');
     return template;
   }
 

@@ -73,7 +73,7 @@ void main() {
     test('generate docs including a single library', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc = new DartDoc(
-          testPackageDir, [], getSdkDir(), [], tempDir, meta, ['fake']);
+          testPackageDir, [], getSdkDir(), [], tempDir, meta, ['dart.core']);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.package, isNotNull);
@@ -81,7 +81,7 @@ void main() {
       Package p = results.package;
       expect(p.name, 'test_package');
       expect(p.hasDocumentationFile, isTrue);
-      expect(p.libraries, hasLength(1));
+      expect(p.libraries.map((lib) => lib.name), contains('dart:core'));
       expect(p.libraries.map((lib) => lib.name), contains('fake'));
     });
 

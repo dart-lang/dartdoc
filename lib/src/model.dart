@@ -7,7 +7,7 @@ library dartdoc.models;
 
 import 'dart:convert';
 
-import 'package:analyzer/src/generated/ast.dart'
+import 'package:analyzer/dart/ast/ast.dart'
     show AnnotatedNode, Annotation, Declaration;
 import 'package:analyzer/src/generated/element.dart';
 import 'package:analyzer/src/generated/resolver.dart'
@@ -901,6 +901,17 @@ abstract class GetterSetterCombo {
 
 class Library extends ModelElement {
   static final Map<String, Library> _libraryMap = <String, Library>{};
+
+  static String getLibraryName(LibraryElement element) {
+    String name = element.name;
+
+    if (name == null || name.isEmpty) {
+      name = element.definingCompilationUnit.name;
+      name = name.substring(0, name.length - '.dart'.length);
+    }
+
+    return name;
+  }
 
   final Package package;
   List<Class> _classes;

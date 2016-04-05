@@ -1,11 +1,16 @@
 ## 0.9.3
-* [enhancement] Added support for URL-based search. If a query parameter named
+* [enhancement] added support for URL-based search. If a query parameter named
   "search" is passed, the page navigates to the first search result for its
   value.
+* [enhancement] added support for passing more than one `--header` or `--footer`
+* [enhancement] added the ability to `--include` libraries referenced by (but
+  not directly inside) the project
+* [bug] rev the analyzer version used to fix an issue generating docs for
+  Flutter
 
 ## 0.9.2
 * [bug] do not generate docs for `dart:_internal` and `dart:nativewrappers`, when defined
-  in the `_embedder.yaml` file. 
+  in the `_embedder.yaml` file.
 * [enhancement] print message to run pub if dartdoc does not find any libraries to
   document.
 

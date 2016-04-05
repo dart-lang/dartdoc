@@ -15,7 +15,7 @@ import 'package:analyzer/source/package_map_provider.dart';
 import 'package:analyzer/source/package_map_resolver.dart';
 import 'package:analyzer/source/pub_package_map_provider.dart';
 import 'package:analyzer/source/sdk_ext.dart';
-import 'package:analyzer/src/generated/element.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/error.dart';
 import 'package:analyzer/src/generated/java_io.dart';
@@ -85,28 +85,17 @@ class DartDoc {
         ? const []
         : findFilesToDocumentInPackage(rootDir.path).toList();
 
-    List<LibraryElement> libraries = _parseLibraries(files);
+    List<LibraryElement> libraries = _parseLibraries(files, includes);
 
-    if (includes != null && includes.isNotEmpty) {
-      Iterable knownLibraryNames = libraries.map((l) => l.name);
-      Set notFound =
-          new Set.from(includes).difference(new Set.from(knownLibraryNames));
-      if (notFound.isNotEmpty) {
-        throw 'Did not find: [${notFound.join(', ')}] in '
-            'known libraries: [${knownLibraryNames.join(', ')}]';
-      }
-      libraries.removeWhere((lib) => !includes.contains(lib.name));
-    } else {
-      // remove excluded libraries
-      excludes.forEach((pattern) {
-        libraries.removeWhere((lib) {
-          return lib.name.startsWith(pattern) || lib.name == pattern;
-        });
+    // remove excluded libraries
+    excludes.forEach((pattern) {
+      libraries.removeWhere((lib) {
+        return lib.name.startsWith(pattern) || lib.name == pattern;
       });
-    }
+    });
 
     if (includes.isNotEmpty || excludes.isNotEmpty) {
-      print('Generating docs for libraries ${libraries.join(', ')}\n');
+      print('generating docs for libraries ${libraries.join(', ')}\n');
     }
 
     Package package = new Package(libraries, packageMeta);
@@ -131,7 +120,8 @@ class DartDoc {
     return new DartDocResults(packageMeta, package, outputDir);
   }
 
-  List<LibraryElement> _parseLibraries(List<String> files) {
+  List<LibraryElement> _parseLibraries(
+      List<String> files, List<String> includes) {
     Set<LibraryElement> libraries = new Set();
     DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
     List<UriResolver> resolvers = [];
@@ -214,6 +204,14 @@ class DartDoc {
     AnalysisResult result = context.performAnalysisTask();
     while (result.hasMoreWork) {
       result = context.performAnalysisTask();
+    }
+
+    // Use the includes.
+    for (Source source in context.librarySources) {
+      LibraryElement library = context.computeLibraryElement(source);
+      if (includes.contains(Library.getLibraryName(library))) {
+        libraries.add(library);
+      }
     }
 
     List<AnalysisErrorInfo> errorInfos = [];

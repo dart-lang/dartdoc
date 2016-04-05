@@ -8,7 +8,7 @@ library dartdoc.markdown_processor;
 
 import 'dart:convert';
 
-import 'package:analyzer/src/generated/ast.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/src/generated/element.dart'
     show
         LibraryElement,
