@@ -52,34 +52,7 @@ Success! Docs generated into <path-to-server-code-lab>/server_code_lab/doc/api/i
 By default, the documentation is generated to the `doc/api` directory as static
 HTML files.
 
-### Options
-
-Command-line options for dartdoc include:
-
-- `-h` or `--help` Display help.
-- `--header=<file>` Insert the specified file, which contains HTML code, into
-  the header of every page.
-- `--footer=<file>` Insert the specified file, which contains HTML code, into
-  the footer of every page.
-- `--input=<directory>` Generate the docs from the specified directory. If not
-  specified, it defaults to the current directory.
-- `--output=<directory>` Generate the output to the specified directory. If not
-  specified, it defaults to `doc/api`.
-- `--package-root=<directory>` Specify the package root of the library.
-- `--exclude=<lib1,lib2,lib3,...>` Exclude the specified libraries from the
-  generated docs.
-- `--include=<lib1,lib2,lib3,...>` Generate docs for the specified libraries.
-- `--hosted-url=<url>` Build a docs sitemap using the specified URL for your
-  website.
-- `--add-crossdart` Add links to [Crossdart](//crossdart.info) to the
-  Source Code sections.
-
-The following options are used only when generating docs for the Dart SDK.
-
-- `--dart-sdk=<path>` Specify the location of the Dart SDK, if it can't be
-  detected automatically.
-- `--sdk-docs` Generate only docs for the Dart SDK.
-- `--sdk-readme=<file>` Specify the README file for the Dart SDK.
+Run `dartdoc -h` to see the available command-line options.
 
 ## Viewing docs
 
