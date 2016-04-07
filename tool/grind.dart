@@ -304,7 +304,7 @@ checkSdkLinks() {
 updateTestPackageDocs() {
   var options = new RunOptions(workingDirectory: 'testing/test_package');
 
-  var dir = new Directory('testing/test_package_docs');
+  var dir = new Directory('test_package_docs');
 
   if (dir.existsSync()) {
     dir.deleteSync(recursive: true);
@@ -314,7 +314,7 @@ updateTestPackageDocs() {
       arguments: [
         '--no-include-source',
         '--output',
-        '../testing/test_package_docs'
+        '../test_package_docs'
       ],
       runOptions: options);
 }
