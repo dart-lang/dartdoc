@@ -18,10 +18,10 @@ Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location.sourceUri;
 
 String get _testPackageDocsPath =>
-    p.fromUri(_currentFileUri.resolve('../test_package_docs'));
+    p.fromUri(_currentFileUri.resolve('../testing/test_package_docs'));
 
 String get _testPackagePath =>
-    p.fromUri(_currentFileUri.resolve('../test_package'));
+    p.fromUri(_currentFileUri.resolve('../testing/test_package'));
 
 void main() {
   group('compare outputs', () {

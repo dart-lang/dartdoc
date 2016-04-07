@@ -1,7 +1,7 @@
 build/
 doc/api/
-test_package/doc
-test_package_small/doc
+testing/test_package/doc
+testing/test_package_small/doc
 packages
 .buildlog
 .pub

@@ -17,7 +17,7 @@ void main() {
 
     setUp(() {
       var d = new Directory(
-          path.join(Directory.current.path, 'test_package_not_valid'));
+          path.join(Directory.current.path, 'testing/test_package_not_valid'));
       if (!d.existsSync()) {
         throw "$d cannot be found";
       }

@@ -245,7 +245,7 @@ Future _uploadStats(int sdkDocsGenTime) async {
 checkLinks() {
   bool foundError = false;
   Set<String> visited = new Set();
-  final origin = 'test_package/doc/api/';
+  final origin = 'testing/test_package/doc/api/';
   var start = 'index.html';
 
   _doCheck(origin, visited, start, foundError);
@@ -302,15 +302,19 @@ checkSdkLinks() {
 
 @Task('update test_package_docs')
 updateTestPackageDocs() {
-  var options = new RunOptions(workingDirectory: 'test_package');
+  var options = new RunOptions(workingDirectory: 'testing/test_package');
 
-  var dir = new Directory('test_package_docs');
+  var dir = new Directory('testing/test_package_docs');
 
   if (dir.existsSync()) {
     dir.deleteSync(recursive: true);
   }
 
-  Dart.run('../bin/dartdoc.dart',
-      arguments: ['--no-include-source', '--output', '../test_package_docs'],
+  Dart.run('../../bin/dartdoc.dart',
+      arguments: [
+        '--no-include-source',
+        '--output',
+        '../testing/test_package_docs'
+      ],
       runOptions: options);
 }
