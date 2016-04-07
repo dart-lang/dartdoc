@@ -311,10 +311,6 @@ updateTestPackageDocs() {
   }
 
   Dart.run('../../bin/dartdoc.dart',
-      arguments: [
-        '--no-include-source',
-        '--output',
-        '../test_package_docs'
-      ],
+      arguments: ['--no-include-source', '--output', '../test_package_docs'],
       runOptions: options);
 }
