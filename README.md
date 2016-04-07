@@ -4,17 +4,14 @@
 
 Use `dartdoc` to generate HTML documentaton for your Dart package.
 
-If you want to _contribute_ to the dartdoc project, see the
-[contributor docs][]. This page contains information about _using_ the dartdoc
-tool.
+For informtion about contributing to the dartdoc project, see the [contributor docs][].
 
 ## Installing dartdoc
 
 ### From the Dart SDK
 
-[Download the Dart SDK](https://www.dartlang.org/downloads/), version
-1.12-dev.5.10 or later. If not already added, add the SDK's `bin` directory to
-your `PATH`.
+[Download the Dart SDK](https://www.dartlang.org/downloads/); if not already added,
+add the SDK's `bin` directory to your `PATH`.
 
 ### From pub.dartlang.org
 
@@ -28,7 +25,7 @@ to the Dart SDK.
 
 ## Generating docs
 
-Run `dartdoc` from the root directory of package.  For example:
+Run `dartdoc` from the root directory of package. For example:
 
 ```
 $ dartdoc
@@ -96,18 +93,13 @@ File names are _case-sensitive_.
 Check out the
 [Effective Dart: Documentation guide](https://www.dartlang.org/effective-dart/documentation/).
 
-The guide covers formatting, linking, markup, and general best practices
-when authoring doc comments for Dart with dartdoc.
+The guide covers formatting, linking, markup, and general best practices when
+authoring doc comments for Dart with `dartdoc`.
 
 ### Excluding from documentation
 
-dartdoc will not generate documentation for a Dart element and its children that has
-the `<nodoc>` tag in the documentation comment.
-
-## Older versions
-
-As of Dart 1.12, `dartdoc` is shipped with the Dart SDK and replaces the
-older `docgen` tool.
+`dartdoc` will not generate documentation for a Dart element and its children that
+has the `<nodoc>` tag in the documentation comment.
 
 ## Issues and bugs
 
