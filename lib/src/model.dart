@@ -9,7 +9,8 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/ast/ast.dart'
     show AnnotatedNode, Annotation, Declaration;
-import 'package:analyzer/src/generated/element.dart';
+import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/resolver.dart'
     show Namespace, NamespaceBuilder, InheritanceManager, MemberMap;
 import 'package:analyzer/src/generated/source_io.dart';
@@ -662,7 +663,7 @@ abstract class Documentable {
 
 // TODO: how do we get rid of this class?
 class Dynamic extends ModelElement {
-  Dynamic(DynamicElementImpl element, Library library)
+  Dynamic(Element element, Library library)
       : super(element, library);
 
   ModelElement get enclosingElement => throw new UnsupportedError('');
@@ -1221,7 +1222,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   ModelElement(this.element, this.library);
 
   factory ModelElement.from(Element e, Library library) {
-    if (e is DynamicElementImpl) {
+    if (e.kind == ElementKind.DYNAMIC) {
       return new Dynamic(e, library);
     }
     // Also handles enums
@@ -1940,7 +1941,7 @@ class TopLevelVariable extends ModelElement
   }
 
   String get constantValue {
-    var v = (_variable as ConstTopLevelVariableElementImpl)
+    var v = _variable
         .computeNode()
         .toSource();
     if (v == null) return '';
