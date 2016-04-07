@@ -9,7 +9,7 @@ library dartdoc.markdown_processor;
 import 'dart:convert';
 
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/src/generated/element.dart'
+import 'package:analyzer/dart/element/element.dart'
     show
         LibraryElement,
         Element,

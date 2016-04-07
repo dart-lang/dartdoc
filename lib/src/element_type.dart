@@ -6,7 +6,7 @@
 library dartdoc.element_type;
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/src/generated/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 
 import 'model.dart';
 
@@ -23,7 +23,7 @@ class ElementType {
 
   bool get isParameterizedType {
     if (_type is FunctionType) {
-      return (_type as FunctionType).boundTypeParameters.isNotEmpty;
+      return (_type as FunctionType).typeFormals.isNotEmpty;
     } else if (_type is ParameterizedType) {
       return (_type as ParameterizedType).typeArguments.isNotEmpty;
     }
@@ -77,7 +77,7 @@ class ElementType {
   List<ElementType> get typeArguments {
     if (_type is FunctionType) {
       return (_type as FunctionType)
-          .boundTypeParameters
+          .typeFormals
           .map((f) => _getElementTypeFrom(f.type))
           .toList();
     } else {
