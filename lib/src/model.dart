@@ -663,8 +663,7 @@ abstract class Documentable {
 
 // TODO: how do we get rid of this class?
 class Dynamic extends ModelElement {
-  Dynamic(Element element, Library library)
-      : super(element, library);
+  Dynamic(Element element, Library library) : super(element, library);
 
   ModelElement get enclosingElement => throw new UnsupportedError('');
 
@@ -1941,9 +1940,7 @@ class TopLevelVariable extends ModelElement
   }
 
   String get constantValue {
-    var v = _variable
-        .computeNode()
-        .toSource();
+    var v = _variable.computeNode().toSource();
     if (v == null) return '';
     var string = v.substring(v.indexOf('=') + 1, v.length).trim();
     return string.replaceAll(modelType.name, modelType.linkedName);
