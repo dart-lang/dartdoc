@@ -25,6 +25,12 @@ body {
   color: #212121;
 }
 
+@media (min-width: 1300px) {
+  .container {
+    width: 1270px;
+  }
+}
+
 nav {
   font-size: 17px;
 }
@@ -46,7 +52,7 @@ nav .container {
 
 @media screen and (min-width: 500px) and (max-width: 768px) {
   .navbar-right {
-      float: right!important;
+    float: right!important;
   }
 }
 
