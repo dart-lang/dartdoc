@@ -1,3 +1,7 @@
+## unreleased
+* [enhancement] added a `--favicon` option to specify a favicon to use for the
+  generated docs
+
 ## 0.9.3+1
 * [bug] fix an issue with including duplicated libraries
 

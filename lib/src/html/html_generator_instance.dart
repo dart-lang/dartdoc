@@ -24,9 +24,11 @@ class HtmlGeneratorInstance implements HtmlOptions {
   final StreamController<File> _onFileCreated;
   final String relCanonicalPrefix;
   final String toolVersion;
+  final String faviconPath;
 
   HtmlGeneratorInstance(this.toolVersion, this.url, this._templates,
-      this.package, this.out, this._onFileCreated, this.relCanonicalPrefix);
+      this.package, this.out, this._onFileCreated, this.relCanonicalPrefix,
+      {this.faviconPath});
 
   Future generate() async {
     if (!out.existsSync()) out.createSync();
@@ -34,10 +36,13 @@ class HtmlGeneratorInstance implements HtmlOptions {
     if (package != null) {
       _generateDocs();
       _generateSearchIndex();
-      // TODO: generate sitemap
     }
 
     await _copyResources();
+    if (faviconPath != null) {
+      File file = new File(path.join(out.path, 'static-assets', 'favicon.png'));
+      file.writeAsBytesSync(new File(faviconPath).readAsBytesSync());
+    }
   }
 
   void _generateSearchIndex() {
