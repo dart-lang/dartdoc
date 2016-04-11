@@ -34,17 +34,13 @@ else
   grind analyze
 
   # Run dartdoc on test_package.
-  cd test_package
-  dart -c ../bin/dartdoc.dart
-  cd ..
+  (cd testing/test_package; dart -c ../../bin/dartdoc.dart)
 
   # checks the test_package results
   grind check-links
 
   # And on test_package_small.
-  cd test_package_small
-  dart -c ../bin/dartdoc.dart
-  cd ..
+  (cd testing/test_package_small; dart -c ../../bin/dartdoc.dart)
 
   # Gather and send coverage data.
   if [ "$REPO_TOKEN" ]

@@ -20,13 +20,14 @@ import 'package:path/path.dart' as p;
 AnalyzerHelper analyzerHelper;
 DartSdk sdkDir;
 Package testPackage;
-final Directory testPackageBadDir = new Directory('test_package_bad');
+final Directory testPackageBadDir = new Directory('testing/test_package_bad');
 
-final Directory testPackageDir = new Directory('test_package');
+final Directory testPackageDir = new Directory('testing/test_package');
 Package testPackageSmall;
 final Directory testPackageWithEmbedderYaml =
-    new Directory('test_package_embedder_yaml');
-final Directory testPackageWithNoReadme = new Directory('test_package_small');
+    new Directory('testing/test_package_embedder_yaml');
+final Directory testPackageWithNoReadme =
+    new Directory('testing/test_package_small');
 
 void delete(Directory dir) {
   if (dir.existsSync()) dir.deleteSync(recursive: true);
@@ -45,9 +46,10 @@ void init() {
     'lib/is_deprecated.dart'
   ];
 
-  testPackage = _bootPackage(pathsForTestLib, 'test_package');
+  testPackage = _bootPackage(pathsForTestLib, 'testing/test_package');
 
-  testPackageSmall = _bootPackage(['lib/main.dart'], 'test_package_small');
+  testPackageSmall =
+      _bootPackage(['lib/main.dart'], 'testing/test_package_small');
 }
 
 Package _bootPackage(Iterable<String> libPaths, String dirPath) {
