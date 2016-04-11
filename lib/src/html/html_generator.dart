@@ -39,6 +39,7 @@ class HtmlGenerator extends Generator {
   final String _relCanonicalPrefix;
   final Templates _templates;
   final String _toolVersion;
+  final String faviconPath;
 
   final StreamController<File> _onFileCreated =
       new StreamController(sync: true);
@@ -51,7 +52,8 @@ class HtmlGenerator extends Generator {
       List<String> headers,
       List<String> footers,
       String relCanonicalPrefix,
-      String toolVersion}) async {
+      String toolVersion,
+      String faviconPath}) async {
     var templates =
         await Templates.create(headerPaths: headers, footerPaths: footers);
 
@@ -59,15 +61,18 @@ class HtmlGenerator extends Generator {
       toolVersion = 'unknown';
     }
 
-    return new HtmlGenerator._(url, relCanonicalPrefix, templates, toolVersion);
+    return new HtmlGenerator._(url, relCanonicalPrefix, templates, toolVersion,
+        faviconPath: faviconPath);
   }
 
   HtmlGenerator._(
-      this._url, this._relCanonicalPrefix, this._templates, this._toolVersion);
+      this._url, this._relCanonicalPrefix, this._templates, this._toolVersion,
+      {this.faviconPath});
 
   Future generate(Package package, Directory out) {
     return new HtmlGeneratorInstance(_toolVersion, _url, _templates, package,
-            out, _onFileCreated, _relCanonicalPrefix)
+            out, _onFileCreated, _relCanonicalPrefix,
+            faviconPath: faviconPath)
         .generate();
   }
 }

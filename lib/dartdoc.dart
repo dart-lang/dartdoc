@@ -45,14 +45,16 @@ final String defaultOutDir = p.join('doc', 'api');
 
 /// Initialize and setup the generators.
 Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
-    List<String> footerFilePaths, String relCanonicalPrefix) async {
+    List<String> footerFilePaths, String relCanonicalPrefix,
+    {String faviconPath}) async {
   return [
     await HtmlGenerator.create(
         url: url,
         headers: headerFilePaths,
         footers: footerFilePaths,
         relCanonicalPrefix: relCanonicalPrefix,
-        toolVersion: version)
+        toolVersion: version,
+        faviconPath: faviconPath)
   ];
 }
 
