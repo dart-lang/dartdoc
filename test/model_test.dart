@@ -47,6 +47,14 @@ void main() {
         expect(package.libraries, hasLength(6));
       });
 
+      test('categories', () {
+        expect(package.categories, hasLength(1));
+
+        PackageCategory category = package.categories.first;
+        expect(category.name, 'test_package');
+        expect(category.libraries, hasLength(6));
+      });
+
       test('is documented in library', () {
         expect(package.isDocumented(exLibrary.element), isTrue);
       });
@@ -119,6 +127,10 @@ void main() {
 
     test('has a name', () {
       expect(exLibrary.name, 'ex');
+    });
+
+    test('packageName', () {
+      expect(exLibrary.packageName, 'test_package');
     });
 
     test('has a fully qualified name', () {

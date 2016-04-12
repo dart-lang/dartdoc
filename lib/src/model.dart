@@ -6,6 +6,7 @@
 library dartdoc.models;
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart'
     show AnnotatedNode, Annotation, Declaration;
@@ -16,6 +17,7 @@ import 'package:analyzer/src/generated/resolver.dart'
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:collection/collection.dart';
+import 'package:path/path.dart' as p;
 import 'package:quiver/core.dart' show hash3;
 
 import 'config.dart';
@@ -921,6 +923,7 @@ class Library extends ModelElement {
   List<TopLevelVariable> _variables;
   Namespace _exportedNamespace;
   String _name;
+  String _packageName;
 
   factory Library(LibraryElement element, Package package) {
     String key = element == null ? 'null' : element.name;
@@ -1019,6 +1022,21 @@ class Library extends ModelElement {
 
   @override
   String get href => '$dirName/$fileName';
+
+  String get packageName {
+    if (_packageName == null) {
+      String sourcePath = _library.source.fullName;
+      File file = new File(sourcePath);
+      if (file.existsSync()) {
+        _packageName = _getPackageName(file.parent);
+        if (_packageName == null) _packageName = '';
+      } else {
+        _packageName = '';
+      }
+    }
+
+    return _packageName;
+  }
 
   bool get isAnonymous => element.name == null || element.name.isEmpty;
 
@@ -1142,6 +1160,20 @@ class Library extends ModelElement {
         .toList(growable: false)..sort(byName);
 
     return _variables;
+  }
+
+  static String _getPackageName(Directory dir) {
+    if (!dir.existsSync() || !dir.path.contains(Platform.pathSeparator)) {
+      return null;
+    }
+
+    File pubspec = new File(p.join(dir.path, 'pubspec.yaml'));
+    if (pubspec.existsSync()) {
+      PackageMeta meta = new PackageMeta.fromDir(dir);
+      return meta.name;
+    } else {
+      return _getPackageName(dir.parent);
+    }
   }
 }
 
@@ -1718,6 +1750,25 @@ class Package implements Nameable, Documentable {
 
   List<Library> get libraries => _libraries;
 
+  List<PackageCategory> get categories {
+    Map<String, PackageCategory> result = {};
+
+    for (Library library in _libraries) {
+      String name = '';
+
+      if (library.name.startsWith('dart:')) {
+        name = 'Dart Core';
+      } else {
+        name = library.packageName;
+      }
+
+      if (!result.containsKey(name)) result[name] = new PackageCategory(name);
+      result[name]._libraries.add(library);
+    }
+
+    return result.values.toList()..sort();
+  }
+
   String get name => packageMeta.name;
 
   String get oneLineDoc => '';
@@ -1778,6 +1829,17 @@ class Package implements Nameable, Documentable {
     }
     return new Library(e.library, this);
   }
+}
+
+class PackageCategory implements Comparable {
+  final String name;
+  final List<Library> _libraries = [];
+
+  PackageCategory(this.name);
+
+  List<Library> get libraries => _libraries;
+
+  int compareTo(PackageCategory other) => name.compareTo(other.name);
 }
 
 class Parameter extends ModelElement implements EnclosedElement {

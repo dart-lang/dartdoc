@@ -68,10 +68,12 @@ abstract class TemplateData<T extends Documentable> {
 }
 
 class PackageTemplateData extends TemplateData<Package> {
-  PackageTemplateData(HtmlOptions htmlOptions, Package package)
+  PackageTemplateData(
+      HtmlOptions htmlOptions, Package package, this.useCategories)
       : super(htmlOptions, package);
 
   bool get includeVersion => true;
+  final bool useCategories;
   List get navLinks => [];
   String get title => '${package.name} - Dart API docs';
   Package get self => package;
@@ -90,11 +92,13 @@ class PackageTemplateData extends TemplateData<Package> {
 class LibraryTemplateData extends TemplateData<Library> {
   final Library library;
 
-  LibraryTemplateData(HtmlOptions htmlOptions, Package package, this.library)
+  LibraryTemplateData(HtmlOptions htmlOptions, Package package, this.library,
+      this.useCategories)
       : super(htmlOptions, package);
 
   String get title => '${library.name} library - Dart API';
   String get documentation => library.documentation;
+  final bool useCategories;
   String get htmlBase => '..';
   String get metaDescription =>
       '${library.name} library API docs, for the Dart programming language.';

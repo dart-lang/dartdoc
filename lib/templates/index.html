@@ -3,38 +3,67 @@
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
     <h5>{{self.name}}</h5>
 
+    {{#useCategories}}
+    <ol>
+      {{#package.categories}}
+        <li class="section-title">{{name}}</li>
+        {{#libraries}}
+        <li>{{{linkedName}}}</li>
+        {{/libraries}}
+      {{/package.categories}}
+
+    </ol>
+    {{/useCategories}}
+
+    {{^useCategories}}
     <ol>
       <li class="section-title"><a href="{{package.href}}#libraries">Libraries</a></li>
       {{#package.libraries}}
       <li>{{{linkedName}}}</li>
       {{/package.libraries}}
     </ol>
+    {{/useCategories}}
   </div>
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
-
     {{#package}}
       {{>documentation}}
     {{/package}}
 
-    <section class="summary" id="libraries">
-      <h2>Libraries</h2>
-      <dl>
-        {{#package.libraries}}
-          <dt id="{{htmlId}}">
-            <span class="name">{{{ linkedName }}}</span>
-          </dt>
-          <dd>
-            {{#isDocumented}}
-            <p>
-              {{{ oneLineDoc }}}
-              {{>has_more_docs}}
-            </p>
-            {{/isDocumented}}
-          </dd>
-        {{/package.libraries}}
-      </dl>
-    </section>
+    {{#useCategories}}
+      {{#package.categories}}
+        <section class="summary">
+          <h2>{{name}}</h2>
+          <dl>
+            {{#libraries}}
+              <dt id="{{htmlId}}">
+                <span class="name">{{{ linkedName }}}</span>
+              </dt>
+              <dd>
+                {{#isDocumented}}<p>{{{ oneLineDoc }}}</p>{{/isDocumented}}
+              </dd>
+            {{/libraries}}
+          </dl>
+        </section>
+      {{/package.categories}}
+
+    {{/useCategories}}
+
+    {{^useCategories}}
+      <section class="summary" id="libraries">
+        <h2>Libraries</h2>
+        <dl>
+          {{#package.libraries}}
+            <dt id="{{htmlId}}">
+              <span class="name">{{{ linkedName }}}</span>
+            </dt>
+            <dd>
+              {{#isDocumented}}<p>{{{ oneLineDoc }}}</p>{{/isDocumented}}
+            </dd>
+          {{/package.libraries}}
+        </dl>
+      </section>
+    {{/useCategories}}
 
   </div> <!-- /.main-content -->
 
