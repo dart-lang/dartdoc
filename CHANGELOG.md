@@ -1,4 +1,4 @@
-## unreleased
+## 0.9.4
 * [enhancement] added a `--favicon` option to specify a favicon to use for the
   generated docs
 * [enhancement] added a `--use-categories` flag to groups libraries into source
