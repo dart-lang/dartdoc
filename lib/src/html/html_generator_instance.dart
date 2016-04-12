@@ -25,10 +25,11 @@ class HtmlGeneratorInstance implements HtmlOptions {
   final String relCanonicalPrefix;
   final String toolVersion;
   final String faviconPath;
+  final bool useCategories;
 
   HtmlGeneratorInstance(this.toolVersion, this.url, this._templates,
       this.package, this.out, this._onFileCreated, this.relCanonicalPrefix,
-      {this.faviconPath});
+      {this.faviconPath, this.useCategories});
 
   Future generate() async {
     if (!out.existsSync()) out.createSync();
@@ -134,7 +135,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
   void generatePackage() {
     stdout.write('documenting ${package.name}');
 
-    TemplateData data = new PackageTemplateData(this, package);
+    TemplateData data = new PackageTemplateData(this, package, useCategories);
 
     _build('index.html', _templates.indexTemplate, data);
   }
@@ -148,7 +149,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
           "documentation comments");
     }
 
-    TemplateData data = new LibraryTemplateData(this, package, lib);
+    TemplateData data =
+        new LibraryTemplateData(this, package, lib, useCategories);
 
     _build(path.join(lib.dirName, '${lib.fileName}'),
         _templates.libraryTemplate, data);

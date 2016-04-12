@@ -5,12 +5,26 @@
     <h5><a href="{{href}}">{{name}}</a></h5>
     {{/navLinks}}
 
+    {{#useCategories}}
     <ol>
-      <li class="section-title"><a href="index.html">Libraries</a></li>
+      {{#package.categories}}
+        <li class="section-title">{{name}}</li>
+        {{#libraries}}
+        <li>{{{linkedName}}}</li>
+        {{/libraries}}
+      {{/package.categories}}
+
+    </ol>
+    {{/useCategories}}
+
+    {{^useCategories}}
+    <ol>
+      <li class="section-title"><a href="{{package.href}}#libraries">Libraries</a></li>
       {{#package.libraries}}
       <li>{{{linkedName}}}</li>
       {{/package.libraries}}
     </ol>
+    {{/useCategories}}
   </div>
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">

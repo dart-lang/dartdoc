@@ -1,6 +1,8 @@
 ## unreleased
 * [enhancement] added a `--favicon` option to specify a favicon to use for the
   generated docs
+* [enhancement] added a `--use-categories` flag to groups libraries into source
+  packages in the overview page and the left-hand side navigation panel
 
 ## 0.9.3+1
 * [bug] fix an issue with including duplicated libraries

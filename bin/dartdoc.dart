@@ -116,7 +116,7 @@ main(List<String> arguments) async {
 
   var generators = await initGenerators(
       url, headerFilePaths, footerFilePaths, args['rel-canonical-prefix'],
-      faviconPath: args['favicon']);
+      faviconPath: args['favicon'], useCategories: args['use-categories']);
 
   for (var generator in generators) {
     generator.onFileCreated.listen(_onProgress);
@@ -207,6 +207,10 @@ ArgParser _createArgsParser() {
       help: 'Show source code blocks', negatable: true, defaultsTo: true);
   parser.addOption('favicon',
       help: 'A path to a favicon for the generated docs');
+  parser.addFlag('use-categories',
+      help: 'Group libraries from the same package into categories',
+      negatable: false,
+      defaultsTo: false);
   return parser;
 }
 
