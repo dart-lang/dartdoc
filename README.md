@@ -4,7 +4,11 @@
 
 Use `dartdoc` to generate HTML documentaton for your Dart package.
 
-For informtion about contributing to the dartdoc project, see the [contributor docs][].
+For information about contributing to the dartdoc project, see the [contributor docs][].
+
+For issues/details related to hosted Dart API docs, see
+[dart-lang/api.dartlang.org](https://github.com/dart-lang/api.dartlang.org/) (for dart:* libraries) and
+[astashov/dartdocs.org](https://github.com/astashov/dartdocs.org) (for libraries in pub packages).
 
 ## Installing dartdoc
 
