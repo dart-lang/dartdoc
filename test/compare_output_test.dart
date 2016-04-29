@@ -11,8 +11,15 @@ import 'dart:mirrors';
 
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
-
 import 'package:which/which.dart';
+
+const List<String> _filesToIgnore = const <String>['.DS_Store'];
+
+const _gitBinName = 'git';
+
+String _gitCache;
+
+final _nameStatusLineRegexp = new RegExp(r'(\w)\t(.+)');
 
 Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location.sourceUri;
@@ -26,6 +33,8 @@ String get _testPackagePath =>
 void main() {
   group('compare outputs', () {
     Directory tempDir;
+
+    var dartdocBin = p.fromUri(_currentFileUri.resolve('../bin/dartdoc.dart'));
 
     setUp(() {
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
@@ -43,9 +52,6 @@ void main() {
             "argument is ignored. Skipping on Windows to avoid parsing git output");
         return;
       }
-
-      var dartdocBin =
-          p.fromUri(_currentFileUri.resolve('../bin/dartdoc.dart'));
 
       var args = <String>[
         dartdocBin,
@@ -99,12 +105,6 @@ void main() {
           ];
           result = Process.runSync(gitPath, args);
           assert(result.exitCode != 0);
-          // TODO(keertip): remove once 1.14 is stable; noSuchMethod documentation
-          // has changed from 1.13 to 1.14.
-          if (!result.stdout.contains('noSuchMethod')) {
-            message.add("$v\t$k");
-            message.add(result.stdout);
-          }
         }
       });
 
@@ -118,7 +118,40 @@ void main() {
 
       fail(message.join('\n'));
     });
+
+    test('Check for sample code in examples', () {
+      var args = <String>[
+        dartdocBin,
+        '--include',
+        'ex',
+        '--no-include-source',
+        '--output',
+        tempDir.path
+      ];
+
+      var result =
+          Process.runSync('dart', args, workingDirectory: _testPackagePath);
+
+      if (result.exitCode != 0) {
+        print(result.exitCode);
+        print(result.stdout);
+        print(result.stderr);
+        fail('dartdoc failed');
+      }
+
+      if (!result.stdout
+          .contains('core/pipes/ts/slice_pipe/slice_pipe_example.ts')) {
+        fail('Did not process @example in comments');
+      }
+    });
   }, onPlatform: {'windows': new Skip('Avoiding parsing git output')});
+}
+
+Future<String> _gitBinPath() async {
+  if (_gitCache == null) {
+    _gitCache = await which(_gitBinName);
+  }
+  return _gitCache;
 }
 
 Map<String, String> _parseOutput(
@@ -148,19 +181,4 @@ Map<String, String> _parseOutput(
   }
 
   return values;
-}
-
-const List<String> _filesToIgnore = const <String>['.DS_Store'];
-
-final _nameStatusLineRegexp = new RegExp(r'(\w)\t(.+)');
-
-const _gitBinName = 'git';
-
-String _gitCache;
-
-Future<String> _gitBinPath() async {
-  if (_gitCache == null) {
-    _gitCache = await which(_gitBinName);
-  }
-  return _gitCache;
 }
