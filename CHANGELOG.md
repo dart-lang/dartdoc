@@ -1,3 +1,11 @@
+## 0.9.5
+* [enhancement] support for `@example` tag to inject sample code into comments.
+  eg. `{@example core/ts/bootstrap/bootstrap.dart region='bootstrap'}`, where 
+  path is path to source in the package examples directory, and region is
+  specified by `#docregion` and `#enddocregion` in the file.
+* [enhancement] do not document if there is a `@nodoc` in the doc comment.
+   NOTE: &lt;nodoc> is now deprecated and will be removed in a later version.
+
 ## 0.9.4
 * [enhancement] added a `--favicon` option to specify a favicon to use for the
   generated docs
