@@ -263,6 +263,11 @@ class unDocumented {
   String s;
 }
 
+/// @nodoc
+class unDocumented2 {
+  String s;
+}
+
 abstract class _PrivateAbstractClass {
   void test() {
     print("Hello World");
