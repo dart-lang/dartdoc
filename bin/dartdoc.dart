@@ -14,8 +14,6 @@ import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:stack_trace/stack_trace.dart';
 
-bool _showProgress = false;
-
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
 main(List<String> arguments) async {
@@ -145,21 +143,7 @@ main(List<String> arguments) async {
   });
 }
 
-void _onProgress(File file) {
-  if (_showProgress) stdout.write('.');
-}
-
-/// Print help if we are passed the help option.
-void _printHelp(ArgParser parser, {int exitCode: 0}) {
-  print('Generate HTML documentation for Dart libraries.\n');
-  _printUsageAndExit(parser, exitCode: exitCode);
-}
-
-void _printUsageAndExit(ArgParser parser, {int exitCode: 0}) {
-  print('Usage: dartdoc [OPTIONS]\n');
-  print(parser.usage);
-  exit(exitCode);
-}
+bool _showProgress = false;
 
 ArgParser _createArgsParser() {
   var parser = new ArgParser();
@@ -212,6 +196,22 @@ ArgParser _createArgsParser() {
       negatable: false,
       defaultsTo: false);
   return parser;
+}
+
+void _onProgress(File file) {
+  if (_showProgress) stdout.write('.');
+}
+
+/// Print help if we are passed the help option.
+void _printHelp(ArgParser parser, {int exitCode: 0}) {
+  print('Generate HTML documentation for Dart libraries.\n');
+  _printUsageAndExit(parser, exitCode: exitCode);
+}
+
+void _printUsageAndExit(ArgParser parser, {int exitCode: 0}) {
+  print('Usage: dartdoc [OPTIONS]\n');
+  print(parser.usage);
+  exit(exitCode);
 }
 
 String _resolveTildePath(String originalPath) {

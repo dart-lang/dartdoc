@@ -904,18 +904,8 @@ abstract class GetterSetterCombo {
 class Library extends ModelElement {
   static final Map<String, Library> _libraryMap = <String, Library>{};
 
-  static String getLibraryName(LibraryElement element) {
-    String name = element.name;
-
-    if (name == null || name.isEmpty) {
-      name = element.definingCompilationUnit.name;
-      name = name.substring(0, name.length - '.dart'.length);
-    }
-
-    return name;
-  }
-
   final Package package;
+
   List<Class> _classes;
   List<Class> _enums;
   List<ModelFunction> _functions;
@@ -924,7 +914,6 @@ class Library extends ModelElement {
   Namespace _exportedNamespace;
   String _name;
   String _packageName;
-
   factory Library(LibraryElement element, Package package) {
     String key = element == null ? 'null' : element.name;
 
@@ -1023,21 +1012,6 @@ class Library extends ModelElement {
   @override
   String get href => '$dirName/$fileName';
 
-  String get packageName {
-    if (_packageName == null) {
-      String sourcePath = _library.source.fullName;
-      File file = new File(sourcePath);
-      if (file.existsSync()) {
-        _packageName = _getPackageName(file.parent);
-        if (_packageName == null) _packageName = '';
-      } else {
-        _packageName = '';
-      }
-    }
-
-    return _packageName;
-  }
-
   bool get isAnonymous => element.name == null || element.name.isEmpty;
 
   bool get isDocumented => oneLineDoc.isNotEmpty;
@@ -1071,6 +1045,21 @@ class Library extends ModelElement {
     _name = source.isInSystemLibrary ? source.encoding : _name;
 
     return _name;
+  }
+
+  String get packageName {
+    if (_packageName == null) {
+      String sourcePath = _library.source.fullName;
+      File file = new File(sourcePath);
+      if (file.existsSync()) {
+        _packageName = _getPackageName(file.parent);
+        if (_packageName == null) _packageName = '';
+      } else {
+        _packageName = '';
+      }
+    }
+
+    return _packageName;
   }
 
   String get path => _library.definingCompilationUnit.name;
@@ -1160,6 +1149,17 @@ class Library extends ModelElement {
         .toList(growable: false)..sort(byName);
 
     return _variables;
+  }
+
+  static String getLibraryName(LibraryElement element) {
+    String name = element.name;
+
+    if (name == null || name.isEmpty) {
+      name = element.definingCompilationUnit.name;
+      name = name.substring(0, name.length - '.dart'.length);
+    }
+
+    return name;
   }
 
   static String _getPackageName(Directory dir) {
@@ -1343,6 +1343,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     }
 
     _rawDocs = stripComments(_rawDocs) ?? '';
+    _rawDocs = _injectExamples(_rawDocs);
     return _rawDocs;
   }
 
@@ -1605,6 +1606,34 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
     return '<a ${classContent}href="${href}">$name</a>';
   }
+
+  // process the {@example ...} in comments and inject the example
+  // code into the doc commment.
+  // {@example core/ts/bootstrap/bootstrap.ts region='bootstrap'}
+  String _injectExamples(String rawdocs) {
+    if (rawdocs.contains('@example')) {
+      RegExp exp = new RegExp(r"{@example .+}");
+      Iterable<Match> matches = exp.allMatches(rawdocs);
+      var dirPath = this.package.packageMeta.dir.path;
+      for (var match in matches) {
+        var strings = match.group(0).split(' ');
+        var path = strings[1];
+        if (path.contains(Platform.pathSeparator) &&
+            !path.startsWith(Platform.pathSeparator)) {
+          var file = new File(p.join(dirPath, 'examples', path));
+          if (file.existsSync()) {
+            // TODO(keertip):inject example
+          } else {
+            var filepath =
+                this.element.source.fullName.substring(dirPath.length + 1);
+            stdout.write(
+                '\nwarning: ${filepath}: file ${strings[1]} does not exist.');
+          }
+        }
+      }
+    }
+    return rawdocs;
+  }
 }
 
 class ModelFunction extends ModelElement
@@ -1718,38 +1747,6 @@ class Package implements Nameable, Documentable {
     _implementors.values.forEach((l) => l.sort());
   }
 
-  String get documentation {
-    return hasDocumentationFile ? documentationFile.contents : null;
-  }
-
-  String get documentationAsHtml {
-    if (_docsAsHtml != null) return _docsAsHtml;
-
-    _docsAsHtml = new Documentation(documentation).asHtml;
-
-    return _docsAsHtml;
-  }
-
-  FileContents get documentationFile => packageMeta.getReadmeContents();
-
-  bool get hasDocumentation =>
-      documentationFile != null && documentationFile.contents.isNotEmpty;
-
-  // TODO: make this work
-  bool get hasDocumentationFile => documentationFile != null;
-
-  // TODO: Clients should use [documentationFile] so they can act differently on
-  // plain text or markdown.
-  bool get hasMoreThanOneLineDocs => true;
-
-  String get href => 'index.html';
-
-  // TODO: make this work
-  /// Does this package represent the SDK?
-  bool get isSdk => packageMeta.isSdk;
-
-  List<Library> get libraries => _libraries;
-
   List<PackageCategory> get categories {
     Map<String, PackageCategory> result = {};
 
@@ -1768,6 +1765,38 @@ class Package implements Nameable, Documentable {
 
     return result.values.toList()..sort();
   }
+
+  String get documentation {
+    return hasDocumentationFile ? documentationFile.contents : null;
+  }
+
+  String get documentationAsHtml {
+    if (_docsAsHtml != null) return _docsAsHtml;
+
+    _docsAsHtml = new Documentation(documentation).asHtml;
+
+    return _docsAsHtml;
+  }
+
+  FileContents get documentationFile => packageMeta.getReadmeContents();
+
+  // TODO: make this work
+  bool get hasDocumentation =>
+      documentationFile != null && documentationFile.contents.isNotEmpty;
+
+  // TODO: Clients should use [documentationFile] so they can act differently on
+  // plain text or markdown.
+  bool get hasDocumentationFile => documentationFile != null;
+
+  bool get hasMoreThanOneLineDocs => true;
+
+  // TODO: make this work
+  String get href => 'index.html';
+
+  /// Does this package represent the SDK?
+  bool get isSdk => packageMeta.isSdk;
+
+  List<Library> get libraries => _libraries;
 
   String get name => packageMeta.name;
 

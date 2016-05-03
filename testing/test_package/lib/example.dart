@@ -162,6 +162,7 @@ class ConstantCat implements Cat {
 }
 
 /// implements [Cat], [E]
+/// {@example core/pipes/ts/slice_pipe/slice_pipe_example.ts region='SlicePipe_list'}
 class Dog implements Cat, E {
   String name;
 
