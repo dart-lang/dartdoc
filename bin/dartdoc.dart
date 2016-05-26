@@ -123,7 +123,10 @@ main(List<String> arguments) async {
   var addCrossdart = args['add-crossdart'] as bool;
   var includeSource = args['include-source'] as bool;
 
-  initializeConfig(addCrossdart: addCrossdart, includeSource: includeSource);
+  initializeConfig(
+      addCrossdart: addCrossdart,
+      includeSource: includeSource,
+      inputDir: inputDir);
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries,

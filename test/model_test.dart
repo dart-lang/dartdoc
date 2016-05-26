@@ -12,6 +12,7 @@ import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:test/test.dart';
+import 'package:path/path.dart' as p;
 
 import 'src/utils.dart' as utils;
 
@@ -805,6 +806,7 @@ void main() {
     });
 
     test('has source code', () {
+      initializeConfig(addCrossdart: false);
       expect(topLevelFunction.sourceCode, startsWith('@deprecated'));
       expect(topLevelFunction.sourceCode, endsWith('''
 String topLevelFunction(int param1, bool param2, Cool coolBeans,
@@ -842,6 +844,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'testGeneric');
       convertToMap = HasGenerics.instanceMethods
           .singleWhere((m) => m.name == 'convertToMap');
+    });
+
+    tearDown(() {
+      var file = new File(p.join(Directory.current.path, "crossdart.json"));
+      if (file.existsSync()) {
+        file.deleteSync();
+      }
     });
 
     test('has a fully qualified name', () {
@@ -920,7 +929,22 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('method source code indents correctly', () {
-      expect(convertToMap.sourceCode, 'Map<X, Y> convertToMap() => null;');
+      initializeConfig(addCrossdart: false);
+      expect(convertToMap.sourceCode,
+          'Map&lt;X, Y&gt; convertToMap() =&gt; null;');
+    });
+
+    test('method source code crossdartifies correctly', () {
+      convertToMap.clearSourceCodeCache();
+      new File(p.join(Directory.current.path, "crossdart.json"))
+          .writeAsStringSync("""
+              {"testing/test_package/lib/fake.dart":
+                {"references":[{"offset":5806,"end":5809,"remotePath":"http://www.example.com/fake.dart"}]}}
+      """);
+
+      initializeConfig(addCrossdart: true, inputDir: Directory.current);
+      expect(convertToMap.sourceCode,
+          "<a class='crossdart-link' href='http://www.example.com/fake.dart'>Map</a>&lt;X, Y&gt; convertToMap() =&gt; null;");
     });
 
     group(".crossdartHtmlTag()", () {
@@ -929,7 +953,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         String packageName = m1.library.package.name;
         String packageVersion = m1.library.package.version;
         expect(m1.crossdartHtmlTag,
-            contains("//crossdart.info/p/$packageName/$packageVersion"));
+            contains("//www.crossdart.info/p/$packageName/$packageVersion"));
       });
 
       test('it returns an empty string when Crossdart support is disabled', () {

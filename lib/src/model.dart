@@ -1926,6 +1926,24 @@ class Parameter extends ModelElement implements EnclosedElement {
   String toString() => element.name;
 }
 
+Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
+Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
+  if (__crossdartJson == null) {
+    if (config != null) {
+      var crossdartFile =
+          new File(p.join(config.inputDir.path, "crossdart.json"));
+      if (crossdartFile.existsSync()) {
+        __crossdartJson = JSON.decode(crossdartFile.readAsStringSync());
+      } else {
+        __crossdartJson = {};
+      }
+    } else {
+      __crossdartJson = {};
+    }
+  }
+  return __crossdartJson;
+}
+
 abstract class SourceCodeMixin {
   String _sourceCodeCache;
   String get crossdartHtmlTag {
@@ -1941,6 +1959,10 @@ abstract class SourceCodeMixin {
   bool get hasSourceCode => config.includeSource && sourceCode.isNotEmpty;
 
   Library get library;
+
+  void clearSourceCodeCache() {
+    _sourceCodeCache = null;
+  }
 
   String get sourceCode {
     if (_sourceCodeCache == null) {
@@ -1958,8 +1980,14 @@ abstract class SourceCodeMixin {
         }
 
         // Trim the common indent from the source snippet.
-        String source =
-            contents.substring(node.offset - (node.offset - i), node.end);
+        var start = node.offset - (node.offset - i);
+        String source = contents.substring(start, node.end);
+
+        if (config != null && config.addCrossdart) {
+          source = crossdartifySource(_crossdartJson, source, element, start);
+        } else {
+          source = const HtmlEscape().convert(source);
+        }
         source = stripIndentFromSource(source);
         source = stripDartdocCommentsFromSource(source);
 
@@ -1976,14 +2004,18 @@ abstract class SourceCodeMixin {
     if (_lineNumber != null && _sourceFilePath != null) {
       String packageName = library.package.isSdk ? "sdk" : library.package.name;
       String packageVersion = library.package.version;
-      var root = "${library.package.packageMeta.resolvedDir}/lib"
-          .replaceAll("\\", "/");
-      var sourceFilePath = _sourceFilePath
+      var root = library.package.packageMeta.resolvedDir;
+      if (!library.package.isSdk) {
+        root += "/lib";
+      }
+      root = root.replaceAll("\\", "/");
+      var sourceFilePath = new File(_sourceFilePath)
+          .resolveSymbolicLinksSync()
           .replaceAll("\\", "/")
           .replaceAll(root, "")
           .replaceAll(new RegExp(r"^/*"), "");
       String url =
-          "//crossdart.info/p/$packageName/$packageVersion/$sourceFilePath.html";
+          "//www.crossdart.info/p/$packageName/$packageVersion/$sourceFilePath.html";
       return "${url}#line-${_lineNumber}";
     } else {
       return null;
