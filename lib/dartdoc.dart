@@ -24,6 +24,7 @@ import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:path/path.dart' as p;
+import 'package:yaml/src/yaml_node.dart';
 
 import 'src/generator.dart';
 import 'src/html/html_generator.dart';
@@ -155,8 +156,10 @@ class DartDoc {
       resolvers.add(new PackageMapUriResolver(
           PhysicalResourceProvider.INSTANCE, packageMap));
 
-      embedderUriResolver = new EmbedderUriResolver(
-          new EmbedderYamlLocator(packageMap).embedderYamls);
+      Map<fileSystem.Folder, YamlMap> embedderMap =
+          new EmbedderYamlLocator(packageMap).embedderYamls;
+      embedderUriResolver =
+          new EmbedderUriResolver(new EmbedderSdk(embedderMap));
       if (embedderUriResolver.length == 0) {
         // The embedder uri resolver has no mappings. Use the default Dart SDK
         // uri resolver.
