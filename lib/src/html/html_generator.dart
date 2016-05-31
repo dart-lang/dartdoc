@@ -5,7 +5,7 @@
 library dartdoc.html_generator;
 
 import 'dart:async' show Future, StreamController, Stream;
-import 'dart:io' show Directory, File, stdout;
+import 'dart:io' show Directory, File;
 
 import '../generator.dart';
 import '../model.dart';

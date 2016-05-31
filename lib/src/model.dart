@@ -23,7 +23,7 @@ import 'package:quiver/core.dart' show hash3;
 import 'config.dart';
 import 'element_type.dart';
 import 'line_number_cache.dart';
-import 'markdown_processor.dart' show Documentation, renderMarkdownToHtml;
+import 'markdown_processor.dart' show Documentation;
 import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
 import 'utils.dart' show stripComments;
