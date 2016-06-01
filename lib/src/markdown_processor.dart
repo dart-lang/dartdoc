@@ -14,10 +14,7 @@ import 'package:analyzer/dart/element/element.dart'
         LibraryElement,
         Element,
         ConstructorElement,
-        CompilationUnitElement,
         ClassElement,
-        ClassMemberElement,
-        TopLevelVariableElement,
         ParameterElement,
         PropertyAccessorElement;
 import 'package:html/parser.dart' show parse;

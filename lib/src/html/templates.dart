@@ -1,7 +1,7 @@
 library dartdoc.templates;
 
-import 'dart:async' show Future, StreamController, Stream;
-import 'dart:io' show Directory, File, stdout;
+import 'dart:async' show Future;
+import 'dart:io' show File;
 
 import 'package:mustache4dart/mustache4dart.dart';
 
