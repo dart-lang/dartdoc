@@ -413,7 +413,8 @@ void main() {
     test('single ref to class', () {
       expect(
           B.documentationAsHtml.contains(
-              '<p>Extends class <a href="ex/Apple-class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a> or <a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>'),
+              '<p>Extends class <a href="ex/Apple-class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a> '
+              'or <a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a></p>'),
           isTrue);
     });
 

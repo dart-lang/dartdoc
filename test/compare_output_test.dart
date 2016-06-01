@@ -64,10 +64,9 @@ void main() {
           Process.runSync('dart', args, workingDirectory: _testPackagePath);
 
       if (result.exitCode != 0) {
-        print(result.exitCode);
         print(result.stdout);
         print(result.stderr);
-        fail('dartdoc failed');
+        fail('dartdoc failed: ${result.exitCode}');
       }
 
       var gitPath = await _gitBinPath();
@@ -133,16 +132,13 @@ void main() {
           Process.runSync('dart', args, workingDirectory: _testPackagePath);
 
       if (result.exitCode != 0) {
-        print(result.exitCode);
         print(result.stdout);
         print(result.stderr);
-        fail('dartdoc failed');
+        fail('dartdoc failed: ${result.exitCode}');
       }
 
-      if (!result.stdout
-          .contains('core/pipes/ts/slice_pipe/slice_pipe_example.ts')) {
-        fail('Did not process @example in comments');
-      }
+      expect(result.stdout,
+          contains('core/pipes/ts/slice_pipe/slice_pipe_example.ts'));
     });
   }, onPlatform: {'windows': new Skip('Avoiding parsing git output')});
 }
