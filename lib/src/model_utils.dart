@@ -5,12 +5,15 @@
 library dartdoc.model_utils;
 
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:path/path.dart' as p;
+import 'config.dart';
 
 final Map<String, String> _fileContents = <String, String>{};
 
@@ -79,20 +82,27 @@ bool isPublic(Element e) {
 /// Strip leading dartdoc comments from the given source code.
 String stripDartdocCommentsFromSource(String source) {
   String remainer = source.trimLeft();
-  bool lineComments = remainer.startsWith('///');
-  bool blockComments = remainer.startsWith('/**');
+  HtmlEscape sanitizer = const HtmlEscape();
+  bool lineComments = remainer.startsWith('///') ||
+      remainer.startsWith(sanitizer.convert('///'));
+  bool blockComments = remainer.startsWith('/**') ||
+      remainer.startsWith(sanitizer.convert('/**'));
 
   return source.split('\n').where((String line) {
     if (lineComments) {
-      if (line.startsWith('///')) return false;
+      if (line.startsWith('///') || line.startsWith(sanitizer.convert('///'))) {
+        return false;
+      }
       lineComments = false;
       return true;
     } else if (blockComments) {
-      if (line.contains('*/')) {
+      if (line.contains('*/') || line.contains(sanitizer.convert('*/'))) {
         blockComments = false;
         return false;
       }
-      if (line.startsWith('/**')) return false;
+      if (line.startsWith('/**') || line.startsWith(sanitizer.convert('/**'))) {
+        return false;
+      }
       return false;
     }
 
@@ -108,4 +118,46 @@ String stripIndentFromSource(String source) {
     line = line.trimRight();
     return line.startsWith(indent) ? line.substring(indent.length) : line;
   }).join('\n');
+}
+
+/// Add links to crossdart.info to the given source fragment
+String crossdartifySource(
+    Map<String, Map<String, List<Map<String, dynamic>>>> json,
+    String source,
+    Element element,
+    int start) {
+  var sanitizer = const HtmlEscape();
+  String newSource;
+  if (json.isNotEmpty) {
+    var node = element.computeNode();
+    var file =
+        element.source.fullName.replaceAll("${config.inputDir.path}/", "");
+    var filesData = json[file];
+    if (filesData != null) {
+      var data = filesData["references"]
+          .where((r) => r["offset"] >= start && r["end"] <= node.end);
+      if (data.isNotEmpty) {
+        var previousStop = 0;
+        var stringBuffer = new StringBuffer();
+        for (var item in data) {
+          stringBuffer.write(sanitizer
+              .convert(source.substring(previousStop, item["offset"] - start)));
+          stringBuffer
+              .write("<a class='crossdart-link' href='${item["remotePath"]}'>");
+          stringBuffer.write(sanitizer.convert(
+              source.substring(item["offset"] - start, item["end"] - start)));
+          stringBuffer.write("</a>");
+          previousStop = item["end"] - start;
+        }
+        stringBuffer.write(
+            sanitizer.convert(source.substring(previousStop, source.length)));
+
+        newSource = stringBuffer.toString();
+      }
+    }
+  }
+  if (newSource == null) {
+    newSource = sanitizer.convert(source);
+  }
+  return newSource;
 }
