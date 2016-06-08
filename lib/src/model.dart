@@ -2025,8 +2025,10 @@ abstract class SourceCodeMixin {
   int get _lineNumber {
     var node = element.computeNode();
     if (node is Declaration && (node as Declaration).element != null) {
-      return lineNumberCache.lineNumber(
-          (node as Declaration).element.source.fullName, node.offset);
+      var element = (node as Declaration).element;
+      var lineNumber = lineNumberCache.lineNumber(
+          element.source.fullName, element.nameOffset);
+      return lineNumber + 1;
     } else {
       return null;
     }
