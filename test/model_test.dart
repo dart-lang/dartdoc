@@ -948,14 +948,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     group(".crossdartHtmlTag()", () {
-      test('it returns a Crossdart link when Crossdart support is enabled', () {
-        initializeConfig(addCrossdart: true);
-        String packageName = m1.library.package.name;
-        String packageVersion = m1.library.package.version;
-        expect(m1.crossdartHtmlTag,
-            contains("//www.crossdart.info/p/$packageName/$packageVersion"));
-      });
-
       test('it returns an empty string when Crossdart support is disabled', () {
         initializeConfig(addCrossdart: false);
         expect(m1.crossdartHtmlTag, "");
