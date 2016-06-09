@@ -13,6 +13,9 @@ import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:stack_trace/stack_trace.dart';
+import 'package:analyzer/src/generated/sdk.dart';
+import 'package:analyzer/src/generated/sdk_io.dart';
+import 'package:analyzer/src/generated/java_io.dart';
 
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
@@ -123,10 +126,13 @@ main(List<String> arguments) async {
   var addCrossdart = args['add-crossdart'] as bool;
   var includeSource = args['include-source'] as bool;
 
+  DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
+
   initializeConfig(
       addCrossdart: addCrossdart,
       includeSource: includeSource,
-      inputDir: inputDir);
+      inputDir: inputDir,
+      sdkVersion: sdk.sdkVersion);
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries,

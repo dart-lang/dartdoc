@@ -2001,21 +2001,8 @@ abstract class SourceCodeMixin {
   }
 
   String get _crossdartUrl {
-    if (_lineNumber != null && _sourceFilePath != null) {
-      String packageName = library.package.isSdk ? "sdk" : library.package.name;
-      String packageVersion = library.package.version;
-      var root = library.package.packageMeta.resolvedDir;
-      if (!library.package.isSdk) {
-        root += "/lib";
-      }
-      root = root.replaceAll("\\", "/");
-      var sourceFilePath = new File(_sourceFilePath)
-          .resolveSymbolicLinksSync()
-          .replaceAll("\\", "/")
-          .replaceAll(root, "")
-          .replaceAll(new RegExp(r"^/*"), "");
-      String url =
-          "//www.crossdart.info/p/$packageName/$packageVersion/$sourceFilePath.html";
+    if (_lineNumber != null && _crossdartPath != null) {
+      String url = "//www.crossdart.info/p/${_crossdartPath}.html";
       return "${url}#line-${_lineNumber}";
     } else {
       return null;
@@ -2025,19 +2012,49 @@ abstract class SourceCodeMixin {
   int get _lineNumber {
     var node = element.computeNode();
     if (node is Declaration && (node as Declaration).element != null) {
-      return lineNumberCache.lineNumber(
-          (node as Declaration).element.source.fullName, node.offset);
+      var element = (node as Declaration).element;
+      var lineNumber = lineNumberCache.lineNumber(
+          element.source.fullName, element.nameOffset);
+      return lineNumber + 1;
     } else {
       return null;
     }
   }
 
-  String get _sourceFilePath {
+  String get _crossdartPath {
     var node = element.computeNode();
     if (node is Declaration && (node as Declaration).element != null) {
-      return ((node as Declaration).element.source as FileBasedSource)
-          .file
-          .toString();
+      var source = ((node as Declaration).element.source as FileBasedSource);
+      var file = source.file.toString();
+      var uri = source.uri.toString();
+      var packageMeta = library.package.packageMeta;
+      if (uri.startsWith("package:")) {
+        var splittedUri =
+            uri.replaceAll(new RegExp(r"^package:"), "").split("/");
+        var packageName = splittedUri.first;
+        var packageVersion;
+        if (packageName == packageMeta.name) {
+          packageVersion = packageMeta.version;
+        } else {
+          var match = new RegExp(
+                  ".pub-cache/(hosted/pub.dartlang.org|git)/${packageName}-([^/]+)")
+              .firstMatch(file);
+          if (match != null) {
+            packageVersion = match[2];
+          }
+        }
+        if (packageVersion != null) {
+          return "${packageName}/${packageVersion}/${splittedUri.skip(1).join("/")}";
+        } else {
+          return null;
+        }
+      } else if (uri.startsWith("dart:")) {
+        var packageName = "sdk";
+        var packageVersion = config.sdkVersion;
+        return "${packageName}/${packageVersion}/lib/${uri.replaceAll(new RegExp(r"^dart:"), "")}";
+      } else {
+        return null;
+      }
     } else {
       return null;
     }
