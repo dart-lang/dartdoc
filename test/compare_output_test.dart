@@ -60,8 +60,8 @@ void main() {
         tempDir.path
       ];
 
-      var result =
-          Process.runSync('dart', args, workingDirectory: _testPackagePath);
+      var result = Process.runSync(Platform.resolvedExecutable, args,
+          workingDirectory: _testPackagePath);
 
       if (result.exitCode != 0) {
         print(result.exitCode);
@@ -129,8 +129,8 @@ void main() {
         tempDir.path
       ];
 
-      var result =
-          Process.runSync('dart', args, workingDirectory: _testPackagePath);
+      var result = Process.runSync(Platform.resolvedExecutable, args,
+          workingDirectory: _testPackagePath);
 
       if (result.exitCode != 0) {
         print(result.exitCode);
