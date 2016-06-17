@@ -733,7 +733,16 @@ void main() {
       var dog = animal.constants.firstWhere((f) => f.name == 'DOG');
       expect(dog.linkedName, equals('DOG'));
       expect(dog.isConst, isTrue);
-      expect(dog.constantValue, equals('const Animal(2)'));
+      expect(dog.constantValue, equals('const Animal(1)'));
+    });
+
+    test('constants have correct indicies', () {
+      String valueByName(var name) {
+        return animal.constants.firstWhere((f) => f.name == name).constantValue;
+      }
+      expect(valueByName('CAT'), equals('const Animal(0)'));
+      expect(valueByName('DOG'), equals('const Animal(1)'));
+      expect(valueByName('HORSE'), equals('const Animal(2)'));
     });
 
     test('has a single `index` property', () {

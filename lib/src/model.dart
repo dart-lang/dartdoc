@@ -695,8 +695,9 @@ class Enum extends Class {
   List<EnumField> get constants {
     if (_constants != null) return _constants;
 
-    // is there a better way to get the index during a map() ?
-    var index = 0;
+    // This is a hack to give 'values' an index of -1 and all other fields
+    // their expected indicies. https://github.com/dart-lang/dartdoc/issues/1176
+    var index = -1;
 
     _constants = _cls.fields
         .where(isPublic)
