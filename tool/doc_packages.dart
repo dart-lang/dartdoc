@@ -14,8 +14,6 @@ import 'package:http/http.dart' as http;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
-// TODO: Use isolates; Platform.numberOfProcessors.
-
 const String _rootDir = 'pub.dartlang.org';
 
 /// To use:

@@ -24,8 +24,7 @@ main([List<String> args]) => grind(args);
 findTransformers() async {
   var dotPackages = new File('.packages');
   if (!dotPackages.existsSync()) {
-    print('No .packages file found in ${Directory.current}');
-    exit(1);
+    fail('No .packages file found in ${Directory.current}');
   }
 
   var foundAnyTransformers = false;
@@ -39,16 +38,16 @@ findTransformers() async {
     if (pubspec.existsSync()) {
       var yamlDoc = yaml.loadYaml(pubspec.readAsStringSync());
       if (yamlDoc['transformers'] != null) {
-        print('${mapping.first} has transformers!');
+        log('${mapping.first} has transformers!');
         foundAnyTransformers = true;
       }
     } else {
-      print('No pubspec found for ${mapping.first}, tried ${pubspec}');
+      log('No pubspec found for ${mapping.first}, tried ${pubspec}');
     }
   });
 
   if (!foundAnyTransformers) {
-    print('No transformers found');
+    log('No transformers found');
   }
 }
 
@@ -76,20 +75,15 @@ checkVersionMatches() async {
 
 @Task('Checks that CHANGELOG mentions current version')
 checkChangelogHasVersion() async {
-  // TODO: use fail() when
-  // https://github.com/google/grinder.dart/issues/288 lands
-
   var changelog = new File('CHANGELOG.md');
   if (!changelog.existsSync()) {
-    print('ERROR: No CHANGELOG.md found in ${Directory.current}');
-    exit(1);
+    fail('ERROR: No CHANGELOG.md found in ${Directory.current}');
   }
 
   Pubspec pubspec = await Pubspec.load();
 
   if (!changelog.readAsLinesSync().contains('## ${pubspec.version}')) {
-    print('ERROR: CHANGELOG.md does not mention version ${pubspec.version}');
-    exit(1);
+    fail('ERROR: CHANGELOG.md does not mention version ${pubspec.version}');
   }
 }
 
@@ -164,7 +158,6 @@ Future buildSdkDocs() async {
 // if I run grind build-sdk-docs manually.
 // See https://github.com/google/grinder.dart/issues/291
 validateSdkDocs() {
-  // TODO(keertip): change number to 17 once 1.13 is stable
   const expectedLibCount = 18;
   var indexHtml = joinFile(docsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
@@ -258,12 +251,11 @@ _doCheck(String origin, Set<String> visited, String pathToCheck, bool error,
   var fullPath = path.normalize("$origin$pathToCheck");
   if (visited.contains(fullPath)) return;
   visited.add(fullPath);
-  //print("Visiting $fullPath");
 
   File file = new File("$fullPath");
   if (!file.existsSync()) {
     error = true;
-    print('  * Not found: $fullPath from $source');
+    log('  * Not found: $fullPath from $source');
     return;
   }
   Document doc = parse(file.readAsStringSync());
@@ -272,17 +264,14 @@ _doCheck(String origin, Set<String> visited, String pathToCheck, bool error,
   if (base != null) {
     baseHref = base.attributes['href'];
   }
-  //print("  Base is $baseHref");
   List<Element> links = doc.querySelectorAll('a');
   links
       .map((link) => link.attributes['href'])
       .where((href) => href != null)
       .forEach((href) {
     if (!href.startsWith('http') && !href.contains('#')) {
-      //print("  Found link: $href");
       var full = '${path.dirname(pathToCheck)}/$baseHref/$href';
       var normalized = path.normalize(full);
-      //print("    => $full\n      => $normalized");
       _doCheck(origin, visited, normalized, error, pathToCheck);
     }
   });
@@ -303,13 +292,7 @@ checkSdkLinks() {
 @Task('update test_package_docs')
 updateTestPackageDocs() {
   var options = new RunOptions(workingDirectory: 'testing/test_package');
-
-  var dir = new Directory('test_package_docs');
-
-  if (dir.existsSync()) {
-    dir.deleteSync(recursive: true);
-  }
-
+  delete(getDir('test_package_docs'));
   Dart.run('../../bin/dartdoc.dart',
       arguments: ['--no-include-source', '--output', '../test_package_docs'],
       runOptions: options);
