@@ -165,11 +165,6 @@ void main() {
               'WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a>'));
     });
 
-    test('has more than one line docs (or not)', () {
-      expect(fakeLibrary.hasMoreThanOneLineDocs, true);
-      expect(exLibrary.hasMoreThanOneLineDocs, false);
-    });
-
     test('has properties', () {
       expect(exLibrary.hasProperties, isTrue);
     });
