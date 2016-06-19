@@ -939,7 +939,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       new File(p.join(Directory.current.path, "crossdart.json"))
           .writeAsStringSync("""
               {"testing/test_package/lib/fake.dart":
-                {"references":[{"offset":5806,"end":5809,"remotePath":"http://www.example.com/fake.dart"}]}}
+                {"references":[{"offset":1069,"end":1072,"remotePath":"http://www.example.com/fake.dart"}]}}
       """);
 
       initializeConfig(addCrossdart: true, inputDir: Directory.current);

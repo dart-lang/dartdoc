@@ -50,6 +50,19 @@ import 'css.dart' as css;
 
 import 'two_exports.dart' show BaseClass;
 
+class HasGenerics<X, Y, Z> {
+  HasGenerics(X x, Y y, Z z) {}
+
+  X returnX() => null;
+
+  Z returnZ() => null;
+
+  Z doStuff(String s, X x) => null;
+
+  /// Converts itself to a map.
+  Map<X, Y> convertToMap() => null;
+}
+
 Map<dynamic, String> mapWithDynamicKeys = {};
 
 /// Useful for annotations.
@@ -255,19 +268,6 @@ class Foo2 {
 
   static const Foo2 BAR = const Foo2(0);
   static const Foo2 BAZ = const Foo2(1);
-}
-
-class HasGenerics<X, Y, Z> {
-  HasGenerics(X x, Y y, Z z) {}
-
-  X returnX() => null;
-
-  Z returnZ() => null;
-
-  Z doStuff(String s, X x) => null;
-
-  /// Converts itself to a map.
-  Map<X, Y> convertToMap() => null;
 }
 
 class OtherGenericsThing<A> {

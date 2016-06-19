@@ -4,15 +4,15 @@
 
 library dartdoc.model_utils;
 
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:path/path.dart' as p;
+
 import 'config.dart';
 
 final Map<String, String> _fileContents = <String, String>{};
