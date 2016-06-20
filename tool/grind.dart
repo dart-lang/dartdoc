@@ -144,7 +144,7 @@ Future buildSdkDocs() async {
   delete(docsDir);
   log('building SDK docs');
   int sdkDocsGenTime = await _runAsyncTimed(() async {
-    var process = await Process.start('dart', [
+    var process = await Process.start(Platform.resolvedExecutable, [
       'bin/dartdoc.dart',
       '--output',
       '${docsDir.path}',
