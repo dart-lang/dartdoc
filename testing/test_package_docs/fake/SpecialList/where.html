@@ -157,10 +157,11 @@
 predicate <code>test</code>.</p>
 <p>The matching elements have the same order in the returned iterable
 as they have in <code>iterator</code>.</p>
-<p>This method returns a view of the mapped elements. As long as the
-returned <code>Iterable</code> is not iterated over, the supplied function <code>test</code> will
-not be invoked. Iterating will not cache results, and thus iterating
-multiple times over the returned <code>Iterable</code> will invoke the supplied
+<p>This method returns a view of the mapped elements.
+As long as the returned <code>Iterable</code> is not iterated over,
+the supplied function <code>test</code> will not be invoked.
+Iterating will not cache results, and thus iterating multiple times over
+the returned <code>Iterable</code> may invoke the supplied
 function <code>test</code> multiple times on the same element.</p>
     </section>
     
