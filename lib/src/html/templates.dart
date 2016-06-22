@@ -10,8 +10,6 @@ import 'resource_loader.dart' as loader;
 typedef String TemplateRenderer(context,
     {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});
 
-// TODO: if we can ever enumerate the contents of a package, we
-// won't need this.
 const _partials = const <String>[
   'callable',
   'callable_multiline',
@@ -26,7 +24,6 @@ const _partials = const <String>[
   'sidebar_for_class',
   'source_code',
   'sidebar_for_library',
-  'has_more_docs',
   'accessor_getter',
   'accessor_setter'
 ];

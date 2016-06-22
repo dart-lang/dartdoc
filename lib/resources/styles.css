@@ -255,7 +255,6 @@ dd.callable, dd.constant, dd.property {
 }
 
 dd p {
-  white-space: nowrap;
   overflow-x: hidden;
   text-overflow: ellipsis;
   margin-bottom: 0;
