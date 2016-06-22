@@ -1,5 +1,6 @@
 ## 0.9.6+1
 * [health] remove an unneeded package dependency
+* [enhancement] show the full documentation summary text for elements
 
 ## 0.9.6
 * [bug] fix enum indexes (#1176).
