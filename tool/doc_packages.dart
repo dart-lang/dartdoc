@@ -253,5 +253,6 @@ class PackageInfo {
   String get archiveUrl =>
       'https://storage.googleapis.com/pub.dartlang.org/packages/${name}-${version}.tar.gz';
 
+  @override
   String toString() => '${name}, ${version}';
 }

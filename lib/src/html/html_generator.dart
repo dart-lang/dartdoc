@@ -45,6 +45,7 @@ class HtmlGenerator extends Generator {
   final StreamController<File> _onFileCreated =
       new StreamController(sync: true);
 
+  @override
   Stream<File> get onFileCreated => _onFileCreated.stream;
 
   /// [url] - optional URL for where the docs will be hosted.
@@ -71,6 +72,7 @@ class HtmlGenerator extends Generator {
       this._url, this._relCanonicalPrefix, this._templates, this._toolVersion,
       {this.faviconPath, this.useCategories});
 
+  @override
   Future generate(Package package, Directory out) {
     return new HtmlGeneratorInstance(_toolVersion, _url, _templates, package,
             out, _onFileCreated, _relCanonicalPrefix,

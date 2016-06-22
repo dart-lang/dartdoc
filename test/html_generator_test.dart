@@ -106,8 +106,11 @@ const Matcher doesExist = const _DoesExist();
 
 class _DoesExist extends Matcher {
   const _DoesExist();
+  @override
   bool matches(item, Map matchState) => item.existsSync();
+  @override
   Description describe(Description description) => description.add('exists');
+  @override
   Description describeMismatch(
       item, Description mismatchDescription, Map matchState, bool verbose) {
     if (item is! File && item is! Directory) {

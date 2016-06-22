@@ -118,6 +118,7 @@ class ElementType {
     }
   }
 
+  @override
   String toString() => "$_type";
 
   ElementType _getElementTypeFrom(DartType f) {
