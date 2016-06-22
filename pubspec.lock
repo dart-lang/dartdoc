@@ -54,7 +54,7 @@ packages:
       name: collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.5.1"
+    version: "1.8.0"
   contrast:
     description:
       name: contrast
@@ -127,12 +127,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.1"
-  librato:
-    description:
-      name: librato
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.3"
   logging:
     description:
       name: logging
@@ -288,7 +282,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.13+1"
+    version: "0.12.14"
   typed_data:
     description:
       name: typed_data
@@ -343,4 +337,4 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.8"
-sdk: ">=1.14.0 <1.18.0"
+sdk: ">=1.14.0 <1.19.0"

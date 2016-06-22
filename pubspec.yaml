@@ -24,7 +24,6 @@ dev_dependencies:
   den_api: ^0.1.0
   grinder: ^0.8.0
   http: ^0.11.0
-  librato: ^0.0.3
   pub_semver: ^1.0.0
   test: ^0.12.0
   which: ^0.1.3

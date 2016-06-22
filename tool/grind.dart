@@ -11,7 +11,6 @@ import 'package:den_api/den_api.dart';
 import 'package:grinder/grinder.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
-import 'package:librato/librato.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart' as yaml;
 
@@ -137,18 +136,15 @@ analyze() {
 Future buildSdkDocs() async {
   delete(docsDir);
   log('building SDK docs');
-  int sdkDocsGenTime = await _runAsyncTimed(() async {
-    var process = await Process.start(Platform.resolvedExecutable, [
-      'bin/dartdoc.dart',
-      '--output',
-      '${docsDir.path}',
-      '--sdk-docs',
-      '--show-progress'
-    ]);
-    stdout.addStream(process.stdout);
-    stderr.addStream(process.stderr);
-  });
-  return _uploadStats(sdkDocsGenTime);
+  var process = await Process.start(Platform.resolvedExecutable, [
+    'bin/dartdoc.dart',
+    '--output',
+    '${docsDir.path}',
+    '--sdk-docs',
+    '--show-progress'
+  ]);
+  stdout.addStream(process.stdout);
+  stderr.addStream(process.stderr);
 }
 
 @Task('Validate the SDK doc build.')
@@ -206,31 +202,6 @@ indexResources() {
 @Task('analyze, test, and self-test dartdoc')
 @Depends(analyze, test, testDartdoc)
 buildbot() => null;
-
-Future<int> _runAsyncTimed(Future callback()) async {
-  var stopwatch = new Stopwatch()..start();
-  await callback();
-  stopwatch.stop();
-  return stopwatch.elapsedMilliseconds;
-}
-
-Future _uploadStats(int sdkDocsGenTime) async {
-  Map env = Platform.environment;
-
-  if (env.containsKey('LIBRATO_USER') && env.containsKey('TRAVIS_COMMIT')) {
-    Librato librato = new Librato.fromEnvVars();
-    log('Uploading stats to ${librato.baseUrl}');
-    LibratoStat sdkDocsGenTimeStat =
-        new LibratoStat('sdk-docs-gen-time', sdkDocsGenTime);
-    await librato.postStats([sdkDocsGenTimeStat]);
-    String commit = env['TRAVIS_COMMIT'];
-    LibratoLink link = new LibratoLink(
-        'github', 'https://github.com/dart-lang/dart-pad/commit/${commit}');
-    LibratoAnnotation annotation = new LibratoAnnotation(commit,
-        description: 'Commit ${commit}', links: [link]);
-    return librato.createAnnotation('build_ui', annotation);
-  }
-}
 
 // TODO: check http links, check links in <link>
 // Also TODO: put a guard for infinite link checking
