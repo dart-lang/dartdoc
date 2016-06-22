@@ -1,3 +1,6 @@
+## 0.9.6+1
+* [health] remove an unneeded package dependency
+
 ## 0.9.6
 * [bug] fix enum indexes (#1176).
 * [enhancement] added support for crossdart. If there is a `crossdart.json`
@@ -6,7 +9,7 @@
 
 ## 0.9.5
 * [enhancement] support for `@example` tag to inject sample code into comments.
-  eg. `{@example core/ts/bootstrap/bootstrap.dart region='bootstrap'}`, where 
+  eg. `{@example core/ts/bootstrap/bootstrap.dart region='bootstrap'}`, where
   path is path to source in the package examples directory, and region is
   specified by `#docregion` and `#enddocregion` in the file.
 * [enhancement] do not document if there is a `@nodoc` in the doc comment.
@@ -43,7 +46,7 @@
 ## 0.9.0
 * **BREAKING** works with Dart SDK 1.14.0 and above
 * [health] use package resource
-* [enhancement] add support for packages with `_embedder.yaml`  
+* [enhancement] add support for packages with `_embedder.yaml`
 * [bug] fix generating docs when input == '.'
 * [bug] modify showing constants so that there is no double `const` shown in
   value.
