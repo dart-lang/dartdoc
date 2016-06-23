@@ -16,6 +16,12 @@ const String COLOR_GREEN = 'green';
 
 const String COLOR_ORANGE = 'orange';
 
+const List<String> PRETTY_COLORS = const <String>[
+  COLOR_GREEN,
+  COLOR_ORANGE,
+  'blue'
+];
+
 const String COMPLEX_COLOR = 'red' + '-' + 'green' + '-' + 'blue';
 
 /// top level var <nodoc>
