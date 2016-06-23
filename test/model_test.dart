@@ -1231,13 +1231,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Constant', () {
-    TopLevelVariable greenConstant, cat, orangeConstant, deprecated;
+    TopLevelVariable greenConstant,
+        cat,
+        orangeConstant,
+        prettyColorsConstant,
+        deprecated;
 
     setUp(() {
       greenConstant =
           exLibrary.constants.firstWhere((c) => c.name == 'COLOR_GREEN');
       orangeConstant =
           exLibrary.constants.firstWhere((c) => c.name == 'COLOR_ORANGE');
+      prettyColorsConstant =
+          exLibrary.constants.firstWhere((c) => c.name == 'PRETTY_COLORS');
       cat = exLibrary.constants.firstWhere((c) => c.name == 'MY_CAT');
       deprecated =
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
@@ -1252,7 +1258,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('found all the constants', () {
-      expect(exLibrary.constants, hasLength(8));
+      expect(exLibrary.constants, hasLength(9));
     });
 
     test('COLOR_GREEN is constant', () {
@@ -1261,6 +1267,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('COLOR_ORANGE has correct value', () {
       expect(orangeConstant.constantValue, "&#39;orange&#39;");
+    });
+
+    test('PRETTY_COLORS', () {
+      expect(prettyColorsConstant.constantValue,
+          "const &lt;String&gt; [COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;]");
     });
 
     test('MY_CAT is linked', () {
