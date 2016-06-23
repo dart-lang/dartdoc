@@ -1,3 +1,6 @@
+## unreleased
+* [bug] fix an issue involving escaping constants (#1084).
+
 ## 0.9.6+1
 * [health] remove an unneeded package dependency
 * [enhancement] show the full documentation summary text for elements
