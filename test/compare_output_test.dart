@@ -48,8 +48,7 @@ void main() {
 
     test("Validate html output of test_package", () async {
       if (Platform.isWindows) {
-        print("Tests are being run via `all.dart`, which means onPlatform "
-            "argument is ignored. Skipping on Windows to avoid parsing git output");
+        print("Skipping on Windows");
         return;
       }
 
@@ -120,6 +119,11 @@ void main() {
     });
 
     test('Check for sample code in examples', () {
+      if (Platform.isWindows) {
+        print("Skipping on Windows");
+        return;
+      }
+
       var args = <String>[
         dartdocBin,
         '--include',

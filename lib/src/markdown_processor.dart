@@ -163,7 +163,6 @@ class Documentation {
   final String raw;
   final String asHtml;
   final String asOneLiner;
-  final bool hasMoreThanOneLineDocs;
 
   factory Documentation(String markdown) {
     String tempHtml = _renderMarkdownToHtml(markdown);
@@ -175,8 +174,7 @@ class Documentation {
     return new Documentation._internal(element.documentation, tempHtml);
   }
 
-  Documentation._(
-      this.raw, this.asHtml, this.hasMoreThanOneLineDocs, this.asOneLiner);
+  Documentation._(this.raw, this.asHtml, this.asOneLiner);
 
   factory Documentation._internal(String markdown, String rawHtml) {
     var asHtmlDocument = parse(rawHtml);
@@ -206,18 +204,14 @@ class Documentation {
     }
     var asHtml = asHtmlDocument.body.innerHtml;
 
-    // Fixes issue with line ending differences between mac and windows, affecting tests
+    // Fixes issue with line ending differences between mac and windows.
     if (asHtml != null) asHtml = asHtml.trim();
 
-    var asOneLiner = '';
-    var moreThanOneLineDoc = asHtmlDocument.body.children.length > 1;
+    var asOneLiner = asHtmlDocument.body.children.isEmpty
+        ? ''
+        : asHtmlDocument.body.children.first.innerHtml;
 
-    if (asHtmlDocument.body.children.isNotEmpty) {
-      asOneLiner = asHtmlDocument.body.children.first.innerHtml;
-    }
-
-    return new Documentation._(
-        markdown, asHtml, moreThanOneLineDoc, asOneLiner);
+    return new Documentation._(markdown, asHtml, asOneLiner);
   }
 }
 
