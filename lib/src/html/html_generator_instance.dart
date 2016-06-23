@@ -22,7 +22,9 @@ class HtmlGeneratorInstance implements HtmlOptions {
   final Directory out;
   final List<ModelElement> documentedElements = <ModelElement>[];
   final StreamController<File> _onFileCreated;
+  @override
   final String relCanonicalPrefix;
+  @override
   final String toolVersion;
   final String faviconPath;
   final bool useCategories;

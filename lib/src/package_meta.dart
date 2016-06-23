@@ -46,6 +46,7 @@ abstract class PackageMeta {
   /// If the list is empty, this package is valid.
   List<String> getInvalidReasons();
 
+  @override
   String toString() => name;
 }
 
@@ -61,6 +62,7 @@ class FileContents {
 
   bool get isMarkdown => file.path.toLowerCase().endsWith('.md');
 
+  @override
   String toString() => file.path;
 }
 
@@ -79,13 +81,19 @@ class _FilePackageMeta extends PackageMeta {
     }
   }
 
+  @override
   bool get isSdk => false;
 
+  @override
   String get name => _pubspec['name'];
+  @override
   String get version => _pubspec['version'];
+  @override
   String get description => _pubspec['description'];
+  @override
   String get homepage => _pubspec['homepage'];
 
+  @override
   FileContents getReadmeContents() {
     if (_readme != null) return _readme;
     _readme =
@@ -93,6 +101,7 @@ class _FilePackageMeta extends PackageMeta {
     return _readme;
   }
 
+  @override
   FileContents getLicenseContents() {
     if (_license != null) return _license;
     _license = new FileContents(
@@ -100,6 +109,7 @@ class _FilePackageMeta extends PackageMeta {
     return _license;
   }
 
+  @override
   FileContents getChangelogContents() {
     if (_changelog != null) return _changelog;
     _changelog = new FileContents(
@@ -144,16 +154,22 @@ class _SdkMeta extends PackageMeta {
 
   _SdkMeta(Directory dir, {this.sdkReadmePath}) : super(dir);
 
+  @override
   bool get isSdk => true;
 
+  @override
   String get name => 'Dart SDK';
+  @override
   String get version =>
       new File(path.join(dir.path, 'version')).readAsStringSync().trim();
+  @override
   String get description =>
       'The Dart SDK is a set of tools and libraries for the '
       'Dart programming language.';
+  @override
   String get homepage => 'https://github.com/dart-lang/sdk';
 
+  @override
   FileContents getReadmeContents() {
     File f = sdkReadmePath != null
         ? new File(sdkReadmePath)
@@ -167,8 +183,10 @@ class _SdkMeta extends PackageMeta {
   @override
   List<String> getInvalidReasons() => [];
 
+  @override
   FileContents getLicenseContents() => null;
 
   // TODO: The changelog doesn't seem to be available in the sdk.
+  @override
   FileContents getChangelogContents() => null;
 }

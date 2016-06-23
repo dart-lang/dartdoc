@@ -1573,7 +1573,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 }
 
 class StringName implements Nameable {
+  @override
   final String name;
   StringName(this.name);
+  @override
   String toString() => name;
 }

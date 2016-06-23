@@ -272,6 +272,7 @@ class DartDocFailure {
 
   DartDocFailure(this.message);
 
+  @override
   String toString() => message;
 }
 
@@ -306,6 +307,7 @@ class _Error implements Comparable {
 
   String get severityName => error.errorCode.errorSeverity.displayName;
 
+  @override
   int compareTo(_Error other) {
     if (severity == other.severity) {
       int cmp = error.source.fullName.compareTo(other.error.source.fullName);
@@ -315,5 +317,6 @@ class _Error implements Comparable {
     }
   }
 
+  @override
   String toString() => '[${severityName}] ${description}';
 }

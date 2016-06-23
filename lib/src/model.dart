@@ -220,6 +220,7 @@ class Class extends ModelElement implements EnclosedElement {
   }
 
   /// Returns the library that encloses this element.
+  @override
   ModelElement get enclosingElement => library;
 
   String get fileName => "${name}-class.html";
@@ -233,6 +234,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   bool get hasConstructors => constructors.isNotEmpty;
 
+  @override
   int get hashCode => hash3(
       name.hashCode, library.name.hashCode, library.package.name.hashCode);
 
@@ -594,6 +596,7 @@ class Class extends ModelElement implements EnclosedElement {
         return new TypeParameter(f, lib);
       }).toList();
 
+  @override
   bool operator ==(o) =>
       o is Class &&
       name == o.name &&
@@ -624,6 +627,7 @@ class Constructor extends ModelElement
   String get href =>
       '${library.dirName}/${_constructor.enclosingElement.name}/$name.html';
 
+  @override
   bool get isConst => _constructor.isConst;
 
   bool get isFactory => _constructor.isFactory;
@@ -686,6 +690,7 @@ abstract class EnclosedElement {
 }
 
 class Enum extends Class {
+  @override
   List<EnumField> _constants;
 
   Enum(ClassElement element, Library library) : super(element, library);
@@ -792,8 +797,10 @@ class Field extends ModelElement
     return _enclosingClass;
   }
 
+  @override
   bool get hasGetter => _field.getter != null;
 
+  @override
   bool get hasSetter => _field.setter != null;
 
   @override
@@ -808,8 +815,10 @@ class Field extends ModelElement
     }
   }
 
+  @override
   bool get isConst => _field.isConst;
 
+  @override
   bool get isFinal => _field.isFinal;
 
   bool get isInherited => _isInherited;
@@ -837,8 +846,10 @@ class Field extends ModelElement
 
   String get _fileName => isConst ? '$name-constant.html' : '$name.html';
 
+  @override
   PropertyAccessorElement get _getter => _field.getter;
 
+  @override
   PropertyAccessorElement get _setter => _field.setter;
 
   void _setModelType() {
@@ -904,6 +915,7 @@ abstract class GetterSetterCombo {
 class Library extends ModelElement {
   static final Map<String, Library> _libraryMap = <String, Library>{};
 
+  @override
   final Package package;
 
   List<Class> _classes;
@@ -1021,8 +1033,10 @@ class Library extends ModelElement {
   @override
   String get kind => 'library';
 
+  @override
   Library get library => this;
 
+  @override
   String get name {
     if (_name != null) return _name;
 
@@ -1219,6 +1233,7 @@ class Method extends ModelElement
 
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
+  @override
   Method get overriddenElement {
     ClassElement parent = element.enclosingElement;
     for (InterfaceType t in getAllSupertypes(parent)) {
@@ -1329,6 +1344,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   /// This getter will walk up the inheritance hierarchy
   /// to find docs, if the current class doesn't have docs
   /// for this element.
+  @override
   String get documentation {
     if (_rawDocs != null) return _rawDocs;
 
@@ -1431,6 +1447,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   ElementType get modelType => _modelType;
 
+  @override
   String get name => element.name;
 
   @override
@@ -1475,6 +1492,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   bool canOverride() => element is ClassMemberElement;
 
+  @override
   int compareTo(dynamic other) {
     if (other is ModelElement) {
       return name.toLowerCase().compareTo(other.name.toLowerCase());
@@ -1562,6 +1580,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return fragments.join(separator);
   }
 
+  @override
   String toString() => '$runtimeType $name';
 
   String _buildFullyQualifiedName([ModelElement e, String fqName]) {
@@ -1641,6 +1660,7 @@ class ModelFunction extends ModelElement
     _modelType = new ElementType(_func.type, this);
   }
 
+  @override
   ModelElement get enclosingElement => library;
 
   String get fileName => "$name.html";
@@ -1648,6 +1668,7 @@ class ModelFunction extends ModelElement
   @override
   String get href => '${library.dirName}/$fileName';
 
+  @override
   bool get isStatic => _func.isStatic;
 
   @override
@@ -1709,6 +1730,7 @@ class Operator extends Method {
   String get fullyQualifiedName =>
       '${library.name}.${enclosingElement.name}.${super.name}';
 
+  @override
   bool get isOperator => true;
 
   @override
@@ -1716,6 +1738,7 @@ class Operator extends Method {
     return 'operator ${super.name}';
   }
 
+  @override
   String get typeName => 'operator';
 }
 
@@ -1763,10 +1786,12 @@ class Package implements Nameable, Documentable {
     return result.values.toList()..sort();
   }
 
+  @override
   String get documentation {
     return hasDocumentationFile ? documentationFile.contents : null;
   }
 
+  @override
   String get documentationAsHtml {
     if (_docsAsHtml != null) return _docsAsHtml;
 
@@ -1778,6 +1803,7 @@ class Package implements Nameable, Documentable {
   FileContents get documentationFile => packageMeta.getReadmeContents();
 
   // TODO: make this work
+  @override
   bool get hasDocumentation =>
       documentationFile != null && documentationFile.contents.isNotEmpty;
 
@@ -1793,8 +1819,10 @@ class Package implements Nameable, Documentable {
 
   List<Library> get libraries => _libraries;
 
+  @override
   String get name => packageMeta.name;
 
+  @override
   String get oneLineDoc => '';
 
   String get version => packageMeta.version;
@@ -1832,6 +1860,7 @@ class Package implements Nameable, Documentable {
 
   bool isDocumented(Element element) => findLibraryFor(element) != null;
 
+  @override
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
   /// Will try to find the library that exports the element.
@@ -1863,6 +1892,7 @@ class PackageCategory implements Comparable {
 
   List<Library> get libraries => _libraries;
 
+  @override
   int compareTo(PackageCategory other) => name.compareTo(other.name);
 }
 
@@ -1904,6 +1934,7 @@ class Parameter extends ModelElement implements EnclosedElement {
     }
   }
 
+  @override
   String get htmlId => '${_parameter.enclosingElement.name}-param-${name}';
 
   bool get isOptional => _parameter.parameterKind.isOptional;
@@ -1918,6 +1949,7 @@ class Parameter extends ModelElement implements EnclosedElement {
 
   ParameterElement get _parameter => element as ParameterElement;
 
+  @override
   String toString() => element.name;
 }
 
@@ -2085,15 +2117,19 @@ class TopLevelVariable extends ModelElement
   @override
   ModelElement get enclosingElement => library;
 
+  @override
   bool get hasGetter => _variable.getter != null;
 
+  @override
   bool get hasSetter => _variable.setter != null;
 
   @override
   String get href => '${library.dirName}/$_fileName';
 
+  @override
   bool get isConst => _variable.isConst;
 
+  @override
   bool get isFinal => _variable.isFinal;
 
   @override
@@ -2114,8 +2150,10 @@ class TopLevelVariable extends ModelElement
 
   String get _fileName => isConst ? '$name-constant.html' : '$name.html';
 
+  @override
   PropertyAccessorElement get _getter => _variable.getter;
 
+  @override
   PropertyAccessorElement get _setter => _variable.setter;
 
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
@@ -2170,6 +2208,7 @@ class TypeParameter extends ModelElement {
   @override
   String get kind => 'type parameter';
 
+  @override
   String get name {
     var bound = _typeParameter.bound;
     return bound != null
@@ -2179,5 +2218,6 @@ class TypeParameter extends ModelElement {
 
   TypeParameterElement get _typeParameter => element as TypeParameterElement;
 
+  @override
   String toString() => element.name;
 }
