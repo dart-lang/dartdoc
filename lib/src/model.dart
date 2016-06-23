@@ -663,7 +663,6 @@ abstract class Documentable {
   String get documentation;
   String get documentationAsHtml;
   bool get hasDocumentation;
-  bool get hasMoreThanOneLineDocs;
   String get oneLineDoc;
 }
 
@@ -1380,9 +1379,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   bool get hasDocumentation =>
       documentation != null && documentation.isNotEmpty;
 
-  @override
-  bool get hasMoreThanOneLineDocs => _documentation.hasMoreThanOneLineDocs;
-
   bool get hasParameters => parameters.isNotEmpty;
 
   String get href;
@@ -1814,9 +1810,6 @@ class Package implements Nameable, Documentable {
   // TODO: Clients should use [documentationFile] so they can act differently on
   // plain text or markdown.
   bool get hasDocumentationFile => documentationFile != null;
-
-  @override
-  bool get hasMoreThanOneLineDocs => true;
 
   // TODO: make this work
   String get href => 'index.html';
