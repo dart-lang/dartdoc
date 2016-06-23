@@ -1260,12 +1260,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('COLOR_ORANGE has correct value', () {
-      expect(orangeConstant.constantValue, "'orange'");
+      expect(orangeConstant.constantValue, "&#39;orange&#39;");
     });
 
     test('MY_CAT is linked', () {
       expect(cat.constantValue,
-          'const <a href="ex/ConstantCat-class.html">ConstantCat</a>(\'tabby\')');
+          'const <a href="ex/ConstantCat-class.html">ConstantCat</a>(&#39;tabby&#39;)');
     });
 
     test('exported property', () {

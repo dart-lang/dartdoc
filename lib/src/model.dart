@@ -2078,6 +2078,7 @@ class TopLevelVariable extends ModelElement
     var v = _variable.computeNode().toSource();
     if (v == null) return '';
     var string = v.substring(v.indexOf('=') + 1, v.length).trim();
+    string = HTML_ESCAPE.convert(string);
     return string.replaceAll(modelType.name, modelType.linkedName);
   }
 
