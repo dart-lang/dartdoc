@@ -1,7 +1,7 @@
 library dartdoc.cache;
 
-import 'dart:io';
 import 'dart:collection';
+import 'dart:io';
 
 String _getNewlineChar(String contents) {
   if (contents.contains("\r\n")) {
