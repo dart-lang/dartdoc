@@ -1,5 +1,7 @@
 ## unreleased
 * [bug] fix an issue involving escaping constants (#1084).
+* [health] removed a dev dependency
+* [health] removed check for dartfmt on travis
 
 ## 0.9.6+1
 * [health] remove an unneeded package dependency

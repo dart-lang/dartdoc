@@ -21,7 +21,6 @@ dependencies:
   stack_trace: ^1.4.2
   yaml: ^2.1.0
 dev_dependencies:
-  den_api: ^0.1.0
   grinder: ^0.8.0
   http: ^0.11.0
   pub_semver: ^1.0.0
