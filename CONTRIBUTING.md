@@ -20,6 +20,14 @@ yet in the issue tracker, start by opening an issue. Thanks!
 [![Build status](https://ci.appveyor.com/api/projects/status/s6sh69et2ga00dlu?svg=true)](https://ci.appveyor.com/project/devoncarew/dartdoc)
 [![Coverage Status](https://img.shields.io/coveralls/dart-lang/dartdoc.svg)](https://coveralls.io/r/dart-lang/dartdoc)
 
+## Making Changes
+
+1. `grind` is needed to run dartdoc integration tests, see installed via `pub global activate grinder`.
+2. When a change is user-facing, please add a new entry to the [changelog](https://github.com/dart-lang/dartdoc/blob/master/CHANGELOG.md)
+3. Please include a test for your change.  `dartdoc` has both `package:test`-style unittests as well as integration tests.  To run the unittests, use `dart test/all.dart`.  Most changes can be tested via a unittest, but some require modifying the (test_package)[https://github.com/dart-lang/dartdoc/tree/master/testing/test_package] and regenerating its docs via `grind update-test-package-docs`.
+4.  Be sure to format your Dart code using `dartfmt -w`, otherwise travis will complain.
+5.  Post your change via a pull request for review and integration!
+
 ## License
 
 Please see the [dartdoc license](https://github.com/dart-lang/dartdoc/blob/master/LICENSE).
