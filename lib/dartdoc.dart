@@ -32,6 +32,7 @@ import 'src/model.dart';
 import 'src/model_utils.dart';
 import 'src/package_meta.dart';
 
+import 'src/config.dart';
 export 'src/element_type.dart';
 export 'src/generator.dart';
 export 'src/model.dart';
@@ -42,6 +43,19 @@ const String name = 'dartdoc';
 const String version = '0.9.6+2';
 
 final String defaultOutDir = p.join('doc', 'api');
+
+/// Configure the dartdoc generation process
+void initializeConfig(
+    {Directory inputDir,
+    String sdkVersion,
+    bool addCrossdart: false,
+    bool includeSource: true}) {
+  setConfig(
+      inputDir: inputDir,
+      sdkVersion: sdkVersion,
+      addCrossdart: addCrossdart,
+      includeSource: includeSource);
+}
 
 /// Initialize and setup the generators.
 Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,

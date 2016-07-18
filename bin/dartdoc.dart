@@ -9,8 +9,6 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/config.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 import 'package:stack_trace/stack_trace.dart';
 import 'package:analyzer/src/generated/sdk.dart';
