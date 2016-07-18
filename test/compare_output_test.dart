@@ -104,6 +104,7 @@ void main() {
           ];
           result = Process.runSync(gitPath, args);
           assert(result.exitCode != 0);
+          message.add(result.stdout);
         }
       });
 
