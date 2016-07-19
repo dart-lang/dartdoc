@@ -939,22 +939,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('method source code crossdartifies correctly', () {
-      if (Platform.isWindows) {
-        print("Skipping on Windows");
-        return;
-      }
-
       convertToMap.clearSourceCodeCache();
+      var fakePath = "testing/test_package/lib/fake.dart";
+      if (Platform.isWindows) fakePath = fakePath.replaceAll('/', r'\\');
       new File(p.join(Directory.current.path, "crossdart.json"))
           .writeAsStringSync("""
-              {"testing/test_package/lib/fake.dart":
+              {"$fakePath":
                 {"references":[{"offset":1069,"end":1072,"remotePath":"http://www.example.com/fake.dart"}]}}
       """);
 
       initializeConfig(addCrossdart: true, inputDir: Directory.current);
       expect(convertToMap.sourceCode,
           "<a class='crossdart-link' href='http://www.example.com/fake.dart'>Map</a>&lt;X, Y&gt; convertToMap() =&gt; null;");
-    }, onPlatform: {'windows': new Skip('#1188')});
+    });
 
     group(".crossdartHtmlTag()", () {
       test('it returns an empty string when Crossdart support is disabled', () {

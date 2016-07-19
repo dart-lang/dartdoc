@@ -1633,7 +1633,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       var dirPath = this.package.packageMeta.dir.path;
       for (var match in matches) {
         var strings = match.group(0).split(' ');
-        var path = strings[1];
+        var path = strings[1].replaceAll('/', Platform.pathSeparator);
         if (path.contains(Platform.pathSeparator) &&
             !path.startsWith(Platform.pathSeparator)) {
           var file = new File(p.join(dirPath, 'examples', path));
