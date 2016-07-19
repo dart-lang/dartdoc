@@ -130,8 +130,8 @@ String crossdartifySource(
   String newSource;
   if (json.isNotEmpty) {
     var node = element.computeNode();
-    var file =
-        element.source.fullName.replaceAll("${config.inputDir.path}/", "");
+    var file = element.source.fullName
+        .replaceAll("${config.inputDir.path}${Platform.pathSeparator}", "");
     var filesData = json[file];
     if (filesData != null) {
       var data = filesData["references"]

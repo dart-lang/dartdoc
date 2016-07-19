@@ -120,11 +120,6 @@ void main() {
     });
 
     test('Check for sample code in examples', () {
-      if (Platform.isWindows) {
-        print("Skipping on Windows");
-        return;
-      }
-
       var args = <String>[
         dartdocBin,
         '--include',
