@@ -14,7 +14,7 @@ class Config {
 Config _config;
 Config get config => _config;
 
-void initializeConfig(
+void setConfig(
     {Directory inputDir,
     String sdkVersion,
     bool addCrossdart: false,

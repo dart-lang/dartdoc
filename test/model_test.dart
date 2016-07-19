@@ -7,7 +7,7 @@ library dartdoc.model_test;
 import 'dart:io';
 
 import 'package:cli_util/cli_util.dart' as cli_util;
-import 'package:dartdoc/src/config.dart';
+import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
