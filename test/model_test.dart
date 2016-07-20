@@ -819,6 +819,30 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   return null;
 }'''));
     });
+
+    test('typedef params have proper signature', () {
+      // typedef void VoidCallback();
+      // void addCallback(VoidCallback callback) { }
+      ModelFunction function =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback');
+      String params = function.linkedParams();
+      expect(
+          params,
+          '<span class="parameter" id="addCallback-param-callback">'
+          '<span class="type-annotation"><a href="fake/VoidCallback.html">VoidCallback</a></span> '
+          '<span class="parameter-name">callback</span></span>');
+
+      // typedef int Callback2(String);
+      // void addCallback2(Callback2 callback) { }
+      function =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback2');
+      params = function.linkedParams();
+      expect(
+          params,
+          '<span class="parameter" id="addCallback2-param-callback">'
+          '<span class="type-annotation"><a href="fake/Callback2.html">Callback2</a></span> '
+          '<span class="parameter-name">callback</span></span>');
+    });
   });
 
   group('Method', () {

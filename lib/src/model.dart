@@ -1542,7 +1542,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       }
       if (p.modelType.isFunctionType) {
         var returnTypeName;
-        if (p.modelType.element is Typedef) {
+        bool isTypedef = p.modelType.element is Typedef;
+        if (isTypedef) {
           returnTypeName = p.modelType.linkedName;
         } else {
           returnTypeName = p.modelType.createLinkedReturnTypeName();
@@ -1551,10 +1552,12 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         if (showNames) {
           buf.write(' <span class="parameter-name">${p.name}</span>');
         }
-        buf.write('(');
-        buf.write(p.modelType.element
-            .linkedParams(showNames: showNames, showMetadata: showMetadata));
-        buf.write(')');
+        if (!isTypedef) {
+          buf.write('(');
+          buf.write(p.modelType.element
+              .linkedParams(showNames: showNames, showMetadata: showMetadata));
+          buf.write(')');
+        }
       } else if (p.modelType != null && p.modelType.element != null) {
         var mt = p.modelType;
         String typeName = "";

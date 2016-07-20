@@ -430,3 +430,13 @@ class SubForDocComments extends BaseForDocComments {
   /// Reference to [foo] and [bar]
   void localMethod(String foo, bar) {}
 }
+
+typedef void VoidCallback();
+
+/// Adds a callback.
+void addCallback(VoidCallback callback) { }
+
+typedef int Callback2(String);
+
+/// Adds another callback.
+void addCallback2(Callback2 callback) { }
