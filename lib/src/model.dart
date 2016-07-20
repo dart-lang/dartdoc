@@ -28,7 +28,26 @@ import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
 import 'utils.dart' show stripComments;
 
+Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
+
 final Map<Class, List<Class>> _implementors = new Map();
+
+Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
+  if (__crossdartJson == null) {
+    if (config != null) {
+      var crossdartFile =
+          new File(p.join(config.inputDir.path, "crossdart.json"));
+      if (crossdartFile.existsSync()) {
+        __crossdartJson = JSON.decode(crossdartFile.readAsStringSync());
+      } else {
+        __crossdartJson = {};
+      }
+    } else {
+      __crossdartJson = {};
+    }
+  }
+  return __crossdartJson;
+}
 
 int byName(Nameable a, Nameable b) =>
     compareAsciiLowerCaseNatural(a.name, b.name);
@@ -342,7 +361,7 @@ class Class extends ModelElement implements EnclosedElement {
     return _inheritedMethods;
   }
 
-  List<Operator> get inheritedOperators {
+  List<Method> get inheritedOperators {
     if (_inheritedOperators != null) return _inheritedOperators;
     InheritanceManager manager = new InheritanceManager(element.library);
     MemberMap cmap = manager.getMapOfMembersInheritedFromClasses(element);
@@ -666,7 +685,6 @@ abstract class Documentable {
   String get oneLineDoc;
 }
 
-// TODO: how do we get rid of this class?
 class Dynamic extends ModelElement {
   Dynamic(Element element, Library library) : super(element, library);
 
@@ -690,25 +708,26 @@ abstract class EnclosedElement {
 }
 
 class Enum extends Class {
-  List<EnumField> _enumFields;
+  @override
+  List<EnumField> _constants;
 
   Enum(ClassElement element, Library library) : super(element, library);
 
   @override
   List<EnumField> get constants {
-    if (_enumFields != null) return _enumFields;
+    if (_constants != null) return _constants;
 
     // This is a hack to give 'values' an index of -1 and all other fields
     // their expected indicies. https://github.com/dart-lang/dartdoc/issues/1176
     var index = -1;
 
-    _enumFields = _cls.fields
+    _constants = _cls.fields
         .where(isPublic)
         .where((f) => f.isConst)
         .map((field) => new EnumField.forConstant(index++, field, library))
         .toList(growable: false)..sort(byName);
 
-    return _enumFields;
+    return _constants;
   }
 
   @override
@@ -992,8 +1011,8 @@ class Library extends ModelElement {
     if (_functions != null) return _functions;
 
     Set<FunctionElement> elements = new Set();
-    elements.addAll(_libraryElement.definingCompilationUnit.functions);
-    for (CompilationUnitElement cu in _libraryElement.parts) {
+    elements.addAll(_library.definingCompilationUnit.functions);
+    for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functions);
     }
     elements.addAll(_exportedNamespace.definedNames.values
@@ -1027,7 +1046,7 @@ class Library extends ModelElement {
 
   bool get isDocumented => oneLineDoc.isNotEmpty;
 
-  bool get isInSdk => _libraryElement.isInSdk;
+  bool get isInSdk => _library.isInSdk;
 
   @override
   String get kind => 'library';
@@ -1041,7 +1060,7 @@ class Library extends ModelElement {
 
     // handle the case of an anonymous library
     if (element.name == null || element.name.isEmpty) {
-      _name = _libraryElement.definingCompilationUnit.name;
+      _name = _library.definingCompilationUnit.name;
       if (_name.endsWith('.dart')) {
         _name = _name.substring(0, _name.length - '.dart'.length);
       }
@@ -1054,7 +1073,7 @@ class Library extends ModelElement {
     // name is to get source.encoding.
     // This may be wrong or misleading, but developers expect the name
     // of dart:____
-    var source = _libraryElement.definingCompilationUnit.source;
+    var source = _library.definingCompilationUnit.source;
     _name = source.isInSystemLibrary ? source.encoding : _name;
 
     return _name;
@@ -1062,7 +1081,7 @@ class Library extends ModelElement {
 
   String get packageName {
     if (_packageName == null) {
-      String sourcePath = _libraryElement.source.fullName;
+      String sourcePath = _library.source.fullName;
       File file = new File(sourcePath);
       if (file.existsSync()) {
         _packageName = _getPackageName(file.parent);
@@ -1075,7 +1094,7 @@ class Library extends ModelElement {
     return _packageName;
   }
 
-  String get path => _libraryElement.definingCompilationUnit.name;
+  String get path => _library.definingCompilationUnit.name;
 
   /// All variables ("properties") except constants.
   List<TopLevelVariable> get properties {
@@ -1087,9 +1106,8 @@ class Library extends ModelElement {
     if (_typeDefs != null) return _typeDefs;
 
     Set<FunctionTypeAliasElement> elements = new Set();
-    elements
-        .addAll(_libraryElement.definingCompilationUnit.functionTypeAliases);
-    for (CompilationUnitElement cu in _libraryElement.parts) {
+    elements.addAll(_library.definingCompilationUnit.functionTypeAliases);
+    for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.functionTypeAliases);
     }
 
@@ -1107,11 +1125,11 @@ class Library extends ModelElement {
     if (_classes != null) return _classes;
 
     Set<ClassElement> types = new Set();
-    types.addAll(_libraryElement.definingCompilationUnit.types);
-    for (CompilationUnitElement cu in _libraryElement.parts) {
+    types.addAll(_library.definingCompilationUnit.types);
+    for (CompilationUnitElement cu in _library.parts) {
       types.addAll(cu.types);
     }
-    for (LibraryElement le in _libraryElement.exportedLibraries) {
+    for (LibraryElement le in _library.exportedLibraries) {
       types.addAll(le.definingCompilationUnit.types
           .where((t) => _exportedNamespace.definedNames.values.contains(t.name))
           .toList());
@@ -1128,7 +1146,7 @@ class Library extends ModelElement {
     return _classes;
   }
 
-  LibraryElement get _libraryElement => (element as LibraryElement);
+  LibraryElement get _library => (element as LibraryElement);
 
   Class getClassByName(String name) {
     return _allClasses.firstWhere((it) => it.name == name, orElse: () => null);
@@ -1150,8 +1168,8 @@ class Library extends ModelElement {
     if (_variables != null) return _variables;
 
     Set<TopLevelVariableElement> elements = new Set();
-    elements.addAll(_libraryElement.definingCompilationUnit.topLevelVariables);
-    for (CompilationUnitElement cu in _libraryElement.parts) {
+    elements.addAll(_library.definingCompilationUnit.topLevelVariables);
+    for (CompilationUnitElement cu in _library.parts) {
       elements.addAll(cu.topLevelVariables);
     }
     _exportedNamespace.definedNames.values.forEach((element) {
@@ -1218,6 +1236,11 @@ class Method extends ModelElement
 
   String get fileName => "${name}.html";
 
+  String get fullkind {
+    if (_method.isAbstract) return 'abstract $kind';
+    return kind;
+  }
+
   @override
   String get href => '${library.dirName}/${enclosingElement.name}/${fileName}';
 
@@ -1249,15 +1272,14 @@ class Method extends ModelElement
   MethodElement get _method => (element as MethodElement);
 }
 
-// TODO: rename this to Property
 abstract class ModelElement implements Comparable, Nameable, Documentable {
-  final Element _element;
-  final Library _library;
+  final Element element;
+  final Library library;
 
   ElementType _modelType;
   String _rawDocs;
   Documentation __documentation;
-  List<Parameter> _parameters;
+  List _parameters;
   String _linkedName;
 
   String _fullyQualifiedName;
@@ -1265,7 +1287,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   // WARNING: putting anything into the body of this seems
   // to lead to stack overflows. Need to make a registry of ModelElements
   // somehow.
-  ModelElement(this._element, this._library);
+  ModelElement(this.element, this.library);
 
   factory ModelElement.from(Element e, Library library) {
     if (e.kind == ElementKind.DYNAMIC) {
@@ -1363,8 +1385,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return _rawDocs;
   }
 
-  Element get element => _element;
-
   @override
   String get documentationAsHtml => _documentation.asHtml;
 
@@ -1435,8 +1455,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   /// A human-friendly name for the kind of element this is.
   String get kind;
-
-  Library get library => _library;
 
   String get linkedName {
     if (_linkedName == null) {
@@ -1888,7 +1906,7 @@ class Package implements Nameable, Documentable {
   }
 }
 
-class PackageCategory implements Comparable<PackageCategory> {
+class PackageCategory implements Comparable {
   final String name;
   final List<Library> _libraries = [];
 
@@ -1957,25 +1975,6 @@ class Parameter extends ModelElement implements EnclosedElement {
   String toString() => element.name;
 }
 
-Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
-Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
-  if (__crossdartJson == null) {
-    if (config != null) {
-      var crossdartFile =
-          new File(p.join(config.inputDir.path, "crossdart.json"));
-      if (crossdartFile.existsSync()) {
-        __crossdartJson = JSON.decode(crossdartFile.readAsStringSync())
-            as Map<String, Map<String, List<Map<String, dynamic>>>>;
-      } else {
-        __crossdartJson = {};
-      }
-    } else {
-      __crossdartJson = {};
-    }
-  }
-  return __crossdartJson;
-}
-
 abstract class SourceCodeMixin {
   String _sourceCodeCache;
   String get crossdartHtmlTag {
@@ -1991,10 +1990,6 @@ abstract class SourceCodeMixin {
   bool get hasSourceCode => config.includeSource && sourceCode.isNotEmpty;
 
   Library get library;
-
-  void clearSourceCodeCache() {
-    _sourceCodeCache = null;
-  }
 
   String get sourceCode {
     if (_sourceCodeCache == null) {
@@ -2032,31 +2027,10 @@ abstract class SourceCodeMixin {
     return _sourceCodeCache;
   }
 
-  String get _crossdartUrl {
-    if (_lineNumber != null && _crossdartPath != null) {
-      String url = "//www.crossdart.info/p/${_crossdartPath}.html";
-      return "${url}#line-${_lineNumber}";
-    } else {
-      return null;
-    }
-  }
-
-  int get _lineNumber {
-    var node = element.computeNode();
-    if (node is Declaration && node.element != null) {
-      var element = node.element;
-      var lineNumber = lineNumberCache.lineNumber(
-          element.source.fullName, element.nameOffset);
-      return lineNumber + 1;
-    } else {
-      return null;
-    }
-  }
-
   String get _crossdartPath {
     var node = element.computeNode();
-    if (node is Declaration && node.element != null) {
-      var source = (node.element.source as FileBasedSource);
+    if (node is Declaration && (node as Declaration).element != null) {
+      var source = ((node as Declaration).element.source as FileBasedSource);
       var file = source.file.toString();
       var uri = source.uri.toString();
       var packageMeta = library.package.packageMeta;
@@ -2090,6 +2064,31 @@ abstract class SourceCodeMixin {
     } else {
       return null;
     }
+  }
+
+  String get _crossdartUrl {
+    if (_lineNumber != null && _crossdartPath != null) {
+      String url = "//www.crossdart.info/p/${_crossdartPath}.html";
+      return "${url}#line-${_lineNumber}";
+    } else {
+      return null;
+    }
+  }
+
+  int get _lineNumber {
+    var node = element.computeNode();
+    if (node is Declaration && (node as Declaration).element != null) {
+      var element = (node as Declaration).element;
+      var lineNumber = lineNumberCache.lineNumber(
+          element.source.fullName, element.nameOffset);
+      return lineNumber + 1;
+    } else {
+      return null;
+    }
+  }
+
+  void clearSourceCodeCache() {
+    _sourceCodeCache = null;
   }
 }
 
