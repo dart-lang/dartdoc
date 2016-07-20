@@ -261,7 +261,7 @@ class DartDoc {
               new _Error(error, info.lineInfo, packageMeta.dir.path));
         })
         .where((_Error error) => error.isError)
-        .toList()..sort();
+        .toList() as List<_Error>..sort();
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print("Parsed ${libraries.length} "
@@ -299,7 +299,7 @@ class DartDocResults {
   DartDocResults(this.packageMeta, this.package, this.outDir);
 }
 
-class _Error implements Comparable {
+class _Error implements Comparable<_Error> {
   final AnalysisError error;
   final LineInfo lineInfo;
   final String projectPath;
