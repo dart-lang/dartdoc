@@ -592,7 +592,7 @@ void main() {
     });
 
     test('inherited methods,including from Object ', () {
-      expect(B.inheritedMethods, hasLength(6));
+      expect(B.inheritedMethods, hasLength(7));
       expect(B.hasInheritedMethods, isTrue);
     });
 
@@ -632,10 +632,11 @@ void main() {
     });
 
     test('F has many inherited methods', () {
-      expect(F.inheritedMethods, hasLength(7));
+      expect(F.inheritedMethods, hasLength(8));
       expect(
           F.inheritedMethods.map((im) => im.name),
           equals([
+            'abstractMethod',
             'foo',
             'getClassA',
             'noSuchMethod',
@@ -821,8 +822,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Method', () {
-    Class classB, klass, HasGenerics, CatString;
-    Method m1, isGreaterThan, m4, m5, m6, m7, convertToMap;
+    Class classB, klass, HasGenerics, Cat, CatString;
+    Method m1, isGreaterThan, m4, m5, m6, m7, convertToMap, abstractMethod;
     Method inheritedClear, testGeneric;
 
     setUp(() {
@@ -831,6 +832,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       HasGenerics =
           fakeLibrary.classes.singleWhere((c) => c.name == 'HasGenerics');
       CatString = exLibrary.classes.singleWhere((c) => c.name == 'CatString');
+      Cat = exLibrary.classes.singleWhere((c) => c.name == 'Cat');
       inheritedClear =
           CatString.inheritedMethods.singleWhere((m) => m.name == 'clear');
       m1 = classB.instanceMethods.singleWhere((m) => m.name == 'm1');
@@ -842,6 +844,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       m5 = klass.instanceMethods.singleWhere((m) => m.name == 'another');
       m6 = klass.instanceMethods.singleWhere((m) => m.name == 'toString');
       m7 = classB.instanceMethods.singleWhere((m) => m.name == 'doNothing');
+      abstractMethod =
+          Cat.instanceMethods.singleWhere((m) => m.name == 'abstractMethod');
       testGeneric = exLibrary.classes
           .singleWhere((c) => c.name == 'Dog')
           .instanceMethods
@@ -859,6 +863,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has a fully qualified name', () {
       expect(m1.fullyQualifiedName, 'ex.B.m1');
+    });
+
+    test('has abstract kind', () {
+      expect(abstractMethod.fullkind, 'abstract method');
     });
 
     test(

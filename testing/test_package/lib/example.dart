@@ -16,12 +16,6 @@ const String COLOR_GREEN = 'green';
 
 const String COLOR_ORANGE = 'orange';
 
-const List<String> PRETTY_COLORS = const <String>[
-  COLOR_GREEN,
-  COLOR_ORANGE,
-  'blue'
-];
-
 const String COMPLEX_COLOR = 'red' + '-' + 'green' + '-' + 'blue';
 
 /// top level var <nodoc>
@@ -32,7 +26,13 @@ const incorrectDocReference = 'same name as const from fake';
 
 /// This should [not work].
 const incorrectDocReferenceFromEx = 'doh';
+
 const ConstantCat MY_CAT = const ConstantCat('tabby');
+const List<String> PRETTY_COLORS = const <String>[
+  COLOR_GREEN,
+  COLOR_ORANGE,
+  'blue'
+];
 @deprecated
 int deprecatedField;
 
@@ -165,6 +165,8 @@ class B extends Apple with Cat {
 
 abstract class Cat {
   bool get isImplemented;
+
+  void abstractMethod();
 }
 
 class CatString extends StringBuffer {}
@@ -175,6 +177,10 @@ class ConstantCat implements Cat {
   const ConstantCat(this.name);
 
   bool get isImplemented => true;
+
+  void abstractMethod() {
+    // do nothing
+  }
 }
 
 /// implements [Cat], [E]
