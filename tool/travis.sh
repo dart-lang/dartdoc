@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Copyright (c) 2014, Google Inc. Please see the AUTHORS file for details.
-# All rights reserved. Use of this source code is governed by a BSD-style
-# license that can be found in the LICENSE file.
+# Copyright (c) 2015, the Dart project authors.  Please see the AUTHORS file
+# for details. All rights reserved. Use of this source code is governed by a
+# BSD-style license that can be found in the LICENSE file.
 
 # Fast fail the script on failures.
 set -e
@@ -16,7 +16,7 @@ export PATH="$PATH":"~/.pub-cache/bin"
 
 if [ "$GEN_SDK_DOCS" = "true" ]
 then
- # Build the SDK docs
+  # Build the SDK docs
   # silence stdout but echo stderr
   echo ""
   echo "Building and validating SDK docs..."
