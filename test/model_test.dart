@@ -11,8 +11,8 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:test/test.dart';
 import 'package:path/path.dart' as p;
+import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
 

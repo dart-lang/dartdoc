@@ -6,14 +6,14 @@ library dartdoc.bin;
 
 import 'dart:io';
 
+import 'package:analyzer/src/generated/java_io.dart';
+import 'package:analyzer/src/generated/sdk.dart';
+import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:args/args.dart';
 import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/dartdoc.dart';
 import 'package:path/path.dart' as path;
 import 'package:stack_trace/stack_trace.dart';
-import 'package:analyzer/src/generated/sdk.dart';
-import 'package:analyzer/src/generated/sdk_io.dart';
-import 'package:analyzer/src/generated/java_io.dart';
 
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.

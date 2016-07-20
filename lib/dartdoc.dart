@@ -25,6 +25,7 @@ import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:path/path.dart' as p;
 
+import 'src/config.dart';
 import 'src/generator.dart';
 import 'src/html/html_generator.dart';
 import 'src/io_utils.dart';
@@ -32,7 +33,6 @@ import 'src/model.dart';
 import 'src/model_utils.dart';
 import 'src/package_meta.dart';
 
-import 'src/config.dart';
 export 'src/element_type.dart';
 export 'src/generator.dart';
 export 'src/model.dart';
