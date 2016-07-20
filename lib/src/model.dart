@@ -28,7 +28,26 @@ import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
 import 'utils.dart' show stripComments;
 
+Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
+
 final Map<Class, List<Class>> _implementors = new Map();
+
+Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
+  if (__crossdartJson == null) {
+    if (config != null) {
+      var crossdartFile =
+          new File(p.join(config.inputDir.path, "crossdart.json"));
+      if (crossdartFile.existsSync()) {
+        __crossdartJson = JSON.decode(crossdartFile.readAsStringSync());
+      } else {
+        __crossdartJson = {};
+      }
+    } else {
+      __crossdartJson = {};
+    }
+  }
+  return __crossdartJson;
+}
 
 int byName(Nameable a, Nameable b) =>
     compareAsciiLowerCaseNatural(a.name, b.name);
@@ -666,7 +685,6 @@ abstract class Documentable {
   String get oneLineDoc;
 }
 
-// TODO: how do we get rid of this class?
 class Dynamic extends ModelElement {
   Dynamic(Element element, Library library) : super(element, library);
 
@@ -1218,6 +1236,11 @@ class Method extends ModelElement
 
   String get fileName => "${name}.html";
 
+  String get fullkind {
+    if (_method.isAbstract) return 'abstract $kind';
+    return kind;
+  }
+
   @override
   String get href => '${library.dirName}/${enclosingElement.name}/${fileName}';
 
@@ -1249,7 +1272,6 @@ class Method extends ModelElement
   MethodElement get _method => (element as MethodElement);
 }
 
-// TODO: rename this to Property
 abstract class ModelElement implements Comparable, Nameable, Documentable {
   final Element element;
   final Library library;
@@ -1953,24 +1975,6 @@ class Parameter extends ModelElement implements EnclosedElement {
   String toString() => element.name;
 }
 
-Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
-Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
-  if (__crossdartJson == null) {
-    if (config != null) {
-      var crossdartFile =
-          new File(p.join(config.inputDir.path, "crossdart.json"));
-      if (crossdartFile.existsSync()) {
-        __crossdartJson = JSON.decode(crossdartFile.readAsStringSync());
-      } else {
-        __crossdartJson = {};
-      }
-    } else {
-      __crossdartJson = {};
-    }
-  }
-  return __crossdartJson;
-}
-
 abstract class SourceCodeMixin {
   String _sourceCodeCache;
   String get crossdartHtmlTag {
@@ -1986,10 +1990,6 @@ abstract class SourceCodeMixin {
   bool get hasSourceCode => config.includeSource && sourceCode.isNotEmpty;
 
   Library get library;
-
-  void clearSourceCodeCache() {
-    _sourceCodeCache = null;
-  }
 
   String get sourceCode {
     if (_sourceCodeCache == null) {
@@ -2025,27 +2025,6 @@ abstract class SourceCodeMixin {
     }
 
     return _sourceCodeCache;
-  }
-
-  String get _crossdartUrl {
-    if (_lineNumber != null && _crossdartPath != null) {
-      String url = "//www.crossdart.info/p/${_crossdartPath}.html";
-      return "${url}#line-${_lineNumber}";
-    } else {
-      return null;
-    }
-  }
-
-  int get _lineNumber {
-    var node = element.computeNode();
-    if (node is Declaration && (node as Declaration).element != null) {
-      var element = (node as Declaration).element;
-      var lineNumber = lineNumberCache.lineNumber(
-          element.source.fullName, element.nameOffset);
-      return lineNumber + 1;
-    } else {
-      return null;
-    }
   }
 
   String get _crossdartPath {
@@ -2085,6 +2064,31 @@ abstract class SourceCodeMixin {
     } else {
       return null;
     }
+  }
+
+  String get _crossdartUrl {
+    if (_lineNumber != null && _crossdartPath != null) {
+      String url = "//www.crossdart.info/p/${_crossdartPath}.html";
+      return "${url}#line-${_lineNumber}";
+    } else {
+      return null;
+    }
+  }
+
+  int get _lineNumber {
+    var node = element.computeNode();
+    if (node is Declaration && (node as Declaration).element != null) {
+      var element = (node as Declaration).element;
+      var lineNumber = lineNumberCache.lineNumber(
+          element.source.fullName, element.nameOffset);
+      return lineNumber + 1;
+    } else {
+      return null;
+    }
+  }
+
+  void clearSourceCodeCache() {
+    _sourceCodeCache = null;
   }
 }
 
