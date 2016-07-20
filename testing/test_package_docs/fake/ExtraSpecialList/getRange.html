@@ -160,7 +160,7 @@
 of the call to this method. The returned <code>Iterable</code> behaves like
 <code>skip(start).take(end - start)</code>. That is, it does not throw exceptions
 if <code>this</code> changes size.</p>
-<pre class="prettyprint lang-dart"><code>List&lt;String&gt; colors = ['red', 'green', 'blue', 'orange', 'pink'];
+<pre class="prettyprint language-dart"><code>List&lt;String&gt; colors = ['red', 'green', 'blue', 'orange', 'pink'];
 Iterable&lt;String&gt; range = colors.getRange(1, 4);
 range.join(', ');  // 'green, blue, orange'
 colors.length = 3;

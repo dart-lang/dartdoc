@@ -192,13 +192,10 @@ class Documentation {
       //   See https://github.com/dart-lang/markdown/commit/a7bf3dd
       e.classes.add('prettyprint');
 
-      // only "assume" the user intended dart if there are no other classes
-      // present
-      // TODO(kevmoo): This should be `language-dart`.
-      //   Waiting on pkg/markdown v0.10
-      //   See https://github.com/dart-lang/markdown/commit/a7bf3dd
+      // Only "assume" the user intended dart if there are no other classes
+      // present.
       if (e.classes.length == 1) {
-        e.classes.add('lang-dart');
+        e.classes.add('language-dart');
       }
     }
     var asHtml = asHtmlDocument.body.innerHtml;

@@ -401,7 +401,7 @@ void main() {
     test('no references', () {
       expect(
           Apple.documentationAsHtml,
-          '<p>Sample class <code>String</code></p><pre class="prettyprint lang-dart">  A\n'
+          '<p>Sample class <code>String</code></p><pre class="prettyprint language-dart">  A\n'
           '   B\n'
           '</pre>');
     });
