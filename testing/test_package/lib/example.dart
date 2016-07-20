@@ -50,7 +50,17 @@ int function1(String s, bool b, lastParam) => 5;
 
 typedef String processMessage<T>(String msg);
 
-enum Animal { CAT, DOG, HORSE }
+enum Animal {
+  /// Single line docs.
+  CAT,
+
+  /// Multi line docs.
+  ///
+  /// [Dog] needs lots of docs.
+  DOG,
+
+  HORSE
+}
 
 /**
  * Sample class [String]
