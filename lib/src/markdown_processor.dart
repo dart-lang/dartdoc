@@ -58,8 +58,8 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
     }
     var node = modelElement.element.computeNode().parent.parent;
     if (node is AnnotatedNode) {
-      if ((node as AnnotatedNode).documentationComment != null) {
-        return (node as AnnotatedNode).documentationComment.references;
+      if (node.documentationComment != null) {
+        return node.documentationComment.references;
       }
     }
   }

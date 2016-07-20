@@ -124,7 +124,7 @@ Future<List<String>> _packageUrls(int page) {
   return http
       .get('https://pub.dartlang.org/packages.json?page=${page}')
       .then((response) {
-    return JSON.decode(response.body)['packages'];
+    return JSON.decode(response.body)['packages'] as List<String>;
   });
 }
 
@@ -133,8 +133,9 @@ Future<List<PackageInfo>> _getPackageInfos(List<String> packageUrls) {
     return http.get(p).then((response) {
       var json = JSON.decode(response.body);
       String name = json['name'];
-      List<Version> versions =
-          json['versions'].map((v) => new Version.parse(v)).toList();
+      List<Version> versions = json['versions']
+          .map((v) => new Version.parse(v))
+          .toList() as List<Version>;
       return new PackageInfo(name, Version.primary(versions));
     });
   }).toList();

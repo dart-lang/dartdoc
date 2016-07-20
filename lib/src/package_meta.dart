@@ -124,7 +124,7 @@ class _FilePackageMeta extends PackageMeta {
   /// empty list if no reasons found.
   @override
   List<String> getInvalidReasons() {
-    var reasons = [];
+    List<String> reasons = <String>[];
     if (_pubspec == null || _pubspec.isEmpty) {
       reasons.add('No pubspec.yaml found');
     } else if (!_pubspec.containsKey('name')) {

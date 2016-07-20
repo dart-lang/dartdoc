@@ -67,19 +67,21 @@ main(List<String> arguments) async {
     exit(1);
   }
 
-  List<String> excludeLibraries = args['exclude'];
-  List<String> includeLibraries = args['include'];
-  List<String> includeExternals = args['include-external'];
+  List<String> excludeLibraries = args['exclude'] as List<String>;
+  List<String> includeLibraries = args['include'] as List<String>;
+  List<String> includeExternals = args['include-external'] as List<String>;
 
   String url = args['hosted-url'];
-  List<String> footerFilePaths = args['footer'].map(_resolveTildePath).toList();
+  List<String> footerFilePaths =
+      args['footer'].map(_resolveTildePath).toList() as List<String>;
   for (String footerFilePath in footerFilePaths) {
     if (!new File(footerFilePath).existsSync()) {
       print("Error: unable to locate footer file: ${footerFilePath}.");
       exit(1);
     }
   }
-  List<String> headerFilePaths = args['header'].map(_resolveTildePath).toList();
+  List<String> headerFilePaths =
+      args['header'].map(_resolveTildePath).toList() as List<String>;
   for (String headerFilePath in footerFilePaths) {
     if (!new File(headerFilePath).existsSync()) {
       print("Error: unable to locate header file: ${headerFilePath}.");
