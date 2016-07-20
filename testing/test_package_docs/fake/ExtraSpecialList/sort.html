@@ -155,14 +155,14 @@
     <section class="desc markdown">
       <p>Sorts this list according to the order specified by the <code>compare</code> function.</p>
 <p>The <code>compare</code> function must act as a <code>Comparator</code>.</p>
-<pre class="prettyprint lang-dart"><code>List&lt;String&gt; numbers = ['two', 'three', 'four'];
+<pre class="prettyprint language-dart"><code>List&lt;String&gt; numbers = ['two', 'three', 'four'];
 // Sort from shortest to longest.
 numbers.sort((a, b) =&gt; a.length.compareTo(b.length));
 print(numbers);  // [two, four, three]
 </code></pre>
 <p>The default List implementations use <code>Comparable.compare</code> if
 <code>compare</code> is omitted.</p>
-<pre class="prettyprint lang-dart"><code>List&lt;int&gt; nums = [13, 2, -11];
+<pre class="prettyprint language-dart"><code>List&lt;int&gt; nums = [13, 2, -11];
 nums.sort();
 print(nums);  // [-11, 2, 13]
 </code></pre>
@@ -170,7 +170,7 @@ print(nums);  // [-11, 2, 13]
 are distinct objects.
 The sort function is not guaranteed to be stable, so distinct objects
 that compare as equal may occur in any order in the result:</p>
-<pre class="prettyprint lang-dart"><code>List&lt;String&gt; numbers = ['one', 'two', 'three', 'four'];
+<pre class="prettyprint language-dart"><code>List&lt;String&gt; numbers = ['one', 'two', 'three', 'four'];
 numbers.sort((a, b) =&gt; a.length.compareTo(b.length));
 print(numbers);  // [one, two, four, three] OR [two, one, four, three]
 </code></pre>

@@ -160,14 +160,14 @@ If it has only one element, that element is returned.</p>
 <p>Otherwise this method starts with the first element from the iterator,
 and then combines it with the remaining elements in iteration order,
 as if by:</p>
-<pre class="prettyprint lang-dart"><code>E value = iterable.first;
+<pre class="prettyprint language-dart"><code>E value = iterable.first;
 iterable.skip(1).forEach((element) {
   value = combine(value, element);
 });
 return value;
 </code></pre>
 <p>Example of calculating the sum of an iterable:</p>
-<pre class="prettyprint lang-dart"><code>iterable.reduce((value, element) =&gt; value + element);
+<pre class="prettyprint language-dart"><code>iterable.reduce((value, element) =&gt; value + element);
 </code></pre>
     </section>
     
