@@ -81,7 +81,9 @@ void _addToImplementors(Class c) {
 }
 
 /// Getters and setters.
-class Accessor extends ModelElement implements EnclosedElement {
+class Accessor extends ModelElement
+    with SourceCodeMixin
+    implements EnclosedElement {
   Accessor(PropertyAccessorElement element, Library library)
       : super(element, library);
 
@@ -2209,7 +2211,9 @@ class TopLevelVariable extends ModelElement
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 }
 
-class Typedef extends ModelElement implements EnclosedElement {
+class Typedef extends ModelElement
+    with SourceCodeMixin
+    implements EnclosedElement {
   Typedef(FunctionTypeAliasElement element, Library library)
       : super(element, library) {
     if (element.type != null) {

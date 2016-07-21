@@ -570,6 +570,11 @@ void main() {
       expect(Apple.staticProperties, hasLength(1));
     });
 
+    test('constructors have source', () {
+      Constructor ctor = Dog.constructors.first;
+      expect(ctor.sourceCode, isNotEmpty);
+    });
+
     test('get constants', () {
       expect(Apple.constants, hasLength(1));
     });
