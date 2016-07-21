@@ -169,11 +169,11 @@ Map<String, String> _parseOutput(
 
     if (type == 'A') {
       expect(p.isWithin(tempPath, path), isTrue,
-          reason: '`${path}` should be within ${tempPath}');
+          reason: '`$path` should be within $tempPath');
       path = p.relative(path, from: tempPath);
     } else {
       expect(p.isWithin(sourcePath, path), isTrue,
-          reason: '`${path}` should be within ${sourcePath}');
+          reason: '`$path` should be within $sourcePath');
       path = p.relative(path, from: sourcePath);
     }
 

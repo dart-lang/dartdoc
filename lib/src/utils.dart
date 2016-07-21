@@ -17,7 +17,7 @@ String stripComments(String str) {
       } else if (line.startsWith('///')) {
         buf.write('${line.substring(3)}\n');
       } else {
-        buf.write('${line}\n');
+        buf.write('$line\n');
       }
     }
   } else {
