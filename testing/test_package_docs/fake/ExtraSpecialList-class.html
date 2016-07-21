@@ -83,6 +83,7 @@
       <li><a href="fake/NAME_SINGLEUNDERSCORE-constant.html">NAME_SINGLEUNDERSCORE</a></li>
       <li><a href="fake/NAME_WITH_TWO_UNDERSCORES-constant.html">NAME_WITH_TWO_UNDERSCORES</a></li>
       <li><a href="fake/PI-constant.html">PI</a></li>
+      <li><a href="fake/required-constant.html">required</a></li>
       <li><a href="fake/testingCodeSyntaxInOneLiners-constant.html">testingCodeSyntaxInOneLiners</a></li>
       <li><a href="fake/UP-constant.html">UP</a></li>
       <li><a href="fake/ZERO-constant.html">ZERO</a></li>
@@ -108,6 +109,8 @@
       <li><a href="fake/addCallback2.html">addCallback2</a></li>
       <li><a href="fake/functionWithFunctionParameters.html">functionWithFunctionParameters</a></li>
       <li><a href="fake/onlyPositionalWithNoDefaultNoType.html">onlyPositionalWithNoDefaultNoType</a></li>
+      <li><a href="fake/paintImage1.html">paintImage1</a></li>
+      <li><a href="fake/paintImage2.html">paintImage2</a></li>
       <li><a href="fake/paramFromAnotherLib.html">paramFromAnotherLib</a></li>
       <li><a href="fake/short.html">short</a></li>
       <li><a href="fake/soIntense.html">soIntense</a></li>
@@ -310,7 +313,7 @@
           <div class="features">inherited</div>
         </dd>
         <dt id="operator []=" class="callable inherited">
-          <span class="name"><a href="fake/SpecialList/operator_put.html">operator []=</a></span><span class="signature">(<wbr><span class="parameter" id="[]=-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span></span>, <span class="parameter" id="[]=-param-value"><span class="parameter-name">value</span></span>)
+          <span class="name"><a href="fake/SpecialList/operator_put.html">operator []=</a></span><span class="signature">(<wbr><span class="parameter" id="[]=-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span>, </span> <span class="parameter" id="[]=-param-value"><span class="parameter-name">value</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -408,7 +411,7 @@ the length of the list becomes zero.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="fillRange" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/fillRange.html">fillRange</a></span><span class="signature">(<wbr><span class="parameter" id="fillRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span></span>, <span class="parameter" id="fillRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span></span>, [<span class="parameter" id="fillRange-param-fill"><span class="parameter-name">fill</span></span>])
+          <span class="name"><a href="fake/ExtraSpecialList/fillRange.html">fillRange</a></span><span class="signature">(<wbr><span class="parameter" id="fillRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span>, </span> <span class="parameter" id="fillRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span>, [</span> <span class="parameter" id="fillRange-param-fill"><span class="parameter-name">fill</span></span> ])
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -418,7 +421,7 @@ to the given <code>fillValue</code>.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="firstWhere" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/firstWhere.html">firstWhere</a></span><span class="signature">(<wbr><span class="parameter" id="firstWhere-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>, {<span class="parameter" id="firstWhere-param-orElse"><span class="type-annotation">dynamic</span> <span class="parameter-name">orElse</span>()</span>})
+          <span class="name"><a href="fake/ExtraSpecialList/firstWhere.html">firstWhere</a></span><span class="signature">(<wbr><span class="parameter" id="firstWhere-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>), {</span> <span class="parameter" id="firstWhere-param-orElse"><span class="type-annotation">dynamic</span> <span class="parameter-name">orElse</span>()</span> })
             <span class="returntype parameter">&#8594; dynamic</span>
           </span>
         </dt>
@@ -427,7 +430,7 @@ to the given <code>fillValue</code>.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="fold" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/fold.html">fold</a></span><span class="signature">(<wbr><span class="parameter" id="fold-param-initialValue"><span class="parameter-name">initialValue</span></span>, <span class="parameter" id="fold-param-combine"><span class="type-annotation">dynamic</span> <span class="parameter-name">combine</span>(<span class="parameter" id="combine-param-previousValue"><span class="parameter-name">previousValue</span></span>, <span class="parameter" id="combine-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>)
+          <span class="name"><a href="fake/ExtraSpecialList/fold.html">fold</a></span><span class="signature">(<wbr><span class="parameter" id="fold-param-initialValue"><span class="parameter-name">initialValue</span>, </span> <span class="parameter" id="fold-param-combine"><span class="type-annotation">dynamic</span> <span class="parameter-name">combine</span>(<span class="parameter" id="combine-param-previousValue"><span class="parameter-name">previousValue</span>, </span> <span class="parameter" id="combine-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>)
             <span class="returntype parameter">&#8594; dynamic</span>
           </span>
         </dt>
@@ -447,7 +450,7 @@ order.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="getRange" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/getRange.html">getRange</a></span><span class="signature">(<wbr><span class="parameter" id="getRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span></span>, <span class="parameter" id="getRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span></span>)
+          <span class="name"><a href="fake/ExtraSpecialList/getRange.html">getRange</a></span><span class="signature">(<wbr><span class="parameter" id="getRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span>, </span> <span class="parameter" id="getRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span></span>)
             <span class="returntype parameter">&#8594; Iterable</span>
           </span>
         </dt>
@@ -457,7 +460,7 @@ order.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="indexOf" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/indexOf.html">indexOf</a></span><span class="signature">(<wbr><span class="parameter" id="indexOf-param-element"><span class="type-annotation">Object</span> <span class="parameter-name">element</span></span>, [<span class="parameter" id="indexOf-param-startIndex"><span class="type-annotation">int</span> <span class="parameter-name">startIndex</span> = <span class="default-value">0</span></span>])
+          <span class="name"><a href="fake/ExtraSpecialList/indexOf.html">indexOf</a></span><span class="signature">(<wbr><span class="parameter" id="indexOf-param-element"><span class="type-annotation">Object</span> <span class="parameter-name">element</span>, [</span> <span class="parameter" id="indexOf-param-startIndex"><span class="type-annotation">int</span> <span class="parameter-name">startIndex</span> = <span class="default-value">0</span></span> ])
             <span class="returntype parameter">&#8594; int</span>
           </span>
         </dt>
@@ -466,7 +469,7 @@ order.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="insert" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/insert.html">insert</a></span><span class="signature">(<wbr><span class="parameter" id="insert-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span></span>, <span class="parameter" id="insert-param-element"><span class="parameter-name">element</span></span>)
+          <span class="name"><a href="fake/ExtraSpecialList/insert.html">insert</a></span><span class="signature">(<wbr><span class="parameter" id="insert-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span>, </span> <span class="parameter" id="insert-param-element"><span class="parameter-name">element</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -475,7 +478,7 @@ order.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="insertAll" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/insertAll.html">insertAll</a></span><span class="signature">(<wbr><span class="parameter" id="insertAll-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span></span>, <span class="parameter" id="insertAll-param-iterable"><span class="type-annotation">Iterable</span> <span class="parameter-name">iterable</span></span>)
+          <span class="name"><a href="fake/ExtraSpecialList/insertAll.html">insertAll</a></span><span class="signature">(<wbr><span class="parameter" id="insertAll-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span>, </span> <span class="parameter" id="insertAll-param-iterable"><span class="type-annotation">Iterable</span> <span class="parameter-name">iterable</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -484,7 +487,7 @@ order.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="join" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/join.html">join</a></span><span class="signature">(<wbr>[<span class="parameter" id="join-param-separator"><span class="type-annotation">String</span> <span class="parameter-name">separator</span> = <span class="default-value">""</span></span>])
+          <span class="name"><a href="fake/ExtraSpecialList/join.html">join</a></span><span class="signature">(<wbr>[<span class="parameter" id="join-param-separator"><span class="type-annotation">String</span> <span class="parameter-name">separator</span> = <span class="default-value">""</span></span> ])
             <span class="returntype parameter">&#8594; String</span>
           </span>
         </dt>
@@ -493,7 +496,7 @@ order.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="lastIndexOf" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/lastIndexOf.html">lastIndexOf</a></span><span class="signature">(<wbr><span class="parameter" id="lastIndexOf-param-element"><span class="type-annotation">Object</span> <span class="parameter-name">element</span></span>, [<span class="parameter" id="lastIndexOf-param-startIndex"><span class="type-annotation">int</span> <span class="parameter-name">startIndex</span></span>])
+          <span class="name"><a href="fake/ExtraSpecialList/lastIndexOf.html">lastIndexOf</a></span><span class="signature">(<wbr><span class="parameter" id="lastIndexOf-param-element"><span class="type-annotation">Object</span> <span class="parameter-name">element</span>, [</span> <span class="parameter" id="lastIndexOf-param-startIndex"><span class="type-annotation">int</span> <span class="parameter-name">startIndex</span></span> ])
             <span class="returntype parameter">&#8594; int</span>
           </span>
         </dt>
@@ -504,7 +507,7 @@ Returns -1 if <code>element</code> is not found.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="lastWhere" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/lastWhere.html">lastWhere</a></span><span class="signature">(<wbr><span class="parameter" id="lastWhere-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>, {<span class="parameter" id="lastWhere-param-orElse"><span class="type-annotation">dynamic</span> <span class="parameter-name">orElse</span>()</span>})
+          <span class="name"><a href="fake/ExtraSpecialList/lastWhere.html">lastWhere</a></span><span class="signature">(<wbr><span class="parameter" id="lastWhere-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>), {</span> <span class="parameter" id="lastWhere-param-orElse"><span class="type-annotation">dynamic</span> <span class="parameter-name">orElse</span>()</span> })
             <span class="returntype parameter">&#8594; dynamic</span>
           </span>
         </dt>
@@ -532,7 +535,7 @@ calling <code>f</code> on each element of this <code>Iterable</code> in iteratio
           <div class="features">inherited</div>
         </dd>
         <dt id="reduce" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/reduce.html">reduce</a></span><span class="signature">(<wbr><span class="parameter" id="reduce-param-combine"><span class="type-annotation">dynamic</span> <span class="parameter-name">combine</span>(<span class="parameter" id="combine-param-previousValue"><span class="type-annotation">E</span> <span class="parameter-name">previousValue</span></span>, <span class="parameter" id="combine-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>)
+          <span class="name"><a href="fake/ExtraSpecialList/reduce.html">reduce</a></span><span class="signature">(<wbr><span class="parameter" id="reduce-param-combine"><span class="type-annotation">dynamic</span> <span class="parameter-name">combine</span>(<span class="parameter" id="combine-param-previousValue"><span class="type-annotation">E</span> <span class="parameter-name">previousValue</span>, </span> <span class="parameter" id="combine-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>)
             <span class="returntype parameter">&#8594; dynamic</span>
           </span>
         </dt>
@@ -569,7 +572,7 @@ of the collection using the provided function.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="removeRange" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/removeRange.html">removeRange</a></span><span class="signature">(<wbr><span class="parameter" id="removeRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span></span>, <span class="parameter" id="removeRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span></span>)
+          <span class="name"><a href="fake/ExtraSpecialList/removeRange.html">removeRange</a></span><span class="signature">(<wbr><span class="parameter" id="removeRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span>, </span> <span class="parameter" id="removeRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -587,7 +590,7 @@ of the collection using the provided function.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="replaceRange" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/replaceRange.html">replaceRange</a></span><span class="signature">(<wbr><span class="parameter" id="replaceRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span></span>, <span class="parameter" id="replaceRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span></span>, <span class="parameter" id="replaceRange-param-newContents"><span class="type-annotation">Iterable</span> <span class="parameter-name">newContents</span></span>)
+          <span class="name"><a href="fake/ExtraSpecialList/replaceRange.html">replaceRange</a></span><span class="signature">(<wbr><span class="parameter" id="replaceRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span>, </span> <span class="parameter" id="replaceRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span>, </span> <span class="parameter" id="replaceRange-param-newContents"><span class="type-annotation">Iterable</span> <span class="parameter-name">newContents</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -606,7 +609,7 @@ and inserts the contents of <code>replacement</code> in its place.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="setAll" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/setAll.html">setAll</a></span><span class="signature">(<wbr><span class="parameter" id="setAll-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span></span>, <span class="parameter" id="setAll-param-iterable"><span class="type-annotation">Iterable</span> <span class="parameter-name">iterable</span></span>)
+          <span class="name"><a href="fake/ExtraSpecialList/setAll.html">setAll</a></span><span class="signature">(<wbr><span class="parameter" id="setAll-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span>, </span> <span class="parameter" id="setAll-param-iterable"><span class="type-annotation">Iterable</span> <span class="parameter-name">iterable</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -616,7 +619,7 @@ at position <code>index</code> in this list.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="setRange" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/setRange.html">setRange</a></span><span class="signature">(<wbr><span class="parameter" id="setRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span></span>, <span class="parameter" id="setRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span></span>, <span class="parameter" id="setRange-param-iterable"><span class="type-annotation">Iterable</span> <span class="parameter-name">iterable</span></span>, [<span class="parameter" id="setRange-param-skipCount"><span class="type-annotation">int</span> <span class="parameter-name">skipCount</span> = <span class="default-value">0</span></span>])
+          <span class="name"><a href="fake/ExtraSpecialList/setRange.html">setRange</a></span><span class="signature">(<wbr><span class="parameter" id="setRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span>, </span> <span class="parameter" id="setRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span>, </span> <span class="parameter" id="setRange-param-iterable"><span class="type-annotation">Iterable</span> <span class="parameter-name">iterable</span>, [</span> <span class="parameter" id="setRange-param-skipCount"><span class="type-annotation">int</span> <span class="parameter-name">skipCount</span> = <span class="default-value">0</span></span> ])
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -626,7 +629,7 @@ into the range <code>start</code>, inclusive, to <code>end</code>, exclusive, of
           <div class="features">inherited</div>
         </dd>
         <dt id="shuffle" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/shuffle.html">shuffle</a></span><span class="signature">(<wbr>[<span class="parameter" id="shuffle-param-random"><span class="type-annotation">Random</span> <span class="parameter-name">random</span></span>])
+          <span class="name"><a href="fake/ExtraSpecialList/shuffle.html">shuffle</a></span><span class="signature">(<wbr>[<span class="parameter" id="shuffle-param-random"><span class="type-annotation">Random</span> <span class="parameter-name">random</span></span> ])
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -662,7 +665,7 @@ into the range <code>start</code>, inclusive, to <code>end</code>, exclusive, of
           <div class="features">inherited</div>
         </dd>
         <dt id="sort" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/sort.html">sort</a></span><span class="signature">(<wbr>[<span class="parameter" id="sort-param-compare"><span class="type-annotation">int</span> <span class="parameter-name">compare</span>(<span class="parameter" id="compare-param-a"><span class="type-annotation">E</span> <span class="parameter-name">a</span></span>, <span class="parameter" id="compare-param-b"><span class="type-annotation">E</span> <span class="parameter-name">b</span></span>)</span>])
+          <span class="name"><a href="fake/ExtraSpecialList/sort.html">sort</a></span><span class="signature">(<wbr>[<span class="parameter" id="sort-param-compare"><span class="type-annotation">int</span> <span class="parameter-name">compare</span>(<span class="parameter" id="compare-param-a"><span class="type-annotation">E</span> <span class="parameter-name">a</span>, </span> <span class="parameter" id="compare-param-b"><span class="type-annotation">E</span> <span class="parameter-name">b</span></span>)</span> ])
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -671,7 +674,7 @@ into the range <code>start</code>, inclusive, to <code>end</code>, exclusive, of
           <div class="features">inherited</div>
         </dd>
         <dt id="sublist" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/sublist.html">sublist</a></span><span class="signature">(<wbr><span class="parameter" id="sublist-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span></span>, [<span class="parameter" id="sublist-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span></span>])
+          <span class="name"><a href="fake/ExtraSpecialList/sublist.html">sublist</a></span><span class="signature">(<wbr><span class="parameter" id="sublist-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span>, [</span> <span class="parameter" id="sublist-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span></span> ])
             <span class="returntype parameter">&#8594; List</span>
           </span>
         </dt>
@@ -699,7 +702,7 @@ exclusive.</p>
           <div class="features">inherited</div>
         </dd>
         <dt id="toList" class="callable inherited">
-          <span class="name"><a href="fake/ExtraSpecialList/toList.html">toList</a></span><span class="signature">(<wbr>{<span class="parameter" id="toList-param-growable"><span class="type-annotation">bool</span> <span class="parameter-name">growable</span>: <span class="default-value">true</span></span>})
+          <span class="name"><a href="fake/ExtraSpecialList/toList.html">toList</a></span><span class="signature">(<wbr>{<span class="parameter" id="toList-param-growable"><span class="type-annotation">bool</span> <span class="parameter-name">growable</span>: <span class="default-value">true</span></span> })
             <span class="returntype parameter">&#8594; List</span>
           </span>
         </dt>

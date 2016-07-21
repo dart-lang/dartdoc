@@ -875,12 +875,12 @@ class Field extends ModelElement
   void _setModelType() {
     if (hasGetter) {
       var t = _field.getter.returnType;
-      _modelType = new ElementType(t,
-          new ModelElement.from(t.element, package._getLibraryFor(t.element)));
+      _modelType = new ElementType(
+          t, new ModelElement.from(t.element, _findLibraryFor(t.element)));
     } else {
       var s = _field.setter.parameters.first.type;
-      _modelType = new ElementType(s,
-          new ModelElement.from(s.element, package._getLibraryFor(s.element)));
+      _modelType = new ElementType(
+          s, new ModelElement.from(s.element, _findLibraryFor(s.element)));
     }
   }
 }
@@ -1532,36 +1532,35 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   String linkedParams(
       {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
-    String renderParam(Parameter p) {
+
+    String renderParam(Parameter param, String suffix) {
       StringBuffer buf = new StringBuffer();
-      buf.write('<span class="parameter" id="${p.htmlId}">');
-      if (showMetadata && p.hasAnnotations) {
-        buf.write('<ol class="annotation-list">');
-        p.annotations.forEach((String annotation) {
-          buf.write('<li>$annotation</li>');
+      buf.write('<span class="parameter" id="${param.htmlId}">');
+      if (showMetadata && param.hasAnnotations) {
+        param.annotations.forEach((String annotation) {
+          buf.write('<span>@$annotation</span> ');
         });
-        buf.write('</ol> ');
       }
-      if (p.modelType.isFunctionType) {
+      if (param.modelType.isFunctionType) {
         var returnTypeName;
-        bool isTypedef = p.modelType.element is Typedef;
+        bool isTypedef = param.modelType.element is Typedef;
         if (isTypedef) {
-          returnTypeName = p.modelType.linkedName;
+          returnTypeName = param.modelType.linkedName;
         } else {
-          returnTypeName = p.modelType.createLinkedReturnTypeName();
+          returnTypeName = param.modelType.createLinkedReturnTypeName();
         }
         buf.write('<span class="type-annotation">${returnTypeName}</span>');
         if (showNames) {
-          buf.write(' <span class="parameter-name">${p.name}</span>');
+          buf.write(' <span class="parameter-name">${param.name}</span>');
         }
         if (!isTypedef) {
           buf.write('(');
-          buf.write(p.modelType.element
+          buf.write(param.modelType.element
               .linkedParams(showNames: showNames, showMetadata: showMetadata));
           buf.write(')');
         }
-      } else if (p.modelType != null && p.modelType.element != null) {
-        var mt = p.modelType;
+      } else if (param.modelType != null && param.modelType.element != null) {
+        var mt = param.modelType;
         String typeName = "";
         if (mt != null && !mt.isDynamic) {
           typeName = mt.linkedName;
@@ -1570,46 +1569,71 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
           buf.write('<span class="type-annotation">$typeName</span> ');
         }
         if (showNames) {
-          buf.write('<span class="parameter-name">${p.name}</span>');
+          buf.write('<span class="parameter-name">${param.name}</span>');
         }
       }
 
-      if (p.hasDefaultValue) {
-        if (p.isOptionalNamed) {
+      if (param.hasDefaultValue) {
+        if (param.isOptionalNamed) {
           buf.write(': ');
         } else {
           buf.write(' = ');
         }
-        buf.write('<span class="default-value">${p.defaultValue}</span>');
+        buf.write('<span class="default-value">${param.defaultValue}</span>');
       }
-      buf.write('</span>');
+      buf.write('${suffix}</span>');
       return buf.toString();
     }
 
-    String renderParams(Iterable<Parameter> params,
-        {String open: '', String close: ''}) {
-      return '$open${params.map(renderParam).join(separator)}$close';
+    List<Parameter> requiredParams =
+        parameters.where((Parameter p) => !p.isOptional).toList();
+    List<Parameter> positionalParams =
+        parameters.where((Parameter p) => p.isOptionalPositional).toList();
+    List<Parameter> namedParams =
+        parameters.where((Parameter p) => p.isOptionalNamed).toList();
+
+    StringBuffer builder = new StringBuffer();
+
+    // prefix
+    if (requiredParams.isEmpty && positionalParams.isNotEmpty) {
+      builder.write('[');
+    } else if (requiredParams.isEmpty && namedParams.isNotEmpty) {
+      builder.write('{');
     }
 
-    Iterable<Parameter> requiredParams =
-        parameters.where((Parameter p) => !p.isOptional);
-    Iterable<Parameter> positionalParams =
-        parameters.where((Parameter p) => p.isOptionalPositional);
-    Iterable<Parameter> namedParams =
-        parameters.where((Parameter p) => p.isOptionalNamed);
+    // index over params
+    for (Parameter param in requiredParams) {
+      bool isLast = param == requiredParams.last;
+      String ext;
+      if (isLast && positionalParams.isNotEmpty) {
+        ext = ', [';
+      } else if (isLast && namedParams.isNotEmpty) {
+        ext = ', {';
+      } else {
+        ext = isLast ? '' : ', ';
+      }
+      builder.write(renderParam(param, ext));
+      builder.write(' ');
+    }
+    for (Parameter param in positionalParams) {
+      bool isLast = param == positionalParams.last;
+      builder.write(renderParam(param, isLast ? '' : ', '));
+      builder.write(' ');
+    }
+    for (Parameter param in namedParams) {
+      bool isLast = param == namedParams.last;
+      builder.write(renderParam(param, isLast ? '' : ', '));
+      builder.write(' ');
+    }
 
-    List<String> fragments = [];
-    if (requiredParams.isNotEmpty) {
-      fragments.add(renderParams(requiredParams));
-    }
-    if (positionalParams.isNotEmpty) {
-      fragments.add(renderParams(positionalParams, open: '[', close: ']'));
-    }
+    // suffix
     if (namedParams.isNotEmpty) {
-      fragments.add(renderParams(namedParams, open: '{', close: '}'));
+      builder.write('}');
+    } else if (positionalParams.isNotEmpty) {
+      builder.write(']');
     }
 
-    return fragments.join(separator);
+    return builder.toString().trim();
   }
 
   @override
@@ -1653,6 +1677,19 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     }
 
     return '<a ${classContent}href="${href}">$name</a>';
+  }
+
+  // TODO(keertip): consolidate all the find library methods
+  Library _findLibraryFor(Element e) {
+    var element = e.getAncestor((l) => l is LibraryElement);
+    var lib;
+    if (element != null) {
+      lib = package.findLibraryFor(element);
+    }
+    if (lib == null) {
+      lib = package._getLibraryFor(e);
+    }
+    return lib;
   }
 
   // process the {@example ...} in comments and inject the example
@@ -1904,12 +1941,13 @@ class Package implements Nameable, Documentable {
       return null;
     }
 
-    Library lib = elementLibaryMap['${e.kind}.${e.name}'];
+    Library lib = elementLibaryMap['${e.kind}.${e.name}.${e.enclosingElement}'];
     if (lib != null) return lib;
     lib =
         libraries.firstWhere((l) => l.hasInExportedNamespace(e), orElse: () {});
     if (lib != null) {
-      elementLibaryMap.putIfAbsent('${e.kind}.${e.name}', () => lib);
+      elementLibaryMap.putIfAbsent(
+          '${e.kind}.${e.name}.${e.enclosingElement}', () => lib);
       return lib;
     }
     return new Library(e.library, this);
@@ -1933,7 +1971,7 @@ class Parameter extends ModelElement implements EnclosedElement {
       : super(element, library) {
     var t = _parameter.type;
     _modelType = new ElementType(
-        t, new ModelElement.from(t.element, package._getLibraryFor(t.element)));
+        t, new ModelElement.from(t.element, _findLibraryFor(t.element)));
   }
 
   String get defaultValue {

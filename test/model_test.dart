@@ -1466,6 +1466,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(params.contains('List') && params.contains('Apple'), isTrue);
     });
 
+    test('commas on same param line', () {
+      ModelFunction method = fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage1');
+      String params = method.linkedParams();
+      expect(params, contains(', </span>'));
+    });
+
     test('param exported in library', () {
       var param = paramFromExportLib.parameters[0];
       expect(param.name, equals('helper'));

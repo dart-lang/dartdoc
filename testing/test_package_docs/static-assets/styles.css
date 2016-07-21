@@ -413,8 +413,11 @@ footer .container-fluid {
 .multi-line-signature {
   font-size: 17px;
   color: #727272;
+}
+
+.multi-line-signature .parameter {
   margin-left: 24px;
-  text-indent: -24px;
+  display: block;
 }
 
 .breadcrumbs {
