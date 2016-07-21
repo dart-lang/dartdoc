@@ -1363,8 +1363,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   bool get canHaveParameters =>
       element is ExecutableElement || element is FunctionTypeAliasElement;
 
-  /// Returns the docs, stripped of their
-  /// leading comments syntax.
+  /// Returns the docs, stripped of their leading comments syntax.
   ///
   /// This getter will walk up the inheritance hierarchy
   /// to find docs, if the current class doesn't have docs
