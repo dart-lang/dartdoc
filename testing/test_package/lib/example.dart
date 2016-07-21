@@ -191,7 +191,9 @@ class Dog implements Cat, E {
   @deprecated
   int deprecatedField;
 
-  Dog();
+  Dog() {
+    testMethod([]);
+  }
 
   @deprecated
   Dog.deprecatedCreate(this.name);

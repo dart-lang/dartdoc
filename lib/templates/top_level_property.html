@@ -22,12 +22,14 @@
     {{#property.hasExplicitGetter}}
     {{#property.getter}}
       {{>accessor_getter}}
+      {{>source_code}}
     {{/property.getter}}
     {{/property.hasExplicitGetter}}
 
     {{#property.hasExplicitSetter}}
     {{#property.setter}}
       {{>accessor_setter}}
+      {{>source_code}}
     {{/property.setter}}
     {{/property.hasExplicitSetter}}
 
