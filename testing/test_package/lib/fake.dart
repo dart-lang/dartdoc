@@ -440,3 +440,30 @@ typedef int Callback2(String);
 
 /// Adds another callback.
 void addCallback2(Callback2 callback) { }
+
+const required = 'required';
+
+/// Paints an image into the given rectangle in the canvas.
+void paintImage1({
+  @required String canvas,
+  @required int rect,
+  @required ExtraSpecialList image,
+  BaseForDocComments colorFilter,
+  String repeat: LongFirstLine.THING
+}) {
+  // nothing to do here -
+
+}
+
+/// Paints an image into the given rectangle in the canvas.
+void paintImage2(
+  String fooParam, [
+  @required String canvas,
+  @required int rect,
+  @required ExtraSpecialList image,
+  BaseForDocComments colorFilter,
+  String repeat = LongFirstLine.THING
+]) {
+  // nothing to do here -
+
+}
