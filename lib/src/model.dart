@@ -873,12 +873,12 @@ class Field extends ModelElement
   void _setModelType() {
     if (hasGetter) {
       var t = _field.getter.returnType;
-      _modelType = new ElementType(t,
-          new ModelElement.from(t.element, package._getLibraryFor(t.element)));
+      _modelType = new ElementType(
+          t, new ModelElement.from(t.element, _findLibraryFor(t.element)));
     } else {
       var s = _field.setter.parameters.first.type;
-      _modelType = new ElementType(s,
-          new ModelElement.from(s.element, package._getLibraryFor(s.element)));
+      _modelType = new ElementType(
+          s, new ModelElement.from(s.element, _findLibraryFor(s.element)));
     }
   }
 }
@@ -1677,6 +1677,19 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return '<a ${classContent}href="${href}">$name</a>';
   }
 
+  // TODO(keertip): consolidate all the find library methods
+  Library _findLibraryFor(Element e) {
+    var element = e.getAncestor((l) => l is LibraryElement);
+    var lib;
+    if (element != null) {
+      lib = package.findLibraryFor(element);
+    }
+    if (lib == null) {
+      lib = package._getLibraryFor(e);
+    }
+    return lib;
+  }
+
   // process the {@example ...} in comments and inject the example
   // code into the doc commment.
   // {@example core/ts/bootstrap/bootstrap.ts region='bootstrap'}
@@ -1926,12 +1939,13 @@ class Package implements Nameable, Documentable {
       return null;
     }
 
-    Library lib = elementLibaryMap['${e.kind}.${e.name}'];
+    Library lib = elementLibaryMap['${e.kind}.${e.name}.${e.enclosingElement}'];
     if (lib != null) return lib;
     lib =
         libraries.firstWhere((l) => l.hasInExportedNamespace(e), orElse: () {});
     if (lib != null) {
-      elementLibaryMap.putIfAbsent('${e.kind}.${e.name}', () => lib);
+      elementLibaryMap.putIfAbsent(
+          '${e.kind}.${e.name}.${e.enclosingElement}', () => lib);
       return lib;
     }
     return new Library(e.library, this);
@@ -1955,7 +1969,7 @@ class Parameter extends ModelElement implements EnclosedElement {
       : super(element, library) {
     var t = _parameter.type;
     _modelType = new ElementType(
-        t, new ModelElement.from(t.element, package._getLibraryFor(t.element)));
+        t, new ModelElement.from(t.element, _findLibraryFor(t.element)));
   }
 
   String get defaultValue {
