@@ -274,7 +274,7 @@ class PublicClassImplementsPrivateInterface implements _PrivateInterface {
 /// 3. All references should be hyperlinks. [MyError] and
 ///    [ShapeType] and [MyError] and [MyException] and
 ///    [MyError] and [MyException] and
-///    [ShapeType] foo bar.
+///    [List<int>] foo bar.
 class ShapeType extends _RetainedEnum {
   static const ShapeType rect = const ShapeType._internal("Rect");
   static const ShapeType ellipse = const ShapeType._internal("Ellipse");
