@@ -467,3 +467,13 @@ void paintImage2(
   // nothing to do here -
 
 }
+
+/// Test operator references: [OperatorReferenceClass.==].
+class OperatorReferenceClass {
+  OperatorReferenceClass();
+
+  @override
+  bool operator ==(dynamic other) {
+    return false;
+  }
+}
