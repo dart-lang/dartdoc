@@ -264,14 +264,15 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void _writeFile(String filename, String content) {
-    File f = _createOutputFile(out, filename);
-    f.writeAsStringSync(content);
-    _onFileCreated.add(f);
+    File file = _createOutputFile(out, filename);
+    file.writeAsStringSync(content);
+    _onFileCreated.add(file);
   }
 }
 
 File _createOutputFile(Directory destination, String filename) {
-  File f = new File(path.join(destination.path, filename));
-  if (!f.existsSync()) f.createSync(recursive: true);
-  return f;
+  File file = new File(path.join(destination.path, filename));
+  Directory parent = file.parent;
+  if (!parent.existsSync()) parent.createSync(recursive: true);
+  return file;
 }
