@@ -1,3 +1,18 @@
+
+## 0.9.7
+* fix the display of long constants
+* fixed an issue with duplicate libraries in SDK
+* show source code for more element types
+* fix for issue with references in parameters and return type pointing to wrong element with same name
+* updated to a new verion of the markdown library
+* fix signatures for functions with typedef params (#1137)
+* make dartdoc strong-mode clean (#1205)
+* fix an issue w/ references in dartdoc not being hyperlinked
+* show 'abstract' for methods that are abstract
+* show the full value of enums
+* cleanup bin/dartdoc to use public dartdoc API (#1199)
+* add contribution instructions
+
 ## 0.9.6+2
 * [bug] fix an issue involving escaping constants (#1084).
 * [health] removed a dev dependency
