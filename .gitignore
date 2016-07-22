@@ -1,5 +1,6 @@
 build/
 doc/api/
+doc/sdk/
 testing/test_package/doc
 testing/test_package_small/doc
 packages

@@ -144,7 +144,7 @@ String _linkDocReference(String reference, ModelElement element,
     if (_emitWarning) {
       print("  warning: unresolved doc reference '$reference' (in $element)");
     }
-    return '<code>$reference</code>';
+    return '<code>${HTML_ESCAPE.convert(reference)}</code>';
   }
 }
 
@@ -195,7 +195,7 @@ class Documentation {
       bool specifiesLanguage = pre.classes.isNotEmpty;
       pre.classes.add('prettyprint');
       // Assume the user intended Dart if there are no other classes present.
-      if (!specifiesLanguage) pre.classes.add('language-dart');      
+      if (!specifiesLanguage) pre.classes.add('language-dart');
     }
 
     // `trim` fixes issue with line ending differences between mac and windows.
