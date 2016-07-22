@@ -44,19 +44,6 @@ const String version = '0.9.6+2';
 
 final String defaultOutDir = p.join('doc', 'api');
 
-/// Configure the dartdoc generation process
-void initializeConfig(
-    {Directory inputDir,
-    String sdkVersion,
-    bool addCrossdart: false,
-    bool includeSource: true}) {
-  setConfig(
-      inputDir: inputDir,
-      sdkVersion: sdkVersion,
-      addCrossdart: addCrossdart,
-      includeSource: includeSource);
-}
-
 /// Initialize and setup the generators.
 Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
     List<String> footerFilePaths, String relCanonicalPrefix,
@@ -71,6 +58,19 @@ Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
         faviconPath: faviconPath,
         useCategories: useCategories)
   ];
+}
+
+/// Configure the dartdoc generation process
+void initializeConfig(
+    {Directory inputDir,
+    String sdkVersion,
+    bool addCrossdart: false,
+    bool includeSource: true}) {
+  setConfig(
+      inputDir: inputDir,
+      sdkVersion: sdkVersion,
+      addCrossdart: addCrossdart,
+      includeSource: includeSource);
 }
 
 /// Generates Dart documentation for all public Dart libraries in the given
@@ -196,7 +196,8 @@ class DartDoc {
       ..sourceFactory = sourceFactory;
 
     if (packageMeta.isSdk) {
-      libraries.addAll(getSdkLibrariesToDocument(sdk, context));
+      libraries
+          .addAll(new Set()..addAll(getSdkLibrariesToDocument(sdk, context)));
     }
 
     List<Source> sources = [];
