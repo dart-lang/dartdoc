@@ -180,33 +180,29 @@ class Documentation {
     for (var s in asHtmlDocument.querySelectorAll('script')) {
       s.remove();
     }
-    for (var e in asHtmlDocument.querySelectorAll('pre')) {
-      if (e.children.isNotEmpty &&
-          e.children.length != 1 &&
-          e.children.first.localName != 'code') {
+    for (var pre in asHtmlDocument.querySelectorAll('pre')) {
+      if (pre.children.isNotEmpty &&
+          pre.children.length != 1 &&
+          pre.children.first.localName != 'code') {
         continue;
       }
 
-      // TODO(kevmoo): This should be applied to <code>, not <pre>
-      //   Waiting on pkg/markdown v0.10
-      //   See https://github.com/dart-lang/markdown/commit/a7bf3dd
-      e.classes.add('prettyprint');
-
-      // Only "assume" the user intended dart if there are no other classes
-      // present.
-      if (e.classes.length == 1) {
-        e.classes.add('language-dart');
+      if (pre.children.isNotEmpty && pre.children.first.localName == 'code') {
+        var code = pre.children.first;
+        pre.classes.addAll(code.classes.where((name) => name.startsWith('language-')));
       }
+
+      bool specifiesLanguage = pre.classes.isNotEmpty;
+      pre.classes.add('prettyprint');
+      // Assume the user intended Dart if there are no other classes present.
+      if (!specifiesLanguage) pre.classes.add('language-dart');      
     }
-    var asHtml = asHtmlDocument.body.innerHtml;
 
-    // Fixes issue with line ending differences between mac and windows.
-    if (asHtml != null) asHtml = asHtml.trim();
-
+    // `trim` fixes issue with line ending differences between mac and windows.
+    var asHtml = asHtmlDocument.body.innerHtml?.trim();
     var asOneLiner = asHtmlDocument.body.children.isEmpty
         ? ''
         : asHtmlDocument.body.children.first.innerHtml;
-
     return new Documentation._(markdown, asHtml, asOneLiner);
   }
 }
