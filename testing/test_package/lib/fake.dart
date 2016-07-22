@@ -105,7 +105,7 @@ const String UP = 'up';
 
 const String NAME_SINGLEUNDERSCORE = 'yay bug hunting';
 
-const String NAME_WITH_TWO_UNDERSCORES = 'episode seven better be good';
+const String NAME_WITH_TWO_UNDERSCORES = 'episode seven better be good; episode seven better be good; episode seven better be good; episode seven better be good';
 
 /// Testing [NAME_WITH_TWO_UNDERSCORES] should not be italicized.
 ///
