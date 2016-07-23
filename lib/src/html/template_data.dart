@@ -49,21 +49,21 @@ abstract class TemplateData<T extends Documentable> {
   String get version => htmlOptions.toolVersion;
   String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
 
-  Iterable<Subnav> getSubNavItems() => const Iterable<Subnav>.empty();
+  Iterable<Subnav> getSubNavItems() => <Subnav>[];
 
   String _layoutTitle(String name, String kind, bool isDeprecated) {
-    if (kind.isEmpty)
-      kind =
-          '&nbsp;'; // Ugly. fixes https://github.com/dart-lang/dartdoc/issues/695
+    if (kind.isEmpty) kind = '&nbsp;';
     String str = '<span class="kind">$kind</span>';
     if (!isDeprecated) return '${str} ${name}';
     return '${str} <span class="deprecated">$name</span>';
   }
 
-  Iterable<Subnav> _gatherSubnavForInvokable(ModelElement element) sync* {
+  Iterable<Subnav> _gatherSubnavForInvokable(ModelElement element) {
     if (element is SourceCodeMixin &&
         (element as SourceCodeMixin).hasSourceCode) {
-      yield new Subnav('Source', '${element.href}#source');
+      return [new Subnav('Source', '${element.href}#source')];
+    } else {
+      return <Subnav>[];
     }
   }
 }
@@ -83,14 +83,14 @@ class PackageTemplateData extends TemplateData<Package> {
   @override
   Package get self => package;
   @override
-  String get layoutTitle =>
-      _layoutTitle(package.name, package.isSdk ? '' : 'package', false);
+  String get layoutTitle => _layoutTitle(
+      package.name, (useCategories || package.isSdk) ? '' : 'package', false);
   @override
   String get metaDescription =>
       '${package.name} API docs, for the Dart programming language.';
   @override
-  Iterable<Subnav> getSubNavItems() sync* {
-    yield new Subnav('Libraries', '${package.href}#libraries');
+  Iterable<Subnav> getSubNavItems() {
+    return [new Subnav('Libraries', '${package.href}#libraries')];
   }
 
   /// `null` for packages because they are at the root – not needed
@@ -177,13 +177,13 @@ class ClassTemplateData extends TemplateData<Class> {
       yield new Subnav('Static Properties', '${clazz.href}#static-properties');
     if (clazz.hasStaticMethods)
       yield new Subnav('Static Methods', '${clazz.href}#static-methods');
-    if (clazz.hasInstanceProperties)
+    if (clazz.hasProperties)
       yield new Subnav('Properties', '${clazz.href}#instance-properties');
     if (clazz.hasConstructors)
       yield new Subnav('Constructors', '${clazz.href}#constructors');
     if (clazz.hasOperators)
       yield new Subnav('Operators', '${clazz.href}#operators');
-    if (clazz.hasInstanceMethods)
+    if (clazz.hasMethods)
       yield new Subnav('Methods', '${clazz.href}#instance-methods');
   }
 
@@ -383,6 +383,8 @@ class TypedefTemplateData extends TemplateData<Typedef> {
   List get navLinks => [package, library];
   @override
   String get htmlBase => '..';
+  @override
+  Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(typeDef);
 }
 
 class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {

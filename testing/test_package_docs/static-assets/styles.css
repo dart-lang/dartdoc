@@ -508,7 +508,7 @@ ul.subnav {
   overflow: auto;
   white-space: nowrap;
   padding-left: 0;
-  min-height: 24px;
+  min-height: 25px;
 }
 
 ul.subnav::-webkit-scrollbar {
