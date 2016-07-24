@@ -1,4 +1,9 @@
 
+## 0.9.7+1
+* change how we truncate long constant values on the summary page
+* show the full docs for enums on the summary page; just show the first line of
+  docs for other contants
+
 ## 0.9.7
 * fix the display of long constants
 * fixed an issue with duplicate libraries in SDK

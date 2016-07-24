@@ -162,7 +162,7 @@ void main() {
       expect(
           fakeLibrary.oneLineDoc,
           equals(
-              'WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a>'));
+              '<p>WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a></p>'));
     });
 
     test('has properties', () {
@@ -379,7 +379,7 @@ void main() {
       expect(
           add.oneLineDoc,
           equals(
-              'Adds <code>value</code> to the end of this list,\nextending the length by one.'));
+              '<p>Adds <code>value</code> to the end of this list,\nextending the length by one.</p>'));
     });
 
     test(
@@ -459,7 +459,7 @@ void main() {
       expect(
           testingCodeSyntaxInOneLiners.oneLineDoc,
           equals(
-              'These are code syntaxes: <code>true</code> and <code>false</code>'));
+              '<p>These are code syntaxes: <code>true</code> and <code>false</code></p>'));
     });
 
     test('doc comments to parameters are marked as code', () {
@@ -1467,7 +1467,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('commas on same param line', () {
-      ModelFunction method = fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage1');
+      ModelFunction method =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage1');
       String params = method.linkedParams();
       expect(params, contains(', </span>'));
     });

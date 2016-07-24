@@ -165,4 +165,15 @@ void main() {
       expectCorrectDocumentation();
     });
   });
+
+  group('truncateString', () {
+    test('normal', () {
+      expect(truncateString('foo bar baz qux', 100), hasLength(15));
+    });
+
+    test('truncates', () {
+      expect(truncateString('foo bar baz qux', 10), hasLength(11));
+      expect(truncateString('foo bar baz qux', 10), 'foo bar ba…');
+    });
+  });
 }

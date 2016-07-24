@@ -305,14 +305,6 @@ dl dt.callable .name {
   color: #4674a2;
 }
 
-/* make sure constant values don't overflow */
-.signature code {
-  white-space: nowrap;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-  display: block;
-}
-
 .optional {
   font-style: italic;
 }
