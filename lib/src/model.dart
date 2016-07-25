@@ -26,7 +26,7 @@ import 'line_number_cache.dart';
 import 'markdown_processor.dart' show Documentation;
 import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
-import 'utils.dart' show stripComments;
+import 'utils.dart';
 
 Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
 
@@ -773,6 +773,9 @@ class EnumField extends Field {
   }
 
   @override
+  String get oneLineDoc => documentationAsHtml;
+
+  @override
   String get href =>
       '${library.dirName}/${(enclosingElement as Class).fileName}';
 
@@ -808,6 +811,8 @@ class Field extends ModelElement
 
     return _constantValue;
   }
+
+  String get constantValueTruncated => truncateString(constantValue, 200);
 
   @override
   ModelElement get enclosingElement {
@@ -1531,7 +1536,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   String linkedParams(
       {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
-
     String renderParam(Parameter param, String suffix) {
       StringBuffer buf = new StringBuffer();
       buf.write('<span class="parameter" id="${param.htmlId}">');
@@ -2164,6 +2168,8 @@ class TopLevelVariable extends ModelElement
     string = HTML_ESCAPE.convert(string);
     return string.replaceAll(modelType.name, modelType.linkedName);
   }
+
+  String get constantValueTruncated => truncateString(constantValue, 200);
 
   @override
   ModelElement get enclosingElement => library;

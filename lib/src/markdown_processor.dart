@@ -189,7 +189,8 @@ class Documentation {
 
       if (pre.children.isNotEmpty && pre.children.first.localName == 'code') {
         var code = pre.children.first;
-        pre.classes.addAll(code.classes.where((name) => name.startsWith('language-')));
+        pre.classes
+            .addAll(code.classes.where((name) => name.startsWith('language-')));
       }
 
       bool specifiesLanguage = pre.classes.isNotEmpty;
@@ -203,6 +204,9 @@ class Documentation {
     var asOneLiner = asHtmlDocument.body.children.isEmpty
         ? ''
         : asHtmlDocument.body.children.first.innerHtml;
+    if (!asOneLiner.startsWith('<p>')) {
+      asOneLiner = '<p>$asOneLiner</p>';
+    }
     return new Documentation._(markdown, asHtml, asOneLiner);
   }
 }

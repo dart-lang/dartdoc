@@ -256,6 +256,11 @@ enum Color {
   ORANGE,
   YELLOW,
   GREEN,
+
+  /// Some constants have long docs.
+  ///
+  /// Some constants have long docs.
+  /// Some constants have long docs.
   BLUE,
   INDIGO,
   VIOLET

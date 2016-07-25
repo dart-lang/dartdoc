@@ -41,3 +41,11 @@ String stripComments(String str) {
   }
   return buf.toString().trim();
 }
+
+String truncateString(String str, int length) {
+  if (str != null && str.length > length) {
+    return str.substring(0, length) + '…';
+  } else {
+    return str;
+  }
+}
