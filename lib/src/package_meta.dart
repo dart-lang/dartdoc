@@ -95,6 +95,8 @@ class _FilePackageMeta extends PackageMeta {
   void runPubGet() {
     String pubPath =
         path.join(path.dirname(Platform.resolvedExecutable), 'pub');
+    if (Platform.isWindows) pubPath += '.bat';
+
     ProcessResult result =
         Process.runSync(pubPath, ['get'], workingDirectory: dir.path);
 
