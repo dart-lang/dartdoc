@@ -27,7 +27,7 @@ void main() {
     test('is not valid', () {
       expect(p.isValid, isFalse);
       expect(p.getInvalidReasons(), isNotEmpty);
-      expect(p.getInvalidReasons(), contains('No pubspec.yaml found'));
+      expect(p.getInvalidReasons(), contains('no pubspec.yaml found'));
     });
   });
 

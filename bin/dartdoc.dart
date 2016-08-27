@@ -106,9 +106,18 @@ main(List<String> arguments) async {
       : new PackageMeta.fromDir(inputDir);
 
   if (!packageMeta.isValid) {
-    print('Unable to generate documentation.');
-    packageMeta.getInvalidReasons().map((r) => '* $r').forEach(print);
+    stderr.writeln(
+        'Unable to generate documentation: ${packageMeta.getInvalidReasons().first}.');
     exit(1);
+  }
+
+  if (!packageMeta.isSdk && packageMeta.needsPubGet) {
+    try {
+      packageMeta.runPubGet();
+    } catch (e) {
+      stderr.writeln('$e');
+      exit(1);
+    }
   }
 
   print("Generating documentation for '${packageMeta}' into "

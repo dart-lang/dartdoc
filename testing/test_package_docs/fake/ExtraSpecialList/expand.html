@@ -158,6 +158,15 @@
 by <code>f</code> for each element of this, in iteration order.</p>
 <p>The returned <code>Iterable</code> is lazy, and calls <code>f</code> for each element
 of this every time it's iterated.</p>
+<p>Example:</p>
+<pre class="prettyprint language-dart"><code>var pairs = [[1, 2], [3, 4]];
+var flattened = pairs.expand((pair) =&gt; pair).toList();
+print(flattened); // =&gt; [1, 2, 3, 4];
+
+var input = [1, 2, 3];
+var duplicated = input.expand((i) =&gt; [i, i]).toList();
+print(duplicated); // =&gt; [1, 1, 2, 2, 3, 3]
+</code></pre>
     </section>
     
     

@@ -7,6 +7,8 @@ library test_utils;
 import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/file_system/file_system.dart';
+import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
@@ -69,7 +71,7 @@ class AnalyzerHelper {
   AnalyzerHelper() {
     List<UriResolver> resolvers = [
       new DartUriResolver(sdkDir),
-      new FileUriResolver()
+      new ResourceUriResolver(PhysicalResourceProvider.INSTANCE)
     ];
 
     SourceFactory sourceFactory = new SourceFactory(resolvers);
