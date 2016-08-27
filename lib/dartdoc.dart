@@ -14,11 +14,11 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/source/embedder.dart';
 import 'package:analyzer/source/package_map_resolver.dart';
 import 'package:analyzer/source/sdk_ext.dart';
+import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/error.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
-import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:package_config/discovery.dart' as package_config;
@@ -152,7 +152,8 @@ class DartDoc {
   List<LibraryElement> _parseLibraries(
       List<String> files, List<String> includeExternals) {
     List<LibraryElement> libraries = [];
-    DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
+    DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
+        PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
     List<UriResolver> resolvers = [];
 
     fileSystem.Folder cwd =

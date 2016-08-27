@@ -93,8 +93,14 @@ class _FilePackageMeta extends PackageMeta {
 
   @override
   void runPubGet() {
+    String pubPath =
+        path.join(path.dirname(Platform.resolvedExecutable), 'pub');
     ProcessResult result =
-        Process.runSync('pub', ['get'], workingDirectory: dir.path);
+        Process.runSync(pubPath, ['get'], workingDirectory: dir.path);
+
+    if (result.stdout.isNotEmpty) {
+      print(result.stdout.trim());
+    }
 
     if (result.exitCode != 0) {
       StringBuffer buf = new StringBuffer();
