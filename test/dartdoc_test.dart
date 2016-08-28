@@ -102,6 +102,7 @@ void main() {
 
     test('generate docs for package with embedder yaml', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageWithEmbedderYaml);
+      if (meta.needsPubGet) meta.runPubGet();
       DartDoc dartdoc = new DartDoc(
           testPackageWithEmbedderYaml, [], getSdkDir(), [], tempDir, meta, []);
 

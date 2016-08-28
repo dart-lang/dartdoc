@@ -18,7 +18,6 @@ yet in the issue tracker, start by opening an issue. Thanks!
 
 [![Build Status](https://travis-ci.org/dart-lang/dartdoc.svg)](https://travis-ci.org/dart-lang/dartdoc)
 [![Build status](https://ci.appveyor.com/api/projects/status/s6sh69et2ga00dlu?svg=true)](https://ci.appveyor.com/project/devoncarew/dartdoc)
-[![Coverage Status](https://img.shields.io/coveralls/dart-lang/dartdoc.svg)](https://coveralls.io/r/dart-lang/dartdoc)
 
 ## Making Changes
 

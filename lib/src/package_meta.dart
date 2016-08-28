@@ -19,6 +19,9 @@ abstract class PackageMeta {
       new _SdkMeta(sdkDir, sdkReadmePath: sdkReadmePath);
 
   bool get isSdk;
+  bool get needsPubGet => false;
+
+  void runPubGet();
 
   String get name;
   String get version;
@@ -85,6 +88,31 @@ class _FilePackageMeta extends PackageMeta {
   bool get isSdk => false;
 
   @override
+  bool get needsPubGet =>
+      !(new File(path.join(dir.path, '.packages')).existsSync());
+
+  @override
+  void runPubGet() {
+    String pubPath =
+        path.join(path.dirname(Platform.resolvedExecutable), 'pub');
+    if (Platform.isWindows) pubPath += '.bat';
+
+    ProcessResult result =
+        Process.runSync(pubPath, ['get'], workingDirectory: dir.path);
+
+    if (result.stdout.isNotEmpty) {
+      print(result.stdout.trim());
+    }
+
+    if (result.exitCode != 0) {
+      StringBuffer buf = new StringBuffer();
+      buf.writeln('${result.stdout}');
+      buf.writeln('${result.stderr}');
+      throw buf.toString().trim();
+    }
+  }
+
+  @override
   String get name => _pubspec['name'];
   @override
   String get version => _pubspec['version'];
@@ -126,9 +154,9 @@ class _FilePackageMeta extends PackageMeta {
   List<String> getInvalidReasons() {
     List<String> reasons = <String>[];
     if (_pubspec == null || _pubspec.isEmpty) {
-      reasons.add('No pubspec.yaml found');
+      reasons.add('no pubspec.yaml found');
     } else if (!_pubspec.containsKey('name')) {
-      reasons.add('No name found in pubspec.yaml');
+      reasons.add('no name found in pubspec.yaml');
     }
     return reasons;
   }
@@ -156,6 +184,11 @@ class _SdkMeta extends PackageMeta {
 
   @override
   bool get isSdk => true;
+
+  @override
+  void runPubGet() {
+    throw 'unsupported operation';
+  }
 
   @override
   String get name => 'Dart SDK';

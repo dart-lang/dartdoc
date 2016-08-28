@@ -12,18 +12,17 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/file_system/file_system.dart' as fileSystem;
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/source/embedder.dart';
-import 'package:analyzer/source/package_map_provider.dart';
 import 'package:analyzer/source/package_map_resolver.dart';
-import 'package:analyzer/source/pub_package_map_provider.dart';
 import 'package:analyzer/source/sdk_ext.dart';
+import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/error.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
-import 'package:analyzer/src/generated/sdk_io.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:path/path.dart' as p;
+import 'package:package_config/discovery.dart' as package_config;
+import 'package:path/path.dart' as path;
 
 import 'src/config.dart';
 import 'src/generator.dart';
@@ -42,7 +41,7 @@ const String name = 'dartdoc';
 // Update when pubspec version changes.
 const String version = '0.9.7+1';
 
-final String defaultOutDir = p.join('doc', 'api');
+final String defaultOutDir = path.join('doc', 'api');
 
 /// Initialize and setup the generators.
 Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
@@ -153,24 +152,21 @@ class DartDoc {
   List<LibraryElement> _parseLibraries(
       List<String> files, List<String> includeExternals) {
     List<LibraryElement> libraries = [];
-    DartSdk sdk = new DirectoryBasedDartSdk(new JavaFile(sdkDir.path));
+    DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
+        PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
     List<UriResolver> resolvers = [];
 
-    fileSystem.Resource cwd =
+    fileSystem.Folder cwd =
         PhysicalResourceProvider.INSTANCE.getResource(rootDir.path);
-    PubPackageMapProvider pubPackageMapProvider =
-        new PubPackageMapProvider(PhysicalResourceProvider.INSTANCE, sdk);
-    PackageMapInfo packageMapInfo =
-        pubPackageMapProvider.computePackageMap(cwd);
-    Map<String, List<fileSystem.Folder>> packageMap = packageMapInfo.packageMap;
+    Map<String, List<fileSystem.Folder>> packageMap = _calculatePackageMap(cwd);
     EmbedderUriResolver embedderUriResolver;
     if (packageMap != null) {
       resolvers.add(new SdkExtUriResolver(packageMap));
       resolvers.add(new PackageMapUriResolver(
           PhysicalResourceProvider.INSTANCE, packageMap));
 
-      embedderUriResolver = new EmbedderUriResolver(
-          new EmbedderYamlLocator(packageMap).embedderYamls);
+      var embedderYamls = new EmbedderYamlLocator(packageMap).embedderYamls;
+      embedderUriResolver = new EmbedderUriResolver(embedderYamls);
       if (embedderUriResolver.length == 0) {
         // The embedder uri resolver has no mappings. Use the default Dart SDK
         // uri resolver.
@@ -183,7 +179,8 @@ class DartDoc {
     } else {
       resolvers.add(new DartUriResolver(sdk));
     }
-    resolvers.add(new FileUriResolver());
+    resolvers.add(
+        new fileSystem.ResourceUriResolver(PhysicalResourceProvider.INSTANCE));
 
     SourceFactory sourceFactory = new SourceFactory(resolvers);
 
@@ -262,7 +259,7 @@ class DartDoc {
               new _Error(error, info.lineInfo, packageMeta.dir.path));
         })
         .where((_Error error) => error.isError)
-        .toList() as List<_Error>..sort();
+        .toList()..sort();
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print("Parsed ${libraries.length} "
@@ -278,6 +275,23 @@ class DartDoc {
 
     return libraries.toList();
   }
+}
+
+Map<String, List<fileSystem.Folder>> _calculatePackageMap(
+    fileSystem.Folder dir) {
+  Map<String, List<fileSystem.Folder>> map = new Map();
+  var info = package_config.findPackagesFromFile(dir.toUri());
+
+  for (String name in info.packages) {
+    Uri uri = info.asMap()[name];
+    fileSystem.Resource resource =
+        PhysicalResourceProvider.INSTANCE.getResource(uri.toFilePath());
+    if (resource is fileSystem.Folder) {
+      map[name] = [resource];
+    }
+  }
+
+  return map;
 }
 
 /// This class is returned if dartdoc fails in an expected way (for instance, if
