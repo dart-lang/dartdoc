@@ -1,3 +1,5 @@
+## 0.9.7+2
+* fixed a regression with generating package docs (#1233)
 
 ## 0.9.7+1
 * change how we truncate long constant values on the summary page
