@@ -1,3 +1,6 @@
+## 0.9.7+3
+* Extended package_config dependency to include stable 1.0.0 api.
+
 ## 0.9.7+2
 * fixed a regression with generating package docs (#1233)
 
