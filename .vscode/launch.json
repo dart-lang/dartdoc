@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Dart command line",
+      "type": "dart-cli",
+      "request": "launch",
+      "cwd": "/Users/devoncarew/projects/package_config",
+      "sdkPath": "${command.sdkPath}",
+      "program": "${workspaceRoot}/bin/dartdoc.dart",
+      "args": []
+    }
+  ]
+}
