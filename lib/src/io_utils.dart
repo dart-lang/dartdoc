@@ -51,6 +51,8 @@ Iterable<String> _doList(String dir, Set<String> listedDirectories,
 /// Given a package name, explore the directory and pull out all top level
 /// library files in the "lib" directory to document.
 Iterable<String> findFilesToDocumentInPackage(String packageDir) sync* {
+  final String sep = path.separator;
+
   var packageLibDir = path.join(packageDir, 'lib');
   var packageLibSrcDir = path.join(packageLibDir, 'src');
 
@@ -60,8 +62,8 @@ Iterable<String> findFilesToDocumentInPackage(String packageDir) sync* {
   for (var lib
       in listDir(packageDir, recursive: true, listDir: _packageDirList)) {
     if (lib.endsWith('.dart') &&
-        (!lib.contains('${path.separator}packages') ||
-            packageDir.contains('${path.separator}packages'))) {
+        (!lib.contains('${sep}packages${sep}') ||
+            packageDir.contains('${sep}packages${sep}'))) {
       // Only include libraries within the lib dir that are not in lib/src
       if (path.isWithin(packageLibDir, lib) &&
           !path.isWithin(packageLibSrcDir, lib)) {

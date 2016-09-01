@@ -1,3 +1,6 @@
+## unreleased
+* fixed an issue with documenting libraries starting with `packages`
+
 ## 0.9.7+3
 * Extended package_config dependency to include stable 1.0.0 api.
 
