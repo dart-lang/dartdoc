@@ -32,7 +32,7 @@ buildbot() => null;
 Future buildSdkDocs() async {
   delete(docsDir);
   log('building SDK docs');
-  var process = await Process.start(Platform.resolvedExecutable, [
+  Process process = await Process.start(Platform.resolvedExecutable, [
     'bin/dartdoc.dart',
     '--output',
     '${docsDir.path}',
@@ -41,6 +41,11 @@ Future buildSdkDocs() async {
   ]);
   stdout.addStream(process.stdout);
   stderr.addStream(process.stderr);
+
+  int exitCode = await process.exitCode;
+  if (exitCode != 0) {
+    fail("exitCode: $exitCode");
+  }
 }
 
 @Task('Checks that CHANGELOG mentions current version')
@@ -202,29 +207,47 @@ updateTestPackageDocs() {
 }
 
 @Task('Validate the SDK doc build.')
-//@Depends(buildSdkDocs) unfortunately this doesn't work, because
-// I get Uncaught Error: Bad state: StreamSink is bound to a stream
-// if I run grind validate-sdk-docs. However, everything works
-// if I run grind build-sdk-docs manually.
-// See https://github.com/google/grinder.dart/issues/291
+@Depends(buildSdkDocs)
 validateSdkDocs() {
   const expectedLibCount = 18;
-  var indexHtml = joinFile(docsDir, ['index.html']);
+
+  File indexHtml = joinFile(docsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
     fail('no index.html found for SDK docs');
   }
+  log('found index.html');
+  String indexContents = indexHtml.readAsStringSync();
+  int foundLibs = _findCount(indexContents, '  <li><a href="dart-');
+  if (foundLibs != expectedLibCount) {
+    fail('expected $expectedLibCount dart: index.html entries, found $foundLibs');
+  }
+  log('$foundLibs index.html dart: entries found');
+
   // check for the existence of certain files/dirs
   var libsLength =
       docsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
-  if (libsLength != expectedLibCount && libsLength != 17) {
+  if (libsLength != expectedLibCount) {
     fail('docs not generated for all the SDK libraries, '
         'expected $expectedLibCount directories, generated $libsLength directories');
   }
+  log('$libsLength dart: libraries found');
+
   var futureConstFile =
       joinFile(docsDir, [path.join('dart-async', 'Future', 'Future.html')]);
   if (!futureConstFile.existsSync()) {
     fail('no Future.html found for dart:async Future constructor');
   }
+  log('found Future.async ctor');
+}
+
+int _findCount(String str, String match) {
+  int count = 0;
+  int index = str.indexOf(match);
+  while (index != -1) {
+    count++;
+    index = str.indexOf(match, index + match.length);
+  }
+  return count;
 }
 
 _doCheck(String origin, Set<String> visited, String pathToCheck, bool error,
