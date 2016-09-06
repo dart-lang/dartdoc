@@ -1,4 +1,4 @@
-## unreleased
+## 0.9.7+4
 * fixed an issue with documenting libraries starting with `packages`
 * upgraded our dependency on `html` to 0.13.0
 * upgraded our dependency on `package_config` and `markdown`
