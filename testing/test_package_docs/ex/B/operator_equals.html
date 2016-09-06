@@ -122,12 +122,12 @@ only if <code>this</code> and <code>other</code> are the same object.</p>
 a class. The overriding method must still be an equivalence relation.
 That is, it must be:</p><ul><li>
 <p>Total: It must return a boolean for all arguments. It should never throw
-   or return <code>null</code>.</p></li><li>
+or return <code>null</code>.</p></li><li>
 <p>Reflexive: For all objects <code>o</code>, <code>o == o</code> must be true.</p></li><li>
 <p>Symmetric: For all objects <code>o1</code> and <code>o2</code>, <code>o1 == o2</code> and <code>o2 == o1</code> must
-   either both be true, or both be false.</p></li><li>
+either both be true, or both be false.</p></li><li>
 <p>Transitive: For all objects <code>o1</code>, <code>o2</code>, and <code>o3</code>, if <code>o1 == o2</code> and
-   <code>o2 == o3</code> are true, then <code>o1 == o3</code> must be true.</p></li></ul>
+<code>o2 == o3</code> are true, then <code>o1 == o3</code> must be true.</p></li></ul>
 <p>The method should also be consistent over time, so equality of two objects
 should not change over time, or at least only change if one of the objects
 was modified.</p>

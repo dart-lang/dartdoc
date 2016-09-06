@@ -126,7 +126,7 @@ packages:
       name: markdown
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.1"
+    version: "0.11.0+1"
   matcher:
     description:
       name: matcher
@@ -162,7 +162,7 @@ packages:
       name: package_config
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.5"
+    version: "1.0.0"
   package_resolver:
     description:
       name: package_resolver

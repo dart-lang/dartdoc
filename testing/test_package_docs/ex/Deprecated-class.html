@@ -153,13 +153,9 @@ class-level declarations (variables, getters, setters, methods, operators or
 constructors, whether static or not), named optional arguments and
 trailing optional positional parameters.</p>
 <p>Deprecation is transitive:</p><ul><li>If a library is deprecated, so is every member of it.</li><li>If a class is deprecated, so is every member of it.</li><li>If a variable is deprecated, so are its implicit getter and setter.</li></ul>
-<p>A tool that processes Dart source code may report when:</p><ul><li>the code imports a deprecated library.</li><li>
-<p>the code exports a deprecated library, or any deprecated member of
- &nbsp;a non-deprecated library.</p></li><li>the code refers statically to a deprecated declaration.</li><li>
-<p>the code dynamically uses a member of an object with a statically known
-  type, where the member is deprecated on the static type of the object.</p></li><li>
-<p>the code dynamically calls a method with an argument where the
-  corresponding optional parameter is deprecated on the object's static type.</p></li></ul>
+<p>A tool that processes Dart source code may report when:</p><ul><li>the code imports a deprecated library.</li><li>the code exports a deprecated library, or any deprecated member of &nbsp;a non-deprecated library.</li><li>the code refers statically to a deprecated declaration.</li><li>the code dynamically uses a member of an object with a statically known
+type, where the member is deprecated on the static type of the object.</li><li>the code dynamically calls a method with an argument where the
+corresponding optional parameter is deprecated on the object's static type.</li></ul>
 <p>If the deprecated use is inside a library, class or method which is itself
 deprecated, the tool should not bother the user about it.
 A deprecated feature is expected to use other deprecated features.</p>
