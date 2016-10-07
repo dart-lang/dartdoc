@@ -129,7 +129,7 @@ Future<List<String>> _packageUrls(int page) {
 }
 
 Future<List<PackageInfo>> _getPackageInfos(List<String> packageUrls) {
-  List<Future> futures = packageUrls.map((String p) {
+  var futures = packageUrls.map((String p) {
     return http.get(p).then((response) {
       var json = JSON.decode(response.body);
       String name = json['name'];
