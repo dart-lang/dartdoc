@@ -1,3 +1,9 @@
+## 0.9.7+6
+* fixed an issue with generating docs with crossdart links.
+
+## 0.9.7+5
+* update Markdown dependency to 0.11.1.
+
 ## 0.9.7+4
 * fixed an issue with documenting libraries starting with `packages`
 * upgraded our dependency on `html` to 0.13.0
