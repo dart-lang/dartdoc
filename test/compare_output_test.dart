@@ -144,6 +144,26 @@ void main() {
         fail('Did not process @example in comments');
       }
     });
+
+    test('Check dartdoc generation with crossdart', () {
+      var args = <String>[
+        dartdocBin,
+        '--add-crossdart',
+        '--output',
+        tempDir.path
+      ];
+
+      var result = Process.runSync(Platform.resolvedExecutable, args,
+          workingDirectory: _testPackagePath);
+
+      if (result.exitCode != 0) {
+        print(result.exitCode);
+        print(result.stdout);
+        print(result.stderr);
+        fail('dartdoc failed');
+      }
+
+    });
   }, onPlatform: {'windows': new Skip('Avoiding parsing git output')});
 }
 

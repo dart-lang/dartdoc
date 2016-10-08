@@ -14,7 +14,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/resolver.dart'
     show Namespace, NamespaceBuilder, InheritanceManager;
-import 'package:analyzer/src/generated/source_io.dart';
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as p;
@@ -773,14 +772,14 @@ class EnumField extends Field {
   }
 
   @override
-  String get oneLineDoc => documentationAsHtml;
-
-  @override
   String get href =>
       '${library.dirName}/${(enclosingElement as Class).fileName}';
 
   @override
   String get linkedName => name;
+
+  @override
+  String get oneLineDoc => documentationAsHtml;
 }
 
 class Field extends ModelElement
@@ -2081,8 +2080,8 @@ abstract class SourceCodeMixin {
   String get _crossdartPath {
     var node = element.computeNode();
     if (node is Declaration && node.element != null) {
-      var source = (node.element.source as FileBasedSource);
-      var file = source.file.toString();
+      var source = node.element.source;
+      var filePath = source.fullName;
       var uri = source.uri.toString();
       var packageMeta = library.package.packageMeta;
       if (uri.startsWith("package:")) {
@@ -2095,7 +2094,7 @@ abstract class SourceCodeMixin {
         } else {
           var match = new RegExp(
                   ".pub-cache/(hosted/pub.dartlang.org|git)/${packageName}-([^/]+)")
-              .firstMatch(file);
+              .firstMatch(filePath);
           if (match != null) {
             packageVersion = match[2];
           }
