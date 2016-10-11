@@ -4,28 +4,16 @@
 
 Use `dartdoc` to generate HTML documentaton for your Dart package.
 
-For information about contributing to the dartdoc project, see the [contributor docs][].
+For information about contributing to the dartdoc project, see the
+[contributor docs][].
 
 For issues/details related to hosted Dart API docs, see
-[dart-lang/api.dartlang.org](https://github.com/dart-lang/api.dartlang.org/) (for dart:* libraries) and
-[astashov/dartdocs.org](https://github.com/astashov/dartdocs.org) (for libraries in pub packages).
+[dart-lang/api.dartlang.org](https://github.com/dart-lang/api.dartlang.org/).
 
 ## Installing dartdoc
 
-### From the Dart SDK
-
-[Download the Dart SDK](https://www.dartlang.org/downloads/); if not already added,
-add the SDK's `bin` directory to your `PATH`.
-
-### From pub.dartlang.org
-
-You can install the latest version of dartdoc with `pub`:
-
-    $ pub global activate dartdoc
-
-Note: to ensure that this version is run when you type `dartdoc` on the command
-line, make sure that `~/.pub-cache/bin` is on your `PATH`, and before the path
-to the Dart SDK.
+- download the [Dart SDK](https://www.dartlang.org/downloads/)
+- add the SDK's `bin` directory to your `PATH`
 
 ## Generating docs
 
@@ -71,7 +59,7 @@ $ dhttpd --path doc/api
 Navigate to `http://localhost:8080` in your browser; the search function should
 now work.
 
-### Link structure
+## Link structure
 
 dartdoc produces static files with a predictable link structure.
 
@@ -100,10 +88,10 @@ Check out the
 The guide covers formatting, linking, markup, and general best practices when
 authoring doc comments for Dart with `dartdoc`.
 
-### Excluding from documentation
+## Excluding from documentation
 
-`dartdoc` will not generate documentation for a Dart element and its children that
-has the `<nodoc>` tag in the documentation comment.
+`dartdoc` will not generate documentation for a Dart element and its children
+that have the `<nodoc>` tag in the documentation comment.
 
 ## Issues and bugs
 
