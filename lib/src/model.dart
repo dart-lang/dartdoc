@@ -13,7 +13,7 @@ import 'package:analyzer/dart/ast/ast.dart'
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/resolver.dart'
-    show Namespace, NamespaceBuilder, InheritanceManager, MemberMap;
+    show Namespace, NamespaceBuilder, InheritanceManager;
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as p;
@@ -304,8 +304,8 @@ class Class extends ModelElement implements EnclosedElement {
     if (_inheritedMethods != null) return _inheritedMethods;
 
     InheritanceManager manager = new InheritanceManager(element.library);
-    MemberMap cmap = manager.getMapOfMembersInheritedFromClasses(element);
-    MemberMap imap = manager.getMapOfMembersInheritedFromInterfaces(element);
+    Map<String, ExecutableElement> cmap = manager.getMembersInheritedFromClasses(element);
+    Map<String, ExecutableElement> imap = manager.getMembersInheritedFromInterfaces(element);
 
     // remove methods that exist on this class
     _methods.forEach((method) {
@@ -322,22 +322,22 @@ class Class extends ModelElement implements EnclosedElement {
       if (f._getter != null) uniqueNames.add(f._getter.name);
     });
 
-    for (var i = 0; i < cmap.size; i++) {
+    for (String key in cmap.keys) {
       // XXX: if we care about showing a hierarchy with our inherited methods,
       // then don't do this
-      if (uniqueNames.contains(cmap.getKey(i))) continue;
+      if (uniqueNames.contains(key)) continue;
 
-      uniqueNames.add(cmap.getKey(i));
-      vs.add(cmap.getValue(i));
+      uniqueNames.add(key);
+      vs.add(cmap[key]);
     }
 
-    for (var i = 0; i < imap.size; i++) {
+    for (String key in imap.keys) {
       // XXX: if we care about showing a hierarchy with our inherited methods,
       // then don't do this
-      if (uniqueNames.contains(imap.getKey(i))) continue;
+      if (uniqueNames.contains(key)) continue;
 
-      uniqueNames.add(imap.getKey(i));
-      vs.add(imap.getValue(i));
+      uniqueNames.add(key);
+      vs.add(imap[key]);
     }
 
     for (ExecutableElement value in vs) {
@@ -366,8 +366,8 @@ class Class extends ModelElement implements EnclosedElement {
   List<Operator> get inheritedOperators {
     if (_inheritedOperators != null) return _inheritedOperators;
     InheritanceManager manager = new InheritanceManager(element.library);
-    MemberMap cmap = manager.getMapOfMembersInheritedFromClasses(element);
-    MemberMap imap = manager.getMapOfMembersInheritedFromInterfaces(element);
+    Map<String, ExecutableElement> cmap = manager.getMembersInheritedFromClasses(element);
+    Map<String, ExecutableElement> imap = manager.getMembersInheritedFromInterfaces(element);
     operators.forEach((operator) {
       cmap.remove(operator.element.name);
       imap.remove(operator.element.name);
@@ -386,15 +386,15 @@ class Class extends ModelElement implements EnclosedElement {
       return false;
     }
 
-    for (int i = 0; i < imap.size; i++) {
-      ExecutableElement value = imap.getValue(i);
+    for (String key in imap.keys) {
+      ExecutableElement value = imap[key];
       if (_isInheritedOperator(value)) {
         vs.putIfAbsent(value.name, () => value);
       }
     }
 
-    for (int i = 0; i < cmap.size; i++) {
-      ExecutableElement value = cmap.getValue(i);
+    for (String key in cmap.keys) {
+      ExecutableElement value = cmap[key];
       if (_isInheritedOperator(value)) {
         vs.putIfAbsent(value.name, () => value);
       }
@@ -421,8 +421,8 @@ class Class extends ModelElement implements EnclosedElement {
     if (_inheritedProperties != null) return _inheritedProperties;
 
     InheritanceManager manager = new InheritanceManager(element.library);
-    MemberMap cmap = manager.getMapOfMembersInheritedFromClasses(element);
-    MemberMap imap = manager.getMapOfMembersInheritedFromInterfaces(element);
+    Map<String, ExecutableElement> cmap = manager.getMembersInheritedFromClasses(element);
+    Map<String, ExecutableElement> imap = manager.getMembersInheritedFromInterfaces(element);
 
     _inheritedProperties = [];
     List<ExecutableElement> vs = [];
@@ -433,22 +433,22 @@ class Class extends ModelElement implements EnclosedElement {
       if (f._getter != null) uniqueNames.add(f._getter.name);
     });
 
-    for (var i = 0; i < cmap.size; i++) {
+    for (String key in cmap.keys) {
       // XXX: if we care about showing a hierarchy with our inherited methods,
       // then don't do this
-      if (uniqueNames.contains(cmap.getKey(i))) continue;
+      if (uniqueNames.contains(key)) continue;
 
-      uniqueNames.add(cmap.getKey(i));
-      vs.add(cmap.getValue(i));
+      uniqueNames.add(key);
+      vs.add(cmap[key]);
     }
 
-    for (var i = 0; i < imap.size; i++) {
+    for (String key in imap.keys) {
       // XXX: if we care about showing a hierarchy with our inherited methods,
       // then don't do this
-      if (uniqueNames.contains(imap.getKey(i))) continue;
+      if (uniqueNames.contains(key)) continue;
 
-      uniqueNames.add(imap.getKey(i));
-      vs.add(imap.getValue(i));
+      uniqueNames.add(key);
+      vs.add(imap[key]);
     }
 
     vs.removeWhere((it) => instanceProperties.any((i) => it.name == i.name));
