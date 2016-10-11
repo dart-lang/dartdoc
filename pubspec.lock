@@ -6,7 +6,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.28.1"
+    version: "0.29.0"
   ansicolor:
     description:
       name: ansicolor
@@ -276,7 +276,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.15+7"
+    version: "0.12.15+10"
   typed_data:
     description:
       name: typed_data

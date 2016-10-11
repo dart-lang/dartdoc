@@ -1,5 +1,5 @@
 ## unreleased
-* removed some use of deprecated analyzer APIs
+* removed some uses of deprecated analyzer APIs
 
 ## 0.9.7+6
 * fixed an issue with generating docs with crossdart links.
