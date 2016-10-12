@@ -9,14 +9,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/error/error.dart';
 import 'package:analyzer/file_system/file_system.dart' as fileSystem;
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:analyzer/source/embedder.dart';
+import 'package:analyzer/source/embedder.dart' show EmbedderUriResolver;
 import 'package:analyzer/source/package_map_resolver.dart';
 import 'package:analyzer/source/sdk_ext.dart';
+import 'package:analyzer/src/context/builder.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
-import 'package:analyzer/src/generated/error.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
@@ -184,7 +185,7 @@ class DartDoc {
 
     SourceFactory sourceFactory = new SourceFactory(resolvers);
 
-    var options = new AnalysisOptionsImpl()..cacheSize = 512;
+    var options = new AnalysisOptionsImpl();
 
     AnalysisEngine.instance.processRequiredPlugins();
 
