@@ -27,26 +27,34 @@ import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
 import 'utils.dart';
 
-Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
+Map<String, Map<String, Map<String, List<Map<String, dynamic>>>>> __crossdartJson = {};
 
 final Map<Class, List<Class>> _implementors = new Map();
 
-Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
-  if (__crossdartJson == null) {
+Map<String, Map<String, List<Map<String, dynamic>>>> _crossdartJson(Element element) {
+  var packagePath = element.source.uri.path;
+  var packageName = p.split(packagePath).first;
+  if (__crossdartJson[packageName] == null) {
     if (config != null) {
       var crossdartFile =
           new File(p.join(config.inputDir.path, "crossdart.json"));
-      if (crossdartFile.existsSync()) {
-        __crossdartJson = JSON.decode(crossdartFile.readAsStringSync())
+      if (!crossdartFile.existsSync()) {
+        var relativePath = p.joinAll(p.split(packagePath).skip(1));
+        var absolutePath = element.source.fullName;
+        var dir = new Directory(absolutePath.replaceFirst(relativePath, ""));
+        crossdartFile = Library._getCrossdartJsonFile(dir);
+      }
+      if (crossdartFile != null && crossdartFile.existsSync()) {
+        __crossdartJson[packageName] = JSON.decode(crossdartFile.readAsStringSync())
             as Map<String, Map<String, List<Map<String, dynamic>>>>;
       } else {
-        __crossdartJson = {};
+        __crossdartJson[packageName] = {};
       }
     } else {
-      __crossdartJson = {};
+      __crossdartJson[packageName] = {};
     }
   }
-  return __crossdartJson;
+  return __crossdartJson[packageName];
 }
 
 int byName(Nameable a, Nameable b) =>
@@ -1202,16 +1210,44 @@ class Library extends ModelElement {
   }
 
   static String _getPackageName(Directory dir) {
+    var file = _searchForFile(dir, "pubspec.yaml");
+    if (file != null) {
+      PackageMeta meta = new PackageMeta.fromDir(file.parent);
+      return meta.name;
+    } else {
+      return null;
+    }
+  }
+
+  static String _getPackageVersion(Directory dir) {
+    var file = _searchForFile(dir, "pubspec.yaml");
+    if (file != null) {
+      PackageMeta meta = new PackageMeta.fromDir(file.parent);
+      return meta.version;
+    } else {
+      return null;
+    }
+  }
+
+  static File _getCrossdartJsonFile(Directory dir) {
+    print("Looking for a crossdart.json file");
+    return _searchForFile(dir, "crossdart.json");
+  }
+
+  static File _searchForFile(Directory dir, String filename) {
     if (!dir.existsSync() || !dir.path.contains(Platform.pathSeparator)) {
       return null;
     }
 
-    File pubspec = new File(p.join(dir.path, 'pubspec.yaml'));
-    if (pubspec.existsSync()) {
-      PackageMeta meta = new PackageMeta.fromDir(dir);
-      return meta.name;
+    File file = new File(p.join(dir.path, filename));
+    if (file.existsSync()) {
+      return file;
     } else {
-      return _getPackageName(dir.parent);
+      if (p.split(dir.path).length > 1) {
+        return _searchForFile(dir.parent, filename);
+      } else {
+        return null;
+      }
     }
   }
 }
@@ -2061,7 +2097,7 @@ abstract class SourceCodeMixin {
         String source = contents.substring(start, node.end);
 
         if (config != null && config.addCrossdart) {
-          source = crossdartifySource(_crossdartJson, source, element, start);
+          source = crossdartifySource(_crossdartJson(element), source, element, start);
         } else {
           source = const HtmlEscape().convert(source);
         }
@@ -2088,6 +2124,7 @@ abstract class SourceCodeMixin {
         var splittedUri =
             uri.replaceAll(new RegExp(r"^package:"), "").split("/");
         var packageName = splittedUri.first;
+        var relativePath = p.joinAll(splittedUri.skip(1));
         var packageVersion;
         if (packageName == packageMeta.name) {
           packageVersion = packageMeta.version;
@@ -2099,8 +2136,12 @@ abstract class SourceCodeMixin {
             packageVersion = match[2];
           }
         }
+        if (packageVersion == null) {
+          var packagePath = filePath.replaceFirst(relativePath, "");
+          packageVersion = Library._getPackageVersion(new Directory(packagePath));
+        }
         if (packageVersion != null) {
-          return "${packageName}/${packageVersion}/${splittedUri.skip(1).join("/")}";
+          return "${packageName}/${packageVersion}/${relativePath}";
         } else {
           return null;
         }
