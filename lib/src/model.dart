@@ -1367,7 +1367,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         // TODO link to the element's href
         var name = a.element.name;
         if (name.isEmpty) {
-          name = a.constantValue.type.displayName;
+          name = '@${a.constantValue.type.displayName}';
         }
         return name;
       }).toList(growable: false);
