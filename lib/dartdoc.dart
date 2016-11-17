@@ -6,23 +6,18 @@
 library dartdoc;
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' show Directory, Platform;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
-import 'package:analyzer/file_system/file_system.dart' as fileSystem;
+import 'package:analyzer/file_system/file_system.dart';
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:analyzer/source/embedder.dart' show EmbedderUriResolver;
-import 'package:analyzer/source/package_map_resolver.dart';
-import 'package:analyzer/source/sdk_ext.dart';
 import 'package:analyzer/src/context/builder.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
-import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:package_config/discovery.dart' as package_config;
 import 'package:path/path.dart' as path;
 
 import 'src/config.dart';
@@ -153,39 +148,21 @@ class DartDoc {
   List<LibraryElement> _parseLibraries(
       List<String> files, List<String> includeExternals) {
     List<LibraryElement> libraries = [];
-    DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
-        PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
-    List<UriResolver> resolvers = [];
-
-    fileSystem.Folder cwd =
-        PhysicalResourceProvider.INSTANCE.getResource(rootDir.path);
-    Map<String, List<fileSystem.Folder>> packageMap = _calculatePackageMap(cwd);
-    EmbedderUriResolver embedderUriResolver;
-    if (packageMap != null) {
-      resolvers.add(new SdkExtUriResolver(packageMap));
-      resolvers.add(new PackageMapUriResolver(
-          PhysicalResourceProvider.INSTANCE, packageMap));
-
-      var embedderYamls = new EmbedderYamlLocator(packageMap).embedderYamls;
-      embedderUriResolver = new EmbedderUriResolver(embedderYamls);
-      if (embedderUriResolver.length == 0) {
-        // The embedder uri resolver has no mappings. Use the default Dart SDK
-        // uri resolver.
-        resolvers.add(new DartUriResolver(sdk));
-      } else {
-        // The embedder uri resolver has mappings, use it instead of the default
-        // Dart SDK uri resolver.
-        resolvers.add(embedderUriResolver);
-      }
-    } else {
-      resolvers.add(new DartUriResolver(sdk));
-    }
-    resolvers.add(
-        new fileSystem.ResourceUriResolver(PhysicalResourceProvider.INSTANCE));
-
-    SourceFactory sourceFactory = new SourceFactory(resolvers);
-
-    var options = new AnalysisOptionsImpl();
+    ResourceProvider resourceProvider = PhysicalResourceProvider.INSTANCE;
+    ContextBuilder builder = new ContextBuilder(
+        resourceProvider,
+        new DartSdkManager(sdkDir.path, false, (options) {
+          DartSdk sdk = new FolderBasedDartSdk(
+              PhysicalResourceProvider.INSTANCE,
+              PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
+          sdk.context.analysisOptions = options;
+          return sdk;
+        }),
+        null);
+    AnalysisOptions options = builder.getAnalysisOptions(null, rootDir.path);
+    SourceFactory sourceFactory =
+        builder.createSourceFactory(rootDir.path, options);
+    DartSdk sdk = sourceFactory.dartSdk;
 
     AnalysisEngine.instance.processRequiredPlugins();
 
@@ -200,19 +177,7 @@ class DartDoc {
 
     List<Source> sources = [];
 
-    void processLibrary(String filePath) {
-      String name = filePath;
-      if (name.startsWith(Directory.current.path)) {
-        name = name.substring(Directory.current.path.length);
-        if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
-      }
-      print('parsing ${name}...');
-      JavaFile javaFile = new JavaFile(filePath).getAbsoluteFile();
-      Source source = new FileBasedSource(javaFile);
-      Uri uri = context.sourceFactory.restoreUri(source);
-      if (uri != null) {
-        source = new FileBasedSource(javaFile, uri);
-      }
+    void processSource(Source source) {
       sources.add(source);
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
@@ -220,12 +185,28 @@ class DartDoc {
       }
     }
 
+    void processLibrary(String filePath) {
+      String name = filePath;
+      if (name.startsWith(Directory.current.path)) {
+        name = name.substring(Directory.current.path.length);
+        if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
+      }
+      print('parsing ${name}...');
+      File file = resourceProvider.getFile(filePath);
+      Source source = file.createSource();
+      Uri uri = context.sourceFactory.restoreUri(source);
+      if (uri != null) {
+        source = file.createSource(uri);
+      }
+      processSource(source);
+    }
+
     files.forEach(processLibrary);
 
-    if ((embedderUriResolver != null) && (embedderUriResolver.length > 0)) {
-      embedderUriResolver.dartSdk.uris.forEach((String dartUri) {
-        Source source = embedderUriResolver.dartSdk.mapDartUri(dartUri);
-        processLibrary(source.fullName);
+    if (sdk is EmbedderSdk) {
+      sdk.uris.forEach((String dartUri) {
+        Source source = sdk.mapDartUri(dartUri);
+        processSource(source);
       });
     }
 
@@ -276,23 +257,6 @@ class DartDoc {
 
     return libraries.toList();
   }
-}
-
-Map<String, List<fileSystem.Folder>> _calculatePackageMap(
-    fileSystem.Folder dir) {
-  Map<String, List<fileSystem.Folder>> map = new Map();
-  var info = package_config.findPackagesFromFile(dir.toUri());
-
-  for (String name in info.packages) {
-    Uri uri = info.asMap()[name];
-    fileSystem.Resource resource =
-        PhysicalResourceProvider.INSTANCE.getResource(uri.toFilePath());
-    if (resource is fileSystem.Folder) {
-      map[name] = [resource];
-    }
-  }
-
-  return map;
 }
 
 /// This class is returned if dartdoc fails in an expected way (for instance, if

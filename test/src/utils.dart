@@ -22,14 +22,14 @@ import 'package:path/path.dart' as p;
 AnalyzerHelper analyzerHelper;
 DartSdk sdkDir;
 Package testPackage;
-final Directory testPackageBadDir = new Directory('testing/test_package_bad');
+final Directory testPackageBadDir = new Directory('testing/test_package_bad').absolute;
 
-final Directory testPackageDir = new Directory('testing/test_package');
+final Directory testPackageDir = new Directory('testing/test_package').absolute;
 Package testPackageSmall;
 final Directory testPackageWithEmbedderYaml =
-    new Directory('testing/test_package_embedder_yaml');
+    new Directory('testing/test_package_embedder_yaml').absolute;
 final Directory testPackageWithNoReadme =
-    new Directory('testing/test_package_small');
+    new Directory('testing/test_package_small').absolute;
 
 void delete(Directory dir) {
   if (dir.existsSync()) dir.deleteSync(recursive: true);

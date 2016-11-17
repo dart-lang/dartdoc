@@ -52,7 +52,7 @@ void main() {
         await dartdoc.generateDocs();
         fail('dartdoc should fail on analysis errors');
       } catch (e) {
-        expect(e is DartDocFailure, isTrue);
+        expect(e, new isInstanceOf<DartDocFailure>());
       }
     });
 
@@ -113,9 +113,10 @@ void main() {
       expect(p.name, 'test_package_embedder_yaml');
       expect(p.hasDocumentationFile, isFalse);
       expect(p.libraries, hasLength(3));
-      expect(p.libraries.map((lib) => lib.name).contains('dart:core'), isTrue);
-      expect(p.libraries.map((lib) => lib.name).contains('dart:async'), isTrue);
-      expect(p.libraries.map((lib) => lib.name).contains('dart:bear'), isTrue);
+      var libraryNames = p.libraries.map((lib) => lib.name).toList();
+      expect(libraryNames, contains('dart:core'));
+      expect(libraryNames, contains('dart:async'));
+      expect(libraryNames, contains('dart:bear'));
       // Ensure that we actually parsed some source by checking for
       // the 'Bear' class.
       Library dart_bear =
