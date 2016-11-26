@@ -173,9 +173,6 @@ ArgParser _createArgsParser() {
       help: 'Add Crossdart links to the source code pieces.',
       negatable: false,
       defaultsTo: false);
-  parser.addOption('dart-sdk',
-      help:
-          "Location of the Dart SDK. Use if SDK isn't automatically located.");
   parser.addFlag('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
   parser.addFlag('show-progress',
