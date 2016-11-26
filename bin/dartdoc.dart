@@ -10,8 +10,8 @@ import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:args/args.dart';
-import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as path;
 import 'package:stack_trace/stack_trace.dart';
 
@@ -39,10 +39,9 @@ main(List<String> arguments) async {
     exit(0);
   }
 
-  Directory sdkDir = cli_util.getSdkDir(arguments);
+  Directory sdkDir = getSdkDir();
   if (sdkDir == null) {
-    print("Error: unable to locate the Dart SDK. Please use the --dart-sdk "
-        "command line option or set the DART_SDK environment variable.");
+    print("Error: unable to locate the Dart SDK.");
     exit(1);
   }
 
