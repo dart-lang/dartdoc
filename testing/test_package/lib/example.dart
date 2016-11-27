@@ -48,6 +48,10 @@ get y => 2;
 
 int function1(String s, bool b, lastParam) => 5;
 
+T genericFunction<T>(T arg) {
+  return arg;
+}
+
 typedef String processMessage<T>(String msg);
 
 enum Animal {
@@ -219,6 +223,10 @@ class Dog implements Cat, E {
   void testGeneric(Map<String, dynamic> args) {}
 
   void testMethod(Iterable it) {}
+
+  T testGenericMethod<T>(T arg) {
+    return arg;
+  }
 
   @Deprecated("Internal use")
   static Dog createDog(String s) {
