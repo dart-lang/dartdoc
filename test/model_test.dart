@@ -6,11 +6,11 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
-import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -27,7 +27,7 @@ void main() {
   final Library twoExportsLib =
       package.libraries.firstWhere((lib) => lib.name == 'two_exports');
 
-  Directory sdkDir = cli_util.getSdkDir();
+  Directory sdkDir = getSdkDir();
 
   if (sdkDir == null) {
     print("Warning: unable to locate the Dart SDK.");
@@ -596,8 +596,8 @@ void main() {
       expect(Dog.operators[0].name, 'operator ==');
     });
 
-    test('inherited methods,including from Object ', () {
-      expect(B.inheritedMethods, hasLength(7));
+    test('inherited methods, including from Object ', () {
+      expect(B.inheritedMethods, hasLength(6));
       expect(B.hasInheritedMethods, isTrue);
     });
 
@@ -969,6 +969,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(testGeneric.parameters[0].modelType.linkedName,
           'Map&lt;String, dynamic&gt;');
     });
+
 
     test('parameter is a function', () {
       var functionArgParam = m4.parameters[1];

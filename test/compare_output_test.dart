@@ -4,20 +4,16 @@
 
 library dartdoc.compare_output_test;
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:mirrors';
 
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
-import 'package:which/which.dart';
 
 const List<String> _filesToIgnore = const <String>['.DS_Store'];
 
-const _gitBinName = 'git';
-
-String _gitCache;
+const String gitBinName = 'git';
 
 final _nameStatusLineRegexp = new RegExp(r'(\w)\t(.+)');
 
@@ -69,8 +65,6 @@ void main() {
         fail('dartdoc failed');
       }
 
-      var gitPath = await _gitBinPath();
-
       args = <String>[
         'diff',
         '--no-index',
@@ -80,7 +74,7 @@ void main() {
         tempDir.path
       ];
 
-      result = Process.runSync(gitPath, args);
+      result = Process.runSync(gitBinName, args);
 
       if (result.exitCode == 0) return;
 
@@ -102,7 +96,7 @@ void main() {
             p.join(_testPackageDocsPath, k),
             p.join(tempDir.path, k)
           ];
-          result = Process.runSync(gitPath, args);
+          result = Process.runSync(gitBinName, args);
           assert(result.exitCode != 0);
           message.add(result.stdout);
         }
@@ -165,13 +159,6 @@ void main() {
 
     });
   }, onPlatform: {'windows': new Skip('Avoiding parsing git output')});
-}
-
-Future<String> _gitBinPath() async {
-  if (_gitCache == null) {
-    _gitCache = await which(_gitBinName);
-  }
-  return _gitCache;
 }
 
 Map<String, String> _parseOutput(

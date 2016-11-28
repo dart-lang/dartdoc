@@ -148,6 +148,7 @@ class B extends Apple with Cat {
    */
   List<String> list;
 
+  @override
   bool get isImplemented => false;
 
   @deprecated
@@ -163,6 +164,9 @@ class B extends Apple with Cat {
   void writeMsg(String msg, [String transformMsg(String origMsg, bool flag)]) {
     // do nothing
   }
+
+  @override
+  void abstractMethod() { }
 }
 
 // Do NOT add a doc comment to C. Testing blank comments.
@@ -180,8 +184,10 @@ class ConstantCat implements Cat {
 
   const ConstantCat(this.name);
 
+  @override
   bool get isImplemented => true;
 
+  @override
   void abstractMethod() {
     // do nothing
   }
@@ -211,7 +217,8 @@ class Dog implements Cat, E {
   @override
   bool get isImplemented => true;
 
-  operator ==(Dog other) => name == other.name;
+  @override
+  operator ==(other) => other is Dog && name == other.name;
 
   foo() async => 42;
 
@@ -232,6 +239,9 @@ class Dog implements Cat, E {
   static Dog createDog(String s) {
     return new Dog.deprecatedCreate(s);
   }
+
+  @override
+  void abstractMethod() { }
 }
 
 abstract class E {}
@@ -257,12 +267,14 @@ class Klass {
   method() {}
 
   /// A shadowed method
+  @override
   toString() {}
 }
 
 class MyError extends Error {}
 
 class MyErrorImplements implements Error {
+  @override
   StackTrace get stackTrace => null;
 }
 
@@ -320,5 +332,6 @@ class _RetainedEnum {
   final String name;
 
   const _RetainedEnum(this.name);
+  @override
   String toString() => name;
 }
