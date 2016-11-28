@@ -588,7 +588,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.instanceMethods, hasLength(4));
+      expect(Dog.instanceMethods, hasLength(5));
     });
 
     test('get operators', () {
@@ -596,8 +596,8 @@ void main() {
       expect(Dog.operators[0].name, 'operator ==');
     });
 
-    test('inherited methods,including from Object ', () {
-      expect(B.inheritedMethods, hasLength(7));
+    test('inherited methods, including from Object ', () {
+      expect(B.inheritedMethods, hasLength(6));
       expect(B.hasInheritedMethods, isTrue);
     });
 
@@ -956,6 +956,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(testGeneric.parameters[0].modelType.linkedName,
           'Map&lt;String, dynamic&gt;');
     });
+
 
     test('parameter is a function', () {
       var functionArgParam = m4.parameters[1];

@@ -51,7 +51,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
   void _generateSearchIndex() {
     File jsonFile = _createOutputFile(out, 'index.json');
     String json = JSON.encode(documentedElements.map((ModelElement e) {
-      // TODO: find a better string for type
       Map data = {
         'name': e.name,
         'qualifiedName': e.name,
@@ -69,7 +68,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
       }
       return data;
     }).toList());
-    jsonFile.writeAsStringSync(json);
+    jsonFile.writeAsStringSync('${json}\n');
   }
 
   void _generateDocs() {
