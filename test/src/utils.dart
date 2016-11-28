@@ -14,9 +14,9 @@ import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as p;
 
 AnalyzerHelper analyzerHelper;
@@ -38,7 +38,7 @@ void delete(Directory dir) {
 void init() {
   ResourceProvider resourceProvider = PhysicalResourceProvider.INSTANCE;
   sdkDir = new FolderBasedDartSdk(
-      resourceProvider, resourceProvider.getFolder(cli_util.getSdkDir().path));
+      resourceProvider, resourceProvider.getFolder(getSdkDir().path));
 
   analyzerHelper = new AnalyzerHelper();
   var pathsForTestLib = [

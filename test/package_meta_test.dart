@@ -6,8 +6,8 @@ library dartdoc.package_utils_test;
 
 import 'dart:io';
 
-import 'package:cli_util/cli_util.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 

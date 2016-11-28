@@ -6,11 +6,11 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
-import 'package:cli_util/cli_util.dart' as cli_util;
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -27,7 +27,7 @@ void main() {
   final Library twoExportsLib =
       package.libraries.firstWhere((lib) => lib.name == 'two_exports');
 
-  Directory sdkDir = cli_util.getSdkDir();
+  Directory sdkDir = getSdkDir();
 
   if (sdkDir == null) {
     print("Warning: unable to locate the Dart SDK.");
