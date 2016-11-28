@@ -588,7 +588,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.instanceMethods, hasLength(5));
+      expect(Dog.instanceMethods, hasLength(6));
     });
 
     test('get operators', () {
@@ -637,7 +637,7 @@ void main() {
     });
 
     test('F has many inherited methods', () {
-      expect(F.inheritedMethods, hasLength(8));
+      expect(F.inheritedMethods, hasLength(9));
       expect(
           F.inheritedMethods.map((im) => im.name),
           equals([
@@ -647,6 +647,7 @@ void main() {
             'noSuchMethod',
             'test',
             'testGeneric',
+            'testGenericMethod',
             'testMethod',
             'toString'
           ]));
@@ -741,6 +742,7 @@ void main() {
       String valueByName(var name) {
         return animal.constants.firstWhere((f) => f.name == name).constantValue;
       }
+
       expect(valueByName('CAT'), equals('const Animal(0)'));
       expect(valueByName('DOG'), equals('const Animal(1)'));
       expect(valueByName('HORSE'), equals('const Animal(2)'));
@@ -759,11 +761,14 @@ void main() {
 
   group('Function', () {
     ModelFunction f1;
+    ModelFunction genericFunction;
     ModelFunction thisIsAsync;
     ModelFunction topLevelFunction;
 
     setUp(() {
-      f1 = exLibrary.functions.single;
+      f1 = exLibrary.functions.first;
+      genericFunction =
+          exLibrary.functions.firstWhere((f) => f.name == 'genericFunction');
       thisIsAsync =
           fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsAsync');
       topLevelFunction =
@@ -848,12 +853,16 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           '<span class="type-annotation"><a href="fake/Callback2.html">Callback2</a></span> '
           '<span class="parameter-name">callback</span></span>');
     });
+
+    test('supports generic methods', () {
+      expect(genericFunction.nameWithGenerics, 'genericFunction&lt;T&gt;');
+    });
   });
 
   group('Method', () {
     Class classB, klass, HasGenerics, Cat, CatString;
     Method m1, isGreaterThan, m4, m5, m6, m7, convertToMap, abstractMethod;
-    Method inheritedClear, testGeneric;
+    Method inheritedClear, testGeneric, testGenericMethod;
 
     setUp(() {
       klass = exLibrary.classes.singleWhere((c) => c.name == 'Klass');
@@ -879,6 +888,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((c) => c.name == 'Dog')
           .instanceMethods
           .singleWhere((m) => m.name == 'testGeneric');
+      testGenericMethod = exLibrary.classes
+          .singleWhere((c) => c.name == 'Dog')
+          .instanceMethods
+          .singleWhere((m) => m.name == 'testGenericMethod');
       convertToMap = HasGenerics.instanceMethods
           .singleWhere((m) => m.name == 'convertToMap');
     });
@@ -961,6 +974,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('parameter is a function', () {
       var functionArgParam = m4.parameters[1];
       expect(functionArgParam.modelType.createLinkedReturnTypeName(), 'String');
+    });
+
+    test('generic method type args are rendered', () {
+      expect(testGenericMethod.nameWithGenerics, 'testGenericMethod&lt;T&gt;');
     });
 
     test('doc for method with no return type', () {

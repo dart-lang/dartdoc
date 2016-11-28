@@ -528,6 +528,7 @@ class Class extends ModelElement implements EnclosedElement {
   // problem if we want to show that info later.
   List<ElementType> get mixins => _mixins;
 
+  @override
   String get nameWithGenerics {
     if (!modelType.isParameterizedType) return name;
     return '$name&lt;${_typeParameters.map((t) => t.name).join(', ')}&gt;';
@@ -1221,15 +1222,24 @@ class Method extends ModelElement
     implements EnclosedElement {
   bool _isInherited = false;
   Class _enclosingClass;
+  List<TypeParameter> typeParameters = [];
 
   Method(MethodElement element, Library library) : super(element, library) {
     _modelType = new ElementType(_method.type, this);
+    _calcTypeParameters();
   }
 
   Method.inherited(MethodElement element, this._enclosingClass, Library library)
       : super(element, library) {
     _modelType = new ElementType(_method.type, this);
     _isInherited = true;
+    _calcTypeParameters();
+  }
+
+  void _calcTypeParameters() {
+    typeParameters = _method.typeParameters.map((f) {
+      return new TypeParameter(f, library);
+    }).toList();
   }
 
   @override
@@ -1262,6 +1272,18 @@ class Method extends ModelElement
   String get kind => 'method';
 
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
+
+  @override
+  String get nameWithGenerics {
+    if (typeParameters.isEmpty) return name;
+    return '$name&lt;${typeParameters.map((t) => t.name).join(', ')}&gt;';
+  }
+
+  @override
+  String get genericParameters {
+    if (typeParameters.isEmpty) return '';
+    return '&lt;${typeParameters.map((t) => t.name).join(', ')}&gt;';
+  }
 
   @override
   Method get overriddenElement {
@@ -1482,6 +1504,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   @override
   String get name => element.name;
 
+  String get nameWithGenerics => name;
+
+  String get genericParameters => '';
+
   @override
   String get oneLineDoc => _documentation.asOneLiner;
 
@@ -1673,11 +1699,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       }
     }
 
-    var classContent = '';
-    if (isDeprecated) {
-      classContent = 'class="deprecated" ';
-    }
-
+    var classContent = isDeprecated ? 'class="deprecated" ' : '';
     return '<a ${classContent}href="${href}">$name</a>';
   }
 
@@ -1726,9 +1748,18 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 class ModelFunction extends ModelElement
     with SourceCodeMixin
     implements EnclosedElement {
+  List<TypeParameter> typeParameters = [];
+
   ModelFunction(FunctionElement element, Library library)
       : super(element, library) {
     _modelType = new ElementType(_func.type, this);
+    _calcTypeParameters();
+  }
+
+  void _calcTypeParameters() {
+    typeParameters = _func.typeParameters.map((f) {
+      return new TypeParameter(f, library);
+    }).toList();
   }
 
   @override
@@ -1746,6 +1777,18 @@ class ModelFunction extends ModelElement
   String get kind => 'function';
 
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
+
+  @override
+  String get nameWithGenerics {
+    if (typeParameters.isEmpty) return name;
+    return '$name&lt;${typeParameters.map((t) => t.name).join(', ')}&gt;';
+  }
+
+  @override
+  String get genericParameters {
+    if (typeParameters.isEmpty) return '';
+    return '&lt;${typeParameters.map((t) => t.name).join(', ')}&gt;';
+  }
 
   FunctionElement get _func => (element as FunctionElement);
 }
@@ -2240,6 +2283,7 @@ class Typedef extends ModelElement
       ? modelType.createLinkedReturnTypeName()
       : _typedef.returnType.name;
 
+  @override
   String get nameWithGenerics {
     if (!modelType.isParameterizedType) return name;
     return '$name&lt;${_typeParameters.map((t) => t.name).join(', ')}&gt;';

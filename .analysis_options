@@ -1,5 +1,7 @@
 analyzer:
   strong-mode: true
+  language:
+    enableGenericMethods: true
   exclude:
     - 'doc/api/**'
     - 'lib/templates/*.html'

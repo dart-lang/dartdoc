@@ -186,6 +186,7 @@ class DartDoc {
     SourceFactory sourceFactory = new SourceFactory(resolvers);
 
     var options = new AnalysisOptionsImpl();
+    options.enableGenericMethods = true;
 
     AnalysisEngine.instance.processRequiredPlugins();
 
