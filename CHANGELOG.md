@@ -1,4 +1,6 @@
-## unreleased
+## 0.9.8
+* support for generic methods.
+* remove deps on cli_utils and which.
 * removed some uses of deprecated analyzer APIs
 
 ## 0.9.7+6
