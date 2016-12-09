@@ -124,8 +124,9 @@ packages:
   markdown:
     description:
       name: markdown
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "/Users/jcollins/dart/markdown"
+      relative: false
+    source: path
     version: "0.11.1"
   matcher:
     description:
