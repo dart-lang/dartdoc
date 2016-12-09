@@ -37,9 +37,11 @@
 /// }
 /// ```
 ///
-/// Here is a hyperlink with angle brackets:
+/// Here are some hyperlinks with angle brackets:
 ///
-/// <https://myfakepackage.com/withapath>
+/// * <https://myfakepackage.com/withapath>
+/// * <ftp://ftp.myfakepackage.com/donthidemyschema>
+/// * <http://myfakepackage.com/buthidethisone>
 ///
 /// [pkg]: http://example.org
 library fake;
