@@ -40,7 +40,7 @@ export 'src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.9.7+6';
+const String version = '0.9.8';
 
 final String defaultOutDir = path.join('doc', 'api');
 
@@ -71,6 +71,23 @@ void initializeConfig(
       sdkVersion: sdkVersion,
       addCrossdart: addCrossdart,
       includeSource: includeSource);
+}
+
+Map<String, List<fileSystem.Folder>> _calculatePackageMap(
+    fileSystem.Folder dir) {
+  Map<String, List<fileSystem.Folder>> map = new Map();
+  var info = package_config.findPackagesFromFile(dir.toUri());
+
+  for (String name in info.packages) {
+    Uri uri = info.asMap()[name];
+    fileSystem.Resource resource =
+        PhysicalResourceProvider.INSTANCE.getResource(uri.toFilePath());
+    if (resource is fileSystem.Folder) {
+      map[name] = [resource];
+    }
+  }
+
+  return map;
 }
 
 /// Generates Dart documentation for all public Dart libraries in the given
@@ -186,6 +203,7 @@ class DartDoc {
     SourceFactory sourceFactory = new SourceFactory(resolvers);
 
     var options = new AnalysisOptionsImpl();
+    options.enableGenericMethods = true;
 
     AnalysisEngine.instance.processRequiredPlugins();
 
@@ -276,23 +294,6 @@ class DartDoc {
 
     return libraries.toList();
   }
-}
-
-Map<String, List<fileSystem.Folder>> _calculatePackageMap(
-    fileSystem.Folder dir) {
-  Map<String, List<fileSystem.Folder>> map = new Map();
-  var info = package_config.findPackagesFromFile(dir.toUri());
-
-  for (String name in info.packages) {
-    Uri uri = info.asMap()[name];
-    fileSystem.Resource resource =
-        PhysicalResourceProvider.INSTANCE.getResource(uri.toFilePath());
-    if (resource is fileSystem.Folder) {
-      map[name] = [resource];
-    }
-  }
-
-  return map;
 }
 
 /// This class is returned if dartdoc fails in an expected way (for instance, if
