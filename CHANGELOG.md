@@ -1,3 +1,7 @@
+## unreleased
+* change the `--include-external` flag to help disambiguate files to 
+  include (#1236)
+
 ## 0.9.8
 * support for generic methods.
 * remove deps on cli_utils and which.

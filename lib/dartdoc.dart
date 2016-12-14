@@ -252,12 +252,13 @@ class DartDoc {
     while (result.hasMoreWork) {
       result = context.performAnalysisTask();
     }
-
+    
     // Use the includeExternals.
     for (Source source in context.librarySources) {
       LibraryElement library = context.computeLibraryElement(source);
       String libraryName = Library.getLibraryName(library);
-      if (includeExternals.contains(libraryName)) {
+      var fullPath = source.fullName;
+      if (includeExternals.any((string) => fullPath.endsWith(string))) {
         if (libraries.map(Library.getLibraryName).contains(libraryName)) {
           continue;
         }
