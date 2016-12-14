@@ -1,4 +1,4 @@
-## unreleased
+## 0.9.8+1
 * change the `--include-external` flag to help disambiguate files to 
   include (#1236)
 
