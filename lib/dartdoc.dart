@@ -40,7 +40,7 @@ export 'src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.9.8';
+const String version = '0.9.8+1';
 
 final String defaultOutDir = path.join('doc', 'api');
 
@@ -252,7 +252,7 @@ class DartDoc {
     while (result.hasMoreWork) {
       result = context.performAnalysisTask();
     }
-    
+
     // Use the includeExternals.
     for (Source source in context.librarySources) {
       LibraryElement library = context.computeLibraryElement(source);
