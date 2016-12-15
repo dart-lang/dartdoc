@@ -1,6 +1,10 @@
 ## 0.9.9
-* [enhancement] Add support for stripping schema from display text for urls
-  defined with brackets (#1147)
+* Add support for stripping schema from display text for urls defined with
+  brackets (#1147)
+
+## 0.9.8+1
+* change the `--include-external` flag to help disambiguate files to 
+  include (#1236)
 
 ## 0.9.8
 * support for generic methods.

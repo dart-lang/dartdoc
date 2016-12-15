@@ -2,7 +2,8 @@ language: dart
 sudo: false
 dart:
   - dev
-  - stable
+# Disabled - re-enable once dev goes stable (see #1290).
+#  - stable
 env:
   - GEN_SDK_DOCS=true
   - GEN_SDK_DOCS=false

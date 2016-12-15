@@ -193,7 +193,9 @@ ArgParser _createArgsParser() {
   parser.addOption('include',
       allowMultiple: true, help: 'library names to generate docs for');
   parser.addOption('include-external',
-      allowMultiple: true, help: 'additional (external) libraries to include');
+      allowMultiple: true,
+      help: 'additional (external) dart files to include, use "dir/fileName", '
+          'as in lib/material.dart');
   parser.addOption('hosted-url',
       help:
           'URL where the docs will be hosted (used to generate the sitemap).');
