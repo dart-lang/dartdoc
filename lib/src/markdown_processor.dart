@@ -26,8 +26,10 @@ const bool _emitWarning = false;
 // We don't emit warnings currently: #572.
 const List<String> _oneLinerSkipTags = const ["code", "pre"];
 
-final List<md.InlineSyntax> _markdown_syntaxes = [new _InlineCodeSyntax(),
-                                                  new _AutolinkWithoutScheme()];
+final List<md.InlineSyntax> _markdown_syntaxes = [
+  new _InlineCodeSyntax(),
+  new _AutolinkWithoutScheme()
+];
 
 // Remove these schemas from the display text for hyperlinks.
 final RegExp _hide_schemes = new RegExp('^(http|https)://');
