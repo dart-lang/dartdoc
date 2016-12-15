@@ -1,3 +1,7 @@
+## 0.9.9
+* [enhancement] Add support for stripping schema from display text for urls
+  defined with brackets (#1147)
+
 ## 0.9.8
 * support for generic methods.
 * remove deps on cli_utils and which.

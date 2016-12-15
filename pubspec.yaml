@@ -1,6 +1,6 @@
 name: dartdoc
 # Also update the `version` field in lib/dartdoc.dart.
-version: 0.9.8
+version: 0.9.9
 author: Dart Team <misc@dartlang.org>
 description: A documentation generator for Dart.
 homepage: https://github.com/dart-lang/dartdoc
@@ -15,9 +15,10 @@ dependencies:
   # least version 3.0.3 to work around an issue with 3.0.2.
   http_parser: '>=3.0.3 <4.0.0'
   logging: '>=0.9.0 <0.12.0'
-  #markdown: ^0.11.1
-  markdown:
-    path: /Users/jcollins/dart/markdown
+  #markdown: '>=0.11.2 <0.12.0'
+  markdown: ^0.11.2
+  #markdown:
+  #  path: /Users/jcollins/dart/markdown
   mustache4dart: ^1.0.9
   package_config: '>=0.1.5 <2.0.0'
   path: ^1.3.0
