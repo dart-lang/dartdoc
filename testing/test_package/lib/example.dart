@@ -194,7 +194,12 @@ class ConstantCat implements Cat {
 }
 
 /// implements [Cat], [E]
-/// {@example core/pipes/ts/slice_pipe/slice_pipe_example.ts region='SlicePipe_list'}
+///
+/// {@example examples/dog_food}
+/// {@example examples/dog_food.txt region=meat}
+///
+/// {@example examples/test.dart region= lang=html}
+/// {@example examples/file-does-not-exist.js}
 class Dog implements Cat, E {
   String name;
 

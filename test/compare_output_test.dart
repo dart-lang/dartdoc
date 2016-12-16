@@ -133,9 +133,9 @@ void main() {
         fail('dartdoc failed');
       }
 
-      if (!result.stdout
-          .contains('core/pipes/ts/slice_pipe/slice_pipe_example.ts')) {
-        fail('Did not process @example in comments');
+      if (!result.stderr
+          .contains(new RegExp(r'Warning:.*file-does-not-exist\.js'))) {
+        fail('Warning missing for nonexistent @example: \nstdout: ${result.stdout} \nstderr: ${result.stderr}');
       }
     });
 
