@@ -1716,32 +1716,82 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return lib;
   }
 
-  // process the {@example ...} in comments and inject the example
-  // code into the doc commment.
-  // {@example core/ts/bootstrap/bootstrap.ts region='bootstrap'}
+  /// Replace {@example ...} in API comments with the content of named file.
+  ///
+  /// Syntax:
+  ///
+  ///     {@example PATH [region=NAME] [lang=NAME]}
+  ///
+  /// where PATH and NAME are tokens _without_ whitespace; NAME can optionally be
+  /// quoted (use of quotes is for backwards compatibility and discouraged).
+  ///
+  /// If PATH is `dir/file.ext` and region is `r` then we'll look for the file
+  /// named `dir/file-r.ext.md`, relative to the project root directory (of the
+  /// project for which the docs are being generated).
+  ///
+  /// Examples:
+  ///
+  ///     {@example examples/angular/quickstart/web/main.dart}
+  ///     {@example abc/def/xyz_component.dart region=template lang=html}
+  ///
   String _injectExamples(String rawdocs) {
-    if (rawdocs.contains('@example')) {
-      RegExp exp = new RegExp(r"{@example .+}");
-      Iterable<Match> matches = exp.allMatches(rawdocs);
-      var dirPath = this.package.packageMeta.dir.path;
-      for (var match in matches) {
-        var strings = match.group(0).split(' ');
-        var path = strings[1].replaceAll('/', Platform.pathSeparator);
-        if (path.contains(Platform.pathSeparator) &&
-            !path.startsWith(Platform.pathSeparator)) {
-          var file = new File(p.join(dirPath, 'examples', path));
-          if (file.existsSync()) {
-            // TODO(keertip):inject example
-          } else {
-            var filepath =
-                this.element.source.fullName.substring(dirPath.length + 1);
-            stdout.write(
-                '\nwarning: ${filepath}: file ${strings[1]} does not exist.');
-          }
+    final dirPath = this.package.packageMeta.dir.path;
+    RegExp exampleRE = new RegExp(r'{@example\s+([^}]+)}');
+    return rawdocs.replaceAllMapped(exampleRE, (match) {
+      var args = _getExampleArgs(match[1]);
+      var lang = args['lang'] ?? p.extension(args['src']);
+
+      var replacement = match[0]; // default to fully matched string.
+
+      var fragmentFile = new File(p.join(dirPath, args['file']));
+      if (fragmentFile.existsSync()) {
+        replacement = fragmentFile.readAsStringSync();
+        if (!lang.isEmpty) {
+          replacement = replacement.replaceFirst('```', '```$lang');
         }
+      } else {
+        // TODO: is this the proper way to handle warnings?
+        var filePath = this.element.source.fullName.substring(dirPath.length + 1);
+        final msg = 'Warning: ${filePath}: @example file not found, $fragmentFile';
+        stderr.write(msg);
       }
+      return replacement;
+    });
+  }
+
+  /// Helper for _injectExamples used to process @example arguments.
+  /// Returns a map of arguments. The first unnamed argument will have key 'src'.
+  /// The computed file path, constructed from 'src' and 'region' will have key
+  /// 'file'.
+  Map<String, String> _getExampleArgs(String argsAsString) {
+    // Extract PATH and return is under key 'src'
+    var endOfSrc = argsAsString.indexOf(' ');
+    if (endOfSrc < 0) endOfSrc = argsAsString.length;
+    var src = argsAsString.substring(0, endOfSrc);
+    src = src.replaceAll('/', Platform.pathSeparator);
+    final args = { 'src': src };
+
+    // Process remaining named arguments
+    var namedArgs = argsAsString.substring(endOfSrc);
+    // Arg value: allow optional quotes; warning: we still don't support whitespace.
+    RegExp keyValueRE = new RegExp('(\\w+)=[\'"]?(\\S*)[\'"]?');
+    Iterable<Match> matches = keyValueRE.allMatches(namedArgs);
+    matches.forEach((match) {
+      args[match[1]] = match[2];
+    });
+
+    // Compute 'file'
+    final fragExtension = '.md';
+    var file = src + fragExtension;
+    var region = args['region'] ?? '';
+    if (!region.isEmpty) {
+      var dir = p.dirname(src);
+      var basename = p.basenameWithoutExtension(src);
+      var ext = p.extension(src);
+      file = p.join(dir, '$basename-$region$ext$fragExtension');
     }
-    return rawdocs;
+    args['file'] = file;
+    return args;
   }
 }
 
