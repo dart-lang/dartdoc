@@ -304,8 +304,10 @@ class Class extends ModelElement implements EnclosedElement {
     if (_inheritedMethods != null) return _inheritedMethods;
 
     InheritanceManager manager = new InheritanceManager(element.library);
-    Map<String, ExecutableElement> cmap = manager.getMembersInheritedFromClasses(element);
-    Map<String, ExecutableElement> imap = manager.getMembersInheritedFromInterfaces(element);
+    Map<String, ExecutableElement> cmap =
+        manager.getMembersInheritedFromClasses(element);
+    Map<String, ExecutableElement> imap =
+        manager.getMembersInheritedFromInterfaces(element);
 
     // remove methods that exist on this class
     _methods.forEach((method) {
@@ -366,8 +368,10 @@ class Class extends ModelElement implements EnclosedElement {
   List<Operator> get inheritedOperators {
     if (_inheritedOperators != null) return _inheritedOperators;
     InheritanceManager manager = new InheritanceManager(element.library);
-    Map<String, ExecutableElement> cmap = manager.getMembersInheritedFromClasses(element);
-    Map<String, ExecutableElement> imap = manager.getMembersInheritedFromInterfaces(element);
+    Map<String, ExecutableElement> cmap =
+        manager.getMembersInheritedFromClasses(element);
+    Map<String, ExecutableElement> imap =
+        manager.getMembersInheritedFromInterfaces(element);
     operators.forEach((operator) {
       cmap.remove(operator.element.name);
       imap.remove(operator.element.name);
@@ -421,8 +425,10 @@ class Class extends ModelElement implements EnclosedElement {
     if (_inheritedProperties != null) return _inheritedProperties;
 
     InheritanceManager manager = new InheritanceManager(element.library);
-    Map<String, ExecutableElement> cmap = manager.getMembersInheritedFromClasses(element);
-    Map<String, ExecutableElement> imap = manager.getMembersInheritedFromInterfaces(element);
+    Map<String, ExecutableElement> cmap =
+        manager.getMembersInheritedFromClasses(element);
+    Map<String, ExecutableElement> imap =
+        manager.getMembersInheritedFromInterfaces(element);
 
     _inheritedProperties = [];
     List<ExecutableElement> vs = [];
@@ -1362,11 +1368,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   List<String> get annotations {
     // Check https://code.google.com/p/dart/issues/detail?id=23181
     // If that is fixed, this code might get a lot easier
-    if (element.computeNode() != null &&
-        element.computeNode() is AnnotatedNode) {
-      return (element.computeNode() as AnnotatedNode)
-          .metadata
-          .map((Annotation a) {
+    var computedNode = element.computeNode();
+    var ret = <String>[];
+    if (computedNode != null && computedNode is AnnotatedNode) {
+      ret = computedNode.metadata.map((Annotation a) {
         var annotationString = a.toSource().substring(1); // remove the @
         var e = a.element;
         if (e != null && (e is ConstructorElement)) {
@@ -1378,12 +1383,18 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         }
         return annotationString;
       }).toList(growable: false);
-    } else {
-      return element.metadata.map((ElementAnnotation a) {
+    }
+    if (ret.isEmpty || computedNode is! AnnotatedNode) {
+      ret = element.metadata.map((ElementAnnotation a) {
         // TODO link to the element's href
-        return a.element.name;
+        var name = a.element.name;
+        if (name.isEmpty) {
+          name = '@${a.constantValue.type.displayName}';
+        }
+        return name;
       }).toList(growable: false);
     }
+    return ret;
   }
 
   bool get canHaveParameters =>
