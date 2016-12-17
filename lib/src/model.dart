@@ -103,6 +103,22 @@ class Accessor extends ModelElement
   bool get isGetter => _accessor.isGetter;
 
   @override
+  Accessor get overriddenElement {
+    Element parent = element.enclosingElement;
+    if (parent is ClassElement) {
+      for (InterfaceType t in getAllSupertypes(parent)) {
+        var accessor = this.isGetter
+            ? t.getGetter(element.name)
+            : t.getSetter(element.name);
+        if (accessor != null) {
+          return new Accessor(accessor, library);
+        }
+      }
+    }
+    return null;
+  }
+
+  @override
   String get kind => 'accessor';
 
   PropertyAccessorElement get _accessor => (element as PropertyAccessorElement);
@@ -1548,7 +1564,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return __documentation;
   }
 
-  bool canOverride() => element is ClassMemberElement;
+  bool canOverride() => element is ClassMemberElement || element is PropertyAccessorElement;
 
   @override
   int compareTo(dynamic other) {

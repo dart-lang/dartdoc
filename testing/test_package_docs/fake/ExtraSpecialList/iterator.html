@@ -156,7 +156,31 @@
         <span class="returntype">Iterator</span>
         <span class="name ">iterator</span></section>
       
-      </section>
+      <section class="desc markdown">
+  <p>Returns a new <code>Iterator</code> that allows iterating the elements of this
+<code>Iterable</code>.</p>
+<p>Iterable classes may specify the iteration order of their elements
+(for example <code>List</code> always iterate in index order),
+or they may leave it unspecified (for example a hash-based <code>Set</code>
+may iterate in any order).</p>
+<p>Each time <code>iterator</code> is read, it returns a new iterator,
+which can be used to iterate through all the elements again.
+The iterators of the same iterable can be stepped through independently,
+but should return the same elements in the same order,
+as long as the underlying collection isn't changed.</p>
+<p>Modifying the collection may cause new iterators to produce
+different elements, and may change the order of existing elements.
+A <code>List</code> specifies its iteration order precisely,
+so modifying the list changes the iteration order predictably.
+A hash-based <code>Set</code> may change its iteration order completely
+when adding a new element to the set.</p>
+<p>Modifying the underlying collection after creating the new iterator
+may cause an error the next time <code>Iterator.moveNext</code> is called
+on that iterator.
+Any <em>modifiable</em> iterable class should specify which operations will
+break iteration.</p>
+</section>
+</section>
       
 
 
