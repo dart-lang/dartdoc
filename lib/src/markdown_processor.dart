@@ -28,6 +28,12 @@ const List<String> _oneLinerSkipTags = const ["code", "pre"];
 
 final List<md.InlineSyntax> _markdown_syntaxes = [new _InlineCodeSyntax()];
 
+class MatchingLinkResult {
+  final ModelElement element;
+  final String label;
+  MatchingLinkResult(this.element, this.label);
+}
+
 // TODO: this is in the wrong place
 NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
   if (modelElement == null) return null;
@@ -67,10 +73,10 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
 }
 
 /// Returns null if element is a parameter.
-ModelElement _getMatchingLinkElement(
+MatchingLinkResult _getMatchingLinkElement(
     String codeRef, ModelElement element, List<CommentReference> commentRefs,
     {bool isConstructor: false}) {
-  if (commentRefs == null) return null;
+  if (commentRefs == null) return new MatchingLinkResult(null, null);
 
   Element refElement;
   bool isEnum = false;
@@ -87,7 +93,9 @@ ModelElement _getMatchingLinkElement(
   }
 
   // Did not find an element in scope
-  if (refElement == null) return null;
+  if (refElement == null) {
+    return _findRefElementInLibrary(codeRef, element, commentRefs);
+  }
 
   if (refElement is PropertyAccessorElement) {
     // yay we found an accessor that wraps a const, but we really
@@ -99,7 +107,7 @@ ModelElement _getMatchingLinkElement(
     }
   }
 
-  if (refElement is ParameterElement) return null;
+  if (refElement is ParameterElement) return new MatchingLinkResult(null, null);
 
   // bug! this can fail to find the right library name if the element's name
   // we're looking for is the same as a name that comes in from an imported
@@ -114,24 +122,66 @@ ModelElement _getMatchingLinkElement(
     // Is there a way to pull this from a registry of known elements?
     // Seems like we're creating too many objects this way.
     if (isEnum) {
-      return new EnumField(refElement, refLibrary);
+      return new MatchingLinkResult(new EnumField(refElement, refLibrary), null);
     }
-    return new ModelElement.from(refElement, refLibrary);
+    return new MatchingLinkResult(new ModelElement.from(refElement, refLibrary), null);
   }
-  return null;
+  return new MatchingLinkResult(null, null);
+}
+
+MatchingLinkResult _findRefElementInLibrary(String codeRef, ModelElement element, List<CommentReference> commentRefs) {
+  final package = element.library.package;
+  final Map<String, ModelElement> result = {};
+  package.libraries.forEach((library) {
+    final List<ModelElement> modelElements = []
+      ..addAll(library.allClasses)
+      ..addAll(library.constants)
+      ..addAll(library.enums)
+      ..addAll(library.functions)
+      ..addAll(library.properties)
+      ..addAll(library.typedefs);
+
+    library.allClasses.forEach((c) {
+      modelElements.addAll(c.allInstanceMethods);
+      modelElements.addAll(c.allInstanceProperties);
+      modelElements.addAll(c.allOperators);
+      modelElements.addAll(c.staticMethods);
+      modelElements.addAll(c.staticProperties);
+    });
+
+    modelElements.forEach((modelElement) {
+      if (codeRef == modelElement.name || codeRef == modelElement.fullyQualifiedName) {
+        result[modelElement.fullyQualifiedName] = modelElement;
+      }
+    });
+  });
+
+  if (result.isEmpty) {
+    return new MatchingLinkResult(null, null);
+  } else if (result.length == 1) {
+    return new MatchingLinkResult(result.values.first, result.values.first.name);
+  } else {
+    if (_emitWarning) {
+      print("Abiguous reference '${codeRef}' in '${element.fullyQualifiedName}', " +
+        "we found it in the following elements: ${result.keys.map((k) => "'${k}'").join(", ")}");
+    }
+    return new MatchingLinkResult(null, null);
+  }
 }
 
 String _linkDocReference(String reference, ModelElement element,
     NodeList<CommentReference> commentRefs) {
-  ModelElement linkedElement;
   // support for [new Constructor] and [new Class.namedCtr]
   var refs = reference.split(' ');
+  MatchingLinkResult result;
   if (refs.length == 2 && refs.first == 'new') {
-    linkedElement = _getMatchingLinkElement(refs[1], element, commentRefs,
+    result = _getMatchingLinkElement(refs[1], element, commentRefs,
         isConstructor: true);
   } else {
-    linkedElement = _getMatchingLinkElement(reference, element, commentRefs);
+    result = _getMatchingLinkElement(reference, element, commentRefs);
   }
+  final linkedElement = result.element;
+  final label = result.label ?? reference;
   if (linkedElement != null) {
     var classContent = '';
     if (linkedElement.isDeprecated) {
@@ -139,12 +189,12 @@ String _linkDocReference(String reference, ModelElement element,
     }
     // this would be linkedElement.linkedName, but link bodies are slightly
     // different for doc references. sigh.
-    return '<a ${classContent}href="${linkedElement.href}">$reference</a>';
+    return '<a ${classContent}href="${linkedElement.href}">$label</a>';
   } else {
     if (_emitWarning) {
       print("  warning: unresolved doc reference '$reference' (in $element)");
     }
-    return '<code>${HTML_ESCAPE.convert(reference)}</code>';
+    return '<code>${HTML_ESCAPE.convert(label)}</code>';
   }
 }
 

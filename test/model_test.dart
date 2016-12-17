@@ -276,7 +276,7 @@ void main() {
       test(
           'link to a name in another library in this package, but is not imported into this library, is codeified',
           () {
-        expect(docsAsHtml, contains('<code>doesStuff</code>'));
+        expect(docsAsHtml, contains('<a href="anonymous_library/doesStuff.html">doesStuff</a>'));
       });
 
       test(
@@ -427,7 +427,7 @@ void main() {
       expect(resolved, isNotNull);
       expect(resolved,
           contains('<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
-      expect(resolved, contains('linking over to <code>Apple</code>.'));
+      expect(resolved, contains('linking over to <a href="ex/Apple-class.html">Apple</a>.'));
     });
 
     test('references to class and constructors', () {

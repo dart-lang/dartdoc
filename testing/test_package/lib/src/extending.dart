@@ -8,5 +8,5 @@ int topLevelVariable = 1;
 ///
 /// Also check out [topLevelVariable].
 ///
-/// This should not work: linking over to [Apple].
+/// This also should work: linking over to [Apple].
 class ExtendingClass extends BaseClass {}
