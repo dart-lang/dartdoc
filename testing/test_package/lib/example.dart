@@ -151,6 +151,9 @@ class B extends Apple with Cat {
   @override
   bool get isImplemented => false;
 
+  @override
+  String get s => "123";
+
   @deprecated
   Future doNothing() async {}
 

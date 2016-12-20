@@ -1196,6 +1196,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         onlySetterGetter,
         onlySetterSetter;
 
+    Class classB;
+
     setUp(() {
       TopLevelVariable justGetter =
           fakeLibrary.properties.firstWhere((p) => p.name == 'justGetter');
@@ -1205,6 +1207,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.properties.firstWhere((p) => p.name == 'justSetter');
       onlySetterSetter = justSetter.setter;
       onlySetterGetter = justSetter.getter;
+
+      classB = exLibrary.classes.singleWhere((c) => c.name == 'B');
     });
 
     test('are available on top-level variables', () {
@@ -1212,6 +1216,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(onlyGetterSetter, isNull);
       expect(onlySetterGetter, isNull);
       expect(onlySetterSetter.name, equals('justSetter='));
+    });
+
+    test('if overridden, gets documentation from superclasses', () {
+      final doc = classB.allInstanceProperties.firstWhere((p) => p.name == "s").getter.documentation;
+      expect(doc, equals("The getter for `s`"));
     });
   });
 
