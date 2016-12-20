@@ -1425,6 +1425,26 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return (_fullyQualifiedName ??= _buildFullyQualifiedName());
   }
 
+  String get sourceFileName {
+    return element.source.fullName;
+  }
+
+  int _lineNumber;
+  bool _isLineNumberComputed = false;
+  int get lineNumber {
+    if (!_isLineNumberComputed) {
+      var node = element.computeNode();
+      if (node is Declaration && node.element != null) {
+        var element = node.element;
+        var lineNumber = lineNumberCache.lineNumber(
+            element.source.fullName, element.nameOffset);
+        _lineNumber = lineNumber + 1;
+      }
+      _isLineNumberComputed = true;
+    }
+    return _lineNumber;
+  }
+
   bool get hasAnnotations => annotations.isNotEmpty;
 
   @override
@@ -2047,6 +2067,31 @@ class Package implements Nameable, Documentable {
     }
     return new Library(e.library, this);
   }
+
+  List<ModelElement> _allModelElements;
+  List<ModelElement> get allModelElements {
+    if (_allModelElements == null) {
+      _allModelElements = [];
+      this.libraries.forEach((library) {
+        _allModelElements
+          ..addAll(library.allClasses)
+          ..addAll(library.constants)
+          ..addAll(library.enums)
+          ..addAll(library.functions)
+          ..addAll(library.properties)
+          ..addAll(library.typedefs);
+
+        library.allClasses.forEach((c) {
+          _allModelElements.addAll(c.allInstanceMethods);
+          _allModelElements.addAll(c.allInstanceProperties);
+          _allModelElements.addAll(c.allOperators);
+          _allModelElements.addAll(c.staticMethods);
+          _allModelElements.addAll(c.staticProperties);
+        });
+      });
+    }
+    return _allModelElements;
+  }
 }
 
 class PackageCategory implements Comparable<PackageCategory> {
@@ -2127,6 +2172,8 @@ abstract class SourceCodeMixin {
       return "";
     }
   }
+
+  int get lineNumber;
 
   Element get element;
 
@@ -2210,21 +2257,9 @@ abstract class SourceCodeMixin {
   }
 
   String get _crossdartUrl {
-    if (_lineNumber != null && _crossdartPath != null) {
+    if (lineNumber != null && _crossdartPath != null) {
       String url = "//www.crossdart.info/p/${_crossdartPath}.html";
-      return "${url}#line-${_lineNumber}";
-    } else {
-      return null;
-    }
-  }
-
-  int get _lineNumber {
-    var node = element.computeNode();
-    if (node is Declaration && node.element != null) {
-      var element = node.element;
-      var lineNumber = lineNumberCache.lineNumber(
-          element.source.fullName, element.nameOffset);
-      return lineNumber + 1;
+      return "${url}#line-${lineNumber}";
     } else {
       return null;
     }

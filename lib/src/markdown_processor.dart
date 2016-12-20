@@ -9,13 +9,7 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart'
-    show
-        LibraryElement,
-        Element,
-        ConstructorElement,
-        ClassElement,
-        ParameterElement,
-        PropertyAccessorElement;
+    show LibraryElement, Element, ConstructorElement, ClassElement, ParameterElement, PropertyAccessorElement;
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 
@@ -39,27 +33,19 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
   if (modelElement == null) return null;
   if (modelElement.documentation == null && modelElement.canOverride()) {
     var melement = modelElement.overriddenElement;
-    if (melement != null &&
-        melement.element.computeNode() != null &&
-        melement.element.computeNode() is AnnotatedNode) {
-      var docComment = (melement.element.computeNode() as AnnotatedNode)
-          .documentationComment;
+    if (melement != null && melement.element.computeNode() != null && melement.element.computeNode() is AnnotatedNode) {
+      var docComment = (melement.element.computeNode() as AnnotatedNode).documentationComment;
       if (docComment != null) return docComment.references;
       return null;
     }
   }
   if (modelElement.element.computeNode() is AnnotatedNode) {
-    if ((modelElement.element.computeNode() as AnnotatedNode)
-            .documentationComment !=
-        null) {
-      return (modelElement.element.computeNode() as AnnotatedNode)
-          .documentationComment
-          .references;
+    if ((modelElement.element.computeNode() as AnnotatedNode).documentationComment != null) {
+      return (modelElement.element.computeNode() as AnnotatedNode).documentationComment.references;
     }
   } else if (modelElement.element is LibraryElement) {
     // handle anonymous libraries
-    if (modelElement.element.computeNode() == null ||
-        modelElement.element.computeNode().parent == null) {
+    if (modelElement.element.computeNode() == null || modelElement.element.computeNode().parent == null) {
       return null;
     }
     var node = modelElement.element.computeNode().parent.parent;
@@ -73,8 +59,7 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
 }
 
 /// Returns null if element is a parameter.
-MatchingLinkResult _getMatchingLinkElement(
-    String codeRef, ModelElement element, List<CommentReference> commentRefs,
+MatchingLinkResult _getMatchingLinkElement(String codeRef, ModelElement element, List<CommentReference> commentRefs,
     {bool isConstructor: false}) {
   if (commentRefs == null) return new MatchingLinkResult(null, null);
 
@@ -84,8 +69,7 @@ MatchingLinkResult _getMatchingLinkElement(
   for (CommentReference ref in commentRefs) {
     if (ref.identifier.name == codeRef) {
       bool isConstrElement = ref.identifier.staticElement is ConstructorElement;
-      if (isConstructor && isConstrElement ||
-          !isConstructor && !isConstrElement) {
+      if (isConstructor && isConstrElement || !isConstructor && !isConstrElement) {
         refElement = ref.identifier.staticElement;
         break;
       }
@@ -101,8 +85,7 @@ MatchingLinkResult _getMatchingLinkElement(
     // yay we found an accessor that wraps a const, but we really
     // want the top-level field itself
     refElement = (refElement as PropertyAccessorElement).variable;
-    if (refElement.enclosingElement is ClassElement &&
-        (refElement.enclosingElement as ClassElement).isEnum) {
+    if (refElement.enclosingElement is ClassElement && (refElement.enclosingElement as ClassElement).isEnum) {
       isEnum = true;
     }
   }
@@ -115,8 +98,7 @@ MatchingLinkResult _getMatchingLinkElement(
   //
   // Don't search through all libraries in the package, actually search
   // in the current scope.
-  Library refLibrary =
-      element.package.findLibraryFor(refElement, scopedTo: element);
+  Library refLibrary = element.package.findLibraryFor(refElement, scopedTo: element);
 
   if (refLibrary != null) {
     // Is there a way to pull this from a registry of known elements?
@@ -130,30 +112,12 @@ MatchingLinkResult _getMatchingLinkElement(
 }
 
 MatchingLinkResult _findRefElementInLibrary(String codeRef, ModelElement element, List<CommentReference> commentRefs) {
-  final package = element.library.package;
+  final Package package = element.library.package;
   final Map<String, ModelElement> result = {};
-  package.libraries.forEach((library) {
-    final List<ModelElement> modelElements = []
-      ..addAll(library.allClasses)
-      ..addAll(library.constants)
-      ..addAll(library.enums)
-      ..addAll(library.functions)
-      ..addAll(library.properties)
-      ..addAll(library.typedefs);
-
-    library.allClasses.forEach((c) {
-      modelElements.addAll(c.allInstanceMethods);
-      modelElements.addAll(c.allInstanceProperties);
-      modelElements.addAll(c.allOperators);
-      modelElements.addAll(c.staticMethods);
-      modelElements.addAll(c.staticProperties);
-    });
-
-    modelElements.forEach((modelElement) {
-      if (codeRef == modelElement.name || codeRef == modelElement.fullyQualifiedName) {
-        result[modelElement.fullyQualifiedName] = modelElement;
-      }
-    });
+  package.allModelElements.forEach((modelElement) {
+    if (codeRef == modelElement.name || codeRef == modelElement.fullyQualifiedName) {
+      result[modelElement.fullyQualifiedName] = modelElement;
+    }
   });
 
   if (result.isEmpty) {
@@ -161,27 +125,25 @@ MatchingLinkResult _findRefElementInLibrary(String codeRef, ModelElement element
   } else if (result.length == 1) {
     return new MatchingLinkResult(result.values.first, result.values.first.name);
   } else {
-    if (_emitWarning) {
-      print("Abiguous reference '${codeRef}' in '${element.fullyQualifiedName}', " +
-        "we found it in the following elements: ${result.keys.map((k) => "'${k}'").join(", ")}");
-    }
+    // TODO: add --fatal-warning, which would make the app crash in case of ambiguous references
+    print(
+        "Ambiguous reference to [${codeRef}] in '${element.fullyQualifiedName}' (${element.sourceFileName}:${element.lineNumber}). " +
+            "We found matches to the following elements: ${result.keys.map((k) => "'${k}'").join(", ")}");
     return new MatchingLinkResult(null, null);
   }
 }
 
-String _linkDocReference(String reference, ModelElement element,
-    NodeList<CommentReference> commentRefs) {
+String _linkDocReference(String reference, ModelElement element, NodeList<CommentReference> commentRefs) {
   // support for [new Constructor] and [new Class.namedCtr]
   var refs = reference.split(' ');
   MatchingLinkResult result;
   if (refs.length == 2 && refs.first == 'new') {
-    result = _getMatchingLinkElement(refs[1], element, commentRefs,
-        isConstructor: true);
+    result = _getMatchingLinkElement(refs[1], element, commentRefs, isConstructor: true);
   } else {
     result = _getMatchingLinkElement(reference, element, commentRefs);
   }
-  final linkedElement = result.element;
-  final label = result.label ?? reference;
+  final ModelElement linkedElement = result.element;
+  final String label = result.label ?? reference;
   if (linkedElement != null) {
     var classContent = '';
     if (linkedElement.isDeprecated) {
@@ -192,6 +154,7 @@ String _linkDocReference(String reference, ModelElement element,
     return '<a ${classContent}href="${linkedElement.href}">$label</a>';
   } else {
     if (_emitWarning) {
+      // TODO: add --fatal-warning, which would make the app crash in case of ambiguous references
       print("  warning: unresolved doc reference '$reference' (in $element)");
     }
     return '<code>${HTML_ESCAPE.convert(label)}</code>';
@@ -204,8 +167,7 @@ String _renderMarkdownToHtml(String text, [ModelElement element]) {
     return new md.Text(_linkDocReference(name, element, commentRefs));
   }
 
-  return md.markdownToHtml(text,
-      inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
+  return md.markdownToHtml(text, inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
 }
 
 class Documentation {
@@ -231,16 +193,13 @@ class Documentation {
       s.remove();
     }
     for (var pre in asHtmlDocument.querySelectorAll('pre')) {
-      if (pre.children.isNotEmpty &&
-          pre.children.length != 1 &&
-          pre.children.first.localName != 'code') {
+      if (pre.children.isNotEmpty && pre.children.length != 1 && pre.children.first.localName != 'code') {
         continue;
       }
 
       if (pre.children.isNotEmpty && pre.children.first.localName == 'code') {
         var code = pre.children.first;
-        pre.classes
-            .addAll(code.classes.where((name) => name.startsWith('language-')));
+        pre.classes.addAll(code.classes.where((name) => name.startsWith('language-')));
       }
 
       bool specifiesLanguage = pre.classes.isNotEmpty;
@@ -251,9 +210,7 @@ class Documentation {
 
     // `trim` fixes issue with line ending differences between mac and windows.
     var asHtml = asHtmlDocument.body.innerHtml?.trim();
-    var asOneLiner = asHtmlDocument.body.children.isEmpty
-        ? ''
-        : asHtmlDocument.body.children.first.innerHtml;
+    var asOneLiner = asHtmlDocument.body.children.isEmpty ? '' : asHtmlDocument.body.children.first.innerHtml;
     if (!asOneLiner.startsWith('<p>')) {
       asOneLiner = '<p>$asOneLiner</p>';
     }
