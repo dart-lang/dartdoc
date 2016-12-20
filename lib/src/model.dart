@@ -1752,7 +1752,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       } else {
         // TODO: is this the proper way to handle warnings?
         var filePath = this.element.source.fullName.substring(dirPath.length + 1);
-        final msg = 'Warning: ${filePath}: @example file not found, $fragmentFile';
+        final msg = '\nwarning: ${filePath}: @example file not found, ${fragmentFile.path}';
         stderr.write(msg);
       }
       return replacement;

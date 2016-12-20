@@ -134,8 +134,8 @@ void main() {
       }
 
       if (!result.stderr
-          .contains(new RegExp(r'Warning:.*file-does-not-exist\.js'))) {
-        fail('Warning missing for nonexistent @example: \nstdout: ${result.stdout} \nstderr: ${result.stderr}');
+          .contains(new RegExp(r'warning:.*file-does-not-exist\.js'))) {
+        fail('Missing warning for nonexistent @example: \nstdout: ${result.stdout} \nstderr: ${result.stderr}');
       }
     });
 
