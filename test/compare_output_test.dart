@@ -50,6 +50,8 @@ void main() {
 
       var args = <String>[
         dartdocBin,
+        '--example-path-prefix',
+        'examples',
         '--no-include-source',
         '--output',
         tempDir.path
@@ -133,9 +135,14 @@ void main() {
         fail('dartdoc failed');
       }
 
-      if (!result.stderr
-          .contains(new RegExp(r'warning:.*file-does-not-exist\.js'))) {
-        fail('Missing warning for nonexistent @example: \nstdout: ${result.stdout} \nstderr: ${result.stderr}');
+      // Examples are reported as unfound because we (purposefully)
+      // did not use --example-path-prefix above.
+      final sep = '.'; // We don't care what the path separator character is
+      final firstUnfoundExample = new RegExp('warning: lib${sep}example.dart: '
+          '@example file not found.*test_package${sep}dog${sep}food.md');
+      if (!result.stderr.contains(firstUnfoundExample)) {
+        fail('Should warn about unfound @example files: \n'
+            'stdout:\n${result.stdout}\nstderr:\n${result.stderr}');
       }
     });
 
@@ -156,7 +163,6 @@ void main() {
         print(result.stderr);
         fail('dartdoc failed');
       }
-
     });
   }, onPlatform: {'windows': new Skip('Avoiding parsing git output')});
 }

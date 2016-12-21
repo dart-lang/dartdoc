@@ -139,6 +139,7 @@ main(List<String> arguments) async {
 
   initializeConfig(
       addCrossdart: addCrossdart,
+      examplePathPrefix: args['example-path-prefix'],
       includeSource: includeSource,
       inputDir: inputDir,
       sdkVersion: sdk.sdkVersion);
@@ -199,6 +200,8 @@ ArgParser _createArgsParser() {
   parser.addOption('hosted-url',
       help:
           'URL where the docs will be hosted (used to generate the sitemap).');
+  parser.addOption('example-path-prefix',
+      help: 'Prefix for @example paths. Default is project root.');
   parser.addOption('rel-canonical-prefix',
       help:
           'If provided, add a rel="canonical" prefixed with provided value. \n'
