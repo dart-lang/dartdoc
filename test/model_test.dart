@@ -608,11 +608,11 @@ void main() {
     });
 
     test('get instance fields', () {
-      expect(Apple.instanceProperties, hasLength(2));
+      expect(Apple.instanceProperties, hasLength(3));
     });
 
     test('get inherited properties, including properties of Object', () {
-      expect(B.inheritedProperties, hasLength(4));
+      expect(B.inheritedProperties, hasLength(5));
     });
 
     test('get methods', () {
@@ -1269,6 +1269,16 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       final doc = classB.allInstanceProperties.firstWhere((p) => p.name == "s").getter.documentation;
       expect(doc, equals("The getter for `s`"));
     });
+
+    test("has correct linked return type if the return type is a parameterized typedef", () {
+      Class apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
+      final fieldWithTypedef = apple
+          .allInstanceProperties
+          .firstWhere((m) => m.name == "fieldWithTypedef");
+      expect(
+          fieldWithTypedef.linkedReturnType,
+          equals('<a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a>&lt;bool&gt;'));
+    });
   });
 
   group('Top-level Variable', () {
@@ -1479,6 +1489,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('linked return type', () {
       expect(t.linkedReturnType, equals('String'));
+    });
+
+    test("name with generics", () {
+      expect(t.nameWithGenerics, equals('processMessage&lt;T&gt;'));
     });
   });
 

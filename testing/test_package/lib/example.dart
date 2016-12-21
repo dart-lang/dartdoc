@@ -54,6 +54,8 @@ T genericFunction<T>(T arg) {
 
 typedef String processMessage<T>(String msg);
 
+typedef String ParameterizedTypedef<T>(T msg, int foo);
+
 enum Animal {
   /// Single line docs.
   CAT,
@@ -128,6 +130,11 @@ class Apple {
   void paramFromExportLib(Helper helper) {}
 
   void printMsg(String msg, [bool linebreak]) {}
+
+  /**
+   * fieldWithTypedef docs here
+   */
+  final ParameterizedTypedef<bool> fieldWithTypedef;
 }
 
 class WithGeneric<T> {
