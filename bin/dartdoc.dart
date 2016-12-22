@@ -180,9 +180,9 @@ ArgParser _createArgsParser() {
       help: 'Display progress indications to console stdout', negatable: false);
   parser.addOption('sdk-readme',
       help:
-          'Path to the SDK description file. Use if generating Dart SDK docs.');
+          'Path to the SDK description file; use if generating Dart SDK docs.');
   parser.addOption('input',
-      help: 'Path to source directory', defaultsTo: Directory.current.path);
+      help: 'Path to source directory.', defaultsTo: Directory.current.path);
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
   parser.addOption('header',
@@ -190,29 +190,29 @@ ArgParser _createArgsParser() {
   parser.addOption('footer',
       allowMultiple: true, help: 'path to file containing HTML text.');
   parser.addOption('exclude',
-      allowMultiple: true, help: 'library names to ignore');
+      allowMultiple: true, help: 'Library names to ignore.');
   parser.addOption('include',
-      allowMultiple: true, help: 'library names to generate docs for');
+      allowMultiple: true, help: 'Library names to generate docs for.');
   parser.addOption('include-external',
       allowMultiple: true,
-      help: 'additional (external) dart files to include, use "dir/fileName", '
-          'as in lib/material.dart');
+      help: 'Additional (external) dart files to include; use "dir/fileName", '
+          'as in lib/material.dart.');
   parser.addOption('hosted-url',
       help:
           'URL where the docs will be hosted (used to generate the sitemap).');
   parser.addOption('example-path-prefix',
-      help: 'Prefix for @example paths. Default is project root.');
+      help: 'Prefix for @example paths.\n(defaults to the project root)');
   parser.addOption('rel-canonical-prefix',
       help:
-          'If provided, add a rel="canonical" prefixed with provided value. \n'
-          'Consider using if building many versions of the docs for public SEO. '
-          'Learn more at https://goo.gl/gktN6F.');
+          'If provided, add a rel="canonical" prefixed with provided value. '
+          'Consider using if\nbuilding many versions of the docs for public '
+          'SEO; learn more at https://goo.gl/gktN6F.');
   parser.addFlag('include-source',
-      help: 'Show source code blocks', negatable: true, defaultsTo: true);
+      help: 'Show source code blocks.', negatable: true, defaultsTo: true);
   parser.addOption('favicon',
-      help: 'A path to a favicon for the generated docs');
+      help: 'A path to a favicon for the generated docs.');
   parser.addFlag('use-categories',
-      help: 'Group libraries from the same package into categories',
+      help: 'Group libraries from the same package into categories.',
       negatable: false,
       defaultsTo: false);
   return parser;
