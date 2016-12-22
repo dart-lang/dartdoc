@@ -1793,7 +1793,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     RegExp keyValueRE = new RegExp('(\\w+)=[\'"]?(\\S*)[\'"]?');
     Iterable<Match> matches = keyValueRE.allMatches(namedArgs);
     matches.forEach((match) {
-      args[match[1]] = match[2];
+      // Ignore optional quotes
+      args[match[1]] = match[2].replaceAll(new RegExp('[\'"]'), '');
     });
 
     // Compute 'file'
@@ -1806,7 +1807,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       var ext = p.extension(src);
       file = p.join(dir, '$basename-$region$ext$fragExtension');
     }
-    args['file'] = file;
+    args['file'] = config.examplePathPrefix == null ? file : p.join(config.examplePathPrefix, file);
     return args;
   }
 }

@@ -65,11 +65,13 @@ void initializeConfig(
     {Directory inputDir,
     String sdkVersion,
     bool addCrossdart: false,
+    String examplePathPrefix,
     bool includeSource: true}) {
   setConfig(
       inputDir: inputDir,
       sdkVersion: sdkVersion,
       addCrossdart: addCrossdart,
+      examplePathPrefix: examplePathPrefix,
       includeSource: includeSource);
 }
 
