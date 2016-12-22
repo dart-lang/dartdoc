@@ -130,6 +130,15 @@ class Apple {
   void printMsg(String msg, [bool linebreak]) {}
 }
 
+class WithGeneric<T> {
+  T prop;
+  WithGeneric(this.prop);
+}
+
+class WithGenericSub extends WithGeneric<Apple> {
+  WithGenericSub(Apple prop) : super(prop);
+}
+
 /// Extends class [Apple], use [new Apple] or [new Apple.fromString]
 ///
 /// <pre>

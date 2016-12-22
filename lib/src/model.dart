@@ -476,7 +476,7 @@ class Class extends ModelElement implements EnclosedElement {
           value.enclosingElement != null) {
         // TODO: why is this here?
         var e = value.variable;
-        if (_inheritedProperties.any((f) => f.element == e)) {
+        if (_inheritedProperties.any((f) => f.element.name == e.name)) {
           continue;
         }
         if (!package.isDocumented(value.enclosingElement)) {

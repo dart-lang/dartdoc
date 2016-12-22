@@ -528,7 +528,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(18));
+      expect(classes, hasLength(20));
     });
 
     test('abstract', () {
@@ -1187,6 +1187,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('a stand-alone setter does not have a getter', () {
       expect(onlySetter.getter, isNull);
+    });
+
+    test('has one inherited property for getter/setter when inherited from parameterized class', () {
+      Class withGenericSub = exLibrary.classes.firstWhere((c) => c.name == 'WithGenericSub');
+      expect(withGenericSub.inheritedProperties.where((p) => p.name == "prop").length, equals(1));
     });
   });
 
