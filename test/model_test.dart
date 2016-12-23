@@ -276,7 +276,15 @@ void main() {
       test(
           'link to a name in another library in this package, but is not imported into this library, is codeified',
           () {
-        expect(docsAsHtml, contains('<a href="anonymous_library/doesStuff.html">doesStuff</a>'));
+        expect(docsAsHtml, contains('<code>doesStuff</code>'));
+      });
+
+      test(
+          'link to unresolved name in the library in this package still should be linked',
+          () {
+        final Class helperClass = exLibrary.classes.firstWhere((c) => c.name == 'Helper');
+        expect(helperClass.documentationAsHtml, contains('<a href="ex/Apple-class.html">Apple</a>'));
+        expect(helperClass.documentationAsHtml, contains('<a href="ex/B-class.html">B</a>'));
       });
 
       test(
@@ -427,7 +435,7 @@ void main() {
       expect(resolved, isNotNull);
       expect(resolved,
           contains('<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
-      expect(resolved, contains('linking over to <a href="ex/Apple-class.html">Apple</a>.'));
+      expect(resolved, contains('linking over to <code>Apple</code>.'));
     });
 
     test('references to class and constructors', () {

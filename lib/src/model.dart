@@ -1215,6 +1215,30 @@ class Library extends ModelElement {
       return _getPackageName(dir.parent);
     }
   }
+
+  List<ModelElement> _allModelElements;
+  List<ModelElement> get allModelElements {
+    if (_allModelElements == null) {
+      final List<ModelElement> result = [];
+      result
+        ..addAll(library.allClasses)
+        ..addAll(library.constants)
+        ..addAll(library.enums)
+        ..addAll(library.functions)
+        ..addAll(library.properties)
+        ..addAll(library.typedefs);
+
+      library.allClasses.forEach((c) {
+        result.addAll(c.allInstanceMethods);
+        result.addAll(c.allInstanceProperties);
+        result.addAll(c.allOperators);
+        result.addAll(c.staticMethods);
+        result.addAll(c.staticProperties);
+      });
+      _allModelElements = result;
+    }
+    return _allModelElements;
+  }
 }
 
 class Method extends ModelElement
@@ -1312,6 +1336,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   String _linkedName;
 
   String _fullyQualifiedName;
+  String _fullyQualifiedNameWithoutLibrary;
 
   // WARNING: putting anything into the body of this seems
   // to lead to stack overflows. Need to make a registry of ModelElements
@@ -1425,9 +1450,11 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return (_fullyQualifiedName ??= _buildFullyQualifiedName());
   }
 
-  String get sourceFileName {
-    return element.source.fullName;
+  String get fullyQualifiedNameWithoutLibrary {
+    return (_fullyQualifiedNameWithoutLibrary ??= fullyQualifiedName.split(".").skip(1).join("."));
   }
+
+  String get sourceFileName => element.source.fullName;
 
   int _lineNumber;
   bool _isLineNumberComputed = false;
@@ -2073,21 +2100,7 @@ class Package implements Nameable, Documentable {
     if (_allModelElements == null) {
       _allModelElements = [];
       this.libraries.forEach((library) {
-        _allModelElements
-          ..addAll(library.allClasses)
-          ..addAll(library.constants)
-          ..addAll(library.enums)
-          ..addAll(library.functions)
-          ..addAll(library.properties)
-          ..addAll(library.typedefs);
-
-        library.allClasses.forEach((c) {
-          _allModelElements.addAll(c.allInstanceMethods);
-          _allModelElements.addAll(c.allInstanceProperties);
-          _allModelElements.addAll(c.allOperators);
-          _allModelElements.addAll(c.staticMethods);
-          _allModelElements.addAll(c.staticProperties);
-        });
+        _allModelElements.addAll(library.allModelElements);
       });
     }
     return _allModelElements;

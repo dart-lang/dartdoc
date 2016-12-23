@@ -40,8 +40,9 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
     }
   }
   if (modelElement.element.computeNode() is AnnotatedNode) {
-    if ((modelElement.element.computeNode() as AnnotatedNode).documentationComment != null) {
-      return (modelElement.element.computeNode() as AnnotatedNode).documentationComment.references;
+    final AnnotatedNode annotatedNode = modelElement.element.computeNode();
+    if (annotatedNode.documentationComment != null) {
+      return annotatedNode.documentationComment.references;
     }
   } else if (modelElement.element is LibraryElement) {
     // handle anonymous libraries
@@ -112,13 +113,21 @@ MatchingLinkResult _getMatchingLinkElement(String codeRef, ModelElement element,
 }
 
 MatchingLinkResult _findRefElementInLibrary(String codeRef, ModelElement element, List<CommentReference> commentRefs) {
-  final Package package = element.library.package;
+  final Library library = element.library;
+  final Package package = library.package;
   final Map<String, ModelElement> result = {};
-  package.allModelElements.forEach((modelElement) {
-    if (codeRef == modelElement.name || codeRef == modelElement.fullyQualifiedName) {
+
+  for (final modelElement in package.allModelElements) {
+    if (codeRef == modelElement.fullyQualifiedName) {
       result[modelElement.fullyQualifiedName] = modelElement;
     }
-  });
+  }
+
+  for (final modelElement in library.allModelElements) {
+    if (codeRef == modelElement.fullyQualifiedNameWithoutLibrary) {
+      result[modelElement.fullyQualifiedName] = modelElement;
+    }
+  }
 
   if (result.isEmpty) {
     return new MatchingLinkResult(null, null);
