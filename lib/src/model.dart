@@ -1755,7 +1755,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     RegExp exampleRE = new RegExp(r'{@example\s+([^}]+)}');
     return rawdocs.replaceAllMapped(exampleRE, (match) {
       var args = _getExampleArgs(match[1]);
-      var lang = args['lang'] ?? p.extension(args['src']);
+      var lang = args['lang'] ?? p.extension(args['src']).replaceFirst('.','');
 
       var replacement = match[0]; // default to fully matched string.
 
