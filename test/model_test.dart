@@ -911,6 +911,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(abstractMethod.fullkind, 'abstract method');
     });
 
+    test("returns correct overriddenDepth", () {
+      final bAbstractMethod = classB.allInstanceMethods.firstWhere((m) => m.name == "abstractMethod");
+      expect(abstractMethod.overriddenDepth, equals(0));
+      expect(bAbstractMethod.overriddenDepth, equals(1));
+    });
+
     test(
         'an inherited method has class as the enclosing class, when superclass not in package',
         () {

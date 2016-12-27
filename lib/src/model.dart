@@ -1529,6 +1529,19 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   ModelElement get overriddenElement => null;
 
+  int _overriddenDepth;
+  int get overriddenDepth {
+    if (_overriddenDepth == null) {
+      _overriddenDepth = 0;
+      ModelElement e = this;
+      while (e.overriddenElement != null) {
+        _overriddenDepth += 1;
+        e = e.overriddenElement;
+      }
+    }
+    return _overriddenDepth;
+  }
+
   Package get package =>
       (this is Library) ? (this as Library).package : this.library.package;
 
