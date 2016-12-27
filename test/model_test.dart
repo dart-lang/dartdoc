@@ -280,6 +280,14 @@ void main() {
       });
 
       test(
+          'link to unresolved name in the library in this package still should be linked',
+          () {
+        final Class helperClass = exLibrary.classes.firstWhere((c) => c.name == 'Helper');
+        expect(helperClass.documentationAsHtml, contains('<a href="ex/Apple-class.html">Apple</a>'));
+        expect(helperClass.documentationAsHtml, contains('<a href="ex/B-class.html">B</a>'));
+      });
+
+      test(
           'link to a name of a class from an imported library that exports the name',
           () {
         expect(

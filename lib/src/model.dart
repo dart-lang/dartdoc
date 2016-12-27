@@ -1231,6 +1231,30 @@ class Library extends ModelElement {
       return _getPackageName(dir.parent);
     }
   }
+
+  List<ModelElement> _allModelElements;
+  List<ModelElement> get allModelElements {
+    if (_allModelElements == null) {
+      final List<ModelElement> result = [];
+      result
+        ..addAll(library.allClasses)
+        ..addAll(library.constants)
+        ..addAll(library.enums)
+        ..addAll(library.functions)
+        ..addAll(library.properties)
+        ..addAll(library.typedefs);
+
+      library.allClasses.forEach((c) {
+        result.addAll(c.allInstanceMethods);
+        result.addAll(c.allInstanceProperties);
+        result.addAll(c.allOperators);
+        result.addAll(c.staticMethods);
+        result.addAll(c.staticProperties);
+      });
+      _allModelElements = result;
+    }
+    return _allModelElements;
+  }
 }
 
 class Method extends ModelElement
@@ -1328,6 +1352,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   String _linkedName;
 
   String _fullyQualifiedName;
+  String _fullyQualifiedNameWithoutLibrary;
 
   // WARNING: putting anything into the body of this seems
   // to lead to stack overflows. Need to make a registry of ModelElements
@@ -1439,6 +1464,28 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   /// For example: libraryName.className.methodName
   String get fullyQualifiedName {
     return (_fullyQualifiedName ??= _buildFullyQualifiedName());
+  }
+
+  String get fullyQualifiedNameWithoutLibrary {
+    return (_fullyQualifiedNameWithoutLibrary ??= fullyQualifiedName.split(".").skip(1).join("."));
+  }
+
+  String get sourceFileName => element.source.fullName;
+
+  int _lineNumber;
+  bool _isLineNumberComputed = false;
+  int get lineNumber {
+    if (!_isLineNumberComputed) {
+      var node = element.computeNode();
+      if (node is Declaration && node.element != null) {
+        var element = node.element;
+        var lineNumber = lineNumberCache.lineNumber(
+            element.source.fullName, element.nameOffset);
+        _lineNumber = lineNumber + 1;
+      }
+      _isLineNumberComputed = true;
+    }
+    return _lineNumber;
   }
 
   bool get hasAnnotations => annotations.isNotEmpty;
@@ -2077,6 +2124,17 @@ class Package implements Nameable, Documentable {
     }
     return new Library(e.library, this);
   }
+
+  List<ModelElement> _allModelElements;
+  List<ModelElement> get allModelElements {
+    if (_allModelElements == null) {
+      _allModelElements = [];
+      this.libraries.forEach((library) {
+        _allModelElements.addAll(library.allModelElements);
+      });
+    }
+    return _allModelElements;
+  }
 }
 
 class PackageCategory implements Comparable<PackageCategory> {
@@ -2157,6 +2215,8 @@ abstract class SourceCodeMixin {
       return "";
     }
   }
+
+  int get lineNumber;
 
   Element get element;
 
@@ -2240,21 +2300,9 @@ abstract class SourceCodeMixin {
   }
 
   String get _crossdartUrl {
-    if (_lineNumber != null && _crossdartPath != null) {
+    if (lineNumber != null && _crossdartPath != null) {
       String url = "//www.crossdart.info/p/${_crossdartPath}.html";
-      return "${url}#line-${_lineNumber}";
-    } else {
-      return null;
-    }
-  }
-
-  int get _lineNumber {
-    var node = element.computeNode();
-    if (node is Declaration && node.element != null) {
-      var element = node.element;
-      var lineNumber = lineNumberCache.lineNumber(
-          element.source.fullName, element.nameOffset);
-      return lineNumber + 1;
+      return "${url}#line-${lineNumber}";
     } else {
       return null;
     }
