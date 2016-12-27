@@ -1235,8 +1235,8 @@ class Library extends ModelElement {
   List<ModelElement> _allModelElements;
   List<ModelElement> get allModelElements {
     if (_allModelElements == null) {
-      final List<ModelElement> result = [];
-      result
+      final List<ModelElement> results = [];
+      results
         ..addAll(library.allClasses)
         ..addAll(library.constants)
         ..addAll(library.enums)
@@ -1245,14 +1245,16 @@ class Library extends ModelElement {
         ..addAll(library.typedefs);
 
       library.allClasses.forEach((c) {
-        result.addAll(c.allInstanceMethods);
-        result.addAll(c.allInstanceProperties);
-        result.addAll(c.allOperators);
-        result.addAll(c.staticMethods);
-        result.addAll(c.staticProperties);
+        results.addAll(c.allInstanceMethods);
+        results.addAll(c.allInstanceProperties);
+        results.addAll(c.allOperators);
+        results.addAll(c.staticMethods);
+        results.addAll(c.staticProperties);
       });
-      _allModelElements = result;
+
+      _allModelElements = results;
     }
+
     return _allModelElements;
   }
 }
@@ -1815,7 +1817,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     RegExp exampleRE = new RegExp(r'{@example\s+([^}]+)}');
     return rawdocs.replaceAllMapped(exampleRE, (match) {
       var args = _getExampleArgs(match[1]);
-      var lang = args['lang'] ?? p.extension(args['src']).replaceFirst('.','');
+      var lang = args['lang'] ?? p.extension(args['src']).replaceFirst('.', '');
 
       var replacement = match[0]; // default to fully matched string.
 

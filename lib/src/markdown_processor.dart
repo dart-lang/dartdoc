@@ -123,9 +123,12 @@ MatchingLinkResult _findRefElementInLibrary(String codeRef, ModelElement element
     }
   }
 
-  for (final modelElement in library.allModelElements) {
-    if (codeRef == modelElement.fullyQualifiedNameWithoutLibrary) {
-      result[modelElement.fullyQualifiedName] = modelElement;
+  // Only look for partially qualfied matches if we didn't find a fully qualfied one.
+  if (result.isEmpty) {
+    for (final modelElement in library.allModelElements) {
+      if (codeRef == modelElement.fullyQualifiedNameWithoutLibrary) {
+        result[modelElement.fullyQualifiedName] = modelElement;
+      }
     }
   }
 
