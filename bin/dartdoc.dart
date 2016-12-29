@@ -140,6 +140,7 @@ main(List<String> arguments) async {
   initializeConfig(
       addCrossdart: addCrossdart,
       examplePathPrefix: args['example-path-prefix'],
+      showWarnings: args['show-warnings'],
       includeSource: includeSource,
       inputDir: inputDir,
       sdkVersion: sdk.sdkVersion);
@@ -176,6 +177,8 @@ ArgParser _createArgsParser() {
       defaultsTo: false);
   parser.addFlag('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
+  parser.addFlag('show-warnings',
+      help: 'Display warnings.', negatable: false);
   parser.addFlag('show-progress',
       help: 'Display progress indications to console stdout', negatable: false);
   parser.addOption('sdk-readme',

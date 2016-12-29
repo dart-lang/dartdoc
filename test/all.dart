@@ -13,6 +13,7 @@ import 'model_utils_test.dart' as model_utils_tests;
 import 'package_meta_test.dart' as package_meta_tests;
 import 'resource_loader_test.dart' as resource_loader_tests;
 import 'template_test.dart' as template_tests;
+import 'markdown_processor_test.dart' as markdown_processor_tests;
 
 void main() {
   compare_output_tests.main();
@@ -24,4 +25,5 @@ void main() {
   package_meta_tests.main();
   resource_loader_tests.main();
   template_tests.main();
+  markdown_processor_tests.main();
 }

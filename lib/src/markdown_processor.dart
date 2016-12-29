@@ -6,6 +6,7 @@
 library dartdoc.markdown_processor;
 
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart'
@@ -14,8 +15,23 @@ import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 
 import 'model.dart';
+import 'reporting.dart';
 
-const bool _emitWarning = false;
+const validHtmlTags = const [
+  "a", "abbr", "address", "area", "article", "aside", "audio", "b", "base",
+  "bdi", "bdo", "blockquote", "body", "br", "button", "canvas", "caption",
+  "cite", "code", "col", "colgroup", "data", "datalist", "dd", "del", "dfn",
+  "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure",
+  "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hr",
+  "html", "i", "iframe", "img", "input", "ins", "kbd", "keygen", "label",
+  "legend", "li", "link", "main", "map", "mark", "meta", "meter", "nav",
+  "noscript", "object", "ol", "optgroup", "option", "output", "p", "param",
+  "pre", "progress", "q", "rb", "rp", "rt", "rtc", "ruby", "s", "samp",
+  "script", "section", "select", "small", "source", "span", "strong", "style",
+  "sub", "sup", "table", "tbody", "td", "template", "textarea", "tfoot", "th",
+  "thead", "time", "title", "tr", "track", "u", "ul", "var", "video", "wbr"
+];
+final nonHTMLRegexp = new RegExp("</?(?!(${validHtmlTags.join("|")})[> ])\\w+[> ]");
 
 // We don't emit warnings currently: #572.
 const List<String> _oneLinerSkipTags = const ["code", "pre"];
@@ -137,9 +153,8 @@ MatchingLinkResult _findRefElementInLibrary(String codeRef, ModelElement element
   } else if (result.length == 1) {
     return new MatchingLinkResult(result.values.first, result.values.first.name);
   } else {
-    // TODO: add --fatal-warning, which would make the app crash in case of ambiguous references
-    print(
-        "Ambiguous reference to [${codeRef}] in '${element.fullyQualifiedName}' (${element.sourceFileName}:${element.lineNumber}). " +
+    warning(
+        "Ambiguous reference to [${codeRef}] in ${_elementSource(element)}. " +
             "We found matches to the following elements: ${result.keys.map((k) => "'${k}'").join(", ")}");
     return new MatchingLinkResult(null, null);
   }
@@ -165,12 +180,17 @@ String _linkDocReference(String reference, ModelElement element, NodeList<Commen
     // different for doc references. sigh.
     return '<a ${classContent}href="${linkedElement.href}">$label</a>';
   } else {
-    if (_emitWarning) {
-      // TODO: add --fatal-warning, which would make the app crash in case of ambiguous references
-      print("  warning: unresolved doc reference '$reference' (in $element)");
-    }
+    warning("unresolved doc reference '$reference' (in ${_elementSource(element)}");
     return '<code>${HTML_ESCAPE.convert(label)}</code>';
   }
+}
+
+String _elementSource(ModelElement element) {
+  while ((element.element.documentationComment == null || element.element.documentationComment == "")
+      && element.overriddenElement != null) {
+    element = element.overriddenElement;
+  }
+  return "'${element.fullyQualifiedName}' (${element.sourceFileName}:${element.lineNumber})";
 }
 
 String _renderMarkdownToHtml(String text, [ModelElement element]) {
@@ -179,7 +199,54 @@ String _renderMarkdownToHtml(String text, [ModelElement element]) {
     return new md.Text(_linkDocReference(name, element, commentRefs));
   }
 
+  _showWarningsForGenericsOutsideSquareBracketsBlocks(text, element);
   return md.markdownToHtml(text, inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
+}
+
+// Generics should be wrapped into `[]` blocks, to avoid handling them as HTML tags
+// (like, [Apple<int>]). @Hixie asked for a warning when there's something, that looks
+// like a non HTML tag (a generic?) outside of a `[]` block.
+// https://github.com/dart-lang/dartdoc/issues/1250#issuecomment-269257942
+void _showWarningsForGenericsOutsideSquareBracketsBlocks(String text, [ModelElement element]) {
+  List<int> tagPositions = findFreeHangingGenericsPositions(text);
+  if (tagPositions.isNotEmpty) {
+    tagPositions.forEach((int position) {
+      String errorMessage = "There's a generic type handled as HTML";
+      if (element != null) {
+        errorMessage += " in ${_elementSource(element)}";
+      }
+      errorMessage += " - '${text.substring(max(position - 20, 0), min(position + 20, text.length))}'";
+      warning(errorMessage);
+    });
+  }
+}
+
+List<int> findFreeHangingGenericsPositions(String string) {
+  int currentPosition = 0;
+  int squareBracketsDepth = 0;
+  List<int> results = [];
+  while (true) {
+    final nextOpenBracket = string.indexOf("[", currentPosition);
+    final nextCloseBracket = string.indexOf("]", currentPosition);
+    final nextNonHTMLTag = string.indexOf(nonHTMLRegexp, currentPosition);
+    final nextPositions = [nextOpenBracket, nextCloseBracket, nextNonHTMLTag].where((p) => p != -1);
+    if (nextPositions.isNotEmpty) {
+      final minPos = nextPositions.reduce(min);
+      if (nextOpenBracket == minPos) {
+        squareBracketsDepth += 1;
+      } else if (nextCloseBracket == minPos) {
+        squareBracketsDepth = max(squareBracketsDepth - 1, 0);
+      } else if (nextNonHTMLTag == minPos) {
+        if (squareBracketsDepth == 0) {
+          results.add(minPos);
+        }
+      }
+      currentPosition = minPos + 1;
+    } else {
+      break;
+    }
+  }
+  return results;
 }
 
 class Documentation {
