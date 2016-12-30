@@ -55,7 +55,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
         'name': e.name,
         'qualifiedName': e.name,
         'href': e.href,
-        'type': e.kind
+        'type': e.kind,
+        'overriddenDepth': e.overriddenDepth,
       };
       if (e is EnclosedElement) {
         EnclosedElement ee = e as EnclosedElement;

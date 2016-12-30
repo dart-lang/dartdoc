@@ -280,6 +280,14 @@ void main() {
       });
 
       test(
+          'link to unresolved name in the library in this package still should be linked',
+          () {
+        final Class helperClass = exLibrary.classes.firstWhere((c) => c.name == 'Helper');
+        expect(helperClass.documentationAsHtml, contains('<a href="ex/Apple-class.html">Apple</a>'));
+        expect(helperClass.documentationAsHtml, contains('<a href="ex/B-class.html">B</a>'));
+      });
+
+      test(
           'link to a name of a class from an imported library that exports the name',
           () {
         expect(
@@ -528,7 +536,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(18));
+      expect(classes, hasLength(20));
     });
 
     test('abstract', () {
@@ -911,6 +919,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(abstractMethod.fullkind, 'abstract method');
     });
 
+    test("returns correct overriddenDepth", () {
+      final bAbstractMethod = classB.allInstanceMethods.firstWhere((m) => m.name == "abstractMethod");
+      expect(abstractMethod.overriddenDepth, equals(0));
+      expect(bAbstractMethod.overriddenDepth, equals(1));
+    });
+
     test(
         'an inherited method has class as the enclosing class, when superclass not in package',
         () {
@@ -1194,6 +1208,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('a stand-alone setter does not have a getter', () {
       expect(onlySetter.getter, isNull);
     });
+
+    test('has one inherited property for getter/setter when inherited from parameterized class', () {
+      Class withGenericSub = exLibrary.classes.firstWhere((c) => c.name == 'WithGenericSub');
+      expect(withGenericSub.inheritedProperties.where((p) => p.name == "prop").length, equals(1));
+    });
   });
 
   group('Accessor', () {
@@ -1201,6 +1220,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         onlyGetterSetter,
         onlySetterGetter,
         onlySetterSetter;
+
+    Class classB;
 
     setUp(() {
       TopLevelVariable justGetter =
@@ -1211,6 +1232,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.properties.firstWhere((p) => p.name == 'justSetter');
       onlySetterSetter = justSetter.setter;
       onlySetterGetter = justSetter.getter;
+
+      classB = exLibrary.classes.singleWhere((c) => c.name == 'B');
     });
 
     test('are available on top-level variables', () {
@@ -1218,6 +1241,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(onlyGetterSetter, isNull);
       expect(onlySetterGetter, isNull);
       expect(onlySetterSetter.name, equals('justSetter='));
+    });
+
+    test('if overridden, gets documentation from superclasses', () {
+      final doc = classB.allInstanceProperties.firstWhere((p) => p.name == "s").getter.documentation;
+      expect(doc, equals("The getter for `s`"));
     });
   });
 

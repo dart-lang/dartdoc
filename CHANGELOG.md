@@ -1,10 +1,17 @@
-## 0.9.9
+## 0.9.9+1
 * Add support for stripping schema from display text for urls defined with
   brackets (#1147)
 
+## 0.9.9
+* resolve non-imported symbols in comments (#1153) - thanks @astashov!
+* support `@example` insertion of .md file fragments (#1105) - thanks @chalin!
+* go to the first suggestion in the search field on enter (#1149)
+* rank parent class method higher than its overrides in search suggestions (#896)
+* fix double props when inherited from parameterized class (#1228)
+* add showing docs of overridden accessors (#1266)
+
 ## 0.9.8+1
-* change the `--include-external` flag to help disambiguate files to 
-  include (#1236)
+* change the `--include-external` flag to help disambiguate files to include (#1236)
 
 ## 0.9.8
 * support for generic methods.

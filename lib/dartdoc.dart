@@ -40,7 +40,7 @@ export 'src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.9.9';
+const String version = '0.9.9+1';
 
 final String defaultOutDir = path.join('doc', 'api');
 
@@ -65,11 +65,13 @@ void initializeConfig(
     {Directory inputDir,
     String sdkVersion,
     bool addCrossdart: false,
+    String examplePathPrefix,
     bool includeSource: true}) {
   setConfig(
       inputDir: inputDir,
       sdkVersion: sdkVersion,
       addCrossdart: addCrossdart,
+      examplePathPrefix: examplePathPrefix,
       includeSource: includeSource);
 }
 

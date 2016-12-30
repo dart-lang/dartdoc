@@ -103,6 +103,22 @@ class Accessor extends ModelElement
   bool get isGetter => _accessor.isGetter;
 
   @override
+  Accessor get overriddenElement {
+    Element parent = element.enclosingElement;
+    if (parent is ClassElement) {
+      for (InterfaceType t in getAllSupertypes(parent)) {
+        var accessor = this.isGetter
+            ? t.getGetter(element.name)
+            : t.getSetter(element.name);
+        if (accessor != null) {
+          return new Accessor(accessor, library);
+        }
+      }
+    }
+    return null;
+  }
+
+  @override
   String get kind => 'accessor';
 
   PropertyAccessorElement get _accessor => (element as PropertyAccessorElement);
@@ -460,7 +476,7 @@ class Class extends ModelElement implements EnclosedElement {
           value.enclosingElement != null) {
         // TODO: why is this here?
         var e = value.variable;
-        if (_inheritedProperties.any((f) => f.element == e)) {
+        if (_inheritedProperties.any((f) => f.element.name == e.name)) {
           continue;
         }
         if (!package.isDocumented(value.enclosingElement)) {
@@ -1215,6 +1231,32 @@ class Library extends ModelElement {
       return _getPackageName(dir.parent);
     }
   }
+
+  List<ModelElement> _allModelElements;
+  List<ModelElement> get allModelElements {
+    if (_allModelElements == null) {
+      final List<ModelElement> results = [];
+      results
+        ..addAll(library.allClasses)
+        ..addAll(library.constants)
+        ..addAll(library.enums)
+        ..addAll(library.functions)
+        ..addAll(library.properties)
+        ..addAll(library.typedefs);
+
+      library.allClasses.forEach((c) {
+        results.addAll(c.allInstanceMethods);
+        results.addAll(c.allInstanceProperties);
+        results.addAll(c.allOperators);
+        results.addAll(c.staticMethods);
+        results.addAll(c.staticProperties);
+      });
+
+      _allModelElements = results;
+    }
+
+    return _allModelElements;
+  }
 }
 
 class Method extends ModelElement
@@ -1312,6 +1354,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   String _linkedName;
 
   String _fullyQualifiedName;
+  String _fullyQualifiedNameWithoutLibrary;
 
   // WARNING: putting anything into the body of this seems
   // to lead to stack overflows. Need to make a registry of ModelElements
@@ -1425,6 +1468,28 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return (_fullyQualifiedName ??= _buildFullyQualifiedName());
   }
 
+  String get fullyQualifiedNameWithoutLibrary {
+    return (_fullyQualifiedNameWithoutLibrary ??= fullyQualifiedName.split(".").skip(1).join("."));
+  }
+
+  String get sourceFileName => element.source.fullName;
+
+  int _lineNumber;
+  bool _isLineNumberComputed = false;
+  int get lineNumber {
+    if (!_isLineNumberComputed) {
+      var node = element.computeNode();
+      if (node is Declaration && node.element != null) {
+        var element = node.element;
+        var lineNumber = lineNumberCache.lineNumber(
+            element.source.fullName, element.nameOffset);
+        _lineNumber = lineNumber + 1;
+      }
+      _isLineNumberComputed = true;
+    }
+    return _lineNumber;
+  }
+
   bool get hasAnnotations => annotations.isNotEmpty;
 
   @override
@@ -1513,6 +1578,19 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   ModelElement get overriddenElement => null;
 
+  int _overriddenDepth;
+  int get overriddenDepth {
+    if (_overriddenDepth == null) {
+      _overriddenDepth = 0;
+      ModelElement e = this;
+      while (e.overriddenElement != null) {
+        _overriddenDepth += 1;
+        e = e.overriddenElement;
+      }
+    }
+    return _overriddenDepth;
+  }
+
   Package get package =>
       (this is Library) ? (this as Library).package : this.library.package;
 
@@ -1548,7 +1626,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return __documentation;
   }
 
-  bool canOverride() => element is ClassMemberElement;
+  bool canOverride() => element is ClassMemberElement || element is PropertyAccessorElement;
 
   @override
   int compareTo(dynamic other) {
@@ -1739,7 +1817,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     RegExp exampleRE = new RegExp(r'{@example\s+([^}]+)}');
     return rawdocs.replaceAllMapped(exampleRE, (match) {
       var args = _getExampleArgs(match[1]);
-      var lang = args['lang'] ?? p.extension(args['src']);
+      var lang = args['lang'] ?? p.extension(args['src']).replaceFirst('.', '');
 
       var replacement = match[0]; // default to fully matched string.
 
@@ -1752,7 +1830,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       } else {
         // TODO: is this the proper way to handle warnings?
         var filePath = this.element.source.fullName.substring(dirPath.length + 1);
-        final msg = 'Warning: ${filePath}: @example file not found, $fragmentFile';
+        final msg = '\nwarning: ${filePath}: @example file not found, ${fragmentFile.path}';
         stderr.write(msg);
       }
       return replacement;
@@ -1777,7 +1855,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     RegExp keyValueRE = new RegExp('(\\w+)=[\'"]?(\\S*)[\'"]?');
     Iterable<Match> matches = keyValueRE.allMatches(namedArgs);
     matches.forEach((match) {
-      args[match[1]] = match[2];
+      // Ignore optional quotes
+      args[match[1]] = match[2].replaceAll(new RegExp('[\'"]'), '');
     });
 
     // Compute 'file'
@@ -1790,7 +1869,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       var ext = p.extension(src);
       file = p.join(dir, '$basename-$region$ext$fragExtension');
     }
-    args['file'] = file;
+    args['file'] = config.examplePathPrefix == null ? file : p.join(config.examplePathPrefix, file);
     return args;
   }
 }
@@ -2047,6 +2126,17 @@ class Package implements Nameable, Documentable {
     }
     return new Library(e.library, this);
   }
+
+  List<ModelElement> _allModelElements;
+  List<ModelElement> get allModelElements {
+    if (_allModelElements == null) {
+      _allModelElements = [];
+      this.libraries.forEach((library) {
+        _allModelElements.addAll(library.allModelElements);
+      });
+    }
+    return _allModelElements;
+  }
 }
 
 class PackageCategory implements Comparable<PackageCategory> {
@@ -2127,6 +2217,8 @@ abstract class SourceCodeMixin {
       return "";
     }
   }
+
+  int get lineNumber;
 
   Element get element;
 
@@ -2210,21 +2302,9 @@ abstract class SourceCodeMixin {
   }
 
   String get _crossdartUrl {
-    if (_lineNumber != null && _crossdartPath != null) {
+    if (lineNumber != null && _crossdartPath != null) {
       String url = "//www.crossdart.info/p/${_crossdartPath}.html";
-      return "${url}#line-${_lineNumber}";
-    } else {
-      return null;
-    }
-  }
-
-  int get _lineNumber {
-    var node = element.computeNode();
-    if (node is Declaration && node.element != null) {
-      var element = node.element;
-      var lineNumber = lineNumberCache.lineNumber(
-          element.source.fullName, element.nameOffset);
-      return lineNumber + 1;
+      return "${url}#line-${lineNumber}";
     } else {
       return null;
     }

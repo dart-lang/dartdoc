@@ -90,8 +90,8 @@ authoring doc comments for Dart with `dartdoc`.
 
 ## Excluding from documentation
 
-`dartdoc` will not generate documentation for a Dart element and its children
-that have the `<nodoc>` tag in the documentation comment.
+`dartdoc` will not generate documentation for a Dart element and its children that have the
+`@nodoc` tag in the documentation comment.
 
 ## Issues and bugs
 

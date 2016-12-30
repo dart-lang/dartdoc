@@ -9,13 +9,7 @@ import 'dart:convert';
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart'
-    show
-        LibraryElement,
-        Element,
-        ConstructorElement,
-        ClassElement,
-        ParameterElement,
-        PropertyAccessorElement;
+    show LibraryElement, Element, ConstructorElement, ClassElement, ParameterElement, PropertyAccessorElement;
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 
@@ -34,32 +28,31 @@ final List<md.InlineSyntax> _markdown_syntaxes = [
 // Remove these schemas from the display text for hyperlinks.
 final RegExp _hide_schemes = new RegExp('^(http|https)://');
 
+class MatchingLinkResult {
+  final ModelElement element;
+  final String label;
+  MatchingLinkResult(this.element, this.label);
+}
+
 // TODO: this is in the wrong place
 NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
   if (modelElement == null) return null;
   if (modelElement.documentation == null && modelElement.canOverride()) {
     var melement = modelElement.overriddenElement;
-    if (melement != null &&
-        melement.element.computeNode() != null &&
-        melement.element.computeNode() is AnnotatedNode) {
-      var docComment = (melement.element.computeNode() as AnnotatedNode)
-          .documentationComment;
+    if (melement != null && melement.element.computeNode() != null && melement.element.computeNode() is AnnotatedNode) {
+      var docComment = (melement.element.computeNode() as AnnotatedNode).documentationComment;
       if (docComment != null) return docComment.references;
       return null;
     }
   }
   if (modelElement.element.computeNode() is AnnotatedNode) {
-    if ((modelElement.element.computeNode() as AnnotatedNode)
-            .documentationComment !=
-        null) {
-      return (modelElement.element.computeNode() as AnnotatedNode)
-          .documentationComment
-          .references;
+    final AnnotatedNode annotatedNode = modelElement.element.computeNode();
+    if (annotatedNode.documentationComment != null) {
+      return annotatedNode.documentationComment.references;
     }
   } else if (modelElement.element is LibraryElement) {
     // handle anonymous libraries
-    if (modelElement.element.computeNode() == null ||
-        modelElement.element.computeNode().parent == null) {
+    if (modelElement.element.computeNode() == null || modelElement.element.computeNode().parent == null) {
       return null;
     }
     var node = modelElement.element.computeNode().parent.parent;
@@ -73,10 +66,9 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
 }
 
 /// Returns null if element is a parameter.
-ModelElement _getMatchingLinkElement(
-    String codeRef, ModelElement element, List<CommentReference> commentRefs,
+MatchingLinkResult _getMatchingLinkElement(String codeRef, ModelElement element, List<CommentReference> commentRefs,
     {bool isConstructor: false}) {
-  if (commentRefs == null) return null;
+  if (commentRefs == null) return new MatchingLinkResult(null, null);
 
   Element refElement;
   bool isEnum = false;
@@ -84,8 +76,7 @@ ModelElement _getMatchingLinkElement(
   for (CommentReference ref in commentRefs) {
     if (ref.identifier.name == codeRef) {
       bool isConstrElement = ref.identifier.staticElement is ConstructorElement;
-      if (isConstructor && isConstrElement ||
-          !isConstructor && !isConstrElement) {
+      if (isConstructor && isConstrElement || !isConstructor && !isConstrElement) {
         refElement = ref.identifier.staticElement;
         break;
       }
@@ -93,19 +84,20 @@ ModelElement _getMatchingLinkElement(
   }
 
   // Did not find an element in scope
-  if (refElement == null) return null;
+  if (refElement == null) {
+    return _findRefElementInLibrary(codeRef, element, commentRefs);
+  }
 
   if (refElement is PropertyAccessorElement) {
     // yay we found an accessor that wraps a const, but we really
     // want the top-level field itself
     refElement = (refElement as PropertyAccessorElement).variable;
-    if (refElement.enclosingElement is ClassElement &&
-        (refElement.enclosingElement as ClassElement).isEnum) {
+    if (refElement.enclosingElement is ClassElement && (refElement.enclosingElement as ClassElement).isEnum) {
       isEnum = true;
     }
   }
 
-  if (refElement is ParameterElement) return null;
+  if (refElement is ParameterElement) return new MatchingLinkResult(null, null);
 
   // bug! this can fail to find the right library name if the element's name
   // we're looking for is the same as a name that comes in from an imported
@@ -113,31 +105,63 @@ ModelElement _getMatchingLinkElement(
   //
   // Don't search through all libraries in the package, actually search
   // in the current scope.
-  Library refLibrary =
-      element.package.findLibraryFor(refElement, scopedTo: element);
+  Library refLibrary = element.package.findLibraryFor(refElement, scopedTo: element);
 
   if (refLibrary != null) {
     // Is there a way to pull this from a registry of known elements?
     // Seems like we're creating too many objects this way.
     if (isEnum) {
-      return new EnumField(refElement, refLibrary);
+      return new MatchingLinkResult(new EnumField(refElement, refLibrary), null);
     }
-    return new ModelElement.from(refElement, refLibrary);
+    return new MatchingLinkResult(new ModelElement.from(refElement, refLibrary), null);
   }
-  return null;
+  return new MatchingLinkResult(null, null);
 }
 
-String _linkDocReference(String reference, ModelElement element,
-    NodeList<CommentReference> commentRefs) {
-  ModelElement linkedElement;
+MatchingLinkResult _findRefElementInLibrary(String codeRef, ModelElement element, List<CommentReference> commentRefs) {
+  final Library library = element.library;
+  final Package package = library.package;
+  final Map<String, ModelElement> result = {};
+
+  for (final modelElement in package.allModelElements) {
+    if (codeRef == modelElement.fullyQualifiedName) {
+      result[modelElement.fullyQualifiedName] = modelElement;
+    }
+  }
+
+  // Only look for partially qualified matches if we didn't find a fully qualified one.
+  if (result.isEmpty) {
+    for (final modelElement in library.allModelElements) {
+      if (codeRef == modelElement.fullyQualifiedNameWithoutLibrary) {
+        result[modelElement.fullyQualifiedName] = modelElement;
+      }
+    }
+  }
+
+  if (result.isEmpty) {
+    return new MatchingLinkResult(null, null);
+  } else if (result.length == 1) {
+    return new MatchingLinkResult(result.values.first, result.values.first.name);
+  } else {
+    // TODO: add --fatal-warning, which would make the app crash in case of ambiguous references
+    print(
+        "Ambiguous reference to [${codeRef}] in '${element.fullyQualifiedName}' (${element.sourceFileName}:${element.lineNumber}). " +
+            "We found matches to the following elements: ${result.keys.map((k) => "'${k}'").join(", ")}");
+    return new MatchingLinkResult(null, null);
+  }
+}
+
+String _linkDocReference(String reference, ModelElement element, NodeList<CommentReference> commentRefs) {
   // support for [new Constructor] and [new Class.namedCtr]
   var refs = reference.split(' ');
+  MatchingLinkResult result;
   if (refs.length == 2 && refs.first == 'new') {
-    linkedElement = _getMatchingLinkElement(refs[1], element, commentRefs,
-        isConstructor: true);
+    result = _getMatchingLinkElement(refs[1], element, commentRefs, isConstructor: true);
   } else {
-    linkedElement = _getMatchingLinkElement(reference, element, commentRefs);
+    result = _getMatchingLinkElement(reference, element, commentRefs);
   }
+  final ModelElement linkedElement = result.element;
+  final String label = result.label ?? reference;
   if (linkedElement != null) {
     var classContent = '';
     if (linkedElement.isDeprecated) {
@@ -145,12 +169,13 @@ String _linkDocReference(String reference, ModelElement element,
     }
     // this would be linkedElement.linkedName, but link bodies are slightly
     // different for doc references. sigh.
-    return '<a ${classContent}href="${linkedElement.href}">$reference</a>';
+    return '<a ${classContent}href="${linkedElement.href}">$label</a>';
   } else {
     if (_emitWarning) {
+      // TODO: add --fatal-warning, which would make the app crash in case of ambiguous references
       print("  warning: unresolved doc reference '$reference' (in $element)");
     }
-    return '<code>${HTML_ESCAPE.convert(reference)}</code>';
+    return '<code>${HTML_ESCAPE.convert(label)}</code>';
   }
 }
 
@@ -160,8 +185,7 @@ String _renderMarkdownToHtml(String text, [ModelElement element]) {
     return new md.Text(_linkDocReference(name, element, commentRefs));
   }
 
-  return md.markdownToHtml(text,
-      inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
+  return md.markdownToHtml(text, inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
 }
 
 class Documentation {
@@ -187,16 +211,13 @@ class Documentation {
       s.remove();
     }
     for (var pre in asHtmlDocument.querySelectorAll('pre')) {
-      if (pre.children.isNotEmpty &&
-          pre.children.length != 1 &&
-          pre.children.first.localName != 'code') {
+      if (pre.children.isNotEmpty && pre.children.length != 1 && pre.children.first.localName != 'code') {
         continue;
       }
 
       if (pre.children.isNotEmpty && pre.children.first.localName == 'code') {
         var code = pre.children.first;
-        pre.classes
-            .addAll(code.classes.where((name) => name.startsWith('language-')));
+        pre.classes.addAll(code.classes.where((name) => name.startsWith('language-')));
       }
 
       bool specifiesLanguage = pre.classes.isNotEmpty;
@@ -207,9 +228,7 @@ class Documentation {
 
     // `trim` fixes issue with line ending differences between mac and windows.
     var asHtml = asHtmlDocument.body.innerHtml?.trim();
-    var asOneLiner = asHtmlDocument.body.children.isEmpty
-        ? ''
-        : asHtmlDocument.body.children.first.innerHtml;
+    var asOneLiner = asHtmlDocument.body.children.isEmpty ? '' : asHtmlDocument.body.children.first.innerHtml;
     if (!asOneLiner.startsWith('<p>')) {
       asOneLiner = '<p>$asOneLiner</p>';
     }
