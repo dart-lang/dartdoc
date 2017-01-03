@@ -18,15 +18,15 @@ import 'model.dart';
 import 'reporting.dart';
 
 const validHtmlTags = const [
-  "a", "abbr", "address", "area", "article", "aside", "audio", "b", "base",
-  "bdi", "bdo", "blockquote", "body", "br", "button", "canvas", "caption",
+  "a", "abbr", "address", "area", "article", "aside", "audio", "b",
+  "bdi", "bdo", "blockquote", "br", "button", "canvas", "caption",
   "cite", "code", "col", "colgroup", "data", "datalist", "dd", "del", "dfn",
-  "div", "dl", "dt", "em", "embed", "fieldset", "figcaption", "figure",
-  "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hr",
-  "html", "i", "iframe", "img", "input", "ins", "kbd", "keygen", "label",
+  "div", "dl", "dt", "em", "fieldset", "figcaption", "figure",
+  "footer", "form", "h1", "h2", "h3", "h4", "h5", "h6", "header", "hr",
+  "i", "iframe", "img", "input", "ins", "kbd", "keygen", "label",
   "legend", "li", "link", "main", "map", "mark", "meta", "meter", "nav",
   "noscript", "object", "ol", "optgroup", "option", "output", "p", "param",
-  "pre", "progress", "q", "rb", "rp", "rt", "rtc", "ruby", "s", "samp",
+  "pre", "progress", "q", "s", "samp",
   "script", "section", "select", "small", "source", "span", "strong", "style",
   "sub", "sup", "table", "tbody", "td", "template", "textarea", "tfoot", "th",
   "thead", "time", "title", "tr", "track", "u", "ul", "var", "video", "wbr"
@@ -154,7 +154,7 @@ MatchingLinkResult _findRefElementInLibrary(String codeRef, ModelElement element
     return new MatchingLinkResult(result.values.first, result.values.first.name);
   } else {
     warning(
-        "Ambiguous reference to [${codeRef}] in ${_elementSource(element)}. " +
+        "Ambiguous reference to [${codeRef}] in ${_elementLocation(element)}. " +
             "We found matches to the following elements: ${result.keys.map((k) => "'${k}'").join(", ")}");
     return new MatchingLinkResult(null, null);
   }
@@ -180,12 +180,12 @@ String _linkDocReference(String reference, ModelElement element, NodeList<Commen
     // different for doc references. sigh.
     return '<a ${classContent}href="${linkedElement.href}">$label</a>';
   } else {
-    warning("unresolved doc reference '$reference' (in ${_elementSource(element)}");
+    warning("unresolved doc reference '$reference' (in ${_elementLocation(element)}");
     return '<code>${HTML_ESCAPE.convert(label)}</code>';
   }
 }
 
-String _elementSource(ModelElement element) {
+String _elementLocation(ModelElement element) {
   while ((element.element.documentationComment == null || element.element.documentationComment == "")
       && element.overriddenElement != null) {
     element = element.overriddenElement;
@@ -211,9 +211,9 @@ void _showWarningsForGenericsOutsideSquareBracketsBlocks(String text, [ModelElem
   List<int> tagPositions = findFreeHangingGenericsPositions(text);
   if (tagPositions.isNotEmpty) {
     tagPositions.forEach((int position) {
-      String errorMessage = "There's a generic type handled as HTML";
+      String errorMessage = "Generic type handled as HTML";
       if (element != null) {
-        errorMessage += " in ${_elementSource(element)}";
+        errorMessage += " in ${_elementLocation(element)}";
       }
       errorMessage += " - '${text.substring(max(position - 20, 0), min(position + 20, text.length))}'";
       warning(errorMessage);
@@ -226,10 +226,10 @@ List<int> findFreeHangingGenericsPositions(String string) {
   int squareBracketsDepth = 0;
   List<int> results = [];
   while (true) {
-    final nextOpenBracket = string.indexOf("[", currentPosition);
-    final nextCloseBracket = string.indexOf("]", currentPosition);
-    final nextNonHTMLTag = string.indexOf(nonHTMLRegexp, currentPosition);
-    final nextPositions = [nextOpenBracket, nextCloseBracket, nextNonHTMLTag].where((p) => p != -1);
+    final int nextOpenBracket = string.indexOf("[", currentPosition);
+    final int nextCloseBracket = string.indexOf("]", currentPosition);
+    final int nextNonHTMLTag = string.indexOf(nonHTMLRegexp, currentPosition);
+    final Iterable<int> nextPositions = [nextOpenBracket, nextCloseBracket, nextNonHTMLTag].where((p) => p != -1);
     if (nextPositions.isNotEmpty) {
       final minPos = nextPositions.reduce(min);
       if (nextOpenBracket == minPos) {
