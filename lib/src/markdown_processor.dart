@@ -180,7 +180,7 @@ String _linkDocReference(String reference, ModelElement element, NodeList<Commen
     // different for doc references. sigh.
     return '<a ${classContent}href="${linkedElement.href}">$label</a>';
   } else {
-    warning("unresolved doc reference '$reference' (in ${_elementLocation(element)}");
+    warning("unresolved doc reference '$reference'${element != null ? " (in ${_elementLocation(element)}" : ""}");
     return '<code>${HTML_ESCAPE.convert(label)}</code>';
   }
 }
