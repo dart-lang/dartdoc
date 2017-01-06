@@ -1010,14 +1010,20 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('method source code crossdartifies correctly', () {
       convertToMap.clearSourceCodeCache();
       var fakePath = "testing/test_package/lib/fake.dart";
+      var offset = new File(fakePath)
+          .readAsStringSync()
+          .indexOf('Map<X, Y> convertToMap');
+      expect(offset, isNonNegative,
+             reason: "Can't find convertToMap function in ${fakePath}");
       if (Platform.isWindows) fakePath = fakePath.replaceAll('/', r'\\');
       new File(p.join(Directory.current.path, "crossdart.json"))
           .writeAsStringSync("""
               {"$fakePath":
-                {"references":[{"offset":1069,"end":1072,"remotePath":"http://www.example.com/fake.dart"}]}}
+                {"references":[{"offset":${offset},"end":${offset+3},"remotePath":"http://www.example.com/fake.dart"}]}}
       """);
 
       initializeConfig(addCrossdart: true, inputDir: Directory.current);
+
       expect(convertToMap.sourceCode,
           "<a class='crossdart-link' href='http://www.example.com/fake.dart'>Map</a>&lt;X, Y&gt; convertToMap() =&gt; null;");
     });

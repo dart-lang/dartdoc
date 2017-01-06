@@ -1,3 +1,7 @@
+## 0.9.9+1
+* Add support for stripping schema from display text for urls defined with
+  brackets (#1147)
+
 ## 0.9.9
 * resolve non-imported symbols in comments (#1153) - thanks @astashov!
 * support `@example` insertion of .md file fragments (#1105) - thanks @chalin!

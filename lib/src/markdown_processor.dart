@@ -36,7 +36,13 @@ final nonHTMLRegexp = new RegExp("</?(?!(${validHtmlTags.join("|")})[> ])\\w+[> 
 // We don't emit warnings currently: #572.
 const List<String> _oneLinerSkipTags = const ["code", "pre"];
 
-final List<md.InlineSyntax> _markdown_syntaxes = [new _InlineCodeSyntax()];
+final List<md.InlineSyntax> _markdown_syntaxes = [
+  new _InlineCodeSyntax(),
+  new _AutolinkWithoutScheme()
+];
+
+// Remove these schemas from the display text for hyperlinks.
+final RegExp _hide_schemes = new RegExp('^(http|https)://');
 
 class MatchingLinkResult {
   final ModelElement element;
@@ -304,6 +310,19 @@ class _InlineCodeSyntax extends md.InlineSyntax {
   bool onMatch(md.InlineParser parser, Match match) {
     var element = new md.Element.text('code', HTML_ESCAPE.convert(match[1]));
     parser.addNode(element);
+    return true;
+  }
+}
+
+class _AutolinkWithoutScheme extends md.AutolinkSyntax {
+  @override
+  bool onMatch(md.InlineParser parser, Match match) {
+    var url = match[1];
+    var text = md.escapeHtml(url).replaceFirst(_hide_schemes, '');
+    var anchor = new md.Element.text('a', text);
+    anchor.attributes['href'] = url;
+    parser.addNode(anchor);
+
     return true;
   }
 }
