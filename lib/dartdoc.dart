@@ -64,12 +64,14 @@ Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
 void initializeConfig(
     {Directory inputDir,
     String sdkVersion,
+    bool showWarnings: false,
     bool addCrossdart: false,
     String examplePathPrefix,
     bool includeSource: true}) {
   setConfig(
       inputDir: inputDir,
       sdkVersion: sdkVersion,
+      showWarnings: showWarnings,
       addCrossdart: addCrossdart,
       examplePathPrefix: examplePathPrefix,
       includeSource: includeSource);
