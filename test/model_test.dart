@@ -636,7 +636,7 @@ void main() {
           .firstWhere((m) => m.name == 'returnCool', orElse: () => null);
       expect(returnCool, isNotNull);
       expect(returnCool.linkedReturnType,
-          equals('<a href="ex/Cool-class.html">Cool</a>'));
+          equals('<a href="fake/Cool-class.html">Cool</a>'));
     });
 
     test('F has a single instance method', () {

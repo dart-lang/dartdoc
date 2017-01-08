@@ -26,6 +26,7 @@ import 'markdown_processor.dart' show Documentation;
 import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
 import 'utils.dart';
+import 'export_graph.dart';
 
 Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
 
@@ -98,7 +99,7 @@ class Accessor extends ModelElement
 
   @override
   String get href =>
-      '${library.dirName}/${_accessor.enclosingElement.name}/${name}.html';
+      '${canonicalLibrary.dirName}/${_accessor.enclosingElement.name}/${name}.html';
 
   bool get isGetter => _accessor.isGetter;
 
@@ -310,7 +311,7 @@ class Class extends ModelElement implements EnclosedElement {
   bool get hasSupertype => supertype != null;
 
   @override
-  String get href => '${library.dirName}/$fileName';
+  String get href => '${canonicalLibrary.dirName}/$fileName';
 
   /// Returns all the implementors of the class specified.
   List<Class> get implementors =>
@@ -663,7 +664,7 @@ class Constructor extends ModelElement
 
   @override
   String get href =>
-      '${library.dirName}/${_constructor.enclosingElement.name}/$name.html';
+      '${canonicalLibrary.dirName}/${_constructor.enclosingElement.name}/$name.html';
 
   @override
   bool get isConst => _constructor.isConst;
@@ -790,7 +791,7 @@ class EnumField extends Field {
 
   @override
   String get href =>
-      '${library.dirName}/${(enclosingElement as Class).fileName}';
+      '${canonicalLibrary.dirName}/${(enclosingElement as Class).fileName}';
 
   @override
   String get linkedName => name;
@@ -845,11 +846,20 @@ class Field extends ModelElement
   bool get hasSetter => _field.setter != null;
 
   @override
+  Library get canonicalLibrary {
+    if (isInherited) {
+      return enclosingElement.canonicalLibrary;
+    } else {
+      return super.canonicalLibrary;
+    }
+  }
+
+  @override
   String get href {
     if (enclosingElement is Class) {
-      return '${library.dirName}/${enclosingElement.name}/$_fileName';
+      return '${canonicalLibrary.dirName}/${enclosingElement.name}/$_fileName';
     } else if (enclosingElement is Library) {
-      return '${library.dirName}/$_fileName';
+      return '${canonicalLibrary.dirName}/$_fileName';
     } else {
       throw new StateError(
           '$name is not in a class or library, instead it is a ${enclosingElement.element}');
@@ -1285,6 +1295,15 @@ class Method extends ModelElement
   }
 
   @override
+  Library get canonicalLibrary {
+    if (isInherited) {
+      return enclosingElement.canonicalLibrary;
+    } else {
+      return super.canonicalLibrary;
+    }
+  }
+
+  @override
   ModelElement get enclosingElement {
     if (_enclosingClass == null) {
       _enclosingClass =
@@ -1301,7 +1320,7 @@ class Method extends ModelElement
   }
 
   @override
-  String get href => '${library.dirName}/${enclosingElement.name}/${fileName}';
+  String get href => '${canonicalLibrary.dirName}/${enclosingElement.name}/${fileName}';
 
   bool get isInherited => _isInherited;
 
@@ -1455,6 +1474,17 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     _rawDocs = _injectExamples(_rawDocs);
     return _rawDocs;
   }
+
+  Library _canonicalLibrary;
+  Library get canonicalLibrary {
+    if (_canonicalLibrary == null) {
+      final libraryElement = package.exportGraph.canonicalLibraryElement(element.library) ?? library.element;
+      _canonicalLibrary = package.libraries.firstWhere((l) => l.element == libraryElement, orElse: () => library);
+    }
+    return _canonicalLibrary;
+  }
+
+  bool get isCanonical => library == canonicalLibrary;
 
   @override
   String get documentationAsHtml => _documentation.asHtml;
@@ -1897,7 +1927,7 @@ class ModelFunction extends ModelElement
   String get fileName => "$name.html";
 
   @override
-  String get href => '${library.dirName}/$fileName';
+  String get href => '${canonicalLibrary.dirName}/$fileName';
 
   @override
   bool get isStatic => _func.isStatic;
@@ -2137,6 +2167,11 @@ class Package implements Nameable, Documentable {
     }
     return _allModelElements;
   }
+
+  ExportGraph _exportGraph;
+  ExportGraph get exportGraph {
+    return (_exportGraph ??= new ExportGraph(libraries.map((l) => l.element as LibraryElement)));
+  }
 }
 
 class PackageCategory implements Comparable<PackageCategory> {
@@ -2178,13 +2213,13 @@ class Parameter extends ModelElement implements EnclosedElement {
     var p = _parameter.enclosingElement;
 
     if (p is FunctionElement) {
-      return '${library.dirName}/${p.name}.html';
+      return '${canonicalLibrary.dirName}/${p.name}.html';
     } else {
       // TODO: why is this logic here?
       var name = Operator.friendlyNames.containsKey(p.name)
           ? Operator.friendlyNames[p.name]
           : p.name;
-      return '${library.dirName}/${p.enclosingElement.name}/' +
+      return '${canonicalLibrary.dirName}/${p.enclosingElement.name}/' +
           '${name}.html#${htmlId}';
     }
   }
@@ -2353,7 +2388,7 @@ class TopLevelVariable extends ModelElement
   bool get hasSetter => _variable.setter != null;
 
   @override
-  String get href => '${library.dirName}/$_fileName';
+  String get href => '${canonicalLibrary.dirName}/$_fileName';
 
   @override
   bool get isConst => _variable.isConst;
@@ -2404,7 +2439,7 @@ class Typedef extends ModelElement
   String get fileName => '$name.html';
 
   @override
-  String get href => '${library.dirName}/$fileName';
+  String get href => '${canonicalLibrary.dirName}/$fileName';
 
   @override
   String get kind => 'typedef';
@@ -2435,7 +2470,7 @@ class TypeParameter extends ModelElement {
 
   @override
   String get href =>
-      '${library.dirName}/${_typeParameter.enclosingElement.name}/$name';
+      '${canonicalLibrary.dirName}/${_typeParameter.enclosingElement.name}/$name';
 
   @override
   String get kind => 'type parameter';
