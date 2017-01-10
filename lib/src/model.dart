@@ -1478,7 +1478,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   Library _canonicalLibrary;
   Library get canonicalLibrary {
     if (_canonicalLibrary == null) {
-      final libraryElement = package.exportGraph.canonicalLibraryElement(element.library) ?? library.element;
+      final libraryElement = package.exportGraph.canonicalLibraryElement(element) ?? library.element;
       _canonicalLibrary = package.libraries.firstWhere((l) => l.element == libraryElement, orElse: () => library);
     }
     return _canonicalLibrary;
