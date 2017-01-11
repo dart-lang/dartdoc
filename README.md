@@ -93,6 +93,27 @@ authoring doc comments for Dart with `dartdoc`.
 `dartdoc` will not generate documentation for a Dart element and its children that have the
 `@nodoc` tag in the documentation comment.
 
+## Advanced features
+
+### Macros
+
+You can specify "macros", i.e. reusable pieces of documentation. For that, first specify a template
+anywhere in the comments, like:
+
+```
+/// {@template template_name}
+/// Some shared docs
+/// {@endtemplate}
+```
+
+and then you can insert it via `{@macro template_name}`, like
+
+```
+/// Some comment
+/// {@macro template_name}
+/// More comments
+```
+
 ## Issues and bugs
 
 Please file reports on the [GitHub Issue Tracker][].

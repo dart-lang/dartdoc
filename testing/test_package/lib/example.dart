@@ -249,6 +249,19 @@ class Dog implements Cat, E {
     return [new Apple()];
   }
 
+  /// Macro method
+  ///
+  /// {@template foo}
+  /// Foo macro content
+  /// {@endtemplate}
+  ///
+  /// {@macro foo}
+  /// More docs
+  void withMacro() {}
+
+  /// {@macro foo}
+  void withMacro2() {}
+
   void testGeneric(Map<String, dynamic> args) {}
 
   void testMethod(Iterable it) {}

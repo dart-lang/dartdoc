@@ -1472,6 +1472,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
     _rawDocs = stripComments(_rawDocs) ?? '';
     _rawDocs = _injectExamples(_rawDocs);
+    _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
+    _rawDocs = _injectMacros(_rawDocs);
     return _rawDocs;
   }
 
@@ -1867,6 +1869,55 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     });
   }
 
+  /// Replace {@macro ...} in API comments with the contents of the macro
+  ///
+  /// Syntax:
+  ///
+  ///     {@macro NAME}
+  ///
+  /// Example:
+  ///
+  /// You define the template anywhere in the comments like:
+  ///
+  ///     {@template foo}
+  ///     Foo contents!
+  ///     {@endtemplate}
+  ///
+  /// and them somewhere use it like this:
+  ///
+  ///     Some comments
+  ///     {@macro foo}
+  ///     More comments
+  ///
+  /// Which will render
+  ///
+  ///     Some comments
+  ///     Foo contents!
+  ///     More comments
+  ///
+  String _injectMacros(String rawDocs) {
+    final macroRegExp = new RegExp(r'{@macro\s+([^}]+)}');
+    return rawDocs.replaceAllMapped(macroRegExp, (match) {
+      return package.getMacro(match[1]);
+    });
+  }
+
+  /// Parse {@template ...} in API comments and store them in the index on the package.
+  ///
+  /// Syntax:
+  ///
+  ///     {@template NAME}
+  ///     The contents of the macro
+  ///     {@endtemplate}
+  ///
+  String _stripMacroTemplatesAndAddToIndex(String rawDocs) {
+    final templateRegExp = new RegExp(r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?', multiLine: true);
+    return rawDocs.replaceAllMapped(templateRegExp, (match) {
+      package.addMacro(match[1].trim(), match[2].trim());
+      return "";
+    });
+  }
+
   /// Helper for _injectExamples used to process @example arguments.
   /// Returns a map of arguments. The first unnamed argument will have key 'src'.
   /// The computed file path, constructed from 'src' and 'region' will have key
@@ -1899,7 +1950,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       var ext = p.extension(src);
       file = p.join(dir, '$basename-$region$ext$fragExtension');
     }
-    args['file'] = config.examplePathPrefix == null ? file : p.join(config.examplePathPrefix, file);
+    args['file'] = config?.examplePathPrefix == null ? file : p.join(config.examplePathPrefix, file);
     return args;
   }
 }
@@ -2020,6 +2071,7 @@ class Package implements Nameable, Documentable {
   final PackageMeta packageMeta;
   final Map<String, Library> elementLibaryMap = {};
   String _docsAsHtml;
+  final Map<String, String> _macros = {};
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {
     libraryElements.forEach((element) {
@@ -2171,6 +2223,12 @@ class Package implements Nameable, Documentable {
   ExportGraph _exportGraph;
   ExportGraph get exportGraph {
     return (_exportGraph ??= new ExportGraph(libraries.map((l) => l.element as LibraryElement)));
+  }
+
+  String getMacro(String name) => _macros[name];
+
+  void addMacro(String name, String content) {
+    _macros[name] = content;
   }
 }
 

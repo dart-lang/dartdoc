@@ -150,6 +150,8 @@ class DartDoc {
     }
 
     Package package = new Package(libraries, packageMeta);
+    // Go through docs of every model element in package to prebuild the macros index
+    package.allModelElements.forEach((m) => m.documentation);
 
     // Create the out directory.
     if (!outputDir.existsSync()) outputDir.createSync(recursive: true);

@@ -203,6 +203,26 @@ void main() {
     });
   });
 
+  group('Macros', () {
+    Class dog;
+    Method withMacro, withMacro2;
+
+    setUp(() {
+      dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
+      withMacro = dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro');
+      withMacro2 = dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro2');
+      package.allModelElements.forEach((m) => m.documentation);
+    });
+
+    test("renders a macro within the same comment where it's defined", () {
+      expect(withMacro.documentation, equals("Macro method\n\n\nFoo macro content\nMore docs"));
+    });
+
+    test("renders a macro in another method, not the same where it's defined", () {
+      expect(withMacro2.documentation, equals("Foo macro content"));
+    });
+  });
+
   group('Docs as HTML', () {
     Class Apple, B, superAwesomeClass, foo2;
     TopLevelVariable incorrectDocReferenceFromEx;
@@ -596,7 +616,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.instanceMethods, hasLength(6));
+      expect(Dog.instanceMethods, hasLength(8));
     });
 
     test('get operators', () {
@@ -645,7 +665,7 @@ void main() {
     });
 
     test('F has many inherited methods', () {
-      expect(F.inheritedMethods, hasLength(9));
+      expect(F.inheritedMethods, hasLength(11));
       expect(
           F.inheritedMethods.map((im) => im.name),
           equals([
@@ -657,7 +677,9 @@ void main() {
             'testGeneric',
             'testGenericMethod',
             'testMethod',
-            'toString'
+            'toString',
+            'withMacro',
+            'withMacro2'
           ]));
     });
 
