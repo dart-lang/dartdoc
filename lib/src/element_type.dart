@@ -23,7 +23,7 @@ class ElementType {
 
   bool get isParameterizedType {
     if (_type is FunctionType) {
-      return (_type as FunctionType).typeFormals.isNotEmpty;
+      return typeArguments.isNotEmpty;
     } else if (_type is ParameterizedType) {
       return (_type as ParameterizedType).typeArguments.isNotEmpty;
     }
@@ -75,11 +75,18 @@ class ElementType {
   }
 
   List<ElementType> get typeArguments {
-    if (_type is FunctionType) {
-      return (_type as FunctionType)
-          .typeFormals
-          .map((f) => _getElementTypeFrom(f.type))
-          .toList();
+    var type = _type;
+    if (type is FunctionType) {
+      Iterable<DartType> typeArguments;
+      if (type.element is FunctionTypeAliasElement && type.typeFormals.isEmpty) {
+        // TODO(jmesserly): simplify check above; we should have a way
+        // to find instantiated typedefs without consulting the element.
+        // Also, it will not work if we support typedefs declared inside classes.
+        typeArguments = type.typeArguments;
+      } else {
+        typeArguments = type.typeFormals.map((f) => f.type);
+      }
+      return typeArguments.map(_getElementTypeFrom).toList();
     } else {
       return (_type as ParameterizedType)
           .typeArguments
