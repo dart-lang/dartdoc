@@ -754,3 +754,16 @@ li.inherited a {
   opacity: 0.65;
   font-style: italic;
 }
+
+#instance-methods dt.inherited .name,
+#instance-properties dt.inherited .name,
+#operators dt.inherited .name {
+  font-weight: 300;
+  font-style: italic;
+}
+
+#instance-methods dt.inherited .signature,
+#instance-properties dt.inherited .signature,
+#operators dt.inherited .signature {
+  font-weight: 300;
+}

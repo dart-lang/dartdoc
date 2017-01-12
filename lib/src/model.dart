@@ -204,9 +204,8 @@ class Class extends ModelElement implements EnclosedElement {
   List<Method> get allInstanceMethods {
     if (_allInstanceMethods != null) return _allInstanceMethods;
     _allInstanceMethods = []
-      ..addAll(instanceMethods)
-      ..addAll(inheritedMethods)
-      ..sort(byName);
+      ..addAll([]..addAll(instanceMethods)..sort(byName))
+      ..addAll([]..addAll(inheritedMethods)..sort(byName));
     return _allInstanceMethods;
   }
 
@@ -218,9 +217,8 @@ class Class extends ModelElement implements EnclosedElement {
 
     // TODO best way to make this a fixed length list?
     _allInstanceProperties = []
-      ..addAll(instanceProperties)
-      ..addAll(inheritedProperties)
-      ..sort(byName);
+      ..addAll([]..addAll(instanceProperties)..sort(byName))
+      ..addAll([]..addAll(inheritedProperties)..sort(byName));
 
     return _allInstanceProperties;
   }
@@ -231,9 +229,8 @@ class Class extends ModelElement implements EnclosedElement {
   List<Operator> get allOperators {
     if (_allOperators != null) return _allOperators;
     _allOperators = []
-      ..addAll(operators)
-      ..addAll(inheritedOperators)
-      ..sort(byName);
+      ..addAll([]..addAll(operators)..sort(byName))
+      ..addAll([]..addAll(inheritedOperators)..sort(byName));
     return _allOperators;
   }
 
