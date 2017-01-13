@@ -1,4 +1,10 @@
-## 0.9.9+1
+## 0.9.10
+* de-emphasize and resort the inherited members (#641)
+* fix bug with showing parameterized typdefs in return types of properties (#1263)
+* add macros support, to help reuse documentation (#1264)
+* de-emphasize reexported symbols in generated docs (#1158)
+* fix for angular2 docs generation (#1315)
+* generate warnings for generics not in `[]` in the documentation (#1250)
 * Add support for stripping schema from display text for urls defined with
   brackets (#1147)
 
