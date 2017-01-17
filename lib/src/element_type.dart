@@ -64,7 +64,7 @@ class ElementType {
 
   ModelElement get returnElement {
     Element e = _returnTypeCore.element;
-    if (e == null) {
+    if (e == null || e.library == null) {
       return null;
     }
     Library lib = element.package.findLibraryFor(e);

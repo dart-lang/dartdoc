@@ -202,7 +202,11 @@ updateTestPackageDocs() {
   var options = new RunOptions(workingDirectory: 'testing/test_package');
   delete(getDir('test_package_docs'));
   Dart.run('../../bin/dartdoc.dart',
-      arguments: ['--no-include-source', '--output', '../test_package_docs', '--example-path-prefix', 'examples'],
+      arguments: [
+          '--no-include-source',
+          '--output', '../test_package_docs',
+          '--example-path-prefix', 'examples',
+          '--auto-include-dependencies'],
       runOptions: options);
 }
 

@@ -961,7 +961,10 @@ abstract class GetterSetterCombo {
 }
 
 class Library extends ModelElement {
-  static final Map<String, Library> _libraryMap = <String, Library>{};
+  static Map<String, Library> _libraryMap = <String, Library>{};
+  static void clearLibraryMap() {
+    _libraryMap = {};
+  }
 
   @override
   final Package package;
@@ -1769,6 +1772,31 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     }
 
     return builder.toString().trim();
+  }
+
+  /// Gather all the used elements, from the parameters and return type, for example
+  /// E.g. method <code>Iterable<String> blah(List<int> foo)</code> will return
+  /// <code>[Iterable, String, List, int]</code>
+  Iterable<ModelElement> get usedElements {
+    final set = new Set<ModelElement>();
+    if (modelType != null) {
+      if (modelType.isFunctionType) {
+        if (modelType.returnElement != null) {
+          set.addAll(modelType.returnElement.usedElements);
+        }
+        if (canHaveParameters) {
+          set.addAll(parameters.map((p) => p.usedElements).expand((i) => i));
+        }
+      } else if (modelType.element != null) {
+        set.add(modelType.element);
+        if (modelType.isParameterizedType) {
+          set.addAll(modelType.typeArguments
+              .map((arg) => arg.element.usedElements)
+              .expand((i) => i));
+        }
+      }
+    }
+    return set;
   }
 
   @override

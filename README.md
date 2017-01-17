@@ -114,6 +114,11 @@ and then you can insert it via `{@macro template_name}`, like
 /// More comments
 ```
 
+### Auto including dependencies
+
+If `--auto-include-dependencies` flag is provided, dartdoc tries to automatically add
+all the used libraries, even from other packages, to the list of the documented libraries.
+
 ## Issues and bugs
 
 Please file reports on the [GitHub Issue Tracker][].
