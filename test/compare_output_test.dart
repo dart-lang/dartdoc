@@ -50,6 +50,7 @@ void main() {
 
       var args = <String>[
         dartdocBin,
+        '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',
         '--no-include-source',
