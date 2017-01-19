@@ -1243,7 +1243,7 @@ class Library extends ModelElement {
   }
 
   List<ModelElement> _allModelElements;
-  List<ModelElement> get allModelElements {
+  Iterable<ModelElement> get allModelElements {
     if (_allModelElements == null) {
       final List<ModelElement> results = [];
       results
@@ -1266,6 +1266,11 @@ class Library extends ModelElement {
     }
 
     return _allModelElements;
+  }
+
+  List<ModelElement> _allCanonicalModelElements;
+  Iterable<ModelElement> get allCanonicalModelElements {
+    return (_allCanonicalModelElements ??= allModelElements.where((e) => e.isCanonical).toList());
   }
 }
 
@@ -2235,7 +2240,7 @@ class Package implements Nameable, Documentable {
   }
 
   List<ModelElement> _allModelElements;
-  List<ModelElement> get allModelElements {
+  Iterable<ModelElement> get allModelElements {
     if (_allModelElements == null) {
       _allModelElements = [];
       this.libraries.forEach((library) {
@@ -2243,6 +2248,11 @@ class Package implements Nameable, Documentable {
       });
     }
     return _allModelElements;
+  }
+
+  List<ModelElement> _allCanonicalModelElements;
+  Iterable<ModelElement> get allCanonicalModelElements {
+    return (_allCanonicalModelElements ??= allModelElements.where((e) => e.isCanonical).toList());
   }
 
   ExportGraph _exportGraph;

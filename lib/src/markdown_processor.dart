@@ -139,7 +139,7 @@ MatchingLinkResult _findRefElementInLibrary(String codeRef, ModelElement element
   final Package package = library.package;
   final Map<String, ModelElement> result = {};
 
-  for (final modelElement in package.allModelElements) {
+  for (final modelElement in package.allCanonicalModelElements) {
     if (codeRef == modelElement.fullyQualifiedName) {
       result[modelElement.fullyQualifiedName] = modelElement;
     }
@@ -147,7 +147,7 @@ MatchingLinkResult _findRefElementInLibrary(String codeRef, ModelElement element
 
   // Only look for partially qualified matches if we didn't find a fully qualified one.
   if (result.isEmpty) {
-    for (final modelElement in library.allModelElements) {
+    for (final modelElement in library.allCanonicalModelElements) {
       if (codeRef == modelElement.fullyQualifiedNameWithoutLibrary) {
         result[modelElement.fullyQualifiedName] = modelElement;
       }
