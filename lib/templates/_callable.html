@@ -5,7 +5,5 @@
 </dt>
 <dd{{ #isInherited }} class="inherited"{{ /isInherited}}>
   {{{ oneLineDoc }}}
-  {{#isInherited}}
-  <div class="features">inherited</div>
-  {{/isInherited}}
+  {{>features}}
 </dd>

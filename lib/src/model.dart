@@ -53,6 +53,31 @@ Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
 int byName(Nameable a, Nameable b) =>
     compareAsciiLowerCaseNatural(a.name, b.name);
 
+/// Items mapped to zero will sort before custom annotations, items mapped above
+/// zero are sorted after custom annotations, items mapped to zero will sort
+/// alphabetically among custom annotations.  (Custom annotations are assumed
+/// to be any annotation or feature not in this map).
+const Map<String, Int> featureOrder = const {
+  'inherited' : -1,
+  'final' : 1,
+  'async' : 2,
+  'read-only' : 3,
+  'write-only' : 3,
+  'read / write' : 3,
+};
+
+int byFeatureOrdering(String a, String b) {
+  int scoreA = 0;
+  int scoreB = 0;
+
+  if (featureOrder.containsKey(a)) scoreA = featureOrder[a];
+  if (featureOrder.containsKey(b)) scoreB = featureOrder[b];
+
+  if (scoreA < scoreB) return -1;
+  if (scoreA > scoreB) return 1;
+  return compareAsciiLowerCaseNatural(a, b);
+}
+
 void _addToImplementors(Class c) {
   _implementors.putIfAbsent(c, () => []);
 
@@ -867,7 +892,12 @@ class Field extends ModelElement
   bool get isConst => _field.isConst;
 
   @override
-  bool get isFinal => _field.isFinal;
+  bool get isFinal {
+    /// isFinal returns true for the field even if it has an explicit getter
+    /// (which means we should not document it as "final").
+    if (hasExplicitGetter) return false;
+    return _field.isFinal;
+  }
 
   bool get isInherited => _isInherited;
 
@@ -882,6 +912,17 @@ class Field extends ModelElement
   String get typeName => "property";
 
   bool get writeOnly => hasSetter && !hasGetter;
+
+  @override
+  Set<String> get features {
+    Set<String> all_features = super.features;
+    /// final/const implies read-only, don't display both strings.
+    if (readOnly && !isFinal && !isConst) all_features.add('read-only');
+    if (writeOnly) all_features.add('write-only');
+    if (readWrite) all_features.add('read / write');
+    if (isInherited) all_features.add('inherited');
+    return all_features;
+  }
 
   @override
   String get _computeDocumentationComment {
@@ -1324,6 +1365,13 @@ class Method extends ModelElement
   bool get isOperator => false;
 
   @override
+  Set<String> get features {
+    Set<String> all_features = super.features;
+    if (isInherited) all_features.add('inherited');
+    return all_features;
+  }
+
+  @override
   bool get isStatic => _method.isStatic;
 
   @override
@@ -1443,6 +1491,21 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         return a.element.name;
       }).toList(growable: false);
     }
+  }
+
+  /// const and static are not needed here because const/static elements get
+  /// their own sections in the doc.
+  Set<String> get features {
+    Set<String> all_features = new Set<String>();
+    all_features.addAll(annotations);
+    if (isAsynchronous) all_features.add('async');
+    if (isFinal) all_features.add('final');
+    return all_features;
+  }
+
+  String get featuresAsString {
+    List<String> all_features = features.toList()..sort(byFeatureOrdering);
+    return all_features.join(', ');
   }
 
   bool get canHaveParameters =>
@@ -2460,6 +2523,17 @@ class TopLevelVariable extends ModelElement
   bool get readWrite => hasGetter && hasSetter;
 
   bool get writeOnly => hasSetter && !hasGetter;
+
+  @override
+  Set<String> get features {
+    Set<String> all_features = super.features;
+    /// final implies read-only, don't display both strings.
+    if (readOnly && !isFinal && !isConst) all_features.add('read-only');
+    if (writeOnly) all_features.add('write-only');
+    if (readWrite) all_features.add('read / write');
+    return all_features;
+  }
+
   @override
   String get _computeDocumentationComment {
     String docs = getterSetterDocumentationComment;

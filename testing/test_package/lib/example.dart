@@ -2,10 +2,12 @@
 library ex;
 
 import 'dart:async';
+import 'dart:math';
 
 import 'src/mylib.dart' show Helper;
 
 export 'dart:core' show deprecated, Deprecated;
+import 'package:meta/meta.dart' show protected, factory;
 
 export 'fake.dart' show Cool;
 export 'src/mylib.dart' show Helper;
@@ -26,6 +28,14 @@ const incorrectDocReference = 'same name as const from fake';
 
 /// This should [not work].
 const incorrectDocReferenceFromEx = 'doh';
+
+/// A custom annotation.
+class aThingToDo {
+  final String who;
+  final String what;
+
+  const aThingToDo(this.who, this.what);
+}
 
 const ConstantCat MY_CAT = const ConstantCat('tabby');
 const List<String> PRETTY_COLORS = const <String>[
@@ -230,6 +240,12 @@ class Dog implements Cat, E {
   @deprecated
   int deprecatedField;
 
+  final int aFinalField;
+  static const String aStaticConstField = "A Constant Dog";
+
+  @protected
+  final int aProtectedFinalField;
+
   Dog() {
     testMethod([]);
   }
@@ -246,6 +262,8 @@ class Dog implements Cat, E {
   @override
   bool get isImplemented => true;
 
+  int get aGetterReturningRandomThings => (new Random()).nextInt(50);
+
   @override
   operator ==(other) => other is Dog && name == other.name;
 
@@ -254,6 +272,15 @@ class Dog implements Cat, E {
   @deprecated
   List<Apple> getClassA() {
     return [new Apple()];
+  }
+
+  /// A tasty static + final property.
+  static final int somethingTasty;
+
+  static int __staticbacker = 0;
+  static int get staticGetterSetter => __staticbacker;
+  static int set staticGetterSetter(x) {
+    __staticbacker = x;
   }
 
   /// Macro method
@@ -308,9 +335,21 @@ class Klass {
   /// A method
   method() {}
 
+  /// A protected method
+  @protected
+  imProtected() {}
+
+  /// Not really a factory, but...
+  @factory
+  imAFactoryNoReally() {}
+
   /// A shadowed method
   @override
   toString() {}
+
+  /// A method with a custom annotation
+  @aThingToDo('from', 'thing')
+  anotherMethod() {}
 }
 
 class MyError extends Error {}
