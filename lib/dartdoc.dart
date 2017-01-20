@@ -67,14 +67,16 @@ void initializeConfig(
     bool showWarnings: false,
     bool addCrossdart: false,
     String examplePathPrefix,
-    bool includeSource: true}) {
+    bool includeSource: true,
+    bool autoIncludeDependencies: false}) {
   setConfig(
       inputDir: inputDir,
       sdkVersion: sdkVersion,
       showWarnings: showWarnings,
       addCrossdart: addCrossdart,
       examplePathPrefix: examplePathPrefix,
-      includeSource: includeSource);
+      includeSource: includeSource,
+      autoIncludeDependencies: autoIncludeDependencies);
 }
 
 Map<String, List<fileSystem.Folder>> _calculatePackageMap(
@@ -150,6 +152,13 @@ class DartDoc {
     }
 
     Package package = new Package(libraries, packageMeta);
+
+    if (config != null && config.autoIncludeDependencies) {
+      final newLibraryElements = _buildLibrariesWithAutoincludedDependencies(package);
+      Library.clearLibraryMap();
+      package = new Package(newLibraryElements, packageMeta);
+    }
+
     // Go through docs of every model element in package to prebuild the macros index
     package.allModelElements.forEach((m) => m.documentation);
 
@@ -357,4 +366,25 @@ class _Error implements Comparable<_Error> {
 
   @override
   String toString() => '[${severityName}] ${description}';
+}
+
+Iterable<LibraryElement> _buildLibrariesWithAutoincludedDependencies(Package package) {
+  final List<LibraryElement> newLibraryElements = []..addAll(package.libraries.map((l) => l.element as LibraryElement));
+
+  package.allModelElements.forEach((modelElement) {
+    modelElement.usedElements.forEach((used) {
+      if (used != null && used.modelType != null) {
+        final ModelElement modelTypeElement = used.modelType.element;
+        final library = package.findLibraryFor(modelTypeElement.element);
+        if (library == null && modelTypeElement.library != null) {
+          if (!newLibraryElements.contains(modelTypeElement.library.element)
+              && !modelTypeElement.library.name.startsWith("dart:")) {
+            newLibraryElements.add(modelTypeElement.library.element);
+          }
+        }
+      }
+    });
+  });
+
+  return newLibraryElements;
 }

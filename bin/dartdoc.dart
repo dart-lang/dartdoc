@@ -143,7 +143,8 @@ main(List<String> arguments) async {
       showWarnings: args['show-warnings'],
       includeSource: includeSource,
       inputDir: inputDir,
-      sdkVersion: sdk.sdkVersion);
+      sdkVersion: sdk.sdkVersion,
+      autoIncludeDependencies: args['auto-include-dependencies']);
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries,
@@ -216,6 +217,10 @@ ArgParser _createArgsParser() {
       help: 'A path to a favicon for the generated docs.');
   parser.addFlag('use-categories',
       help: 'Group libraries from the same package into categories.',
+      negatable: false,
+      defaultsTo: false);
+  parser.addFlag('auto-include-dependencies',
+      help: 'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
       negatable: false,
       defaultsTo: false);
   return parser;

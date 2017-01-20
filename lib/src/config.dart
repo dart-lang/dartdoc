@@ -13,8 +13,15 @@ class Config {
   final String examplePathPrefix;
   final bool includeSource;
   final String sdkVersion;
+  final bool autoIncludeDependencies;
   Config._(
-      this.inputDir, this.showWarnings, this.addCrossdart, this.examplePathPrefix, this.includeSource, this.sdkVersion);
+      this.inputDir,
+      this.showWarnings,
+      this.addCrossdart,
+      this.examplePathPrefix,
+      this.includeSource,
+      this.sdkVersion,
+      this.autoIncludeDependencies);
 }
 
 Config _config;
@@ -26,6 +33,14 @@ void setConfig(
     String sdkVersion,
     bool addCrossdart: false,
     String examplePathPrefix,
-    bool includeSource: true}) {
-  _config = new Config._(inputDir, showWarnings, addCrossdart, examplePathPrefix, includeSource, sdkVersion);
+    bool includeSource: true,
+    bool autoIncludeDependencies: false}) {
+  _config = new Config._(
+      inputDir,
+      showWarnings,
+      addCrossdart,
+      examplePathPrefix,
+      includeSource,
+      sdkVersion,
+      autoIncludeDependencies);
 }

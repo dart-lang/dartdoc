@@ -625,7 +625,7 @@ void main() {
     });
 
     test('inherited methods, including from Object ', () {
-      expect(B.inheritedMethods, hasLength(6));
+      expect(B.inheritedMethods, hasLength(7));
       expect(B.hasInheritedMethods, isTrue);
     });
 

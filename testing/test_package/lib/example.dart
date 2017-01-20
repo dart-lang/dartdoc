@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'src/mylib.dart' show Helper;
+import 'package:test_package_imported/main.dart';
 
 export 'dart:core' show deprecated, Deprecated;
 import 'package:meta/meta.dart' show protected, factory;
@@ -106,6 +107,10 @@ class Apple {
   }
 
   Apple._internal(this._s2);
+
+  /// Apple docs for whataclass
+  void whataclass(List<Whataclass<bool>> list) {
+  }
 
   /**
    * The getter for `s`
