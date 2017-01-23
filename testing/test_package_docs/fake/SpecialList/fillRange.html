@@ -155,7 +155,10 @@
     <section class="desc markdown">
       <p>Sets the objects in the range <code>start</code> inclusive to <code>end</code> exclusive
 to the given <code>fillValue</code>.</p>
-<p>An error occurs if <code>start</code>..<code>end</code> is not a valid range for <code>this</code>.</p>
+<p>The provide range, given by <code>start</code> and <code>end</code>, must be valid.
+A range from <code>start</code> to <code>end</code> is valid if <code>0 &lt;= start &lt;= end &lt;= len</code>, where
+<code>len</code> is this list's <code>length</code>. The range starts at <code>start</code> and has length
+<code>end - start</code>. An empty range (with <code>end == start</code>) is valid.</p>
     </section>
     
     

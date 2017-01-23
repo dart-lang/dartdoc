@@ -155,11 +155,13 @@
     <section class="desc markdown">
       <p>Returns an <code>Iterable</code> that iterates over the objects in the range
 <code>start</code> inclusive to <code>end</code> exclusive.</p>
-<p>An error occurs if <code>end</code> is before <code>start</code>.</p>
-<p>An error occurs if the <code>start</code> and <code>end</code> are not valid ranges at the time
-of the call to this method. The returned <code>Iterable</code> behaves like
-<code>skip(start).take(end - start)</code>. That is, it does not throw exceptions
-if <code>this</code> changes size.</p>
+<p>The provide range, given by <code>start</code> and <code>end</code>, must be valid at the time
+of the call.</p>
+<p>A range from <code>start</code> to <code>end</code> is valid if <code>0 &lt;= start &lt;= end &lt;= len</code>, where
+<code>len</code> is this list's <code>length</code>. The range starts at <code>start</code> and has length
+<code>end - start</code>. An empty range (with <code>end == start</code>) is valid.</p>
+<p>The returned <code>Iterable</code> behaves like <code>skip(start).take(end - start)</code>.
+That is, it does <em>not</em> throw if this list changes size.</p>
 <pre class="prettyprint language-dart"><code>List&lt;String&gt; colors = ['red', 'green', 'blue', 'orange', 'pink'];
 Iterable&lt;String&gt; range = colors.getRange(1, 4);
 range.join(', ');  // 'green, blue, orange'

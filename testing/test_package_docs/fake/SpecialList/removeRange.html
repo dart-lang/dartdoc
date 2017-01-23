@@ -154,8 +154,10 @@
     </section>
     <section class="desc markdown">
       <p>Removes the objects in the range <code>start</code> inclusive to <code>end</code> exclusive.</p>
-<p>The <code>start</code> and <code>end</code> indices must be in the range
-<code>0 ≤ index ≤ length</code>, and <code>start ≤ end</code>.</p>
+<p>The provide range, given by <code>start</code> and <code>end</code>, must be valid.
+A range from <code>start</code> to <code>end</code> is valid if <code>0 &lt;= start &lt;= end &lt;= len</code>, where
+<code>len</code> is this list's <code>length</code>. The range starts at <code>start</code> and has length
+<code>end - start</code>. An empty range (with <code>end == start</code>) is valid.</p>
 <p>Throws an <code>UnsupportedError</code> if this is a fixed-length list. In that case
 the list is not modified.</p>
     </section>

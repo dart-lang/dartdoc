@@ -159,7 +159,10 @@ and inserts the contents of <code>replacement</code> in its place.</p>
 list.replaceRange(1, 4, [6, 7]);
 list.join(', '); // '1, 6, 7, 5'
 </code></pre>
-<p>An error occurs if <code>start</code>..<code>end</code> is not a valid range for <code>this</code>.</p>
+<p>The provide range, given by <code>start</code> and <code>end</code>, must be valid.
+A range from <code>start</code> to <code>end</code> is valid if <code>0 &lt;= start &lt;= end &lt;= len</code>, where
+<code>len</code> is this list's <code>length</code>. The range starts at <code>start</code> and has length
+<code>end - start</code>. An empty range (with <code>end == start</code>) is valid.</p>
 <p>This method does not work on fixed-length lists, even when <code>replacement</code>
 has the same number of elements as the replaced range. In that case use
 <code>setRange</code> instead.</p>

@@ -222,8 +222,6 @@ class ConstantCat implements Cat {
 /// {@example dog/food}
 /// {@example dog/food.txt region=meat}
 ///
-/// {@example test.html}
-///
 /// {@example test.dart region=template lang=html}
 ///
 /// {@example test.dart region=}
