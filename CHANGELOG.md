@@ -1,4 +1,4 @@
-* add all annotations to feature list for methods, properties, constants (#1264)
+* add annotations to features line for methods, properties, constants (#1264)
 
 ## 0.9.10
 * de-emphasize and resort the inherited members (#641)
