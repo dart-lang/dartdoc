@@ -556,7 +556,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(20));
+      expect(classes, hasLength(21));
     });
 
     test('abstract', () {
@@ -688,10 +688,13 @@ void main() {
     });
 
     test('F has a few inherited properties', () {
-      expect(F.inheritedProperties, hasLength(7));
+      expect(F.inheritedProperties, hasLength(10));
       expect(
           F.inheritedProperties.map((ip) => ip.name),
           equals([
+            'aFinalField',
+            'aGetterReturningRandomThings',
+            'aProtectedFinalField',
             'deprecatedField',
             'deprecatedGetter',
             'deprecatedSetter',
