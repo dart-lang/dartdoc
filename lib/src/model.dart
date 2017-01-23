@@ -57,7 +57,7 @@ int byName(Nameable a, Nameable b) =>
 /// zero are sorted after custom annotations, items mapped to zero will sort
 /// alphabetically among custom annotations.  (Custom annotations are assumed
 /// to be any annotation or feature not in this map).
-const Map<String, Int> featureOrder = const {
+const Map<String, int> featureOrder = const {
   'read-only': 1,
   'write-only': 1,
   'read / write': 1,
