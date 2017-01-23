@@ -2545,7 +2545,7 @@ class TopLevelVariable extends ModelElement
 
   @override
   bool get isFinal {
-    /// isFinal returns true for the field even if it has an explicit getter
+    /// isFinal returns true for the variable even if it has an explicit getter
     /// (which means we should not document it as "final").
     if (hasExplicitGetter) return false;
     return _variable.isFinal;
