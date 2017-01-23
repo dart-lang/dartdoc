@@ -162,13 +162,15 @@ List&lt;int&gt; list2 = [5, 6, 7, 8, 9];
 list1.setRange(1, 3, list2, 3);
 list1.join(', '); // '1, 8, 9, 4'
 </code></pre>
-<p>The <code>start</code> and <code>end</code> indices must satisfy <code>0 ≤ start ≤ end ≤ length</code>.
-If <code>start</code> equals <code>end</code>, this method has no effect.</p>
+<p>The provide range, given by <code>start</code> and <code>end</code>, must be valid.
+A range from <code>start</code> to <code>end</code> is valid if <code>0 &lt;= start &lt;= end &lt;= len</code>, where
+<code>len</code> is this list's <code>length</code>. The range starts at <code>start</code> and has length
+<code>end - start</code>. An empty range (with <code>end == start</code>) is valid.</p>
 <p>The <code>iterable</code> must have enough objects to fill the range from <code>start</code>
 to <code>end</code> after skipping <code>skipCount</code> objects.</p>
-<p>If <code>iterable</code> is this list, the operation will copy the elements originally
-in the range from <code>skipCount</code> to <code>skipCount + (end - start)</code> to the
-range <code>start</code> to <code>end</code>, even if the two ranges overlap.</p>
+<p>If <code>iterable</code> is this list, the operation will copies the elements
+originally in the range from <code>skipCount</code> to <code>skipCount + (end - start)</code> to
+the range <code>start</code> to <code>end</code>, even if the two ranges overlap.</p>
 <p>If <code>iterable</code> depends on this list in some other way, no guarantees are
 made.</p>
     </section>
