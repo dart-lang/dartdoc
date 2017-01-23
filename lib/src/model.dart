@@ -58,12 +58,12 @@ int byName(Nameable a, Nameable b) =>
 /// alphabetically among custom annotations.  (Custom annotations are assumed
 /// to be any annotation or feature not in this map).
 const Map<String, Int> featureOrder = const {
-  'read-only' : 1,
-  'write-only' : 1,
-  'read / write' : 1,
-  'final' : 2,
-  'async' : 3,
-  'inherited' : 4,
+  'read-only': 1,
+  'write-only': 1,
+  'read / write': 1,
+  'final': 2,
+  'async': 3,
+  'inherited': 4,
 };
 
 int byFeatureOrdering(String a, String b) {
