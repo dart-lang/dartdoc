@@ -58,12 +58,12 @@ int byName(Nameable a, Nameable b) =>
 /// alphabetically among custom annotations.  (Custom annotations are assumed
 /// to be any annotation or feature not in this map).
 const Map<String, Int> featureOrder = const {
-  'inherited' : -1,
-  'final' : 1,
-  'async' : 2,
-  'read-only' : 3,
-  'write-only' : 3,
-  'read / write' : 3,
+  'read-only' : 1,
+  'write-only' : 1,
+  'read / write' : 1,
+  'final' : 2,
+  'async' : 3,
+  'inherited' : 4,
 };
 
 int byFeatureOrdering(String a, String b) {
@@ -1501,6 +1501,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   Set<String> get features {
     Set<String> all_features = new Set<String>();
     all_features.addAll(annotations);
+    /// override as an annotation should be replaced with direct information
+    /// from the analyzer if we decide to display it at this level.
+    all_features.removeAll(['override']);
     if (isAsynchronous) all_features.add('async');
     if (isFinal) all_features.add('final');
     return all_features;
