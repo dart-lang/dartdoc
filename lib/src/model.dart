@@ -2544,7 +2544,12 @@ class TopLevelVariable extends ModelElement
   bool get isConst => _variable.isConst;
 
   @override
-  bool get isFinal => _variable.isFinal;
+  bool get isFinal {
+    /// isFinal returns true for the field even if it has an explicit getter
+    /// (which means we should not document it as "final").
+    if (hasExplicitGetter) return false;
+    return _variable.isFinal;
+  }
 
   @override
   String get kind => 'top-level property';
