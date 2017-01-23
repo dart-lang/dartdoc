@@ -53,10 +53,11 @@ Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
 int byName(Nameable a, Nameable b) =>
     compareAsciiLowerCaseNatural(a.name, b.name);
 
-/// Items mapped to zero will sort before custom annotations, items mapped above
-/// zero are sorted after custom annotations, items mapped to zero will sort
-/// alphabetically among custom annotations.  (Custom annotations are assumed
-/// to be any annotation or feature not in this map).
+/// Items mapped less than zero will sort before custom annotations.
+/// Items mapped above zero are sorted after custom annotations.
+/// Items mapped to zero will sort alphabetically among custom annotations.
+/// Custom annotations are assumed to be any annotation or feature not in this
+/// map.
 const Map<String, int> featureOrder = const {
   'read-only': 1,
   'write-only': 1,
