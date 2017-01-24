@@ -63,8 +63,7 @@ const Map<String, int> featureOrder = const {
   'write-only': 1,
   'read / write': 1,
   'final': 2,
-  'async': 3,
-  'inherited': 4,
+  'inherited': 3,
 };
 
 int byFeatureOrdering(String a, String b) {
@@ -917,7 +916,7 @@ class Field extends ModelElement
   @override
   Set<String> get features {
     Set<String> all_features = super.features;
-    /// final/const implies read-only, don't display both strings.
+    /// final/const implies read-only, so don't display both strings.
     if (readOnly && !isFinal && !isConst) all_features.add('read-only');
     if (writeOnly) all_features.add('write-only');
     if (readWrite) all_features.add('read / write');
@@ -1508,7 +1507,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     /// Drop the plain "deprecated" annotation, that's indicated via
     /// strikethroughs. Custom @Deprecated() will still appear.
     all_features.remove('deprecated');
-    if (isAsynchronous) all_features.add('async');
     if (isFinal) all_features.add('final');
     return all_features;
   }
@@ -2567,7 +2565,7 @@ class TopLevelVariable extends ModelElement
   @override
   Set<String> get features {
     Set<String> all_features = super.features;
-    /// final implies read-only, don't display both strings.
+    /// final/const implies read-only, so don't display both strings.
     if (readOnly && !isFinal && !isConst) all_features.add('read-only');
     if (writeOnly) all_features.add('write-only');
     if (readWrite) all_features.add('read / write');
