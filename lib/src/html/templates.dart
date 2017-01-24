@@ -22,7 +22,7 @@ const _partials = const <String>[
   'head',
   'property',
   'styles_and_scripts',
-  'readable_writable',
+  'features',
   'documentation',
   'name_summary',
   'sidebar_for_class',

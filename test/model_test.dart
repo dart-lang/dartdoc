@@ -556,7 +556,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(20));
+      expect(classes, hasLength(21));
     });
 
     test('abstract', () {
@@ -616,7 +616,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.instanceMethods, hasLength(8));
+      expect(Dog.instanceMethods, hasLength(9));
     });
 
     test('get operators', () {
@@ -665,12 +665,13 @@ void main() {
     });
 
     test('F has many inherited methods', () {
-      expect(F.inheritedMethods, hasLength(11));
+      expect(F.inheritedMethods, hasLength(12));
       expect(
           F.inheritedMethods.map((im) => im.name),
           equals([
             'abstractMethod',
             'foo',
+            'getAnotherClassD',
             'getClassA',
             'noSuchMethod',
             'test',
@@ -688,10 +689,13 @@ void main() {
     });
 
     test('F has a few inherited properties', () {
-      expect(F.inheritedProperties, hasLength(7));
+      expect(F.inheritedProperties, hasLength(10));
       expect(
           F.inheritedProperties.map((ip) => ip.name),
           equals([
+            'aFinalField',
+            'aGetterReturningRandomThings',
+            'aProtectedFinalField',
             'deprecatedField',
             'deprecatedGetter',
             'deprecatedSetter',

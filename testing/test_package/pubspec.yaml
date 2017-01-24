@@ -2,5 +2,6 @@ name: test_package
 description: Best package ever.
 version: 0.0.1
 dependencies:
+  meta: ^1.0.0
   test_package_imported:
     path: "../test_package_imported"

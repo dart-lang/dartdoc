@@ -1,3 +1,5 @@
+* add annotations to features line for methods, properties, constants (#1264)
+
 ## 0.9.10
 * de-emphasize and resort the inherited members (#641)
 * fix bug with showing parameterized typdefs in return types of properties (#1263)

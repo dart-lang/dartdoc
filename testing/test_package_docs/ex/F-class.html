@@ -107,6 +107,7 @@
     
       <li class="section-title"><a href="ex/ex-library.html#classes">Classes</a></li>
       <li><a href="ex/Apple-class.html">Apple</a></li>
+      <li><a href="ex/aThingToDo-class.html">aThingToDo</a></li>
       <li><a href="ex/B-class.html">B</a></li>
       <li><a href="ex/Cat-class.html">Cat</a></li>
       <li><a href="ex/CatString-class.html">CatString</a></li>
@@ -173,15 +174,37 @@
       <h2>Properties</h2>
 
       <dl class="properties">
+        <dt id="aFinalField" class="property inherited">
+          <span class="name"><a href="ex/Dog/aFinalField.html">aFinalField</a></span>
+          <span class="signature">&#8594; int</span>
+        </dt>
+        <dd class="inherited">
+          <p></p>
+          <div class="features">final, inherited</div>
+</dd>
+        <dt id="aGetterReturningRandomThings" class="property inherited">
+          <span class="name"><a href="ex/Dog/aGetterReturningRandomThings.html">aGetterReturningRandomThings</a></span>
+          <span class="signature">&#8594; int</span>
+        </dt>
+        <dd class="inherited">
+          <p></p>
+          <div class="features">read-only, inherited</div>
+</dd>
+        <dt id="aProtectedFinalField" class="property inherited">
+          <span class="name"><a href="ex/Dog/aProtectedFinalField.html">aProtectedFinalField</a></span>
+          <span class="signature">&#8594; int</span>
+        </dt>
+        <dd class="inherited">
+          <p></p>
+          <div class="features">final, inherited</div>
+</dd>
         <dt id="deprecatedField" class="property inherited">
           <span class="name"><a class="deprecated" href="ex/Dog/deprecatedField.html">deprecatedField</a></span>
           <span class="signature">&#8594; int</span>
         </dt>
         <dd class="inherited">
           <p></p>
-          <div class="features">
-    read / write, inherited
-  </div>
+          <div class="features">read / write, inherited</div>
 </dd>
         <dt id="deprecatedGetter" class="property inherited">
           <span class="name"><a class="deprecated" href="ex/Dog/deprecatedGetter.html">deprecatedGetter</a></span>
@@ -189,9 +212,7 @@
         </dt>
         <dd class="inherited">
           <p></p>
-          <div class="features">
-    read-only, inherited
-  </div>
+          <div class="features">read-only, inherited</div>
 </dd>
         <dt id="deprecatedSetter" class="property inherited">
           <span class="name"><a class="deprecated" href="ex/Dog/deprecatedSetter.html">deprecatedSetter</a></span>
@@ -199,9 +220,7 @@
         </dt>
         <dd class="inherited">
           <p></p>
-          <div class="features">
-    write-only, inherited
-  </div>
+          <div class="features">write-only, inherited</div>
 </dd>
         <dt id="hashCode" class="property inherited">
           <span class="name"><a href="ex/F/hashCode.html">hashCode</a></span>
@@ -209,9 +228,7 @@
         </dt>
         <dd class="inherited">
           <p>Get a hash code for this object.</p>
-          <div class="features">
-    read-only, inherited
-  </div>
+          <div class="features">read-only, inherited</div>
 </dd>
         <dt id="isImplemented" class="property inherited">
           <span class="name"><a href="ex/Dog/isImplemented.html">isImplemented</a></span>
@@ -219,9 +236,7 @@
         </dt>
         <dd class="inherited">
           <p></p>
-          <div class="features">
-    read-only, inherited
-  </div>
+          <div class="features">read-only, inherited</div>
 </dd>
         <dt id="name" class="property inherited">
           <span class="name"><a href="ex/Dog/name.html">name</a></span>
@@ -229,9 +244,7 @@
         </dt>
         <dd class="inherited">
           <p></p>
-          <div class="features">
-    read / write, inherited
-  </div>
+          <div class="features">read / write, inherited</div>
 </dd>
         <dt id="runtimeType" class="property inherited">
           <span class="name"><a href="ex/F/runtimeType.html">runtimeType</a></span>
@@ -239,9 +252,7 @@
         </dt>
         <dd class="inherited">
           <p>A representation of the runtime type of the object.</p>
-          <div class="features">
-    read-only, inherited
-  </div>
+          <div class="features">read-only, inherited</div>
 </dd>
       </dl>
     </section>
@@ -257,7 +268,7 @@
         <dd class="inherited">
           <p>The equality operator.</p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
       </dl>
     </section>
 
@@ -271,7 +282,8 @@
         </dt>
         <dd>
           <p></p>
-        </dd>
+          
+</dd>
         <dt id="abstractMethod" class="callable inherited">
           <span class="name"><a href="ex/Dog/abstractMethod.html">abstractMethod</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; void</span>
@@ -280,7 +292,7 @@
         <dd class="inherited">
           <p></p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
         <dt id="foo" class="callable inherited">
           <span class="name"><a href="ex/Dog/foo.html">foo</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; Future</span>
@@ -289,7 +301,16 @@
         <dd class="inherited">
           <p></p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
+        <dt id="getAnotherClassD" class="callable inherited">
+          <span class="name deprecated"><a class="deprecated" href="ex/Dog/getAnotherClassD.html">getAnotherClassD</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; List&lt;<a href="ex/Dog-class.html">Dog</a>&gt;</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          <p></p>
+          <div class="features"><a href="ex/Deprecated-class.html">Deprecated</a>('before v27.3'), inherited</div>
+</dd>
         <dt id="getClassA" class="callable inherited">
           <span class="name deprecated"><a class="deprecated" href="ex/Dog/getClassA.html">getClassA</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; List&lt;<a href="ex/Apple-class.html">Apple</a>&gt;</span>
@@ -298,7 +319,7 @@
         <dd class="inherited">
           <p></p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
         <dt id="noSuchMethod" class="callable inherited">
           <span class="name"><a href="ex/F/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
             <span class="returntype parameter">&#8594; dynamic</span>
@@ -307,7 +328,7 @@
         <dd class="inherited">
           <p>Invoked when a non-existent method or property is accessed.</p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
         <dt id="test" class="callable inherited">
           <span class="name"><a href="ex/F/test.html">test</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; void</span>
@@ -316,7 +337,7 @@
         <dd class="inherited">
           <p></p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
         <dt id="testGeneric" class="callable inherited">
           <span class="name"><a href="ex/Dog/testGeneric.html">testGeneric</a></span><span class="signature">(<wbr><span class="parameter" id="testGeneric-param-args"><span class="type-annotation">Map&lt;String, dynamic&gt;</span> <span class="parameter-name">args</span></span>)
             <span class="returntype parameter">&#8594; void</span>
@@ -325,7 +346,7 @@
         <dd class="inherited">
           <p></p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
         <dt id="testGenericMethod" class="callable inherited">
           <span class="name"><a href="ex/Dog/testGenericMethod.html">testGenericMethod</a></span><span class="signature">&lt;T&gt;(<wbr><span class="parameter" id="testGenericMethod-param-arg"><span class="type-annotation">T</span> <span class="parameter-name">arg</span></span>)
             <span class="returntype parameter">&#8594; T</span>
@@ -334,7 +355,7 @@
         <dd class="inherited">
           <p></p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
         <dt id="testMethod" class="callable inherited">
           <span class="name"><a href="ex/Dog/testMethod.html">testMethod</a></span><span class="signature">(<wbr><span class="parameter" id="testMethod-param-it"><span class="type-annotation">Iterable</span> <span class="parameter-name">it</span></span>)
             <span class="returntype parameter">&#8594; void</span>
@@ -343,7 +364,7 @@
         <dd class="inherited">
           <p></p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
         <dt id="toString" class="callable inherited">
           <span class="name"><a href="ex/F/toString.html">toString</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; String</span>
@@ -352,7 +373,7 @@
         <dd class="inherited">
           <p>Returns a string representation of this object.</p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
         <dt id="withMacro" class="callable inherited">
           <span class="name"><a href="ex/Dog/withMacro.html">withMacro</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; void</span>
@@ -361,7 +382,7 @@
         <dd class="inherited">
           <p>Macro method</p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
         <dt id="withMacro2" class="callable inherited">
           <span class="name"><a href="ex/Dog/withMacro2.html">withMacro2</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; void</span>
@@ -370,7 +391,7 @@
         <dd class="inherited">
           <p>Foo macro content</p>
           <div class="features">inherited</div>
-        </dd>
+</dd>
       </dl>
     </section>
 
@@ -388,6 +409,9 @@
       <li class="section-title inherited">
         <a href="ex/F-class.html#instance-properties">Properties</a>
       </li>
+      <li class="inherited"><a href="ex/Dog/aFinalField.html">aFinalField</a></li>
+      <li class="inherited"><a href="ex/Dog/aGetterReturningRandomThings.html">aGetterReturningRandomThings</a></li>
+      <li class="inherited"><a href="ex/Dog/aProtectedFinalField.html">aProtectedFinalField</a></li>
       <li class="inherited"><a class="deprecated" href="ex/Dog/deprecatedField.html">deprecatedField</a></li>
       <li class="inherited"><a class="deprecated" href="ex/Dog/deprecatedGetter.html">deprecatedGetter</a></li>
       <li class="inherited"><a class="deprecated" href="ex/Dog/deprecatedSetter.html">deprecatedSetter</a></li>
@@ -403,6 +427,7 @@
       <li><a href="ex/F/methodWithGenericParam.html">methodWithGenericParam</a></li>
       <li class="inherited"><a href="ex/Dog/abstractMethod.html">abstractMethod</a></li>
       <li class="inherited"><a href="ex/Dog/foo.html">foo</a></li>
+      <li class="inherited"><a class="deprecated" href="ex/Dog/getAnotherClassD.html">getAnotherClassD</a></li>
       <li class="inherited"><a class="deprecated" href="ex/Dog/getClassA.html">getClassA</a></li>
       <li class="inherited"><a href="ex/F/noSuchMethod.html">noSuchMethod</a></li>
       <li class="inherited"><a href="ex/F/test.html">test</a></li>
