@@ -277,6 +277,11 @@ class Dog implements Cat, E {
     return [new Apple()];
   }
 
+  @Deprecated('before v27.3')
+  List<Dog> getAnotherClassD() {
+    return [new Dog()];
+  }
+
   /// A tasty static + final property.
   static final int somethingTasty;
 

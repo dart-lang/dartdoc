@@ -1504,7 +1504,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     all_features.addAll(annotations);
     /// override as an annotation should be replaced with direct information
     /// from the analyzer if we decide to display it at this level.
-    all_features.removeAll(['override']);
+    all_features.remove('override');
+    /// Drop the plain "deprecated" annotation, that's indicated via
+    /// strikethroughs. Custom @Deprecated() will still appear.
+    all_features.remove('deprecated');
     if (isAsynchronous) all_features.add('async');
     if (isFinal) all_features.add('final');
     return all_features;

@@ -616,7 +616,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.instanceMethods, hasLength(8));
+      expect(Dog.instanceMethods, hasLength(9));
     });
 
     test('get operators', () {
@@ -665,12 +665,13 @@ void main() {
     });
 
     test('F has many inherited methods', () {
-      expect(F.inheritedMethods, hasLength(11));
+      expect(F.inheritedMethods, hasLength(12));
       expect(
           F.inheritedMethods.map((im) => im.name),
           equals([
             'abstractMethod',
             'foo',
+            'getAnotherClassD',
             'getClassA',
             'noSuchMethod',
             'test',
