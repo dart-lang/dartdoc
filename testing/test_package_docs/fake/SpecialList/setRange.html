@@ -168,7 +168,7 @@ A range from <code>start</code> to <code>end</code> is valid if <code>0 &lt;= st
 <code>end - start</code>. An empty range (with <code>end == start</code>) is valid.</p>
 <p>The <code>iterable</code> must have enough objects to fill the range from <code>start</code>
 to <code>end</code> after skipping <code>skipCount</code> objects.</p>
-<p>If <code>iterable</code> is this list, the operation will copies the elements
+<p>If <code>iterable</code> is this list, the operation copies the elements
 originally in the range from <code>skipCount</code> to <code>skipCount + (end - start)</code> to
 the range <code>start</code> to <code>end</code>, even if the two ranges overlap.</p>
 <p>If <code>iterable</code> depends on this list in some other way, no guarantees are

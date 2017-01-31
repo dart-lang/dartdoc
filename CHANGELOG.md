@@ -1,4 +1,7 @@
+## 0.9.11
+
 * add annotations to features line for methods, properties, constants (#1265)
+* fixed an issue where the search box wasn't selecting the correct result (#1330)
 
 ## 0.9.10
 * de-emphasize and resort the inherited members (#641)
