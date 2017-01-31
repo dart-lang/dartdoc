@@ -189,21 +189,24 @@ function initSearch() {
 
     var typeaheadElement = $('#search-box.typeahead');
     var typeaheadElementParent = typeaheadElement.parent();
+    var selectedSuggestion;
 
     typeaheadElement.on("keydown", function (e) {
       if (e.keyCode === 13) { // Enter
-        var suggestion = typeaheadElementParent.find(".tt-suggestion.tt-selectable:eq(0)");
-        if (suggestion.length > 0) {
-          var href = suggestion.data("href");
-          if (href != null) {
-            window.location = href;
+        if (selectedSuggestion == null) {
+          var suggestion = typeaheadElementParent.find(".tt-suggestion.tt-selectable:eq(0)");
+          if (suggestion.length > 0) {
+            var href = suggestion.data("href");
+            if (href != null) {
+              window.location = href;
+            }
           }
         }
-        console.log(typeaheadElement.typeahead("val"));
       }
     });
 
     typeaheadElement.bind('typeahead:select', function(ev, suggestion) {
+        selectedSuggestion = suggestion;
         window.location = suggestion.href;
     });
   }
