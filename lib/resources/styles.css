@@ -767,3 +767,13 @@ li.inherited a {
 #operators dt.inherited .signature {
   font-weight: 300;
 }
+
+@media print {
+  .subnav, .sidebar {
+    display:none;
+  }
+
+  a[href]:after {
+   content:"" !important;
+  }
+}
