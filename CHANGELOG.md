@@ -1,6 +1,7 @@
-## Unreleased
+## 0.9.12
 
 * add print styles
+* fix for resolving references in comments (#1328)
 
 ## 0.9.11
 
