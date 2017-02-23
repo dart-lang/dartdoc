@@ -9,8 +9,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart'
-    show AnnotatedNode, Annotation, Declaration;
+    show AnnotatedNode, Annotation, Declaration, FormalParameter, FieldDeclaration,
+         VariableDeclaration, VariableDeclarationList;
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/resolver.dart'
     show Namespace, NamespaceBuilder, InheritanceManager;
@@ -914,8 +916,38 @@ class Field extends ModelElement
   bool get writeOnly => hasSetter && !hasGetter;
 
   @override
+  List<String> get annotations {
+    if (element is PropertyInducingElement && super.annotations.isEmpty) {
+      var pie = element as PropertyInducingElement;
+      var all_annotations = new List<String>();
+      all_annotations.addAll(annotations_from_EAmetadata(pie.getter?.metadata));
+      all_annotations.addAll(annotations_from_EAmetadata(pie.setter?.metadata));
+      return all_annotations;
+    } else {
+      return super.annotations;
+    }
+  }
+
+  @override
   Set<String> get features {
-    Set<String> all_features = super.features;
+    if (element.toString().contains('iconSet')) {
+      ///print('calling super');
+    }
+    if (element.toString().contains('iconSet')) {
+      ///print('here we go');
+      ///print(element.toString());
+      ///print(element.runtimeType);
+      ///print(element is PropertyInducingElement);
+    }
+    if (element is PropertyInducingElement && !hasAnnotations) {
+      var pie = element as PropertyInducingElement;
+      List<ElementAnnotation> gmd = pie.getter?.metadata;
+      List<ElementAnnotation> smd = pie.setter?.metadata;
+      ///print(gmd);
+      ///print(smd);
+    }
+    Set<String> all_features = new Set<String>();
+    all_features.addAll(annotations);
     /// final/const implies read-only, so don't display both strings.
     if (readOnly && !isFinal && !isConst) all_features.add('read-only');
     if (writeOnly) all_features.add('write-only');
@@ -1477,34 +1509,122 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   List<String> get annotations {
     // Check https://code.google.com/p/dart/issues/detail?id=23181
     // If that is fixed, this code might get a lot easier
+
+    if (element.computeNode() != null) {
+      if (element.computeNode() is FormalParameter) {
+        //var n1 = element.computeNode();
+        //if (n1.metadata.isNotEmpty) {
+        //  print(n1.metadata);
+        //}
+      } else if (!(element.computeNode() is AnnotatedNode)) {
+        ///print('wtf');
+        ///print(element
+        ///    .computeNode()
+        ///    .runtimeType
+        ///    .toString());
+      } else {
+        if (element is PropertyInducingElement) {
+        }
+        var n1 = element.computeNode() as AnnotatedNode;
+        if (n1.toString().contains('iconSet')) {
+          //print(n1);
+          //print(element.computeNode().runtimeType);
+          if (n1.parent is AnnotatedNode) {
+            //print (n1.parent.runtimeType);
+            var n2 = n1.parent as AnnotatedNode;
+            if (n2.parent is AnnotatedNode) {
+              //print(n2.parent.runtimeType);
+              var n3 = n2.parent as AnnotatedNode;
+              //print(n3.metadata);
+            }
+          }
+          ///print((n2.parent as AnnotatedNode).metadata);
+          ///var n3 = n2.parent as AnnotatedNode;
+        }
+      }
+    }
+
     if (element.computeNode() != null &&
         element.computeNode() is AnnotatedNode) {
-      return (element.computeNode() as AnnotatedNode)
-          .metadata
-          .map((Annotation a) {
-        var annotationString = a.toSource().substring(1); // remove the @
-        var e = a.element;
-        if (e != null && (e is ConstructorElement)) {
-          var me = new ModelElement.from(
-              e.enclosingElement, package._getLibraryFor(e.enclosingElement));
-          if (me.href != null) {
-            return annotationString.replaceAll(me.name, me.linkedName);
-          }
+      AnnotatedNode node = element.computeNode() as AnnotatedNode;
+      while ((node is VariableDeclaration ||
+              node is VariableDeclarationList) &&
+          node is! FieldDeclaration) {
+        if (null == (node as AnnotatedNode).parent) {
+          break;
         }
-        return annotationString;
-      }).toList(growable: false);
+        node = node.parent;
+      }
+      return annotations_from_metadata(node.metadata);
     } else {
-      return element.metadata.map((ElementAnnotation a) {
-        // TODO link to the element's href
-        return a.element.name;
-      }).toList(growable: false);
+      return annotations_from_EAmetadata(element.metadata);
     }
+  }
+
+  List<String> annotations_from_EAmetadata(List<ElementAnnotation> md) {
+    if (md == null) {
+      return new List<String>();
+    }
+    return md.map((ElementAnnotation ea) {
+      // TODO link to the element's href
+      Annotation a = (ea as ElementAnnotationImpl).annotationAst;
+      var annotationString = a.toSource().substring(1); // remove the @
+      var ae = a.element;
+      if (ae != null && (ae is ConstructorElement)) {
+        var me = new ModelElement.from(ae, package._getLibraryFor(ae));
+        if(annotationString.contains('Input')) {
+          print('----');
+          print(me.fullyQualifiedNameWithoutLibrary);
+          print(me.nameWithGenerics);
+          print(me.element.runtimeType);
+          print(me.element);
+          print(me.element.computeNode().metadata);
+          print(a);
+          //print((a as ElementAnnotationImpl).annotationAst);
+          ///print(me.href);
+        }
+        /*if(annotationString.contains('Input')) {
+          ///print(ae.computeNode().childEntities.toString());
+          print(ae.computeNode().childEntities.elementAt(0).runtimeType);
+        }*/
+      }
+      if (ae != null && (ae is ConstructorElement)) {
+        var me = new ModelElement.from(
+          ae.enclosingElement, package._getLibraryFor(ae.enclosingElement));
+        if (me.href != null) {
+          return annotationString.replaceAll(me.name, me.linkedName);
+        }
+      }
+      return annotationString;
+    }).toList(growable: false);
+  }
+
+  List<String> annotations_from_metadata(List<Annotation> md) {
+    if (md == null) {
+      return new List<String>();
+    }
+    return md
+        .map((Annotation a) {
+      var annotationString = a.toSource().substring(1); // remove the @
+      var ae = a.element;
+      if (ae != null && (ae is ConstructorElement)) {
+        var me = new ModelElement.from(
+            ae.enclosingElement, package._getLibraryFor(ae.enclosingElement));
+        if (me.href != null) {
+          return annotationString.replaceAll(me.name, me.linkedName);
+        }
+      }
+      return annotationString;
+    }).toList(growable: false);
   }
 
   /// const and static are not needed here because const/static elements get
   /// their own sections in the doc.
   Set<String> get features {
     Set<String> all_features = new Set<String>();
+    ///if (annotations.isNotEmpty) {
+    ///  print(annotations);
+    ///}
     all_features.addAll(annotations);
     /// override as an annotation should be replaced with direct information
     /// from the analyzer if we decide to display it at this level.
