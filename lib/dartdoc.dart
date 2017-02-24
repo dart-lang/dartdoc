@@ -269,16 +269,36 @@ class DartDoc {
     }
 
     // Use the includeExternals.
-    for (Source source in context.librarySources) {
+    bool matchesLibrary(String includeExternal, Source source) {
       LibraryElement library = context.computeLibraryElement(source);
       String libraryName = Library.getLibraryName(library);
-      var fullPath = source.fullName;
-      if (includeExternals.any((string) => fullPath.endsWith(string))) {
-        if (libraries.map(Library.getLibraryName).contains(libraryName)) {
-          continue;
-        }
-        libraries.add(library);
+      return source.fullName.endsWith(includeExternal);
+    }
+
+    for (String includeExternal in includeExternals) {
+      var quotedArgString = "'--include-external $includeExternal'";
+      List<Source> matchedSources = context.librarySources
+          .where((library) => matchesLibrary(includeExternal, library));
+      if (matchedSources.isEmpty) {
+        print("  warning: $quotedArgString -- " +
+            "no library found matching $includeExternal.");
+        continue;
       }
+      if (matchedSources.length > 1) {
+        var indentedMatchedPaths =
+            '  ' + matchedSources.map((source) => source.fullName).join('\n  ');
+        throw new DartDocFailure("$quotedArgString -- " +
+            "multiple libraries found matching $includeExternal:\n" +
+            "$indentedMatchedPaths");
+      }
+      Source source = matchedSources.first;
+      LibraryElement library = context.computeLibraryElement(source);
+      String libraryName = Library.getLibraryName(library);
+      if (libraries.map(Library.getLibraryName).contains(libraryName)) {
+        print("  info: $quotedArgString ignored, $libraryName already seen.");
+        continue;
+      }
+      libraries.add(library);
     }
 
     List<AnalysisErrorInfo> errorInfos = [];
