@@ -12,7 +12,6 @@ import 'package:analyzer/dart/ast/ast.dart'
     show AnnotatedNode, Annotation, Declaration, FormalParameter, FieldDeclaration,
          VariableDeclaration, VariableDeclarationList;
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/resolver.dart'
     show Namespace, NamespaceBuilder, InheritanceManager;
@@ -920,8 +919,8 @@ class Field extends ModelElement
     if (element is PropertyInducingElement && super.annotations.isEmpty) {
       var pie = element as PropertyInducingElement;
       var all_annotations = new List<String>();
-      all_annotations.addAll(annotations_from_EAmetadata(pie.getter?.metadata));
-      all_annotations.addAll(annotations_from_EAmetadata(pie.setter?.metadata));
+      all_annotations.addAll(annotationsFromMetadata(pie.getter?.metadata));
+      all_annotations.addAll(annotationsFromMetadata(pie.setter?.metadata));
       return all_annotations;
     } else {
       return super.annotations;
@@ -930,23 +929,7 @@ class Field extends ModelElement
 
   @override
   Set<String> get features {
-    if (element.toString().contains('iconSet')) {
-      ///print('calling super');
-    }
-    if (element.toString().contains('iconSet')) {
-      ///print('here we go');
-      ///print(element.toString());
-      ///print(element.runtimeType);
-      ///print(element is PropertyInducingElement);
-    }
-    if (element is PropertyInducingElement && !hasAnnotations) {
-      var pie = element as PropertyInducingElement;
-      List<ElementAnnotation> gmd = pie.getter?.metadata;
-      List<ElementAnnotation> smd = pie.setter?.metadata;
-      ///print(gmd);
-      ///print(smd);
-    }
-    Set<String> all_features = new Set<String>();
+    Set<String> all_features = super.features;
     all_features.addAll(annotations);
     /// final/const implies read-only, so don't display both strings.
     if (readOnly && !isFinal && !isConst) all_features.add('read-only');
@@ -1507,43 +1490,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   List<String> get annotations {
-    // Check https://code.google.com/p/dart/issues/detail?id=23181
-    // If that is fixed, this code might get a lot easier
-
-    if (element.computeNode() != null) {
-      if (element.computeNode() is FormalParameter) {
-        //var n1 = element.computeNode();
-        //if (n1.metadata.isNotEmpty) {
-        //  print(n1.metadata);
-        //}
-      } else if (!(element.computeNode() is AnnotatedNode)) {
-        ///print('wtf');
-        ///print(element
-        ///    .computeNode()
-        ///    .runtimeType
-        ///    .toString());
-      } else {
-        if (element is PropertyInducingElement) {
-        }
-        var n1 = element.computeNode() as AnnotatedNode;
-        if (n1.toString().contains('iconSet')) {
-          //print(n1);
-          //print(element.computeNode().runtimeType);
-          if (n1.parent is AnnotatedNode) {
-            //print (n1.parent.runtimeType);
-            var n2 = n1.parent as AnnotatedNode;
-            if (n2.parent is AnnotatedNode) {
-              //print(n2.parent.runtimeType);
-              var n3 = n2.parent as AnnotatedNode;
-              //print(n3.metadata);
-            }
-          }
-          ///print((n2.parent as AnnotatedNode).metadata);
-          ///var n3 = n2.parent as AnnotatedNode;
-        }
-      }
-    }
-
     if (element.computeNode() != null &&
         element.computeNode() is AnnotatedNode) {
       AnnotatedNode node = element.computeNode() as AnnotatedNode;
@@ -1555,56 +1501,24 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         }
         node = node.parent;
       }
-      return annotations_from_metadata(node.metadata);
+      return annotationsFromMetadata(node.metadata);
+    } else if (element.computeNode() is FormalParameter) {
+      /// TODO(jcollins-g): This is special cased to suppress annotations
+      ///                   in constructor documentation.  Do we want to do
+      ///                   this?
+      return new List<String>();
     } else {
-      return annotations_from_EAmetadata(element.metadata);
+      return annotationsFromMetadata(element.metadata);
     }
   }
 
-  List<String> annotations_from_EAmetadata(List<ElementAnnotation> md) {
+  /// dynamic parameter since ElementAnnotation and Annotation have no common
+  /// class for calling toSource() and element.
+  List<String> annotationsFromMetadata(List<dynamic> md) {
     if (md == null) {
       return new List<String>();
     }
-    return md.map((ElementAnnotation ea) {
-      // TODO link to the element's href
-      Annotation a = (ea as ElementAnnotationImpl).annotationAst;
-      var annotationString = a.toSource().substring(1); // remove the @
-      var ae = a.element;
-      if (ae != null && (ae is ConstructorElement)) {
-        var me = new ModelElement.from(ae, package._getLibraryFor(ae));
-        if(annotationString.contains('Input')) {
-          print('----');
-          print(me.fullyQualifiedNameWithoutLibrary);
-          print(me.nameWithGenerics);
-          print(me.element.runtimeType);
-          print(me.element);
-          print(me.element.computeNode().metadata);
-          print(a);
-          //print((a as ElementAnnotationImpl).annotationAst);
-          ///print(me.href);
-        }
-        /*if(annotationString.contains('Input')) {
-          ///print(ae.computeNode().childEntities.toString());
-          print(ae.computeNode().childEntities.elementAt(0).runtimeType);
-        }*/
-      }
-      if (ae != null && (ae is ConstructorElement)) {
-        var me = new ModelElement.from(
-          ae.enclosingElement, package._getLibraryFor(ae.enclosingElement));
-        if (me.href != null) {
-          return annotationString.replaceAll(me.name, me.linkedName);
-        }
-      }
-      return annotationString;
-    }).toList(growable: false);
-  }
-
-  List<String> annotations_from_metadata(List<Annotation> md) {
-    if (md == null) {
-      return new List<String>();
-    }
-    return md
-        .map((Annotation a) {
+    return md.map((dynamic a) {
       var annotationString = a.toSource().substring(1); // remove the @
       var ae = a.element;
       if (ae != null && (ae is ConstructorElement)) {
@@ -1615,16 +1529,13 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         }
       }
       return annotationString;
-    }).toList(growable: false);
+    }).toList(growable: false) as List<String>;
   }
 
   /// const and static are not needed here because const/static elements get
   /// their own sections in the doc.
   Set<String> get features {
     Set<String> all_features = new Set<String>();
-    ///if (annotations.isNotEmpty) {
-    ///  print(annotations);
-    ///}
     all_features.addAll(annotations);
     /// override as an annotation should be replaced with direct information
     /// from the analyzer if we decide to display it at this level.
