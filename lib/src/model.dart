@@ -2606,6 +2606,7 @@ class TopLevelVariable extends ModelElement
   @override
   Set<String> get features {
     Set<String> all_features = super.features;
+
     /// final/const implies read-only, so don't display both strings.
     if (readOnly && !isFinal && !isConst) all_features.add('read-only');
     if (writeOnly) all_features.add('write-only');
