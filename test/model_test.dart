@@ -1649,20 +1649,20 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           forAnnotation.annotations.first,
           equals(
-              '<a href="ex/ForAnnotation-class.html">ForAnnotation</a>(\'my value\')'));
+              '@<a href="ex/ForAnnotation-class.html">ForAnnotation</a>(\'my value\')'));
     });
 
     test('methods has the right annotation', () {
       var m = dog.instanceMethods.singleWhere((m) => m.name == 'getClassA');
       expect(m.hasAnnotations, isTrue);
-      expect(m.annotations.first, equals('deprecated'));
+      expect(m.annotations.first, equals('@deprecated'));
     });
 
     test('method annotations have the right link', () {
       expect(
           ctr.annotations[0],
           equals(
-              '<a href="ex/Deprecated-class.html">Deprecated</a>("Internal use")'));
+              '@<a href="ex/Deprecated-class.html">Deprecated</a>("Internal use")'));
     });
   });
 

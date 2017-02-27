@@ -1503,9 +1503,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       }
       return annotationsFromMetadata(node.metadata);
     } else if (element.computeNode() is FormalParameter) {
-      /// TODO(jcollins-g): This is special cased to suppress annotations
-      ///                   in constructor documentation.  Do we want to do
-      ///                   this?
+      /// TODO(jcollins-g): This is special cased to suppress annotations for
+      ///                   parameters in constructor documentation.  Do we
+      ///                   want to do this?
       return new List<String>();
     } else {
       return annotationsFromMetadata(element.metadata);
@@ -1519,17 +1519,17 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       return new List<String>();
     }
     return md.map((dynamic a) {
-      var annotationString = a.toSource().substring(1); // remove the @
-      var ae = a.element;
-      if (ae != null && (ae is ConstructorElement)) {
+      String annotationString = a.toSource();
+      if (a.element != null && (a.element is ConstructorElement)) {
         var me = new ModelElement.from(
-            ae.enclosingElement, package._getLibraryFor(ae.enclosingElement));
-        if (me.href != null) {
-          return annotationString.replaceAll(me.name, me.linkedName);
-        }
+            a.element.enclosingElement,
+            package._getLibraryFor(a.element.enclosingElement));
+        return annotationString.replaceFirst(
+            "${me.name}",
+            "${me.linkedName}");
       }
       return annotationString;
-    }).toList(growable: false) as List<String>;
+    }).toList(growable: false);
   }
 
   /// const and static are not needed here because const/static elements get
@@ -1539,10 +1539,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     all_features.addAll(annotations);
     /// override as an annotation should be replaced with direct information
     /// from the analyzer if we decide to display it at this level.
-    all_features.remove('override');
+    all_features.remove('@override');
     /// Drop the plain "deprecated" annotation, that's indicated via
     /// strikethroughs. Custom @Deprecated() will still appear.
-    all_features.remove('deprecated');
+    all_features.remove('@deprecated');
     if (isFinal) all_features.add('final');
     return all_features;
   }
@@ -1780,7 +1780,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       buf.write('<span class="parameter" id="${param.htmlId}">');
       if (showMetadata && param.hasAnnotations) {
         param.annotations.forEach((String annotation) {
-          buf.write('<span>@$annotation</span> ');
+          buf.write('<span>$annotation</span> ');
         });
       }
       if (param.modelType.isFunctionType) {
