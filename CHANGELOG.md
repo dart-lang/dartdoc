@@ -1,5 +1,7 @@
-* fix multiple annotations related issues with a refactor of annotation/feature
-  list handling (#1268, #1162)
+## 0.9.13
+
+* fix multiple annotations related issues in annotation/feature list handling
+  (#1268, #1162, #1081)
 
 ## 0.9.12
 
