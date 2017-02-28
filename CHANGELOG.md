@@ -1,3 +1,6 @@
+* fix multiple annotations related issues with a refactor of annotation/feature
+  list handling (#1268, #1162)
+
 ## 0.9.12
 
 * add print styles

@@ -1645,11 +1645,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('has one annotation',
         () => expect(forAnnotation.annotations, hasLength(1)));
 
-    test('has the right annotation', () {
+    test('has the right annotation and is escaped', () {
       expect(
           forAnnotation.annotations.first,
           equals(
-              '@<a href="ex/ForAnnotation-class.html">ForAnnotation</a>(\'my value\')'));
+              '@<a href="ex/ForAnnotation-class.html">ForAnnotation</a>(&#39;my value&#39;)'));
     });
 
     test('methods has the right annotation', () {
@@ -1658,11 +1658,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(m.annotations.first, equals('@deprecated'));
     });
 
-    test('method annotations have the right link', () {
+    test('method annotations have the right link and are escaped', () {
       expect(
           ctr.annotations[0],
           equals(
-              '@<a href="ex/Deprecated-class.html">Deprecated</a>("Internal use")'));
+              '@<a href="ex/Deprecated-class.html">Deprecated</a>(&quot;Internal use&quot;)'));
     });
   });
 

@@ -921,9 +921,6 @@ class Field extends ModelElement
 
     if (element is PropertyInducingElement) {
       var pie = element as PropertyInducingElement;
-      if (super.annotations.isNotEmpty) {
-        assert(pie.getter == null && pie.setter == null);
-      }
       all_annotations.addAll(annotationsFromMetadata(pie.getter?.metadata));
       all_annotations.addAll(annotationsFromMetadata(pie.setter?.metadata));
     }
@@ -1497,29 +1494,31 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (element.computeNode() is AnnotatedNode) {
       AnnotatedNode node = element.computeNode() as AnnotatedNode;
 
-      /// Declarations are contained inside FieldDeclarations, and that is where
-      /// the actual annotations are.
+      // Declarations are contained inside FieldDeclarations, and that is where
+      // the actual annotations are.
       while ((node is VariableDeclaration || node is VariableDeclarationList) &&
           node is! FieldDeclaration) {
-        if (null == (node as AnnotatedNode).parent) break;
+        assert (null != (node as AnnotatedNode).parent);
         node = node.parent;
       }
       metadata = node.metadata;
     } else if (element.computeNode() is! FormalParameter) {
-      /// TODO(jcollins-g): This is special cased to suppress annotations for
-      ///                   parameters in constructor documentation.  Do we
-      ///                   want to do this?
+      // TODO(jcollins-g): This is special cased to suppress annotations for
+      //                   parameters in constructor documentation.  Do we
+      //                   want to do this?
       metadata = element.metadata;
     }
     return annotationsFromMetadata(metadata);
   }
 
-  /// dynamic parameter since ElementAnnotation and Annotation have no common
-  /// class for calling toSource() and element.
+  /// Returns annotations from a given metadata set, with escaping.
+  /// md is a dynamic parameter since ElementAnnotation and Annotation have no
+  /// common class for calling toSource() and element.
   List<String> annotationsFromMetadata(List<dynamic> md) {
+    const HtmlEscape sanitizer = const HtmlEscape();
     if (md == null) md = new List<dynamic>();
     return md.map((dynamic a) {
-      String annotation = a.toSource();
+      String annotation = sanitizer.convert(a.toSource());
       if (a.element is ConstructorElement) {
         var me = new ModelElement.from(a.element.enclosingElement,
             package._getLibraryFor(a.element.enclosingElement));
@@ -1529,19 +1528,19 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     }).toList(growable: false);
   }
 
-  /// const and static are not needed here because const/static elements get
-  /// their own sections in the doc.
   Set<String> get features {
     Set<String> all_features = new Set<String>();
     all_features.addAll(annotations);
 
-    /// override as an annotation should be replaced with direct information
-    /// from the analyzer if we decide to display it at this level.
+    // override as an annotation should be replaced with direct information
+    // from the analyzer if we decide to display it at this level.
     all_features.remove('@override');
 
-    /// Drop the plain "deprecated" annotation, that's indicated via
-    /// strikethroughs. Custom @Deprecated() will still appear.
+    // Drop the plain "deprecated" annotation, that's indicated via
+    // strikethroughs. Custom @Deprecated() will still appear.
     all_features.remove('@deprecated');
+    // const and static are not needed here because const/static elements get
+    // their own sections in the doc.
     if (isFinal) all_features.add('final');
     return all_features;
   }
