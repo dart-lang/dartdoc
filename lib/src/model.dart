@@ -1515,10 +1515,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   /// md is a dynamic parameter since ElementAnnotation and Annotation have no
   /// common class for calling toSource() and element.
   List<String> annotationsFromMetadata(List<dynamic> md) {
-    const HtmlEscape sanitizer = const HtmlEscape();
     if (md == null) md = new List<dynamic>();
     return md.map((dynamic a) {
-      String annotation = sanitizer.convert(a.toSource());
+      String annotation = (const HtmlEscape()).convert(a.toSource());
       if (a.element is ConstructorElement) {
         var me = new ModelElement.from(a.element.enclosingElement,
             package._getLibraryFor(a.element.enclosingElement));
