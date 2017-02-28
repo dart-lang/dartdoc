@@ -9,8 +9,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart'
-    show AnnotatedNode, Annotation, Declaration, FormalParameter, FieldDeclaration,
-         VariableDeclaration, VariableDeclarationList;
+    show AnnotatedNode, Declaration, FormalParameter, FieldDeclaration,
+        VariableDeclaration, VariableDeclarationList;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/resolver.dart'
@@ -916,15 +916,18 @@ class Field extends ModelElement
 
   @override
   List<String> get annotations {
-    if (element is PropertyInducingElement && super.annotations.isEmpty) {
+    List<String> all_annotations = new List<String>();
+    all_annotations.addAll(super.annotations);
+
+    if (element is PropertyInducingElement) {
       var pie = element as PropertyInducingElement;
-      var all_annotations = new List<String>();
+      if (super.annotations.isNotEmpty) {
+        assert(pie.getter == null && pie.setter == null);
+      }
       all_annotations.addAll(annotationsFromMetadata(pie.getter?.metadata));
       all_annotations.addAll(annotationsFromMetadata(pie.setter?.metadata));
-      return all_annotations;
-    } else {
-      return super.annotations;
     }
+    return all_annotations.toList(growable: false);
   }
 
   @override
@@ -1490,45 +1493,39 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   List<String> get annotations {
-    if (element.computeNode() != null &&
-        element.computeNode() is AnnotatedNode) {
+    List<dynamic> metadata;
+    if (element.computeNode() is AnnotatedNode) {
       AnnotatedNode node = element.computeNode() as AnnotatedNode;
-      while ((node is VariableDeclaration ||
-              node is VariableDeclarationList) &&
+
+      /// Declarations are contained inside FieldDeclarations, and that is where
+      /// the actual annotations are.
+      while ((node is VariableDeclaration || node is VariableDeclarationList) &&
           node is! FieldDeclaration) {
-        if (null == (node as AnnotatedNode).parent) {
-          break;
-        }
+        if (null == (node as AnnotatedNode).parent) break;
         node = node.parent;
       }
-      return annotationsFromMetadata(node.metadata);
-    } else if (element.computeNode() is FormalParameter) {
+      metadata = node.metadata;
+    } else if (element.computeNode() is! FormalParameter) {
       /// TODO(jcollins-g): This is special cased to suppress annotations for
       ///                   parameters in constructor documentation.  Do we
       ///                   want to do this?
-      return new List<String>();
-    } else {
-      return annotationsFromMetadata(element.metadata);
+      metadata = element.metadata;
     }
+    return annotationsFromMetadata(metadata);
   }
 
   /// dynamic parameter since ElementAnnotation and Annotation have no common
   /// class for calling toSource() and element.
   List<String> annotationsFromMetadata(List<dynamic> md) {
-    if (md == null) {
-      return new List<String>();
-    }
+    if (md == null) md = new List<dynamic>();
     return md.map((dynamic a) {
-      String annotationString = a.toSource();
-      if (a.element != null && (a.element is ConstructorElement)) {
-        var me = new ModelElement.from(
-            a.element.enclosingElement,
+      String annotation = a.toSource();
+      if (a.element is ConstructorElement) {
+        var me = new ModelElement.from(a.element.enclosingElement,
             package._getLibraryFor(a.element.enclosingElement));
-        return annotationString.replaceFirst(
-            "${me.name}",
-            "${me.linkedName}");
+        annotation = annotation.replaceFirst(me.name, me.linkedName);
       }
-      return annotationString;
+      return annotation;
     }).toList(growable: false);
   }
 
@@ -1537,9 +1534,11 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   Set<String> get features {
     Set<String> all_features = new Set<String>();
     all_features.addAll(annotations);
+
     /// override as an annotation should be replaced with direct information
     /// from the analyzer if we decide to display it at this level.
     all_features.remove('@override');
+
     /// Drop the plain "deprecated" annotation, that's indicated via
     /// strikethroughs. Custom @Deprecated() will still appear.
     all_features.remove('@deprecated');
