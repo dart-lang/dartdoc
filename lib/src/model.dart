@@ -9,7 +9,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart'
-    show AnnotatedNode, Annotation, Declaration;
+    show AnnotatedNode, Declaration, FormalParameter, FieldDeclaration,
+        VariableDeclaration, VariableDeclarationList;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/resolver.dart'
@@ -914,8 +915,22 @@ class Field extends ModelElement
   bool get writeOnly => hasSetter && !hasGetter;
 
   @override
+  List<String> get annotations {
+    List<String> all_annotations = new List<String>();
+    all_annotations.addAll(super.annotations);
+
+    if (element is PropertyInducingElement) {
+      var pie = element as PropertyInducingElement;
+      all_annotations.addAll(annotationsFromMetadata(pie.getter?.metadata));
+      all_annotations.addAll(annotationsFromMetadata(pie.setter?.metadata));
+    }
+    return all_annotations.toList(growable: false);
+  }
+
+  @override
   Set<String> get features {
     Set<String> all_features = super.features;
+    all_features.addAll(annotations);
     /// final/const implies read-only, so don't display both strings.
     if (readOnly && !isFinal && !isConst) all_features.add('read-only');
     if (writeOnly) all_features.add('write-only');
@@ -1475,43 +1490,56 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   List<String> get annotations {
-    // Check https://code.google.com/p/dart/issues/detail?id=23181
-    // If that is fixed, this code might get a lot easier
-    if (element.computeNode() != null &&
-        element.computeNode() is AnnotatedNode) {
-      return (element.computeNode() as AnnotatedNode)
-          .metadata
-          .map((Annotation a) {
-        var annotationString = a.toSource().substring(1); // remove the @
-        var e = a.element;
-        if (e != null && (e is ConstructorElement)) {
-          var me = new ModelElement.from(
-              e.enclosingElement, package._getLibraryFor(e.enclosingElement));
-          if (me.href != null) {
-            return annotationString.replaceAll(me.name, me.linkedName);
-          }
-        }
-        return annotationString;
-      }).toList(growable: false);
-    } else {
-      return element.metadata.map((ElementAnnotation a) {
-        // TODO link to the element's href
-        return a.element.name;
-      }).toList(growable: false);
+    List<dynamic> metadata;
+    if (element.computeNode() is AnnotatedNode) {
+      AnnotatedNode node = element.computeNode() as AnnotatedNode;
+
+      // Declarations are contained inside FieldDeclarations, and that is where
+      // the actual annotations are.
+      while ((node is VariableDeclaration || node is VariableDeclarationList) &&
+          node is! FieldDeclaration) {
+        assert (null != (node as AnnotatedNode).parent);
+        node = node.parent;
+      }
+      metadata = node.metadata;
+    } else if (element.computeNode() is! FormalParameter) {
+      // TODO(jcollins-g): This is special cased to suppress annotations for
+      //                   parameters in constructor documentation.  Do we
+      //                   want to do this?
+      metadata = element.metadata;
     }
+    return annotationsFromMetadata(metadata);
   }
 
-  /// const and static are not needed here because const/static elements get
-  /// their own sections in the doc.
+  /// Returns annotations from a given metadata set, with escaping.
+  /// md is a dynamic parameter since ElementAnnotation and Annotation have no
+  /// common class for calling toSource() and element.
+  List<String> annotationsFromMetadata(List<dynamic> md) {
+    if (md == null) md = new List<dynamic>();
+    return md.map((dynamic a) {
+      String annotation = (const HtmlEscape()).convert(a.toSource());
+      if (a.element is ConstructorElement) {
+        var me = new ModelElement.from(a.element.enclosingElement,
+            package._getLibraryFor(a.element.enclosingElement));
+        annotation = annotation.replaceFirst(me.name, me.linkedName);
+      }
+      return annotation;
+    }).toList(growable: false);
+  }
+
   Set<String> get features {
     Set<String> all_features = new Set<String>();
     all_features.addAll(annotations);
-    /// override as an annotation should be replaced with direct information
-    /// from the analyzer if we decide to display it at this level.
-    all_features.remove('override');
-    /// Drop the plain "deprecated" annotation, that's indicated via
-    /// strikethroughs. Custom @Deprecated() will still appear.
-    all_features.remove('deprecated');
+
+    // override as an annotation should be replaced with direct information
+    // from the analyzer if we decide to display it at this level.
+    all_features.remove('@override');
+
+    // Drop the plain "deprecated" annotation, that's indicated via
+    // strikethroughs. Custom @Deprecated() will still appear.
+    all_features.remove('@deprecated');
+    // const and static are not needed here because const/static elements get
+    // their own sections in the doc.
     if (isFinal) all_features.add('final');
     return all_features;
   }
@@ -1749,7 +1777,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       buf.write('<span class="parameter" id="${param.htmlId}">');
       if (showMetadata && param.hasAnnotations) {
         param.annotations.forEach((String annotation) {
-          buf.write('<span>@$annotation</span> ');
+          buf.write('<span>$annotation</span> ');
         });
       }
       if (param.modelType.isFunctionType) {
@@ -2575,6 +2603,7 @@ class TopLevelVariable extends ModelElement
   @override
   Set<String> get features {
     Set<String> all_features = super.features;
+
     /// final/const implies read-only, so don't display both strings.
     if (readOnly && !isFinal && !isConst) all_features.add('read-only');
     if (writeOnly) all_features.add('write-only');

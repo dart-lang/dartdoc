@@ -456,10 +456,6 @@ nav .self-name {
   display: inline;
 }
 
-.annotation-list li:before {
-  content: "@";
-}
-
 .comma-separated {
   list-style: none;
   padding: 0;
