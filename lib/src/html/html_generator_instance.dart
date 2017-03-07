@@ -33,6 +33,9 @@ class HtmlGeneratorInstance implements HtmlOptions {
   String get faviconPath => _options.faviconPath;
   bool get useCategories => _options.useCategories;
   bool get prettyIndexJson => _options.prettyIndexJson;
+  // Don't generate the same data over and over per run.  Assumes that
+  // doing so will create identical data.
+  Set<String> writtenFiles = new Set();
 
   HtmlGeneratorInstance(this._options, this._templates, this.package, this.out,
       this._onFileCreated);
@@ -270,11 +273,24 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
-    String content = template(data,
-        assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
+    String fullName = path.join(out.path, filename);
+    // There's no point to writing non-canonical class information, at all,
+    // not even once -- it'll be covered later when the canonical version comes
+    // up.
+    if (data.self is Class && (!(data.self as Class).isCanonical)) {
+      return;
+    }
 
-    _writeFile(filename, content);
-    if (data.self is ModelElement) documentedElements.add(data.self);
+    // TODO(jcollins-g): refactor generation so we don't bother calling this
+    // for files we won't ever write.
+    if (!writtenFiles.contains(fullName)) {
+      String content = template(data,
+          assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
+
+      _writeFile(filename, content);
+      writtenFiles.add(fullName);
+      if (data.self is ModelElement) documentedElements.add(data.self);
+    }
   }
 
   void _writeFile(String filename, String content) {

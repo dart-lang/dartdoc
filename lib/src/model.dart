@@ -23,7 +23,6 @@ import 'package:analyzer/src/generated/resolver.dart'
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as p;
-import 'package:quiver/core.dart' show hash3;
 
 import 'config.dart';
 import 'element_type.dart';
@@ -36,7 +35,8 @@ import 'export_graph.dart';
 
 Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
 
-final Map<Class, List<Class>> _implementors = new Map();
+/// Map of Class.href to a list of classes implementing that class
+final Map<String, List<Class>> _implementors = new Map();
 
 Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
   if (__crossdartJson == null) {
@@ -88,8 +88,8 @@ void _addToImplementors(Class c) {
   _implementors.putIfAbsent(c, () => []);
 
   void _checkAndAddClass(Class key, Class implClass) {
-    _implementors.putIfAbsent(key, () => []);
-    List list = _implementors[key];
+    _implementors.putIfAbsent(key.href, () => []);
+    List list = _implementors[key.href];
 
     if (!list.any((l) => l.element == c.element)) {
       list.add(implClass);
@@ -313,10 +313,6 @@ class Class extends ModelElement implements EnclosedElement {
 
   bool get hasConstructors => constructors.isNotEmpty;
 
-  @override
-  int get hashCode => hash3(
-      name.hashCode, library.name.hashCode, library.package.name.hashCode);
-
   bool get hasImplementors => implementors.isNotEmpty;
 
   bool get hasInheritedMethods => inheritedMethods.isNotEmpty;
@@ -355,8 +351,9 @@ class Class extends ModelElement implements EnclosedElement {
   String get href => '${canonicalLibrary.dirName}/$fileName';
 
   /// Returns all the implementors of the class specified.
-  List<Class> get implementors =>
-      _implementors[this] != null ? _implementors[this] : [];
+  List<Class> get implementors {
+    return _implementors[href] != null ? _implementors[href] : [];
+  }
 
   List<Method> get inheritedMethods {
     if (_inheritedMethods != null) return _inheritedMethods;
