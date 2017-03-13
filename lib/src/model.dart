@@ -1614,17 +1614,23 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return _rawDocs;
   }
 
-  Library _canonicalLibrary;
-  Library get canonicalLibrary {
-    if (_canonicalLibrary == null) {
-      final libraryElement =
-          package.exportGraph.canonicalLibraryElement(element) ??
-              library.element;
-      _canonicalLibrary = package.libraries.firstWhere(
-          (l) => l.element == libraryElement,
-          orElse: () => library);
+  Library __canonicalLibrary;
+  Library get _canonicalLibrary {
+    // TODO(jcollins-g): All ModelElements should be able to find a canonical
+    //                   library (even methods, etc), to avoid creating duplicate
+    //                   files.  This isn't the case right now, and can hide bugs.
+    if (__canonicalLibrary == null) {
+      final libraryElement = package.exportGraph.canonicalLibraryElement(
+          element) ?? library.element;
+      __canonicalLibrary =
+          package.libraries.firstWhere((l) => l.element == libraryElement,
+              orElse: () => null);
     }
-    return _canonicalLibrary;
+    return __canonicalLibrary;
+  }
+
+  Library get canonicalLibrary {
+    return _canonicalLibrary ?? library;
   }
 
   bool get isCanonical => library == canonicalLibrary;

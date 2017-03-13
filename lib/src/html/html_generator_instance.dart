@@ -277,7 +277,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
     // There's no point to writing non-canonical class information, at all,
     // not even once -- it'll be covered later when the canonical version comes
     // up.
-    if (data.self is Class && (!(data.self as Class).isCanonical)) {
+    if (data.self is ModelElement && !(data.self as ModelElement).isCanonical) {
       return;
     }
 

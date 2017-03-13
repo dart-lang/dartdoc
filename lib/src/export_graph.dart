@@ -19,8 +19,7 @@ class _ExportGraphNode {
     if (libraryElements.contains(libraryElement)) {
       return this;
     } else {
-      return exportedBy.toList().firstWhere(
-          (l) => l.canonicalLibraryElement(libraryElements) != null);
+      return exportedBy.firstWhere((l) => l.canonicalLibraryElement(libraryElements) != null);
     }
   }
 }
