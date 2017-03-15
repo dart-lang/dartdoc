@@ -31,7 +31,6 @@ import 'markdown_processor.dart' show Documentation;
 import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
 import 'utils.dart';
-import 'export_graph.dart';
 
 Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
 
@@ -85,14 +84,17 @@ int byFeatureOrdering(String a, String b) {
 }
 
 void _addToImplementors(Class c) {
-  _implementors.putIfAbsent(c, () => []);
-
+  if (c.isCanonical) {
+    _implementors.putIfAbsent(c.href, () => []);
+  }
   void _checkAndAddClass(Class key, Class implClass) {
-    _implementors.putIfAbsent(key.href, () => []);
-    List list = _implementors[key.href];
+    if (key.isCanonical) {
+      _implementors.putIfAbsent(key.href, () => []);
+      List list = _implementors[key.href];
 
-    if (!list.any((l) => l.element == c.element)) {
-      list.add(implClass);
+      if (!list.any((l) => l.element == c.element)) {
+        list.add(implClass);
+      }
     }
   }
 
@@ -129,8 +131,10 @@ class Accessor extends ModelElement
   }
 
   @override
-  String get href =>
-      '${canonicalLibrary.dirName}/${_accessor.enclosingElement.name}/${name}.html';
+  String get href {
+    if (canonicalLibrary == null) return null;
+    return '${canonicalLibrary.dirName}/${_accessor.enclosingElement.name}/${name}.html';
+  }
 
   bool get isGetter => _accessor.isGetter;
 
@@ -188,7 +192,7 @@ class Class extends ModelElement implements EnclosedElement {
           Library lib = new Library(f.element.library, p);
           ElementType t =
               new ElementType(f, new ModelElement.from(f.element, lib));
-          bool exclude = t.element.element.isPrivate;
+          bool exclude = t.element.element.isPrivate || !t.element.isCanonical;
           if (exclude) {
             return null;
           } else {
@@ -205,12 +209,7 @@ class Class extends ModelElement implements EnclosedElement {
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
 
       /* Private Superclasses should not be shown. */
-      var exclude = _supertype.element.element.isPrivate;
-
-      /* Hide dart2js related stuff */
-      exclude = exclude ||
-          (lib.name.startsWith("dart:") &&
-              _supertype.name == "NativeFieldWrapperClass2");
+      var exclude = _supertype.element.element.isPrivate || !_supertype.element.isCanonical;
 
       if (exclude) {
         _supertype = null;
@@ -221,7 +220,7 @@ class Class extends ModelElement implements EnclosedElement {
         .map((f) {
           var lib = new Library(f.element.library, p);
           var t = new ElementType(f, new ModelElement.from(f.element, lib));
-          var exclude = t.element.element.isPrivate;
+          var exclude = t.element.element.isPrivate || !t.element.isCanonical;
           if (exclude) {
             return null;
           } else {
@@ -348,7 +347,10 @@ class Class extends ModelElement implements EnclosedElement {
   bool get hasSupertype => supertype != null;
 
   @override
-  String get href => '${canonicalLibrary.dirName}/$fileName';
+  String get href {
+    if (canonicalLibrary == null) return null;
+    return '${canonicalLibrary.dirName}/$fileName';
+  }
 
   /// Returns all the implementors of the class specified.
   List<Class> get implementors {
@@ -712,8 +714,10 @@ class Constructor extends ModelElement
   String get fullyQualifiedName => '${library.name}.$name';
 
   @override
-  String get href =>
-      '${canonicalLibrary.dirName}/${_constructor.enclosingElement.name}/$name.html';
+  String get href {
+    if (canonicalLibrary == null) return null;
+    return '${canonicalLibrary.dirName}/${_constructor.enclosingElement.name}/$name.html';
+  }
 
   @override
   bool get isConst => _constructor.isConst;
@@ -840,8 +844,10 @@ class EnumField extends Field {
   }
 
   @override
-  String get href =>
-      '${canonicalLibrary.dirName}/${(enclosingElement as Class).fileName}';
+  String get href {
+    if (canonicalLibrary == null) return null;
+    return '${canonicalLibrary.dirName}/${(enclosingElement as Class).fileName}';
+  }
 
   @override
   String get linkedName => name;
@@ -906,6 +912,7 @@ class Field extends ModelElement
 
   @override
   String get href {
+    if (canonicalLibrary == null) return null;
     if (enclosingElement is Class) {
       return '${canonicalLibrary.dirName}/${enclosingElement.name}/$_fileName';
     } else if (enclosingElement is Library) {
@@ -1160,7 +1167,10 @@ class Library extends ModelElement {
   bool get hasTypedefs => typedefs.isNotEmpty;
 
   @override
-  String get href => '$dirName/$fileName';
+  String get href {
+    if (canonicalLibrary == null) return null;
+    return '$canonicalLibrary.dirName/$fileName';
+  }
 
   bool get isAnonymous => element.name == null || element.name.isEmpty;
 
@@ -1403,7 +1413,7 @@ class Method extends ModelElement
   ModelElement get enclosingElement {
     if (_enclosingClass == null) {
       _enclosingClass =
-          new ModelElement.from(_method.enclosingElement, library);
+      new ModelElement.from(_method.enclosingElement, library);
     }
     return _enclosingClass;
   }
@@ -1416,8 +1426,10 @@ class Method extends ModelElement
   }
 
   @override
-  String get href =>
-      '${canonicalLibrary.dirName}/${enclosingElement.name}/${fileName}';
+  String get href {
+    if (canonicalLibrary == null) return null;
+    return '${canonicalLibrary.dirName}/${enclosingElement.name}/${fileName}';
+  }
 
   bool get isInherited => _isInherited;
 
@@ -1525,6 +1537,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     throw "Unknown type ${e.runtimeType}";
   }
 
+  Set<Library> get exportedInLibraries {
+    return library.package.libraryElementReexportedBy[this.element.library];
+  }
+
   List<String> get annotations {
     List<dynamic> metadata;
     if (element.computeNode() is AnnotatedNode) {
@@ -1614,23 +1630,26 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return _rawDocs;
   }
 
-  Library __canonicalLibrary;
-  Library get _canonicalLibrary {
-    // TODO(jcollins-g): All ModelElements should be able to find a canonical
-    //                   library (even methods, etc), to avoid creating duplicate
-    //                   files.  This isn't the case right now, and can hide bugs.
-    if (__canonicalLibrary == null) {
-      final libraryElement = package.exportGraph.canonicalLibraryElement(
-          element) ?? library.element;
-      __canonicalLibrary =
-          package.libraries.firstWhere((l) => l.element == libraryElement,
-              orElse: () => null);
-    }
-    return __canonicalLibrary;
-  }
-
+  Library _canonicalLibrary;
+  bool _canonicalLibraryIsSet = false;
   Library get canonicalLibrary {
-    return _canonicalLibrary ?? library;
+    if (!_canonicalLibraryIsSet) {
+      if (exportedInLibraries == null || exportedInLibraries.isEmpty) {
+        _canonicalLibrary = null;
+      } else {
+        if (exportedInLibraries.length == 1) {
+          // TODO(jcollins-g): why is the special case necessary?  analyzer quirk?
+          _canonicalLibrary = exportedInLibraries.first;
+        } else {
+          _canonicalLibrary = exportedInLibraries.firstWhere((l) =>
+          l.element.location
+              .components[0] == element.library.location.components[0],
+              orElse: () => null);
+        }
+      }
+      _canonicalLibraryIsSet = true;
+    }
+    return _canonicalLibrary;
   }
 
   bool get isCanonical => library == canonicalLibrary;
@@ -1678,6 +1697,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   bool get hasParameters => parameters.isNotEmpty;
 
+  /// href must be null if the canonicalLibrary for this element is not
+  /// available.
   String get href;
 
   String get htmlId => name;
@@ -1967,6 +1988,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (name.startsWith('_')) {
       return HTML_ESCAPE.convert(name);
     }
+    if (href == null) {
+      return HTML_ESCAPE.convert(name);
+    }
     if (!(this is Method || this is Field) && !package.isDocumented(element)) {
       return HTML_ESCAPE.convert(name);
     }
@@ -2158,7 +2182,10 @@ class ModelFunction extends ModelElement
   String get fileName => "$name.html";
 
   @override
-  String get href => '${canonicalLibrary.dirName}/$fileName';
+  String get href {
+    if (canonicalLibrary == null) return null;
+    return '${canonicalLibrary.dirName}/$fileName';
+  }
 
   @override
   bool get isStatic => _func.isStatic;
@@ -2249,7 +2276,10 @@ class Operator extends Method {
 class Package implements Nameable, Documentable {
   final List<Library> _libraries = [];
   final PackageMeta packageMeta;
-  final Map<String, Library> elementLibaryMap = {};
+
+  final Map<Element, Library> _elementToLibrary = {};
+  // TODO(jcollins-g): replace this.
+  final Map<String, Library> elementLibraryMap = {};
   String _docsAsHtml;
   final Map<String, String> _macros = {};
 
@@ -2259,8 +2289,9 @@ class Package implements Nameable, Documentable {
       if (isPublic(element)) {
         var lib = new Library(element, this);
         Library._libraryMap.putIfAbsent(lib.name, () => lib);
-        elementLibaryMap.putIfAbsent('${lib.kind}.${lib.name}', () => lib);
+        elementLibraryMap.putIfAbsent('${lib.kind}.${lib.name}', () => lib);
         _libraries.add(lib);
+        _elementToLibrary[element] = lib;
       }
     });
 
@@ -2291,6 +2322,27 @@ class Package implements Nameable, Documentable {
     return result.values.toList()..sort();
   }
 
+  Map<LibraryElement, Set<Library>> _libraryElementReexportedBy;
+  void _tagReexportsFor(Library tll, LibraryElement libraryElement) {
+    _libraryElementReexportedBy.putIfAbsent(libraryElement, () => new Set());
+    _libraryElementReexportedBy[libraryElement].add(tll);
+    for (ExportElement exportedElement in libraryElement.exports) {
+      if ((!_elementToLibrary.containsKey(exportedElement.library)) || libraryElement == tll.element) {
+        _tagReexportsFor(tll, exportedElement.exportedLibrary);
+      }
+    }
+  }
+
+  Map<LibraryElement, Set<Library>> get libraryElementReexportedBy {
+     if (_libraryElementReexportedBy == null) {
+       _libraryElementReexportedBy = new Map<LibraryElement, Set<Library>>();
+       for (Library library in libraries) {
+         _tagReexportsFor(library, library.element);
+       }
+     }
+     return _libraryElementReexportedBy;
+  }
+
   @override
   String get documentation {
     return hasDocumentationFile ? documentationFile.contents : null;
@@ -2317,7 +2369,7 @@ class Package implements Nameable, Documentable {
   bool get hasDocumentationFile => documentationFile != null;
 
   // TODO: make this work
-  String get href => 'index.html';
+  String get href => null;
 
   /// Does this package represent the SDK?
   bool get isSdk => packageMeta.isSdk;
@@ -2376,23 +2428,22 @@ class Package implements Nameable, Documentable {
     if (e.library == null) {
       return null;
     }
-
-    Library lib = elementLibaryMap['${e.kind}.${e.name}.${e.enclosingElement}'];
+    Library lib = elementLibraryMap['${e.kind}.${e.name}.${e.enclosingElement}'];
     if (lib != null) return lib;
     lib =
         libraries.firstWhere((l) => l.hasInExportedNamespace(e), orElse: () {});
     if (lib != null) {
-      elementLibaryMap.putIfAbsent(
+      elementLibraryMap.putIfAbsent(
           '${e.kind}.${e.name}.${e.enclosingElement}', () => lib);
       return lib;
     }
     return new Library(e.library, this);
   }
 
-  List<ModelElement> _allModelElements;
+  Set<ModelElement> _allModelElements;
   Iterable<ModelElement> get allModelElements {
     if (_allModelElements == null) {
-      _allModelElements = [];
+      _allModelElements = new Set();
       this.libraries.forEach((library) {
         _allModelElements.addAll(library.allModelElements);
       });
@@ -2404,12 +2455,6 @@ class Package implements Nameable, Documentable {
   Iterable<ModelElement> get allCanonicalModelElements {
     return (_allCanonicalModelElements ??=
         allModelElements.where((e) => e.isCanonical).toList());
-  }
-
-  ExportGraph _exportGraph;
-  ExportGraph get exportGraph {
-    return (_exportGraph ??=
-        new ExportGraph(libraries.map((l) => l.element as LibraryElement)));
   }
 
   String getMacro(String name) => _macros[name];
@@ -2455,6 +2500,7 @@ class Parameter extends ModelElement implements EnclosedElement {
 
   @override
   String get href {
+    if (canonicalLibrary == null) return null;
     var p = _parameter.enclosingElement;
 
     if (p is FunctionElement) {
@@ -2633,7 +2679,10 @@ class TopLevelVariable extends ModelElement
   bool get hasSetter => _variable.setter != null;
 
   @override
-  String get href => '${canonicalLibrary.dirName}/$_fileName';
+  String get href {
+    if (canonicalLibrary == null) return null;
+    return '${canonicalLibrary.dirName}/$_fileName';
+  }
 
   @override
   bool get isConst => _variable.isConst;
@@ -2701,7 +2750,10 @@ class Typedef extends ModelElement
   String get fileName => '$name.html';
 
   @override
-  String get href => '${canonicalLibrary.dirName}/$fileName';
+  String get href {
+    if (canonicalLibrary == null) return null;
+    return '${canonicalLibrary.dirName}/$fileName';
+  }
 
   @override
   String get kind => 'typedef';
@@ -2731,8 +2783,10 @@ class TypeParameter extends ModelElement {
   }
 
   @override
-  String get href =>
-      '${canonicalLibrary.dirName}/${_typeParameter.enclosingElement.name}/$name';
+  String get href {
+    if (canonicalLibrary == null) return null;
+    return '${canonicalLibrary.dirName}/${_typeParameter.enclosingElement.name}/$name';
+  }
 
   @override
   String get kind => 'type parameter';

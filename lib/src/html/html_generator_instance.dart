@@ -98,6 +98,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
       generateLibrary(package, lib);
 
       for (var clazz in lib.allClasses) {
+        if (!clazz.isCanonical) continue;
         generateClass(package, lib, clazz);
 
         for (var constructor in clazz.constructors) {
@@ -130,6 +131,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
       }
 
       for (var eNum in lib.enums) {
+        if (!eNum.isCanonical) continue;
         generateEnum(package, lib, eNum);
       }
 
@@ -146,6 +148,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
       }
 
       for (var typeDef in lib.typedefs) {
+        if (!typeDef.isCanonical) continue;
         generateTypeDef(package, lib, typeDef);
       }
     }
@@ -273,7 +276,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
-    String fullName = path.join(out.path, filename);
     // There's no point to writing non-canonical class information, at all,
     // not even once -- it'll be covered later when the canonical version comes
     // up.
@@ -281,6 +283,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
       return;
     }
 
+    String fullName = path.join(out.path, filename);
     // TODO(jcollins-g): refactor generation so we don't bother calling this
     // for files we won't ever write.
     if (!writtenFiles.contains(fullName)) {

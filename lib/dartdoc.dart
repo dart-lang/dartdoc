@@ -159,7 +159,6 @@ class DartDoc {
     }
 
     Package package = new Package(libraries, packageMeta);
-
     if (config != null && config.autoIncludeDependencies) {
       final newLibraryElements =
           _buildLibrariesWithAutoincludedDependencies(package);
@@ -262,7 +261,6 @@ class DartDoc {
     }
 
     files.forEach(processLibrary);
-
     if ((embedderUriResolver != null) && (embedderUriResolver.length > 0)) {
       embedderUriResolver.dartSdk.uris.forEach((String dartUri) {
         Source source = embedderUriResolver.dartSdk.mapDartUri(dartUri);
@@ -377,19 +375,31 @@ class _Error implements Comparable<_Error> {
   String toString() => '[${severityName}] ${description}';
 }
 
+<<<<<<< HEAD
 Iterable<LibraryElement> _buildLibrariesWithAutoincludedDependencies(
     Package package) {
   final List<LibraryElement> newLibraryElements = []
     ..addAll(package.libraries.map((l) => l.element as LibraryElement));
+=======
+Iterable<LibraryElement> _buildLibrariesWithAutoincludedDependencies(Package package) {
+  final Set<LibraryElement> newLibraryElements = new Set();
+  newLibraryElements.addAll(package.libraries.map((l) => l.element as LibraryElement));
+>>>>>>> Implemented by and a few other things still broken, but closer.
 
   package.allModelElements.forEach((modelElement) {
     modelElement.usedElements.forEach((used) {
       if (used != null && used.modelType != null) {
         final ModelElement modelTypeElement = used.modelType.element;
         final library = package.findLibraryFor(modelTypeElement.element);
+<<<<<<< HEAD
         if (library == null && modelTypeElement.library != null) {
           if (!newLibraryElements.contains(modelTypeElement.library.element) &&
               !modelTypeElement.library.name.startsWith("dart:")) {
+=======
+        if (library == null && modelTypeElement.library != null && modelTypeElement.library.canonicalLibrary == null) {
+          if (!newLibraryElements.contains(modelTypeElement.library.element)
+              && !modelTypeElement.library.name.startsWith("dart:")) {
+>>>>>>> Implemented by and a few other things still broken, but closer.
             newLibraryElements.add(modelTypeElement.library.element);
           }
         }
