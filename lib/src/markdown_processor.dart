@@ -290,7 +290,11 @@ String _linkDocReference(String reference, ModelElement element,
     }
     // this would be linkedElement.linkedName, but link bodies are slightly
     // different for doc references. sigh.
-    return '<a ${classContent}href="${linkedElement.href}">$label</a>';
+    if (linkedElement.href == null) {
+      return HTML_ESCAPE.convert(label);
+    } else {
+      return '<a ${classContent}href="${linkedElement.href}">$label</a>';
+    }
   } else {
     warning(
         "unresolved doc reference '$reference'${element != null ? " (in ${_elementLocation(element)}" : ""}");
