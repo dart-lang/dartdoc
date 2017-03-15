@@ -94,7 +94,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
     generatePackage();
 
-    for (var lib in package.libraries) {
+    for (var lib in package.libraries.toList()..sort()) {
       generateLibrary(package, lib);
 
       for (var clazz in lib.allClasses) {

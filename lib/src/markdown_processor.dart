@@ -218,15 +218,12 @@ MatchingLinkResult _getMatchingLinkElement(
   // bug! this can fail to find the right library name if the element's name
   // we're looking for is the same as a name that comes in from an imported
   // library.
-  //
-  // Don't search through all libraries in the package, actually search
-  // in the current scope.
-  Library refLibrary =
-      element.package.findLibraryFor(refElement, scopedTo: element);
+  Library refLibrary = element.package.findLibraryFor(refElement);
 
   if (refLibrary != null) {
     // Is there a way to pull this from a registry of known elements?
     // Seems like we're creating too many objects this way.
+    // TODO(jcollins-g): link with new registry
     if (isEnum) {
       return new MatchingLinkResult(
           new EnumField(refElement, refLibrary), null);
