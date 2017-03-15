@@ -124,7 +124,7 @@ class Accessor extends ModelElement
   ModelElement get enclosingElement {
     if (_accessor.enclosingElement is CompilationUnitElement) {
       return package
-          ._getLibraryFor(_accessor.enclosingElement.enclosingElement);
+          .findOrCreateLibraryFor(_accessor.enclosingElement.enclosingElement);
     }
 
     return new ModelElement.from(_accessor.enclosingElement, library);
@@ -203,7 +203,7 @@ class Class extends ModelElement implements EnclosedElement {
         .toList(growable: false);
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
-      Library lib = package._getLibraryFor(_cls.supertype.element);
+      Library lib = package.findOrCreateLibraryFor(_cls.supertype.element);
 
       _supertype = new ElementType(
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
@@ -410,7 +410,7 @@ class Class extends ModelElement implements EnclosedElement {
           _inheritedMethods.add(m);
           _genPageMethods.add(m);
         } else {
-          Library lib = package._getLibraryFor(value.enclosingElement);
+          Library lib = package.findOrCreateLibraryFor(value.enclosingElement);
           _inheritedMethods.add(new Method.inherited(
               value, new Class(value.enclosingElement, lib), lib));
         }
@@ -467,7 +467,7 @@ class Class extends ModelElement implements EnclosedElement {
         _inheritedOperators.add(o);
         _genPageOperators.add(o);
       } else {
-        Library lib = package._getLibraryFor(value.enclosingElement);
+        Library lib = package.findOrCreateLibraryFor(value.enclosingElement);
         _inheritedOperators.add(new Operator.inherited(
             value, new Class(value.enclosingElement, lib), lib));
       }
@@ -531,7 +531,7 @@ class Class extends ModelElement implements EnclosedElement {
           _inheritedProperties.add(f);
           _genPageProperties.add(f);
         } else {
-          Library lib = package._getLibraryFor(e.enclosingElement);
+          Library lib = package.findOrCreateLibraryFor(e.enclosingElement);
           _inheritedProperties.add(
               new Field.inherited(e, new Class(e.enclosingElement, lib), lib));
         }
@@ -1572,7 +1572,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       String annotation = (const HtmlEscape()).convert(a.toSource());
       if (a.element is ConstructorElement) {
         var me = new ModelElement.from(a.element.enclosingElement,
-            package._getLibraryFor(a.element.enclosingElement));
+            package.findOrCreateLibraryFor(a.element.enclosingElement));
         annotation = annotation.replaceFirst(me.name, me.linkedName);
       }
       return annotation;
@@ -2019,7 +2019,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       lib = package.findLibraryFor(element);
     }
     if (lib == null) {
-      lib = package._getLibraryFor(e);
+      lib = package.findOrCreateLibraryFor(e);
     }
     return lib;
   }
@@ -2274,7 +2274,10 @@ class Operator extends Method {
 }
 
 class Package implements Nameable, Documentable {
-  final List<Library> _libraries = [];
+  // Library objects serving as entry points for documentation.
+  final Set<Library> _libraries = new Set();
+  // All library objects related to this package; a superset of _libraries.
+  final Map<LibraryElement, Library> _all_libraries = new Map();
   final PackageMeta packageMeta;
 
   final Map<Element, Library> _elementToLibrary = {};
@@ -2282,6 +2285,19 @@ class Package implements Nameable, Documentable {
   final Map<String, Library> elementLibraryMap = {};
   String _docsAsHtml;
   final Map<String, String> _macros = {};
+
+  /*
+  void AddTopLevelLibrary(Library l) {
+    _libraries.add(l);
+    AddOtherLibrary(l);
+  }
+
+  void AddOtherLibrary(Library l) {
+    _all_libraries.add(l);
+    assert (!_elementToLibrary.containsKey(l.element));
+    _elementToLibrary[l.element] = l;
+  }*/
+
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {
     libraryElements.forEach((element) {
@@ -2291,6 +2307,8 @@ class Package implements Nameable, Documentable {
         Library._libraryMap.putIfAbsent(lib.name, () => lib);
         elementLibraryMap.putIfAbsent('${lib.kind}.${lib.name}', () => lib);
         _libraries.add(lib);
+        _all_libraries[element] = lib;
+        assert(!_elementToLibrary.containsKey(lib.element));
         _elementToLibrary[element] = lib;
       }
     });
@@ -2299,7 +2317,6 @@ class Package implements Nameable, Documentable {
       library._allClasses.forEach(_addToImplementors);
     });
 
-    _libraries.sort();
     _implementors.values.forEach((l) => l.sort());
   }
 
@@ -2374,7 +2391,7 @@ class Package implements Nameable, Documentable {
   /// Does this package represent the SDK?
   bool get isSdk => packageMeta.isSdk;
 
-  List<Library> get libraries => _libraries;
+  Set<Library> get libraries => _libraries;
 
   @override
   String get name => packageMeta.name;
@@ -2384,7 +2401,8 @@ class Package implements Nameable, Documentable {
 
   String get version => packageMeta.version;
 
-  Library findLibraryFor(final Element element, {final ModelElement scopedTo}) {
+  /*
+  Library _findLibraryFor(final Element element) {
     if (element is LibraryElement) {
       // will equality work here? or should we check names?
       return _libraries.firstWhere((lib) => lib.element == element,
@@ -2414,16 +2432,45 @@ class Package implements Nameable, Documentable {
     return _libraries.firstWhere((lib) => lib.hasInExportedNamespace(el),
         orElse: () => null);
   }
+  */
+
+  Library newFindLibraryFor(Element element) {
+    if (_elementToLibrary.containsKey(element)) {
+      return _elementToLibrary[element];
+    }
+    Library foundLibrary = null;
+    if (libraryElementReexportedBy.containsKey(element.library)) {
+      Set<Library> exportedIn = libraryElementReexportedBy[element.library];
+      if (exportedIn.length == 1) {
+        // TODO(jcollins-g): why is the special case necessary here?  analyzer quirk?
+        foundLibrary = exportedIn.first;
+      } else {
+        foundLibrary = exportedIn.firstWhere((l) => l.element.location.components[0] == element.library.location.components[0], orElse: () => null);
+      }
+    }
+    if (foundLibrary != null) _elementToLibrary[element] = foundLibrary;
+    return foundLibrary;
+  }
+
+  Library findLibraryFor(Element element) {
+    //Library lib = _findLibraryFor(element);
+    Library newLib = newFindLibraryFor(element);
+    //if (newLib != lib) {
+    //  print ("hmmm: ${newLib} ${lib}");
+    //}
+    return newLib;
+  }
 
   bool isDocumented(Element element) => findLibraryFor(element) != null;
 
   @override
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
+  /*
   /// Will try to find the library that exports the element.
   /// Checks if a library exports a name.
-  /// Can return null if not appropriate library can be found.
-  Library _getLibraryFor(Element e) {
+  /// Can return null if no appropriate library can be found.
+  Library findOrCreateLibraryForFinder(Element e) {
     // can be null if e is for dynamic
     if (e.library == null) {
       return null;
@@ -2437,13 +2484,43 @@ class Package implements Nameable, Documentable {
           '${e.kind}.${e.name}.${e.enclosingElement}', () => lib);
       return lib;
     }
-    return new Library(e.library, this);
+    return null;
+  }
+  */
+
+  /// This is used when we might need a Library object that isn't actually
+  /// a documentation entry point (for elements that have no canonical Library
+  /// within the set of documentation entry point Libraries).
+  Library findOrCreateLibraryFor(Element e) {
+    // This is just a cache to avoid creating lots of packages over and over.
+    if (_all_libraries.containsKey(e.library)) {
+      return _all_libraries[e.library];
+    }
+    // can be null if e is for dynamic
+    if (e.library == null) {
+      return null;
+    }
+    //Library lib = findOrCreateLibraryForFinder(e);
+    Library foundLibrary = findLibraryFor(e);
+    //if (newLib != lib) {
+    //  print ("hmmm");
+    //}
+
+    //if (lib == null) {
+    //  return new Library(e.library, this);
+    //}
+    if (foundLibrary == null) {
+      foundLibrary = new Library(e.library, this);
+      _all_libraries[e.library] = foundLibrary;
+      assert(findOrCreateLibraryFor(e) == foundLibrary);
+    }
+    return foundLibrary;
   }
 
-  Set<ModelElement> _allModelElements;
+  List<ModelElement> _allModelElements;
   Iterable<ModelElement> get allModelElements {
     if (_allModelElements == null) {
-      _allModelElements = new Set();
+      _allModelElements = [];
       this.libraries.forEach((library) {
         _allModelElements.addAll(library.allModelElements);
       });
@@ -2651,11 +2728,11 @@ class TopLevelVariable extends ModelElement
       var t = _variable.getter.returnType;
 
       _modelType = new ElementType(t,
-          new ModelElement.from(t.element, package._getLibraryFor(t.element)));
+          new ModelElement.from(t.element, package.findOrCreateLibraryFor(t.element)));
     } else {
       var s = _variable.setter.parameters.first.type;
       _modelType = new ElementType(s,
-          new ModelElement.from(s.element, package._getLibraryFor(s.element)));
+          new ModelElement.from(s.element, package.findOrCreateLibraryFor(s.element)));
     }
   }
 
