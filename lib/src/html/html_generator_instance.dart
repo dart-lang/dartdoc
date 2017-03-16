@@ -33,9 +33,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
   String get faviconPath => _options.faviconPath;
   bool get useCategories => _options.useCategories;
   bool get prettyIndexJson => _options.prettyIndexJson;
-  // Don't generate the same data over and over per run.  Assumes that
-  // doing so will create identical data.
-  Set<String> writtenFiles = new Set();
+  // Protect against generating the same data over and over for a package.
+  final Set<String> _writtenFiles = new Set();
 
   HtmlGeneratorInstance(this._options, this._templates, this.package, this.out,
       this._onFileCreated);
@@ -56,13 +55,11 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void _generateSearchIndex() {
-    File jsonFile = _createOutputFile(out, 'index.json');
-
     var encoder =
         prettyIndexJson ? new JsonEncoder.withIndent(' ') : new JsonEncoder();
 
-    String json = encoder.convert(
-        documentedElements.where((e) => e.isCanonical).map((ModelElement e) {
+    File jsonFile = _createOutputFile(path.join(out.path, 'index.json'));
+    String json = encoder.convert(documentedElements.where((e) => e.isCanonical).map((ModelElement e) {
       Map data = {
         'name': e.name,
         'qualifiedName': e.name,
@@ -94,10 +91,12 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
     generatePackage();
 
-    for (var lib in package.libraries.toList()..sort()) {
+    for (var lib in package.libraries) {
       generateLibrary(package, lib);
 
       for (var clazz in lib.allClasses) {
+        // TODO(jcollins-g): consider refactor so that only the canonical
+        // ModelElements show up in these lists
         if (!clazz.isCanonical) continue;
         generateClass(package, lib, clazz);
 
@@ -136,14 +135,17 @@ class HtmlGeneratorInstance implements HtmlOptions {
       }
 
       for (var constant in lib.constants) {
+        if (!constant.isCanonical) continue;
         generateTopLevelConstant(package, lib, constant);
       }
 
       for (var property in lib.properties) {
+        if (!property.isCanonical) continue;
         generateTopLevelProperty(package, lib, property);
       }
 
       for (var function in lib.functions) {
+        if (!function.isCanonical) continue;
         generateFunction(package, lib, function);
       }
 
@@ -276,35 +278,29 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
-    // There's no point to writing non-canonical class information, at all,
-    // not even once -- it'll be covered later when the canonical version comes
-    // up.
-    if (data.self is ModelElement && !(data.self as ModelElement).isCanonical) {
-      return;
-    }
-
     String fullName = path.join(out.path, filename);
-    // TODO(jcollins-g): refactor generation so we don't bother calling this
-    // for files we won't ever write.
-    if (!writtenFiles.contains(fullName)) {
+    // If you see this assert, we're probably being called to build non-canonical
+    // docs somehow.  Check data.self.isCanonical to find out.
+    assert(!_writtenFiles.contains(fullName));
+    if (!_writtenFiles.contains(fullName)) {
       String content = template(data,
           assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
-      _writeFile(filename, content);
-      writtenFiles.add(fullName);
+      _writeFile(fullName, content);
+      _writtenFiles.add(fullName);
       if (data.self is ModelElement) documentedElements.add(data.self);
     }
   }
 
   void _writeFile(String filename, String content) {
-    File file = _createOutputFile(out, filename);
+    File file = _createOutputFile(filename);
     file.writeAsStringSync(content);
     _onFileCreated.add(file);
   }
 }
 
-File _createOutputFile(Directory destination, String filename) {
-  File file = new File(path.join(destination.path, filename));
+File _createOutputFile(String filename) {
+  File file = new File(filename);
   Directory parent = file.parent;
   if (!parent.existsSync()) parent.createSync(recursive: true);
   return file;

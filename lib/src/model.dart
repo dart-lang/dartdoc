@@ -1169,7 +1169,7 @@ class Library extends ModelElement {
   @override
   String get href {
     if (canonicalLibrary == null) return null;
-    return '$canonicalLibrary.dirName/$fileName';
+    return '${canonicalLibrary.dirName}/$fileName';
   }
 
   bool get isAnonymous => element.name == null || element.name.isEmpty;
@@ -2275,14 +2275,12 @@ class Operator extends Method {
 
 class Package implements Nameable, Documentable {
   // Library objects serving as entry points for documentation.
-  final Set<Library> _libraries = new Set();
+  final List<Library> _libraries = [];
   // All library objects related to this package; a superset of _libraries.
   final Map<LibraryElement, Library> _all_libraries = new Map();
   final PackageMeta packageMeta;
 
   final Map<Element, Library> _elementToLibrary = {};
-  // TODO(jcollins-g): replace this.
-  final Map<String, Library> elementLibraryMap = {};
   String _docsAsHtml;
   final Map<String, String> _macros = {};
 
@@ -2300,12 +2298,12 @@ class Package implements Nameable, Documentable {
 
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {
-    libraryElements.forEach((element) {
+    List<LibraryElement> sortedElements = new List.from(libraryElements)..sort((a, b) => compareNatural(a.displayName, b.displayName));
+    sortedElements.forEach((element) {
       // add only if the element should be included in the public api
       if (isPublic(element)) {
         var lib = new Library(element, this);
         Library._libraryMap.putIfAbsent(lib.name, () => lib);
-        elementLibraryMap.putIfAbsent('${lib.kind}.${lib.name}', () => lib);
         _libraries.add(lib);
         _all_libraries[element] = lib;
         assert(!_elementToLibrary.containsKey(lib.element));
@@ -2391,7 +2389,7 @@ class Package implements Nameable, Documentable {
   /// Does this package represent the SDK?
   bool get isSdk => packageMeta.isSdk;
 
-  Set<Library> get libraries => _libraries;
+  List<Library> get libraries => _libraries;
 
   @override
   String get name => packageMeta.name;
