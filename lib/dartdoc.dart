@@ -154,20 +154,22 @@ class DartDoc {
       });
     }
 
-    if (includes.isNotEmpty || excludes.isNotEmpty) {
-      print('generating docs for libraries ${libraries.join(', ')}\n');
+    print('generating docs for libraries ${libraries.join(', ')}');
+
+    Package package;
+    // TODO(jcollins-g): this should be a Package constructor/factory
+    if (config != null && config.autoIncludeDependencies) {
+      print('(and all dependencies, recursively)');
+      package = _buildPackageWithAutoincludedDependencies(
+          new Set()..addAll(libraries), packageMeta);
+    } else {
+      package = new Package(libraries, packageMeta);
     }
 
-    Package package = new Package(libraries, packageMeta);
-    if (config != null && config.autoIncludeDependencies) {
-      final newLibraryElements =
-          _buildLibrariesWithAutoincludedDependencies(package);
-      Library.clearLibraryMap();
-      package = new Package(newLibraryElements, packageMeta);
-    }
+    print ('\n');
 
     // Go through docs of every model element in package to prebuild the macros index
-    package.allModelElements.forEach((m) => m.documentation);
+    package.allCanonicalModelElements.forEach((m) => m.documentation);
 
     // Create the out directory.
     if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
@@ -178,10 +180,10 @@ class DartDoc {
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print(
-        "\nDocumented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} "
+        "\nDocumented ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds.");
 
-    if (libraries.isEmpty) {
+    if (package.libraries.isEmpty) {
       print(
           "\ndartdoc could not find any libraries to document. Run `pub get` and try again.");
     }
@@ -261,12 +263,6 @@ class DartDoc {
     }
 
     files.forEach(processLibrary);
-    if ((embedderUriResolver != null) && (embedderUriResolver.length > 0)) {
-      embedderUriResolver.dartSdk.uris.forEach((String dartUri) {
-        Source source = embedderUriResolver.dartSdk.mapDartUri(dartUri);
-        processLibrary(source.fullName);
-      });
-    }
 
     // Ensure that the analysis engine performs all remaining work.
     AnalysisResult result = context.performAnalysisTask();
@@ -279,10 +275,37 @@ class DartDoc {
       LibraryElement library = context.computeLibraryElement(source);
       String libraryName = Library.getLibraryName(library);
       var fullPath = source.fullName;
+      if (libraryName.contains("http_parser")) {
+        print ('hmm');
+      }
+      if (libraryName.contains("media_type")) {
+        print ('hmmm');
+      }
+
       if (includeExternals.any((string) => fullPath.endsWith(string))) {
         if (libraries.map(Library.getLibraryName).contains(libraryName)) {
           continue;
         }
+        libraries.add(library);
+      } else if (config != null && config.autoIncludeDependencies && libraryName != '') {
+        // This is a pretty intensely hardcoded convention, but there seems to
+        // to be no other way to identify what might be a "top level" library
+        // here.  Two regexps so I don't have to reimplement path separators in
+        // my regexp.
+        File searchFile = new File(fullPath);
+        searchFile = new File(path.join(searchFile.parent.path, 'pubspec.yaml'));
+        bool foundLibSrc = false;
+        while (!foundLibSrc && searchFile.parent != null) {
+          if (fullPath.contains('lib/src')) {
+            print ('hmmm');
+          }
+          if (searchFile.existsSync()) break;
+          List<String> pathParts = path.split(searchFile.parent.path);
+          pathParts = pathParts.sublist(pathParts.length - 2, pathParts.length);
+          foundLibSrc = pathParts[0] + '/' + pathParts[1] == 'lib/src';
+          searchFile = new File(path.join(searchFile.parent.parent.path, 'pubspec.yaml'));
+        }
+        if (foundLibSrc) continue;
         libraries.add(library);
       }
     }
@@ -375,37 +398,30 @@ class _Error implements Comparable<_Error> {
   String toString() => '[${severityName}] ${description}';
 }
 
-<<<<<<< HEAD
-Iterable<LibraryElement> _buildLibrariesWithAutoincludedDependencies(
-    Package package) {
-  final List<LibraryElement> newLibraryElements = []
-    ..addAll(package.libraries.map((l) => l.element as LibraryElement));
-=======
-Iterable<LibraryElement> _buildLibrariesWithAutoincludedDependencies(Package package) {
-  final Set<LibraryElement> newLibraryElements = new Set();
-  newLibraryElements.addAll(package.libraries.map((l) => l.element as LibraryElement));
->>>>>>> Implemented by and a few other things still broken, but closer.
+Package _buildPackageWithAutoincludedDependencies(
+    Set<LibraryElement> libraryElements, PackageMeta packageMeta) {
+  var startLength = libraryElements.length;
+  // TODO(jcollins-g): get rid of need to clear this
+  Library.clearLibraryMap();
+  Package package = new Package(libraryElements, packageMeta);
 
+  // TODO(jcollins-g): this is inefficient; keep track of modelElements better
   package.allModelElements.forEach((modelElement) {
     modelElement.usedElements.forEach((used) {
       if (used != null && used.modelType != null) {
         final ModelElement modelTypeElement = used.modelType.element;
         final library = package.findLibraryFor(modelTypeElement.element);
-<<<<<<< HEAD
-        if (library == null && modelTypeElement.library != null) {
-          if (!newLibraryElements.contains(modelTypeElement.library.element) &&
-              !modelTypeElement.library.name.startsWith("dart:")) {
-=======
-        if (library == null && modelTypeElement.library != null && modelTypeElement.library.canonicalLibrary == null) {
-          if (!newLibraryElements.contains(modelTypeElement.library.element)
-              && !modelTypeElement.library.name.startsWith("dart:")) {
->>>>>>> Implemented by and a few other things still broken, but closer.
-            newLibraryElements.add(modelTypeElement.library.element);
-          }
+        if (library == null
+            && modelTypeElement.library != null
+            && modelTypeElement.library.canonicalLibrary == null
+            && !libraryElements.contains(modelTypeElement.library.element)) {
+          libraryElements.add(modelTypeElement.library.element);
         }
       }
     });
   });
 
-  return newLibraryElements;
+  if (libraryElements.length > startLength)
+    return _buildPackageWithAutoincludedDependencies(libraryElements, packageMeta);
+  return package;
 }

@@ -223,7 +223,6 @@ MatchingLinkResult _getMatchingLinkElement(
   if (refLibrary != null) {
     // Is there a way to pull this from a registry of known elements?
     // Seems like we're creating too many objects this way.
-    // TODO(jcollins-g): link with new registry
     if (isEnum) {
       return new MatchingLinkResult(
           new EnumField(refElement, refLibrary), null);
