@@ -97,34 +97,42 @@ class HtmlGeneratorInstance implements HtmlOptions {
       for (var clazz in lib.allClasses) {
         // TODO(jcollins-g): consider refactor so that only the canonical
         // ModelElements show up in these lists
+        //if (!clazz.name.contains("Unmodifiable")) continue;
         if (!clazz.isCanonical) continue;
         generateClass(package, lib, clazz);
 
         for (var constructor in clazz.constructors) {
+          if (!constructor.isCanonical) continue;
           generateConstructor(package, lib, clazz, constructor);
         }
 
         for (var constant in clazz.constants) {
+          if (!constant.isCanonical) continue;
           generateConstant(package, lib, clazz, constant);
         }
 
         for (var property in clazz.staticProperties) {
+          if (!property.isCanonical) continue;
           generateProperty(package, lib, clazz, property);
         }
 
         for (var property in clazz.propertiesForPages) {
+          if (!property.isCanonical) continue;
           generateProperty(package, lib, clazz, property);
         }
 
         for (var method in clazz.methodsForPages) {
+          if (!method.isCanonical) continue;
           generateMethod(package, lib, clazz, method);
         }
 
         for (var operator in clazz.operatorsForPages) {
+          if (!operator.isCanonical) continue;
           generateMethod(package, lib, clazz, operator);
         }
 
         for (var method in clazz.staticMethods) {
+          if (!method.isCanonical) continue;
           generateMethod(package, lib, clazz, method);
         }
       }
@@ -281,6 +289,12 @@ class HtmlGeneratorInstance implements HtmlOptions {
     String fullName = path.join(out.path, filename);
     // If you see this assert, we're probably being called to build non-canonical
     // docs somehow.  Check data.self.isCanonical to find out.
+    if (fullName.contains("dart-collection/UnmodifiableListView/length.html")) {
+      print("**found: $fullName");
+    }
+    if (_writtenFiles.contains(fullName)) {
+      print("**collision: $fullName");
+    }
     assert(!_writtenFiles.contains(fullName));
     if (!_writtenFiles.contains(fullName)) {
       String content = template(data,
