@@ -154,19 +154,23 @@ class DartDoc {
       });
     }
 
-    print('generating docs for libraries ${libraries.join(', ')}');
 
     Package package;
     // TODO(jcollins-g): this should be a Package constructor/factory
     if (config != null && config.autoIncludeDependencies) {
-      print('(and all dependencies, recursively)');
       package = _buildPackageWithAutoincludedDependencies(
           new Set()..addAll(libraries), packageMeta);
     } else {
       package = new Package(libraries, packageMeta);
     }
+    List<Library> collections = [];
+    for (Library library in package.libraries) {
+      if (library.name.contains('collection')) {
+        collections.add(library);
+      }
+    }
 
-    print ('\n');
+    print('generating docs for libraries ${package.libraries.map((Library l) => l.name).join(', ')}\n');
 
     // Go through docs of every model element in package to prebuild the macros index
     package.allCanonicalModelElements.forEach((m) => m.documentation);
@@ -258,11 +262,18 @@ class DartDoc {
       sources.add(source);
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
-        libraries.add(library);
+        if (!isPrivate(library)) libraries.add(library);
       }
     }
 
     files.forEach(processLibrary);
+
+    if ((embedderUriResolver != null) && (embedderUriResolver.length > 0)) {
+      embedderUriResolver.dartSdk.uris.forEach((String dartUri) {
+        Source source = embedderUriResolver.dartSdk.mapDartUri(dartUri);
+        processLibrary(source.fullName);
+      });
+    }
 
     // Ensure that the analysis engine performs all remaining work.
     AnalysisResult result = context.performAnalysisTask();
@@ -273,14 +284,11 @@ class DartDoc {
     // Use the includeExternals.
     for (Source source in context.librarySources) {
       LibraryElement library = context.computeLibraryElement(source);
+      if (library == null) {
+        continue;
+      }
       String libraryName = Library.getLibraryName(library);
       var fullPath = source.fullName;
-      if (libraryName.contains("http_parser")) {
-        print ('hmm');
-      }
-      if (libraryName.contains("media_type")) {
-        print ('hmmm');
-      }
 
       if (includeExternals.any((string) => fullPath.endsWith(string))) {
         if (libraries.map(Library.getLibraryName).contains(libraryName)) {
@@ -296,9 +304,6 @@ class DartDoc {
         searchFile = new File(path.join(searchFile.parent.path, 'pubspec.yaml'));
         bool foundLibSrc = false;
         while (!foundLibSrc && searchFile.parent != null) {
-          if (fullPath.contains('lib/src')) {
-            print ('hmmm');
-          }
           if (searchFile.existsSync()) break;
           List<String> pathParts = path.split(searchFile.parent.path);
           pathParts = pathParts.sublist(pathParts.length - 2, pathParts.length);
@@ -413,6 +418,7 @@ Package _buildPackageWithAutoincludedDependencies(
         final library = package.findLibraryFor(modelTypeElement.element);
         if (library == null
             && modelTypeElement.library != null
+            && !isPrivate(modelTypeElement.library.element)
             && modelTypeElement.library.canonicalLibrary == null
             && !libraryElements.contains(modelTypeElement.library.element)) {
           libraryElements.add(modelTypeElement.library.element);

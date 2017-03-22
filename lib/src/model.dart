@@ -901,7 +901,7 @@ class Field extends ModelElement
   @override
   bool get hasSetter => _field.setter != null;
 
-  @override
+/*  @override
   Library get canonicalLibrary {
     if (isInherited) {
       return enclosingElement.canonicalLibrary;
@@ -909,6 +909,7 @@ class Field extends ModelElement
       return super.canonicalLibrary;
     }
   }
+*/
 
   @override
   String get href {
@@ -1400,6 +1401,7 @@ class Method extends ModelElement
     }).toList();
   }
 
+  /*
   @override
   Library get canonicalLibrary {
     if (isInherited) {
@@ -1408,6 +1410,7 @@ class Method extends ModelElement
       return super.canonicalLibrary;
     }
   }
+  */
 
   @override
   ModelElement get enclosingElement {
@@ -2298,8 +2301,7 @@ class Package implements Nameable, Documentable {
 
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {
-    List<LibraryElement> sortedElements = new List.from(libraryElements)..sort((a, b) => compareNatural(a.displayName, b.displayName));
-    sortedElements.forEach((element) {
+    libraryElements.forEach((element) {
       // add only if the element should be included in the public api
       if (isPublic(element)) {
         var lib = new Library(element, this);
@@ -2311,6 +2313,7 @@ class Package implements Nameable, Documentable {
       }
     });
 
+    _libraries.sort((a, b) => compareNatural(a.name, b.name));
     _libraries.forEach((library) {
       library._allClasses.forEach(_addToImplementors);
     });
