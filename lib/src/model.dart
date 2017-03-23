@@ -1498,7 +1498,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       // the actual annotations are.
       while ((node is VariableDeclaration || node is VariableDeclarationList) &&
           node is! FieldDeclaration) {
-        assert (null != (node as AnnotatedNode).parent);
+        assert (null != node.parent);
         node = node.parent;
       }
       metadata = node.metadata;
