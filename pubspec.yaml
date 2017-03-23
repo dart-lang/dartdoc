@@ -19,8 +19,8 @@ dependencies:
   mustache4dart: ^1.0.9
   package_config: '>=0.1.5 <2.0.0'
   path: ^1.3.0
-  quiver: '>=0.18.0 <0.23.0'
-  resource: ^1.1.0
+  quiver: '>=0.18.0 <0.25.0'
+  resource: '>=1.1.0 <3.0.0'
   stack_trace: ^1.4.2
   yaml: ^2.1.0
 dev_dependencies:
