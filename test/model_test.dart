@@ -209,16 +209,20 @@ void main() {
 
     setUp(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
-      withMacro = dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro');
-      withMacro2 = dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro2');
+      withMacro =
+          dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro');
+      withMacro2 =
+          dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro2');
       package.allModelElements.forEach((m) => m.documentation);
     });
 
     test("renders a macro within the same comment where it's defined", () {
-      expect(withMacro.documentation, equals("Macro method\n\n\nFoo macro content\nMore docs"));
+      expect(withMacro.documentation,
+          equals("Macro method\n\n\nFoo macro content\nMore docs"));
     });
 
-    test("renders a macro in another method, not the same where it's defined", () {
+    test("renders a macro in another method, not the same where it's defined",
+        () {
       expect(withMacro2.documentation, equals("Foo macro content"));
     });
   });
@@ -302,9 +306,12 @@ void main() {
       test(
           'link to unresolved name in the library in this package still should be linked',
           () {
-        final Class helperClass = exLibrary.classes.firstWhere((c) => c.name == 'Helper');
-        expect(helperClass.documentationAsHtml, contains('<a href="ex/Apple-class.html">Apple</a>'));
-        expect(helperClass.documentationAsHtml, contains('<a href="ex/B-class.html">B</a>'));
+        final Class helperClass =
+            exLibrary.classes.firstWhere((c) => c.name == 'Helper');
+        expect(helperClass.documentationAsHtml,
+            contains('<a href="ex/Apple-class.html">Apple</a>'));
+        expect(helperClass.documentationAsHtml,
+            contains('<a href="ex/B-class.html">B</a>'));
       });
 
       test(
@@ -946,7 +953,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test("returns correct overriddenDepth", () {
-      final bAbstractMethod = classB.allInstanceMethods.firstWhere((m) => m.name == "abstractMethod");
+      final bAbstractMethod = classB.allInstanceMethods
+          .firstWhere((m) => m.name == "abstractMethod");
       expect(abstractMethod.overriddenDepth, equals(0));
       expect(bAbstractMethod.overriddenDepth, equals(1));
     });
@@ -1010,7 +1018,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           'Map&lt;String, dynamic&gt;');
     });
 
-
     test('parameter is a function', () {
       var functionArgParam = m4.parameters[1];
       expect(functionArgParam.modelType.createLinkedReturnTypeName(), 'String');
@@ -1040,7 +1047,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .readAsStringSync()
           .indexOf('Map<X, Y> convertToMap');
       expect(offset, isNonNegative,
-             reason: "Can't find convertToMap function in ${fakePath}");
+          reason: "Can't find convertToMap function in ${fakePath}");
       if (Platform.isWindows) fakePath = fakePath.replaceAll('/', r'\\');
       new File(p.join(Directory.current.path, "crossdart.json"))
           .writeAsStringSync("""
@@ -1235,9 +1242,16 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(onlySetter.getter, isNull);
     });
 
-    test('has one inherited property for getter/setter when inherited from parameterized class', () {
-      Class withGenericSub = exLibrary.classes.firstWhere((c) => c.name == 'WithGenericSub');
-      expect(withGenericSub.inheritedProperties.where((p) => p.name == "prop").length, equals(1));
+    test(
+        'has one inherited property for getter/setter when inherited from parameterized class',
+        () {
+      Class withGenericSub =
+          exLibrary.classes.firstWhere((c) => c.name == 'WithGenericSub');
+      expect(
+          withGenericSub.inheritedProperties
+              .where((p) => p.name == "prop")
+              .length,
+          equals(1));
     });
   });
 
@@ -1270,18 +1284,23 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('if overridden, gets documentation from superclasses', () {
-      final doc = classB.allInstanceProperties.firstWhere((p) => p.name == "s").getter.documentation;
+      final doc = classB.allInstanceProperties
+          .firstWhere((p) => p.name == "s")
+          .getter
+          .documentation;
       expect(doc, equals("The getter for `s`"));
     });
 
-    test("has correct linked return type if the return type is a parameterized typedef", () {
+    test(
+        "has correct linked return type if the return type is a parameterized typedef",
+        () {
       Class apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
-      final fieldWithTypedef = apple
-          .allInstanceProperties
+      final fieldWithTypedef = apple.allInstanceProperties
           .firstWhere((m) => m.name == "fieldWithTypedef");
       expect(
           fieldWithTypedef.linkedReturnType,
-          equals('<a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a>&lt;bool&gt;'));
+          equals(
+              '<a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a>&lt;bool&gt;'));
     });
   });
 

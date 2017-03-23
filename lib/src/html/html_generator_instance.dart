@@ -50,7 +50,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
   void _generateSearchIndex() {
     File jsonFile = _createOutputFile(out, 'index.json');
-    String json = JSON.encode(documentedElements.where((e) => e.isCanonical).map((ModelElement e) {
+    String json = JSON.encode(
+        documentedElements.where((e) => e.isCanonical).map((ModelElement e) {
       Map data = {
         'name': e.name,
         'qualifiedName': e.name,

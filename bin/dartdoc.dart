@@ -178,8 +178,7 @@ ArgParser _createArgsParser() {
       defaultsTo: false);
   parser.addFlag('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
-  parser.addFlag('show-warnings',
-      help: 'Display warnings.', negatable: false);
+  parser.addFlag('show-warnings', help: 'Display warnings.', negatable: false);
   parser.addFlag('show-progress',
       help: 'Display progress indications to console stdout', negatable: false);
   parser.addOption('sdk-readme',
@@ -207,8 +206,7 @@ ArgParser _createArgsParser() {
   parser.addOption('example-path-prefix',
       help: 'Prefix for @example paths.\n(defaults to the project root)');
   parser.addOption('rel-canonical-prefix',
-      help:
-          'If provided, add a rel="canonical" prefixed with provided value. '
+      help: 'If provided, add a rel="canonical" prefixed with provided value. '
           'Consider using if\nbuilding many versions of the docs for public '
           'SEO; learn more at https://goo.gl/gktN6F.');
   parser.addFlag('include-source',
@@ -220,7 +218,8 @@ ArgParser _createArgsParser() {
       negatable: false,
       defaultsTo: false);
   parser.addFlag('auto-include-dependencies',
-      help: 'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
+      help:
+          'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
       negatable: false,
       defaultsTo: false);
   return parser;

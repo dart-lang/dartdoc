@@ -111,7 +111,8 @@ const String UP = 'up';
 
 const String NAME_SINGLEUNDERSCORE = 'yay bug hunting';
 
-const String NAME_WITH_TWO_UNDERSCORES = 'episode seven better be good; episode seven better be good; episode seven better be good; episode seven better be good';
+const String NAME_WITH_TWO_UNDERSCORES =
+    'episode seven better be good; episode seven better be good; episode seven better be good; episode seven better be good';
 
 /// Testing [NAME_WITH_TWO_UNDERSCORES] should not be italicized.
 ///
@@ -445,38 +446,33 @@ class SubForDocComments extends BaseForDocComments {
 typedef void VoidCallback();
 
 /// Adds a callback.
-void addCallback(VoidCallback callback) { }
+void addCallback(VoidCallback callback) {}
 
 typedef int Callback2(String);
 
 /// Adds another callback.
-void addCallback2(Callback2 callback) { }
+void addCallback2(Callback2 callback) {}
 
 const required = 'required';
 
 /// Paints an image into the given rectangle in the canvas.
-void paintImage1({
-  @required String canvas,
-  @required int rect,
-  @required ExtraSpecialList image,
-  BaseForDocComments colorFilter,
-  String repeat: LongFirstLine.THING
-}) {
+void paintImage1(
+    {@required String canvas,
+    @required int rect,
+    @required ExtraSpecialList image,
+    BaseForDocComments colorFilter,
+    String repeat: LongFirstLine.THING}) {
   // nothing to do here -
-
 }
 
 /// Paints an image into the given rectangle in the canvas.
-void paintImage2(
-  String fooParam, [
-  @required String canvas,
-  @required int rect,
-  @required ExtraSpecialList image,
-  BaseForDocComments colorFilter,
-  String repeat = LongFirstLine.THING
-]) {
+void paintImage2(String fooParam,
+    [@required String canvas,
+    @required int rect,
+    @required ExtraSpecialList image,
+    BaseForDocComments colorFilter,
+    String repeat = LongFirstLine.THING]) {
   // nothing to do here -
-
 }
 
 /// Test operator references: [OperatorReferenceClass.==].

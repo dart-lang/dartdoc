@@ -94,6 +94,7 @@ class Uri {
     int parseHex(int start, int end) {
       return 0;
     }
+
     return null;
   }
 }

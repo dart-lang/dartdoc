@@ -78,7 +78,8 @@ class ElementType {
     var type = _type;
     if (type is FunctionType) {
       Iterable<DartType> typeArguments;
-      if (type.element is FunctionTypeAliasElement && type.typeFormals.isEmpty) {
+      if (type.element is FunctionTypeAliasElement &&
+          type.typeFormals.isEmpty) {
         // TODO(jmesserly): simplify check above; we should have a way
         // to find instantiated typedefs without consulting the element.
         // Also, it will not work if we support typedefs declared inside classes.

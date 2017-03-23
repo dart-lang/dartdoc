@@ -14,11 +14,13 @@ class _ExportGraphNode {
   /// It returns a "canonical" library element
   ///
   /// That's one of the passed in the arguments, which is the closest if we go up the graph.
-  _ExportGraphNode canonicalLibraryElement(Iterable<LibraryElement> libraryElements) {
+  _ExportGraphNode canonicalLibraryElement(
+      Iterable<LibraryElement> libraryElements) {
     if (libraryElements.contains(libraryElement)) {
       return this;
     } else {
-      return exportedBy.toList().firstWhere((l) => l.canonicalLibraryElement(libraryElements) != null);
+      return exportedBy.toList().firstWhere(
+          (l) => l.canonicalLibraryElement(libraryElements) != null);
     }
   }
 }
@@ -27,7 +29,8 @@ class _ExportGraphNode {
 /// the library element from the arguments, adds it to the index, then goes through all
 /// the libraries this library element exports, adds them to the index too and also connects
 /// them to build a graph.
-void _buildSubGraph(Map<String, _ExportGraphNode> map, LibraryElement libraryElement) {
+void _buildSubGraph(
+    Map<String, _ExportGraphNode> map, LibraryElement libraryElement) {
   if (!map.containsKey(libraryElement.source.fullName)) {
     map[libraryElement.source.fullName] = new _ExportGraphNode(libraryElement);
   }
@@ -35,7 +38,8 @@ void _buildSubGraph(Map<String, _ExportGraphNode> map, LibraryElement libraryEle
   libraryElement.exports.forEach((ExportElement export) {
     final exportedLibraryElement = export.exportedLibrary;
     if (!map.containsKey(exportedLibraryElement.source.fullName)) {
-      map[exportedLibraryElement.source.fullName] = new _ExportGraphNode(exportedLibraryElement);
+      map[exportedLibraryElement.source.fullName] =
+          new _ExportGraphNode(exportedLibraryElement);
     }
     final childNode = map[exportedLibraryElement.source.fullName];
     childNode.exportedBy.add(node);
@@ -62,7 +66,9 @@ class ExportGraph {
   LibraryElement canonicalLibraryElement(Element element) {
     if (map.containsKey(element.library.source.fullName)) {
       final node = map[element.library.source.fullName];
-      return node.canonicalLibraryElement(packageLibraryElements)?.libraryElement;
+      return node
+          .canonicalLibraryElement(packageLibraryElements)
+          ?.libraryElement;
     } else {
       return element.library;
     }

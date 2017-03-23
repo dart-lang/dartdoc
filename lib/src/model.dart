@@ -9,8 +9,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart'
-    show AnnotatedNode, Declaration, FormalParameter, FieldDeclaration,
-        VariableDeclaration, VariableDeclarationList;
+    show
+        AnnotatedNode,
+        Declaration,
+        FormalParameter,
+        FieldDeclaration,
+        VariableDeclaration,
+        VariableDeclarationList;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/resolver.dart'
@@ -230,8 +235,12 @@ class Class extends ModelElement implements EnclosedElement {
   List<Method> get allInstanceMethods {
     if (_allInstanceMethods != null) return _allInstanceMethods;
     _allInstanceMethods = []
-      ..addAll([]..addAll(instanceMethods)..sort(byName))
-      ..addAll([]..addAll(inheritedMethods)..sort(byName));
+      ..addAll([]
+        ..addAll(instanceMethods)
+        ..sort(byName))
+      ..addAll([]
+        ..addAll(inheritedMethods)
+        ..sort(byName));
     return _allInstanceMethods;
   }
 
@@ -243,8 +252,12 @@ class Class extends ModelElement implements EnclosedElement {
 
     // TODO best way to make this a fixed length list?
     _allInstanceProperties = []
-      ..addAll([]..addAll(instanceProperties)..sort(byName))
-      ..addAll([]..addAll(inheritedProperties)..sort(byName));
+      ..addAll([]
+        ..addAll(instanceProperties)
+        ..sort(byName))
+      ..addAll([]
+        ..addAll(inheritedProperties)
+        ..sort(byName));
 
     return _allInstanceProperties;
   }
@@ -255,8 +268,12 @@ class Class extends ModelElement implements EnclosedElement {
   List<Operator> get allOperators {
     if (_allOperators != null) return _allOperators;
     _allOperators = []
-      ..addAll([]..addAll(operators)..sort(byName))
-      ..addAll([]..addAll(inheritedOperators)..sort(byName));
+      ..addAll([]
+        ..addAll(operators)
+        ..sort(byName))
+      ..addAll([]
+        ..addAll(inheritedOperators)
+        ..sort(byName));
     return _allOperators;
   }
 
@@ -275,7 +292,8 @@ class Class extends ModelElement implements EnclosedElement {
 
     _constructors = _cls.constructors.where(isPublic).map((e) {
       return new Constructor(e, library);
-    }).toList(growable: true)..sort(byName);
+    }).toList(growable: true)
+      ..sort(byName);
 
     return _constructors;
   }
@@ -344,8 +362,10 @@ class Class extends ModelElement implements EnclosedElement {
     if (_inheritedMethods != null) return _inheritedMethods;
 
     InheritanceManager manager = new InheritanceManager(element.library);
-    Map<String, ExecutableElement> cmap = manager.getMembersInheritedFromClasses(element);
-    Map<String, ExecutableElement> imap = manager.getMembersInheritedFromInterfaces(element);
+    Map<String, ExecutableElement> cmap =
+        manager.getMembersInheritedFromClasses(element);
+    Map<String, ExecutableElement> imap =
+        manager.getMembersInheritedFromInterfaces(element);
 
     // remove methods that exist on this class
     _methods.forEach((method) {
@@ -406,8 +426,10 @@ class Class extends ModelElement implements EnclosedElement {
   List<Operator> get inheritedOperators {
     if (_inheritedOperators != null) return _inheritedOperators;
     InheritanceManager manager = new InheritanceManager(element.library);
-    Map<String, ExecutableElement> cmap = manager.getMembersInheritedFromClasses(element);
-    Map<String, ExecutableElement> imap = manager.getMembersInheritedFromInterfaces(element);
+    Map<String, ExecutableElement> cmap =
+        manager.getMembersInheritedFromClasses(element);
+    Map<String, ExecutableElement> imap =
+        manager.getMembersInheritedFromInterfaces(element);
     operators.forEach((operator) {
       cmap.remove(operator.element.name);
       imap.remove(operator.element.name);
@@ -461,8 +483,10 @@ class Class extends ModelElement implements EnclosedElement {
     if (_inheritedProperties != null) return _inheritedProperties;
 
     InheritanceManager manager = new InheritanceManager(element.library);
-    Map<String, ExecutableElement> cmap = manager.getMembersInheritedFromClasses(element);
-    Map<String, ExecutableElement> imap = manager.getMembersInheritedFromInterfaces(element);
+    Map<String, ExecutableElement> cmap =
+        manager.getMembersInheritedFromClasses(element);
+    Map<String, ExecutableElement> imap =
+        manager.getMembersInheritedFromInterfaces(element);
 
     _inheritedProperties = [];
     List<ExecutableElement> vs = [];
@@ -525,7 +549,8 @@ class Class extends ModelElement implements EnclosedElement {
 
     _instanceMethods = _methods
         .where((m) => !m.isStatic && !m.isOperator)
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false)
+          ..sort(byName);
 
     _genPageMethods.addAll(_instanceMethods);
     return _instanceMethods;
@@ -535,7 +560,8 @@ class Class extends ModelElement implements EnclosedElement {
     if (_instanceFields != null) return _instanceFields;
     _instanceFields = _allFields
         .where((f) => !f.isStatic)
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false)
+          ..sort(byName);
 
     _genPageProperties.addAll(_instanceFields);
     return _instanceFields;
@@ -606,7 +632,8 @@ class Class extends ModelElement implements EnclosedElement {
     _staticFields = _allFields
         .where((f) => f.isStatic)
         .where((f) => !f.isConst)
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false)
+          ..sort(byName);
 
     return _staticFields;
   }
@@ -631,7 +658,8 @@ class Class extends ModelElement implements EnclosedElement {
     _fields = _cls.fields
         .where(isPublic)
         .map((e) => new Field(e, library))
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false)
+          ..sort(byName);
 
     return _fields;
   }
@@ -647,7 +675,8 @@ class Class extends ModelElement implements EnclosedElement {
       } else {
         return new Operator(e, library);
       }
-    }).toList(growable: false)..sort(byName);
+    }).toList(growable: false)
+      ..sort(byName);
 
     return _allMethods;
   }
@@ -767,7 +796,8 @@ class Enum extends Class {
         .where(isPublic)
         .where((f) => f.isConst)
         .map((field) => new EnumField.forConstant(index++, field, library))
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false)
+          ..sort(byName);
 
     return _enumFields;
   }
@@ -931,6 +961,7 @@ class Field extends ModelElement
   Set<String> get features {
     Set<String> all_features = super.features;
     all_features.addAll(annotations);
+
     /// final/const implies read-only, so don't display both strings.
     if (readOnly && !isFinal && !isConst) all_features.add('read-only');
     if (writeOnly) all_features.add('write-only');
@@ -1083,7 +1114,8 @@ class Library extends ModelElement {
     _enums = enumClasses
         .where(isPublic)
         .map((e) => new Enum(e, this))
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false)
+          ..sort(byName);
 
     return _enums;
   }
@@ -1091,7 +1123,8 @@ class Library extends ModelElement {
   List<Class> get exceptions {
     return _allClasses
         .where((c) => c.isErrorOrException)
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false)
+          ..sort(byName);
   }
 
   String get fileName => '$dirName-library.html';
@@ -1109,7 +1142,8 @@ class Library extends ModelElement {
 
     _functions = elements.where(isPublic).map((e) {
       return new ModelFunction(e, this);
-    }).toList(growable: false)..sort(byName);
+    }).toList(growable: false)
+      ..sort(byName);
 
     return _functions;
   }
@@ -1206,7 +1240,8 @@ class Library extends ModelElement {
     elements..removeWhere(isPrivate);
     _typeDefs = elements
         .map((e) => new Typedef(e, this))
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false)
+          ..sort(byName);
 
     return _typeDefs;
   }
@@ -1231,7 +1266,8 @@ class Library extends ModelElement {
     _classes = types
         .where(isPublic)
         .map((e) => new Class(e, this))
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false)
+          ..sort(byName);
 
     return _classes;
   }
@@ -1268,7 +1304,8 @@ class Library extends ModelElement {
     _variables = elements
         .where(isPublic)
         .map((e) => new TopLevelVariable(e, this))
-        .toList(growable: false)..sort(byName);
+        .toList(growable: false)
+          ..sort(byName);
 
     return _variables;
   }
@@ -1326,7 +1363,8 @@ class Library extends ModelElement {
 
   List<ModelElement> _allCanonicalModelElements;
   Iterable<ModelElement> get allCanonicalModelElements {
-    return (_allCanonicalModelElements ??= allModelElements.where((e) => e.isCanonical).toList());
+    return (_allCanonicalModelElements ??=
+        allModelElements.where((e) => e.isCanonical).toList());
   }
 }
 
@@ -1381,7 +1419,8 @@ class Method extends ModelElement
   }
 
   @override
-  String get href => '${canonicalLibrary.dirName}/${enclosingElement.name}/${fileName}';
+  String get href =>
+      '${canonicalLibrary.dirName}/${enclosingElement.name}/${fileName}';
 
   bool get isInherited => _isInherited;
 
@@ -1498,7 +1537,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       // the actual annotations are.
       while ((node is VariableDeclaration || node is VariableDeclarationList) &&
           node is! FieldDeclaration) {
-        assert (null != node.parent);
+        assert(null != node.parent);
         node = node.parent;
       }
       metadata = node.metadata;
@@ -1581,8 +1620,12 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   Library _canonicalLibrary;
   Library get canonicalLibrary {
     if (_canonicalLibrary == null) {
-      final libraryElement = package.exportGraph.canonicalLibraryElement(element) ?? library.element;
-      _canonicalLibrary = package.libraries.firstWhere((l) => l.element == libraryElement, orElse: () => library);
+      final libraryElement =
+          package.exportGraph.canonicalLibraryElement(element) ??
+              library.element;
+      _canonicalLibrary = package.libraries.firstWhere(
+          (l) => l.element == libraryElement,
+          orElse: () => library);
     }
     return _canonicalLibrary;
   }
@@ -1602,7 +1645,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   String get fullyQualifiedNameWithoutLibrary {
-    return (_fullyQualifiedNameWithoutLibrary ??= fullyQualifiedName.split(".").skip(1).join("."));
+    return (_fullyQualifiedNameWithoutLibrary ??=
+        fullyQualifiedName.split(".").skip(1).join("."));
   }
 
   String get sourceFileName => element.source.fullName;
@@ -1759,7 +1803,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return __documentation;
   }
 
-  bool canOverride() => element is ClassMemberElement || element is PropertyAccessorElement;
+  bool canOverride() =>
+      element is ClassMemberElement || element is PropertyAccessorElement;
 
   @override
   int compareTo(dynamic other) {
@@ -1987,8 +2032,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         }
       } else {
         // TODO: is this the proper way to handle warnings?
-        var filePath = this.element.source.fullName.substring(dirPath.length + 1);
-        final msg = '\nwarning: ${filePath}: @example file not found, ${fragmentFile.path}';
+        var filePath =
+            this.element.source.fullName.substring(dirPath.length + 1);
+        final msg =
+            '\nwarning: ${filePath}: @example file not found, ${fragmentFile.path}';
         stderr.write(msg);
       }
       return replacement;
@@ -2037,7 +2084,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   ///     {@endtemplate}
   ///
   String _stripMacroTemplatesAndAddToIndex(String rawDocs) {
-    final templateRegExp = new RegExp(r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?', multiLine: true);
+    final templateRegExp = new RegExp(
+        r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?',
+        multiLine: true);
     return rawDocs.replaceAllMapped(templateRegExp, (match) {
       package.addMacro(match[1].trim(), match[2].trim());
       return "";
@@ -2054,7 +2103,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (endOfSrc < 0) endOfSrc = argsAsString.length;
     var src = argsAsString.substring(0, endOfSrc);
     src = src.replaceAll('/', Platform.pathSeparator);
-    final args = { 'src': src };
+    final args = {'src': src};
 
     // Process remaining named arguments
     var namedArgs = argsAsString.substring(endOfSrc);
@@ -2076,7 +2125,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       var ext = p.extension(src);
       file = p.join(dir, '$basename-$region$ext$fragExtension');
     }
-    args['file'] = config?.examplePathPrefix == null ? file : p.join(config.examplePathPrefix, file);
+    args['file'] = config?.examplePathPrefix == null
+        ? file
+        : p.join(config.examplePathPrefix, file);
     return args;
   }
 }
@@ -2348,12 +2399,14 @@ class Package implements Nameable, Documentable {
 
   List<ModelElement> _allCanonicalModelElements;
   Iterable<ModelElement> get allCanonicalModelElements {
-    return (_allCanonicalModelElements ??= allModelElements.where((e) => e.isCanonical).toList());
+    return (_allCanonicalModelElements ??=
+        allModelElements.where((e) => e.isCanonical).toList());
   }
 
   ExportGraph _exportGraph;
   ExportGraph get exportGraph {
-    return (_exportGraph ??= new ExportGraph(libraries.map((l) => l.element as LibraryElement)));
+    return (_exportGraph ??=
+        new ExportGraph(libraries.map((l) => l.element as LibraryElement)));
   }
 
   String getMacro(String name) => _macros[name];
