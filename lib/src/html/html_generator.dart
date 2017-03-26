@@ -41,6 +41,7 @@ class HtmlGenerator extends Generator {
   final String _toolVersion;
   final String faviconPath;
   final bool useCategories;
+  final bool prettyIndexJson;
 
   final StreamController<File> _onFileCreated =
       new StreamController(sync: true);
@@ -56,7 +57,8 @@ class HtmlGenerator extends Generator {
       String relCanonicalPrefix,
       String toolVersion,
       String faviconPath,
-      bool useCategories: false}) async {
+      bool useCategories: false,
+      bool prettyIndexJson: false}) async {
     var templates =
         await Templates.create(headerPaths: headers, footerPaths: footers);
 
@@ -65,18 +67,22 @@ class HtmlGenerator extends Generator {
     }
 
     return new HtmlGenerator._(url, relCanonicalPrefix, templates, toolVersion,
-        faviconPath: faviconPath, useCategories: useCategories);
+        faviconPath: faviconPath,
+        useCategories: useCategories,
+        prettyIndexJson: prettyIndexJson);
   }
 
   HtmlGenerator._(
       this._url, this._relCanonicalPrefix, this._templates, this._toolVersion,
-      {this.faviconPath, this.useCategories});
+      {this.faviconPath, this.useCategories, this.prettyIndexJson: false});
 
   @override
   Future generate(Package package, Directory out) {
     return new HtmlGeneratorInstance(_toolVersion, _url, _templates, package,
             out, _onFileCreated, _relCanonicalPrefix,
-            faviconPath: faviconPath, useCategories: useCategories)
+            faviconPath: faviconPath,
+            useCategories: useCategories,
+            prettyIndexJson: prettyIndexJson)
         .generate();
   }
 }

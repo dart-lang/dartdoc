@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async' show Future, StreamController;
-import 'dart:convert' show JSON;
+import 'dart:convert' show JsonEncoder;
 import 'dart:io' show Directory, File, stdout;
 import 'dart:typed_data' show Uint8List;
 
@@ -28,10 +28,11 @@ class HtmlGeneratorInstance implements HtmlOptions {
   final String toolVersion;
   final String faviconPath;
   final bool useCategories;
+  final bool prettyIndexJson;
 
   HtmlGeneratorInstance(this.toolVersion, this.url, this._templates,
       this.package, this.out, this._onFileCreated, this.relCanonicalPrefix,
-      {this.faviconPath, this.useCategories});
+      {this.faviconPath, this.useCategories, this.prettyIndexJson: false});
 
   Future generate() async {
     if (!out.existsSync()) out.createSync();
@@ -50,7 +51,11 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
   void _generateSearchIndex() {
     File jsonFile = _createOutputFile(out, 'index.json');
-    String json = JSON.encode(
+
+    var encoder =
+        prettyIndexJson ? new JsonEncoder.withIndent(' ') : new JsonEncoder();
+
+    String json = encoder.convert(
         documentedElements.where((e) => e.isCanonical).map((ModelElement e) {
       Map data = {
         'name': e.name,
