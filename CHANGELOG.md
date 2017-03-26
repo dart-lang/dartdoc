@@ -4,6 +4,8 @@
 
 * Added `pretty-index-json` command line flag.
 
+* `index.json` file entries are now sorted.
+
 ## 0.9.12
 
 * add print styles

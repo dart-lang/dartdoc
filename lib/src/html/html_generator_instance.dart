@@ -7,6 +7,7 @@ import 'dart:convert' show JsonEncoder;
 import 'dart:io' show Directory, File, stdout;
 import 'dart:typed_data' show Uint8List;
 
+import 'package:collection/collection.dart' show compareNatural;
 import 'package:path/path.dart' as path;
 
 import '../model.dart';
@@ -74,7 +75,12 @@ class HtmlGeneratorInstance implements HtmlOptions {
         data['qualifiedName'] = e.fullyQualifiedName;
       }
       return data;
-    }).toList());
+    }).toList()
+          ..sort((a, b) {
+            var aQualified = a['qualifiedName'] as String;
+            var bQualified = b['qualifiedName'] as String;
+            return compareNatural(aQualified, bQualified);
+          }));
     jsonFile.writeAsStringSync('${json}\n');
   }
 
