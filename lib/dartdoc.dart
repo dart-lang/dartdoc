@@ -47,7 +47,9 @@ final String defaultOutDir = path.join('doc', 'api');
 /// Initialize and setup the generators.
 Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
     List<String> footerFilePaths, String relCanonicalPrefix,
-    {String faviconPath, bool useCategories: false}) async {
+    {String faviconPath,
+    bool useCategories: false,
+    bool prettyIndexJson: false}) async {
   return [
     await HtmlGenerator.create(
         url: url,
@@ -56,7 +58,8 @@ Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
         relCanonicalPrefix: relCanonicalPrefix,
         toolVersion: version,
         faviconPath: faviconPath,
-        useCategories: useCategories)
+        useCategories: useCategories,
+        prettyIndexJson: prettyIndexJson)
   ];
 }
 

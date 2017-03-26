@@ -125,7 +125,9 @@ main(List<String> arguments) async {
 
   var generators = await initGenerators(
       url, headerFilePaths, footerFilePaths, args['rel-canonical-prefix'],
-      faviconPath: args['favicon'], useCategories: args['use-categories']);
+      faviconPath: args['favicon'],
+      useCategories: args['use-categories'],
+      prettyIndexJson: args['pretty-index-json']);
 
   for (var generator in generators) {
     generator.onFileCreated.listen(_onProgress);
@@ -220,6 +222,11 @@ ArgParser _createArgsParser() {
   parser.addFlag('auto-include-dependencies',
       help:
           'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
+      negatable: false,
+      defaultsTo: false);
+  parser.addFlag('pretty-index-json',
+      help:
+          "Generates `index.json` with indentation and newlines. The file is larger, but it's also easier to diff.",
       negatable: false,
       defaultsTo: false);
   return parser;

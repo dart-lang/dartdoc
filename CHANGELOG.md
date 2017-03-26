@@ -2,6 +2,8 @@
 
 * fix multiple issues in annotation/feature list handling (#1268, #1162, #1081)
 
+* Added `pretty-index-json` command line flag.
+
 ## 0.9.12
 
 * add print styles
