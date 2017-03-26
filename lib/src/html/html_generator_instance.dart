@@ -11,29 +11,31 @@ import 'package:collection/collection.dart' show compareNatural;
 import 'package:path/path.dart' as path;
 
 import '../model.dart';
+import 'html_generator.dart' show HtmlGeneratorOptions;
 import 'resource_loader.dart' as loader;
 import 'resources.g.dart' as resources;
 import 'template_data.dart';
 import 'templates.dart';
 
 class HtmlGeneratorInstance implements HtmlOptions {
-  final String url;
+  final HtmlGeneratorOptions _options;
+
+  String get url => _options.url;
   final Templates _templates;
   final Package package;
   final Directory out;
   final List<ModelElement> documentedElements = <ModelElement>[];
   final StreamController<File> _onFileCreated;
   @override
-  final String relCanonicalPrefix;
+  String get relCanonicalPrefix => _options.relCanonicalPrefix;
   @override
-  final String toolVersion;
-  final String faviconPath;
-  final bool useCategories;
-  final bool prettyIndexJson;
+  String get toolVersion => _options.toolVersion;
+  String get faviconPath => _options.faviconPath;
+  bool get useCategories => _options.useCategories;
+  bool get prettyIndexJson => _options.prettyIndexJson;
 
-  HtmlGeneratorInstance(this.toolVersion, this.url, this._templates,
-      this.package, this.out, this._onFileCreated, this.relCanonicalPrefix,
-      {this.faviconPath, this.useCategories, this.prettyIndexJson: false});
+  HtmlGeneratorInstance(this._options, this._templates, this.package, this.out,
+      this._onFileCreated);
 
   Future generate() async {
     if (!out.existsSync()) out.createSync();

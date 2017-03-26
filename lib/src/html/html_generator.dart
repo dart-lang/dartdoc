@@ -12,8 +12,6 @@ import '../model.dart';
 import 'html_generator_instance.dart';
 import 'templates.dart';
 
-String dartdocVersion = 'unknown';
-
 typedef String Renderer(String input);
 
 // Generation order for libraries:
@@ -35,13 +33,8 @@ typedef String Renderer(String input);
 //   methods
 
 class HtmlGenerator extends Generator {
-  final String _url;
-  final String _relCanonicalPrefix;
   final Templates _templates;
-  final String _toolVersion;
-  final String faviconPath;
-  final bool useCategories;
-  final bool prettyIndexJson;
+  final HtmlGeneratorOptions _options;
 
   final StreamController<File> _onFileCreated =
       new StreamController(sync: true);
@@ -51,38 +44,40 @@ class HtmlGenerator extends Generator {
 
   /// [url] - optional URL for where the docs will be hosted.
   static Future<HtmlGenerator> create(
-      {String url,
+      {HtmlGeneratorOptions options,
       List<String> headers,
-      List<String> footers,
-      String relCanonicalPrefix,
-      String toolVersion,
-      String faviconPath,
-      bool useCategories: false,
-      bool prettyIndexJson: false}) async {
+      List<String> footers}) async {
     var templates =
         await Templates.create(headerPaths: headers, footerPaths: footers);
 
-    if (toolVersion == null) {
-      toolVersion = 'unknown';
-    }
-
-    return new HtmlGenerator._(url, relCanonicalPrefix, templates, toolVersion,
-        faviconPath: faviconPath,
-        useCategories: useCategories,
-        prettyIndexJson: prettyIndexJson);
+    return new HtmlGenerator._(
+        options ?? new HtmlGeneratorOptions(), templates);
   }
 
-  HtmlGenerator._(
-      this._url, this._relCanonicalPrefix, this._templates, this._toolVersion,
-      {this.faviconPath, this.useCategories, this.prettyIndexJson: false});
+  HtmlGenerator._(this._options, this._templates);
 
   @override
   Future generate(Package package, Directory out) {
-    return new HtmlGeneratorInstance(_toolVersion, _url, _templates, package,
-            out, _onFileCreated, _relCanonicalPrefix,
-            faviconPath: faviconPath,
-            useCategories: useCategories,
-            prettyIndexJson: prettyIndexJson)
+    return new HtmlGeneratorInstance(
+            _options, _templates, package, out, _onFileCreated)
         .generate();
   }
+}
+
+class HtmlGeneratorOptions {
+  final String url;
+  final String relCanonicalPrefix;
+  final String faviconPath;
+  final String toolVersion;
+  final bool useCategories;
+  final bool prettyIndexJson;
+
+  HtmlGeneratorOptions(
+      {this.url,
+      this.relCanonicalPrefix,
+      this.faviconPath,
+      String toolVersion,
+      this.useCategories: false,
+      this.prettyIndexJson: false})
+      : this.toolVersion = toolVersion ?? 'unknown';
 }

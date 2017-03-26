@@ -50,16 +50,20 @@ Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
     {String faviconPath,
     bool useCategories: false,
     bool prettyIndexJson: false}) async {
+  var options = new HtmlGeneratorOptions(
+      url: url,
+      relCanonicalPrefix: relCanonicalPrefix,
+      toolVersion: version,
+      faviconPath: faviconPath,
+      useCategories: useCategories,
+      prettyIndexJson: prettyIndexJson);
+
   return [
     await HtmlGenerator.create(
-        url: url,
-        headers: headerFilePaths,
-        footers: footerFilePaths,
-        relCanonicalPrefix: relCanonicalPrefix,
-        toolVersion: version,
-        faviconPath: faviconPath,
-        useCategories: useCategories,
-        prettyIndexJson: prettyIndexJson)
+      options: options,
+      headers: headerFilePaths,
+      footers: footerFilePaths,
+    )
   ];
 }
 
