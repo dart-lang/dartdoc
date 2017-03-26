@@ -54,6 +54,7 @@ void main() {
         '--example-path-prefix',
         'examples',
         '--no-include-source',
+        '--pretty-index-json',
         '--output',
         tempDir.path
       ];
