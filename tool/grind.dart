@@ -208,7 +208,8 @@ updateTestPackageDocs() {
         '../test_package_docs',
         '--example-path-prefix',
         'examples',
-        '--auto-include-dependencies'
+        '--auto-include-dependencies',
+        '--pretty-index-json'
       ],
       runOptions: options);
 }
