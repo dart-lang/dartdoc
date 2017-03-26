@@ -131,9 +131,9 @@ or return <code>null</code>.</p></li><li>
 either both be true, or both be false.</p></li><li>
 <p>Transitive: For all objects <code>o1</code>, <code>o2</code>, and <code>o3</code>, if <code>o1 == o2</code> and
 <code>o2 == o3</code> are true, then <code>o1 == o3</code> must be true.</p></li></ul>
-<p>The method should also be consistent over time, so equality of two objects
-should not change over time, or at least only change if one of the objects
-was modified.</p>
+<p>The method should also be consistent over time, 
+so whether two objects are equal should only change
+if at least one of the objects was modified.</p>
 <p>If a subclass overrides the equality operator it should override
 the <code>hashCode</code> method as well to maintain consistency.</p>
     </section>
