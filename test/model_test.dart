@@ -34,7 +34,7 @@ void main() {
     exit(1);
   }
 
-  Package sdkAsPackage = new Package(
+  Package sdkAsPackage = Package.withAutoIncludedDependencies(
       getSdkLibrariesToDocument(utils.sdkDir, utils.analyzerHelper.context),
       new PackageMeta.fromSdk(sdkDir));
 
