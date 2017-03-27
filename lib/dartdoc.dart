@@ -154,7 +154,8 @@ class DartDoc {
     Package package = new Package(libraries, packageMeta);
 
     if (config != null && config.autoIncludeDependencies) {
-      final newLibraryElements = _buildLibrariesWithAutoincludedDependencies(package);
+      final newLibraryElements =
+          _buildLibrariesWithAutoincludedDependencies(package);
       Library.clearLibraryMap();
       package = new Package(newLibraryElements, packageMeta);
     }
@@ -294,7 +295,8 @@ class DartDoc {
               new _Error(error, info.lineInfo, packageMeta.dir.path));
         })
         .where((_Error error) => error.isError)
-        .toList()..sort();
+        .toList()
+          ..sort();
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print("Parsed ${libraries.length} "
@@ -368,8 +370,10 @@ class _Error implements Comparable<_Error> {
   String toString() => '[${severityName}] ${description}';
 }
 
-Iterable<LibraryElement> _buildLibrariesWithAutoincludedDependencies(Package package) {
-  final List<LibraryElement> newLibraryElements = []..addAll(package.libraries.map((l) => l.element as LibraryElement));
+Iterable<LibraryElement> _buildLibrariesWithAutoincludedDependencies(
+    Package package) {
+  final List<LibraryElement> newLibraryElements = []
+    ..addAll(package.libraries.map((l) => l.element as LibraryElement));
 
   package.allModelElements.forEach((modelElement) {
     modelElement.usedElements.forEach((used) {
@@ -377,8 +381,8 @@ Iterable<LibraryElement> _buildLibrariesWithAutoincludedDependencies(Package pac
         final ModelElement modelTypeElement = used.modelType.element;
         final library = package.findLibraryFor(modelTypeElement.element);
         if (library == null && modelTypeElement.library != null) {
-          if (!newLibraryElements.contains(modelTypeElement.library.element)
-              && !modelTypeElement.library.name.startsWith("dart:")) {
+          if (!newLibraryElements.contains(modelTypeElement.library.element) &&
+              !modelTypeElement.library.name.startsWith("dart:")) {
             newLibraryElements.add(modelTypeElement.library.element);
           }
         }

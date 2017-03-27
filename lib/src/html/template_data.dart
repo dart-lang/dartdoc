@@ -276,8 +276,8 @@ class FunctionTemplateData extends TemplateData<ModelFunction> {
   String get title =>
       '${function.name} function - ${library.name} library - Dart API';
   @override
-  String get layoutTitle =>
-      _layoutTitle(function.nameWithGenerics, 'function', function.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+      function.nameWithGenerics, 'function', function.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${function.name} function from the '
@@ -305,8 +305,8 @@ class MethodTemplateData extends TemplateData<Method> {
   String get title => '${method.name} method - ${clazz.name} class - '
       '${library.name} library - Dart API';
   @override
-  String get layoutTitle =>
-      _layoutTitle(method.nameWithGenerics, method.fullkind, method.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+      method.nameWithGenerics, method.fullkind, method.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${method.name} method from the ${clazz.name} class, '

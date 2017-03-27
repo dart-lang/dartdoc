@@ -35,12 +35,6 @@ void setConfig(
     String examplePathPrefix,
     bool includeSource: true,
     bool autoIncludeDependencies: false}) {
-  _config = new Config._(
-      inputDir,
-      showWarnings,
-      addCrossdart,
-      examplePathPrefix,
-      includeSource,
-      sdkVersion,
-      autoIncludeDependencies);
+  _config = new Config._(inputDir, showWarnings, addCrossdart,
+      examplePathPrefix, includeSource, sdkVersion, autoIncludeDependencies);
 }

@@ -20,7 +20,8 @@ void main() {
     });
 
     test('ignores HTML tags', () {
-      final string = "One two<int> foo<pre> [[three<four>] five<six>] bar</pre> seven<eight>";
+      final string =
+          "One two<int> foo<pre> [[three<four>] five<six>] bar</pre> seven<eight>";
       expect(findFreeHangingGenericsPositions(string), equals([7, 63]));
     });
   });

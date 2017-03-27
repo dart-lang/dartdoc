@@ -75,7 +75,6 @@ enum Animal {
   ///
   /// [Dog] needs lots of docs.
   DOG,
-
   HORSE
 }
 
@@ -109,8 +108,7 @@ class Apple {
   Apple._internal(this._s2);
 
   /// Apple docs for whataclass
-  void whataclass(List<Whataclass<bool>> list) {
-  }
+  void whataclass(List<Whataclass<bool>> list) {}
 
   /**
    * The getter for `s`
@@ -200,7 +198,7 @@ class B extends Apple with Cat {
   }
 
   @override
-  void abstractMethod() { }
+  void abstractMethod() {}
 }
 
 // Do NOT add a doc comment to C. Testing blank comments.
@@ -318,7 +316,7 @@ class Dog implements Cat, E {
   }
 
   @override
-  void abstractMethod() { }
+  void abstractMethod() {}
 }
 
 abstract class E {}

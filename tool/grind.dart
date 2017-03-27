@@ -203,10 +203,13 @@ updateTestPackageDocs() {
   delete(getDir('test_package_docs'));
   Dart.run('../../bin/dartdoc.dart',
       arguments: [
-          '--no-include-source',
-          '--output', '../test_package_docs',
-          '--example-path-prefix', 'examples',
-          '--auto-include-dependencies'],
+        '--no-include-source',
+        '--output',
+        '../test_package_docs',
+        '--example-path-prefix',
+        'examples',
+        '--auto-include-dependencies'
+      ],
       runOptions: options);
 }
 
@@ -223,7 +226,8 @@ validateSdkDocs() {
   String indexContents = indexHtml.readAsStringSync();
   int foundLibs = _findCount(indexContents, '  <li><a href="dart-');
   if (foundLibs != expectedLibCount) {
-    fail('expected $expectedLibCount dart: index.html entries, found $foundLibs');
+    fail(
+        'expected $expectedLibCount dart: index.html entries, found $foundLibs');
   }
   log('$foundLibs index.html dart: entries found');
 
