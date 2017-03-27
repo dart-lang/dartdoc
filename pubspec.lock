@@ -193,6 +193,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.2"
+  quiver_hashcode:
+    description:
+      name: quiver_hashcode
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   resource:
     description:
       name: resource
@@ -277,6 +283,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.20+4"
+  tuple:
+    description:
+      name: tuple
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   typed_data:
     description:
       name: typed_data

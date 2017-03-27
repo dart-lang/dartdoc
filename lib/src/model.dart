@@ -583,8 +583,6 @@ class Class extends ModelElement implements EnclosedElement {
         } else {
           Library lib = package.findOrCreateLibraryFor(e.enclosingElement);
           Class newClass = new Class (e.enclosingElement, lib);
-          // TODO(jcollins-g):  This one confuses me a bit still, but the case
-          //                    seems to be necessary.  Why?
           _inheritedProperties.add(
               new Field.inherited(e, newClass, lib));
         }
