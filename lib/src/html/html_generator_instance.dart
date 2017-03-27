@@ -97,7 +97,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
       for (var clazz in lib.allClasses) {
         // TODO(jcollins-g): consider refactor so that only the canonical
         // ModelElements show up in these lists
-        //if (!clazz.name.contains("Unmodifiable")) continue;
         if (!clazz.isCanonical) continue;
         generateClass(package, lib, clazz);
 
@@ -180,9 +179,9 @@ class HtmlGeneratorInstance implements HtmlOptions {
       stdout.write("\n  warning: '${lib.name}' has no library level "
           "documentation comments");
     }
-
-    TemplateData data =
-        new LibraryTemplateData(this, package, lib, useCategories);
+    TemplateData data = new LibraryTemplateData(this, package, lib, useCategories);
+    if (data.self.name.contains("ex"))
+      print('hmmm');
 
     _build(path.join(lib.dirName, '${lib.fileName}'),
         _templates.libraryTemplate, data);
@@ -287,23 +286,22 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
     String fullName = path.join(out.path, filename);
-    // If you see this assert, we're probably being called to build non-canonical
-    // docs somehow.  Check data.self.isCanonical to find out.
-    if (fullName.contains("dart-collection/UnmodifiableListView/length.html")) {
-      print("**found: $fullName");
-    }
-    if (_writtenFiles.contains(fullName)) {
-      print("**collision: $fullName");
-    }
-    assert(!_writtenFiles.contains(fullName));
-    if (!_writtenFiles.contains(fullName)) {
-      String content = template(data,
-          assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
+    if (fullName.contains('ex/_PrivateAbstractClass/test.html'))
+      print ('hmmm');
 
-      _writeFile(fullName, content);
-      _writtenFiles.add(fullName);
-      if (data.self is ModelElement) documentedElements.add(data.self);
+    String content = template(data,
+        assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
+
+    if (data.self is ModelElement) {
+      if ((data.self as ModelElement).name.contains('two_exports'))
+        print('hmmm');
     }
+    // If you see this assert, we're probably being called to build non-canonical
+    // docs somehow.  Check data.self.isCanonical and callers for bugs.
+    assert(!_writtenFiles.contains(fullName));
+    _writeFile(fullName, content);
+    _writtenFiles.add(fullName);
+    if (data.self is ModelElement) documentedElements.add(data.self);
   }
 
   void _writeFile(String filename, String content) {

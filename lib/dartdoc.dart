@@ -134,6 +134,7 @@ class DartDoc {
         ? const []
         : findFilesToDocumentInPackage(rootDir.path).toList();
 
+    /// TODO(jcollins-g): seems like most of this belongs in the Package constructor
     List<LibraryElement> libraries = _parseLibraries(files, includeExternals);
 
     if (includes != null && includes.isNotEmpty) {
@@ -154,12 +155,9 @@ class DartDoc {
       });
     }
 
-
     Package package;
-    // TODO(jcollins-g): this should be a Package constructor/factory
     if (config != null && config.autoIncludeDependencies) {
-      package = _buildPackageWithAutoincludedDependencies(
-          new Set()..addAll(libraries), packageMeta);
+      package = Package.withAutoIncludedDependencies(libraries, packageMeta);
     } else {
       package = new Package(libraries, packageMeta);
     }
@@ -197,7 +195,7 @@ class DartDoc {
 
   List<LibraryElement> _parseLibraries(
       List<String> files, List<String> includeExternals) {
-    List<LibraryElement> libraries = [];
+    Set<LibraryElement> libraries = new Set();
     DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
         PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
     List<UriResolver> resolvers = [];
@@ -296,18 +294,19 @@ class DartDoc {
         }
         libraries.add(library);
       } else if (config != null && config.autoIncludeDependencies && libraryName != '') {
-        // This is a pretty intensely hardcoded convention, but there seems to
-        // to be no other way to identify what might be a "top level" library
-        // here.  Two regexps so I don't have to reimplement path separators in
-        // my regexp.
         File searchFile = new File(fullPath);
         searchFile = new File(path.join(searchFile.parent.path, 'pubspec.yaml'));
         bool foundLibSrc = false;
         while (!foundLibSrc && searchFile.parent != null) {
           if (searchFile.existsSync()) break;
           List<String> pathParts = path.split(searchFile.parent.path);
+          // This is a pretty intensely hardcoded convention, but there seems to
+          // to be no other way to identify what might be a "top level" library
+          // here.  If lib/src is in the path between the file and the pubspec,
+          // assume that this is supposed to be private.
+          if (pathParts.length < 2) break;
           pathParts = pathParts.sublist(pathParts.length - 2, pathParts.length);
-          foundLibSrc = pathParts[0] + '/' + pathParts[1] == 'lib/src';
+          foundLibSrc = path.join(pathParts[0], pathParts[1]) == 'lib/src';
           searchFile = new File(path.join(searchFile.parent.parent.path, 'pubspec.yaml'));
         }
         if (foundLibSrc) continue;
@@ -401,33 +400,4 @@ class _Error implements Comparable<_Error> {
 
   @override
   String toString() => '[${severityName}] ${description}';
-}
-
-Package _buildPackageWithAutoincludedDependencies(
-    Set<LibraryElement> libraryElements, PackageMeta packageMeta) {
-  var startLength = libraryElements.length;
-  // TODO(jcollins-g): get rid of need to clear this
-  Library.clearLibraryMap();
-  Package package = new Package(libraryElements, packageMeta);
-
-  // TODO(jcollins-g): this is inefficient; keep track of modelElements better
-  package.allModelElements.forEach((modelElement) {
-    modelElement.usedElements.forEach((used) {
-      if (used != null && used.modelType != null) {
-        final ModelElement modelTypeElement = used.modelType.element;
-        final library = package.findLibraryFor(modelTypeElement.element);
-        if (library == null
-            && modelTypeElement.library != null
-            && !isPrivate(modelTypeElement.library.element)
-            && modelTypeElement.library.canonicalLibrary == null
-            && !libraryElements.contains(modelTypeElement.library.element)) {
-          libraryElements.add(modelTypeElement.library.element);
-        }
-      }
-    });
-  });
-
-  if (libraryElements.length > startLength)
-    return _buildPackageWithAutoincludedDependencies(libraryElements, packageMeta);
-  return package;
 }
