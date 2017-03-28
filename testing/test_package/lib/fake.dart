@@ -135,7 +135,7 @@ typedef String FakeProcesses(String input);
 typedef T GenericTypedef<T>(T input);
 
 /// A typedef with the new style generic function syntax.
-typedef NewGenericTypedef<T> = List<T> Function<T>(int);
+typedef NewGenericTypedef<T> = List<S> Function<S>(T, int, bool);
 
 /// Lots and lots of parameters.
 typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,
