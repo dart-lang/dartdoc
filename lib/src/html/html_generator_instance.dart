@@ -143,6 +143,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
       }
 
       for (var typeDef in lib.typedefs) {
+        if (typeDef.name.contains("NewGenericTypedef"))
+          print('hello');
         generateTypeDef(package, lib, typeDef);
       }
     }

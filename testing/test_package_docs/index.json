@@ -2105,23 +2105,23 @@
  {
   "name": "MyExceptionImplements",
   "qualifiedName": "ex.MyExceptionImplements",
-  "href": "ex/MyExceptionImplements/MyExceptionImplements.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "MyExceptionImplements",
-   "type": "class"
-  }
- },
- {
-  "name": "MyExceptionImplements",
-  "qualifiedName": "ex.MyExceptionImplements",
   "href": "ex/MyExceptionImplements-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
    "type": "library"
+  }
+ },
+ {
+  "name": "MyExceptionImplements",
+  "qualifiedName": "ex.MyExceptionImplements",
+  "href": "ex/MyExceptionImplements/MyExceptionImplements.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MyExceptionImplements",
+   "type": "class"
   }
  },
  {
@@ -2292,23 +2292,23 @@
  {
   "name": "PublicClassImplementsPrivateInterface",
   "qualifiedName": "ex.PublicClassImplementsPrivateInterface",
-  "href": "ex/PublicClassImplementsPrivateInterface/PublicClassImplementsPrivateInterface.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "PublicClassImplementsPrivateInterface",
-   "type": "class"
-  }
- },
- {
-  "name": "PublicClassImplementsPrivateInterface",
-  "qualifiedName": "ex.PublicClassImplementsPrivateInterface",
   "href": "ex/PublicClassImplementsPrivateInterface-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
    "type": "library"
+  }
+ },
+ {
+  "name": "PublicClassImplementsPrivateInterface",
+  "qualifiedName": "ex.PublicClassImplementsPrivateInterface",
+  "href": "ex/PublicClassImplementsPrivateInterface/PublicClassImplementsPrivateInterface.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "PublicClassImplementsPrivateInterface",
+   "type": "class"
   }
  },
  {
@@ -3146,23 +3146,23 @@
  {
   "name": "Annotation",
   "qualifiedName": "fake.Annotation",
-  "href": "fake/Annotation-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "Annotation",
-  "qualifiedName": "fake.Annotation",
   "href": "fake/Annotation/Annotation.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Annotation",
    "type": "class"
+  }
+ },
+ {
+  "name": "Annotation",
+  "qualifiedName": "fake.Annotation",
+  "href": "fake/Annotation-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -3652,23 +3652,23 @@
  {
   "name": "Doh",
   "qualifiedName": "fake.Doh",
-  "href": "fake/Doh/Doh.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Doh",
-   "type": "class"
-  }
- },
- {
-  "name": "Doh",
-  "qualifiedName": "fake.Doh",
   "href": "fake/Doh-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "Doh",
+  "qualifiedName": "fake.Doh",
+  "href": "fake/Doh/Doh.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Doh",
+   "type": "class"
   }
  },
  {
@@ -4488,23 +4488,23 @@
  {
   "name": "HasGenericWithExtends",
   "qualifiedName": "fake.HasGenericWithExtends",
-  "href": "fake/HasGenericWithExtends/HasGenericWithExtends.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "HasGenericWithExtends",
-   "type": "class"
-  }
- },
- {
-  "name": "HasGenericWithExtends",
-  "qualifiedName": "fake.HasGenericWithExtends",
   "href": "fake/HasGenericWithExtends-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "HasGenericWithExtends",
+  "qualifiedName": "fake.HasGenericWithExtends",
+  "href": "fake/HasGenericWithExtends/HasGenericWithExtends.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasGenericWithExtends",
+   "type": "class"
   }
  },
  {
@@ -4565,23 +4565,23 @@
  {
   "name": "HasGenerics",
   "qualifiedName": "fake.HasGenerics",
-  "href": "fake/HasGenerics/HasGenerics.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "HasGenerics",
-   "type": "class"
-  }
- },
- {
-  "name": "HasGenerics",
-  "qualifiedName": "fake.HasGenerics",
   "href": "fake/HasGenerics-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "HasGenerics",
+  "qualifiedName": "fake.HasGenerics",
+  "href": "fake/HasGenerics/HasGenerics.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasGenerics",
+   "type": "class"
   }
  },
  {
@@ -4686,23 +4686,23 @@
  {
   "name": "Interface",
   "qualifiedName": "fake.Interface",
-  "href": "fake/Interface-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "Interface",
-  "qualifiedName": "fake.Interface",
   "href": "fake/Interface/Interface.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Interface",
    "type": "class"
+  }
+ },
+ {
+  "name": "Interface",
+  "qualifiedName": "fake.Interface",
+  "href": "fake/Interface-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -5146,6 +5146,17 @@
   }
  },
  {
+  "name": "NewGenericTypedef",
+  "qualifiedName": "fake.NewGenericTypedef",
+  "href": "fake/NewGenericTypedef.html",
+  "type": "typedef",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "Oops",
   "qualifiedName": "fake.Oops",
   "href": "fake/Oops/Oops.html",
@@ -5313,23 +5324,23 @@
  {
   "name": "OtherGenericsThing",
   "qualifiedName": "fake.OtherGenericsThing",
-  "href": "fake/OtherGenericsThing-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "OtherGenericsThing",
-  "qualifiedName": "fake.OtherGenericsThing",
   "href": "fake/OtherGenericsThing/OtherGenericsThing.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "OtherGenericsThing",
    "type": "class"
+  }
+ },
+ {
+  "name": "OtherGenericsThing",
+  "qualifiedName": "fake.OtherGenericsThing",
+  "href": "fake/OtherGenericsThing-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -6061,23 +6072,23 @@
  {
   "name": "SubForDocComments",
   "qualifiedName": "fake.SubForDocComments",
-  "href": "fake/SubForDocComments-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "SubForDocComments",
-  "qualifiedName": "fake.SubForDocComments",
   "href": "fake/SubForDocComments/SubForDocComments.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "SubForDocComments",
    "type": "class"
+  }
+ },
+ {
+  "name": "SubForDocComments",
+  "qualifiedName": "fake.SubForDocComments",
+  "href": "fake/SubForDocComments-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -6281,23 +6292,23 @@
  {
   "name": "WithGetterAndSetter",
   "qualifiedName": "fake.WithGetterAndSetter",
-  "href": "fake/WithGetterAndSetter-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "WithGetterAndSetter",
-  "qualifiedName": "fake.WithGetterAndSetter",
   "href": "fake/WithGetterAndSetter/WithGetterAndSetter.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "WithGetterAndSetter",
    "type": "class"
+  }
+ },
+ {
+  "name": "WithGetterAndSetter",
+  "qualifiedName": "fake.WithGetterAndSetter",
+  "href": "fake/WithGetterAndSetter-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
