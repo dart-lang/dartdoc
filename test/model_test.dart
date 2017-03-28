@@ -1517,7 +1517,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('linked return type', () {
       expect(t.linkedReturnType, equals('String'));
-      expect(generic.linkedReturnType, equals('List&lt;T&gt;'));
+      expect(generic.linkedReturnType, equals('List&lt;S&gt;'));
     });
 
     test("name with generics", () {
