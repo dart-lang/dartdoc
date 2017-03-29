@@ -1524,6 +1524,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(t.nameWithGenerics, equals('processMessage&lt;T&gt;'));
       expect(generic.nameWithGenerics, equals('NewGenericTypedef&lt;T&gt;'));
     });
+
+    test("generic parameters", () {
+      expect(t.genericParameters, equals(''));
+      expect(generic.genericParameters, equals('&lt;S&gt;'));
+    });
   });
 
   group('Parameter', () {
