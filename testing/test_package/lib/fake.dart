@@ -353,6 +353,11 @@ thisIsAsync() async => 42;
 /// Explicitly returns a Future and is marked async.
 Future thisIsAlsoAsync() async => 43;
 
+/// A generic function with a type parameter.
+void myGenericFunction<S>(int a, bool b, S c) {
+  return;
+}
+
 /// This is a great thing.
 const greatAnnotation = 'great';
 

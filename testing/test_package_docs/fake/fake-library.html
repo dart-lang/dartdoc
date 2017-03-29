@@ -296,7 +296,7 @@ which is a bit redundant.</p>
           
 </dd>
         <dt id="NewGenericTypedef" class="callable">
-          <span class="name"><a href="fake/NewGenericTypedef.html">NewGenericTypedef</a></span><span class="signature">(<wbr><span class="parameter" id="-param-"><span class="type-annotation">T</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">int</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">bool</span></span>)
+          <span class="name"><a href="fake/NewGenericTypedef.html">NewGenericTypedef</a></span><span class="signature">&lt;S&gt;(<wbr><span class="parameter" id="-param-"><span class="type-annotation">T</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">int</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">bool</span></span>)
             <span class="returntype parameter">&#8594; List&lt;S&gt;</span>
           </span>
         </dt>
@@ -408,6 +408,15 @@ which is a bit redundant.</p>
         </dt>
         <dd>
           <p>This function has two parameters that are functions.</p>
+          
+</dd>
+        <dt id="myGenericFunction" class="callable">
+          <span class="name"><a href="fake/myGenericFunction.html">myGenericFunction</a></span><span class="signature">&lt;S&gt;(<wbr><span class="parameter" id="myGenericFunction-param-a"><span class="type-annotation">int</span> <span class="parameter-name">a</span>, </span> <span class="parameter" id="myGenericFunction-param-b"><span class="type-annotation">bool</span> <span class="parameter-name">b</span>, </span> <span class="parameter" id="myGenericFunction-param-c"><span class="type-annotation">S</span> <span class="parameter-name">c</span></span>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          <p>A generic function with a type parameter.</p>
           
 </dd>
         <dt id="onlyPositionalWithNoDefaultNoType" class="callable">
@@ -683,6 +692,7 @@ across... wait for it... two physical lines.</p>
       <li><a href="fake/addCallback.html">addCallback</a></li>
       <li><a href="fake/addCallback2.html">addCallback2</a></li>
       <li><a href="fake/functionWithFunctionParameters.html">functionWithFunctionParameters</a></li>
+      <li><a href="fake/myGenericFunction.html">myGenericFunction</a></li>
       <li><a href="fake/onlyPositionalWithNoDefaultNoType.html">onlyPositionalWithNoDefaultNoType</a></li>
       <li><a href="fake/paintImage1.html">paintImage1</a></li>
       <li><a href="fake/paintImage2.html">paintImage2</a></li>

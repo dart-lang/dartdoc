@@ -6160,23 +6160,23 @@
  {
   "name": "SuperAwesomeClass",
   "qualifiedName": "fake.SuperAwesomeClass",
-  "href": "fake/SuperAwesomeClass/SuperAwesomeClass.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SuperAwesomeClass",
-   "type": "class"
-  }
- },
- {
-  "name": "SuperAwesomeClass",
-  "qualifiedName": "fake.SuperAwesomeClass",
   "href": "fake/SuperAwesomeClass-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "SuperAwesomeClass",
+  "qualifiedName": "fake.SuperAwesomeClass",
+  "href": "fake/SuperAwesomeClass/SuperAwesomeClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SuperAwesomeClass",
+   "type": "class"
   }
  },
  {
@@ -6292,23 +6292,23 @@
  {
   "name": "WithGetterAndSetter",
   "qualifiedName": "fake.WithGetterAndSetter",
-  "href": "fake/WithGetterAndSetter/WithGetterAndSetter.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "WithGetterAndSetter",
-   "type": "class"
-  }
- },
- {
-  "name": "WithGetterAndSetter",
-  "qualifiedName": "fake.WithGetterAndSetter",
   "href": "fake/WithGetterAndSetter-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "WithGetterAndSetter",
+  "qualifiedName": "fake.WithGetterAndSetter",
+  "href": "fake/WithGetterAndSetter/WithGetterAndSetter.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "WithGetterAndSetter",
+   "type": "class"
   }
  },
  {
@@ -6503,6 +6503,17 @@
   "qualifiedName": "fake.meaningOfLife",
   "href": "fake/meaningOfLife.html",
   "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "myGenericFunction",
+  "qualifiedName": "fake.myGenericFunction",
+  "href": "fake/myGenericFunction.html",
+  "type": "function",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",

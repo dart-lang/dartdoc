@@ -2700,6 +2700,17 @@ class Typedef extends ModelElement
   String get fileName => '$name.html';
 
   @override
+  String get genericParameters {
+    if (element is GenericTypeAliasElement) {
+      List<TypeParameterElement> genericTypeParameters = (element as GenericTypeAliasElement).function.typeParameters;
+      if (genericTypeParameters.isNotEmpty) {
+        return '&lt;${genericTypeParameters.map((t) => t.name).join(', ')}&gt;';
+      }
+    } // else, all types are resolved.
+    return '';
+  }
+
+  @override
   String get href => '${canonicalLibrary.dirName}/$fileName';
 
   @override
@@ -2719,8 +2730,8 @@ class Typedef extends ModelElement
       (element as FunctionTypeAliasElement);
 
   List<TypeParameter> get _typeParameters => _typedef.typeParameters.map((f) {
-        return new TypeParameter(f, library);
-      }).toList();
+    return new TypeParameter(f, library);
+  }).toList();
 }
 
 class TypeParameter extends ModelElement {
