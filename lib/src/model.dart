@@ -21,6 +21,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/resolver.dart'
     show Namespace, NamespaceBuilder, InheritanceManager;
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
+import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:collection/collection.dart';
 import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';
@@ -133,7 +134,7 @@ abstract class Inheritable {
   }
 
   ModelElement get canonicalEnclosingElement {
-    if ((this as ModelElement).name == "lengthX" && this.enclosingElement.name == "ExtendingClass")
+    if ((this as ModelElement).name == "message" && (this as ModelElement).library.name != "fake")
       print('hmmmm');
     if (!_canonicalEnclosingClassIsSet) {
       if (isInherited) {
@@ -149,8 +150,17 @@ abstract class Inheritable {
           //assert(definingEnclosingElement.library.name == "dart:core" && definingEnclosingElement.name == 'Object');
           inheritance.add(definingEnclosingElement);
         }
+        Element searchElement = element;
+        while (searchElement is Member) {
+          searchElement = (searchElement as Member).baseElement;
+        }
+        bool foundElement = false;
         for (Class c in inheritance.reversed) {
-          if (c.isCanonical) {
+          if (!foundElement && c.contains(searchElement))
+            foundElement = true;
+          if (c.isCanonical && foundElement) {
+            if (c.name == "Error" && (this as ModelElement).name == "toString")
+              print('hmmmm');
             _canonicalEnclosingClass = c;
             break;
           }
@@ -339,6 +349,21 @@ class Class extends ModelElement implements EnclosedElement {
       ..sort(byName);
 
     return _constants;
+  }
+
+  final Set<Element> _allElements = new Set();
+
+  // TODO(jcollins-g): optimize this.
+  bool contains(Element element) {
+    if (_allElements.isEmpty) {
+      _allElements.addAll(allInstanceMethods.map((e) => e.element));
+      _allElements.addAll(allInstanceProperties.map((e) => e.element));
+      _allElements.addAll(allOperators.map((e) => e.element));
+      _allElements.addAll(constructors.map((e) => e.element));
+      _allElements.addAll(staticMethods.map((e) => e.element));
+      _allElements.addAll(staticProperties.map((e) => e.element));
+    }
+    return _allElements.contains(element);
   }
 
   List<Constructor> get constructors {
