@@ -116,6 +116,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
         }
 
         for (var property in clazz.propertiesForPages) {
+          if (property.name == "runtimeType" && (clazz.name == "ExtendingClass" || clazz.name == "BaseClass"))
+            print('hmmm');
           if (!property.isCanonical) continue;
           generateProperty(package, lib, clazz, property);
         }
@@ -180,8 +182,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
           "documentation comments");
     }
     TemplateData data = new LibraryTemplateData(this, package, lib, useCategories);
-    if (data.self.name.contains("ex"))
-      print('hmmm');
 
     _build(path.join(lib.dirName, '${lib.fileName}'),
         _templates.libraryTemplate, data);
@@ -286,16 +286,10 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
     String fullName = path.join(out.path, filename);
-    if (fullName.contains('ex/_PrivateAbstractClass/test.html'))
-      print ('hmmm');
 
     String content = template(data,
         assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
-    if (data.self is ModelElement) {
-      if ((data.self as ModelElement).name.contains('two_exports'))
-        print('hmmm');
-    }
     // If you see this assert, we're probably being called to build non-canonical
     // docs somehow.  Check data.self.isCanonical and callers for bugs.
     assert(!_writtenFiles.contains(fullName));
