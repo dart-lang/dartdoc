@@ -79,7 +79,7 @@ _getPackageVersion() {
 checkLinks() {
   bool foundError = false;
   Set<String> visited = new Set();
-  final origin = 'testing/test_package/doc/api/';
+  final origin = 'testing/test_package_docs/';
   var start = 'index.html';
 
   _doCheck(origin, visited, start, foundError);
@@ -267,8 +267,11 @@ _doCheck(String origin, Set<String> visited, String pathToCheck, bool error,
 
   File file = new File("$fullPath");
   if (!file.existsSync()) {
-    error = true;
-    log('  * Not found: $fullPath from $source');
+    // There is a deliberately broken link in one place.
+    if (!fullPath.endsWith("ftp:/ftp.myfakepackage.com/donthidemyschema")) {
+      error = true;
+      log('  * Not found: $fullPath from $source');
+    }
     return;
   }
   Document doc = parse(file.readAsStringSync());
@@ -283,7 +286,12 @@ _doCheck(String origin, Set<String> visited, String pathToCheck, bool error,
       .where((href) => href != null)
       .forEach((href) {
     if (!href.startsWith('http') && !href.contains('#')) {
-      var full = '${path.dirname(pathToCheck)}/$baseHref/$href';
+      var full;
+      if (baseHref != null) {
+        full = '${path.dirname(pathToCheck)}/$baseHref/$href';
+      } else {
+        full = '${path.dirname(pathToCheck)}/$href';
+      }
       var normalized = path.normalize(full);
       _doCheck(origin, visited, normalized, error, pathToCheck);
     }
