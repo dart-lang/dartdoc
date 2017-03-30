@@ -577,7 +577,6 @@ class Class extends ModelElement implements EnclosedElement {
           value is PropertyAccessorElement &&
           isPublic(value) &&
           value.enclosingElement != null) {
-
         // This seems to be here to deal with half-field inheritance, where
         // we inherit a getter but not a setter, or vice-versa.  (Or if a parent
         // class has the same trouble). In that case, just drop any duplicate
@@ -600,6 +599,7 @@ class Class extends ModelElement implements EnclosedElement {
         }
       }
     }
+
 
     _inheritedProperties.sort(byName);
 
@@ -1520,6 +1520,8 @@ class Method extends ModelElement
 abstract class ModelElement implements Comparable, Nameable, Documentable {
   final Element _element;
   final Library _library;
+
+  static final Map<Tuple2<Element, Library>, ModelElement> __allModelElements = {};
 
   ElementType _modelType;
   String _rawDocs;
