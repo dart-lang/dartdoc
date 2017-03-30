@@ -1,4 +1,4 @@
-## 0.9.13
+## 1.0.0
 
 * fix multiple issues in annotation/feature list handling (#1268, #1162, #1081)
 
