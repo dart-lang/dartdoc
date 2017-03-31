@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:async' show Future;
+import 'dart:async' show Completer, Future, Stream;
 import 'dart:io' hide ProcessException;
 
 import 'package:dartdoc/dartdoc.dart' show defaultOutDir;
@@ -83,6 +83,7 @@ checkLinks() {
   var start = 'index.html';
 
   _doCheck(origin, visited, start, foundError);
+  _doFileCheck(origin, visited, foundError);
 
   if (foundError) exit(1);
 }
@@ -200,7 +201,7 @@ testDartdoc() {
 @Task('update test_package_docs')
 updateTestPackageDocs() {
   var options = new RunOptions(workingDirectory: 'testing/test_package');
-  delete(getDir('test_package_docs'));
+  delete(getDir('testing/test_package_docs'));
   Dart.run('../../bin/dartdoc.dart',
       arguments: [
         '--no-include-source',
@@ -257,6 +258,38 @@ int _findCount(String str, String match) {
     index = str.indexOf(match, index + match.length);
   }
   return count;
+}
+
+Stream<FileSystemEntity> dirContents(String dir) {
+  var files = <FileSystemEntity>[];
+  var lister = new Directory(dir).list(recursive: true);
+  return lister;
+}
+
+
+_doFileCheck(String origin, Set<String> visited, bool error) {
+  String normalOrigin = path.normalize(origin);
+  dirContents(normalOrigin).toList().then((allFiles) {
+    bool foundIndex = false;
+    for (FileSystemEntity f in allFiles) {
+      if (f is Directory) continue;
+      var fullPath = path.normalize(f.path);
+      if (fullPath.startsWith("${normalOrigin}/static-assets/")) continue;
+      if (fullPath == "${normalOrigin}/index.json") {
+        foundIndex = true;
+        continue;
+      }
+      if (visited.contains(fullPath))
+        continue;
+      log('   * Orphaned: $fullPath');
+      error = true;
+    }
+    if (!foundIndex) {
+      log('  * Not found: ${normalOrigin}/index.json');
+      error = true;
+    }
+  });
+
 }
 
 _doCheck(String origin, Set<String> visited, String pathToCheck, bool error,

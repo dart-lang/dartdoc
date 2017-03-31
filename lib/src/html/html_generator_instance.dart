@@ -189,7 +189,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
   void generateClass(Package package, Library lib, Class clazz) {
     TemplateData data = new ClassTemplateData(this, package, lib, clazz);
-    if (clazz.name == 'UnmodifiableMapBase')
+    if (clazz.name == 'Dog')
       1+1;
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }

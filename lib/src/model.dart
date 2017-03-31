@@ -143,6 +143,8 @@ abstract class Inheritable {
         while (searchElement is Member) {
           searchElement = (searchElement as Member).baseElement;
         }
+        if (searchElement.name == "test")
+          1+1;
         bool foundElement = false;
         for (Class c in inheritance.reversed) {
           if (!foundElement && c.contains(searchElement)) {
@@ -156,8 +158,6 @@ abstract class Inheritable {
             //}
           }
           if (c.isCanonical && foundElement) {
-            if (c.name == "MapBase" && element.name == "addAll")
-              1+1;
             _canonicalEnclosingClass = c;
             break;
           }
@@ -165,6 +165,8 @@ abstract class Inheritable {
         if (definingEnclosingElement.isCanonical)
           assert(definingEnclosingElement == _canonicalEnclosingClass);
       } else {
+        if (element.name == "test")
+          1+1;
         _canonicalEnclosingClass = enclosingElement;
       }
       _canonicalEnclosingClassIsSet = true;
@@ -285,12 +287,13 @@ class Class extends ModelElement implements EnclosedElement {
           Library lib = new Library(f.element.library, p);
           ElementType t =
               new ElementType(f, new ModelElement.from(f.element, lib));
-          bool exclude = t.element.element.isPrivate || !t.element.isCanonical;
+          return t;
+          /*bool exclude = t.element.element.isPrivate || !t.element.isCanonical;
           if (exclude) {
             return null;
           } else {
             return t;
-          }
+          }*/
         })
         .where((mixin) => mixin != null)
         .toList(growable: false);
@@ -302,11 +305,11 @@ class Class extends ModelElement implements EnclosedElement {
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
 
       /* Private Superclasses should not be shown. */
-      var exclude = _supertype.element.element.isPrivate || !_supertype.element.isCanonical;
+      /*var exclude = _supertype.element.element.isPrivate || !_supertype.element.isCanonical;
 
       if (exclude) {
         _supertype = null;
-      }
+      }*/
     }
 
     _interfaces = _cls.interfaces
@@ -469,6 +472,8 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<Method> get inheritedMethods {
     if (_inheritedMethods != null) return _inheritedMethods;
+    if (name == "F")
+      1+1;
 
     Map<String, ExecutableElement> cmap =
         library.inheritanceManager.getMembersInheritedFromClasses(element);
@@ -528,6 +533,8 @@ class Class extends ModelElement implements EnclosedElement {
 
     _inheritedMethods.sort(byName);
 
+    if (name == "Dog")
+      1+1;
     return _inheritedMethods;
   }
 
@@ -757,8 +764,6 @@ class Class extends ModelElement implements EnclosedElement {
   /// Not the same as superChain as it may include mixins.
   List<Class> _inheritanceChain;
   List<Class> get inheritanceChain {
-    if (name == "SynchronousStreamController")
-      1+1;
     if (_inheritanceChain == null) {
       _inheritanceChain = [];
       _inheritanceChain.add(this);
@@ -1826,11 +1831,13 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (library == canonicalLibrary) {
       if (this is Inheritable) {
         Inheritable i = (this as Inheritable);
+        if (name == 'test' && i.enclosingElement.name == 'Dog')
+          1+1;
         // If we're the defining element, or if the defining element is not
         // in the set of libraries being documented, then this element
         // should be treated as canonical (given library == canonicalLibrary).
         if (i.enclosingElement == i.canonicalEnclosingElement) {
-          if (name == 'hashCode' && i.enclosingElement.name == 'WithGetterAndSetter')
+          if (name == 'test' && i.enclosingElement.name == 'Dog')
             true;
           return true;
         } else {
