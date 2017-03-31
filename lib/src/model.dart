@@ -134,33 +134,30 @@ abstract class Inheritable {
   }
 
   ModelElement get canonicalEnclosingElement {
-    if ((this as ModelElement).name == "message" && (this as ModelElement).library.name != "fake")
-      print('hmmmm');
     if (!_canonicalEnclosingClassIsSet) {
       if (isInherited) {
         // We need to find the first intermediate inherited class that
         // is canonical, starting from the definingEnclosingElement.
         // Build the list in reverse order first (easier).
-        List<Class> inheritance = [(enclosingElement as Class)];
-        inheritance.addAll((enclosingElement as Class).superChain.map((e) => (e.returnElement as Class)));
-        if (!inheritance.contains(definingEnclosingElement)) {
-          // The only way this should ever happen is if definingEnclosingElement is Dart's Object.
-          // However, supers calculation seems to be buggy.
-          // TODO(jcollins-g): fix this
-          //assert(definingEnclosingElement.library.name == "dart:core" && definingEnclosingElement.name == 'Object');
-          inheritance.add(definingEnclosingElement);
-        }
         Element searchElement = element;
         while (searchElement is Member) {
           searchElement = (searchElement as Member).baseElement;
         }
         bool foundElement = false;
         for (Class c in inheritance.reversed) {
-          if (!foundElement && c.contains(searchElement))
-            foundElement = true;
+          if (!foundElement && c.contains(searchElement)) {
+            // Remember if we see a canonical abstract class here, just in case
+            // we didn't implement it.
+            //if (c.isAbstract) {
+            //  if (c.isCanonical) firstAbstract = c;
+            //  continue;
+            //} else {
+              foundElement = true;
+            //}
+          }
           if (c.isCanonical && foundElement) {
-            if (c.name == "Error" && (this as ModelElement).name == "toString")
-              print('hmmmm');
+            if (c.name == "MapBase" && element.name == "addAll")
+              1+1;
             _canonicalEnclosingClass = c;
             break;
           }
@@ -173,6 +170,39 @@ abstract class Inheritable {
       _canonicalEnclosingClassIsSet = true;
     }
     return _canonicalEnclosingClass;
+  }
+
+  List<Class> get inheritance {
+    List<Class> inheritance = [];
+    inheritance.addAll((enclosingElement as Class).inheritanceChain);
+    if (!inheritance.contains(definingEnclosingElement)) {
+      // TODO(jcollins-g): Why does this happen?
+      //int objectAt = inheritance.indexOf((enclosingElement as Class).library.package.objectElement);
+      //inheritance.insert(objectAt + 1, definingEnclosingElement);
+      inheritance.add(definingEnclosingElement);
+    }
+    // TODO(jcollins-g): Sometimes, we don't get Object added on.  Why?
+    if (inheritance.last != package.objectElement)
+      inheritance.add(package.objectElement);
+    return inheritance;
+
+    /*// We need to find the first intermediate inherited class that
+    // is canonical, starting from the definingEnclosingElement.
+    // Build the list in reverse order first (easier).
+    List<Class> inheritance = [(enclosingElement as Class)];
+    inheritance.addAll((enclosingElement as Class).superChain.map((e) => (e.returnElement as Class)));
+    if (!inheritance.contains(definingEnclosingElement)) {
+      // The only way this should ever happen is if definingEnclosingElement is Dart's Object.
+      // However, supers calculation seems to be buggy.
+      // TODO(jcollins-g): fix this
+      //assert(definingEnclosingElement.library.name == "dart:core" && definingEnclosingElement.name == 'Object');
+      inheritance.add(definingEnclosingElement);
+    }
+    List<Class> inheritanceChain = (enclosingElement as Class).inheritanceChain;
+    if (inheritance.isNotEmpty && inheritanceChain.isEmpty) {
+      1+1;
+    }
+    return inheritance;*/
   }
 }
 
@@ -313,7 +343,7 @@ class Class extends ModelElement implements EnclosedElement {
     if (_allInstanceProperties != null) return _allInstanceProperties;
 
     if (name == "Object")
-      print('hmmm');
+      true;
     // TODO best way to make this a fixed length list?
     _allInstanceProperties = []
       ..addAll([]
@@ -440,11 +470,10 @@ class Class extends ModelElement implements EnclosedElement {
   List<Method> get inheritedMethods {
     if (_inheritedMethods != null) return _inheritedMethods;
 
-    InheritanceManager manager = new InheritanceManager(element.library);
     Map<String, ExecutableElement> cmap =
-        manager.getMembersInheritedFromClasses(element);
+        library.inheritanceManager.getMembersInheritedFromClasses(element);
     Map<String, ExecutableElement> imap =
-        manager.getMembersInheritedFromInterfaces(element);
+        library.inheritanceManager.getMembersInheritedFromInterfaces(element);
 
     // remove methods that exist on this class
     _methods.forEach((method) {
@@ -504,11 +533,10 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<Operator> get inheritedOperators {
     if (_inheritedOperators != null) return _inheritedOperators;
-    InheritanceManager manager = new InheritanceManager(element.library);
     Map<String, ExecutableElement> cmap =
-        manager.getMembersInheritedFromClasses(element);
+        library.inheritanceManager.getMembersInheritedFromClasses(element);
     Map<String, ExecutableElement> imap =
-        manager.getMembersInheritedFromInterfaces(element);
+        library.inheritanceManager.getMembersInheritedFromInterfaces(element);
     operators.forEach((operator) {
       cmap.remove(operator.element.name);
       imap.remove(operator.element.name);
@@ -561,13 +589,12 @@ class Class extends ModelElement implements EnclosedElement {
   List<Field> get inheritedProperties {
     if (_inheritedProperties != null) return _inheritedProperties;
     if (name == "B") {
-      print ('hmmm');
+      true;
     }
-    InheritanceManager manager = new InheritanceManager(element.library);
     Map<String, ExecutableElement> cmap =
-        manager.getMembersInheritedFromClasses(element);
+        library.inheritanceManager.getMembersInheritedFromClasses(element);
     Map<String, ExecutableElement> imap =
-        manager.getMembersInheritedFromInterfaces(element);
+        library.inheritanceManager.getMembersInheritedFromInterfaces(element);
 
     _inheritedProperties = [];
     List<ExecutableElement> vs = [];
@@ -658,6 +685,8 @@ class Class extends ModelElement implements EnclosedElement {
 
   bool get isAbstract => _cls.isAbstract;
 
+  bool get isCanonical => super.isCanonical && !name.startsWith('_');
+
   bool get isErrorOrException {
     bool _doCheck(InterfaceType type) {
       return (type.element.library.isDartCore &&
@@ -723,6 +752,23 @@ class Class extends ModelElement implements EnclosedElement {
           ..sort(byName);
 
     return _staticFields;
+  }
+
+  /// Not the same as superChain as it may include mixins.
+  List<Class> _inheritanceChain;
+  List<Class> get inheritanceChain {
+    if (name == "SynchronousStreamController")
+      1+1;
+    if (_inheritanceChain == null) {
+      _inheritanceChain = [];
+      _inheritanceChain.add(this);
+      _inheritanceChain.addAll(mixins.reversed.map((e) => (e.returnElement as Class)));
+      /// Caching should make this recursion a little less painful.
+      for (Class c in superChain.map((e) => (e.returnElement as Class))) {
+        _inheritanceChain.addAll(c.inheritanceChain);
+      }
+    }
+    return _inheritanceChain.toList(growable: false);
   }
 
   List<ElementType> get superChain {
@@ -1001,7 +1047,7 @@ class Field extends ModelElement
           '$name is not in a class or library, instead it is a ${enclosingElement.element}');
     }
     if (retval.contains("two_exports/WithGetterAndSetter/hashCode.html"))
-      print ('hmmm');
+      true;
     return retval;
   }
 
@@ -1240,6 +1286,14 @@ class Library extends ModelElement {
   String get href {
     if (canonicalLibrary == null) return null;
     return '${canonicalLibrary.dirName}/$fileName';
+  }
+
+  InheritanceManager _inheritanceManager;
+  InheritanceManager get inheritanceManager {
+    if (_inheritanceManager == null) {
+      _inheritanceManager = new InheritanceManager(element);
+    }
+    return _inheritanceManager;
   }
 
   bool get isAnonymous => element.name == null || element.name.isEmpty;
@@ -1577,6 +1631,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       // Also handles enums
       if (e is ClassElement) {
         newModelElement = new Class(e, library);
+        if (newModelElement.library.name == 'dart:core' && newModelElement.name == 'Object') {
+          // We've found Object.  This is an important object, so save it in the package.
+          newModelElement.library.package._objectElement = newModelElement;
+        }
       }
       if (e is FunctionElement) {
         newModelElement = new ModelFunction(e, library);
@@ -1732,7 +1790,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     assert(package.allLibrariesAdded);
     if (true) {
       if (name == "WithGetterAndSetter" && package.libraries.length == 8)
-        print('hmmm');
+        true;
       if (!package.libraries.contains(definingLibrary)) {
         _canonicalLibrary = package.libraries.firstWhere((l) {
           Element lookup = (l.element as LibraryElement).exportNamespace
@@ -1754,9 +1812,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         }
       }
       if (element.name == "Apple" && _canonicalLibrary == null)
-        print('hmmmm');
+        true;
       if (_canonicalLibraryIsSet && oldCanonicalLibrary != _canonicalLibrary) {
-        print('hmmmmm');
+        true;
       }
       _canonicalLibraryIsSet = true;
     }
@@ -1773,7 +1831,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         // should be treated as canonical (given library == canonicalLibrary).
         if (i.enclosingElement == i.canonicalEnclosingElement) {
           if (name == 'hashCode' && i.enclosingElement.name == 'WithGetterAndSetter')
-            print('hmmm');
+            true;
           return true;
         } else {
           return false;
@@ -2118,7 +2176,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   String _calculateLinkedName() {
     if (name.contains("Apple")) {
-      print('hmm');
+      true;
     }
 
     if (name.startsWith('_')) {
@@ -2559,6 +2617,11 @@ class Package implements Nameable, Documentable {
   @override
   String get oneLineDoc => '';
 
+  // Written from ModelElement.from.
+  ModelElement _objectElement;
+  // Return the element for "Object".
+  ModelElement get objectElement => _objectElement;
+
   String get version => packageMeta.version;
 
   Library findLibraryFor(Element element) {
@@ -2575,8 +2638,8 @@ class Package implements Nameable, Documentable {
   }
 
   bool isDocumented(Element element) {
-    if (element.name.contains("ExtendingClass")) {
-      print("hmmm");
+    if (element.name == "MapBase") {
+      true;
     }
     if (isPrivate(element)) return false;
     return findCanonicalLibraryFor(element) != null;

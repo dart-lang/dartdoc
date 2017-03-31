@@ -190,7 +190,7 @@ MatchingLinkResult _getMatchingLinkElement(
 
   for (CommentReference ref in commentRefs) {
     if (codeRef.contains("BaseClass")) {
-      print ("hmmm");
+      1+1;
     }
     if (ref.identifier.name == codeRef) {
       bool isConstrElement = ref.identifier.staticElement is ConstructorElement;
@@ -238,7 +238,7 @@ MatchingLinkResult _findRefElementInLibrary(
   final Map<String, ModelElement> result = {};
 
   if (codeRef.contains("BaseClass")) {
-    print("hmmm");
+    1+1;
   }
 
   for (final modelElement in package.allCanonicalModelElements) {

@@ -1181,23 +1181,23 @@
  {
   "name": "StreamConsumer",
   "qualifiedName": "dart:async.StreamConsumer",
-  "href": "dart-async/StreamConsumer/StreamConsumer.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "StreamConsumer",
-   "type": "class"
-  }
- },
- {
-  "name": "StreamConsumer",
-  "qualifiedName": "dart:async.StreamConsumer",
   "href": "dart-async/StreamConsumer-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:async",
    "type": "library"
+  }
+ },
+ {
+  "name": "StreamConsumer",
+  "qualifiedName": "dart:async.StreamConsumer",
+  "href": "dart-async/StreamConsumer/StreamConsumer.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "StreamConsumer",
+   "type": "class"
   }
  },
  {
@@ -1225,23 +1225,23 @@
  {
   "name": "StreamController",
   "qualifiedName": "dart:async.StreamController",
-  "href": "dart-async/StreamController/StreamController.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "StreamController",
-   "type": "class"
-  }
- },
- {
-  "name": "StreamController",
-  "qualifiedName": "dart:async.StreamController",
   "href": "dart-async/StreamController-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:async",
    "type": "library"
+  }
+ },
+ {
+  "name": "StreamController",
+  "qualifiedName": "dart:async.StreamController",
+  "href": "dart-async/StreamController/StreamController.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "StreamController",
+   "type": "class"
   }
  },
  {
@@ -1434,23 +1434,23 @@
  {
   "name": "StreamSink",
   "qualifiedName": "dart:async.StreamSink",
-  "href": "dart-async/StreamSink-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:async",
-   "type": "library"
-  }
- },
- {
-  "name": "StreamSink",
-  "qualifiedName": "dart:async.StreamSink",
   "href": "dart-async/StreamSink/StreamSink.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "StreamSink",
    "type": "class"
+  }
+ },
+ {
+  "name": "StreamSink",
+  "qualifiedName": "dart:async.StreamSink",
+  "href": "dart-async/StreamSink-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:async",
+   "type": "library"
   }
  },
  {
@@ -1478,23 +1478,23 @@
  {
   "name": "StreamSubscription",
   "qualifiedName": "dart:async.StreamSubscription",
-  "href": "dart-async/StreamSubscription-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:async",
-   "type": "library"
-  }
- },
- {
-  "name": "StreamSubscription",
-  "qualifiedName": "dart:async.StreamSubscription",
   "href": "dart-async/StreamSubscription/StreamSubscription.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "StreamSubscription",
    "type": "class"
+  }
+ },
+ {
+  "name": "StreamSubscription",
+  "qualifiedName": "dart:async.StreamSubscription",
+  "href": "dart-async/StreamSubscription-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:async",
+   "type": "library"
   }
  },
  {
@@ -1632,23 +1632,23 @@
  {
   "name": "StreamView",
   "qualifiedName": "dart:async.StreamView",
-  "href": "dart-async/StreamView/StreamView.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "StreamView",
-   "type": "class"
-  }
- },
- {
-  "name": "StreamView",
-  "qualifiedName": "dart:async.StreamView",
   "href": "dart-async/StreamView-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:async",
    "type": "library"
+  }
+ },
+ {
+  "name": "StreamView",
+  "qualifiedName": "dart:async.StreamView",
+  "href": "dart-async/StreamView/StreamView.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "StreamView",
+   "type": "class"
   }
  },
  {
@@ -1687,23 +1687,23 @@
  {
   "name": "SynchronousStreamController",
   "qualifiedName": "dart:async.SynchronousStreamController",
-  "href": "dart-async/SynchronousStreamController/SynchronousStreamController.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SynchronousStreamController",
-   "type": "class"
-  }
- },
- {
-  "name": "SynchronousStreamController",
-  "qualifiedName": "dart:async.SynchronousStreamController",
   "href": "dart-async/SynchronousStreamController-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:async",
    "type": "library"
+  }
+ },
+ {
+  "name": "SynchronousStreamController",
+  "qualifiedName": "dart:async.SynchronousStreamController",
+  "href": "dart-async/SynchronousStreamController/SynchronousStreamController.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SynchronousStreamController",
+   "type": "class"
   }
  },
  {
@@ -1742,23 +1742,23 @@
  {
   "name": "TimeoutException",
   "qualifiedName": "dart:async.TimeoutException",
-  "href": "dart-async/TimeoutException-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:async",
-   "type": "library"
-  }
- },
- {
-  "name": "TimeoutException",
-  "qualifiedName": "dart:async.TimeoutException",
   "href": "dart-async/TimeoutException/TimeoutException.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "TimeoutException",
    "type": "class"
+  }
+ },
+ {
+  "name": "TimeoutException",
+  "qualifiedName": "dart:async.TimeoutException",
+  "href": "dart-async/TimeoutException-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:async",
+   "type": "library"
   }
  },
  {
@@ -2171,23 +2171,23 @@
  {
   "name": "ZoneDelegate",
   "qualifiedName": "dart:async.ZoneDelegate",
-  "href": "dart-async/ZoneDelegate-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:async",
-   "type": "library"
-  }
- },
- {
-  "name": "ZoneDelegate",
-  "qualifiedName": "dart:async.ZoneDelegate",
   "href": "dart-async/ZoneDelegate/ZoneDelegate.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ZoneDelegate",
    "type": "class"
+  }
+ },
+ {
+  "name": "ZoneDelegate",
+  "qualifiedName": "dart:async.ZoneDelegate",
+  "href": "dart-async/ZoneDelegate-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:async",
+   "type": "library"
   }
  },
  {
@@ -2893,23 +2893,23 @@
  {
   "name": "HasNextIterator",
   "qualifiedName": "dart:collection.HasNextIterator",
-  "href": "dart-collection/HasNextIterator-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:collection",
-   "type": "library"
-  }
- },
- {
-  "name": "HasNextIterator",
-  "qualifiedName": "dart:collection.HasNextIterator",
   "href": "dart-collection/HasNextIterator/HasNextIterator.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "HasNextIterator",
    "type": "class"
+  }
+ },
+ {
+  "name": "HasNextIterator",
+  "qualifiedName": "dart:collection.HasNextIterator",
+  "href": "dart-collection/HasNextIterator-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:collection",
+   "type": "library"
   }
  },
  {
@@ -2937,23 +2937,23 @@
  {
   "name": "HashMap",
   "qualifiedName": "dart:collection.HashMap",
-  "href": "dart-collection/HashMap-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:collection",
-   "type": "library"
-  }
- },
- {
-  "name": "HashMap",
-  "qualifiedName": "dart:collection.HashMap",
   "href": "dart-collection/HashMap/HashMap.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "HashMap",
    "type": "class"
+  }
+ },
+ {
+  "name": "HashMap",
+  "qualifiedName": "dart:collection.HashMap",
+  "href": "dart-collection/HashMap-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:collection",
+   "type": "library"
   }
  },
  {
@@ -5060,23 +5060,23 @@
  {
   "name": "MapView",
   "qualifiedName": "dart:collection.MapView",
-  "href": "dart-collection/MapView-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:collection",
-   "type": "library"
-  }
- },
- {
-  "name": "MapView",
-  "qualifiedName": "dart:collection.MapView",
   "href": "dart-collection/MapView/MapView.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "MapView",
    "type": "class"
+  }
+ },
+ {
+  "name": "MapView",
+  "qualifiedName": "dart:collection.MapView",
+  "href": "dart-collection/MapView-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:collection",
+   "type": "library"
   }
  },
  {
@@ -5533,23 +5533,23 @@
  {
   "name": "SetBase",
   "qualifiedName": "dart:collection.SetBase",
-  "href": "dart-collection/SetBase/SetBase.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SetBase",
-   "type": "class"
-  }
- },
- {
-  "name": "SetBase",
-  "qualifiedName": "dart:collection.SetBase",
   "href": "dart-collection/SetBase-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:collection",
    "type": "library"
+  }
+ },
+ {
+  "name": "SetBase",
+  "qualifiedName": "dart:collection.SetBase",
+  "href": "dart-collection/SetBase/SetBase.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SetBase",
+   "type": "class"
   }
  },
  {
@@ -6303,23 +6303,23 @@
  {
   "name": "SplayTreeSet",
   "qualifiedName": "dart:collection.SplayTreeSet",
-  "href": "dart-collection/SplayTreeSet/SplayTreeSet.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SplayTreeSet",
-   "type": "class"
-  }
- },
- {
-  "name": "SplayTreeSet",
-  "qualifiedName": "dart:collection.SplayTreeSet",
   "href": "dart-collection/SplayTreeSet-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:collection",
    "type": "library"
+  }
+ },
+ {
+  "name": "SplayTreeSet",
+  "qualifiedName": "dart:collection.SplayTreeSet",
+  "href": "dart-collection/SplayTreeSet/SplayTreeSet.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SplayTreeSet",
+   "type": "class"
   }
  },
  {
@@ -6798,23 +6798,23 @@
  {
   "name": "UnmodifiableMapBase",
   "qualifiedName": "dart:collection.UnmodifiableMapBase",
-  "href": "dart-collection/UnmodifiableMapBase/UnmodifiableMapBase.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "UnmodifiableMapBase",
-   "type": "class"
-  }
- },
- {
-  "name": "UnmodifiableMapBase",
-  "qualifiedName": "dart:collection.UnmodifiableMapBase",
   "href": "dart-collection/UnmodifiableMapBase-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:collection",
    "type": "library"
+  }
+ },
+ {
+  "name": "UnmodifiableMapBase",
+  "qualifiedName": "dart:collection.UnmodifiableMapBase",
+  "href": "dart-collection/UnmodifiableMapBase/UnmodifiableMapBase.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "UnmodifiableMapBase",
+   "type": "class"
   }
  },
  {
@@ -6860,23 +6860,23 @@
  {
   "name": "AsciiCodec",
   "qualifiedName": "dart:convert.AsciiCodec",
-  "href": "dart-convert/AsciiCodec-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:convert",
-   "type": "library"
-  }
- },
- {
-  "name": "AsciiCodec",
-  "qualifiedName": "dart:convert.AsciiCodec",
   "href": "dart-convert/AsciiCodec/AsciiCodec.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "AsciiCodec",
    "type": "class"
+  }
+ },
+ {
+  "name": "AsciiCodec",
+  "qualifiedName": "dart:convert.AsciiCodec",
+  "href": "dart-convert/AsciiCodec-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:convert",
+   "type": "library"
   }
  },
  {
@@ -6946,6 +6946,28 @@
   }
  },
  {
+  "name": "bind",
+  "qualifiedName": "dart:convert.AsciiDecoder.bind",
+  "href": "dart-convert/AsciiDecoder/bind.html",
+  "type": "method",
+  "overriddenDepth": 2,
+  "enclosedBy": {
+   "name": "AsciiDecoder",
+   "type": "class"
+  }
+ },
+ {
+  "name": "convert",
+  "qualifiedName": "dart:convert.AsciiDecoder.convert",
+  "href": "dart-convert/AsciiDecoder/convert.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "AsciiDecoder",
+   "type": "class"
+  }
+ },
+ {
   "name": "startChunkedConversion",
   "qualifiedName": "dart:convert.AsciiDecoder.startChunkedConversion",
   "href": "dart-convert/AsciiDecoder/startChunkedConversion.html",
@@ -6954,6 +6976,17 @@
   "enclosedBy": {
    "name": "AsciiDecoder",
    "type": "class"
+  }
+ },
+ {
+  "name": "AsciiEncoder",
+  "qualifiedName": "dart:convert.AsciiEncoder",
+  "href": "dart-convert/AsciiEncoder-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:convert",
+   "type": "library"
   }
  },
  {
@@ -6968,14 +7001,36 @@
   }
  },
  {
-  "name": "AsciiEncoder",
-  "qualifiedName": "dart:convert.AsciiEncoder",
-  "href": "dart-convert/AsciiEncoder-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
+  "name": "bind",
+  "qualifiedName": "dart:convert.AsciiEncoder.bind",
+  "href": "dart-convert/AsciiEncoder/bind.html",
+  "type": "method",
+  "overriddenDepth": 2,
   "enclosedBy": {
-   "name": "dart:convert",
-   "type": "library"
+   "name": "AsciiEncoder",
+   "type": "class"
+  }
+ },
+ {
+  "name": "convert",
+  "qualifiedName": "dart:convert.AsciiEncoder.convert",
+  "href": "dart-convert/AsciiEncoder/convert.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "AsciiEncoder",
+   "type": "class"
+  }
+ },
+ {
+  "name": "startChunkedConversion",
+  "qualifiedName": "dart:convert.AsciiEncoder.startChunkedConversion",
+  "href": "dart-convert/AsciiEncoder/startChunkedConversion.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "AsciiEncoder",
+   "type": "class"
   }
  },
  {
@@ -7003,23 +7058,23 @@
  {
   "name": "Base64Codec",
   "qualifiedName": "dart:convert.Base64Codec",
-  "href": "dart-convert/Base64Codec/Base64Codec.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Base64Codec",
-   "type": "class"
-  }
- },
- {
-  "name": "Base64Codec",
-  "qualifiedName": "dart:convert.Base64Codec",
   "href": "dart-convert/Base64Codec-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:convert",
    "type": "library"
+  }
+ },
+ {
+  "name": "Base64Codec",
+  "qualifiedName": "dart:convert.Base64Codec",
+  "href": "dart-convert/Base64Codec/Base64Codec.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Base64Codec",
+   "type": "class"
   }
  },
  {
@@ -7168,23 +7223,23 @@
  {
   "name": "ByteConversionSink",
   "qualifiedName": "dart:convert.ByteConversionSink",
-  "href": "dart-convert/ByteConversionSink-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:convert",
-   "type": "library"
-  }
- },
- {
-  "name": "ByteConversionSink",
-  "qualifiedName": "dart:convert.ByteConversionSink",
   "href": "dart-convert/ByteConversionSink/ByteConversionSink.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ByteConversionSink",
    "type": "class"
+  }
+ },
+ {
+  "name": "ByteConversionSink",
+  "qualifiedName": "dart:convert.ByteConversionSink",
+  "href": "dart-convert/ByteConversionSink-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:convert",
+   "type": "library"
   }
  },
  {
@@ -7333,23 +7388,23 @@
  {
   "name": "ChunkedConverter",
   "qualifiedName": "dart:convert.ChunkedConverter",
-  "href": "dart-convert/ChunkedConverter/ChunkedConverter.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ChunkedConverter",
-   "type": "class"
-  }
- },
- {
-  "name": "ChunkedConverter",
-  "qualifiedName": "dart:convert.ChunkedConverter",
   "href": "dart-convert/ChunkedConverter-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:convert",
    "type": "library"
+  }
+ },
+ {
+  "name": "ChunkedConverter",
+  "qualifiedName": "dart:convert.ChunkedConverter",
+  "href": "dart-convert/ChunkedConverter/ChunkedConverter.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ChunkedConverter",
+   "type": "class"
   }
  },
  {
@@ -7498,23 +7553,23 @@
  {
   "name": "Converter",
   "qualifiedName": "dart:convert.Converter",
-  "href": "dart-convert/Converter-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:convert",
-   "type": "library"
-  }
- },
- {
-  "name": "Converter",
-  "qualifiedName": "dart:convert.Converter",
   "href": "dart-convert/Converter/Converter.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Converter",
    "type": "class"
+  }
+ },
+ {
+  "name": "Converter",
+  "qualifiedName": "dart:convert.Converter",
+  "href": "dart-convert/Converter-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:convert",
+   "type": "library"
   }
  },
  {
@@ -7652,23 +7707,23 @@
  {
   "name": "HtmlEscape",
   "qualifiedName": "dart:convert.HtmlEscape",
-  "href": "dart-convert/HtmlEscape/HtmlEscape.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "HtmlEscape",
-   "type": "class"
-  }
- },
- {
-  "name": "HtmlEscape",
-  "qualifiedName": "dart:convert.HtmlEscape",
   "href": "dart-convert/HtmlEscape-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:convert",
    "type": "library"
+  }
+ },
+ {
+  "name": "HtmlEscape",
+  "qualifiedName": "dart:convert.HtmlEscape",
+  "href": "dart-convert/HtmlEscape/HtmlEscape.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HtmlEscape",
+   "type": "class"
   }
  },
  {
@@ -7949,23 +8004,23 @@
  {
   "name": "JsonDecoder",
   "qualifiedName": "dart:convert.JsonDecoder",
-  "href": "dart-convert/JsonDecoder/JsonDecoder.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "JsonDecoder",
-   "type": "class"
-  }
- },
- {
-  "name": "JsonDecoder",
-  "qualifiedName": "dart:convert.JsonDecoder",
   "href": "dart-convert/JsonDecoder-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:convert",
    "type": "library"
+  }
+ },
+ {
+  "name": "JsonDecoder",
+  "qualifiedName": "dart:convert.JsonDecoder",
+  "href": "dart-convert/JsonDecoder/JsonDecoder.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "JsonDecoder",
+   "type": "class"
   }
  },
  {
@@ -8290,6 +8345,17 @@
  {
   "name": "Latin1Decoder",
   "qualifiedName": "dart:convert.Latin1Decoder",
+  "href": "dart-convert/Latin1Decoder-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:convert",
+   "type": "library"
+  }
+ },
+ {
+  "name": "Latin1Decoder",
+  "qualifiedName": "dart:convert.Latin1Decoder",
   "href": "dart-convert/Latin1Decoder/Latin1Decoder.html",
   "type": "constructor",
   "overriddenDepth": 0,
@@ -8299,14 +8365,25 @@
   }
  },
  {
-  "name": "Latin1Decoder",
-  "qualifiedName": "dart:convert.Latin1Decoder",
-  "href": "dart-convert/Latin1Decoder-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
+  "name": "bind",
+  "qualifiedName": "dart:convert.Latin1Decoder.bind",
+  "href": "dart-convert/Latin1Decoder/bind.html",
+  "type": "method",
+  "overriddenDepth": 2,
   "enclosedBy": {
-   "name": "dart:convert",
-   "type": "library"
+   "name": "Latin1Decoder",
+   "type": "class"
+  }
+ },
+ {
+  "name": "convert",
+  "qualifiedName": "dart:convert.Latin1Decoder.convert",
+  "href": "dart-convert/Latin1Decoder/convert.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "Latin1Decoder",
+   "type": "class"
   }
  },
  {
@@ -8323,6 +8400,17 @@
  {
   "name": "Latin1Encoder",
   "qualifiedName": "dart:convert.Latin1Encoder",
+  "href": "dart-convert/Latin1Encoder-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:convert",
+   "type": "library"
+  }
+ },
+ {
+  "name": "Latin1Encoder",
+  "qualifiedName": "dart:convert.Latin1Encoder",
   "href": "dart-convert/Latin1Encoder/Latin1Encoder.html",
   "type": "constructor",
   "overriddenDepth": 0,
@@ -8332,14 +8420,36 @@
   }
  },
  {
-  "name": "Latin1Encoder",
-  "qualifiedName": "dart:convert.Latin1Encoder",
-  "href": "dart-convert/Latin1Encoder-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
+  "name": "bind",
+  "qualifiedName": "dart:convert.Latin1Encoder.bind",
+  "href": "dart-convert/Latin1Encoder/bind.html",
+  "type": "method",
+  "overriddenDepth": 2,
   "enclosedBy": {
-   "name": "dart:convert",
-   "type": "library"
+   "name": "Latin1Encoder",
+   "type": "class"
+  }
+ },
+ {
+  "name": "convert",
+  "qualifiedName": "dart:convert.Latin1Encoder.convert",
+  "href": "dart-convert/Latin1Encoder/convert.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "Latin1Encoder",
+   "type": "class"
+  }
+ },
+ {
+  "name": "startChunkedConversion",
+  "qualifiedName": "dart:convert.Latin1Encoder.startChunkedConversion",
+  "href": "dart-convert/Latin1Encoder/startChunkedConversion.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "Latin1Encoder",
+   "type": "class"
   }
  },
  {
@@ -8499,23 +8609,23 @@
  {
   "name": "StringConversionSinkBase",
   "qualifiedName": "dart:convert.StringConversionSinkBase",
-  "href": "dart-convert/StringConversionSinkBase/StringConversionSinkBase.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "StringConversionSinkBase",
-   "type": "class"
-  }
- },
- {
-  "name": "StringConversionSinkBase",
-  "qualifiedName": "dart:convert.StringConversionSinkBase",
   "href": "dart-convert/StringConversionSinkBase-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:convert",
    "type": "library"
+  }
+ },
+ {
+  "name": "StringConversionSinkBase",
+  "qualifiedName": "dart:convert.StringConversionSinkBase",
+  "href": "dart-convert/StringConversionSinkBase/StringConversionSinkBase.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "StringConversionSinkBase",
+   "type": "class"
   }
  },
  {
@@ -8631,23 +8741,23 @@
  {
   "name": "Utf8Codec",
   "qualifiedName": "dart:convert.Utf8Codec",
-  "href": "dart-convert/Utf8Codec/Utf8Codec.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Utf8Codec",
-   "type": "class"
-  }
- },
- {
-  "name": "Utf8Codec",
-  "qualifiedName": "dart:convert.Utf8Codec",
   "href": "dart-convert/Utf8Codec-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:convert",
    "type": "library"
+  }
+ },
+ {
+  "name": "Utf8Codec",
+  "qualifiedName": "dart:convert.Utf8Codec",
+  "href": "dart-convert/Utf8Codec/Utf8Codec.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Utf8Codec",
+   "type": "class"
   }
  },
  {
@@ -8697,23 +8807,23 @@
  {
   "name": "Utf8Decoder",
   "qualifiedName": "dart:convert.Utf8Decoder",
-  "href": "dart-convert/Utf8Decoder/Utf8Decoder.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Utf8Decoder",
-   "type": "class"
-  }
- },
- {
-  "name": "Utf8Decoder",
-  "qualifiedName": "dart:convert.Utf8Decoder",
   "href": "dart-convert/Utf8Decoder-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:convert",
    "type": "library"
+  }
+ },
+ {
+  "name": "Utf8Decoder",
+  "qualifiedName": "dart:convert.Utf8Decoder",
+  "href": "dart-convert/Utf8Decoder/Utf8Decoder.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Utf8Decoder",
+   "type": "class"
   }
  },
  {
@@ -8763,23 +8873,23 @@
  {
   "name": "Utf8Encoder",
   "qualifiedName": "dart:convert.Utf8Encoder",
-  "href": "dart-convert/Utf8Encoder/Utf8Encoder.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Utf8Encoder",
-   "type": "class"
-  }
- },
- {
-  "name": "Utf8Encoder",
-  "qualifiedName": "dart:convert.Utf8Encoder",
   "href": "dart-convert/Utf8Encoder-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:convert",
    "type": "library"
+  }
+ },
+ {
+  "name": "Utf8Encoder",
+  "qualifiedName": "dart:convert.Utf8Encoder",
+  "href": "dart-convert/Utf8Encoder/Utf8Encoder.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Utf8Encoder",
+   "type": "class"
   }
  },
  {
@@ -8825,23 +8935,23 @@
  {
   "name": "AbstractClassInstantiationError",
   "qualifiedName": "dart:core.AbstractClassInstantiationError",
-  "href": "dart-core/AbstractClassInstantiationError/AbstractClassInstantiationError.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "AbstractClassInstantiationError",
-   "type": "class"
-  }
- },
- {
-  "name": "AbstractClassInstantiationError",
-  "qualifiedName": "dart:core.AbstractClassInstantiationError",
   "href": "dart-core/AbstractClassInstantiationError-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:core",
    "type": "library"
+  }
+ },
+ {
+  "name": "AbstractClassInstantiationError",
+  "qualifiedName": "dart:core.AbstractClassInstantiationError",
+  "href": "dart-core/AbstractClassInstantiationError/AbstractClassInstantiationError.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AbstractClassInstantiationError",
+   "type": "class"
   }
  },
  {
@@ -8990,23 +9100,23 @@
  {
   "name": "BidirectionalIterator",
   "qualifiedName": "dart:core.BidirectionalIterator",
-  "href": "dart-core/BidirectionalIterator/BidirectionalIterator.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "BidirectionalIterator",
-   "type": "class"
-  }
- },
- {
-  "name": "BidirectionalIterator",
-  "qualifiedName": "dart:core.BidirectionalIterator",
   "href": "dart-core/BidirectionalIterator-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:core",
    "type": "library"
+  }
+ },
+ {
+  "name": "BidirectionalIterator",
+  "qualifiedName": "dart:core.BidirectionalIterator",
+  "href": "dart-core/BidirectionalIterator/BidirectionalIterator.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BidirectionalIterator",
+   "type": "class"
   }
  },
  {
@@ -9023,23 +9133,23 @@
  {
   "name": "CastError",
   "qualifiedName": "dart:core.CastError",
-  "href": "dart-core/CastError-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:core",
-   "type": "library"
-  }
- },
- {
-  "name": "CastError",
-  "qualifiedName": "dart:core.CastError",
   "href": "dart-core/CastError/CastError.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "CastError",
    "type": "class"
+  }
+ },
+ {
+  "name": "CastError",
+  "qualifiedName": "dart:core.CastError",
+  "href": "dart-core/CastError-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:core",
+   "type": "library"
   }
  },
  {
@@ -10431,23 +10541,23 @@
  {
   "name": "FormatException",
   "qualifiedName": "dart:core.FormatException",
-  "href": "dart-core/FormatException/FormatException.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "FormatException",
-   "type": "class"
-  }
- },
- {
-  "name": "FormatException",
-  "qualifiedName": "dart:core.FormatException",
   "href": "dart-core/FormatException-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:core",
    "type": "library"
+  }
+ },
+ {
+  "name": "FormatException",
+  "qualifiedName": "dart:core.FormatException",
+  "href": "dart-core/FormatException/FormatException.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "FormatException",
+   "type": "class"
   }
  },
  {
@@ -11102,23 +11212,23 @@
  {
   "name": "Iterator",
   "qualifiedName": "dart:core.Iterator",
-  "href": "dart-core/Iterator/Iterator.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Iterator",
-   "type": "class"
-  }
- },
- {
-  "name": "Iterator",
-  "qualifiedName": "dart:core.Iterator",
   "href": "dart-core/Iterator-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:core",
    "type": "library"
+  }
+ },
+ {
+  "name": "Iterator",
+  "qualifiedName": "dart:core.Iterator",
+  "href": "dart-core/Iterator/Iterator.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Iterator",
+   "type": "class"
   }
  },
  {
@@ -11938,23 +12048,23 @@
  {
   "name": "Object",
   "qualifiedName": "dart:core.Object",
-  "href": "dart-core/Object-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:core",
-   "type": "library"
-  }
- },
- {
-  "name": "Object",
-  "qualifiedName": "dart:core.Object",
   "href": "dart-core/Object/Object.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Object",
    "type": "class"
+  }
+ },
+ {
+  "name": "Object",
+  "qualifiedName": "dart:core.Object",
+  "href": "dart-core/Object-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:core",
+   "type": "library"
   }
  },
  {
@@ -12015,23 +12125,23 @@
  {
   "name": "OutOfMemoryError",
   "qualifiedName": "dart:core.OutOfMemoryError",
-  "href": "dart-core/OutOfMemoryError/OutOfMemoryError.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "OutOfMemoryError",
-   "type": "class"
-  }
- },
- {
-  "name": "OutOfMemoryError",
-  "qualifiedName": "dart:core.OutOfMemoryError",
   "href": "dart-core/OutOfMemoryError-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:core",
    "type": "library"
+  }
+ },
+ {
+  "name": "OutOfMemoryError",
+  "qualifiedName": "dart:core.OutOfMemoryError",
+  "href": "dart-core/OutOfMemoryError/OutOfMemoryError.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OutOfMemoryError",
+   "type": "class"
   }
  },
  {
@@ -12444,23 +12554,23 @@
  {
   "name": "Runes",
   "qualifiedName": "dart:core.Runes",
-  "href": "dart-core/Runes-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:core",
-   "type": "library"
-  }
- },
- {
-  "name": "Runes",
-  "qualifiedName": "dart:core.Runes",
   "href": "dart-core/Runes/Runes.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Runes",
    "type": "class"
+  }
+ },
+ {
+  "name": "Runes",
+  "qualifiedName": "dart:core.Runes",
+  "href": "dart-core/Runes-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:core",
+   "type": "library"
   }
  },
  {
@@ -12499,23 +12609,23 @@
  {
   "name": "Set",
   "qualifiedName": "dart:core.Set",
-  "href": "dart-core/Set-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:core",
-   "type": "library"
-  }
- },
- {
-  "name": "Set",
-  "qualifiedName": "dart:core.Set",
   "href": "dart-core/Set/Set.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Set",
    "type": "class"
+  }
+ },
+ {
+  "name": "Set",
+  "qualifiedName": "dart:core.Set",
+  "href": "dart-core/Set-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:core",
+   "type": "library"
   }
  },
  {
@@ -12763,23 +12873,23 @@
  {
   "name": "StackOverflowError",
   "qualifiedName": "dart:core.StackOverflowError",
-  "href": "dart-core/StackOverflowError-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:core",
-   "type": "library"
-  }
- },
- {
-  "name": "StackOverflowError",
-  "qualifiedName": "dart:core.StackOverflowError",
   "href": "dart-core/StackOverflowError/StackOverflowError.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "StackOverflowError",
    "type": "class"
+  }
+ },
+ {
+  "name": "StackOverflowError",
+  "qualifiedName": "dart:core.StackOverflowError",
+  "href": "dart-core/StackOverflowError-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:core",
+   "type": "library"
   }
  },
  {
@@ -12807,23 +12917,23 @@
  {
   "name": "StackTrace",
   "qualifiedName": "dart:core.StackTrace",
-  "href": "dart-core/StackTrace-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:core",
-   "type": "library"
-  }
- },
- {
-  "name": "StackTrace",
-  "qualifiedName": "dart:core.StackTrace",
   "href": "dart-core/StackTrace/StackTrace.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "StackTrace",
    "type": "class"
+  }
+ },
+ {
+  "name": "StackTrace",
+  "qualifiedName": "dart:core.StackTrace",
+  "href": "dart-core/StackTrace-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:core",
+   "type": "library"
   }
  },
  {
@@ -12862,23 +12972,23 @@
  {
   "name": "StateError",
   "qualifiedName": "dart:core.StateError",
-  "href": "dart-core/StateError-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:core",
-   "type": "library"
-  }
- },
- {
-  "name": "StateError",
-  "qualifiedName": "dart:core.StateError",
   "href": "dart-core/StateError/StateError.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "StateError",
    "type": "class"
+  }
+ },
+ {
+  "name": "StateError",
+  "qualifiedName": "dart:core.StateError",
+  "href": "dart-core/StateError-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:core",
+   "type": "library"
   }
  },
  {
@@ -13412,23 +13522,23 @@
  {
   "name": "StringBuffer",
   "qualifiedName": "dart:core.StringBuffer",
-  "href": "dart-core/StringBuffer-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:core",
-   "type": "library"
-  }
- },
- {
-  "name": "StringBuffer",
-  "qualifiedName": "dart:core.StringBuffer",
   "href": "dart-core/StringBuffer/StringBuffer.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "StringBuffer",
    "type": "class"
+  }
+ },
+ {
+  "name": "StringBuffer",
+  "qualifiedName": "dart:core.StringBuffer",
+  "href": "dart-core/StringBuffer-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:core",
+   "type": "library"
   }
  },
  {
@@ -13643,23 +13753,23 @@
  {
   "name": "Type",
   "qualifiedName": "dart:core.Type",
-  "href": "dart-core/Type/Type.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Type",
-   "type": "class"
-  }
- },
- {
-  "name": "Type",
-  "qualifiedName": "dart:core.Type",
   "href": "dart-core/Type-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:core",
    "type": "library"
+  }
+ },
+ {
+  "name": "Type",
+  "qualifiedName": "dart:core.Type",
+  "href": "dart-core/Type/Type.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Type",
+   "type": "class"
   }
  },
  {
@@ -14534,23 +14644,23 @@
  {
   "name": "double",
   "qualifiedName": "dart:core.double",
-  "href": "dart-core/double/double.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "double",
-   "type": "class"
-  }
- },
- {
-  "name": "double",
-  "qualifiedName": "dart:core.double",
   "href": "dart-core/double-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:core",
    "type": "library"
+  }
+ },
+ {
+  "name": "double",
+  "qualifiedName": "dart:core.double",
+  "href": "dart-core/double/double.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "double",
+   "type": "class"
   }
  },
  {
@@ -15707,17 +15817,6 @@
  {
   "name": "MutableRectangle",
   "qualifiedName": "dart:math.MutableRectangle",
-  "href": "dart-math/MutableRectangle/MutableRectangle.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "MutableRectangle",
-   "type": "class"
-  }
- },
- {
-  "name": "MutableRectangle",
-  "qualifiedName": "dart:math.MutableRectangle",
   "href": "dart-math/MutableRectangle-class.html",
   "type": "class",
   "overriddenDepth": 0,
@@ -15727,10 +15826,109 @@
   }
  },
  {
+  "name": "MutableRectangle",
+  "qualifiedName": "dart:math.MutableRectangle",
+  "href": "dart-math/MutableRectangle/MutableRectangle.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "dart:math.MutableRectangle.==",
+  "href": "dart-math/MutableRectangle/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "bottom",
+  "qualifiedName": "dart:math.MutableRectangle.bottom",
+  "href": "dart-math/MutableRectangle/bottom.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "bottomLeft",
+  "qualifiedName": "dart:math.MutableRectangle.bottomLeft",
+  "href": "dart-math/MutableRectangle/bottomLeft.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "bottomRight",
+  "qualifiedName": "dart:math.MutableRectangle.bottomRight",
+  "href": "dart-math/MutableRectangle/bottomRight.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "boundingBox",
+  "qualifiedName": "dart:math.MutableRectangle.boundingBox",
+  "href": "dart-math/MutableRectangle/boundingBox.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "containsPoint",
+  "qualifiedName": "dart:math.MutableRectangle.containsPoint",
+  "href": "dart-math/MutableRectangle/containsPoint.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "containsRectangle",
+  "qualifiedName": "dart:math.MutableRectangle.containsRectangle",
+  "href": "dart-math/MutableRectangle/containsRectangle.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
   "name": "MutableRectangle.fromPoints",
   "qualifiedName": "dart:math.MutableRectangle.fromPoints",
   "href": "dart-math/MutableRectangle/MutableRectangle.fromPoints.html",
   "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "dart:math.MutableRectangle.hashCode",
+  "href": "dart-math/MutableRectangle/hashCode.html",
+  "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "MutableRectangle",
@@ -15749,6 +15947,28 @@
   }
  },
  {
+  "name": "intersection",
+  "qualifiedName": "dart:math.MutableRectangle.intersection",
+  "href": "dart-math/MutableRectangle/intersection.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "intersects",
+  "qualifiedName": "dart:math.MutableRectangle.intersects",
+  "href": "dart-math/MutableRectangle/intersects.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
   "name": "left",
   "qualifiedName": "dart:math.MutableRectangle.left",
   "href": "dart-math/MutableRectangle/left.html",
@@ -15760,9 +15980,53 @@
   }
  },
  {
+  "name": "right",
+  "qualifiedName": "dart:math.MutableRectangle.right",
+  "href": "dart-math/MutableRectangle/right.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "dart:math.MutableRectangle.toString",
+  "href": "dart-math/MutableRectangle/toString.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
   "name": "top",
   "qualifiedName": "dart:math.MutableRectangle.top",
   "href": "dart-math/MutableRectangle/top.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "topLeft",
+  "qualifiedName": "dart:math.MutableRectangle.topLeft",
+  "href": "dart-math/MutableRectangle/topLeft.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MutableRectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "topRight",
+  "qualifiedName": "dart:math.MutableRectangle.topRight",
+  "href": "dart-math/MutableRectangle/topRight.html",
   "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -15938,23 +16202,23 @@
  {
   "name": "Random",
   "qualifiedName": "dart:math.Random",
-  "href": "dart-math/Random-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "dart:math",
-   "type": "library"
-  }
- },
- {
-  "name": "Random",
-  "qualifiedName": "dart:math.Random",
   "href": "dart-math/Random/Random.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Random",
    "type": "class"
+  }
+ },
+ {
+  "name": "Random",
+  "qualifiedName": "dart:math.Random",
+  "href": "dart-math/Random-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "dart:math",
+   "type": "library"
   }
  },
  {
@@ -16024,10 +16288,98 @@
   }
  },
  {
+  "name": "operator ==",
+  "qualifiedName": "dart:math.Rectangle.==",
+  "href": "dart-math/Rectangle/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "bottom",
+  "qualifiedName": "dart:math.Rectangle.bottom",
+  "href": "dart-math/Rectangle/bottom.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "bottomLeft",
+  "qualifiedName": "dart:math.Rectangle.bottomLeft",
+  "href": "dart-math/Rectangle/bottomLeft.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "bottomRight",
+  "qualifiedName": "dart:math.Rectangle.bottomRight",
+  "href": "dart-math/Rectangle/bottomRight.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "boundingBox",
+  "qualifiedName": "dart:math.Rectangle.boundingBox",
+  "href": "dart-math/Rectangle/boundingBox.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "containsPoint",
+  "qualifiedName": "dart:math.Rectangle.containsPoint",
+  "href": "dart-math/Rectangle/containsPoint.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "containsRectangle",
+  "qualifiedName": "dart:math.Rectangle.containsRectangle",
+  "href": "dart-math/Rectangle/containsRectangle.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
   "name": "Rectangle.fromPoints",
   "qualifiedName": "dart:math.Rectangle.fromPoints",
   "href": "dart-math/Rectangle/Rectangle.fromPoints.html",
   "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "dart:math.Rectangle.hashCode",
+  "href": "dart-math/Rectangle/hashCode.html",
+  "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Rectangle",
@@ -16046,6 +16398,28 @@
   }
  },
  {
+  "name": "intersection",
+  "qualifiedName": "dart:math.Rectangle.intersection",
+  "href": "dart-math/Rectangle/intersection.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "intersects",
+  "qualifiedName": "dart:math.Rectangle.intersects",
+  "href": "dart-math/Rectangle/intersects.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
   "name": "left",
   "qualifiedName": "dart:math.Rectangle.left",
   "href": "dart-math/Rectangle/left.html",
@@ -16057,9 +16431,53 @@
   }
  },
  {
+  "name": "right",
+  "qualifiedName": "dart:math.Rectangle.right",
+  "href": "dart-math/Rectangle/right.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "dart:math.Rectangle.toString",
+  "href": "dart-math/Rectangle/toString.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
   "name": "top",
   "qualifiedName": "dart:math.Rectangle.top",
   "href": "dart-math/Rectangle/top.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "topLeft",
+  "qualifiedName": "dart:math.Rectangle.topLeft",
+  "href": "dart-math/Rectangle/topLeft.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Rectangle",
+   "type": "class"
+  }
+ },
+ {
+  "name": "topRight",
+  "qualifiedName": "dart:math.Rectangle.topRight",
+  "href": "dart-math/Rectangle/topRight.html",
   "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -20125,23 +20543,23 @@
  {
   "name": "Float64x2",
   "qualifiedName": "dart:typed_data.Float64x2",
-  "href": "dart-typed_data/Float64x2/Float64x2.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Float64x2",
-   "type": "class"
-  }
- },
- {
-  "name": "Float64x2",
-  "qualifiedName": "dart:typed_data.Float64x2",
   "href": "dart-typed_data/Float64x2-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:typed_data",
    "type": "library"
+  }
+ },
+ {
+  "name": "Float64x2",
+  "qualifiedName": "dart:typed_data.Float64x2",
+  "href": "dart-typed_data/Float64x2/Float64x2.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Float64x2",
+   "type": "class"
   }
  },
  {
@@ -20466,23 +20884,23 @@
  {
   "name": "Int16List",
   "qualifiedName": "dart:typed_data.Int16List",
-  "href": "dart-typed_data/Int16List/Int16List.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Int16List",
-   "type": "class"
-  }
- },
- {
-  "name": "Int16List",
-  "qualifiedName": "dart:typed_data.Int16List",
   "href": "dart-typed_data/Int16List-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:typed_data",
    "type": "library"
+  }
+ },
+ {
+  "name": "Int16List",
+  "qualifiedName": "dart:typed_data.Int16List",
+  "href": "dart-typed_data/Int16List/Int16List.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Int16List",
+   "type": "class"
   }
  },
  {
@@ -24107,23 +24525,23 @@
  {
   "name": "Uint64List",
   "qualifiedName": "dart:typed_data.Uint64List",
-  "href": "dart-typed_data/Uint64List/Uint64List.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Uint64List",
-   "type": "class"
-  }
- },
- {
-  "name": "Uint64List",
-  "qualifiedName": "dart:typed_data.Uint64List",
   "href": "dart-typed_data/Uint64List-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "dart:typed_data",
    "type": "library"
+  }
+ },
+ {
+  "name": "Uint64List",
+  "qualifiedName": "dart:typed_data.Uint64List",
+  "href": "dart-typed_data/Uint64List/Uint64List.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Uint64List",
+   "type": "class"
   }
  },
  {
@@ -24345,23 +24763,23 @@
  {
   "name": "B",
   "qualifiedName": "ex.B",
-  "href": "ex/B/B.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "B",
-   "type": "class"
-  }
- },
- {
-  "name": "B",
-  "qualifiedName": "ex.B",
   "href": "ex/B-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
    "type": "library"
+  }
+ },
+ {
+  "name": "B",
+  "qualifiedName": "ex.B",
+  "href": "ex/B/B.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "B",
+   "type": "class"
   }
  },
  {
@@ -24543,23 +24961,23 @@
  {
   "name": "CatString",
   "qualifiedName": "ex.CatString",
-  "href": "ex/CatString-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "CatString",
-  "qualifiedName": "ex.CatString",
   "href": "ex/CatString/CatString.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "CatString",
    "type": "class"
+  }
+ },
+ {
+  "name": "CatString",
+  "qualifiedName": "ex.CatString",
+  "href": "ex/CatString-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -24895,23 +25313,23 @@
  {
   "name": "E",
   "qualifiedName": "ex.E",
-  "href": "ex/E/E.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "E",
-   "type": "class"
-  }
- },
- {
-  "name": "E",
-  "qualifiedName": "ex.E",
   "href": "ex/E-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
    "type": "library"
+  }
+ },
+ {
+  "name": "E",
+  "qualifiedName": "ex.E",
+  "href": "ex/E/E.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "E",
+   "type": "class"
   }
  },
  {
@@ -25005,23 +25423,23 @@
  {
   "name": "Helper",
   "qualifiedName": "ex.Helper",
-  "href": "ex/Helper-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "Helper",
-  "qualifiedName": "ex.Helper",
   "href": "ex/Helper/Helper.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Helper",
    "type": "class"
+  }
+ },
+ {
+  "name": "Helper",
+  "qualifiedName": "ex.Helper",
+  "href": "ex/Helper-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -25137,6 +25555,17 @@
  {
   "name": "MyError",
   "qualifiedName": "ex.MyError",
+  "href": "ex/MyError-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "MyError",
+  "qualifiedName": "ex.MyError",
   "href": "ex/MyError/MyError.html",
   "type": "constructor",
   "overriddenDepth": 0,
@@ -25146,9 +25575,9 @@
   }
  },
  {
-  "name": "MyError",
-  "qualifiedName": "ex.MyError",
-  "href": "ex/MyError-class.html",
+  "name": "MyErrorImplements",
+  "qualifiedName": "ex.MyErrorImplements",
+  "href": "ex/MyErrorImplements-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -25168,17 +25597,6 @@
   }
  },
  {
-  "name": "MyErrorImplements",
-  "qualifiedName": "ex.MyErrorImplements",
-  "href": "ex/MyErrorImplements-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
   "name": "stackTrace",
   "qualifiedName": "ex.MyErrorImplements.stackTrace",
   "href": "ex/MyErrorImplements/stackTrace.html",
@@ -25192,23 +25610,23 @@
  {
   "name": "MyException",
   "qualifiedName": "ex.MyException",
-  "href": "ex/MyException/MyException.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "MyException",
-   "type": "class"
-  }
- },
- {
-  "name": "MyException",
-  "qualifiedName": "ex.MyException",
   "href": "ex/MyException-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
    "type": "library"
+  }
+ },
+ {
+  "name": "MyException",
+  "qualifiedName": "ex.MyException",
+  "href": "ex/MyException/MyException.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MyException",
+   "type": "class"
   }
  },
  {
@@ -25278,6 +25696,17 @@
   }
  },
  {
+  "name": "test",
+  "qualifiedName": "ex.PublicClassExtendsPrivateClass.test",
+  "href": "ex/PublicClassExtendsPrivateClass/test.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "PublicClassExtendsPrivateClass",
+   "type": "class"
+  }
+ },
+ {
   "name": "PublicClassImplementsPrivateInterface",
   "qualifiedName": "ex.PublicClassImplementsPrivateInterface",
   "href": "ex/PublicClassImplementsPrivateInterface-class.html",
@@ -25333,6 +25762,17 @@
   }
  },
  {
+  "name": "name",
+  "qualifiedName": "ex.ShapeType.name",
+  "href": "ex/ShapeType/name.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ShapeType",
+   "type": "class"
+  }
+ },
+ {
   "name": "rect",
   "qualifiedName": "ex.ShapeType.rect",
   "href": "ex/ShapeType/rect-constant.html",
@@ -25341,6 +25781,28 @@
   "enclosedBy": {
    "name": "ShapeType",
    "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "ex.ShapeType.toString",
+  "href": "ex/ShapeType/toString.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "ShapeType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "SpecializedDuration",
+  "qualifiedName": "ex.SpecializedDuration",
+  "href": "ex/SpecializedDuration-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -25355,9 +25817,9 @@
   }
  },
  {
-  "name": "SpecializedDuration",
-  "qualifiedName": "ex.SpecializedDuration",
-  "href": "ex/SpecializedDuration-class.html",
+  "name": "WithGeneric",
+  "qualifiedName": "ex.WithGeneric",
+  "href": "ex/WithGeneric-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -25377,17 +25839,6 @@
   }
  },
  {
-  "name": "WithGeneric",
-  "qualifiedName": "ex.WithGeneric",
-  "href": "ex/WithGeneric-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
   "name": "prop",
   "qualifiedName": "ex.WithGeneric.prop",
   "href": "ex/WithGeneric/prop.html",
@@ -25401,23 +25852,23 @@
  {
   "name": "WithGenericSub",
   "qualifiedName": "ex.WithGenericSub",
-  "href": "ex/WithGenericSub/WithGenericSub.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "WithGenericSub",
-   "type": "class"
-  }
- },
- {
-  "name": "WithGenericSub",
-  "qualifiedName": "ex.WithGenericSub",
   "href": "ex/WithGenericSub-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
    "type": "library"
+  }
+ },
+ {
+  "name": "WithGenericSub",
+  "qualifiedName": "ex.WithGenericSub",
+  "href": "ex/WithGenericSub/WithGenericSub.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "WithGenericSub",
+   "type": "class"
   }
  },
  {
@@ -25639,23 +26090,23 @@
  {
   "name": "BaseForDocComments",
   "qualifiedName": "fake.BaseForDocComments",
-  "href": "fake/BaseForDocComments-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "BaseForDocComments",
-  "qualifiedName": "fake.BaseForDocComments",
   "href": "fake/BaseForDocComments/BaseForDocComments.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "BaseForDocComments",
    "type": "class"
+  }
+ },
+ {
+  "name": "BaseForDocComments",
+  "qualifiedName": "fake.BaseForDocComments",
+  "href": "fake/BaseForDocComments-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -25771,23 +26222,23 @@
  {
   "name": "Cool",
   "qualifiedName": "fake.Cool",
-  "href": "fake/Cool-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "Cool",
-  "qualifiedName": "fake.Cool",
   "href": "fake/Cool/Cool.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Cool",
    "type": "class"
+  }
+ },
+ {
+  "name": "Cool",
+  "qualifiedName": "fake.Cool",
+  "href": "fake/Cool-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -26277,23 +26728,23 @@
  {
   "name": "MixMeIn",
   "qualifiedName": "fake.MixMeIn",
-  "href": "fake/MixMeIn-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "MixMeIn",
-  "qualifiedName": "fake.MixMeIn",
   "href": "fake/MixMeIn/MixMeIn.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "MixMeIn",
    "type": "class"
+  }
+ },
+ {
+  "name": "MixMeIn",
+  "qualifiedName": "fake.MixMeIn",
+  "href": "fake/MixMeIn-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -26321,23 +26772,23 @@
  {
   "name": "Oops",
   "qualifiedName": "fake.Oops",
-  "href": "fake/Oops-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "Oops",
-  "qualifiedName": "fake.Oops",
   "href": "fake/Oops/Oops.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Oops",
    "type": "class"
+  }
+ },
+ {
+  "name": "Oops",
+  "qualifiedName": "fake.Oops",
+  "href": "fake/Oops-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -26431,23 +26882,23 @@
  {
   "name": "SpecialList",
   "qualifiedName": "fake.SpecialList",
-  "href": "fake/SpecialList/SpecialList.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "SpecialList",
-  "qualifiedName": "fake.SpecialList",
   "href": "fake/SpecialList-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "SpecialList",
+  "qualifiedName": "fake.SpecialList",
+  "href": "fake/SpecialList/SpecialList.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SpecialList",
+   "type": "class"
   }
  },
  {
