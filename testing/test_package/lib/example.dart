@@ -67,6 +67,7 @@ typedef String processMessage<T>(String msg);
 
 typedef String ParameterizedTypedef<T>(T msg, int foo);
 
+
 enum Animal {
   /// Single line docs.
   CAT,

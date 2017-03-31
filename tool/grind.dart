@@ -96,6 +96,7 @@ checkSdkLinks() {
   var start = 'index.html';
 
   _doCheck(origin, visited, start, foundError);
+  _doFileCheck(origin, visited, foundError);
 
   if (foundError) exit(1);
 }

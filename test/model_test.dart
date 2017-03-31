@@ -575,11 +575,11 @@ void main() {
     });
 
     test('mixins', () {
-      expect(Apple.mixins, hasLength(0));
+      expect(Apple.mixinsRaw, hasLength(0));
     });
 
-    test('mixins not private', () {
-      expect(F.mixins, hasLength(0));
+    test('mixins private', () {
+      expect(F.mixinsRaw, hasLength(1));
     });
 
     test('interfaces', () {
@@ -619,7 +619,7 @@ void main() {
     });
 
     test('get inherited properties, including properties of Object', () {
-      expect(B.inheritedProperties, hasLength(5));
+      expect(B.inheritedProperties, hasLength(4));
     });
 
     test('get methods', () {
@@ -731,18 +731,18 @@ void main() {
     // are exported out through one library
     test('ExtendingClass has a super class that is also in the same library',
         () {
-      expect(ExtendingClass.supertype.name, equals('BaseClass'));
+      expect(ExtendingClass.superChain[0].name, equals('BaseClass'));
       expect(
-          ExtendingClass.supertype.element.library.name, equals('two_exports'));
+          ExtendingClass.superChain[0].element.library.name, equals('two_exports'));
     });
 
     test(
         "ExtendingClass's super class has a library that is not in two_exports",
         () {
       expect(
-          ExtendingClass.superChain.last.name, equals('WithGetterAndSetter'));
+          ExtendingClass.superChainRaw.last.name, equals('WithGetterAndSetter'));
       expect(
-          ExtendingClass.superChain.last.element.library.name, equals('fake'));
+          ExtendingClass.superChainRaw.last.element.library.name, equals('fake'));
     });
   });
 

@@ -36,9 +36,6 @@ import 'utils.dart';
 
 Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
 
-/// Map of Class.href to a list of classes implementing that class
-final Map<String, List<Class>> _implementors = new Map();
-
 Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
   if (__crossdartJson == null) {
     if (config != null) {
@@ -83,36 +80,6 @@ int byFeatureOrdering(String a, String b) {
   if (scoreA < scoreB) return -1;
   if (scoreA > scoreB) return 1;
   return compareAsciiLowerCaseNatural(a, b);
-}
-
-void _addToImplementors(Class c) {
-  if (c.isCanonical) {
-    _implementors.putIfAbsent(c.href, () => []);
-  }
-  void _checkAndAddClass(Class key, Class implClass) {
-    if (key.isCanonical) {
-      _implementors.putIfAbsent(key.href, () => []);
-      List list = _implementors[key.href];
-
-      if (!list.any((l) => l.element == c.element)) {
-        list.add(implClass);
-      }
-    }
-  }
-
-  if (!c._mixins.isEmpty) {
-    c._mixins.forEach((t) {
-      _checkAndAddClass(t.element, c);
-    });
-  }
-  if (c._supertype != null) {
-    _checkAndAddClass(c._supertype.element, c);
-  }
-  if (!c._interfaces.isEmpty) {
-    c._interfaces.forEach((t) {
-      _checkAndAddClass(t.element, c);
-    });
-  }
 }
 
 /// Handle inheritance.
@@ -177,14 +144,14 @@ abstract class Inheritable {
   List<Class> get inheritance {
     List<Class> inheritance = [];
     inheritance.addAll((enclosingElement as Class).inheritanceChain);
-    if (!inheritance.contains(definingEnclosingElement)) {
+    if (!inheritance.contains(definingEnclosingElement) && definingEnclosingElement != null) {
       // TODO(jcollins-g): Why does this happen?
       //int objectAt = inheritance.indexOf((enclosingElement as Class).library.package.objectElement);
       //inheritance.insert(objectAt + 1, definingEnclosingElement);
       inheritance.add(definingEnclosingElement);
     }
     // TODO(jcollins-g): Sometimes, we don't get Object added on.  Why?
-    if (inheritance.last != package.objectElement)
+    if (inheritance.last != package.objectElement && package.objectElement != null)
       inheritance.add(package.objectElement);
     return inheritance;
 
@@ -467,7 +434,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   /// Returns all the implementors of the class specified.
   List<Class> get implementors {
-    return _implementors[href] != null ? _implementors[href] : [];
+    return (package._implementors[href] != null ? package._implementors[href] : []).toList(growable: false);
   }
 
   List<Method> get inheritedMethods {
@@ -711,11 +678,20 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<Method> get methodsForPages => _genPageMethods.toList(growable: false);
 
-  // TODO: make this method smarter about hierarchies and overrides. Right
-  // now, we're creating a flat list. We're not paying attention to where
-  // these methods are actually coming from. This might turn out to be a
-  // problem if we want to show that info later.
-  List<ElementType> get mixins => _mixins;
+  List<ElementType> get mixinsRaw => _mixins;
+
+  List<ElementType> canonicalizeTypes(List<ElementType> rawTypes) {
+    List<ElementType> canonicalList = [];
+    for (ElementType type in rawTypes) {
+      ModelElement canonicalElement = package.findCanonicalModelElementFor(
+          type.element.element);
+      if (canonicalElement != null)
+        canonicalList.add(canonicalElement.modelType);
+    }
+    return canonicalList;
+  }
+
+  List<ElementType> get mixins => canonicalizeTypes(mixinsRaw);
 
   @override
   String get nameWithGenerics {
@@ -767,16 +743,16 @@ class Class extends ModelElement implements EnclosedElement {
     if (_inheritanceChain == null) {
       _inheritanceChain = [];
       _inheritanceChain.add(this);
-      _inheritanceChain.addAll(mixins.reversed.map((e) => (e.returnElement as Class)));
+      _inheritanceChain.addAll(mixinsRaw.reversed.map((e) => (e.returnElement as Class)));
       /// Caching should make this recursion a little less painful.
-      for (Class c in superChain.map((e) => (e.returnElement as Class))) {
+      for (Class c in superChainRaw.map((e) => (e.returnElement as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
     }
     return _inheritanceChain.toList(growable: false);
   }
 
-  List<ElementType> get superChain {
+  List<ElementType> get superChainRaw {
     List<ElementType> typeChain = [];
     var parent = _supertype;
     while (parent != null) {
@@ -786,6 +762,8 @@ class Class extends ModelElement implements EnclosedElement {
     return typeChain;
   }
 
+  List<ElementType> get superChainRawReversed => superChainRaw.reversed.toList();
+  List<ElementType> get superChain => canonicalizeTypes(superChainRaw);
   List<ElementType> get superChainReversed => superChain.reversed.toList();
 
   ElementType get supertype => _supertype;
@@ -1722,11 +1700,11 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (md == null) md = new List<dynamic>();
     return md.map((dynamic a) {
       String annotation = (const HtmlEscape()).convert(a.toSource());
-      if (a.element is ConstructorElement) {
-        var me = new ModelElement.from(a.element.enclosingElement,
-            package.findOrCreateLibraryFor(a.element.enclosingElement));
+      //if (a.element is ConstructorElement) {
+      var me = package.findCanonicalModelElementFor(a.element.enclosingElement);
+      if (me != null)
         annotation = annotation.replaceFirst(me.name, me.linkedName);
-      }
+      //}
       return annotation;
     }).toList(growable: false);
   }
@@ -2482,6 +2460,8 @@ class Package implements Nameable, Documentable {
   final Map<LibraryElement, Library> _all_libraries = new Map();
   // All ModelElements constructed for this package; a superset  of allModelElements.
   final Map<Tuple3<Element, Library, Class>, ModelElement> _all_model_elements = new Map();
+  /// Map of Class.href to a list of classes implementing that class
+  final Map<String, List<Class>> _implementors = new Map();
 
   final PackageMeta packageMeta;
 
@@ -2616,6 +2596,36 @@ class Package implements Nameable, Documentable {
   /// Does this package represent the SDK?
   bool get isSdk => packageMeta.isSdk;
 
+  void _addToImplementors(Class c) {
+    if (c.isCanonical) {
+      _implementors.putIfAbsent(c.href, () => []);
+    }
+    void _checkAndAddClass(Class key, Class implClass) {
+      if (key.isCanonical) {
+        _implementors.putIfAbsent(key.href, () => []);
+        List list = _implementors[key.href];
+
+        if (!list.any((l) => l.element == c.element)) {
+          list.add(implClass);
+        }
+      }
+    }
+
+    if (!c._mixins.isEmpty) {
+      c._mixins.forEach((t) {
+        _checkAndAddClass(t.element, c);
+      });
+    }
+    if (c._supertype != null) {
+      _checkAndAddClass(c._supertype.element, c);
+    }
+    if (!c._interfaces.isEmpty) {
+      c._interfaces.forEach((t) {
+        _checkAndAddClass(t.element, c);
+      });
+    }
+  }
+
   List<Library> get libraries => _libraries;
 
   @override
@@ -2664,6 +2674,18 @@ class Package implements Nameable, Documentable {
         }
       }
     }
+  }
+
+  /// Tries to find a canonical ModelElement for this element.
+  /// Do not use this to find Inheritable ModelElements; we can't
+  /// figure out whether this element is inherited by ourselves.
+  ModelElement findCanonicalModelElementFor(Element e) {
+    Library lib = findCanonicalLibraryFor(e);
+    ModelElement modelElement;
+    if (lib != null)
+      modelElement = new ModelElement.from(e, lib);
+    assert(modelElement is! Inheritable);
+    return modelElement;
   }
 
   /// This is used when we might need a Library object that isn't actually
