@@ -1768,7 +1768,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     Library oldCanonicalLibrary = _canonicalLibrary;
     Element topLevelElement = element;
     while (topLevelElement != null && topLevelElement.enclosingElement is! CompilationUnitElement) {
-      topLevelElement = element.enclosingElement;
+      topLevelElement = topLevelElement.enclosingElement;
     }
     assert(package.allLibrariesAdded);
     if (true) {
