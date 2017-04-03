@@ -3,10 +3,10 @@
 packages:
   analyzer:
     description:
-      name: analyzer
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.29.9"
+      path: "../sdk/sdk/pkg/analyzer"
+      relative: true
+    source: path
+    version: "0.29.20"
   ansicolor:
     description:
       name: ansicolor
@@ -73,6 +73,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.13.4"
+  front_end:
+    description:
+      path: "../sdk/sdk/pkg/front_end"
+      relative: true
+    source: path
+    version: "0.1.0-alpha.1"
   glob:
     description:
       name: glob
@@ -115,6 +121,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  kernel:
+    description:
+      path: "../sdk/sdk/pkg/kernel"
+      relative: true
+    source: path
+    version: "0.2.0"
   logging:
     description:
       name: logging
@@ -279,9 +291,9 @@ packages:
     version: "1.0.0"
   test:
     description:
-      name: test
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../test"
+      relative: true
+    source: path
     version: "0.12.20+4"
   typed_data:
     description:

@@ -1,3 +1,7 @@
+## 0.9.14-dev
+
+* Enable support for generic function types (#1321)
+
 ## 0.9.13
 
 * fix grind check-links and check-sdk-links (#1360)
