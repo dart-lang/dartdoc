@@ -57,6 +57,9 @@ class ElementType {
     }
     _linkedName = buf.toString();
 
+    if (_linkedName.contains("dart-io/.html")) {
+      1+1;
+    }
     return _linkedName;
   }
 

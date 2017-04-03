@@ -2160,9 +2160,11 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   String _calculateLinkedName() {
-    if (name.contains("Apple")) {
-      true;
-    }
+    // TODO(jcollins): Bug originally introduced sometime before 0.9.12; add
+    // an assert for this and fix instances of it.  We should never be calling
+    // this method for an entity with no name.
+    if (name.isEmpty)
+      return '';
 
     if (name.startsWith('_')) {
       return HTML_ESCAPE.convert(name);
