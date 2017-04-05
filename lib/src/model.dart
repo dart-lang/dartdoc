@@ -82,7 +82,8 @@ int byFeatureOrdering(String a, String b) {
   return compareAsciiLowerCaseNatural(a, b);
 }
 
-/// Handle inheritance.
+/// Mixin for subclasses of ModelElement representing Elements that can be
+/// inherited from one class to another.
 abstract class Inheritable {
   Element get element;
   ModelElement get enclosingElement;
@@ -439,7 +440,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   /// Returns all the implementors of the class specified.
   List<Class> get implementors {
-    return (package._implementors[href] != null ? package._implementors[href] : []).toList(growable: false);
+    return (package._implementors[href] != null ? package._implementors[href] : []).toList(growable: false) as List<Class>;
   }
 
   List<Method> get inheritedMethods {
@@ -1777,14 +1778,13 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   Library _canonicalLibrary;
   bool _canonicalLibraryIsSet = false;
   Library get canonicalLibrary {
-    Library oldCanonicalLibrary = _canonicalLibrary;
     Element topLevelElement = element;
     while (topLevelElement != null && topLevelElement.enclosingElement is! CompilationUnitElement) {
       topLevelElement = topLevelElement.enclosingElement;
     }
     // This is not accurate if we are constructing the Package.
     assert(package.allLibrariesAdded);
-    if (true) {
+    if (!_canonicalLibraryIsSet) {
       if (name == "WithGetterAndSetter" && package.libraries.length == 8)
         true;
       if (!package.libraries.contains(definingLibrary)) {
@@ -1811,9 +1811,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
             //}).toList();
           }
           if (candidateLibraries.length > 1) {
-            print(
-                'Warning: ambiguous reexport of ${name}, candidates: ${candidateLibraries
-                    .map((l) => l.name)}');
+            library.package.warn(this, PackageWarning.ambiguousReexport,
+                "${candidateLibraries.map((l) => l.name)}");
           }
           if (candidateLibraries.isNotEmpty)
             _canonicalLibrary = candidateLibraries.first;
@@ -1830,9 +1829,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       }
       if (element.name == "Apple" && _canonicalLibrary == null)
         true;
-      if (_canonicalLibraryIsSet && oldCanonicalLibrary != _canonicalLibrary) {
-        true;
-      }
       _canonicalLibraryIsSet = true;
     }
     return _canonicalLibrary;
@@ -2204,6 +2200,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       return HTML_ESCAPE.convert(name);
     }
     if (href == null) {
+      package.warn(this, PackageWarning.noCanonicalFound);
       return HTML_ESCAPE.convert(name);
     }
 
@@ -2490,6 +2487,14 @@ class Operator extends Method {
 
 }
 
+// The kinds of warnings that can be displayed when documenting a package.
+enum PackageWarning {
+  ambiguousReexport,
+  noCanonicalFound,
+  noLibraryLevelDocs,
+}
+
+
 class Package implements Nameable, Documentable {
   // Library objects serving as entry points for documentation.
   final List<Library> _libraries = [];
@@ -2499,6 +2504,8 @@ class Package implements Nameable, Documentable {
   final Map<Tuple3<Element, Library, Class>, ModelElement> _all_model_elements = new Map();
   /// Map of Class.href to a list of classes implementing that class
   final Map<String, List<Class>> _implementors = new Map();
+
+  final Map<Element, Set<PackageWarning>> _displayedWarnings = new Map();
 
   final PackageMeta packageMeta;
 
@@ -2530,6 +2537,51 @@ class Package implements Nameable, Documentable {
     });
 
     _implementors.values.forEach((l) => l.sort());
+  }
+
+  void warn(ModelElement modelElement, PackageWarning kind, [String message]) {
+    if (_displayedWarnings.containsKey(modelElement.element) &&
+        _displayedWarnings[modelElement.element].contains(kind))
+      return;
+    String elementName;
+    if (modelElement.element is ClassMemberElement) {
+      Element theElement = modelElement.element;
+      ClassElement enclosingClass;
+      while (theElement is! ClassElement && theElement.enclosingElement != null) {
+        theElement = theElement.enclosingElement;
+      }
+      enclosingClass = theElement as ClassElement;
+      if (_displayedWarnings.containsKey(enclosingClass) &&
+          _displayedWarnings[enclosingClass].contains(kind))
+        return;
+      elementName = "${enclosingClass.name}.${modelElement.name}";
+    } else {
+      elementName = "${modelElement.name}";
+    }
+    String fullElementName = "${elementName} (${modelElement.library.element.location})";
+
+    String warningMessage;
+    switch (kind) {
+      case PackageWarning.noCanonicalFound:
+        // Fix these warnings by adding libraries with --include, or by using
+        // --auto-include-dependencies.
+        // TODO(jcollins-g): add a dartdoc flag to enable external website linking for non-canonical elements, using .packages for versioning
+        // TODO(jcollins-g): support documenting multiple packages at once and linking between them
+        warningMessage = "no canonical library found for ${fullElementName}, not linking";
+        break;
+      case PackageWarning.ambiguousReexport:
+        // Fix these warnings by adding the original library exporting the
+        // symbol with --include, or by using --auto-include-dependencies.
+        // TODO(jcollins-g): add a dartdoc flag to force a particular resolution order for (or drop) ambiguous reexports
+        warningMessage = "ambiguous reexport of ${fullElementName}, canonicalization candidates: ${message}";
+        break;
+      case PackageWarning.noLibraryLevelDocs:
+        warningMessage = "${fullElementName} has no library level documentation comments";
+        break;
+    }
+    stderr.write("\n warning: ${warningMessage}");
+    _displayedWarnings.putIfAbsent(modelElement.element, () => new Set());
+    _displayedWarnings[modelElement.element].add(kind);
   }
 
   static Package _withAutoIncludedDependencies(
@@ -2635,18 +2687,18 @@ class Package implements Nameable, Documentable {
   bool get isSdk => packageMeta.isSdk;
 
   void _addToImplementors(Class c) {
-    if (c.isCanonical) {
+    //if (c.isCanonical) {
       _implementors.putIfAbsent(c.href, () => []);
-    }
+    //}
     void _checkAndAddClass(Class key, Class implClass) {
-      if (key.isCanonical) {
+      //if (key.isCanonical) {
         _implementors.putIfAbsent(key.href, () => []);
         List list = _implementors[key.href];
 
         if (!list.any((l) => l.element == c.element)) {
           list.add(implClass);
         }
-      }
+      //}
     }
 
     if (!c._mixins.isEmpty) {
