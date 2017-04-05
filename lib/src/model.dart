@@ -101,12 +101,13 @@ abstract class Inheritable {
   }
 
   ModelElement get canonicalEnclosingElement {
+    Element searchElement = element;
     if (!_canonicalEnclosingClassIsSet) {
+      //_canonicalEnclosingClass = package.findCanonicalModelElementFor(enclosingElement.element);
       if (isInherited) {
         // We need to find the first intermediate inherited class that
         // is canonical, starting from the definingEnclosingElement.
         // Build the list in reverse order first (easier).
-        Element searchElement = element;
         while (searchElement is Member) {
           searchElement = (searchElement as Member).baseElement;
         }
@@ -124,7 +125,8 @@ abstract class Inheritable {
               foundElement = true;
             //}
           }
-          if (c.isCanonical && foundElement) {
+          Class canonicalC = package.findCanonicalModelElementFor(c.element);
+          if (canonicalC != null && foundElement) {
             _canonicalEnclosingClass = c;
             break;
           }
@@ -136,6 +138,8 @@ abstract class Inheritable {
           1+1;
         _canonicalEnclosingClass = enclosingElement;
       }
+      if (package.findCanonicalModelElementFor(enclosingElement.element) != _canonicalEnclosingClass)
+        1+1;
       _canonicalEnclosingClassIsSet = true;
     }
     return _canonicalEnclosingClass;
@@ -362,6 +366,7 @@ class Class extends ModelElement implements EnclosedElement {
       _allElements.addAll(constructors.map((e) => e.element));
       _allElements.addAll(staticMethods.map((e) => e.element));
       _allElements.addAll(staticProperties.map((e) => e.element));
+      _allElements.addAll(_allElements.where((e) => e is Member)..map((e) => (e as Member).baseElement));
     }
     return _allElements.contains(element);
   }
@@ -492,8 +497,11 @@ class Class extends ModelElement implements EnclosedElement {
           _genPageMethods.add(m);
         } else {
           Library lib = package.findOrCreateLibraryFor(value.enclosingElement);
+          Class enclosingClass = new ModelElement.from(value.enclosingElement, lib);
+          if (lib != null && lib.element.name == "" && value is MethodElement && value.enclosingElement.name == "Animation")
+            1+1;
           _inheritedMethods.add(new ModelElement.from(
-              value, lib, enclosingClass: new ModelElement.from(value.enclosingElement, lib)));
+              value, lib, enclosingClass: enclosingClass));
         }
       }
     }
@@ -1164,11 +1172,6 @@ abstract class GetterSetterCombo {
 }
 
 class Library extends ModelElement {
-  static Map<LibraryElement, Library> _libraryMap = <LibraryElement, Library>{};
-  static void clearLibraryMap() {
-    _libraryMap = {};
-  }
-
   @override
   final Package package;
 
@@ -1603,6 +1606,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   // Specify enclosingClass only if this is an Inheritable object.
   // TODO(jcollins-g): enforce this
   factory ModelElement.from(Element e, Library library, {Class enclosingClass}) {
+    if (library != null && library.element.name == "" && e is MethodElement && e.enclosingElement.name == "Animation")
+      1+1;
     Tuple3<Element, Library, Class> key = new Tuple3(e, library, enclosingClass);
     ModelElement newModelElement;
     if (e.kind != ElementKind.DYNAMIC && library.package._all_model_elements.containsKey(key)) {
@@ -1640,6 +1645,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         else
           newModelElement = new Operator.inherited(e, enclosingClass, library);
       }
+      if (library != null && library.element.name == "" && e is MethodElement && e.enclosingElement.name == "Animation")
+        1+1;
       if (e is MethodElement && !e.isOperator) {
         if (enclosingClass == null)
           newModelElement = new Method(e, library);
@@ -1760,7 +1767,12 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return _rawDocs;
   }
 
-  Library get definingLibrary => package.findOrCreateLibraryFor(element);
+  Library get definingLibrary {
+    Library lib = package.findOrCreateLibraryFor(element);
+    if (package.libraries.map((l) => l.name).contains(lib.name) && !package.libraries.contains(lib))
+      1+1;
+    return lib;
+  }
 
   Library _canonicalLibrary;
   bool _canonicalLibraryIsSet = false;
@@ -1770,20 +1782,42 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     while (topLevelElement != null && topLevelElement.enclosingElement is! CompilationUnitElement) {
       topLevelElement = topLevelElement.enclosingElement;
     }
+    // This is not accurate if we are constructing the Package.
     assert(package.allLibrariesAdded);
     if (true) {
       if (name == "WithGetterAndSetter" && package.libraries.length == 8)
         true;
       if (!package.libraries.contains(definingLibrary)) {
-        _canonicalLibrary = package.libraries.firstWhere((l) {
-          Element lookup = (l.element as LibraryElement).exportNamespace
-              .definedNames[topLevelElement?.name];
-          if (lookup is PropertyAccessorElement)
-            lookup = (lookup as PropertyAccessorElement).variable;
-          if (topLevelElement == lookup)
-            return true;
-          return false;
-        }, orElse: () => null);
+        List<Library> candidateLibraries = package.libraryElementReexportedBy[definingLibrary.element]?.toList();
+        if (candidateLibraries != null) {
+          candidateLibraries = candidateLibraries.where((l) {
+            Element lookup = (l.element as LibraryElement).exportNamespace
+                .definedNames[topLevelElement?.name];
+            if (lookup is PropertyAccessorElement)
+              lookup = (lookup as PropertyAccessorElement).variable;
+            if (topLevelElement == lookup)
+              return true;
+            return false;
+          }).toList();
+          if (name == "_ListenerMixin") {
+            1 + 1;
+          }
+          if (candidateLibraries.length > 1) {
+            //List<String> compilationUnitPathPieces;
+            //String compilationUnitPath = topLevelElement?.enclosingElement?.source?.fullName;
+            //compilationUnitPathPieces = compilationUnitPath == null ? [] : p.split(compilationUnitPath);
+            //candidateLibraries = candidateLibraries.where((l) {
+            //  return compilationUnitPathPieces.contains(l.name);
+            //}).toList();
+          }
+          if (candidateLibraries.length > 1) {
+            print(
+                'Warning: ambiguous reexport of ${name}, candidates: ${candidateLibraries
+                    .map((l) => l.name)}');
+          }
+          if (candidateLibraries.isNotEmpty)
+            _canonicalLibrary = candidateLibraries.first;
+        }
       } else {
         _canonicalLibrary = definingLibrary;
       }
@@ -2172,6 +2206,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (href == null) {
       return HTML_ESCAPE.convert(name);
     }
+
     if (!(this is Method || this is Field) && isPrivate(element)) {
       return HTML_ESCAPE.convert(name);
     }
@@ -2474,11 +2509,14 @@ class Package implements Nameable, Documentable {
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {
     assert(_all_model_elements.isEmpty);
+    assert(_all_libraries.isEmpty);
     libraryElements.forEach((element) {
       // add only if the element should be included in the public api
       if (isPublic(element)) {
-        var lib = new Library(element, this);
+        var lib = new Library._(element, this);
         _libraries.add(lib);
+        if (lib.name == "animation")
+          1+1;
         _all_libraries[element] = lib;
         assert(!_elementToLibrary.containsKey(lib.element));
         _elementToLibrary[element] = lib;
@@ -2497,8 +2535,6 @@ class Package implements Nameable, Documentable {
   static Package _withAutoIncludedDependencies(
       Set<LibraryElement> libraryElements, PackageMeta packageMeta) {
     var startLength = libraryElements.length;
-    // TODO(jcollins-g): get rid of need to clear this
-    Library.clearLibraryMap();
     Package package = new Package(libraryElements, packageMeta);
 
     // TODO(jcollins-g): this is inefficient; keep track of modelElements better
@@ -2558,7 +2594,7 @@ class Package implements Nameable, Documentable {
   }
 
   Map<LibraryElement, Set<Library>> get libraryElementReexportedBy {
-     if (_libraryElementReexportedBy == null) {
+     if (_libraryElementReexportedBy == null || !allLibrariesAdded) {
        _libraryElementReexportedBy = new Map<LibraryElement, Set<Library>>();
        for (Library library in libraries) {
          _tagReexportsFor(library, library.element);
@@ -2628,7 +2664,7 @@ class Package implements Nameable, Documentable {
     }
   }
 
-  List<Library> get libraries => _libraries;
+  List<Library> get libraries => _libraries.toList(growable: false);
 
   @override
   String get name => packageMeta.name;
@@ -2705,6 +2741,8 @@ class Package implements Nameable, Documentable {
     Library foundLibrary = findLibraryFor(e);
 
     if (foundLibrary == null) {
+      if (e.library.name == "animation")
+        1+1;
       foundLibrary = new Library._(e.library, this);
       _all_libraries[e.library] = foundLibrary;
     }
