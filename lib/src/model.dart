@@ -18,6 +18,7 @@ import 'package:analyzer/dart/ast/ast.dart'
         VariableDeclarationList;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+// TODO(jcollins-g): Stop using internal analyzer structures somehow.
 import 'package:analyzer/src/generated/resolver.dart'
     show Namespace, NamespaceBuilder, InheritanceManager;
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
@@ -118,26 +119,14 @@ abstract class Inheritable {
   ModelElement get canonicalEnclosingElement {
     Element searchElement = element;
     if (!_canonicalEnclosingClassIsSet) {
-      //_canonicalEnclosingClass = package.findCanonicalModelElementFor(enclosingElement.element);
       if (isInherited) {
-        // We need to find the first intermediate inherited class that
-        // is canonical, starting from the definingEnclosingElement.
-        // Build the list in reverse order first (easier).
         while (searchElement is Member) {
           searchElement = (searchElement as Member).baseElement;
         }
-        if (searchElement.name == "test") 1 + 1;
         bool foundElement = false;
         for (Class c in inheritance.reversed) {
           if (!foundElement && c.contains(searchElement)) {
-            // Remember if we see a canonical abstract class here, just in case
-            // we didn't implement it.
-            //if (c.isAbstract) {
-            //  if (c.isCanonical) firstAbstract = c;
-            //  continue;
-            //} else {
             foundElement = true;
-            //}
           }
           Class canonicalC = package.findCanonicalModelElementFor(c.element);
           if (canonicalC != null && foundElement) {
@@ -148,11 +137,8 @@ abstract class Inheritable {
         if (definingEnclosingElement.isCanonical)
           assert(definingEnclosingElement == _canonicalEnclosingClass);
       } else {
-        if (element.name == "test") 1 + 1;
         _canonicalEnclosingClass = enclosingElement;
       }
-      if (package.findCanonicalModelElementFor(enclosingElement.element) !=
-          _canonicalEnclosingClass) 1 + 1;
       _canonicalEnclosingClassIsSet = true;
     }
     return _canonicalEnclosingClass;
@@ -253,12 +239,6 @@ class Class extends ModelElement implements EnclosedElement {
           ElementType t =
               new ElementType(f, new ModelElement.from(f.element, lib));
           return t;
-          /*bool exclude = t.element.element.isPrivate || !t.element.isCanonical;
-          if (exclude) {
-            return null;
-          } else {
-            return t;
-          }*/
         })
         .where((mixin) => mixin != null)
         .toList(growable: false);
@@ -268,13 +248,6 @@ class Class extends ModelElement implements EnclosedElement {
 
       _supertype = new ElementType(
           _cls.supertype, new ModelElement.from(_cls.supertype.element, lib));
-
-      /* Private Superclasses should not be shown. */
-      /*var exclude = _supertype.element.element.isPrivate || !_supertype.element.isCanonical;
-
-      if (exclude) {
-        _supertype = null;
-      }*/
     }
 
     _interfaces = _cls.interfaces
@@ -310,7 +283,6 @@ class Class extends ModelElement implements EnclosedElement {
   List<Field> get allInstanceProperties {
     if (_allInstanceProperties != null) return _allInstanceProperties;
 
-    if (name == "Object") true;
     // TODO best way to make this a fixed length list?
     _allInstanceProperties = []
       ..addAll([]
@@ -441,7 +413,6 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<Method> get inheritedMethods {
     if (_inheritedMethods != null) return _inheritedMethods;
-    if (name == "F") 1 + 1;
 
     Map<String, ExecutableElement> cmap =
         library.inheritanceManager.getMembersInheritedFromClasses(element);
@@ -496,10 +467,6 @@ class Class extends ModelElement implements EnclosedElement {
           Library lib = package.findOrCreateLibraryFor(value.enclosingElement);
           Class enclosingClass =
               new ModelElement.from(value.enclosingElement, lib);
-          if (lib != null &&
-              lib.element.name == "" &&
-              value is MethodElement &&
-              value.enclosingElement.name == "Animation") 1 + 1;
           _inheritedMethods.add(new ModelElement.from(value, lib,
               enclosingClass: enclosingClass));
         }
@@ -508,10 +475,11 @@ class Class extends ModelElement implements EnclosedElement {
 
     _inheritedMethods.sort(byName);
 
-    if (name == "Dog") 1 + 1;
     return _inheritedMethods;
   }
 
+  // TODO(jcollins-g): this is very copy-paste from inheritedMethods that the
+  // constructor is always [ModelElement.from].  Fix this.
   List<Operator> get inheritedOperators {
     if (_inheritedOperators != null) return _inheritedOperators;
     Map<String, ExecutableElement> cmap =
@@ -571,9 +539,6 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<Field> get inheritedProperties {
     if (_inheritedProperties != null) return _inheritedProperties;
-    if (name == "B") {
-      true;
-    }
     Map<String, ExecutableElement> cmap =
         library.inheritanceManager.getMembersInheritedFromClasses(element);
     Map<String, ExecutableElement> imap =
@@ -665,6 +630,8 @@ class Class extends ModelElement implements EnclosedElement {
 
   bool get isAbstract => _cls.isAbstract;
 
+  // TODO(jcollins-g): Something still not quite right with privacy detection,
+  // we shouldn't be checking for underscores here.
   bool get isCanonical => super.isCanonical && !name.startsWith('_');
 
   bool get isErrorOrException {
@@ -995,6 +962,8 @@ class Field extends ModelElement
       : super(element, library) {
     _isInherited = true;
     _setModelType();
+    // Can't set _isInherited to true if this is the defining element, because
+    // that would mean it isn't inherited.
     assert(enclosingElement != definingEnclosingElement);
   }
 
@@ -1620,9 +1589,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   final Element _element;
   final Library _library;
 
-  static final Map<Tuple2<Element, Library>, ModelElement> __allModelElements =
-      {};
-
   ElementType _modelType;
   String _rawDocs;
   Documentation __documentation;
@@ -1637,9 +1603,11 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   // somehow.
   ModelElement(this._element, this._library);
 
-  // Do not construct any ModelElements unless they are from this constructor.
-  // Specify enclosingClass only if this is an Inheritable object.
-  // TODO(jcollins-g): enforce this
+  /// Do not construct any ModelElements unless they are from this constructor.
+  /// TODO(jcollins-g): enforce this.
+  /// Specify enclosingClass only if this is to be an Inheritable object.
+  /// TODO(jcollins-g): this way of using the optional parameter is messy,
+  /// clean that up.
   factory ModelElement.from(Element e, Library library,
       {Class enclosingClass}) {
     if (library != null &&
@@ -1749,11 +1717,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (md == null) md = new List<dynamic>();
     return md.map((dynamic a) {
       String annotation = (const HtmlEscape()).convert(a.toSource());
-      //if (a.element is ConstructorElement) {
       var me = package.findCanonicalModelElementFor(a.element.enclosingElement);
       if (me != null)
         annotation = annotation.replaceFirst(me.name, me.linkedName);
-      //}
       return annotation;
     }).toList(growable: false);
   }
@@ -1809,23 +1775,23 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return _rawDocs;
   }
 
-  Library get definingLibrary {
-    Library lib = package.findOrCreateLibraryFor(element);
-    if (package.libraries.map((l) => l.name).contains(lib.name) &&
-        !package.libraries.contains(lib)) 1 + 1;
-    return lib;
-  }
+  Library get definingLibrary => package.findOrCreateLibraryFor(element);
 
   Library _canonicalLibrary;
+  // _canonicalLibrary can be null so we can't check against null to see whether
+  // we tried to compute it before.
   bool _canonicalLibraryIsSet = false;
   Library get canonicalLibrary {
+    // This is not accurate if we are constructing the Package.
+    assert(package.allLibrariesAdded);
+     // Since we're looking for a library, find the [Element] immediately
+    // contained by a [CompilationUnitElement] in the tree.
     Element topLevelElement = element;
     while (topLevelElement != null &&
         topLevelElement.enclosingElement is! CompilationUnitElement) {
       topLevelElement = topLevelElement.enclosingElement;
     }
-    // This is not accurate if we are constructing the Package.
-    assert(package.allLibrariesAdded);
+
     if (!_canonicalLibraryIsSet) {
       if (name == "WithGetterAndSetter" && package.libraries.length == 8) true;
       if (!package.libraries.contains(definingLibrary)) {
@@ -1842,17 +1808,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
             if (topLevelElement == lookup) return true;
             return false;
           }).toList();
-          if (name == "_ListenerMixin") {
-            1 + 1;
-          }
-          if (candidateLibraries.length > 1) {
-            //List<String> compilationUnitPathPieces;
-            //String compilationUnitPath = topLevelElement?.enclosingElement?.source?.fullName;
-            //compilationUnitPathPieces = compilationUnitPath == null ? [] : p.split(compilationUnitPath);
-            //candidateLibraries = candidateLibraries.where((l) {
-            //  return compilationUnitPathPieces.contains(l.name);
-            //}).toList();
-          }
+          // If path inspection or other disambiguation heuristics are needed,
+          // they should go here.
           if (candidateLibraries.length > 1) {
             library.package.warn(this, PackageWarning.ambiguousReexport,
                 "${candidateLibraries.map((l) => l.name)}");
@@ -1870,7 +1827,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
           _canonicalLibrary = library;
         }
       }
-      if (element.name == "Apple" && _canonicalLibrary == null) true;
       _canonicalLibraryIsSet = true;
     }
     return _canonicalLibrary;
@@ -1881,17 +1837,16 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (library == canonicalLibrary) {
       if (this is Inheritable) {
         Inheritable i = (this as Inheritable);
-        if (name == 'test' && i.enclosingElement.name == 'Dog') 1 + 1;
         // If we're the defining element, or if the defining element is not
         // in the set of libraries being documented, then this element
         // should be treated as canonical (given library == canonicalLibrary).
         if (i.enclosingElement == i.canonicalEnclosingElement) {
-          if (name == 'test' && i.enclosingElement.name == 'Dog') true;
           return true;
         } else {
           return false;
         }
       }
+      // If there's no inheritance to deal with, we're done.
       return true;
     }
     return false;
@@ -1942,8 +1897,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   bool get hasParameters => parameters.isNotEmpty;
 
-  /// href must be null if the canonicalLibrary for this element is not
-  /// available.
+  /// If canonicalLibrary (or canonicalEnclosingElement, for Inheritable
+  /// subclasses) is null, href should be null.
   String get href;
 
   String get htmlId => name;
@@ -2231,8 +2186,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   String _calculateLinkedName() {
-    // TODO(jcollins-g): FunctionElementImpls as parameters seem to have no
-    // name.  Analyzer bug?
+    // If we're calling this with an empty name, we probably have the wrong
+    // element associated with a ModelElement.
     assert(!name.isEmpty);
 
     if (isPrivate(element)) {
@@ -2249,6 +2204,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   // TODO(keertip): consolidate all the find library methods
+  // This differs from package.findOrCreateLibraryFor in a small way,
+  // searching for the [Library] associated with this element's
+  //
   Library _findLibraryFor(Element e) {
     var element = e.getAncestor((l) => l is LibraryElement);
     var lib;
@@ -2768,7 +2726,11 @@ class Package implements Nameable, Documentable {
 
   String get version => packageMeta.version;
 
+  /// Looks up which [Library] is the one reexporting this [Element]; not
+  /// necessarily the canonical [Library].
   Library findLibraryFor(Element element) {
+    // Maybe we were given an element we already saw, or an element for the
+    // Library itself added by the constructor in [ModelElement.from].
     if (_elementToLibrary.containsKey(element)) {
       return _elementToLibrary[element];
     }
@@ -2833,11 +2795,9 @@ class Package implements Nameable, Documentable {
     Library foundLibrary = findLibraryFor(e);
 
     if (foundLibrary == null) {
-      if (e.library.name == "animation") 1 + 1;
       foundLibrary = new Library._(e.library, this);
       _all_libraries[e.library] = foundLibrary;
     }
-    //assert(foundLibrary.modelElementsMap[e] != null);
     return foundLibrary;
   }
 

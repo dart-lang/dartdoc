@@ -134,7 +134,7 @@ class DartDoc {
         ? const []
         : findFilesToDocumentInPackage(rootDir.path).toList();
 
-    /// TODO(jcollins-g): seems like most of this belongs in the Package constructor
+    // TODO(jcollins-g): seems like most of this belongs in the Package constructor
     List<LibraryElement> libraries = _parseLibraries(files, includeExternals);
 
     if (includes != null && includes.isNotEmpty) {
@@ -159,8 +159,8 @@ class DartDoc {
     if (config != null && config.autoIncludeDependencies) {
       package = Package.withAutoIncludedDependencies(libraries, packageMeta);
       libraries = package.libraries.map((l) => l.element).toList();
-      print(libraries.map((l) => l.name).toList().toString());
-      // remove excluded libraries again, in case they are picked up by deps.
+      // remove excluded libraries again, in case they are picked up through
+      // dependencies.
       excludes.forEach((pattern) {
         libraries.removeWhere((lib) {
           return lib.name.startsWith(pattern) || lib.name == pattern;
@@ -169,17 +169,12 @@ class DartDoc {
     }
     package = new Package(libraries, packageMeta);
 
-    // remove excluded libraries again, in case they are picked up by deps.
-    excludes.forEach((pattern) {
-      libraries.removeWhere((lib) {
-        return lib.name.startsWith(pattern) || lib.name == pattern;
-      });
-    });
-
     print(
         'generating docs for libraries ${package.libraries.map((Library l) => l.name).join(', ')}\n');
 
     // Go through docs of every model element in package to prebuild the macros index
+    // TODO(jcollins-g): move index building into a cached-on-demand generation
+    // like most other bits in [Package].
     package.allCanonicalModelElements.forEach((m) => m.documentation);
 
     // Create the out directory.
@@ -195,7 +190,7 @@ class DartDoc {
         "in ${seconds.toStringAsFixed(1)} seconds.");
 
     if (package.libraries.isEmpty) {
-      print(
+      stderr.write(
           "\ndartdoc could not find any libraries to document. Run `pub get` and try again.");
     }
 
@@ -318,7 +313,7 @@ class DartDoc {
           // assume that this is supposed to be private.
           if (pathParts.length < 2) break;
           pathParts = pathParts.sublist(pathParts.length - 2, pathParts.length);
-          foundLibSrc = path.join(pathParts[0], pathParts[1]) == 'lib/src';
+          foundLibSrc = path.join(pathParts[0], pathParts[1]) == path.join('lib', 'src');
           searchFile = new File(
               path.join(searchFile.parent.parent.path, 'pubspec.yaml'));
         }

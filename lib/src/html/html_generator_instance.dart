@@ -33,7 +33,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
   String get faviconPath => _options.faviconPath;
   bool get useCategories => _options.useCategories;
   bool get prettyIndexJson => _options.prettyIndexJson;
-  // Protect against generating the same data over and over for a package.
+  // Protect against bugs in canonicalization by tracking what files we
+  // write.
   final Set<String> _writtenFiles = new Set();
 
   HtmlGeneratorInstance(this._options, this._templates, this.package, this.out,
@@ -99,7 +100,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
         // TODO(jcollins-g): consider refactor so that only the canonical
         // ModelElements show up in these lists
         if (!clazz.isCanonical) continue;
-        //if (clazz.name != 'GZipCodec') continue;
         generateClass(package, lib, clazz);
 
         for (var constructor in clazz.constructors) {
@@ -118,9 +118,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
         }
 
         for (var property in clazz.propertiesForPages) {
-          if (property.name == "runtimeType" &&
-              (clazz.name == "ExtendingClass" || clazz.name == "BaseClass"))
-            1 + 1;
           if (!property.isCanonical) continue;
           generateProperty(package, lib, clazz, property);
         }
@@ -192,7 +189,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
   void generateClass(Package package, Library lib, Class clazz) {
     TemplateData data = new ClassTemplateData(this, package, lib, clazz);
-    if (clazz.name == 'Dog') 1 + 1;
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
 

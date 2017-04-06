@@ -211,9 +211,9 @@ updateTestPackageDocs() {
         '--example-path-prefix',
         'examples',
         '--no-include-source',
-        '--pretty-index-json'
-            '--exclude',
-        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data',
+        '--pretty-index-json',
+        '--exclude',
+        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,meta',
         '--output',
         '../test_package_docs',
       ],

@@ -54,7 +54,7 @@ void main() {
         '--example-path-prefix',
         'examples',
         '--exclude',
-        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data',
+        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,meta',
         '--no-include-source',
         '--pretty-index-json',
         '--output',

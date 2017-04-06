@@ -36,18 +36,6 @@ class ElementType {
     if (_linkedName != null) return _linkedName;
 
     StringBuffer buf = new StringBuffer();
-    ModelElement canonicalModelElement;
-    if (element != null &&
-        element is! Dynamic &&
-        !element.isCanonical &&
-        element is! Inheritable) {
-      canonicalModelElement =
-          element.library.package.findCanonicalModelElementFor(element.element);
-      if (canonicalModelElement != null) 1 + 1;
-    }
-    if (canonicalModelElement == null)
-      // TODO(jcollins-g): ick.
-      canonicalModelElement = element;
 
     if (isParameterType) {
       buf.write(name);
@@ -69,9 +57,6 @@ class ElementType {
     }
     _linkedName = buf.toString();
 
-    if (_linkedName.contains("dart-io/.html")) {
-      1 + 1;
-    }
     return _linkedName;
   }
 

@@ -188,9 +188,6 @@ MatchingLinkResult _getMatchingLinkElement(
   bool isEnum = false;
 
   for (CommentReference ref in commentRefs) {
-    if (codeRef.contains("BaseClass")) {
-      1 + 1;
-    }
     if (ref.identifier.name == codeRef) {
       bool isConstrElement = ref.identifier.staticElement is ConstructorElement;
       if (isConstructor && isConstrElement ||
@@ -236,10 +233,10 @@ MatchingLinkResult _findRefElementInLibrary(
   final Package package = library.package;
   final Map<String, ModelElement> result = {};
 
-  if (codeRef.contains("BaseClass")) {
-    1 + 1;
-  }
-
+  // TODO(jcollins-g): This is extremely inefficient and no longer necessary
+  // since allCanonicalModelElements is now stable and doesn't mutate after
+  // [Package] construction.  So precompute and cache the result map somewhere,
+  // maybe in [Package].
   for (final modelElement in package.allCanonicalModelElements) {
     // Constructors are handled in _linkDocReference.
     if (codeRef == modelElement.fullyQualifiedName &&
@@ -302,6 +299,7 @@ String _linkDocReference(String reference, ModelElement element,
   }
 }
 
+// TODO(jcollins-g): Merge this into new [Package.warn] warning system
 String _elementLocation(ModelElement element) {
   while ((element.element.documentationComment == null ||
           element.element.documentationComment == "") &&
