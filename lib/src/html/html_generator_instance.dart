@@ -98,7 +98,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
         // TODO(jcollins-g): consider refactor so that only the canonical
         // ModelElements show up in these lists
         if (!clazz.isCanonical) continue;
-        //if (clazz.name != 'RenderObjectWidget') continue;
+        //if (clazz.name != 'GZipCodec') continue;
         generateClass(package, lib, clazz);
 
         for (var constructor in clazz.constructors) {

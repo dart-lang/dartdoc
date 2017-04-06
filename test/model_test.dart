@@ -733,7 +733,7 @@ void main() {
         () {
       expect(ExtendingClass.superChain[0].name, equals('BaseClass'));
       expect(
-          ExtendingClass.superChain[0].element.library.name, equals('two_exports'));
+          ExtendingClass.superChain[0].element.canonicalLibrary.name, equals('two_exports'));
     });
 
     test(

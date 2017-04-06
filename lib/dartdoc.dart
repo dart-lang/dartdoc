@@ -158,15 +158,23 @@ class DartDoc {
     Package package;
     if (config != null && config.autoIncludeDependencies) {
       package = Package.withAutoIncludedDependencies(libraries, packageMeta);
-    } else {
-      package = new Package(libraries, packageMeta);
+      libraries = package.libraries.map((l) => l.element).toList();
+      print (libraries.map((l)=> l.name).toList().toString());
+      // remove excluded libraries again, in case they are picked up by deps.
+      excludes.forEach((pattern) {
+        libraries.removeWhere((lib) {
+          return lib.name.startsWith(pattern) || lib.name == pattern;
+        });
+      });
     }
-    List<Library> collections = [];
-    for (Library library in package.libraries) {
-      if (library.name.contains('collection')) {
-        collections.add(library);
-      }
-    }
+    package = new Package(libraries, packageMeta);
+
+    // remove excluded libraries again, in case they are picked up by deps.
+    excludes.forEach((pattern) {
+      libraries.removeWhere((lib) {
+        return lib.name.startsWith(pattern) || lib.name == pattern;
+      });
+    });
 
     print('generating docs for libraries ${package.libraries.map((Library l) => l.name).join(', ')}\n');
 

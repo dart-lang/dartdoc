@@ -202,16 +202,20 @@ testDartdoc() {
 @Task('update test_package_docs')
 updateTestPackageDocs() {
   var options = new RunOptions(workingDirectory: 'testing/test_package');
+  // This must be synced with ../test/compare_output_test.dart's
+  // "Validate html output of test_package" test.
   delete(getDir('testing/test_package_docs'));
   Dart.run('../../bin/dartdoc.dart',
       arguments: [
-        '--no-include-source',
-        '--output',
-        '../test_package_docs',
+        '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',
-        '--auto-include-dependencies',
+        '--no-include-source',
         '--pretty-index-json'
+        '--exclude',
+        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data',
+        '--output',
+        '../test_package_docs',
       ],
       runOptions: options);
 }

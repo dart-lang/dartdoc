@@ -84,6 +84,20 @@ int byFeatureOrdering(String a, String b) {
 
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
+///
+/// Inheritable adds yet another view to help canonicalization for member
+/// [ModelElement]s -- [Inheritable.definingEnclosingElement].  With this
+/// as an end point, we can search the inheritance chain between this instance and
+/// the [Inheritable.definingEnclosingElement] in [Inheritable.canonicalEnclosingElement],
+/// for the canonical [Class] closest to where this member was defined.  We
+/// can then know that when we find [Inheritable.element] inside that [Class]'s
+/// namespace, that's the one we should treat as canonical and implementors
+/// of this class can use that knowledge to determine canonicalization.
+///
+/// We pick the class closest to the definingEnclosingElement so that all
+/// children of that class inheriting the same member will point to the same
+/// place in the documentation, and we pick a canonical class because that's
+/// the one in the public namespace that will be documented.
 abstract class Inheritable {
   Element get element;
   ModelElement get enclosingElement;
@@ -151,32 +165,12 @@ abstract class Inheritable {
     inheritance.addAll((enclosingElement as Class).inheritanceChain);
     if (!inheritance.contains(definingEnclosingElement) && definingEnclosingElement != null) {
       // TODO(jcollins-g): Why does this happen?
-      //int objectAt = inheritance.indexOf((enclosingElement as Class).library.package.objectElement);
-      //inheritance.insert(objectAt + 1, definingEnclosingElement);
       inheritance.add(definingEnclosingElement);
     }
     // TODO(jcollins-g): Sometimes, we don't get Object added on.  Why?
     if (inheritance.last != package.objectElement && package.objectElement != null)
       inheritance.add(package.objectElement);
     return inheritance;
-
-    /*// We need to find the first intermediate inherited class that
-    // is canonical, starting from the definingEnclosingElement.
-    // Build the list in reverse order first (easier).
-    List<Class> inheritance = [(enclosingElement as Class)];
-    inheritance.addAll((enclosingElement as Class).superChain.map((e) => (e.returnElement as Class)));
-    if (!inheritance.contains(definingEnclosingElement)) {
-      // The only way this should ever happen is if definingEnclosingElement is Dart's Object.
-      // However, supers calculation seems to be buggy.
-      // TODO(jcollins-g): fix this
-      //assert(definingEnclosingElement.library.name == "dart:core" && definingEnclosingElement.name == 'Object');
-      inheritance.add(definingEnclosingElement);
-    }
-    List<Class> inheritanceChain = (enclosingElement as Class).inheritanceChain;
-    if (inheritance.isNotEmpty && inheritanceChain.isEmpty) {
-      1+1;
-    }
-    return inheritance;*/
   }
 }
 
@@ -695,7 +689,7 @@ class Class extends ModelElement implements EnclosedElement {
       ModelElement canonicalElement = package.findCanonicalModelElementFor(
           type.element.element);
       if (canonicalElement != null)
-        canonicalList.add(canonicalElement.modelType);
+        canonicalList.add(type);
     }
     return canonicalList;
   }
@@ -1583,6 +1577,32 @@ class Method extends ModelElement
   MethodElement get _method => (element as MethodElement);
 }
 
+/// This class is the foundation of Dartdoc's model for source code.
+/// All ModelElements are contained within a [Package], and laid out in a
+/// structure that mirrors the availability of identifiers in the various
+/// namespaces within that package.  For example, multiple [Class] objects
+/// for a particular identifier ([ModelElement.element]) may show up in
+/// different [Library]s as the identifier is reexported.
+///
+/// However, ModelElements have an additional concept vital to generating
+/// documentation: canonicalization.
+///
+/// A ModelElement is canonical if it is the element in the namespace where that
+/// element 'comes from' in the public interface to this [Package].  That often
+/// means the [ModelElement.library] is contained in [Package.libraries], but
+/// there are many exceptions and ambiguities the code tries to address here.
+///
+/// Non-canonical elements should refer to their canonical counterparts, making
+/// it easy to calculate links via [ModelElement.href] without having to
+/// know in a particular namespace which elements are canonical or not.
+/// A number of [Package] methods, such as [Package.findCanonicalModelElementFor]
+/// can help with this.
+///
+/// When documenting, Dartdoc should only write out files corresponding to
+/// canonical instances of ModelElement ([ModelElement.isCanonical]).  This
+/// helps prevent subtle bugs as generated output for a non-canonical
+/// ModelElement will reference itself as part of the "wrong" [Library]
+/// from the public interface perspective.
 abstract class ModelElement implements Comparable, Nameable, Documentable {
   final Element _element;
   final Library _library;
@@ -2190,34 +2210,17 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   String _calculateLinkedName() {
-    // TODO(jcollins): Bug originally introduced sometime before 0.9.12; add
-    // an assert for this and fix instances of it.  We should never be calling
-    // this method for an entity with no name.
-    if (name.isEmpty)
-      return '';
+    // TODO(jcollins-g): FunctionElementImpls as parameters seem to have no
+    // name.  Analyzer bug?
+    assert(!name.isEmpty);
 
-    if (name.startsWith('_')) {
+    if (isPrivate(element)) {
       return HTML_ESCAPE.convert(name);
     }
+
     if (href == null) {
       package.warn(this, PackageWarning.noCanonicalFound);
       return HTML_ESCAPE.convert(name);
-    }
-
-    if (!(this is Method || this is Field) && isPrivate(element)) {
-      return HTML_ESCAPE.convert(name);
-    }
-
-    ModelElement c = (this is EnclosedElement)
-        ? (this as EnclosedElement).enclosingElement
-        : null;
-    if (c != null) {
-      if (!package.isDocumented(c.element)) {
-        return HTML_ESCAPE.convert(name);
-      }
-      if (c.name.startsWith('_')) {
-        return '${c.name}.${HTML_ESCAPE.convert(name)}';
-      }
     }
 
     var classContent = isDeprecated ? 'class="deprecated" ' : '';
@@ -2393,6 +2396,13 @@ class ModelFunction extends ModelElement
   ModelElement get enclosingElement => library;
 
   String get fileName => "$name.html";
+
+  @override
+  String get name {
+    if (element.enclosingElement is ParameterElement && super.name.isEmpty)
+      return element.enclosingElement.name;
+    return super.name;
+  }
 
   @override
   String get href {
