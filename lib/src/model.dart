@@ -254,7 +254,7 @@ class Class extends ModelElement implements EnclosedElement {
         .map((f) {
           var lib = new Library(f.element.library, p);
           var t = new ElementType(f, new ModelElement.from(f.element, lib));
-          var exclude = t.element.element.isPrivate || !t.element.isCanonical;
+          var exclude = t.element.element.isPrivate;
           if (exclude) {
             return null;
           } else {
@@ -395,7 +395,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   bool get hasStaticProperties => staticProperties.isNotEmpty;
 
-  bool get hasSupertype => supertype != null;
+  bool get hasSupertype => (supertype != null && supertype.element != package.objectElement);
 
   @override
   String get href {
@@ -653,17 +653,18 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<ElementType> get mixinsRaw => _mixins;
 
-  List<ElementType> canonicalizeTypes(List<ElementType> rawTypes) {
-    List<ElementType> canonicalList = [];
+  // TODO(jcollins-g): This method knows nothing about public/private or
+  // canonicalization of elements not in this package.  Fix this when we add
+  // multiple-package awareness.
+  List<ElementType> filterNonPublicTypes(List<ElementType> rawTypes) {
+    List<ElementType> publicList = [];
     for (ElementType type in rawTypes) {
-      ModelElement canonicalElement =
-          package.findCanonicalModelElementFor(type.element.element);
-      if (canonicalElement != null) canonicalList.add(type);
+      if (!isPrivate(type.element.element)) publicList.add(type);
     }
-    return canonicalList;
+    return publicList;
   }
 
-  List<ElementType> get mixins => canonicalizeTypes(mixinsRaw);
+  List<ElementType> get mixins => filterNonPublicTypes(mixinsRaw);
 
   @override
   String get nameWithGenerics {
@@ -740,7 +741,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<ElementType> get superChainRawReversed =>
       superChainRaw.reversed.toList();
-  List<ElementType> get superChain => canonicalizeTypes(superChainRaw);
+  List<ElementType> get superChain => filterNonPublicTypes(superChainRaw);
   List<ElementType> get superChainReversed => superChain.reversed.toList();
 
   ElementType get supertype => _supertype;
@@ -1688,6 +1689,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return library.package.libraryElementReexportedBy[this.element.library];
   }
 
+  // TODO(jcollins-g): annotations should now be able to use the utility
+  // functions in package for finding elements and avoid using computeNode().
   List<String> get annotations {
     List<dynamic> metadata;
     if (element.computeNode() is AnnotatedNode) {
@@ -2253,7 +2256,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
           replacement = replacement.replaceFirst('```', '```$lang');
         }
       } else {
-        // TODO: is this the proper way to handle warnings?
+        // TODO(jcollins-g): move this to Package.warn system
         var filePath =
             this.element.source.fullName.substring(dirPath.length + 1);
         final msg =
@@ -2682,18 +2685,14 @@ class Package implements Nameable, Documentable {
   bool get isSdk => packageMeta.isSdk;
 
   void _addToImplementors(Class c) {
-    //if (c.isCanonical) {
     _implementors.putIfAbsent(c.href, () => []);
-    //}
     void _checkAndAddClass(Class key, Class implClass) {
-      //if (key.isCanonical) {
       _implementors.putIfAbsent(key.href, () => []);
       List list = _implementors[key.href];
 
       if (!list.any((l) => l.element == c.element)) {
         list.add(implClass);
       }
-      //}
     }
 
     if (!c._mixins.isEmpty) {
