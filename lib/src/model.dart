@@ -2191,7 +2191,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   String _calculateLinkedName() {
     // If we're calling this with an empty name, we probably have the wrong
     // element associated with a ModelElement.
-    assert(!name.isEmpty);
+    assert(!name.isEmpty || this.element.type.name == "dynamic");
 
     if (isPrivate(element)) {
       return HTML_ESCAPE.convert(name);
