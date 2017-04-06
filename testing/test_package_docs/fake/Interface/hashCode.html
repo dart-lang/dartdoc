@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="API docs for the hashCode property from the Interface class, for the Dart programming language.">
+  <title>hashCode property - Interface class - fake library - Dart API</title>
+  <!-- required because all the links are pseudo-absolute -->
+  <base href="../..">
+
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' type='text/css'>
+  <link rel="stylesheet" href="static-assets/prettify.css">
+  <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="static-assets/styles.css">
+  <link rel="icon" href="static-assets/favicon.png">
+
+  <!-- Do not remove placeholder -->
+  <!-- Header Placeholder -->
+</head>
+
+<body>
+
+<div id="overlay-under-drawer"></div>
+
+<header class="container-fluid" id="title">
+  <nav class="navbar navbar-fixed-top">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-12 contents">
+          <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+          <ol class="breadcrumbs gt-separated hidden-xs">
+            <li><a href="index.html">test_package</a></li>
+            <li><a href="fake/fake-library.html">fake</a></li>
+            <li><a href="fake/Interface-class.html">Interface</a></li>
+            <li class="self-crumb">hashCode</li>
+          </ol>
+          <div class="self-name">hashCode</div>
+          <form class="search navbar-right" role="search">
+            <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+          </form>
+        </div> <!-- /col -->
+      </div> <!-- /row -->
+    </div> <!-- /container -->
+  </nav>
+
+  <div class="container masthead">
+    <div class="row">
+      <div class="col-sm-12 contents">
+        <ol class="breadcrumbs gt-separated visible-xs">
+          <li><a href="index.html">test_package</a></li>
+          <li><a href="fake/fake-library.html">fake</a></li>
+          <li><a href="fake/Interface-class.html">Interface</a></li>
+          <li class="self-crumb">hashCode</li>
+        </ol>
+        <div class="title-description">
+          <h1 class="title">
+            <span class="kind">property</span> hashCode
+          </h1>
+        </div>
+      </div> <!-- /col -->
+    </div> <!-- /row -->
+  </div> <!-- /container -->
+
+</header>
+
+<div class="container body">
+  <div class="row">
+
+  <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    <h5><a href="index.html">test_package</a></h5>
+    <h5><a href="fake/fake-library.html">fake</a></h5>
+    <h5><a href="fake/Interface-class.html">Interface</a></h5>
+
+    <ol>
+    
+    
+    
+      <li class="section-title"><a href="fake/Interface-class.html#constructors">Constructors</a></li>
+      <li><a href="fake/Interface/Interface.html">Interface</a></li>
+    
+      <li class="section-title inherited">
+        <a href="fake/Interface-class.html#instance-properties">Properties</a>
+      </li>
+      <li class="inherited"><a href="fake/Interface/hashCode.html">hashCode</a></li>
+      <li class="inherited"><a href="fake/Interface/runtimeType.html">runtimeType</a></li>
+    
+      <li class="section-title inherited"><a href="fake/Interface-class.html#operators">Operators</a></li>
+      <li class="inherited"><a href="fake/Interface/operator_equals.html">operator ==</a></li>
+    
+      <li class="section-title inherited"><a href="fake/Interface-class.html#instance-methods">Methods</a></li>
+      <li class="inherited"><a href="fake/Interface/noSuchMethod.html">noSuchMethod</a></li>
+      <li class="inherited"><a href="fake/Interface/toString.html">toString</a></li>
+    </ol>
+
+  </div><!--/.sidebar-offcanvas-->
+
+  <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+
+
+      <section id="getter">
+      
+      <section class="multi-line-signature">
+        <span class="returntype">int</span>
+        <span class="name ">hashCode</span></section>
+      
+      <section class="desc markdown">
+  <p>The hash code for this object.</p>
+<p>A hash code is a single integer which represents the state of the object
+that affects <code>==</code> comparisons.</p>
+<p>All objects have hash codes. 
+The default hash code represents only the identity of the object, 
+the same way as the default <code>==</code> implementation only considers objects
+equal if they are identical (see <code>identityHashCode</code>).</p>
+<p>If <code>==</code> is overridden to use the object state instead, 
+the hash code must also be changed to represent that state. </p>
+<p>Hash codes must be the same for objects that are equal to each other
+according to <code>==</code>.
+The hash code of an object should only change if the object changes
+in a way that affects equality.
+There are no further requirements for the hash codes.
+They need not be consistent between executions of the same program
+and there are no distribution guarantees.</p>
+<p>Objects that are not equal are allowed to have the same hash code,
+it is even technically allowed that all instances have the same hash code,
+but if clashes happen too often, it may reduce the efficiency of hash-based
+data structures like <code>HashSet</code> or <code>HashMap</code>.</p>
+<p>If a subclass overrides <code>hashCode</code>, it should override the
+<code>==</code> operator as well to maintain consistency.</p>
+</section>
+</section>
+      
+
+
+  </div> <!-- /.main-content -->
+
+</div> <!-- row -->
+</div> <!-- container -->
+
+<footer>
+  <div class="container-fluid">
+    <div class="container">
+      <p class="text-center">
+        <span class="no-break">
+          test_package 0.0.1
+        </span>
+        &bull;
+        <span class="no-break">
+          <a href="https://www.dartlang.org">
+            <img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16">
+          </a>
+        </span>
+        &bull;
+        <span class="copyright no-break">
+          <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
+        </span>
+      </p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="static-assets/typeahead.bundle.min.js"></script>
+<script src="static-assets/prettify.js"></script>
+<script src="static-assets/URI.js"></script>
+<script src="static-assets/script.js"></script>
+<!-- Do not remove placeholder -->
+<!-- Footer Placeholder -->
+
+</body>
+
+</html>
