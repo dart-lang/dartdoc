@@ -14,7 +14,6 @@ import 'package:analyzer/dart/element/element.dart'
         LibraryElement,
         Element,
         ConstructorElement,
-        ClassElement,
         ParameterElement,
         PropertyAccessorElement;
 import 'package:html/parser.dart' show parse;
@@ -185,7 +184,6 @@ MatchingLinkResult _getMatchingLinkElement(
   if (commentRefs == null) return new MatchingLinkResult(null, null);
 
   Element refElement;
-  bool isEnum = false;
 
   for (CommentReference ref in commentRefs) {
     if (ref.identifier.name == codeRef) {
@@ -207,10 +205,6 @@ MatchingLinkResult _getMatchingLinkElement(
     // yay we found an accessor that wraps a const, but we really
     // want the top-level field itself
     refElement = (refElement as PropertyAccessorElement).variable;
-    if (refElement.enclosingElement is ClassElement &&
-        (refElement.enclosingElement as ClassElement).isEnum) {
-      isEnum = true;
-    }
   }
 
   if (refElement is ParameterElement) return new MatchingLinkResult(null, null);

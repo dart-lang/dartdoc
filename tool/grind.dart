@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:async' show Completer, Future, Stream;
+import 'dart:async' show Future, Stream;
 import 'dart:io' hide ProcessException;
 
 import 'package:dartdoc/dartdoc.dart' show defaultOutDir;
@@ -266,7 +266,6 @@ int _findCount(String str, String match) {
 }
 
 Stream<FileSystemEntity> dirContents(String dir) {
-  var files = <FileSystemEntity>[];
   var lister = new Directory(dir).list(recursive: true);
   return lister;
 }

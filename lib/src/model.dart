@@ -632,6 +632,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   // TODO(jcollins-g): Something still not quite right with privacy detection,
   // we shouldn't be checking for underscores here.
+  @override
   bool get isCanonical => super.isCanonical && !name.startsWith('_');
 
   bool get isErrorOrException {
@@ -1835,7 +1836,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return _canonicalLibrary;
   }
 
-  @override
   bool get isCanonical {
     if (library == canonicalLibrary) {
       if (this is Inheritable) {
@@ -2191,7 +2191,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   String _calculateLinkedName() {
     // If we're calling this with an empty name, we probably have the wrong
     // element associated with a ModelElement.
-    assert(!name.isEmpty || this.element.type.name == "dynamic");
+    assert(!name.isEmpty || (this.element is TypeDefiningElement  && (this.element as TypeDefiningElement).type.name == "dynamic"));
 
     if (isPrivate(element)) {
       return HTML_ESCAPE.convert(name);
@@ -2766,6 +2766,7 @@ class Package implements Nameable, Documentable {
         }
       }
     }
+    return null;
   }
 
   /// Tries to find a canonical ModelElement for this element.
