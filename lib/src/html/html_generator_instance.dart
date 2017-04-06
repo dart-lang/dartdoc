@@ -59,7 +59,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
         prettyIndexJson ? new JsonEncoder.withIndent(' ') : new JsonEncoder();
 
     File jsonFile = _createOutputFile(path.join(out.path, 'index.json'));
-    String json = encoder.convert(documentedElements.where((e) => e.isCanonical).map((ModelElement e) {
+    String json = encoder.convert(
+        documentedElements.where((e) => e.isCanonical).map((ModelElement e) {
       Map data = {
         'name': e.name,
         'qualifiedName': e.name,
@@ -117,8 +118,9 @@ class HtmlGeneratorInstance implements HtmlOptions {
         }
 
         for (var property in clazz.propertiesForPages) {
-          if (property.name == "runtimeType" && (clazz.name == "ExtendingClass" || clazz.name == "BaseClass"))
-            1+1;
+          if (property.name == "runtimeType" &&
+              (clazz.name == "ExtendingClass" || clazz.name == "BaseClass"))
+            1 + 1;
           if (!property.isCanonical) continue;
           generateProperty(package, lib, clazz, property);
         }
@@ -181,7 +183,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
     if (!lib.isAnonymous && !lib.hasDocumentation) {
       package.warn(lib, PackageWarning.noLibraryLevelDocs);
     }
-    TemplateData data = new LibraryTemplateData(this, package, lib, useCategories);
+    TemplateData data =
+        new LibraryTemplateData(this, package, lib, useCategories);
 
     _build(path.join(lib.dirName, '${lib.fileName}'),
         _templates.libraryTemplate, data);
@@ -189,8 +192,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
   void generateClass(Package package, Library lib, Class clazz) {
     TemplateData data = new ClassTemplateData(this, package, lib, clazz);
-    if (clazz.name == 'Dog')
-      1+1;
+    if (clazz.name == 'Dog') 1 + 1;
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
 

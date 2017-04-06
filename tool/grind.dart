@@ -212,7 +212,7 @@ updateTestPackageDocs() {
         'examples',
         '--no-include-source',
         '--pretty-index-json'
-        '--exclude',
+            '--exclude',
         'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data',
         '--output',
         '../test_package_docs',
@@ -271,7 +271,6 @@ Stream<FileSystemEntity> dirContents(String dir) {
   return lister;
 }
 
-
 _doFileCheck(String origin, Set<String> visited, bool error) {
   String normalOrigin = path.normalize(origin);
   dirContents(normalOrigin).toList().then((allFiles) {
@@ -284,8 +283,7 @@ _doFileCheck(String origin, Set<String> visited, bool error) {
         foundIndex = true;
         continue;
       }
-      if (visited.contains(fullPath))
-        continue;
+      if (visited.contains(fullPath)) continue;
       log('   * Orphaned: $fullPath');
       error = true;
     }
@@ -294,7 +292,6 @@ _doFileCheck(String origin, Set<String> visited, bool error) {
       error = true;
     }
   });
-
 }
 
 _doCheck(String origin, Set<String> visited, String pathToCheck, bool error,

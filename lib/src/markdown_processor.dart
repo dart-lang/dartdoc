@@ -184,13 +184,12 @@ MatchingLinkResult _getMatchingLinkElement(
     {bool isConstructor: false}) {
   if (commentRefs == null) return new MatchingLinkResult(null, null);
 
-
   Element refElement;
   bool isEnum = false;
 
   for (CommentReference ref in commentRefs) {
     if (codeRef.contains("BaseClass")) {
-      1+1;
+      1 + 1;
     }
     if (ref.identifier.name == codeRef) {
       bool isConstrElement = ref.identifier.staticElement is ConstructorElement;
@@ -224,7 +223,7 @@ MatchingLinkResult _getMatchingLinkElement(
   // There have been places in the code which helpfully cache entities
   // regardless of what package they are associated with.  This assert
   // will protect us from reintroducing that.
-  assert (refModelElement == null || refModelElement.package == element.package);
+  assert(refModelElement == null || refModelElement.package == element.package);
   if (refModelElement != null) {
     return new MatchingLinkResult(refModelElement, null);
   }
@@ -238,12 +237,13 @@ MatchingLinkResult _findRefElementInLibrary(
   final Map<String, ModelElement> result = {};
 
   if (codeRef.contains("BaseClass")) {
-    1+1;
+    1 + 1;
   }
 
   for (final modelElement in package.allCanonicalModelElements) {
     // Constructors are handled in _linkDocReference.
-    if (codeRef == modelElement.fullyQualifiedName && modelElement is! Constructor) {
+    if (codeRef == modelElement.fullyQualifiedName &&
+        modelElement is! Constructor) {
       result[modelElement.fullyQualifiedName] = modelElement;
     }
   }
@@ -251,7 +251,8 @@ MatchingLinkResult _findRefElementInLibrary(
   // Only look for partially qualified matches if we didn't find a fully qualified one.
   if (result.isEmpty) {
     for (final modelElement in library.allCanonicalModelElements) {
-      if (codeRef == modelElement.fullyQualifiedNameWithoutLibrary && modelElement is! Constructor) {
+      if (codeRef == modelElement.fullyQualifiedNameWithoutLibrary &&
+          modelElement is! Constructor) {
         result[modelElement.fullyQualifiedName] = modelElement;
       }
     }

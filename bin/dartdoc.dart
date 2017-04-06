@@ -56,13 +56,15 @@ main(List<String> arguments) async {
 
   var readme = args['sdk-readme'];
   if (readme != null && !(new File(readme).existsSync())) {
-    stderr.write(" Error: unable to locate the SDK description file at $readme.");
+    stderr
+        .write(" Error: unable to locate the SDK description file at $readme.");
     exit(1);
   }
 
   Directory inputDir = new Directory(args['input']);
   if (!inputDir.existsSync()) {
-    stderr.write(" Error: unable to locate the input directory at ${inputDir.path}.");
+    stderr.write(
+        " Error: unable to locate the input directory at ${inputDir.path}.");
     exit(1);
   }
 
@@ -96,7 +98,8 @@ main(List<String> arguments) async {
 
   if (args.rest.isNotEmpty) {
     var unknownArgs = args.rest.join(' ');
-    stderr.write('Error: detected unknown command-line argument(s): $unknownArgs');
+    stderr.write(
+        'Error: detected unknown command-line argument(s): $unknownArgs');
     _printUsageAndExit(parser, exitCode: 1);
   }
 

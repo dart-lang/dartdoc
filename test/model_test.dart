@@ -732,17 +732,17 @@ void main() {
     test('ExtendingClass has a super class that is also in the same library',
         () {
       expect(ExtendingClass.superChain[0].name, equals('BaseClass'));
-      expect(
-          ExtendingClass.superChain[0].element.canonicalLibrary.name, equals('two_exports'));
+      expect(ExtendingClass.superChain[0].element.canonicalLibrary.name,
+          equals('two_exports'));
     });
 
     test(
         "ExtendingClass's super class has a library that is not in two_exports",
         () {
-      expect(
-          ExtendingClass.superChainRaw.last.name, equals('WithGetterAndSetter'));
-      expect(
-          ExtendingClass.superChainRaw.last.element.library.name, equals('fake'));
+      expect(ExtendingClass.superChainRaw.last.name,
+          equals('WithGetterAndSetter'));
+      expect(ExtendingClass.superChainRaw.last.element.library.name,
+          equals('fake'));
     });
   });
 

@@ -159,7 +159,7 @@ class DartDoc {
     if (config != null && config.autoIncludeDependencies) {
       package = Package.withAutoIncludedDependencies(libraries, packageMeta);
       libraries = package.libraries.map((l) => l.element).toList();
-      print (libraries.map((l)=> l.name).toList().toString());
+      print(libraries.map((l) => l.name).toList().toString());
       // remove excluded libraries again, in case they are picked up by deps.
       excludes.forEach((pattern) {
         libraries.removeWhere((lib) {
@@ -176,7 +176,8 @@ class DartDoc {
       });
     });
 
-    print('generating docs for libraries ${package.libraries.map((Library l) => l.name).join(', ')}\n');
+    print(
+        'generating docs for libraries ${package.libraries.map((Library l) => l.name).join(', ')}\n');
 
     // Go through docs of every model element in package to prebuild the macros index
     package.allCanonicalModelElements.forEach((m) => m.documentation);
@@ -301,9 +302,12 @@ class DartDoc {
           continue;
         }
         libraries.add(library);
-      } else if (config != null && config.autoIncludeDependencies && libraryName != '') {
+      } else if (config != null &&
+          config.autoIncludeDependencies &&
+          libraryName != '') {
         File searchFile = new File(fullPath);
-        searchFile = new File(path.join(searchFile.parent.path, 'pubspec.yaml'));
+        searchFile =
+            new File(path.join(searchFile.parent.path, 'pubspec.yaml'));
         bool foundLibSrc = false;
         while (!foundLibSrc && searchFile.parent != null) {
           if (searchFile.existsSync()) break;
@@ -315,7 +319,8 @@ class DartDoc {
           if (pathParts.length < 2) break;
           pathParts = pathParts.sublist(pathParts.length - 2, pathParts.length);
           foundLibSrc = path.join(pathParts[0], pathParts[1]) == 'lib/src';
-          searchFile = new File(path.join(searchFile.parent.parent.path, 'pubspec.yaml'));
+          searchFile = new File(
+              path.join(searchFile.parent.parent.path, 'pubspec.yaml'));
         }
         if (foundLibSrc) continue;
         libraries.add(library);
