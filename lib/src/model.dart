@@ -904,6 +904,9 @@ class Enum extends Class {
   }
 
   @override
+  List<Field> get propertiesForPages => allInstanceProperties;
+
+  @override
   String get kind => 'enum';
 }
 
@@ -930,6 +933,8 @@ class EnumField extends Field {
   String get documentation {
     if (name == 'values') {
       return 'A constant List of the values in this enum, in order of their declaration.';
+    } else if (name == 'index') {
+      return 'The integer index of this enum.';
     } else {
       return super.documentation;
     }
@@ -944,6 +949,9 @@ class EnumField extends Field {
 
   @override
   String get linkedName => name;
+
+  @override
+  bool get isCanonical => false;
 
   @override
   String get oneLineDoc => documentationAsHtml;
@@ -1510,7 +1518,7 @@ class Method extends ModelElement
   String get href {
     if (canonicalLibrary == null || canonicalEnclosingElement == null)
       return null;
-    return '${canonicalLibrary.dirName}/${canonicalEnclosingElement.name}/${fileName}';
+    return '${canonicalEnclosingElement.library.dirName}/${canonicalEnclosingElement.name}/${fileName}';
   }
 
   @override
@@ -2190,7 +2198,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   String _calculateLinkedName() {
     // If we're calling this with an empty name, we probably have the wrong
-    // element associated with a ModelElement.
+    // element associated with a ModelElement or there's an analysis bug.
     assert(!name.isEmpty || (this.element is TypeDefiningElement  && (this.element as TypeDefiningElement).type.name == "dynamic"));
 
     if (isPrivate(element)) {
@@ -2208,8 +2216,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   // TODO(keertip): consolidate all the find library methods
   // This differs from package.findOrCreateLibraryFor in a small way,
-  // searching for the [Library] associated with this element's
-  //
+  // searching for the [Library] associated with this element's enclosing
+  // Library before trying to create one.
   Library _findLibraryFor(Element e) {
     var element = e.getAncestor((l) => l is LibraryElement);
     var lib;
@@ -2781,8 +2789,8 @@ class Package implements Nameable, Documentable {
   }
 
   /// This is used when we might need a Library object that isn't actually
-  /// a documentation entry point (for elements that have no canonical Library
-  /// within the set of documentation entry point Libraries).
+  /// a documentation entry point (for elements that have no Library within the
+  /// set of canonical Libraries).
   Library findOrCreateLibraryFor(Element e) {
     // This is just a cache to avoid creating lots of libraries over and over.
     if (_all_libraries.containsKey(e.library)) {

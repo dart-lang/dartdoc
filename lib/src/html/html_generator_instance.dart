@@ -141,6 +141,18 @@ class HtmlGeneratorInstance implements HtmlOptions {
       for (var eNum in lib.enums) {
         if (!eNum.isCanonical) continue;
         generateEnum(package, lib, eNum);
+        for (var property in eNum.propertiesForPages) {
+          if (!property.isCanonical) continue;
+          generateProperty(package, lib, eNum, property);
+        }
+        for (var operator in eNum.operatorsForPages) {
+          if (!operator.isCanonical) continue;
+          generateMethod(package, lib, eNum, operator);
+        }
+        for (var method in eNum.methodsForPages) {
+          if (!method.isCanonical) continue;
+          generateMethod(package, lib, eNum, method);
+        }
       }
 
       for (var constant in lib.constants) {

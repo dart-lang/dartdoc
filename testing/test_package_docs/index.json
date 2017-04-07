@@ -79,6 +79,61 @@
   }
  },
  {
+  "name": "operator ==",
+  "qualifiedName": "ex.Animal.==",
+  "href": "ex/Animal/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Animal",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "ex.Animal.hashCode",
+  "href": "ex/Animal/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Animal",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "ex.Animal.noSuchMethod",
+  "href": "ex/Animal/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Animal",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "ex.Animal.runtimeType",
+  "href": "ex/Animal/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Animal",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "ex.Animal.toString",
+  "href": "ex/Animal/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Animal",
+   "type": "enum"
+  }
+ },
+ {
   "name": "Apple",
   "qualifiedName": "ex.Apple",
   "href": "ex/Apple-class.html",
@@ -719,23 +774,23 @@
  {
   "name": "ConstantCat",
   "qualifiedName": "ex.ConstantCat",
-  "href": "ex/ConstantCat-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "ConstantCat",
-  "qualifiedName": "ex.ConstantCat",
   "href": "ex/ConstantCat/ConstantCat.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ConstantCat",
    "type": "class"
+  }
+ },
+ {
+  "name": "ConstantCat",
+  "qualifiedName": "ex.ConstantCat",
+  "href": "ex/ConstantCat-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -917,23 +972,23 @@
  {
   "name": "Dog",
   "qualifiedName": "ex.Dog",
-  "href": "ex/Dog-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "Dog",
-  "qualifiedName": "ex.Dog",
   "href": "ex/Dog/Dog.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Dog",
    "type": "class"
+  }
+ },
+ {
+  "name": "Dog",
+  "qualifiedName": "ex.Dog",
+  "href": "ex/Dog-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -1357,23 +1412,23 @@
  {
   "name": "ForAnnotation",
   "qualifiedName": "ex.ForAnnotation",
-  "href": "ex/ForAnnotation/ForAnnotation.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ForAnnotation",
-   "type": "class"
-  }
- },
- {
-  "name": "ForAnnotation",
-  "qualifiedName": "ex.ForAnnotation",
   "href": "ex/ForAnnotation-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
    "type": "library"
+  }
+ },
+ {
+  "name": "ForAnnotation",
+  "qualifiedName": "ex.ForAnnotation",
+  "href": "ex/ForAnnotation/ForAnnotation.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ForAnnotation",
+   "type": "class"
   }
  },
  {
@@ -1610,23 +1665,23 @@
  {
   "name": "Klass",
   "qualifiedName": "ex.Klass",
-  "href": "ex/Klass-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "Klass",
-  "qualifiedName": "ex.Klass",
   "href": "ex/Klass/Klass.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Klass",
    "type": "class"
+  }
+ },
+ {
+  "name": "Klass",
+  "qualifiedName": "ex.Klass",
+  "href": "ex/Klass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -2655,23 +2710,23 @@
  {
   "name": "WithGeneric",
   "qualifiedName": "ex.WithGeneric",
-  "href": "ex/WithGeneric/WithGeneric.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "WithGeneric",
-   "type": "class"
-  }
- },
- {
-  "name": "WithGeneric",
-  "qualifiedName": "ex.WithGeneric",
   "href": "ex/WithGeneric-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
    "type": "library"
+  }
+ },
+ {
+  "name": "WithGeneric",
+  "qualifiedName": "ex.WithGeneric",
+  "href": "ex/WithGeneric/WithGeneric.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "WithGeneric",
+   "type": "class"
   }
  },
  {
@@ -3080,23 +3135,23 @@
  {
   "name": "AnotherInterface",
   "qualifiedName": "fake.AnotherInterface",
-  "href": "fake/AnotherInterface/AnotherInterface.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "AnotherInterface",
-   "type": "class"
-  }
- },
- {
-  "name": "AnotherInterface",
-  "qualifiedName": "fake.AnotherInterface",
   "href": "fake/AnotherInterface-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "AnotherInterface",
+  "qualifiedName": "fake.AnotherInterface",
+  "href": "fake/AnotherInterface/AnotherInterface.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AnotherInterface",
+   "type": "class"
   }
  },
  {
@@ -3287,14 +3342,58 @@
   }
  },
  {
-  "name": "ConstantClass",
-  "qualifiedName": "fake.ConstantClass",
-  "href": "fake/ConstantClass-class.html",
-  "type": "class",
+  "name": "operator ==",
+  "qualifiedName": "fake.Color.==",
+  "href": "fake/Color/operator_equals.html",
+  "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "fake",
-   "type": "library"
+   "name": "Color",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.Color.hashCode",
+  "href": "fake/Color/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Color",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.Color.noSuchMethod",
+  "href": "fake/Color/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Color",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.Color.runtimeType",
+  "href": "fake/Color/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Color",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.Color.toString",
+  "href": "fake/Color/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Color",
+   "type": "enum"
   }
  },
  {
@@ -3306,6 +3405,17 @@
   "enclosedBy": {
    "name": "ConstantClass",
    "type": "class"
+  }
+ },
+ {
+  "name": "ConstantClass",
+  "qualifiedName": "fake.ConstantClass",
+  "href": "fake/ConstantClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -3586,23 +3696,23 @@
  {
   "name": "ExtraSpecialList",
   "qualifiedName": "fake.ExtraSpecialList",
-  "href": "fake/ExtraSpecialList-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "ExtraSpecialList",
-  "qualifiedName": "fake.ExtraSpecialList",
   "href": "fake/ExtraSpecialList/ExtraSpecialList.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ExtraSpecialList",
    "type": "class"
+  }
+ },
+ {
+  "name": "ExtraSpecialList",
+  "qualifiedName": "fake.ExtraSpecialList",
+  "href": "fake/ExtraSpecialList-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -3740,23 +3850,23 @@
  {
   "name": "HasGenericWithExtends",
   "qualifiedName": "fake.HasGenericWithExtends",
-  "href": "fake/HasGenericWithExtends/HasGenericWithExtends.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "HasGenericWithExtends",
-   "type": "class"
-  }
- },
- {
-  "name": "HasGenericWithExtends",
-  "qualifiedName": "fake.HasGenericWithExtends",
   "href": "fake/HasGenericWithExtends-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "HasGenericWithExtends",
+  "qualifiedName": "fake.HasGenericWithExtends",
+  "href": "fake/HasGenericWithExtends/HasGenericWithExtends.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasGenericWithExtends",
+   "type": "class"
   }
  },
  {
@@ -3938,23 +4048,23 @@
  {
   "name": "Interface",
   "qualifiedName": "fake.Interface",
-  "href": "fake/Interface-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "Interface",
-  "qualifiedName": "fake.Interface",
   "href": "fake/Interface/Interface.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Interface",
    "type": "class"
+  }
+ },
+ {
+  "name": "Interface",
+  "qualifiedName": "fake.Interface",
+  "href": "fake/Interface-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -4345,23 +4455,23 @@
  {
   "name": "Oops",
   "qualifiedName": "fake.Oops",
-  "href": "fake/Oops-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "Oops",
-  "qualifiedName": "fake.Oops",
   "href": "fake/Oops/Oops.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Oops",
    "type": "class"
+  }
+ },
+ {
+  "name": "Oops",
+  "qualifiedName": "fake.Oops",
+  "href": "fake/Oops-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -4433,23 +4543,23 @@
  {
   "name": "OperatorReferenceClass",
   "qualifiedName": "fake.OperatorReferenceClass",
-  "href": "fake/OperatorReferenceClass/OperatorReferenceClass.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "OperatorReferenceClass",
-   "type": "class"
-  }
- },
- {
-  "name": "OperatorReferenceClass",
-  "qualifiedName": "fake.OperatorReferenceClass",
   "href": "fake/OperatorReferenceClass-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "OperatorReferenceClass",
+  "qualifiedName": "fake.OperatorReferenceClass",
+  "href": "fake/OperatorReferenceClass/OperatorReferenceClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OperatorReferenceClass",
+   "type": "class"
   }
  },
  {
@@ -4510,23 +4620,23 @@
  {
   "name": "OtherGenericsThing",
   "qualifiedName": "fake.OtherGenericsThing",
-  "href": "fake/OtherGenericsThing-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "OtherGenericsThing",
-  "qualifiedName": "fake.OtherGenericsThing",
   "href": "fake/OtherGenericsThing/OtherGenericsThing.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "OtherGenericsThing",
    "type": "class"
+  }
+ },
+ {
+  "name": "OtherGenericsThing",
+  "qualifiedName": "fake.OtherGenericsThing",
+  "href": "fake/OtherGenericsThing-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -5291,23 +5401,23 @@
  {
   "name": "SuperAwesomeClass",
   "qualifiedName": "fake.SuperAwesomeClass",
-  "href": "fake/SuperAwesomeClass-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "SuperAwesomeClass",
-  "qualifiedName": "fake.SuperAwesomeClass",
   "href": "fake/SuperAwesomeClass/SuperAwesomeClass.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "SuperAwesomeClass",
    "type": "class"
+  }
+ },
+ {
+  "name": "SuperAwesomeClass",
+  "qualifiedName": "fake.SuperAwesomeClass",
+  "href": "fake/SuperAwesomeClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
