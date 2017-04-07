@@ -7,6 +7,7 @@ library dartdoc.model_utils;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/engine.dart';
@@ -130,8 +131,18 @@ String crossdartifySource(
   String newSource;
   if (json.isNotEmpty) {
     var node = element.computeNode();
-    var file = element.source.fullName
-        .replaceAll("${config.inputDir.path}${Platform.pathSeparator}", "");
+
+    var uri = element.source.uri;
+    String file;
+    if (uri.scheme == "package") {
+      var splittedUri =
+        uri.toString().replaceAll(new RegExp(r"^package:"), "").split("/");
+      file = p.join("lib", p.joinAll(splittedUri.skip(1)));
+    } else {
+      file = element.source.fullName
+          .replaceAll("${config.inputDir.path}${Platform.pathSeparator}", "");
+    }
+
     var filesData = json[file];
     if (filesData != null) {
       var data = filesData["references"]
