@@ -1019,7 +1019,6 @@ class Field extends ModelElement
       throw new StateError(
           '$name is not in a class or library, instead it is a ${enclosingElement.element}');
     }
-    if (retval.contains("two_exports/WithGetterAndSetter/hashCode.html")) true;
     return retval;
   }
 
@@ -1805,7 +1804,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     }
 
     if (!_canonicalLibraryIsSet) {
-      if (name == "WithGetterAndSetter" && package.libraries.length == 8) true;
       if (!package.libraries.contains(definingLibrary)) {
         List<Library> candidateLibraries = package
             .libraryElementReexportedBy[definingLibrary.element]

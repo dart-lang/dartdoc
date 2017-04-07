@@ -2,7 +2,7 @@
 
 * fix canonicalization problems and related issues introduced in 0.9.11,
   including:
-  * #1361/#1232 - Broken links in enums
+  * #1361 and #1232 - Broken links in enums
   * #1345 - Reexports have wrong library links
   * #1341 - Duplicate docs still in some cases
   * #1334 - Some classes don't list their subclasses
@@ -24,7 +24,7 @@
 * Dartdoc internals have changed significantly:
   * Package now owns the calculation of recursive dependencies with a factory
     constructor, Package.withAutoincludedDependencies.
-  * ModelElements now have a global cache
+  * ModelElements and Libraries now have Package-scoped caches.
   * ModelElements and their subclasses now must be constructed from a single
     factory, ModelElements.from
   * Package has new methods to assist canonicalization, including
