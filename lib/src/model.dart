@@ -1614,15 +1614,11 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   /// Do not construct any ModelElements unless they are from this constructor.
   /// TODO(jcollins-g): enforce this.
-  /// Specify enclosingClass only if this is to be an Inheritable object.
+  /// Specify enclosingClass only if this is to be an inherited object.
   /// TODO(jcollins-g): this way of using the optional parameter is messy,
   /// clean that up.
   factory ModelElement.from(Element e, Library library,
       {Class enclosingClass}) {
-    if (library != null &&
-        library.element.name == "" &&
-        e is MethodElement &&
-        e.enclosingElement.name == "Animation") 1 + 1;
     Tuple3<Element, Library, Class> key =
         new Tuple3(e, library, enclosingClass);
     ModelElement newModelElement;
@@ -1663,10 +1659,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         else
           newModelElement = new Operator.inherited(e, enclosingClass, library);
       }
-      if (library != null &&
-          library.element.name == "" &&
-          e is MethodElement &&
-          e.enclosingElement.name == "Animation") 1 + 1;
       if (e is MethodElement && !e.isOperator) {
         if (enclosingClass == null)
           newModelElement = new Method(e, library);
@@ -2520,7 +2512,6 @@ class Package implements Nameable, Documentable {
       if (isPublic(element)) {
         var lib = new Library._(element, this);
         _libraries.add(lib);
-        if (lib.name == "animation") 1 + 1;
         _all_libraries[element] = lib;
         assert(!_elementToLibrary.containsKey(lib.element));
         _elementToLibrary[element] = lib;
