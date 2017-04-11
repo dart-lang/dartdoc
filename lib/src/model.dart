@@ -397,7 +397,8 @@ class Class extends ModelElement implements EnclosedElement {
 
   bool get hasStaticProperties => staticProperties.isNotEmpty;
 
-  bool get hasSupertype => (supertype != null && supertype.element != package.objectElement);
+  bool get hasSupertype =>
+      (supertype != null && supertype.element != package.objectElement);
 
   @override
   String get href {
@@ -572,7 +573,8 @@ class Class extends ModelElement implements EnclosedElement {
       uniqueNames.add(key);
       values.add(imap[key]);
     }
-    values.removeWhere((it) => instanceProperties.any((i) => it.name == i.name));
+    values
+        .removeWhere((it) => instanceProperties.any((i) => it.name == i.name));
 
     for (var value in values) {
       if (value != null &&
@@ -685,7 +687,8 @@ class Class extends ModelElement implements EnclosedElement {
     return _operators;
   }
 
-  List<Operator> get operatorsForPages => new UnmodifiableListView(_genPageOperators.toList());
+  List<Operator> get operatorsForPages =>
+      new UnmodifiableListView(_genPageOperators.toList());
 
   // TODO: make this method smarter about hierarchies and overrides. Right
   // now, we're creating a flat list. We're not paying attention to where
@@ -1786,7 +1789,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   Library get canonicalLibrary {
     // This is not accurate if we are constructing the Package.
     assert(package.allLibrariesAdded);
-     // Since we're looking for a library, find the [Element] immediately
+    // Since we're looking for a library, find the [Element] immediately
     // contained by a [CompilationUnitElement] in the tree.
     Element topLevelElement = element;
     while (topLevelElement != null &&
@@ -2186,7 +2189,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   String _calculateLinkedName() {
     // If we're calling this with an empty name, we probably have the wrong
     // element associated with a ModelElement or there's an analysis bug.
-    assert(!name.isEmpty || (this.element is TypeDefiningElement  && (this.element as TypeDefiningElement).type.name == "dynamic"));
+    assert(!name.isEmpty ||
+        (this.element is TypeDefiningElement &&
+            (this.element as TypeDefiningElement).type.name == "dynamic"));
 
     if (isPrivate(element)) {
       return HTML_ESCAPE.convert(name);

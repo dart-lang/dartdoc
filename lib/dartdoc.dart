@@ -313,7 +313,8 @@ class DartDoc {
           // assume that this is supposed to be private.
           if (pathParts.length < 2) break;
           pathParts = pathParts.sublist(pathParts.length - 2, pathParts.length);
-          foundLibSrc = path.join(pathParts[0], pathParts[1]) == path.join('lib', 'src');
+          foundLibSrc =
+              path.join(pathParts[0], pathParts[1]) == path.join('lib', 'src');
           searchFile = new File(
               path.join(searchFile.parent.parent.path, 'pubspec.yaml'));
         }

@@ -191,7 +191,8 @@ testDartdoc() {
   delete(docsDir);
   try {
     log('running dartdoc');
-    Dart.run('bin/dartdoc.dart', arguments: ['--output', '${docsDir.path}'], vmArgs: ['--checked']);
+    Dart.run('bin/dartdoc.dart',
+        arguments: ['--output', '${docsDir.path}'], vmArgs: ['--checked']);
 
     File indexHtml = joinFile(docsDir, ['index.html']);
     if (!indexHtml.existsSync()) fail('docs not generated');
@@ -294,7 +295,8 @@ void _doFileCheck(String origin, Set<String> visited, bool error) {
   });
 }
 
-void _doCheck(String origin, Set<String> visited, String pathToCheck, bool error,
+void _doCheck(
+    String origin, Set<String> visited, String pathToCheck, bool error,
     [String source]) {
   var fullPath = path.normalize("$origin$pathToCheck");
   if (visited.contains(fullPath)) return;
