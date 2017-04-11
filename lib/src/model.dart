@@ -5,6 +5,7 @@
 /// The models used to represent Dart code.
 library dartdoc.models;
 
+import 'dart:collection' show UnmodifiableListView;
 import 'dart:convert';
 import 'dart:io';
 
@@ -134,8 +135,9 @@ abstract class Inheritable {
             break;
           }
         }
-        if (definingEnclosingElement.isCanonical)
+        if (definingEnclosingElement.isCanonical) {
           assert(definingEnclosingElement == _canonicalEnclosingClass);
+        }
       } else {
         _canonicalEnclosingClass = enclosingElement;
       }
@@ -426,7 +428,7 @@ class Class extends ModelElement implements EnclosedElement {
     });
 
     _inheritedMethods = [];
-    List<ExecutableElement> vs = [];
+    List<ExecutableElement> values = [];
     Set<String> uniqueNames = new Set();
 
     instanceProperties.forEach((f) {
@@ -440,7 +442,7 @@ class Class extends ModelElement implements EnclosedElement {
       if (uniqueNames.contains(key)) continue;
 
       uniqueNames.add(key);
-      vs.add(cmap[key]);
+      values.add(cmap[key]);
     }
 
     for (String key in imap.keys) {
@@ -449,10 +451,10 @@ class Class extends ModelElement implements EnclosedElement {
       if (uniqueNames.contains(key)) continue;
 
       uniqueNames.add(key);
-      vs.add(imap[key]);
+      values.add(imap[key]);
     }
 
-    for (ExecutableElement value in vs) {
+    for (ExecutableElement value in values) {
       if (value != null &&
           value is MethodElement &&
           isPublic(value) &&
@@ -491,7 +493,7 @@ class Class extends ModelElement implements EnclosedElement {
       imap.remove(operator.element.name);
     });
     _inheritedOperators = [];
-    Map<String, ExecutableElement> vs = {};
+    Map<String, ExecutableElement> values = {};
 
     bool _isInheritedOperator(ExecutableElement value) {
       if (value != null &&
@@ -507,18 +509,18 @@ class Class extends ModelElement implements EnclosedElement {
     for (String key in imap.keys) {
       ExecutableElement value = imap[key];
       if (_isInheritedOperator(value)) {
-        vs.putIfAbsent(value.name, () => value);
+        values.putIfAbsent(value.name, () => value);
       }
     }
 
     for (String key in cmap.keys) {
       ExecutableElement value = cmap[key];
       if (_isInheritedOperator(value)) {
-        vs.putIfAbsent(value.name, () => value);
+        values.putIfAbsent(value.name, () => value);
       }
     }
 
-    for (ExecutableElement value in vs.values) {
+    for (ExecutableElement value in values.values) {
       if (!package.isDocumented(value.enclosingElement)) {
         Operator o =
             new ModelElement.from(value, library, enclosingClass: this);
@@ -545,7 +547,7 @@ class Class extends ModelElement implements EnclosedElement {
         library.inheritanceManager.getMembersInheritedFromInterfaces(element);
 
     _inheritedProperties = [];
-    List<ExecutableElement> vs = [];
+    List<ExecutableElement> values = [];
     Set<String> uniqueNames = new Set();
 
     instanceProperties.forEach((f) {
@@ -559,7 +561,7 @@ class Class extends ModelElement implements EnclosedElement {
       if (uniqueNames.contains(key)) continue;
 
       uniqueNames.add(key);
-      vs.add(cmap[key]);
+      values.add(cmap[key]);
     }
 
     for (String key in imap.keys) {
@@ -568,11 +570,11 @@ class Class extends ModelElement implements EnclosedElement {
       if (uniqueNames.contains(key)) continue;
 
       uniqueNames.add(key);
-      vs.add(imap[key]);
+      values.add(imap[key]);
     }
-    vs.removeWhere((it) => instanceProperties.any((i) => it.name == i.name));
+    values.removeWhere((it) => instanceProperties.any((i) => it.name == i.name));
 
-    for (var value in vs) {
+    for (var value in values) {
       if (value != null &&
           value is PropertyAccessorElement &&
           isPublic(value) &&
@@ -683,8 +685,7 @@ class Class extends ModelElement implements EnclosedElement {
     return _operators;
   }
 
-  List<Operator> get operatorsForPages =>
-      _genPageOperators.toList(growable: false);
+  List<Operator> get operatorsForPages => new UnmodifiableListView(_genPageOperators.toList());
 
   // TODO: make this method smarter about hierarchies and overrides. Right
   // now, we're creating a flat list. We're not paying attention to where
@@ -1461,9 +1462,7 @@ class Library extends ModelElement {
     return _modelElementsMap;
   }
 
-  Iterable<ModelElement> get allModelElements {
-    return modelElementsMap.values;
-  }
+  Iterable<ModelElement> get allModelElements => modelElementsMap.values;
 
   List<ModelElement> _allCanonicalModelElements;
   Iterable<ModelElement> get allCanonicalModelElements {
@@ -1601,7 +1600,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   ElementType _modelType;
   String _rawDocs;
   Documentation __documentation;
-  List<Parameter> _parameters;
+  UnmodifiableListView<Parameter> _parameters;
   String _linkedName;
 
   String _fullyQualifiedName;
@@ -1854,9 +1853,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   @override
-  String get documentationAsHtml {
-    return _documentation.asHtml;
-  }
+  String get documentationAsHtml => _documentation.asHtml;
 
   Element get element => _element;
 
@@ -2014,9 +2011,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       params = (element as FunctionTypeAliasElement).parameters;
     }
 
-    _parameters = params
+    _parameters = new UnmodifiableListView<Parameter>(params
         .map((p) => new ModelElement.from(p, library))
-        .toList(growable: false);
+        .toList() as Iterable<Parameter>);
 
     return _parameters;
   }
@@ -2744,9 +2741,8 @@ class Package implements Nameable, Documentable {
   }
 
   bool isDocumented(Element element) {
-    if (element.name == "MapBase") {
-      true;
-    }
+    // If this isn't a private element and we have a canonical Library for it,
+    // this element will be documented.
     if (isPrivate(element)) return false;
     return findCanonicalLibraryFor(element) != null;
   }

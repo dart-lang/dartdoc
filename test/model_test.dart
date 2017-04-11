@@ -731,8 +731,8 @@ void main() {
     // are exported out through one library
     test('ExtendingClass has a super class that is also in the same library',
         () {
-      expect(ExtendingClass.superChain[0].name, equals('BaseClass'));
-      expect(ExtendingClass.superChain[0].element.canonicalLibrary.name,
+      expect(ExtendingClass.superChain.first.name, equals('BaseClass'));
+      expect(ExtendingClass.superChain.first.element.canonicalLibrary.name,
           equals('two_exports'));
     });
 

@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:async' show Future, Stream;
+import 'dart:async';
 import 'dart:io' hide ProcessException;
 
 import 'package:dartdoc/dartdoc.dart' show defaultOutDir;
@@ -33,6 +33,7 @@ Future buildSdkDocs() async {
   delete(docsDir);
   log('building SDK docs');
   Process process = await Process.start(Platform.resolvedExecutable, [
+    '--checked',
     'bin/dartdoc.dart',
     '--output',
     '${docsDir.path}',
@@ -190,7 +191,7 @@ testDartdoc() {
   delete(docsDir);
   try {
     log('running dartdoc');
-    Dart.run('bin/dartdoc.dart', arguments: ['--output', '${docsDir.path}']);
+    Dart.run('bin/dartdoc.dart', arguments: ['--output', '${docsDir.path}'], vmArgs: ['--checked']);
 
     File indexHtml = joinFile(docsDir, ['index.html']);
     if (!indexHtml.existsSync()) fail('docs not generated');
@@ -217,7 +218,8 @@ updateTestPackageDocs() {
         '--output',
         '../test_package_docs',
       ],
-      runOptions: options);
+      runOptions: options,
+      vmArgs: ['--checked']);
 }
 
 @Task('Validate the SDK doc build.')
@@ -266,11 +268,10 @@ int _findCount(String str, String match) {
 }
 
 Stream<FileSystemEntity> dirContents(String dir) {
-  var lister = new Directory(dir).list(recursive: true);
-  return lister;
+  return new Directory(dir).list(recursive: true);
 }
 
-_doFileCheck(String origin, Set<String> visited, bool error) {
+void _doFileCheck(String origin, Set<String> visited, bool error) {
   String normalOrigin = path.normalize(origin);
   dirContents(normalOrigin).toList().then((allFiles) {
     bool foundIndex = false;
@@ -293,7 +294,7 @@ _doFileCheck(String origin, Set<String> visited, bool error) {
   });
 }
 
-_doCheck(String origin, Set<String> visited, String pathToCheck, bool error,
+void _doCheck(String origin, Set<String> visited, String pathToCheck, bool error,
     [String source]) {
   var fullPath = path.normalize("$origin$pathToCheck");
   if (visited.contains(fullPath)) return;
