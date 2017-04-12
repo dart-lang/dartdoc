@@ -286,9 +286,6 @@ class DartDoc {
     // Use the includeExternals.
     for (Source source in context.librarySources) {
       LibraryElement library = context.computeLibraryElement(source);
-      if (library == null) {
-        continue;
-      }
       String libraryName = Library.getLibraryName(library);
       var fullPath = source.fullName;
 
