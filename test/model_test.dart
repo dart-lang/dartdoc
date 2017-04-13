@@ -20,6 +20,7 @@ void main() {
   utils.init();
 
   final Package package = utils.testPackage;
+  final Package ginormousPackage = utils.testPackageGinormous;
   final Library exLibrary =
       package.libraries.firstWhere((lib) => lib.name == 'ex');
   final Library fakeLibrary =
@@ -40,6 +41,10 @@ void main() {
 
   group('Package', () {
     group('test package', () {
+      setUp(() {
+        setConfig();
+      });
+
       test('name', () {
         expect(package.name, 'test_package');
       });
@@ -54,6 +59,17 @@ void main() {
         PackageCategory category = package.categories.first;
         expect(category.name, 'test_package');
         expect(category.libraries, hasLength(6));
+      });
+
+      test('multiple categories, sorted default', () {
+        expect(ginormousPackage.categories, hasLength(2));
+        expect(ginormousPackage.categories.first.name, equals('test_package'));
+      });
+
+      test('multiple categories, specified sort order', () {
+        setConfig(categoryOrder: ['Dart Core', 'test_package']);
+        expect(ginormousPackage.categories, hasLength(2));
+        expect(ginormousPackage.categories.first.name, equals('Dart Core'));
       });
 
       test('is documented in library', () {
@@ -862,7 +878,7 @@ void main() {
     });
 
     test('has source code', () {
-      initializeConfig(addCrossdart: false);
+      setConfig(addCrossdart: false);
       expect(topLevelFunction.sourceCode, startsWith('@deprecated'));
       expect(topLevelFunction.sourceCode, endsWith('''
 String topLevelFunction(int param1, bool param2, Cool coolBeans,
@@ -1035,7 +1051,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('method source code indents correctly', () {
-      initializeConfig(addCrossdart: false);
+      setConfig(addCrossdart: false);
       expect(convertToMap.sourceCode,
           'Map&lt;X, Y&gt; convertToMap() =&gt; null;');
     });
@@ -1055,7 +1071,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
                 {"references":[{"offset":${offset},"end":${offset+3},"remotePath":"http://www.example.com/fake.dart"}]}}
       """);
 
-      initializeConfig(addCrossdart: true, inputDir: Directory.current);
+      setConfig(addCrossdart: true, inputDir: Directory.current);
 
       expect(convertToMap.sourceCode,
           "<a class='crossdart-link' href='http://www.example.com/fake.dart'>Map</a>&lt;X, Y&gt; convertToMap() =&gt; null;");
@@ -1063,7 +1079,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     group(".crossdartHtmlTag()", () {
       test('it returns an empty string when Crossdart support is disabled', () {
-        initializeConfig(addCrossdart: false);
+        setConfig(addCrossdart: false);
         expect(m1.crossdartHtmlTag, "");
       });
     });

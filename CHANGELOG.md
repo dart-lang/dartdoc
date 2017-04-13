@@ -31,6 +31,12 @@
     findCanonicalLibraryFor and findCanonicalModelElementFor.
   * New mixin "Inheritable" helps class members calculate canonicalization
     for inheritable members
+* change order of library, class, and enum members on displayed pages (#1323).
+* change order of categories when using --use-categories, prioritizing
+  this package first, the SDK second, packages with this package's name
+  embedded third, and finally all other packages.  A new flag,
+  --category-order, lets you change what order categories appear in. (#1323)
+* fix broken masthead links in enums (#1225).
 
 ## 0.9.13
 

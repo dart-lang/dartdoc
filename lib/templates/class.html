@@ -69,41 +69,6 @@
     </section>
     {{/clazz.hasModifiers}}
 
-    {{#clazz.hasConstants}}
-    <section class="summary offset-anchor" id="constants">
-      <h2>Constants</h2>
-
-      <dl class="properties">
-        {{#clazz.constants}}
-        {{>constant}}
-        {{/clazz.constants}}
-      </dl>
-    </section>
-    {{/clazz.hasConstants}}
-
-    {{#clazz.hasStaticProperties}}
-    <section class="summary offset-anchor" id="static-properties">
-      <h2>Static Properties</h2>
-
-      <dl class="properties">
-        {{#clazz.staticProperties}}
-        {{>property}}
-        {{/clazz.staticProperties}}
-      </dl>
-    </section>
-    {{/clazz.hasStaticProperties}}
-
-    {{#clazz.hasStaticMethods}}
-    <section class="summary offset-anchor" id="static-methods">
-      <h2>Static Methods</h2>
-      <dl class="callables">
-        {{#clazz.staticMethods}}
-        {{>callable}}
-        {{/clazz.staticMethods}}
-      </dl>
-    </section>
-    {{/clazz.hasStaticMethods}}
-
     {{#clazz.hasConstructors}}
     <section class="summary offset-anchor" id="constructors">
       <h2>Constructors</h2>
@@ -139,6 +104,17 @@
     </section>
     {{/clazz.hasProperties}}
 
+    {{#clazz.hasMethods}}
+    <section class="summary offset-anchor{{ #allInstanceMethodsInherited }} inherited{{ /allInstanceMethodsInherited }}" id="instance-methods">
+      <h2>Methods</h2>
+      <dl class="callables">
+        {{#clazz.allInstanceMethods}}
+        {{>callable}}
+        {{/clazz.allInstanceMethods}}
+      </dl>
+    </section>
+    {{/clazz.hasMethods}}
+
     {{#clazz.hasOperators}}
     <section class="summary offset-anchor{{ #allOperatorsInherited }} inherited{{ /allOperatorsInherited}}" id="operators">
       <h2>Operators</h2>
@@ -150,16 +126,41 @@
     </section>
     {{/clazz.hasOperators}}
 
-    {{#clazz.hasMethods}}
-    <section class="summary offset-anchor{{ #allInstanceMethodsInherited }} inherited{{ /allInstanceMethodsInherited }}" id="instance-methods">
-      <h2>Methods</h2>
-      <dl class="callables">
-        {{#clazz.allInstanceMethods}}
-        {{>callable}}
-        {{/clazz.allInstanceMethods}}
+    {{#clazz.hasStaticProperties}}
+    <section class="summary offset-anchor" id="static-properties">
+      <h2>Static Properties</h2>
+
+      <dl class="properties">
+        {{#clazz.staticProperties}}
+        {{>property}}
+        {{/clazz.staticProperties}}
       </dl>
     </section>
-    {{/clazz.hasMethods}}
+    {{/clazz.hasStaticProperties}}
+
+    {{#clazz.hasStaticMethods}}
+    <section class="summary offset-anchor" id="static-methods">
+      <h2>Static Methods</h2>
+      <dl class="callables">
+        {{#clazz.staticMethods}}
+        {{>callable}}
+        {{/clazz.staticMethods}}
+      </dl>
+    </section>
+    {{/clazz.hasStaticMethods}}
+
+    {{#clazz.hasConstants}}
+    <section class="summary offset-anchor" id="constants">
+      <h2>Constants</h2>
+
+      <dl class="properties">
+        {{#clazz.constants}}
+        {{>constant}}
+        {{/clazz.constants}}
+      </dl>
+    </section>
+    {{/clazz.hasConstants}}
+
 
   </div> <!-- /.main-content -->
 

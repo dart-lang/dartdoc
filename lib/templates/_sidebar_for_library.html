@@ -1,17 +1,17 @@
 <ol>
+  {{#library.hasClasses}}
+  <li class="section-title"><a href="{{library.href}}#classes">Classes</a></li>
+  {{#library.classes}}
+  <li>{{{ linkedName }}}</li>
+  {{/library.classes}}
+  {{/library.hasClasses}}
+
   {{#library.hasConstants}}
   <li class="section-title"><a href="{{library.href}}#constants">Constants</a></li>
   {{#library.constants}}
   <li>{{{ linkedName }}}</li>
   {{/library.constants}}
   {{/library.hasConstants}}
-
-  {{#library.hasTypedefs}}
-  <li class="section-title"><a href="{{library.href}}#typedefs">Typedefs</a></li>
-  {{#library.typedefs}}
-  <li>{{{ linkedName }}}</li>
-  {{/library.typedefs}}
-  {{/library.hasTypedefs}}
 
   {{#library.hasProperties}}
   <li class="section-title"><a href="{{library.href}}#properties">Properties</a></li>
@@ -34,12 +34,12 @@
   {{/library.enums}}
   {{/library.hasEnums}}
 
-  {{#library.hasClasses}}
-  <li class="section-title"><a href="{{library.href}}#classes">Classes</a></li>
-  {{#library.classes}}
+  {{#library.hasTypedefs}}
+  <li class="section-title"><a href="{{library.href}}#typedefs">Typedefs</a></li>
+  {{#library.typedefs}}
   <li>{{{ linkedName }}}</li>
-  {{/library.classes}}
-  {{/library.hasClasses}}
+  {{/library.typedefs}}
+  {{/library.hasTypedefs}}
 
   {{#library.hasExceptions}}
   <li class="section-title"><a href="{{library.href}}#exceptions">Exceptions</a></li>

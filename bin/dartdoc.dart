@@ -11,7 +11,6 @@ import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as path;
 import 'package:stack_trace/stack_trace.dart';
 
@@ -142,14 +141,15 @@ main(List<String> arguments) async {
   DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
       PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
 
-  initializeConfig(
+  setConfig(
       addCrossdart: addCrossdart,
       examplePathPrefix: args['example-path-prefix'],
       showWarnings: args['show-warnings'],
       includeSource: includeSource,
       inputDir: inputDir,
       sdkVersion: sdk.sdkVersion,
-      autoIncludeDependencies: args['auto-include-dependencies']);
+      autoIncludeDependencies: args['auto-include-dependencies'],
+      categoryOrder: args['category-order']);
 
   var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries,
@@ -194,13 +194,19 @@ ArgParser _createArgsParser() {
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
   parser.addOption('header',
-      allowMultiple: true, help: 'path to file containing HTML text.');
+      allowMultiple: true,
+      splitCommas: true,
+      help: 'paths to header files containing HTML text.');
   parser.addOption('footer',
-      allowMultiple: true, help: 'path to file containing HTML text.');
+      allowMultiple: true,
+      splitCommas: true,
+      help: 'paths to footer files containing HTML text.');
   parser.addOption('exclude',
-      allowMultiple: true, help: 'Library names to ignore.');
+      allowMultiple: true, splitCommas: true, help: 'Library names to ignore.');
   parser.addOption('include',
-      allowMultiple: true, help: 'Library names to generate docs for.');
+      allowMultiple: true,
+      splitCommas: true,
+      help: 'Library names to generate docs for.');
   parser.addOption('include-external',
       allowMultiple: true,
       help: 'Additional (external) dart files to include; use "dir/fileName", '
@@ -222,6 +228,11 @@ ArgParser _createArgsParser() {
       help: 'Group libraries from the same package into categories.',
       negatable: false,
       defaultsTo: false);
+  parser.addOption('category-order',
+      help: 'A list of category names to place first when --use-categories is '
+          'set.  Unmentioned categories are sorted after these.',
+      allowMultiple: true,
+      splitCommas: true);
   parser.addFlag('auto-include-dependencies',
       help:
           'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',

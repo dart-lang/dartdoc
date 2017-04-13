@@ -33,10 +33,12 @@ import 'src/model.dart';
 import 'src/model_utils.dart';
 import 'src/package_meta.dart';
 
+export 'src/config.dart';
 export 'src/element_type.dart';
 export 'src/generator.dart';
 export 'src/model.dart';
 export 'src/package_meta.dart';
+export 'src/sdk.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
@@ -65,25 +67,6 @@ Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
       footers: footerFilePaths,
     )
   ];
-}
-
-/// Configure the dartdoc generation process
-void initializeConfig(
-    {Directory inputDir,
-    String sdkVersion,
-    bool showWarnings: false,
-    bool addCrossdart: false,
-    String examplePathPrefix,
-    bool includeSource: true,
-    bool autoIncludeDependencies: false}) {
-  setConfig(
-      inputDir: inputDir,
-      sdkVersion: sdkVersion,
-      showWarnings: showWarnings,
-      addCrossdart: addCrossdart,
-      examplePathPrefix: examplePathPrefix,
-      includeSource: includeSource,
-      autoIncludeDependencies: autoIncludeDependencies);
 }
 
 Map<String, List<fileSystem.Folder>> _calculatePackageMap(
@@ -125,7 +108,7 @@ class DartDoc {
   ///
   /// [DartDocResults] is returned if dartdoc succeeds. [DartDocFailure] is
   /// thrown if dartdoc fails in an expected way, for example if there is an
-  /// anaysis error in the code. Any other exception can be throw if there is an
+  /// analysis error in the code. Any other exception can be throw if there is an
   /// unexpected failure.
   Future<DartDocResults> generateDocs() async {
     _stopwatch = new Stopwatch()..start();

@@ -119,17 +119,17 @@ class LibraryTemplateData extends TemplateData<Library> {
   List get navLinks => [package];
   @override
   Iterable<Subnav> getSubNavItems() sync* {
+    if (library.hasClasses)
+      yield new Subnav('Classes', '${library.href}#classes');
     if (library.hasConstants)
       yield new Subnav('Constants', '${library.href}#constants');
-    if (library.hasTypedefs)
-      yield new Subnav('Typedefs', '${library.href}#typedefs');
     if (library.hasProperties)
       yield new Subnav('Properties', '${library.href}#properties');
     if (library.hasFunctions)
       yield new Subnav('Functions', '${library.href}#functions');
     if (library.hasEnums) yield new Subnav('Enums', '${library.href}#enums');
-    if (library.hasClasses)
-      yield new Subnav('Classes', '${library.href}#classes');
+    if (library.hasTypedefs)
+      yield new Subnav('Typedefs', '${library.href}#typedefs');
     if (library.hasExceptions)
       yield new Subnav('Exceptions', '${library.href}#exceptions');
   }
@@ -171,20 +171,20 @@ class ClassTemplateData extends TemplateData<Class> {
   String get htmlBase => '..';
   @override
   Iterable<Subnav> getSubNavItems() sync* {
-    if (clazz.hasConstants)
-      yield new Subnav('Constants', '${clazz.href}#constants');
+    if (clazz.hasConstructors)
+      yield new Subnav('Constructors', '${clazz.href}#constructors');
+    if (clazz.hasProperties)
+      yield new Subnav('Properties', '${clazz.href}#instance-properties');
+    if (clazz.hasMethods)
+      yield new Subnav('Methods', '${clazz.href}#instance-methods');
+    if (clazz.hasOperators)
+      yield new Subnav('Operators', '${clazz.href}#operators');
     if (clazz.hasStaticProperties)
       yield new Subnav('Static Properties', '${clazz.href}#static-properties');
     if (clazz.hasStaticMethods)
       yield new Subnav('Static Methods', '${clazz.href}#static-methods');
-    if (clazz.hasProperties)
-      yield new Subnav('Properties', '${clazz.href}#instance-properties');
-    if (clazz.hasConstructors)
-      yield new Subnav('Constructors', '${clazz.href}#constructors');
-    if (clazz.hasOperators)
-      yield new Subnav('Operators', '${clazz.href}#operators');
-    if (clazz.hasMethods)
-      yield new Subnav('Methods', '${clazz.href}#instance-methods');
+    if (clazz.hasConstants)
+      yield new Subnav('Constants', '${clazz.href}#constants');
   }
 
   Class get objectType {
@@ -235,21 +235,20 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
 
 class EnumTemplateData extends TemplateData<Enum> {
   EnumTemplateData(
-      HtmlOptions htmlOptions, Package package, this.library, this.clazz)
+      HtmlOptions htmlOptions, Package package, this.library, this.eNum)
       : super(htmlOptions, package);
 
   final Library library;
-  final Enum clazz;
+  final Enum eNum;
   @override
-  Enum get self => clazz;
+  Enum get self => eNum;
   @override
-  String get layoutTitle =>
-      _layoutTitle(clazz.name, 'enum', clazz.isDeprecated);
+  String get layoutTitle => _layoutTitle(eNum.name, 'enum', eNum.isDeprecated);
   @override
   String get title => '${self.name} enum - ${library.name} library - Dart API';
   @override
   String get metaDescription =>
-      'API docs for the ${clazz.name} enum from the ${library.name} library, '
+      'API docs for the ${eNum.name} enum from the ${library.name} library, '
       'for the Dart programming language.';
   @override
   List get navLinks => [package, library];
@@ -257,8 +256,10 @@ class EnumTemplateData extends TemplateData<Enum> {
   String get htmlBase => '..';
   @override
   Iterable<Subnav> getSubNavItems() => [
-        new Subnav('Constants', '${clazz.href}#constants'),
-        new Subnav('Properties', '${clazz.href}#properties')
+        new Subnav('Constants', '${eNum.href}#constants'),
+        new Subnav('Properties', '${eNum.href}#instance-properties'),
+        new Subnav('Methods', '${eNum.href}#instance-methods'),
+        new Subnav('Operators', '${eNum.href}#operators')
       ];
 }
 
