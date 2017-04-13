@@ -84,6 +84,8 @@ int byFeatureOrdering(String a, String b) {
   return compareAsciiLowerCaseNatural(a, b);
 }
 
+final RegExp _locationSplitter = new RegExp(r"(package:|[\\/;.])");
+
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
 ///
@@ -1472,6 +1474,42 @@ class Library extends ModelElement {
     return (_allCanonicalModelElements ??=
         allModelElements.where((e) => e.isCanonical).toList());
   }
+
+  final Map<Library, bool>_isReexportedBy = {};
+  /// Heuristic that tries to guess if this library is actually largely
+  /// reexported by some other library.  We guess this by comparing the elements
+  /// inside each of allModelElements for both libraries.  Don't use this
+  /// except as a last-resort for canonicalization as it is a pretty fuzzy
+  /// definition.
+  ///
+  /// If most of the elements from this library appear in the other, but not
+  /// the reverse, then the other library is considered to be a reexporter of
+  /// this one.
+  ///
+  /// If not, then the situation is either ambiguous, or the reverse is true.
+  /// Computing this is expensive, so cache it.
+  bool isReexportedBy(Library library) {
+    assert (package.allLibrariesAdded);
+    if (_isReexportedBy.containsKey(library)) return _isReexportedBy[library];
+    Set<Element> otherElements = new Set()..addAll(library.allModelElements.map((l) => l.element));
+    Set<Element> ourElements = new Set()..addAll(allModelElements.map((l) => l.element));
+    if (ourElements.difference(otherElements).length <= ourElements.length / 2) {
+      // Less than half of our elements are unique to us.
+      if (otherElements.difference(ourElements).length <= otherElements.length / 2) {
+        // ... but the same is true for the other library.  Reexporting
+        // is ambiguous.
+        _isReexportedBy[library] = false;
+      } else {
+        _isReexportedBy[library] = true;
+      }
+    } else {
+      // We have a lot of unique elements, we're probably not reexported by
+      // the other libraries.
+      _isReexportedBy[library] = false;
+    }
+
+    return _isReexportedBy[library];
+  }
 }
 
 class Method extends ModelElement
@@ -1691,6 +1729,50 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return library.package.libraryElementReexportedBy[this.element.library];
   }
 
+  Set<String> get locationPieces {
+    return new Set()..addAll(
+        element.location.toString().split(_locationSplitter).where((s) => s.isNotEmpty));
+  }
+
+  Set<String> get namePieces {
+    return new Set()..addAll(
+        name.split(_locationSplitter).where((s) => s.isNotEmpty));
+  }
+
+  // Use components of this element's location to return a score for library
+  // location.
+  double scoreElementWithLibrary(Library lib) {
+    Iterable<String> resplit(Set<String> items) sync* {
+      for (String item in items) {
+        for (String subItem in item.split('_')) {
+          yield subItem;
+        }
+      }
+    }
+    double result = 0.0;
+    // Penalty for deprecated libraries.
+    if (lib.isDeprecated) result -= 1;
+    // Give a big boost if the library has the package name embedded in it.
+    if (package.namePieces.intersection(lib.namePieces).length > 0)
+      result += 1;
+    // Give a tiny boost for libraries with long names.
+    result += .01 * lib.namePieces.length;
+    // If we don't know the location of this element, return our best guess.
+    // TODO(jcollins-g): is that even possible?
+    if (locationPieces.isEmpty) return result;
+    // The more pieces we have of the location in our library name, the more we should boost our score.
+    result += (lib.namePieces.intersection(locationPieces).length.toDouble()) / (locationPieces.length.toDouble());
+    // If pieces of location at least start with elements of our library name, boost the score a little bit.
+    for (String piece in resplit(locationPieces)) {
+      for (String namePiece in lib.namePieces) {
+        if (piece.startsWith(namePiece)) {
+          result += 0.001;
+        }
+      }
+    }
+    return result;
+  }
+
   // TODO(jcollins-g): annotations should now be able to use the utility
   // functions in package for finding elements and avoid using computeNode().
   List<String> get annotations {
@@ -1812,14 +1894,25 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
             if (topLevelElement == lookup) return true;
             return false;
           }).toList();
-          // If path inspection or other disambiguation heuristics are needed,
-          // they should go here.
           if (candidateLibraries.length > 1) {
-            library.package.warn(this, PackageWarning.ambiguousReexport,
-                "${candidateLibraries.map((l) => l.name)}");
+            // Heuristic scoring to determine which library a human likely
+            // considers this element to be primarily 'from', and therefore,
+            // canonical.  Still warn if the heuristic isn't that confident.
+            candidateLibraries = scoreCanonicalCandidates(candidateLibraries);
+            double secondHighestScore = scoreElementWithLibrary(
+                candidateLibraries[candidateLibraries.length - 2]);
+            double highestScore = scoreElementWithLibrary(
+                candidateLibraries.last);
+            double confidence = highestScore - secondHighestScore;
+            // In debugging I've found below .1 to be the most tricky; even
+            // humans have to scratch their heads a bit at this level.
+            if (confidence < 0.1) {
+              library.package.warn(this, PackageWarning.ambiguousReexport,
+                  "${candidateLibraries.map((l) => l.name)} -> ${candidateLibraries.last.name} (confidence ${confidence})");
+            }
           }
           if (candidateLibraries.isNotEmpty)
-            _canonicalLibrary = candidateLibraries.first;
+            _canonicalLibrary = candidateLibraries.last;
         }
       } else {
         _canonicalLibrary = definingLibrary;
@@ -1835,6 +1928,11 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     }
     return _canonicalLibrary;
   }
+
+  int byScore(Library a, Library b) {
+    return Comparable.compare(scoreElementWithLibrary(a), scoreElementWithLibrary(b));
+  }
+  List<Library> scoreCanonicalCandidates(List<Library> libraries) => libraries..sort(byScore);
 
   bool get isCanonical {
     if (library == canonicalLibrary) {
@@ -2562,8 +2660,10 @@ class Package implements Nameable, Documentable {
         break;
       case PackageWarning.ambiguousReexport:
         // Fix these warnings by adding the original library exporting the
-        // symbol with --include, or by using --auto-include-dependencies.
-        // TODO(jcollins-g): add a dartdoc flag to force a particular resolution order for (or drop) ambiguous reexports
+        // symbol with --include, by using --auto-include-dependencies,
+        // or by using --exclude to hide one of the libraries involved
+        // TODO(jcollins-g): add a dartdoc flag to force a particular resolution
+        // order for (or drop) ambiguous reexports
         warningMessage =
             "ambiguous reexport of ${fullElementName}, canonicalization candidates: ${message}";
         break;
@@ -2575,6 +2675,11 @@ class Package implements Nameable, Documentable {
     stderr.write("\n warning: ${warningMessage}");
     _displayedWarnings.putIfAbsent(modelElement.element, () => new Set());
     _displayedWarnings[modelElement.element].add(kind);
+  }
+
+  Set<String> get namePieces {
+    return new Set()..addAll(
+        name.split(_locationSplitter).where((s) => s.isNotEmpty));
   }
 
   static Package _withAutoIncludedDependencies(
