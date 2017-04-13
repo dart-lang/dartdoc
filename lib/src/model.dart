@@ -1099,11 +1099,11 @@ class Field extends ModelElement
     if (hasGetter) {
       var t = _field.getter.returnType;
       _modelType = new ElementType(
-          t, new ModelElement.from(t.element, _findLibraryFor(t.element)));
+          t, new ModelElement.from(t.element, _findOrCreateEnclosingLibraryFor(t.element)));
     } else {
       var s = _field.setter.parameters.first.type;
       _modelType = new ElementType(
-          s, new ModelElement.from(s.element, _findLibraryFor(s.element)));
+          s, new ModelElement.from(s.element, _findOrCreateEnclosingLibraryFor(s.element)));
     }
   }
 }
@@ -2210,7 +2210,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   // This differs from package.findOrCreateLibraryFor in a small way,
   // searching for the [Library] associated with this element's enclosing
   // Library before trying to create one.
-  Library _findLibraryFor(Element e) {
+  Library _findOrCreateEnclosingLibraryFor(Element e) {
     var element = e.getAncestor((l) => l is LibraryElement);
     var lib;
     if (element != null) {
@@ -2643,6 +2643,7 @@ class Package implements Nameable, Documentable {
   }
 
   Map<LibraryElement, Set<Library>> get libraryElementReexportedBy {
+    // Table must be reset if we're still in the middle of adding libraries.
     if (_libraryElementReexportedBy == null || !allLibrariesAdded) {
       _libraryElementReexportedBy = new Map<LibraryElement, Set<Library>>();
       for (Library library in libraries) {
@@ -2724,7 +2725,7 @@ class Package implements Nameable, Documentable {
 
   String get version => packageMeta.version;
 
-  /// Looks up which [Library] is the one reexporting this [Element]; not
+  /// Looks up some [Library] that is reexporting this [Element]; not
   /// necessarily the canonical [Library].
   Library findLibraryFor(Element element) {
     // Maybe we were given an element we already saw, or an element for the
@@ -2840,7 +2841,7 @@ class Parameter extends ModelElement implements EnclosedElement {
       : super(element, library) {
     var t = _parameter.type;
     _modelType = new ElementType(
-        t, new ModelElement.from(t.element, _findLibraryFor(t.element)));
+        t, new ModelElement.from(t.element, _findOrCreateEnclosingLibraryFor(t.element)));
   }
 
   String get defaultValue {
