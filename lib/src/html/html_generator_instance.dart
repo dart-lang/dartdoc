@@ -33,6 +33,9 @@ class HtmlGeneratorInstance implements HtmlOptions {
   String get faviconPath => _options.faviconPath;
   bool get useCategories => _options.useCategories;
   bool get prettyIndexJson => _options.prettyIndexJson;
+  // Protect against bugs in canonicalization by tracking what files we
+  // write.
+  final Set<String> _writtenFiles = new Set();
 
   HtmlGeneratorInstance(this._options, this._templates, this.package, this.out,
       this._onFileCreated);
@@ -53,11 +56,10 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void _generateSearchIndex() {
-    File jsonFile = _createOutputFile(out, 'index.json');
-
     var encoder =
         prettyIndexJson ? new JsonEncoder.withIndent(' ') : new JsonEncoder();
 
+    File jsonFile = _createOutputFile(path.join(out.path, 'index.json'));
     String json = encoder.convert(
         documentedElements.where((e) => e.isCanonical).map((ModelElement e) {
       Map data = {
@@ -95,54 +97,81 @@ class HtmlGeneratorInstance implements HtmlOptions {
       generateLibrary(package, lib);
 
       for (var clazz in lib.allClasses) {
+        // TODO(jcollins-g): consider refactor so that only the canonical
+        // ModelElements show up in these lists
+        if (!clazz.isCanonical) continue;
         generateClass(package, lib, clazz);
 
         for (var constructor in clazz.constructors) {
+          if (!constructor.isCanonical) continue;
           generateConstructor(package, lib, clazz, constructor);
         }
 
         for (var constant in clazz.constants) {
+          if (!constant.isCanonical) continue;
           generateConstant(package, lib, clazz, constant);
         }
 
         for (var property in clazz.staticProperties) {
+          if (!property.isCanonical) continue;
           generateProperty(package, lib, clazz, property);
         }
 
         for (var property in clazz.propertiesForPages) {
+          if (!property.isCanonical) continue;
           generateProperty(package, lib, clazz, property);
         }
 
         for (var method in clazz.methodsForPages) {
+          if (!method.isCanonical) continue;
           generateMethod(package, lib, clazz, method);
         }
 
         for (var operator in clazz.operatorsForPages) {
+          if (!operator.isCanonical) continue;
           generateMethod(package, lib, clazz, operator);
         }
 
         for (var method in clazz.staticMethods) {
+          if (!method.isCanonical) continue;
           generateMethod(package, lib, clazz, method);
         }
       }
 
       for (var eNum in lib.enums) {
+        if (!eNum.isCanonical) continue;
         generateEnum(package, lib, eNum);
+        for (var property in eNum.propertiesForPages) {
+          if (!property.isCanonical) continue;
+          generateProperty(package, lib, eNum, property);
+        }
+        for (var operator in eNum.operatorsForPages) {
+          if (!operator.isCanonical) continue;
+          generateMethod(package, lib, eNum, operator);
+        }
+        for (var method in eNum.methodsForPages) {
+          if (!method.isCanonical) continue;
+          generateMethod(package, lib, eNum, method);
+        }
       }
 
       for (var constant in lib.constants) {
+        if (!constant.isCanonical) continue;
         generateTopLevelConstant(package, lib, constant);
       }
 
       for (var property in lib.properties) {
+        if (!property.isCanonical) continue;
         generateTopLevelProperty(package, lib, property);
       }
 
       for (var function in lib.functions) {
+        if (!function.isCanonical) continue;
         generateFunction(package, lib, function);
       }
 
       for (var typeDef in lib.typedefs) {
+        if (!typeDef.isCanonical) continue;
         generateTypeDef(package, lib, typeDef);
       }
     }
@@ -161,10 +190,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
         .write('\ngenerating docs for library ${lib.name} from ${lib.path}...');
 
     if (!lib.isAnonymous && !lib.hasDocumentation) {
-      stdout.write("\n  warning: '${lib.name}' has no library level "
-          "documentation comments");
+      package.warn(lib, PackageWarning.noLibraryLevelDocs);
     }
-
     TemplateData data =
         new LibraryTemplateData(this, package, lib, useCategories);
 
@@ -174,7 +201,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
   void generateClass(Package package, Library lib, Class clazz) {
     TemplateData data = new ClassTemplateData(this, package, lib, clazz);
-
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
 
@@ -270,22 +296,28 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
+    String fullName = path.join(out.path, filename);
+
     String content = template(data,
         assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
-    _writeFile(filename, content);
+    // If you see this assert, we're probably being called to build non-canonical
+    // docs somehow.  Check data.self.isCanonical and callers for bugs.
+    assert(!_writtenFiles.contains(fullName));
+    _writeFile(fullName, content);
+    _writtenFiles.add(fullName);
     if (data.self is ModelElement) documentedElements.add(data.self);
   }
 
   void _writeFile(String filename, String content) {
-    File file = _createOutputFile(out, filename);
+    File file = _createOutputFile(filename);
     file.writeAsStringSync(content);
     _onFileCreated.add(file);
   }
 }
 
-File _createOutputFile(Directory destination, String filename) {
-  File file = new File(path.join(destination.path, filename));
+File _createOutputFile(String filename) {
+  File file = new File(filename);
   Directory parent = file.parent;
   if (!parent.existsSync()) parent.createSync(recursive: true);
   return file;

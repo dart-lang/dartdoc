@@ -40,7 +40,7 @@ export 'src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.9.13';
+const String version = '0.10.0';
 
 final String defaultOutDir = path.join('doc', 'api');
 
@@ -134,6 +134,7 @@ class DartDoc {
         ? const []
         : findFilesToDocumentInPackage(rootDir.path).toList();
 
+    // TODO(jcollins-g): seems like most of this belongs in the Package constructor
     List<LibraryElement> libraries = _parseLibraries(files, includeExternals);
 
     if (includes != null && includes.isNotEmpty) {
@@ -154,21 +155,27 @@ class DartDoc {
       });
     }
 
-    if (includes.isNotEmpty || excludes.isNotEmpty) {
-      print('generating docs for libraries ${libraries.join(', ')}\n');
-    }
-
-    Package package = new Package(libraries, packageMeta);
-
+    Package package;
     if (config != null && config.autoIncludeDependencies) {
-      final newLibraryElements =
-          _buildLibrariesWithAutoincludedDependencies(package);
-      Library.clearLibraryMap();
-      package = new Package(newLibraryElements, packageMeta);
+      package = Package.withAutoIncludedDependencies(libraries, packageMeta);
+      libraries = package.libraries.map((l) => l.element).toList();
+      // remove excluded libraries again, in case they are picked up through
+      // dependencies.
+      excludes.forEach((pattern) {
+        libraries.removeWhere((lib) {
+          return lib.name.startsWith(pattern) || lib.name == pattern;
+        });
+      });
     }
+    package = new Package(libraries, packageMeta);
+
+    print(
+        'generating docs for libraries ${package.libraries.map((Library l) => l.name).join(', ')}\n');
 
     // Go through docs of every model element in package to prebuild the macros index
-    package.allModelElements.forEach((m) => m.documentation);
+    // TODO(jcollins-g): move index building into a cached-on-demand generation
+    // like most other bits in [Package].
+    package.allCanonicalModelElements.forEach((m) => m.documentation);
 
     // Create the out directory.
     if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
@@ -179,11 +186,11 @@ class DartDoc {
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print(
-        "\nDocumented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} "
+        "\nDocumented ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds.");
 
-    if (libraries.isEmpty) {
-      print(
+    if (package.libraries.isEmpty) {
+      stderr.write(
           "\ndartdoc could not find any libraries to document. Run `pub get` and try again.");
     }
 
@@ -192,7 +199,7 @@ class DartDoc {
 
   List<LibraryElement> _parseLibraries(
       List<String> files, List<String> includeExternals) {
-    List<LibraryElement> libraries = [];
+    Set<LibraryElement> libraries = new Set();
     DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
         PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
     List<UriResolver> resolvers = [];
@@ -257,7 +264,7 @@ class DartDoc {
       sources.add(source);
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
-        libraries.add(library);
+        if (!isPrivate(library)) libraries.add(library);
       }
     }
 
@@ -281,10 +288,34 @@ class DartDoc {
       LibraryElement library = context.computeLibraryElement(source);
       String libraryName = Library.getLibraryName(library);
       var fullPath = source.fullName;
+
       if (includeExternals.any((string) => fullPath.endsWith(string))) {
         if (libraries.map(Library.getLibraryName).contains(libraryName)) {
           continue;
         }
+        libraries.add(library);
+      } else if (config != null &&
+          config.autoIncludeDependencies &&
+          libraryName != '') {
+        File searchFile = new File(fullPath);
+        searchFile =
+            new File(path.join(searchFile.parent.path, 'pubspec.yaml'));
+        bool foundLibSrc = false;
+        while (!foundLibSrc && searchFile.parent != null) {
+          if (searchFile.existsSync()) break;
+          List<String> pathParts = path.split(searchFile.parent.path);
+          // This is a pretty intensely hardcoded convention, but there seems to
+          // to be no other way to identify what might be a "top level" library
+          // here.  If lib/src is in the path between the file and the pubspec,
+          // assume that this is supposed to be private.
+          if (pathParts.length < 2) break;
+          pathParts = pathParts.sublist(pathParts.length - 2, pathParts.length);
+          foundLibSrc =
+              path.join(pathParts[0], pathParts[1]) == path.join('lib', 'src');
+          searchFile = new File(
+              path.join(searchFile.parent.parent.path, 'pubspec.yaml'));
+        }
+        if (foundLibSrc) continue;
         libraries.add(library);
       }
     }
@@ -375,27 +406,4 @@ class _Error implements Comparable<_Error> {
 
   @override
   String toString() => '[${severityName}] ${description}';
-}
-
-Iterable<LibraryElement> _buildLibrariesWithAutoincludedDependencies(
-    Package package) {
-  final List<LibraryElement> newLibraryElements = []
-    ..addAll(package.libraries.map((l) => l.element as LibraryElement));
-
-  package.allModelElements.forEach((modelElement) {
-    modelElement.usedElements.forEach((used) {
-      if (used != null && used.modelType != null) {
-        final ModelElement modelTypeElement = used.modelType.element;
-        final library = package.findLibraryFor(modelTypeElement.element);
-        if (library == null && modelTypeElement.library != null) {
-          if (!newLibraryElements.contains(modelTypeElement.library.element) &&
-              !modelTypeElement.library.name.startsWith("dart:")) {
-            newLibraryElements.add(modelTypeElement.library.element);
-          }
-        }
-      }
-    });
-  });
-
-  return newLibraryElements;
 }

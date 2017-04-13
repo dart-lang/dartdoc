@@ -14,7 +14,6 @@ import 'package:analyzer/dart/element/element.dart'
         LibraryElement,
         Element,
         ConstructorElement,
-        ClassElement,
         ParameterElement,
         PropertyAccessorElement;
 import 'package:html/parser.dart' show parse;
@@ -185,7 +184,6 @@ MatchingLinkResult _getMatchingLinkElement(
   if (commentRefs == null) return new MatchingLinkResult(null, null);
 
   Element refElement;
-  bool isEnum = false;
 
   for (CommentReference ref in commentRefs) {
     if (ref.identifier.name == codeRef) {
@@ -207,32 +205,18 @@ MatchingLinkResult _getMatchingLinkElement(
     // yay we found an accessor that wraps a const, but we really
     // want the top-level field itself
     refElement = (refElement as PropertyAccessorElement).variable;
-    if (refElement.enclosingElement is ClassElement &&
-        (refElement.enclosingElement as ClassElement).isEnum) {
-      isEnum = true;
-    }
   }
 
   if (refElement is ParameterElement) return new MatchingLinkResult(null, null);
 
-  // bug! this can fail to find the right library name if the element's name
-  // we're looking for is the same as a name that comes in from an imported
-  // library.
-  //
-  // Don't search through all libraries in the package, actually search
-  // in the current scope.
-  Library refLibrary =
-      element.package.findLibraryFor(refElement, scopedTo: element);
-
-  if (refLibrary != null) {
-    // Is there a way to pull this from a registry of known elements?
-    // Seems like we're creating too many objects this way.
-    if (isEnum) {
-      return new MatchingLinkResult(
-          new EnumField(refElement, refLibrary), null);
-    }
-    return new MatchingLinkResult(
-        new ModelElement.from(refElement, refLibrary), null);
+  Library refLibrary = element.package.findOrCreateLibraryFor(refElement);
+  ModelElement refModelElement = refLibrary.modelElementsMap[refElement];
+  // There have been places in the code which helpfully cache entities
+  // regardless of what package they are associated with.  This assert
+  // will protect us from reintroducing that.
+  assert(refModelElement == null || refModelElement.package == element.package);
+  if (refModelElement != null) {
+    return new MatchingLinkResult(refModelElement, null);
   }
   return new MatchingLinkResult(null, null);
 }
@@ -243,8 +227,14 @@ MatchingLinkResult _findRefElementInLibrary(
   final Package package = library.package;
   final Map<String, ModelElement> result = {};
 
+  // TODO(jcollins-g): This is extremely inefficient and no longer necessary
+  // since allCanonicalModelElements is now stable and doesn't mutate after
+  // [Package] construction.  So precompute and cache the result map somewhere,
+  // maybe in [Package].
   for (final modelElement in package.allCanonicalModelElements) {
-    if (codeRef == modelElement.fullyQualifiedName) {
+    // Constructors are handled in _linkDocReference.
+    if (codeRef == modelElement.fullyQualifiedName &&
+        modelElement is! Constructor) {
       result[modelElement.fullyQualifiedName] = modelElement;
     }
   }
@@ -252,7 +242,8 @@ MatchingLinkResult _findRefElementInLibrary(
   // Only look for partially qualified matches if we didn't find a fully qualified one.
   if (result.isEmpty) {
     for (final modelElement in library.allCanonicalModelElements) {
-      if (codeRef == modelElement.fullyQualifiedNameWithoutLibrary) {
+      if (codeRef == modelElement.fullyQualifiedNameWithoutLibrary &&
+          modelElement is! Constructor) {
         result[modelElement.fullyQualifiedName] = modelElement;
       }
     }
@@ -290,7 +281,11 @@ String _linkDocReference(String reference, ModelElement element,
     }
     // this would be linkedElement.linkedName, but link bodies are slightly
     // different for doc references. sigh.
-    return '<a ${classContent}href="${linkedElement.href}">$label</a>';
+    if (linkedElement.href == null) {
+      return '<code>${HTML_ESCAPE.convert(label)}</code>';
+    } else {
+      return '<a ${classContent}href="${linkedElement.href}">$label</a>';
+    }
   } else {
     warning(
         "unresolved doc reference '$reference'${element != null ? " (in ${_elementLocation(element)}" : ""}");
@@ -298,6 +293,7 @@ String _linkDocReference(String reference, ModelElement element,
   }
 }
 
+// TODO(jcollins-g): Merge this into new [Package.warn] warning system
 String _elementLocation(ModelElement element) {
   while ((element.element.documentationComment == null ||
           element.element.documentationComment == "") &&

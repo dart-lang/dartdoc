@@ -47,12 +47,14 @@ void main() {
         print("Skipping on Windows");
         return;
       }
-
+      // This must be synced with ../tool/grind.dart's updateTestPackageDocs().
       var args = <String>[
         dartdocBin,
         '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',
+        '--exclude',
+        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,meta',
         '--no-include-source',
         '--pretty-index-json',
         '--output',

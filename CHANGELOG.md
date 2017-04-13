@@ -1,3 +1,37 @@
+## 0.10.0
+
+* fix canonicalization problems and related issues introduced or not addressed
+  in 0.9.11, including:
+  * (#1361), (#1232), (#1239 (partial))- Broken links in enums
+  * (#1345) and (#1090)- Reexports have wrong links in many places
+  * (#1341), (#1197 (partial)) - Duplicate docs still in some cases
+  * (#1334) - Some classes don't list their subclasses
+  * Inheritable class members had incorrect canonicalization in many cases
+  * ... and many other unfiled bugs relating to inheritance and duplicate files.
+* Dartdoc no longer creates documentation for a given identifier more than once.
+  This means dartdoc is 20-30% faster on complex packages.
+* --auto-include-dependencies is now recursive past one layer (#589) It now drills
+  all the way down and will dive into the SDK and other packages.
+* Change display of warnings to be more consistent; warnings now always
+  go to stderr and are printed on their own line.
+* Dartdoc now warns when it is unable to find a canonical object to link to
+* Dartdoc now warns if a package exports an identifier so that it is
+  ambiguous which one should be treated as canonical
+* Dartdoc now has a number of asserts in checked mode for issues solved
+  and as-yet-unsolved, including (#1367) or canonicalization problems; try
+  running in checked mode if you see structural problems in generated docs and
+  see if an assert fires.
+* Dartdoc internals have changed significantly:
+  * Package now owns the calculation of recursive dependencies with a factory
+    constructor, Package.withAutoincludedDependencies.
+  * ModelElements and Libraries now have Package-scoped caches.
+  * ModelElements and their subclasses now must be constructed from a single
+    factory, ModelElements.from
+  * Package has new methods to assist canonicalization, including
+    findCanonicalLibraryFor and findCanonicalModelElementFor.
+  * New mixin "Inheritable" helps class members calculate canonicalization
+    for inheritable members
+
 ## 0.9.13
 
 * fix grind check-links and check-sdk-links (#1360)
