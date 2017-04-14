@@ -2650,8 +2650,9 @@ class Package implements Nameable, Documentable {
         name = library.packageName;
       }
 
-      if (!result.containsKey(name))
+      if (!result.containsKey(name)) {
         result[name] = new PackageCategory(name, this);
+      }
       result[name]._libraries.add(library);
     }
     // Help the user if they pass us a category that doesn't exist.

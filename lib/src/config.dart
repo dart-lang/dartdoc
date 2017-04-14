@@ -39,8 +39,9 @@ void setConfig(
     String sdkVersion,
     bool autoIncludeDependencies: false,
     List<String> categoryOrder}) {
-  if (categoryOrder == null)
+  if (categoryOrder == null) {
     categoryOrder = new UnmodifiableListView<String>([]);
+  }
   _config = new Config._(
       inputDir,
       showWarnings,
