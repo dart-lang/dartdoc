@@ -1099,11 +1099,15 @@ class Field extends ModelElement
     if (hasGetter) {
       var t = _field.getter.returnType;
       _modelType = new ElementType(
-          t, new ModelElement.from(t.element, _findOrCreateEnclosingLibraryFor(t.element)));
+          t,
+          new ModelElement.from(
+              t.element, _findOrCreateEnclosingLibraryFor(t.element)));
     } else {
       var s = _field.setter.parameters.first.type;
       _modelType = new ElementType(
-          s, new ModelElement.from(s.element, _findOrCreateEnclosingLibraryFor(s.element)));
+          s,
+          new ModelElement.from(
+              s.element, _findOrCreateEnclosingLibraryFor(s.element)));
     }
   }
 }
@@ -2906,7 +2910,9 @@ class Parameter extends ModelElement implements EnclosedElement {
       : super(element, library) {
     var t = _parameter.type;
     _modelType = new ElementType(
-        t, new ModelElement.from(t.element, _findOrCreateEnclosingLibraryFor(t.element)));
+        t,
+        new ModelElement.from(
+            t.element, _findOrCreateEnclosingLibraryFor(t.element)));
   }
 
   String get defaultValue {
