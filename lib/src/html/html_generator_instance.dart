@@ -213,10 +213,10 @@ class HtmlGeneratorInstance implements HtmlOptions {
         _templates.constructorTemplate, data);
   }
 
-  void generateEnum(Package package, Library lib, Class eNum) {
+  void generateEnum(Package package, Library lib, Enum eNum) {
     TemplateData data = new EnumTemplateData(this, package, lib, eNum);
 
-    _build(path.joinAll(eNum.href.split('/')), _templates.classTemplate, data);
+    _build(path.joinAll(eNum.href.split('/')), _templates.enumTemplate, data);
   }
 
   void generateFunction(Package package, Library lib, ModelFunction function) {

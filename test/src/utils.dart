@@ -22,10 +22,11 @@ import 'package:path/path.dart' as p;
 AnalyzerHelper analyzerHelper;
 DartSdk sdkDir;
 Package testPackage;
-final Directory testPackageBadDir = new Directory('testing/test_package_bad');
-
-final Directory testPackageDir = new Directory('testing/test_package');
+Package testPackageGinormous;
 Package testPackageSmall;
+
+final Directory testPackageBadDir = new Directory('testing/test_package_bad');
+final Directory testPackageDir = new Directory('testing/test_package');
 final Directory testPackageWithEmbedderYaml =
     new Directory('testing/test_package_embedder_yaml');
 final Directory testPackageWithNoReadme =
@@ -50,21 +51,29 @@ void init() {
     'lib/is_deprecated.dart'
   ];
 
-  testPackage = _bootPackage(pathsForTestLib, 'testing/test_package');
+  testPackage = _bootPackage(pathsForTestLib, 'testing/test_package', false);
+  testPackageGinormous =
+      _bootPackage(pathsForTestLib, 'testing/test_package', true);
 
   testPackageSmall =
-      _bootPackage(['lib/main.dart'], 'testing/test_package_small');
+      _bootPackage(['lib/main.dart'], 'testing/test_package_small', false);
 }
 
-Package _bootPackage(Iterable<String> libPaths, String dirPath) {
+Package _bootPackage(Iterable<String> libPaths, String dirPath,
+    bool withAutoIncludedDependencies) {
   String fullDirPath = p.join(Directory.current.path, dirPath);
   Iterable<LibraryElement> libElements = libPaths.map((libFile) {
     Source source = analyzerHelper.addSource(p.join(fullDirPath, libFile));
     return analyzerHelper.resolve(source);
   });
 
-  return new Package(
-      libElements, new PackageMeta.fromDir(new Directory(dirPath)));
+  if (withAutoIncludedDependencies) {
+    return Package.withAutoIncludedDependencies(
+        libElements, new PackageMeta.fromDir(new Directory(dirPath)));
+  } else {
+    return new Package(
+        libElements, new PackageMeta.fromDir(new Directory(dirPath)));
+  }
 }
 
 class AnalyzerHelper {

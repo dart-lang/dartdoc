@@ -1099,11 +1099,15 @@ class Field extends ModelElement
     if (hasGetter) {
       var t = _field.getter.returnType;
       _modelType = new ElementType(
-          t, new ModelElement.from(t.element, _findOrCreateEnclosingLibraryFor(t.element)));
+          t,
+          new ModelElement.from(
+              t.element, _findOrCreateEnclosingLibraryFor(t.element)));
     } else {
       var s = _field.setter.parameters.first.type;
       _modelType = new ElementType(
-          s, new ModelElement.from(s.element, _findOrCreateEnclosingLibraryFor(s.element)));
+          s,
+          new ModelElement.from(
+              s.element, _findOrCreateEnclosingLibraryFor(s.element)));
     }
   }
 }
@@ -1303,6 +1307,8 @@ class Library extends ModelElement {
     return _name;
   }
 
+  /// The real package, as opposed to the package we are documenting it with,
+  /// [Package.name]
   String get packageName {
     if (_packageName == null) {
       String sourcePath = _libraryElement.source.fullName;
@@ -2483,6 +2489,7 @@ enum PackageWarning {
   ambiguousReexport,
   noCanonicalFound,
   noLibraryLevelDocs,
+  categoryOrderGivesMissingPackageName,
 }
 
 class Package implements Nameable, Documentable {
@@ -2498,6 +2505,8 @@ class Package implements Nameable, Documentable {
   final Map<String, List<Class>> _implementors = new Map();
 
   final Map<Element, Set<PackageWarning>> _displayedWarnings = new Map();
+  final Map<String, Set<PackageWarning>> _displayedNonElementWarnings =
+      new Map();
 
   final PackageMeta packageMeta;
 
@@ -2530,26 +2539,40 @@ class Package implements Nameable, Documentable {
   }
 
   void warn(ModelElement modelElement, PackageWarning kind, [String message]) {
-    if (_displayedWarnings.containsKey(modelElement.element) &&
-        _displayedWarnings[modelElement.element].contains(kind)) return;
     String elementName;
-    if (modelElement.element is ClassMemberElement) {
-      Element theElement = modelElement.element;
-      ClassElement enclosingClass;
-      while (
-          theElement is! ClassElement && theElement.enclosingElement != null) {
-        theElement = theElement.enclosingElement;
+    String fullElementName;
+    if (modelElement != null) {
+      if (_displayedWarnings.containsKey(modelElement.element) &&
+          _displayedWarnings[modelElement.element].contains(kind)) {
+        return;
       }
-      enclosingClass = theElement as ClassElement;
-      if (_displayedWarnings.containsKey(enclosingClass) &&
-          _displayedWarnings[enclosingClass].contains(kind)) return;
-      elementName = "${enclosingClass.name}.${modelElement.name}";
-    } else {
-      elementName = "${modelElement.name}";
-    }
-    String fullElementName =
-        "${elementName} (${modelElement.library.element.location})";
 
+      if (modelElement.element is ClassMemberElement) {
+        Element theElement = modelElement.element;
+        ClassElement enclosingClass;
+        while (theElement is! ClassElement &&
+            theElement.enclosingElement != null) {
+          theElement = theElement.enclosingElement;
+        }
+        enclosingClass = theElement as ClassElement;
+        if (_displayedWarnings.containsKey(enclosingClass) &&
+            _displayedWarnings[enclosingClass].contains(kind)) return;
+        elementName = "${enclosingClass.name}.${modelElement.name}";
+      } else {
+        elementName = "${modelElement.name}";
+      }
+      fullElementName =
+          "${elementName} (${modelElement.library.element.location})";
+    } else {
+      // If we don't have an element, we need a message to disambiguate.
+      assert(message != null);
+      // Checking for kinds here seems a bit redundant right now, but for
+      // consistency...
+      if (_displayedNonElementWarnings.containsKey(message) &&
+          _displayedNonElementWarnings[message].contains(kind)) {
+        return;
+      }
+    }
     String warningMessage;
     switch (kind) {
       case PackageWarning.noCanonicalFound:
@@ -2571,10 +2594,19 @@ class Package implements Nameable, Documentable {
         warningMessage =
             "${fullElementName} has no library level documentation comments";
         break;
+      case PackageWarning.categoryOrderGivesMissingPackageName:
+        warningMessage =
+            "--category-order gives invalid package name: ${message}";
+        break;
     }
     stderr.write("\n warning: ${warningMessage}");
-    _displayedWarnings.putIfAbsent(modelElement.element, () => new Set());
-    _displayedWarnings[modelElement.element].add(kind);
+    if (modelElement != null) {
+      _displayedWarnings.putIfAbsent(modelElement.element, () => new Set());
+      _displayedWarnings[modelElement.element].add(kind);
+    } else {
+      _displayedNonElementWarnings.putIfAbsent(message, () => new Set());
+      _displayedNonElementWarnings[message].add(kind);
+    }
   }
 
   static Package _withAutoIncludedDependencies(
@@ -2622,11 +2654,19 @@ class Package implements Nameable, Documentable {
         name = library.packageName;
       }
 
-      if (!result.containsKey(name)) result[name] = new PackageCategory(name);
+      if (!result.containsKey(name)) {
+        result[name] = new PackageCategory(name, this);
+      }
       result[name]._libraries.add(library);
     }
-
-    return result.values.toList()..sort();
+    // Help the user if they pass us a category that doesn't exist.
+    for (String categoryName in config.categoryOrder) {
+      if (!result.containsKey(categoryName))
+        warn(null, PackageWarning.categoryOrderGivesMissingPackageName,
+            "${categoryName}, categories: ${result.keys.join(',')}");
+    }
+    List<PackageCategory> packageCategories = result.values.toList()..sort();
+    return packageCategories;
   }
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy;
@@ -2827,13 +2867,42 @@ class Package implements Nameable, Documentable {
 class PackageCategory implements Comparable<PackageCategory> {
   final String name;
   final List<Library> _libraries = [];
+  Package package;
 
-  PackageCategory(this.name);
+  PackageCategory(this.name, this.package);
 
   List<Library> get libraries => _libraries;
 
   @override
-  int compareTo(PackageCategory other) => name.compareTo(other.name);
+  String toString() => name;
+
+  /// Returns:
+  /// -1 if this category is listed in --category-order.
+  /// 0 if this category is the original package we are documenting.
+  /// 1 if this group represents the Dart SDK.
+  /// 2 if this group has a name that contains the name of the original
+  ///   package we are documenting.
+  /// 3 otherwise.
+  int get _group {
+    if (config.categoryOrder.contains(name)) return -1;
+    if (name.toLowerCase() == package.name.toLowerCase()) return 0;
+    if (name == "Dart Core") return 1;
+    if (name.toLowerCase().contains(package.name.toLowerCase())) return 2;
+    return 3;
+  }
+
+  @override
+  int compareTo(PackageCategory other) {
+    if (_group == other._group) {
+      if (_group == -1) {
+        return Comparable.compare(config.categoryOrder.indexOf(name),
+            config.categoryOrder.indexOf(other.name));
+      } else {
+        return name.toLowerCase().compareTo(other.name.toLowerCase());
+      }
+    }
+    return Comparable.compare(_group, other._group);
+  }
 }
 
 class Parameter extends ModelElement implements EnclosedElement {
@@ -2841,7 +2910,9 @@ class Parameter extends ModelElement implements EnclosedElement {
       : super(element, library) {
     var t = _parameter.type;
     _modelType = new ElementType(
-        t, new ModelElement.from(t.element, _findOrCreateEnclosingLibraryFor(t.element)));
+        t,
+        new ModelElement.from(
+            t.element, _findOrCreateEnclosingLibraryFor(t.element)));
   }
 
   String get defaultValue {

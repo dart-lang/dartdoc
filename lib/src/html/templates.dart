@@ -26,6 +26,7 @@ const _partials = const <String>[
   'documentation',
   'name_summary',
   'sidebar_for_class',
+  'sidebar_for_enum',
   'source_code',
   'sidebar_for_library',
   'accessor_getter',
@@ -74,6 +75,7 @@ Future<String> _getTemplateFile(String templateFileName) =>
 
 class Templates {
   final TemplateRenderer classTemplate;
+  final TemplateRenderer enumTemplate;
   final TemplateRenderer constantTemplate;
   final TemplateRenderer constructorTemplate;
   final TemplateRenderer functionTemplate;
@@ -105,6 +107,7 @@ class Templates {
     var indexTemplate = await _loadTemplate('index.html');
     var libraryTemplate = await _loadTemplate('library.html');
     var classTemplate = await _loadTemplate('class.html');
+    var enumTemplate = await _loadTemplate('enum.html');
     var functionTemplate = await _loadTemplate('function.html');
     var methodTemplate = await _loadTemplate('method.html');
     var constructorTemplate = await _loadTemplate('constructor.html');
@@ -120,6 +123,7 @@ class Templates {
         indexTemplate,
         libraryTemplate,
         classTemplate,
+        enumTemplate,
         functionTemplate,
         methodTemplate,
         constructorTemplate,
@@ -134,6 +138,7 @@ class Templates {
       this.indexTemplate,
       this.libraryTemplate,
       this.classTemplate,
+      this.enumTemplate,
       this.functionTemplate,
       this.methodTemplate,
       this.constructorTemplate,
