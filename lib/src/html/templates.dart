@@ -33,33 +33,40 @@ const _partials = const <String>[
   'accessor_setter'
 ];
 
-Future<Map<String, String>> _loadPartials(
-    List<String> headerPaths, List<String> footerPaths) async {
+Future<Map<String, String>> _loadPartials(List<String> headerPaths,
+    List<String> footerPaths, List<String> footerTextPaths) async {
+  final String headerPlaceholder = '<!-- header placeholder -->';
+  final String footerPlaceholder = '<!-- footer placeholder -->';
+  final String footerTextPlaceholder = '<!-- footer-text placeholder -->';
+
   headerPaths ??= [];
   footerPaths ??= [];
+  footerTextPaths ??= [];
 
   var partials = <String, String>{};
 
   Future<String> _loadPartial(String templatePath) async {
     String template = await _getTemplateFile(templatePath);
-    if (templatePath.contains('_head') && headerPaths.isNotEmpty) {
+
+    if (templatePath.contains('_head')) {
       String headerValue = headerPaths
           .map((path) => new File(path).readAsStringSync())
           .join('\n');
-      template =
-          template.replaceAll('<!-- Header Placeholder -->', headerValue);
-      template =
-          template.replaceAll('  <!-- Do not remove placeholder -->\n', '');
+      template = template.replaceAll(headerPlaceholder, headerValue);
     }
-    if (templatePath.contains('_footer') && footerPaths.isNotEmpty) {
+
+    if (templatePath.contains('_footer')) {
       String footerValue = footerPaths
           .map((path) => new File(path).readAsStringSync())
           .join('\n');
-      template =
-          template.replaceAll('<!-- Footer Placeholder -->', footerValue);
-      template =
-          template.replaceAll('  <!-- Do not remove placeholder -->\n', '');
+      template = template.replaceAll(footerPlaceholder, footerValue);
+
+      String footerTextValue = footerTextPaths
+          .map((path) => new File(path).readAsStringSync())
+          .join('\n');
+      template = template.replaceAll(footerTextPlaceholder, footerTextValue);
     }
+
     return template;
   }
 
@@ -88,8 +95,11 @@ class Templates {
   final TemplateRenderer typeDefTemplate;
 
   static Future<Templates> create(
-      {List<String> headerPaths, List<String> footerPaths}) async {
-    var partials = await _loadPartials(headerPaths, footerPaths);
+      {List<String> headerPaths,
+      List<String> footerPaths,
+      List<String> footerTextPaths}) async {
+    var partials =
+        await _loadPartials(headerPaths, footerPaths, footerTextPaths);
 
     String _partial(String name) {
       String partial = partials[name];

@@ -8,7 +8,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:mirrors';
 
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 const List<String> _filesToIgnore = const <String>['.DS_Store'];
@@ -21,16 +21,17 @@ Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location.sourceUri;
 
 String get _testPackageDocsPath =>
-    p.fromUri(_currentFileUri.resolve('../testing/test_package_docs'));
+    path.fromUri(_currentFileUri.resolve('../testing/test_package_docs'));
 
 String get _testPackagePath =>
-    p.fromUri(_currentFileUri.resolve('../testing/test_package'));
+    path.fromUri(_currentFileUri.resolve('../testing/test_package'));
 
 void main() {
   group('compare outputs', () {
     Directory tempDir;
 
-    var dartdocBin = p.fromUri(_currentFileUri.resolve('../bin/dartdoc.dart'));
+    var dartdocBin =
+        path.fromUri(_currentFileUri.resolve('../bin/dartdoc.dart'));
 
     setUp(() {
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
@@ -99,8 +100,8 @@ void main() {
             'diff',
             '--no-index',
             '--no-color',
-            p.join(_testPackageDocsPath, k),
-            p.join(tempDir.path, k)
+            path.join(_testPackageDocsPath, k),
+            path.join(tempDir.path, k)
           ];
           result = Process.runSync(gitBinName, args);
           assert(result.exitCode != 0);
@@ -150,6 +151,34 @@ void main() {
       }
     });
 
+    test('--footer-text includes text', () {
+      String footerTextPath =
+          path.join(Directory.systemTemp.path, 'footer.txt');
+      new File(footerTextPath).writeAsStringSync(' footer text include ');
+
+      var args = <String>[
+        dartdocBin,
+        '--footer-text=${footerTextPath}',
+        '--include',
+        'ex',
+        '--output',
+        tempDir.path
+      ];
+
+      var result = Process.runSync(Platform.resolvedExecutable, args,
+          workingDirectory: _testPackagePath);
+
+      if (result.exitCode != 0) {
+        print(result.exitCode);
+        print(result.stdout);
+        print(result.stderr);
+        fail('dartdoc failed');
+      }
+
+      File outFile = new File(path.join(tempDir.path, 'index.html'));
+      expect(outFile.readAsStringSync(), contains('footer text include'));
+    });
+
     test('Check dartdoc generation with crossdart', () {
       var args = <String>[
         dartdocBin,
@@ -178,23 +207,23 @@ Map<String, String> _parseOutput(
     Match match = _nameStatusLineRegexp.firstMatch(line);
 
     var type = match[1];
-    var path = match[2];
+    var p = match[2];
 
-    if (_filesToIgnore.any((i) => p.basename(path) == i)) {
+    if (_filesToIgnore.any((i) => path.basename(p) == i)) {
       continue;
     }
 
     if (type == 'A') {
-      expect(p.isWithin(tempPath, path), isTrue,
-          reason: '`$path` should be within $tempPath');
-      path = p.relative(path, from: tempPath);
+      expect(path.isWithin(tempPath, p), isTrue,
+          reason: '`$p` should be within $tempPath');
+      p = path.relative(p, from: tempPath);
     } else {
-      expect(p.isWithin(sourcePath, path), isTrue,
-          reason: '`$path` should be within $sourcePath');
-      path = p.relative(path, from: sourcePath);
+      expect(path.isWithin(sourcePath, p), isTrue,
+          reason: '`$p` should be within $sourcePath');
+      p = path.relative(p, from: sourcePath);
     }
 
-    values[path] = type;
+    values[p] = type;
   }
 
   return values;

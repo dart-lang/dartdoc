@@ -72,6 +72,16 @@ main(List<String> arguments) async {
   List<String> includeExternals = args['include-external'] as List<String>;
 
   String url = args['hosted-url'];
+
+  List<String> headerFilePaths =
+      args['header'].map(_resolveTildePath).toList() as List<String>;
+  for (String headerFilePath in headerFilePaths) {
+    if (!new File(headerFilePath).existsSync()) {
+      stderr.write(" Error: unable to locate header file: ${headerFilePath}.");
+      exit(1);
+    }
+  }
+
   List<String> footerFilePaths =
       args['footer'].map(_resolveTildePath).toList() as List<String>;
   for (String footerFilePath in footerFilePaths) {
@@ -80,11 +90,13 @@ main(List<String> arguments) async {
       exit(1);
     }
   }
-  List<String> headerFilePaths =
-      args['header'].map(_resolveTildePath).toList() as List<String>;
-  for (String headerFilePath in footerFilePaths) {
-    if (!new File(headerFilePath).existsSync()) {
-      stderr.write(" Error: unable to locate header file: ${headerFilePath}.");
+
+  List<String> footerTextFilePaths =
+      args['footer-text'].map(_resolveTildePath).toList() as List<String>;
+  for (String footerFilePath in footerTextFilePaths) {
+    if (!new File(footerFilePath).existsSync()) {
+      stderr.write(
+          " Error: unable to locate footer-text file: ${footerFilePath}.");
       exit(1);
     }
   }
@@ -125,8 +137,10 @@ main(List<String> arguments) async {
       "${outputDir.absolute.path}${Platform.pathSeparator}");
   print('');
 
-  var generators = await initGenerators(
-      url, headerFilePaths, footerFilePaths, args['rel-canonical-prefix'],
+  var generators = await initGenerators(url, args['rel-canonical-prefix'],
+      headerFilePaths: headerFilePaths,
+      footerFilePaths: footerFilePaths,
+      footerTextFilePaths: footerTextFilePaths,
       faviconPath: args['favicon'],
       useCategories: args['use-categories'],
       prettyIndexJson: args['pretty-index-json']);
@@ -201,6 +215,10 @@ ArgParser _createArgsParser() {
       allowMultiple: true,
       splitCommas: true,
       help: 'paths to footer files containing HTML text.');
+  parser.addOption('footer-text',
+      allowMultiple: true,
+      splitCommas: true,
+      help: 'paths to footer-text files (optional text next to the copyright).');
   parser.addOption('exclude',
       allowMultiple: true, splitCommas: true, help: 'Library names to ignore.');
   parser.addOption('include',

@@ -47,9 +47,11 @@ const String version = '0.10.0';
 final String defaultOutDir = path.join('doc', 'api');
 
 /// Initialize and setup the generators.
-Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
-    List<String> footerFilePaths, String relCanonicalPrefix,
-    {String faviconPath,
+Future<List<Generator>> initGenerators(String url, String relCanonicalPrefix,
+    {List<String> headerFilePaths,
+    List<String> footerFilePaths,
+    List<String> footerTextFilePaths,
+    String faviconPath,
     bool useCategories: false,
     bool prettyIndexJson: false}) async {
   var options = new HtmlGeneratorOptions(
@@ -65,6 +67,7 @@ Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
       options: options,
       headers: headerFilePaths,
       footers: footerFilePaths,
+      footerTexts: footerTextFilePaths,
     )
   ];
 }
