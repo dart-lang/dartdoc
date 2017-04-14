@@ -112,8 +112,7 @@ void main() {
 
       message.addAll([
         '',
-        "If there have been changes to generation"
-            " you may need to run `grind update-test-package-docs` again."
+        'If there have been changes to generation you may need to run `grind update-test-package-docs` again.'
       ]);
 
       fail(message.join('\n'));

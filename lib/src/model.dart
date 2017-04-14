@@ -2733,7 +2733,7 @@ class Package implements Nameable, Documentable {
     if (_elementToLibrary.containsKey(element)) {
       return _elementToLibrary[element];
     }
-    Library foundLibrary = null;
+    Library foundLibrary;
     if (libraryElementReexportedBy.containsKey(element.library)) {
       Set<Library> exportedIn = libraryElementReexportedBy[element.library];
       foundLibrary = exportedIn.firstWhere(
