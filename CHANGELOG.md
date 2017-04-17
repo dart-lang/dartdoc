@@ -1,3 +1,8 @@
+## unreleased
+
+* added a new `--footer-text` command-line option, to allow adding additional
+  text in the package name and copyright section of the footer
+
 ## 0.10.0
 
 * fix canonicalization problems and related issues introduced or not addressed
