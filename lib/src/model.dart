@@ -2797,6 +2797,7 @@ class Package implements Nameable, Documentable {
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
   final Map<Element, Library> _canonicalLibraryFor = new Map();
+
   /// Tries to find a top level library that references this element.
   Library findCanonicalLibraryFor(Element e) {
     assert(allLibrariesAdded);
