@@ -201,7 +201,8 @@ class DartDoc {
       resolvers.add(new PackageMapUriResolver(
           PhysicalResourceProvider.INSTANCE, packageMap));
       var embedderYamls = new EmbedderYamlLocator(packageMap).embedderYamls;
-      embedderSdk = new EmbedderSdk(PhysicalResourceProvider.INSTANCE, embedderYamls);
+      embedderSdk =
+          new EmbedderSdk(PhysicalResourceProvider.INSTANCE, embedderYamls);
       embedderResolver = new DartUriResolver(embedderSdk);
       if (embedderSdk.urlMappings.length == 0) {
         // The embedder uri resolver has no mappings. Use the default Dart SDK
