@@ -3,6 +3,9 @@
 * added a new `--footer-text` command-line option, to allow adding additional
   text in the package name and copyright section of the footer
 * Reduced stack depth by not recomputing findCanonicalLibraryFor (#1381)
+* Workaround for (#1367) forces on enableAssertInitializer.
+* Work around analyzer-0.29 bug where embedded SDK uri's aren't properly
+  reversed.
 
 ## 0.10.0
 
