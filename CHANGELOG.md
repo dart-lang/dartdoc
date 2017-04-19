@@ -2,6 +2,7 @@
 
 * added a new `--footer-text` command-line option, to allow adding additional
   text in the package name and copyright section of the footer
+* Reduced stack depth by not recomputing findCanonicalLibraryFor (#1381)
 
 ## 0.10.0
 
