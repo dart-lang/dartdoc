@@ -2796,16 +2796,25 @@ class Package implements Nameable, Documentable {
   @override
   String toString() => isSdk ? 'SDK' : 'Package $name';
 
+  final Map<Element, Library> _canonicalLibraryFor = new Map();
+
   /// Tries to find a top level library that references this element.
   Library findCanonicalLibraryFor(Element e) {
+    assert(allLibrariesAdded);
+
+    if (_canonicalLibraryFor.containsKey(e)) {
+      return _canonicalLibraryFor[e];
+    }
+    _canonicalLibraryFor[e] = null;
     for (Library library in libraries) {
       if (library.modelElementsMap.containsKey(e)) {
         if (library.modelElementsMap[e].isCanonical) {
-          return library;
+          _canonicalLibraryFor[e] = library;
+          break;
         }
       }
     }
-    return null;
+    return _canonicalLibraryFor[e];
   }
 
   /// Tries to find a canonical ModelElement for this element.

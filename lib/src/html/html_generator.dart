@@ -46,7 +46,8 @@ class HtmlGenerator extends Generator {
   static Future<HtmlGenerator> create(
       {HtmlGeneratorOptions options,
       List<String> headers,
-      List<String> footers, List<String> footerTexts}) async {
+      List<String> footers,
+      List<String> footerTexts}) async {
     var templates = await Templates.create(
         headerPaths: headers,
         footerPaths: footers,
