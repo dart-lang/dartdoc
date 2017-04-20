@@ -4,8 +4,9 @@
 
 library reporting;
 
-import 'config.dart';
 import 'dart:io';
+
+import 'config.dart';
 
 // TODO(jcollins-g): Merge this with the new [Package] error reporting.
 void warning(String message) {
