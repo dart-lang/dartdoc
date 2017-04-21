@@ -12,7 +12,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/error/error.dart';
 import 'package:analyzer/file_system/file_system.dart' as fileSystem;
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:analyzer/source/embedder.dart' show EmbedderUriResolver;
 import 'package:analyzer/source/package_map_resolver.dart';
 import 'package:analyzer/source/sdk_ext.dart';
 import 'package:analyzer/src/context/builder.dart';
@@ -193,22 +192,25 @@ class DartDoc {
     fileSystem.Folder cwd =
         PhysicalResourceProvider.INSTANCE.getResource(rootDir.path);
     Map<String, List<fileSystem.Folder>> packageMap = _calculatePackageMap(cwd);
-    EmbedderUriResolver embedderUriResolver;
+
+    EmbedderSdk embedderSdk;
+    DartUriResolver embedderResolver;
     if (packageMap != null) {
       resolvers.add(new SdkExtUriResolver(packageMap));
       resolvers.add(new PackageMapUriResolver(
           PhysicalResourceProvider.INSTANCE, packageMap));
-
       var embedderYamls = new EmbedderYamlLocator(packageMap).embedderYamls;
-      embedderUriResolver = new EmbedderUriResolver(embedderYamls);
-      if (embedderUriResolver.length == 0) {
+      embedderSdk =
+          new EmbedderSdk(PhysicalResourceProvider.INSTANCE, embedderYamls);
+      embedderResolver = new DartUriResolver(embedderSdk);
+      if (embedderSdk.urlMappings.length == 0) {
         // The embedder uri resolver has no mappings. Use the default Dart SDK
         // uri resolver.
         resolvers.add(new DartUriResolver(sdk));
       } else {
         // The embedder uri resolver has mappings, use it instead of the default
         // Dart SDK uri resolver.
-        resolvers.add(embedderUriResolver);
+        resolvers.add(embedderResolver);
       }
     } else {
       resolvers.add(new DartUriResolver(sdk));
@@ -220,6 +222,7 @@ class DartDoc {
 
     var options = new AnalysisOptionsImpl();
     options.enableGenericMethods = true;
+    options.enableAssertInitializer = true;
 
     AnalysisEngine.instance.processRequiredPlugins();
 
@@ -243,9 +246,18 @@ class DartDoc {
       print('parsing ${name}...');
       JavaFile javaFile = new JavaFile(filePath).getAbsoluteFile();
       Source source = new FileBasedSource(javaFile);
-      Uri uri = context.sourceFactory.restoreUri(source);
+
+      // TODO(jcollins-g): remove the manual reversal using embedderSdk when we
+      // upgrade to analyzer-0.30 (where DartUriResolver implements
+      // restoreAbsolute)
+      Uri uri = embedderSdk?.fromFileUri(source.uri)?.uri;
       if (uri != null) {
         source = new FileBasedSource(javaFile, uri);
+      } else {
+        uri = context.sourceFactory.restoreUri(source);
+        if (uri != null) {
+          source = new FileBasedSource(javaFile, uri);
+        }
       }
       sources.add(source);
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
@@ -256,9 +268,9 @@ class DartDoc {
 
     files.forEach(processLibrary);
 
-    if ((embedderUriResolver != null) && (embedderUriResolver.length > 0)) {
-      embedderUriResolver.dartSdk.uris.forEach((String dartUri) {
-        Source source = embedderUriResolver.dartSdk.mapDartUri(dartUri);
+    if ((embedderSdk != null) && (embedderSdk.urlMappings.length > 0)) {
+      embedderSdk.urlMappings.keys.forEach((String dartUri) {
+        Source source = embedderSdk.mapDartUri(dartUri);
         processLibrary(source.fullName);
       });
     }
