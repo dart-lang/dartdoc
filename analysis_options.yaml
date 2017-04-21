@@ -3,7 +3,7 @@ analyzer:
   language:
     enableGenericMethods: true
   exclude:
-    - 'doc/api/**'
+    - 'doc/**'
     - 'lib/templates/*.html'
     - 'pub.dartlang.org/**'
     - 'testing/**'
