@@ -37,7 +37,7 @@ void main() {
 
   Package sdkAsPackage = Package.withAutoIncludedDependencies(
       getSdkLibrariesToDocument(utils.sdkDir, utils.analyzerHelper.context),
-      new PackageMeta.fromSdk(sdkDir));
+      new PackageMeta.fromSdk(sdkDir), new PackageWarningOptions());
 
   group('Package', () {
     group('test package', () {
@@ -314,9 +314,9 @@ void main() {
       });
 
       test(
-          'link to a name in another library in this package, but is not imported into this library, is codeified',
+          'link to a name in another library in this package, but is not imported into this library, should still be linked',
           () {
-        expect(docsAsHtml, contains('<code>doesStuff</code>'));
+        expect(docsAsHtml, contains('<a href="anonymous_library/doesStuff.html">doesStuff</a>'));
       });
 
       test(
@@ -327,7 +327,7 @@ void main() {
         expect(helperClass.documentationAsHtml,
             contains('<a href="ex/Apple-class.html">Apple</a>'));
         expect(helperClass.documentationAsHtml,
-            contains('<a href="ex/B-class.html">B</a>'));
+            contains('<a href="ex/B-class.html">ex.B</a>'));
       });
 
       test(
@@ -478,7 +478,7 @@ void main() {
       expect(resolved, isNotNull);
       expect(resolved,
           contains('<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
-      expect(resolved, contains('linking over to <code>Apple</code>.'));
+      expect(resolved, contains('linking over to <a href="ex/Apple-class.html">Apple</a>.'));
     });
 
     test('references to class and constructors', () {
@@ -1469,7 +1469,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(appleDefaultConstructor.enclosingElement.name, equals(apple.name));
     });
 
-    test('has contructor', () {
+    test('has constructor', () {
       expect(appleDefaultConstructor, isNotNull);
       expect(appleDefaultConstructor.name, equals('Apple'));
       expect(appleDefaultConstructor.shortName, equals('Apple'));

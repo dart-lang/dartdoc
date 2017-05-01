@@ -94,6 +94,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
     generatePackage();
 
     for (var lib in package.libraries) {
+      //if (lib.name != 'dart:convert') continue;
+      //if(lib.name != 'angular2.router') continue;
       generateLibrary(package, lib);
 
       for (var clazz in lib.allClasses) {
@@ -178,7 +180,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void generatePackage() {
-    stdout.write('documenting ${package.name}');
+    stdout.write('\ndocumenting ${package.name}');
 
     TemplateData data = new PackageTemplateData(this, package, useCategories);
 
@@ -188,7 +190,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
   void generateLibrary(Package package, Library lib) {
     stdout
         .write('\ngenerating docs for library ${lib.name} from ${lib.path}...');
-
     if (!lib.isAnonymous && !lib.hasDocumentation) {
       package.warn(lib, PackageWarning.noLibraryLevelDocs);
     }
@@ -290,10 +291,12 @@ class HtmlGeneratorInstance implements HtmlOptions {
       File destFile =
           new File(path.join(out.path, 'static-assets', destFileName))
             ..createSync(recursive: true);
-      Uint8List resourceBytes = await loader.loadAsBytes(resourcePath);
+      Uint8List resourceBytes = (await loader.loadAsBytes(resourcePath));
       destFile.writeAsBytesSync(resourceBytes);
     }
   }
+
+  get writtenFiles => _writtenFiles;
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
     String fullName = path.join(out.path, filename);
