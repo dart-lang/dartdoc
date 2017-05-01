@@ -170,9 +170,6 @@ main(List<String> arguments) async {
       includeExternals: includeExternals);
 
   dartdoc.onCheckProgress.listen(_onProgress);
-  /*DartDocResults results = await dartdoc.generateDocs();
-  print('\nSuccess! Docs generated into ${results.outDir.absolute.path}');
-  */
   Chain.capture(() async {
     DartDocResults results = await dartdoc.generateDocs();
     print('\nSuccess! Docs generated into ${results.outDir.absolute.path}');
@@ -201,7 +198,7 @@ ArgParser _createArgsParser() {
       defaultsTo: false);
   parser.addFlag('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
-  parser.addFlag('show-warnings', help: 'Display warnings.', negatable: false, defaultsTo: false);
+  parser.addFlag('show-warnings', help: 'Display warnings.', negatable: false);
   parser.addFlag('show-progress',
       help: 'Display progress indications to console stdout', negatable: false);
   parser.addOption('sdk-readme',

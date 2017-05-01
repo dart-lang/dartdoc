@@ -94,8 +94,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
     generatePackage();
 
     for (var lib in package.libraries) {
-      //if (lib.name != 'dart:convert') continue;
-      //if(lib.name != 'angular2.router') continue;
       generateLibrary(package, lib);
 
       for (var clazz in lib.allClasses) {
@@ -291,7 +289,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
       File destFile =
           new File(path.join(out.path, 'static-assets', destFileName))
             ..createSync(recursive: true);
-      Uint8List resourceBytes = (await loader.loadAsBytes(resourcePath));
+      Uint8List resourceBytes = await loader.loadAsBytes(resourcePath);
       destFile.writeAsBytesSync(resourceBytes);
     }
   }

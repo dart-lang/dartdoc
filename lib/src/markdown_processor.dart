@@ -127,7 +127,7 @@ final trailingIgnoreStuff =
 final leadingIgnoreStuff =
     new RegExp(r'^(const|final|var)[\s]+', multiLine: true);
 
-// This is a constructor!
+// This is explicitly intended as a reference to a constructor.
 final isConstructor = new RegExp(r'^new[\s]+', multiLine: true);
 
 // This is probably not really intended as a doc reference, so don't try or
@@ -171,17 +171,7 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
   if (cModelElement == null)
     return null;
   modelElement = cModelElement;
-  /*if (modelElement.documentation == null && modelElement.canOverride()) {
-    var melement = modelElement.overriddenElement;
-    if (melement != null &&
-        melement.element.computeNode() != null &&
-        melement.element.computeNode() is AnnotatedNode) {
-      var docComment = (melement.element.computeNode() as AnnotatedNode)
-          .documentationComment;
-      if (docComment != null) return docComment.references;
-      return null;
-    }
-  }*/
+
   if (modelElement.element.documentationComment == null && modelElement.canOverride()) {
     var node = modelElement.overriddenElement?.element?.computeNode();
     if (node is AnnotatedNode) {
@@ -190,6 +180,7 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
       }
     }
   }
+
   if (modelElement.element.computeNode() is AnnotatedNode) {
     final AnnotatedNode annotatedNode = modelElement.element.computeNode();
     if (annotatedNode.documentationComment != null) {
@@ -208,6 +199,10 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
       }
     }
   }
+
+  // Our references might come from somewhere up in the inheritance chain.
+  // TODO(jcollins-g): rationalize this and all other places where docs are
+  //                   inherited to be consistent.
   if (modelElement.element is ClassMemberElement) {
     var node = modelElement.element.getAncestor((e) => e is ClassElement).computeNode();
     if (node is AnnotatedNode) {
@@ -215,9 +210,7 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
         return node.documentationComment.references;
       }
     }
-  } /*else if (modelElement.element is Member) {
-    var node = modelElement.element.enclosingElement.
-  }*/
+  }
   return null;
 }
 
@@ -235,7 +228,6 @@ MatchingLinkResult _getMatchingLinkElement(
   }
 
   Element refElement;
-
 
   // Try expensive not-scoped lookup.
   if (refElement == null) {
@@ -276,7 +268,6 @@ MatchingLinkResult _getMatchingLinkElement(
   Element searchElement = refElement is Member ? refElement.baseElement : refElement;
 
   Class preferredClass = _getPreferredClass(element);
-  //Set<ModelElement> refModelElements = refLibrary.modelElementsMap[searchElement];
   ModelElement refModelElement = element.package.findCanonicalModelElementFor(searchElement, preferredClass: preferredClass);
   // There have been places in the code which helpfully cache entities
   // regardless of what package they are associated with.  This assert
@@ -299,7 +290,7 @@ MatchingLinkResult _getMatchingLinkElement(
 
 /// Returns true if this is a constructor we should consider in
 /// _findRefElementInLibrary, or if this isn't a constructor.
-bool _yesReallyThisConstructor(String codeRef, ModelElement modelElement) {
+bool _ConsiderIfConstructor(String codeRef, ModelElement modelElement) {
   if (modelElement is! Constructor) return true;
   if (codeRef.contains(isConstructor)) return true;
   Constructor aConstructor = modelElement;
@@ -311,7 +302,7 @@ bool _yesReallyThisConstructor(String codeRef, ModelElement modelElement) {
     }
   }
   if (aConstructor.name != aConstructor.enclosingElement.name) {
-    // This isn't a default constructor so treat it like anything else.
+    // This isn't a default constructor so treat it like any other member.
     return true;
   }
   return false;
@@ -323,27 +314,17 @@ bool _yesReallyThisConstructor(String codeRef, ModelElement modelElement) {
 // TODO(jcollins-g): function caches with maps are very common in dartdoc.
 //                   Extract into library.
 Map<String, Set<ModelElement>> _findRefElementCache;
-//final Map<Tuple2<String, ModelElement>, Element> _findRefElementInLibraryCache = new Map();
-// TODO(jcollins-g): get some sort of consistency in resolving names
-// TODO(jcollins-g): rewrite this to handle constructors in a less hacky way
-// TODO(jcollins-g): this function breaks down naturally into many helpers, extract them
-// TODO(jcollins-g): a complex package winds up spending a lot of cycles here.  Optimize.
+// TODO(jcollins-g): Rewrite this to handle constructors in a less hacky way
+// TODO(jcollins-g): This function breaks down naturally into many helpers, extract them
+// TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
 Element _findRefElementInLibrary(String codeRef, ModelElement element) {
   assert(element.package.allLibrariesAdded);
-  //Tuple2<String, ModelElement> key = new Tuple2(codeRef, element);
-  //if (_findRefElementInLibraryCache.containsKey(key)) {
-  //  return _findRefElementInLibraryCache[key];
-  //}
 
   String codeRefChomped = codeRef.replaceFirst(isConstructor, '');
 
   final Library library = element.library;
   final Package package = library.package;
   final Set<ModelElement> results = new Set();
-
-  if (element.fullyQualifiedName == 'dart:io.Platform' && codeRef == 'dart:io') {
-    1+1;
-  }
 
   results.remove(null);
   // Oh, and this might be an operator.  Strip the operator prefix and try again.
@@ -368,30 +349,14 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
 
   // Maybe this ModelElement has parameters, and this is one of them.
   // We don't link these, but this keeps us from emitting warnings.  Be sure to
-  // get members of parameters too (yes, people do this).
-  // TODO(jcollins): link to classes that are the types of parameters, where known
+  // get members of parameters too.
+  // TODO(jcollins-g): link to classes that are the types of parameters, where known
   results.addAll(element.allParameters.where((p) => p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
-  /*
-  if (element.canHaveParameters && element.parameters.map((p) => p.name).contains(codeRef)) {
-     results.addAll(element.parameters.where((p) => p.name.contains(codeRef)));
-  }
-  if (element is GetterSetterCombo) {
-    Accessor setter = element.setter;
-    if (setter != null) {
-      if (setter.parameters.map((p) => p.name).contains(codeRef)) {
-        results.addAll(setter.parameters.where((p) => p.name.contains(codeRef)));
-      }
-      for (Parameter p in setter.parameters) {
-
-      }
-    }
-  }*/
   results.remove(null);
 
   if (results.isEmpty) {
     // Maybe this is local to a class.
-    // TODO(jcollins): pretty sure tryClasses is a strict subset of the superclass chain.
-    // Optimize if that's the case.
+    // TODO(jcollins-g): tryClasses is a strict subset of the superclass chain.  Optimize.
     List<Class> tryClasses = [_getPreferredClass(element)];
     Class realClass = tryClasses.first;
     if (element is Inheritable) {
@@ -401,12 +366,6 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
         overriddenElement = overriddenElement.overriddenElement;
       }
     }
-    /*
-    if (element.element.enclosingElement is ClassElement) {
-      tryClass = new ModelElement.from(element.element.enclosingElement, element.library);
-    } else if (element is Class) {
-      tryClass = element;
-    }*/
 
     for (Class tryClass in tryClasses) {
       if (tryClass != null) {
@@ -428,6 +387,10 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
   results.remove(null);
 
   // We now need the ref element cache to keep from repeatedly searching [Package.allModelElements].
+  // TODO(jcollins-g): Find somewhere to cache elements outside package.libraries
+  //                   so we can give the right warning (no canonical found)
+  //                   when referring to objects in libraries outside the
+  //                   documented set.
   if (results.isEmpty && _findRefElementCache == null) {
     assert(package.allLibrariesAdded);
     _findRefElementCache = new Map();
@@ -443,33 +406,16 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
   // if the codeRef might be qualified, and contains periods.)
   if (results.isEmpty && codeRefChomped.contains('.') && _findRefElementCache.containsKey(codeRefChomped)) {
     for (final modelElement in _findRefElementCache[codeRefChomped]) {
-      if (!_yesReallyThisConstructor(codeRef, modelElement)) continue;
+      if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
       results.add(package.findCanonicalModelElementFor(modelElement.element));
     }
-    // TODO(jcollins-g): This is extremely inefficient and no longer necessary
-    // since allCanonicalModelElements is now stable and doesn't mutate after
-    // [Package] construction.  So precompute and cache the result map somewhere,
-    // maybe in [Package].
-    /*for (final modelElement in package.allModelElements) {
-      if (!_yesReallyThisConstructor(codeRef, modelElement)) continue;
-      // Constructors are handled in _linkDocReference.
-      if (codeRefChomped == modelElement.fullyQualifiedName) {
-        results.add(package.findCanonicalModelElementFor(modelElement.element));
-      }
-      // Try without the library too; sometimes people use that as shorthand.
-      // Not the same as partially qualified matches because here we have a '.'.
-      if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary) {
-        results.add(package.findCanonicalModelElementFor(modelElement.element));
-      }
-    }*/
   }
   results.remove(null);
-
 
   // Only look for partially qualified matches if we didn't find a fully qualified one.
   if (results.isEmpty) {
     for (final modelElement in library.allModelElements) {
-      if (!_yesReallyThisConstructor(codeRef, modelElement)) continue;
+      if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
       if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary) {
         results.add(package.findCanonicalModelElementFor(modelElement.element));
       }
@@ -485,20 +431,11 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
         results.add(package.findCanonicalModelElementFor(modelElement.element));
       }
     }
-    /*for (final modelElement in package.allModelElements) {
-      if (!_yesReallyThisConstructor(codeRef, modelElement)) continue;
-      if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary) {
-        results.add(package.findCanonicalModelElementFor(modelElement.element));
-      }
-      if (modelElement is Library && codeRefChomped == modelElement.fullyQualifiedName) {
-        results.add(package.findCanonicalModelElementFor(modelElement.element));
-      }
-    }*/
   }
 
   // This could conceivably be a reference to an enum member.  They don't show up in allModelElements.
-  // TODO(jcollins-g): put enum members in allModelElements with useful hrefs without blowing up other assumptions.
-  // TODO(jcollins-g): this doesn't provide good warnings if an enum and class have the same name in different libraries in the same package.  Fix that.
+  // TODO(jcollins-g): Put enum members in allModelElements with useful hrefs without blowing up other assumptions about what that means.
+  // TODO(jcollins-g): This doesn't provide good warnings if an enum and class have the same name in different libraries in the same package.  Fix that.
   if (results.isEmpty) {
     List<String> codeRefChompedParts = codeRefChomped.split('.');
     if (codeRefChompedParts.length >= 2) {
@@ -564,8 +501,8 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
   return result;
 }
 
-
-// results is an output parameter
+// _getResultsForClass assumes codeRefChomped might be a member of tryClass (inherited or not)
+// and will add to [results]
 void _getResultsForClass(Class tryClass, String codeRefChomped, Set<ModelElement> results, String codeRef, Package package) {
   if ((tryClass.modelType.typeArguments.map((e) => e.name)).contains(codeRefChomped)) {
     results.add(tryClass.modelType.typeArguments.firstWhere((e) => e.name == codeRefChomped).element);
@@ -578,19 +515,28 @@ void _getResultsForClass(Class tryClass, String codeRefChomped, Set<ModelElement
       //                   or integrate into ModelElement in a simpler way.
       List<Class> superChain = [];
       superChain.add(tryClass);
+      // This seems duplicitous with our caller, but the preferredClass
+      // hint matters with findCanonicalModelElementFor.
+      // TODO(jcollins-g): This makes our caller ~O(n^2) vs length of superChain.
+      //                   Fortunately superChains are short, but optimize this if it matters.
       superChain.addAll(tryClass.superChainRaw.map((t) => t.returnElement as Class));
       List<String> codeRefParts = codeRefChomped.split('.');
       for (final c in superChain) {
+        // TODO(jcollins-g): add a hash-map-enabled lookup function to Class?
         for (final modelElement in c.allModelElements) {
-          if (!_yesReallyThisConstructor(codeRef, modelElement)) continue;
+          if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
           String namePart = modelElement.fullyQualifiedName.split('.').last;
           // TODO(jcollins-g): fix operators so we can use 'name' here or similar.
           if (codeRefChomped == namePart) {
             results.add(package.findCanonicalModelElementFor(modelElement.element, preferredClass: tryClass));
             continue;
           }
-          // TODO(jcollins-g): fix partial qualifications logic so it can tell
+          // Handle non-documented class documentation being imported into a
+          // documented class when it refers to itself (with help from caller's
+          // iteration on tryClasses).
+          // TODO(jcollins-g): Fix partial qualifications in _findRefElementInLibrary so it can tell
           // when it is referenced from a non-documented element?
+          // TODO(jcollins-g): We could probably check this early.
           if (codeRefParts.first == c.name && codeRefParts.last == namePart) {
             results.add(package.findCanonicalModelElementFor(modelElement.element, preferredClass: tryClass));
             continue;
@@ -620,14 +566,10 @@ void _getResultsForClass(Class tryClass, String codeRefChomped, Set<ModelElement
 
 String _linkDocReference(String codeRef, ModelElement element,
     NodeList<CommentReference> commentRefs) {
-  // We might not have the canonical ModelElement here.  If we don't,
-  // try to get it.
-  /*if (!element.isCanonical) {
-    element = element.package.findCanonicalModelElementFor(element.element);
-  }*/
+  // TODO(jcollins-g): Refactor so that doc operations work on the
+  //                   documented element.
   element = element.overriddenDocumentedElement;
 
-  // support for [new Constructor] and [new Class.namedCtr]
   MatchingLinkResult result;
   result = _getMatchingLinkElement(codeRef, element, commentRefs);
   final ModelElement linkedElement = result.element;
@@ -637,8 +579,8 @@ String _linkDocReference(String codeRef, ModelElement element,
     if (linkedElement.isDeprecated) {
       classContent = 'class="deprecated" ';
     }
-    // this would be linkedElement.linkedName, but link bodies are slightly
-    // different for doc references. sigh.
+    // This would be linkedElement.linkedName, but link bodies are slightly
+    // different for doc references.
     if (linkedElement.href == null) {
       return '<code>${HTML_ESCAPE.convert(label)}</code>';
     } else {
@@ -677,10 +619,6 @@ void _showWarningsForGenericsOutsideSquareBracketsBlocks(String text,
       priorContext = priorContext.replaceAll(new RegExp(r'^.*\n', multiLine: true), '');
       postContext = postContext.replaceAll(new RegExp(r'\n.*$', multiLine: true), '');
       String errorMessage = "$priorContext$postContext";
-      //String errorMessage = "${text.substring(max(position - 20, 0), min(position + 20, text.length))}";
-
-      // Strip pieces of lines before and after that
-      //errorMessage = errorMessage.replaceAll(new RegExp(r'(\n[^<>]*$|^[^<>]*\n)'), '');
       // TODO(jcollins-g):  allow for more specific error location inside comments
       element.warn(PackageWarning.typeAsHtml, errorMessage);
     });

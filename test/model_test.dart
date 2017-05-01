@@ -478,7 +478,7 @@ void main() {
       expect(resolved, isNotNull);
       expect(resolved,
           contains('<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
-      expect(resolved, contains('linking over to <a href="ex/Apple-class.html">Apple</a>.'));
+      expect(resolved, contains('Linking over to <a href="ex/Apple-class.html">Apple</a>'));
     });
 
     test('references to class and constructors', () {
