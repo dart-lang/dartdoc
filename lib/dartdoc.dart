@@ -159,7 +159,8 @@ class DartDoc {
     }
     Package package;
     if (config != null && config.autoIncludeDependencies) {
-      package = Package.withAutoIncludedDependencies(libraries, packageMeta, warningOptions);
+      package = Package.withAutoIncludedDependencies(
+          libraries, packageMeta, warningOptions);
       libraries = package.libraries.map((l) => l.element).toList();
       // remove excluded libraries again, in case they are picked up through
       // dependencies.
@@ -184,7 +185,8 @@ class DartDoc {
 
     for (var generator in generators) {
       await generator.generate(package, outputDir);
-      generator.writtenFiles.forEach((p) => writtenFiles.add(path.normalize(p)));
+      generator.writtenFiles
+          .forEach((p) => writtenFiles.add(path.normalize(p)));
     }
 
     await verifyLinks(package, outputDir.path);
@@ -193,7 +195,8 @@ class DartDoc {
     print(
         "\nDocumented ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds.");
-    print ("Finished with:  ${package.packageWarningCounter.warningCount} warnings, ${package.packageWarningCounter.errorCount} errors");
+    print(
+        "Finished with:  ${package.packageWarningCounter.warningCount} warnings, ${package.packageWarningCounter.errorCount} errors");
 
     if (package.libraries.isEmpty) {
       throw new DartDocFailure(
@@ -207,7 +210,8 @@ class DartDoc {
     return new DartDocResults(packageMeta, package, outputDir);
   }
 
-  void _warn(Package package, PackageWarning kind, String p, String origin, {String source}) {
+  void _warn(Package package, PackageWarning kind, String p, String origin,
+      {String source}) {
     // Ordinarily this would go in [Package.warn], but we don't actually know what
     // ModelElement to warn on yet.
     Locatable referenceElement;
@@ -231,7 +235,8 @@ class DartDoc {
         referenceElement = referenceElements.firstWhere((e) => e.isCanonical);
       } else {
         // If we don't have a canonical element, just pick one.
-        referenceElement = referenceElements.isEmpty ? null : referenceElements.first;
+        referenceElement =
+            referenceElements.isEmpty ? null : referenceElements.first;
       }
     }
     if (referenceElement == null && source == 'index.html')
@@ -239,12 +244,14 @@ class DartDoc {
     package.warn(referenceElement, kind, p);
   }
 
-  Future _doOrphanCheck(Package package, String origin, Set<String> visited) async {
+  Future _doOrphanCheck(
+      Package package, String origin, Set<String> visited) async {
     String normalOrigin = path.normalize(origin);
     String staticAssets = path.joinAll([normalOrigin, 'static-assets', '']);
     String indexJson = path.joinAll([normalOrigin, 'index.json']);
     bool foundIndex = false;
-    await for (FileSystemEntity f in new Directory(normalOrigin).list(recursive: true))  {
+    await for (FileSystemEntity f
+        in new Directory(normalOrigin).list(recursive: true)) {
       var fullPath = path.normalize(f.path);
       if (f is Directory) {
         continue;
@@ -258,7 +265,7 @@ class DartDoc {
         continue;
       }
       if (visited.contains(fullPath)) continue;
-      if (!writtenFiles.contains(fullPath))  {
+      if (!writtenFiles.contains(fullPath)) {
         // This isn't a file we wrote (this time); don't claim we did.
         _warn(package, PackageWarning.unknownFile, fullPath, normalOrigin);
       } else {
@@ -273,7 +280,9 @@ class DartDoc {
     }
   }
 
-  _doCheck(Package package, String origin, Set<String> visited, String pathToCheck, [String source, String fullPath]) {
+  _doCheck(
+      Package package, String origin, Set<String> visited, String pathToCheck,
+      [String source, String fullPath]) {
     if (fullPath == null) {
       fullPath = path.joinAll([origin, pathToCheck]);
       fullPath = path.normalize(fullPath);
@@ -281,7 +290,9 @@ class DartDoc {
 
     File file = new File("$fullPath");
     if (!file.existsSync()) {
-      _warn(package, PackageWarning.brokenLink, pathToCheck, path.normalize(origin), source: source);
+      _warn(package, PackageWarning.brokenLink, pathToCheck,
+          path.normalize(origin),
+          source: source);
       _onCheckProgress.add(pathToCheck);
       return;
     }
@@ -309,17 +320,19 @@ class DartDoc {
         newFullPath = path.normalize(newFullPath);
         if (!visited.contains(newFullPath)) {
           visited.add(newFullPath);
-          _doCheck(package, origin, visited, newPathToCheck, pathToCheck, newFullPath);
+          _doCheck(package, origin, visited, newPathToCheck, pathToCheck,
+              newFullPath);
         }
       }
     }
 
     _onCheckProgress.add(pathToCheck);
-    1+1;
+    1 + 1;
     //return;
   }
 
   Map<String, Set<ModelElement>> _hrefs;
+
   /// Don't call this method more than once, and only after you've
   /// generated all docs for the Package.
   Future verifyLinks(Package package, String origin) async {

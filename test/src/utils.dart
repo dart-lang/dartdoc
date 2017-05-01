@@ -69,11 +69,13 @@ Package _bootPackage(Iterable<String> libPaths, String dirPath,
 
   if (withAutoIncludedDependencies) {
     return Package.withAutoIncludedDependencies(
-        libElements, new PackageMeta.fromDir(new Directory(dirPath)),
+        libElements,
+        new PackageMeta.fromDir(new Directory(dirPath)),
         new PackageWarningOptions());
   } else {
     return new Package(
-        libElements, new PackageMeta.fromDir(new Directory(dirPath)),
+        libElements,
+        new PackageMeta.fromDir(new Directory(dirPath)),
         new PackageWarningOptions());
   }
 }

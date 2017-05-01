@@ -66,7 +66,7 @@ class HtmlGenerator extends Generator {
   @override
   Future generate(Package package, Directory out) {
     _instance = new HtmlGeneratorInstance(
-            _options, _templates, package, out, _onFileCreated);
+        _options, _templates, package, out, _onFileCreated);
     return _instance.generate();
   }
 }

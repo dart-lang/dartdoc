@@ -55,8 +55,8 @@ main(List<String> arguments) async {
 
   var readme = args['sdk-readme'];
   if (readme != null && !(new File(readme).existsSync())) {
-    stderr
-        .write(" fatal error: unable to locate the SDK description file at $readme.");
+    stderr.write(
+        " fatal error: unable to locate the SDK description file at $readme.");
     exit(1);
   }
 
@@ -77,7 +77,8 @@ main(List<String> arguments) async {
       args['header'].map(_resolveTildePath).toList() as List<String>;
   for (String headerFilePath in headerFilePaths) {
     if (!new File(headerFilePath).existsSync()) {
-      stderr.write(" fatal error: unable to locate header file: ${headerFilePath}.");
+      stderr.write(
+          " fatal error: unable to locate header file: ${headerFilePath}.");
       exit(1);
     }
   }
@@ -86,7 +87,8 @@ main(List<String> arguments) async {
       args['footer'].map(_resolveTildePath).toList() as List<String>;
   for (String footerFilePath in footerFilePaths) {
     if (!new File(footerFilePath).existsSync()) {
-      stderr.write(" fatal error: unable to locate footer file: ${footerFilePath}.");
+      stderr.write(
+          " fatal error: unable to locate footer file: ${footerFilePath}.");
       exit(1);
     }
   }
@@ -219,7 +221,8 @@ ArgParser _createArgsParser() {
   parser.addOption('footer-text',
       allowMultiple: true,
       splitCommas: true,
-      help: 'paths to footer-text files (optional text next to the copyright).');
+      help:
+          'paths to footer-text files (optional text next to the copyright).');
   parser.addOption('exclude',
       allowMultiple: true, splitCommas: true, help: 'Library names to ignore.');
   parser.addOption('include',
