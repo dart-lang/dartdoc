@@ -297,7 +297,8 @@ class DartDoc {
     List<Element> links = doc.querySelectorAll('a');
     List<String> stringLinks = links
         .map((link) => link.attributes['href'])
-        .where((href) => href != null).toList();
+        .where((href) => href != null)
+        .toList();
     return new Tuple2(stringLinks, baseHref);
   }
 
@@ -311,7 +312,7 @@ class DartDoc {
 
     Tuple2 stringLinksAndHref = _getStringLinksAndHref(fullPath);
     if (stringLinksAndHref == null) {
-       _warn(package, PackageWarning.brokenLink, pathToCheck,
+      _warn(package, PackageWarning.brokenLink, pathToCheck,
           path.normalize(origin),
           source: source);
       _onCheckProgress.add(pathToCheck);
