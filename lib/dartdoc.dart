@@ -26,6 +26,7 @@ import 'package:html/parser.dart' show parse;
 import 'package:package_config/discovery.dart' as package_config;
 import 'package:path/path.dart' as path;
 
+import 'package:tuple/tuple.dart';
 import 'src/config.dart';
 import 'src/generator.dart';
 import 'src/html/html_generator.dart';
@@ -280,21 +281,12 @@ class DartDoc {
     }
   }
 
-  _doCheck(
-      Package package, String origin, Set<String> visited, String pathToCheck,
-      [String source, String fullPath]) {
-    if (fullPath == null) {
-      fullPath = path.joinAll([origin, pathToCheck]);
-      fullPath = path.normalize(fullPath);
-    }
-
+  // This is extracted to save memory during the check; be careful not to hang
+  // on to anything referencing the full file and doc tree.
+  Tuple2<Iterable<String>, String> _getStringLinksAndHref(String fullPath) {
     File file = new File("$fullPath");
     if (!file.existsSync()) {
-      _warn(package, PackageWarning.brokenLink, pathToCheck,
-          path.normalize(origin),
-          source: source);
-      _onCheckProgress.add(pathToCheck);
-      return;
+      return null;
     }
     Document doc = parse(file.readAsStringSync());
     Element base = doc.querySelector('base');
@@ -303,9 +295,30 @@ class DartDoc {
       baseHref = base.attributes['href'];
     }
     List<Element> links = doc.querySelectorAll('a');
-    Iterable<String> stringLinks = links
+    List<String> stringLinks = links
         .map((link) => link.attributes['href'])
-        .where((href) => href != null);
+        .where((href) => href != null).toList();
+    return new Tuple2(stringLinks, baseHref);
+  }
+
+  void _doCheck(
+      Package package, String origin, Set<String> visited, String pathToCheck,
+      [String source, String fullPath]) {
+    if (fullPath == null) {
+      fullPath = path.joinAll([origin, pathToCheck]);
+      fullPath = path.normalize(fullPath);
+    }
+
+    Tuple2 stringLinksAndHref = _getStringLinksAndHref(fullPath);
+    if (stringLinksAndHref == null) {
+       _warn(package, PackageWarning.brokenLink, pathToCheck,
+          path.normalize(origin),
+          source: source);
+      _onCheckProgress.add(pathToCheck);
+      return null;
+    }
+    Iterable<String> stringLinks = stringLinksAndHref.item1;
+    String baseHref = stringLinksAndHref.item2;
 
     for (String href in stringLinks) {
       if (!href.startsWith('http') && !href.contains('#')) {
@@ -325,10 +338,7 @@ class DartDoc {
         }
       }
     }
-
     _onCheckProgress.add(pathToCheck);
-    1 + 1;
-    //return;
   }
 
   Map<String, Set<ModelElement>> _hrefs;

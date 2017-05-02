@@ -3342,9 +3342,6 @@ class Package implements Nameable, Documentable, Locatable {
       }
       assert(matches.length <= 1);
       if (!matches.isEmpty) modelElement = matches.first;
-      if (modelElement == null &&
-          e.enclosingElement.library.name != 'dart._internal' &&
-          !e.name.startsWith('_')) 1 + 1;
     } else {
       if (lib != null) modelElement = new ModelElement.from(e, lib);
       assert(modelElement is! Inheritable);

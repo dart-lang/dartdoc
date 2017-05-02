@@ -3,7 +3,7 @@
 * Many cleanups to dartdoc stdout/stderr, error messages, and warnings:
   * Display fatal errors with 'fatal error' string to distinguish them from ordinary errors
   * Upgrades to new Package.warn system.
-    * Fully integrated all scattered "warnings" and added new ones for the link checker.
+    * Fully integrated all scattered "warnings" (#1369) and added new ones for the link checker.
     * Allow for setting which warnings are errors in the library.
     * Change location output to something IntelliJ can understand and link to
     * Display location output for all warnings including line number plus column, when available
@@ -17,7 +17,7 @@
   * Make the progress counter tick slower.
 * Added a built-in link checker and orphaned file generator, and tied it into Package.warn so
   that when debugging dartdoc we can breakpoint and discover what about that ModelElement
-  caused to create the broken link.
+  caused us to create the broken link. (#1380)
 * Fix bug where canonicalEnclosingElement could return a non-canonical Class.
 * Fix bug where findCanonicalModelElementFor could return a non-canonical Class.
 * Fix overriddenElement for Accessors to generate using enclosingCombo hint to ModelElement factory.
@@ -27,7 +27,7 @@
 * Squish some bugs related to duplicate logic for instantiating inherited class members.
   * Enum and a few other places could still generate duplicate ModelElements for the
     same thing.  This is now fixed.
-  * EnumField is now handled by ModelElement.from factory.
+  * EnumField is now handled by ModelElement.from factory, fixing #1239.
   * Added hints for EnumField and Accessors (index, enclosingCombo) to offload the buggy
     logic for figuring this out from callers to ModelElement.from.
 * Fix broken link generation when a canonical class's defining library isn't canonical.
@@ -35,13 +35,13 @@
   * Link correctly to generic types for Fields/TopLevelVariables.
   * Use right, left, and bidirectional arrows for read-only, write-only, and read-write
     parameters.
-* Partial rewrite of comment reference system
+* Partial rewrite of comment reference system (#1391, #1285 partial)
   * Handle gracefully a variety of things users try in the real world, like prefixing operators
     with 'operator', embedded newlines in comment references, and cases that shouldn't be
     considered at all (comment refs that are really array references in sample docs, etc).
   * Handle canonicalization correctly for comment references: point to the right places and
     only to canonical elements.
-  * In general, warnings related to comment references should be much more useful now.
+  * In general, warnings related to comment references should be much more useful now. (#1343)
     * Many fewer ambiguous doc reference warnings now and the ones that exist should be more
       easily understandable and fixable with the new warning message.
     * Understand references to parameters even though we don't do anything useful with them just yet
