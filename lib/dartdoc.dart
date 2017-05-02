@@ -186,11 +186,10 @@ class DartDoc {
 
     for (var generator in generators) {
       await generator.generate(package, outputDir);
-      generator.writtenFiles
-          .forEach((p) => writtenFiles.add(path.normalize(p)));
+      writtenFiles.addAll(generator.writtenFiles.map(path.normalize));
     }
 
-    await verifyLinks(package, outputDir.path);
+    verifyLinks(package, outputDir.path);
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print(
@@ -245,14 +244,13 @@ class DartDoc {
     package.warn(referenceElement, kind, p);
   }
 
-  Future _doOrphanCheck(
-      Package package, String origin, Set<String> visited) async {
+  void _doOrphanCheck(
+      Package package, String origin, Set<String> visited) {
     String normalOrigin = path.normalize(origin);
     String staticAssets = path.joinAll([normalOrigin, 'static-assets', '']);
     String indexJson = path.joinAll([normalOrigin, 'index.json']);
     bool foundIndex = false;
-    await for (FileSystemEntity f
-        in new Directory(normalOrigin).list(recursive: true)) {
+    for (FileSystemEntity f in new Directory(normalOrigin).listSync(recursive: true)) {
       var fullPath = path.normalize(f.path);
       if (f is Directory) {
         continue;
@@ -346,18 +344,16 @@ class DartDoc {
 
   /// Don't call this method more than once, and only after you've
   /// generated all docs for the Package.
-  Future verifyLinks(Package package, String origin) async {
+  void verifyLinks(Package package, String origin) {
     assert(_hrefs == null);
     _hrefs = package.allHrefs;
 
-    Set<String> visited = new Set();
-    String start = 'index.html';
+    final Set<String> visited = new Set();
+    final String start = 'index.html';
     visited.add(start);
     stdout.write('\nvalidating docs');
     _doCheck(package, origin, visited, start);
-    await _doOrphanCheck(package, origin, visited);
-    // A do nothing line magically makes await _doOrphanCheck actually await?
-    return;
+    _doOrphanCheck(package, origin, visited);
   }
 
   List<LibraryElement> _parseLibraries(

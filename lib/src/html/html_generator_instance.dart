@@ -294,7 +294,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
     }
   }
 
-  get writtenFiles => _writtenFiles;
+  Set<String> get writtenFiles => _writtenFiles;
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
     String fullName = path.join(out.path, filename);

@@ -520,9 +520,6 @@ class Class extends ModelElement implements EnclosedElement {
           _inheritedMethods.add(m);
           _genPageMethods.add(m);
         } else {
-          //Library lib = package.findOrCreateLibraryFor(value.enclosingElement);
-          //Class enclosingClass =
-          //    new ModelElement.from(value.enclosingElement, lib);
           _inheritedMethods
               .add(new ModelElement.from(value, library, enclosingClass: this));
         }
@@ -879,7 +876,7 @@ class Constructor extends ModelElement
     String constructorName = element.name;
     Class c = new ModelElement.from(element.enclosingElement, library) as Class;
     if (constructorName.isEmpty) {
-      return '${c.name}';
+      return c.name;
     } else {
       return '${c.name}.$constructorName';
     }
@@ -1218,9 +1215,14 @@ abstract class GetterSetterCombo implements ModelElement {
   }
 
   String get arrow {
+    // →
     if (readOnly) return r'&#8594;';
+    // ←
     if (writeOnly) return r'&#8592;';
+    // ↔
     if (readWrite) return r'&#8596;';
+    // A GetterSetterCombo should always be one of readOnly, writeOnly,
+    // or readWrite.
     assert(false);
     return null;
   }
@@ -2766,8 +2768,6 @@ class PackageWarningOptions {
   PackageWarningOptions() {
     _asWarnings.addAll(PackageWarning.values);
     ignore(PackageWarning.typeAsHtml);
-    //error(PackageWarning.brokenLink);
-    //error(PackageWarning.orphanedFile);
   }
 
   void _assertInvariantsOk() {
@@ -3022,6 +3022,8 @@ class Package implements Nameable, Documentable, Locatable {
             'dartdoc detected an unknown file in the doc tree:  ${message}';
         break;
       case PackageWarning.typeAsHtml:
+        // The message for this warning can contain many punctuation and other symbols,
+        // so bracket with a triple quote for defense.
         warningMessage = 'generic type handled as HTML: """${message}"""';
         break;
     }

@@ -116,23 +116,23 @@ const validHtmlTags = const [
   "video",
   "wbr"
 ];
-final nonHTMLRegexp =
+final RegExp nonHTML =
     new RegExp("</?(?!(${validHtmlTags.join("|")})[> ])\\w+[> ]");
 
 // Type parameters and other things to ignore at the end of doc references.
-final trailingIgnoreStuff = new RegExp(r'(<.*>|\(.*\))$');
+final RegExp trailingIgnoreStuff = new RegExp(r'(<.*>|\(.*\))$');
 
 // Things to ignore at the beginning of doc references
-final leadingIgnoreStuff =
+final RegExp leadingIgnoreStuff =
     new RegExp(r'^(const|final|var)[\s]+', multiLine: true);
 
 // This is explicitly intended as a reference to a constructor.
-final isConstructor = new RegExp(r'^new[\s]+', multiLine: true);
+final RegExp isConstructor = new RegExp(r'^new[\s]+', multiLine: true);
 
 // This is probably not really intended as a doc reference, so don't try or
 // warn about them.
 // Covers anything with leading digits/symbols, empty string, weird punctuation, spaces.
-final notARealDocReference = new RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
+final RegExp notARealDocReference = new RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
 
 // We don't emit warnings currently: #572.
 const List<String> _oneLinerSkipTags = const ["code", "pre"];
@@ -293,6 +293,11 @@ MatchingLinkResult _getMatchingLinkElement(
     // canonical library found message.
     return new MatchingLinkResult(null, null, warn: false);
   }
+  // We should never get here unless there's a bug in findCanonicalModelElementFor.
+  // findCanonicalModelElementFor(searchElement, preferredClass: preferredClass)
+  // should only return null if ModelElement.from(searchElement, refLibrary)
+  // would return a non-canonical element.  However, outside of checked mode,
+  // at least we have a canonical element, so proceed.
   assert(false);
   return new MatchingLinkResult(refModelElement, null);
 }
@@ -325,6 +330,8 @@ bool _ConsiderIfConstructor(String codeRef, ModelElement modelElement) {
 Map<String, Set<ModelElement>> _findRefElementCache;
 // TODO(jcollins-g): Rewrite this to handle constructors in a less hacky way
 // TODO(jcollins-g): This function breaks down naturally into many helpers, extract them
+// TODO(jcollins-g): Subcomponents of this function shouldn't be adding nulls to results, strip the
+//                   removes out that are gratuitous and
 // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
 Element _findRefElementInLibrary(String codeRef, ModelElement element) {
   assert(element.package.allLibrariesAdded);
@@ -335,8 +342,7 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
   final Package package = library.package;
   final Set<ModelElement> results = new Set();
 
-  results.remove(null);
-  // Oh, and this might be an operator.  Strip the operator prefix and try again.
+  // This might be an operator.  Strip the operator prefix and try again.
   if (results.isEmpty && codeRef.startsWith('operator')) {
     String newCodeRef = codeRef.replaceFirst('operator', '');
     return _findRefElementInLibrary(newCodeRef, element);
@@ -362,8 +368,8 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
   // TODO(jcollins-g): link to classes that are the types of parameters, where known
   results.addAll(element.allParameters.where((p) =>
       p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
-  results.remove(null);
 
+  results.remove(null);
   if (results.isEmpty) {
     // Maybe this is local to a class.
     // TODO(jcollins-g): tryClasses is a strict subset of the superclass chain.  Optimize.
@@ -476,9 +482,9 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
     }
   }
 
-  results.remove(null);
   Element result;
 
+  results.remove(null);
   if (results.length > 1) {
     // If this name could refer to a class or a constructor, prefer the class.
     if (results.any((r) => r is Class)) {
@@ -520,7 +526,6 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
         "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
     result = results.first.element;
   }
-  //_findRefElementInLibraryCache[key] = result;
   return result;
 }
 
@@ -641,6 +646,13 @@ String _renderMarkdownToHtml(String text, [ModelElement element]) {
       inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
 }
 
+
+// Maximum number of characters to display before a suspected generic.
+const maxPriorContext = 20;
+// Maximum number of characters to display after the beginning of a suspected generic.
+const maxPostContext = 30;
+
+
 // Generics should be wrapped into `[]` blocks, to avoid handling them as HTML tags
 // (like, [Apple<int>]). @Hixie asked for a warning when there's something, that looks
 // like a non HTML tag (a generic?) outside of a `[]` block.
@@ -651,9 +663,9 @@ void _showWarningsForGenericsOutsideSquareBracketsBlocks(
   if (tagPositions.isNotEmpty) {
     tagPositions.forEach((int position) {
       String priorContext =
-          "${text.substring(max(position - 20, 0), position)}";
+          "${text.substring(max(position - maxPriorContext, 0), position)}";
       String postContext =
-          "${text.substring(position, min(position + 30, text.length))}";
+          "${text.substring(position, min(position + maxPostContext, text.length))}";
       priorContext =
           priorContext.replaceAll(new RegExp(r'^.*\n', multiLine: true), '');
       postContext =
@@ -672,7 +684,7 @@ List<int> findFreeHangingGenericsPositions(String string) {
   while (true) {
     final int nextOpenBracket = string.indexOf("[", currentPosition);
     final int nextCloseBracket = string.indexOf("]", currentPosition);
-    final int nextNonHTMLTag = string.indexOf(nonHTMLRegexp, currentPosition);
+    final int nextNonHTMLTag = string.indexOf(nonHTML, currentPosition);
     final Iterable<int> nextPositions = [
       nextOpenBracket,
       nextCloseBracket,

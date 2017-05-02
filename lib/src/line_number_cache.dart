@@ -6,6 +6,7 @@ library dartdoc.cache;
 
 import 'dart:collection';
 import 'dart:io';
+
 import 'package:tuple/tuple.dart';
 
 String _getNewlineChar(String contents) {
