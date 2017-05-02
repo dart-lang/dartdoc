@@ -68,7 +68,7 @@ class HtmlGenerator extends Generator {
   /// Actually write out the documentation for [package].
   /// Stores the HtmlGeneratorInstance so we can access it in [writtenFiles].
   Future generate(Package package, Directory out) {
-    assert (_instance == null);
+    assert(_instance == null);
     _instance = new HtmlGeneratorInstance(
         _options, _templates, package, out, _onFileCreated);
     return _instance.generate();

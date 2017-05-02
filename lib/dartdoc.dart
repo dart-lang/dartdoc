@@ -244,13 +244,13 @@ class DartDoc {
     package.warn(referenceElement, kind, p);
   }
 
-  void _doOrphanCheck(
-      Package package, String origin, Set<String> visited) {
+  void _doOrphanCheck(Package package, String origin, Set<String> visited) {
     String normalOrigin = path.normalize(origin);
     String staticAssets = path.joinAll([normalOrigin, 'static-assets', '']);
     String indexJson = path.joinAll([normalOrigin, 'index.json']);
     bool foundIndex = false;
-    for (FileSystemEntity f in new Directory(normalOrigin).listSync(recursive: true)) {
+    for (FileSystemEntity f
+        in new Directory(normalOrigin).listSync(recursive: true)) {
       var fullPath = path.normalize(f.path);
       if (f is Directory) {
         continue;

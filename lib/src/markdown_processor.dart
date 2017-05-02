@@ -646,12 +646,10 @@ String _renderMarkdownToHtml(String text, [ModelElement element]) {
       inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
 }
 
-
 // Maximum number of characters to display before a suspected generic.
 const maxPriorContext = 20;
 // Maximum number of characters to display after the beginning of a suspected generic.
 const maxPostContext = 30;
-
 
 // Generics should be wrapped into `[]` blocks, to avoid handling them as HTML tags
 // (like, [Apple<int>]). @Hixie asked for a warning when there's something, that looks
