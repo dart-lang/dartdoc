@@ -33,8 +33,3 @@ dev_dependencies:
 
 executables:
   dartdoc: null
-
-dependency_overrides:
-  # These dependency overrides are required until package:test supports 0.30.0 of analyzer.
-  analyzer: 0.30.0
-  test: 0.12.20+11
