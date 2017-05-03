@@ -9,10 +9,11 @@
     * Display location output for all warnings including line number plus column, when available
       from analyzer (still some bugs in our resolution). It still doesn't do code references quite
       right but at least gets you to the neighborhood.
-    * Add a warn method to ModelElements so they can warn on themselves without help from the Package.
+    * Add a warn method to ModelElements so they can warn on themselves without help from the
+      Package.
     * Warn correctly and squelch duplicates across doc inheritance and canonicalization almost
       everywhere.
-   * Change --show-warnings to show all warnings, even those that might not be useful yet.
+    * Change --show-warnings to show all warnings, even those that might not be useful yet.
   * Display a count of all warnings/errors after document generation.
   * Make the progress counter tick slower.
 * Added a built-in link checker and orphaned file generator, and tied it into Package.warn so
