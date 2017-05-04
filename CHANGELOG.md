@@ -1,5 +1,6 @@
 ## 0.11.0
 
+* Fix resolution of ambiguous classes where the analyzer can help us. #1397
 * Many cleanups to dartdoc stdout/stderr, error messages, and warnings:
   * Display fatal errors with 'fatal error' string to distinguish them from ordinary errors
   * Upgrades to new Package.warn system.
