@@ -3027,11 +3027,6 @@ class Package implements Nameable, Documentable, Locatable {
         warningMessage = 'generic type handled as HTML: """${message}"""';
         break;
     }
-    // warningMessage should not contain "file:" or "dart:" -- confuses IntelliJ.
-    ['file:', 'dart:'].forEach((s) {
-      // message can contain user text; nothing we can do about that.
-      assert(!warningMessage.contains(s) || message.contains(s));
-    });
     String fullMessage =
         "${warningMessage} ${modelElement != null ? modelElement.elementLocation : ''}";
     packageWarningCounter.addWarning(

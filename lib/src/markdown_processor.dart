@@ -236,24 +236,14 @@ MatchingLinkResult _getMatchingLinkElement(
 
   // Try expensive not-scoped lookup.
   if (refElement == null) {
-    refElement = _findRefElementInLibrary(codeRef, element);
+    refElement = _findRefElementInLibrary(codeRef, element, commentRefs);
   }
 
   // This is faster but does not take canonicalization into account; try
   // only as a last resort. TODO(jcollins-g): make analyzer comment references
   // dartdoc-canonicalization-aware?
   if (refElement == null) {
-    for (CommentReference ref in commentRefs) {
-      if (ref.identifier.name == codeRef) {
-        bool isConstrElement =
-            ref.identifier.staticElement is ConstructorElement;
-        // Constructors are now handled by library search.
-        if (!isConstrElement) {
-          refElement = ref.identifier.staticElement;
-          break;
-        }
-      }
-    }
+    refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
   }
 
   // Did not find it anywhere.
@@ -302,6 +292,23 @@ MatchingLinkResult _getMatchingLinkElement(
   return new MatchingLinkResult(refModelElement, null);
 }
 
+Element _getRefElementFromCommentRefs(List<CommentReference> commentRefs, String codeRef) {
+  // This is faster but does not take canonicalization into account; try
+  // only as a last resort. TODO(jcollins-g): make analyzer comment references
+  // dartdoc-canonicalization-aware?
+  for (CommentReference ref in commentRefs) {
+    if (ref.identifier.name == codeRef) {
+      bool isConstrElement =
+          ref.identifier.staticElement is ConstructorElement;
+      // Constructors are now handled by library search.
+      if (!isConstrElement) {
+        return ref.identifier.staticElement;
+      }
+    }
+  }
+  return null;
+}
+
 /// Returns true if this is a constructor we should consider in
 /// _findRefElementInLibrary, or if this isn't a constructor.
 bool _ConsiderIfConstructor(String codeRef, ModelElement modelElement) {
@@ -333,7 +340,7 @@ Map<String, Set<ModelElement>> _findRefElementCache;
 // TODO(jcollins-g): Subcomponents of this function shouldn't be adding nulls to results, strip the
 //                   removes out that are gratuitous and debug the individual pieces.
 // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
-Element _findRefElementInLibrary(String codeRef, ModelElement element) {
+Element _findRefElementInLibrary(String codeRef, ModelElement element, List<CommentReference> commentRefs) {
   assert(element.package.allLibrariesAdded);
 
   String codeRefChomped = codeRef.replaceFirst(isConstructor, '');
@@ -345,21 +352,21 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
   // This might be an operator.  Strip the operator prefix and try again.
   if (results.isEmpty && codeRef.startsWith('operator')) {
     String newCodeRef = codeRef.replaceFirst('operator', '');
-    return _findRefElementInLibrary(newCodeRef, element);
+    return _findRefElementInLibrary(newCodeRef, element, commentRefs);
   }
 
   results.remove(null);
   // Oh, and someone might have some type parameters or other garbage.
   if (results.isEmpty && codeRef.contains(trailingIgnoreStuff)) {
     String newCodeRef = codeRef.replaceFirst(trailingIgnoreStuff, '');
-    return _findRefElementInLibrary(newCodeRef, element);
+    return _findRefElementInLibrary(newCodeRef, element, commentRefs);
   }
 
   results.remove(null);
   // Oh, and someone might have thrown on a 'const' or 'final' in front.
   if (results.isEmpty && codeRef.contains(leadingIgnoreStuff)) {
     String newCodeRef = codeRef.replaceFirst(leadingIgnoreStuff, '');
-    return _findRefElementInLibrary(newCodeRef, element);
+    return _findRefElementInLibrary(newCodeRef, element, commentRefs);
   }
 
   // Maybe this ModelElement has parameters, and this is one of them.
@@ -515,8 +522,20 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
       results.removeWhere((r) => !r.fullyQualifiedName.startsWith(startName));
     }
   }
-  // TODO(jcollins-g): further disambiguations based on package information?
 
+  // TODO(jcollins-g): As a last resort, try disambiguation with commentRefs.
+  //                   Maybe one of these is the same as what's resolvable with
+  //                   the analyzer, and if so, drop the others.  We can't
+  //                   do this in reverse order because commentRefs don't know
+  //                   about dartdoc canonicalization.
+  if (results.length > 1) {
+    Element refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
+    if (results.any((me) => me.element == refElement)) {
+      results.removeWhere((me) => me.element != refElement);
+    }
+  }
+
+  // TODO(jcollins-g): further disambiguations based on package information?
   if (results.isEmpty) {
     result = null;
   } else if (results.length == 1) {
