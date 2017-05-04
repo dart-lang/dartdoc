@@ -125,6 +125,8 @@ abstract class Inheritable {
           searchElement = (searchElement as Member).baseElement;
         }
         bool foundElement = false;
+        // TODO(jcollins-g): generate warning if an inherited element's definition
+        // is in an intermediate non-canonical class in the inheritance chain
         for (Class c in inheritance.reversed) {
           if (!foundElement && c.contains(searchElement)) {
             foundElement = true;
@@ -139,7 +141,9 @@ abstract class Inheritable {
           assert(definingEnclosingElement == _canonicalEnclosingClass);
         }
       } else {
-        _canonicalEnclosingClass = enclosingElement;
+        if (enclosingElement.isCanonical) {
+          _canonicalEnclosingClass = enclosingElement;
+        }
       }
       _canonicalEnclosingClassIsSet = true;
     }
@@ -165,8 +169,21 @@ abstract class Inheritable {
 class Accessor extends ModelElement
     with SourceCodeMixin
     implements EnclosedElement {
-  Accessor(PropertyAccessorElement element, Library library)
+  ModelElement _enclosingCombo;
+  Accessor(
+      PropertyAccessorElement element, Library library, this._enclosingCombo)
       : super(element, library);
+
+  ModelElement get enclosingCombo => _enclosingCombo;
+
+  @override
+  void warn(PackageWarning kind, [String message]) {
+    if (enclosingCombo != null) {
+      enclosingCombo.warn(kind, message);
+    } else {
+      super.warn(kind, message);
+    }
+  }
 
   @override
   ModelElement get enclosingElement {
@@ -186,20 +203,33 @@ class Accessor extends ModelElement
 
   bool get isGetter => _accessor.isGetter;
 
+  ModelElement _overriddenElement;
   @override
   Accessor get overriddenElement {
-    Element parent = element.enclosingElement;
-    if (parent is ClassElement) {
-      for (InterfaceType t in getAllSupertypes(parent)) {
-        var accessor = this.isGetter
-            ? t.getGetter(element.name)
-            : t.getSetter(element.name);
-        if (accessor != null) {
-          return new ModelElement.from(accessor, library);
+    assert(package.allLibrariesAdded);
+    if (_overriddenElement == null) {
+      Element parent = element.enclosingElement;
+      if (parent is ClassElement) {
+        for (InterfaceType t in getAllSupertypes(parent)) {
+          var accessor = this.isGetter
+              ? t.getGetter(element.name)
+              : t.getSetter(element.name);
+          if (accessor != null) {
+            Class parentClass = new ModelElement.from(
+                parent, package.findOrCreateLibraryFor(parent));
+            List<Field> possibleFields = [];
+            possibleFields.addAll(parentClass.allInstanceProperties);
+            possibleFields.addAll(parentClass.staticProperties);
+            String fieldName = accessor.name.replaceFirst('=', '');
+            _overriddenElement = new ModelElement.from(accessor, library,
+                enclosingCombo: possibleFields
+                    .firstWhere((f) => f.element.name == fieldName));
+            break;
+          }
         }
       }
     }
-    return null;
+    return _overriddenElement;
   }
 
   @override
@@ -339,6 +369,29 @@ class Class extends ModelElement implements EnclosedElement {
     return _allElements.contains(element);
   }
 
+  final Set<ModelElement> _allModelElements = new Set();
+  List<ModelElement> get allModelElements {
+    if (_allModelElements.isEmpty) {
+      _allModelElements
+        ..addAll(allInstanceMethods)
+        ..addAll(allInstanceProperties)
+        ..addAll(allOperators)
+        ..addAll(constants)
+        ..addAll(constructors)
+        ..addAll(staticMethods)
+        ..addAll(staticProperties)
+        ..addAll(allInstanceMethods)
+        ..addAll(_typeParameters);
+    }
+    return _allModelElements.toList();
+  }
+
+  List<ModelElement> _allCanonicalModelElements;
+  List<ModelElement> get allCanonicalModelElements {
+    return (_allCanonicalModelElements ??=
+        allModelElements.where((e) => e.isCanonical).toList());
+  }
+
   List<Constructor> get constructors {
     if (_constructors != null) return _constructors;
 
@@ -467,11 +520,8 @@ class Class extends ModelElement implements EnclosedElement {
           _inheritedMethods.add(m);
           _genPageMethods.add(m);
         } else {
-          Library lib = package.findOrCreateLibraryFor(value.enclosingElement);
-          Class enclosingClass =
-              new ModelElement.from(value.enclosingElement, lib);
-          _inheritedMethods.add(new ModelElement.from(value, lib,
-              enclosingClass: enclosingClass));
+          _inheritedMethods
+              .add(new ModelElement.from(value, library, enclosingClass: this));
         }
       }
     }
@@ -528,10 +578,8 @@ class Class extends ModelElement implements EnclosedElement {
         _inheritedOperators.add(o);
         _genPageOperators.add(o);
       } else {
-        Library lib = package.findOrCreateLibraryFor(value.enclosingElement);
-        _inheritedOperators.add(new ModelElement.from(value, lib,
-            enclosingClass:
-                new ModelElement.from(value.enclosingElement, lib)));
+        _inheritedOperators
+            .add(new ModelElement.from(value, library, enclosingClass: this));
       }
     }
 
@@ -892,7 +940,7 @@ class Enum extends Class {
     _enumFields = _cls.fields
         .where(isPublic)
         .where((f) => f.isConst)
-        .map((field) => new EnumField.forConstant(index++, field, library))
+        .map((field) => new ModelElement.from(field, library, index: index++))
         .toList(growable: false)
           ..sort(byName);
 
@@ -903,7 +951,7 @@ class Enum extends Class {
   List<EnumField> get instanceProperties {
     return super
         .instanceProperties
-        .map((Field p) => new EnumField(p.element, p.library))
+        .map((Field p) => new ModelElement.from(p.element, p.library))
         .toList(growable: false);
   }
 
@@ -955,7 +1003,18 @@ class EnumField extends Field {
   String get linkedName => name;
 
   @override
-  bool get isCanonical => false;
+  bool get isCanonical {
+    if (name == 'index') return false;
+    // If this is something inherited from Object, e.g. hashCode, let the
+    // normal rules apply.
+    if (_index == null) {
+      return super.isCanonical;
+    }
+    // TODO(jcollins-g): We don't actually document this as a separate entity;
+    //                   do that or change this to false and deal with the
+    //                   consequences.
+    return true;
+  }
 
   @override
   String get oneLineDoc => documentationAsHtml;
@@ -1016,7 +1075,7 @@ class Field extends ModelElement
     if (enclosingElement is Class) {
       if (canonicalEnclosingElement == null) return null;
       retval =
-          '${canonicalEnclosingElement.library.dirName}/${canonicalEnclosingElement.name}/$_fileName';
+          '${canonicalEnclosingElement.canonicalLibrary.dirName}/${canonicalEnclosingElement.name}/$_fileName';
     } else if (enclosingElement is Library) {
       retval = '${canonicalLibrary.dirName}/$_fileName';
     } else {
@@ -1043,14 +1102,7 @@ class Field extends ModelElement
   @override
   String get kind => 'property';
 
-  String get linkedReturnType => modelType.linkedName;
-
-  bool get readOnly => hasGetter && !hasSetter;
-  bool get readWrite => hasGetter && hasSetter;
-
   String get typeName => "property";
-
-  bool get writeOnly => hasSetter && !hasGetter;
 
   @override
   List<String> get annotations {
@@ -1102,20 +1154,16 @@ class Field extends ModelElement
           t,
           new ModelElement.from(
               t.element, _findOrCreateEnclosingLibraryFor(t.element)));
-    } else {
-      var s = _field.setter.parameters.first.type;
-      _modelType = new ElementType(
-          s,
-          new ModelElement.from(
-              s.element, _findOrCreateEnclosingLibraryFor(s.element)));
     }
   }
 }
 
 /// Mixin for top-level variables and fields (aka properties)
-abstract class GetterSetterCombo {
+abstract class GetterSetterCombo implements ModelElement {
   Accessor get getter {
-    return _getter == null ? null : new ModelElement.from(_getter, library);
+    return _getter == null
+        ? null
+        : new ModelElement.from(_getter, library, enclosingCombo: this);
   }
 
   String get getterSetterDocumentationComment {
@@ -1136,6 +1184,23 @@ abstract class GetterSetterCombo {
     return buffer.toString();
   }
 
+  String get linkedReturnType {
+    if (hasGetter) return modelType.linkedName;
+    return null;
+  }
+
+  @override
+  String get genericParameters {
+    if (hasSetter) return setter.genericParameters;
+    return null;
+  }
+
+  @override
+  String get linkedParamsNoMetadata {
+    if (hasSetter) return setter.linkedParamsNoMetadata;
+    return null;
+  }
+
   bool get hasExplicitGetter => hasGetter && !_getter.isSynthetic;
 
   bool get hasExplicitSetter => hasSetter && !_setter.isSynthetic;
@@ -1145,10 +1210,32 @@ abstract class GetterSetterCombo {
 
   bool get hasSetter;
 
-  Library get library;
+  bool get hasGetterOrSetterWithoutParams {
+    return (hasGetter || (hasSetter && !hasExplicitSetter));
+  }
+
+  String get arrow {
+    // →
+    if (readOnly) return r'&#8594;';
+    // ←
+    if (writeOnly) return r'&#8592;';
+    // ↔
+    if (readWrite) return r'&#8596;';
+    // A GetterSetterCombo should always be one of readOnly, writeOnly,
+    // or readWrite.
+    assert(false);
+    return null;
+  }
+
+  bool get readOnly => hasGetter && !hasSetter;
+  bool get readWrite => hasGetter && hasSetter;
+
+  bool get writeOnly => hasSetter && !hasGetter;
 
   Accessor get setter {
-    return _setter == null ? null : new ModelElement.from(_setter, library);
+    return _setter == null
+        ? null
+        : new ModelElement.from(_setter, library, enclosingCombo: this);
   }
 
   PropertyAccessorElement get _getter;
@@ -1207,7 +1294,7 @@ class Library extends ModelElement {
         .where((element) => element is ClassElement && element.isEnum));
     _enums = enumClasses
         .where(isPublic)
-        .map((e) => new Enum(e, this))
+        .map((e) => new ModelElement.from(e, this))
         .toList(growable: false)
           ..sort(byName);
 
@@ -1442,8 +1529,8 @@ class Library extends ModelElement {
     }
   }
 
-  Map<Element, ModelElement> _modelElementsMap;
-  Map<Element, ModelElement> get modelElementsMap {
+  Map<Element, Set<ModelElement>> _modelElementsMap;
+  Map<Element, Set<ModelElement>> get modelElementsMap {
     if (_modelElementsMap == null) {
       final Set<ModelElement> results = new Set();
       results
@@ -1455,23 +1542,28 @@ class Library extends ModelElement {
         ..addAll(library.typedefs);
 
       library.allClasses.forEach((c) {
-        results.addAll(c.allInstanceMethods);
-        results.addAll(c.allInstanceProperties);
-        results.addAll(c.allOperators);
-        results.addAll(c.constructors);
-        results.addAll(c.staticMethods);
-        results.addAll(c.staticProperties);
+        results.addAll(c.allModelElements);
+        results.add(c);
       });
 
-      _modelElementsMap = new Map();
-      results.forEach((modelElement) =>
-          _modelElementsMap[modelElement.element] = modelElement);
-      _modelElementsMap[element] = this;
+      _modelElementsMap = new Map<Element, Set<ModelElement>>();
+      results.forEach((modelElement) {
+        _modelElementsMap.putIfAbsent(modelElement.element, () => new Set());
+        _modelElementsMap[modelElement.element].add(modelElement);
+      });
+      _modelElementsMap.putIfAbsent(element, () => new Set());
+      _modelElementsMap[element].add(this);
     }
     return _modelElementsMap;
   }
 
-  Iterable<ModelElement> get allModelElements => modelElementsMap.values;
+  Iterable<ModelElement> get allModelElements sync* {
+    for (Set<ModelElement> modelElements in modelElementsMap.values) {
+      for (ModelElement modelElement in modelElements) {
+        yield modelElement;
+      }
+    }
+  }
 
   List<ModelElement> _allCanonicalModelElements;
   Iterable<ModelElement> get allCanonicalModelElements {
@@ -1525,7 +1617,7 @@ class Method extends ModelElement
   String get href {
     if (canonicalLibrary == null || canonicalEnclosingElement == null)
       return null;
-    return '${canonicalEnclosingElement.library.dirName}/${canonicalEnclosingElement.name}/${fileName}';
+    return '${canonicalEnclosingElement.canonicalLibrary.dirName}/${canonicalEnclosingElement.name}/${fileName}';
   }
 
   @override
@@ -1602,7 +1694,8 @@ class Method extends ModelElement
 /// helps prevent subtle bugs as generated output for a non-canonical
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
-abstract class ModelElement implements Comparable, Nameable, Documentable {
+abstract class ModelElement
+    implements Comparable, Nameable, Documentable, Locatable {
   final Element _element;
   final Library _library;
 
@@ -1623,27 +1716,42 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   /// Do not construct any ModelElements unless they are from this constructor.
   /// TODO(jcollins-g): enforce this.
   /// Specify enclosingClass only if this is to be an inherited object.
+  /// Specify index only if this is to be an EnumField.forConstant.
+  /// Specify enclosingCombo (a GetterSetterCombo) only if this is to be an
+  /// Accessor.
   /// TODO(jcollins-g): this way of using the optional parameter is messy,
   /// clean that up.
   factory ModelElement.from(Element e, Library library,
-      {Class enclosingClass}) {
-    Tuple3<Element, Library, Class> key =
-        new Tuple3(e, library, enclosingClass);
+      {Class enclosingClass, int index, ModelElement enclosingCombo}) {
+    // We don't need index in this key because it isn't a disambiguator.
+    // It isn't a disambiguator because EnumFields are not inherited, ever.
+    // TODO(jcollins-g): cleanup class hierarchy so that EnumFields aren't
+    // Inheritable, somehow?
+    if (e is Member) e = (e as Member).baseElement;
+    Tuple4<Element, Library, Class, ModelElement> key =
+        new Tuple4(e, library, enclosingClass, enclosingCombo);
     ModelElement newModelElement;
     if (e.kind != ElementKind.DYNAMIC &&
-        library.package._all_model_elements.containsKey(key)) {
-      newModelElement = library.package._all_model_elements[key];
+        library.package._allConstructedModelElements.containsKey(key)) {
+      newModelElement = library.package._allConstructedModelElements[key];
     } else {
       if (e.kind == ElementKind.DYNAMIC) {
         newModelElement = new Dynamic(e, library);
       }
+      if (e is LibraryElement) {
+        newModelElement = new Library(e, library.package);
+      }
       // Also handles enums
       if (e is ClassElement) {
-        newModelElement = new Class(e, library);
-        if (newModelElement.library.name == 'dart:core' &&
-            newModelElement.name == 'Object') {
-          // We've found Object.  This is an important object, so save it in the package.
-          newModelElement.library.package._objectElement = newModelElement;
+        if (!e.isEnum) {
+          newModelElement = new Class(e, library);
+          if (newModelElement.library.name == 'dart:core' &&
+              newModelElement.name == 'Object') {
+            // We've found Object.  This is an important object, so save it in the package.
+            newModelElement.library.package._objectElement = newModelElement;
+          }
+        } else {
+          newModelElement = new Enum(e, library);
         }
       }
       if (e is FunctionElement) {
@@ -1653,10 +1761,19 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         newModelElement = new Typedef(e, library);
       }
       if (e is FieldElement) {
-        if (enclosingClass == null)
-          newModelElement = new Field(e, library);
-        else
+        if (enclosingClass == null) {
+          if (index != null) {
+            newModelElement = new EnumField.forConstant(index, e, library);
+          } else {
+            if (e.enclosingElement.isEnum) {
+              newModelElement = new EnumField(e, library);
+            } else {
+              newModelElement = new Field(e, library);
+            }
+          }
+        } else {
           newModelElement = new Field.inherited(e, enclosingClass, library);
+        }
       }
       if (e is ConstructorElement) {
         newModelElement = new Constructor(e, library);
@@ -1677,7 +1794,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         newModelElement = new TopLevelVariable(e, library);
       }
       if (e is PropertyAccessorElement) {
-        newModelElement = new Accessor(e, library);
+        newModelElement = new Accessor(e, library, enclosingCombo);
       }
       if (e is TypeParameterElement) {
         newModelElement = new TypeParameter(e, library);
@@ -1688,8 +1805,21 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     }
     if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
     if (enclosingClass != null) assert(newModelElement is Inheritable);
-    if (library != null)
-      library.package._all_model_elements[key] = newModelElement;
+    if (library != null) {
+      library.package._allConstructedModelElements[key] = newModelElement;
+      if (newModelElement is Inheritable) {
+        Tuple2<Element, Library> iKey = new Tuple2(e, library);
+        library.package._allInheritableElements
+            .putIfAbsent(iKey, () => new Set());
+        library.package._allInheritableElements[iKey].add(newModelElement);
+      }
+    }
+    if (newModelElement is Accessor) {
+      assert(newModelElement.enclosingCombo == enclosingCombo);
+    } else {
+      assert(enclosingCombo == null);
+    }
+
     return newModelElement;
   }
 
@@ -1821,7 +1951,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
           // If path inspection or other disambiguation heuristics are needed,
           // they should go here.
           if (candidateLibraries.length > 1) {
-            library.package.warn(this, PackageWarning.ambiguousReexport,
+            warn(PackageWarning.ambiguousReexport,
                 "${candidateLibraries.map((l) => l.name)}");
           }
           if (candidateLibraries.isNotEmpty)
@@ -1842,6 +1972,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return _canonicalLibrary;
   }
 
+  @override
   bool get isCanonical {
     if (library == canonicalLibrary) {
       if (this is Inheritable) {
@@ -1864,36 +1995,47 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   @override
   String get documentationAsHtml => _documentation.asHtml;
 
+  @override
   Element get element => _element;
+
+  @override
+  String get elementLocation {
+    // Call nothing from here that can emit warnings or you'll cause stack overflows.
+    if (lineAndColumn != null) {
+      return "(${p.toUri(sourceFileName)}:${lineAndColumn.item1}:${lineAndColumn.item2})";
+    }
+    return "(${p.toUri(sourceFileName)})";
+  }
 
   /// Returns the fully qualified name.
   ///
   /// For example: libraryName.className.methodName
+  @override
   String get fullyQualifiedName {
     return (_fullyQualifiedName ??= _buildFullyQualifiedName());
   }
 
   String get fullyQualifiedNameWithoutLibrary {
-    return (_fullyQualifiedNameWithoutLibrary ??=
-        fullyQualifiedName.split(".").skip(1).join("."));
+    // Remember, periods are legal in library names.
+    if (_fullyQualifiedNameWithoutLibrary == null) {
+      _fullyQualifiedNameWithoutLibrary =
+          fullyQualifiedName.replaceFirst("${library.fullyQualifiedName}.", '');
+    }
+    return _fullyQualifiedNameWithoutLibrary;
   }
 
   String get sourceFileName => element.source.fullName;
 
-  int _lineNumber;
+  Tuple2<int, int> _lineAndColumn;
   bool _isLineNumberComputed = false;
-  int get lineNumber {
+  @override
+  Tuple2<int, int> get lineAndColumn {
+    // TODO(jcollins-g): we should always be able to get line numbers.  Why can't we, sometimes?
     if (!_isLineNumberComputed) {
-      var node = element.computeNode();
-      if (node is Declaration && node.element != null) {
-        var element = node.element;
-        var lineNumber = lineNumberCache.lineNumber(
-            element.source.fullName, element.nameOffset);
-        _lineNumber = lineNumber + 1;
-      }
-      _isLineNumberComputed = true;
+      _lineAndColumn = lineNumberCache.lineAndColumn(
+          element.source.fullName, element.nameOffset);
     }
-    return _lineNumber;
+    return _lineAndColumn;
   }
 
   bool get hasAnnotations => annotations.isNotEmpty;
@@ -1906,6 +2048,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   /// If canonicalLibrary (or canonicalEnclosingElement, for Inheritable
   /// subclasses) is null, href should be null.
+  @override
   String get href;
 
   String get htmlId => name;
@@ -1986,6 +2129,25 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   ModelElement get overriddenElement => null;
 
+  ModelElement _overriddenDocumentedElement;
+  bool _overriddenDocumentedElementIsSet = false;
+  // TODO(jcollins-g): This method prefers canonical elements, but it isn't
+  // guaranteed and is probably the source of bugs or confusing warnings.
+  ModelElement get overriddenDocumentedElement {
+    if (!_overriddenDocumentedElementIsSet) {
+      ModelElement found = this;
+      while ((found.element.documentationComment == null ||
+              found.element.documentationComment == "") &&
+          !found.isCanonical &&
+          found.overriddenElement != null) {
+        found = found.overriddenElement;
+      }
+      _overriddenDocumentedElement = found;
+      _overriddenDocumentedElementIsSet = true;
+    }
+    return _overriddenDocumentedElement;
+  }
+
   int _overriddenDepth;
   int get overriddenDepth {
     if (_overriddenDepth == null) {
@@ -2001,6 +2163,34 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   Package get package =>
       (this is Library) ? (this as Library).package : this.library.package;
+
+  List<Parameter> _allParameters;
+  // TODO(jcollins-g): This is in the wrong place.  Move parts to GetterSetterCombo,
+  // elsewhere as appropriate?
+  List<Parameter> get allParameters {
+    if (_allParameters == null) {
+      final Set<Parameter> recursedParameters = new Set();
+      final Set<Parameter> newParameters = new Set();
+      if (this is GetterSetterCombo &&
+          (this as GetterSetterCombo).setter != null) {
+        newParameters.addAll((this as GetterSetterCombo).setter.parameters);
+      } else {
+        if (canHaveParameters) newParameters.addAll(parameters);
+      }
+      while (newParameters.isNotEmpty) {
+        recursedParameters.addAll(newParameters);
+        newParameters.clear();
+        for (Parameter p in recursedParameters) {
+          if (p.modelType.element.canHaveParameters) {
+            newParameters.addAll(p.modelType.element.parameters
+                .where((p) => !recursedParameters.contains(p)));
+          }
+        }
+      }
+      _allParameters = recursedParameters.toList();
+    }
+    return _allParameters;
+  }
 
   List<Parameter> get parameters {
     if (!canHaveParameters) {
@@ -2025,6 +2215,17 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         .toList() as Iterable<Parameter>);
 
     return _parameters;
+  }
+
+  void warn(PackageWarning kind, [String message]) {
+    if (kind == PackageWarning.unresolvedDocReference &&
+        overriddenElement != null) {
+      // The documentation we're using for this element came from somewhere else.
+      // Attach the warning to that element to deduplicate.
+      overriddenElement.warn(kind, message);
+    } else {
+      library.package.warn(this, kind, message);
+    }
   }
 
   String get _computeDocumentationComment => element.documentationComment;
@@ -2204,7 +2405,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     }
 
     if (href == null) {
-      package.warn(this, PackageWarning.noCanonicalFound);
+      warn(PackageWarning.noCanonicalFound);
       return HTML_ESCAPE.convert(name);
     }
 
@@ -2486,27 +2687,208 @@ class Operator extends Method {
 
 // The kinds of warnings that can be displayed when documenting a package.
 enum PackageWarning {
+  ambiguousDocReference,
   ambiguousReexport,
   noCanonicalFound,
   noLibraryLevelDocs,
   categoryOrderGivesMissingPackageName,
+  unresolvedDocReference,
+  brokenLink,
+  orphanedFile,
+  unknownFile,
+  typeAsHtml,
 }
 
-class Package implements Nameable, Documentable {
+/// Provides description text and command line flags for warnings.
+/// TODO(jcollins-g): Actually use this for command line flags.
+Map<PackageWarning, List<String>> packageWarningText = {
+  PackageWarning.ambiguousDocReference: [
+    "ambiguous-doc-reference",
+    "A comment reference could refer to two or more different objects"
+  ],
+  PackageWarning.ambiguousReexport: [
+    "ambiguous-reexport",
+    "A symbol is exported from private to public in more than one place and dartdoc is forced to guess which one is canonical"
+  ],
+  PackageWarning.noCanonicalFound: [
+    "no-canonical-found",
+    "A symbol is is part of the public interface for this package, but no library documented with this package documents it so dartdoc can not link to it"
+  ],
+  PackageWarning.noLibraryLevelDocs: [
+    "no-library-level-docs",
+    "There are no library level docs for this library"
+  ],
+  PackageWarning.categoryOrderGivesMissingPackageName: [
+    "category-order-gives-missing-package-name",
+    "The category-order flag on the command line was given the name of a nonexistent package"
+  ],
+  PackageWarning.unresolvedDocReference: [
+    "unresolved-doc-reference",
+    "A comment reference could not be found in parameters, enclosing class, enclosing library, or at the top level of any documented library with the package"
+  ],
+  PackageWarning.brokenLink: [
+    "brokenLink",
+    "Dartdoc generated a link to a non-existent file"
+  ],
+  PackageWarning.orphanedFile: [
+    "orphanedFile",
+    "Dartdoc generated files that are unreachable from the index"
+  ],
+  PackageWarning.unknownFile: [
+    "unknownFile",
+    "A leftover file exists in the tree that dartdoc did not write in this pass"
+  ],
+  PackageWarning.typeAsHtml: [
+    "typeAsHtml",
+    "Use of <> in a comment for type parameters is being treated as HTML by markdown"
+  ],
+};
+
+// Something that can be located for warning purposes.
+abstract class Locatable {
+  String get fullyQualifiedName;
+  String get href;
+  Element get element;
+  String get elementLocation;
+  Tuple2<int, int> get lineAndColumn;
+  bool get isCanonical;
+}
+
+class PackageWarningOptions {
+  // PackageWarnings must be in one of _ignoreWarnings or union(_asWarnings, _asErrors)
+  final Set<PackageWarning> _ignoreWarnings = new Set();
+  // PackageWarnings can be in both asWarnings and asErrors, latter takes precedence
+  final Set<PackageWarning> _asWarnings = new Set();
+  final Set<PackageWarning> _asErrors = new Set();
+
+  Set<PackageWarning> get ignoreWarnings => _ignoreWarnings;
+  Set<PackageWarning> get asWarnings => _asWarnings;
+  Set<PackageWarning> get asErrors => _asErrors;
+
+  PackageWarningOptions() {
+    _asWarnings.addAll(PackageWarning.values);
+    ignore(PackageWarning.typeAsHtml);
+  }
+
+  void _assertInvariantsOk() {
+    assert(_asWarnings
+        .union(_asErrors)
+        .union(_ignoreWarnings)
+        .containsAll(PackageWarning.values.toSet()));
+    assert(_asWarnings.union(_asErrors).intersection(_ignoreWarnings).isEmpty);
+  }
+
+  void ignore(PackageWarning kind) {
+    _assertInvariantsOk();
+    _asWarnings.remove(kind);
+    _asErrors.remove(kind);
+    _ignoreWarnings.add(kind);
+    _assertInvariantsOk();
+  }
+
+  void warn(PackageWarning kind) {
+    _assertInvariantsOk();
+    _ignoreWarnings.remove(kind);
+    _asWarnings.add(kind);
+    _asErrors.remove(kind);
+    _assertInvariantsOk();
+  }
+
+  void error(PackageWarning kind) {
+    _assertInvariantsOk();
+    _ignoreWarnings.remove(kind);
+    _asWarnings.add(kind);
+    _asErrors.add(kind);
+    _assertInvariantsOk();
+  }
+}
+
+class PackageWarningCounter {
+  final Map<Element, Set<Tuple2<PackageWarning, String>>> _countedWarnings =
+      new Map();
+  final Map<PackageWarning, int> _warningCounts = new Map();
+  final PackageWarningOptions options;
+
+  PackageWarningCounter(this.options);
+
+  /// Actually write out the warning.  Assumes it is already counted with add.
+  void _writeWarning(PackageWarning kind, String fullMessage) {
+    if (options.ignoreWarnings.contains(kind)) return;
+    String toWrite;
+    if (!options.asErrors.contains(kind)) {
+      if (options.asWarnings.contains(kind))
+        toWrite = "warning: ${fullMessage}";
+    } else {
+      if (options.asErrors.contains(kind)) toWrite = "error: ${fullMessage}";
+    }
+    if (toWrite != null) stderr.write("\n ${toWrite}");
+  }
+
+  /// Returns true if we've already warned for this.
+  bool hasWarning(Element element, PackageWarning kind, String message) {
+    Tuple2<PackageWarning, String> warningData = new Tuple2(kind, message);
+    if (_countedWarnings.containsKey(element)) {
+      return _countedWarnings[element].contains(warningData);
+    }
+    return false;
+  }
+
+  /// Adds the warning to the counter, and writes out the fullMessage string
+  /// if configured to do so.
+  void addWarning(Element element, PackageWarning kind, String message,
+      String fullMessage) {
+    assert(!hasWarning(element, kind, message));
+    Tuple2<PackageWarning, String> warningData = new Tuple2(kind, message);
+    _warningCounts.putIfAbsent(kind, () => 0);
+    _warningCounts[kind] += 1;
+    _countedWarnings.putIfAbsent(element, () => new Set());
+    _countedWarnings[element].add(warningData);
+    _writeWarning(kind, fullMessage);
+  }
+
+  int get errorCount {
+    return _warningCounts.keys
+        .map((w) => options.asErrors.contains(w) ? _warningCounts[w] : 0)
+        .reduce((a, b) => a + b);
+  }
+
+  int get warningCount {
+    return _warningCounts.keys
+        .map((w) =>
+            options.asWarnings.contains(w) && !options.asErrors.contains(w)
+                ? _warningCounts[w]
+                : 0)
+        .reduce((a, b) => a + b);
+  }
+
+  @override
+  String toString() {
+    String errors = '$errorCount ${errorCount == 1 ? "error" : "errors"}';
+    String warnings =
+        '$warningCount ${warningCount == 1 ? "warning" : "warnings"}';
+    return [errors, warnings].join(', ');
+  }
+}
+
+class Package implements Nameable, Documentable, Locatable {
   // Library objects serving as entry points for documentation.
   final List<Library> _libraries = [];
   // All library objects related to this package; a superset of _libraries.
-  final Map<LibraryElement, Library> _all_libraries = new Map();
-  // All ModelElements constructed for this package; a superset  of allModelElements.
-  final Map<Tuple3<Element, Library, Class>, ModelElement> _all_model_elements =
-      new Map();
+  final Map<LibraryElement, Library> _allLibraries = new Map();
+
+  // Objects to keep track of warnings.
+  final PackageWarningOptions _packageWarningOptions;
+  PackageWarningCounter _packageWarningCounter;
+  // All ModelElements constructed for this package; a superset of allModelElements.
+  final Map<Tuple4<Element, Library, Class, ModelElement>, ModelElement>
+      _allConstructedModelElements = new Map();
+
+  // Anything that might be inheritable, place here for later lookup.
+  final Map<Tuple2<Element, Library>, Set<ModelElement>>
+      _allInheritableElements = new Map();
 
   /// Map of Class.href to a list of classes implementing that class
   final Map<String, List<Class>> _implementors = new Map();
-
-  final Map<Element, Set<PackageWarning>> _displayedWarnings = new Map();
-  final Map<String, Set<PackageWarning>> _displayedNonElementWarnings =
-      new Map();
 
   final PackageMeta packageMeta;
 
@@ -2515,15 +2897,17 @@ class Package implements Nameable, Documentable {
   final Map<String, String> _macros = {};
   bool allLibrariesAdded = false;
 
-  Package(Iterable<LibraryElement> libraryElements, this.packageMeta) {
-    assert(_all_model_elements.isEmpty);
-    assert(_all_libraries.isEmpty);
+  Package(Iterable<LibraryElement> libraryElements, this.packageMeta,
+      this._packageWarningOptions) {
+    assert(_allConstructedModelElements.isEmpty);
+    assert(_allLibraries.isEmpty);
+    _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
     libraryElements.forEach((element) {
       // add only if the element should be included in the public api
       if (isPublic(element)) {
         var lib = new Library._(element, this);
         _libraries.add(lib);
-        _all_libraries[element] = lib;
+        _allLibraries[element] = lib;
         assert(!_elementToLibrary.containsKey(lib.element));
         _elementToLibrary[element] = lib;
       }
@@ -2538,40 +2922,59 @@ class Package implements Nameable, Documentable {
     _implementors.values.forEach((l) => l.sort());
   }
 
-  void warn(ModelElement modelElement, PackageWarning kind, [String message]) {
-    String elementName;
-    String fullElementName;
-    if (modelElement != null) {
-      if (_displayedWarnings.containsKey(modelElement.element) &&
-          _displayedWarnings[modelElement.element].contains(kind)) {
-        return;
-      }
+  @override
+  Element get element => null;
 
-      if (modelElement.element is ClassMemberElement) {
-        Element theElement = modelElement.element;
-        ClassElement enclosingClass;
-        while (theElement is! ClassElement &&
-            theElement.enclosingElement != null) {
-          theElement = theElement.enclosingElement;
+  @override
+  String get elementLocation => '(top level package)';
+
+  @override
+  Tuple2<int, int> get lineAndColumn => null;
+
+  @override
+  String get fullyQualifiedName => name;
+
+  @override
+  bool get isCanonical => true;
+
+  PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
+
+  void warn(Locatable modelElement, PackageWarning kind, [String message]) {
+    if (modelElement != null) {
+      // This sort of warning is only applicable to top level elements.
+      if (kind == PackageWarning.ambiguousReexport) {
+        Element topLevelElement = modelElement.element;
+        while (topLevelElement.enclosingElement is! CompilationUnitElement) {
+          topLevelElement = topLevelElement.enclosingElement;
         }
-        enclosingClass = theElement as ClassElement;
-        if (_displayedWarnings.containsKey(enclosingClass) &&
-            _displayedWarnings[enclosingClass].contains(kind)) return;
-        elementName = "${enclosingClass.name}.${modelElement.name}";
-      } else {
-        elementName = "${modelElement.name}";
+        modelElement = new ModelElement.from(
+            topLevelElement, findOrCreateLibraryFor(topLevelElement));
       }
-      fullElementName =
-          "${elementName} (${modelElement.library.element.location})";
+      if (modelElement is Accessor) {
+        // This might be part of a Field, if so, assign this warning to the field
+        // rather than the Accessor.
+        if ((modelElement as Accessor).enclosingCombo != null)
+          modelElement = (modelElement as Accessor).enclosingCombo;
+      }
     } else {
       // If we don't have an element, we need a message to disambiguate.
       assert(message != null);
-      // Checking for kinds here seems a bit redundant right now, but for
-      // consistency...
-      if (_displayedNonElementWarnings.containsKey(message) &&
-          _displayedNonElementWarnings[message].contains(kind)) {
-        return;
-      }
+    }
+    if (_packageWarningCounter.hasWarning(
+        modelElement?.element, kind, message)) {
+      return;
+    }
+    // Elements that are part of the Dart SDK can have colons in their FQNs.
+    // This confuses IntelliJ and makes it so it can't link to the location
+    // of the error in the console window, so separate out the library from
+    // the path.
+    // TODO(jcollins-g): What about messages that may include colons?  Substituting
+    //                   them out doesn't work as well there since it might confuse
+    //                   the user, yet we still want IntelliJ to link properly.
+    String nameSplitFromColonPieces;
+    if (modelElement != null) {
+      nameSplitFromColonPieces =
+          modelElement.fullyQualifiedName.replaceFirst(':', '-');
     }
     String warningMessage;
     switch (kind) {
@@ -2581,38 +2984,66 @@ class Package implements Nameable, Documentable {
         // TODO(jcollins-g): add a dartdoc flag to enable external website linking for non-canonical elements, using .packages for versioning
         // TODO(jcollins-g): support documenting multiple packages at once and linking between them
         warningMessage =
-            "no canonical library found for ${fullElementName}, not linking";
+            "no canonical library found for ${nameSplitFromColonPieces}, not linking";
         break;
       case PackageWarning.ambiguousReexport:
         // Fix these warnings by adding the original library exporting the
         // symbol with --include, or by using --auto-include-dependencies.
         // TODO(jcollins-g): add a dartdoc flag to force a particular resolution order for (or drop) ambiguous reexports
         warningMessage =
-            "ambiguous reexport of ${fullElementName}, canonicalization candidates: ${message}";
+            "ambiguous reexport of ${nameSplitFromColonPieces}, canonicalization candidates: ${message}";
         break;
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
-            "${fullElementName} has no library level documentation comments";
+            "${modelElement.fullyQualifiedName} has no library level documentation comments";
+        break;
+      case PackageWarning.ambiguousDocReference:
+        warningMessage =
+            "ambiguous doc reference in ${nameSplitFromColonPieces}: ${message}";
         break;
       case PackageWarning.categoryOrderGivesMissingPackageName:
         warningMessage =
-            "--category-order gives invalid package name: ${message}";
+            "--category-order gives invalid package name: '${message}'";
+        break;
+      case PackageWarning.unresolvedDocReference:
+        warningMessage =
+            "unresolved doc reference [${message}], from ${nameSplitFromColonPieces}";
+        break;
+      case PackageWarning.brokenLink:
+        warningMessage =
+            'dartdoc generated a broken link to: ${message}, from ${nameSplitFromColonPieces == null ? "<unknown>" : nameSplitFromColonPieces}';
+        break;
+      case PackageWarning.orphanedFile:
+        warningMessage =
+            'dartdoc generated a file orphan: ${message}, from ${nameSplitFromColonPieces == null ? "<unknown>" : nameSplitFromColonPieces}';
+        break;
+      case PackageWarning.unknownFile:
+        warningMessage =
+            'dartdoc detected an unknown file in the doc tree:  ${message}';
+        break;
+      case PackageWarning.typeAsHtml:
+        // The message for this warning can contain many punctuation and other symbols,
+        // so bracket with a triple quote for defense.
+        warningMessage = 'generic type handled as HTML: """${message}"""';
         break;
     }
-    stderr.write("\n warning: ${warningMessage}");
-    if (modelElement != null) {
-      _displayedWarnings.putIfAbsent(modelElement.element, () => new Set());
-      _displayedWarnings[modelElement.element].add(kind);
-    } else {
-      _displayedNonElementWarnings.putIfAbsent(message, () => new Set());
-      _displayedNonElementWarnings[message].add(kind);
-    }
+    // warningMessage should not contain "file:" or "dart:" -- confuses IntelliJ.
+    ['file:', 'dart:'].forEach((s) {
+      // message can contain user text; nothing we can do about that.
+      assert(!warningMessage.contains(s) || message.contains(s));
+    });
+    String fullMessage =
+        "${warningMessage} ${modelElement != null ? modelElement.elementLocation : ''}";
+    packageWarningCounter.addWarning(
+        modelElement?.element, kind, message, fullMessage);
   }
 
   static Package _withAutoIncludedDependencies(
-      Set<LibraryElement> libraryElements, PackageMeta packageMeta) {
+      Set<LibraryElement> libraryElements,
+      PackageMeta packageMeta,
+      PackageWarningOptions options) {
     var startLength = libraryElements.length;
-    Package package = new Package(libraryElements, packageMeta);
+    Package package = new Package(libraryElements, packageMeta, options);
 
     // TODO(jcollins-g): this is inefficient; keep track of modelElements better
     package.allModelElements.forEach((modelElement) {
@@ -2632,14 +3063,17 @@ class Package implements Nameable, Documentable {
     });
 
     if (libraryElements.length > startLength)
-      return _withAutoIncludedDependencies(libraryElements, packageMeta);
+      return _withAutoIncludedDependencies(
+          libraryElements, packageMeta, options);
     return package;
   }
 
   static Package withAutoIncludedDependencies(
-      Iterable<LibraryElement> libraryElements, PackageMeta packageMeta) {
+      Iterable<LibraryElement> libraryElements,
+      PackageMeta packageMeta,
+      PackageWarningOptions options) {
     return _withAutoIncludedDependencies(
-        new Set()..addAll(libraryElements), packageMeta);
+        new Set()..addAll(libraryElements), packageMeta, options);
   }
 
   List<PackageCategory> get categories {
@@ -2698,6 +3132,24 @@ class Package implements Nameable, Documentable {
     return hasDocumentationFile ? documentationFile.contents : null;
   }
 
+  /// A lookup index for hrefs to allow warnings to indicate where a broken
+  /// link or orphaned file may have come from.  Not cached because
+  /// [ModelElement]s can be created at any time and we're basing this
+  /// on more than just [allModelElements] to make the error messages
+  /// comprehensive.
+  Map<String, Set<ModelElement>> get allHrefs {
+    Map<String, Set<ModelElement>> hrefMap = new Map();
+    // TODO(jcollins-g ): handle calculating hrefs causing new elements better
+    //                    than toList().
+    for (ModelElement modelElement
+        in _allConstructedModelElements.values.toList()) {
+      if (modelElement.href == null) continue;
+      hrefMap.putIfAbsent(modelElement.href, () => new Set());
+      hrefMap[modelElement.href].add(modelElement);
+    }
+    return hrefMap;
+  }
+
   @override
   String get documentationAsHtml {
     if (_docsAsHtml != null) return _docsAsHtml;
@@ -2719,6 +3171,7 @@ class Package implements Nameable, Documentable {
   bool get hasDocumentationFile => documentationFile != null;
 
   // TODO: make this work
+  @override
   String get href => 'index.html';
 
   /// Does this package represent the SDK?
@@ -2801,30 +3254,103 @@ class Package implements Nameable, Documentable {
   /// Tries to find a top level library that references this element.
   Library findCanonicalLibraryFor(Element e) {
     assert(allLibrariesAdded);
+    Element searchElement = e;
+    if (e is PropertyAccessorElement) {
+      searchElement = e.variable;
+    }
 
     if (_canonicalLibraryFor.containsKey(e)) {
       return _canonicalLibraryFor[e];
     }
     _canonicalLibraryFor[e] = null;
     for (Library library in libraries) {
-      if (library.modelElementsMap.containsKey(e)) {
-        if (library.modelElementsMap[e].isCanonical) {
-          _canonicalLibraryFor[e] = library;
-          break;
+      if (library.modelElementsMap.containsKey(searchElement)) {
+        for (ModelElement modelElement
+            in library.modelElementsMap[searchElement]) {
+          if (modelElement.isCanonical) {
+            _canonicalLibraryFor[e] = library;
+            break;
+          }
         }
       }
     }
     return _canonicalLibraryFor[e];
   }
 
-  /// Tries to find a canonical ModelElement for this element.
-  /// Do not use this to find Inheritable ModelElements; we can't
-  /// figure out whether this element is inherited by ourselves.
-  ModelElement findCanonicalModelElementFor(Element e) {
+  /// Tries to find a canonical ModelElement for this element.  If we know
+  /// this element is related to a particular class, pass preferredClass to
+  /// disambiguate.
+  ModelElement findCanonicalModelElementFor(Element e, {Class preferredClass}) {
+    assert(allLibrariesAdded);
     Library lib = findCanonicalLibraryFor(e);
     ModelElement modelElement;
-    if (lib != null) modelElement = new ModelElement.from(e, lib);
-    assert(modelElement is! Inheritable);
+    // TODO(jcollins-g): The data structures should be changed to eliminate guesswork
+    // with member elements.
+    if (e is ClassMemberElement || e is PropertyAccessorElement) {
+      // Prefer Fields over Accessors.
+      if (e is PropertyAccessorElement)
+        e = (e as PropertyAccessorElement).variable;
+      Set<ModelElement> candidates = new Set();
+      Tuple2<Element, Library> iKey = new Tuple2(e, lib);
+      Tuple4<Element, Library, Class, ModelElement> key =
+          new Tuple4(e, lib, null, null);
+      Tuple4<Element, Library, Class, ModelElement> keyWithClass =
+          new Tuple4(e, lib, preferredClass, null);
+      if (_allConstructedModelElements.containsKey(key)) {
+        candidates.add(_allConstructedModelElements[key]);
+      }
+      if (_allConstructedModelElements.containsKey(keyWithClass)) {
+        candidates.add(_allConstructedModelElements[keyWithClass]);
+      }
+      if (candidates.isEmpty && _allInheritableElements.containsKey(iKey)) {
+        candidates.addAll(
+            _allInheritableElements[iKey].where((me) => me.isCanonical));
+      }
+      Class canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
+      if (canonicalClass != null) {
+        candidates.addAll(canonicalClass.allCanonicalModelElements.where((m) {
+          if (m.element is FieldElement) {
+            FieldElement fieldElement = m.element as FieldElement;
+            Element getter;
+            Element setter;
+            if (fieldElement.getter?.isSynthetic == true) {
+              getter = fieldElement.getter.variable;
+            } else {
+              getter = fieldElement.getter;
+            }
+            if (fieldElement.setter?.isSynthetic == true) {
+              setter = fieldElement.setter.variable;
+            } else {
+              setter = fieldElement.setter;
+            }
+            if (setter == e || getter == e) return true;
+          }
+          if (m.element == e) return true;
+          return false;
+        }));
+      }
+      Set<ModelElement> matches = new Set()
+        ..addAll(candidates.where((me) => me.isCanonical));
+
+      // This is for situations where multiple classes may actually be canonical
+      // for an inherited element whose defining Class is not canonical.
+      if (matches.length > 1 && preferredClass != null) {
+        // Search for matches inside our superchain.
+        List<Class> superChain =
+            preferredClass.superChainRaw.map((et) => et.element).toList();
+        superChain.add(preferredClass);
+        matches.removeWhere((me) =>
+            !superChain.contains((me as EnclosedElement).enclosingElement));
+      }
+      assert(matches.length <= 1);
+      if (!matches.isEmpty) modelElement = matches.first;
+    } else {
+      if (lib != null) modelElement = new ModelElement.from(e, lib);
+      assert(modelElement is! Inheritable);
+      if (modelElement != null && !modelElement.isCanonical) {
+        modelElement = null;
+      }
+    }
     return modelElement;
   }
 
@@ -2833,8 +3359,8 @@ class Package implements Nameable, Documentable {
   /// set of canonical Libraries).
   Library findOrCreateLibraryFor(Element e) {
     // This is just a cache to avoid creating lots of libraries over and over.
-    if (_all_libraries.containsKey(e.library)) {
-      return _all_libraries[e.library];
+    if (_allLibraries.containsKey(e.library)) {
+      return _allLibraries[e.library];
     }
     // can be null if e is for dynamic
     if (e.library == null) {
@@ -2844,13 +3370,14 @@ class Package implements Nameable, Documentable {
 
     if (foundLibrary == null) {
       foundLibrary = new Library._(e.library, this);
-      _all_libraries[e.library] = foundLibrary;
+      _allLibraries[e.library] = foundLibrary;
     }
     return foundLibrary;
   }
 
   List<ModelElement> _allModelElements;
   Iterable<ModelElement> get allModelElements {
+    assert(allLibrariesAdded);
     if (_allModelElements == null) {
       _allModelElements = [];
       this.libraries.forEach((library) {
@@ -2984,7 +3511,7 @@ abstract class SourceCodeMixin {
     }
   }
 
-  int get lineNumber;
+  Tuple2<int, int> get lineAndColumn;
 
   Element get element;
 
@@ -3068,9 +3595,9 @@ abstract class SourceCodeMixin {
   }
 
   String get _crossdartUrl {
-    if (lineNumber != null && _crossdartPath != null) {
+    if (lineAndColumn != null && _crossdartPath != null) {
       String url = "//www.crossdart.info/p/${_crossdartPath}.html";
-      return "${url}#line-${lineNumber}";
+      return "${url}#line-${lineAndColumn.item1}";
     } else {
       return null;
     }
@@ -3141,13 +3668,6 @@ class TopLevelVariable extends ModelElement
 
   @override
   String get kind => 'top-level property';
-
-  String get linkedReturnType => modelType.linkedName;
-
-  bool get readOnly => hasGetter && !hasSetter;
-  bool get readWrite => hasGetter && hasSetter;
-
-  bool get writeOnly => hasSetter && !hasGetter;
 
   @override
   Set<String> get features {

@@ -7,6 +7,8 @@ library dartdoc.cache;
 import 'dart:collection';
 import 'dart:io';
 
+import 'package:tuple/tuple.dart';
+
 String _getNewlineChar(String contents) {
   if (contents.contains("\r\n")) {
     return "\r\n";
@@ -49,6 +51,20 @@ class LineNumberCache {
       var lastKey = lineMap.lastKeyBefore(offset);
       return lineMap[lastKey];
     }
+  }
+
+  Tuple2<int, int> lineAndColumn(String file, int offset) {
+    if (offset == 0) {
+      return new Tuple2(0, 0);
+    } else {
+      var lineMap = _lineNumbers.putIfAbsent(
+          file, () => _createLineNumbersMap(_fileContents(file)));
+      var lastKey = lineMap.lastKeyBefore(offset);
+      if (lastKey != null) {
+        return new Tuple2(lineMap[lastKey] + 1, offset - lastKey);
+      }
+    }
+    return null;
   }
 
   String _fileContents(String file) =>

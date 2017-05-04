@@ -178,7 +178,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void generatePackage() {
-    stdout.write('documenting ${package.name}');
+    stdout.write('\ndocumenting ${package.name}');
 
     TemplateData data = new PackageTemplateData(this, package, useCategories);
 
@@ -188,7 +188,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
   void generateLibrary(Package package, Library lib) {
     stdout
         .write('\ngenerating docs for library ${lib.name} from ${lib.path}...');
-
     if (!lib.isAnonymous && !lib.hasDocumentation) {
       package.warn(lib, PackageWarning.noLibraryLevelDocs);
     }
@@ -294,6 +293,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
       destFile.writeAsBytesSync(resourceBytes);
     }
   }
+
+  Set<String> get writtenFiles => _writtenFiles;
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
     String fullName = path.join(out.path, filename);

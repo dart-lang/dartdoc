@@ -1,8 +1,62 @@
-## unreleased
+## 0.11.0
 
-* added a new `--footer-text` command-line option, to allow adding additional
-  text in the package name and copyright section of the footer
-* Reduced stack depth by not recomputing findCanonicalLibraryFor (#1381)
+* Many cleanups to dartdoc stdout/stderr, error messages, and warnings:
+  * Display fatal errors with 'fatal error' string to distinguish them from ordinary errors
+  * Upgrades to new Package.warn system.
+    * Fully integrated all scattered "warnings" (#1369) and added new ones for the link checker.
+    * Allow for setting which warnings are errors in the library.
+    * Change location output to something IntelliJ can understand and link to
+    * Display location output for all warnings including line number plus column, when available
+      from analyzer (still some bugs in our resolution). It still doesn't do code references quite
+      right but at least gets you to the neighborhood.
+    * Add a warn method to ModelElements so they can warn on themselves without help from the
+      Package.
+    * Warn correctly and squelch duplicates across doc inheritance and canonicalization almost
+      everywhere.
+    * Change --show-warnings to show all warnings, even those that might not be useful yet.
+  * Display a count of all warnings/errors after document generation.
+  * Make the progress counter tick slower.
+* Added a built-in link checker and orphaned file checker, and tied it into Package.warn so
+  that when debugging dartdoc we can breakpoint and discover what about that ModelElement
+  caused us to create the broken link. (#1380)
+* Fix bug where canonicalEnclosingElement could return a non-canonical Class.
+* Fix bug where findCanonicalModelElementFor could return a non-canonical Class.
+* Fix overriddenElement for Accessors to generate using enclosingCombo hint to ModelElement factory.
+* Fix fullyQualifiedNameWithoutLibrary when periods are part of the library name.
+* Add an allModelElements for Classes to support comment references.
+* Make allModelElements for Libraries work using Class.allModelElements recursively.
+* Squish some bugs related to duplicate logic for instantiating inherited class members.
+  * Enum and a few other places could still generate duplicate ModelElements for the
+    same thing.  This is now fixed.
+  * EnumField is now handled by ModelElement.from factory, fixing #1239.
+  * Added hints for EnumField and Accessors (index, enclosingCombo) to offload the buggy
+    logic for figuring this out from callers to ModelElement.from.
+* Fix broken link generation when a canonical class's defining library isn't canonical.
+* Partial rewrite of GetterSetterCombo and Fields/TopLevelVariable handling
+  * Link correctly to generic types for Fields/TopLevelVariables.
+  * Use right, left, and bidirectional arrows for read-only, write-only, and read-write
+    parameters.
+* Partial rewrite of comment reference system (#1391, #1285 partial)
+  * Handle gracefully a variety of things users try in the real world, like prefixing operators
+    with 'operator', embedded newlines in comment references, and cases that shouldn't be
+    considered at all (comment refs that are really array references in sample docs, etc).
+  * Handle canonicalization correctly for comment references: point to the right places and
+    only to canonical elements.
+  * In general, warnings related to comment references should be much more useful now. (#1343)
+    * Many fewer ambiguous doc reference warnings now and the ones that exist should be more
+      easily understandable and fixable with the new warning message.
+    * Understand references to parameters even though we don't do anything useful with them just yet
+    * Generics outside square brackets (#1250) are now warned with better context information that
+      takes newlines into account, but there are so many of them in complex packages like Flutter
+      that we still only show those with --show-warnings.
+  * Cache the traversal of allModelElements.
+  * Change handling of enum constant linking in codeRefs to work properly, though warnings about
+    that aren't right in some edge cases still.
+  * Only use analyzer resolving of commentRefs as a last resort since they don't take dartdoc
+    canonicalization into account.
+* Added a new `--footer-text` command-line option, to allow adding additional
+  text in the package name and copyright section of the footer.
+* Reduced stack depth by not recomputing findCanonicalLibraryFor. (#1381)
 * Workaround for (#1367) forces on enableAssertInitializer.
 * Work around analyzer-0.29 bug where embedded SDK uri's aren't properly
   reversed.

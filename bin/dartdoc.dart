@@ -55,15 +55,15 @@ main(List<String> arguments) async {
 
   var readme = args['sdk-readme'];
   if (readme != null && !(new File(readme).existsSync())) {
-    stderr
-        .write(" Error: unable to locate the SDK description file at $readme.");
+    stderr.write(
+        " fatal error: unable to locate the SDK description file at $readme.");
     exit(1);
   }
 
   Directory inputDir = new Directory(args['input']);
   if (!inputDir.existsSync()) {
     stderr.write(
-        " Error: unable to locate the input directory at ${inputDir.path}.");
+        " fatal error: unable to locate the input directory at ${inputDir.path}.");
     exit(1);
   }
 
@@ -77,7 +77,8 @@ main(List<String> arguments) async {
       args['header'].map(_resolveTildePath).toList() as List<String>;
   for (String headerFilePath in headerFilePaths) {
     if (!new File(headerFilePath).existsSync()) {
-      stderr.write(" Error: unable to locate header file: ${headerFilePath}.");
+      stderr.write(
+          " fatal error: unable to locate header file: ${headerFilePath}.");
       exit(1);
     }
   }
@@ -86,7 +87,8 @@ main(List<String> arguments) async {
       args['footer'].map(_resolveTildePath).toList() as List<String>;
   for (String footerFilePath in footerFilePaths) {
     if (!new File(footerFilePath).existsSync()) {
-      stderr.write(" Error: unable to locate footer file: ${footerFilePath}.");
+      stderr.write(
+          " fatal error: unable to locate footer file: ${footerFilePath}.");
       exit(1);
     }
   }
@@ -96,7 +98,7 @@ main(List<String> arguments) async {
   for (String footerFilePath in footerTextFilePaths) {
     if (!new File(footerFilePath).existsSync()) {
       stderr.write(
-          " Error: unable to locate footer-text file: ${footerFilePath}.");
+          " fatal error: unable to locate footer-text file: ${footerFilePath}.");
       exit(1);
     }
   }
@@ -110,7 +112,7 @@ main(List<String> arguments) async {
   if (args.rest.isNotEmpty) {
     var unknownArgs = args.rest.join(' ');
     stderr.write(
-        'Error: detected unknown command-line argument(s): $unknownArgs');
+        ' fatal error: detected unknown command-line argument(s): $unknownArgs');
     _printUsageAndExit(parser, exitCode: 1);
   }
 
@@ -120,7 +122,7 @@ main(List<String> arguments) async {
 
   if (!packageMeta.isValid) {
     stderr.writeln(
-        'Unable to generate documentation: ${packageMeta.getInvalidReasons().first}.');
+        ' fatal error: Unable to generate documentation: ${packageMeta.getInvalidReasons().first}.');
     exit(1);
   }
 
@@ -165,10 +167,11 @@ main(List<String> arguments) async {
       autoIncludeDependencies: args['auto-include-dependencies'],
       categoryOrder: args['category-order']);
 
-  var dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
+  DartDoc dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries,
       includeExternals: includeExternals);
 
+  dartdoc.onCheckProgress.listen(_onProgress);
   Chain.capture(() async {
     DartDocResults results = await dartdoc.generateDocs();
     print('\nSuccess! Docs generated into ${results.outDir.absolute.path}');
@@ -218,7 +221,8 @@ ArgParser _createArgsParser() {
   parser.addOption('footer-text',
       allowMultiple: true,
       splitCommas: true,
-      help: 'paths to footer-text files (optional text next to the copyright).');
+      help:
+          'paths to footer-text files (optional text next to the copyright).');
   parser.addOption('exclude',
       allowMultiple: true, splitCommas: true, help: 'Library names to ignore.');
   parser.addOption('include',
@@ -264,8 +268,12 @@ ArgParser _createArgsParser() {
   return parser;
 }
 
-void _onProgress(File file) {
-  if (_showProgress) stdout.write('.');
+int _progressCounter = 0;
+void _onProgress(var file) {
+  if (_showProgress && _progressCounter % 5 == 0) {
+    stdout.write('.');
+  }
+  _progressCounter += 1;
 }
 
 /// Print help if we are passed the help option.
