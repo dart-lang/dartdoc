@@ -16,7 +16,7 @@
     * Change --show-warnings to show all warnings, even those that might not be useful yet.
   * Display a count of all warnings/errors after document generation.
   * Make the progress counter tick slower.
-* Added a built-in link checker and orphaned file generator, and tied it into Package.warn so
+* Added a built-in link checker and orphaned file checker, and tied it into Package.warn so
   that when debugging dartdoc we can breakpoint and discover what about that ModelElement
   caused us to create the broken link. (#1380)
 * Fix bug where canonicalEnclosingElement could return a non-canonical Class.
