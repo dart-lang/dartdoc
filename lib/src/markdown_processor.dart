@@ -292,10 +292,8 @@ MatchingLinkResult _getMatchingLinkElement(
   return new MatchingLinkResult(refModelElement, null);
 }
 
+/// Given a set of commentRefs, return the one whose name matches the codeRef.
 Element _getRefElementFromCommentRefs(List<CommentReference> commentRefs, String codeRef) {
-  // This is faster but does not take canonicalization into account; try
-  // only as a last resort. TODO(jcollins-g): make analyzer comment references
-  // dartdoc-canonicalization-aware?
   for (CommentReference ref in commentRefs) {
     if (ref.identifier.name == codeRef) {
       bool isConstrElement =
