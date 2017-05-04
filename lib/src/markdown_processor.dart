@@ -331,7 +331,7 @@ Map<String, Set<ModelElement>> _findRefElementCache;
 // TODO(jcollins-g): Rewrite this to handle constructors in a less hacky way
 // TODO(jcollins-g): This function breaks down naturally into many helpers, extract them
 // TODO(jcollins-g): Subcomponents of this function shouldn't be adding nulls to results, strip the
-//                   removes out that are gratuitous and
+//                   removes out that are gratuitous and debug the individual pieces.
 // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
 Element _findRefElementInLibrary(String codeRef, ModelElement element) {
   assert(element.package.allLibrariesAdded);
@@ -533,6 +533,8 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element) {
 // and will add to [results]
 void _getResultsForClass(Class tryClass, String codeRefChomped,
     Set<ModelElement> results, String codeRef, Package package) {
+  // This might be part of the type arguments for the class, if so, add them.
+  // Otherwise, search the class.
   if ((tryClass.modelType.typeArguments.map((e) => e.name))
       .contains(codeRefChomped)) {
     results.add(tryClass.modelType.typeArguments
