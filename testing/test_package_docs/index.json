@@ -510,23 +510,23 @@
  {
   "name": "Cat",
   "qualifiedName": "ex.Cat",
-  "href": "ex/Cat-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "Cat",
-  "qualifiedName": "ex.Cat",
   "href": "ex/Cat/Cat.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Cat",
    "type": "class"
+  }
+ },
+ {
+  "name": "Cat",
+  "qualifiedName": "ex.Cat",
+  "href": "ex/Cat-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -609,23 +609,23 @@
  {
   "name": "CatString",
   "qualifiedName": "ex.CatString",
-  "href": "ex/CatString-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "CatString",
-  "qualifiedName": "ex.CatString",
   "href": "ex/CatString/CatString.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "CatString",
    "type": "class"
+  }
+ },
+ {
+  "name": "CatString",
+  "qualifiedName": "ex.CatString",
+  "href": "ex/CatString-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -774,23 +774,23 @@
  {
   "name": "ConstantCat",
   "qualifiedName": "ex.ConstantCat",
-  "href": "ex/ConstantCat/ConstantCat.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ConstantCat",
-   "type": "class"
-  }
- },
- {
-  "name": "ConstantCat",
-  "qualifiedName": "ex.ConstantCat",
   "href": "ex/ConstantCat-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
    "type": "library"
+  }
+ },
+ {
+  "name": "ConstantCat",
+  "qualifiedName": "ex.ConstantCat",
+  "href": "ex/ConstantCat/ConstantCat.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstantCat",
+   "type": "class"
   }
  },
  {
@@ -884,23 +884,23 @@
  {
   "name": "Deprecated",
   "qualifiedName": "ex.Deprecated",
-  "href": "ex/Deprecated-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "Deprecated",
-  "qualifiedName": "ex.Deprecated",
   "href": "ex/Deprecated/Deprecated.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Deprecated",
    "type": "class"
+  }
+ },
+ {
+  "name": "Deprecated",
+  "qualifiedName": "ex.Deprecated",
+  "href": "ex/Deprecated-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -972,23 +972,23 @@
  {
   "name": "Dog",
   "qualifiedName": "ex.Dog",
-  "href": "ex/Dog/Dog.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Dog",
-   "type": "class"
-  }
- },
- {
-  "name": "Dog",
-  "qualifiedName": "ex.Dog",
   "href": "ex/Dog-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
    "type": "library"
+  }
+ },
+ {
+  "name": "Dog",
+  "qualifiedName": "ex.Dog",
+  "href": "ex/Dog/Dog.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
   }
  },
  {
@@ -1368,23 +1368,23 @@
  {
   "name": "F",
   "qualifiedName": "ex.F",
-  "href": "ex/F-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "F",
-  "qualifiedName": "ex.F",
   "href": "ex/F/F.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "F",
    "type": "class"
+  }
+ },
+ {
+  "name": "F",
+  "qualifiedName": "ex.F",
+  "href": "ex/F-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -1577,23 +1577,23 @@
  {
   "name": "Helper",
   "qualifiedName": "ex.Helper",
-  "href": "ex/Helper-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "Helper",
-  "qualifiedName": "ex.Helper",
   "href": "ex/Helper/Helper.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Helper",
    "type": "class"
+  }
+ },
+ {
+  "name": "Helper",
+  "qualifiedName": "ex.Helper",
+  "href": "ex/Helper-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -1984,23 +1984,23 @@
  {
   "name": "MyException",
   "qualifiedName": "ex.MyException",
-  "href": "ex/MyException-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "MyException",
-  "qualifiedName": "ex.MyException",
   "href": "ex/MyException/MyException.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "MyException",
    "type": "class"
+  }
+ },
+ {
+  "name": "MyException",
+  "qualifiedName": "ex.MyException",
+  "href": "ex/MyException-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -3331,6 +3331,116 @@
   }
  },
  {
+  "name": "ClassWithUnusualProperties",
+  "qualifiedName": "fake.ClassWithUnusualProperties",
+  "href": "fake/ClassWithUnusualProperties-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ClassWithUnusualProperties",
+  "qualifiedName": "fake.ClassWithUnusualProperties",
+  "href": "fake/ClassWithUnusualProperties/ClassWithUnusualProperties.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aMethod",
+  "qualifiedName": "fake.ClassWithUnusualProperties.aMethod",
+  "href": "fake/ClassWithUnusualProperties/aMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitGetter",
+  "qualifiedName": "fake.ClassWithUnusualProperties.explicitGetter",
+  "href": "fake/ClassWithUnusualProperties/explicitGetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitGetterImplicitSetter",
+  "qualifiedName": "fake.ClassWithUnusualProperties.explicitGetterImplicitSetter",
+  "href": "fake/ClassWithUnusualProperties/explicitGetterImplicitSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitGetterSetter",
+  "qualifiedName": "fake.ClassWithUnusualProperties.explicitGetterSetter",
+  "href": "fake/ClassWithUnusualProperties/explicitGetterSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitSetter",
+  "qualifiedName": "fake.ClassWithUnusualProperties.explicitSetter",
+  "href": "fake/ClassWithUnusualProperties/explicitSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "finalProperty",
+  "qualifiedName": "fake.ClassWithUnusualProperties.finalProperty",
+  "href": "fake/ClassWithUnusualProperties/finalProperty.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "implicitGetterExplicitSetter",
+  "qualifiedName": "fake.ClassWithUnusualProperties.implicitGetterExplicitSetter",
+  "href": "fake/ClassWithUnusualProperties/implicitGetterExplicitSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "implicitReadWrite",
+  "qualifiedName": "fake.ClassWithUnusualProperties.implicitReadWrite",
+  "href": "fake/ClassWithUnusualProperties/implicitReadWrite.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
   "name": "Color",
   "qualifiedName": "fake.Color",
   "href": "fake/Color-class.html",
@@ -4046,13 +4156,101 @@
   }
  },
  {
-  "name": "Interface",
-  "qualifiedName": "fake.Interface",
-  "href": "fake/Interface/Interface.html",
+  "name": "ImplicitProperties",
+  "qualifiedName": "fake.ImplicitProperties",
+  "href": "fake/ImplicitProperties/ImplicitProperties.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "Interface",
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ImplicitProperties",
+  "qualifiedName": "fake.ImplicitProperties",
+  "href": "fake/ImplicitProperties-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ImplicitProperties.==",
+  "href": "fake/ImplicitProperties/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitGetterImplicitSetter",
+  "qualifiedName": "fake.ImplicitProperties.explicitGetterImplicitSetter",
+  "href": "fake/ImplicitProperties/explicitGetterImplicitSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ImplicitProperties.hashCode",
+  "href": "fake/ImplicitProperties/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "implicitGetterExplicitSetter",
+  "qualifiedName": "fake.ImplicitProperties.implicitGetterExplicitSetter",
+  "href": "fake/ImplicitProperties/implicitGetterExplicitSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ImplicitProperties.noSuchMethod",
+  "href": "fake/ImplicitProperties/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ImplicitProperties.runtimeType",
+  "href": "fake/ImplicitProperties/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ImplicitProperties.toString",
+  "href": "fake/ImplicitProperties/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
    "type": "class"
   }
  },
@@ -4065,6 +4263,17 @@
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "Interface",
+  "qualifiedName": "fake.Interface",
+  "href": "fake/Interface/Interface.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Interface",
+   "type": "class"
   }
  },
  {
@@ -4125,23 +4334,23 @@
  {
   "name": "LongFirstLine",
   "qualifiedName": "fake.LongFirstLine",
-  "href": "fake/LongFirstLine-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "LongFirstLine",
-  "qualifiedName": "fake.LongFirstLine",
   "href": "fake/LongFirstLine/LongFirstLine.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "LongFirstLine",
    "type": "class"
+  }
+ },
+ {
+  "name": "LongFirstLine",
+  "qualifiedName": "fake.LongFirstLine",
+  "href": "fake/LongFirstLine-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -4455,23 +4664,23 @@
  {
   "name": "Oops",
   "qualifiedName": "fake.Oops",
-  "href": "fake/Oops/Oops.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Oops",
-   "type": "class"
-  }
- },
- {
-  "name": "Oops",
-  "qualifiedName": "fake.Oops",
   "href": "fake/Oops-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "Oops",
+  "qualifiedName": "fake.Oops",
+  "href": "fake/Oops/Oops.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Oops",
+   "type": "class"
   }
  },
  {
@@ -4543,23 +4752,23 @@
  {
   "name": "OperatorReferenceClass",
   "qualifiedName": "fake.OperatorReferenceClass",
-  "href": "fake/OperatorReferenceClass-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "OperatorReferenceClass",
-  "qualifiedName": "fake.OperatorReferenceClass",
   "href": "fake/OperatorReferenceClass/OperatorReferenceClass.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "OperatorReferenceClass",
    "type": "class"
+  }
+ },
+ {
+  "name": "OperatorReferenceClass",
+  "qualifiedName": "fake.OperatorReferenceClass",
+  "href": "fake/OperatorReferenceClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -4719,23 +4928,23 @@
  {
   "name": "SpecialList",
   "qualifiedName": "fake.SpecialList",
-  "href": "fake/SpecialList-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "SpecialList",
-  "qualifiedName": "fake.SpecialList",
   "href": "fake/SpecialList/SpecialList.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "SpecialList",
    "type": "class"
+  }
+ },
+ {
+  "name": "SpecialList",
+  "qualifiedName": "fake.SpecialList",
+  "href": "fake/SpecialList-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -5368,23 +5577,23 @@
  {
   "name": "SubForDocComments",
   "qualifiedName": "fake.SubForDocComments",
-  "href": "fake/SubForDocComments/SubForDocComments.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SubForDocComments",
-   "type": "class"
-  }
- },
- {
-  "name": "SubForDocComments",
-  "qualifiedName": "fake.SubForDocComments",
   "href": "fake/SubForDocComments-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "SubForDocComments",
+  "qualifiedName": "fake.SubForDocComments",
+  "href": "fake/SubForDocComments/SubForDocComments.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SubForDocComments",
+   "type": "class"
   }
  },
  {
@@ -5533,23 +5742,23 @@
  {
   "name": "WithGetterAndSetter",
   "qualifiedName": "fake.WithGetterAndSetter",
-  "href": "fake/WithGetterAndSetter-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "WithGetterAndSetter",
-  "qualifiedName": "fake.WithGetterAndSetter",
   "href": "fake/WithGetterAndSetter/WithGetterAndSetter.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "WithGetterAndSetter",
    "type": "class"
+  }
+ },
+ {
+  "name": "WithGetterAndSetter",
+  "qualifiedName": "fake.WithGetterAndSetter",
+  "href": "fake/WithGetterAndSetter-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -5744,6 +5953,17 @@
   "qualifiedName": "fake.meaningOfLife",
   "href": "fake/meaningOfLife.html",
   "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "myCoolTypedef",
+  "qualifiedName": "fake.myCoolTypedef",
+  "href": "fake/myCoolTypedef.html",
+  "type": "typedef",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",

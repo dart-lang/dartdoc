@@ -174,6 +174,51 @@ class SuperAwesomeClass {
   }
 }
 
+typedef void myCoolTypedef(Cool x, bool y);
+
+/// Names are actually wrong in this class, but when we extend it,
+/// they are correct.
+class ImplicitProperties {
+  String implicitGetterExplicitSetter;
+  List<int> explicitGetterImplicitSetter;
+}
+
+/// Classes with unusual properties?  I don't think they exist.
+class ClassWithUnusualProperties extends ImplicitProperties {
+
+  @override
+  set implicitGetterExplicitSetter(String x) {}
+
+  @override
+  List<int> get explicitGetterImplicitSetter => new List<int>();
+
+  myCoolTypedef _aFunction;
+
+  myCoolTypedef get explicitGetterSetter {
+    return _aFunction;
+  }
+
+  /// This property is not synthetic, so it might reference [f] -- display it.
+  set explicitGetterSetter(myCoolTypedef f) => _aFunction = f;
+
+  /// This property only has a getter and no setter; no parameters to print.
+  myCoolTypedef get explicitGetter {
+    return _aFunction;
+  }
+
+  /// Set to [f], and don't warn about [bar] or [baz].
+  set explicitSetter(f(int bar, Cool baz, List<int> macTruck)) {}
+
+  final Set finalProperty = new Set();
+
+  Map implicitReadWrite;
+
+  /// Hey there, more things not to warn about: [f], [x], or [q].
+  String aMethod(Function f(Cool x, bool q)) {
+    return 'hi';
+  }
+}
+
 /// This is a very long line spread
 /// across... wait for it... two physical lines.
 ///

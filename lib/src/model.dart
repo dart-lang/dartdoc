@@ -1040,6 +1040,14 @@ class Field extends ModelElement
     assert(enclosingElement != definingEnclosingElement);
   }
 
+  @override
+  String get documentation {
+    // Verify that we will show exactly one of the summaries.
+    Set<bool> assertCheck = new Set()..addAll([hasSetter, hasGetterNoSetter]);
+    assert(assertCheck.containsAll([true, false]));
+    return super.documentation;
+  }
+
   String get constantValue {
     if (_constantValue != null) return _constantValue;
 
@@ -1190,6 +1198,12 @@ abstract class GetterSetterCombo implements ModelElement {
   }
 
   @override
+  bool get canHaveParameters => hasSetter;
+
+  @override
+  List<Parameter> get parameters => setter.parameters;
+
+  @override
   String get genericParameters {
     if (hasSetter) return setter.genericParameters;
     return null;
@@ -1204,15 +1218,15 @@ abstract class GetterSetterCombo implements ModelElement {
   bool get hasExplicitGetter => hasGetter && !_getter.isSynthetic;
 
   bool get hasExplicitSetter => hasSetter && !_setter.isSynthetic;
+  bool get hasImplicitSetter => hasSetter && _setter.isSynthetic;
+
   bool get hasGetter;
 
   bool get hasNoGetterSetter => !hasExplicitGetter && !hasExplicitSetter;
 
   bool get hasSetter;
 
-  bool get hasGetterOrSetterWithoutParams {
-    return (hasGetter || (hasSetter && !hasExplicitSetter));
-  }
+  bool get hasGetterNoSetter => (hasGetter && !hasSetter);
 
   String get arrow {
     // →
@@ -2114,6 +2128,10 @@ abstract class ModelElement
   String get linkedParamsLines => linkedParams().trim();
 
   String get linkedParamsNoMetadata => linkedParams(showMetadata: false);
+
+  String get linkedParamsNoMetadataOrNames {
+    return linkedParams(showMetadata: false, showNames: false);
+  }
 
   ElementType get modelType => _modelType;
 
@@ -3634,6 +3652,14 @@ class TopLevelVariable extends ModelElement
   }
 
   String get constantValueTruncated => truncateString(constantValue, 200);
+
+  @override
+  String get documentation {
+    // Verify that we will show exactly one of the summaries.
+    Set<bool> assertCheck = new Set()..addAll([hasSetter, hasGetterNoSetter]);
+    assert(assertCheck.containsAll([true, false]));
+    return super.documentation;
+  }
 
   @override
   ModelElement get enclosingElement => library;
