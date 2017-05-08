@@ -185,7 +185,6 @@ class ImplicitProperties {
 
 /// Classes with unusual properties?  I don't think they exist.
 class ClassWithUnusualProperties extends ImplicitProperties {
-
   @override
   set implicitGetterExplicitSetter(String x) {}
 

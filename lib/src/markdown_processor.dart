@@ -293,11 +293,11 @@ MatchingLinkResult _getMatchingLinkElement(
 }
 
 /// Given a set of commentRefs, return the one whose name matches the codeRef.
-Element _getRefElementFromCommentRefs(List<CommentReference> commentRefs, String codeRef) {
+Element _getRefElementFromCommentRefs(
+    List<CommentReference> commentRefs, String codeRef) {
   for (CommentReference ref in commentRefs) {
     if (ref.identifier.name == codeRef) {
-      bool isConstrElement =
-          ref.identifier.staticElement is ConstructorElement;
+      bool isConstrElement = ref.identifier.staticElement is ConstructorElement;
       // Constructors are now handled by library search.
       if (!isConstrElement) {
         return ref.identifier.staticElement;
@@ -338,7 +338,8 @@ Map<String, Set<ModelElement>> _findRefElementCache;
 // TODO(jcollins-g): Subcomponents of this function shouldn't be adding nulls to results, strip the
 //                   removes out that are gratuitous and debug the individual pieces.
 // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
-Element _findRefElementInLibrary(String codeRef, ModelElement element, List<CommentReference> commentRefs) {
+Element _findRefElementInLibrary(
+    String codeRef, ModelElement element, List<CommentReference> commentRefs) {
   assert(element.package.allLibrariesAdded);
 
   String codeRefChomped = codeRef.replaceFirst(isConstructor, '');
