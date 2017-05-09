@@ -135,6 +135,12 @@ Don't ask questions.</p>
         <dd>
           <p></p>
         </dd>
+        <dt id="ClassWithUnusualProperties">
+          <span class="name "><a href="fake/ClassWithUnusualProperties-class.html">ClassWithUnusualProperties</a></span>
+        </dt>
+        <dd>
+          <p>Classes with unusual properties?  I don't think they exist.</p>
+        </dd>
         <dt id="ConstantClass">
           <span class="name "><a href="fake/ConstantClass-class.html">ConstantClass</a></span>
         </dt>
@@ -170,6 +176,13 @@ Don't ask questions.</p>
         </dt>
         <dd>
           <p>I have a generic and it extends <a href="fake/Foo2-class.html">Foo2</a></p>
+        </dd>
+        <dt id="ImplicitProperties">
+          <span class="name "><a href="fake/ImplicitProperties-class.html">ImplicitProperties</a></span>
+        </dt>
+        <dd>
+          <p>Names are actually wrong in this class, but when we extend it,
+they are correct.</p>
         </dd>
         <dt id="Interface">
           <span class="name "><a href="fake/Interface-class.html">Interface</a></span>
@@ -391,7 +404,7 @@ which is a bit redundant.</p>
 </dd>
         <dt id="justSetter" class="property">
           <span class="name"><a href="fake/justSetter.html">justSetter</a></span><span class="signature">
-            <span class="returntype parameter">&#8592; <span class="parameter" id="justSetter=-param-value"><span class="type-annotation">int</span> <span class="parameter-name">value</span></span></span>
+            <span class="returntype parameter">&#8592;  <span class="parameter" id="justSetter=-param-value"><span class="type-annotation">int</span> <span class="parameter-name">value</span></span>  </span>
           </span>
         </dt>
         <dd>
@@ -399,8 +412,9 @@ which is a bit redundant.</p>
           <div class="features">write-only</div>
 </dd>
         <dt id="mapWithDynamicKeys" class="property">
-          <span class="name"><a href="fake/mapWithDynamicKeys.html">mapWithDynamicKeys</a></span>
-          <span class="signature">&#8596; Map&lt;dynamic, String&gt;</span>
+          <span class="name"><a href="fake/mapWithDynamicKeys.html">mapWithDynamicKeys</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;   <span class="parameter" id="mapWithDynamicKeys=-param-_mapWithDynamicKeys"><span class="type-annotation">Map&lt;dynamic, String&gt;</span> </span> </span>
+          </span>
         </dt>
         <dd>
           <p></p>
@@ -416,20 +430,17 @@ which is a bit redundant.</p>
 </dd>
         <dt id="setAndGet" class="property">
           <span class="name"><a href="fake/setAndGet.html">setAndGet</a></span><span class="signature">
-            <span class="returntype parameter">&#8596; <span class="parameter" id="setAndGet=-param-thing"><span class="type-annotation">String</span> <span class="parameter-name">thing</span></span></span>
+            <span class="returntype parameter">&#8596;  <span class="parameter" id="setAndGet=-param-thing"><span class="type-annotation">String</span> <span class="parameter-name">thing</span></span>  </span>
           </span>
-        </dt>
-        <dt id="setAndGet" class="property">
-          <span class="name"><a href="fake/setAndGet.html">setAndGet</a></span>
-          <span class="signature">&#8596; String</span>
         </dt>
         <dd>
           <p>The getter for setAndGet.</p>
           <div class="features">read / write</div>
 </dd>
         <dt id="simpleProperty" class="property">
-          <span class="name"><a href="fake/simpleProperty.html">simpleProperty</a></span>
-          <span class="signature">&#8596; String</span>
+          <span class="name"><a href="fake/simpleProperty.html">simpleProperty</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;   <span class="parameter" id="simpleProperty=-param-_simpleProperty"><span class="type-annotation">String</span> </span> </span>
+          </span>
         </dt>
         <dd>
           <p>Simple property</p>
@@ -607,6 +618,15 @@ default value.</p>
           <p>Lots and lots of parameters.</p>
           
 </dd>
+        <dt id="myCoolTypedef" class="callable">
+          <span class="name"><a href="fake/myCoolTypedef.html">myCoolTypedef</a></span><span class="signature">(<wbr><span class="parameter" id="myCoolTypedef-param-x"><span class="type-annotation"><a href="fake/Cool-class.html">Cool</a></span> <span class="parameter-name">x</span>, </span> <span class="parameter" id="myCoolTypedef-param-y"><span class="type-annotation">bool</span> <span class="parameter-name">y</span></span>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          <p></p>
+          
+</dd>
         <dt id="VoidCallback" class="callable">
           <span class="name"><a href="fake/VoidCallback.html">VoidCallback</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; void</span>
@@ -647,12 +667,14 @@ default value.</p>
       <li><a href="fake/Annotation-class.html">Annotation</a></li>
       <li><a href="fake/AnotherInterface-class.html">AnotherInterface</a></li>
       <li><a href="fake/BaseForDocComments-class.html">BaseForDocComments</a></li>
+      <li><a href="fake/ClassWithUnusualProperties-class.html">ClassWithUnusualProperties</a></li>
       <li><a href="fake/ConstantClass-class.html">ConstantClass</a></li>
       <li><a href="fake/Cool-class.html">Cool</a></li>
       <li><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></li>
       <li><a href="fake/Foo2-class.html">Foo2</a></li>
       <li><a href="fake/HasGenerics-class.html">HasGenerics</a></li>
       <li><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></li>
+      <li><a href="fake/ImplicitProperties-class.html">ImplicitProperties</a></li>
       <li><a href="fake/Interface-class.html">Interface</a></li>
       <li><a href="fake/LongFirstLine-class.html">LongFirstLine</a></li>
       <li><a href="fake/MixMeIn-class.html">MixMeIn</a></li>
@@ -708,6 +730,7 @@ default value.</p>
       <li><a class="deprecated" href="fake/FakeProcesses.html">FakeProcesses</a></li>
       <li><a href="fake/GenericTypedef.html">GenericTypedef</a></li>
       <li><a href="fake/LotsAndLotsOfParameters.html">LotsAndLotsOfParameters</a></li>
+      <li><a href="fake/myCoolTypedef.html">myCoolTypedef</a></li>
       <li><a href="fake/VoidCallback.html">VoidCallback</a></li>
     
       <li class="section-title"><a href="fake/fake-library.html#exceptions">Exceptions</a></li>

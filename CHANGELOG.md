@@ -1,3 +1,7 @@
+## 0.11.1
+* Fix regression where a property or top level variable can be listed twice
+  under some conditions.  #1401
+
 ## 0.11.0
 
 * Fix resolution of ambiguous classes where the analyzer can help us. #1397
