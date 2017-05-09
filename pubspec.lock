@@ -153,9 +153,9 @@ packages:
     version: "0.0.3"
   mustache4dart:
     description:
-      name: mustache4dart
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "../mustache4dart"
+      relative: true
+    source: path
     version: "1.0.12"
   package_config:
     description:

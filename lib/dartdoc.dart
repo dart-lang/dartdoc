@@ -286,7 +286,7 @@ class DartDoc {
     if (!file.existsSync()) {
       return null;
     }
-    Document doc = parse(file.readAsStringSync());
+    Document doc = parse(file.readAsBytesSync());
     Element base = doc.querySelector('base');
     String baseHref;
     if (base != null) {
@@ -297,6 +297,7 @@ class DartDoc {
         .map((link) => link.attributes['href'])
         .where((href) => href != null)
         .toList();
+
     return new Tuple2(stringLinks, baseHref);
   }
 
@@ -308,6 +309,7 @@ class DartDoc {
       fullPath = path.normalize(fullPath);
     }
 
+    visited.add(fullPath);
     Tuple2 stringLinksAndHref = _getStringLinksAndHref(fullPath);
     if (stringLinksAndHref == null) {
       _warn(package, PackageWarning.brokenLink, pathToCheck,
@@ -331,7 +333,6 @@ class DartDoc {
         String newFullPath = path.joinAll([origin, newPathToCheck]);
         newFullPath = path.normalize(newFullPath);
         if (!visited.contains(newFullPath)) {
-          visited.add(newFullPath);
           _doCheck(package, origin, visited, newPathToCheck, pathToCheck,
               newFullPath);
         }

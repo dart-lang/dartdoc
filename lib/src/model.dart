@@ -1572,12 +1572,15 @@ class Library extends ModelElement {
     return _modelElementsMap;
   }
 
-  Iterable<ModelElement> get allModelElements sync* {
-    for (Set<ModelElement> modelElements in modelElementsMap.values) {
-      for (ModelElement modelElement in modelElements) {
-        yield modelElement;
+  List<ModelElement> _allModelElements;
+  Iterable<ModelElement> get allModelElements {
+    if (_allModelElements == null) {
+      _allModelElements = [];
+      for (Set<ModelElement> modelElements in modelElementsMap.values) {
+        _allModelElements.addAll(modelElements);
       }
     }
+    return _allModelElements;
   }
 
   List<ModelElement> _allCanonicalModelElements;
