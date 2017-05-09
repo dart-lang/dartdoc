@@ -1042,7 +1042,8 @@ class Field extends ModelElement
 
   @override
   String get documentation {
-    // Verify that we will show exactly one of the summaries.
+    // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
+    // to prevent displaying more or less than one summary.
     Set<bool> assertCheck = new Set()..addAll([hasSetter, hasGetterNoSetter]);
     assert(assertCheck.containsAll([true, false]));
     return super.documentation;
@@ -3655,7 +3656,8 @@ class TopLevelVariable extends ModelElement
 
   @override
   String get documentation {
-    // Verify that we will show exactly one of the summaries.
+    // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
+    // to prevent displaying more or less than one summary.
     Set<bool> assertCheck = new Set()..addAll([hasSetter, hasGetterNoSetter]);
     assert(assertCheck.containsAll([true, false]));
     return super.documentation;
