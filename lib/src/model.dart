@@ -2978,8 +2978,7 @@ class Package implements Nameable, Documentable {
     warnOnElement(this, kind, message);
   }
 
-  void warnOnElement(Warnable warnable, PackageWarning kind,
-      [String message]) {
+  void warnOnElement(Warnable warnable, PackageWarning kind, [String message]) {
     if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
@@ -3000,8 +2999,7 @@ class Package implements Nameable, Documentable {
       // If we don't have an element, we need a message to disambiguate.
       assert(message != null);
     }
-    if (_packageWarningCounter.hasWarning(
-        warnable?.element, kind, message)) {
+    if (_packageWarningCounter.hasWarning(warnable?.element, kind, message)) {
       return;
     }
     // Elements that are part of the Dart SDK can have colons in their FQNs.
