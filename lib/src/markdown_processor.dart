@@ -744,11 +744,6 @@ class Documentation {
   final String asHtml;
   final String asOneLiner;
 
-  /*factory Documentation(String markdown, Warnable warnable) {
-    String tempHtml = _renderMarkdownToHtml(markdown, warnable);
-    return new Documentation._internal(markdown, tempHtml);
-  }*/
-
   factory Documentation.forElement(Documentable element) {
     String tempHtml = _renderMarkdownToHtml(element);
     return new Documentation._internal(element.documentation, tempHtml);

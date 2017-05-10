@@ -895,7 +895,7 @@ class Constructor extends ModelElement
 
 /// Bridges the gap between model elements and packages,
 /// both of which have documentation.
-abstract class Documentable implements Locatable, Warnable {
+abstract class Documentable implements Warnable {
   String get documentation;
   String get documentationAsHtml;
   bool get hasDocumentation;
@@ -2768,7 +2768,7 @@ Map<PackageWarning, List<String>> packageWarningText = {
 };
 
 // Something that package warnings can be called on.
-abstract class Warnable {
+abstract class Warnable implements Locatable {
   void warn(PackageWarning warning, [String message]);
 }
 
@@ -2978,30 +2978,30 @@ class Package implements Nameable, Documentable {
     warnOnElement(this, kind, message);
   }
 
-  void warnOnElement(Documentable modelElement, PackageWarning kind,
+  void warnOnElement(Warnable warnable, PackageWarning kind,
       [String message]) {
-    if (modelElement != null) {
+    if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
-        Element topLevelElement = modelElement.element;
+        Element topLevelElement = warnable.element;
         while (topLevelElement.enclosingElement is! CompilationUnitElement) {
           topLevelElement = topLevelElement.enclosingElement;
         }
-        modelElement = new ModelElement.from(
+        warnable = new ModelElement.from(
             topLevelElement, findOrCreateLibraryFor(topLevelElement));
       }
-      if (modelElement is Accessor) {
+      if (warnable is Accessor) {
         // This might be part of a Field, if so, assign this warning to the field
         // rather than the Accessor.
-        if ((modelElement as Accessor).enclosingCombo != null)
-          modelElement = (modelElement as Accessor).enclosingCombo;
+        if ((warnable as Accessor).enclosingCombo != null)
+          warnable = (warnable as Accessor).enclosingCombo;
       }
     } else {
       // If we don't have an element, we need a message to disambiguate.
       assert(message != null);
     }
     if (_packageWarningCounter.hasWarning(
-        modelElement?.element, kind, message)) {
+        warnable?.element, kind, message)) {
       return;
     }
     // Elements that are part of the Dart SDK can have colons in their FQNs.
@@ -3012,9 +3012,9 @@ class Package implements Nameable, Documentable {
     //                   them out doesn't work as well there since it might confuse
     //                   the user, yet we still want IntelliJ to link properly.
     String nameSplitFromColonPieces;
-    if (modelElement != null) {
+    if (warnable != null) {
       nameSplitFromColonPieces =
-          modelElement.fullyQualifiedName.replaceFirst(':', '-');
+          warnable.fullyQualifiedName.replaceFirst(':', '-');
     }
     String warningMessage;
     switch (kind) {
@@ -3035,7 +3035,7 @@ class Package implements Nameable, Documentable {
         break;
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
-            "${modelElement.fullyQualifiedName} has no library level documentation comments";
+            "${warnable.fullyQualifiedName} has no library level documentation comments";
         break;
       case PackageWarning.ambiguousDocReference:
         warningMessage =
@@ -3068,9 +3068,9 @@ class Package implements Nameable, Documentable {
         break;
     }
     String fullMessage =
-        "${warningMessage} ${modelElement != null ? modelElement.elementLocation : ''}";
+        "${warningMessage} ${warnable != null ? warnable.elementLocation : ''}";
     packageWarningCounter.addWarning(
-        modelElement?.element, kind, message, fullMessage);
+        warnable?.element, kind, message, fullMessage);
   }
 
   static Package _withAutoIncludedDependencies(
