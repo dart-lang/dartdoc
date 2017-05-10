@@ -895,11 +895,13 @@ class Constructor extends ModelElement
 
 /// Bridges the gap between model elements and packages,
 /// both of which have documentation.
-abstract class Documentable {
+abstract class Documentable implements Locatable, Warnable {
   String get documentation;
   String get documentationAsHtml;
   bool get hasDocumentation;
   String get oneLineDoc;
+  Documentable get overriddenDocumentedElement;
+  Package get package;
 }
 
 class Dynamic extends ModelElement {
@@ -1710,7 +1712,7 @@ class Method extends ModelElement
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
 abstract class ModelElement
-    implements Comparable, Nameable, Documentable, Locatable {
+    implements Comparable, Nameable, Documentable {
   final Element _element;
   final Library _library;
 
@@ -2152,6 +2154,7 @@ abstract class ModelElement
   bool _overriddenDocumentedElementIsSet = false;
   // TODO(jcollins-g): This method prefers canonical elements, but it isn't
   // guaranteed and is probably the source of bugs or confusing warnings.
+  @override
   ModelElement get overriddenDocumentedElement {
     if (!_overriddenDocumentedElementIsSet) {
       ModelElement found = this;
@@ -2180,6 +2183,7 @@ abstract class ModelElement
     return _overriddenDepth;
   }
 
+  @override
   Package get package =>
       (this is Library) ? (this as Library).package : this.library.package;
 
@@ -2236,6 +2240,7 @@ abstract class ModelElement
     return _parameters;
   }
 
+  @override
   void warn(PackageWarning kind, [String message]) {
     if (kind == PackageWarning.unresolvedDocReference &&
         overriddenElement != null) {
@@ -2243,7 +2248,7 @@ abstract class ModelElement
       // Attach the warning to that element to deduplicate.
       overriddenElement.warn(kind, message);
     } else {
-      library.package.warn(this, kind, message);
+      library.package.warnOnElement(this, kind, message);
     }
   }
 
@@ -2763,6 +2768,12 @@ Map<PackageWarning, List<String>> packageWarningText = {
   ],
 };
 
+// Something that package warnings can be called on.
+abstract class Warnable {
+  void warn(PackageWarning warning, [String message]);
+}
+
+
 // Something that can be located for warning purposes.
 abstract class Locatable {
   String get fullyQualifiedName;
@@ -2889,7 +2900,8 @@ class PackageWarningCounter {
   }
 }
 
-class Package implements Nameable, Documentable, Locatable {
+
+class Package implements Nameable, Documentable {
   // Library objects serving as entry points for documentation.
   final List<Library> _libraries = [];
   // All library objects related to this package; a superset of _libraries.
@@ -2910,6 +2922,12 @@ class Package implements Nameable, Documentable, Locatable {
   final Map<String, List<Class>> _implementors = new Map();
 
   final PackageMeta packageMeta;
+
+  @override
+  Package get package => this;
+
+  @override
+  Documentable get overriddenDocumentedElement => this;
 
   final Map<Element, Library> _elementToLibrary = {};
   String _docsAsHtml;
@@ -2958,7 +2976,12 @@ class Package implements Nameable, Documentable, Locatable {
 
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
-  void warn(Locatable modelElement, PackageWarning kind, [String message]) {
+  @override
+  void warn(PackageWarning kind, [String message]) {
+    warnOnElement(this, kind, message);
+  }
+
+  void warnOnElement(Documentable modelElement, PackageWarning kind, [String message]) {
     if (modelElement != null) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
@@ -3110,7 +3133,7 @@ class Package implements Nameable, Documentable, Locatable {
     // Help the user if they pass us a category that doesn't exist.
     for (String categoryName in config.categoryOrder) {
       if (!result.containsKey(categoryName))
-        warn(null, PackageWarning.categoryOrderGivesMissingPackageName,
+        warnOnElement(null, PackageWarning.categoryOrderGivesMissingPackageName,
             "${categoryName}, categories: ${result.keys.join(',')}");
     }
     List<PackageCategory> packageCategories = result.values.toList()..sort();
@@ -3167,8 +3190,7 @@ class Package implements Nameable, Documentable, Locatable {
   @override
   String get documentationAsHtml {
     if (_docsAsHtml != null) return _docsAsHtml;
-
-    _docsAsHtml = new Documentation(documentation).asHtml;
+    _docsAsHtml = new Documentation.forElement(this).asHtml;
 
     return _docsAsHtml;
   }

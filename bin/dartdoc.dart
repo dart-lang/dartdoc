@@ -177,10 +177,10 @@ main(List<String> arguments) async {
     print('\nSuccess! Docs generated into ${results.outDir.absolute.path}');
   }, onError: (e, Chain chain) {
     if (e is DartDocFailure) {
-      stderr.writeln('Generation failed: ${e}.');
+      stderr.writeln('\nGeneration failed: ${e}.');
       exit(1);
     } else {
-      stderr.writeln('Generation failed: ${e}\n${chain.terse}');
+      stderr.writeln('\nGeneration failed: ${e}\n${chain.terse}');
       exit(255);
     }
   });

@@ -164,7 +164,11 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
 }
 
 // TODO: this is in the wrong place
-NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
+NodeList<CommentReference> _getCommentRefs(Documentable documentable) {
+  // Documentable items that aren't related to analyzer elements have no
+  // CommentReference list.
+  if (documentable is! ModelElement) return null;
+  ModelElement modelElement = documentable;
   Class preferredClass = _getPreferredClass(modelElement);
   ModelElement cModelElement = modelElement.package
       .findCanonicalModelElementFor(modelElement.element,
@@ -219,7 +223,7 @@ NodeList<CommentReference> _getCommentRefs(ModelElement modelElement) {
 
 /// Returns null if element is a parameter.
 MatchingLinkResult _getMatchingLinkElement(
-    String codeRef, ModelElement element, List<CommentReference> commentRefs) {
+    String codeRef, Documentable element, List<CommentReference> commentRefs) {
   // By debugging inspection, it seems correct to not warn when we don't have
   // CommentReferences; there's actually nothing that needs resolving in
   // that case.
@@ -244,17 +248,14 @@ MatchingLinkResult _getMatchingLinkElement(
   // dartdoc-canonicalization-aware?
   if (refElement == null) {
     refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
+  } else {
+    assert(refElement is! PropertyAccessorElement);
+    assert(refElement is! PrefixElement);
   }
 
   // Did not find it anywhere.
   if (refElement == null) {
     return new MatchingLinkResult(null, null);
-  }
-
-  if (refElement is PropertyAccessorElement) {
-    // yay we found an accessor that wraps a const, but we really
-    // want the top-level field itself
-    refElement = (refElement as PropertyAccessorElement).variable;
   }
 
   // Ignore all parameters.
@@ -300,7 +301,17 @@ Element _getRefElementFromCommentRefs(
       bool isConstrElement = ref.identifier.staticElement is ConstructorElement;
       // Constructors are now handled by library search.
       if (!isConstrElement) {
-        return ref.identifier.staticElement;
+        Element refElement = ref.identifier.staticElement;
+        if (refElement is PropertyAccessorElement) {
+          // yay we found an accessor that wraps a const, but we really
+          // want the top-level field itself
+          refElement = (refElement as PropertyAccessorElement).variable;
+        }
+        if (refElement is PrefixElement) {
+          // We found a prefix element, but what we really want is the library element.
+          refElement = (refElement as PrefixElement).enclosingElement;
+        }
+        return refElement;
       }
     }
   }
@@ -340,6 +351,7 @@ Map<String, Set<ModelElement>> _findRefElementCache;
 // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
 Element _findRefElementInLibrary(
     String codeRef, ModelElement element, List<CommentReference> commentRefs) {
+  assert(element != null);
   assert(element.package.allLibrariesAdded);
 
   String codeRefChomped = codeRef.replaceFirst(isConstructor, '');
@@ -625,14 +637,13 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
   }
 }
 
-String _linkDocReference(String codeRef, ModelElement element,
+String _linkDocReference(String codeRef, Documentable documentable,
     NodeList<CommentReference> commentRefs) {
   // TODO(jcollins-g): Refactor so that doc operations work on the
   //                   documented element.
-  element = element.overriddenDocumentedElement;
-
+  documentable = documentable.overriddenDocumentedElement;
   MatchingLinkResult result;
-  result = _getMatchingLinkElement(codeRef, element, commentRefs);
+  result = _getMatchingLinkElement(codeRef, documentable, commentRefs);
   final ModelElement linkedElement = result.element;
   final String label = result.label ?? codeRef;
   if (linkedElement != null) {
@@ -649,18 +660,19 @@ String _linkDocReference(String codeRef, ModelElement element,
     }
   } else {
     if (result.warn) {
-      element.warn(PackageWarning.unresolvedDocReference, codeRef);
+      documentable.warn(PackageWarning.unresolvedDocReference, codeRef);
     }
     return '<code>${HTML_ESCAPE.convert(label)}</code>';
   }
 }
 
-String _renderMarkdownToHtml(String text, [ModelElement element]) {
+String _renderMarkdownToHtml(Documentable element) {
   md.Node _linkResolver(String name) {
     NodeList<CommentReference> commentRefs = _getCommentRefs(element);
     return new md.Text(_linkDocReference(name, element, commentRefs));
   }
 
+  String text = element.documentation;
   _showWarningsForGenericsOutsideSquareBracketsBlocks(text, element);
   return md.markdownToHtml(text,
       inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
@@ -676,7 +688,7 @@ const maxPostContext = 30;
 // like a non HTML tag (a generic?) outside of a `[]` block.
 // https://github.com/dart-lang/dartdoc/issues/1250#issuecomment-269257942
 void _showWarningsForGenericsOutsideSquareBracketsBlocks(
-    String text, ModelElement element) {
+    String text, Warnable element) {
   List<int> tagPositions = findFreeHangingGenericsPositions(text);
   if (tagPositions.isNotEmpty) {
     tagPositions.forEach((int position) {
@@ -732,13 +744,13 @@ class Documentation {
   final String asHtml;
   final String asOneLiner;
 
-  factory Documentation(String markdown) {
-    String tempHtml = _renderMarkdownToHtml(markdown);
+  /*factory Documentation(String markdown, Warnable warnable) {
+    String tempHtml = _renderMarkdownToHtml(markdown, warnable);
     return new Documentation._internal(markdown, tempHtml);
-  }
+  }*/
 
-  factory Documentation.forElement(ModelElement element) {
-    String tempHtml = _renderMarkdownToHtml(element.documentation, element);
+  factory Documentation.forElement(Documentable element) {
+    String tempHtml = _renderMarkdownToHtml(element);
     return new Documentation._internal(element.documentation, tempHtml);
   }
 
