@@ -4,7 +4,7 @@
 
 import 'dart:async' show Future, StreamController;
 import 'dart:convert' show JsonEncoder;
-import 'dart:io' show Directory, File, stdout;
+import 'dart:io' show Directory, File;
 import 'dart:typed_data' show Uint8List;
 
 import 'package:collection/collection.dart' show compareNatural;
@@ -178,16 +178,13 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void generatePackage() {
-    stdout.write('\ndocumenting ${package.name}');
-
     TemplateData data = new PackageTemplateData(this, package, useCategories);
 
     _build('index.html', _templates.indexTemplate, data);
   }
 
   void generateLibrary(Package package, Library lib) {
-    stdout
-        .write('\ngenerating docs for library ${lib.name} from ${lib.path}...');
+    print('generating docs for library ${lib.name} from ${lib.path}...');
     if (!lib.isAnonymous && !lib.hasDocumentation) {
       package.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);
     }
