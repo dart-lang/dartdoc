@@ -895,11 +895,13 @@ class Constructor extends ModelElement
 
 /// Bridges the gap between model elements and packages,
 /// both of which have documentation.
-abstract class Documentable {
+abstract class Documentable implements Warnable {
   String get documentation;
   String get documentationAsHtml;
   bool get hasDocumentation;
   String get oneLineDoc;
+  Documentable get overriddenDocumentedElement;
+  Package get package;
 }
 
 class Dynamic extends ModelElement {
@@ -1712,8 +1714,7 @@ class Method extends ModelElement
 /// helps prevent subtle bugs as generated output for a non-canonical
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
-abstract class ModelElement
-    implements Comparable, Nameable, Documentable, Locatable {
+abstract class ModelElement implements Comparable, Nameable, Documentable {
   final Element _element;
   final Library _library;
 
@@ -2155,6 +2156,7 @@ abstract class ModelElement
   bool _overriddenDocumentedElementIsSet = false;
   // TODO(jcollins-g): This method prefers canonical elements, but it isn't
   // guaranteed and is probably the source of bugs or confusing warnings.
+  @override
   ModelElement get overriddenDocumentedElement {
     if (!_overriddenDocumentedElementIsSet) {
       ModelElement found = this;
@@ -2183,6 +2185,7 @@ abstract class ModelElement
     return _overriddenDepth;
   }
 
+  @override
   Package get package =>
       (this is Library) ? (this as Library).package : this.library.package;
 
@@ -2239,6 +2242,7 @@ abstract class ModelElement
     return _parameters;
   }
 
+  @override
   void warn(PackageWarning kind, [String message]) {
     if (kind == PackageWarning.unresolvedDocReference &&
         overriddenElement != null) {
@@ -2246,7 +2250,7 @@ abstract class ModelElement
       // Attach the warning to that element to deduplicate.
       overriddenElement.warn(kind, message);
     } else {
-      library.package.warn(this, kind, message);
+      library.package.warnOnElement(this, kind, message);
     }
   }
 
@@ -2766,6 +2770,11 @@ Map<PackageWarning, List<String>> packageWarningText = {
   ],
 };
 
+// Something that package warnings can be called on.
+abstract class Warnable implements Locatable {
+  void warn(PackageWarning warning, [String message]);
+}
+
 // Something that can be located for warning purposes.
 abstract class Locatable {
   String get fullyQualifiedName;
@@ -2892,7 +2901,7 @@ class PackageWarningCounter {
   }
 }
 
-class Package implements Nameable, Documentable, Locatable {
+class Package implements Nameable, Documentable {
   // Library objects serving as entry points for documentation.
   final List<Library> _libraries = [];
   // All library objects related to this package; a superset of _libraries.
@@ -2913,6 +2922,12 @@ class Package implements Nameable, Documentable, Locatable {
   final Map<String, List<Class>> _implementors = new Map();
 
   final PackageMeta packageMeta;
+
+  @override
+  Package get package => this;
+
+  @override
+  Documentable get overriddenDocumentedElement => this;
 
   final Map<Element, Library> _elementToLibrary = {};
   String _docsAsHtml;
@@ -2961,29 +2976,33 @@ class Package implements Nameable, Documentable, Locatable {
 
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
-  void warn(Locatable modelElement, PackageWarning kind, [String message]) {
-    if (modelElement != null) {
+  @override
+  void warn(PackageWarning kind, [String message]) {
+    warnOnElement(this, kind, message);
+  }
+
+  void warnOnElement(Warnable warnable, PackageWarning kind, [String message]) {
+    if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
-        Element topLevelElement = modelElement.element;
+        Element topLevelElement = warnable.element;
         while (topLevelElement.enclosingElement is! CompilationUnitElement) {
           topLevelElement = topLevelElement.enclosingElement;
         }
-        modelElement = new ModelElement.from(
+        warnable = new ModelElement.from(
             topLevelElement, findOrCreateLibraryFor(topLevelElement));
       }
-      if (modelElement is Accessor) {
+      if (warnable is Accessor) {
         // This might be part of a Field, if so, assign this warning to the field
         // rather than the Accessor.
-        if ((modelElement as Accessor).enclosingCombo != null)
-          modelElement = (modelElement as Accessor).enclosingCombo;
+        if ((warnable as Accessor).enclosingCombo != null)
+          warnable = (warnable as Accessor).enclosingCombo;
       }
     } else {
       // If we don't have an element, we need a message to disambiguate.
       assert(message != null);
     }
-    if (_packageWarningCounter.hasWarning(
-        modelElement?.element, kind, message)) {
+    if (_packageWarningCounter.hasWarning(warnable?.element, kind, message)) {
       return;
     }
     // Elements that are part of the Dart SDK can have colons in their FQNs.
@@ -2994,9 +3013,9 @@ class Package implements Nameable, Documentable, Locatable {
     //                   them out doesn't work as well there since it might confuse
     //                   the user, yet we still want IntelliJ to link properly.
     String nameSplitFromColonPieces;
-    if (modelElement != null) {
+    if (warnable != null) {
       nameSplitFromColonPieces =
-          modelElement.fullyQualifiedName.replaceFirst(':', '-');
+          warnable.fullyQualifiedName.replaceFirst(':', '-');
     }
     String warningMessage;
     switch (kind) {
@@ -3017,7 +3036,7 @@ class Package implements Nameable, Documentable, Locatable {
         break;
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
-            "${modelElement.fullyQualifiedName} has no library level documentation comments";
+            "${warnable.fullyQualifiedName} has no library level documentation comments";
         break;
       case PackageWarning.ambiguousDocReference:
         warningMessage =
@@ -3050,9 +3069,9 @@ class Package implements Nameable, Documentable, Locatable {
         break;
     }
     String fullMessage =
-        "${warningMessage} ${modelElement != null ? modelElement.elementLocation : ''}";
+        "${warningMessage} ${warnable != null ? warnable.elementLocation : ''}";
     packageWarningCounter.addWarning(
-        modelElement?.element, kind, message, fullMessage);
+        warnable?.element, kind, message, fullMessage);
   }
 
   static Package _withAutoIncludedDependencies(
@@ -3113,7 +3132,7 @@ class Package implements Nameable, Documentable, Locatable {
     // Help the user if they pass us a category that doesn't exist.
     for (String categoryName in config.categoryOrder) {
       if (!result.containsKey(categoryName))
-        warn(null, PackageWarning.categoryOrderGivesMissingPackageName,
+        warnOnElement(null, PackageWarning.categoryOrderGivesMissingPackageName,
             "${categoryName}, categories: ${result.keys.join(',')}");
     }
     List<PackageCategory> packageCategories = result.values.toList()..sort();
@@ -3170,8 +3189,7 @@ class Package implements Nameable, Documentable, Locatable {
   @override
   String get documentationAsHtml {
     if (_docsAsHtml != null) return _docsAsHtml;
-
-    _docsAsHtml = new Documentation(documentation).asHtml;
+    _docsAsHtml = new Documentation.forElement(this).asHtml;
 
     return _docsAsHtml;
   }

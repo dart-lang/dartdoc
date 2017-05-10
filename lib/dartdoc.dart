@@ -44,7 +44,7 @@ export 'src/sdk.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.11.1';
+const String version = '0.11.2';
 
 final String defaultOutDir = path.join('doc', 'api');
 
@@ -241,7 +241,7 @@ class DartDoc {
     }
     if (referenceElement == null && source == 'index.html')
       referenceElement = package;
-    package.warn(referenceElement, kind, p);
+    package.warnOnElement(referenceElement, kind, p);
   }
 
   void _doOrphanCheck(Package package, String origin, Set<String> visited) {
