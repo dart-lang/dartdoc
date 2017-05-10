@@ -23,6 +23,8 @@ and_yaml:
   - 3.14
 ```
 
+It sometimes generates warnings in commentRefs like this: [unknownThingy.FromSomewhere]
+
 Be sure to check out other awesome packages on [pub][].
 
 [pub]: https://pub.dartlang.org
