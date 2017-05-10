@@ -1711,8 +1711,7 @@ class Method extends ModelElement
 /// helps prevent subtle bugs as generated output for a non-canonical
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
-abstract class ModelElement
-    implements Comparable, Nameable, Documentable {
+abstract class ModelElement implements Comparable, Nameable, Documentable {
   final Element _element;
   final Library _library;
 
@@ -2773,7 +2772,6 @@ abstract class Warnable {
   void warn(PackageWarning warning, [String message]);
 }
 
-
 // Something that can be located for warning purposes.
 abstract class Locatable {
   String get fullyQualifiedName;
@@ -2900,7 +2898,6 @@ class PackageWarningCounter {
   }
 }
 
-
 class Package implements Nameable, Documentable {
   // Library objects serving as entry points for documentation.
   final List<Library> _libraries = [];
@@ -2981,7 +2978,8 @@ class Package implements Nameable, Documentable {
     warnOnElement(this, kind, message);
   }
 
-  void warnOnElement(Documentable modelElement, PackageWarning kind, [String message]) {
+  void warnOnElement(Documentable modelElement, PackageWarning kind,
+      [String message]) {
     if (modelElement != null) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
