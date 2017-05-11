@@ -40,7 +40,7 @@ main(List<String> arguments) async {
 
   Directory sdkDir = getSdkDir();
   if (sdkDir == null) {
-    stderr.write(" Error: unable to locate the Dart SDK.");
+    stderr.writeln(" Error: unable to locate the Dart SDK.");
     exit(1);
   }
 
@@ -55,14 +55,14 @@ main(List<String> arguments) async {
 
   var readme = args['sdk-readme'];
   if (readme != null && !(new File(readme).existsSync())) {
-    stderr.write(
+    stderr.writeln(
         " fatal error: unable to locate the SDK description file at $readme.");
     exit(1);
   }
 
   Directory inputDir = new Directory(args['input']);
   if (!inputDir.existsSync()) {
-    stderr.write(
+    stderr.writeln(
         " fatal error: unable to locate the input directory at ${inputDir.path}.");
     exit(1);
   }
@@ -77,7 +77,7 @@ main(List<String> arguments) async {
       args['header'].map(_resolveTildePath).toList() as List<String>;
   for (String headerFilePath in headerFilePaths) {
     if (!new File(headerFilePath).existsSync()) {
-      stderr.write(
+      stderr.writeln(
           " fatal error: unable to locate header file: ${headerFilePath}.");
       exit(1);
     }
@@ -87,7 +87,7 @@ main(List<String> arguments) async {
       args['footer'].map(_resolveTildePath).toList() as List<String>;
   for (String footerFilePath in footerFilePaths) {
     if (!new File(footerFilePath).existsSync()) {
-      stderr.write(
+      stderr.writeln(
           " fatal error: unable to locate footer file: ${footerFilePath}.");
       exit(1);
     }
@@ -97,7 +97,7 @@ main(List<String> arguments) async {
       args['footer-text'].map(_resolveTildePath).toList() as List<String>;
   for (String footerFilePath in footerTextFilePaths) {
     if (!new File(footerFilePath).existsSync()) {
-      stderr.write(
+      stderr.writeln(
           " fatal error: unable to locate footer-text file: ${footerFilePath}.");
       exit(1);
     }
@@ -111,7 +111,7 @@ main(List<String> arguments) async {
 
   if (args.rest.isNotEmpty) {
     var unknownArgs = args.rest.join(' ');
-    stderr.write(
+    stderr.writeln(
         ' fatal error: detected unknown command-line argument(s): $unknownArgs');
     _printUsageAndExit(parser, exitCode: 1);
   }

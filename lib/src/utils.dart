@@ -49,3 +49,5 @@ String truncateString(String str, int length) {
     return str;
   }
 }
+
+String pluralize(String word, int count) => count == 1 ? word : '${word}s';

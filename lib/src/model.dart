@@ -2849,7 +2849,7 @@ class PackageWarningCounter {
     } else {
       if (options.asErrors.contains(kind)) toWrite = "error: ${fullMessage}";
     }
-    if (toWrite != null) stderr.write("\n ${toWrite}");
+    if (toWrite != null) print(" ${toWrite}");
   }
 
   /// Returns true if we've already warned for this.
@@ -3057,7 +3057,7 @@ class Package implements Nameable, Documentable {
         break;
       case PackageWarning.unknownFile:
         warningMessage =
-            'dartdoc detected an unknown file in the doc tree:  ${message}';
+            'dartdoc detected an unknown file in the doc tree: ${message}';
         break;
       case PackageWarning.typeAsHtml:
         // The message for this warning can contain many punctuation and other symbols,
