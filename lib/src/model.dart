@@ -896,6 +896,7 @@ class Constructor extends ModelElement
 /// Bridges the gap between model elements and packages,
 /// both of which have documentation.
 abstract class Documentable implements Warnable {
+  String get name;
   String get documentation;
   String get documentationAsHtml;
   bool get hasDocumentation;
@@ -2432,8 +2433,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       return HTML_ESCAPE.convert(name);
     }
 
-    var classContent = isDeprecated ? 'class="deprecated" ' : '';
-    return '<a ${classContent}href="${href}">$name</a>';
+    var classContent = isDeprecated ? ' class="deprecated"' : '';
+    return '<a${classContent} href="${href}">$name</a>';
   }
 
   // TODO(keertip): consolidate all the find library methods
@@ -3239,6 +3240,9 @@ class Package implements Nameable, Documentable {
 
   @override
   String get name => packageMeta.name;
+
+  String get kind =>
+      (packageMeta.useCategories || package.isSdk) ? '' : 'package';
 
   @override
   String get oneLineDoc => '';

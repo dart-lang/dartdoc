@@ -117,7 +117,8 @@ main(List<String> arguments) async {
   }
 
   PackageMeta packageMeta = sdkDocs
-      ? new PackageMeta.fromSdk(sdkDir, sdkReadmePath: readme)
+      ? new PackageMeta.fromSdk(sdkDir,
+          sdkReadmePath: readme, useCategories: args['use-categories'])
       : new PackageMeta.fromDir(inputDir);
 
   if (!packageMeta.isValid) {

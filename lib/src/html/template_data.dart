@@ -32,7 +32,12 @@ abstract class TemplateData<T extends Documentable> {
   String get title;
   String get layoutTitle;
   String get metaDescription;
+  String get name => self.name;
+  String get kind => self is ModelElement ? (self as ModelElement).kind : null;
+
   List get navLinks;
+  Documentable get parent => navLinks.isNotEmpty ? navLinks.last : null;
+
   bool get includeVersion => false;
 
   bool get hasSubNav => subnavItems.isNotEmpty;
@@ -83,8 +88,7 @@ class PackageTemplateData extends TemplateData<Package> {
   @override
   Package get self => package;
   @override
-  String get layoutTitle => _layoutTitle(
-      package.name, (useCategories || package.isSdk) ? '' : 'package', false);
+  String get layoutTitle => _layoutTitle(package.name, kind, false);
   @override
   String get metaDescription =>
       '${package.name} API docs, for the Dart programming language.';
@@ -92,6 +96,9 @@ class PackageTemplateData extends TemplateData<Package> {
   Iterable<Subnav> getSubNavItems() {
     return [new Subnav('Libraries', '${package.href}#libraries')];
   }
+
+  @override
+  String get kind => (useCategories || package.isSdk) ? '' : 'package';
 
   /// `null` for packages because they are at the root – not needed
   @override
