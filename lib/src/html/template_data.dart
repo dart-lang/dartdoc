@@ -32,7 +32,10 @@ abstract class TemplateData<T extends Documentable> {
   String get title;
   String get layoutTitle;
   String get metaDescription;
+
   List get navLinks;
+  Documentable get navLinksLast => navLinks.last;
+
   bool get includeVersion => false;
 
   bool get hasSubNav => subnavItems.isNotEmpty;

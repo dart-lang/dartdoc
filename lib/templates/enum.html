@@ -1,10 +1,7 @@
 {{>head}}
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    {{#navLinks}}
-    <h5><a href="{{href}}">{{name}}</a></h5>
-    {{/navLinks}}
-
+    <h5>{{navLinksLast.kind}} {{navLinksLast.name}}</h5>
     {{>sidebar_for_library}}
   </div>
 
@@ -161,12 +158,10 @@
     </section>
     {{/eNum.hasStaticMethods}}
 
-
-
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>{{self.name}}</h5>
+    <h5>{{self.kind}} {{self.name}}</h5>
     {{>sidebar_for_enum}}
   </div><!--/.sidebar-offcanvas-->
 
