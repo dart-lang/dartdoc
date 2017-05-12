@@ -169,12 +169,6 @@ NodeList<CommentReference> _getCommentRefs(Documentable documentable) {
   // CommentReference list.
   if (documentable is! ModelElement) return null;
   ModelElement modelElement = documentable;
-  Class preferredClass = _getPreferredClass(modelElement);
-  ModelElement cModelElement = modelElement.package
-      .findCanonicalModelElementFor(modelElement.element,
-          preferredClass: preferredClass);
-  if (cModelElement == null) return null;
-  modelElement = cModelElement;
 
   if (modelElement.element.documentationComment == null &&
       modelElement.canOverride()) {
@@ -255,7 +249,10 @@ MatchingLinkResult _getMatchingLinkElement(
 
   // Did not find it anywhere.
   if (refElement == null) {
-    return new MatchingLinkResult(null, null);
+    // TODO(jcollins-g): remove squelching of non-canonical warnings here
+    //                   once we no longer process full markdown for
+    //                   oneLineDocs (#1417)
+    return new MatchingLinkResult(null, null, warn: element.isCanonical);
   }
 
   // Ignore all parameters.
@@ -263,8 +260,9 @@ MatchingLinkResult _getMatchingLinkElement(
     return new MatchingLinkResult(null, null, warn: false);
 
   Library refLibrary = element.package.findOrCreateLibraryFor(refElement);
-  Element searchElement =
-      refElement is Member ? refElement.baseElement : refElement;
+  Element searchElement = refElement;
+  if (searchElement is Member)
+    searchElement = Package.getBasestElement(refElement);
 
   Class preferredClass = _getPreferredClass(element);
   ModelElement refModelElement = element.package.findCanonicalModelElementFor(
