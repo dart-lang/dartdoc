@@ -9,7 +9,7 @@
   <!-- required because all the links are pseudo-absolute -->
   <base href="..">
 
-  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/prettify.css">
   <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
@@ -27,7 +27,7 @@
       <div class="row">
         <div class="col-sm-12 contents">
           <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-          <ol class="breadcrumbs gt-separated hidden-xs">
+          <ol class="breadcrumbs gt-separated dark hidden-xs">
             <li><a href="index.html">test_package</a></li>
             <li><a href="fake/fake-library.html">fake</a></li>
             <li class="self-crumb">paintImage1</li>
@@ -44,7 +44,7 @@
   <div class="container masthead">
     <div class="row">
       <div class="col-sm-12 contents">
-        <ol class="breadcrumbs gt-separated visible-xs">
+        <ol class="breadcrumbs gt-separated dark visible-xs">
           <li><a href="index.html">test_package</a></li>
           <li><a href="fake/fake-library.html">fake</a></li>
           <li class="self-crumb">paintImage1</li>
@@ -64,8 +64,7 @@
   <div class="row">
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5><a href="index.html">test_package</a></h5>
-    <h5><a href="fake/fake-library.html">fake</a></h5>
+    <h5>library fake</h5>
     <ol>
       <li class="section-title"><a href="fake/fake-library.html#classes">Classes</a></li>
       <li><a href="fake/Annotation-class.html">Annotation</a></li>
@@ -157,6 +156,10 @@
 
   </div> <!-- /.main-content -->
 
+  <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+    <h5>function paintImage1</h5>
+  </div><!--/.sidebar-offcanvas-->
+
 </div> <!-- row -->
 </div> <!-- container -->
 
@@ -169,9 +172,7 @@
         </span>
         &bull;
         <span class="no-break">
-          <a href="https://www.dartlang.org">
-            <img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16">
-          </a>
+          <a href="https://www.dartlang.org"><img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16"></a>
         </span>
         &bull;
         <span class="copyright no-break">
