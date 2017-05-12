@@ -896,6 +896,7 @@ class Constructor extends ModelElement
 /// Bridges the gap between model elements and packages,
 /// both of which have documentation.
 abstract class Documentable implements Warnable {
+  String get name;
   String get documentation;
   String get documentationAsHtml;
   bool get hasDocumentation;
