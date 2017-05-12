@@ -33,7 +33,7 @@ nav {
 /* some of this is to reset bootstrap */
 nav.navbar {
   background-color: inherit;
-  min-height: 48px;
+  min-height: 50px;
   border: 0;
 }
 
@@ -80,7 +80,7 @@ header .contents {
 }
 
 .body {
-  margin-top: 24px;
+  margin-top: 90px;
 }
 
 section {
@@ -211,14 +211,6 @@ h2 .crossdart {
 }
 
 @media (min-width: 768px) {
-  .dl-horizontal dd {
-    margin-left: 128px;
-  }
-
-  .dl-horizontal dt {
-    width: 128px;
-  }
-
   ul.subnav li {
     font-size: 17px;
   }
@@ -238,14 +230,6 @@ header li {
 
 header h1 .kind {
   color: #555;
-  font-size: 15px;
-  display: block;
-}
-
-@media screen and (max-width: 768px) {
-  header h1 .kind {
-    font-size: 14px;
-  }
 }
 
 dt {
@@ -276,14 +260,16 @@ section.summary dt {
   text-indent: -24px;
 }
 
+.dl-horizontal dd {
+  margin-left: initial;
+}
+
 dl.dl-horizontal dt {
   font-style: normal;
   text-align: left;
   color: #727272;
-}
-
-dl.dl-horizontal dt::after {
-  content: ':';
+  margin-right: 20px;
+  width: initial;
 }
 
 dt .name {
@@ -449,8 +435,8 @@ footer a, footer a:hover {
   color: #555;
 }
 
-nav .self-name {
-  color: #ddd;
+.self-name {
+  color: #555;
   display: none;
 }
 
@@ -596,7 +582,7 @@ button {
 @media screen and (max-width:768px) {
   #sidenav-left-toggle {
     display: inline;
-    background: no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path fill='#FFFFFF' d='M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z'/></svg>");
+    background: no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path fill='#111' d='M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z'/></svg>");
     background-position: center;
     width: 24px;
     height: 24px;
@@ -629,10 +615,15 @@ button {
     height: 100%;
     background-color: white;
     overflow-y: auto; /* TODO: how to hide scroll bars? */
+    padding: 10px;
   }
 
   .sidebar-offcanvas-left.active {
     left: 0; /* this animates our drawer into the page */
+  }
+
+  .self-name {
+    display: inline-block;
   }
 }
 
