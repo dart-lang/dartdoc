@@ -26,10 +26,6 @@ body {
   background-color: #fff;
 }
 
-nav {
-  font-size: 17px;
-}
-
 /* some of this is to reset bootstrap */
 nav.navbar {
   background-color: inherit;
@@ -413,7 +409,6 @@ footer a, footer a:hover {
 .breadcrumbs {
   padding: 0;
   margin: 8px 0 8px 0;
-  font-size: 17px;
   white-space: nowrap;
   line-height: 1;
 }
