@@ -247,9 +247,6 @@ dd p {
   margin-bottom: 0;
 }
 
-section.summary h2 {
-}
-
 /* indents wrapped lines */
 section.summary dt {
   margin-left: 24px;
@@ -525,9 +522,6 @@ ul.subnav li:last-of-type {
   padding: 0;
 }
 
-.sidebar-offcanvas-left ol {
-}
-
 .sidebar h5 {
   color: #727272;
   font-size: 18px;
@@ -589,10 +583,10 @@ button {
     height: 100%;
     z-index: 1999;
     position: fixed;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-color: black;
     display: block;
   }
