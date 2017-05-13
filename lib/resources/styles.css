@@ -532,7 +532,6 @@ ul.subnav li:last-of-type {
   color: #727272;
   font-size: 18px;
   margin: 0 0 25px 0;
-  white-space: nowrap;
 }
 
 .sidebar h5 a,
