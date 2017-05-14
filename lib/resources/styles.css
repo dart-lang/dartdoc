@@ -522,12 +522,6 @@ ul.subnav li:last-of-type {
   padding: 0;
 }
 
-.sidebar h5 {
-  color: #727272;
-  font-size: 18px;
-  margin: 0 0 25px 0;
-}
-
 .sidebar h5 a,
 .sidebar h5 a:hover {
   color: #727272;
@@ -538,6 +532,13 @@ ul.subnav li:last-of-type {
   text-overflow: ellipsis;
   overflow: hidden;
   padding: 3px 0;
+}
+
+.sidebar h5 {
+  color: #727272;
+  font-size: 18px;
+  margin: 0 0 25px 0;
+  padding-top: 0;
 }
 
 .sidebar ol li.section-title a {
