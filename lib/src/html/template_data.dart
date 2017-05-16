@@ -57,10 +57,11 @@ abstract class TemplateData<T extends Documentable> {
   Iterable<Subnav> getSubNavItems() => <Subnav>[];
 
   String _layoutTitle(String name, String kind, bool isDeprecated) {
-    if (kind.isEmpty) kind = '&nbsp;';
-    String str = '<span class="kind">$kind</span>';
-    if (!isDeprecated) return '${str} ${name}';
-    return '${str} <span class="deprecated">$name</span>';
+    if (isDeprecated) {
+      return '${kind} <span class="deprecated">${name}</span>';
+    } else {
+      return '${kind} ${name}';
+    }
   }
 
   Iterable<Subnav> _gatherSubnavForInvokable(ModelElement element) {
@@ -144,6 +145,7 @@ class LibraryTemplateData extends TemplateData<Library> {
   @override
   String get layoutTitle =>
       _layoutTitle(library.name, 'library', library.isDeprecated);
+
   @override
   Library get self => library;
 }
