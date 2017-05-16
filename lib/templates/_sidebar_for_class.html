@@ -1,25 +1,4 @@
 <ol>
-  {{#clazz.hasConstants}}
-  <li class="section-title"><a href="{{clazz.href}}#constants">Constants</a></li>
-  {{#clazz.constants}}
-  <li>{{{linkedName}}}</li>
-  {{/clazz.constants}}
-  {{/clazz.hasConstants}}
-
-  {{#clazz.hasStaticProperties}}
-  <li class="section-title"><a href="{{clazz.href}}#static-properties">Static properties</a></li>
-  {{#clazz.staticProperties}}
-  <li>{{{ linkedName }}}</li>
-  {{/clazz.staticProperties}}
-  {{/clazz.hasStaticProperties}}
-
-  {{#clazz.hasStaticMethods}}
-  <li class="section-title"><a href="{{clazz.href}}#static-methods">Static methods</a></li>
-  {{#clazz.staticMethods}}
-  <li>{{{ linkedName }}}</li>
-  {{/clazz.staticMethods}}
-  {{/clazz.hasStaticMethods}}
-
   {{#clazz.hasConstructors}}
   <li class="section-title"><a href="{{clazz.href}}#constructors">Constructors</a></li>
   {{#clazz.constructors}}
@@ -36,6 +15,13 @@
   {{/clazz.allInstanceProperties}}
   {{/clazz.hasProperties}}
 
+  {{#clazz.hasMethods}}
+  <li class="section-title{{ #allInstanceMethodsInherited }} inherited{{ /allInstanceMethodsInherited }}"><a href="{{clazz.href}}#instance-methods">Methods</a></li>
+  {{#clazz.allInstanceMethods}}
+  <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
+  {{/clazz.allInstanceMethods}}
+  {{/clazz.hasMethods}}
+
   {{#clazz.hasOperators}}
   <li class="section-title{{ #allOperatorsInherited }} inherited{{ /allOperatorsInherited}}"><a href="{{clazz.href}}#operators">Operators</a></li>
   {{#clazz.allOperators}}
@@ -43,10 +29,24 @@
   {{/clazz.allOperators}}
   {{/clazz.hasOperators}}
 
-  {{#clazz.hasMethods}}
-  <li class="section-title{{ #allInstanceMethodsInherited }} inherited{{ /allInstanceMethodsInherited }}"><a href="{{clazz.href}}#instance-methods">Methods</a></li>
-  {{#clazz.allInstanceMethods}}
-  <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
-  {{/clazz.allInstanceMethods}}
-  {{/clazz.hasMethods}}
+  {{#clazz.hasStaticProperties}}
+  <li class="section-title"><a href="{{clazz.href}}#static-properties">Static properties</a></li>
+  {{#clazz.staticProperties}}
+  <li>{{{ linkedName }}}</li>
+  {{/clazz.staticProperties}}
+  {{/clazz.hasStaticProperties}}
+
+  {{#clazz.hasStaticMethods}}
+  <li class="section-title"><a href="{{clazz.href}}#static-methods">Static methods</a></li>
+  {{#clazz.staticMethods}}
+  <li>{{{ linkedName }}}</li>
+  {{/clazz.staticMethods}}
+  {{/clazz.hasStaticMethods}}
+
+  {{#clazz.hasConstants}}
+  <li class="section-title"><a href="{{clazz.href}}#constants">Constants</a></li>
+  {{#clazz.constants}}
+  <li>{{{linkedName}}}</li>
+  {{/clazz.constants}}
+  {{/clazz.hasConstants}}
 </ol>

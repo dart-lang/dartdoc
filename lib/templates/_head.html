@@ -17,21 +17,20 @@
   <base href="{{htmlBase}}">
   {{/htmlBase}}
 
-  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/prettify.css">
   <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
-  <!-- Do not remove placeholder -->
-  <!-- Header Placeholder -->
+  <!-- header placeholder -->
 </head>
 
 <body>
 
 <div id="overlay-under-drawer"></div>
 
-<header class="container-fluid" id="title">
+<header class="container-fluid header-fixed" id="title">
   <nav class="navbar navbar-fixed-top">
     <div class="container">
       <div class="row">
@@ -39,11 +38,11 @@
           {{^navLinks.isEmpty}}
           <button id="sidenav-left-toggle" type="button">&nbsp;</button>
           {{/navLinks.isEmpty}}
-          <ol class="breadcrumbs gt-separated hidden-xs">
+          <ol class="breadcrumbs gt-separated dark hidden-xs">
             {{#navLinks}}
             <li><a href="{{href}}">{{name}}</a></li>
             {{/navLinks}}
-            <li class="self-crumb">{{self.name}}</li>
+            <li class="self-crumb">{{{ layoutTitle }}}</li>
           </ol>
           <div class="self-name">{{self.name}}</div>
           <form class="search navbar-right" role="search">
@@ -53,34 +52,6 @@
       </div> <!-- /row -->
     </div> <!-- /container -->
   </nav>
-
-  <div class="container masthead">
-    <div class="row">
-      <div class="col-sm-12 contents">
-        <ol class="breadcrumbs gt-separated visible-xs">
-          {{#navLinks}}
-          <li><a href="{{href}}">{{name}}</a></li>
-          {{/navLinks}}
-          {{^navLinks.isEmpty}}
-          <li class="self-crumb">{{self.name}}</li>
-          {{/navLinks.isEmpty}}
-        </ol>
-        <div class="title-description">
-          <h1 class="title">
-            {{{ layoutTitle }}}
-          </h1>
-        </div>
-        {{#hasSubNav}}
-        <ul class="subnav">
-          {{#subnavItems}}
-          <li><a href="{{href}}">{{name}}</a></li>
-          {{/subnavItems}}
-        </ul>
-        {{/hasSubNav}}
-      </div> <!-- /col -->
-    </div> <!-- /row -->
-  </div> <!-- /container -->
-
 </header>
 
 <div class="container body">

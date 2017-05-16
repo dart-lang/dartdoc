@@ -11,12 +11,15 @@ import 'package:yaml/yaml.dart';
 
 abstract class PackageMeta {
   final Directory dir;
+  final bool useCategories;
 
-  PackageMeta(this.dir);
+  PackageMeta(this.dir, {this.useCategories: false});
 
   factory PackageMeta.fromDir(Directory dir) => new _FilePackageMeta(dir);
-  factory PackageMeta.fromSdk(Directory sdkDir, {String sdkReadmePath}) =>
-      new _SdkMeta(sdkDir, sdkReadmePath: sdkReadmePath);
+  factory PackageMeta.fromSdk(Directory sdkDir,
+          {String sdkReadmePath, bool useCategories}) =>
+      new _SdkMeta(sdkDir,
+          sdkReadmePath: sdkReadmePath, useCategories: useCategories);
 
   bool get isSdk;
   bool get needsPubGet => false;
@@ -180,7 +183,8 @@ File _locate(Directory dir, List<String> fileNames) {
 class _SdkMeta extends PackageMeta {
   final String sdkReadmePath;
 
-  _SdkMeta(Directory dir, {this.sdkReadmePath}) : super(dir);
+  _SdkMeta(Directory dir, {this.sdkReadmePath, bool useCategories})
+      : super(dir, useCategories: useCategories);
 
   @override
   bool get isSdk => true;

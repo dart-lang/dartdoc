@@ -1,0 +1,168 @@
+{{>head}}
+
+  <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    <h5>{{parent.kind}} {{parent.name}}</h5>
+    {{>sidebar_for_library}}
+  </div>
+
+  <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+
+    {{#eNum}}
+    {{>documentation}}
+    {{/eNum}}
+
+    {{#eNum.hasModifiers}}
+    <section>
+      <dl class="dl-horizontal">
+        {{#eNum.hasSupertype}}
+        <dt>Inheritance</dt>
+        <dd><ul class="gt-separated dark eNum-relationships">
+          <li>{{{linkedObjectType}}}</li>
+          {{#eNum.superChainReversed}}
+          <li>{{{linkedName}}}</li>
+          {{/eNum.superChainReversed}}
+          <li>{{{name}}}</li>
+        </ul></dd>
+        {{/eNum.hasSupertype}}
+
+        {{#eNum.hasInterfaces}}
+        <dt>Implements</dt>
+        <dd>
+          <ul class="comma-separated eNum-relationships">
+            {{#eNum.interfaces}}
+            <li>{{{linkedName}}}</li>
+            {{/eNum.interfaces}}
+          </ul>
+        </dd>
+        {{/eNum.hasInterfaces}}
+
+        {{#eNum.hasMixins}}
+        <dt>Mixes-in</dt>
+        <dd><ul class="comma-separated eNum-relationships">
+          {{#eNum.mixins}}
+          <li>{{{linkedName}}}</li>
+          {{/eNum.mixins}}
+        </ul></dd>
+        {{/eNum.hasMixins}}
+
+        {{#eNum.hasImplementors}}
+        <dt>Implemented by</dt>
+        <dd><ul class="comma-separated eNum-relationships">
+          {{#eNum.implementors}}
+          <li>{{{linkedName}}}</li>
+          {{/eNum.implementors}}
+        </ul></dd>
+        {{/eNum.hasImplementors}}
+
+        {{#eNum.hasAnnotations}}
+        <dt>Annotations</dt>
+        <dd><ul class="annotation-list eNum-relationships">
+          {{#eNum.annotations}}
+          <li>{{{.}}}</li>
+          {{/eNum.annotations}}
+        </ul></dd>
+        {{/eNum.hasAnnotations}}
+      </dl>
+    </section>
+    {{/eNum.hasModifiers}}
+
+    {{#eNum.hasConstants}}
+    <section class="summary offset-anchor" id="constants">
+      <h2>Constants</h2>
+
+      <dl class="properties">
+        {{#eNum.constants}}
+        {{>constant}}
+        {{/eNum.constants}}
+      </dl>
+    </section>
+    {{/eNum.hasConstants}}
+
+    {{#eNum.hasConstructors}}
+    <section class="summary offset-anchor" id="constructors">
+      <h2>Constructors</h2>
+
+      <dl class="constructor-summary-list">
+        {{#eNum.constructors}}
+        <dt id="{{htmlId}}" class="callable">
+          <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
+        </dt>
+        <dd>
+          {{{ oneLineDoc }}}
+          {{#isConst}}
+          <div class="constructor-modifier features">const</div>
+          {{/isConst}}
+          {{#isFactory}}
+          <div class="constructor-modifier features">factory</div>
+          {{/isFactory}}
+        </dd>
+        {{/eNum.constructors}}
+      </dl>
+    </section>
+    {{/eNum.hasConstructors}}
+
+    {{#eNum.hasProperties}}
+    <section class="summary offset-anchor{{ #allInstancePropertiesInherited }} inherited{{ /allInstancePropertiesInherited }}" id="instance-properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        {{#eNum.allInstanceProperties}}
+        {{>property}}
+        {{/eNum.allInstanceProperties}}
+      </dl>
+    </section>
+    {{/eNum.hasProperties}}
+
+    {{#eNum.hasMethods}}
+    <section class="summary offset-anchor{{ #allInstanceMethodsInherited }} inherited{{ /allInstanceMethodsInherited }}" id="instance-methods">
+      <h2>Methods</h2>
+      <dl class="callables">
+        {{#eNum.allInstanceMethods}}
+        {{>callable}}
+        {{/eNum.allInstanceMethods}}
+      </dl>
+    </section>
+    {{/eNum.hasMethods}}
+
+    {{#eNum.hasOperators}}
+    <section class="summary offset-anchor{{ #allOperatorsInherited }} inherited{{ /allOperatorsInherited}}" id="operators">
+      <h2>Operators</h2>
+      <dl class="callables">
+        {{#eNum.allOperators}}
+        {{>callable}}
+        {{/eNum.allOperators}}
+      </dl>
+    </section>
+    {{/eNum.hasOperators}}
+
+    {{#eNum.hasStaticProperties}}
+    <section class="summary offset-anchor" id="static-properties">
+      <h2>Static Properties</h2>
+
+      <dl class="properties">
+        {{#eNum.staticProperties}}
+        {{>property}}
+        {{/eNum.staticProperties}}
+      </dl>
+    </section>
+    {{/eNum.hasStaticProperties}}
+
+    {{#eNum.hasStaticMethods}}
+    <section class="summary offset-anchor" id="static-methods">
+      <h2>Static Methods</h2>
+      <dl class="callables">
+        {{#eNum.staticMethods}}
+        {{>callable}}
+        {{/eNum.staticMethods}}
+      </dl>
+    </section>
+    {{/eNum.hasStaticMethods}}
+
+  </div> <!-- /.main-content -->
+
+  <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+    <h5>{{self.kind}} {{self.name}}</h5>
+    {{>sidebar_for_enum}}
+  </div><!--/.sidebar-offcanvas-->
+
+{{>footer}}

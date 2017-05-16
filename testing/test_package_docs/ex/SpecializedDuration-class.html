@@ -9,30 +9,28 @@
   <!-- required because all the links are pseudo-absolute -->
   <base href="..">
 
-  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/prettify.css">
   <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
-  <!-- Do not remove placeholder -->
-  <!-- Header Placeholder -->
 </head>
 
 <body>
 
 <div id="overlay-under-drawer"></div>
 
-<header class="container-fluid" id="title">
+<header class="container-fluid header-fixed" id="title">
   <nav class="navbar navbar-fixed-top">
     <div class="container">
       <div class="row">
         <div class="col-sm-12 contents">
           <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-          <ol class="breadcrumbs gt-separated hidden-xs">
+          <ol class="breadcrumbs gt-separated dark hidden-xs">
             <li><a href="index.html">test_package</a></li>
             <li><a href="ex/ex-library.html">ex</a></li>
-            <li class="self-crumb">SpecializedDuration</li>
+            <li class="self-crumb">class SpecializedDuration</li>
           </ol>
           <div class="self-name">SpecializedDuration</div>
           <form class="search navbar-right" role="search">
@@ -42,69 +40,14 @@
       </div> <!-- /row -->
     </div> <!-- /container -->
   </nav>
-
-  <div class="container masthead">
-    <div class="row">
-      <div class="col-sm-12 contents">
-        <ol class="breadcrumbs gt-separated visible-xs">
-          <li><a href="index.html">test_package</a></li>
-          <li><a href="ex/ex-library.html">ex</a></li>
-          <li class="self-crumb">SpecializedDuration</li>
-        </ol>
-        <div class="title-description">
-          <h1 class="title">
-            <span class="kind">class</span> SpecializedDuration
-          </h1>
-        </div>
-        <ul class="subnav">
-          <li><a href="ex/SpecializedDuration-class.html#instance-properties">Properties</a></li>
-          <li><a href="ex/SpecializedDuration-class.html#constructors">Constructors</a></li>
-          <li><a href="ex/SpecializedDuration-class.html#operators">Operators</a></li>
-          <li><a href="ex/SpecializedDuration-class.html#instance-methods">Methods</a></li>
-        </ul>
-      </div> <!-- /col -->
-    </div> <!-- /row -->
-  </div> <!-- /container -->
-
 </header>
 
 <div class="container body">
   <div class="row">
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5><a href="index.html">test_package</a></h5>
-    <h5><a href="ex/ex-library.html">ex</a></h5>
-
+    <h5>library ex</h5>
     <ol>
-      <li class="section-title"><a href="ex/ex-library.html#constants">Constants</a></li>
-      <li><a href="ex/COLOR-constant.html">COLOR</a></li>
-      <li><a href="ex/COLOR_GREEN-constant.html">COLOR_GREEN</a></li>
-      <li><a href="ex/COLOR_ORANGE-constant.html">COLOR_ORANGE</a></li>
-      <li><a href="ex/COMPLEX_COLOR-constant.html">COMPLEX_COLOR</a></li>
-      <li><a href="ex/deprecated-constant.html">deprecated</a></li>
-      <li><a href="ex/incorrectDocReference-constant.html">incorrectDocReference</a></li>
-      <li><a href="ex/incorrectDocReferenceFromEx-constant.html">incorrectDocReferenceFromEx</a></li>
-      <li><a href="ex/MY_CAT-constant.html">MY_CAT</a></li>
-      <li><a href="ex/PRETTY_COLORS-constant.html">PRETTY_COLORS</a></li>
-    
-      <li class="section-title"><a href="ex/ex-library.html#typedefs">Typedefs</a></li>
-      <li><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a></li>
-      <li><a href="ex/processMessage.html">processMessage</a></li>
-    
-      <li class="section-title"><a href="ex/ex-library.html#properties">Properties</a></li>
-      <li><a class="deprecated" href="ex/deprecatedField.html">deprecatedField</a></li>
-      <li><a class="deprecated" href="ex/deprecatedGetter.html">deprecatedGetter</a></li>
-      <li><a class="deprecated" href="ex/deprecatedSetter.html">deprecatedSetter</a></li>
-      <li><a href="ex/number.html">number</a></li>
-      <li><a href="ex/y.html">y</a></li>
-    
-      <li class="section-title"><a href="ex/ex-library.html#functions">Functions</a></li>
-      <li><a href="ex/function1.html">function1</a></li>
-      <li><a href="ex/genericFunction.html">genericFunction</a></li>
-    
-      <li class="section-title"><a href="ex/ex-library.html#enums">Enums</a></li>
-      <li><a href="ex/Animal-class.html">Animal</a></li>
-    
       <li class="section-title"><a href="ex/ex-library.html#classes">Classes</a></li>
       <li><a href="ex/Apple-class.html">Apple</a></li>
       <li><a href="ex/aThingToDo-class.html">aThingToDo</a></li>
@@ -127,6 +70,35 @@
       <li><a href="ex/SpecializedDuration-class.html">SpecializedDuration</a></li>
       <li><a href="ex/WithGeneric-class.html">WithGeneric</a></li>
       <li><a href="ex/WithGenericSub-class.html">WithGenericSub</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#constants">Constants</a></li>
+      <li><a href="ex/COLOR-constant.html">COLOR</a></li>
+      <li><a href="ex/COLOR_GREEN-constant.html">COLOR_GREEN</a></li>
+      <li><a href="ex/COLOR_ORANGE-constant.html">COLOR_ORANGE</a></li>
+      <li><a href="ex/COMPLEX_COLOR-constant.html">COMPLEX_COLOR</a></li>
+      <li><a href="ex/deprecated-constant.html">deprecated</a></li>
+      <li><a href="ex/incorrectDocReference-constant.html">incorrectDocReference</a></li>
+      <li><a href="ex/incorrectDocReferenceFromEx-constant.html">incorrectDocReferenceFromEx</a></li>
+      <li><a href="ex/MY_CAT-constant.html">MY_CAT</a></li>
+      <li><a href="ex/PRETTY_COLORS-constant.html">PRETTY_COLORS</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#properties">Properties</a></li>
+      <li><a class="deprecated" href="ex/deprecatedField.html">deprecatedField</a></li>
+      <li><a class="deprecated" href="ex/deprecatedGetter.html">deprecatedGetter</a></li>
+      <li><a class="deprecated" href="ex/deprecatedSetter.html">deprecatedSetter</a></li>
+      <li><a href="ex/number.html">number</a></li>
+      <li><a href="ex/y.html">y</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#functions">Functions</a></li>
+      <li><a href="ex/function1.html">function1</a></li>
+      <li><a href="ex/genericFunction.html">genericFunction</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#enums">Enums</a></li>
+      <li><a href="ex/Animal-class.html">Animal</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#typedefs">Typedefs</a></li>
+      <li><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a></li>
+      <li><a href="ex/processMessage.html">processMessage</a></li>
     
       <li class="section-title"><a href="ex/ex-library.html#exceptions">Exceptions</a></li>
       <li><a href="ex/MyError-class.html">MyError</a></li>
@@ -157,9 +129,6 @@ that has some operators</p>
 
       </dl>
     </section>
-
-
-
 
     <section class="summary offset-anchor" id="constructors">
       <h2>Constructors</h2>
@@ -249,6 +218,49 @@ that has some operators</p>
         <dd class="inherited">
           <p>A representation of the runtime type of the object.</p>
           <div class="features">read-only, inherited</div>
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor inherited" id="instance-methods">
+      <h2>Methods</h2>
+      <dl class="callables">
+        <dt id="abs" class="callable inherited">
+          <span class="name"><a href="ex/SpecializedDuration/abs.html">abs</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; Duration</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          <p>Returns a new <code>Duration</code> representing the absolute value of this
+<code>Duration</code>.</p>
+          <div class="features">inherited</div>
+</dd>
+        <dt id="compareTo" class="callable inherited">
+          <span class="name"><a href="ex/SpecializedDuration/compareTo.html">compareTo</a></span><span class="signature">(<wbr><span class="parameter" id="compareTo-param-other"><span class="type-annotation">Duration</span> <span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; int</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          <p>Compares this Duration to <code>other</code>, returning zero if the values are equal.</p>
+          <div class="features">inherited</div>
+</dd>
+        <dt id="noSuchMethod" class="callable inherited">
+          <span class="name"><a href="ex/SpecializedDuration/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
+            <span class="returntype parameter">&#8594; dynamic</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          <p>Invoked when a non-existent method or property is accessed.</p>
+          <div class="features">inherited</div>
+</dd>
+        <dt id="toString" class="callable inherited">
+          <span class="name"><a href="ex/SpecializedDuration/toString.html">toString</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; String</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          <p>Returns a string representation of this <code>Duration</code>.</p>
+          <div class="features">inherited</div>
 </dd>
       </dl>
     </section>
@@ -357,57 +369,14 @@ result as a new Duration object.</p>
       </dl>
     </section>
 
-    <section class="summary offset-anchor inherited" id="instance-methods">
-      <h2>Methods</h2>
-      <dl class="callables">
-        <dt id="abs" class="callable inherited">
-          <span class="name"><a href="ex/SpecializedDuration/abs.html">abs</a></span><span class="signature">(<wbr>)
-            <span class="returntype parameter">&#8594; Duration</span>
-          </span>
-        </dt>
-        <dd class="inherited">
-          <p>Returns a new <code>Duration</code> representing the absolute value of this
-<code>Duration</code>.</p>
-          <div class="features">inherited</div>
-</dd>
-        <dt id="compareTo" class="callable inherited">
-          <span class="name"><a href="ex/SpecializedDuration/compareTo.html">compareTo</a></span><span class="signature">(<wbr><span class="parameter" id="compareTo-param-other"><span class="type-annotation">Duration</span> <span class="parameter-name">other</span></span>)
-            <span class="returntype parameter">&#8594; int</span>
-          </span>
-        </dt>
-        <dd class="inherited">
-          <p>Compares this Duration to <code>other</code>, returning zero if the values are equal.</p>
-          <div class="features">inherited</div>
-</dd>
-        <dt id="noSuchMethod" class="callable inherited">
-          <span class="name"><a href="ex/SpecializedDuration/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
-            <span class="returntype parameter">&#8594; dynamic</span>
-          </span>
-        </dt>
-        <dd class="inherited">
-          <p>Invoked when a non-existent method or property is accessed.</p>
-          <div class="features">inherited</div>
-</dd>
-        <dt id="toString" class="callable inherited">
-          <span class="name"><a href="ex/SpecializedDuration/toString.html">toString</a></span><span class="signature">(<wbr>)
-            <span class="returntype parameter">&#8594; String</span>
-          </span>
-        </dt>
-        <dd class="inherited">
-          <p>Returns a string representation of this <code>Duration</code>.</p>
-          <div class="features">inherited</div>
-</dd>
-      </dl>
-    </section>
+
+
 
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>SpecializedDuration</h5>
+    <h5>class SpecializedDuration</h5>
     <ol>
-    
-    
-    
       <li class="section-title"><a href="ex/SpecializedDuration-class.html#constructors">Constructors</a></li>
       <li><a href="ex/SpecializedDuration/SpecializedDuration.html">SpecializedDuration</a></li>
     
@@ -424,6 +393,12 @@ result as a new Duration object.</p>
       <li class="inherited"><a href="ex/SpecializedDuration/isNegative.html">isNegative</a></li>
       <li class="inherited"><a href="ex/SpecializedDuration/runtimeType.html">runtimeType</a></li>
     
+      <li class="section-title inherited"><a href="ex/SpecializedDuration-class.html#instance-methods">Methods</a></li>
+      <li class="inherited"><a href="ex/SpecializedDuration/abs.html">abs</a></li>
+      <li class="inherited"><a href="ex/SpecializedDuration/compareTo.html">compareTo</a></li>
+      <li class="inherited"><a href="ex/SpecializedDuration/noSuchMethod.html">noSuchMethod</a></li>
+      <li class="inherited"><a href="ex/SpecializedDuration/toString.html">toString</a></li>
+    
       <li class="section-title inherited"><a href="ex/SpecializedDuration-class.html#operators">Operators</a></li>
       <li class="inherited"><a href="ex/SpecializedDuration/operator_multiply.html">operator *</a></li>
       <li class="inherited"><a href="ex/SpecializedDuration/operator_plus.html">operator +</a></li>
@@ -436,11 +411,8 @@ result as a new Duration object.</p>
       <li class="inherited"><a href="ex/SpecializedDuration/operator_unary_minus.html">operator unary-</a></li>
       <li class="inherited"><a href="ex/SpecializedDuration/operator_truncate_divide.html">operator ~/</a></li>
     
-      <li class="section-title inherited"><a href="ex/SpecializedDuration-class.html#instance-methods">Methods</a></li>
-      <li class="inherited"><a href="ex/SpecializedDuration/abs.html">abs</a></li>
-      <li class="inherited"><a href="ex/SpecializedDuration/compareTo.html">compareTo</a></li>
-      <li class="inherited"><a href="ex/SpecializedDuration/noSuchMethod.html">noSuchMethod</a></li>
-      <li class="inherited"><a href="ex/SpecializedDuration/toString.html">toString</a></li>
+    
+    
     </ol>
   </div><!--/.sidebar-offcanvas-->
 
@@ -456,14 +428,13 @@ result as a new Duration object.</p>
         </span>
         &bull;
         <span class="no-break">
-          <a href="https://www.dartlang.org">
-            <img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16">
-          </a>
+          <a href="https://www.dartlang.org"><img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16"></a>
         </span>
         &bull;
         <span class="copyright no-break">
           <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
         </span>
+
       </p>
     </div>
   </div>
@@ -474,8 +445,7 @@ result as a new Duration object.</p>
 <script src="static-assets/prettify.js"></script>
 <script src="static-assets/URI.js"></script>
 <script src="static-assets/script.js"></script>
-<!-- Do not remove placeholder -->
-<!-- Footer Placeholder -->
+
 
 </body>
 

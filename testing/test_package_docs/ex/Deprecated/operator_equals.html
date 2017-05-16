@@ -9,31 +9,29 @@
   <!-- required because all the links are pseudo-absolute -->
   <base href="../..">
 
-  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/prettify.css">
   <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
-  <!-- Do not remove placeholder -->
-  <!-- Header Placeholder -->
 </head>
 
 <body>
 
 <div id="overlay-under-drawer"></div>
 
-<header class="container-fluid" id="title">
+<header class="container-fluid header-fixed" id="title">
   <nav class="navbar navbar-fixed-top">
     <div class="container">
       <div class="row">
         <div class="col-sm-12 contents">
           <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-          <ol class="breadcrumbs gt-separated hidden-xs">
+          <ol class="breadcrumbs gt-separated dark hidden-xs">
             <li><a href="index.html">test_package</a></li>
             <li><a href="ex/ex-library.html">ex</a></li>
             <li><a href="ex/Deprecated-class.html">Deprecated</a></li>
-            <li class="self-crumb">operator ==</li>
+            <li class="self-crumb">method operator ==</li>
           </ol>
           <div class="self-name">operator ==</div>
           <form class="search navbar-right" role="search">
@@ -43,39 +41,14 @@
       </div> <!-- /row -->
     </div> <!-- /container -->
   </nav>
-
-  <div class="container masthead">
-    <div class="row">
-      <div class="col-sm-12 contents">
-        <ol class="breadcrumbs gt-separated visible-xs">
-          <li><a href="index.html">test_package</a></li>
-          <li><a href="ex/ex-library.html">ex</a></li>
-          <li><a href="ex/Deprecated-class.html">Deprecated</a></li>
-          <li class="self-crumb">operator ==</li>
-        </ol>
-        <div class="title-description">
-          <h1 class="title">
-            <span class="kind">method</span> operator ==
-          </h1>
-        </div>
-      </div> <!-- /col -->
-    </div> <!-- /row -->
-  </div> <!-- /container -->
-
 </header>
 
 <div class="container body">
   <div class="row">
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5><a href="index.html">test_package</a></h5>
-    <h5><a href="ex/ex-library.html">ex</a></h5>
-    <h5><a href="ex/Deprecated-class.html">Deprecated</a></h5>
-
+    <h5>class Deprecated</h5>
     <ol>
-    
-    
-    
       <li class="section-title"><a href="ex/Deprecated-class.html#constructors">Constructors</a></li>
       <li><a href="ex/Deprecated/Deprecated.html">Deprecated</a></li>
     
@@ -86,14 +59,16 @@
       <li class="inherited"><a href="ex/Deprecated/hashCode.html">hashCode</a></li>
       <li class="inherited"><a href="ex/Deprecated/runtimeType.html">runtimeType</a></li>
     
-      <li class="section-title inherited"><a href="ex/Deprecated-class.html#operators">Operators</a></li>
-      <li class="inherited"><a href="ex/Deprecated/operator_equals.html">operator ==</a></li>
-    
       <li class="section-title"><a href="ex/Deprecated-class.html#instance-methods">Methods</a></li>
       <li><a href="ex/Deprecated/toString.html">toString</a></li>
       <li class="inherited"><a href="ex/Deprecated/noSuchMethod.html">noSuchMethod</a></li>
+    
+      <li class="section-title inherited"><a href="ex/Deprecated-class.html#operators">Operators</a></li>
+      <li class="inherited"><a href="ex/Deprecated/operator_equals.html">operator ==</a></li>
+    
+    
+    
     </ol>
-
   </div><!--/.sidebar-offcanvas-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
@@ -115,7 +90,7 @@ or return <code>null</code>.</p></li><li>
 either both be true, or both be false.</p></li><li>
 <p>Transitive: For all objects <code>o1</code>, <code>o2</code>, and <code>o3</code>, if <code>o1 == o2</code> and
 <code>o2 == o3</code> are true, then <code>o1 == o3</code> must be true.</p></li></ul>
-<p>The method should also be consistent over time, 
+<p>The method should also be consistent over time,
 so whether two objects are equal should only change
 if at least one of the objects was modified.</p>
 <p>If a subclass overrides the equality operator it should override
@@ -125,6 +100,10 @@ the <code>hashCode</code> method as well to maintain consistency.</p>
     
 
   </div> <!-- /.main-content -->
+
+  <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+    <h5>method operator ==</h5>
+  </div><!--/.sidebar-offcanvas-->
 
 </div> <!-- row -->
 </div> <!-- container -->
@@ -138,14 +117,13 @@ the <code>hashCode</code> method as well to maintain consistency.</p>
         </span>
         &bull;
         <span class="no-break">
-          <a href="https://www.dartlang.org">
-            <img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16">
-          </a>
+          <a href="https://www.dartlang.org"><img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16"></a>
         </span>
         &bull;
         <span class="copyright no-break">
           <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
         </span>
+
       </p>
     </div>
   </div>
@@ -156,8 +134,7 @@ the <code>hashCode</code> method as well to maintain consistency.</p>
 <script src="static-assets/prettify.js"></script>
 <script src="static-assets/URI.js"></script>
 <script src="static-assets/script.js"></script>
-<!-- Do not remove placeholder -->
-<!-- Footer Placeholder -->
+
 
 </body>
 

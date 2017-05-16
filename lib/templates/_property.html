@@ -1,7 +1,16 @@
+{{ #hasSetter }}
+<dt id="{{htmlId}}" class="property{{ #isInherited }} inherited{{ /isInherited}}">
+  <span class="name{{#isDeprecated}} deprecated{{/isDeprecated}}">{{{linkedName}}}</span><span class="signature">{{{genericParameters}}}
+    <span class="returntype parameter">{{{ arrow }}} {{ #hasExplicitSetter }} {{{ linkedParamsNoMetadata }}} {{/hasExplicitSetter}} {{#hasImplicitSetter}} {{{linkedParamsNoMetadataOrNames}}} {{/hasImplicitSetter}}</span>
+  </span>
+</dt>
+{{ /hasSetter }}
+{{ #hasGetterNoSetter }}
 <dt id="{{htmlId}}" class="property{{ #isInherited }} inherited{{ /isInherited}}">
   <span class="name">{{{linkedName}}}</span>
-  <span class="signature">&#8594; {{{ linkedReturnType }}}</span>
+  <span class="signature">{{{ arrow }}} {{{ linkedReturnType }}}</span>
 </dt>
+{{ /hasGetterNoSetter }}
 <dd{{ #isInherited }} class="inherited"{{ /isInherited}}>
   {{{ oneLineDoc }}}
   {{>features}}

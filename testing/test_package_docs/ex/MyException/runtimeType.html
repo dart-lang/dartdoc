@@ -9,31 +9,29 @@
   <!-- required because all the links are pseudo-absolute -->
   <base href="../..">
 
-  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/prettify.css">
   <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
-  <!-- Do not remove placeholder -->
-  <!-- Header Placeholder -->
 </head>
 
 <body>
 
 <div id="overlay-under-drawer"></div>
 
-<header class="container-fluid" id="title">
+<header class="container-fluid header-fixed" id="title">
   <nav class="navbar navbar-fixed-top">
     <div class="container">
       <div class="row">
         <div class="col-sm-12 contents">
           <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-          <ol class="breadcrumbs gt-separated hidden-xs">
+          <ol class="breadcrumbs gt-separated dark hidden-xs">
             <li><a href="index.html">test_package</a></li>
             <li><a href="ex/ex-library.html">ex</a></li>
             <li><a href="ex/MyException-class.html">MyException</a></li>
-            <li class="self-crumb">runtimeType</li>
+            <li class="self-crumb">property runtimeType</li>
           </ol>
           <div class="self-name">runtimeType</div>
           <form class="search navbar-right" role="search">
@@ -43,39 +41,14 @@
       </div> <!-- /row -->
     </div> <!-- /container -->
   </nav>
-
-  <div class="container masthead">
-    <div class="row">
-      <div class="col-sm-12 contents">
-        <ol class="breadcrumbs gt-separated visible-xs">
-          <li><a href="index.html">test_package</a></li>
-          <li><a href="ex/ex-library.html">ex</a></li>
-          <li><a href="ex/MyException-class.html">MyException</a></li>
-          <li class="self-crumb">runtimeType</li>
-        </ol>
-        <div class="title-description">
-          <h1 class="title">
-            <span class="kind">property</span> runtimeType
-          </h1>
-        </div>
-      </div> <!-- /col -->
-    </div> <!-- /row -->
-  </div> <!-- /container -->
-
 </header>
 
 <div class="container body">
   <div class="row">
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5><a href="index.html">test_package</a></h5>
-    <h5><a href="ex/ex-library.html">ex</a></h5>
-    <h5><a href="ex/MyException-class.html">MyException</a></h5>
-
+    <h5>class MyException</h5>
     <ol>
-    
-    
-    
       <li class="section-title"><a href="ex/MyException-class.html#constructors">Constructors</a></li>
       <li><a href="ex/MyException/MyException.html">MyException</a></li>
     
@@ -85,14 +58,16 @@
       <li class="inherited"><a href="ex/MyException/hashCode.html">hashCode</a></li>
       <li class="inherited"><a href="ex/MyException/runtimeType.html">runtimeType</a></li>
     
-      <li class="section-title inherited"><a href="ex/MyException-class.html#operators">Operators</a></li>
-      <li class="inherited"><a href="ex/MyException/operator_equals.html">operator ==</a></li>
-    
       <li class="section-title inherited"><a href="ex/MyException-class.html#instance-methods">Methods</a></li>
       <li class="inherited"><a href="ex/MyException/noSuchMethod.html">noSuchMethod</a></li>
       <li class="inherited"><a href="ex/MyException/toString.html">toString</a></li>
+    
+      <li class="section-title inherited"><a href="ex/MyException-class.html#operators">Operators</a></li>
+      <li class="inherited"><a href="ex/MyException/operator_equals.html">operator ==</a></li>
+    
+    
+    
     </ol>
-
   </div><!--/.sidebar-offcanvas-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
@@ -113,6 +88,10 @@
 
   </div> <!-- /.main-content -->
 
+  <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+    <h5>property runtimeType</h5>
+  </div><!--/.sidebar-offcanvas-->
+
 </div> <!-- row -->
 </div> <!-- container -->
 
@@ -125,14 +104,13 @@
         </span>
         &bull;
         <span class="no-break">
-          <a href="https://www.dartlang.org">
-            <img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16">
-          </a>
+          <a href="https://www.dartlang.org"><img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16"></a>
         </span>
         &bull;
         <span class="copyright no-break">
           <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
         </span>
+
       </p>
     </div>
   </div>
@@ -143,8 +121,7 @@
 <script src="static-assets/prettify.js"></script>
 <script src="static-assets/URI.js"></script>
 <script src="static-assets/script.js"></script>
-<!-- Do not remove placeholder -->
-<!-- Footer Placeholder -->
+
 
 </body>
 

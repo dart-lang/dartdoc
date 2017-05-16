@@ -4,7 +4,7 @@
 
 import 'dart:async' show Future, StreamController;
 import 'dart:convert' show JsonEncoder;
-import 'dart:io' show Directory, File, stdout;
+import 'dart:io' show Directory, File;
 import 'dart:typed_data' show Uint8List;
 
 import 'package:collection/collection.dart' show compareNatural;
@@ -178,19 +178,15 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void generatePackage() {
-    stdout.write('documenting ${package.name}');
-
     TemplateData data = new PackageTemplateData(this, package, useCategories);
 
     _build('index.html', _templates.indexTemplate, data);
   }
 
   void generateLibrary(Package package, Library lib) {
-    stdout
-        .write('\ngenerating docs for library ${lib.name} from ${lib.path}...');
-
+    print('generating docs for library ${lib.name} from ${lib.path}...');
     if (!lib.isAnonymous && !lib.hasDocumentation) {
-      package.warn(lib, PackageWarning.noLibraryLevelDocs);
+      package.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);
     }
     TemplateData data =
         new LibraryTemplateData(this, package, lib, useCategories);
@@ -213,10 +209,10 @@ class HtmlGeneratorInstance implements HtmlOptions {
         _templates.constructorTemplate, data);
   }
 
-  void generateEnum(Package package, Library lib, Class eNum) {
+  void generateEnum(Package package, Library lib, Enum eNum) {
     TemplateData data = new EnumTemplateData(this, package, lib, eNum);
 
-    _build(path.joinAll(eNum.href.split('/')), _templates.classTemplate, data);
+    _build(path.joinAll(eNum.href.split('/')), _templates.enumTemplate, data);
   }
 
   void generateFunction(Package package, Library lib, ModelFunction function) {
@@ -294,6 +290,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
       destFile.writeAsBytesSync(resourceBytes);
     }
   }
+
+  Set<String> get writtenFiles => _writtenFiles;
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
     String fullName = path.join(out.path, filename);

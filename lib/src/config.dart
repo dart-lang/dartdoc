@@ -4,16 +4,18 @@
 
 library dartdoc.config;
 
+import 'dart:collection' show UnmodifiableListView;
 import 'dart:io';
 
 class Config {
   final Directory inputDir;
-  final bool addCrossdart;
   final bool showWarnings;
+  final bool addCrossdart;
   final String examplePathPrefix;
   final bool includeSource;
   final String sdkVersion;
   final bool autoIncludeDependencies;
+  final List<String> categoryOrder;
   Config._(
       this.inputDir,
       this.showWarnings,
@@ -21,7 +23,8 @@ class Config {
       this.examplePathPrefix,
       this.includeSource,
       this.sdkVersion,
-      this.autoIncludeDependencies);
+      this.autoIncludeDependencies,
+      this.categoryOrder);
 }
 
 Config _config;
@@ -30,11 +33,22 @@ Config get config => _config;
 void setConfig(
     {Directory inputDir,
     bool showWarnings: false,
-    String sdkVersion,
     bool addCrossdart: false,
     String examplePathPrefix,
     bool includeSource: true,
-    bool autoIncludeDependencies: false}) {
-  _config = new Config._(inputDir, showWarnings, addCrossdart,
-      examplePathPrefix, includeSource, sdkVersion, autoIncludeDependencies);
+    String sdkVersion,
+    bool autoIncludeDependencies: false,
+    List<String> categoryOrder}) {
+  if (categoryOrder == null) {
+    categoryOrder = new UnmodifiableListView<String>([]);
+  }
+  _config = new Config._(
+      inputDir,
+      showWarnings,
+      addCrossdart,
+      examplePathPrefix,
+      includeSource,
+      sdkVersion,
+      autoIncludeDependencies,
+      categoryOrder);
 }
