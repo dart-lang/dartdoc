@@ -81,9 +81,11 @@ class HtmlGeneratorInstance implements HtmlOptions {
       return data;
     }).toList()
           ..sort((a, b) {
-            var aQualified = a['qualifiedName'] as String;
-            var bQualified = b['qualifiedName'] as String;
-            return compareNatural(aQualified, bQualified);
+            var value = compareNatural(a['qualifiedName'], b['qualifiedName']);
+            if (value == 0) {
+              value = compareNatural(a['type'], b['type']);
+            }
+            return value;
           }));
     jsonFile.writeAsStringSync('${json}\n');
   }
