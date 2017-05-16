@@ -9,14 +9,12 @@
   <!-- required because all the links are pseudo-absolute -->
   <base href="..">
 
-  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/prettify.css">
   <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
-  <!-- Do not remove placeholder -->
-  <!-- Header Placeholder -->
 </head>
 
 <body>
@@ -29,7 +27,7 @@
       <div class="row">
         <div class="col-sm-12 contents">
           <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-          <ol class="breadcrumbs gt-separated hidden-xs">
+          <ol class="breadcrumbs gt-separated dark hidden-xs">
             <li><a href="index.html">test_package</a></li>
             <li><a href="test_package_imported.main/test_package_imported.main-library.html">test_package_imported.main</a></li>
             <li class="self-crumb">Whataclass</li>
@@ -46,7 +44,7 @@
   <div class="container masthead">
     <div class="row">
       <div class="col-sm-12 contents">
-        <ol class="breadcrumbs gt-separated visible-xs">
+        <ol class="breadcrumbs gt-separated dark visible-xs">
           <li><a href="index.html">test_package</a></li>
           <li><a href="test_package_imported.main/test_package_imported.main-library.html">test_package_imported.main</a></li>
           <li class="self-crumb">Whataclass</li>
@@ -57,10 +55,10 @@
           </h1>
         </div>
         <ul class="subnav">
-          <li><a href="test_package_imported.main/Whataclass-class.html#instance-properties">Properties</a></li>
           <li><a href="test_package_imported.main/Whataclass-class.html#constructors">Constructors</a></li>
-          <li><a href="test_package_imported.main/Whataclass-class.html#operators">Operators</a></li>
+          <li><a href="test_package_imported.main/Whataclass-class.html#instance-properties">Properties</a></li>
           <li><a href="test_package_imported.main/Whataclass-class.html#instance-methods">Methods</a></li>
+          <li><a href="test_package_imported.main/Whataclass-class.html#operators">Operators</a></li>
         </ul>
       </div> <!-- /col -->
     </div> <!-- /row -->
@@ -72,18 +70,16 @@
   <div class="row">
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5><a href="index.html">test_package</a></h5>
-    <h5><a href="test_package_imported.main/test_package_imported.main-library.html">test_package_imported.main</a></h5>
-
+    <h5>library test_package_imported.main</h5>
     <ol>
-    
-    
-    
-    
-    
       <li class="section-title"><a href="test_package_imported.main/test_package_imported.main-library.html#classes">Classes</a></li>
       <li><a href="test_package_imported.main/Whataclass-class.html">Whataclass</a></li>
       <li><a href="test_package_imported.main/Whataclass2-class.html">Whataclass2</a></li>
+    
+    
+    
+    
+    
     
     </ol>
   </div>
@@ -94,9 +90,6 @@
       <p>Some docs for whataclass</p>
     </section>
     
-
-
-
 
     <section class="summary offset-anchor" id="constructors">
       <h2>Constructors</h2>
@@ -134,21 +127,6 @@
       </dl>
     </section>
 
-    <section class="summary offset-anchor inherited" id="operators">
-      <h2>Operators</h2>
-      <dl class="callables">
-        <dt id="operator ==" class="callable inherited">
-          <span class="name"><a href="test_package_imported.main/Whataclass/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
-            <span class="returntype parameter">&#8594; bool</span>
-          </span>
-        </dt>
-        <dd class="inherited">
-          <p>The equality operator.</p>
-          <div class="features">inherited</div>
-</dd>
-      </dl>
-    </section>
-
     <section class="summary offset-anchor inherited" id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">
@@ -173,14 +151,29 @@
       </dl>
     </section>
 
+    <section class="summary offset-anchor inherited" id="operators">
+      <h2>Operators</h2>
+      <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+          <span class="name"><a href="test_package_imported.main/Whataclass/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; bool</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          <p>The equality operator.</p>
+          <div class="features">inherited</div>
+</dd>
+      </dl>
+    </section>
+
+
+
+
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>Whataclass</h5>
+    <h5>class Whataclass</h5>
     <ol>
-    
-    
-    
       <li class="section-title"><a href="test_package_imported.main/Whataclass-class.html#constructors">Constructors</a></li>
       <li><a href="test_package_imported.main/Whataclass/Whataclass.html">Whataclass</a></li>
     
@@ -190,12 +183,15 @@
       <li class="inherited"><a href="test_package_imported.main/Whataclass/hashCode.html">hashCode</a></li>
       <li class="inherited"><a href="test_package_imported.main/Whataclass/runtimeType.html">runtimeType</a></li>
     
-      <li class="section-title inherited"><a href="test_package_imported.main/Whataclass-class.html#operators">Operators</a></li>
-      <li class="inherited"><a href="test_package_imported.main/Whataclass/operator_equals.html">operator ==</a></li>
-    
       <li class="section-title inherited"><a href="test_package_imported.main/Whataclass-class.html#instance-methods">Methods</a></li>
       <li class="inherited"><a href="test_package_imported.main/Whataclass/noSuchMethod.html">noSuchMethod</a></li>
       <li class="inherited"><a href="test_package_imported.main/Whataclass/toString.html">toString</a></li>
+    
+      <li class="section-title inherited"><a href="test_package_imported.main/Whataclass-class.html#operators">Operators</a></li>
+      <li class="inherited"><a href="test_package_imported.main/Whataclass/operator_equals.html">operator ==</a></li>
+    
+    
+    
     </ol>
   </div><!--/.sidebar-offcanvas-->
 
@@ -211,14 +207,13 @@
         </span>
         &bull;
         <span class="no-break">
-          <a href="https://www.dartlang.org">
-            <img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16">
-          </a>
+          <a href="https://www.dartlang.org"><img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16"></a>
         </span>
         &bull;
         <span class="copyright no-break">
           <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
         </span>
+
       </p>
     </div>
   </div>
@@ -229,8 +224,7 @@
 <script src="static-assets/prettify.js"></script>
 <script src="static-assets/URI.js"></script>
 <script src="static-assets/script.js"></script>
-<!-- Do not remove placeholder -->
-<!-- Footer Placeholder -->
+
 
 </body>
 

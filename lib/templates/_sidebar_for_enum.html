@@ -1,0 +1,52 @@
+<ol>
+  {{#eNum.hasConstants}}
+  <li class="section-title"><a href="{{eNum.href}}#constants">Constants</a></li>
+  {{#eNum.constants}}
+  <li>{{{linkedName}}}</li>
+  {{/eNum.constants}}
+  {{/eNum.hasConstants}}
+
+  {{#eNum.hasConstructors}}
+  <li class="section-title"><a href="{{eNum.href}}#constructors">Constructors</a></li>
+  {{#eNum.constructors}}
+  <li><a{{#isDeprecated}} class="deprecated"{{/isDeprecated}} href="{{href}}">{{shortName}}</a></li>
+  {{/eNum.constructors}}
+  {{/eNum.hasConstructors}}
+
+  {{#eNum.hasProperties}}
+  <li class="section-title{{ #allInstancePropertiesInherited }} inherited{{ /allInstancePropertiesInherited }}">
+    <a href="{{eNum.href}}#instance-properties">Properties</a>
+  </li>
+  {{#eNum.allInstanceProperties}}
+  <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
+  {{/eNum.allInstanceProperties}}
+  {{/eNum.hasProperties}}
+
+  {{#eNum.hasMethods}}
+  <li class="section-title{{ #allInstanceMethodsInherited }} inherited{{ /allInstanceMethodsInherited }}"><a href="{{eNum.href}}#instance-methods">Methods</a></li>
+  {{#eNum.allInstanceMethods}}
+  <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
+  {{/eNum.allInstanceMethods}}
+  {{/eNum.hasMethods}}
+
+  {{#eNum.hasOperators}}
+  <li class="section-title{{ #allOperatorsInherited }} inherited{{ /allOperatorsInherited}}"><a href="{{eNum.href}}#operators">Operators</a></li>
+  {{#eNum.allOperators}}
+  <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
+  {{/eNum.allOperators}}
+  {{/eNum.hasOperators}}
+
+  {{#eNum.hasStaticProperties}}
+  <li class="section-title"><a href="{{eNum.href}}#static-properties">Static properties</a></li>
+  {{#eNum.staticProperties}}
+  <li>{{{ linkedName }}}</li>
+  {{/eNum.staticProperties}}
+  {{/eNum.hasStaticProperties}}
+
+  {{#eNum.hasStaticMethods}}
+  <li class="section-title"><a href="{{eNum.href}}#static-methods">Static methods</a></li>
+  {{#eNum.staticMethods}}
+  <li>{{{ linkedName }}}</li>
+  {{/eNum.staticMethods}}
+  {{/eNum.hasStaticMethods}}
+</ol>

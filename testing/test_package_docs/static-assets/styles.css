@@ -16,13 +16,14 @@ html {
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
-  font-size: 15px;
-  margin-bottom: 60px;
-  -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
   overflow-x: hidden;
-  color: #212121;
+
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 16px;
+  line-height: 1.42857143;
+  color: #111111;
+  background-color: #fff;
 }
 
 nav {
@@ -51,13 +52,12 @@ nav .container {
 }
 
 header {
-  background-color: rgb(0, 102, 152);
-  color: white;
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.37);
+  background-color: #eeeeee;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.1);
 }
 
 header.header-fixed nav.navbar-fixed-top {
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 3px 5px rgba(0,0,0,0.1);
 }
 
 header.container-fluid {
@@ -97,8 +97,10 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: normal;
-  margin: 0;
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 400;
+  margin-top: 1.5em;
+  color: #111111;
 }
 
 h1.title {
@@ -106,8 +108,14 @@ h1.title {
   text-overflow: ellipsis;
 }
 
+h1 {
+  font-size: 37px;
+  margin-top: 0;
+  margin-bottom: 0.67em;
+}
+
 h2 {
-  font-size: 24px;
+  font-size: 28px;
 }
 
 h5 {
@@ -134,18 +142,18 @@ p {
 }
 
 a, a:hover {
-  color: rgb(0, 102, 152);
+  color: #1155cc;
 }
 
 pre.prettyprint {
   font-family: 'Source Code Pro', monospace;
   color: black;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 0;
+  font-size: 15px;
   word-wrap: normal;
   line-height: 1.4;
-  background: #f7f7f7;
-  border: 1px solid #ddd;
+  background: #eee;
+  border: 0;
   margin: 16px 0 16px 0;
   padding: 8px;
 }
@@ -225,12 +233,11 @@ header a,
 header a:hover,
 header p,
 header li {
-  color: white;
+  color: #111;
 }
 
 header h1 .kind {
-  color: #ddd;
-  text-transform: uppercase;
+  color: #555;
   font-size: 15px;
   display: block;
 }
@@ -261,10 +268,6 @@ dd p {
 }
 
 section.summary h2 {
-  color: #727272;
-  margin-bottom: 16px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid #ddd;
 }
 
 /* indents wrapped lines */
@@ -326,16 +329,16 @@ p.firstline {
 }
 
 footer {
+  color: #fff;
+  line-height: 16px;
+  background-color: #111111;
   padding: 20px;
-  position: absolute;
-  bottom: 0;
   width: 100%;
-  height: 60px;
+  margin: 20px 0 0 0;
 }
 
 footer p {
   margin: 0;
-  color: #555;
 }
 
 footer .no-break {
@@ -348,8 +351,8 @@ footer .container-fluid {
   padding-right: 0;
 }
 
-.copyright a {
-  color: #555;
+footer a, footer a:hover {
+  color: #fff;
 }
 
 .markdown h1 {
@@ -392,6 +395,7 @@ footer .container-fluid {
   background-position: center;
   content: "\00a0";
   margin: 0 6px 0 4px;
+  padding: 0 3px 0 0;
 }
 
 .gt-separated.dark li:before {
@@ -442,7 +446,7 @@ footer .container-fluid {
 }
 
 .self-crumb {
-  color: #ddd;
+  color: #555;
 }
 
 nav .self-name {
@@ -509,7 +513,7 @@ ul.subnav li {
 }
 
 ul.subnav li a {
-  color: #FFFFFF;
+  color: #111;
 }
 
 ul.subnav li {
@@ -528,27 +532,38 @@ ul.subnav li:last-of-type {
 
 /* sidebar styles */
 
-.sidebar-offcanvas-left {
-  background-color: #f7f7f7;
+.sidebar-offcanvas-left,
+.sidebar-offcanvas-right {
   padding: 0;
 }
 
 .sidebar ol {
   list-style: none;
-  font-size: 14px;
-  line-height: 24px;
+  line-height: 22px;
   margin-bottom: 0;
   padding: 0;
 }
 
 .sidebar-offcanvas-left ol {
-  padding: 16px;
+}
+
+.sidebar h5 {
+  color: #727272;
+  font-size: 18px;
+  margin: 0 0 25px 0;
+  white-space: nowrap;
+}
+
+.sidebar h5 a,
+.sidebar h5 a:hover {
+  color: #727272;
 }
 
 .sidebar h5,
 .sidebar ol li {
   text-overflow: ellipsis;
   overflow: hidden;
+  padding: 3px 0;
 }
 
 .sidebar ol li.section-title a {
@@ -556,11 +571,10 @@ ul.subnav li:last-of-type {
 }
 
 .sidebar ol li.section-title {
-  font-size: 13px;
-  color: #B6B6B6;
+  font-size: 18px;
+  font-weight: normal;
   text-transform: uppercase;
-  line-height: 20px;
-  margin-top: 24px;
+  padding-top: 25px;
 }
 
 .sidebar ol li:first-child {
@@ -604,13 +618,13 @@ button {
   }
 
   .sidebar-offcanvas-left {
-    left:-100%;
-    position:fixed;
+    left: -100%;
+    position: fixed;
     -webkit-transition:all .25s ease-out;
     -o-transition:all .25s ease-out;
     transition:all .25s ease-out;
     z-index: 2000;
-    top:0;
+    top: 0;
     width: 280px; /* works all the way down to an iphone 4 */
     height: 100%;
     background-color: white;
@@ -618,28 +632,22 @@ button {
   }
 
   .sidebar-offcanvas-left.active {
-    left:0; /* this animates our drawer into the page */
+    left: 0; /* this animates our drawer into the page */
   }
 }
 
-.sidebar h5 {
-  color: #727272;
-  padding-bottom: 16px;
-}
-
 .sidebar-offcanvas-left h5 {
-  border-bottom: 1px solid #ddd;
-  padding: 16px;
+  margin-bottom: 10px;
 }
 
 .sidebar-offcanvas-left h5:last-of-type {
   border: 0;
-  padding: 16px 16px 0 16px;
+  margin-bottom: 25px;
 }
 
 /* the right nav disappears out of view when the window shrinks */
 @media screen and (max-width: 992px) {
-  .sidebar-offcanvas-right{
+  .sidebar-offcanvas-right {
      display: none;
    }
 }
@@ -739,6 +747,10 @@ form.search {
 .search-from-lib {
   font-style: italic;
   color: gray;
+}
+
+#search-box {
+  background-color: #ffffff;
 }
 
 section#setter {

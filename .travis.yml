@@ -2,11 +2,12 @@ language: dart
 sudo: false
 dart:
   - dev
-# Disabled - re-enable once dev goes stable (see #1290).
-#  - stable
 env:
-  - GEN_SDK_DOCS=true
-  - GEN_SDK_DOCS=false
+  - DARTDOC_BOT=main
+  # TODO(devoncarew): add angulardart support
+  #- DARTDOC_BOT=angular
+  - DARTDOC_BOT=flutter
+  - DARTDOC_BOT=sdk-docs
 script: ./tool/travis.sh
 branches:
   only:

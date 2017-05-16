@@ -63,7 +63,11 @@ class ElementType {
   String get name => _type.name;
 
   ModelElement get returnElement {
-    Element e = _returnTypeCore.element;
+    Element e;
+    if (_type is FunctionType)
+      e = _returnTypeCore.element;
+    else
+      e = _type.element;
     if (e == null || e.library == null) {
       return null;
     }

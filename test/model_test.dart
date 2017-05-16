@@ -20,6 +20,7 @@ void main() {
   utils.init();
 
   final Package package = utils.testPackage;
+  final Package ginormousPackage = utils.testPackageGinormous;
   final Library exLibrary =
       package.libraries.firstWhere((lib) => lib.name == 'ex');
   final Library fakeLibrary =
@@ -34,12 +35,17 @@ void main() {
     exit(1);
   }
 
-  Package sdkAsPackage = new Package(
+  Package sdkAsPackage = Package.withAutoIncludedDependencies(
       getSdkLibrariesToDocument(utils.sdkDir, utils.analyzerHelper.context),
-      new PackageMeta.fromSdk(sdkDir));
+      new PackageMeta.fromSdk(sdkDir),
+      new PackageWarningOptions());
 
   group('Package', () {
     group('test package', () {
+      setUp(() {
+        setConfig();
+      });
+
       test('name', () {
         expect(package.name, 'test_package');
       });
@@ -54,6 +60,17 @@ void main() {
         PackageCategory category = package.categories.first;
         expect(category.name, 'test_package');
         expect(category.libraries, hasLength(6));
+      });
+
+      test('multiple categories, sorted default', () {
+        expect(ginormousPackage.categories, hasLength(2));
+        expect(ginormousPackage.categories.first.name, equals('test_package'));
+      });
+
+      test('multiple categories, specified sort order', () {
+        setConfig(categoryOrder: ['Dart Core', 'test_package']);
+        expect(ginormousPackage.categories, hasLength(2));
+        expect(ginormousPackage.categories.first.name, equals('Dart Core'));
       });
 
       test('is documented in library', () {
@@ -298,9 +315,12 @@ void main() {
       });
 
       test(
-          'link to a name in another library in this package, but is not imported into this library, is codeified',
+          'link to a name in another library in this package, but is not imported into this library, should still be linked',
           () {
-        expect(docsAsHtml, contains('<code>doesStuff</code>'));
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="anonymous_library/doesStuff.html">doesStuff</a>'));
       });
 
       test(
@@ -311,7 +331,7 @@ void main() {
         expect(helperClass.documentationAsHtml,
             contains('<a href="ex/Apple-class.html">Apple</a>'));
         expect(helperClass.documentationAsHtml,
-            contains('<a href="ex/B-class.html">B</a>'));
+            contains('<a href="ex/B-class.html">ex.B</a>'));
       });
 
       test(
@@ -462,7 +482,8 @@ void main() {
       expect(resolved, isNotNull);
       expect(resolved,
           contains('<a href="two_exports/BaseClass-class.html">BaseClass</a>'));
-      expect(resolved, contains('linking over to <code>Apple</code>.'));
+      expect(resolved,
+          contains('Linking over to <a href="ex/Apple-class.html">Apple</a>'));
     });
 
     test('references to class and constructors', () {
@@ -575,11 +596,11 @@ void main() {
     });
 
     test('mixins', () {
-      expect(Apple.mixins, hasLength(0));
+      expect(Apple.mixinsRaw, hasLength(0));
     });
 
-    test('mixins not private', () {
-      expect(F.mixins, hasLength(0));
+    test('mixins private', () {
+      expect(F.mixinsRaw, hasLength(1));
     });
 
     test('interfaces', () {
@@ -619,7 +640,7 @@ void main() {
     });
 
     test('get inherited properties, including properties of Object', () {
-      expect(B.inheritedProperties, hasLength(5));
+      expect(B.inheritedProperties, hasLength(4));
     });
 
     test('get methods', () {
@@ -731,18 +752,18 @@ void main() {
     // are exported out through one library
     test('ExtendingClass has a super class that is also in the same library',
         () {
-      expect(ExtendingClass.supertype.name, equals('BaseClass'));
-      expect(
-          ExtendingClass.supertype.element.library.name, equals('two_exports'));
+      expect(ExtendingClass.superChain.first.name, equals('BaseClass'));
+      expect(ExtendingClass.superChain.first.element.canonicalLibrary.name,
+          equals('two_exports'));
     });
 
     test(
         "ExtendingClass's super class has a library that is not in two_exports",
         () {
-      expect(
-          ExtendingClass.superChain.last.name, equals('WithGetterAndSetter'));
-      expect(
-          ExtendingClass.superChain.last.element.library.name, equals('fake'));
+      expect(ExtendingClass.superChainRaw.last.name,
+          equals('WithGetterAndSetter'));
+      expect(ExtendingClass.superChainRaw.last.element.library.name,
+          equals('fake'));
     });
   });
 
@@ -862,7 +883,7 @@ void main() {
     });
 
     test('has source code', () {
-      initializeConfig(addCrossdart: false);
+      setConfig(addCrossdart: false);
       expect(topLevelFunction.sourceCode, startsWith('@deprecated'));
       expect(topLevelFunction.sourceCode, endsWith('''
 String topLevelFunction(int param1, bool param2, Cool coolBeans,
@@ -1035,7 +1056,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('method source code indents correctly', () {
-      initializeConfig(addCrossdart: false);
+      setConfig(addCrossdart: false);
       expect(convertToMap.sourceCode,
           'Map&lt;X, Y&gt; convertToMap() =&gt; null;');
     });
@@ -1055,7 +1076,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
                 {"references":[{"offset":${offset},"end":${offset+3},"remotePath":"http://www.example.com/fake.dart"}]}}
       """);
 
-      initializeConfig(addCrossdart: true, inputDir: Directory.current);
+      setConfig(addCrossdart: true, inputDir: Directory.current);
 
       expect(convertToMap.sourceCode,
           "<a class='crossdart-link' href='http://www.example.com/fake.dart'>Map</a>&lt;X, Y&gt; convertToMap() =&gt; null;");
@@ -1063,7 +1084,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     group(".crossdartHtmlTag()", () {
       test('it returns an empty string when Crossdart support is disabled', () {
-        initializeConfig(addCrossdart: false);
+        setConfig(addCrossdart: false);
         expect(m1.crossdartHtmlTag, "");
       });
     });
@@ -1453,7 +1474,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(appleDefaultConstructor.enclosingElement.name, equals(apple.name));
     });
 
-    test('has contructor', () {
+    test('has constructor', () {
       expect(appleDefaultConstructor, isNotNull);
       expect(appleDefaultConstructor.name, equals('Apple'));
       expect(appleDefaultConstructor.shortName, equals('Apple'));

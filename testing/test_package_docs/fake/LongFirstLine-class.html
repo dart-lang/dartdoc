@@ -9,14 +9,12 @@
   <!-- required because all the links are pseudo-absolute -->
   <base href="..">
 
-  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/prettify.css">
   <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
-  <!-- Do not remove placeholder -->
-  <!-- Header Placeholder -->
 </head>
 
 <body>
@@ -29,7 +27,7 @@
       <div class="row">
         <div class="col-sm-12 contents">
           <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-          <ol class="breadcrumbs gt-separated hidden-xs">
+          <ol class="breadcrumbs gt-separated dark hidden-xs">
             <li><a href="index.html">test_package</a></li>
             <li><a href="fake/fake-library.html">fake</a></li>
             <li class="self-crumb">LongFirstLine</li>
@@ -46,7 +44,7 @@
   <div class="container masthead">
     <div class="row">
       <div class="col-sm-12 contents">
-        <ol class="breadcrumbs gt-separated visible-xs">
+        <ol class="breadcrumbs gt-separated dark visible-xs">
           <li><a href="index.html">test_package</a></li>
           <li><a href="fake/fake-library.html">fake</a></li>
           <li class="self-crumb">LongFirstLine</li>
@@ -57,13 +55,13 @@
           </h1>
         </div>
         <ul class="subnav">
-          <li><a href="fake/LongFirstLine-class.html#constants">Constants</a></li>
+          <li><a href="fake/LongFirstLine-class.html#constructors">Constructors</a></li>
+          <li><a href="fake/LongFirstLine-class.html#instance-properties">Properties</a></li>
+          <li><a href="fake/LongFirstLine-class.html#instance-methods">Methods</a></li>
+          <li><a href="fake/LongFirstLine-class.html#operators">Operators</a></li>
           <li><a href="fake/LongFirstLine-class.html#static-properties">Static Properties</a></li>
           <li><a href="fake/LongFirstLine-class.html#static-methods">Static Methods</a></li>
-          <li><a href="fake/LongFirstLine-class.html#instance-properties">Properties</a></li>
-          <li><a href="fake/LongFirstLine-class.html#constructors">Constructors</a></li>
-          <li><a href="fake/LongFirstLine-class.html#operators">Operators</a></li>
-          <li><a href="fake/LongFirstLine-class.html#instance-methods">Methods</a></li>
+          <li><a href="fake/LongFirstLine-class.html#constants">Constants</a></li>
         </ul>
       </div> <!-- /col -->
     </div> <!-- /row -->
@@ -75,10 +73,30 @@
   <div class="row">
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5><a href="index.html">test_package</a></h5>
-    <h5><a href="fake/fake-library.html">fake</a></h5>
-
+    <h5>library fake</h5>
     <ol>
+      <li class="section-title"><a href="fake/fake-library.html#classes">Classes</a></li>
+      <li><a href="fake/Annotation-class.html">Annotation</a></li>
+      <li><a href="fake/AnotherInterface-class.html">AnotherInterface</a></li>
+      <li><a href="fake/BaseForDocComments-class.html">BaseForDocComments</a></li>
+      <li><a href="fake/ClassWithUnusualProperties-class.html">ClassWithUnusualProperties</a></li>
+      <li><a href="fake/ConstantClass-class.html">ConstantClass</a></li>
+      <li><a href="fake/Cool-class.html">Cool</a></li>
+      <li><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></li>
+      <li><a href="fake/Foo2-class.html">Foo2</a></li>
+      <li><a href="fake/HasGenerics-class.html">HasGenerics</a></li>
+      <li><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></li>
+      <li><a href="fake/ImplicitProperties-class.html">ImplicitProperties</a></li>
+      <li><a href="fake/Interface-class.html">Interface</a></li>
+      <li><a href="fake/LongFirstLine-class.html">LongFirstLine</a></li>
+      <li><a href="fake/MixMeIn-class.html">MixMeIn</a></li>
+      <li><a href="fake/OperatorReferenceClass-class.html">OperatorReferenceClass</a></li>
+      <li><a href="fake/OtherGenericsThing-class.html">OtherGenericsThing</a></li>
+      <li><a href="fake/SpecialList-class.html">SpecialList</a></li>
+      <li><a href="fake/SubForDocComments-class.html">SubForDocComments</a></li>
+      <li><a class="deprecated" href="fake/SuperAwesomeClass-class.html">SuperAwesomeClass</a></li>
+      <li><a href="fake/WithGetterAndSetter-class.html">WithGetterAndSetter</a></li>
+    
       <li class="section-title"><a href="fake/fake-library.html#constants">Constants</a></li>
       <li><a href="fake/CUSTOM_CLASS-constant.html">CUSTOM_CLASS</a></li>
       <li><a class="deprecated" href="fake/DOWN-constant.html">DOWN</a></li>
@@ -92,14 +110,6 @@
       <li><a href="fake/testingCodeSyntaxInOneLiners-constant.html">testingCodeSyntaxInOneLiners</a></li>
       <li><a href="fake/UP-constant.html">UP</a></li>
       <li><a href="fake/ZERO-constant.html">ZERO</a></li>
-    
-      <li class="section-title"><a href="fake/fake-library.html#typedefs">Typedefs</a></li>
-      <li><a href="fake/Callback2.html">Callback2</a></li>
-      <li><a class="deprecated" href="fake/FakeProcesses.html">FakeProcesses</a></li>
-      <li><a href="fake/GenericTypedef.html">GenericTypedef</a></li>
-      <li><a href="fake/LotsAndLotsOfParameters.html">LotsAndLotsOfParameters</a></li>
-      <li><a href="fake/NewGenericTypedef.html">NewGenericTypedef</a></li>
-      <li><a href="fake/VoidCallback.html">VoidCallback</a></li>
     
       <li class="section-title"><a href="fake/fake-library.html#properties">Properties</a></li>
       <li><a href="fake/dynamicGetter.html">dynamicGetter</a></li>
@@ -128,25 +138,14 @@
       <li class="section-title"><a href="fake/fake-library.html#enums">Enums</a></li>
       <li><a href="fake/Color-class.html">Color</a></li>
     
-      <li class="section-title"><a href="fake/fake-library.html#classes">Classes</a></li>
-      <li><a href="fake/Annotation-class.html">Annotation</a></li>
-      <li><a href="fake/AnotherInterface-class.html">AnotherInterface</a></li>
-      <li><a href="fake/BaseForDocComments-class.html">BaseForDocComments</a></li>
-      <li><a href="fake/ConstantClass-class.html">ConstantClass</a></li>
-      <li><a href="fake/Cool-class.html">Cool</a></li>
-      <li><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></li>
-      <li><a href="fake/Foo2-class.html">Foo2</a></li>
-      <li><a href="fake/HasGenerics-class.html">HasGenerics</a></li>
-      <li><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></li>
-      <li><a href="fake/Interface-class.html">Interface</a></li>
-      <li><a href="fake/LongFirstLine-class.html">LongFirstLine</a></li>
-      <li><a href="fake/MixMeIn-class.html">MixMeIn</a></li>
-      <li><a href="fake/OperatorReferenceClass-class.html">OperatorReferenceClass</a></li>
-      <li><a href="fake/OtherGenericsThing-class.html">OtherGenericsThing</a></li>
-      <li><a href="fake/SpecialList-class.html">SpecialList</a></li>
-      <li><a href="fake/SubForDocComments-class.html">SubForDocComments</a></li>
-      <li><a class="deprecated" href="fake/SuperAwesomeClass-class.html">SuperAwesomeClass</a></li>
-      <li><a href="fake/WithGetterAndSetter-class.html">WithGetterAndSetter</a></li>
+      <li class="section-title"><a href="fake/fake-library.html#typedefs">Typedefs</a></li>
+      <li><a href="fake/Callback2.html">Callback2</a></li>
+      <li><a class="deprecated" href="fake/FakeProcesses.html">FakeProcesses</a></li>
+      <li><a href="fake/GenericTypedef.html">GenericTypedef</a></li>
+      <li><a href="fake/LotsAndLotsOfParameters.html">LotsAndLotsOfParameters</a></li>
+      <li><a href="fake/myCoolTypedef.html">myCoolTypedef</a></li>
+      <li><a href="fake/NewGenericTypedef.html">NewGenericTypedef</a></li>
+      <li><a href="fake/VoidCallback.html">VoidCallback</a></li>
     
       <li class="section-title"><a href="fake/fake-library.html#exceptions">Exceptions</a></li>
       <li><a class="deprecated" href="fake/Doh-class.html">Doh</a></li>
@@ -192,90 +191,6 @@ across... wait for it... two physical lines.</p>
       </dl>
     </section>
 
-    <section class="summary offset-anchor" id="constants">
-      <h2>Constants</h2>
-
-      <dl class="properties">
-        <dt id="ANSWER" class="constant">
-          <span class="name "><a href="fake/LongFirstLine/ANSWER-constant.html">ANSWER</a></span>
-          <span class="signature">&#8594; int</span>
-        </dt>
-        <dd>
-          <p></p>
-          
-  <div>
-            <span class="signature"><code>42</code></span>
-          </div>
-        </dd>
-        <dt id="THING" class="constant">
-          <span class="name "><a href="fake/LongFirstLine/THING-constant.html">THING</a></span>
-          <span class="signature">&#8594; dynamic</span>
-        </dt>
-        <dd>
-          <p></p>
-          
-  <div>
-            <span class="signature"><code>'yup'</code></span>
-          </div>
-        </dd>
-      </dl>
-    </section>
-
-    <section class="summary offset-anchor" id="static-properties">
-      <h2>Static Properties</h2>
-
-      <dl class="properties">
-        <dt id="meaningOfLife" class="property">
-          <span class="name"><a href="fake/LongFirstLine/meaningOfLife.html">meaningOfLife</a></span>
-          <span class="signature">&#8594; int</span>
-        </dt>
-        <dd>
-          <p>A static int property.</p>
-          <div class="features">read / write</div>
-</dd>
-        <dt id="staticGetter" class="property">
-          <span class="name"><a href="fake/LongFirstLine/staticGetter.html">staticGetter</a></span>
-          <span class="signature">&#8594; int</span>
-        </dt>
-        <dd>
-          <p></p>
-          <div class="features">read-only</div>
-</dd>
-        <dt id="staticOnlySetter" class="property">
-          <span class="name"><a href="fake/LongFirstLine/staticOnlySetter.html">staticOnlySetter</a></span>
-          <span class="signature">&#8594; bool</span>
-        </dt>
-        <dd>
-          <p></p>
-          <div class="features">write-only</div>
-</dd>
-      </dl>
-    </section>
-
-    <section class="summary offset-anchor" id="static-methods">
-      <h2>Static Methods</h2>
-      <dl class="callables">
-        <dt id="staticMethodNoParams" class="callable">
-          <span class="name"><a href="fake/LongFirstLine/staticMethodNoParams.html">staticMethodNoParams</a></span><span class="signature">(<wbr>)
-            <span class="returntype parameter">&#8594; int</span>
-          </span>
-        </dt>
-        <dd>
-          <p>Just a static method with no parameters.</p>
-          
-</dd>
-        <dt id="staticMethodReturnsVoid" class="callable">
-          <span class="name"><a href="fake/LongFirstLine/staticMethodReturnsVoid.html">staticMethodReturnsVoid</a></span><span class="signature">(<wbr><span class="parameter" id="staticMethodReturnsVoid-param-dynamicThing"><span class="parameter-name">dynamicThing</span></span>)
-            <span class="returntype parameter">&#8594; void</span>
-          </span>
-        </dt>
-        <dd>
-          <p>A static method that takes a single dynamic thing, and returns void.</p>
-          
-</dd>
-      </dl>
-    </section>
-
     <section class="summary offset-anchor" id="constructors">
       <h2>Constructors</h2>
 
@@ -306,8 +221,9 @@ across... wait for it... two physical lines.</p>
 
       <dl class="properties">
         <dt id="aStringProperty" class="property">
-          <span class="name"><a href="fake/LongFirstLine/aStringProperty.html">aStringProperty</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="name"><a href="fake/LongFirstLine/aStringProperty.html">aStringProperty</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;   <span class="parameter" id="aStringProperty=-param-_aStringProperty"><span class="type-annotation">String</span></span> </span>
+          </span>
         </dt>
         <dd>
           <p>An instance string property. Readable and writable.</p>
@@ -322,15 +238,16 @@ across... wait for it... two physical lines.</p>
           <div class="features">read-only</div>
 </dd>
         <dt id="onlySetter" class="property">
-          <span class="name"><a href="fake/LongFirstLine/onlySetter.html">onlySetter</a></span>
-          <span class="signature">&#8594; double</span>
+          <span class="name"><a href="fake/LongFirstLine/onlySetter.html">onlySetter</a></span><span class="signature">
+            <span class="returntype parameter">&#8592;  <span class="parameter" id="onlySetter=-param-d"><span class="type-annotation">double</span> <span class="parameter-name">d</span></span>  </span>
+          </span>
         </dt>
         <dd>
           <p>Only a setter, with a single param, of type double.</p>
           <div class="features">write-only</div>
 </dd>
         <dt id="hashCode" class="property inherited">
-          <span class="name"><a href="fake/LongFirstLine/hashCode.html">hashCode</a></span>
+          <span class="name"><a href="fake/SuperAwesomeClass/hashCode.html">hashCode</a></span>
           <span class="signature">&#8594; int</span>
         </dt>
         <dd class="inherited">
@@ -338,62 +255,21 @@ across... wait for it... two physical lines.</p>
           <div class="features">read-only, inherited</div>
 </dd>
         <dt id="powers" class="property inherited">
-          <span class="name"><a href="fake/SuperAwesomeClass/powers.html">powers</a></span>
-          <span class="signature">&#8594; List&lt;String&gt;</span>
+          <span class="name"><a href="fake/SuperAwesomeClass/powers.html">powers</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;   <span class="parameter" id="powers=-param-_powers"><span class="type-annotation">List&lt;String&gt;</span></span> </span>
+          </span>
         </dt>
         <dd class="inherited">
           <p>In the super class.</p>
           <div class="features">read / write, inherited</div>
 </dd>
         <dt id="runtimeType" class="property inherited">
-          <span class="name"><a href="fake/LongFirstLine/runtimeType.html">runtimeType</a></span>
+          <span class="name"><a href="fake/SuperAwesomeClass/runtimeType.html">runtimeType</a></span>
           <span class="signature">&#8594; Type</span>
         </dt>
         <dd class="inherited">
           <p>A representation of the runtime type of the object.</p>
           <div class="features">read-only, inherited</div>
-</dd>
-      </dl>
-    </section>
-
-    <section class="summary offset-anchor" id="operators">
-      <h2>Operators</h2>
-      <dl class="callables">
-        <dt id="operator *" class="callable">
-          <span class="name"><a href="fake/LongFirstLine/operator_multiply.html">operator *</a></span><span class="signature">(<wbr><span class="parameter" id="*-param-other"><span class="type-annotation"><a href="fake/LongFirstLine-class.html">LongFirstLine</a></span> <span class="parameter-name">other</span></span>)
-            <span class="returntype parameter">&#8594; <a href="fake/LongFirstLine-class.html">LongFirstLine</a></span>
-          </span>
-        </dt>
-        <dd>
-          <p>Multiplies a thingies to this thingie and then returns a new thingie.</p>
-          
-</dd>
-        <dt id="operator +" class="callable">
-          <span class="name"><a href="fake/LongFirstLine/operator_plus.html">operator +</a></span><span class="signature">(<wbr><span class="parameter" id="+-param-other"><span class="type-annotation"><a href="fake/LongFirstLine-class.html">LongFirstLine</a></span> <span class="parameter-name">other</span></span>)
-            <span class="returntype parameter">&#8594; <a href="fake/LongFirstLine-class.html">LongFirstLine</a></span>
-          </span>
-        </dt>
-        <dd>
-          <p>Adds another one of these thingies.</p>
-          
-</dd>
-        <dt id="operator -" class="callable inherited">
-          <span class="name"><a href="fake/SuperAwesomeClass/operator_minus.html">operator -</a></span><span class="signature">(<wbr><span class="parameter" id="--param-other"><span class="parameter-name">other</span></span>)
-            <span class="returntype parameter">&#8594; <a class="deprecated" href="fake/SuperAwesomeClass-class.html">SuperAwesomeClass</a></span>
-          </span>
-        </dt>
-        <dd class="inherited">
-          <p></p>
-          <div class="features">inherited</div>
-</dd>
-        <dt id="operator ==" class="callable inherited">
-          <span class="name"><a href="fake/LongFirstLine/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
-            <span class="returntype parameter">&#8594; bool</span>
-          </span>
-        </dt>
-        <dd class="inherited">
-          <p>The equality operator.</p>
-          <div class="features">inherited</div>
 </dd>
       </dl>
     </section>
@@ -447,7 +323,7 @@ across... wait for it... two physical lines.</p>
           <div class="features">inherited</div>
 </dd>
         <dt id="noSuchMethod" class="callable inherited">
-          <span class="name"><a href="fake/LongFirstLine/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
+          <span class="name"><a href="fake/SuperAwesomeClass/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
             <span class="returntype parameter">&#8594; dynamic</span>
           </span>
         </dt>
@@ -456,7 +332,7 @@ across... wait for it... two physical lines.</p>
           <div class="features">inherited</div>
 </dd>
         <dt id="toString" class="callable inherited">
-          <span class="name"><a href="fake/LongFirstLine/toString.html">toString</a></span><span class="signature">(<wbr>)
+          <span class="name"><a href="fake/SuperAwesomeClass/toString.html">toString</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; String</span>
           </span>
         </dt>
@@ -467,24 +343,139 @@ across... wait for it... two physical lines.</p>
       </dl>
     </section>
 
+    <section class="summary offset-anchor" id="operators">
+      <h2>Operators</h2>
+      <dl class="callables">
+        <dt id="operator *" class="callable">
+          <span class="name"><a href="fake/LongFirstLine/operator_multiply.html">operator *</a></span><span class="signature">(<wbr><span class="parameter" id="*-param-other"><span class="type-annotation"><a href="fake/LongFirstLine-class.html">LongFirstLine</a></span> <span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; <a href="fake/LongFirstLine-class.html">LongFirstLine</a></span>
+          </span>
+        </dt>
+        <dd>
+          <p>Multiplies a thingies to this thingie and then returns a new thingie.</p>
+          
+</dd>
+        <dt id="operator +" class="callable">
+          <span class="name"><a href="fake/LongFirstLine/operator_plus.html">operator +</a></span><span class="signature">(<wbr><span class="parameter" id="+-param-other"><span class="type-annotation"><a href="fake/LongFirstLine-class.html">LongFirstLine</a></span> <span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; <a href="fake/LongFirstLine-class.html">LongFirstLine</a></span>
+          </span>
+        </dt>
+        <dd>
+          <p>Adds another one of these thingies.</p>
+          
+</dd>
+        <dt id="operator -" class="callable inherited">
+          <span class="name"><a href="fake/SuperAwesomeClass/operator_minus.html">operator -</a></span><span class="signature">(<wbr><span class="parameter" id="--param-other"><span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; <a class="deprecated" href="fake/SuperAwesomeClass-class.html">SuperAwesomeClass</a></span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          <p></p>
+          <div class="features">inherited</div>
+</dd>
+        <dt id="operator ==" class="callable inherited">
+          <span class="name"><a href="fake/SuperAwesomeClass/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; bool</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          <p>The equality operator.</p>
+          <div class="features">inherited</div>
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="static-properties">
+      <h2>Static Properties</h2>
+
+      <dl class="properties">
+        <dt id="meaningOfLife" class="property">
+          <span class="name"><a href="fake/LongFirstLine/meaningOfLife.html">meaningOfLife</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;   <span class="parameter" id="meaningOfLife=-param-_meaningOfLife"><span class="type-annotation">int</span></span> </span>
+          </span>
+        </dt>
+        <dd>
+          <p>A static int property.</p>
+          <div class="features">read / write</div>
+</dd>
+        <dt id="staticGetter" class="property">
+          <span class="name"><a href="fake/LongFirstLine/staticGetter.html">staticGetter</a></span>
+          <span class="signature">&#8594; int</span>
+        </dt>
+        <dd>
+          <p></p>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="staticOnlySetter" class="property">
+          <span class="name"><a href="fake/LongFirstLine/staticOnlySetter.html">staticOnlySetter</a></span><span class="signature">
+            <span class="returntype parameter">&#8592;  <span class="parameter" id="staticOnlySetter=-param-thing"><span class="type-annotation">bool</span> <span class="parameter-name">thing</span></span>  </span>
+          </span>
+        </dt>
+        <dd>
+          <p></p>
+          <div class="features">write-only</div>
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="static-methods">
+      <h2>Static Methods</h2>
+      <dl class="callables">
+        <dt id="staticMethodNoParams" class="callable">
+          <span class="name"><a href="fake/LongFirstLine/staticMethodNoParams.html">staticMethodNoParams</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; int</span>
+          </span>
+        </dt>
+        <dd>
+          <p>Just a static method with no parameters.</p>
+          
+</dd>
+        <dt id="staticMethodReturnsVoid" class="callable">
+          <span class="name"><a href="fake/LongFirstLine/staticMethodReturnsVoid.html">staticMethodReturnsVoid</a></span><span class="signature">(<wbr><span class="parameter" id="staticMethodReturnsVoid-param-dynamicThing"><span class="parameter-name">dynamicThing</span></span>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          <p>A static method that takes a single dynamic thing, and returns void.</p>
+          
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="constants">
+      <h2>Constants</h2>
+
+      <dl class="properties">
+        <dt id="ANSWER" class="constant">
+          <span class="name "><a href="fake/LongFirstLine/ANSWER-constant.html">ANSWER</a></span>
+          <span class="signature">&#8594; int</span>
+        </dt>
+        <dd>
+          <p></p>
+          
+  <div>
+            <span class="signature"><code>42</code></span>
+          </div>
+        </dd>
+        <dt id="THING" class="constant">
+          <span class="name "><a href="fake/LongFirstLine/THING-constant.html">THING</a></span>
+          <span class="signature">&#8594; dynamic</span>
+        </dt>
+        <dd>
+          <p></p>
+          
+  <div>
+            <span class="signature"><code>'yup'</code></span>
+          </div>
+        </dd>
+      </dl>
+    </section>
+
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>LongFirstLine</h5>
+    <h5>class LongFirstLine</h5>
     <ol>
-      <li class="section-title"><a href="fake/LongFirstLine-class.html#constants">Constants</a></li>
-      <li><a href="fake/LongFirstLine/ANSWER-constant.html">ANSWER</a></li>
-      <li><a href="fake/LongFirstLine/THING-constant.html">THING</a></li>
-    
-      <li class="section-title"><a href="fake/LongFirstLine-class.html#static-properties">Static properties</a></li>
-      <li><a href="fake/LongFirstLine/meaningOfLife.html">meaningOfLife</a></li>
-      <li><a href="fake/LongFirstLine/staticGetter.html">staticGetter</a></li>
-      <li><a href="fake/LongFirstLine/staticOnlySetter.html">staticOnlySetter</a></li>
-    
-      <li class="section-title"><a href="fake/LongFirstLine-class.html#static-methods">Static methods</a></li>
-      <li><a href="fake/LongFirstLine/staticMethodNoParams.html">staticMethodNoParams</a></li>
-      <li><a href="fake/LongFirstLine/staticMethodReturnsVoid.html">staticMethodReturnsVoid</a></li>
-    
       <li class="section-title"><a href="fake/LongFirstLine-class.html#constructors">Constructors</a></li>
       <li><a class="deprecated" href="fake/LongFirstLine/LongFirstLine.html">LongFirstLine</a></li>
       <li><a href="fake/LongFirstLine/LongFirstLine.fromHasGenerics.html">fromHasGenerics</a></li>
@@ -496,15 +487,9 @@ across... wait for it... two physical lines.</p>
       <li><a href="fake/LongFirstLine/aStringProperty.html">aStringProperty</a></li>
       <li><a href="fake/LongFirstLine/dynamicGetter.html">dynamicGetter</a></li>
       <li><a href="fake/LongFirstLine/onlySetter.html">onlySetter</a></li>
-      <li class="inherited"><a href="fake/LongFirstLine/hashCode.html">hashCode</a></li>
+      <li class="inherited"><a href="fake/SuperAwesomeClass/hashCode.html">hashCode</a></li>
       <li class="inherited"><a href="fake/SuperAwesomeClass/powers.html">powers</a></li>
-      <li class="inherited"><a href="fake/LongFirstLine/runtimeType.html">runtimeType</a></li>
-    
-      <li class="section-title"><a href="fake/LongFirstLine-class.html#operators">Operators</a></li>
-      <li><a href="fake/LongFirstLine/operator_multiply.html">operator *</a></li>
-      <li><a href="fake/LongFirstLine/operator_plus.html">operator +</a></li>
-      <li class="inherited"><a href="fake/SuperAwesomeClass/operator_minus.html">operator -</a></li>
-      <li class="inherited"><a href="fake/LongFirstLine/operator_equals.html">operator ==</a></li>
+      <li class="inherited"><a href="fake/SuperAwesomeClass/runtimeType.html">runtimeType</a></li>
     
       <li class="section-title"><a href="fake/LongFirstLine-class.html#instance-methods">Methods</a></li>
       <li><a class="deprecated" href="fake/LongFirstLine/noParams.html">noParams</a></li>
@@ -512,8 +497,27 @@ across... wait for it... two physical lines.</p>
       <li><a href="fake/LongFirstLine/returnString.html">returnString</a></li>
       <li><a href="fake/LongFirstLine/twoParams.html">twoParams</a></li>
       <li class="inherited"><a href="fake/SuperAwesomeClass/fly.html">fly</a></li>
-      <li class="inherited"><a href="fake/LongFirstLine/noSuchMethod.html">noSuchMethod</a></li>
-      <li class="inherited"><a href="fake/LongFirstLine/toString.html">toString</a></li>
+      <li class="inherited"><a href="fake/SuperAwesomeClass/noSuchMethod.html">noSuchMethod</a></li>
+      <li class="inherited"><a href="fake/SuperAwesomeClass/toString.html">toString</a></li>
+    
+      <li class="section-title"><a href="fake/LongFirstLine-class.html#operators">Operators</a></li>
+      <li><a href="fake/LongFirstLine/operator_multiply.html">operator *</a></li>
+      <li><a href="fake/LongFirstLine/operator_plus.html">operator +</a></li>
+      <li class="inherited"><a href="fake/SuperAwesomeClass/operator_minus.html">operator -</a></li>
+      <li class="inherited"><a href="fake/SuperAwesomeClass/operator_equals.html">operator ==</a></li>
+    
+      <li class="section-title"><a href="fake/LongFirstLine-class.html#static-properties">Static properties</a></li>
+      <li><a href="fake/LongFirstLine/meaningOfLife.html">meaningOfLife</a></li>
+      <li><a href="fake/LongFirstLine/staticGetter.html">staticGetter</a></li>
+      <li><a href="fake/LongFirstLine/staticOnlySetter.html">staticOnlySetter</a></li>
+    
+      <li class="section-title"><a href="fake/LongFirstLine-class.html#static-methods">Static methods</a></li>
+      <li><a href="fake/LongFirstLine/staticMethodNoParams.html">staticMethodNoParams</a></li>
+      <li><a href="fake/LongFirstLine/staticMethodReturnsVoid.html">staticMethodReturnsVoid</a></li>
+    
+      <li class="section-title"><a href="fake/LongFirstLine-class.html#constants">Constants</a></li>
+      <li><a href="fake/LongFirstLine/ANSWER-constant.html">ANSWER</a></li>
+      <li><a href="fake/LongFirstLine/THING-constant.html">THING</a></li>
     </ol>
   </div><!--/.sidebar-offcanvas-->
 
@@ -529,14 +533,13 @@ across... wait for it... two physical lines.</p>
         </span>
         &bull;
         <span class="no-break">
-          <a href="https://www.dartlang.org">
-            <img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16">
-          </a>
+          <a href="https://www.dartlang.org"><img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16"></a>
         </span>
         &bull;
         <span class="copyright no-break">
           <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
         </span>
+
       </p>
     </div>
   </div>
@@ -547,8 +550,7 @@ across... wait for it... two physical lines.</p>
 <script src="static-assets/prettify.js"></script>
 <script src="static-assets/URI.js"></script>
 <script src="static-assets/script.js"></script>
-<!-- Do not remove placeholder -->
-<!-- Footer Placeholder -->
+
 
 </body>
 

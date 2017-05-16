@@ -79,6 +79,61 @@
   }
  },
  {
+  "name": "operator ==",
+  "qualifiedName": "ex.Animal.==",
+  "href": "ex/Animal/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Animal",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "ex.Animal.hashCode",
+  "href": "ex/Animal/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Animal",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "ex.Animal.noSuchMethod",
+  "href": "ex/Animal/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Animal",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "ex.Animal.runtimeType",
+  "href": "ex/Animal/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Animal",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "ex.Animal.toString",
+  "href": "ex/Animal/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Animal",
+   "type": "enum"
+  }
+ },
+ {
   "name": "Apple",
   "qualifiedName": "ex.Apple",
   "href": "ex/Apple-class.html",
@@ -321,17 +376,6 @@
   }
  },
  {
-  "name": "operator ==",
-  "qualifiedName": "ex.B.==",
-  "href": "ex/B/operator_equals.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "B",
-   "type": "class"
-  }
- },
- {
   "name": "abstractMethod",
   "qualifiedName": "ex.B.abstractMethod",
   "href": "ex/B/abstractMethod.html",
@@ -358,17 +402,6 @@
   "qualifiedName": "ex.B.doNothing",
   "href": "ex/B/doNothing.html",
   "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "B",
-   "type": "class"
-  }
- },
- {
-  "name": "hashCode",
-  "qualifiedName": "ex.B.hashCode",
-  "href": "ex/B/hashCode.html",
-  "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "B",
@@ -409,43 +442,10 @@
   }
  },
  {
-  "name": "noSuchMethod",
-  "qualifiedName": "ex.B.noSuchMethod",
-  "href": "ex/B/noSuchMethod.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "B",
-   "type": "class"
-  }
- },
- {
-  "name": "runtimeType",
-  "qualifiedName": "ex.B.runtimeType",
-  "href": "ex/B/runtimeType.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "B",
-   "type": "class"
-  }
- },
- {
   "name": "s",
   "qualifiedName": "ex.B.s",
   "href": "ex/B/s.html",
   "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "B",
-   "type": "class"
-  }
- },
- {
-  "name": "toString",
-  "qualifiedName": "ex.B.toString",
-  "href": "ex/B/toString.html",
-  "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "B",
@@ -510,23 +510,23 @@
  {
   "name": "Cat",
   "qualifiedName": "ex.Cat",
-  "href": "ex/Cat-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "Cat",
-  "qualifiedName": "ex.Cat",
   "href": "ex/Cat/Cat.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Cat",
    "type": "class"
+  }
+ },
+ {
+  "name": "Cat",
+  "qualifiedName": "ex.Cat",
+  "href": "ex/Cat-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -1291,23 +1291,23 @@
  {
   "name": "E",
   "qualifiedName": "ex.E",
-  "href": "ex/E-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "E",
-  "qualifiedName": "ex.E",
   "href": "ex/E/E.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "E",
    "type": "class"
+  }
+ },
+ {
+  "name": "E",
+  "qualifiedName": "ex.E",
+  "href": "ex/E-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -1368,17 +1368,6 @@
  {
   "name": "F",
   "qualifiedName": "ex.F",
-  "href": "ex/F-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "F",
-  "qualifiedName": "ex.F",
   "href": "ex/F/F.html",
   "type": "constructor",
   "overriddenDepth": 0,
@@ -1388,14 +1377,14 @@
   }
  },
  {
-  "name": "hashCode",
-  "qualifiedName": "ex.F.hashCode",
-  "href": "ex/F/hashCode.html",
-  "type": "property",
+  "name": "F",
+  "qualifiedName": "ex.F",
+  "href": "ex/F-class.html",
+  "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "F",
-   "type": "class"
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -1410,42 +1399,9 @@
   }
  },
  {
-  "name": "noSuchMethod",
-  "qualifiedName": "ex.F.noSuchMethod",
-  "href": "ex/F/noSuchMethod.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "F",
-   "type": "class"
-  }
- },
- {
-  "name": "runtimeType",
-  "qualifiedName": "ex.F.runtimeType",
-  "href": "ex/F/runtimeType.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "F",
-   "type": "class"
-  }
- },
- {
   "name": "test",
   "qualifiedName": "ex.F.test",
   "href": "ex/F/test.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "F",
-   "type": "class"
-  }
- },
- {
-  "name": "toString",
-  "qualifiedName": "ex.F.toString",
-  "href": "ex/F/toString.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -1621,23 +1577,23 @@
  {
   "name": "Helper",
   "qualifiedName": "ex.Helper",
-  "href": "ex/Helper-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "Helper",
-  "qualifiedName": "ex.Helper",
   "href": "ex/Helper/Helper.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Helper",
    "type": "class"
+  }
+ },
+ {
+  "name": "Helper",
+  "qualifiedName": "ex.Helper",
+  "href": "ex/Helper-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -1709,23 +1665,23 @@
  {
   "name": "Klass",
   "qualifiedName": "ex.Klass",
-  "href": "ex/Klass-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "Klass",
-  "qualifiedName": "ex.Klass",
   "href": "ex/Klass/Klass.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Klass",
    "type": "class"
+  }
+ },
+ {
+  "name": "Klass",
+  "qualifiedName": "ex.Klass",
+  "href": "ex/Klass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -1940,23 +1896,23 @@
  {
   "name": "MyErrorImplements",
   "qualifiedName": "ex.MyErrorImplements",
-  "href": "ex/MyErrorImplements-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "MyErrorImplements",
-  "qualifiedName": "ex.MyErrorImplements",
   "href": "ex/MyErrorImplements/MyErrorImplements.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "MyErrorImplements",
    "type": "class"
+  }
+ },
+ {
+  "name": "MyErrorImplements",
+  "qualifiedName": "ex.MyErrorImplements",
+  "href": "ex/MyErrorImplements-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -2028,23 +1984,23 @@
  {
   "name": "MyException",
   "qualifiedName": "ex.MyException",
-  "href": "ex/MyException-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ex",
-   "type": "library"
-  }
- },
- {
-  "name": "MyException",
-  "qualifiedName": "ex.MyException",
   "href": "ex/MyException/MyException.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "MyException",
    "type": "class"
+  }
+ },
+ {
+  "name": "MyException",
+  "qualifiedName": "ex.MyException",
+  "href": "ex/MyException-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {
@@ -2204,23 +2160,23 @@
  {
   "name": "PublicClassExtendsPrivateClass",
   "qualifiedName": "ex.PublicClassExtendsPrivateClass",
-  "href": "ex/PublicClassExtendsPrivateClass/PublicClassExtendsPrivateClass.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "PublicClassExtendsPrivateClass",
-   "type": "class"
-  }
- },
- {
-  "name": "PublicClassExtendsPrivateClass",
-  "qualifiedName": "ex.PublicClassExtendsPrivateClass",
   "href": "ex/PublicClassExtendsPrivateClass-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
    "type": "library"
+  }
+ },
+ {
+  "name": "PublicClassExtendsPrivateClass",
+  "qualifiedName": "ex.PublicClassExtendsPrivateClass",
+  "href": "ex/PublicClassExtendsPrivateClass/PublicClassExtendsPrivateClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "PublicClassExtendsPrivateClass",
+   "type": "class"
   }
  },
  {
@@ -2862,61 +2818,6 @@
   }
  },
  {
-  "name": "operator ==",
-  "qualifiedName": "ex.WithGenericSub.==",
-  "href": "ex/WithGenericSub/operator_equals.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "WithGenericSub",
-   "type": "class"
-  }
- },
- {
-  "name": "hashCode",
-  "qualifiedName": "ex.WithGenericSub.hashCode",
-  "href": "ex/WithGenericSub/hashCode.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "WithGenericSub",
-   "type": "class"
-  }
- },
- {
-  "name": "noSuchMethod",
-  "qualifiedName": "ex.WithGenericSub.noSuchMethod",
-  "href": "ex/WithGenericSub/noSuchMethod.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "WithGenericSub",
-   "type": "class"
-  }
- },
- {
-  "name": "runtimeType",
-  "qualifiedName": "ex.WithGenericSub.runtimeType",
-  "href": "ex/WithGenericSub/runtimeType.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "WithGenericSub",
-   "type": "class"
-  }
- },
- {
-  "name": "toString",
-  "qualifiedName": "ex.WithGenericSub.toString",
-  "href": "ex/WithGenericSub/toString.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "WithGenericSub",
-   "type": "class"
-  }
- },
- {
   "name": "aThingToDo",
   "qualifiedName": "ex.aThingToDo",
   "href": "ex/aThingToDo-class.html",
@@ -3146,23 +3047,23 @@
  {
   "name": "Annotation",
   "qualifiedName": "fake.Annotation",
-  "href": "fake/Annotation/Annotation.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Annotation",
-   "type": "class"
-  }
- },
- {
-  "name": "Annotation",
-  "qualifiedName": "fake.Annotation",
   "href": "fake/Annotation-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "Annotation",
+  "qualifiedName": "fake.Annotation",
+  "href": "fake/Annotation/Annotation.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Annotation",
+   "type": "class"
   }
  },
  {
@@ -3430,6 +3331,116 @@
   }
  },
  {
+  "name": "ClassWithUnusualProperties",
+  "qualifiedName": "fake.ClassWithUnusualProperties",
+  "href": "fake/ClassWithUnusualProperties-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ClassWithUnusualProperties",
+  "qualifiedName": "fake.ClassWithUnusualProperties",
+  "href": "fake/ClassWithUnusualProperties/ClassWithUnusualProperties.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aMethod",
+  "qualifiedName": "fake.ClassWithUnusualProperties.aMethod",
+  "href": "fake/ClassWithUnusualProperties/aMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitGetter",
+  "qualifiedName": "fake.ClassWithUnusualProperties.explicitGetter",
+  "href": "fake/ClassWithUnusualProperties/explicitGetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitGetterImplicitSetter",
+  "qualifiedName": "fake.ClassWithUnusualProperties.explicitGetterImplicitSetter",
+  "href": "fake/ClassWithUnusualProperties/explicitGetterImplicitSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitGetterSetter",
+  "qualifiedName": "fake.ClassWithUnusualProperties.explicitGetterSetter",
+  "href": "fake/ClassWithUnusualProperties/explicitGetterSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitSetter",
+  "qualifiedName": "fake.ClassWithUnusualProperties.explicitSetter",
+  "href": "fake/ClassWithUnusualProperties/explicitSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "finalProperty",
+  "qualifiedName": "fake.ClassWithUnusualProperties.finalProperty",
+  "href": "fake/ClassWithUnusualProperties/finalProperty.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "implicitGetterExplicitSetter",
+  "qualifiedName": "fake.ClassWithUnusualProperties.implicitGetterExplicitSetter",
+  "href": "fake/ClassWithUnusualProperties/implicitGetterExplicitSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "implicitReadWrite",
+  "qualifiedName": "fake.ClassWithUnusualProperties.implicitReadWrite",
+  "href": "fake/ClassWithUnusualProperties/implicitReadWrite.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
   "name": "Color",
   "qualifiedName": "fake.Color",
   "href": "fake/Color-class.html",
@@ -3438,6 +3449,61 @@
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.Color.==",
+  "href": "fake/Color/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Color",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.Color.hashCode",
+  "href": "fake/Color/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Color",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.Color.noSuchMethod",
+  "href": "fake/Color/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Color",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.Color.runtimeType",
+  "href": "fake/Color/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Color",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.Color.toString",
+  "href": "fake/Color/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Color",
+   "type": "enum"
   }
  },
  {
@@ -3760,615 +3826,10 @@
   }
  },
  {
-  "name": "operator ==",
-  "qualifiedName": "fake.ExtraSpecialList.==",
-  "href": "fake/ExtraSpecialList/operator_equals.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "add",
-  "qualifiedName": "fake.ExtraSpecialList.add",
-  "href": "fake/ExtraSpecialList/add.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "addAll",
-  "qualifiedName": "fake.ExtraSpecialList.addAll",
-  "href": "fake/ExtraSpecialList/addAll.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "any",
-  "qualifiedName": "fake.ExtraSpecialList.any",
-  "href": "fake/ExtraSpecialList/any.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "asMap",
-  "qualifiedName": "fake.ExtraSpecialList.asMap",
-  "href": "fake/ExtraSpecialList/asMap.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "clear",
-  "qualifiedName": "fake.ExtraSpecialList.clear",
-  "href": "fake/ExtraSpecialList/clear.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "contains",
-  "qualifiedName": "fake.ExtraSpecialList.contains",
-  "href": "fake/ExtraSpecialList/contains.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "elementAt",
-  "qualifiedName": "fake.ExtraSpecialList.elementAt",
-  "href": "fake/ExtraSpecialList/elementAt.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "every",
-  "qualifiedName": "fake.ExtraSpecialList.every",
-  "href": "fake/ExtraSpecialList/every.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "expand",
-  "qualifiedName": "fake.ExtraSpecialList.expand",
-  "href": "fake/ExtraSpecialList/expand.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "fillRange",
-  "qualifiedName": "fake.ExtraSpecialList.fillRange",
-  "href": "fake/ExtraSpecialList/fillRange.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "first",
-  "qualifiedName": "fake.ExtraSpecialList.first",
-  "href": "fake/ExtraSpecialList/first.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "firstWhere",
-  "qualifiedName": "fake.ExtraSpecialList.firstWhere",
-  "href": "fake/ExtraSpecialList/firstWhere.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "fold",
-  "qualifiedName": "fake.ExtraSpecialList.fold",
-  "href": "fake/ExtraSpecialList/fold.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "forEach",
-  "qualifiedName": "fake.ExtraSpecialList.forEach",
-  "href": "fake/ExtraSpecialList/forEach.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "getRange",
-  "qualifiedName": "fake.ExtraSpecialList.getRange",
-  "href": "fake/ExtraSpecialList/getRange.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "hashCode",
-  "qualifiedName": "fake.ExtraSpecialList.hashCode",
-  "href": "fake/ExtraSpecialList/hashCode.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "indexOf",
-  "qualifiedName": "fake.ExtraSpecialList.indexOf",
-  "href": "fake/ExtraSpecialList/indexOf.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "insert",
-  "qualifiedName": "fake.ExtraSpecialList.insert",
-  "href": "fake/ExtraSpecialList/insert.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "insertAll",
-  "qualifiedName": "fake.ExtraSpecialList.insertAll",
-  "href": "fake/ExtraSpecialList/insertAll.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "isEmpty",
-  "qualifiedName": "fake.ExtraSpecialList.isEmpty",
-  "href": "fake/ExtraSpecialList/isEmpty.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "isNotEmpty",
-  "qualifiedName": "fake.ExtraSpecialList.isNotEmpty",
-  "href": "fake/ExtraSpecialList/isNotEmpty.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "iterator",
-  "qualifiedName": "fake.ExtraSpecialList.iterator",
-  "href": "fake/ExtraSpecialList/iterator.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "join",
-  "qualifiedName": "fake.ExtraSpecialList.join",
-  "href": "fake/ExtraSpecialList/join.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "last",
-  "qualifiedName": "fake.ExtraSpecialList.last",
-  "href": "fake/ExtraSpecialList/last.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "lastIndexOf",
-  "qualifiedName": "fake.ExtraSpecialList.lastIndexOf",
-  "href": "fake/ExtraSpecialList/lastIndexOf.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "lastWhere",
-  "qualifiedName": "fake.ExtraSpecialList.lastWhere",
-  "href": "fake/ExtraSpecialList/lastWhere.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "map",
-  "qualifiedName": "fake.ExtraSpecialList.map",
-  "href": "fake/ExtraSpecialList/map.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "noSuchMethod",
-  "qualifiedName": "fake.ExtraSpecialList.noSuchMethod",
-  "href": "fake/ExtraSpecialList/noSuchMethod.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "reduce",
-  "qualifiedName": "fake.ExtraSpecialList.reduce",
-  "href": "fake/ExtraSpecialList/reduce.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "remove",
-  "qualifiedName": "fake.ExtraSpecialList.remove",
-  "href": "fake/ExtraSpecialList/remove.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "removeAt",
-  "qualifiedName": "fake.ExtraSpecialList.removeAt",
-  "href": "fake/ExtraSpecialList/removeAt.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "removeLast",
-  "qualifiedName": "fake.ExtraSpecialList.removeLast",
-  "href": "fake/ExtraSpecialList/removeLast.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "removeRange",
-  "qualifiedName": "fake.ExtraSpecialList.removeRange",
-  "href": "fake/ExtraSpecialList/removeRange.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "removeWhere",
-  "qualifiedName": "fake.ExtraSpecialList.removeWhere",
-  "href": "fake/ExtraSpecialList/removeWhere.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "replaceRange",
-  "qualifiedName": "fake.ExtraSpecialList.replaceRange",
-  "href": "fake/ExtraSpecialList/replaceRange.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "retainWhere",
-  "qualifiedName": "fake.ExtraSpecialList.retainWhere",
-  "href": "fake/ExtraSpecialList/retainWhere.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "reversed",
-  "qualifiedName": "fake.ExtraSpecialList.reversed",
-  "href": "fake/ExtraSpecialList/reversed.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "runtimeType",
-  "qualifiedName": "fake.ExtraSpecialList.runtimeType",
-  "href": "fake/ExtraSpecialList/runtimeType.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "setAll",
-  "qualifiedName": "fake.ExtraSpecialList.setAll",
-  "href": "fake/ExtraSpecialList/setAll.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "setRange",
-  "qualifiedName": "fake.ExtraSpecialList.setRange",
-  "href": "fake/ExtraSpecialList/setRange.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "shuffle",
-  "qualifiedName": "fake.ExtraSpecialList.shuffle",
-  "href": "fake/ExtraSpecialList/shuffle.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "single",
-  "qualifiedName": "fake.ExtraSpecialList.single",
-  "href": "fake/ExtraSpecialList/single.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "singleWhere",
-  "qualifiedName": "fake.ExtraSpecialList.singleWhere",
-  "href": "fake/ExtraSpecialList/singleWhere.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "skip",
-  "qualifiedName": "fake.ExtraSpecialList.skip",
-  "href": "fake/ExtraSpecialList/skip.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "skipWhile",
-  "qualifiedName": "fake.ExtraSpecialList.skipWhile",
-  "href": "fake/ExtraSpecialList/skipWhile.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "sort",
-  "qualifiedName": "fake.ExtraSpecialList.sort",
-  "href": "fake/ExtraSpecialList/sort.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "sublist",
-  "qualifiedName": "fake.ExtraSpecialList.sublist",
-  "href": "fake/ExtraSpecialList/sublist.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "take",
-  "qualifiedName": "fake.ExtraSpecialList.take",
-  "href": "fake/ExtraSpecialList/take.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "takeWhile",
-  "qualifiedName": "fake.ExtraSpecialList.takeWhile",
-  "href": "fake/ExtraSpecialList/takeWhile.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "toList",
-  "qualifiedName": "fake.ExtraSpecialList.toList",
-  "href": "fake/ExtraSpecialList/toList.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "toSet",
-  "qualifiedName": "fake.ExtraSpecialList.toSet",
-  "href": "fake/ExtraSpecialList/toSet.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "toString",
-  "qualifiedName": "fake.ExtraSpecialList.toString",
-  "href": "fake/ExtraSpecialList/toString.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "where",
-  "qualifiedName": "fake.ExtraSpecialList.where",
-  "href": "fake/ExtraSpecialList/where.html",
-  "type": "method",
-  "overriddenDepth": 1,
-  "enclosedBy": {
-   "name": "ExtraSpecialList",
-   "type": "class"
-  }
- },
- {
   "name": "FakeProcesses",
   "qualifiedName": "fake.FakeProcesses",
   "href": "fake/FakeProcesses.html",
   "type": "typedef",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "Foo2",
-  "qualifiedName": "fake.Foo2",
-  "href": "fake/Foo2-class.html",
-  "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -4384,6 +3845,17 @@
   "enclosedBy": {
    "name": "Foo2",
    "type": "class"
+  }
+ },
+ {
+  "name": "Foo2",
+  "qualifiedName": "fake.Foo2",
+  "href": "fake/Foo2-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -4565,23 +4037,23 @@
  {
   "name": "HasGenerics",
   "qualifiedName": "fake.HasGenerics",
-  "href": "fake/HasGenerics-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "HasGenerics",
-  "qualifiedName": "fake.HasGenerics",
   "href": "fake/HasGenerics/HasGenerics.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "HasGenerics",
    "type": "class"
+  }
+ },
+ {
+  "name": "HasGenerics",
+  "qualifiedName": "fake.HasGenerics",
+  "href": "fake/HasGenerics-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -4684,6 +4156,105 @@
   }
  },
  {
+  "name": "ImplicitProperties",
+  "qualifiedName": "fake.ImplicitProperties",
+  "href": "fake/ImplicitProperties-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ImplicitProperties",
+  "qualifiedName": "fake.ImplicitProperties",
+  "href": "fake/ImplicitProperties/ImplicitProperties.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ImplicitProperties.==",
+  "href": "fake/ImplicitProperties/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitGetterImplicitSetter",
+  "qualifiedName": "fake.ImplicitProperties.explicitGetterImplicitSetter",
+  "href": "fake/ImplicitProperties/explicitGetterImplicitSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ImplicitProperties.hashCode",
+  "href": "fake/ImplicitProperties/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "implicitGetterExplicitSetter",
+  "qualifiedName": "fake.ImplicitProperties.implicitGetterExplicitSetter",
+  "href": "fake/ImplicitProperties/implicitGetterExplicitSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ImplicitProperties.noSuchMethod",
+  "href": "fake/ImplicitProperties/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ImplicitProperties.runtimeType",
+  "href": "fake/ImplicitProperties/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ImplicitProperties.toString",
+  "href": "fake/ImplicitProperties/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
   "name": "Interface",
   "qualifiedName": "fake.Interface",
   "href": "fake/Interface/Interface.html",
@@ -4763,23 +4334,23 @@
  {
   "name": "LongFirstLine",
   "qualifiedName": "fake.LongFirstLine",
-  "href": "fake/LongFirstLine-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "LongFirstLine",
-  "qualifiedName": "fake.LongFirstLine",
   "href": "fake/LongFirstLine/LongFirstLine.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "LongFirstLine",
    "type": "class"
+  }
+ },
+ {
+  "name": "LongFirstLine",
+  "qualifiedName": "fake.LongFirstLine",
+  "href": "fake/LongFirstLine-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -4797,17 +4368,6 @@
   "name": "operator +",
   "qualifiedName": "fake.LongFirstLine.+",
   "href": "fake/LongFirstLine/operator_plus.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "LongFirstLine",
-   "type": "class"
-  }
- },
- {
-  "name": "operator ==",
-  "qualifiedName": "fake.LongFirstLine.==",
-  "href": "fake/LongFirstLine/operator_equals.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -4882,17 +4442,6 @@
   }
  },
  {
-  "name": "hashCode",
-  "qualifiedName": "fake.LongFirstLine.hashCode",
-  "href": "fake/LongFirstLine/hashCode.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "LongFirstLine",
-   "type": "class"
-  }
- },
- {
   "name": "meaningOfLife",
   "qualifiedName": "fake.LongFirstLine.meaningOfLife",
   "href": "fake/LongFirstLine/meaningOfLife.html",
@@ -4907,17 +4456,6 @@
   "name": "noParams",
   "qualifiedName": "fake.LongFirstLine.noParams",
   "href": "fake/LongFirstLine/noParams.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "LongFirstLine",
-   "type": "class"
-  }
- },
- {
-  "name": "noSuchMethod",
-  "qualifiedName": "fake.LongFirstLine.noSuchMethod",
-  "href": "fake/LongFirstLine/noSuchMethod.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -4952,17 +4490,6 @@
   "qualifiedName": "fake.LongFirstLine.returnString",
   "href": "fake/LongFirstLine/returnString.html",
   "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "LongFirstLine",
-   "type": "class"
-  }
- },
- {
-  "name": "runtimeType",
-  "qualifiedName": "fake.LongFirstLine.runtimeType",
-  "href": "fake/LongFirstLine/runtimeType.html",
-  "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "LongFirstLine",
@@ -5007,17 +4534,6 @@
   "qualifiedName": "fake.LongFirstLine.staticOnlySetter",
   "href": "fake/LongFirstLine/staticOnlySetter.html",
   "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "LongFirstLine",
-   "type": "class"
-  }
- },
- {
-  "name": "toString",
-  "qualifiedName": "fake.LongFirstLine.toString",
-  "href": "fake/LongFirstLine/toString.html",
-  "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "LongFirstLine",
@@ -5159,23 +4675,23 @@
  {
   "name": "Oops",
   "qualifiedName": "fake.Oops",
-  "href": "fake/Oops/Oops.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Oops",
-   "type": "class"
-  }
- },
- {
-  "name": "Oops",
-  "qualifiedName": "fake.Oops",
   "href": "fake/Oops-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "Oops",
+  "qualifiedName": "fake.Oops",
+  "href": "fake/Oops/Oops.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Oops",
+   "type": "class"
   }
  },
  {
@@ -5247,23 +4763,23 @@
  {
   "name": "OperatorReferenceClass",
   "qualifiedName": "fake.OperatorReferenceClass",
-  "href": "fake/OperatorReferenceClass-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "OperatorReferenceClass",
-  "qualifiedName": "fake.OperatorReferenceClass",
   "href": "fake/OperatorReferenceClass/OperatorReferenceClass.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "OperatorReferenceClass",
    "type": "class"
+  }
+ },
+ {
+  "name": "OperatorReferenceClass",
+  "qualifiedName": "fake.OperatorReferenceClass",
+  "href": "fake/OperatorReferenceClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
   }
  },
  {
@@ -5324,23 +4840,23 @@
  {
   "name": "OtherGenericsThing",
   "qualifiedName": "fake.OtherGenericsThing",
-  "href": "fake/OtherGenericsThing/OtherGenericsThing.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "OtherGenericsThing",
-   "type": "class"
-  }
- },
- {
-  "name": "OtherGenericsThing",
-  "qualifiedName": "fake.OtherGenericsThing",
   "href": "fake/OtherGenericsThing-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "OtherGenericsThing",
+  "qualifiedName": "fake.OtherGenericsThing",
+  "href": "fake/OtherGenericsThing/OtherGenericsThing.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OtherGenericsThing",
+   "type": "class"
   }
  },
  {
@@ -5423,23 +4939,23 @@
  {
   "name": "SpecialList",
   "qualifiedName": "fake.SpecialList",
-  "href": "fake/SpecialList/SpecialList.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SpecialList",
-   "type": "class"
-  }
- },
- {
-  "name": "SpecialList",
-  "qualifiedName": "fake.SpecialList",
   "href": "fake/SpecialList-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "SpecialList",
+  "qualifiedName": "fake.SpecialList",
+  "href": "fake/SpecialList/SpecialList.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SpecialList",
+   "type": "class"
   }
  },
  {
@@ -6092,28 +5608,6 @@
   }
  },
  {
-  "name": "operator ==",
-  "qualifiedName": "fake.SubForDocComments.==",
-  "href": "fake/SubForDocComments/operator_equals.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SubForDocComments",
-   "type": "class"
-  }
- },
- {
-  "name": "hashCode",
-  "qualifiedName": "fake.SubForDocComments.hashCode",
-  "href": "fake/SubForDocComments/hashCode.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SubForDocComments",
-   "type": "class"
-  }
- },
- {
   "name": "localMethod",
   "qualifiedName": "fake.SubForDocComments.localMethod",
   "href": "fake/SubForDocComments/localMethod.html",
@@ -6125,35 +5619,13 @@
   }
  },
  {
-  "name": "noSuchMethod",
-  "qualifiedName": "fake.SubForDocComments.noSuchMethod",
-  "href": "fake/SubForDocComments/noSuchMethod.html",
-  "type": "method",
+  "name": "SuperAwesomeClass",
+  "qualifiedName": "fake.SuperAwesomeClass",
+  "href": "fake/SuperAwesomeClass/SuperAwesomeClass.html",
+  "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "SubForDocComments",
-   "type": "class"
-  }
- },
- {
-  "name": "runtimeType",
-  "qualifiedName": "fake.SubForDocComments.runtimeType",
-  "href": "fake/SubForDocComments/runtimeType.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SubForDocComments",
-   "type": "class"
-  }
- },
- {
-  "name": "toString",
-  "qualifiedName": "fake.SubForDocComments.toString",
-  "href": "fake/SubForDocComments/toString.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SubForDocComments",
+   "name": "SuperAwesomeClass",
    "type": "class"
   }
  },
@@ -6166,17 +5638,6 @@
   "enclosedBy": {
    "name": "fake",
    "type": "library"
-  }
- },
- {
-  "name": "SuperAwesomeClass",
-  "qualifiedName": "fake.SuperAwesomeClass",
-  "href": "fake/SuperAwesomeClass/SuperAwesomeClass.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SuperAwesomeClass",
-   "type": "class"
   }
  },
  {
@@ -6503,6 +5964,17 @@
   "qualifiedName": "fake.meaningOfLife",
   "href": "fake/meaningOfLife.html",
   "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "myCoolTypedef",
+  "qualifiedName": "fake.myCoolTypedef",
+  "href": "fake/myCoolTypedef.html",
+  "type": "typedef",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -6861,61 +6333,6 @@
   }
  },
  {
-  "name": "operator ==",
-  "qualifiedName": "two_exports.BaseClass.==",
-  "href": "two_exports/BaseClass/operator_equals.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "BaseClass",
-   "type": "class"
-  }
- },
- {
-  "name": "hashCode",
-  "qualifiedName": "two_exports.BaseClass.hashCode",
-  "href": "two_exports/BaseClass/hashCode.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "BaseClass",
-   "type": "class"
-  }
- },
- {
-  "name": "noSuchMethod",
-  "qualifiedName": "two_exports.BaseClass.noSuchMethod",
-  "href": "two_exports/BaseClass/noSuchMethod.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "BaseClass",
-   "type": "class"
-  }
- },
- {
-  "name": "runtimeType",
-  "qualifiedName": "two_exports.BaseClass.runtimeType",
-  "href": "two_exports/BaseClass/runtimeType.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "BaseClass",
-   "type": "class"
-  }
- },
- {
-  "name": "toString",
-  "qualifiedName": "two_exports.BaseClass.toString",
-  "href": "two_exports/BaseClass/toString.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "BaseClass",
-   "type": "class"
-  }
- },
- {
   "name": "ExtendingClass",
   "qualifiedName": "two_exports.ExtendingClass",
   "href": "two_exports/ExtendingClass-class.html",
@@ -6931,61 +6348,6 @@
   "qualifiedName": "two_exports.ExtendingClass",
   "href": "two_exports/ExtendingClass/ExtendingClass.html",
   "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtendingClass",
-   "type": "class"
-  }
- },
- {
-  "name": "operator ==",
-  "qualifiedName": "two_exports.ExtendingClass.==",
-  "href": "two_exports/ExtendingClass/operator_equals.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtendingClass",
-   "type": "class"
-  }
- },
- {
-  "name": "hashCode",
-  "qualifiedName": "two_exports.ExtendingClass.hashCode",
-  "href": "two_exports/ExtendingClass/hashCode.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtendingClass",
-   "type": "class"
-  }
- },
- {
-  "name": "noSuchMethod",
-  "qualifiedName": "two_exports.ExtendingClass.noSuchMethod",
-  "href": "two_exports/ExtendingClass/noSuchMethod.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtendingClass",
-   "type": "class"
-  }
- },
- {
-  "name": "runtimeType",
-  "qualifiedName": "two_exports.ExtendingClass.runtimeType",
-  "href": "two_exports/ExtendingClass/runtimeType.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "ExtendingClass",
-   "type": "class"
-  }
- },
- {
-  "name": "toString",
-  "qualifiedName": "two_exports.ExtendingClass.toString",
-  "href": "two_exports/ExtendingClass/toString.html",
-  "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ExtendingClass",

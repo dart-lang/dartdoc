@@ -9,14 +9,12 @@
   <!-- required because all the links are pseudo-absolute -->
   <base href="..">
 
-  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/prettify.css">
   <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
-  <!-- Do not remove placeholder -->
-  <!-- Header Placeholder -->
 </head>
 
 <body>
@@ -29,7 +27,7 @@
       <div class="row">
         <div class="col-sm-12 contents">
           <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-          <ol class="breadcrumbs gt-separated hidden-xs">
+          <ol class="breadcrumbs gt-separated dark hidden-xs">
             <li><a href="index.html">test_package</a></li>
             <li><a href="ex/ex-library.html">ex</a></li>
             <li class="self-crumb">Dog</li>
@@ -46,7 +44,7 @@
   <div class="container masthead">
     <div class="row">
       <div class="col-sm-12 contents">
-        <ol class="breadcrumbs gt-separated visible-xs">
+        <ol class="breadcrumbs gt-separated dark visible-xs">
           <li><a href="index.html">test_package</a></li>
           <li><a href="ex/ex-library.html">ex</a></li>
           <li class="self-crumb">Dog</li>
@@ -57,13 +55,13 @@
           </h1>
         </div>
         <ul class="subnav">
-          <li><a href="ex/Dog-class.html#constants">Constants</a></li>
+          <li><a href="ex/Dog-class.html#constructors">Constructors</a></li>
+          <li><a href="ex/Dog-class.html#instance-properties">Properties</a></li>
+          <li><a href="ex/Dog-class.html#instance-methods">Methods</a></li>
+          <li><a href="ex/Dog-class.html#operators">Operators</a></li>
           <li><a href="ex/Dog-class.html#static-properties">Static Properties</a></li>
           <li><a href="ex/Dog-class.html#static-methods">Static Methods</a></li>
-          <li><a href="ex/Dog-class.html#instance-properties">Properties</a></li>
-          <li><a href="ex/Dog-class.html#constructors">Constructors</a></li>
-          <li><a href="ex/Dog-class.html#operators">Operators</a></li>
-          <li><a href="ex/Dog-class.html#instance-methods">Methods</a></li>
+          <li><a href="ex/Dog-class.html#constants">Constants</a></li>
         </ul>
       </div> <!-- /col -->
     </div> <!-- /row -->
@@ -75,39 +73,8 @@
   <div class="row">
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5><a href="index.html">test_package</a></h5>
-    <h5><a href="ex/ex-library.html">ex</a></h5>
-
+    <h5>library ex</h5>
     <ol>
-      <li class="section-title"><a href="ex/ex-library.html#constants">Constants</a></li>
-      <li><a href="ex/COLOR-constant.html">COLOR</a></li>
-      <li><a href="ex/COLOR_GREEN-constant.html">COLOR_GREEN</a></li>
-      <li><a href="ex/COLOR_ORANGE-constant.html">COLOR_ORANGE</a></li>
-      <li><a href="ex/COMPLEX_COLOR-constant.html">COMPLEX_COLOR</a></li>
-      <li><a href="ex/deprecated-constant.html">deprecated</a></li>
-      <li><a href="ex/incorrectDocReference-constant.html">incorrectDocReference</a></li>
-      <li><a href="ex/incorrectDocReferenceFromEx-constant.html">incorrectDocReferenceFromEx</a></li>
-      <li><a href="ex/MY_CAT-constant.html">MY_CAT</a></li>
-      <li><a href="ex/PRETTY_COLORS-constant.html">PRETTY_COLORS</a></li>
-    
-      <li class="section-title"><a href="ex/ex-library.html#typedefs">Typedefs</a></li>
-      <li><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a></li>
-      <li><a href="ex/processMessage.html">processMessage</a></li>
-    
-      <li class="section-title"><a href="ex/ex-library.html#properties">Properties</a></li>
-      <li><a class="deprecated" href="ex/deprecatedField.html">deprecatedField</a></li>
-      <li><a class="deprecated" href="ex/deprecatedGetter.html">deprecatedGetter</a></li>
-      <li><a class="deprecated" href="ex/deprecatedSetter.html">deprecatedSetter</a></li>
-      <li><a href="ex/number.html">number</a></li>
-      <li><a href="ex/y.html">y</a></li>
-    
-      <li class="section-title"><a href="ex/ex-library.html#functions">Functions</a></li>
-      <li><a href="ex/function1.html">function1</a></li>
-      <li><a href="ex/genericFunction.html">genericFunction</a></li>
-    
-      <li class="section-title"><a href="ex/ex-library.html#enums">Enums</a></li>
-      <li><a href="ex/Animal-class.html">Animal</a></li>
-    
       <li class="section-title"><a href="ex/ex-library.html#classes">Classes</a></li>
       <li><a href="ex/Apple-class.html">Apple</a></li>
       <li><a href="ex/aThingToDo-class.html">aThingToDo</a></li>
@@ -130,6 +97,35 @@
       <li><a href="ex/SpecializedDuration-class.html">SpecializedDuration</a></li>
       <li><a href="ex/WithGeneric-class.html">WithGeneric</a></li>
       <li><a href="ex/WithGenericSub-class.html">WithGenericSub</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#constants">Constants</a></li>
+      <li><a href="ex/COLOR-constant.html">COLOR</a></li>
+      <li><a href="ex/COLOR_GREEN-constant.html">COLOR_GREEN</a></li>
+      <li><a href="ex/COLOR_ORANGE-constant.html">COLOR_ORANGE</a></li>
+      <li><a href="ex/COMPLEX_COLOR-constant.html">COMPLEX_COLOR</a></li>
+      <li><a href="ex/deprecated-constant.html">deprecated</a></li>
+      <li><a href="ex/incorrectDocReference-constant.html">incorrectDocReference</a></li>
+      <li><a href="ex/incorrectDocReferenceFromEx-constant.html">incorrectDocReferenceFromEx</a></li>
+      <li><a href="ex/MY_CAT-constant.html">MY_CAT</a></li>
+      <li><a href="ex/PRETTY_COLORS-constant.html">PRETTY_COLORS</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#properties">Properties</a></li>
+      <li><a class="deprecated" href="ex/deprecatedField.html">deprecatedField</a></li>
+      <li><a class="deprecated" href="ex/deprecatedGetter.html">deprecatedGetter</a></li>
+      <li><a class="deprecated" href="ex/deprecatedSetter.html">deprecatedSetter</a></li>
+      <li><a href="ex/number.html">number</a></li>
+      <li><a href="ex/y.html">y</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#functions">Functions</a></li>
+      <li><a href="ex/function1.html">function1</a></li>
+      <li><a href="ex/genericFunction.html">genericFunction</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#enums">Enums</a></li>
+      <li><a href="ex/Animal-class.html">Animal</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#typedefs">Typedefs</a></li>
+      <li><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a></li>
+      <li><a href="ex/processMessage.html">processMessage</a></li>
     
       <li class="section-title"><a href="ex/ex-library.html#exceptions">Exceptions</a></li>
       <li><a href="ex/MyError-class.html">MyError</a></li>
@@ -170,62 +166,6 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
           <li><a href="ex/F-class.html">F</a></li>
         </ul></dd>
 
-      </dl>
-    </section>
-
-    <section class="summary offset-anchor" id="constants">
-      <h2>Constants</h2>
-
-      <dl class="properties">
-        <dt id="aStaticConstField" class="constant">
-          <span class="name "><a href="ex/Dog/aStaticConstField-constant.html">aStaticConstField</a></span>
-          <span class="signature">&#8594; String</span>
-        </dt>
-        <dd>
-          <p></p>
-          
-  <div>
-            <span class="signature"><code>"A Constant Dog"</code></span>
-          </div>
-        </dd>
-      </dl>
-    </section>
-
-    <section class="summary offset-anchor" id="static-properties">
-      <h2>Static Properties</h2>
-
-      <dl class="properties">
-        <dt id="somethingTasty" class="property">
-          <span class="name"><a href="ex/Dog/somethingTasty.html">somethingTasty</a></span>
-          <span class="signature">&#8594; int</span>
-        </dt>
-        <dd>
-          <p>A tasty static + final property.</p>
-          <div class="features">final</div>
-</dd>
-        <dt id="staticGetterSetter" class="property">
-          <span class="name"><a href="ex/Dog/staticGetterSetter.html">staticGetterSetter</a></span>
-          <span class="signature">&#8594; int</span>
-        </dt>
-        <dd>
-          <p></p>
-          <div class="features">read / write</div>
-</dd>
-      </dl>
-    </section>
-
-    <section class="summary offset-anchor" id="static-methods">
-      <h2>Static Methods</h2>
-      <dl class="callables">
-        <dt id="createDog" class="callable">
-          <span class="name deprecated"><a class="deprecated" href="ex/Dog/createDog.html">createDog</a></span><span class="signature">(<wbr><span class="parameter" id="createDog-param-s"><span class="type-annotation">String</span> <span class="parameter-name">s</span></span>)
-            <span class="returntype parameter">&#8594; <a href="ex/Dog-class.html">Dog</a></span>
-          </span>
-        </dt>
-        <dd>
-          <p></p>
-          <div class="features">@<a href="ex/Deprecated-class.html">Deprecated</a>(&quot;Internal use&quot;)</div>
-</dd>
       </dl>
     </section>
 
@@ -277,8 +217,9 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
           <div class="features">@protected, final</div>
 </dd>
         <dt id="deprecatedField" class="property">
-          <span class="name"><a class="deprecated" href="ex/Dog/deprecatedField.html">deprecatedField</a></span>
-          <span class="signature">&#8594; int</span>
+          <span class="name deprecated"><a class="deprecated" href="ex/Dog/deprecatedField.html">deprecatedField</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;   <span class="parameter" id="deprecatedField=-param-_deprecatedField"><span class="type-annotation">int</span></span> </span>
+          </span>
         </dt>
         <dd>
           <p></p>
@@ -293,8 +234,9 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
           <div class="features">@deprecated, read-only</div>
 </dd>
         <dt id="deprecatedSetter" class="property">
-          <span class="name"><a class="deprecated" href="ex/Dog/deprecatedSetter.html">deprecatedSetter</a></span>
-          <span class="signature">&#8594; int</span>
+          <span class="name deprecated"><a class="deprecated" href="ex/Dog/deprecatedSetter.html">deprecatedSetter</a></span><span class="signature">
+            <span class="returntype parameter">&#8592;  <span class="parameter" id="deprecatedSetter=-param-value"><span class="type-annotation">int</span> <span class="parameter-name">value</span></span>  </span>
+          </span>
         </dt>
         <dd>
           <p></p>
@@ -309,8 +251,9 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
           <div class="features">@override, read-only</div>
 </dd>
         <dt id="name" class="property">
-          <span class="name"><a href="ex/Dog/name.html">name</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="name"><a href="ex/Dog/name.html">name</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;   <span class="parameter" id="name=-param-_name"><span class="type-annotation">String</span></span> </span>
+          </span>
         </dt>
         <dd>
           <p></p>
@@ -331,21 +274,6 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
         <dd class="inherited">
           <p>A representation of the runtime type of the object.</p>
           <div class="features">read-only, inherited</div>
-</dd>
-      </dl>
-    </section>
-
-    <section class="summary offset-anchor" id="operators">
-      <h2>Operators</h2>
-      <dl class="callables">
-        <dt id="operator ==" class="callable">
-          <span class="name"><a href="ex/Dog/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
-            <span class="returntype parameter">&#8594; dynamic</span>
-          </span>
-        </dt>
-        <dd>
-          <p>The equality operator.</p>
-          
 </dd>
       </dl>
     </section>
@@ -455,21 +383,83 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
       </dl>
     </section>
 
+    <section class="summary offset-anchor" id="operators">
+      <h2>Operators</h2>
+      <dl class="callables">
+        <dt id="operator ==" class="callable">
+          <span class="name"><a href="ex/Dog/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; dynamic</span>
+          </span>
+        </dt>
+        <dd>
+          <p>The equality operator.</p>
+          
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="static-properties">
+      <h2>Static Properties</h2>
+
+      <dl class="properties">
+        <dt id="somethingTasty" class="property">
+          <span class="name"><a href="ex/Dog/somethingTasty.html">somethingTasty</a></span>
+          <span class="signature">&#8594; int</span>
+        </dt>
+        <dd>
+          <p>A tasty static + final property.</p>
+          <div class="features">final</div>
+</dd>
+        <dt id="staticGetterSetter" class="property">
+          <span class="name"><a href="ex/Dog/staticGetterSetter.html">staticGetterSetter</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;  <span class="parameter" id="staticGetterSetter=-param-x"><span class="parameter-name">x</span></span>  </span>
+          </span>
+        </dt>
+        <dd>
+          <p></p>
+          <div class="features">read / write</div>
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="static-methods">
+      <h2>Static Methods</h2>
+      <dl class="callables">
+        <dt id="createDog" class="callable">
+          <span class="name deprecated"><a class="deprecated" href="ex/Dog/createDog.html">createDog</a></span><span class="signature">(<wbr><span class="parameter" id="createDog-param-s"><span class="type-annotation">String</span> <span class="parameter-name">s</span></span>)
+            <span class="returntype parameter">&#8594; <a href="ex/Dog-class.html">Dog</a></span>
+          </span>
+        </dt>
+        <dd>
+          <p></p>
+          <div class="features">@<a href="ex/Deprecated-class.html">Deprecated</a>(&quot;Internal use&quot;)</div>
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="constants">
+      <h2>Constants</h2>
+
+      <dl class="properties">
+        <dt id="aStaticConstField" class="constant">
+          <span class="name "><a href="ex/Dog/aStaticConstField-constant.html">aStaticConstField</a></span>
+          <span class="signature">&#8594; String</span>
+        </dt>
+        <dd>
+          <p></p>
+          
+  <div>
+            <span class="signature"><code>"A Constant Dog"</code></span>
+          </div>
+        </dd>
+      </dl>
+    </section>
+
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>Dog</h5>
+    <h5>class Dog</h5>
     <ol>
-      <li class="section-title"><a href="ex/Dog-class.html#constants">Constants</a></li>
-      <li><a href="ex/Dog/aStaticConstField-constant.html">aStaticConstField</a></li>
-    
-      <li class="section-title"><a href="ex/Dog-class.html#static-properties">Static properties</a></li>
-      <li><a href="ex/Dog/somethingTasty.html">somethingTasty</a></li>
-      <li><a href="ex/Dog/staticGetterSetter.html">staticGetterSetter</a></li>
-    
-      <li class="section-title"><a href="ex/Dog-class.html#static-methods">Static methods</a></li>
-      <li><a class="deprecated" href="ex/Dog/createDog.html">createDog</a></li>
-    
       <li class="section-title"><a href="ex/Dog-class.html#constructors">Constructors</a></li>
       <li><a href="ex/Dog/Dog.html">Dog</a></li>
       <li><a class="deprecated" href="ex/Dog/Dog.deprecatedCreate.html">deprecatedCreate</a></li>
@@ -488,9 +478,6 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
       <li class="inherited"><a href="ex/Dog/hashCode.html">hashCode</a></li>
       <li class="inherited"><a href="ex/Dog/runtimeType.html">runtimeType</a></li>
     
-      <li class="section-title"><a href="ex/Dog-class.html#operators">Operators</a></li>
-      <li><a href="ex/Dog/operator_equals.html">operator ==</a></li>
-    
       <li class="section-title"><a href="ex/Dog-class.html#instance-methods">Methods</a></li>
       <li><a href="ex/Dog/abstractMethod.html">abstractMethod</a></li>
       <li><a href="ex/Dog/foo.html">foo</a></li>
@@ -503,6 +490,19 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
       <li><a href="ex/Dog/withMacro2.html">withMacro2</a></li>
       <li class="inherited"><a href="ex/Dog/noSuchMethod.html">noSuchMethod</a></li>
       <li class="inherited"><a href="ex/Dog/toString.html">toString</a></li>
+    
+      <li class="section-title"><a href="ex/Dog-class.html#operators">Operators</a></li>
+      <li><a href="ex/Dog/operator_equals.html">operator ==</a></li>
+    
+      <li class="section-title"><a href="ex/Dog-class.html#static-properties">Static properties</a></li>
+      <li><a href="ex/Dog/somethingTasty.html">somethingTasty</a></li>
+      <li><a href="ex/Dog/staticGetterSetter.html">staticGetterSetter</a></li>
+    
+      <li class="section-title"><a href="ex/Dog-class.html#static-methods">Static methods</a></li>
+      <li><a class="deprecated" href="ex/Dog/createDog.html">createDog</a></li>
+    
+      <li class="section-title"><a href="ex/Dog-class.html#constants">Constants</a></li>
+      <li><a href="ex/Dog/aStaticConstField-constant.html">aStaticConstField</a></li>
     </ol>
   </div><!--/.sidebar-offcanvas-->
 
@@ -518,14 +518,13 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
         </span>
         &bull;
         <span class="no-break">
-          <a href="https://www.dartlang.org">
-            <img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16">
-          </a>
+          <a href="https://www.dartlang.org"><img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16"></a>
         </span>
         &bull;
         <span class="copyright no-break">
           <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
         </span>
+
       </p>
     </div>
   </div>
@@ -536,8 +535,7 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
 <script src="static-assets/prettify.js"></script>
 <script src="static-assets/URI.js"></script>
 <script src="static-assets/script.js"></script>
-<!-- Do not remove placeholder -->
-<!-- Footer Placeholder -->
+
 
 </body>
 

@@ -21,4 +21,7 @@ abstract class Generator {
 
   /// Fires when a file is created.
   Stream<File> get onFileCreated;
+
+  /// Fetches all filenames written by this generator.
+  Set<String> get writtenFiles;
 }

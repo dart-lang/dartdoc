@@ -9,14 +9,12 @@
   <!-- required because all the links are pseudo-absolute -->
   <base href="..">
 
-  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro|Roboto:500,400italic,300,400' type='text/css'>
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/prettify.css">
   <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
-  <!-- Do not remove placeholder -->
-  <!-- Header Placeholder -->
 </head>
 
 <body>
@@ -29,7 +27,7 @@
       <div class="row">
         <div class="col-sm-12 contents">
           <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-          <ol class="breadcrumbs gt-separated hidden-xs">
+          <ol class="breadcrumbs gt-separated dark hidden-xs">
             <li><a href="index.html">test_package</a></li>
             <li class="self-crumb">fake</li>
           </ol>
@@ -45,7 +43,7 @@
   <div class="container masthead">
     <div class="row">
       <div class="col-sm-12 contents">
-        <ol class="breadcrumbs gt-separated visible-xs">
+        <ol class="breadcrumbs gt-separated dark visible-xs">
           <li><a href="index.html">test_package</a></li>
           <li class="self-crumb">fake</li>
         </ol>
@@ -55,12 +53,12 @@
           </h1>
         </div>
         <ul class="subnav">
+          <li><a href="fake/fake-library.html#classes">Classes</a></li>
           <li><a href="fake/fake-library.html#constants">Constants</a></li>
-          <li><a href="fake/fake-library.html#typedefs">Typedefs</a></li>
           <li><a href="fake/fake-library.html#properties">Properties</a></li>
           <li><a href="fake/fake-library.html#functions">Functions</a></li>
           <li><a href="fake/fake-library.html#enums">Enums</a></li>
-          <li><a href="fake/fake-library.html#classes">Classes</a></li>
+          <li><a href="fake/fake-library.html#typedefs">Typedefs</a></li>
           <li><a href="fake/fake-library.html#exceptions">Exceptions</a></li>
         </ul>
       </div> <!-- /col -->
@@ -73,8 +71,7 @@
   <div class="row">
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5><a href="index.html">test_package</a></h5>
-
+    <h5>package test_package</h5>
 
     <ol>
       <li class="section-title"><a href="index.html#libraries">Libraries</a></li>
@@ -115,6 +112,135 @@ Don't ask questions.</p>
 <p>Here are some hyperlinks with angle brackets:</p><ul><li><a href="https://myfakepackage.com/withapath">myfakepackage.com/withapath</a></li><li><a href="ftp://ftp.myfakepackage.com/donthidemyschema">ftp://ftp.myfakepackage.com/donthidemyschema</a></li><li><a href="http://myfakepackage.com/buthidethisone">myfakepackage.com/buthidethisone</a></li></ul>
     </section>
     
+    <section class="summary offset-anchor" id="classes">
+      <h2>Classes</h2>
+
+      <dl>
+        <dt id="Annotation">
+          <span class="name "><a href="fake/Annotation-class.html">Annotation</a></span>
+        </dt>
+        <dd>
+          <p>Useful for annotations.</p>
+        </dd>
+        <dt id="AnotherInterface">
+          <span class="name "><a href="fake/AnotherInterface-class.html">AnotherInterface</a></span>
+        </dt>
+        <dd>
+          <p>Yet another interface that can be implemented.</p>
+        </dd>
+        <dt id="BaseForDocComments">
+          <span class="name "><a href="fake/BaseForDocComments-class.html">BaseForDocComments</a></span>
+        </dt>
+        <dd>
+          <p></p>
+        </dd>
+        <dt id="ClassWithUnusualProperties">
+          <span class="name "><a href="fake/ClassWithUnusualProperties-class.html">ClassWithUnusualProperties</a></span>
+        </dt>
+        <dd>
+          <p>Classes with unusual properties?  I don't think they exist.</p>
+        </dd>
+        <dt id="ConstantClass">
+          <span class="name "><a href="fake/ConstantClass-class.html">ConstantClass</a></span>
+        </dt>
+        <dd>
+          <p>For make-better testing of constants.</p>
+        </dd>
+        <dt id="Cool">
+          <span class="name "><a href="fake/Cool-class.html">Cool</a></span>
+        </dt>
+        <dd>
+          <p>This class is cool!</p>
+        </dd>
+        <dt id="ExtraSpecialList">
+          <span class="name "><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></span>
+        </dt>
+        <dd>
+          <p>This inherits operators.</p>
+        </dd>
+        <dt id="Foo2">
+          <span class="name "><a href="fake/Foo2-class.html">Foo2</a></span>
+        </dt>
+        <dd>
+          <p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>
+        </dd>
+        <dt id="HasGenerics">
+          <span class="name "><a href="fake/HasGenerics-class.html">HasGenerics</a></span>
+        </dt>
+        <dd>
+          <p></p>
+        </dd>
+        <dt id="HasGenericWithExtends">
+          <span class="name "><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></span>
+        </dt>
+        <dd>
+          <p>I have a generic and it extends <a href="fake/Foo2-class.html">Foo2</a></p>
+        </dd>
+        <dt id="ImplicitProperties">
+          <span class="name "><a href="fake/ImplicitProperties-class.html">ImplicitProperties</a></span>
+        </dt>
+        <dd>
+          <p>Names are actually wrong in this class, but when we extend it,
+they are correct.</p>
+        </dd>
+        <dt id="Interface">
+          <span class="name "><a href="fake/Interface-class.html">Interface</a></span>
+        </dt>
+        <dd>
+          <p>An interface that can be implemented.</p>
+        </dd>
+        <dt id="LongFirstLine">
+          <span class="name "><a href="fake/LongFirstLine-class.html">LongFirstLine</a></span>
+        </dt>
+        <dd>
+          <p>This is a very long line spread
+across... wait for it... two physical lines.</p>
+        </dd>
+        <dt id="MixMeIn">
+          <span class="name "><a href="fake/MixMeIn-class.html">MixMeIn</a></span>
+        </dt>
+        <dd>
+          <p>Perfect for mix-ins.</p>
+        </dd>
+        <dt id="OperatorReferenceClass">
+          <span class="name "><a href="fake/OperatorReferenceClass-class.html">OperatorReferenceClass</a></span>
+        </dt>
+        <dd>
+          <p>Test operator references: <a href="fake/OperatorReferenceClass/operator_equals.html">OperatorReferenceClass.==</a>.</p>
+        </dd>
+        <dt id="OtherGenericsThing">
+          <span class="name "><a href="fake/OtherGenericsThing-class.html">OtherGenericsThing</a></span>
+        </dt>
+        <dd>
+          <p></p>
+        </dd>
+        <dt id="SpecialList">
+          <span class="name "><a href="fake/SpecialList-class.html">SpecialList</a></span>
+        </dt>
+        <dd>
+          <p>Extends <code>ListBase</code></p>
+        </dd>
+        <dt id="SubForDocComments">
+          <span class="name "><a href="fake/SubForDocComments-class.html">SubForDocComments</a></span>
+        </dt>
+        <dd>
+          <p>Testing if docs for inherited method are correct.</p>
+        </dd>
+        <dt id="SuperAwesomeClass">
+          <span class="name deprecated"><a class="deprecated" href="fake/SuperAwesomeClass-class.html">SuperAwesomeClass</a></span>
+        </dt>
+        <dd>
+          <p>A super class, with many powers. Link to <a href="ex/Apple-class.html">Apple</a> from another library.</p>
+        </dd>
+        <dt id="WithGetterAndSetter">
+          <span class="name "><a href="fake/WithGetterAndSetter-class.html">WithGetterAndSetter</a></span>
+        </dt>
+        <dd>
+          <p>Tests a single field with explict getter and setter.</p>
+        </dd>
+      </dl>
+    </section>
+
     <section class="summary offset-anchor" id="constants">
       <h2>Constants</h2>
 
@@ -255,67 +381,6 @@ which is a bit redundant.</p>
       </dl>
     </section>
 
-    <section class="summary offset-anchor" id="typedefs">
-      <h2>Typedefs</h2>
-
-      <dl class="callables">
-        <dt id="Callback2" class="callable">
-          <span class="name"><a href="fake/Callback2.html">Callback2</a></span><span class="signature">(<wbr><span class="parameter" id="Callback2-param-String"><span class="parameter-name">String</span></span>)
-            <span class="returntype parameter">&#8594; int</span>
-          </span>
-        </dt>
-        <dd>
-          <p></p>
-          
-</dd>
-        <dt id="FakeProcesses" class="callable">
-          <span class="name deprecated"><a class="deprecated" href="fake/FakeProcesses.html">FakeProcesses</a></span><span class="signature">(<wbr><span class="parameter" id="FakeProcesses-param-input"><span class="type-annotation">String</span> <span class="parameter-name">input</span></span>)
-            <span class="returntype parameter">&#8594; String</span>
-          </span>
-        </dt>
-        <dd>
-          <p>Takes input, returns output.</p>
-          
-</dd>
-        <dt id="GenericTypedef" class="callable">
-          <span class="name"><a href="fake/GenericTypedef.html">GenericTypedef</a></span><span class="signature">(<wbr><span class="parameter" id="GenericTypedef-param-input"><span class="type-annotation">T</span> <span class="parameter-name">input</span></span>)
-            <span class="returntype parameter">&#8594; T</span>
-          </span>
-        </dt>
-        <dd>
-          <p>A typedef with a type parameter.</p>
-          
-</dd>
-        <dt id="LotsAndLotsOfParameters" class="callable">
-          <span class="name"><a href="fake/LotsAndLotsOfParameters.html">LotsAndLotsOfParameters</a></span><span class="signature">(<wbr><span class="parameter" id="LotsAndLotsOfParameters-param-so"><span class="parameter-name">so</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-many"><span class="parameter-name">many</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-parameters"><span class="parameter-name">parameters</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-it"><span class="parameter-name">it</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-should"><span class="parameter-name">should</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-wrap"><span class="parameter-name">wrap</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-when"><span class="parameter-name">when</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-converted"><span class="parameter-name">converted</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-to"><span class="parameter-name">to</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-html"><span class="parameter-name">html</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-documentation"><span class="parameter-name">documentation</span></span>)
-            <span class="returntype parameter">&#8594; int</span>
-          </span>
-        </dt>
-        <dd>
-          <p>Lots and lots of parameters.</p>
-          
-</dd>
-        <dt id="NewGenericTypedef" class="callable">
-          <span class="name"><a href="fake/NewGenericTypedef.html">NewGenericTypedef</a></span><span class="signature">&lt;S&gt;(<wbr><span class="parameter" id="-param-"><span class="type-annotation">T</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">int</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">bool</span></span>)
-            <span class="returntype parameter">&#8594; List&lt;S&gt;</span>
-          </span>
-        </dt>
-        <dd>
-          <p>A typedef with the new style generic function syntax.</p>
-          
-</dd>
-        <dt id="VoidCallback" class="callable">
-          <span class="name"><a href="fake/VoidCallback.html">VoidCallback</a></span><span class="signature">(<wbr>)
-            <span class="returntype parameter">&#8594; void</span>
-          </span>
-        </dt>
-        <dd>
-          <p></p>
-          
-</dd>
-      </dl>
-    </section>
-
     <section class="summary offset-anchor" id="properties">
       <h2>Properties</h2>
 
@@ -337,16 +402,18 @@ which is a bit redundant.</p>
           <div class="features">read-only</div>
 </dd>
         <dt id="justSetter" class="property">
-          <span class="name"><a href="fake/justSetter.html">justSetter</a></span>
-          <span class="signature">&#8594; int</span>
+          <span class="name"><a href="fake/justSetter.html">justSetter</a></span><span class="signature">
+            <span class="returntype parameter">&#8592;  <span class="parameter" id="justSetter=-param-value"><span class="type-annotation">int</span> <span class="parameter-name">value</span></span>  </span>
+          </span>
         </dt>
         <dd>
           <p>Just a setter. No partner getter.</p>
           <div class="features">write-only</div>
 </dd>
         <dt id="mapWithDynamicKeys" class="property">
-          <span class="name"><a href="fake/mapWithDynamicKeys.html">mapWithDynamicKeys</a></span>
-          <span class="signature">&#8594; Map&lt;dynamic, String&gt;</span>
+          <span class="name"><a href="fake/mapWithDynamicKeys.html">mapWithDynamicKeys</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;   <span class="parameter" id="mapWithDynamicKeys=-param-_mapWithDynamicKeys"><span class="type-annotation">Map&lt;dynamic, String&gt;</span></span> </span>
+          </span>
         </dt>
         <dd>
           <p></p>
@@ -361,16 +428,18 @@ which is a bit redundant.</p>
           <div class="features">final</div>
 </dd>
         <dt id="setAndGet" class="property">
-          <span class="name"><a href="fake/setAndGet.html">setAndGet</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="name"><a href="fake/setAndGet.html">setAndGet</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;  <span class="parameter" id="setAndGet=-param-thing"><span class="type-annotation">String</span> <span class="parameter-name">thing</span></span>  </span>
+          </span>
         </dt>
         <dd>
           <p>The getter for setAndGet.</p>
           <div class="features">read / write</div>
 </dd>
         <dt id="simpleProperty" class="property">
-          <span class="name"><a href="fake/simpleProperty.html">simpleProperty</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="name"><a href="fake/simpleProperty.html">simpleProperty</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;   <span class="parameter" id="simpleProperty=-param-_simpleProperty"><span class="type-annotation">String</span></span> </span>
+          </span>
         </dt>
         <dd>
           <p>Simple property</p>
@@ -517,119 +586,73 @@ default value.</p>
       </dl>
     </section>
 
-    <section class="summary offset-anchor" id="classes">
-      <h2>Classes</h2>
+    <section class="summary offset-anchor" id="typedefs">
+      <h2>Typedefs</h2>
 
-      <dl>
-        <dt id="Annotation">
-          <span class="name "><a href="fake/Annotation-class.html">Annotation</a></span>
-        </dt>
-        <dd>
-          <p>Useful for annotations.</p>
-        </dd>
-        <dt id="AnotherInterface">
-          <span class="name "><a href="fake/AnotherInterface-class.html">AnotherInterface</a></span>
-        </dt>
-        <dd>
-          <p>Yet another interface that can be implemented.</p>
-        </dd>
-        <dt id="BaseForDocComments">
-          <span class="name "><a href="fake/BaseForDocComments-class.html">BaseForDocComments</a></span>
+      <dl class="callables">
+        <dt id="Callback2" class="callable">
+          <span class="name"><a href="fake/Callback2.html">Callback2</a></span><span class="signature">(<wbr><span class="parameter" id="Callback2-param-String"><span class="parameter-name">String</span></span>)
+            <span class="returntype parameter">&#8594; int</span>
+          </span>
         </dt>
         <dd>
           <p></p>
-        </dd>
-        <dt id="ConstantClass">
-          <span class="name "><a href="fake/ConstantClass-class.html">ConstantClass</a></span>
+          
+</dd>
+        <dt id="FakeProcesses" class="callable">
+          <span class="name deprecated"><a class="deprecated" href="fake/FakeProcesses.html">FakeProcesses</a></span><span class="signature">(<wbr><span class="parameter" id="FakeProcesses-param-input"><span class="type-annotation">String</span> <span class="parameter-name">input</span></span>)
+            <span class="returntype parameter">&#8594; String</span>
+          </span>
         </dt>
         <dd>
-          <p>For make-better testing of constants.</p>
-        </dd>
-        <dt id="Cool">
-          <span class="name "><a href="fake/Cool-class.html">Cool</a></span>
+          <p>Takes input, returns output.</p>
+          
+</dd>
+        <dt id="GenericTypedef" class="callable">
+          <span class="name"><a href="fake/GenericTypedef.html">GenericTypedef</a></span><span class="signature">(<wbr><span class="parameter" id="GenericTypedef-param-input"><span class="type-annotation">T</span> <span class="parameter-name">input</span></span>)
+            <span class="returntype parameter">&#8594; T</span>
+          </span>
         </dt>
         <dd>
-          <p>This class is cool!</p>
-        </dd>
-        <dt id="ExtraSpecialList">
-          <span class="name "><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></span>
+          <p>A typedef with a type parameter.</p>
+          
+</dd>
+        <dt id="LotsAndLotsOfParameters" class="callable">
+          <span class="name"><a href="fake/LotsAndLotsOfParameters.html">LotsAndLotsOfParameters</a></span><span class="signature">(<wbr><span class="parameter" id="LotsAndLotsOfParameters-param-so"><span class="parameter-name">so</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-many"><span class="parameter-name">many</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-parameters"><span class="parameter-name">parameters</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-it"><span class="parameter-name">it</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-should"><span class="parameter-name">should</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-wrap"><span class="parameter-name">wrap</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-when"><span class="parameter-name">when</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-converted"><span class="parameter-name">converted</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-to"><span class="parameter-name">to</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-html"><span class="parameter-name">html</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-documentation"><span class="parameter-name">documentation</span></span>)
+            <span class="returntype parameter">&#8594; int</span>
+          </span>
         </dt>
         <dd>
-          <p>This inherits operators.</p>
-        </dd>
-        <dt id="Foo2">
-          <span class="name "><a href="fake/Foo2-class.html">Foo2</a></span>
-        </dt>
-        <dd>
-          <p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>
-        </dd>
-        <dt id="HasGenerics">
-          <span class="name "><a href="fake/HasGenerics-class.html">HasGenerics</a></span>
-        </dt>
-        <dd>
-          <p></p>
-        </dd>
-        <dt id="HasGenericWithExtends">
-          <span class="name "><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></span>
-        </dt>
-        <dd>
-          <p>I have a generic and it extends <a href="fake/Foo2-class.html">Foo2</a></p>
-        </dd>
-        <dt id="Interface">
-          <span class="name "><a href="fake/Interface-class.html">Interface</a></span>
-        </dt>
-        <dd>
-          <p>An interface that can be implemented.</p>
-        </dd>
-        <dt id="LongFirstLine">
-          <span class="name "><a href="fake/LongFirstLine-class.html">LongFirstLine</a></span>
-        </dt>
-        <dd>
-          <p>This is a very long line spread
-across... wait for it... two physical lines.</p>
-        </dd>
-        <dt id="MixMeIn">
-          <span class="name "><a href="fake/MixMeIn-class.html">MixMeIn</a></span>
-        </dt>
-        <dd>
-          <p>Perfect for mix-ins.</p>
-        </dd>
-        <dt id="OperatorReferenceClass">
-          <span class="name "><a href="fake/OperatorReferenceClass-class.html">OperatorReferenceClass</a></span>
-        </dt>
-        <dd>
-          <p>Test operator references: <a href="fake/OperatorReferenceClass/operator_equals.html">OperatorReferenceClass.==</a>.</p>
-        </dd>
-        <dt id="OtherGenericsThing">
-          <span class="name "><a href="fake/OtherGenericsThing-class.html">OtherGenericsThing</a></span>
+          <p>Lots and lots of parameters.</p>
+          
+</dd>
+        <dt id="myCoolTypedef" class="callable">
+          <span class="name"><a href="fake/myCoolTypedef.html">myCoolTypedef</a></span><span class="signature">(<wbr><span class="parameter" id="myCoolTypedef-param-x"><span class="type-annotation"><a href="fake/Cool-class.html">Cool</a></span> <span class="parameter-name">x</span>, </span> <span class="parameter" id="myCoolTypedef-param-y"><span class="type-annotation">bool</span> <span class="parameter-name">y</span></span>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
         </dt>
         <dd>
           <p></p>
-        </dd>
-        <dt id="SpecialList">
-          <span class="name "><a href="fake/SpecialList-class.html">SpecialList</a></span>
+          
+</dd>
+        <dt id="NewGenericTypedef" class="callable">
+          <span class="name"><a href="fake/NewGenericTypedef.html">NewGenericTypedef</a></span><span class="signature">&lt;S&gt;(<wbr><span class="parameter" id="-param-"><span class="type-annotation">T</span></span> <span class="parameter" id="-param-"><span class="type-annotation">T</span></span> <span class="parameter" id="-param-"><span class="type-annotation">T</span></span>)
+            <span class="returntype parameter">&#8594; List&lt;S&gt;</span>
+          </span>
         </dt>
         <dd>
-          <p>Extends <code>ListBase</code></p>
-        </dd>
-        <dt id="SubForDocComments">
-          <span class="name "><a href="fake/SubForDocComments-class.html">SubForDocComments</a></span>
+          <p>A typedef with the new style generic function syntax.</p>
+          
+</dd>
+        <dt id="VoidCallback" class="callable">
+          <span class="name"><a href="fake/VoidCallback.html">VoidCallback</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
         </dt>
         <dd>
-          <p>Testing if docs for inherited method are correct.</p>
-        </dd>
-        <dt id="SuperAwesomeClass">
-          <span class="name deprecated"><a class="deprecated" href="fake/SuperAwesomeClass-class.html">SuperAwesomeClass</a></span>
-        </dt>
-        <dd>
-          <p>A super class, with many powers. Link to <a href="ex/Apple-class.html">Apple</a> from another library.</p>
-        </dd>
-        <dt id="WithGetterAndSetter">
-          <span class="name "><a href="fake/WithGetterAndSetter-class.html">WithGetterAndSetter</a></span>
-        </dt>
-        <dd>
-          <p>Tests a single field with explict getter and setter.</p>
-        </dd>
+          <p></p>
+          
+</dd>
       </dl>
     </section>
 
@@ -655,8 +678,30 @@ across... wait for it... two physical lines.</p>
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>fake</h5>
+    <h5>library fake</h5>
     <ol>
+      <li class="section-title"><a href="fake/fake-library.html#classes">Classes</a></li>
+      <li><a href="fake/Annotation-class.html">Annotation</a></li>
+      <li><a href="fake/AnotherInterface-class.html">AnotherInterface</a></li>
+      <li><a href="fake/BaseForDocComments-class.html">BaseForDocComments</a></li>
+      <li><a href="fake/ClassWithUnusualProperties-class.html">ClassWithUnusualProperties</a></li>
+      <li><a href="fake/ConstantClass-class.html">ConstantClass</a></li>
+      <li><a href="fake/Cool-class.html">Cool</a></li>
+      <li><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></li>
+      <li><a href="fake/Foo2-class.html">Foo2</a></li>
+      <li><a href="fake/HasGenerics-class.html">HasGenerics</a></li>
+      <li><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></li>
+      <li><a href="fake/ImplicitProperties-class.html">ImplicitProperties</a></li>
+      <li><a href="fake/Interface-class.html">Interface</a></li>
+      <li><a href="fake/LongFirstLine-class.html">LongFirstLine</a></li>
+      <li><a href="fake/MixMeIn-class.html">MixMeIn</a></li>
+      <li><a href="fake/OperatorReferenceClass-class.html">OperatorReferenceClass</a></li>
+      <li><a href="fake/OtherGenericsThing-class.html">OtherGenericsThing</a></li>
+      <li><a href="fake/SpecialList-class.html">SpecialList</a></li>
+      <li><a href="fake/SubForDocComments-class.html">SubForDocComments</a></li>
+      <li><a class="deprecated" href="fake/SuperAwesomeClass-class.html">SuperAwesomeClass</a></li>
+      <li><a href="fake/WithGetterAndSetter-class.html">WithGetterAndSetter</a></li>
+    
       <li class="section-title"><a href="fake/fake-library.html#constants">Constants</a></li>
       <li><a href="fake/CUSTOM_CLASS-constant.html">CUSTOM_CLASS</a></li>
       <li><a class="deprecated" href="fake/DOWN-constant.html">DOWN</a></li>
@@ -670,14 +715,6 @@ across... wait for it... two physical lines.</p>
       <li><a href="fake/testingCodeSyntaxInOneLiners-constant.html">testingCodeSyntaxInOneLiners</a></li>
       <li><a href="fake/UP-constant.html">UP</a></li>
       <li><a href="fake/ZERO-constant.html">ZERO</a></li>
-    
-      <li class="section-title"><a href="fake/fake-library.html#typedefs">Typedefs</a></li>
-      <li><a href="fake/Callback2.html">Callback2</a></li>
-      <li><a class="deprecated" href="fake/FakeProcesses.html">FakeProcesses</a></li>
-      <li><a href="fake/GenericTypedef.html">GenericTypedef</a></li>
-      <li><a href="fake/LotsAndLotsOfParameters.html">LotsAndLotsOfParameters</a></li>
-      <li><a href="fake/NewGenericTypedef.html">NewGenericTypedef</a></li>
-      <li><a href="fake/VoidCallback.html">VoidCallback</a></li>
     
       <li class="section-title"><a href="fake/fake-library.html#properties">Properties</a></li>
       <li><a href="fake/dynamicGetter.html">dynamicGetter</a></li>
@@ -706,25 +743,14 @@ across... wait for it... two physical lines.</p>
       <li class="section-title"><a href="fake/fake-library.html#enums">Enums</a></li>
       <li><a href="fake/Color-class.html">Color</a></li>
     
-      <li class="section-title"><a href="fake/fake-library.html#classes">Classes</a></li>
-      <li><a href="fake/Annotation-class.html">Annotation</a></li>
-      <li><a href="fake/AnotherInterface-class.html">AnotherInterface</a></li>
-      <li><a href="fake/BaseForDocComments-class.html">BaseForDocComments</a></li>
-      <li><a href="fake/ConstantClass-class.html">ConstantClass</a></li>
-      <li><a href="fake/Cool-class.html">Cool</a></li>
-      <li><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></li>
-      <li><a href="fake/Foo2-class.html">Foo2</a></li>
-      <li><a href="fake/HasGenerics-class.html">HasGenerics</a></li>
-      <li><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></li>
-      <li><a href="fake/Interface-class.html">Interface</a></li>
-      <li><a href="fake/LongFirstLine-class.html">LongFirstLine</a></li>
-      <li><a href="fake/MixMeIn-class.html">MixMeIn</a></li>
-      <li><a href="fake/OperatorReferenceClass-class.html">OperatorReferenceClass</a></li>
-      <li><a href="fake/OtherGenericsThing-class.html">OtherGenericsThing</a></li>
-      <li><a href="fake/SpecialList-class.html">SpecialList</a></li>
-      <li><a href="fake/SubForDocComments-class.html">SubForDocComments</a></li>
-      <li><a class="deprecated" href="fake/SuperAwesomeClass-class.html">SuperAwesomeClass</a></li>
-      <li><a href="fake/WithGetterAndSetter-class.html">WithGetterAndSetter</a></li>
+      <li class="section-title"><a href="fake/fake-library.html#typedefs">Typedefs</a></li>
+      <li><a href="fake/Callback2.html">Callback2</a></li>
+      <li><a class="deprecated" href="fake/FakeProcesses.html">FakeProcesses</a></li>
+      <li><a href="fake/GenericTypedef.html">GenericTypedef</a></li>
+      <li><a href="fake/LotsAndLotsOfParameters.html">LotsAndLotsOfParameters</a></li>
+      <li><a href="fake/myCoolTypedef.html">myCoolTypedef</a></li>
+      <li><a href="fake/NewGenericTypedef.html">NewGenericTypedef</a></li>
+      <li><a href="fake/VoidCallback.html">VoidCallback</a></li>
     
       <li class="section-title"><a href="fake/fake-library.html#exceptions">Exceptions</a></li>
       <li><a class="deprecated" href="fake/Doh-class.html">Doh</a></li>
@@ -744,14 +770,13 @@ across... wait for it... two physical lines.</p>
         </span>
         &bull;
         <span class="no-break">
-          <a href="https://www.dartlang.org">
-            <img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16">
-          </a>
+          <a href="https://www.dartlang.org"><img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16"></a>
         </span>
         &bull;
         <span class="copyright no-break">
           <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
         </span>
+
       </p>
     </div>
   </div>
@@ -762,8 +787,7 @@ across... wait for it... two physical lines.</p>
 <script src="static-assets/prettify.js"></script>
 <script src="static-assets/URI.js"></script>
 <script src="static-assets/script.js"></script>
-<!-- Do not remove placeholder -->
-<!-- Footer Placeholder -->
+
 
 </body>
 

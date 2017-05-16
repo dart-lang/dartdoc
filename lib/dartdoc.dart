@@ -8,11 +8,10 @@ library dartdoc;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element.dart' show LibraryElement;
 import 'package:analyzer/error/error.dart';
 import 'package:analyzer/file_system/file_system.dart' as fileSystem;
 import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:analyzer/source/embedder.dart' show EmbedderUriResolver;
 import 'package:analyzer/source/package_map_resolver.dart';
 import 'package:analyzer/source/sdk_ext.dart';
 import 'package:analyzer/src/context/builder.dart';
@@ -22,9 +21,13 @@ import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:dartdoc/src/utils.dart';
+import 'package:html/dom.dart' show Element, Document;
+import 'package:html/parser.dart' show parse;
 import 'package:package_config/discovery.dart' as package_config;
 import 'package:path/path.dart' as path;
 
+import 'package:tuple/tuple.dart';
 import 'src/config.dart';
 import 'src/generator.dart';
 import 'src/html/html_generator.dart';
@@ -33,21 +36,25 @@ import 'src/model.dart';
 import 'src/model_utils.dart';
 import 'src/package_meta.dart';
 
+export 'src/config.dart';
 export 'src/element_type.dart';
 export 'src/generator.dart';
 export 'src/model.dart';
 export 'src/package_meta.dart';
+export 'src/sdk.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.9.13';
+const String version = '0.11.2';
 
 final String defaultOutDir = path.join('doc', 'api');
 
 /// Initialize and setup the generators.
-Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
-    List<String> footerFilePaths, String relCanonicalPrefix,
-    {String faviconPath,
+Future<List<Generator>> initGenerators(String url, String relCanonicalPrefix,
+    {List<String> headerFilePaths,
+    List<String> footerFilePaths,
+    List<String> footerTextFilePaths,
+    String faviconPath,
     bool useCategories: false,
     bool prettyIndexJson: false}) async {
   var options = new HtmlGeneratorOptions(
@@ -63,27 +70,9 @@ Future<List<Generator>> initGenerators(String url, List<String> headerFilePaths,
       options: options,
       headers: headerFilePaths,
       footers: footerFilePaths,
+      footerTexts: footerTextFilePaths,
     )
   ];
-}
-
-/// Configure the dartdoc generation process
-void initializeConfig(
-    {Directory inputDir,
-    String sdkVersion,
-    bool showWarnings: false,
-    bool addCrossdart: false,
-    String examplePathPrefix,
-    bool includeSource: true,
-    bool autoIncludeDependencies: false}) {
-  setConfig(
-      inputDir: inputDir,
-      sdkVersion: sdkVersion,
-      showWarnings: showWarnings,
-      addCrossdart: addCrossdart,
-      examplePathPrefix: examplePathPrefix,
-      includeSource: includeSource,
-      autoIncludeDependencies: autoIncludeDependencies);
 }
 
 Map<String, List<fileSystem.Folder>> _calculatePackageMap(
@@ -114,18 +103,26 @@ class DartDoc {
   final List<String> includes;
   final List<String> includeExternals;
   final List<String> excludes;
+  final Set<String> writtenFiles = new Set();
+
+  // Fires when the self checks make progress.
+  StreamController<String> _onCheckProgress;
 
   Stopwatch _stopwatch;
 
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
       this.outputDir, this.packageMeta, this.includes,
-      {this.includeExternals: const []});
+      {this.includeExternals: const []}) {
+    _onCheckProgress = new StreamController(sync: true);
+  }
+
+  Stream<String> get onCheckProgress => _onCheckProgress.stream;
 
   /// Generate DartDoc documentation.
   ///
   /// [DartDocResults] is returned if dartdoc succeeds. [DartDocFailure] is
   /// thrown if dartdoc fails in an expected way, for example if there is an
-  /// anaysis error in the code. Any other exception can be throw if there is an
+  /// analysis error in the code. Any other exception can be throw if there is an
   /// unexpected failure.
   Future<DartDocResults> generateDocs() async {
     _stopwatch = new Stopwatch()..start();
@@ -134,6 +131,7 @@ class DartDoc {
         ? const []
         : findFilesToDocumentInPackage(rootDir.path).toList();
 
+    // TODO(jcollins-g): seems like most of this belongs in the Package constructor
     List<LibraryElement> libraries = _parseLibraries(files, includeExternals);
 
     if (includes != null && includes.isNotEmpty) {
@@ -154,45 +152,218 @@ class DartDoc {
       });
     }
 
-    if (includes.isNotEmpty || excludes.isNotEmpty) {
-      print('generating docs for libraries ${libraries.join(', ')}\n');
+    PackageWarningOptions warningOptions = new PackageWarningOptions();
+    // TODO(jcollins-g): explode this into detailed command line options.
+    if (config != null && config.showWarnings) {
+      for (PackageWarning kind in PackageWarning.values) {
+        warningOptions.warn(kind);
+      }
     }
-
-    Package package = new Package(libraries, packageMeta);
-
+    Package package;
     if (config != null && config.autoIncludeDependencies) {
-      final newLibraryElements =
-          _buildLibrariesWithAutoincludedDependencies(package);
-      Library.clearLibraryMap();
-      package = new Package(newLibraryElements, packageMeta);
+      package = Package.withAutoIncludedDependencies(
+          libraries, packageMeta, warningOptions);
+      libraries = package.libraries.map((l) => l.element).toList();
+      // remove excluded libraries again, in case they are picked up through
+      // dependencies.
+      excludes.forEach((pattern) {
+        libraries.removeWhere((lib) {
+          return lib.name.startsWith(pattern) || lib.name == pattern;
+        });
+      });
     }
+    package = new Package(libraries, packageMeta, warningOptions);
 
     // Go through docs of every model element in package to prebuild the macros index
-    package.allModelElements.forEach((m) => m.documentation);
+    // TODO(jcollins-g): move index building into a cached-on-demand generation
+    // like most other bits in [Package].
+    package.allCanonicalModelElements.forEach((m) => m.documentation);
 
     // Create the out directory.
     if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
 
     for (var generator in generators) {
       await generator.generate(package, outputDir);
+      writtenFiles.addAll(generator.writtenFiles.map(path.normalize));
     }
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print(
-        "\nDocumented ${libraries.length} librar${libraries.length == 1 ? 'y' : 'ies'} "
-        "in ${seconds.toStringAsFixed(1)} seconds.");
+        "documented ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "
+        "in ${seconds.toStringAsFixed(1)} seconds");
+    print('');
 
-    if (libraries.isEmpty) {
-      print(
-          "\ndartdoc could not find any libraries to document. Run `pub get` and try again.");
+    verifyLinks(package, outputDir.path);
+    int warnings = package.packageWarningCounter.warningCount;
+    int errors = package.packageWarningCounter.errorCount;
+    if (warnings == 0 && errors == 0) {
+      print("no issues found");
+    } else {
+      print("found ${warnings} ${pluralize('warning', warnings)} "
+          "and ${errors} ${pluralize('error', errors)}");
+    }
+
+    if (package.libraries.isEmpty) {
+      throw new DartDocFailure(
+          "dartdoc could not find any libraries to document. Run `pub get` and try again.");
+    }
+
+    if (package.packageWarningCounter.errorCount > 0) {
+      throw new DartDocFailure("dartdoc encountered errors while processing");
     }
 
     return new DartDocResults(packageMeta, package, outputDir);
   }
 
+  void _warn(Package package, PackageWarning kind, String p, String origin,
+      {String source}) {
+    // Ordinarily this would go in [Package.warn], but we don't actually know what
+    // ModelElement to warn on yet.
+    Locatable referenceElement;
+    Set<Locatable> referenceElements;
+
+    // Make all paths relative to origin.
+    if (path.isWithin(origin, p)) {
+      p = path.relative(p, from: origin);
+    }
+    if (source != null) {
+      if (path.isWithin(origin, source)) {
+        source = path.relative(source, from: origin);
+      }
+      // Source paths are always relative.
+      referenceElements = package.allHrefs[source];
+    } else {
+      referenceElements = package.allHrefs[p];
+    }
+    if (referenceElements != null) {
+      if (referenceElements.any((e) => e.isCanonical)) {
+        referenceElement = referenceElements.firstWhere((e) => e.isCanonical);
+      } else {
+        // If we don't have a canonical element, just pick one.
+        referenceElement =
+            referenceElements.isEmpty ? null : referenceElements.first;
+      }
+    }
+    if (referenceElement == null && source == 'index.html')
+      referenceElement = package;
+    package.warnOnElement(referenceElement, kind, p);
+  }
+
+  void _doOrphanCheck(Package package, String origin, Set<String> visited) {
+    String normalOrigin = path.normalize(origin);
+    String staticAssets = path.joinAll([normalOrigin, 'static-assets', '']);
+    String indexJson = path.joinAll([normalOrigin, 'index.json']);
+    bool foundIndex = false;
+    for (FileSystemEntity f
+        in new Directory(normalOrigin).listSync(recursive: true)) {
+      var fullPath = path.normalize(f.path);
+      if (f is Directory) {
+        continue;
+      }
+      if (fullPath.startsWith(staticAssets)) {
+        continue;
+      }
+      if (fullPath == indexJson) {
+        foundIndex = true;
+        _onCheckProgress.add(fullPath);
+        continue;
+      }
+      if (visited.contains(fullPath)) continue;
+      if (!writtenFiles.contains(fullPath)) {
+        // This isn't a file we wrote (this time); don't claim we did.
+        _warn(package, PackageWarning.unknownFile, fullPath, normalOrigin);
+      } else {
+        _warn(package, PackageWarning.orphanedFile, fullPath, normalOrigin);
+      }
+      _onCheckProgress.add(fullPath);
+    }
+
+    if (!foundIndex) {
+      _warn(package, PackageWarning.brokenLink, indexJson, normalOrigin);
+      _onCheckProgress.add(indexJson);
+    }
+  }
+
+  // This is extracted to save memory during the check; be careful not to hang
+  // on to anything referencing the full file and doc tree.
+  Tuple2<Iterable<String>, String> _getStringLinksAndHref(String fullPath) {
+    File file = new File("$fullPath");
+    if (!file.existsSync()) {
+      return null;
+    }
+    Document doc = parse(file.readAsStringSync());
+    Element base = doc.querySelector('base');
+    String baseHref;
+    if (base != null) {
+      baseHref = base.attributes['href'];
+    }
+    List<Element> links = doc.querySelectorAll('a');
+    List<String> stringLinks = links
+        .map((link) => link.attributes['href'])
+        .where((href) => href != null)
+        .toList();
+    return new Tuple2(stringLinks, baseHref);
+  }
+
+  void _doCheck(
+      Package package, String origin, Set<String> visited, String pathToCheck,
+      [String source, String fullPath]) {
+    if (fullPath == null) {
+      fullPath = path.joinAll([origin, pathToCheck]);
+      fullPath = path.normalize(fullPath);
+    }
+
+    Tuple2 stringLinksAndHref = _getStringLinksAndHref(fullPath);
+    if (stringLinksAndHref == null) {
+      _warn(package, PackageWarning.brokenLink, pathToCheck,
+          path.normalize(origin),
+          source: source);
+      _onCheckProgress.add(pathToCheck);
+      return null;
+    }
+    Iterable<String> stringLinks = stringLinksAndHref.item1;
+    String baseHref = stringLinksAndHref.item2;
+
+    for (String href in stringLinks) {
+      if (!href.startsWith('http') && !href.contains('#')) {
+        var full;
+        if (baseHref != null) {
+          full = '${path.dirname(pathToCheck)}/$baseHref/$href';
+        } else {
+          full = '${path.dirname(pathToCheck)}/$href';
+        }
+        var newPathToCheck = path.normalize(full);
+        String newFullPath = path.joinAll([origin, newPathToCheck]);
+        newFullPath = path.normalize(newFullPath);
+        if (!visited.contains(newFullPath)) {
+          visited.add(newFullPath);
+          _doCheck(package, origin, visited, newPathToCheck, pathToCheck,
+              newFullPath);
+        }
+      }
+    }
+    _onCheckProgress.add(pathToCheck);
+  }
+
+  Map<String, Set<ModelElement>> _hrefs;
+
+  /// Don't call this method more than once, and only after you've
+  /// generated all docs for the Package.
+  void verifyLinks(Package package, String origin) {
+    assert(_hrefs == null);
+    _hrefs = package.allHrefs;
+
+    final Set<String> visited = new Set();
+    final String start = 'index.html';
+    visited.add(start);
+    print('validating docs...');
+    _doCheck(package, origin, visited, start);
+    _doOrphanCheck(package, origin, visited);
+  }
+
   List<LibraryElement> _parseLibraries(
       List<String> files, List<String> includeExternals) {
-    List<LibraryElement> libraries = [];
+    Set<LibraryElement> libraries = new Set();
     DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
         PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
     List<UriResolver> resolvers = [];
@@ -200,22 +371,25 @@ class DartDoc {
     fileSystem.Folder cwd =
         PhysicalResourceProvider.INSTANCE.getResource(rootDir.path);
     Map<String, List<fileSystem.Folder>> packageMap = _calculatePackageMap(cwd);
-    EmbedderUriResolver embedderUriResolver;
+
+    EmbedderSdk embedderSdk;
+    DartUriResolver embedderResolver;
     if (packageMap != null) {
       resolvers.add(new SdkExtUriResolver(packageMap));
       resolvers.add(new PackageMapUriResolver(
           PhysicalResourceProvider.INSTANCE, packageMap));
-
       var embedderYamls = new EmbedderYamlLocator(packageMap).embedderYamls;
-      embedderUriResolver = new EmbedderUriResolver(embedderYamls);
-      if (embedderUriResolver.length == 0) {
+      embedderSdk =
+          new EmbedderSdk(PhysicalResourceProvider.INSTANCE, embedderYamls);
+      embedderResolver = new DartUriResolver(embedderSdk);
+      if (embedderSdk.urlMappings.length == 0) {
         // The embedder uri resolver has no mappings. Use the default Dart SDK
         // uri resolver.
         resolvers.add(new DartUriResolver(sdk));
       } else {
         // The embedder uri resolver has mappings, use it instead of the default
         // Dart SDK uri resolver.
-        resolvers.add(embedderUriResolver);
+        resolvers.add(embedderResolver);
       }
     } else {
       resolvers.add(new DartUriResolver(sdk));
@@ -225,8 +399,10 @@ class DartDoc {
 
     SourceFactory sourceFactory = new SourceFactory(resolvers);
 
+    // TODO(jcollins-g): fix this so it actually obeys analyzer options files.
     var options = new AnalysisOptionsImpl();
     options.enableGenericMethods = true;
+    options.enableAssertInitializer = true;
 
     AnalysisEngine.instance.processRequiredPlugins();
 
@@ -250,22 +426,31 @@ class DartDoc {
       print('parsing ${name}...');
       JavaFile javaFile = new JavaFile(filePath).getAbsoluteFile();
       Source source = new FileBasedSource(javaFile);
-      Uri uri = context.sourceFactory.restoreUri(source);
+
+      // TODO(jcollins-g): remove the manual reversal using embedderSdk when we
+      // upgrade to analyzer-0.30 (where DartUriResolver implements
+      // restoreAbsolute)
+      Uri uri = embedderSdk?.fromFileUri(source.uri)?.uri;
       if (uri != null) {
         source = new FileBasedSource(javaFile, uri);
+      } else {
+        uri = context.sourceFactory.restoreUri(source);
+        if (uri != null) {
+          source = new FileBasedSource(javaFile, uri);
+        }
       }
       sources.add(source);
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
-        libraries.add(library);
+        if (!isPrivate(library)) libraries.add(library);
       }
     }
 
     files.forEach(processLibrary);
 
-    if ((embedderUriResolver != null) && (embedderUriResolver.length > 0)) {
-      embedderUriResolver.dartSdk.uris.forEach((String dartUri) {
-        Source source = embedderUriResolver.dartSdk.mapDartUri(dartUri);
+    if ((embedderSdk != null) && (embedderSdk.urlMappings.length > 0)) {
+      embedderSdk.urlMappings.keys.forEach((String dartUri) {
+        Source source = embedderSdk.mapDartUri(dartUri);
         processLibrary(source.fullName);
       });
     }
@@ -281,10 +466,34 @@ class DartDoc {
       LibraryElement library = context.computeLibraryElement(source);
       String libraryName = Library.getLibraryName(library);
       var fullPath = source.fullName;
+
       if (includeExternals.any((string) => fullPath.endsWith(string))) {
         if (libraries.map(Library.getLibraryName).contains(libraryName)) {
           continue;
         }
+        libraries.add(library);
+      } else if (config != null &&
+          config.autoIncludeDependencies &&
+          libraryName != '') {
+        File searchFile = new File(fullPath);
+        searchFile =
+            new File(path.join(searchFile.parent.path, 'pubspec.yaml'));
+        bool foundLibSrc = false;
+        while (!foundLibSrc && searchFile.parent != null) {
+          if (searchFile.existsSync()) break;
+          List<String> pathParts = path.split(searchFile.parent.path);
+          // This is a pretty intensely hardcoded convention, but there seems to
+          // to be no other way to identify what might be a "top level" library
+          // here.  If lib/src is in the path between the file and the pubspec,
+          // assume that this is supposed to be private.
+          if (pathParts.length < 2) break;
+          pathParts = pathParts.sublist(pathParts.length - 2, pathParts.length);
+          foundLibSrc =
+              path.join(pathParts[0], pathParts[1]) == path.join('lib', 'src');
+          searchFile = new File(
+              path.join(searchFile.parent.parent.path, 'pubspec.yaml'));
+        }
+        if (foundLibSrc) continue;
         libraries.add(library);
       }
     }
@@ -306,9 +515,10 @@ class DartDoc {
           ..sort();
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
-    print("Parsed ${libraries.length} "
-        "file${libraries.length == 1 ? '' : 's'} in "
-        "${seconds.toStringAsFixed(1)} seconds.\n");
+    print("parsed ${libraries.length} ${pluralize('file', libraries.length)} "
+        "in ${seconds.toStringAsFixed(1)} seconds");
+    print('');
+    _stopwatch.reset();
 
     if (errors.isNotEmpty) {
       errors.forEach(print);
@@ -375,27 +585,4 @@ class _Error implements Comparable<_Error> {
 
   @override
   String toString() => '[${severityName}] ${description}';
-}
-
-Iterable<LibraryElement> _buildLibrariesWithAutoincludedDependencies(
-    Package package) {
-  final List<LibraryElement> newLibraryElements = []
-    ..addAll(package.libraries.map((l) => l.element as LibraryElement));
-
-  package.allModelElements.forEach((modelElement) {
-    modelElement.usedElements.forEach((used) {
-      if (used != null && used.modelType != null) {
-        final ModelElement modelTypeElement = used.modelType.element;
-        final library = package.findLibraryFor(modelTypeElement.element);
-        if (library == null && modelTypeElement.library != null) {
-          if (!newLibraryElements.contains(modelTypeElement.library.element) &&
-              !modelTypeElement.library.name.startsWith("dart:")) {
-            newLibraryElements.add(modelTypeElement.library.element);
-          }
-        }
-      }
-    });
-  });
-
-  return newLibraryElements;
 }

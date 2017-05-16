@@ -29,18 +29,21 @@ String getFileContentsFor(Element e) {
 }
 
 Iterable<LibraryElement> getSdkLibrariesToDocument(
-    DartSdk sdk, AnalysisContext context) sync* {
+    DartSdk sdk, AnalysisContext context) {
   var sdkApiLibs = sdk.sdkLibraries
       .where((SdkLibrary sdkLib) => !sdkLib.isInternal && sdkLib.isDocumented)
       .toList();
   sdkApiLibs.sort((lib1, lib2) => lib1.shortName.compareTo(lib2.shortName));
 
+  final Set<LibraryElement> allLibraryElements = new Set();
+
   for (var sdkLib in sdkApiLibs) {
     Source source = sdk.mapDartUri(sdkLib.shortName);
     LibraryElement library = context.computeLibraryElement(source);
-    yield library;
-    yield* library.exportedLibraries;
+    allLibraryElements.add(library);
+    allLibraryElements.addAll(library.exportedLibraries);
   }
+  return allLibraryElements;
 }
 
 bool isInExportedLibraries(

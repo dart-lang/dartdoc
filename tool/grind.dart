@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:async' show Future;
+import 'dart:async';
 import 'dart:io' hide ProcessException;
 
 import 'package:dartdoc/dartdoc.dart' show defaultOutDir;
@@ -33,6 +33,7 @@ Future buildSdkDocs() async {
   delete(docsDir);
   log('building SDK docs');
   Process process = await Process.start(Platform.resolvedExecutable, [
+    '--checked',
     'bin/dartdoc.dart',
     '--output',
     '${docsDir.path}',
@@ -83,6 +84,7 @@ checkLinks() {
   var start = 'index.html';
 
   _doCheck(origin, visited, start, foundError);
+  _doFileCheck(origin, visited, foundError);
 
   if (foundError) exit(1);
 }
@@ -95,6 +97,7 @@ checkSdkLinks() {
   var start = 'index.html';
 
   _doCheck(origin, visited, start, foundError);
+  _doFileCheck(origin, visited, foundError);
 
   if (foundError) exit(1);
 }
@@ -188,7 +191,8 @@ testDartdoc() {
   delete(docsDir);
   try {
     log('running dartdoc');
-    Dart.run('bin/dartdoc.dart', arguments: ['--output', '${docsDir.path}']);
+    Dart.run('bin/dartdoc.dart',
+        arguments: ['--output', '${docsDir.path}'], vmArgs: ['--checked']);
 
     File indexHtml = joinFile(docsDir, ['index.html']);
     if (!indexHtml.existsSync()) fail('docs not generated');
@@ -200,18 +204,23 @@ testDartdoc() {
 @Task('update test_package_docs')
 updateTestPackageDocs() {
   var options = new RunOptions(workingDirectory: 'testing/test_package');
-  delete(getDir('test_package_docs'));
+  // This must be synced with ../test/compare_output_test.dart's
+  // "Validate html output of test_package" test.
+  delete(getDir('testing/test_package_docs'));
   Dart.run('../../bin/dartdoc.dart',
       arguments: [
-        '--no-include-source',
-        '--output',
-        '../test_package_docs',
+        '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',
-        '--auto-include-dependencies',
-        '--pretty-index-json'
+        '--no-include-source',
+        '--pretty-index-json',
+        '--exclude',
+        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,meta',
+        '--output',
+        '../test_package_docs',
       ],
-      runOptions: options);
+      runOptions: options,
+      vmArgs: ['--checked']);
 }
 
 @Task('Validate the SDK doc build.')
@@ -259,7 +268,35 @@ int _findCount(String str, String match) {
   return count;
 }
 
-_doCheck(String origin, Set<String> visited, String pathToCheck, bool error,
+Stream<FileSystemEntity> dirContents(String dir) {
+  return new Directory(dir).list(recursive: true);
+}
+
+void _doFileCheck(String origin, Set<String> visited, bool error) {
+  String normalOrigin = path.normalize(origin);
+  dirContents(normalOrigin).toList().then((allFiles) {
+    bool foundIndex = false;
+    for (FileSystemEntity f in allFiles) {
+      if (f is Directory) continue;
+      var fullPath = path.normalize(f.path);
+      if (fullPath.startsWith("${normalOrigin}/static-assets/")) continue;
+      if (fullPath == "${normalOrigin}/index.json") {
+        foundIndex = true;
+        continue;
+      }
+      if (visited.contains(fullPath)) continue;
+      log('   * Orphaned: $fullPath');
+      error = true;
+    }
+    if (!foundIndex) {
+      log('  * Not found: ${normalOrigin}/index.json');
+      error = true;
+    }
+  });
+}
+
+void _doCheck(
+    String origin, Set<String> visited, String pathToCheck, bool error,
     [String source]) {
   var fullPath = path.normalize("$origin$pathToCheck");
   if (visited.contains(fullPath)) return;
