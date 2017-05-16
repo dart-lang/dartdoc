@@ -3807,8 +3807,8 @@ class Typedef extends ModelElement
       (element as FunctionTypeAliasElement);
 
   List<TypeParameter> get _typeParameters => _typedef.typeParameters.map((f) {
-        return new ModelElement.from(f, library);
-      }).toList();
+    return new ModelElement.from(f, library);
+  }).toList();
 }
 
 class TypeParameter extends ModelElement {

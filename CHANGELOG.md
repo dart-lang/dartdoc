@@ -113,6 +113,12 @@
   --category-order, lets you change what order categories appear in. (#1323)
 * fix broken masthead links in enums (#1225).
 
+## 0.9.14-dev
+
+This is a prerelease only, features listed as added here don't carry forward.
+
+* Enable support for generic function types (#1321)
+
 ## 0.9.13
 
 * fix grind check-links and check-sdk-links (#1360)
