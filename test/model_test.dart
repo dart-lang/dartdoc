@@ -1518,7 +1518,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     setUp(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
-      generic = fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
+      generic =
+          fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
     });
 
     test('has a fully qualified name', () {
@@ -1533,7 +1534,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('docs', () {
       expect(t.documentation, equals(''));
-      expect(generic.documentation, equals('A typedef with the new style generic function syntax.'));
+      expect(generic.documentation,
+          equals('A typedef with the new style generic function syntax.'));
     });
 
     test('linked return type', () {

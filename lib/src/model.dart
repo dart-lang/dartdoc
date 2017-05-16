@@ -3776,7 +3776,8 @@ class Typedef extends ModelElement
   @override
   String get genericParameters {
     if (element is GenericTypeAliasElement) {
-      List<TypeParameterElement> genericTypeParameters = (element as GenericTypeAliasElement).function.typeParameters;
+      List<TypeParameterElement> genericTypeParameters =
+          (element as GenericTypeAliasElement).function.typeParameters;
       if (genericTypeParameters.isNotEmpty) {
         return '&lt;${genericTypeParameters.map((t) => t.name).join(', ')}&gt;';
       }
@@ -3806,8 +3807,8 @@ class Typedef extends ModelElement
       (element as FunctionTypeAliasElement);
 
   List<TypeParameter> get _typeParameters => _typedef.typeParameters.map((f) {
-    return new ModelElement.from(f, library);
-  }).toList();
+        return new ModelElement.from(f, library);
+      }).toList();
 }
 
 class TypeParameter extends ModelElement {
