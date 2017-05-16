@@ -56,7 +56,13 @@ abstract class TemplateData<T extends Documentable> {
 
   Iterable<Subnav> getSubNavItems() => <Subnav>[];
 
-  String _layoutTitle(String name, String kind) => '${kind} ${name}';
+  String _layoutTitle(String name, String kind, bool isDeprecated) {
+    if (isDeprecated) {
+      return '${kind} <span class="deprecated">${name}</span>';
+    } else {
+      return '${kind} ${name}';
+    }
+  }
 
   Iterable<Subnav> _gatherSubnavForInvokable(ModelElement element) {
     if (element is SourceCodeMixin &&
@@ -83,7 +89,7 @@ class PackageTemplateData extends TemplateData<Package> {
   @override
   Package get self => package;
   @override
-  String get layoutTitle => _layoutTitle(package.name, kind);
+  String get layoutTitle => _layoutTitle(package.name, kind, false);
   @override
   String get metaDescription =>
       '${package.name} API docs, for the Dart programming language.';
@@ -137,7 +143,9 @@ class LibraryTemplateData extends TemplateData<Library> {
   }
 
   @override
-  String get layoutTitle => _layoutTitle(library.name, 'library');
+  String get layoutTitle =>
+      _layoutTitle(library.name, 'library', library.isDeprecated);
+
   @override
   Library get self => library;
 }
@@ -165,7 +173,7 @@ class ClassTemplateData extends TemplateData<Class> {
 
   @override
   String get layoutTitle =>
-      _layoutTitle(clazz.nameWithGenerics, clazz.fullkind);
+      _layoutTitle(clazz.nameWithGenerics, clazz.fullkind, clazz.isDeprecated);
   @override
   List get navLinks => [package, library];
   @override
@@ -216,8 +224,8 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
   @override
   Constructor get self => constructor;
   @override
-  String get layoutTitle =>
-      _layoutTitle(constructor.name, constructor.fullKind);
+  String get layoutTitle => _layoutTitle(
+      constructor.name, constructor.fullKind, constructor.isDeprecated);
   @override
   List get navLinks => [package, library, clazz];
   @override
@@ -244,7 +252,7 @@ class EnumTemplateData extends TemplateData<Enum> {
   @override
   Enum get self => eNum;
   @override
-  String get layoutTitle => _layoutTitle(eNum.name, 'enum');
+  String get layoutTitle => _layoutTitle(eNum.name, 'enum', eNum.isDeprecated);
   @override
   String get title => '${self.name} enum - ${library.name} library - Dart API';
   @override
@@ -278,7 +286,8 @@ class FunctionTemplateData extends TemplateData<ModelFunction> {
   String get title =>
       '${function.name} function - ${library.name} library - Dart API';
   @override
-  String get layoutTitle => _layoutTitle(function.nameWithGenerics, 'function');
+  String get layoutTitle => _layoutTitle(
+      function.nameWithGenerics, 'function', function.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${function.name} function from the '
@@ -306,8 +315,8 @@ class MethodTemplateData extends TemplateData<Method> {
   String get title => '${method.name} method - ${clazz.name} class - '
       '${library.name} library - Dart API';
   @override
-  String get layoutTitle =>
-      _layoutTitle(method.nameWithGenerics, method.fullkind);
+  String get layoutTitle => _layoutTitle(
+      method.nameWithGenerics, method.fullkind, method.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${method.name} method from the ${clazz.name} class, '
@@ -336,7 +345,8 @@ class PropertyTemplateData extends TemplateData<Field> {
   String get title => '${property.name} $type - ${clazz.name} class - '
       '${library.name} library - Dart API';
   @override
-  String get layoutTitle => _layoutTitle(property.name, type);
+  String get layoutTitle =>
+      _layoutTitle(property.name, type, property.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${property.name} $type from the ${clazz.name} class, '
@@ -373,7 +383,8 @@ class TypedefTemplateData extends TemplateData<Typedef> {
   String get title =>
       '${typeDef.name} typedef - ${library.name} library - Dart API';
   @override
-  String get layoutTitle => _layoutTitle(typeDef.nameWithGenerics, 'typedef');
+  String get layoutTitle =>
+      _layoutTitle(typeDef.nameWithGenerics, 'typedef', typeDef.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${typeDef.name} property from the '
@@ -401,7 +412,8 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
   String get title =>
       '${property.name} $_type - ${library.name} library - Dart API';
   @override
-  String get layoutTitle => _layoutTitle(property.name, _type);
+  String get layoutTitle =>
+      _layoutTitle(property.name, _type, property.isDeprecated);
   @override
   String get metaDescription =>
       'API docs for the ${property.name} $_type from the '
