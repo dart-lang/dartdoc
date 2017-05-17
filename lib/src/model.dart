@@ -2853,7 +2853,7 @@ class PackageWarningCounter {
     } else {
       if (options.asErrors.contains(kind)) toWrite = "error: ${fullMessage}";
     }
-    if (toWrite != null) print(" ${toWrite}");
+    if (toWrite != null) stderr.write("\n ${toWrite}");
   }
 
   /// Returns true if we've already warned for this.

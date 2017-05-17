@@ -187,21 +187,20 @@ class DartDoc {
       writtenFiles.addAll(generator.writtenFiles.map(path.normalize));
     }
 
-    double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
-    print(
-        "documented ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "
-        "in ${seconds.toStringAsFixed(1)} seconds");
-    print('');
-
     verifyLinks(package, outputDir.path);
     int warnings = package.packageWarningCounter.warningCount;
     int errors = package.packageWarningCounter.errorCount;
     if (warnings == 0 && errors == 0) {
-      print("no issues found");
+      print("\nno issues found");
     } else {
-      print("found ${warnings} ${pluralize('warning', warnings)} "
+      print("\nfound ${warnings} ${pluralize('warning', warnings)} "
           "and ${errors} ${pluralize('error', errors)}");
     }
+
+    double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
+    print(
+        "\ndocumented ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "
+        "in ${seconds.toStringAsFixed(1)} seconds");
 
     if (package.libraries.isEmpty) {
       throw new DartDocFailure(
@@ -357,7 +356,7 @@ class DartDoc {
     final Set<String> visited = new Set();
     final String start = 'index.html';
     visited.add(start);
-    print('validating docs...');
+    stdout.write('\nvalidating docs...');
     _doCheck(package, origin, visited, start);
     _doOrphanCheck(package, origin, visited);
   }
@@ -518,7 +517,6 @@ class DartDoc {
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print("parsed ${libraries.length} ${pluralize('file', libraries.length)} "
         "in ${seconds.toStringAsFixed(1)} seconds");
-    print('');
     _stopwatch.reset();
 
     if (errors.isNotEmpty) {
