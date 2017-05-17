@@ -4,7 +4,7 @@
 
 import 'dart:async' show Future, StreamController;
 import 'dart:convert' show JsonEncoder;
-import 'dart:io' show Directory, File;
+import 'dart:io' show Directory, File, stdout;
 import 'dart:typed_data' show Uint8List;
 
 import 'package:collection/collection.dart' show compareNatural;
@@ -81,9 +81,11 @@ class HtmlGeneratorInstance implements HtmlOptions {
       return data;
     }).toList()
           ..sort((a, b) {
-            var aQualified = a['qualifiedName'] as String;
-            var bQualified = b['qualifiedName'] as String;
-            return compareNatural(aQualified, bQualified);
+            var value = compareNatural(a['qualifiedName'], b['qualifiedName']);
+            if (value == 0) {
+              value = compareNatural(a['type'], b['type']);
+            }
+            return value;
           }));
     jsonFile.writeAsStringSync('${json}\n');
   }
@@ -179,12 +181,14 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
   void generatePackage() {
     TemplateData data = new PackageTemplateData(this, package, useCategories);
+    stdout.write('\ndocumenting ${package.name}');
 
     _build('index.html', _templates.indexTemplate, data);
   }
 
   void generateLibrary(Package package, Library lib) {
-    print('generating docs for library ${lib.name} from ${lib.path}...');
+    stdout
+        .write('\ngenerating docs for library ${lib.name} from ${lib.path}...');
     if (!lib.isAnonymous && !lib.hasDocumentation) {
       package.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);
     }
