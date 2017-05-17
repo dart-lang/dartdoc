@@ -16,23 +16,20 @@ html {
 }
 
 body {
-  font-family: 'Roboto', sans-serif;
-  font-size: 15px;
-  margin-bottom: 60px;
-  -webkit-font-smoothing: antialiased;
   -webkit-text-size-adjust: 100%;
   overflow-x: hidden;
-  color: #212121;
-}
 
-nav {
-  font-size: 17px;
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 16px;
+  line-height: 1.42857143;
+  color: #111111;
+  background-color: #fff;
 }
 
 /* some of this is to reset bootstrap */
 nav.navbar {
   background-color: inherit;
-  min-height: 48px;
+  min-height: 50px;
   border: 0;
 }
 
@@ -51,13 +48,12 @@ nav .container {
 }
 
 header {
-  background-color: rgb(0, 102, 152);
-  color: white;
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.37);
+  background-color: #eeeeee;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.1);
 }
 
 header.header-fixed nav.navbar-fixed-top {
-  box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 3px 5px rgba(0,0,0,0.1);
 }
 
 header.container-fluid {
@@ -80,7 +76,7 @@ header .contents {
 }
 
 .body {
-  margin-top: 24px;
+  margin-top: 90px;
 }
 
 section {
@@ -97,8 +93,10 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: normal;
-  margin: 0;
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 400;
+  margin-top: 1.5em;
+  color: #111111;
 }
 
 h1.title {
@@ -106,8 +104,14 @@ h1.title {
   text-overflow: ellipsis;
 }
 
+h1 {
+  font-size: 37px;
+  margin-top: 0;
+  margin-bottom: 0.67em;
+}
+
 h2 {
-  font-size: 24px;
+  font-size: 28px;
 }
 
 h5 {
@@ -134,18 +138,18 @@ p {
 }
 
 a, a:hover {
-  color: rgb(0, 102, 152);
+  color: #1155cc;
 }
 
 pre.prettyprint {
   font-family: 'Source Code Pro', monospace;
   color: black;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 0;
+  font-size: 15px;
   word-wrap: normal;
   line-height: 1.4;
-  background: #f7f7f7;
-  border: 1px solid #ddd;
+  background: #eee;
+  border: 0;
   margin: 16px 0 16px 0;
   padding: 8px;
 }
@@ -203,14 +207,6 @@ h2 .crossdart {
 }
 
 @media (min-width: 768px) {
-  .dl-horizontal dd {
-    margin-left: 128px;
-  }
-
-  .dl-horizontal dt {
-    width: 128px;
-  }
-
   ul.subnav li {
     font-size: 17px;
   }
@@ -225,20 +221,11 @@ header a,
 header a:hover,
 header p,
 header li {
-  color: white;
+  color: #111;
 }
 
 header h1 .kind {
-  color: #ddd;
-  text-transform: uppercase;
-  font-size: 15px;
-  display: block;
-}
-
-@media screen and (max-width: 768px) {
-  header h1 .kind {
-    font-size: 14px;
-  }
+  color: #555;
 }
 
 dt {
@@ -260,27 +247,22 @@ dd p {
   margin-bottom: 0;
 }
 
-section.summary h2 {
-  color: #727272;
-  margin-bottom: 16px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid #ddd;
-}
-
 /* indents wrapped lines */
 section.summary dt {
   margin-left: 24px;
   text-indent: -24px;
 }
 
+.dl-horizontal dd {
+  margin-left: initial;
+}
+
 dl.dl-horizontal dt {
   font-style: normal;
   text-align: left;
   color: #727272;
-}
-
-dl.dl-horizontal dt::after {
-  content: ':';
+  margin-right: 20px;
+  width: initial;
 }
 
 dt .name {
@@ -326,16 +308,16 @@ p.firstline {
 }
 
 footer {
+  color: #fff;
+  line-height: 16px;
+  background-color: #111111;
   padding: 20px;
-  position: absolute;
-  bottom: 0;
   width: 100%;
-  height: 60px;
+  margin: 20px 0 0 0;
 }
 
 footer p {
   margin: 0;
-  color: #555;
 }
 
 footer .no-break {
@@ -348,8 +330,8 @@ footer .container-fluid {
   padding-right: 0;
 }
 
-.copyright a {
-  color: #555;
+footer a, footer a:hover {
+  color: #fff;
 }
 
 .markdown h1 {
@@ -424,7 +406,6 @@ footer .container-fluid {
 .breadcrumbs {
   padding: 0;
   margin: 8px 0 8px 0;
-  font-size: 17px;
   white-space: nowrap;
   line-height: 1;
 }
@@ -443,11 +424,11 @@ footer .container-fluid {
 }
 
 .self-crumb {
-  color: #ddd;
+  color: #555;
 }
 
-nav .self-name {
-  color: #ddd;
+.self-name {
+  color: #555;
   display: none;
 }
 
@@ -510,7 +491,7 @@ ul.subnav li {
 }
 
 ul.subnav li a {
-  color: #FFFFFF;
+  color: #111;
 }
 
 ul.subnav li {
@@ -529,27 +510,35 @@ ul.subnav li:last-of-type {
 
 /* sidebar styles */
 
-.sidebar-offcanvas-left {
-  background-color: #f7f7f7;
+.sidebar-offcanvas-left,
+.sidebar-offcanvas-right {
   padding: 0;
 }
 
 .sidebar ol {
   list-style: none;
-  font-size: 14px;
-  line-height: 24px;
+  line-height: 22px;
   margin-bottom: 0;
   padding: 0;
 }
 
-.sidebar-offcanvas-left ol {
-  padding: 16px;
+.sidebar h5 a,
+.sidebar h5 a:hover {
+  color: #727272;
 }
 
 .sidebar h5,
 .sidebar ol li {
   text-overflow: ellipsis;
   overflow: hidden;
+  padding: 3px 0;
+}
+
+.sidebar h5 {
+  color: #727272;
+  font-size: 18px;
+  margin: 0 0 25px 0;
+  padding-top: 0;
 }
 
 .sidebar ol li.section-title a {
@@ -557,11 +546,10 @@ ul.subnav li:last-of-type {
 }
 
 .sidebar ol li.section-title {
-  font-size: 13px;
-  color: #B6B6B6;
+  font-size: 18px;
+  font-weight: normal;
   text-transform: uppercase;
-  line-height: 20px;
-  margin-top: 24px;
+  padding-top: 25px;
 }
 
 .sidebar ol li:first-child {
@@ -583,7 +571,7 @@ button {
 @media screen and (max-width:768px) {
   #sidenav-left-toggle {
     display: inline;
-    background: no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path fill='#FFFFFF' d='M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z'/></svg>");
+    background: no-repeat url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'><path fill='#111' d='M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z'/></svg>");
     background-position: center;
     width: 24px;
     height: 24px;
@@ -596,51 +584,50 @@ button {
     height: 100%;
     z-index: 1999;
     position: fixed;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-color: black;
     display: block;
   }
 
   .sidebar-offcanvas-left {
-    left:-100%;
-    position:fixed;
+    left: -100%;
+    position: fixed;
     -webkit-transition:all .25s ease-out;
     -o-transition:all .25s ease-out;
     transition:all .25s ease-out;
     z-index: 2000;
-    top:0;
+    top: 0;
     width: 280px; /* works all the way down to an iphone 4 */
     height: 100%;
     background-color: white;
     overflow-y: auto; /* TODO: how to hide scroll bars? */
+    padding: 10px;
   }
 
   .sidebar-offcanvas-left.active {
-    left:0; /* this animates our drawer into the page */
+    left: 0; /* this animates our drawer into the page */
+  }
+
+  .self-name {
+    display: inline-block;
   }
 }
 
-.sidebar h5 {
-  color: #727272;
-  padding-bottom: 16px;
-}
-
 .sidebar-offcanvas-left h5 {
-  border-bottom: 1px solid #ddd;
-  padding: 16px;
+  margin-bottom: 10px;
 }
 
 .sidebar-offcanvas-left h5:last-of-type {
   border: 0;
-  padding: 16px 16px 0 16px;
+  margin-bottom: 25px;
 }
 
 /* the right nav disappears out of view when the window shrinks */
 @media screen and (max-width: 992px) {
-  .sidebar-offcanvas-right{
+  .sidebar-offcanvas-right {
      display: none;
    }
 }
@@ -740,6 +727,10 @@ form.search {
 .search-from-lib {
   font-style: italic;
   color: gray;
+}
+
+#search-box {
+  background-color: #ffffff;
 }
 
 section#setter {

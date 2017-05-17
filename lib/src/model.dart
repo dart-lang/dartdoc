@@ -121,9 +121,9 @@ abstract class Inheritable {
     Element searchElement = element;
     if (!_canonicalEnclosingClassIsSet) {
       if (isInherited) {
-        while (searchElement is Member) {
-          searchElement = (searchElement as Member).baseElement;
-        }
+        searchElement = searchElement is Member
+            ? Package.getBasestElement(searchElement)
+            : searchElement;
         bool foundElement = false;
         // TODO(jcollins-g): generate warning if an inherited element's definition
         // is in an intermediate non-canonical class in the inheritance chain
@@ -363,8 +363,6 @@ class Class extends ModelElement implements EnclosedElement {
       _allElements.addAll(constructors.map((e) => e.element));
       _allElements.addAll(staticMethods.map((e) => e.element));
       _allElements.addAll(staticProperties.map((e) => e.element));
-      _allElements.addAll(_allElements.where((e) => e is Member)
-        ..map((e) => (e as Member).baseElement));
     }
     return _allElements.contains(element);
   }
@@ -896,6 +894,7 @@ class Constructor extends ModelElement
 /// Bridges the gap between model elements and packages,
 /// both of which have documentation.
 abstract class Documentable implements Warnable {
+  String get name;
   String get documentation;
   String get documentationAsHtml;
   bool get hasDocumentation;
@@ -1746,7 +1745,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     // It isn't a disambiguator because EnumFields are not inherited, ever.
     // TODO(jcollins-g): cleanup class hierarchy so that EnumFields aren't
     // Inheritable, somehow?
-    if (e is Member) e = (e as Member).baseElement;
+    if (e is Member) {
+      e = Package.getBasestElement(e);
+    }
     Tuple4<Element, Library, Class, ModelElement> key =
         new Tuple4(e, library, enclosingClass, enclosingCombo);
     ModelElement newModelElement;
@@ -2435,8 +2436,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       return HTML_ESCAPE.convert(name);
     }
 
-    var classContent = isDeprecated ? 'class="deprecated" ' : '';
-    return '<a ${classContent}href="${href}">$name</a>';
+    var classContent = isDeprecated ? ' class="deprecated"' : '';
+    return '<a${classContent} href="${href}">$name</a>';
   }
 
   // TODO(keertip): consolidate all the find library methods
@@ -2852,7 +2853,7 @@ class PackageWarningCounter {
     } else {
       if (options.asErrors.contains(kind)) toWrite = "error: ${fullMessage}";
     }
-    if (toWrite != null) stderr.write("\n ${toWrite}");
+    if (toWrite != null) print(" ${toWrite}");
   }
 
   /// Returns true if we've already warned for this.
@@ -3060,7 +3061,7 @@ class Package implements Nameable, Documentable {
         break;
       case PackageWarning.unknownFile:
         warningMessage =
-            'dartdoc detected an unknown file in the doc tree:  ${message}';
+            'dartdoc detected an unknown file in the doc tree: ${message}';
         break;
       case PackageWarning.typeAsHtml:
         // The message for this warning can contain many punctuation and other symbols,
@@ -3243,6 +3244,9 @@ class Package implements Nameable, Documentable {
   @override
   String get name => packageMeta.name;
 
+  String get kind =>
+      (packageMeta.useCategories || package.isSdk) ? '' : 'package';
+
   @override
   String get oneLineDoc => '';
 
@@ -3312,12 +3316,24 @@ class Package implements Nameable, Documentable {
     return _canonicalLibraryFor[e];
   }
 
+  // TODO(jcollins-g): Revise when dart-lang/sdk#29600 is fixed.
+  static Element getBasestElement(Member member) {
+    Element element = member;
+    while (element is Member) {
+      element = (element as Member).baseElement;
+    }
+    return element;
+  }
+
   /// Tries to find a canonical ModelElement for this element.  If we know
   /// this element is related to a particular class, pass preferredClass to
   /// disambiguate.
   ModelElement findCanonicalModelElementFor(Element e, {Class preferredClass}) {
     assert(allLibrariesAdded);
     Library lib = findCanonicalLibraryFor(e);
+    if (lib == null && preferredClass != null) {
+      lib = findCanonicalLibraryFor(preferredClass.element);
+    }
     ModelElement modelElement;
     // TODO(jcollins-g): The data structures should be changed to eliminate guesswork
     // with member elements.
@@ -3325,6 +3341,7 @@ class Package implements Nameable, Documentable {
       // Prefer Fields over Accessors.
       if (e is PropertyAccessorElement)
         e = (e as PropertyAccessorElement).variable;
+      if (e is Member) e = getBasestElement(e);
       Set<ModelElement> candidates = new Set();
       Tuple2<Element, Library> iKey = new Tuple2(e, lib);
       Tuple4<Element, Library, Class, ModelElement> key =

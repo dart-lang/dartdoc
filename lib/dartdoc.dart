@@ -21,6 +21,7 @@ import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:dartdoc/src/utils.dart';
 import 'package:html/dom.dart' show Element, Document;
 import 'package:html/parser.dart' show parse;
 import 'package:package_config/discovery.dart' as package_config;
@@ -173,9 +174,6 @@ class DartDoc {
     }
     package = new Package(libraries, packageMeta, warningOptions);
 
-    print(
-        '\ngenerating docs for libraries ${package.libraries.map((Library l) => l.name).join(', ')}\n');
-
     // Go through docs of every model element in package to prebuild the macros index
     // TODO(jcollins-g): move index building into a cached-on-demand generation
     // like most other bits in [Package].
@@ -189,14 +187,21 @@ class DartDoc {
       writtenFiles.addAll(generator.writtenFiles.map(path.normalize));
     }
 
-    verifyLinks(package, outputDir.path);
-
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print(
-        "\nDocumented ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "
-        "in ${seconds.toStringAsFixed(1)} seconds.");
-    print(
-        "Finished with:  ${package.packageWarningCounter.warningCount} warnings, ${package.packageWarningCounter.errorCount} errors");
+        "documented ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "
+        "in ${seconds.toStringAsFixed(1)} seconds");
+    print('');
+
+    verifyLinks(package, outputDir.path);
+    int warnings = package.packageWarningCounter.warningCount;
+    int errors = package.packageWarningCounter.errorCount;
+    if (warnings == 0 && errors == 0) {
+      print("no issues found");
+    } else {
+      print("found ${warnings} ${pluralize('warning', warnings)} "
+          "and ${errors} ${pluralize('error', errors)}");
+    }
 
     if (package.libraries.isEmpty) {
       throw new DartDocFailure(
@@ -352,7 +357,7 @@ class DartDoc {
     final Set<String> visited = new Set();
     final String start = 'index.html';
     visited.add(start);
-    stdout.write('\nvalidating docs');
+    print('validating docs...');
     _doCheck(package, origin, visited, start);
     _doOrphanCheck(package, origin, visited);
   }
@@ -511,9 +516,10 @@ class DartDoc {
           ..sort();
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
-    print("Parsed ${libraries.length} "
-        "file${libraries.length == 1 ? '' : 's'} in "
-        "${seconds.toStringAsFixed(1)} seconds.\n");
+    print("parsed ${libraries.length} ${pluralize('file', libraries.length)} "
+        "in ${seconds.toStringAsFixed(1)} seconds");
+    print('');
+    _stopwatch.reset();
 
     if (errors.isNotEmpty) {
       errors.forEach(print);
