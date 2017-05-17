@@ -1722,6 +1722,37 @@ class Method extends ModelElement
   MethodElement get _method => (element as MethodElement);
 }
 
+/// This class represents the score for a particular element; how likely
+/// it is that this is the canonical element.
+class ScoredCandidate implements Comparable<ScoredCandidate> {
+  final List<String> reasons = [];
+  /// The ModelElement being scored.
+  final ModelElement element;
+  final Library library;
+  /// The score accumulated so far.  Higher means it is more likely that this
+  /// is is the
+  double score = 0.0;
+
+  ScoredCandidate(this.element, this.library);
+
+  void alterScore(double scoreDelta, String reason) {
+    score += scoreDelta;
+    if (scoreDelta != 0) {
+      reasons.add("${reason} (${scoreDelta >= 0 ? '+' : ''}${scoreDelta.toStringAsPrecision(4)})");
+    }
+  }
+
+  int compareTo(ScoredCandidate other) {
+    assert(element == other.element);
+    return score.compareTo(other.score);
+  }
+
+  String toString() {
+    return "${library.name}: ${score.toStringAsPrecision(4)} - ${reasons.join(', ')}";
+  }
+}
+
+
 /// This class is the foundation of Dartdoc's model for source code.
 /// All ModelElements are contained within a [Package], and laid out in a
 /// structure that mirrors the availability of identifiers in the various
@@ -1894,7 +1925,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   // Use components of this element's location to return a score for library
   // location.
-  double scoreElementWithLibrary(Library lib) {
+  ScoredCandidate scoreElementWithLibrary(Library lib) {
+    ScoredCandidate scoredCandidate = new ScoredCandidate(this, lib);
     Iterable<String> resplit(Set<String> items) sync* {
       for (String item in items) {
         for (String subItem in item.split('_')) {
@@ -1902,28 +1934,30 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         }
       }
     }
-    double result = 0.0;
     // Penalty for deprecated libraries.
-    if (lib.isDeprecated) result -= 1;
+    if (lib.isDeprecated) scoredCandidate.alterScore(-1.0, 'is deprecated');
     // Give a big boost if the library has the package name embedded in it.
-    if (package.namePieces.intersection(lib.namePieces).length > 0)
-      result += 1;
+    if (package.namePieces.intersection(lib.namePieces).length > 0) {
+      scoredCandidate.alterScore(1.0, 'embeds package name');
+    }
     // Give a tiny boost for libraries with long names.
-    result += .01 * lib.namePieces.length;
+    scoredCandidate.alterScore(.01 * lib.namePieces.length, 'name is long');
     // If we don't know the location of this element, return our best guess.
     // TODO(jcollins-g): is that even possible?
-    if (locationPieces.isEmpty) return result;
+    if (locationPieces.isEmpty) return scoredCandidate;
     // The more pieces we have of the location in our library name, the more we should boost our score.
-    result += (lib.namePieces.intersection(locationPieces).length.toDouble()) / (locationPieces.length.toDouble());
+    scoredCandidate.alterScore(lib.namePieces.intersection(locationPieces).length.toDouble() / locationPieces.length.toDouble(), 'element location shares parts with name');
     // If pieces of location at least start with elements of our library name, boost the score a little bit.
+    double scoreBoost = 0.0;
     for (String piece in resplit(locationPieces)) {
       for (String namePiece in lib.namePieces) {
         if (piece.startsWith(namePiece)) {
-          result += 0.001;
+          scoreBoost += 0.001;
         }
       }
     }
-    return result;
+    scoredCandidate.alterScore(scoreBoost, 'element location parts start with parts of name');
+    return scoredCandidate;
   }
 
   // TODO(jcollins-g): annotations should now be able to use the utility
@@ -2051,17 +2085,30 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
             // Heuristic scoring to determine which library a human likely
             // considers this element to be primarily 'from', and therefore,
             // canonical.  Still warn if the heuristic isn't that confident.
-            candidateLibraries = scoreCanonicalCandidates(candidateLibraries);
-            double secondHighestScore = scoreElementWithLibrary(
-                candidateLibraries[candidateLibraries.length - 2]);
-            double highestScore = scoreElementWithLibrary(
-                candidateLibraries.last);
+
+            // Start with our top-level element.
+            ModelElement warnable = this;
+            Element topLevelElement = warnable.element;
+            while (topLevelElement.enclosingElement is! CompilationUnitElement) {
+              topLevelElement = topLevelElement.enclosingElement;
+            }
+            warnable = new ModelElement.from(
+                topLevelElement, package.findOrCreateLibraryFor(topLevelElement));
+
+            List<ScoredCandidate> scoredCandidates = warnable.scoreCanonicalCandidates(candidateLibraries);
+            candidateLibraries = scoredCandidates.map((s) => s.library).toList();
+            double secondHighestScore = scoredCandidates[scoredCandidates.length - 2].score;
+            double highestScore = scoredCandidates.last.score;
             double confidence = highestScore - secondHighestScore;
             // In debugging I've found below .1 to be the most tricky; even
             // humans have to scratch their heads a bit at this level.
+            List<String> debugLines = ["${candidateLibraries.map((l) => l.name)} -> ${candidateLibraries.last.name} (confidence ${confidence.toStringAsPrecision(4)})"];
+            debugLines.addAll(scoredCandidates.map((s) => '        ${s.toString()}'));
+            debugLines.add(warnable.namePieces.join(','));
+            debugLines.add(candidateLibraries.last.locationPieces.join(','));
+
             if (confidence < 0.1) {
-              warn(PackageWarning.ambiguousReexport,
-                  "${candidateLibraries.map((l) => l.name)} -> ${candidateLibraries.last.name} (confidence ${confidence})");
+              warnable.warn(PackageWarning.ambiguousReexport, debugLines.join('\n'));
             }
           }
           if (candidateLibraries.isNotEmpty)
@@ -2082,10 +2129,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return _canonicalLibrary;
   }
 
-  int byScore(Library a, Library b) {
-    return Comparable.compare(scoreElementWithLibrary(a), scoreElementWithLibrary(b));
+  List<ScoredCandidate> scoreCanonicalCandidates(List<Library> libraries) {
+    return libraries.map((l) => scoreElementWithLibrary(l)).toList()..sort();
   }
-  List<Library> scoreCanonicalCandidates(List<Library> libraries) => libraries..sort(byScore);
 
   @override
   bool get isCanonical {
@@ -3080,14 +3126,6 @@ class Package implements Nameable, Documentable {
   void warnOnElement(Warnable warnable, PackageWarning kind, [String message]) {
     if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
-      if (kind == PackageWarning.ambiguousReexport) {
-        Element topLevelElement = warnable.element;
-        while (topLevelElement.enclosingElement is! CompilationUnitElement) {
-          topLevelElement = topLevelElement.enclosingElement;
-        }
-        warnable = new ModelElement.from(
-            topLevelElement, findOrCreateLibraryFor(topLevelElement));
-      }
       if (warnable is Accessor) {
         // This might be part of a Field, if so, assign this warning to the field
         // rather than the Accessor.
