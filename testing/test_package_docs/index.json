@@ -3839,23 +3839,23 @@
  {
   "name": "Foo2",
   "qualifiedName": "fake.Foo2",
-  "href": "fake/Foo2/Foo2.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Foo2",
-   "type": "class"
-  }
- },
- {
-  "name": "Foo2",
-  "qualifiedName": "fake.Foo2",
   "href": "fake/Foo2-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "Foo2",
+  "qualifiedName": "fake.Foo2",
+  "href": "fake/Foo2/Foo2.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Foo2",
+   "type": "class"
   }
  },
  {
@@ -4037,23 +4037,23 @@
  {
   "name": "HasGenerics",
   "qualifiedName": "fake.HasGenerics",
-  "href": "fake/HasGenerics/HasGenerics.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "HasGenerics",
-   "type": "class"
-  }
- },
- {
-  "name": "HasGenerics",
-  "qualifiedName": "fake.HasGenerics",
   "href": "fake/HasGenerics-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "HasGenerics",
+  "qualifiedName": "fake.HasGenerics",
+  "href": "fake/HasGenerics/HasGenerics.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasGenerics",
+   "type": "class"
   }
  },
  {
@@ -4257,23 +4257,23 @@
  {
   "name": "Interface",
   "qualifiedName": "fake.Interface",
-  "href": "fake/Interface/Interface.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Interface",
-   "type": "class"
-  }
- },
- {
-  "name": "Interface",
-  "qualifiedName": "fake.Interface",
   "href": "fake/Interface-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "Interface",
+  "qualifiedName": "fake.Interface",
+  "href": "fake/Interface/Interface.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Interface",
+   "type": "class"
   }
  },
  {
@@ -4565,23 +4565,23 @@
  {
   "name": "MixMeIn",
   "qualifiedName": "fake.MixMeIn",
-  "href": "fake/MixMeIn/MixMeIn.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "MixMeIn",
-   "type": "class"
-  }
- },
- {
-  "name": "MixMeIn",
-  "qualifiedName": "fake.MixMeIn",
   "href": "fake/MixMeIn-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "MixMeIn",
+  "qualifiedName": "fake.MixMeIn",
+  "href": "fake/MixMeIn/MixMeIn.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MixMeIn",
+   "type": "class"
   }
  },
  {
@@ -5588,23 +5588,23 @@
  {
   "name": "SubForDocComments",
   "qualifiedName": "fake.SubForDocComments",
-  "href": "fake/SubForDocComments/SubForDocComments.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "SubForDocComments",
-   "type": "class"
-  }
- },
- {
-  "name": "SubForDocComments",
-  "qualifiedName": "fake.SubForDocComments",
   "href": "fake/SubForDocComments-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "SubForDocComments",
+  "qualifiedName": "fake.SubForDocComments",
+  "href": "fake/SubForDocComments/SubForDocComments.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SubForDocComments",
+   "type": "class"
   }
  },
  {
