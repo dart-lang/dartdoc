@@ -2071,7 +2071,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   bool _isLineNumberComputed = false;
   @override
   Tuple2<int, int> get lineAndColumn {
-    /// TODO(jcollins-g): implement lineAndColumn for explicit fields
+    // TODO(jcollins-g): implement lineAndColumn for explicit fields
     if (!_isLineNumberComputed) {
       _lineAndColumn = lineNumberCache.lineAndColumn(
           element.source.fullName, element.nameOffset);
@@ -2786,12 +2786,12 @@ Map<PackageWarning, List<String>> packageWarningText = {
   ],
 };
 
-// Something that package warnings can be called on.
+/// Something that package warnings can be called on.
 abstract class Warnable implements Locatable {
   void warn(PackageWarning warning, {String message, Locatable referredFrom});
 }
 
-// Something that can be located for warning purposes.
+/// Something that can be located for warning purposes.
 abstract class Locatable {
   String get fullyQualifiedName;
   String get href;
