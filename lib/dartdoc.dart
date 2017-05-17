@@ -517,7 +517,6 @@ class DartDoc {
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     print("parsed ${libraries.length} ${pluralize('file', libraries.length)} "
         "in ${seconds.toStringAsFixed(1)} seconds");
-    print('');
     _stopwatch.reset();
 
     if (errors.isNotEmpty) {
