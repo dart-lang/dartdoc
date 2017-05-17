@@ -96,13 +96,11 @@ class HtmlGeneratorInstance implements HtmlOptions {
     generatePackage();
 
     for (var lib in package.libraries) {
-      //if (lib.name != 'services') continue;
       generateLibrary(package, lib);
 
       for (var clazz in lib.allClasses) {
         // TODO(jcollins-g): consider refactor so that only the canonical
         // ModelElements show up in these lists
-        //if (clazz.name != 'StandardMessageCodec') continue;
         if (!clazz.isCanonical) continue;
         generateClass(package, lib, clazz);
 

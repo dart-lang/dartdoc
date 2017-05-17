@@ -165,10 +165,10 @@ packages:
     version: "0.0.3"
   mustache4dart:
     description:
-      path: "../mustache4dart"
-      relative: true
-    source: path
-    version: "1.0.12"
+      name: mustache4dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   package_config:
     description:
       name: package_config

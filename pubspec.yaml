@@ -16,8 +16,7 @@ dependencies:
   http_parser: '>=3.0.3 <4.0.0'
   logging: '>=0.9.0 <0.12.0'
   markdown: ^0.11.2
-  mustache4dart:
-    path: ../mustache4dart
+  mustache4dart: ^1.1.0
   package_config: '>=0.1.5 <2.0.0'
   path: ^1.3.0
   resource: ^1.1.0
