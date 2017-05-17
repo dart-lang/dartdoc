@@ -211,10 +211,11 @@ class Accessor extends ModelElement
       Element parent = element.enclosingElement;
       if (parent is ClassElement) {
         for (InterfaceType t in getAllSupertypes(parent)) {
-          var accessor = this.isGetter
+          Element accessor = this.isGetter
               ? t.getGetter(element.name)
               : t.getSetter(element.name);
           if (accessor != null) {
+            if (accessor is Member) accessor = Package.getBasestElement(accessor);
             Class parentClass = new ModelElement.from(
                 parent, package.findOrCreateLibraryFor(parent));
             List<Field> possibleFields = [];
