@@ -21,7 +21,7 @@
 
 <div id="overlay-under-drawer"></div>
 
-<header class="container-fluid" id="title">
+<header class="container-fluid header-fixed" id="title">
   <nav class="navbar navbar-fixed-top">
     <div class="container">
       <div class="row">
@@ -31,7 +31,7 @@
             <li><a href="index.html">test_package</a></li>
             <li><a href="fake/fake-library.html">fake</a></li>
             <li><a href="fake/SpecialList-class.html">SpecialList</a></li>
-            <li class="self-crumb">map</li>
+            <li class="self-crumb">method map&lt;T&gt;</li>
           </ol>
           <div class="self-name">map</div>
           <form class="search navbar-right" role="search">
@@ -41,25 +41,6 @@
       </div> <!-- /row -->
     </div> <!-- /container -->
   </nav>
-
-  <div class="container masthead">
-    <div class="row">
-      <div class="col-sm-12 contents">
-        <ol class="breadcrumbs gt-separated dark visible-xs">
-          <li><a href="index.html">test_package</a></li>
-          <li><a href="fake/fake-library.html">fake</a></li>
-          <li><a href="fake/SpecialList-class.html">SpecialList</a></li>
-          <li class="self-crumb">map</li>
-        </ol>
-        <div class="title-description">
-          <h1 class="title">
-            <span class="kind">method</span> map&lt;T&gt;
-          </h1>
-        </div>
-      </div> <!-- /col -->
-    </div> <!-- /row -->
-  </div> <!-- /container -->
-
 </header>
 
 <div class="container body">
@@ -156,7 +137,7 @@ multiple times over the returned <code>Iterable</code> will invoke the supplied
 function <code>f</code> multiple times on the same element.</p>
 <p>Methods on the returned iterable are allowed to omit calling <code>f</code>
 on any element where the result isn't needed.
-For example, <code>elementAt</code> may call <code>f</code> only once.</p>
+For example, <a href="fake/SpecialList/elementAt.html">elementAt</a> may call <code>f</code> only once.</p>
     </section>
     
     
