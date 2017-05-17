@@ -125,7 +125,6 @@ class DartDoc {
   /// analysis error in the code. Any other exception can be throw if there is an
   /// unexpected failure.
   Future<DartDocResults> generateDocs() async {
-
     _stopwatch = new Stopwatch()..start();
 
     List<String> files = packageMeta.isSdk
