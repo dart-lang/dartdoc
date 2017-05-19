@@ -92,8 +92,6 @@ class AnalyzerHelper {
     SourceFactory sourceFactory = new SourceFactory(resolvers);
     AnalysisEngine.instance.processRequiredPlugins();
     context = AnalysisEngine.instance.createAnalysisContext();
-    context.analysisOptions = new AnalysisOptionsImpl()
-      ..enableGenericMethods = true;
     context.sourceFactory = sourceFactory;
   }
 

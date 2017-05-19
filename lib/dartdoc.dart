@@ -400,9 +400,7 @@ class DartDoc {
     SourceFactory sourceFactory = new SourceFactory(resolvers);
 
     // TODO(jcollins-g): fix this so it actually obeys analyzer options files.
-    var options = new AnalysisOptionsImpl();
-    options.enableGenericMethods = true;
-    options.enableAssertInitializer = true;
+    var options = new AnalysisOptionsImpl()..enableAssertInitializer = true;
 
     AnalysisEngine.instance.processRequiredPlugins();
 
