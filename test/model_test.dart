@@ -1514,29 +1514,43 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
   group('Typedef', () {
     Typedef t;
+    Typedef generic;
 
     setUp(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
+      generic =
+          fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
     });
 
     test('has a fully qualified name', () {
       expect(t.fullyQualifiedName, 'ex.processMessage');
+      expect(generic.fullyQualifiedName, 'fake.NewGenericTypedef');
     });
 
     test('has enclosing element', () {
       expect(t.enclosingElement.name, equals(exLibrary.name));
+      expect(generic.enclosingElement.name, equals(fakeLibrary.name));
     });
 
     test('docs', () {
       expect(t.documentation, equals(''));
+      expect(generic.documentation,
+          equals('A typedef with the new style generic function syntax.'));
     });
 
     test('linked return type', () {
       expect(t.linkedReturnType, equals('String'));
+      expect(generic.linkedReturnType, equals('List&lt;S&gt;'));
     });
 
     test("name with generics", () {
       expect(t.nameWithGenerics, equals('processMessage&lt;T&gt;'));
+      expect(generic.nameWithGenerics, equals('NewGenericTypedef&lt;T&gt;'));
+    });
+
+    test("generic parameters", () {
+      expect(t.genericParameters, equals(''));
+      expect(generic.genericParameters, equals('&lt;S&gt;'));
     });
   });
 
