@@ -6,6 +6,7 @@
 library dartdoc.markdown_processor;
 
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:analyzer/dart/ast/ast.dart';
@@ -664,8 +665,11 @@ String _linkDocReference(String codeRef, Documentable documentable,
   }
 }
 
-String _renderMarkdownToHtml(Documentable element) {
+/*
+String _renderMarkdownToHtml(Documentable element, bool processFullDocs) {
   md.Node _linkResolver(String name) {
+    counter += 1;
+    if (counter % 500 == 0) stdout.write('\n$counter');
     NodeList<CommentReference> commentRefs = _getCommentRefs(element);
     return new md.Text(_linkDocReference(name, element, commentRefs));
   }
@@ -673,13 +677,16 @@ String _renderMarkdownToHtml(Documentable element) {
   String text = element.documentation;
   _showWarningsForGenericsOutsideSquareBracketsBlocks(text, element);
   return md.markdownToHtml(text,
-      inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
-}
+      inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver, firstTagOnly: !processFullDocs);
+}*/
 
 // Maximum number of characters to display before a suspected generic.
 const maxPriorContext = 20;
 // Maximum number of characters to display after the beginning of a suspected generic.
 const maxPostContext = 30;
+
+final RegExp allBeforeFirstNewline = new RegExp(r'^.*\n', multiLine: true);
+final RegExp allAfterLastNewline = new RegExp(r'\n.*$', multiLine: true);
 
 // Generics should be wrapped into `[]` blocks, to avoid handling them as HTML tags
 // (like, [Apple<int>]). @Hixie asked for a warning when there's something, that looks
@@ -695,9 +702,9 @@ void _showWarningsForGenericsOutsideSquareBracketsBlocks(
       String postContext =
           "${text.substring(position, min(position + maxPostContext, text.length))}";
       priorContext =
-          priorContext.replaceAll(new RegExp(r'^.*\n', multiLine: true), '');
+          priorContext.replaceAll(allBeforeFirstNewline, '');
       postContext =
-          postContext.replaceAll(new RegExp(r'\n.*$', multiLine: true), '');
+          postContext.replaceAll(allAfterLastNewline, '');
       String errorMessage = "$priorContext$postContext";
       // TODO(jcollins-g):  allow for more specific error location inside comments
       element.warn(PackageWarning.typeAsHtml, errorMessage);
@@ -737,7 +744,137 @@ List<int> findFreeHangingGenericsPositions(String string) {
   return results;
 }
 
+int counter = 0;
 class Documentation {
+  String get raw => _element.documentation;
+
+  String _asHtml;
+  String get asHtml {
+    if (_asHtml == null) {
+      _transformHtmlForDartdoc(true);
+    }
+    return _asHtml;
+  }
+
+  String _asOneLiner;
+  String get asOneLiner {
+    if (_asOneLiner == null) {
+      _transformHtmlForDartdoc(false);
+    }
+    return _asOneLiner;
+  }
+
+  NodeList<CommentReference> _commentRefs;
+  NodeList<CommentReference> get commentRefs {
+    if (_commentRefs == null) _commentRefs = _getCommentRefs(_element);
+    return _commentRefs;
+  }
+
+  final Documentable _element;
+
+  void _transformHtmlForDartdoc(bool processAllDocs) {
+    String rawHtml;
+    if (processAllDocs) {
+      rawHtml = _renderMarkdownToHtml(true);
+    } else {
+      rawHtml = _renderMarkdownToHtml(false);
+    }
+    var asHtmlDocument = parse(rawHtml);
+    for (var s in asHtmlDocument.querySelectorAll('script')) {
+      s.remove();
+    }
+    for (var pre in asHtmlDocument.querySelectorAll('pre')) {
+      if (pre.children.isNotEmpty &&
+          pre.children.length != 1 &&
+          pre.children.first.localName != 'code') {
+        continue;
+      }
+
+      if (pre.children.isNotEmpty && pre.children.first.localName == 'code') {
+        var code = pre.children.first;
+        pre.classes
+            .addAll(code.classes.where((name) => name.startsWith('language-')));
+      }
+
+      bool specifiesLanguage = pre.classes.isNotEmpty;
+      pre.classes.add('prettyprint');
+      // Assume the user intended Dart if there are no other classes present.
+      if (!specifiesLanguage) pre.classes.add('language-dart');
+    }
+
+    // `trim` fixes issue with line ending differences between mac and windows.
+    if (_asHtml == null && processAllDocs) {
+      _asHtml = asHtmlDocument.body.innerHtml?.trim();
+    }
+    if (_asOneLiner == null) {
+      _asOneLiner = asHtmlDocument.body.children.isEmpty
+          ? ''
+          : asHtmlDocument.body.children.first.innerHtml;
+      if (!_asOneLiner.startsWith('<p>')) {
+        _asOneLiner = '<p>$_asOneLiner</p>';
+      }
+    }
+  }
+
+  /// Parses the given inline Markdown [text] to a series of AST nodes.
+  List<md.Node> parseInline(String text, md.Document document) => new md.InlineParser(text, document).parse();
+
+  void _parseInlineContent(List<md.Node> nodes, md.Document document) {
+    for (int i = 0; i < nodes.length; i++) {
+      var node = nodes[i];
+      if (node is md.UnparsedContent) {
+        List<md.Node> inlineNodes = parseInline(node.textContent, document);
+        nodes.removeAt(i);
+        nodes.insertAll(i, inlineNodes);
+        i += inlineNodes.length - 1;
+      } else if (node is md.Element && node.children != null) {
+        _parseInlineContent(node.children, document);
+      }
+    }
+  }
+
+  String _renderLinesToHtml(md.Document document, List<String> lines, bool processFullDocs) {
+    List<md.Node> nodes = [];
+    for (md.Node node in new md.BlockParser(lines, document).parseLines()) {
+      if (node is md.Element) {
+        if (node.tag == 'script') continue;
+        if (node.tag == 'pre') {
+          if (node.children.isNotEmpty && node.children.length == 1 && (node.children.first as md.Element).tag == 'code')  {
+            md.Element code = node.children.first;
+            bool specifiesLanguage = code.attributes['class']?.startsWith('language-');
+            node.attributes['class'] = 'prettyprint';
+            if (specifiesLanguage == null || !specifiesLanguage) code.attributes['class'] = 'language-dart';
+          }
+        }
+      }
+      nodes.add(node);
+      if (!processFullDocs) break;
+    }
+    _parseInlineContent(nodes, document);
+    return (new md.HtmlRenderer()).render(nodes);
+  }
+
+  String _renderMarkdownToHtml(bool processFullDocs) {
+    md.Node _linkResolver(String name) {
+      counter += 1;
+      if (counter % 500 == 0) stdout.write('\n$counter');
+      return new md.Text(_linkDocReference(name, _element, commentRefs));
+    }
+
+    String text = _element.documentation;
+    _showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
+    md.Document document = new md.Document(inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
+    List<String> lines = text.replaceAll('\r\n', '\n').split('\n');
+    return _renderLinesToHtml(document, lines, processFullDocs);
+    return md.markdownToHtml(text,
+        inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver, firstNodeOnly: !processFullDocs);
+  }
+
+  Documentation.forElement(this._element) {}
+}
+
+
+/*class Documentation {
   final String raw;
   final String asHtml;
   final String asOneLiner;
@@ -783,7 +920,7 @@ class Documentation {
     }
     return new Documentation._(markdown, asHtml, asOneLiner);
   }
-}
+}*/
 
 class _InlineCodeSyntax extends md.InlineSyntax {
   _InlineCodeSyntax() : super(r'\[:\s?((?:.|\n)*?)\s?:\]');
