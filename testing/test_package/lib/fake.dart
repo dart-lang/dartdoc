@@ -134,6 +134,9 @@ typedef String FakeProcesses(String input);
 /// A typedef with a type parameter.
 typedef T GenericTypedef<T>(T input);
 
+/// A typedef with the new style generic function syntax.
+typedef NewGenericTypedef<T> = List<S> Function<S>(T, int, bool);
+
 /// Lots and lots of parameters.
 typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,
     when, converted, to, html, documentation);
@@ -393,6 +396,11 @@ thisIsAsync() async => 42;
 
 /// Explicitly returns a Future and is marked async.
 Future thisIsAlsoAsync() async => 43;
+
+/// A generic function with a type parameter.
+void myGenericFunction<S>(int a, bool b, S c) {
+  return;
+}
 
 /// This is a great thing.
 const greatAnnotation = 'great';

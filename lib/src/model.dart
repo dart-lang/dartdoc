@@ -1575,12 +1575,15 @@ class Library extends ModelElement {
     return _modelElementsMap;
   }
 
-  Iterable<ModelElement> get allModelElements sync* {
-    for (Set<ModelElement> modelElements in modelElementsMap.values) {
-      for (ModelElement modelElement in modelElements) {
-        yield modelElement;
+  List<ModelElement> _allModelElements;
+  Iterable<ModelElement> get allModelElements {
+    if (_allModelElements == null) {
+      _allModelElements = [];
+      for (Set<ModelElement> modelElements in modelElementsMap.values) {
+        _allModelElements.addAll(modelElements);
       }
     }
+    return _allModelElements;
   }
 
   List<ModelElement> _allCanonicalModelElements;
@@ -2451,9 +2454,11 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
           typeName = mt.linkedName;
         }
         if (typeName.isNotEmpty) {
-          buf.write('<span class="type-annotation">$typeName</span> ');
+          buf.write('<span class="type-annotation">$typeName</span>');
         }
-        if (showNames) {
+        if (typeName.isNotEmpty && showNames && param.name.isNotEmpty)
+          buf.write(' ');
+        if (showNames && param.name.isNotEmpty) {
           buf.write('<span class="parameter-name">${param.name}</span>');
         }
       }
@@ -2994,7 +2999,7 @@ class PackageWarningCounter {
     } else {
       if (options.asErrors.contains(kind)) toWrite = "error: ${fullMessage}";
     }
-    if (toWrite != null) print(" ${toWrite}");
+    if (toWrite != null) stderr.write("\n ${toWrite}");
   }
 
   /// Returns true if we've already warned for this.
@@ -3915,6 +3920,17 @@ class Typedef extends ModelElement
   String get fileName => '$name.html';
 
   @override
+  String get genericParameters {
+    if (element is GenericTypeAliasElement) {
+      List<TypeParameterElement> genericTypeParameters =
+          (element as GenericTypeAliasElement).function.typeParameters;
+      if (genericTypeParameters.isNotEmpty) {
+        return '&lt;${genericTypeParameters.map((t) => t.name).join(', ')}&gt;';
+      }
+    } // else, all types are resolved.
+    return '';
+  }
+
   String get href {
     if (canonicalLibrary == null) return null;
     return '${canonicalLibrary.dirName}/$fileName';
