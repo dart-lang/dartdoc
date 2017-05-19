@@ -2310,9 +2310,11 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
           typeName = mt.linkedName;
         }
         if (typeName.isNotEmpty) {
-          buf.write('<span class="type-annotation">$typeName</span> ');
+          buf.write('<span class="type-annotation">$typeName</span>');
         }
-        if (showNames) {
+        if (typeName.isNotEmpty && showNames && param.name.isNotEmpty)
+          buf.write(' ');
+        if (showNames && param.name.isNotEmpty) {
           buf.write('<span class="parameter-name">${param.name}</span>');
         }
       }
@@ -3775,6 +3777,17 @@ class Typedef extends ModelElement
   String get fileName => '$name.html';
 
   @override
+  String get genericParameters {
+    if (element is GenericTypeAliasElement) {
+      List<TypeParameterElement> genericTypeParameters =
+          (element as GenericTypeAliasElement).function.typeParameters;
+      if (genericTypeParameters.isNotEmpty) {
+        return '&lt;${genericTypeParameters.map((t) => t.name).join(', ')}&gt;';
+      }
+    } // else, all types are resolved.
+    return '';
+  }
+
   String get href {
     if (canonicalLibrary == null) return null;
     return '${canonicalLibrary.dirName}/$fileName';

@@ -4662,6 +4662,17 @@
   }
  },
  {
+  "name": "NewGenericTypedef",
+  "qualifiedName": "fake.NewGenericTypedef",
+  "href": "fake/NewGenericTypedef.html",
+  "type": "typedef",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "Oops",
   "qualifiedName": "fake.Oops",
   "href": "fake/Oops-class.html",
@@ -5964,6 +5975,17 @@
   "qualifiedName": "fake.myCoolTypedef",
   "href": "fake/myCoolTypedef.html",
   "type": "typedef",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "myGenericFunction",
+  "qualifiedName": "fake.myGenericFunction",
+  "href": "fake/myGenericFunction.html",
+  "type": "function",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
