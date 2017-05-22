@@ -1,5 +1,6 @@
 ## 0.12.0
 * Moderate performance enhancements should result in 10-20% speedup on large packages.
+* Improvements to warnings, including indicating referring elements where possible. #1405
 * Enable support for generic function types.  #1321
 * Update analyzer to 0.30.  #1403
 * Enhancements to css style to better match dartlang.org.  #1372 (partial)
