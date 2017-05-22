@@ -121,7 +121,47 @@ all the used libraries, even from other packages, to the list of the documented 
 
 ## Issues and bugs
 
-Please file reports on the [GitHub Issue Tracker][].
+Please file reports on the [GitHub Issue Tracker][].  Issues are labeled with
+priority based on how much impact to the ecosystem the issue addresses and
+the number of generated pages that show the anomaly (widespread vs. not
+widespread).
+
+Some examples of likely triage priorities:
+
+* P0
+  * Broken links, widespread
+  * Uncaught exceptions, widespread
+  * Incorrect linkage, widespread
+  * Very ugly or navigation impaired generated pages, widespread
+
+* P1
+  * Broken links, few or on edge cases
+  * Uncaught exceptions, very rare or with simple workarounds
+  * Incorrect linkage, few or on edge cases
+  * Incorrect doc contents, widespread or with high impact
+  * Minor display warts not significantly impeding navigation, widespread
+  * Default-on warnings that are misleading or wrong, widespread
+  * Generation problems that should be detected but aren't warned, widespread
+  * Enhancements that have significant data around them indicating they are a big win
+  * User performance problem (e.g. page load, search), widespread
+
+* P2
+  * Incorrect doc contents, not widespread
+  * Minor display warts not significantly impeding navigation, not widespread
+  * Generation problems that should be detected but aren't warned, not widespread
+  * Default-on warnings that are misleading or wrong, few or on edge cases  
+  * Non-default warnings that are misleading or wrong, widespread
+  * Enhancements considered important but without significant data indicating they are a big win
+  * User performance problem (e.g. page load, search), not widespread
+  * Generation performance problem, widespread
+
+* P3
+  * Theoretical or extremely rare problems with generation
+  * Minor display warts on edge cases only
+  * Non-default warnings that are misleading or wrong, few or on edge cases
+  * Enhancements whose importance is uncertain
+  * Generation performance problem, limited impact or not widespread
+
 
 ## License
 
