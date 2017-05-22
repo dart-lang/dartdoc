@@ -1,5 +1,7 @@
+## 0.12.0
+* Miscellaneous performance enhancements, ~10-20% on complex packages.
 * Enable support for generic function types.  #1321
-* Update analyzer to 0.30.  #1403
+* Update analyzer to 0.30.  Minimum Dart SDK 1.23 now required.  #1403
 * Enhancements to css style to better match dartlang.org.  #1372 (partial)
 
 ## 0.11.2
