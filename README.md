@@ -143,6 +143,7 @@ Some examples of likely triage priorities:
   * Default-on warnings that are misleading or wrong, widespread
   * Generation problems that should be detected but aren't warned, widespread
   * Enhancements that have significant data around them indicating they are a big win
+  * User performance problem (e.g. page load, search), widespread
 
 * P2
   * Incorrect doc contents, not widespread
@@ -151,14 +152,15 @@ Some examples of likely triage priorities:
   * Default-on warnings that are misleading or wrong, few or on edge cases  
   * Non-default warnings that are misleading or wrong, widespread
   * Enhancements considered important but without significant data indicating they are a big win
-  * Performance problem, widespread
+  * User performance problem (e.g. page load, search), not widespread
+  * Generation performance problem, widespread
 
 * P3
   * Theoretical or extremely rare problems with generation
   * Minor display warts on edge cases only
   * Non-default warnings that are misleading or wrong, few or on edge cases
   * Enhancements whose importance is uncertain
-  * Performance problem, limited impact or not widespread
+  * Generation performance problem, limited impact or not widespread
 
 
 ## License
