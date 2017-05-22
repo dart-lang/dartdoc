@@ -1745,11 +1745,13 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
     }
   }
 
+  @override
   int compareTo(ScoredCandidate other) {
     assert(element == other.element);
     return score.compareTo(other.score);
   }
 
+  @override
   String toString() {
     return "${library.name}: ${score.toStringAsPrecision(4)} - ${reasons.join(', ')}";
   }
@@ -2026,6 +2028,28 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   bool get canHaveParameters =>
       element is ExecutableElement || element is FunctionTypeAliasElement;
 
+
+  String _preferredCanonicalLibrary;
+  String get preferredCanonicalLibrary {
+    if (_preferredCanonicalLibrary == null) documentation;
+    return _preferredCanonicalLibrary;
+  }
+
+  /// Hide canonicalFor from doc while leaving a note to ourselves to
+  /// help with ambiguous canonicalization determination.
+  ///
+  /// Example:
+  ///
+  ///   {@canonicalFor angular2.common}
+  String _setPreferredCanonicalLibrary(String rawDocs) {
+    final canonicalRegExp = new RegExp(r'{@canonicalFor\s([^}]+)}');
+    rawDocs.replaceFirstMapped(canonicalRegExp, (Match match) {
+      _preferredCanonicalLibrary = match.group(1);
+      return '';
+    });
+    return rawDocs;
+  }
+
   /// Returns the docs, stripped of their leading comments syntax.
   ///
   /// This getter will walk up the inheritance hierarchy
@@ -2049,6 +2073,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     _rawDocs = _injectExamples(_rawDocs);
     _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
     _rawDocs = _injectMacros(_rawDocs);
+    _rawDocs = _setPreferredCanonicalLibrary(_rawDocs);
     return _rawDocs;
   }
 
@@ -3931,6 +3956,7 @@ class Typedef extends ModelElement
     return '';
   }
 
+  @override
   String get href {
     if (canonicalLibrary == null) return null;
     return '${canonicalLibrary.dirName}/$fileName';
