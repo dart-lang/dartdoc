@@ -1,3 +1,6 @@
+## 0.12.0
+* Generation performance improved from 20-65% on large packages (more improvement on packages
+  with lower usage of comment references and complex inheritance chains, like angular2).
 * Improvements to warnings, including indicating referring elements where possible. #1405
 * Enable support for generic function types.  #1321
 * Update analyzer to 0.30.  #1403
