@@ -179,11 +179,11 @@ class Accessor extends ModelElement
   ModelElement get enclosingCombo => _enclosingCombo;
 
   @override
-  void warn(PackageWarning kind, [String message]) {
+  void warn(PackageWarning kind, {String message, Locatable referredFrom}) {
     if (enclosingCombo != null) {
-      enclosingCombo.warn(kind, message);
+      enclosingCombo.warn(kind, message: message, referredFrom: referredFrom);
     } else {
-      super.warn(kind, message);
+      super.warn(kind, message: message, referredFrom: referredFrom);
     }
   }
 
@@ -213,10 +213,11 @@ class Accessor extends ModelElement
       Element parent = element.enclosingElement;
       if (parent is ClassElement) {
         for (InterfaceType t in getAllSupertypes(parent)) {
-          var accessor = this.isGetter
+          Element accessor = this.isGetter
               ? t.getGetter(element.name)
               : t.getSetter(element.name);
           if (accessor != null) {
+            if (accessor is Member) accessor = Package.getBasestElement(accessor);
             Class parentClass = new ModelElement.from(
                 parent, package.findOrCreateLibraryFor(parent));
             List<Field> possibleFields = [];
@@ -985,6 +986,12 @@ class EnumField extends Field {
   }
 
   @override
+  EnumField get documentationFrom {
+    if (name == 'values' && name == 'index') return this;
+    return super.documentationFrom;
+  }
+
+  @override
   String get documentation {
     if (name == 'values') {
       return 'A constant List of the values in this enum, in order of their declaration.';
@@ -1713,8 +1720,11 @@ class Method extends ModelElement
   Method get overriddenElement {
     ClassElement parent = element.enclosingElement;
     for (InterfaceType t in getAllSupertypes(parent)) {
-      if (t.getMethod(element.name) != null) {
-        return new ModelElement.from(t.getMethod(element.name), library);
+      Element e = t.getMethod(element.name);
+      if (e != null) {
+        assert(e.enclosingElement is ClassElement);
+        Library l = _findOrCreateEnclosingLibraryFor(e.enclosingElement);
+        return new ModelElement.from(e, l);
       }
     }
     return null;
@@ -2028,7 +2038,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   bool get canHaveParameters =>
       element is ExecutableElement || element is FunctionTypeAliasElement;
 
-
   String _preferredCanonicalLibrary;
   String get preferredCanonicalLibrary {
     if (_preferredCanonicalLibrary == null) documentation;
@@ -2051,24 +2060,35 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   /// Returns the docs, stripped of their leading comments syntax.
+  ModelElement _documentationFrom;
+
+  /// Returns the ModelElement from which we will get documentation.
   ///
   /// This getter will walk up the inheritance hierarchy
   /// to find docs, if the current class doesn't have docs
   /// for this element.
   @override
-  String get documentation {
-    if (_rawDocs != null) return _rawDocs;
-
-    _rawDocs = _computeDocumentationComment;
-
-    if (_rawDocs == null && canOverride()) {
-      var overrideElement = overriddenElement;
-      if (overrideElement != null) {
-        _rawDocs = overrideElement.documentation ?? '';
-        return _rawDocs;
+  ModelElement get documentationFrom {
+    if (_documentationFrom == null) {
+      if (_computeDocumentationComment == null &&
+          canOverride() &&
+          overriddenElement != null) {
+        _documentationFrom = overriddenElement;
+      } else if (this is Inheritable && (this as Inheritable).isInherited) {
+        Inheritable thisInheritable = (this as Inheritable);
+        ModelElement fromThis = new ModelElement.from(
+            element, thisInheritable.definingEnclosingElement.library);
+        _documentationFrom = fromThis.documentationFrom;
+      } else {
+        _documentationFrom = this;
       }
     }
+    return _documentationFrom;
+  }
 
+  String get _documentationLocal {
+    if (_rawDocs != null) return _rawDocs;
+    _rawDocs = _computeDocumentationComment ?? '';
     _rawDocs = stripComments(_rawDocs) ?? '';
     _rawDocs = _injectExamples(_rawDocs);
     _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
@@ -2076,6 +2096,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     _rawDocs = _setPreferredCanonicalLibrary(_rawDocs);
     return _rawDocs;
   }
+
+  /// Returns the docs, stripped of their leading comments syntax.
+  @override
+  String get documentation => documentationFrom._documentationLocal;
 
   Library get definingLibrary => package.findOrCreateLibraryFor(element);
 
@@ -2136,7 +2160,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
             debugLines.add(candidateLibraries.last.locationPieces.join(','));
 
             if (confidence < 0.1) {
-              warnable.warn(PackageWarning.ambiguousReexport, debugLines.join('\n'));
+              warnable.warn(PackageWarning.ambiguousReexport, message: debugLines.join('\n'));
             }
           }
           if (candidateLibraries.isNotEmpty)
@@ -2219,7 +2243,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   bool _isLineNumberComputed = false;
   @override
   Tuple2<int, int> get lineAndColumn {
-    // TODO(jcollins-g): we should always be able to get line numbers.  Why can't we, sometimes?
+    // TODO(jcollins-g): implement lineAndColumn for explicit fields
     if (!_isLineNumberComputed) {
       _lineAndColumn = lineNumberCache.lineAndColumn(
           element.source.fullName, element.nameOffset);
@@ -2413,15 +2437,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   @override
-  void warn(PackageWarning kind, [String message]) {
-    if (kind == PackageWarning.unresolvedDocReference &&
-        overriddenElement != null) {
-      // The documentation we're using for this element came from somewhere else.
-      // Attach the warning to that element to deduplicate.
-      overriddenElement.warn(kind, message);
-    } else {
-      library.package.warnOnElement(this, kind, message);
-    }
+  void warn(PackageWarning kind, {String message, Locatable referredFrom}) {
+    package.warnOnElement(this, kind,
+        message: message, referredFrom: referredFrom);
   }
 
   String get _computeDocumentationComment => element.documentationComment;
@@ -2910,7 +2928,7 @@ Map<PackageWarning, List<String>> packageWarningText = {
   ],
   PackageWarning.noCanonicalFound: [
     "no-canonical-found",
-    "A symbol is is part of the public interface for this package, but no library documented with this package documents it so dartdoc can not link to it"
+    "A symbol is part of the public interface for this package, but no library documented with this package documents it so dartdoc can not link to it"
   ],
   PackageWarning.noLibraryLevelDocs: [
     "no-library-level-docs",
@@ -2942,15 +2960,16 @@ Map<PackageWarning, List<String>> packageWarningText = {
   ],
 };
 
-// Something that package warnings can be called on.
+/// Something that package warnings can be called on.
 abstract class Warnable implements Locatable {
-  void warn(PackageWarning warning, [String message]);
+  void warn(PackageWarning warning, {String message, Locatable referredFrom});
 }
 
-// Something that can be located for warning purposes.
+/// Something that can be located for warning purposes.
 abstract class Locatable {
   String get fullyQualifiedName;
   String get href;
+  Locatable get documentationFrom;
   Element get element;
   String get elementLocation;
   Tuple2<int, int> get lineAndColumn;
@@ -3101,6 +3120,9 @@ class Package implements Nameable, Documentable {
   @override
   Documentable get overriddenDocumentedElement => this;
 
+  @override
+  Documentable get documentationFrom => this;
+
   final Map<Element, Library> _elementToLibrary = {};
   String _docsAsHtml;
   final Map<String, String> _macros = {};
@@ -3149,11 +3171,23 @@ class Package implements Nameable, Documentable {
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
   @override
-  void warn(PackageWarning kind, [String message]) {
-    warnOnElement(this, kind, message);
+  void warn(PackageWarning kind, {String message, Locatable referredFrom}) {
+    warnOnElement(this, kind, message: message, referredFrom: referredFrom);
   }
 
-  void warnOnElement(Warnable warnable, PackageWarning kind, [String message]) {
+  /// Returns colon-stripped name and location of the given locatable.
+  static Tuple2<String, String> nameAndLocation(Locatable locatable) {
+    String locatableName = '<unknown>';
+    String locatableLocation = '';
+    if (locatable != null) {
+      locatableName = locatable.fullyQualifiedName.replaceFirst(':', '-');
+      locatableLocation = locatable.elementLocation;
+    }
+    return new Tuple2(locatableName, locatableLocation);
+  }
+
+  void warnOnElement(Warnable warnable, PackageWarning kind,
+      {String message, Locatable referredFrom}) {
     if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
       if (warnable is Accessor) {
@@ -3176,11 +3210,11 @@ class Package implements Nameable, Documentable {
     // TODO(jcollins-g): What about messages that may include colons?  Substituting
     //                   them out doesn't work as well there since it might confuse
     //                   the user, yet we still want IntelliJ to link properly.
-    String nameSplitFromColonPieces;
-    if (warnable != null) {
-      nameSplitFromColonPieces =
-          warnable.fullyQualifiedName.replaceFirst(':', '-');
-    }
+    Tuple2<String, String> warnableStrings = nameAndLocation(warnable);
+    String warnablePrefix = 'from';
+    Tuple2<String, String> referredFromStrings = nameAndLocation(referredFrom);
+    String referredFromPrefix = 'referred to by';
+    String name = warnableStrings.item1;
     String warningMessage;
     switch (kind) {
       case PackageWarning.noCanonicalFound:
@@ -3188,8 +3222,7 @@ class Package implements Nameable, Documentable {
         // --auto-include-dependencies.
         // TODO(jcollins-g): add a dartdoc flag to enable external website linking for non-canonical elements, using .packages for versioning
         // TODO(jcollins-g): support documenting multiple packages at once and linking between them
-        warningMessage =
-            "no canonical library found for ${nameSplitFromColonPieces}, not linking";
+        warningMessage = "no canonical library found for ${name}, not linking";
         break;
       case PackageWarning.ambiguousReexport:
         // Fix these warnings by adding the original library exporting the
@@ -3198,31 +3231,31 @@ class Package implements Nameable, Documentable {
         // TODO(jcollins-g): add a dartdoc flag to force a particular resolution
         // order for (or drop) ambiguous reexports
         warningMessage =
-            "ambiguous reexport of ${nameSplitFromColonPieces}, canonicalization candidates: ${message}";
+            "ambiguous reexport of ${name}, canonicalization candidates: ${message}";
         break;
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
             "${warnable.fullyQualifiedName} has no library level documentation comments";
         break;
       case PackageWarning.ambiguousDocReference:
-        warningMessage =
-            "ambiguous doc reference in ${nameSplitFromColonPieces}: ${message}";
+        warningMessage = "ambiguous doc reference ${message}";
         break;
       case PackageWarning.categoryOrderGivesMissingPackageName:
         warningMessage =
             "--category-order gives invalid package name: '${message}'";
         break;
       case PackageWarning.unresolvedDocReference:
-        warningMessage =
-            "unresolved doc reference [${message}], from ${nameSplitFromColonPieces}";
+        warningMessage = "unresolved doc reference [${message}]";
+        if (referredFrom == null) {
+          referredFrom = warnable.documentationFrom;
+        }
+        referredFromPrefix = 'in documentation inherited from';
         break;
       case PackageWarning.brokenLink:
-        warningMessage =
-            'dartdoc generated a broken link to: ${message}, from ${nameSplitFromColonPieces == null ? "<unknown>" : nameSplitFromColonPieces}';
+        warningMessage = 'dartdoc generated a broken link to: ${message}';
         break;
       case PackageWarning.orphanedFile:
-        warningMessage =
-            'dartdoc generated a file orphan: ${message}, from ${nameSplitFromColonPieces == null ? "<unknown>" : nameSplitFromColonPieces}';
+        warningMessage = 'dartdoc generated a file orphan: ${message}';
         break;
       case PackageWarning.unknownFile:
         warningMessage =
@@ -3234,8 +3267,22 @@ class Package implements Nameable, Documentable {
         warningMessage = 'generic type handled as HTML: """${message}"""';
         break;
     }
-    String fullMessage =
-        "${warningMessage} ${warnable != null ? warnable.elementLocation : ''}";
+
+    List<String> messageParts = [warningMessage];
+    if (warnable != null)
+      messageParts.add(
+          "${warnablePrefix} ${warnableStrings.item1}: ${warnableStrings.item2}");
+    if (referredFrom != null && referredFrom != warnable) {
+      messageParts.add(
+          "${referredFromPrefix} ${referredFromStrings.item1}: ${referredFromStrings.item2}");
+    }
+    String fullMessage;
+    if (messageParts.length <= 2) {
+      fullMessage = messageParts.join(', ');
+    } else {
+      fullMessage = messageParts.join('\n    ');
+    }
+
     packageWarningCounter.addWarning(
         warnable?.element, kind, message, fullMessage);
   }
@@ -3304,7 +3351,7 @@ class Package implements Nameable, Documentable {
     for (String categoryName in config.categoryOrder) {
       if (!result.containsKey(categoryName))
         warnOnElement(null, PackageWarning.categoryOrderGivesMissingPackageName,
-            "${categoryName}, categories: ${result.keys.join(',')}");
+            message: "${categoryName}, categories: ${result.keys.join(',')}");
     }
     List<PackageCategory> packageCategories = result.values.toList()..sort();
     return packageCategories;

@@ -277,7 +277,8 @@ MatchingLinkResult _getMatchingLinkElement(
   }
   refModelElement = new ModelElement.from(searchElement, refLibrary);
   if (!refModelElement.isCanonical) {
-    refModelElement.warn(PackageWarning.noCanonicalFound);
+    refModelElement.warn(PackageWarning.noCanonicalFound,
+        referredFrom: element);
     // Don't warn about doc references because that's covered by the no
     // canonical library found message.
     return new MatchingLinkResult(null, null, warn: false);
@@ -405,10 +406,10 @@ Element _findRefElementInLibrary(
         _getResultsForClass(
             tryClass, codeRefChomped, results, codeRef, package);
       }
+      results.remove(null);
       if (results.isNotEmpty) break;
     }
-    // Sometimes documentation refers to classes that are further up the chain.
-    // Get those too.
+
     if (results.isEmpty && realClass != null) {
       for (Class superClass
           in realClass.superChain.map((et) => et.element as Class)) {
@@ -416,6 +417,7 @@ Element _findRefElementInLibrary(
           _getResultsForClass(
               superClass, codeRefChomped, results, codeRef, package);
         }
+        results.remove(null);
         if (results.isNotEmpty) break;
       }
     }
@@ -551,7 +553,8 @@ Element _findRefElementInLibrary(
     result = results.first.element;
   } else {
     element.warn(PackageWarning.ambiguousDocReference,
-        "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
+        message:
+            "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
     result = results.first.element;
   }
   return result;
@@ -575,8 +578,9 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
     } else {
       // TODO(jcollins-g): get rid of reimplementation of identifier resolution
       //                   or integrate into ModelElement in a simpler way.
-      List<Class> superChain = [];
-      superChain.add(tryClass);
+      List<Class> superChain = [tryClass];
+      superChain
+          .addAll(tryClass.interfaces.map((t) => t.returnElement as Class));
       // This seems duplicitous with our caller, but the preferredClass
       // hint matters with findCanonicalModelElementFor.
       // TODO(jcollins-g): This makes our caller ~O(n^2) vs length of superChain.
@@ -625,6 +629,7 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
             }
           }
         }
+        results.remove(null);
         if (results.isNotEmpty) break;
         if (c.fullyQualifiedNameWithoutLibrary == codeRefChomped) {
           results.add(c);
@@ -637,9 +642,6 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
 
 String _linkDocReference(String codeRef, Documentable documentable,
     NodeList<CommentReference> commentRefs) {
-  // TODO(jcollins-g): Refactor so that doc operations work on the
-  //                   documented element.
-  documentable = documentable.overriddenDocumentedElement;
   MatchingLinkResult result;
   result = _getMatchingLinkElement(codeRef, documentable, commentRefs);
   final ModelElement linkedElement = result.element;
@@ -658,15 +660,16 @@ String _linkDocReference(String codeRef, Documentable documentable,
     }
   } else {
     if (result.warn) {
-      documentable.warn(PackageWarning.unresolvedDocReference, codeRef);
+      documentable.warn(PackageWarning.unresolvedDocReference,
+          message: codeRef, referredFrom: documentable.documentationFrom);
     }
     return '<code>${HTML_ESCAPE.convert(label)}</code>';
   }
 }
 
 String _renderMarkdownToHtml(Documentable element) {
+  NodeList<CommentReference> commentRefs = _getCommentRefs(element);
   md.Node _linkResolver(String name) {
-    NodeList<CommentReference> commentRefs = _getCommentRefs(element);
     return new md.Text(_linkDocReference(name, element, commentRefs));
   }
 
@@ -700,7 +703,7 @@ void _showWarningsForGenericsOutsideSquareBracketsBlocks(
           postContext.replaceAll(new RegExp(r'\n.*$', multiLine: true), '');
       String errorMessage = "$priorContext$postContext";
       // TODO(jcollins-g):  allow for more specific error location inside comments
-      element.warn(PackageWarning.typeAsHtml, errorMessage);
+      element.warn(PackageWarning.typeAsHtml, message: errorMessage);
     });
   }
 }
