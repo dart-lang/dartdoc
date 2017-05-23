@@ -16,6 +16,8 @@ class Config {
   final String sdkVersion;
   final bool autoIncludeDependencies;
   final List<String> categoryOrder;
+  final double reexportMinConfidence;
+  final bool verboseWarnings;
   Config._(
       this.inputDir,
       this.showWarnings,
@@ -24,7 +26,9 @@ class Config {
       this.includeSource,
       this.sdkVersion,
       this.autoIncludeDependencies,
-      this.categoryOrder);
+      this.categoryOrder,
+      this.reexportMinConfidence,
+      this.verboseWarnings);
 }
 
 Config _config;
@@ -38,7 +42,9 @@ void setConfig(
     bool includeSource: true,
     String sdkVersion,
     bool autoIncludeDependencies: false,
-    List<String> categoryOrder}) {
+    List<String> categoryOrder,
+    double reexportMinConfidence: 0.1,
+    verboseWarnings: true}) {
   if (categoryOrder == null) {
     categoryOrder = new UnmodifiableListView<String>([]);
   }
@@ -50,5 +56,7 @@ void setConfig(
       includeSource,
       sdkVersion,
       autoIncludeDependencies,
-      categoryOrder);
+      categoryOrder,
+      reexportMinConfidence,
+      verboseWarnings);
 }

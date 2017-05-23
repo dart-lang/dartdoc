@@ -152,21 +152,20 @@ main(List<String> arguments) async {
     generator.onFileCreated.listen(_onProgress);
   }
 
-  var addCrossdart = args['add-crossdart'] as bool;
-  var includeSource = args['include-source'] as bool;
-
   DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
       PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
 
   setConfig(
-      addCrossdart: addCrossdart,
+      addCrossdart: args['add-crossdart'] as bool,
       examplePathPrefix: args['example-path-prefix'],
       showWarnings: args['show-warnings'],
-      includeSource: includeSource,
+      includeSource: args['include-source'] as bool,
       inputDir: inputDir,
       sdkVersion: sdk.sdkVersion,
       autoIncludeDependencies: args['auto-include-dependencies'],
-      categoryOrder: args['category-order']);
+      categoryOrder: args['category-order'],
+      reexportMinConfidence: double.parse(args['ambiguous-reexport-scorer-min-confidence']),
+      verboseWarnings: args['verbose-warnings'] as bool);
 
   DartDoc dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries,
@@ -266,6 +265,15 @@ ArgParser _createArgsParser() {
           "Generates `index.json` with indentation and newlines. The file is larger, but it's also easier to diff.",
       negatable: false,
       defaultsTo: false);
+  parser.addOption('ambiguous-reexport-scorer-min-confidence',
+      help:
+          'Minimum scorer confidence to suppress warning on ambiguous reexport.',
+      defaultsTo: "0.1");
+  parser.addFlag('verbose-warnings',
+      help:
+          'Display extra debugging information and help with warnings.',
+      negatable: true,
+      defaultsTo: true);
   return parser;
 }
 
