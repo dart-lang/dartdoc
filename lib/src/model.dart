@@ -215,7 +215,9 @@ class Accessor extends ModelElement
               ? t.getGetter(element.name)
               : t.getSetter(element.name);
           if (accessor != null) {
-            if (accessor is Member) accessor = Package.getBasestElement(accessor);
+            if (accessor is Member) {
+              accessor = Package.getBasestElement(accessor);
+            }
             Class parentClass = new ModelElement.from(
                 parent, package.findOrCreateLibraryFor(parent));
             List<Field> possibleFields = [];
@@ -3835,6 +3837,7 @@ class Typedef extends ModelElement
     return '';
   }
 
+  @override
   String get href {
     if (canonicalLibrary == null) return null;
     return '${canonicalLibrary.dirName}/$fileName';
