@@ -124,17 +124,19 @@ abstract class Inheritable {
         searchElement = searchElement is Member
             ? Package.getBasestElement(searchElement)
             : searchElement;
-        bool foundElement = false;
         // TODO(jcollins-g): generate warning if an inherited element's definition
-        // is in an intermediate non-canonical class in the inheritance chain
+        // is in an intermediate non-canonical class in the inheritance chain?
         for (Class c in inheritance.reversed) {
-          if (!foundElement && c.contains(searchElement)) {
-            foundElement = true;
-          }
-          Class canonicalC = package.findCanonicalModelElementFor(c.element);
-          if (canonicalC != null && foundElement) {
-            _canonicalEnclosingClass = c;
-            break;
+          // Filter out mixins.
+          if (c.contains(searchElement)) {
+            Class canonicalC = package.findCanonicalModelElementFor(c.element);
+            // TODO(jcollins-g): invert this lookup so traversal is recursive
+            // starting from the ModelElement.
+            if (canonicalC != null) {
+              assert(canonicalC.contains(searchElement));
+              _canonicalEnclosingClass = c;
+              break;
+            }
           }
         }
         if (definingEnclosingElement.isCanonical) {
