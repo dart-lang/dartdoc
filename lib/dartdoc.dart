@@ -215,47 +215,61 @@ class DartDoc {
     return new DartDocResults(packageMeta, package, outputDir);
   }
 
-  void _warn(Package package, PackageWarning kind, String p, String origin,
-      {String source}) {
+  /// Warn on file paths.
+  void _warn(Package package, PackageWarning kind, String warnOn, String origin,
+      {String referredFrom}) {
     // Ordinarily this would go in [Package.warn], but we don't actually know what
     // ModelElement to warn on yet.
-    Locatable referenceElement;
-    Set<Locatable> referenceElements;
+    Locatable referredFromElement;
+    Locatable warnOnElement;
+    Set<Locatable> referredFromElements;
+    Set<Locatable> warnOnElements;
 
     // Make all paths relative to origin.
-    if (path.isWithin(origin, p)) {
-      p = path.relative(p, from: origin);
+    if (path.isWithin(origin, warnOn)) {
+      warnOn = path.relative(warnOn, from: origin);
     }
-    if (source != null) {
-      if (path.isWithin(origin, source)) {
-        source = path.relative(source, from: origin);
+    if (referredFrom != null) {
+      if (path.isWithin(origin, referredFrom)) {
+        referredFrom = path.relative(referredFrom, from: origin);
       }
       // Source paths are always relative.
-      referenceElements = _hrefs[source];
-    } else {
-      referenceElements = _hrefs[p];
+      referredFromElements = _hrefs[referredFrom];
     }
-    if (referenceElements != null) {
-      if (referenceElements.any((e) => e.isCanonical)) {
-        referenceElement = referenceElements.firstWhere((e) => e.isCanonical);
+    warnOnElements = _hrefs[warnOn];
+
+    if (referredFromElements != null) {
+      if (referredFromElements.any((e) => e.isCanonical)) {
+        referredFromElement =
+            referredFromElements.firstWhere((e) => e.isCanonical);
       } else {
         // If we don't have a canonical element, just pick one.
-        referenceElement =
-            referenceElements.isEmpty ? null : referenceElements.first;
+        referredFromElement =
+            referredFromElements.isEmpty ? null : referredFromElements.first;
       }
     }
-    if (referenceElement == null && source == 'index.html')
-      referenceElement = package;
-    String message = p;
-    if (source == 'index.json') message = '$p (from index.json)';
-    package.warnOnElement(referenceElement, kind, message: message);
+    if (warnOnElements != null) {
+      if (warnOnElements.any((e) => e.isCanonical)) {
+        warnOnElement = warnOnElements.firstWhere((e) => e.isCanonical);
+      } else {
+        // If we don't have a canonical element, just pick one.
+        warnOnElement = warnOnElements.isEmpty ? null : warnOnElements.first;
+      }
+    }
+
+    if (referredFromElement == null && referredFrom == 'index.html')
+      referredFromElement = package;
+    String message = warnOn;
+    if (referredFrom == 'index.json') message = '$warnOn (from index.json)';
+    package.warnOnElement(warnOnElement, kind,
+        message: message, referredFrom: referredFromElement);
   }
 
   void _doOrphanCheck(Package package, String origin, Set<String> visited) {
     String normalOrigin = path.normalize(origin);
     String staticAssets = path.joinAll([normalOrigin, 'static-assets', '']);
     String indexJson = path.joinAll([normalOrigin, 'index.json']);
-    bool foundIndex = false;
+    bool foundIndexJson = false;
     for (FileSystemEntity f
         in new Directory(normalOrigin).listSync(recursive: true)) {
       var fullPath = path.normalize(f.path);
@@ -266,7 +280,7 @@ class DartDoc {
         continue;
       }
       if (fullPath == indexJson) {
-        foundIndex = true;
+        foundIndexJson = true;
         _onCheckProgress.add(fullPath);
         continue;
       }
@@ -280,7 +294,7 @@ class DartDoc {
       _onCheckProgress.add(fullPath);
     }
 
-    if (!foundIndex) {
+    if (!foundIndexJson) {
       _warn(package, PackageWarning.brokenLink, indexJson, normalOrigin);
       _onCheckProgress.add(indexJson);
     }
@@ -330,7 +344,7 @@ class DartDoc {
         if (!visited.contains(entryPath)) {
           _warn(package, PackageWarning.brokenLink, entryPath,
               path.normalize(origin),
-              source: fullPath);
+              referredFrom: fullPath);
         }
         found.add(entryPath);
       }
@@ -340,7 +354,7 @@ class DartDoc {
     for (String s in missing_from_search) {
       _warn(package, PackageWarning.missingFromSearchIndex, s,
           path.normalize(origin),
-          source: s);
+          referredFrom: fullPath);
     }
   }
 
@@ -352,15 +366,15 @@ class DartDoc {
       fullPath = path.normalize(fullPath);
     }
 
-    visited.add(fullPath);
     Tuple2 stringLinksAndHref = _getStringLinksAndHref(fullPath);
     if (stringLinksAndHref == null) {
       _warn(package, PackageWarning.brokenLink, pathToCheck,
           path.normalize(origin),
-          source: source);
+          referredFrom: source);
       _onCheckProgress.add(pathToCheck);
       return null;
     }
+    visited.add(fullPath);
     Iterable<String> stringLinks = stringLinksAndHref.item1;
     String baseHref = stringLinksAndHref.item2;
 

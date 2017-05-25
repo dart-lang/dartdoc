@@ -3097,6 +3097,8 @@ class Package implements Nameable, Documentable {
         break;
       case PackageWarning.brokenLink:
         warningMessage = 'dartdoc generated a broken link to: ${message}';
+        warnablePrefix = 'to element';
+        referredFromPrefix = 'linked to from';
         break;
       case PackageWarning.orphanedFile:
         warningMessage = 'dartdoc generated a file orphan: ${message}';
