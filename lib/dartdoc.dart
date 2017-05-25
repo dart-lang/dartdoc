@@ -6,6 +6,7 @@
 library dartdoc;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart' show LibraryElement;
@@ -230,9 +231,9 @@ class DartDoc {
         source = path.relative(source, from: origin);
       }
       // Source paths are always relative.
-      referenceElements = package.allHrefs[source];
+      referenceElements = _hrefs[source];
     } else {
-      referenceElements = package.allHrefs[p];
+      referenceElements = _hrefs[p];
     }
     if (referenceElements != null) {
       if (referenceElements.any((e) => e.isCanonical)) {
@@ -245,7 +246,9 @@ class DartDoc {
     }
     if (referenceElement == null && source == 'index.html')
       referenceElement = package;
-    package.warnOnElement(referenceElement, kind, message: p);
+    String message = p;
+    if (source == 'index.json') message = '$p (from index.json)';
+    package.warnOnElement(referenceElement, kind, message: message);
   }
 
   void _doOrphanCheck(Package package, String origin, Set<String> visited) {
@@ -305,6 +308,42 @@ class DartDoc {
     return new Tuple2(stringLinks, baseHref);
   }
 
+  void _doSearchIndexCheck(
+      Package package, String origin, Set<String> visited) {
+    String fullPath = path.joinAll([origin, 'index.json']);
+    String indexPath = path.joinAll([origin, 'index.html']);
+    File file = new File("$fullPath");
+    if (!file.existsSync()) {
+      return null;
+    }
+    JsonDecoder decoder = new JsonDecoder();
+    List jsonData = decoder.convert(file.readAsStringSync());
+
+    Set<String> found = new Set();
+    found.add(fullPath);
+    // The package index isn't supposed to be in the search, so suppress the
+    // warning.
+    found.add(indexPath);
+    for (Map<String, String> entry in jsonData) {
+      if (entry.containsKey('href')) {
+        String entryPath = path.joinAll([origin, entry['href']]);
+        if (!visited.contains(entryPath)) {
+          _warn(package, PackageWarning.brokenLink, entryPath,
+              path.normalize(origin),
+              source: fullPath);
+        }
+        found.add(entryPath);
+      }
+    }
+    // Missing from search index
+    Set<String> missing_from_search = visited.difference(found);
+    for (String s in missing_from_search) {
+      _warn(package, PackageWarning.missingFromSearchIndex, s,
+          path.normalize(origin),
+          source: s);
+    }
+  }
+
   void _doCheck(
       Package package, String origin, Set<String> visited, String pathToCheck,
       [String source, String fullPath]) {
@@ -355,10 +394,10 @@ class DartDoc {
 
     final Set<String> visited = new Set();
     final String start = 'index.html';
-    visited.add(start);
     stdout.write('\nvalidating docs...');
     _doCheck(package, origin, visited, start);
     _doOrphanCheck(package, origin, visited);
+    _doSearchIndexCheck(package, origin, visited);
   }
 
   List<LibraryElement> _parseLibraries(
