@@ -168,7 +168,7 @@ packages:
       name: mustache4dart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.12"
+    version: "1.1.0"
   package_config:
     description:
       name: package_config
@@ -350,4 +350,4 @@ packages:
     source: hosted
     version: "2.1.12"
 sdks:
-  dart: ">=1.22.0 <2.0.0"
+  dart: ">=1.23.0-dev.11.5 <2.0.0"

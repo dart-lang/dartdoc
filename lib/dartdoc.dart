@@ -45,7 +45,7 @@ export 'src/sdk.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.11.2';
+const String version = '0.12.0';
 
 final String defaultOutDir = path.join('doc', 'api');
 
@@ -245,7 +245,7 @@ class DartDoc {
     }
     if (referenceElement == null && source == 'index.html')
       referenceElement = package;
-    package.warnOnElement(referenceElement, kind, p);
+    package.warnOnElement(referenceElement, kind, message: p);
   }
 
   void _doOrphanCheck(Package package, String origin, Set<String> visited) {
@@ -290,7 +290,7 @@ class DartDoc {
     if (!file.existsSync()) {
       return null;
     }
-    Document doc = parse(file.readAsStringSync());
+    Document doc = parse(file.readAsBytesSync());
     Element base = doc.querySelector('base');
     String baseHref;
     if (base != null) {
@@ -301,6 +301,7 @@ class DartDoc {
         .map((link) => link.attributes['href'])
         .where((href) => href != null)
         .toList();
+
     return new Tuple2(stringLinks, baseHref);
   }
 
@@ -312,6 +313,7 @@ class DartDoc {
       fullPath = path.normalize(fullPath);
     }
 
+    visited.add(fullPath);
     Tuple2 stringLinksAndHref = _getStringLinksAndHref(fullPath);
     if (stringLinksAndHref == null) {
       _warn(package, PackageWarning.brokenLink, pathToCheck,
@@ -335,7 +337,6 @@ class DartDoc {
         String newFullPath = path.joinAll([origin, newPathToCheck]);
         newFullPath = path.normalize(newFullPath);
         if (!visited.contains(newFullPath)) {
-          visited.add(newFullPath);
           _doCheck(package, origin, visited, newPathToCheck, pathToCheck,
               newFullPath);
         }
@@ -399,9 +400,7 @@ class DartDoc {
     SourceFactory sourceFactory = new SourceFactory(resolvers);
 
     // TODO(jcollins-g): fix this so it actually obeys analyzer options files.
-    var options = new AnalysisOptionsImpl();
-    options.enableGenericMethods = true;
-    options.enableAssertInitializer = true;
+    var options = new AnalysisOptionsImpl()..enableAssertInitializer = true;
 
     AnalysisEngine.instance.processRequiredPlugins();
 

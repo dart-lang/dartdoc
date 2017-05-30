@@ -153,6 +153,22 @@ class MatchingLinkResult {
   MatchingLinkResult(this.element, this.label, {this.warn: true});
 }
 
+class IterableBlockParser extends md.BlockParser {
+  IterableBlockParser(lines, document) : super(lines, document);
+
+  Iterable<md.Node> parseLinesGenerator() sync* {
+    while (!isDone) {
+      for (var syntax in blockSyntaxes) {
+        if (syntax.canParse(this)) {
+          md.Node block = syntax.parse(this);
+          if (block != null) yield (block);
+          break;
+        }
+      }
+    }
+  }
+}
+
 // Calculate a class hint for findCanonicalModelElementFor.
 ModelElement _getPreferredClass(ModelElement modelElement) {
   if (modelElement is EnclosedElement &&
@@ -278,7 +294,8 @@ MatchingLinkResult _getMatchingLinkElement(
   }
   refModelElement = new ModelElement.from(searchElement, refLibrary);
   if (!refModelElement.isCanonical) {
-    refModelElement.warn(PackageWarning.noCanonicalFound);
+    refModelElement.warn(PackageWarning.noCanonicalFound,
+        referredFrom: element);
     // Don't warn about doc references because that's covered by the no
     // canonical library found message.
     return new MatchingLinkResult(null, null, warn: false);
@@ -406,10 +423,10 @@ Element _findRefElementInLibrary(
         _getResultsForClass(
             tryClass, codeRefChomped, results, codeRef, package);
       }
+      results.remove(null);
       if (results.isNotEmpty) break;
     }
-    // Sometimes documentation refers to classes that are further up the chain.
-    // Get those too.
+
     if (results.isEmpty && realClass != null) {
       for (Class superClass
           in realClass.superChain.map((et) => et.element as Class)) {
@@ -417,6 +434,7 @@ Element _findRefElementInLibrary(
           _getResultsForClass(
               superClass, codeRefChomped, results, codeRef, package);
         }
+        results.remove(null);
         if (results.isNotEmpty) break;
       }
     }
@@ -552,7 +570,8 @@ Element _findRefElementInLibrary(
     result = results.first.element;
   } else {
     element.warn(PackageWarning.ambiguousDocReference,
-        "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
+        message:
+            "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
     result = results.first.element;
   }
   return result;
@@ -576,8 +595,9 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
     } else {
       // TODO(jcollins-g): get rid of reimplementation of identifier resolution
       //                   or integrate into ModelElement in a simpler way.
-      List<Class> superChain = [];
-      superChain.add(tryClass);
+      List<Class> superChain = [tryClass];
+      superChain
+          .addAll(tryClass.interfaces.map((t) => t.returnElement as Class));
       // This seems duplicitous with our caller, but the preferredClass
       // hint matters with findCanonicalModelElementFor.
       // TODO(jcollins-g): This makes our caller ~O(n^2) vs length of superChain.
@@ -626,6 +646,7 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
             }
           }
         }
+        results.remove(null);
         if (results.isNotEmpty) break;
         if (c.fullyQualifiedNameWithoutLibrary == codeRefChomped) {
           results.add(c);
@@ -638,9 +659,6 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
 
 String _linkDocReference(String codeRef, Documentable documentable,
     NodeList<CommentReference> commentRefs) {
-  // TODO(jcollins-g): Refactor so that doc operations work on the
-  //                   documented element.
-  documentable = documentable.overriddenDocumentedElement;
   MatchingLinkResult result;
   result = _getMatchingLinkElement(codeRef, documentable, commentRefs);
   final ModelElement linkedElement = result.element;
@@ -659,7 +677,8 @@ String _linkDocReference(String codeRef, Documentable documentable,
     }
   } else {
     if (result.warn) {
-      documentable.warn(PackageWarning.unresolvedDocReference, codeRef);
+      documentable.warn(PackageWarning.unresolvedDocReference,
+          message: codeRef, referredFrom: documentable.documentationFrom);
     }
     return '<code>${HTML_ESCAPE.convert(label)}</code>';
   }
@@ -707,7 +726,7 @@ void _showWarningsForGenericsOutsideSquareBracketsBlocks(
           postContext.replaceAll(allAfterLastNewline, '');
       String errorMessage = "$priorContext$postContext";
       // TODO(jcollins-g):  allow for more specific error location inside comments
-      element.warn(PackageWarning.typeAsHtml, errorMessage);
+      element.warn(PackageWarning.typeAsHtml, message: errorMessage);
     });
   }
 }
@@ -835,7 +854,7 @@ class Documentation {
 
   String _renderLinesToHtml(md.Document document, List<String> lines, bool processFullDocs) {
     List<md.Node> nodes = [];
-    for (md.Node node in new md.BlockParser(lines, document).parseLines()) {
+    for (md.Node node in new IterableBlockParser(lines, document).parseLinesGenerator()) {
       if (node is md.Element) {
         if (node.tag == 'script') continue;
         if (node.tag == 'pre') {
