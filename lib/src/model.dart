@@ -179,6 +179,9 @@ class Accessor extends ModelElement
   ModelElement get enclosingCombo => _enclosingCombo;
 
   @override
+  bool get isCanonical => enclosingCombo.isCanonical;
+
+  @override
   void warn(PackageWarning kind, {String message, Locatable referredFrom}) {
     if (enclosingCombo != null) {
       enclosingCombo.warn(kind, message: message, referredFrom: referredFrom);
@@ -903,6 +906,7 @@ abstract class Documentable implements Warnable {
   String get documentation;
   String get documentationAsHtml;
   bool get hasDocumentation;
+  bool get hasExtendedDocumentation;
   String get oneLineDoc;
   Documentable get overriddenDocumentedElement;
   Package get package;
@@ -2092,6 +2096,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   bool get hasDocumentation =>
       documentation != null && documentation.isNotEmpty;
 
+  @override
+  bool get hasExtendedDocumentation => href != null && _documentation.hasExtendedDocs;
+
   bool get hasParameters => parameters.isNotEmpty;
 
   /// If canonicalLibrary (or canonicalEnclosingElement, for Inheritable
@@ -2957,6 +2964,9 @@ class Package implements Nameable, Documentable {
 
   @override
   Documentable get documentationFrom => this;
+
+  @override
+  bool get hasExtendedDocumentation => documentation.isNotEmpty;
 
   final Map<Element, Library> _elementToLibrary = {};
   String _docsAsHtml;

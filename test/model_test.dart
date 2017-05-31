@@ -427,6 +427,14 @@ void main() {
           contains("['hello from dart']"));
     });
 
+    test('class without additional docs', () {
+      expect(specialList.hasExtendedDocumentation, equals(false));
+    });
+
+    test('class with additional docs', () {
+      expect(Apple.hasExtendedDocumentation, equals(true));
+    });
+
     test('oneLine doc references in inherited methods should not have brackets',
         () {
       Method add =

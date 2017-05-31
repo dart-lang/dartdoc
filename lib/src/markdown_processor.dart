@@ -14,6 +14,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
+import 'package:tuple/tuple.dart';
 
 import 'model.dart';
 
@@ -134,6 +135,10 @@ final RegExp isConstructor = new RegExp(r'^new[\s]+', multiLine: true);
 // warn about them.
 // Covers anything with leading digits/symbols, empty string, weird punctuation, spaces.
 final RegExp notARealDocReference = new RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
+
+final RegExp openTag = new RegExp(r'''^<([^<]*)>''');
+final RegExp closeTag = new RegExp(r'''</([^<]*)>$''');
+final RegExp whiteSpace = new RegExp(r'[\s]+', multiLine: true);
 
 // We don't emit warnings currently: #572.
 const List<String> _oneLinerSkipTags = const ["code", "pre"];
@@ -764,40 +769,12 @@ List<int> findFreeHangingGenericsPositions(String string) {
 }
 
 int counter = 0;
+int __haveFullDocAlready = 0;
 class Documentation {
-  String get raw => _element.documentation;
 
-  String _asHtml;
-  String get asHtml {
-    if (_asHtml == null) {
-      _transformHtmlForDartdoc(true);
-    }
-    return _asHtml;
-  }
-
-  String _asOneLiner;
-  String get asOneLiner {
-    if (_asOneLiner == null) {
-      _transformHtmlForDartdoc(false);
-    }
-    return _asOneLiner;
-  }
-
-  NodeList<CommentReference> _commentRefs;
-  NodeList<CommentReference> get commentRefs {
-    if (_commentRefs == null) _commentRefs = _getCommentRefs(_element);
-    return _commentRefs;
-  }
-
-  final Documentable _element;
-
-  void _transformHtmlForDartdoc(bool processAllDocs) {
-    String rawHtml;
-    if (processAllDocs) {
-      rawHtml = _renderMarkdownToHtml(true);
-    } else {
-      rawHtml = _renderMarkdownToHtml(false);
-    }
+  /// Returns a tuple of longHtml, shortHtml.  longHtml is NULL if [processFullDocs] is true.
+  Tuple2<String, String> _renderNodesToHtml(List<md.Node> nodes, bool processFullDocs) {
+    var rawHtml = new md.HtmlRenderer().render(nodes);
     var asHtmlDocument = parse(rawHtml);
     for (var s in asHtmlDocument.querySelectorAll('script')) {
       s.remove();
@@ -820,24 +797,76 @@ class Documentation {
       // Assume the user intended Dart if there are no other classes present.
       if (!specifiesLanguage) pre.classes.add('language-dart');
     }
+    String asHtml;
+    String asOneLiner;
 
-    // `trim` fixes issue with line ending differences between mac and windows.
-    if (_asHtml == null && processAllDocs) {
-      _asHtml = asHtmlDocument.body.innerHtml?.trim();
+    if (processFullDocs) {
+      // `trim` fixes issue with line ending differences between mac and windows.
+      asHtml = asHtmlDocument.body.innerHtml?.trim();
+    }
+    asOneLiner = asHtmlDocument.body.children.isEmpty
+        ? ''
+        : asHtmlDocument.body.children.first.innerHtml;
+
+    return new Tuple2(asHtml, asOneLiner);
+  }
+
+  bool _hasExtendedDocs;
+  bool get hasExtendedDocs {
+    if (_hasExtendedDocs == null) {
+      _renderHtmlForDartdoc(_element.isCanonical && _asHtml == null);
+    }
+    return _hasExtendedDocs;
+  }
+
+  String get raw => _element.documentation;
+
+  String _asHtml;
+  String get asHtml {
+    if (_asHtml == null) {
+      assert(_asOneLiner == null || _element.isCanonical);
+      _renderHtmlForDartdoc(true);
+    }
+    return _asHtml;
+  }
+
+  String _asOneLiner;
+  String get asOneLiner {
+    if (_asOneLiner == null) {
+      assert(_asHtml == null);
+      _renderHtmlForDartdoc(_element.isCanonical);
+    }
+    return _asOneLiner;
+  }
+
+  NodeList<CommentReference> _commentRefs;
+  NodeList<CommentReference> get commentRefs {
+    if (_commentRefs == null) _commentRefs = _getCommentRefs(_element);
+    return _commentRefs;
+  }
+
+  final Documentable _element;
+
+  void _renderHtmlForDartdoc(bool processAllDocs) {
+    Tuple3<String, String, bool> rawHtml = _renderMarkdownToHtml(processAllDocs);
+    String rawHtmlLong = rawHtml.item1;
+    String rawHtmlShort = rawHtml.item2;
+    if (_hasExtendedDocs != null) {
+      assert(_hasExtendedDocs == rawHtml.item3);
+    }
+    _hasExtendedDocs = rawHtml.item3;
+    if (processAllDocs) {
+      _asHtml = rawHtmlLong;
     }
     if (_asOneLiner == null) {
-      _asOneLiner = asHtmlDocument.body.children.isEmpty
-          ? ''
-          : asHtmlDocument.body.children.first.innerHtml;
-      if (!_asOneLiner.startsWith('<p>')) {
-        _asOneLiner = '<p>$_asOneLiner</p>';
-      }
+      _asOneLiner = rawHtmlShort;
     }
   }
 
   /// Parses the given inline Markdown [text] to a series of AST nodes.
   List<md.Node> parseInline(String text, md.Document document) => new md.InlineParser(text, document).parse();
 
+  // TODO(jcollins-g): consider making this a public method in markdown package
   void _parseInlineContent(List<md.Node> nodes, md.Document document) {
     for (int i = 0; i < nodes.length; i++) {
       var node = nodes[i];
@@ -852,28 +881,46 @@ class Documentation {
     }
   }
 
-  String _renderLinesToHtml(md.Document document, List<String> lines, bool processFullDocs) {
+  /// Returns a tuple of longHtml, shortHtml (longHtml is NULL if !processFullDocs)
+  Tuple3<String, String, bool> _renderLinesToHtml(md.Document document, List<String> lines, bool processFullDocs) {
+    bool hasExtendedDocs = false;
+    md.Node firstNode;
     List<md.Node> nodes = [];
     for (md.Node node in new IterableBlockParser(lines, document).parseLinesGenerator()) {
-      if (node is md.Element) {
-        if (node.tag == 'script') continue;
-        if (node.tag == 'pre') {
-          if (node.children.isNotEmpty && node.children.length == 1 && (node.children.first as md.Element).tag == 'code')  {
-            md.Element code = node.children.first;
-            bool specifiesLanguage = code.attributes['class']?.startsWith('language-');
-            node.attributes['class'] = 'prettyprint';
-            if (specifiesLanguage == null || !specifiesLanguage) code.attributes['class'] = 'language-dart';
-          }
-        }
+      if (firstNode != null) {
+        hasExtendedDocs = true;
+        if (!processFullDocs) break;
+      }
+      if (firstNode == null) {
+        firstNode = node;
       }
       nodes.add(node);
-      if (!processFullDocs) break;
     }
     _parseInlineContent(nodes, document);
-    return (new md.HtmlRenderer()).render(nodes);
+
+    String shortHtml;
+    String longHtml;
+    if (processFullDocs) {
+      Tuple2 htmls = _renderNodesToHtml(nodes, processFullDocs);
+      longHtml = htmls.item1;
+      shortHtml = htmls.item2;
+    } else {
+      if (firstNode != null) {
+        Tuple2 htmls = _renderNodesToHtml([firstNode], processFullDocs);
+        shortHtml = htmls.item2;
+      } else {
+        shortHtml = '';
+      }
+    }
+    if (!shortHtml.startsWith('<p>')) {
+      shortHtml = '<p>$shortHtml</p>';
+    }
+    return new Tuple3<String, String, bool>(longHtml, shortHtml, hasExtendedDocs);
   }
 
-  String _renderMarkdownToHtml(bool processFullDocs) {
+  /// Returns a tuple of longHtml, shortHtml, hasExtendedDocs
+  /// (longHtml is NULL if !processFullDocs)
+  Tuple3<String, String, bool> _renderMarkdownToHtml(bool processFullDocs) {
     md.Node _linkResolver(String name) {
       counter += 1;
       if (counter % 500 == 0) stdout.write('\n$counter');
@@ -885,8 +932,6 @@ class Documentation {
     md.Document document = new md.Document(inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
     List<String> lines = text.replaceAll('\r\n', '\n').split('\n');
     return _renderLinesToHtml(document, lines, processFullDocs);
-    return md.markdownToHtml(text,
-        inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver, firstNodeOnly: !processFullDocs);
   }
 
   Documentation.forElement(this._element) {}
