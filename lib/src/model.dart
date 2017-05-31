@@ -2097,7 +2097,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       documentation != null && documentation.isNotEmpty;
 
   @override
-  bool get hasExtendedDocumentation => href != null && _documentation.hasExtendedDocs;
+  bool get hasExtendedDocumentation =>
+      href != null && _documentation.hasExtendedDocs;
 
   bool get hasParameters => parameters.isNotEmpty;
 

@@ -703,10 +703,8 @@ void _showWarningsForGenericsOutsideSquareBracketsBlocks(
           "${text.substring(max(position - maxPriorContext, 0), position)}";
       String postContext =
           "${text.substring(position, min(position + maxPostContext, text.length))}";
-      priorContext =
-          priorContext.replaceAll(allBeforeFirstNewline, '');
-      postContext =
-          postContext.replaceAll(allAfterLastNewline, '');
+      priorContext = priorContext.replaceAll(allBeforeFirstNewline, '');
+      postContext = postContext.replaceAll(allAfterLastNewline, '');
       String errorMessage = "$priorContext$postContext";
       // TODO(jcollins-g):  allow for more specific error location inside comments
       element.warn(PackageWarning.typeAsHtml, message: errorMessage);
@@ -749,18 +747,20 @@ List<int> findFreeHangingGenericsPositions(String string) {
 class MarkdownDocument extends md.Document {
   MarkdownDocument(
       {Iterable<md.BlockSyntax> blockSyntaxes,
-        Iterable<md.InlineSyntax> inlineSyntaxes,
-        md.ExtensionSet extensionSet,
-        linkResolver,
-        imageLinkResolver}) : super(
-      blockSyntaxes: blockSyntaxes,
-      inlineSyntaxes: inlineSyntaxes,
-      extensionSet: extensionSet,
-      linkResolver: linkResolver,
-      imageLinkResolver: imageLinkResolver);
+      Iterable<md.InlineSyntax> inlineSyntaxes,
+      md.ExtensionSet extensionSet,
+      linkResolver,
+      imageLinkResolver})
+      : super(
+            blockSyntaxes: blockSyntaxes,
+            inlineSyntaxes: inlineSyntaxes,
+            extensionSet: extensionSet,
+            linkResolver: linkResolver,
+            imageLinkResolver: imageLinkResolver);
 
   /// Returns a tuple of longHtml, shortHtml.  longHtml is NULL if [processFullDocs] is true.
-  static Tuple2<String, String> _renderNodesToHtml(List<md.Node> nodes, bool processFullDocs) {
+  static Tuple2<String, String> _renderNodesToHtml(
+      List<md.Node> nodes, bool processFullDocs) {
     var rawHtml = new md.HtmlRenderer().render(nodes);
     var asHtmlDocument = parse(rawHtml);
     for (var s in asHtmlDocument.querySelectorAll('script')) {
@@ -804,7 +804,8 @@ class MarkdownDocument extends md.Document {
     for (int i = 0; i < nodes.length; i++) {
       var node = nodes[i];
       if (node is md.UnparsedContent) {
-        List<md.Node> inlineNodes = new md.InlineParser(node.textContent, this).parse();
+        List<md.Node> inlineNodes =
+            new md.InlineParser(node.textContent, this).parse();
         nodes.removeAt(i);
         nodes.insertAll(i, inlineNodes);
         i += inlineNodes.length - 1;
@@ -815,11 +816,13 @@ class MarkdownDocument extends md.Document {
   }
 
   /// Returns a tuple of longHtml, shortHtml (longHtml is NULL if !processFullDocs)
-  Tuple3<String, String, bool> renderLinesToHtml(List<String> lines, bool processFullDocs) {
+  Tuple3<String, String, bool> renderLinesToHtml(
+      List<String> lines, bool processFullDocs) {
     bool hasExtendedDocs = false;
     md.Node firstNode;
     List<md.Node> nodes = [];
-    for (md.Node node in new IterableBlockParser(lines, this).parseLinesGenerator()) {
+    for (md.Node node
+        in new IterableBlockParser(lines, this).parseLinesGenerator()) {
       if (firstNode != null) {
         hasExtendedDocs = true;
         if (!processFullDocs) break;
@@ -848,10 +851,10 @@ class MarkdownDocument extends md.Document {
     if (!shortHtml.startsWith('<p>')) {
       shortHtml = '<p>$shortHtml</p>';
     }
-    return new Tuple3<String, String, bool>(longHtml, shortHtml, hasExtendedDocs);
+    return new Tuple3<String, String, bool>(
+        longHtml, shortHtml, hasExtendedDocs);
   }
 }
-
 
 class Documentation {
   bool _hasExtendedDocs;
@@ -891,7 +894,8 @@ class Documentation {
   final Documentable _element;
 
   void _renderHtmlForDartdoc(bool processAllDocs) {
-    Tuple3<String, String, bool> renderResults = _renderMarkdownToHtml(processAllDocs);
+    Tuple3<String, String, bool> renderResults =
+        _renderMarkdownToHtml(processAllDocs);
     if (processAllDocs) {
       _asHtml = renderResults.item1;
     }
@@ -904,7 +908,6 @@ class Documentation {
     _hasExtendedDocs = renderResults.item3;
   }
 
-
   /// Returns a tuple of longHtml, shortHtml, hasExtendedDocs
   /// (longHtml is NULL if !processFullDocs)
   Tuple3<String, String, bool> _renderMarkdownToHtml(bool processFullDocs) {
@@ -914,7 +917,8 @@ class Documentation {
 
     String text = _element.documentation;
     _showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
-    MarkdownDocument document = new MarkdownDocument(inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
+    MarkdownDocument document = new MarkdownDocument(
+        inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
     List<String> lines = text.replaceAll('\r\n', '\n').split('\n');
     return document.renderLinesToHtml(lines, processFullDocs);
   }
