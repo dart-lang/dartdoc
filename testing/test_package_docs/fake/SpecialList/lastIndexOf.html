@@ -128,9 +128,20 @@
       <span class="name ">lastIndexOf</span>(<wbr><span class="parameter" id="lastIndexOf-param-element"><span class="type-annotation">Object</span> <span class="parameter-name">element</span>, [</span> <span class="parameter" id="lastIndexOf-param-startIndex"><span class="type-annotation">int</span> <span class="parameter-name">startIndex</span></span> ])
     </section>
     <section class="desc markdown">
-      <p>Returns the last index in the list <code>a</code> of the given <code>element</code>, starting
-the search at index <code>startIndex</code> to 0.
-Returns -1 if <code>element</code> is not found.</p>
+      <p>Returns the last index of <code>element</code> in this list.</p>
+<p>Searches the list backwards from index <code>start</code> to 0.</p>
+<p>The first time an object <code>o</code> is encountered so that <code>o == element</code>,
+the index of <code>o</code> is returned.</p>
+<pre class="prettyprint language-dart"><code>List&lt;String&gt; notes = ['do', 're', 'mi', 're'];
+notes.lastIndexOf('re', 2); // 1
+</code></pre>
+<p>If <code>start</code> is not provided, this method searches from the end of the
+list./Returns</p>
+<pre class="prettyprint language-dart"><code>notes.lastIndexOf('re');  // 3
+</code></pre>
+<p>Returns -1 if <code>element</code> is not found.</p>
+<pre class="prettyprint language-dart"><code>notes.lastIndexOf('fa');  // -1
+</code></pre>
     </section>
     
     

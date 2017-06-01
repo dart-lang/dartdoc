@@ -827,9 +827,7 @@ class MarkdownDocument extends md.Document {
         hasExtendedDocs = true;
         if (!processFullDocs) break;
       }
-      if (firstNode == null) {
-        firstNode = node;
-      }
+      firstNode ??= node;
       nodes.add(node);
     }
     _parseInlineContent(nodes);
@@ -848,15 +846,15 @@ class MarkdownDocument extends md.Document {
         shortHtml = '';
       }
     }
-    if (!shortHtml.startsWith('<p>')) {
-      shortHtml = '<p>$shortHtml</p>';
-    }
     return new Tuple3<String, String, bool>(
         longHtml, shortHtml, hasExtendedDocs);
   }
 }
 
 class Documentation {
+  final Documentable _element;
+  Documentation.forElement(this._element) {}
+
   bool _hasExtendedDocs;
   bool get hasExtendedDocs {
     if (_hasExtendedDocs == null) {
@@ -864,8 +862,6 @@ class Documentation {
     }
     return _hasExtendedDocs;
   }
-
-  String get raw => _element.documentation;
 
   String _asHtml;
   String get asHtml {
@@ -891,7 +887,7 @@ class Documentation {
     return _commentRefs;
   }
 
-  final Documentable _element;
+  String get raw => _element.documentation;
 
   void _renderHtmlForDartdoc(bool processAllDocs) {
     Tuple3<String, String, bool> renderResults =
@@ -922,8 +918,6 @@ class Documentation {
     List<String> lines = text.replaceAll('\r\n', '\n').split('\n');
     return document.renderLinesToHtml(lines, processFullDocs);
   }
-
-  Documentation.forElement(this._element) {}
 }
 
 class _InlineCodeSyntax extends md.InlineSyntax {
