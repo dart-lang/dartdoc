@@ -2059,6 +2059,15 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return "(${p.toUri(sourceFileName)})";
   }
 
+  /// Returns a link to extended documentation, or the empty string if that
+  /// does not exist.
+  String get extendedDocLink {
+    if (hasExtendedDocumentation) {
+      return '<a href="${href}">[...]</a>';
+    }
+    return '';
+  }
+
   /// Returns the fully qualified name.
   ///
   /// For example: libraryName.className.methodName
@@ -2185,7 +2194,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   String get genericParameters => '';
 
   @override
-  String get oneLineDoc => _documentation.asOneLiner;
+  String get oneLineDoc => _documentation.asOneLiner + ' ' +  extendedDocLink;
 
   ModelElement get overriddenElement => null;
 
