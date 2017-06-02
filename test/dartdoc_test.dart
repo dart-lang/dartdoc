@@ -39,7 +39,7 @@ void main() {
       Package p = results.package;
       expect(p.name, 'test_package');
       expect(p.hasDocumentationFile, isTrue);
-      expect(p.libraries, hasLength(8));
+      expect(p.libraries, hasLength(10));
     });
 
     test('generate docs for ${path.basename(testPackageBadDir.path)} fails',
@@ -96,7 +96,7 @@ void main() {
       Package p = results.package;
       expect(p.name, 'test_package');
       expect(p.hasDocumentationFile, isTrue);
-      expect(p.libraries, hasLength(7));
+      expect(p.libraries, hasLength(9));
       expect(p.libraries.map((lib) => lib.name).contains('fake'), isFalse);
     });
 

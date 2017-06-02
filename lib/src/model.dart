@@ -25,6 +25,7 @@ import 'package:analyzer/src/generated/resolver.dart'
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';
 
@@ -2168,7 +2169,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     // Since we're looking for a library, find the [Element] immediately
     // contained by a [CompilationUnitElement] in the tree.
     Element topLevelElement = element;
-    while (topLevelElement != null &&
+    while (topLevelElement != null && topLevelElement is! LibraryElement &&
         topLevelElement.enclosingElement is! CompilationUnitElement) {
       topLevelElement = topLevelElement.enclosingElement;
     }
@@ -2204,7 +2205,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
             List<String> debugLines = [];
             debugLines.addAll(scoredCandidates.map((s) => '${s.toString()}'));
 
-            if (confidence < config.reexportMinConfidence) {
+            if (config == null || confidence < config.reexportMinConfidence) {
               warnable.warn(PackageWarning.ambiguousReexport, message: message, extendedDebug: debugLines);
             }
           }
@@ -3060,6 +3061,8 @@ class PackageWarningOptions {
   final Set<PackageWarning> _asWarnings = new Set();
   final Set<PackageWarning> _asErrors = new Set();
 
+  bool autoFlush = true;
+
   Set<PackageWarning> get ignoreWarnings => _ignoreWarnings;
   Set<PackageWarning> get asWarnings => _asWarnings;
   Set<PackageWarning> get asErrors => _asErrors;
@@ -3108,7 +3111,20 @@ class PackageWarningCounter {
   final Map<PackageWarning, int> _warningCounts = new Map();
   final PackageWarningOptions options;
 
+  StringBuffer buffer = new StringBuffer();
+
   PackageWarningCounter(this.options);
+
+  /// Flush to stderr, but only if [options.autoFlush] is true.
+  ///
+  /// We keep a buffer because under certain conditions (--auto-include-dependencies)
+  /// warnings here might be duplicated across multiple Package constructions.
+  void maybeFlush() {
+    if (options.autoFlush) {
+      stderr.write(buffer.toString());
+      buffer = new StringBuffer();
+    }
+  }
 
   /// Actually write out the warning.  Assumes it is already counted with add.
   void _writeWarning(PackageWarning kind, String name, String fullMessage) {
@@ -3121,16 +3137,17 @@ class PackageWarningCounter {
       if (options.asErrors.contains(kind)) toWrite = "error: ${fullMessage}";
     }
     if (toWrite != null) {
-      stderr.write("\n ${toWrite}");
+      buffer.write("\n ${toWrite}");
       if (_warningCounts[kind] == 1 && config.verboseWarnings && packageWarningText[kind].longHelp.isNotEmpty) {
         // First time we've seen this warning.  Give a little extra info.
         final String separator = '\n            ';
         final String nameSub = r'@@name@@';
         String verboseOut = '$separator${packageWarningText[kind].longHelp.join(separator)}';
         verboseOut = verboseOut.replaceAll(nameSub, name);
-        stderr.write(verboseOut);
+        buffer.write(verboseOut);
       }
     }
+    maybeFlush();
   }
 
   /// Returns true if we've already warned for this.
@@ -3182,12 +3199,16 @@ class PackageWarningCounter {
 class Package implements Nameable, Documentable {
   // Library objects serving as entry points for documentation.
   final List<Library> _libraries = [];
+
   // All library objects related to this package; a superset of _libraries.
-  final Map<LibraryElement, Library> _allLibraries = new Map();
+  @visibleForTesting
+  final Map<LibraryElement, Library> allLibraries = new Map();
 
   // Objects to keep track of warnings.
   final PackageWarningOptions _packageWarningOptions;
+
   PackageWarningCounter _packageWarningCounter;
+
   // All ModelElements constructed for this package; a superset of allModelElements.
   final Map<Tuple4<Element, Library, Class, ModelElement>, ModelElement>
       _allConstructedModelElements = new Map();
@@ -3221,14 +3242,14 @@ class Package implements Nameable, Documentable {
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta,
       this._packageWarningOptions) {
     assert(_allConstructedModelElements.isEmpty);
-    assert(_allLibraries.isEmpty);
+    assert(allLibraries.isEmpty);
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
     libraryElements.forEach((element) {
       // add only if the element should be included in the public api
       if (isPublic(element)) {
         var lib = new Library._(element, this);
         _libraries.add(lib);
-        _allLibraries[element] = lib;
+        allLibraries[element] = lib;
         assert(!_elementToLibrary.containsKey(lib.element));
         _elementToLibrary[element] = lib;
       }
@@ -3248,6 +3269,12 @@ class Package implements Nameable, Documentable {
 
   @override
   String get elementLocation => '(top level package)';
+
+  /// Flush out any warnings we might have collected while
+  /// [_packageWarningOptions.autoFlush] was false.
+  void flushWarnings() {
+    _packageWarningCounter.maybeFlush();
+  }
 
   @override
   Tuple2<int, int> get lineAndColumn => null;
@@ -3397,6 +3424,7 @@ class Package implements Nameable, Documentable {
       PackageMeta packageMeta,
       PackageWarningOptions options) {
     var startLength = libraryElements.length;
+    options.autoFlush = false;
     Package package = new Package(libraryElements, packageMeta, options);
 
     // TODO(jcollins-g): this is inefficient; keep track of modelElements better
@@ -3417,8 +3445,10 @@ class Package implements Nameable, Documentable {
     });
 
     if (libraryElements.length > startLength)
-      return _withAutoIncludedDependencies(
+      package = _withAutoIncludedDependencies(
           libraryElements, packageMeta, options);
+    options.autoFlush = true;
+    package.flushWarnings;
     return package;
   }
 
@@ -3739,8 +3769,8 @@ class Package implements Nameable, Documentable {
     if (e == null)
       1+1;
     // This is just a cache to avoid creating lots of libraries over and over.
-    if (_allLibraries.containsKey(e.library)) {
-      return _allLibraries[e.library];
+    if (allLibraries.containsKey(e.library)) {
+      return allLibraries[e.library];
     }
     // can be null if e is for dynamic
     if (e.library == null) {
@@ -3750,7 +3780,7 @@ class Package implements Nameable, Documentable {
 
     if (foundLibrary == null) {
       foundLibrary = new Library._(e.library, this);
-      _allLibraries[e.library] = foundLibrary;
+      allLibraries[e.library] = foundLibrary;
     }
     return foundLibrary;
   }
