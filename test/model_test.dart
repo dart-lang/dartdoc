@@ -179,7 +179,7 @@ void main() {
       expect(
           fakeLibrary.oneLineDoc,
           equals(
-              '<p>WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a></p>'));
+              'WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a>'));
     });
 
     test('has properties', () {
@@ -427,6 +427,14 @@ void main() {
           contains("['hello from dart']"));
     });
 
+    test('class without additional docs', () {
+      expect(specialList.hasExtendedDocumentation, equals(false));
+    });
+
+    test('class with additional docs', () {
+      expect(Apple.hasExtendedDocumentation, equals(true));
+    });
+
     test('oneLine doc references in inherited methods should not have brackets',
         () {
       Method add =
@@ -434,7 +442,7 @@ void main() {
       expect(
           add.oneLineDoc,
           equals(
-              '<p>Adds <code>value</code> to the end of this list,\nextending the length by one.</p>'));
+              'Adds <code>value</code> to the end of this list,\nextending the length by one.'));
     });
 
     test(
@@ -515,7 +523,7 @@ void main() {
       expect(
           testingCodeSyntaxInOneLiners.oneLineDoc,
           equals(
-              '<p>These are code syntaxes: <code>true</code> and <code>false</code></p>'));
+              'These are code syntaxes: <code>true</code> and <code>false</code>'));
     });
 
     test('doc comments to parameters are marked as code', () {
