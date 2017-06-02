@@ -261,7 +261,7 @@ void main() {
 
     test('@canonicalFor directive works', () {
       expect(SomeOtherClass.canonicalLibrary, equals(reexportOneLib));
-      expect(SomeClass.canonicalLibrary, equals(reexportOneLib));
+      expect(SomeClass.canonicalLibrary, equals(reexportTwoLib));
     });
   });
 
