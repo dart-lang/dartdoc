@@ -188,7 +188,7 @@ test() {
 
 @Task('Generate docs for dartdoc')
 testDartdoc() {
-  delete(docsDir);
+  //delete(docsDir);
   try {
     log('running dartdoc');
     Dart.run('bin/dartdoc.dart',
