@@ -164,7 +164,8 @@ main(List<String> arguments) async {
       sdkVersion: sdk.sdkVersion,
       autoIncludeDependencies: args['auto-include-dependencies'],
       categoryOrder: args['category-order'],
-      reexportMinConfidence: double.parse(args['ambiguous-reexport-scorer-min-confidence']),
+      reexportMinConfidence:
+          double.parse(args['ambiguous-reexport-scorer-min-confidence']),
       verboseWarnings: args['verbose-warnings'] as bool);
 
   DartDoc dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
@@ -270,8 +271,7 @@ ArgParser _createArgsParser() {
           'Minimum scorer confidence to suppress warning on ambiguous reexport.',
       defaultsTo: "0.1");
   parser.addFlag('verbose-warnings',
-      help:
-          'Display extra debugging information and help with warnings.',
+      help: 'Display extra debugging information and help with warnings.',
       negatable: true,
       defaultsTo: true);
   return parser;

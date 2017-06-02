@@ -185,11 +185,18 @@ class Accessor extends ModelElement
   bool get isCanonical => enclosingCombo.isCanonical;
 
   @override
-  void warn(PackageWarning kind, {String message, Locatable referredFrom, List<String> extendedDebug}) {
+  void warn(PackageWarning kind,
+      {String message, Locatable referredFrom, List<String> extendedDebug}) {
     if (enclosingCombo != null) {
-      enclosingCombo.warn(kind, message: message, referredFrom: referredFrom, extendedDebug: extendedDebug);
+      enclosingCombo.warn(kind,
+          message: message,
+          referredFrom: referredFrom,
+          extendedDebug: extendedDebug);
     } else {
-      super.warn(kind, message: message, referredFrom: referredFrom, extendedDebug: extendedDebug);
+      super.warn(kind,
+          message: message,
+          referredFrom: referredFrom,
+          extendedDebug: extendedDebug);
     }
   }
 
@@ -1303,6 +1310,7 @@ class Library extends ModelElement {
   }
 
   List<String> _allOriginalModelElementNames;
+
   /// [allModelElements] resolved to their original names.
   ///
   /// A collection of [ModelElement.fullyQualifiedNames] for [ModelElement]s
@@ -1313,7 +1321,8 @@ class Library extends ModelElement {
     if (_allOriginalModelElementNames == null) {
       _allOriginalModelElementNames = allModelElements.map((e) {
         return new ModelElement.from(
-          e.element, package.findOrCreateLibraryFor(e.element)).fullyQualifiedName;
+                e.element, package.findOrCreateLibraryFor(e.element))
+            .fullyQualifiedName;
       }).toList();
     }
     return _allOriginalModelElementNames;
@@ -1343,7 +1352,6 @@ class Library extends ModelElement {
     }
     return _canonicalFor;
   }
-
 
   /// Hide canonicalFor from doc while leaving a note to ourselves to
   /// help with ambiguous canonicalization determination.
@@ -1670,7 +1678,8 @@ class Library extends ModelElement {
         allModelElements.where((e) => e.isCanonical).toList());
   }
 
-  final Map<Library, bool>_isReexportedBy = {};
+  final Map<Library, bool> _isReexportedBy = {};
+
   /// Heuristic that tries to guess if this library is actually largely
   /// reexported by some other library.  We guess this by comparing the elements
   /// inside each of allModelElements for both libraries.  Don't use this
@@ -1684,13 +1693,17 @@ class Library extends ModelElement {
   /// If not, then the situation is either ambiguous, or the reverse is true.
   /// Computing this is expensive, so cache it.
   bool isReexportedBy(Library library) {
-    assert (package.allLibrariesAdded);
+    assert(package.allLibrariesAdded);
     if (_isReexportedBy.containsKey(library)) return _isReexportedBy[library];
-    Set<Element> otherElements = new Set()..addAll(library.allModelElements.map((l) => l.element));
-    Set<Element> ourElements = new Set()..addAll(allModelElements.map((l) => l.element));
-    if (ourElements.difference(otherElements).length <= ourElements.length / 2) {
+    Set<Element> otherElements = new Set()
+      ..addAll(library.allModelElements.map((l) => l.element));
+    Set<Element> ourElements = new Set()
+      ..addAll(allModelElements.map((l) => l.element));
+    if (ourElements.difference(otherElements).length <=
+        ourElements.length / 2) {
       // Less than half of our elements are unique to us.
-      if (otherElements.difference(ourElements).length <= otherElements.length / 2) {
+      if (otherElements.difference(ourElements).length <=
+          otherElements.length / 2) {
         // ... but the same is true for the other library.  Reexporting
         // is ambiguous.
         _isReexportedBy[library] = false;
@@ -1810,9 +1823,11 @@ class Method extends ModelElement
 /// it is that this is the canonical element.
 class ScoredCandidate implements Comparable<ScoredCandidate> {
   final List<String> reasons = [];
+
   /// The ModelElement being scored.
   final ModelElement element;
   final Library library;
+
   /// The score accumulated so far.  Higher means it is more likely that this
   /// is is the
   double score = 0.0;
@@ -1822,7 +1837,8 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
   void alterScore(double scoreDelta, String reason) {
     score += scoreDelta;
     if (scoreDelta != 0) {
-      reasons.add("${reason} (${scoreDelta >= 0 ? '+' : ''}${scoreDelta.toStringAsPrecision(4)})");
+      reasons.add(
+          "${reason} (${scoreDelta >= 0 ? '+' : ''}${scoreDelta.toStringAsPrecision(4)})");
     }
   }
 
@@ -1837,7 +1853,6 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
     return "${library.name}: ${score.toStringAsPrecision(4)} - ${reasons.join(', ')}";
   }
 }
-
 
 /// This class is the foundation of Dartdoc's model for source code.
 /// All ModelElements are contained within a [Package], and laid out in a
@@ -2000,13 +2015,16 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   Set<String> get locationPieces {
-    return new Set()..addAll(
-        element.location.toString().split(_locationSplitter).where((s) => s.isNotEmpty));
+    return new Set()
+      ..addAll(element.location
+          .toString()
+          .split(_locationSplitter)
+          .where((s) => s.isNotEmpty));
   }
 
   Set<String> get namePieces {
-    return new Set()..addAll(
-        name.split(_locationSplitter).where((s) => s.isNotEmpty));
+    return new Set()
+      ..addAll(name.split(_locationSplitter).where((s) => s.isNotEmpty));
   }
 
   // Use components of this element's location to return a score for library
@@ -2020,6 +2038,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         }
       }
     }
+
     // Large boost for @canonicalFor, essentially overriding all other concerns.
     if (lib.canonicalFor.contains(fullyQualifiedName)) {
       scoredCandidate.alterScore(5.0, 'marked @canonicalFor');
@@ -2038,7 +2057,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     assert(!locationPieces.isEmpty);
     if (locationPieces.isEmpty) return scoredCandidate;
     // The more pieces we have of the location in our library name, the more we should boost our score.
-    scoredCandidate.alterScore(lib.namePieces.intersection(locationPieces).length.toDouble() / locationPieces.length.toDouble(), 'element location shares parts with name');
+    scoredCandidate.alterScore(
+        lib.namePieces.intersection(locationPieces).length.toDouble() /
+            locationPieces.length.toDouble(),
+        'element location shares parts with name');
     // If pieces of location at least start with elements of our library name, boost the score a little bit.
     double scoreBoost = 0.0;
     for (String piece in resplit(locationPieces)) {
@@ -2048,7 +2070,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         }
       }
     }
-    scoredCandidate.alterScore(scoreBoost, 'element location parts start with parts of name');
+    scoredCandidate.alterScore(
+        scoreBoost, 'element location parts start with parts of name');
     return scoredCandidate;
   }
 
@@ -2115,7 +2138,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   bool get canHaveParameters =>
       element is ExecutableElement || element is FunctionTypeAliasElement;
 
-
   /// Returns the docs, stripped of their leading comments syntax.
   ModelElement _documentationFrom;
 
@@ -2169,7 +2191,8 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     // Since we're looking for a library, find the [Element] immediately
     // contained by a [CompilationUnitElement] in the tree.
     Element topLevelElement = element;
-    while (topLevelElement != null && topLevelElement is! LibraryElement &&
+    while (topLevelElement != null &&
+        topLevelElement is! LibraryElement &&
         topLevelElement.enclosingElement is! CompilationUnitElement) {
       topLevelElement = topLevelElement.enclosingElement;
     }
@@ -2196,17 +2219,22 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
             // Heuristic scoring to determine which library a human likely
             // considers this element to be primarily 'from', and therefore,
             // canonical.  Still warn if the heuristic isn't that confident.
-            List<ScoredCandidate> scoredCandidates = warnable.scoreCanonicalCandidates(candidateLibraries);
-            candidateLibraries = scoredCandidates.map((s) => s.library).toList();
-            double secondHighestScore = scoredCandidates[scoredCandidates.length - 2].score;
+            List<ScoredCandidate> scoredCandidates =
+                warnable.scoreCanonicalCandidates(candidateLibraries);
+            candidateLibraries =
+                scoredCandidates.map((s) => s.library).toList();
+            double secondHighestScore =
+                scoredCandidates[scoredCandidates.length - 2].score;
             double highestScore = scoredCandidates.last.score;
             double confidence = highestScore - secondHighestScore;
-            String message = "${candidateLibraries.map((l) => l.name)} -> ${candidateLibraries.last.name} (confidence ${confidence.toStringAsPrecision(4)})";
+            String message =
+                "${candidateLibraries.map((l) => l.name)} -> ${candidateLibraries.last.name} (confidence ${confidence.toStringAsPrecision(4)})";
             List<String> debugLines = [];
             debugLines.addAll(scoredCandidates.map((s) => '${s.toString()}'));
 
             if (config == null || confidence < config.reexportMinConfidence) {
-              warnable.warn(PackageWarning.ambiguousReexport, message: message, extendedDebug: debugLines);
+              warnable.warn(PackageWarning.ambiguousReexport,
+                  message: message, extendedDebug: debugLines);
             }
           }
           if (candidateLibraries.isNotEmpty)
@@ -2487,9 +2515,12 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   @override
-  void warn(PackageWarning kind, {String message, Locatable referredFrom, List<String> extendedDebug}) {
+  void warn(PackageWarning kind,
+      {String message, Locatable referredFrom, List<String> extendedDebug}) {
     package.warnOnElement(this, kind,
-        message: message, referredFrom: referredFrom, extendedDebug: extendedDebug);
+        message: message,
+        referredFrom: referredFrom,
+        extendedDebug: extendedDebug);
   }
 
   String get _computeDocumentationComment => element.documentationComment;
@@ -2973,7 +3004,8 @@ class PackageWarningHelpText {
   List<String> longHelp;
   final PackageWarning warning;
 
-  PackageWarningHelpText(this.warning, this.warningName, this.shortHelp, [this.longHelp]) {
+  PackageWarningHelpText(this.warning, this.warningName, this.shortHelp,
+      [this.longHelp]) {
     if (this.longHelp == null) this.longHelp = [];
   }
 }
@@ -2989,13 +3021,15 @@ Map<PackageWarning, PackageWarningHelpText> packageWarningText = {
       PackageWarning.ambiguousReexport,
       "ambiguous-reexport",
       "A symbol is exported from private to public in more than one library and dartdoc can not determine which one is canonical",
-      ["Use {@canonicalFor @@name@@} in the desired library's documentation to resolve",
-      "the ambiguity and/or override dartdoc's decision, or structure your package ",
-      "so the reexport is less ambiguous.  The symbol will still be referenced in ",
-      "all candidates -- this only controls the location where it will be written ",
-      "and which library will be displayed in navigation for the relevant pages.",
-      "The flag --ambiguous-reexport-scorer-min-confidence allows you to set the",
-      "threshold at which this warning will appear."]),
+      [
+        "Use {@canonicalFor @@name@@} in the desired library's documentation to resolve",
+        "the ambiguity and/or override dartdoc's decision, or structure your package ",
+        "so the reexport is less ambiguous.  The symbol will still be referenced in ",
+        "all candidates -- this only controls the location where it will be written ",
+        "and which library will be displayed in navigation for the relevant pages.",
+        "The flag --ambiguous-reexport-scorer-min-confidence allows you to set the",
+        "threshold at which this warning will appear."
+      ]),
   PackageWarning.ignoredCanonicalFor: new PackageWarningHelpText(
       PackageWarning.ignoredCanonicalFor,
       "ignored-canonical-for",
@@ -3138,11 +3172,14 @@ class PackageWarningCounter {
     }
     if (toWrite != null) {
       buffer.write("\n ${toWrite}");
-      if (_warningCounts[kind] == 1 && config.verboseWarnings && packageWarningText[kind].longHelp.isNotEmpty) {
+      if (_warningCounts[kind] == 1 &&
+          config.verboseWarnings &&
+          packageWarningText[kind].longHelp.isNotEmpty) {
         // First time we've seen this warning.  Give a little extra info.
         final String separator = '\n            ';
         final String nameSub = r'@@name@@';
-        String verboseOut = '$separator${packageWarningText[kind].longHelp.join(separator)}';
+        String verboseOut =
+            '$separator${packageWarningText[kind].longHelp.join(separator)}';
         verboseOut = verboseOut.replaceAll(nameSub, name);
         buffer.write(verboseOut);
       }
@@ -3288,8 +3325,12 @@ class Package implements Nameable, Documentable {
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
   @override
-  void warn(PackageWarning kind, {String message, Locatable referredFrom, List<String> extendedDebug}) {
-    warnOnElement(this, kind, message: message, referredFrom: referredFrom, extendedDebug: extendedDebug);
+  void warn(PackageWarning kind,
+      {String message, Locatable referredFrom, List<String> extendedDebug}) {
+    warnOnElement(this, kind,
+        message: message,
+        referredFrom: referredFrom,
+        extendedDebug: extendedDebug);
   }
 
   /// Returns colon-stripped name and location of the given locatable.
@@ -3410,13 +3451,12 @@ class Package implements Nameable, Documentable {
       fullMessage = messageParts.join('\n    ');
     }
 
-    packageWarningCounter.addWarning(
-        warnable, kind, message, fullMessage);
+    packageWarningCounter.addWarning(warnable, kind, message, fullMessage);
   }
 
   Set<String> get namePieces {
-    return new Set()..addAll(
-        name.split(_locationSplitter).where((s) => s.isNotEmpty));
+    return new Set()
+      ..addAll(name.split(_locationSplitter).where((s) => s.isNotEmpty));
   }
 
   static Package _withAutoIncludedDependencies(
@@ -3445,8 +3485,8 @@ class Package implements Nameable, Documentable {
     });
 
     if (libraryElements.length > startLength)
-      package = _withAutoIncludedDependencies(
-          libraryElements, packageMeta, options);
+      package =
+          _withAutoIncludedDependencies(libraryElements, packageMeta, options);
     options.autoFlush = true;
     package.flushWarnings;
     return package;
@@ -3766,8 +3806,7 @@ class Package implements Nameable, Documentable {
   /// a documentation entry point (for elements that have no Library within the
   /// set of canonical Libraries).
   Library findOrCreateLibraryFor(Element e) {
-    if (e == null)
-      1+1;
+    if (e == null) 1 + 1;
     // This is just a cache to avoid creating lots of libraries over and over.
     if (allLibraries.containsKey(e.library)) {
       return allLibraries[e.library];

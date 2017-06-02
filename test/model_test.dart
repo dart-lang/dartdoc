@@ -125,7 +125,12 @@ void main() {
   });
 
   group('Library', () {
-    Library dartAsyncLib, anonLib, isDeprecated, someLib, reexportOneLib, reexportTwoLib;
+    Library dartAsyncLib,
+        anonLib,
+        isDeprecated,
+        someLib,
+        reexportOneLib,
+        reexportTwoLib;
     Class SomeClass, SomeOtherClass, YetAnotherClass, AUnicornClass;
 
     setUp(() {
@@ -139,10 +144,10 @@ void main() {
 
       someLib = package.allLibraries.values
           .firstWhere((lib) => lib.name == 'reexport.somelib');
-      reexportOneLib = package.libraries
-          .firstWhere((lib) => lib.name == 'reexport_one');
-      reexportTwoLib = package.libraries
-          .firstWhere((lib) => lib.name == 'reexport_two');
+      reexportOneLib =
+          package.libraries.firstWhere((lib) => lib.name == 'reexport_one');
+      reexportTwoLib =
+          package.libraries.firstWhere((lib) => lib.name == 'reexport_two');
       SomeClass = someLib.getClassByName('SomeClass');
       SomeOtherClass = someLib.getClassByName('SomeOtherClass');
       YetAnotherClass = someLib.getClassByName('YetAnotherClass');
@@ -232,31 +237,32 @@ void main() {
     });
 
     test('with ambiguous reexport warnings', () {
-      final warningMsg = '(reexport_one, reexport_two) -> reexport_two (confidence 0.000)';
+      final warningMsg =
+          '(reexport_one, reexport_two) -> reexport_two (confidence 0.000)';
       // Unicorn class has a warning because two @canonicalFors cancel each other out.
-      expect(package.packageWarningCounter.hasWarning(
-          AUnicornClass,
-          PackageWarning.ambiguousReexport,
-          warningMsg), isTrue);
+      expect(
+          package.packageWarningCounter.hasWarning(
+              AUnicornClass, PackageWarning.ambiguousReexport, warningMsg),
+          isTrue);
       // This class is ambiguous without a @canonicalFor
-      expect(package.packageWarningCounter.hasWarning(
-          YetAnotherClass,
-          PackageWarning.ambiguousReexport,
-          warningMsg), isTrue);
+      expect(
+          package.packageWarningCounter.hasWarning(
+              YetAnotherClass, PackageWarning.ambiguousReexport, warningMsg),
+          isTrue);
       // These two classes have a @canonicalFor
-      expect(package.packageWarningCounter.hasWarning(
-          SomeClass,
-          PackageWarning.ambiguousReexport,
-          warningMsg), isFalse);
-      expect(package.packageWarningCounter.hasWarning(
-          SomeOtherClass,
-          PackageWarning.ambiguousReexport,
-          warningMsg), isFalse);
+      expect(
+          package.packageWarningCounter.hasWarning(
+              SomeClass, PackageWarning.ambiguousReexport, warningMsg),
+          isFalse);
+      expect(
+          package.packageWarningCounter.hasWarning(
+              SomeOtherClass, PackageWarning.ambiguousReexport, warningMsg),
+          isFalse);
       // This library has a canonicalFor with no corresponding item
-      expect(package.packageWarningCounter.hasWarning(
-          reexportTwoLib,
-          PackageWarning.ignoredCanonicalFor,
-          'something.ThatDoesntExist'), isTrue);
+      expect(
+          package.packageWarningCounter.hasWarning(reexportTwoLib,
+              PackageWarning.ignoredCanonicalFor, 'something.ThatDoesntExist'),
+          isTrue);
     });
 
     test('@canonicalFor directive works', () {
