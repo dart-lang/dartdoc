@@ -1829,7 +1829,7 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
   final Library library;
 
   /// The score accumulated so far.  Higher means it is more likely that this
-  /// is is the
+  /// is the intended canonical Library.
   double score = 0.0;
 
   ScoredCandidate(this.element, this.library);
