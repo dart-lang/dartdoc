@@ -44,17 +44,6 @@ header form {
   padding-right: 30px;
   
 }
-header #search-box {
-      color: #555;
-background-color: #fff;
-background-image: none;
-border: 1px solid #ccc;
-border-radius: 2px;
-font-family: inherit;
-padding: 4px 6px;
-font-size: 15px;
-height: 20px;
-}
 footer {
   flex: 0 0 16px;
   display: flex;
@@ -77,7 +66,6 @@ main {
 ::-webkit-scrollbar-button:hover{ background-color: #AAA; }
 ::-webkit-scrollbar-thumb{ background-color: #CCC; }
 ::-webkit-scrollbar-thumb:hover{ background-color: #CCC; }
-::-webkit-scrollbar-track{ background-color: #efefef; }
 ::-webkit-scrollbar{ width: 4px; }
 
 .main-content {
@@ -114,18 +102,18 @@ nav.navbar {
   border: 0;
 }
 
+@media (max-width: 767px) {
+  .hidden-xs {
+    display: none!important;
+  }
+}
+
 nav.navbar .row {
   padding-top: 8px;
 }
 
 nav .container {
   white-space: nowrap;
-}
-
-@media screen and (min-width: 500px) and (max-width: 768px) {
-  .navbar-right {
-      float: right!important;
-  }
 }
 
 header {
@@ -220,6 +208,7 @@ strong {
 
 p {
   margin-bottom: 1em;
+  margin-top: 0;
 }
 
 a, a:hover {
@@ -732,8 +721,8 @@ button {
 .tt-query,
 .tt-hint {
   width: 200px;
-  height: 30px;
-  padding: 8px 12px;
+  height: 20px;
+  padding: 4px 12px;
   line-height: 30px;
   outline: none;
 }
