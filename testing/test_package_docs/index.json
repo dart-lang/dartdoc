@@ -1575,6 +1575,94 @@
   }
  },
  {
+  "name": "Helper",
+  "qualifiedName": "ex.Helper",
+  "href": "ex/Helper-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "Helper",
+  "qualifiedName": "ex.Helper",
+  "href": "ex/Helper/Helper.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Helper",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "ex.Helper.==",
+  "href": "ex/Helper/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Helper",
+   "type": "class"
+  }
+ },
+ {
+  "name": "getContents",
+  "qualifiedName": "ex.Helper.getContents",
+  "href": "ex/Helper/getContents.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Helper",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "ex.Helper.hashCode",
+  "href": "ex/Helper/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Helper",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "ex.Helper.noSuchMethod",
+  "href": "ex/Helper/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Helper",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "ex.Helper.runtimeType",
+  "href": "ex/Helper/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Helper",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "ex.Helper.toString",
+  "href": "ex/Helper/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Helper",
+   "type": "class"
+  }
+ },
+ {
   "name": "Klass",
   "qualifiedName": "ex.Klass",
   "href": "ex/Klass-class.html",
@@ -6374,112 +6462,6 @@
   "enclosedBy": {
    "name": "YetAnotherClass",
    "type": "class"
-  }
- },
- {
-  "name": "src.mylib",
-  "qualifiedName": "src.mylib",
-  "href": "src.mylib/src.mylib-library.html",
-  "type": "library",
-  "overriddenDepth": 0
- },
- {
-  "name": "Helper",
-  "qualifiedName": "src.mylib.Helper",
-  "href": "src.mylib/Helper-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "src.mylib",
-   "type": "library"
-  }
- },
- {
-  "name": "Helper",
-  "qualifiedName": "src.mylib.Helper",
-  "href": "src.mylib/Helper/Helper.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Helper",
-   "type": "class"
-  }
- },
- {
-  "name": "operator ==",
-  "qualifiedName": "src.mylib.Helper.==",
-  "href": "src.mylib/Helper/operator_equals.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Helper",
-   "type": "class"
-  }
- },
- {
-  "name": "getContents",
-  "qualifiedName": "src.mylib.Helper.getContents",
-  "href": "src.mylib/Helper/getContents.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Helper",
-   "type": "class"
-  }
- },
- {
-  "name": "hashCode",
-  "qualifiedName": "src.mylib.Helper.hashCode",
-  "href": "src.mylib/Helper/hashCode.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Helper",
-   "type": "class"
-  }
- },
- {
-  "name": "noSuchMethod",
-  "qualifiedName": "src.mylib.Helper.noSuchMethod",
-  "href": "src.mylib/Helper/noSuchMethod.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Helper",
-   "type": "class"
-  }
- },
- {
-  "name": "runtimeType",
-  "qualifiedName": "src.mylib.Helper.runtimeType",
-  "href": "src.mylib/Helper/runtimeType.html",
-  "type": "property",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Helper",
-   "type": "class"
-  }
- },
- {
-  "name": "toString",
-  "qualifiedName": "src.mylib.Helper.toString",
-  "href": "src.mylib/Helper/toString.html",
-  "type": "method",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "Helper",
-   "type": "class"
-  }
- },
- {
-  "name": "helperFunction",
-  "qualifiedName": "src.mylib.helperFunction",
-  "href": "src.mylib/helperFunction.html",
-  "type": "function",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "src.mylib",
-   "type": "library"
   }
  },
  {
