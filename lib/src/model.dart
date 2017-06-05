@@ -1956,17 +1956,24 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   String get _documentationLocal {
     if (_rawDocs != null) return _rawDocs;
-    _rawDocs = _computeDocumentationComment ?? '';
-    _rawDocs = stripComments(_rawDocs) ?? '';
-    _rawDocs = _injectExamples(_rawDocs);
-    _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
-    _rawDocs = _injectMacros(_rawDocs);
+    if (config.dropTextFrom.contains(element.library.name)) {
+      _rawDocs = '';
+    } else {
+      _rawDocs = _computeDocumentationComment ?? '';
+      _rawDocs = stripComments(_rawDocs) ?? '';
+      _rawDocs = _injectExamples(_rawDocs);
+      _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
+      _rawDocs = _injectMacros(_rawDocs);
+    }
     return _rawDocs;
   }
 
   /// Returns the docs, stripped of their leading comments syntax.
   @override
-  String get documentation => documentationFrom._documentationLocal;
+  String get documentation {
+    String x = documentationFrom._documentationLocal;
+    return x;
+  }
 
   Library get definingLibrary => package.findOrCreateLibraryFor(element);
 

@@ -127,23 +127,6 @@
       <span class="returntype">Iterable&lt;E&gt;</span>
       <span class="name ">getRange</span>(<wbr><span class="parameter" id="getRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span>, </span> <span class="parameter" id="getRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span></span>)
     </section>
-    <section class="desc markdown">
-      <p>Returns an <code>Iterable</code> that iterates over the objects in the range
-<code>start</code> inclusive to <code>end</code> exclusive.</p>
-<p>The provide range, given by <code>start</code> and <code>end</code>, must be valid at the time
-of the call.</p>
-<p>A range from <code>start</code> to <code>end</code> is valid if <code>0 &lt;= start &lt;= end &lt;= len</code>, where
-<code>len</code> is this list's <code>length</code>. The range starts at <code>start</code> and has length
-<code>end - start</code>. An empty range (with <code>end == start</code>) is valid.</p>
-<p>The returned <code>Iterable</code> behaves like <code>skip(start).take(end - start)</code>.
-That is, it does <em>not</em> throw if this list changes size.</p>
-<pre class="prettyprint language-dart"><code>List&lt;String&gt; colors = ['red', 'green', 'blue', 'orange', 'pink'];
-Iterable&lt;String&gt; range = colors.getRange(1, 4);
-range.join(', ');  // 'green, blue, orange'
-colors.length = 3;
-range.join(', ');  // 'green, blue'
-</code></pre>
-    </section>
     
     
 

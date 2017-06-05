@@ -127,19 +127,6 @@
       <span class="returntype">bool</span>
       <span class="name ">contains</span>(<wbr><span class="parameter" id="contains-param-element"><span class="type-annotation">Object</span> <span class="parameter-name">element</span></span>)
     </section>
-    <section class="desc markdown">
-      <p>Returns true if the collection contains an element equal to <code>element</code>.</p>
-<p>This operation will check each element in order for being equal to
-<code>element</code>, unless it has a more efficient way to find an element
-equal to <code>element</code>.</p>
-<p>The equality used to determine whether <code>element</code> is equal to an element of
-the iterable defaults to the <code>Object.==</code> of the element.</p>
-<p>Some types of iterable may have a different equality used for its elements.
-For example, a <code>Set</code> may have a custom equality
-(see <code>Set.identity</code>) that its <code>contains</code> uses.
-Likewise the <code>Iterable</code> returned by a <code>Map.keys</code> call
-should use the same equality that the <code>Map</code> uses for keys.</p>
-    </section>
     
     
 

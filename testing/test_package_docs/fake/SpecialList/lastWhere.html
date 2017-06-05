@@ -127,18 +127,6 @@
       <span class="returntype">E</span>
       <span class="name ">lastWhere</span>(<wbr><span class="parameter" id="lastWhere-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>), {</span> <span class="parameter" id="lastWhere-param-orElse"><span class="type-annotation">E</span> <span class="parameter-name">orElse</span>()</span> })
     </section>
-    <section class="desc markdown">
-      <p>Returns the last element that satisfies the given predicate <code>test</code>.</p>
-<p>An iterable that can access its elements directly may check its
-elements in any order (for example a list starts by checking the
-last element and then moves towards the start of the list).
-The default implementation iterates elements in iteration order,
-checks <code>test(element)</code> for each,
-and finally returns that last one that matched.</p>
-<p>If no element satisfies <code>test</code>, the result of invoking the <code>orElse</code>
-function is returned.
-If <code>orElse</code> is omitted, it defaults to throwing a <code>StateError</code>.</p>
-    </section>
     
     
 

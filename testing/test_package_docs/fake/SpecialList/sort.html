@@ -127,29 +127,6 @@
       <span class="returntype">void</span>
       <span class="name ">sort</span>(<wbr>[<span class="parameter" id="sort-param-compare"><span class="type-annotation">int</span> <span class="parameter-name">compare</span>(<span class="parameter" id="compare-param-a"><span class="type-annotation">E</span> <span class="parameter-name">a</span>, </span> <span class="parameter" id="compare-param-b"><span class="type-annotation">E</span> <span class="parameter-name">b</span></span>)</span> ])
     </section>
-    <section class="desc markdown">
-      <p>Sorts this list according to the order specified by the <code>compare</code> function.</p>
-<p>The <code>compare</code> function must act as a <code>Comparator</code>.</p>
-<pre class="prettyprint language-dart"><code>List&lt;String&gt; numbers = ['two', 'three', 'four'];
-// Sort from shortest to longest.
-numbers.sort((a, b) =&gt; a.length.compareTo(b.length));
-print(numbers);  // [two, four, three]
-</code></pre>
-<p>The default List implementations use <code>Comparable.compare</code> if
-<code>compare</code> is omitted.</p>
-<pre class="prettyprint language-dart"><code>List&lt;int&gt; nums = [13, 2, -11];
-nums.sort();
-print(nums);  // [-11, 2, 13]
-</code></pre>
-<p>A <code>Comparator</code> may compare objects as equal (return zero), even if they
-are distinct objects.
-The sort function is not guaranteed to be stable, so distinct objects
-that compare as equal may occur in any order in the result:</p>
-<pre class="prettyprint language-dart"><code>List&lt;String&gt; numbers = ['one', 'two', 'three', 'four'];
-numbers.sort((a, b) =&gt; a.length.compareTo(b.length));
-print(numbers);  // [one, two, four, three] OR [two, one, four, three]
-</code></pre>
-    </section>
     
     
 

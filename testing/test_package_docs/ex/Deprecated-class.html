@@ -110,33 +110,6 @@
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
 
-    <section class="desc markdown">
-      <p>The annotation <code>@Deprecated('expires when')</code> marks a feature as deprecated.</p>
-<p>The annotation <code>@deprecated</code> is a shorthand for deprecating until
-an unspecified "next release".</p>
-<p>The intent of the <code>@Deprecated</code> annotation is to inform users of a feature
-that they should change their code, even if it is currently still working
-correctly.</p>
-<p>A deprecated feature is scheduled to be removed at a later time, possibly
-specified as the "expires" field of the annotation.
-This means that a deprecated feature should not be used, or code using it
-will break at some point in the future. If there is code using the feature,
-that code should be rewritten to not use the deprecated feature.</p>
-<p>A deprecated feature should document how the same effect can be achieved,
-so the programmer knows how to rewrite the code.</p>
-<p>The <code>@Deprecated</code> annotation applies to libraries, top-level declarations
-(variables, getters, setters, functions, classes and typedefs),
-class-level declarations (variables, getters, setters, methods, operators or
-constructors, whether static or not), named optional arguments and
-trailing optional positional parameters.</p>
-<p>Deprecation is transitive:</p><ul><li>If a library is deprecated, so is every member of it.</li><li>If a class is deprecated, so is every member of it.</li><li>If a variable is deprecated, so are its implicit getter and setter.</li></ul>
-<p>A tool that processes Dart source code may report when:</p><ul><li>the code imports a deprecated library.</li><li>the code exports a deprecated library, or any deprecated member of &nbsp;a non-deprecated library.</li><li>the code refers statically to a deprecated declaration.</li><li>the code dynamically uses a member of an object with a statically known
-type, where the member is deprecated on the static type of the object.</li><li>the code dynamically calls a method with an argument where the
-corresponding optional parameter is deprecated on the object's static type.</li></ul>
-<p>If the deprecated use is inside a library, class or method which is itself
-deprecated, the tool should not bother the user about it.
-A deprecated feature is expected to use other deprecated features.</p>
-    </section>
     
 
     <section class="summary offset-anchor" id="constructors">
@@ -147,8 +120,7 @@ A deprecated feature is expected to use other deprecated features.</p>
           <span class="name"><a href="ex/Deprecated/Deprecated.html">Deprecated</a></span><span class="signature">(<span class="parameter" id="-param-expires"><span class="type-annotation">String</span> <span class="parameter-name">expires</span></span>)</span>
         </dt>
         <dd>
-          Create a deprecation annotation which specifies the expiration of the
-annotated feature.
+          
           <div class="constructor-modifier features">const</div>
         </dd>
       </dl>
@@ -163,7 +135,7 @@ annotated feature.
           <span class="signature">&#8594; String</span>
         </dt>
         <dd>
-          A description of when the deprecated feature is expected to be retired.
+          
           <div class="features">final</div>
 </dd>
         <dt id="hashCode" class="property inherited">
@@ -171,7 +143,7 @@ annotated feature.
           <span class="signature">&#8594; int</span>
         </dt>
         <dd class="inherited">
-          The hash code for this object.
+          
           <div class="features">read-only, inherited</div>
 </dd>
         <dt id="runtimeType" class="property inherited">
@@ -179,7 +151,7 @@ annotated feature.
           <span class="signature">&#8594; Type</span>
         </dt>
         <dd class="inherited">
-          A representation of the runtime type of the object.
+          
           <div class="features">read-only, inherited</div>
 </dd>
       </dl>
@@ -194,7 +166,7 @@ annotated feature.
           </span>
         </dt>
         <dd>
-          Returns a string representation of this object.
+          
           
 </dd>
         <dt id="noSuchMethod" class="callable inherited">
@@ -203,7 +175,7 @@ annotated feature.
           </span>
         </dt>
         <dd class="inherited">
-          Invoked when a non-existent method or property is accessed.
+          
           <div class="features">inherited</div>
 </dd>
       </dl>
@@ -218,7 +190,7 @@ annotated feature.
           </span>
         </dt>
         <dd class="inherited">
-          The equality operator.
+          
           <div class="features">inherited</div>
 </dd>
       </dl>
