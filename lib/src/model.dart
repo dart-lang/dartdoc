@@ -3478,8 +3478,6 @@ class Package implements Nameable, Documentable {
               !isPrivate(modelTypeElement.library.element) &&
               modelTypeElement.library.canonicalLibrary == null &&
               !libraryElements.contains(modelTypeElement.library.element)) {
-            if (modelTypeElement.library.element.name == 'src.mylib')
-              1+1;
             libraryElements.add(modelTypeElement.library.element);
           }
         }

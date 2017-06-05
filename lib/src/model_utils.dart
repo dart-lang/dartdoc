@@ -52,7 +52,6 @@ bool isInExportedLibraries(
       .any((lib) => lib == library || lib.exportedLibraries.contains(library));
 }
 
-
 final RegExp slashes = new RegExp('[\/]');
 bool isPrivate(Element e) {
   if (e.name.startsWith('_') ||
@@ -64,8 +63,9 @@ bool isPrivate(Element e) {
   if (e is LibraryElement) {
     List<String> locationParts = e.location.components[0].split(slashes);
     // TODO(jcollins-g): Implement real cross package detection
-    if (locationParts.length >= 2 && locationParts[0].startsWith('package:') && locationParts[1] == 'src')
-      return true;
+    if (locationParts.length >= 2 &&
+        locationParts[0].startsWith('package:') &&
+        locationParts[1] == 'src') return true;
   }
   return false;
 }
