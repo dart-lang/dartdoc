@@ -269,7 +269,8 @@ ArgParser _createArgsParser() {
   parser.addOption('ambiguous-reexport-scorer-min-confidence',
       help:
           'Minimum scorer confidence to suppress warning on ambiguous reexport.',
-      defaultsTo: "0.1");
+      defaultsTo: "0.1",
+      hide: true);
   parser.addFlag('verbose-warnings',
       help: 'Display extra debugging information and help with warnings.',
       negatable: true,
