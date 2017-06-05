@@ -156,17 +156,17 @@ main(List<String> arguments) async {
       PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
 
   setConfig(
-      addCrossdart: args['add-crossdart'] as bool,
+      addCrossdart: args['add-crossdart'],
       examplePathPrefix: args['example-path-prefix'],
       showWarnings: args['show-warnings'],
-      includeSource: args['include-source'] as bool,
+      includeSource: args['include-source'],
       inputDir: inputDir,
       sdkVersion: sdk.sdkVersion,
       autoIncludeDependencies: args['auto-include-dependencies'],
       categoryOrder: args['category-order'],
       reexportMinConfidence:
           double.parse(args['ambiguous-reexport-scorer-min-confidence']),
-      verboseWarnings: args['verbose-warnings'] as bool);
+      verboseWarnings: args['verbose-warnings']);
 
   DartDoc dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries,
