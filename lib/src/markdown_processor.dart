@@ -6,7 +6,6 @@
 library dartdoc.markdown_processor;
 
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:analyzer/dart/ast/ast.dart';

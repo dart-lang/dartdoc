@@ -127,22 +127,6 @@
       <span class="returntype">T</span>
       <span class="name ">fold</span>&lt;T&gt;(<wbr><span class="parameter" id="fold-param-initialValue"><span class="type-annotation">T</span> <span class="parameter-name">initialValue</span>, </span> <span class="parameter" id="fold-param-combine"><span class="type-annotation">T</span> <span class="parameter-name">combine</span>(<span class="parameter" id="combine-param-previousValue"><span class="type-annotation">T</span> <span class="parameter-name">previousValue</span>, </span> <span class="parameter" id="combine-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>)
     </section>
-    <section class="desc markdown">
-      <p>Reduces a collection to a single value by iteratively combining each
-element of the collection with an existing value</p>
-<p>Uses <code>initialValue</code> as the initial value,
-then iterates through the elements and updates the value with
-each element using the <code>combine</code> function, as if by:</p>
-<pre class="prettyprint language-dart"><code>var value = initialValue;
-for (E element in this) {
-  value = combine(value, element);
-}
-return value;
-</code></pre>
-<p>Example of calculating the sum of an iterable:</p>
-<pre class="prettyprint language-dart"><code>iterable.fold(0, (prev, element) =&gt; prev + element);
-</code></pre>
-    </section>
     
     
 

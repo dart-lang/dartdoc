@@ -127,15 +127,6 @@
       <span class="returntype">void</span>
       <span class="name ">retainWhere</span>(<wbr><span class="parameter" id="retainWhere-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>)
     </section>
-    <section class="desc markdown">
-      <p>Removes all objects from this list that fail to satisfy <code>test</code>.</p>
-<p>An object <code>o</code> satisfies <code>test</code> if <code>test(o)</code> is true.</p>
-<pre class="prettyprint language-dart"><code>List&lt;String&gt; numbers = ['one', 'two', 'three', 'four'];
-numbers.retainWhere((item) =&gt; item.length == 3);
-numbers.join(', '); // 'one, two'
-</code></pre>
-<p>Throws an <code>UnsupportedError</code> if this is a fixed-length list.</p>
-    </section>
     
     
 

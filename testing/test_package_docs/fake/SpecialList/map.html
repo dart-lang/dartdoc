@@ -127,18 +127,6 @@
       <span class="returntype">Iterable&lt;T&gt;</span>
       <span class="name ">map</span>&lt;T&gt;(<wbr><span class="parameter" id="map-param-f"><span class="type-annotation">T</span> <span class="parameter-name">f</span>(<span class="parameter" id="f-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>)
     </section>
-    <section class="desc markdown">
-      <p>Returns a new lazy <code>Iterable</code> with elements that are created by
-calling <code>f</code> on each element of this <code>Iterable</code> in iteration order.</p>
-<p>This method returns a view of the mapped elements. As long as the
-returned <code>Iterable</code> is not iterated over, the supplied function <code>f</code> will
-not be invoked. The transformed elements will not be cached. Iterating
-multiple times over the returned <code>Iterable</code> will invoke the supplied
-function <code>f</code> multiple times on the same element.</p>
-<p>Methods on the returned iterable are allowed to omit calling <code>f</code>
-on any element where the result isn't needed.
-For example, <a href="fake/SpecialList/elementAt.html">elementAt</a> may call <code>f</code> only once.</p>
-    </section>
     
     
 

@@ -214,6 +214,7 @@ updateTestPackageDocs() {
         'examples',
         '--no-include-source',
         '--pretty-index-json',
+        '--hide-sdk-text',
         '--exclude',
         'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,meta',
         '--output',

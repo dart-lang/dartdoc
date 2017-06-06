@@ -127,20 +127,6 @@
       <span class="returntype">bool</span>
       <span class="name ">remove</span>(<wbr><span class="parameter" id="remove-param-element"><span class="type-annotation">Object</span> <span class="parameter-name">element</span></span>)
     </section>
-    <section class="desc markdown">
-      <p>Removes the first occurrence of <code>value</code> from this list.</p>
-<p>Returns true if <code>value</code> was in the list, false otherwise.</p>
-<pre class="prettyprint language-dart"><code>List&lt;String&gt; parts = ['head', 'shoulders', 'knees', 'toes'];
-parts.remove('head'); // true
-parts.join(', ');     // 'shoulders, knees, toes'
-</code></pre>
-<p>The method has no effect if <code>value</code> was not in the list.</p>
-<pre class="prettyprint language-dart"><code>// Note: 'head' has already been removed.
-parts.remove('head'); // false
-parts.join(', ');     // 'shoulders, knees, toes'
-</code></pre>
-<p>An <code>UnsupportedError</code> occurs if the list is fixed-length.</p>
-    </section>
     
     
 

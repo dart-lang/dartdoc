@@ -21,6 +21,7 @@ void main() {
 
     setUp(() {
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
+      setConfig();
     });
 
     tearDown(() {
