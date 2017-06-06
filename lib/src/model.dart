@@ -1849,9 +1849,8 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
   }
 
   @override
-  String toString() {
-    return "${library.name}: ${score.toStringAsPrecision(4)} - ${reasons.join(', ')}";
-  }
+  String toString() =>
+      "${library.name}: ${score.toStringAsPrecision(4)} - ${reasons.join(', ')}";
 }
 
 /// This class is the foundation of Dartdoc's model for source code.
@@ -1880,7 +1879,8 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
 /// helps prevent subtle bugs as generated output for a non-canonical
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
-abstract class ModelElement implements Comparable, Nameable, Documentable {
+abstract class ModelElement extends Nameable
+    implements Comparable, Documentable {
   final Element _element;
   final Library _library;
 
@@ -2020,11 +2020,6 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
           .toString()
           .split(_locationSplitter)
           .where((s) => s.isNotEmpty));
-  }
-
-  Set<String> get namePieces {
-    return new Set()
-      ..addAll(name.split(_locationSplitter).where((s) => s.isNotEmpty));
   }
 
   // Use components of this element's location to return a score for library
@@ -2922,6 +2917,9 @@ class ModelFunction extends ModelElement
 /// Something that has a name.
 abstract class Nameable {
   String get name;
+
+  Set<String> get namePieces => new Set()
+    ..addAll(name.split(_locationSplitter).where((s) => s.isNotEmpty));
 }
 
 class Operator extends Method {
@@ -3006,7 +3004,7 @@ class PackageWarningHelpText {
 
   PackageWarningHelpText(this.warning, this.warningName, this.shortHelp,
       [this.longHelp]) {
-    if (this.longHelp == null) this.longHelp = [];
+    this.longHelp ??= [];
   }
 }
 
@@ -3233,7 +3231,7 @@ class PackageWarningCounter {
   }
 }
 
-class Package implements Nameable, Documentable {
+class Package extends Nameable implements Documentable {
   // Library objects serving as entry points for documentation.
   final List<Library> _libraries = [];
 
@@ -3398,7 +3396,7 @@ class Package implements Nameable, Documentable {
         break;
       case PackageWarning.ignoredCanonicalFor:
         warningMessage =
-            "library says it is {@canonicalFor ${message}} but ${message} is not exported there";
+            "library says it is {@canonicalFor ${message}} but ${message} can't be canonical there";
         break;
       case PackageWarning.categoryOrderGivesMissingPackageName:
         warningMessage =
@@ -3452,11 +3450,6 @@ class Package implements Nameable, Documentable {
     }
 
     packageWarningCounter.addWarning(warnable, kind, message, fullMessage);
-  }
-
-  Set<String> get namePieces {
-    return new Set()
-      ..addAll(name.split(_locationSplitter).where((s) => s.isNotEmpty));
   }
 
   static Package _withAutoIncludedDependencies(

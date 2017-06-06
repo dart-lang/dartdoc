@@ -266,8 +266,8 @@ void main() {
     });
 
     test('@canonicalFor directive works', () {
-      expect(SomeOtherClass.canonicalLibrary, equals(reexportOneLib));
-      expect(SomeClass.canonicalLibrary, equals(reexportTwoLib));
+      expect(SomeOtherClass.canonicalLibrary, reexportOneLib);
+      expect(SomeClass.canonicalLibrary, reexportTwoLib);
     });
   });
 
@@ -1818,7 +1818,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 }
 
-class StringName implements Nameable {
+class StringName extends Nameable {
   @override
   final String name;
   StringName(this.name);
