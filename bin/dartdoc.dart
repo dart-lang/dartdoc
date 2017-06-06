@@ -295,6 +295,7 @@ ArgParser _createArgsParser() {
         "Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.",
     negatable: true,
     defaultsTo: false,
+    hide: true,
   );
 
   return parser;

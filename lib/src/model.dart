@@ -1970,10 +1970,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   /// Returns the docs, stripped of their leading comments syntax.
   @override
-  String get documentation {
-    String x = documentationFrom._documentationLocal;
-    return x;
-  }
+  String get documentation => documentationFrom._documentationLocal;
 
   Library get definingLibrary => package.findOrCreateLibraryFor(element);
 

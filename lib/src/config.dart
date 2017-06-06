@@ -42,12 +42,8 @@ void setConfig(
     bool autoIncludeDependencies: false,
     List<String> categoryOrder,
     List<String> dropTextFrom}) {
-  if (categoryOrder == null) {
-    categoryOrder = new UnmodifiableListView<String>([]);
-  }
-  if (dropTextFrom == null) {
-    dropTextFrom = new UnmodifiableListView<String>([]);
-  }
+  categoryOrder ??= new UnmodifiableListView<String>([]);
+  dropTextFrom ??= new UnmodifiableListView<String>([]);
   _config = new Config._(
       inputDir,
       showWarnings,
