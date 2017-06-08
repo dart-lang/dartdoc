@@ -481,6 +481,10 @@ class Class extends ModelElement implements EnclosedElement {
     Map<String, ExecutableElement> imap =
         library.inheritanceManager.getMembersInheritedFromInterfaces(element);
 
+    if (cmap.length + imap.length > 10) {
+      1+1;
+    }
+
     // remove methods that exist on this class
     _methods.forEach((method) {
       cmap.remove(method.name);
