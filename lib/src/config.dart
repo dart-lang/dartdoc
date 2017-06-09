@@ -16,6 +16,7 @@ class Config {
   final String sdkVersion;
   final bool autoIncludeDependencies;
   final List<String> categoryOrder;
+  final List<String> dropTextFrom;
   Config._(
       this.inputDir,
       this.showWarnings,
@@ -24,7 +25,8 @@ class Config {
       this.includeSource,
       this.sdkVersion,
       this.autoIncludeDependencies,
-      this.categoryOrder);
+      this.categoryOrder,
+      this.dropTextFrom);
 }
 
 Config _config;
@@ -38,10 +40,10 @@ void setConfig(
     bool includeSource: true,
     String sdkVersion,
     bool autoIncludeDependencies: false,
-    List<String> categoryOrder}) {
-  if (categoryOrder == null) {
-    categoryOrder = new UnmodifiableListView<String>([]);
-  }
+    List<String> categoryOrder,
+    List<String> dropTextFrom}) {
+  categoryOrder ??= new UnmodifiableListView<String>([]);
+  dropTextFrom ??= new UnmodifiableListView<String>([]);
   _config = new Config._(
       inputDir,
       showWarnings,
@@ -50,5 +52,6 @@ void setConfig(
       includeSource,
       sdkVersion,
       autoIncludeDependencies,
-      categoryOrder);
+      categoryOrder,
+      dropTextFrom);
 }

@@ -117,18 +117,6 @@
       <span class="returntype">Iterable&lt;E&gt;</span>
       <span class="name ">where</span>(<wbr><span class="parameter" id="where-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>)
     </section>
-    <section class="desc markdown">
-      <p>Returns a new lazy <code>Iterable</code> with all elements that satisfy the
-predicate <code>test</code>.</p>
-<p>The matching elements have the same order in the returned iterable
-as they have in <a href="fake/SpecialList/iterator.html">iterator</a>.</p>
-<p>This method returns a view of the mapped elements.
-As long as the returned <code>Iterable</code> is not iterated over,
-the supplied function <code>test</code> will not be invoked.
-Iterating will not cache results, and thus iterating multiple times over
-the returned <code>Iterable</code> may invoke the supplied
-function <code>test</code> multiple times on the same element.</p>
-    </section>
     
     
 

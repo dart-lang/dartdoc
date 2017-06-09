@@ -117,14 +117,6 @@
       <span class="returntype">Iterable&lt;E&gt;</span>
       <span class="name ">takeWhile</span>(<wbr><span class="parameter" id="takeWhile-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>)
     </section>
-    <section class="desc markdown">
-      <p>Returns a lazy iterable of the leading elements satisfying <code>test</code>.</p>
-<p>The filtering happens lazily. Every new iterator of the returned
-iterable starts iterating over the elements of <code>this</code>.</p>
-<p>The elements can be computed by stepping through <a href="fake/SpecialList/iterator.html">iterator</a> until an
-element is found where <code>test(element)</code> is false. At that point,
-the returned iterable stops (its <code>moveNext()</code> returns false).</p>
-    </section>
     
     
 

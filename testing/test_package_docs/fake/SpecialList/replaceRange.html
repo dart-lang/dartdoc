@@ -117,21 +117,6 @@
       <span class="returntype">void</span>
       <span class="name ">replaceRange</span>(<wbr><span class="parameter" id="replaceRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span>, </span> <span class="parameter" id="replaceRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span>, </span> <span class="parameter" id="replaceRange-param-newContents"><span class="type-annotation">Iterable&lt;E&gt;</span> <span class="parameter-name">newContents</span></span>)
     </section>
-    <section class="desc markdown">
-      <p>Removes the objects in the range <code>start</code> inclusive to <code>end</code> exclusive
-and inserts the contents of <code>replacement</code> in its place.</p>
-<pre class="prettyprint language-dart"><code>List&lt;int&gt; list = [1, 2, 3, 4, 5];
-list.replaceRange(1, 4, [6, 7]);
-list.join(', '); // '1, 6, 7, 5'
-</code></pre>
-<p>The provide range, given by <code>start</code> and <code>end</code>, must be valid.
-A range from <code>start</code> to <code>end</code> is valid if <code>0 &lt;= start &lt;= end &lt;= len</code>, where
-<code>len</code> is this list's <code>length</code>. The range starts at <code>start</code> and has length
-<code>end - start</code>. An empty range (with <code>end == start</code>) is valid.</p>
-<p>This method does not work on fixed-length lists, even when <code>replacement</code>
-has the same number of elements as the replaced range. In that case use
-<a href="fake/SpecialList/setRange.html">setRange</a> instead.</p>
-    </section>
     
     
 

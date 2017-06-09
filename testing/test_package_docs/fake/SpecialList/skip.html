@@ -117,19 +117,6 @@
       <span class="returntype">Iterable&lt;E&gt;</span>
       <span class="name ">skip</span>(<wbr><span class="parameter" id="skip-param-count"><span class="type-annotation">int</span> <span class="parameter-name">count</span></span>)
     </section>
-    <section class="desc markdown">
-      <p>Returns an <code>Iterable</code> that provides all but the first <code>count</code> elements.</p>
-<p>When the returned iterable is iterated, it starts iterating over <code>this</code>,
-first skipping past the initial <code>count</code> elements.
-If <code>this</code> has fewer than <code>count</code> elements, then the resulting Iterable is
-empty.
-After that, the remaining elements are iterated in the same order as
-in this iterable.</p>
-<p>Some iterables may be able to find later elements without first iterating
-through earlier elements, for example when iterating a <code>List</code>.
-Such iterables are allowed to ignore the initial skipped elements.</p>
-<p>The <code>count</code> must not be negative.</p>
-    </section>
     
     
 
