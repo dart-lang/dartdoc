@@ -49,7 +49,7 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 8px;
+  padding: 20px;
 }
 main {
   flex: 1;
@@ -78,10 +78,16 @@ main {
   max-width: 700px;
 }
 
+.sidebar,
+.main-content {
+  margin: 20px 0;
+}
+
 .sidebar-offcanvas-right {
   flex: 0 1 12em;
   overflow-y: auto;
   padding: 20px 15px 15px 15px;
+  margin-right: 20px;
 }
 /* end for layout */
 
