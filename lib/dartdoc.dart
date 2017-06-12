@@ -220,9 +220,8 @@ class DartDoc {
       {String referredFrom}) {
     // Ordinarily this would go in [Package.warn], but we don't actually know what
     // ModelElement to warn on yet.
-    Locatable referredFromElement;
     Locatable warnOnElement;
-    Set<Locatable> referredFromElements;
+    Set<Locatable> referredFromElements = new Set();
     Set<Locatable> warnOnElements;
 
     // Make all paths relative to origin.
@@ -234,18 +233,15 @@ class DartDoc {
         referredFrom = path.relative(referredFrom, from: origin);
       }
       // Source paths are always relative.
-      referredFromElements = _hrefs[referredFrom];
+      if (_hrefs[referredFrom] != null) {
+        referredFromElements.addAll(_hrefs[referredFrom]);
+      }
     }
     warnOnElements = _hrefs[warnOn];
 
     if (referredFromElements != null) {
       if (referredFromElements.any((e) => e.isCanonical)) {
-        referredFromElement =
-            referredFromElements.firstWhere((e) => e.isCanonical);
-      } else {
-        // If we don't have a canonical element, just pick one.
-        referredFromElement =
-            referredFromElements.isEmpty ? null : referredFromElements.first;
+        referredFromElements.removeWhere((e) => !e.isCanonical);
       }
     }
     if (warnOnElements != null) {
@@ -257,12 +253,12 @@ class DartDoc {
       }
     }
 
-    if (referredFromElement == null && referredFrom == 'index.html')
-      referredFromElement = package;
+    if (referredFromElements.isEmpty  && referredFrom == 'index.html')
+      referredFromElements.add(package);
     String message = warnOn;
     if (referredFrom == 'index.json') message = '$warnOn (from index.json)';
     package.warnOnElement(warnOnElement, kind,
-        message: message, referredFrom: referredFromElement);
+        message: message, referredFrom: referredFromElements.toList());
   }
 
   void _doOrphanCheck(Package package, String origin, Set<String> visited) {

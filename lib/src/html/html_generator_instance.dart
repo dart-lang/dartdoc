@@ -101,7 +101,9 @@ class HtmlGeneratorInstance implements HtmlOptions {
       for (var clazz in lib.allClasses) {
         // TODO(jcollins-g): consider refactor so that only the canonical
         // ModelElements show up in these lists
+        //if (clazz.name != 'FlutterLogoDecoration') continue;
         if (!clazz.isCanonical) continue;
+
         generateClass(package, lib, clazz);
 
         for (var constructor in clazz.constructors) {

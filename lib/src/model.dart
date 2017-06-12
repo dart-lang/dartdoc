@@ -144,6 +144,8 @@ abstract class Inheritable {
         }
       } else {
         if (enclosingElement.isCanonical) {
+          if (enclosingElement is Library)
+            1+1;
           _canonicalEnclosingClass = enclosingElement;
         }
       }
@@ -167,27 +169,70 @@ abstract class Inheritable {
   }
 }
 
+/// A getter or setter that is a member of a Class.
+class InheritableAccessor extends Accessor with Inheritable {
+
+  /// Factory will return an [InheritableAccessor] with isInherited = true
+  /// if [element] is in [inheritedAccessors].
+  factory InheritableAccessor.from(PropertyAccessorElement element, Set<PropertyAccessorElement> inheritedAccessors, Class enclosingClass) {
+    if (element == null) return null;
+    if (inheritedAccessors.contains(element)) {
+      return new ModelElement.from(element, enclosingClass.library, enclosingClass: enclosingClass);
+    }
+    return new ModelElement.from(element, enclosingClass.library);
+  }
+
+  ModelElement _enclosingElement;
+  bool _isInherited = false;
+  InheritableAccessor(
+      PropertyAccessorElement element, Library library)
+      : super(element, library);
+
+  InheritableAccessor.inherited(PropertyAccessorElement element, Library library, this._enclosingElement)
+      : super(element, library) {
+    _isInherited = true;
+  }
+
+  @override
+  bool get isInherited => _isInherited;
+
+  @override
+  ModelElement get enclosingElement {
+    if (_enclosingElement == null) {
+      if (_accessor.enclosingElement is CompilationUnitElement) {
+        _enclosingElement = package
+            .findOrCreateLibraryFor(_accessor.enclosingElement.enclosingElement);
+      } else {
+        _enclosingElement = new ModelElement.from(_accessor.enclosingElement, library);
+      }
+    }
+    return _enclosingElement;
+  }
+}
+
+
 /// Getters and setters.
 class Accessor extends ModelElement
     with SourceCodeMixin
     implements EnclosedElement {
-  ModelElement _enclosingCombo;
+  GetterSetterCombo _enclosingCombo;
+
   Accessor(
-      PropertyAccessorElement element, Library library, this._enclosingCombo)
+      PropertyAccessorElement element, Library library)
       : super(element, library);
+
 
   ModelElement get enclosingCombo => _enclosingCombo;
 
-  @override
-  bool get isCanonical => enclosingCombo.isCanonical;
+  /// Call exactly once to set the enclosing combo for this Accessor.
+  void set enclosingCombo(GetterSetterCombo combo) {
+    assert(_enclosingCombo == null);
+    _enclosingCombo = combo;
+  }
 
   @override
-  void warn(PackageWarning kind, {String message, Locatable referredFrom}) {
-    if (enclosingCombo != null) {
-      enclosingCombo.warn(kind, message: message, referredFrom: referredFrom);
-    } else {
-      super.warn(kind, message: message, referredFrom: referredFrom);
-    }
+  String get computeDocumentationComment {
+    return super.computeDocumentationComment;
   }
 
   @override
@@ -201,6 +246,20 @@ class Accessor extends ModelElement
   }
 
   @override
+  bool get isCanonical => enclosingCombo.isCanonical;
+
+  bool get isInherited => false;
+
+  @override
+  void warn(PackageWarning kind, {String message, List<Locatable> referredFrom}) {
+    if (enclosingCombo != null) {
+      enclosingCombo.warn(kind, message: message, referredFrom: referredFrom);
+    } else {
+      super.warn(kind, message: message, referredFrom: referredFrom);
+    }
+  }
+
+  @override
   String get href {
     if (canonicalLibrary == null) return null;
     return '${canonicalLibrary.dirName}/${_accessor.enclosingElement.name}/${name}.html';
@@ -209,6 +268,7 @@ class Accessor extends ModelElement
   bool get isGetter => _accessor.isGetter;
 
   ModelElement _overriddenElement;
+
   @override
   Accessor get overriddenElement {
     assert(package.allLibrariesAdded);
@@ -224,15 +284,42 @@ class Accessor extends ModelElement
               accessor = Package.getBasestElement(accessor);
             }
             Class parentClass = new ModelElement.from(
-                parent, package.findOrCreateLibraryFor(parent));
+                t.element, package.findOrCreateLibraryFor(t.element));
             List<Field> possibleFields = [];
             possibleFields.addAll(parentClass.allInstanceProperties);
             possibleFields.addAll(parentClass.staticProperties);
             String fieldName = accessor.name.replaceFirst('=', '');
+            Field foundField = possibleFields.firstWhere((f) => f.element.name == fieldName);
+            if (this.isGetter) {
+              _overriddenElement = foundField.getter;
+            } else {
+              _overriddenElement = foundField.setter;
+            }
+            assert(!(_overriddenElement as Accessor).isInherited);
+            if (_overriddenElement != null)
+              1+1;
+            break;
+            /*
             _overriddenElement = new ModelElement.from(accessor, library,
                 enclosingCombo: possibleFields
                     .firstWhere((f) => f.element.name == fieldName));
-            break;
+            */
+
+            /*Field foundField;
+            foundField = possibleFields.firstWhere(
+                (f) => f.getter?.element == accessor || f.setter?.element == accessor, orElse: () => null);
+            if (foundField != null) {
+              print ('found something: ${accessor.name}');
+              if (foundField.getter?.element == accessor) {
+                _overriddenElement = foundField.getter;
+              }
+              if (foundField.setter?.element == accessor) {
+                _overriddenElement = foundField.setter;
+              }
+              break;
+            }*/
+          } else {
+            1+1;
           }
         }
       }
@@ -245,6 +332,7 @@ class Accessor extends ModelElement
 
   PropertyAccessorElement get _accessor => (element as PropertyAccessorElement);
 }
+
 
 class Class extends ModelElement implements EnclosedElement {
   List<ElementType> _mixins;
@@ -496,8 +584,8 @@ class Class extends ModelElement implements EnclosedElement {
     Set<String> uniqueNames = new Set();
 
     instanceProperties.forEach((f) {
-      if (f._setter != null) uniqueNames.add(f._setter.name);
-      if (f._getter != null) uniqueNames.add(f._getter.name);
+      if (f.setter != null) uniqueNames.add(f.setter.element.name);
+      if (f.getter != null) uniqueNames.add(f.getter.element.name);
     });
 
     for (String key in cmap.keys) {
@@ -599,6 +687,12 @@ class Class extends ModelElement implements EnclosedElement {
   }
 
   List<Field> get inheritedProperties {
+    if (_inheritedProperties == null) {
+      _inheritedProperties = _allFields.where((f) => f.isInherited).toList()..sort(byName);
+    }
+    return _inheritedProperties;
+  }
+  /*List<Field> get inheritedProperties {
     if (_inheritedProperties != null) return _inheritedProperties;
     Map<String, ExecutableElement> cmap =
         library.inheritanceManager.getMembersInheritedFromClasses(element);
@@ -610,8 +704,8 @@ class Class extends ModelElement implements EnclosedElement {
     Set<String> uniqueNames = new Set();
 
     instanceProperties.forEach((f) {
-      if (f._setter != null) uniqueNames.add(f._setter.name);
-      if (f._getter != null) uniqueNames.add(f._getter.name);
+      if (f.setter != null) uniqueNames.add(f.setter.element.name);
+      if (f.getter != null) uniqueNames.add(f.getter.element.name);
     });
 
     for (String key in cmap.keys) {
@@ -663,7 +757,7 @@ class Class extends ModelElement implements EnclosedElement {
     _inheritedProperties.sort(byName);
 
     return _inheritedProperties;
-  }
+  }*/
 
   List<Method> get instanceMethods {
     if (_instanceMethods != null) return _instanceMethods;
@@ -811,6 +905,38 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<Field> get _allFields {
     if (_fields != null) return _fields;
+    _fields = [];
+    Map<String, ExecutableElement> cmap =
+        library.inheritanceManager.getMembersInheritedFromClasses(element);
+    Map<String, ExecutableElement> imap =
+        library.inheritanceManager.getMembersInheritedFromInterfaces(element);
+
+    Set<PropertyAccessorElement> inheritedAccessors = new Set();
+    inheritedAccessors.addAll(cmap.values.where((e) => e is PropertyAccessorElement));
+    inheritedAccessors.addAll(imap.values.where((e) => e is PropertyAccessorElement));
+
+    for (FieldElement f in _cls.fields.where(isPublic)) {
+      PropertyAccessorElement getterElement = f.getter;
+      PropertyAccessorElement setterElement = f.setter;
+      Accessor getter = new InheritableAccessor.from(getterElement, inheritedAccessors, this);
+      Accessor setter = new InheritableAccessor.from(setterElement, inheritedAccessors, this);
+      if ((getter != null && getter.isInherited) || (setter != null && setter.isInherited)) {
+        // Field is >=50% inherited.
+        // TODO(jcollins-g): make half-inherited fields half-italicized...?
+        _fields.add(new ModelElement.from(f, library, enclosingClass: this,
+                                          getter: getter, setter: setter));
+      } else {
+        _fields.add(new ModelElement.from(f, library,
+                                          getter: getter, setter: setter));
+      }
+    }
+    _fields.sort(byName);
+    return _fields;
+  }
+
+  /*
+  List<Field> get _allFields {
+    if (_fields != null) return _fields;
 
     _fields = _cls.fields
         .where(isPublic)
@@ -820,6 +946,7 @@ class Class extends ModelElement implements EnclosedElement {
 
     return _fields;
   }
+  */
 
   ClassElement get _cls => (element as ClassElement);
 
@@ -948,16 +1075,24 @@ class Enum extends Class {
     if (_enumFields != null) return _enumFields;
 
     // This is a hack to give 'values' an index of -1 and all other fields
-    // their expected indicies. https://github.com/dart-lang/dartdoc/issues/1176
+    // their expected indices. https://github.com/dart-lang/dartdoc/issues/1176
     var index = -1;
 
+    _enumFields = [];
+    for (FieldElement f in _cls.fields.where(isPublic).where((f) => f.isConst)) {
+      // Enums do not have inheritance.
+      Accessor accessor = new ModelElement.from(f.getter, library);
+      _enumFields.add(new ModelElement.from(f, library, index: index++, getter: accessor));
+    }
+    _enumFields.sort(byName);
+    /*
     _enumFields = _cls.fields
         .where(isPublic)
         .where((f) => f.isConst)
         .map((field) => new ModelElement.from(field, library, index: index++))
         .toList(growable: false)
           ..sort(byName);
-
+    */
     return _enumFields;
   }
 
@@ -981,10 +1116,23 @@ class Enum extends Class {
 class EnumField extends Field {
   int _index;
 
-  EnumField(FieldElement element, Library library) : super(element, library);
+  EnumField(FieldElement element, Library library, Accessor getter, Accessor setter) : super(element, library, getter, setter);
 
-  EnumField.forConstant(this._index, FieldElement element, Library library)
-      : super(element, library);
+  EnumField.forConstant(this._index, FieldElement element, Library library, Accessor getter)
+      : super(element, library, getter, null);
+
+  /*
+  Accessor get getter {
+    // EnumFields should never be trying to get getter/setters, they are
+    // all synthetic.
+    assert(false);
+    return null;
+  }
+  Accessor get setter {
+    assert(false);
+    return null;
+  }
+  */
 
   @override
   String get constantValue {
@@ -996,8 +1144,8 @@ class EnumField extends Field {
   }
 
   @override
-  EnumField get documentationFrom {
-    if (name == 'values' && name == 'index') return this;
+  List<EnumField> get documentationFrom {
+    if (name == 'values' && name == 'index') return [this];
     return super.documentationFrom;
   }
 
@@ -1046,18 +1194,24 @@ class Field extends ModelElement
   String _constantValue;
   bool _isInherited = false;
   Class _enclosingClass;
+  @override
+  final InheritableAccessor getter;
+  @override
+  final InheritableAccessor setter;
 
-  Field(FieldElement element, Library library) : super(element, library) {
+  Field(FieldElement element, Library library, this.getter, this.setter) : super(element, library) {
     _setModelType();
+    if (getter != null) getter.enclosingCombo = this;
+    if (setter != null) setter.enclosingCombo = this;
   }
 
-  Field.inherited(FieldElement element, this._enclosingClass, Library library)
-      : super(element, library) {
-    _isInherited = true;
-    _setModelType();
+  factory Field.inherited(FieldElement element, Class enclosingClass, Library library, Accessor getter, Accessor setter) {
+    Field newField = new Field(element, library, getter, setter);
+    newField._isInherited = true;
     // Can't set _isInherited to true if this is the defining element, because
     // that would mean it isn't inherited.
-    assert(enclosingElement != definingEnclosingElement);
+    assert(newField.enclosingElement != newField.definingEnclosingElement);
+    return newField;
   }
 
   @override
@@ -1082,6 +1236,76 @@ class Field extends ModelElement
   }
 
   String get constantValueTruncated => truncateString(constantValue, 200);
+
+  /*
+  @override
+  List<ModelElement> get documentationFrom {
+    if (_documentationFrom == null) {
+      _documentationFrom = [];
+      if (getter != null) _documentationFrom.addAll(getter.documentationFrom);
+      if (setter != null) _documentationFrom.addAll(setter.documentationFrom);
+      if (_documentationFrom.length > 1) {
+        int c = 0;
+        for (ModelElement e in _documentationFrom) {
+          if (e.documentation != '') {
+            c += 1;
+          }
+        }
+        if (c == _documentationFrom.length)
+          1+1;
+      }
+    }
+    return _documentationFrom;
+  }
+
+  String _oneLineDoc;
+  @override
+  String get oneLineDoc {
+    if (_oneLineDoc == null) {
+      List<String> oneLineDocs = [];
+      for (ModelElement e in [getter, setter]) {
+        if (e != null)
+          oneLineDocs.add(e.oneLineDoc);
+      }
+    }
+  }
+  */
+  /*
+  // TODO(jcollins-g): documentationFrom doesn't really make sense in the case
+  // of split fields.
+  @override
+  ModelElement get documentationFrom {
+    if (_documentationFrom == null) {
+      if (computeDocumentationComment == null &&
+          canOverride() &&
+          overriddenElement != null) {
+        _documentationFrom = overriddenElement;
+      } else if (this is Inheritable && (this as Inheritable).isInherited) {
+        Inheritable thisInheritable = (this as Inheritable);
+        ModelElement fromThis = new ModelElement.from(
+            element, thisInheritable.definingEnclosingElement.library);
+        _documentationFrom = fromThis.documentationFrom;
+      } else {
+        _documentationFrom = this;
+      }
+    }
+    return _documentationFrom;
+  }
+
+  String get _documentationLocal {
+    if (_rawDocs != null) return _rawDocs;
+    if (config.dropTextFrom.contains(element.library.name)) {
+      _rawDocs = '';
+    } else {
+      _rawDocs = computeDocumentationComment ?? '';
+      _rawDocs = stripComments(_rawDocs) ?? '';
+      _rawDocs = _injectExamples(_rawDocs);
+      _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
+      _rawDocs = _injectMacros(_rawDocs);
+    }
+    return _rawDocs;
+  }
+  */
 
   @override
   ModelElement get enclosingElement {
@@ -1160,7 +1384,9 @@ class Field extends ModelElement
   }
 
   @override
-  String get _computeDocumentationComment {
+  String get computeDocumentationComment {
+    if (name == 'hashCode' && enclosingElement.name == 'FlutterLogoDecoration')
+      1+1;
     String docs = getterSetterDocumentationComment;
     if (docs.isEmpty) return _field.documentationComment;
     return docs;
@@ -1170,11 +1396,13 @@ class Field extends ModelElement
 
   String get _fileName => isConst ? '$name-constant.html' : '$name.html';
 
+  /*
   @override
   PropertyAccessorElement get _getter => _field.getter;
 
   @override
   PropertyAccessorElement get _setter => _field.setter;
+  */
 
   void _setModelType() {
     if (hasGetter) {
@@ -1189,22 +1417,73 @@ class Field extends ModelElement
 
 /// Mixin for top-level variables and fields (aka properties)
 abstract class GetterSetterCombo implements ModelElement {
-  Accessor get getter {
+  Accessor get getter;
+
+  /*{
     return _getter == null
         ? null
-        : new ModelElement.from(_getter, library, enclosingCombo: this);
+        : new ModelElement.from(_getter, library, enclosingCombo: this, enclosingClass: isInherited ? enclosingElement : null);
+  }*/
+
+  ModelElement enclosingElement;
+  bool get isInherited;
+
+  @override
+  List<ModelElement> get documentationFrom {
+    if (_documentationFrom == null) {
+      _documentationFrom = [];
+      if (getter != null) _documentationFrom.addAll(getter.documentationFrom);
+      if (setter != null) _documentationFrom.addAll(setter.documentationFrom);
+      if (_documentationFrom.length > 1) {
+        int c = 0;
+        for (ModelElement e in _documentationFrom) {
+          if (e.documentation != '') {
+            c += 1;
+          }
+        }
+        if (c == _documentationFrom.length)
+          1+1;
+      }
+    }
+    return _documentationFrom;
+  }
+
+  String _oneLineDoc;
+  @override
+  String get oneLineDoc {
+    if (_oneLineDoc == null) {
+      StringBuffer buffer = new StringBuffer();
+      bool addGetterSetterText = false;
+      if (getter != null && getter.oneLineDoc.isNotEmpty &&
+          setter != null && setter.oneLineDoc.isNotEmpty) {
+        addGetterSetterText = true;
+      }
+      if (getter != null) {
+        buffer.writeln('${addGetterSetterText ? "On read: ": ""}${getter.oneLineDoc}');
+      }
+      if (setter != null) {
+        buffer.writeln('${addGetterSetterText ? "On write: ": ""}${setter.oneLineDoc}');
+      }
+      _oneLineDoc = buffer.toString();
+    }
+    return _oneLineDoc;
   }
 
   String get getterSetterDocumentationComment {
     var buffer = new StringBuffer();
 
-    if (hasGetter && !_getter.isSynthetic) {
-      String docs = stripComments(_getter.documentationComment);
+    if (hasGetter && getter == null)
+      1+1;
+
+    if (hasGetter && !getter.element.isSynthetic) {
+      assert(getter.documentationFrom.length == 1);
+      String docs = stripComments(getter.documentationFrom.first.computeDocumentationComment);
       if (docs != null) buffer.write(docs);
     }
 
-    if (hasSetter && !_setter.isSynthetic) {
-      String docs = stripComments(_setter.documentationComment);
+    if (hasSetter && !setter.element.isSynthetic) {
+      assert(setter.documentationFrom.length == 1);
+      String docs = stripComments(setter.documentationFrom.first.computeDocumentationComment);
       if (docs != null) {
         if (buffer.isNotEmpty) buffer.write('\n\n');
         buffer.write(docs);
@@ -1236,10 +1515,10 @@ abstract class GetterSetterCombo implements ModelElement {
     return null;
   }
 
-  bool get hasExplicitGetter => hasGetter && !_getter.isSynthetic;
+  bool get hasExplicitGetter => hasGetter && !getter.element.isSynthetic;
 
-  bool get hasExplicitSetter => hasSetter && !_setter.isSynthetic;
-  bool get hasImplicitSetter => hasSetter && _setter.isSynthetic;
+  bool get hasExplicitSetter => hasSetter && !setter.element.isSynthetic;
+  bool get hasImplicitSetter => hasSetter && setter.element.isSynthetic;
 
   bool get hasGetter;
 
@@ -1267,18 +1546,20 @@ abstract class GetterSetterCombo implements ModelElement {
 
   bool get writeOnly => hasSetter && !hasGetter;
 
-  Accessor get setter {
-    return _setter == null
+  Accessor get setter; /*{
+      return _setter == null
         ? null
-        : new ModelElement.from(_setter, library, enclosingCombo: this);
-  }
+        : new ModelElement.from(_setter, library, enclosingCombo: this, enclosingClass: isInherited ? enclosingElement : null);
+  }*/
 
+  /*
   PropertyAccessorElement get _getter;
 
   // TODO: now that we have explicit getter and setters, we probably
   // want a cleaner way to do this. Only the one-liner is using this
   // now. The detail pages should be using getter and setter directly.
   PropertyAccessorElement get _setter;
+  */
 }
 
 class Library extends ModelElement {
@@ -1528,14 +1809,28 @@ class Library extends ModelElement {
       elements.addAll(cu.topLevelVariables);
     }
     _exportedNamespace.definedNames.values.forEach((element) {
-      if (element is PropertyAccessorElement) elements.add(element.variable);
+      if (element is PropertyAccessorElement) {
+        elements.add(element.variable);
+      }
     });
-    _variables = elements
+    _variables = [];
+    for (TopLevelVariableElement element in elements) {
+      Accessor getter;
+      if (element.getter != null)
+        getter = new ModelElement.from(element.getter, this);
+      Accessor setter;
+      if (element.setter != null)
+        setter = new ModelElement.from(element.setter, this);
+      _variables.add(new ModelElement.from(element, this, getter: getter, setter: setter));
+    }
+
+    _variables.sort(byName);
+    /*elements
         .where(isPublic)
         .map((e) => new ModelElement.from(e, this))
         .toList(growable: false)
           ..sort(byName);
-
+    */
     return _variables;
   }
 
@@ -1753,16 +2048,16 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   // somehow.
   ModelElement(this._element, this._library);
 
+  // TODO(jcollins-g): this way of using the optional parameter is messy,
+  // clean that up.
+  // TODO(jcollins-g): Refactor this into class-specific factories that
+  // call this one.
+  // TODO(jcollins-g): enforce this.
   /// Do not construct any ModelElements unless they are from this constructor.
-  /// TODO(jcollins-g): enforce this.
   /// Specify enclosingClass only if this is to be an inherited object.
   /// Specify index only if this is to be an EnumField.forConstant.
-  /// Specify enclosingCombo (a GetterSetterCombo) only if this is to be an
-  /// Accessor.
-  /// TODO(jcollins-g): this way of using the optional parameter is messy,
-  /// clean that up.
-  factory ModelElement.from(Element e, Library library,
-      {Class enclosingClass, int index, ModelElement enclosingCombo}) {
+   factory ModelElement.from(Element e, Library library,
+      {Class enclosingClass, int index, Accessor getter, Accessor setter}) {
     // We don't need index in this key because it isn't a disambiguator.
     // It isn't a disambiguator because EnumFields are not inherited, ever.
     // TODO(jcollins-g): cleanup class hierarchy so that EnumFields aren't
@@ -1770,8 +2065,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (e is Member) {
       e = Package.getBasestElement(e);
     }
-    Tuple4<Element, Library, Class, ModelElement> key =
-        new Tuple4(e, library, enclosingClass, enclosingCombo);
+    Tuple3<Element, Library, Class> key = new Tuple3(e, library, enclosingClass);
     ModelElement newModelElement;
     if (e.kind != ElementKind.DYNAMIC &&
         library.package._allConstructedModelElements.containsKey(key)) {
@@ -1805,16 +2099,19 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       if (e is FieldElement) {
         if (enclosingClass == null) {
           if (index != null) {
-            newModelElement = new EnumField.forConstant(index, e, library);
+            assert(getter != null);
+            newModelElement = new EnumField.forConstant(index, e, library, getter);
           } else {
             if (e.enclosingElement.isEnum) {
-              newModelElement = new EnumField(e, library);
+              newModelElement = new EnumField(e, library, getter, setter);
             } else {
-              newModelElement = new Field(e, library);
+              assert(getter != null || setter != null);
+              newModelElement = new Field(e, library, getter, setter);
             }
           }
         } else {
-          newModelElement = new Field.inherited(e, enclosingClass, library);
+          assert(getter != null || setter != null);
+          newModelElement = new Field.inherited(e, enclosingClass, library, getter, setter);
         }
       }
       if (e is ConstructorElement) {
@@ -1833,10 +2130,18 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
           newModelElement = new Method.inherited(e, enclosingClass, library);
       }
       if (e is TopLevelVariableElement) {
-        newModelElement = new TopLevelVariable(e, library);
+        assert(getter != null || setter != null);
+        newModelElement = new TopLevelVariable(e, library, getter, setter);
       }
       if (e is PropertyAccessorElement) {
-        newModelElement = new Accessor(e, library, enclosingCombo);
+        if (e.enclosingElement is ClassElement) {
+          if (enclosingClass == null)
+            newModelElement = new InheritableAccessor(e, library);
+          else
+            newModelElement = new InheritableAccessor.inherited(e, library, enclosingClass);
+        } else {
+          newModelElement = new Accessor(e, library);
+        }
       }
       if (e is TypeParameterElement) {
         newModelElement = new TypeParameter(e, library);
@@ -1856,10 +2161,15 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         library.package._allInheritableElements[iKey].add(newModelElement);
       }
     }
-    if (newModelElement is Accessor) {
-      assert(newModelElement.enclosingCombo == enclosingCombo);
-    } else {
-      assert(enclosingCombo == null);
+    if (newModelElement is Field) {
+      if (getter != null && newModelElement.getter == null)
+        1+1;
+      assert(getter == null || newModelElement.getter.enclosingCombo != null);
+      assert(setter == null || newModelElement.setter.enclosingCombo != null);
+    }
+    if (newModelElement is TopLevelVariable) {
+      assert(getter == null || newModelElement.getter.enclosingCombo != null);
+      assert(setter == null || newModelElement.setter.enclosingCombo != null);
     }
 
     return newModelElement;
@@ -1932,7 +2242,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   bool get canHaveParameters =>
       element is ExecutableElement || element is FunctionTypeAliasElement;
 
-  ModelElement _documentationFrom;
+  List<ModelElement> _documentationFrom;
 
   /// Returns the ModelElement from which we will get documentation.
   ///
@@ -1940,19 +2250,19 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   /// to find docs, if the current class doesn't have docs
   /// for this element.
   @override
-  ModelElement get documentationFrom {
+  List<ModelElement> get documentationFrom {
     if (_documentationFrom == null) {
-      if (_computeDocumentationComment == null &&
+      if (computeDocumentationComment == null &&
           canOverride() &&
           overriddenElement != null) {
-        _documentationFrom = overriddenElement;
+        _documentationFrom = [overriddenElement];
       } else if (this is Inheritable && (this as Inheritable).isInherited) {
         Inheritable thisInheritable = (this as Inheritable);
         ModelElement fromThis = new ModelElement.from(
             element, thisInheritable.definingEnclosingElement.library);
         _documentationFrom = fromThis.documentationFrom;
       } else {
-        _documentationFrom = this;
+        _documentationFrom = [this];
       }
     }
     return _documentationFrom;
@@ -1963,7 +2273,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
     } else {
-      _rawDocs = _computeDocumentationComment ?? '';
+      _rawDocs = computeDocumentationComment ?? '';
       _rawDocs = stripComments(_rawDocs) ?? '';
       _rawDocs = _injectExamples(_rawDocs);
       _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
@@ -1974,7 +2284,9 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
 
   /// Returns the docs, stripped of their leading comments syntax.
   @override
-  String get documentation => documentationFrom._documentationLocal;
+  String get documentation {
+    return documentationFrom.map((e) => e._documentationLocal).join('\n');
+  }
 
   Library get definingLibrary => package.findOrCreateLibraryFor(element);
 
@@ -2288,12 +2600,12 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   @override
-  void warn(PackageWarning kind, {String message, Locatable referredFrom}) {
+  void warn(PackageWarning kind, {String message, List<Locatable> referredFrom}) {
     package.warnOnElement(this, kind,
         message: message, referredFrom: referredFrom);
   }
 
-  String get _computeDocumentationComment => element.documentationComment;
+  String get computeDocumentationComment => element.documentationComment;
 
   Documentation get _documentation {
     if (__documentation != null) return __documentation;
@@ -2818,14 +3130,14 @@ Map<PackageWarning, List<String>> packageWarningText = {
 
 /// Something that package warnings can be called on.
 abstract class Warnable implements Locatable {
-  void warn(PackageWarning warning, {String message, Locatable referredFrom});
+  void warn(PackageWarning warning, {String message, List<Locatable> referredFrom});
 }
 
 /// Something that can be located for warning purposes.
 abstract class Locatable {
   String get fullyQualifiedName;
   String get href;
-  Locatable get documentationFrom;
+  List<Locatable> get documentationFrom;
   Element get element;
   String get elementLocation;
   Tuple2<int, int> get lineAndColumn;
@@ -2958,7 +3270,7 @@ class Package implements Nameable, Documentable {
   final PackageWarningOptions _packageWarningOptions;
   PackageWarningCounter _packageWarningCounter;
   // All ModelElements constructed for this package; a superset of allModelElements.
-  final Map<Tuple4<Element, Library, Class, ModelElement>, ModelElement>
+  final Map<Tuple3<Element, Library, Class>, ModelElement>
       _allConstructedModelElements = new Map();
 
   // Anything that might be inheritable, place here for later lookup.
@@ -2977,7 +3289,7 @@ class Package implements Nameable, Documentable {
   Documentable get overriddenDocumentedElement => this;
 
   @override
-  Documentable get documentationFrom => this;
+  List<Documentable> get documentationFrom => [this];
 
   @override
   bool get hasExtendedDocumentation => documentation.isNotEmpty;
@@ -3030,7 +3342,7 @@ class Package implements Nameable, Documentable {
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
   @override
-  void warn(PackageWarning kind, {String message, Locatable referredFrom}) {
+  void warn(PackageWarning kind, {String message, List<Locatable> referredFrom}) {
     warnOnElement(this, kind, message: message, referredFrom: referredFrom);
   }
 
@@ -3046,7 +3358,7 @@ class Package implements Nameable, Documentable {
   }
 
   void warnOnElement(Warnable warnable, PackageWarning kind,
-      {String message, Locatable referredFrom}) {
+      {String message, List<Locatable> referredFrom}) {
     if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
@@ -3079,7 +3391,6 @@ class Package implements Nameable, Documentable {
     //                   the user, yet we still want IntelliJ to link properly.
     Tuple2<String, String> warnableStrings = nameAndLocation(warnable);
     String warnablePrefix = 'from';
-    Tuple2<String, String> referredFromStrings = nameAndLocation(referredFrom);
     String referredFromPrefix = 'referred to by';
     String name = warnableStrings.item1;
     String warningMessage;
@@ -3143,9 +3454,14 @@ class Package implements Nameable, Documentable {
     if (warnable != null)
       messageParts.add(
           "${warnablePrefix} ${warnableStrings.item1}: ${warnableStrings.item2}");
-    if (referredFrom != null && referredFrom != warnable) {
-      messageParts.add(
-          "${referredFromPrefix} ${referredFromStrings.item1}: ${referredFromStrings.item2}");
+    if (referredFrom != null) {
+      for (Locatable referral in referredFrom) {
+        if (referral != warnable) {
+          Tuple2<String, String> referredFromStrings = nameAndLocation(referral);
+          messageParts.add(
+              "${referredFromPrefix} ${referredFromStrings.item1}: ${referredFromStrings.item2}");
+        }
+      }
     }
     String fullMessage;
     if (messageParts.length <= 2) {
@@ -3756,7 +4072,12 @@ abstract class SourceCodeMixin {
 class TopLevelVariable extends ModelElement
     with GetterSetterCombo
     implements EnclosedElement {
-  TopLevelVariable(TopLevelVariableElement element, Library library)
+  @override
+  final Accessor getter;
+  @override
+  final Accessor setter;
+
+  TopLevelVariable(TopLevelVariableElement element, Library library, this.getter, this.setter)
       : super(element, library) {
     if (hasGetter) {
       var t = _variable.getter.returnType;
@@ -3772,7 +4093,12 @@ class TopLevelVariable extends ModelElement
           new ModelElement.from(
               s.element, package.findOrCreateLibraryFor(s.element)));
     }
+    if (getter != null) getter.enclosingCombo = this;
+    if (setter != null) setter.enclosingCombo = this;
   }
+
+  @override
+  bool get isInherited => false;
 
   String get constantValue {
     var v = _variable.computeNode().toSource();
@@ -3834,7 +4160,7 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  String get _computeDocumentationComment {
+  String get computeDocumentationComment {
     String docs = getterSetterDocumentationComment;
     if (docs.isEmpty) return _variable.documentationComment;
     return docs;
@@ -3842,11 +4168,12 @@ class TopLevelVariable extends ModelElement
 
   String get _fileName => isConst ? '$name-constant.html' : '$name.html';
 
-  @override
+  /*@override
   PropertyAccessorElement get _getter => _variable.getter;
 
   @override
   PropertyAccessorElement get _setter => _variable.setter;
+  */
 
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 }
