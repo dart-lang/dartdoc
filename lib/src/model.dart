@@ -25,6 +25,7 @@ import 'package:analyzer/src/generated/resolver.dart'
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';
 
@@ -83,6 +84,8 @@ int byFeatureOrdering(String a, String b) {
   if (scoreA > scoreB) return 1;
   return compareAsciiLowerCaseNatural(a, b);
 }
+
+final RegExp _locationSplitter = new RegExp(r"(package:|[\\/;.])");
 
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
@@ -182,11 +185,18 @@ class Accessor extends ModelElement
   bool get isCanonical => enclosingCombo.isCanonical;
 
   @override
-  void warn(PackageWarning kind, {String message, Locatable referredFrom}) {
+  void warn(PackageWarning kind,
+      {String message, Locatable referredFrom, List<String> extendedDebug}) {
     if (enclosingCombo != null) {
-      enclosingCombo.warn(kind, message: message, referredFrom: referredFrom);
+      enclosingCombo.warn(kind,
+          message: message,
+          referredFrom: referredFrom,
+          extendedDebug: extendedDebug);
     } else {
-      super.warn(kind, message: message, referredFrom: referredFrom);
+      super.warn(kind,
+          message: message,
+          referredFrom: referredFrom,
+          extendedDebug: extendedDebug);
     }
   }
 
@@ -1299,6 +1309,25 @@ class Library extends ModelElement {
         new NamespaceBuilder().createExportNamespaceForLibrary(element);
   }
 
+  List<String> _allOriginalModelElementNames;
+
+  /// [allModelElements] resolved to their original names.
+  ///
+  /// A collection of [ModelElement.fullyQualifiedNames] for [ModelElement]s
+  /// documented with this library, but these ModelElements and names correspond
+  /// to the defining library where each originally came from with respect
+  /// to inheritance and reexporting.  Most useful for error reporting.
+  Iterable<String> get allOriginalModelElementNames {
+    if (_allOriginalModelElementNames == null) {
+      _allOriginalModelElementNames = allModelElements.map((e) {
+        return new ModelElement.from(
+                e.element, package.findOrCreateLibraryFor(e.element))
+            .fullyQualifiedName;
+      }).toList();
+    }
+    return _allOriginalModelElementNames;
+  }
+
   List<Class> get allClasses => _allClasses;
 
   List<Class> get classes {
@@ -1313,6 +1342,50 @@ class Library extends ModelElement {
   }
 
   String get dirName => name.replaceAll(':', '-');
+
+  Set<String> _canonicalFor;
+
+  Set<String> get canonicalFor {
+    if (_canonicalFor == null) {
+      // TODO(jcollins-g): restructure to avoid using side effects.
+      documentation;
+    }
+    return _canonicalFor;
+  }
+
+  /// Hide canonicalFor from doc while leaving a note to ourselves to
+  /// help with ambiguous canonicalization determination.
+  ///
+  /// Example:
+  ///   {@canonicalFor libname.ClassName}
+  String _setCanonicalFor(String rawDocs) {
+    if (_canonicalFor == null) {
+      _canonicalFor = new Set();
+    }
+    Set<String> notFoundInAllModelElements = new Set();
+    final canonicalRegExp = new RegExp(r'{@canonicalFor\s([^}]+)}');
+    rawDocs = rawDocs.replaceAllMapped(canonicalRegExp, (Match match) {
+      canonicalFor.add(match.group(1));
+      notFoundInAllModelElements.add(match.group(1));
+      return '';
+    });
+    if (notFoundInAllModelElements.isNotEmpty) {
+      notFoundInAllModelElements.removeAll(allOriginalModelElementNames);
+    }
+    for (String notFound in notFoundInAllModelElements) {
+      warn(PackageWarning.ignoredCanonicalFor, message: notFound);
+    }
+    return rawDocs;
+  }
+
+  String _libraryDocs;
+  @override
+  String get documentation {
+    if (_libraryDocs == null) {
+      _libraryDocs = _setCanonicalFor(super.documentation);
+    }
+    return _libraryDocs;
+  }
 
   /// Libraries are not enclosed by anything.
   ModelElement get enclosingElement => null;
@@ -1604,6 +1677,47 @@ class Library extends ModelElement {
     return (_allCanonicalModelElements ??=
         allModelElements.where((e) => e.isCanonical).toList());
   }
+
+  final Map<Library, bool> _isReexportedBy = {};
+
+  /// Heuristic that tries to guess if this library is actually largely
+  /// reexported by some other library.  We guess this by comparing the elements
+  /// inside each of allModelElements for both libraries.  Don't use this
+  /// except as a last-resort for canonicalization as it is a pretty fuzzy
+  /// definition.
+  ///
+  /// If most of the elements from this library appear in the other, but not
+  /// the reverse, then the other library is considered to be a reexporter of
+  /// this one.
+  ///
+  /// If not, then the situation is either ambiguous, or the reverse is true.
+  /// Computing this is expensive, so cache it.
+  bool isReexportedBy(Library library) {
+    assert(package.allLibrariesAdded);
+    if (_isReexportedBy.containsKey(library)) return _isReexportedBy[library];
+    Set<Element> otherElements = new Set()
+      ..addAll(library.allModelElements.map((l) => l.element));
+    Set<Element> ourElements = new Set()
+      ..addAll(allModelElements.map((l) => l.element));
+    if (ourElements.difference(otherElements).length <=
+        ourElements.length / 2) {
+      // Less than half of our elements are unique to us.
+      if (otherElements.difference(ourElements).length <=
+          otherElements.length / 2) {
+        // ... but the same is true for the other library.  Reexporting
+        // is ambiguous.
+        _isReexportedBy[library] = false;
+      } else {
+        _isReexportedBy[library] = true;
+      }
+    } else {
+      // We have a lot of unique elements, we're probably not reexported by
+      // the other libraries.
+      _isReexportedBy[library] = false;
+    }
+
+    return _isReexportedBy[library];
+  }
 }
 
 class Method extends ModelElement
@@ -1705,6 +1819,40 @@ class Method extends ModelElement
   MethodElement get _method => (element as MethodElement);
 }
 
+/// This class represents the score for a particular element; how likely
+/// it is that this is the canonical element.
+class ScoredCandidate implements Comparable<ScoredCandidate> {
+  final List<String> reasons = [];
+
+  /// The ModelElement being scored.
+  final ModelElement element;
+  final Library library;
+
+  /// The score accumulated so far.  Higher means it is more likely that this
+  /// is the intended canonical Library.
+  double score = 0.0;
+
+  ScoredCandidate(this.element, this.library);
+
+  void alterScore(double scoreDelta, String reason) {
+    score += scoreDelta;
+    if (scoreDelta != 0) {
+      reasons.add(
+          "${reason} (${scoreDelta >= 0 ? '+' : ''}${scoreDelta.toStringAsPrecision(4)})");
+    }
+  }
+
+  @override
+  int compareTo(ScoredCandidate other) {
+    assert(element == other.element);
+    return score.compareTo(other.score);
+  }
+
+  @override
+  String toString() =>
+      "${library.name}: ${score.toStringAsPrecision(4)} - ${reasons.join(', ')}";
+}
+
 /// This class is the foundation of Dartdoc's model for source code.
 /// All ModelElements are contained within a [Package], and laid out in a
 /// structure that mirrors the availability of identifiers in the various
@@ -1731,7 +1879,8 @@ class Method extends ModelElement
 /// helps prevent subtle bugs as generated output for a non-canonical
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
-abstract class ModelElement implements Comparable, Nameable, Documentable {
+abstract class ModelElement extends Nameable
+    implements Comparable, Documentable {
   final Element _element;
   final Library _library;
 
@@ -1865,6 +2014,62 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     return library.package.libraryElementReexportedBy[this.element.library];
   }
 
+  Set<String> get locationPieces {
+    return new Set()
+      ..addAll(element.location
+          .toString()
+          .split(_locationSplitter)
+          .where((s) => s.isNotEmpty));
+  }
+
+  // Use components of this element's location to return a score for library
+  // location.
+  ScoredCandidate scoreElementWithLibrary(Library lib) {
+    ScoredCandidate scoredCandidate = new ScoredCandidate(this, lib);
+    Iterable<String> resplit(Set<String> items) sync* {
+      for (String item in items) {
+        for (String subItem in item.split('_')) {
+          yield subItem;
+        }
+      }
+    }
+
+    // Large boost for @canonicalFor, essentially overriding all other concerns.
+    if (lib.canonicalFor.contains(fullyQualifiedName)) {
+      scoredCandidate.alterScore(5.0, 'marked @canonicalFor');
+    }
+    // Penalty for deprecated libraries.
+    if (lib.isDeprecated) scoredCandidate.alterScore(-1.0, 'is deprecated');
+    // Give a big boost if the library has the package name embedded in it.
+    if (package.namePieces.intersection(lib.namePieces).length > 0) {
+      scoredCandidate.alterScore(1.0, 'embeds package name');
+    }
+    // Give a tiny boost for libraries with long names, assuming they're
+    // more specific (and therefore more likely to be the owner of this symbol).
+    scoredCandidate.alterScore(.01 * lib.namePieces.length, 'name is long');
+    // If we don't know the location of this element, return our best guess.
+    // TODO(jcollins-g): is that even possible?
+    assert(!locationPieces.isEmpty);
+    if (locationPieces.isEmpty) return scoredCandidate;
+    // The more pieces we have of the location in our library name, the more we should boost our score.
+    scoredCandidate.alterScore(
+        lib.namePieces.intersection(locationPieces).length.toDouble() /
+            locationPieces.length.toDouble(),
+        'element location shares parts with name');
+    // If pieces of location at least start with elements of our library name, boost the score a little bit.
+    double scoreBoost = 0.0;
+    for (String piece in resplit(locationPieces)) {
+      for (String namePiece in lib.namePieces) {
+        if (piece.startsWith(namePiece)) {
+          scoreBoost += 0.001;
+        }
+      }
+    }
+    scoredCandidate.alterScore(
+        scoreBoost, 'element location parts start with parts of name');
+    return scoredCandidate;
+  }
+
   // TODO(jcollins-g): annotations should now be able to use the utility
   // functions in package for finding elements and avoid using computeNode().
   List<String> get annotations {
@@ -1925,6 +2130,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   bool get canHaveParameters =>
       element is ExecutableElement || element is FunctionTypeAliasElement;
 
+  /// Returns the docs, stripped of their leading comments syntax.
   ModelElement _documentationFrom;
 
   /// Returns the ModelElement from which we will get documentation.
@@ -1982,6 +2188,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
     // contained by a [CompilationUnitElement] in the tree.
     Element topLevelElement = element;
     while (topLevelElement != null &&
+        topLevelElement is! LibraryElement &&
         topLevelElement.enclosingElement is! CompilationUnitElement) {
       topLevelElement = topLevelElement.enclosingElement;
     }
@@ -2001,14 +2208,33 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
             if (topLevelElement == lookup) return true;
             return false;
           }).toList();
-          // If path inspection or other disambiguation heuristics are needed,
-          // they should go here.
+          // Start with our top-level element.
+          ModelElement warnable = new ModelElement.from(
+              topLevelElement, package.findOrCreateLibraryFor(topLevelElement));
           if (candidateLibraries.length > 1) {
-            warn(PackageWarning.ambiguousReexport,
-                message: "${candidateLibraries.map((l) => l.name)}");
+            // Heuristic scoring to determine which library a human likely
+            // considers this element to be primarily 'from', and therefore,
+            // canonical.  Still warn if the heuristic isn't that confident.
+            List<ScoredCandidate> scoredCandidates =
+                warnable.scoreCanonicalCandidates(candidateLibraries);
+            candidateLibraries =
+                scoredCandidates.map((s) => s.library).toList();
+            double secondHighestScore =
+                scoredCandidates[scoredCandidates.length - 2].score;
+            double highestScore = scoredCandidates.last.score;
+            double confidence = highestScore - secondHighestScore;
+            String message =
+                "${candidateLibraries.map((l) => l.name)} -> ${candidateLibraries.last.name} (confidence ${confidence.toStringAsPrecision(4)})";
+            List<String> debugLines = [];
+            debugLines.addAll(scoredCandidates.map((s) => '${s.toString()}'));
+
+            if (config == null || confidence < config.reexportMinConfidence) {
+              warnable.warn(PackageWarning.ambiguousReexport,
+                  message: message, extendedDebug: debugLines);
+            }
           }
           if (candidateLibraries.isNotEmpty)
-            _canonicalLibrary = candidateLibraries.first;
+            _canonicalLibrary = candidateLibraries.last;
         }
       } else {
         _canonicalLibrary = definingLibrary;
@@ -2023,6 +2249,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
       _canonicalLibraryIsSet = true;
     }
     return _canonicalLibrary;
+  }
+
+  List<ScoredCandidate> scoreCanonicalCandidates(List<Library> libraries) {
+    return libraries.map((l) => scoreElementWithLibrary(l)).toList()..sort();
   }
 
   @override
@@ -2281,9 +2511,12 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
   }
 
   @override
-  void warn(PackageWarning kind, {String message, Locatable referredFrom}) {
+  void warn(PackageWarning kind,
+      {String message, Locatable referredFrom, List<String> extendedDebug}) {
     package.warnOnElement(this, kind,
-        message: message, referredFrom: referredFrom);
+        message: message,
+        referredFrom: referredFrom,
+        extendedDebug: extendedDebug);
   }
 
   String get _computeDocumentationComment => element.documentationComment;
@@ -2685,6 +2918,9 @@ class ModelFunction extends ModelElement
 /// Something that has a name.
 abstract class Nameable {
   String get name;
+
+  Set<String> get namePieces => new Set()
+    ..addAll(name.split(_locationSplitter).where((s) => s.isNotEmpty));
 }
 
 class Operator extends Method {
@@ -2749,6 +2985,7 @@ class Operator extends Method {
 enum PackageWarning {
   ambiguousDocReference,
   ambiguousReexport,
+  ignoredCanonicalFor,
   noCanonicalFound,
   noLibraryLevelDocs,
   categoryOrderGivesMissingPackageName,
@@ -2760,53 +2997,78 @@ enum PackageWarning {
   typeAsHtml,
 }
 
+class PackageWarningHelpText {
+  final String warningName;
+  final String shortHelp;
+  List<String> longHelp;
+  final PackageWarning warning;
+
+  PackageWarningHelpText(this.warning, this.warningName, this.shortHelp,
+      [this.longHelp]) {
+    this.longHelp ??= [];
+  }
+}
+
 /// Provides description text and command line flags for warnings.
 /// TODO(jcollins-g): Actually use this for command line flags.
-Map<PackageWarning, List<String>> packageWarningText = {
-  PackageWarning.ambiguousDocReference: [
-    "ambiguous-doc-reference",
-    "A comment reference could refer to two or more different objects"
-  ],
-  PackageWarning.ambiguousReexport: [
-    "ambiguous-reexport",
-    "A symbol is exported from private to public in more than one place and dartdoc is forced to guess which one is canonical"
-  ],
-  PackageWarning.noCanonicalFound: [
-    "no-canonical-found",
-    "A symbol is part of the public interface for this package, but no library documented with this package documents it so dartdoc can not link to it"
-  ],
-  PackageWarning.noLibraryLevelDocs: [
-    "no-library-level-docs",
-    "There are no library level docs for this library"
-  ],
-  PackageWarning.categoryOrderGivesMissingPackageName: [
-    "category-order-gives-missing-package-name",
-    "The category-order flag on the command line was given the name of a nonexistent package"
-  ],
-  PackageWarning.unresolvedDocReference: [
-    "unresolved-doc-reference",
-    "A comment reference could not be found in parameters, enclosing class, enclosing library, or at the top level of any documented library with the package"
-  ],
-  PackageWarning.brokenLink: [
-    "brokenLink",
-    "Dartdoc generated a link to a non-existent file"
-  ],
-  PackageWarning.orphanedFile: [
-    "orphanedFile",
-    "Dartdoc generated files that are unreachable from the index"
-  ],
-  PackageWarning.unknownFile: [
-    "unknownFile",
-    "A leftover file exists in the tree that dartdoc did not write in this pass"
-  ],
-  PackageWarning.missingFromSearchIndex: [
-    "missingFromSearchIndex",
-    "A file generated by dartdoc is not present in the generated index.json"
-  ],
-  PackageWarning.typeAsHtml: [
-    "typeAsHtml",
-    "Use of <> in a comment for type parameters is being treated as HTML by markdown"
-  ],
+Map<PackageWarning, PackageWarningHelpText> packageWarningText = {
+  PackageWarning.ambiguousDocReference: new PackageWarningHelpText(
+      PackageWarning.ambiguousDocReference,
+      "ambiguous-doc-reference",
+      "A comment reference could refer to two or more different objects"),
+  PackageWarning.ambiguousReexport: new PackageWarningHelpText(
+      PackageWarning.ambiguousReexport,
+      "ambiguous-reexport",
+      "A symbol is exported from private to public in more than one library and dartdoc can not determine which one is canonical",
+      [
+        "Use {@canonicalFor @@name@@} in the desired library's documentation to resolve",
+        "the ambiguity and/or override dartdoc's decision, or structure your package ",
+        "so the reexport is less ambiguous.  The symbol will still be referenced in ",
+        "all candidates -- this only controls the location where it will be written ",
+        "and which library will be displayed in navigation for the relevant pages.",
+        "The flag --ambiguous-reexport-scorer-min-confidence allows you to set the",
+        "threshold at which this warning will appear."
+      ]),
+  PackageWarning.ignoredCanonicalFor: new PackageWarningHelpText(
+      PackageWarning.ignoredCanonicalFor,
+      "ignored-canonical-for",
+      "A @canonicalFor tag refers to a library which this symbol can not be canonical for"),
+  PackageWarning.noCanonicalFound: new PackageWarningHelpText(
+      PackageWarning.noCanonicalFound,
+      "no-canonical-found",
+      "A symbol is part of the public interface for this package, but no library documented with this package documents it so dartdoc can not link to it"),
+  PackageWarning.noLibraryLevelDocs: new PackageWarningHelpText(
+      PackageWarning.noLibraryLevelDocs,
+      "no-library-level-docs",
+      "There are no library level docs for this library"),
+  PackageWarning.categoryOrderGivesMissingPackageName: new PackageWarningHelpText(
+      PackageWarning.categoryOrderGivesMissingPackageName,
+      "category-order-gives-missing-package-name",
+      "The category-order flag on the command line was given the name of a nonexistent package"),
+  PackageWarning.unresolvedDocReference: new PackageWarningHelpText(
+      PackageWarning.unresolvedDocReference,
+      "unresolved-doc-reference",
+      "A comment reference could not be found in parameters, enclosing class, enclosing library, or at the top level of any documented library with the package"),
+  PackageWarning.brokenLink: new PackageWarningHelpText(
+      PackageWarning.brokenLink,
+      "brokenLink",
+      "Dartdoc generated a link to a non-existent file"),
+  PackageWarning.orphanedFile: new PackageWarningHelpText(
+      PackageWarning.orphanedFile,
+      "orphanedFile",
+      "Dartdoc generated files that are unreachable from the index"),
+  PackageWarning.unknownFile: new PackageWarningHelpText(
+      PackageWarning.unknownFile,
+      "unknownFile",
+      "A leftover file exists in the tree that dartdoc did not write in this pass"),
+  PackageWarning.missingFromSearchIndex: new PackageWarningHelpText(
+      PackageWarning.missingFromSearchIndex,
+      "missingFromSearchIndex",
+      "A file generated by dartdoc is not present in the generated index.json"),
+  PackageWarning.typeAsHtml: new PackageWarningHelpText(
+      PackageWarning.typeAsHtml,
+      "typeAsHtml",
+      "Use of <> in a comment for type parameters is being treated as HTML by markdown"),
 };
 
 /// Something that package warnings can be called on.
@@ -2831,6 +3093,8 @@ class PackageWarningOptions {
   // PackageWarnings can be in both asWarnings and asErrors, latter takes precedence
   final Set<PackageWarning> _asWarnings = new Set();
   final Set<PackageWarning> _asErrors = new Set();
+
+  bool autoFlush = true;
 
   Set<PackageWarning> get ignoreWarnings => _ignoreWarnings;
   Set<PackageWarning> get asWarnings => _asWarnings;
@@ -2880,10 +3144,23 @@ class PackageWarningCounter {
   final Map<PackageWarning, int> _warningCounts = new Map();
   final PackageWarningOptions options;
 
+  StringBuffer buffer = new StringBuffer();
+
   PackageWarningCounter(this.options);
 
+  /// Flush to stderr, but only if [options.autoFlush] is true.
+  ///
+  /// We keep a buffer because under certain conditions (--auto-include-dependencies)
+  /// warnings here might be duplicated across multiple Package constructions.
+  void maybeFlush() {
+    if (options.autoFlush) {
+      stderr.write(buffer.toString());
+      buffer = new StringBuffer();
+    }
+  }
+
   /// Actually write out the warning.  Assumes it is already counted with add.
-  void _writeWarning(PackageWarning kind, String fullMessage) {
+  void _writeWarning(PackageWarning kind, String name, String fullMessage) {
     if (options.ignoreWarnings.contains(kind)) return;
     String toWrite;
     if (!options.asErrors.contains(kind)) {
@@ -2892,29 +3169,43 @@ class PackageWarningCounter {
     } else {
       if (options.asErrors.contains(kind)) toWrite = "error: ${fullMessage}";
     }
-    if (toWrite != null) stderr.write("\n ${toWrite}");
+    if (toWrite != null) {
+      buffer.write("\n ${toWrite}");
+      if (_warningCounts[kind] == 1 &&
+          config.verboseWarnings &&
+          packageWarningText[kind].longHelp.isNotEmpty) {
+        // First time we've seen this warning.  Give a little extra info.
+        final String separator = '\n            ';
+        final String nameSub = r'@@name@@';
+        String verboseOut =
+            '$separator${packageWarningText[kind].longHelp.join(separator)}';
+        verboseOut = verboseOut.replaceAll(nameSub, name);
+        buffer.write(verboseOut);
+      }
+    }
+    maybeFlush();
   }
 
   /// Returns true if we've already warned for this.
-  bool hasWarning(Element element, PackageWarning kind, String message) {
+  bool hasWarning(Warnable element, PackageWarning kind, String message) {
     Tuple2<PackageWarning, String> warningData = new Tuple2(kind, message);
-    if (_countedWarnings.containsKey(element)) {
-      return _countedWarnings[element].contains(warningData);
+    if (_countedWarnings.containsKey(element?.element)) {
+      return _countedWarnings[element?.element].contains(warningData);
     }
     return false;
   }
 
   /// Adds the warning to the counter, and writes out the fullMessage string
   /// if configured to do so.
-  void addWarning(Element element, PackageWarning kind, String message,
+  void addWarning(Warnable element, PackageWarning kind, String message,
       String fullMessage) {
     assert(!hasWarning(element, kind, message));
     Tuple2<PackageWarning, String> warningData = new Tuple2(kind, message);
     _warningCounts.putIfAbsent(kind, () => 0);
     _warningCounts[kind] += 1;
-    _countedWarnings.putIfAbsent(element, () => new Set());
-    _countedWarnings[element].add(warningData);
-    _writeWarning(kind, fullMessage);
+    _countedWarnings.putIfAbsent(element?.element, () => new Set());
+    _countedWarnings[element?.element].add(warningData);
+    _writeWarning(kind, element?.fullyQualifiedName, fullMessage);
   }
 
   int get errorCount {
@@ -2941,15 +3232,19 @@ class PackageWarningCounter {
   }
 }
 
-class Package implements Nameable, Documentable {
+class Package extends Nameable implements Documentable {
   // Library objects serving as entry points for documentation.
   final List<Library> _libraries = [];
+
   // All library objects related to this package; a superset of _libraries.
-  final Map<LibraryElement, Library> _allLibraries = new Map();
+  @visibleForTesting
+  final Map<LibraryElement, Library> allLibraries = new Map();
 
   // Objects to keep track of warnings.
   final PackageWarningOptions _packageWarningOptions;
+
   PackageWarningCounter _packageWarningCounter;
+
   // All ModelElements constructed for this package; a superset of allModelElements.
   final Map<Tuple4<Element, Library, Class, ModelElement>, ModelElement>
       _allConstructedModelElements = new Map();
@@ -2983,14 +3278,14 @@ class Package implements Nameable, Documentable {
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta,
       this._packageWarningOptions) {
     assert(_allConstructedModelElements.isEmpty);
-    assert(_allLibraries.isEmpty);
+    assert(allLibraries.isEmpty);
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
     libraryElements.forEach((element) {
       // add only if the element should be included in the public api
       if (isPublic(element)) {
         var lib = new Library._(element, this);
         _libraries.add(lib);
-        _allLibraries[element] = lib;
+        allLibraries[element] = lib;
         assert(!_elementToLibrary.containsKey(lib.element));
         _elementToLibrary[element] = lib;
       }
@@ -3011,6 +3306,12 @@ class Package implements Nameable, Documentable {
   @override
   String get elementLocation => '(top level package)';
 
+  /// Flush out any warnings we might have collected while
+  /// [_packageWarningOptions.autoFlush] was false.
+  void flushWarnings() {
+    _packageWarningCounter.maybeFlush();
+  }
+
   @override
   Tuple2<int, int> get lineAndColumn => null;
 
@@ -3023,8 +3324,12 @@ class Package implements Nameable, Documentable {
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
   @override
-  void warn(PackageWarning kind, {String message, Locatable referredFrom}) {
-    warnOnElement(this, kind, message: message, referredFrom: referredFrom);
+  void warn(PackageWarning kind,
+      {String message, Locatable referredFrom, List<String> extendedDebug}) {
+    warnOnElement(this, kind,
+        message: message,
+        referredFrom: referredFrom,
+        extendedDebug: extendedDebug);
   }
 
   /// Returns colon-stripped name and location of the given locatable.
@@ -3039,17 +3344,9 @@ class Package implements Nameable, Documentable {
   }
 
   void warnOnElement(Warnable warnable, PackageWarning kind,
-      {String message, Locatable referredFrom}) {
+      {String message, Locatable referredFrom, List<String> extendedDebug}) {
     if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
-      if (kind == PackageWarning.ambiguousReexport) {
-        Element topLevelElement = warnable.element;
-        while (topLevelElement.enclosingElement is! CompilationUnitElement) {
-          topLevelElement = topLevelElement.enclosingElement;
-        }
-        warnable = new ModelElement.from(
-            topLevelElement, findOrCreateLibraryFor(topLevelElement));
-      }
       if (warnable is Accessor) {
         // This might be part of a Field, if so, assign this warning to the field
         // rather than the Accessor.
@@ -3060,7 +3357,7 @@ class Package implements Nameable, Documentable {
       // If we don't have an element, we need a message to disambiguate.
       assert(message != null);
     }
-    if (_packageWarningCounter.hasWarning(warnable?.element, kind, message)) {
+    if (_packageWarningCounter.hasWarning(warnable, kind, message)) {
       return;
     }
     // Elements that are part of the Dart SDK can have colons in their FQNs.
@@ -3086,8 +3383,8 @@ class Package implements Nameable, Documentable {
         break;
       case PackageWarning.ambiguousReexport:
         // Fix these warnings by adding the original library exporting the
-        // symbol with --include, or by using --auto-include-dependencies.
-        // TODO(jcollins-g): add a dartdoc flag to force a particular resolution order for (or drop) ambiguous reexports
+        // symbol with --include, by using --auto-include-dependencies,
+        // or by using --exclude to hide one of the libraries involved
         warningMessage =
             "ambiguous reexport of ${name}, canonicalization candidates: ${message}";
         break;
@@ -3097,6 +3394,10 @@ class Package implements Nameable, Documentable {
         break;
       case PackageWarning.ambiguousDocReference:
         warningMessage = "ambiguous doc reference ${message}";
+        break;
+      case PackageWarning.ignoredCanonicalFor:
+        warningMessage =
+            "library says it is {@canonicalFor ${message}} but ${message} can't be canonical there";
         break;
       case PackageWarning.categoryOrderGivesMissingPackageName:
         warningMessage =
@@ -3140,6 +3441,8 @@ class Package implements Nameable, Documentable {
       messageParts.add(
           "${referredFromPrefix} ${referredFromStrings.item1}: ${referredFromStrings.item2}");
     }
+    if (config.verboseWarnings && extendedDebug != null)
+      messageParts.addAll(extendedDebug.map((s) => "    $s"));
     String fullMessage;
     if (messageParts.length <= 2) {
       fullMessage = messageParts.join(', ');
@@ -3147,8 +3450,7 @@ class Package implements Nameable, Documentable {
       fullMessage = messageParts.join('\n    ');
     }
 
-    packageWarningCounter.addWarning(
-        warnable?.element, kind, message, fullMessage);
+    packageWarningCounter.addWarning(warnable, kind, message, fullMessage);
   }
 
   static Package _withAutoIncludedDependencies(
@@ -3156,6 +3458,7 @@ class Package implements Nameable, Documentable {
       PackageMeta packageMeta,
       PackageWarningOptions options) {
     var startLength = libraryElements.length;
+    options.autoFlush = false;
     Package package = new Package(libraryElements, packageMeta, options);
 
     // TODO(jcollins-g): this is inefficient; keep track of modelElements better
@@ -3176,8 +3479,10 @@ class Package implements Nameable, Documentable {
     });
 
     if (libraryElements.length > startLength)
-      return _withAutoIncludedDependencies(
-          libraryElements, packageMeta, options);
+      package =
+          _withAutoIncludedDependencies(libraryElements, packageMeta, options);
+    options.autoFlush = true;
+    package.flushWarnings;
     return package;
   }
 
@@ -3495,9 +3800,10 @@ class Package implements Nameable, Documentable {
   /// a documentation entry point (for elements that have no Library within the
   /// set of canonical Libraries).
   Library findOrCreateLibraryFor(Element e) {
+    if (e == null) 1 + 1;
     // This is just a cache to avoid creating lots of libraries over and over.
-    if (_allLibraries.containsKey(e.library)) {
-      return _allLibraries[e.library];
+    if (allLibraries.containsKey(e.library)) {
+      return allLibraries[e.library];
     }
     // can be null if e is for dynamic
     if (e.library == null) {
@@ -3507,7 +3813,7 @@ class Package implements Nameable, Documentable {
 
     if (foundLibrary == null) {
       foundLibrary = new Library._(e.library, this);
-      _allLibraries[e.library] = foundLibrary;
+      allLibraries[e.library] = foundLibrary;
     }
     return foundLibrary;
   }

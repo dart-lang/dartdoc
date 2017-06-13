@@ -52,11 +52,23 @@ bool isInExportedLibraries(
       .any((lib) => lib == library || lib.exportedLibraries.contains(library));
 }
 
-bool isPrivate(Element e) =>
-    e.name.startsWith('_') ||
-    (e is LibraryElement &&
-        (e.identifier == 'dart:_internal' ||
-            e.identifier == 'dart:nativewrappers'));
+final RegExp slashes = new RegExp('[\/]');
+bool isPrivate(Element e) {
+  if (e.name.startsWith('_') ||
+      (e is LibraryElement &&
+          (e.identifier == 'dart:_internal' ||
+              e.identifier == 'dart:nativewrappers'))) {
+    return true;
+  }
+  if (e is LibraryElement) {
+    List<String> locationParts = e.location.components[0].split(slashes);
+    // TODO(jcollins-g): Implement real cross package detection
+    if (locationParts.length >= 2 &&
+        locationParts[0].startsWith('package:') &&
+        locationParts[1] == 'src') return true;
+  }
+  return false;
+}
 
 bool isPublic(Element e) {
   if (isPrivate(e)) return false;

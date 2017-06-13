@@ -16,6 +16,8 @@ class Config {
   final String sdkVersion;
   final bool autoIncludeDependencies;
   final List<String> categoryOrder;
+  final double reexportMinConfidence;
+  final bool verboseWarnings;
   final List<String> dropTextFrom;
   Config._(
       this.inputDir,
@@ -26,6 +28,8 @@ class Config {
       this.sdkVersion,
       this.autoIncludeDependencies,
       this.categoryOrder,
+      this.reexportMinConfidence,
+      this.verboseWarnings,
       this.dropTextFrom);
 }
 
@@ -41,6 +45,8 @@ void setConfig(
     String sdkVersion,
     bool autoIncludeDependencies: false,
     List<String> categoryOrder,
+    double reexportMinConfidence: 0.1,
+    verboseWarnings: true,
     List<String> dropTextFrom}) {
   categoryOrder ??= new UnmodifiableListView<String>([]);
   dropTextFrom ??= new UnmodifiableListView<String>([]);
@@ -53,5 +59,7 @@ void setConfig(
       sdkVersion,
       autoIncludeDependencies,
       categoryOrder,
+      reexportMinConfidence,
+      verboseWarnings,
       dropTextFrom);
 }

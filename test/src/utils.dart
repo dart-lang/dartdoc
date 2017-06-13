@@ -14,6 +14,7 @@ import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/sdk.dart';
@@ -41,6 +42,8 @@ void init() {
   sdkDir = new FolderBasedDartSdk(
       resourceProvider, resourceProvider.getFolder(getSdkDir().path));
 
+  setConfig();
+
   analyzerHelper = new AnalyzerHelper();
   var pathsForTestLib = [
     'lib/example.dart',
@@ -48,7 +51,9 @@ void init() {
     'lib/fake.dart',
     'lib/anonymous_library.dart',
     'lib/another_anonymous_lib.dart',
-    'lib/is_deprecated.dart'
+    'lib/is_deprecated.dart',
+    'lib/reexport_one.dart',
+    'lib/reexport_two.dart',
   ];
 
   testPackage = _bootPackage(pathsForTestLib, 'testing/test_package', false);
