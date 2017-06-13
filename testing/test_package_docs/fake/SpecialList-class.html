@@ -11,7 +11,6 @@
 
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/prettify.css">
-  <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
@@ -21,29 +20,20 @@
 
 <div id="overlay-under-drawer"></div>
 
-<header class="container-fluid header-fixed" id="title">
-  <nav class="navbar navbar-fixed-top">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-12 contents">
-          <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-          <ol class="breadcrumbs gt-separated dark hidden-xs">
-            <li><a href="index.html">test_package</a></li>
-            <li><a href="fake/fake-library.html">fake</a></li>
-            <li class="self-crumb">class SpecialList&lt;E&gt;</li>
-          </ol>
-          <div class="self-name">SpecialList</div>
-          <form class="search navbar-right" role="search">
-            <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-          </form>
-        </div> <!-- /col -->
-      </div> <!-- /row -->
-    </div> <!-- /container -->
-  </nav>
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="index.html">test_package</a></li>
+    <li><a href="fake/fake-library.html">fake</a></li>
+    <li class="self-crumb">class SpecialList&lt;E&gt;</li>
+  </ol>
+  <div class="self-name">SpecialList</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
 </header>
 
-<div class="container body">
-  <div class="row">
+<main>
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
     <h5>library fake</h5>
@@ -190,7 +180,7 @@
           <span class="signature">&#8594; int</span>
         </dt>
         <dd class="inherited">
-          The hash code for this object.
+          
           <div class="features">read-only, inherited</div>
 </dd>
         <dt id="isEmpty" class="property inherited">
@@ -238,7 +228,7 @@
           <span class="signature">&#8594; Type</span>
         </dt>
         <dd class="inherited">
-          A representation of the runtime type of the object.
+          
           <div class="features">read-only, inherited</div>
 </dd>
         <dt id="single" class="property inherited">
@@ -261,8 +251,7 @@
           </span>
         </dt>
         <dd class="inherited">
-          Adds <code>value</code> to the end of this list,
-extending the length by one.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="addAll" class="callable inherited">
@@ -271,7 +260,7 @@ extending the length by one.
           </span>
         </dt>
         <dd class="inherited">
-          Appends all objects of <code>iterable</code> to the end of this list.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="any" class="callable inherited">
@@ -280,7 +269,7 @@ extending the length by one.
           </span>
         </dt>
         <dd class="inherited">
-          Checks whether any element of this iterable satisfies <code>test</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="asMap" class="callable inherited">
@@ -289,7 +278,7 @@ extending the length by one.
           </span>
         </dt>
         <dd class="inherited">
-          Returns an unmodifiable <code>Map</code> view of <code>this</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="clear" class="callable inherited">
@@ -298,8 +287,7 @@ extending the length by one.
           </span>
         </dt>
         <dd class="inherited">
-          Removes all objects from this list;
-the length of the list becomes zero.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="contains" class="callable inherited">
@@ -308,7 +296,7 @@ the length of the list becomes zero.
           </span>
         </dt>
         <dd class="inherited">
-          Returns true if the collection contains an element equal to <code>element</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="elementAt" class="callable inherited">
@@ -317,7 +305,7 @@ the length of the list becomes zero.
           </span>
         </dt>
         <dd class="inherited">
-          Returns the <code>index</code>th element.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="every" class="callable inherited">
@@ -326,7 +314,7 @@ the length of the list becomes zero.
           </span>
         </dt>
         <dd class="inherited">
-          Checks whether every element of this iterable satisfies <code>test</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="expand" class="callable inherited">
@@ -335,7 +323,7 @@ the length of the list becomes zero.
           </span>
         </dt>
         <dd class="inherited">
-          Expands each element of this <code>Iterable</code> into zero or more elements.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="fillRange" class="callable inherited">
@@ -344,8 +332,7 @@ the length of the list becomes zero.
           </span>
         </dt>
         <dd class="inherited">
-          Sets the objects in the range <code>start</code> inclusive to <code>end</code> exclusive
-to the given <code>fillValue</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="firstWhere" class="callable inherited">
@@ -354,7 +341,7 @@ to the given <code>fillValue</code>.
           </span>
         </dt>
         <dd class="inherited">
-          Returns the first element that satisfies the given predicate <code>test</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="fold" class="callable inherited">
@@ -363,8 +350,7 @@ to the given <code>fillValue</code>.
           </span>
         </dt>
         <dd class="inherited">
-          Reduces a collection to a single value by iteratively combining each
-element of the collection with an existing value
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="forEach" class="callable inherited">
@@ -373,8 +359,7 @@ element of the collection with an existing value
           </span>
         </dt>
         <dd class="inherited">
-          Applies the function <code>f</code> to each element of this collection in iteration
-order.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="getRange" class="callable inherited">
@@ -383,8 +368,7 @@ order.
           </span>
         </dt>
         <dd class="inherited">
-          Returns an <code>Iterable</code> that iterates over the objects in the range
-<code>start</code> inclusive to <code>end</code> exclusive.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="indexOf" class="callable inherited">
@@ -393,7 +377,7 @@ order.
           </span>
         </dt>
         <dd class="inherited">
-          Returns the first index of <code>element</code> in this list.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="insert" class="callable inherited">
@@ -402,7 +386,7 @@ order.
           </span>
         </dt>
         <dd class="inherited">
-          Inserts the object at position <code>index</code> in this list.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="insertAll" class="callable inherited">
@@ -411,7 +395,7 @@ order.
           </span>
         </dt>
         <dd class="inherited">
-          Inserts all objects of <code>iterable</code> at position <code>index</code> in this list.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="join" class="callable inherited">
@@ -420,7 +404,7 @@ order.
           </span>
         </dt>
         <dd class="inherited">
-          Converts each element to a <code>String</code> and concatenates the strings.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="lastIndexOf" class="callable inherited">
@@ -429,9 +413,7 @@ order.
           </span>
         </dt>
         <dd class="inherited">
-          Returns the last index in the list <code>a</code> of the given <code>element</code>, starting
-the search at index <code>startIndex</code> to 0.
-Returns -1 if <code>element</code> is not found.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="lastWhere" class="callable inherited">
@@ -440,7 +422,7 @@ Returns -1 if <code>element</code> is not found.
           </span>
         </dt>
         <dd class="inherited">
-          Returns the last element that satisfies the given predicate <code>test</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="map" class="callable inherited">
@@ -449,8 +431,7 @@ Returns -1 if <code>element</code> is not found.
           </span>
         </dt>
         <dd class="inherited">
-          Returns a new lazy <code>Iterable</code> with elements that are created by
-calling <code>f</code> on each element of this <code>Iterable</code> in iteration order.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="noSuchMethod" class="callable inherited">
@@ -459,7 +440,7 @@ calling <code>f</code> on each element of this <code>Iterable</code> in iteratio
           </span>
         </dt>
         <dd class="inherited">
-          Invoked when a non-existent method or property is accessed.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="reduce" class="callable inherited">
@@ -468,8 +449,7 @@ calling <code>f</code> on each element of this <code>Iterable</code> in iteratio
           </span>
         </dt>
         <dd class="inherited">
-          Reduces a collection to a single value by iteratively combining elements
-of the collection using the provided function.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="remove" class="callable inherited">
@@ -478,7 +458,7 @@ of the collection using the provided function.
           </span>
         </dt>
         <dd class="inherited">
-          Removes the first occurrence of <code>value</code> from this list.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="removeAt" class="callable inherited">
@@ -487,7 +467,7 @@ of the collection using the provided function.
           </span>
         </dt>
         <dd class="inherited">
-          Removes the object at position <code>index</code> from this list.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="removeLast" class="callable inherited">
@@ -496,7 +476,7 @@ of the collection using the provided function.
           </span>
         </dt>
         <dd class="inherited">
-          Pops and returns the last object in this list.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="removeRange" class="callable inherited">
@@ -505,7 +485,7 @@ of the collection using the provided function.
           </span>
         </dt>
         <dd class="inherited">
-          Removes the objects in the range <code>start</code> inclusive to <code>end</code> exclusive.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="removeWhere" class="callable inherited">
@@ -514,7 +494,7 @@ of the collection using the provided function.
           </span>
         </dt>
         <dd class="inherited">
-          Removes all objects from this list that satisfy <code>test</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="replaceRange" class="callable inherited">
@@ -523,8 +503,7 @@ of the collection using the provided function.
           </span>
         </dt>
         <dd class="inherited">
-          Removes the objects in the range <code>start</code> inclusive to <code>end</code> exclusive
-and inserts the contents of <code>replacement</code> in its place.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="retainWhere" class="callable inherited">
@@ -533,7 +512,7 @@ and inserts the contents of <code>replacement</code> in its place.
           </span>
         </dt>
         <dd class="inherited">
-          Removes all objects from this list that fail to satisfy <code>test</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="setAll" class="callable inherited">
@@ -542,8 +521,7 @@ and inserts the contents of <code>replacement</code> in its place.
           </span>
         </dt>
         <dd class="inherited">
-          Overwrites objects of <code>this</code> with the objects of <code>iterable</code>, starting
-at position <code>index</code> in this list.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="setRange" class="callable inherited">
@@ -552,8 +530,7 @@ at position <code>index</code> in this list.
           </span>
         </dt>
         <dd class="inherited">
-          Copies the objects of <code>iterable</code>, skipping <code>skipCount</code> objects first,
-into the range <code>start</code>, inclusive, to <code>end</code>, exclusive, of the list.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="shuffle" class="callable inherited">
@@ -562,7 +539,7 @@ into the range <code>start</code>, inclusive, to <code>end</code>, exclusive, of
           </span>
         </dt>
         <dd class="inherited">
-          Shuffles the elements of this list randomly.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="singleWhere" class="callable inherited">
@@ -571,7 +548,7 @@ into the range <code>start</code>, inclusive, to <code>end</code>, exclusive, of
           </span>
         </dt>
         <dd class="inherited">
-          Returns the single element that satisfies <code>test</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="skip" class="callable inherited">
@@ -580,7 +557,7 @@ into the range <code>start</code>, inclusive, to <code>end</code>, exclusive, of
           </span>
         </dt>
         <dd class="inherited">
-          Returns an <code>Iterable</code> that provides all but the first <code>count</code> elements.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="skipWhile" class="callable inherited">
@@ -589,7 +566,7 @@ into the range <code>start</code>, inclusive, to <code>end</code>, exclusive, of
           </span>
         </dt>
         <dd class="inherited">
-          Returns an <code>Iterable</code> that skips leading elements while <code>test</code> is satisfied.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="sort" class="callable inherited">
@@ -598,7 +575,7 @@ into the range <code>start</code>, inclusive, to <code>end</code>, exclusive, of
           </span>
         </dt>
         <dd class="inherited">
-          Sorts this list according to the order specified by the <code>compare</code> function.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="sublist" class="callable inherited">
@@ -607,8 +584,7 @@ into the range <code>start</code>, inclusive, to <code>end</code>, exclusive, of
           </span>
         </dt>
         <dd class="inherited">
-          Returns a new list containing the objects from <code>start</code> inclusive to <code>end</code>
-exclusive.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="take" class="callable inherited">
@@ -617,7 +593,7 @@ exclusive.
           </span>
         </dt>
         <dd class="inherited">
-          Returns a lazy iterable of the <code>count</code> first elements of this iterable.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="takeWhile" class="callable inherited">
@@ -626,7 +602,7 @@ exclusive.
           </span>
         </dt>
         <dd class="inherited">
-          Returns a lazy iterable of the leading elements satisfying <code>test</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="toList" class="callable inherited">
@@ -635,7 +611,7 @@ exclusive.
           </span>
         </dt>
         <dd class="inherited">
-          Creates a <code>List</code> containing the elements of this <code>Iterable</code>.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="toSet" class="callable inherited">
@@ -644,7 +620,7 @@ exclusive.
           </span>
         </dt>
         <dd class="inherited">
-          Creates a <code>Set</code> containing the same elements as this iterable.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="toString" class="callable inherited">
@@ -653,7 +629,7 @@ exclusive.
           </span>
         </dt>
         <dd class="inherited">
-          Returns a string representation of this object.
+          
           <div class="features">inherited</div>
 </dd>
         <dt id="where" class="callable inherited">
@@ -662,8 +638,7 @@ exclusive.
           </span>
         </dt>
         <dd class="inherited">
-          Returns a new lazy <code>Iterable</code> with all elements that satisfy the
-predicate <code>test</code>.
+          
           <div class="features">inherited</div>
 </dd>
       </dl>
@@ -696,7 +671,7 @@ predicate <code>test</code>.
           </span>
         </dt>
         <dd class="inherited">
-          The equality operator.
+          
           <div class="features">inherited</div>
 </dd>
       </dl>
@@ -783,28 +758,17 @@ predicate <code>test</code>.
     </ol>
   </div><!--/.sidebar-offcanvas-->
 
-</div> <!-- row -->
-</div> <!-- container -->
+</main>
 
 <footer>
-  <div class="container-fluid">
-    <div class="container">
-      <p class="text-center">
-        <span class="no-break">
-          test_package 0.0.1
-        </span>
-        &bull;
-        <span class="no-break">
-          <a href="https://www.dartlang.org"><img src="static-assets/favicon.png" alt="Dart" title="Dart" width="16" height="16"></a>
-        </span>
-        &bull;
-        <span class="copyright no-break">
-          <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
-        </span>
+  <span class="no-break">
+    test_package 0.0.1
+  </span>
+  &bull;
+  <span class="copyright no-break">
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
+  </span>
 
-      </p>
-    </div>
-  </div>
 </footer>
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>

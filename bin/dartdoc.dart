@@ -155,6 +155,28 @@ main(List<String> arguments) async {
   DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
       PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
 
+  List<String> dropTextFrom = [];
+  if (args['hide-sdk-text']) {
+    dropTextFrom.addAll([
+      'dart.async',
+      'dart.collection',
+      'dart.convert',
+      'dart.core',
+      'dart.developer',
+      'dart.html',
+      'dart.indexed_db',
+      'dart.io',
+      'dart.lisolate',
+      'dart.js',
+      'dart.js_util',
+      'dart.math',
+      'dart.mirrors',
+      'dart.svg',
+      'dart.typed_data',
+      'dart.web_audio'
+    ]);
+  }
+
   setConfig(
       addCrossdart: args['add-crossdart'],
       examplePathPrefix: args['example-path-prefix'],
@@ -166,7 +188,8 @@ main(List<String> arguments) async {
       categoryOrder: args['category-order'],
       reexportMinConfidence:
           double.parse(args['ambiguous-reexport-scorer-min-confidence']),
-      verboseWarnings: args['verbose-warnings']);
+      verboseWarnings: args['verbose-warnings'],
+      dropTextFrom: dropTextFrom);
 
   DartDoc dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries,
@@ -275,6 +298,15 @@ ArgParser _createArgsParser() {
       help: 'Display extra debugging information and help with warnings.',
       negatable: true,
       defaultsTo: true);
+  parser.addFlag(
+    'hide-sdk-text',
+    help:
+        "Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.",
+    negatable: true,
+    defaultsTo: false,
+    hide: true,
+  );
+
   return parser;
 }
 

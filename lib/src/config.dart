@@ -18,6 +18,7 @@ class Config {
   final List<String> categoryOrder;
   final double reexportMinConfidence;
   final bool verboseWarnings;
+  final List<String> dropTextFrom;
   Config._(
       this.inputDir,
       this.showWarnings,
@@ -28,7 +29,8 @@ class Config {
       this.autoIncludeDependencies,
       this.categoryOrder,
       this.reexportMinConfidence,
-      this.verboseWarnings);
+      this.verboseWarnings,
+      this.dropTextFrom);
 }
 
 Config _config;
@@ -44,10 +46,10 @@ void setConfig(
     bool autoIncludeDependencies: false,
     List<String> categoryOrder,
     double reexportMinConfidence: 0.1,
-    verboseWarnings: true}) {
-  if (categoryOrder == null) {
-    categoryOrder = new UnmodifiableListView<String>([]);
-  }
+    verboseWarnings: true,
+    List<String> dropTextFrom}) {
+  categoryOrder ??= new UnmodifiableListView<String>([]);
+  dropTextFrom ??= new UnmodifiableListView<String>([]);
   _config = new Config._(
       inputDir,
       showWarnings,
@@ -58,5 +60,6 @@ void setConfig(
       autoIncludeDependencies,
       categoryOrder,
       reexportMinConfidence,
-      verboseWarnings);
+      verboseWarnings,
+      dropTextFrom);
 }

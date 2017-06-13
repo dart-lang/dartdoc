@@ -2085,10 +2085,7 @@ abstract class ModelElement extends Nameable
         node = node.parent;
       }
       metadata = node.metadata;
-    } else if (element.computeNode() is! FormalParameter) {
-      // TODO(jcollins-g): This is special cased to suppress annotations for
-      //                   parameters in constructor documentation.  Do we
-      //                   want to do this?
+    } else {
       metadata = element.metadata;
     }
     return annotationsFromMetadata(metadata);
@@ -2162,11 +2159,15 @@ abstract class ModelElement extends Nameable
 
   String get _documentationLocal {
     if (_rawDocs != null) return _rawDocs;
-    _rawDocs = _computeDocumentationComment ?? '';
-    _rawDocs = stripComments(_rawDocs) ?? '';
-    _rawDocs = _injectExamples(_rawDocs);
-    _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
-    _rawDocs = _injectMacros(_rawDocs);
+    if (config.dropTextFrom.contains(element.library.name)) {
+      _rawDocs = '';
+    } else {
+      _rawDocs = _computeDocumentationComment ?? '';
+      _rawDocs = stripComments(_rawDocs) ?? '';
+      _rawDocs = _injectExamples(_rawDocs);
+      _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
+      _rawDocs = _injectMacros(_rawDocs);
+    }
     return _rawDocs;
   }
 
