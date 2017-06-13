@@ -51,7 +51,7 @@ void main() {
       });
 
       test('libraries', () {
-        expect(package.libraries, hasLength(6));
+        expect(package.libraries, hasLength(8));
       });
 
       test('categories', () {
@@ -59,7 +59,7 @@ void main() {
 
         PackageCategory category = package.categories.first;
         expect(category.name, 'test_package');
-        expect(category.libraries, hasLength(6));
+        expect(category.libraries, hasLength(8));
       });
 
       test('multiple categories, sorted default', () {
@@ -125,7 +125,13 @@ void main() {
   });
 
   group('Library', () {
-    Library dartAsyncLib, anonLib, isDeprecated;
+    Library dartAsyncLib,
+        anonLib,
+        isDeprecated,
+        someLib,
+        reexportOneLib,
+        reexportTwoLib;
+    Class SomeClass, SomeOtherClass, YetAnotherClass, AUnicornClass;
 
     setUp(() {
       dartAsyncLib = new Library(
@@ -135,6 +141,17 @@ void main() {
 
       anonLib = package.libraries
           .firstWhere((lib) => lib.name == 'anonymous_library');
+
+      someLib = package.allLibraries.values
+          .firstWhere((lib) => lib.name == 'reexport.somelib');
+      reexportOneLib =
+          package.libraries.firstWhere((lib) => lib.name == 'reexport_one');
+      reexportTwoLib =
+          package.libraries.firstWhere((lib) => lib.name == 'reexport_two');
+      SomeClass = someLib.getClassByName('SomeClass');
+      SomeOtherClass = someLib.getClassByName('SomeOtherClass');
+      YetAnotherClass = someLib.getClassByName('YetAnotherClass');
+      AUnicornClass = someLib.getClassByName('AUnicornClass');
 
       isDeprecated =
           package.libraries.firstWhere((lib) => lib.name == 'is_deprecated');
@@ -217,6 +234,40 @@ void main() {
 
     test('anonymous lib', () {
       expect(anonLib.isAnonymous, isTrue);
+    });
+
+    test('with ambiguous reexport warnings', () {
+      final warningMsg =
+          '(reexport_one, reexport_two) -> reexport_two (confidence 0.000)';
+      // Unicorn class has a warning because two @canonicalFors cancel each other out.
+      expect(
+          package.packageWarningCounter.hasWarning(
+              AUnicornClass, PackageWarning.ambiguousReexport, warningMsg),
+          isTrue);
+      // This class is ambiguous without a @canonicalFor
+      expect(
+          package.packageWarningCounter.hasWarning(
+              YetAnotherClass, PackageWarning.ambiguousReexport, warningMsg),
+          isTrue);
+      // These two classes have a @canonicalFor
+      expect(
+          package.packageWarningCounter.hasWarning(
+              SomeClass, PackageWarning.ambiguousReexport, warningMsg),
+          isFalse);
+      expect(
+          package.packageWarningCounter.hasWarning(
+              SomeOtherClass, PackageWarning.ambiguousReexport, warningMsg),
+          isFalse);
+      // This library has a canonicalFor with no corresponding item
+      expect(
+          package.packageWarningCounter.hasWarning(reexportTwoLib,
+              PackageWarning.ignoredCanonicalFor, 'something.ThatDoesntExist'),
+          isTrue);
+    });
+
+    test('@canonicalFor directive works', () {
+      expect(SomeOtherClass.canonicalLibrary, reexportOneLib);
+      expect(SomeClass.canonicalLibrary, reexportTwoLib);
     });
   });
 
@@ -1627,6 +1678,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(params, contains(', </span>'));
     });
 
+    test('param with annotations', () {
+      ModelFunction method =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage1');
+      String params = method.linkedParams();
+      expect(params, contains('@required'));
+    });
+
     test('param exported in library', () {
       var param = paramFromExportLib.parameters[0];
       expect(param.name, equals('helper'));
@@ -1767,7 +1825,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 }
 
-class StringName implements Nameable {
+class StringName extends Nameable {
   @override
   final String name;
   StringName(this.name);

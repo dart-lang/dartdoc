@@ -6143,6 +6143,328 @@
   "overriddenDepth": 0
  },
  {
+  "name": "reexport_one",
+  "qualifiedName": "reexport_one",
+  "href": "reexport_one/reexport_one-library.html",
+  "type": "library",
+  "overriddenDepth": 0
+ },
+ {
+  "name": "SomeOtherClass",
+  "qualifiedName": "reexport_one.SomeOtherClass",
+  "href": "reexport_one/SomeOtherClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "reexport_one",
+   "type": "library"
+  }
+ },
+ {
+  "name": "SomeOtherClass",
+  "qualifiedName": "reexport_one.SomeOtherClass",
+  "href": "reexport_one/SomeOtherClass/SomeOtherClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeOtherClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "reexport_one.SomeOtherClass.==",
+  "href": "reexport_one/SomeOtherClass/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeOtherClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "reexport_one.SomeOtherClass.hashCode",
+  "href": "reexport_one/SomeOtherClass/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeOtherClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "reexport_one.SomeOtherClass.noSuchMethod",
+  "href": "reexport_one/SomeOtherClass/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeOtherClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "reexport_one.SomeOtherClass.runtimeType",
+  "href": "reexport_one/SomeOtherClass/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeOtherClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "reexport_one.SomeOtherClass.toString",
+  "href": "reexport_one/SomeOtherClass/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeOtherClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "reexport_two",
+  "qualifiedName": "reexport_two",
+  "href": "reexport_two/reexport_two-library.html",
+  "type": "library",
+  "overriddenDepth": 0
+ },
+ {
+  "name": "AUnicornClass",
+  "qualifiedName": "reexport_two.AUnicornClass",
+  "href": "reexport_two/AUnicornClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "reexport_two",
+   "type": "library"
+  }
+ },
+ {
+  "name": "AUnicornClass",
+  "qualifiedName": "reexport_two.AUnicornClass",
+  "href": "reexport_two/AUnicornClass/AUnicornClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AUnicornClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "reexport_two.AUnicornClass.==",
+  "href": "reexport_two/AUnicornClass/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AUnicornClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "reexport_two.AUnicornClass.hashCode",
+  "href": "reexport_two/AUnicornClass/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AUnicornClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "reexport_two.AUnicornClass.noSuchMethod",
+  "href": "reexport_two/AUnicornClass/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AUnicornClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "reexport_two.AUnicornClass.runtimeType",
+  "href": "reexport_two/AUnicornClass/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AUnicornClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "reexport_two.AUnicornClass.toString",
+  "href": "reexport_two/AUnicornClass/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AUnicornClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "SomeClass",
+  "qualifiedName": "reexport_two.SomeClass",
+  "href": "reexport_two/SomeClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "reexport_two",
+   "type": "library"
+  }
+ },
+ {
+  "name": "SomeClass",
+  "qualifiedName": "reexport_two.SomeClass",
+  "href": "reexport_two/SomeClass/SomeClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "reexport_two.SomeClass.==",
+  "href": "reexport_two/SomeClass/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "reexport_two.SomeClass.hashCode",
+  "href": "reexport_two/SomeClass/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "reexport_two.SomeClass.noSuchMethod",
+  "href": "reexport_two/SomeClass/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "reexport_two.SomeClass.runtimeType",
+  "href": "reexport_two/SomeClass/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "reexport_two.SomeClass.toString",
+  "href": "reexport_two/SomeClass/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SomeClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "YetAnotherClass",
+  "qualifiedName": "reexport_two.YetAnotherClass",
+  "href": "reexport_two/YetAnotherClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "reexport_two",
+   "type": "library"
+  }
+ },
+ {
+  "name": "YetAnotherClass",
+  "qualifiedName": "reexport_two.YetAnotherClass",
+  "href": "reexport_two/YetAnotherClass/YetAnotherClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "YetAnotherClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "reexport_two.YetAnotherClass.==",
+  "href": "reexport_two/YetAnotherClass/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "YetAnotherClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "reexport_two.YetAnotherClass.hashCode",
+  "href": "reexport_two/YetAnotherClass/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "YetAnotherClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "reexport_two.YetAnotherClass.noSuchMethod",
+  "href": "reexport_two/YetAnotherClass/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "YetAnotherClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "reexport_two.YetAnotherClass.runtimeType",
+  "href": "reexport_two/YetAnotherClass/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "YetAnotherClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "reexport_two.YetAnotherClass.toString",
+  "href": "reexport_two/YetAnotherClass/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "YetAnotherClass",
+   "type": "class"
+  }
+ },
+ {
   "name": "test_package_imported.main",
   "qualifiedName": "test_package_imported.main",
   "href": "test_package_imported.main/test_package_imported.main-library.html",

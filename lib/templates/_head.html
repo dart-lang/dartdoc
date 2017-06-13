@@ -19,7 +19,6 @@
 
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/prettify.css">
-  <link rel="stylesheet" href="static-assets/css/bootstrap.min.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
@@ -30,29 +29,20 @@
 
 <div id="overlay-under-drawer"></div>
 
-<header class="container-fluid header-fixed" id="title">
-  <nav class="navbar navbar-fixed-top">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-12 contents">
-          {{^navLinks.isEmpty}}
-          <button id="sidenav-left-toggle" type="button">&nbsp;</button>
-          {{/navLinks.isEmpty}}
-          <ol class="breadcrumbs gt-separated dark hidden-xs">
-            {{#navLinks}}
-            <li><a href="{{href}}">{{name}}</a></li>
-            {{/navLinks}}
-            <li class="self-crumb">{{{ layoutTitle }}}</li>
-          </ol>
-          <div class="self-name">{{self.name}}</div>
-          <form class="search navbar-right" role="search">
-            <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
-          </form>
-        </div> <!-- /col -->
-      </div> <!-- /row -->
-    </div> <!-- /container -->
-  </nav>
+<header id="title">
+  {{^navLinks.isEmpty}}
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  {{/navLinks.isEmpty}}
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    {{#navLinks}}
+    <li><a href="{{href}}">{{name}}</a></li>
+    {{/navLinks}}
+    <li class="self-crumb">{{{ layoutTitle }}}</li>
+  </ol>
+  <div class="self-name">{{self.name}}</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
 </header>
 
-<div class="container body">
-  <div class="row">
+<main>

@@ -21,7 +21,6 @@ const _partials = const <String>[
   'footer',
   'head',
   'property',
-  'styles_and_scripts',
   'features',
   'documentation',
   'name_summary',
