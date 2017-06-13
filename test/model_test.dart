@@ -1627,6 +1627,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(params, contains(', </span>'));
     });
 
+    test('param with annotations', () {
+      ModelFunction method =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage1');
+      String params = method.linkedParams();
+      expect(params, contains('@required'));
+    });
+
     test('param exported in library', () {
       var param = paramFromExportLib.parameters[0];
       expect(param.name, equals('helper'));

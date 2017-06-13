@@ -1880,10 +1880,7 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
         node = node.parent;
       }
       metadata = node.metadata;
-    } else if (element.computeNode() is! FormalParameter) {
-      // TODO(jcollins-g): This is special cased to suppress annotations for
-      //                   parameters in constructor documentation.  Do we
-      //                   want to do this?
+    } else {
       metadata = element.metadata;
     }
     return annotationsFromMetadata(metadata);
