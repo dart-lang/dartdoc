@@ -261,8 +261,9 @@ class Accessor extends ModelElement
 
   @override
   String get href {
-    if (canonicalLibrary == null) return null;
-    return '${canonicalLibrary.dirName}/${_accessor.enclosingElement.name}/${name}.html';
+    return enclosingCombo.href;
+    //if (canonicalLibrary == null) return null;
+    //return '${canonicalLibrary.dirName}/${_accessor.enclosingElement.name}/${name}.html';
   }
 
   bool get isGetter => _accessor.isGetter;
@@ -1046,6 +1047,7 @@ abstract class Documentable implements Warnable {
 class Dynamic extends ModelElement {
   Dynamic(Element element, Library library) : super(element, library);
 
+  @override
   ModelElement get enclosingElement => throw new UnsupportedError('');
 
   @override
@@ -1379,7 +1381,18 @@ class Field extends ModelElement
     if (readOnly && !isFinal && !isConst) all_features.add('read-only');
     if (writeOnly) all_features.add('write-only');
     if (readWrite) all_features.add('read / write');
-    if (isInherited) all_features.add('inherited');
+    if (getter != null && setter != null) {
+      if (getter.isInherited && setter.isInherited) {
+        all_features.add('inherited');
+      } else {
+        if (getter.isInherited)
+          all_features.add('inherited-getter');
+        if (setter.isInherited)
+          all_features.add('inherited-setter');
+      }
+    } else {
+      if (isInherited) all_features.add('inherited');
+    }
     return all_features;
   }
 
@@ -1425,6 +1438,7 @@ abstract class GetterSetterCombo implements ModelElement {
         : new ModelElement.from(_getter, library, enclosingCombo: this, enclosingClass: isInherited ? enclosingElement : null);
   }*/
 
+  @override
   ModelElement enclosingElement;
   bool get isInherited;
 
@@ -1600,6 +1614,7 @@ class Library extends ModelElement {
   String get dirName => name.replaceAll(':', '-');
 
   /// Libraries are not enclosed by anything.
+  @override
   ModelElement get enclosingElement => null;
 
   List<Class> get enums {
@@ -2130,6 +2145,10 @@ abstract class ModelElement implements Comparable, Nameable, Documentable {
           newModelElement = new Method.inherited(e, enclosingClass, library);
       }
       if (e is TopLevelVariableElement) {
+        if (getter == null && setter == null) {
+          // FIXME: so, what's wrong here?
+          1+1;
+        }
         assert(getter != null || setter != null);
         newModelElement = new TopLevelVariable(e, library, getter, setter);
       }
@@ -3131,6 +3150,7 @@ Map<PackageWarning, List<String>> packageWarningText = {
 /// Something that package warnings can be called on.
 abstract class Warnable implements Locatable {
   void warn(PackageWarning warning, {String message, List<Locatable> referredFrom});
+  Warnable get enclosingElement;
 }
 
 /// Something that can be located for warning purposes.
@@ -3292,6 +3312,9 @@ class Package implements Nameable, Documentable {
   List<Documentable> get documentationFrom => [this];
 
   @override
+  Warnable get enclosingElement => null;
+
+  @override
   bool get hasExtendedDocumentation => documentation.isNotEmpty;
 
   final Map<Element, Library> _elementToLibrary = {};
@@ -3362,12 +3385,19 @@ class Package implements Nameable, Documentable {
     if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
+        if (warnable is TypeParameter)
+          1+1;
+        while (warnable.enclosingElement is! Library && warnable.enclosingElement != null) {
+          warnable = warnable.enclosingElement;
+        }
+        /*
         Element topLevelElement = warnable.element;
         while (topLevelElement.enclosingElement is! CompilationUnitElement) {
           topLevelElement = topLevelElement.enclosingElement;
         }
         warnable = new ModelElement.from(
             topLevelElement, findOrCreateLibraryFor(topLevelElement));
+        */
       }
       if (warnable is Accessor) {
         // This might be part of a Field, if so, assign this warning to the field
@@ -3743,6 +3773,8 @@ class Package implements Nameable, Documentable {
       lib = findCanonicalLibraryFor(preferredClass.element);
     }
     ModelElement modelElement;
+    // TODO(jcollins-g): Special cases are pretty large here.  Refactor to split
+    // out into helpers.
     // TODO(jcollins-g): The data structures should be changed to eliminate guesswork
     // with member elements.
     if (e is ClassMemberElement || e is PropertyAccessorElement) {
@@ -3805,7 +3837,16 @@ class Package implements Nameable, Documentable {
       assert(matches.length <= 1);
       if (!matches.isEmpty) modelElement = matches.first;
     } else {
-      if (lib != null) modelElement = new ModelElement.from(e, lib);
+      if (lib != null) {
+        Accessor getter;
+        Accessor setter;
+        if (e is PropertyInducingElement) {
+          if (e.getter != null) getter = new ModelElement.from(e.getter, lib);
+          if (e.setter != null) setter = new ModelElement.from(e.setter, lib);
+          1+1;
+        }
+        modelElement = new ModelElement.from(e, lib, getter: getter, setter: setter);
+      }
       assert(modelElement is! Inheritable);
       if (modelElement != null && !modelElement.isCanonical) {
         modelElement = null;
@@ -4237,6 +4278,9 @@ class TypeParameter extends ModelElement {
       : super(element, library) {
     _modelType = new ElementType(_typeParameter.type, this);
   }
+
+  @override
+  ModelElement get enclosingElement => new ModelElement.from(element.enclosingElement, library);
 
   @override
   String get href {

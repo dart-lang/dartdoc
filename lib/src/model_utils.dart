@@ -64,7 +64,7 @@ bool isPublic(Element e) {
   if (isPrivate(e)) return false;
   // check to see if element is part of the public api, that is it does not
   // have a '<nodoc>' or '@nodoc' in the documentation comment
-  /*if (e is PropertyAccessorElement && e.isSynthetic) {
+  if (e is PropertyAccessorElement && e.isSynthetic) {
     var accessor = (e as PropertyAccessorElement);
     if (accessor.correspondingSetter != null &&
         !accessor.correspondingSetter.isSynthetic) {
@@ -81,7 +81,6 @@ bool isPublic(Element e) {
   if (docComment != null &&
       (docComment.contains('<nodoc>') || docComment.contains('@nodoc')))
     return false;
-  */
   return true;
 }
 
