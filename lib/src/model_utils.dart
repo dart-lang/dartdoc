@@ -71,7 +71,6 @@ bool isPrivate(Element e) {
 }
 
 // TODO(jcollins-g): this does not take into account inheritance
-// FIXME(jcollins-g): reimplement @nodoc somewhere else
 bool isPublic(Element e) {
   if (isPrivate(e)) return false;
   // check to see if element is part of the public api, that is it does not

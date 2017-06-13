@@ -2295,10 +2295,25 @@ abstract class ModelElement extends Nameable
       if (e is TopLevelVariableElement) {
         if (getter == null && setter == null) {
           // FIXME: so, what's wrong here?
-          1+1;
+          if (e.getter != null) {
+            getter = new ModelElement.from(e.getter, library);
+            if (getter.enclosingCombo != null) {
+              newModelElement = getter.enclosingCombo;
+            }
+          }
+          if (e.setter != null) {
+            setter = new ModelElement.from(e.setter, library);
+            if (setter.enclosingCombo != null) {
+              if (newModelElement != null) {
+                assert(setter.enclosingCombo == getter.enclosingCombo);
+              }
+              newModelElement = setter.enclosingCombo;
+            }
+          }
         }
         assert(getter != null || setter != null);
-        newModelElement = new TopLevelVariable(e, library, getter, setter);
+        if (newModelElement == null)
+          newModelElement = new TopLevelVariable(e, library, getter, setter);
       }
       if (e is PropertyAccessorElement) {
         if (e.enclosingElement is ClassElement) {
