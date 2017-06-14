@@ -1227,6 +1227,8 @@ class Field extends ModelElement
 
   @override
   String get documentation {
+    if (name == 'darkColor' && enclosingElement.name == 'FlutterLogoDecoration')
+      1+1;
     // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
     // to prevent displaying more or less than one summary.
     Set<bool> assertCheck = new Set()..addAll([hasSetter, hasGetterNoSetter]);
@@ -1407,8 +1409,7 @@ class Field extends ModelElement
 
   @override
   String get computeDocumentationComment {
-    if (name == 'hashCode' && enclosingElement.name == 'FlutterLogoDecoration')
-      1+1;
+
     String docs = getterSetterDocumentationComment;
     if (docs.isEmpty) return _field.documentationComment;
     return docs;
@@ -1451,21 +1452,39 @@ abstract class GetterSetterCombo implements ModelElement {
   ModelElement enclosingElement;
   bool get isInherited;
 
+
+  /// Returns true if at least one accessor is synthetic.
+  bool get hasSyntheticAccessors {
+    if ((getter != null && getter.element.isSynthetic) ||
+        (setter != null && setter.element.isSynthetic)) {
+      // No half-synthetic combos here, please.
+      assert(getter == null || getter.element.isSynthetic);
+      assert(setter == null || setter.element.isSynthetic);
+      return true;
+    }
+    return false;
+  }
+
   @override
   List<ModelElement> get documentationFrom {
     if (_documentationFrom == null) {
       _documentationFrom = [];
-      if (getter != null) _documentationFrom.addAll(getter.documentationFrom);
-      if (setter != null) _documentationFrom.addAll(setter.documentationFrom);
-      if (_documentationFrom.length > 1) {
-        int c = 0;
-        for (ModelElement e in _documentationFrom) {
-          if (e.documentation != '') {
-            c += 1;
+      if (hasSyntheticAccessors) {
+        // TODO(jcollins-g): untangle when mixins can use super
+        _documentationFrom = computeDocumentationFrom;
+      } else {
+        if (getter != null) _documentationFrom.addAll(getter.documentationFrom);
+        if (setter != null) _documentationFrom.addAll(setter.documentationFrom);
+        if (_documentationFrom.length > 1) {
+          int c = 0;
+          for (ModelElement e in _documentationFrom) {
+            if (e.documentation != '') {
+              c += 1;
+            }
           }
+          if (c == _documentationFrom.length)
+            1+1;
         }
-        if (c == _documentationFrom.length)
-          1+1;
       }
     }
     return _documentationFrom;
@@ -1475,19 +1494,23 @@ abstract class GetterSetterCombo implements ModelElement {
   @override
   String get oneLineDoc {
     if (_oneLineDoc == null) {
-      StringBuffer buffer = new StringBuffer();
-      bool addGetterSetterText = false;
-      if (getter != null && getter.oneLineDoc.isNotEmpty &&
-          setter != null && setter.oneLineDoc.isNotEmpty) {
-        addGetterSetterText = true;
+      if (hasSyntheticAccessors) {
+        _oneLineDoc = _documentation.asOneLiner;
+      } else {
+        StringBuffer buffer = new StringBuffer();
+        bool addGetterSetterText = false;
+        if (getter != null && getter.oneLineDoc.isNotEmpty &&
+            setter != null && setter.oneLineDoc.isNotEmpty) {
+          addGetterSetterText = true;
+        }
+        if (getter != null) {
+          buffer.writeln('${addGetterSetterText ? "On read: ": ""}${getter.oneLineDoc}');
+        }
+        if (setter != null) {
+          buffer.writeln('${addGetterSetterText ? "On write: ": ""}${setter.oneLineDoc}');
+        }
+        _oneLineDoc = buffer.toString();
       }
-      if (getter != null) {
-        buffer.writeln('${addGetterSetterText ? "On read: ": ""}${getter.oneLineDoc}');
-      }
-      if (setter != null) {
-        buffer.writeln('${addGetterSetterText ? "On write: ": ""}${setter.oneLineDoc}');
-      }
-      _oneLineDoc = buffer.toString();
     }
     return _oneLineDoc;
   }
@@ -1901,7 +1924,7 @@ class Library extends ModelElement {
       }
     });
     _variables = [];
-    for (TopLevelVariableElement element in elements) {
+    for (TopLevelVariableElement element in elements.where(isPublic)) {
       Accessor getter;
       if (element.getter != null)
         getter = new ModelElement.from(element.getter, this);
@@ -2478,6 +2501,15 @@ abstract class ModelElement extends Nameable
       element is ExecutableElement || element is FunctionTypeAliasElement;
 
   List<ModelElement> _documentationFrom;
+  // TODO(jcollins-g): untangle when mixins can call super
+  @override
+  List<ModelElement> get documentationFrom  {
+    if (_documentationFrom == null) {
+      _documentationFrom = computeDocumentationFrom;
+    }
+    return _documentationFrom;
+  }
+
   /// Returns the ModelElement(s) from which we will get documentation.
   /// Can be more than one if this is a Field composing documentation from
   /// multiple Accessors.
@@ -2485,23 +2517,21 @@ abstract class ModelElement extends Nameable
   /// This getter will walk up the inheritance hierarchy
   /// to find docs, if the current class doesn't have docs
   /// for this element.
-  @override
-  List<ModelElement> get documentationFrom {
-    if (_documentationFrom == null) {
-      if (computeDocumentationComment == null &&
-          canOverride() &&
-          overriddenElement != null) {
-        _documentationFrom = [overriddenElement];
-      } else if (this is Inheritable && (this as Inheritable).isInherited) {
-        Inheritable thisInheritable = (this as Inheritable);
-        ModelElement fromThis = new ModelElement.from(
-            element, thisInheritable.definingEnclosingElement.library);
-        _documentationFrom = fromThis.documentationFrom;
-      } else {
-        _documentationFrom = [this];
-      }
+  List<ModelElement> get computeDocumentationFrom {
+    List<ModelElement> docFrom;
+    if (computeDocumentationComment == null &&
+        canOverride() &&
+        overriddenElement != null) {
+      docFrom = [overriddenElement];
+    } else if (this is Inheritable && (this as Inheritable).isInherited) {
+      Inheritable thisInheritable = (this as Inheritable);
+      ModelElement fromThis = new ModelElement.from(
+          element, thisInheritable.definingEnclosingElement.library);
+      docFrom = fromThis.documentationFrom;
+    } else {
+      docFrom = [this];
     }
-    return _documentationFrom;
+    return docFrom;
   }
 
   String get _documentationLocal {
