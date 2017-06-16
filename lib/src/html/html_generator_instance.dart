@@ -104,6 +104,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
         //if (clazz.name != 'FlutterLogoDecoration') continue;
         if (!clazz.isCanonical) continue;
 
+        if (clazz.name == 'ConstantCat')
+          1+1;
         generateClass(package, lib, clazz);
 
         for (var constructor in clazz.constructors) {
@@ -122,6 +124,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
         }
 
         for (var property in clazz.propertiesForPages) {
+          if (property.name == 'hashCode')
+            1+1;
           if (!property.isCanonical) continue;
           generateProperty(package, lib, clazz, property);
         }

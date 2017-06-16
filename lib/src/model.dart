@@ -360,7 +360,6 @@ class Class extends ModelElement implements EnclosedElement {
   List<Field> _instanceFields;
   List<Field> _inheritedProperties;
   List<Field> _allInstanceProperties;
-  final Set<Field> _genPageProperties = new Set();
 
   Class(ClassElement element, Library library) : super(element, library) {
     Package p = library.package;
@@ -783,7 +782,6 @@ class Class extends ModelElement implements EnclosedElement {
         .toList(growable: false)
           ..sort(byName);
 
-    _genPageProperties.addAll(_instanceFields);
     return _instanceFields;
   }
 
@@ -854,8 +852,10 @@ class Class extends ModelElement implements EnclosedElement {
   // now, we're creating a flat list. We're not paying attention to where
   // these methods are actually coming from. This might turn out to be a
   // problem if we want to show that info later.
-  List<Field> get propertiesForPages =>
-      _genPageProperties.toList(growable: false);
+  List<Field> get propertiesForPages  {
+    return []..addAll(
+        instanceProperties)..addAll(inheritedProperties)..sort(byName);
+  }
 
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
