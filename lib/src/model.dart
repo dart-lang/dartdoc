@@ -452,19 +452,24 @@ class Class extends ModelElement implements EnclosedElement {
     return _constants;
   }
 
-  final Set<Element> _allElements = new Set();
-
-  // TODO(jcollins-g): optimize this.
-  bool contains(Element element) {
-    if (_allElements.isEmpty) {
-      _allElements.addAll(allInstanceMethods.map((e) => e.element));
-      _allElements.addAll(allInstanceProperties.map((e) => e.element));
-      _allElements.addAll(allOperators.map((e) => e.element));
-      _allElements.addAll(constructors.map((e) => e.element));
-      _allElements.addAll(staticMethods.map((e) => e.element));
-      _allElements.addAll(staticProperties.map((e) => e.element));
+  Map<Element, ModelElement> _allElements;
+  Map<Element, ModelElement> get allElements  {
+    if (_allElements == null) {
+      _allElements = new Map();
+      for (ModelElement me in allModelElements) {
+        assert(!_allElements.containsKey(me.element));
+        _allElements[me.element] = me;
+      }
     }
-    return _allElements.contains(element);
+    return _allElements;
+  }
+
+  bool contains(Element element) {
+    return allElements.containsKey(element);
+  }
+
+  ModelElement findModelElement(Element element) {
+    return allElements[element];
   }
 
   final Set<ModelElement> _allModelElements = new Set();

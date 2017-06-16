@@ -296,7 +296,7 @@ MatchingLinkResult _getMatchingLinkElement(
     if (codeRef == 'Map.keys')
       1+1;
     Class refClass = new ModelElement.from(searchElement.enclosingElement, refLibrary);
-    refModelElement = refClass.allModelElements.firstWhere((e) => e.element == searchElement);
+    refModelElement = refClass.findModelElement(searchElement);
   } else {
     refModelElement = new ModelElement.from(searchElement, refLibrary);
   }
