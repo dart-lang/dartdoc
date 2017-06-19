@@ -2424,7 +2424,8 @@ abstract class ModelElement extends Nameable
   String get genericParameters => '';
 
   @override
-  String get oneLineDoc => '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
+  String get oneLineDoc =>
+      '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
 
   ModelElement get overriddenElement => null;
 
