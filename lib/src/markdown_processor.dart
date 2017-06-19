@@ -6,7 +6,6 @@
 library dartdoc.markdown_processor;
 
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 import 'package:analyzer/dart/ast/ast.dart';
@@ -118,6 +117,7 @@ const validHtmlTags = const [
   "video",
   "wbr"
 ];
+
 final RegExp nonHTML =
     new RegExp("</?(?!(${validHtmlTags.join("|")})[> ])\\w+[> ]");
 
@@ -135,6 +135,8 @@ final RegExp isConstructor = new RegExp(r'^new[\s]+', multiLine: true);
 // warn about them.
 // Covers anything with leading digits/symbols, empty string, weird punctuation, spaces.
 final RegExp notARealDocReference = new RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
+
+final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.ELEMENT);
 
 final List<md.InlineSyntax> _markdown_syntaxes = [
   new _InlineCodeSyntax(),
@@ -935,7 +937,7 @@ class _AutolinkWithoutScheme extends md.AutolinkSyntax {
   @override
   bool onMatch(md.InlineParser parser, Match match) {
     var url = match[1];
-    var text = md.escapeHtml(url).replaceFirst(_hide_schemes, '');
+    var text = htmlEscape.convert(url).replaceFirst(_hide_schemes, '');
     var anchor = new md.Element.text('a', text);
     anchor.attributes['href'] = url;
     parser.addNode(anchor);

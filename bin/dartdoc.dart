@@ -152,21 +152,44 @@ main(List<String> arguments) async {
     generator.onFileCreated.listen(_onProgress);
   }
 
-  var addCrossdart = args['add-crossdart'] as bool;
-  var includeSource = args['include-source'] as bool;
-
   DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
       PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
 
+  List<String> dropTextFrom = [];
+  if (args['hide-sdk-text']) {
+    dropTextFrom.addAll([
+      'dart.async',
+      'dart.collection',
+      'dart.convert',
+      'dart.core',
+      'dart.developer',
+      'dart.html',
+      'dart.indexed_db',
+      'dart.io',
+      'dart.lisolate',
+      'dart.js',
+      'dart.js_util',
+      'dart.math',
+      'dart.mirrors',
+      'dart.svg',
+      'dart.typed_data',
+      'dart.web_audio'
+    ]);
+  }
+
   setConfig(
-      addCrossdart: addCrossdart,
+      addCrossdart: args['add-crossdart'],
       examplePathPrefix: args['example-path-prefix'],
       showWarnings: args['show-warnings'],
-      includeSource: includeSource,
+      includeSource: args['include-source'],
       inputDir: inputDir,
       sdkVersion: sdk.sdkVersion,
       autoIncludeDependencies: args['auto-include-dependencies'],
-      categoryOrder: args['category-order']);
+      categoryOrder: args['category-order'],
+      reexportMinConfidence:
+          double.parse(args['ambiguous-reexport-scorer-min-confidence']),
+      verboseWarnings: args['verbose-warnings'],
+      dropTextFrom: dropTextFrom);
 
   DartDoc dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries,
@@ -266,6 +289,24 @@ ArgParser _createArgsParser() {
           "Generates `index.json` with indentation and newlines. The file is larger, but it's also easier to diff.",
       negatable: false,
       defaultsTo: false);
+  parser.addOption('ambiguous-reexport-scorer-min-confidence',
+      help:
+          'Minimum scorer confidence to suppress warning on ambiguous reexport.',
+      defaultsTo: "0.1",
+      hide: true);
+  parser.addFlag('verbose-warnings',
+      help: 'Display extra debugging information and help with warnings.',
+      negatable: true,
+      defaultsTo: true);
+  parser.addFlag(
+    'hide-sdk-text',
+    help:
+        "Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.",
+    negatable: true,
+    defaultsTo: false,
+    hide: true,
+  );
+
   return parser;
 }
 

@@ -96,7 +96,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
     generatePackage();
 
     for (var lib in package.libraries) {
-      //if (lib.name != 'flutter_test') continue;
       generateLibrary(package, lib);
 
       for (var clazz in lib.allClasses) {
