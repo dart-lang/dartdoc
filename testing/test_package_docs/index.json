@@ -4200,6 +4200,28 @@
   }
  },
  {
+  "name": "explicitGetterSetterForInheriting",
+  "qualifiedName": "fake.ImplicitProperties.explicitGetterSetterForInheriting",
+  "href": "fake/ImplicitProperties/explicitGetterSetterForInheriting.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "forInheriting",
+  "qualifiedName": "fake.ImplicitProperties.forInheriting",
+  "href": "fake/ImplicitProperties/forInheriting.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
   "name": "hashCode",
   "qualifiedName": "fake.ImplicitProperties.hashCode",
   "href": "fake/ImplicitProperties/hashCode.html",

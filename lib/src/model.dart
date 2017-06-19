@@ -229,7 +229,10 @@ class Accessor extends ModelElement
 
   @override
   String get computeDocumentationComment {
-    return super.computeDocumentationComment;
+    if (element.isSynthetic) {
+      return (element as PropertyAccessorElement).variable.documentationComment;
+    }
+    return stripComments(super.computeDocumentationComment);
   }
 
   @override
@@ -980,6 +983,12 @@ class Class extends ModelElement implements EnclosedElement {
       PropertyAccessorElement setterElement,
       Set<PropertyAccessorElement> inheritedAccessors,
       [FieldElement f]) {
+    if (f != null && f.name == 'implicitGetterExplicitSetter')
+      1+1;
+    if (getterElement != null && getterElement.name.contains('implicitGetterExplicitSetter'))
+      1+1;
+    if (setterElement != null && setterElement.name.contains('implicitGetterExplicitSetter'))
+      1+1;
     Accessor getter = new InheritableAccessor.from(getterElement, inheritedAccessors, this);
     Accessor setter = new InheritableAccessor.from(setterElement, inheritedAccessors, this);
     assert(!(getter == null && setter == null));
@@ -1400,11 +1409,11 @@ class Field extends ModelElement
     return _enclosingClass;
   }
 
-  @override
-  bool get hasGetter => _field.getter != null;
+  //@override
+  //bool get hasGetter => _field.getter != null;
 
-  @override
-  bool get hasSetter => _field.setter != null;
+  //@override
+  //bool get hasSetter => _field.setter != null;
 
   @override
   String get href {
@@ -1500,7 +1509,7 @@ class Field extends ModelElement
 
   void _setModelType() {
     if (hasGetter) {
-      var t = _field.getter.returnType;
+      var t = (getter.element as PropertyAccessorElement).returnType;
       _modelType = new ElementType(
           t,
           new ModelElement.from(
@@ -1537,8 +1546,11 @@ abstract class GetterSetterCombo implements ModelElement {
   List<ModelElement> get documentationFrom {
     if (_documentationFrom == null) {
       _documentationFrom = [];
-      if (getter != null) _documentationFrom.addAll(getter.documentationFrom);
-      if (setter != null) _documentationFrom.addAll(setter.documentationFrom);
+      if (getter != null) {
+        _documentationFrom.addAll(getter.documentationFrom.where((e) => e.computeDocumentationComment != computeDocumentationComment));
+      }
+      if (setter != null)
+        _documentationFrom.addAll(setter.documentationFrom.where((e) => e.computeDocumentationComment != computeDocumentationComment));
       if (_documentationFrom.length == 0 || _documentationFrom.every((e) => e.documentation == ''))
         _documentationFrom = computeDocumentationFrom;
     }
@@ -1549,6 +1561,8 @@ abstract class GetterSetterCombo implements ModelElement {
   @override
   String get oneLineDoc {
     if (_oneLineDoc == null) {
+      if (name == 'implicitGetterExplicitSetter')
+        1+1;
       bool hasAccessorsWithDocs = (getter != null && getter.oneLineDoc.isNotEmpty ||
                                    setter != null && setter.oneLineDoc.isNotEmpty);
       if (!hasAccessorsWithDocs) {
@@ -1580,13 +1594,13 @@ abstract class GetterSetterCombo implements ModelElement {
 
     if (hasGetter && !getter.element.isSynthetic) {
       assert(getter.documentationFrom.length == 1);
-      String docs = stripComments(getter.documentationFrom.first.computeDocumentationComment);
+      String docs = getter.documentationFrom.first.computeDocumentationComment;
       if (docs != null) buffer.write(docs);
     }
 
     if (hasSetter && !setter.element.isSynthetic) {
       assert(setter.documentationFrom.length == 1);
-      String docs = stripComments(setter.documentationFrom.first.computeDocumentationComment);
+      String docs = setter.documentationFrom.first.computeDocumentationComment;
       if (docs != null) {
         if (buffer.isNotEmpty) buffer.write('\n\n');
         buffer.write(docs);
@@ -1623,11 +1637,11 @@ abstract class GetterSetterCombo implements ModelElement {
   bool get hasExplicitSetter => hasSetter && !setter.element.isSynthetic;
   bool get hasImplicitSetter => hasSetter && setter.element.isSynthetic;
 
-  bool get hasGetter;
+  bool get hasGetter => getter != null;
 
   bool get hasNoGetterSetter => !hasExplicitGetter && !hasExplicitSetter;
 
-  bool get hasSetter;
+  bool get hasSetter => setter != null;
 
   bool get hasGetterNoSetter => (hasGetter && !hasSetter);
 
@@ -2631,6 +2645,8 @@ abstract class ModelElement extends Nameable
   /// Returns the docs, stripped of their leading comments syntax.
   @override
   String get documentation {
+    if (name == 'implicitGetterExplicitSetter')
+      1+1;
     return documentationFrom.map((e) => e._documentationLocal).join('\n');
   }
 
@@ -4600,11 +4616,11 @@ class TopLevelVariable extends ModelElement
   @override
   ModelElement get enclosingElement => library;
 
-  @override
-  bool get hasGetter => _variable.getter != null;
+  //@override
+  //bool get hasGetter => _variable.getter != null;
 
-  @override
-  bool get hasSetter => _variable.setter != null;
+  //@override
+  //bool get hasSetter => _variable.setter != null;
 
   @override
   String get href {

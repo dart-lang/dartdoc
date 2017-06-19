@@ -196,9 +196,6 @@ class ImplicitProperties {
 
   /// Explicit setter for inheriting.
   set explicitGetterSetterForInheriting(int foo) {}
-
-  /// A constant integer from ImplicitProperties.
-  static const int aConstantInteger = 50;
 }
 
 /// Classes with unusual properties?  I don't think they exist.

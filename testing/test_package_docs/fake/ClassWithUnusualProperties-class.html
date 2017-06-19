@@ -120,6 +120,8 @@
 
     <section class="desc markdown">
       <p>Classes with unusual properties?  I don't think they exist.</p>
+<p>Or rather, dartdoc used to think they didn't exist.  Check the variations
+on inheritance and overrides here.</p>
     </section>
     
     <section>
@@ -163,12 +165,13 @@
           <div class="features">read-only</div>
 </dd>
         <dt id="explicitGetterImplicitSetter" class="property">
-          <span class="name"><a href="fake/ClassWithUnusualProperties/explicitGetterImplicitSetter.html">explicitGetterImplicitSetter</a></span>
-          <span class="signature">&#8594; List&lt;int&gt;</span>
+          <span class="name"><a href="fake/ClassWithUnusualProperties/explicitGetterImplicitSetter.html">explicitGetterImplicitSetter</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;   <span class="parameter" id="explicitGetterImplicitSetter=-param-_explicitGetterImplicitSetter"><span class="type-annotation">List&lt;int&gt;</span></span> </span>
+          </span>
         </dt>
         <dd>
-          
-          <div class="features">@override, inherited-setter, read-only</div>
+          Getter doc for explicitGetterImplicitSetter
+          <div class="features">@override, inherited-setter, read / write</div>
 </dd>
         <dt id="explicitGetterSetter" class="property">
           <span class="name"><a href="fake/ClassWithUnusualProperties/explicitGetterSetter.html">explicitGetterSetter</a></span><span class="signature">
@@ -176,7 +179,7 @@
           </span>
         </dt>
         <dd>
-          This property is not synthetic, so it might reference <code>f</code> -- display it.
+          Getter doc for explicitGetterSetter.
           <div class="features">read / write</div>
 </dd>
         <dt id="explicitSetter" class="property">
@@ -193,17 +196,17 @@
           <span class="signature">&#8594; Set</span>
         </dt>
         <dd>
-          
+          This property has some docs, too.
           <div class="features">final</div>
 </dd>
         <dt id="implicitGetterExplicitSetter" class="property">
           <span class="name"><a href="fake/ClassWithUnusualProperties/implicitGetterExplicitSetter.html">implicitGetterExplicitSetter</a></span><span class="signature">
-            <span class="returntype parameter">&#8592;  <span class="parameter" id="implicitGetterExplicitSetter=-param-x"><span class="type-annotation">String</span> <span class="parameter-name">x</span></span>  </span>
+            <span class="returntype parameter">&#8596;  <span class="parameter" id="implicitGetterExplicitSetter=-param-x"><span class="type-annotation">String</span> <span class="parameter-name">x</span></span>  </span>
           </span>
         </dt>
         <dd>
-          
-          <div class="features">@override, inherited-getter, write-only</div>
+          Docs for implicitGetterExplicitSetter from ImplicitProperties.
+          <div class="features">@override, inherited-getter, read / write</div>
 </dd>
         <dt id="implicitReadWrite" class="property">
           <span class="name"><a href="fake/ClassWithUnusualProperties/implicitReadWrite.html">implicitReadWrite</a></span><span class="signature">
@@ -213,6 +216,24 @@
         <dd>
           
           <div class="features">read / write</div>
+</dd>
+        <dt id="explicitGetterSetterForInheriting" class="property inherited">
+          <span class="name"><a href="fake/ImplicitProperties/explicitGetterSetterForInheriting.html">explicitGetterSetterForInheriting</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;  <span class="parameter" id="explicitGetterSetterForInheriting=-param-foo"><span class="type-annotation">int</span> <span class="parameter-name">foo</span></span>  </span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          Explicit getter for inheriting.
+          <div class="features">read / write, inherited</div>
+</dd>
+        <dt id="forInheriting" class="property inherited">
+          <span class="name"><a href="fake/ImplicitProperties/forInheriting.html">forInheriting</a></span><span class="signature">
+            <span class="returntype parameter">&#8596;   <span class="parameter" id="forInheriting=-param-_forInheriting"><span class="type-annotation">int</span></span> </span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          A simple property to inherit.
+          <div class="features">read / write, inherited</div>
 </dd>
         <dt id="hashCode" class="property inherited">
           <span class="name"><a href="fake/ImplicitProperties/hashCode.html">hashCode</a></span>
@@ -302,6 +323,8 @@
       <li><a href="fake/ClassWithUnusualProperties/finalProperty.html">finalProperty</a></li>
       <li><a href="fake/ClassWithUnusualProperties/implicitGetterExplicitSetter.html">implicitGetterExplicitSetter</a></li>
       <li><a href="fake/ClassWithUnusualProperties/implicitReadWrite.html">implicitReadWrite</a></li>
+      <li class="inherited"><a href="fake/ImplicitProperties/explicitGetterSetterForInheriting.html">explicitGetterSetterForInheriting</a></li>
+      <li class="inherited"><a href="fake/ImplicitProperties/forInheriting.html">forInheriting</a></li>
       <li class="inherited"><a href="fake/ImplicitProperties/hashCode.html">hashCode</a></li>
       <li class="inherited"><a href="fake/ImplicitProperties/runtimeType.html">runtimeType</a></li>
     
