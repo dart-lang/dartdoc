@@ -293,16 +293,16 @@ MatchingLinkResult _getMatchingLinkElement(
     return new MatchingLinkResult(refModelElement, null);
   }
   if (searchElement is ClassMemberElement) {
-    if (codeRef == 'Map.keys')
-      1+1;
-    Class refClass = new ModelElement.from(searchElement.enclosingElement, refLibrary);
+    if (codeRef == 'Map.keys') 1 + 1;
+    Class refClass =
+        new ModelElement.from(searchElement.enclosingElement, refLibrary);
     refModelElement = refClass.findModelElement(searchElement);
   } else {
     refModelElement = new ModelElement.from(searchElement, refLibrary);
   }
   if (!refModelElement.isCanonical) {
-    refModelElement.warn(PackageWarning.noCanonicalFound,
-        referredFrom: [element]);
+    refModelElement
+        .warn(PackageWarning.noCanonicalFound, referredFrom: [element]);
     // Don't warn about doc references because that's covered by the no
     // canonical library found message.
     return new MatchingLinkResult(null, null, warn: false);

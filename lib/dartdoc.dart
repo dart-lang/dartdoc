@@ -253,7 +253,7 @@ class DartDoc {
       }
     }
 
-    if (referredFromElements.isEmpty  && referredFrom == 'index.html')
+    if (referredFromElements.isEmpty && referredFrom == 'index.html')
       referredFromElements.add(package);
     String message = warnOn;
     if (referredFrom == 'index.json') message = '$warnOn (from index.json)';

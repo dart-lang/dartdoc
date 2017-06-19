@@ -207,6 +207,7 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   set implicitGetterExplicitSetter(String x) {}
 
   @override
+
   /// Getter doc for explicitGetterImplicitSetter
   List<int> get explicitGetterImplicitSetter => new List<int>();
 
