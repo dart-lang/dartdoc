@@ -13,7 +13,6 @@ import 'package:analyzer/dart/ast/ast.dart'
     show
         AnnotatedNode,
         Declaration,
-        FormalParameter,
         FieldDeclaration,
         VariableDeclaration,
         VariableDeclarationList;
@@ -2425,7 +2424,7 @@ abstract class ModelElement extends Nameable
   String get genericParameters => '';
 
   @override
-  String get oneLineDoc => _documentation.asOneLiner + ' ' +  extendedDocLink;
+  String get oneLineDoc => '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
 
   ModelElement get overriddenElement => null;
 
