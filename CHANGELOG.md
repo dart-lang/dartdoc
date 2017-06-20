@@ -9,6 +9,7 @@
   canonicalFor, to override its decisions (#1455)
 * Add a hidden flag to drop text in docs imported from the SDK, and use this
   flag in the integration test to make that test less fragile (#1457)
+* Add link to package homepage from index (#1460)
 
 ## 0.12.0
 * Generation performance improved from 20-65% on large packages (more improvement on packages
