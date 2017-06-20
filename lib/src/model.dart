@@ -24,7 +24,6 @@ import 'package:analyzer/src/generated/resolver.dart'
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:collection/collection.dart';
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';
 
@@ -3246,7 +3245,6 @@ class Package extends Nameable implements Documentable {
   final List<Library> _libraries = [];
 
   // All library objects related to this package; a superset of _libraries.
-  @visibleForTesting
   final Map<LibraryElement, Library> allLibraries = new Map();
 
   // Objects to keep track of warnings.
