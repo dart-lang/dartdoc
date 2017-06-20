@@ -848,7 +848,8 @@ class Class extends ModelElement implements EnclosedElement {
         .where(isPublic));
 
     assert(!inheritedAccessors.any((e) => e is Member));
-    // This structure keeps track of inherited accessors.
+    // This structure keeps track of inherited accessors, allowing lookup
+    // by field name (stripping the '=' from setters).
     Map<String, List<PropertyAccessorElement>> accessorMap = new Map();
     for (PropertyAccessorElement accessorElement in inheritedAccessors) {
       String name = accessorElement.name.replaceFirst('=', '');
@@ -893,7 +894,9 @@ class Class extends ModelElement implements EnclosedElement {
 
   /// Add a single Field to _fields.
   ///
-  /// Modifies accessorMap, removing the field added.
+  /// If [f] is not specified, pick the FieldElement from the PropertyAccessorElement
+  /// closer to the leaf of the inheritance tree (or the getter in case of a tie),
+  /// and construct a Field using that.
   void _addSingleField(
       PropertyAccessorElement getterElement,
       PropertyAccessorElement setterElement,
@@ -931,7 +934,9 @@ class Class extends ModelElement implements EnclosedElement {
           enclosingClass: this, getter: getter, setter: setter));
     } else {
       // Field is <100% inherited (could be half-inherited).
-      // TODO(jcollins-g): make half-inherited fields half-italicized...?
+      // TODO(jcollins-g): Navigation is probably still confusing for
+      // half-inherited fields when traversing the inheritance tree.  Make
+      // this better, somehow.
       _fields.add(
           new ModelElement.from(f, library, getter: getter, setter: setter));
     }
@@ -2178,26 +2183,11 @@ abstract class ModelElement extends Nameable
       }
       if (e is TopLevelVariableElement) {
         if (getter == null && setter == null) {
-          // FIXME: so, what's wrong here?
-          if (e.getter != null) {
-            getter = new ModelElement.from(e.getter, library);
-            if (getter.enclosingCombo != null) {
-              newModelElement = getter.enclosingCombo;
-            }
-          }
-          if (e.setter != null) {
-            setter = new ModelElement.from(e.setter, library);
-            if (setter.enclosingCombo != null) {
-              if (newModelElement != null) {
-                assert(setter.enclosingCombo == getter.enclosingCombo);
-              }
-              newModelElement = setter.enclosingCombo;
-            }
-          }
-        }
-        assert(getter != null || setter != null);
-        if (newModelElement == null)
+          List<TopLevelVariable> allVariables = []..addAll(library.properties)..addAll(library.constants);
+          newModelElement = allVariables.firstWhere((v) => v.element == e);
+        } else {
           newModelElement = new TopLevelVariable(e, library, getter, setter);
+        }
       }
       if (e is PropertyAccessorElement) {
         if (e.enclosingElement is ClassElement) {
@@ -2228,11 +2218,7 @@ abstract class ModelElement extends Nameable
         library.package._allInheritableElements[iKey].add(newModelElement);
       }
     }
-    if (newModelElement is Field) {
-      assert(getter == null || newModelElement.getter.enclosingCombo != null);
-      assert(setter == null || newModelElement.setter.enclosingCombo != null);
-    }
-    if (newModelElement is TopLevelVariable) {
+    if (newModelElement is GetterSetterCombo) {
       assert(getter == null || newModelElement.getter.enclosingCombo != null);
       assert(setter == null || newModelElement.setter.enclosingCombo != null);
     }

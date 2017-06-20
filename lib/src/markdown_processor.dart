@@ -292,14 +292,9 @@ MatchingLinkResult _getMatchingLinkElement(
   if (refModelElement != null) {
     return new MatchingLinkResult(refModelElement, null);
   }
-  if (searchElement is ClassMemberElement) {
-    if (codeRef == 'Map.keys') 1 + 1;
-    Class refClass =
-        new ModelElement.from(searchElement.enclosingElement, refLibrary);
-    refModelElement = refClass.findModelElement(searchElement);
-  } else {
-    refModelElement = new ModelElement.from(searchElement, refLibrary);
-  }
+  // From this point on, we haven't been able to find a canonical ModelElement.
+  // So in this case, just find any ModelElement we can.
+  refModelElement = new ModelElement.from(searchElement, refLibrary);
   if (!refModelElement.isCanonical) {
     refModelElement
         .warn(PackageWarning.noCanonicalFound, referredFrom: [element]);
