@@ -1,3 +1,8 @@
+## 0.13.1
+* Remove unnecessary dependency on meta.
+* Drop --force from pub publish arguments to avoid publishing more broken
+  packages.
+
 ## 0.13.0
 * Fixed case where inherited members could be linked to the wrong mixin (#1434)
 * Added broken link detection to the search index.
