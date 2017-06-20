@@ -2289,6 +2289,15 @@ abstract class ModelElement extends Nameable
     return "(${p.toUri(sourceFileName)})";
   }
 
+  /// Returns a link to extended documentation, or the empty string if that
+  /// does not exist.
+  String get extendedDocLink {
+    if (hasExtendedDocumentation) {
+      return '<a href="${href}">[...]</a>';
+    }
+    return '';
+  }
+
   /// Returns the fully qualified name.
   ///
   /// For example: libraryName.className.methodName
@@ -2415,7 +2424,8 @@ abstract class ModelElement extends Nameable
   String get genericParameters => '';
 
   @override
-  String get oneLineDoc => _documentation.asOneLiner;
+  String get oneLineDoc =>
+      '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
 
   ModelElement get overriddenElement => null;
 

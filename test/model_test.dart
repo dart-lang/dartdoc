@@ -207,7 +207,7 @@ void main() {
       expect(
           fakeLibrary.oneLineDoc,
           equals(
-              'WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a>'));
+              'WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a> <a href="fake/fake-library.html">[...]</a>'));
     });
 
     test('has properties', () {
@@ -504,7 +504,7 @@ void main() {
       expect(
           add.oneLineDoc,
           equals(
-              'Adds <code>value</code> to the end of this list,\nextending the length by one.'));
+              'Adds <code>value</code> to the end of this list,\nextending the length by one. <a href="fake/SpecialList/add.html">[...]</a>'));
     });
 
     test(
