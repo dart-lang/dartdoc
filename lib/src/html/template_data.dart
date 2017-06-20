@@ -40,6 +40,9 @@ abstract class TemplateData<T extends Documentable> {
 
   bool get includeVersion => false;
 
+  bool get hasHomepage => false;
+  String get homepage => null;
+
   bool get hasSubNav => subnavItems.isNotEmpty;
 
   List<Subnav> get subnavItems {
@@ -97,6 +100,11 @@ class PackageTemplateData extends TemplateData<Package> {
   Iterable<Subnav> getSubNavItems() {
     return [new Subnav('Libraries', '${package.href}#libraries')];
   }
+
+  @override
+  bool get hasHomepage => package.hasHomepage;
+  @override
+  String get homepage => package.homepage;
 
   @override
   String get kind => (useCategories || package.isSdk) ? '' : 'package';

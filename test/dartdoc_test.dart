@@ -67,6 +67,7 @@ void main() {
 
       Package p = results.package;
       expect(p.name, 'test_package_small');
+      expect(p.hasHomepage, isFalse);
       expect(p.hasDocumentationFile, isFalse);
       expect(p.libraries, hasLength(1));
     });
