@@ -1,3 +1,15 @@
+## 0.13.0
+* Fixed case where inherited members could be linked to the wrong mixin (#1434)
+* Added broken link detection to the search index.
+* Avoid parsing markdown for ModelElements unless we're actually going to use
+  the docs, speeding up generation overall by ~10% (#1417)
+* Add annotations to parameter documentation (#1432)
+* Change dartdoc style to use multiple independent scrolling columns (#1350)
+* Add scoring for ambiguous canonicalization, and a new comment directive,
+  canonicalFor, to override its decisions (#1455)
+* Add a hidden flag to drop text in docs imported from the SDK, and use this
+  flag in the integration test to make that test less fragile (#1457)
+
 ## 0.12.0
 * Generation performance improved from 20-65% on large packages (more improvement on packages
   with lower usage of comment references and complex inheritance chains, like angular2).
