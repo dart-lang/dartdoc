@@ -258,7 +258,7 @@ class DartDoc {
     String message = warnOn;
     if (referredFrom == 'index.json') message = '$warnOn (from index.json)';
     package.warnOnElement(warnOnElement, kind,
-        message: message, referredFrom: referredFromElements.toList());
+        message: message, referredFrom: referredFromElements);
   }
 
   void _doOrphanCheck(Package package, String origin, Set<String> visited) {

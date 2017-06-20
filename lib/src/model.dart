@@ -234,8 +234,8 @@ class Accessor extends ModelElement
   @override
   void warn(PackageWarning kind,
       {String message,
-      List<Locatable> referredFrom,
-      List<String> extendedDebug}) {
+      Iterable<Locatable> referredFrom,
+      Iterable<String> extendedDebug}) {
     if (enclosingCombo != null) {
       enclosingCombo.warn(kind,
           message: message,
@@ -2766,8 +2766,8 @@ abstract class ModelElement extends Nameable
   @override
   void warn(PackageWarning kind,
       {String message,
-      List<Locatable> referredFrom,
-      List<String> extendedDebug}) {
+      Iterable<Locatable> referredFrom,
+      Iterable<String> extendedDebug}) {
     package.warnOnElement(this, kind,
         message: message,
         referredFrom: referredFrom,
@@ -3329,7 +3329,7 @@ Map<PackageWarning, PackageWarningHelpText> packageWarningText = {
 /// Something that package warnings can be called on.
 abstract class Warnable implements Locatable {
   void warn(PackageWarning warning,
-      {String message, List<Locatable> referredFrom});
+      {String message, Iterable<Locatable> referredFrom});
   Warnable get enclosingElement;
 }
 
@@ -3586,8 +3586,8 @@ class Package extends Nameable implements Documentable {
   @override
   void warn(PackageWarning kind,
       {String message,
-      List<Locatable> referredFrom,
-      List<String> extendedDebug}) {
+      Iterable<Locatable> referredFrom,
+      Iterable<String> extendedDebug}) {
     warnOnElement(this, kind,
         message: message,
         referredFrom: referredFrom,
@@ -3607,8 +3607,8 @@ class Package extends Nameable implements Documentable {
 
   void warnOnElement(Warnable warnable, PackageWarning kind,
       {String message,
-      List<Locatable> referredFrom,
-      List<String> extendedDebug}) {
+      Iterable<Locatable> referredFrom,
+      Iterable<String> extendedDebug}) {
     if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
@@ -4086,7 +4086,6 @@ class Package extends Nameable implements Documentable {
   /// a documentation entry point (for elements that have no Library within the
   /// set of canonical Libraries).
   Library findOrCreateLibraryFor(Element e) {
-    if (e == null) 1 + 1;
     // This is just a cache to avoid creating lots of libraries over and over.
     if (allLibraries.containsKey(e.library)) {
       return allLibraries[e.library];
