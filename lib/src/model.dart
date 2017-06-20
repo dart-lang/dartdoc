@@ -13,7 +13,6 @@ import 'package:analyzer/dart/ast/ast.dart'
     show
         AnnotatedNode,
         Declaration,
-        FormalParameter,
         FieldDeclaration,
         VariableDeclaration,
         VariableDeclarationList;
@@ -3630,6 +3629,10 @@ class Package extends Nameable implements Documentable {
   }
 
   List<Library> get libraries => _libraries.toList(growable: false);
+
+  bool get hasHomepage =>
+      packageMeta.homepage != null && packageMeta.homepage.isNotEmpty;
+  String get homepage => packageMeta.homepage;
 
   @override
   String get name => packageMeta.name;
