@@ -1,4 +1,5 @@
 name: test_package
+homepage: http://github.com/dart-lang
 description: Best package ever.
 version: 0.0.1
 dependencies:

@@ -54,6 +54,11 @@ void main() {
         expect(package.libraries, hasLength(8));
       });
 
+      test('homepage', () {
+        expect(package.hasHomepage, true);
+        expect(package.homepage, equals('http://github.com/dart-lang'));
+      });
+
       test('categories', () {
         expect(package.categories, hasLength(1));
 
@@ -92,6 +97,12 @@ void main() {
 
       test('sdk name', () {
         expect(sdkAsPackage.name, equals('Dart SDK'));
+      });
+
+      test('sdk homepage', () {
+        expect(sdkAsPackage.hasHomepage, isTrue);
+        expect(
+            sdkAsPackage.homepage, equals('https://github.com/dart-lang/sdk'));
       });
 
       test('sdk version', () {
