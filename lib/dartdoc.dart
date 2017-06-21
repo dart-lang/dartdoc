@@ -239,10 +239,8 @@ class DartDoc {
     }
     warnOnElements = _hrefs[warnOn];
 
-    if (referredFromElements != null) {
-      if (referredFromElements.any((e) => e.isCanonical)) {
-        referredFromElements.removeWhere((e) => !e.isCanonical);
-      }
+    if (referredFromElements.any((e) => e.isCanonical)) {
+      referredFromElements.removeWhere((e) => !e.isCanonical);
     }
     if (warnOnElements != null) {
       if (warnOnElements.any((e) => e.isCanonical)) {
