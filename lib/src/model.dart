@@ -24,7 +24,6 @@ import 'package:analyzer/src/generated/resolver.dart'
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:collection/collection.dart';
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';
 
@@ -2529,6 +2528,15 @@ abstract class ModelElement extends Nameable
     return "(${p.toUri(sourceFileName)})";
   }
 
+  /// Returns a link to extended documentation, or the empty string if that
+  /// does not exist.
+  String get extendedDocLink {
+    if (hasExtendedDocumentation) {
+      return '<a href="${href}">[...]</a>';
+    }
+    return '';
+  }
+
   /// Returns the fully qualified name.
   ///
   /// For example: libraryName.className.methodName
@@ -2655,7 +2663,8 @@ abstract class ModelElement extends Nameable
   String get genericParameters => '';
 
   @override
-  String get oneLineDoc => _documentation.asOneLiner;
+  String get oneLineDoc =>
+      '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
 
   ModelElement get overriddenElement => null;
 
@@ -3480,7 +3489,6 @@ class Package extends Nameable implements Documentable {
   final List<Library> _libraries = [];
 
   // All library objects related to this package; a superset of _libraries.
-  @visibleForTesting
   final Map<LibraryElement, Library> allLibraries = new Map();
 
   // Objects to keep track of warnings.
@@ -3891,6 +3899,10 @@ class Package extends Nameable implements Documentable {
   }
 
   List<Library> get libraries => _libraries.toList(growable: false);
+
+  bool get hasHomepage =>
+      packageMeta.homepage != null && packageMeta.homepage.isNotEmpty;
+  String get homepage => packageMeta.homepage;
 
   @override
   String get name => packageMeta.name;
