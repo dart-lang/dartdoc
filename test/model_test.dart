@@ -1260,6 +1260,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(implicitGetterExplicitSetter.isInherited, isFalse);
       expect(implicitGetterExplicitSetter.features.contains('inherited-getter'),
           isTrue);
+      expect(implicitGetterExplicitSetter.features.contains('read / write'),
+          isTrue);
       expect(
           implicitGetterExplicitSetter.oneLineDoc,
           equals(
@@ -1276,6 +1278,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(explicitGetterImplicitSetter.isInherited, isFalse);
       expect(explicitGetterImplicitSetter.features.contains('inherited-setter'),
           isTrue);
+      expect(explicitGetterImplicitSetter.features.contains('read / write'),
+          isTrue);
       expect(explicitGetterImplicitSetter.oneLineDoc,
           equals('Getter doc for explicitGetterImplicitSetter'));
       // Even though we have some new setter docs, getter still takes priority.
@@ -1291,7 +1295,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has extended documentation', () {
       expect(lengthX.hasExtendedDocumentation, isTrue);
-      expect(lengthX.oneLineDoc, equals('Returns a length. <a href="fake/WithGetterAndSetter/lengthX.html">[...]</a>'));
+      expect(
+          lengthX.oneLineDoc,
+          equals(
+              'Returns a length. <a href="fake/WithGetterAndSetter/lengthX.html">[...]</a>'));
       expect(lengthX.documentation, contains('the fourth dimension'));
       expect(lengthX.documentation, isNot(contains('[...]')));
     });

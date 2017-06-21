@@ -439,13 +439,9 @@ class Class extends ModelElement implements EnclosedElement {
     return _allElements;
   }
 
-  bool contains(Element element) {
-    return allElements.containsKey(element);
-  }
+  bool contains(Element element) => allElements.containsKey(element);
 
-  ModelElement findModelElement(Element element) {
-    return allElements[element];
-  }
+  ModelElement findModelElement(Element element) => allElements[element];
 
   final Set<ModelElement> _allModelElements = new Set();
   List<ModelElement> get allModelElements {
@@ -764,12 +760,10 @@ class Class extends ModelElement implements EnclosedElement {
   // now, we're creating a flat list. We're not paying attention to where
   // these methods are actually coming from. This might turn out to be a
   // problem if we want to show that info later.
-  List<Field> get propertiesForPages {
-    return []
-      ..addAll(instanceProperties)
-      ..addAll(inheritedProperties)
-      ..sort(byName);
-  }
+  List<Field> get propertiesForPages => []
+    ..addAll(instanceProperties)
+    ..addAll(inheritedProperties)
+    ..sort(byName);
 
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
@@ -894,7 +888,7 @@ class Class extends ModelElement implements EnclosedElement {
   /// Add a single Field to _fields.
   ///
   /// If [f] is not specified, pick the FieldElement from the PropertyAccessorElement
-  /// closer to the leaf of the inheritance tree (or the getter in case of a tie),
+  /// whose enclosing class inherits from the other (defaulting to the getter)
   /// and construct a Field using that.
   void _addSingleField(
       PropertyAccessorElement getterElement,
@@ -2182,7 +2176,9 @@ abstract class ModelElement extends Nameable
       }
       if (e is TopLevelVariableElement) {
         if (getter == null && setter == null) {
-          List<TopLevelVariable> allVariables = []..addAll(library.properties)..addAll(library.constants);
+          List<TopLevelVariable> allVariables = []
+            ..addAll(library.properties)
+            ..addAll(library.constants);
           newModelElement = allVariables.firstWhere((v) => v.element == e);
         } else {
           newModelElement = new TopLevelVariable(e, library, getter, setter);
