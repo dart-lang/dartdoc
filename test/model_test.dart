@@ -1289,6 +1289,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(lengthX.fullyQualifiedName, 'fake.WithGetterAndSetter.lengthX');
     });
 
+    test('has extended documentation', () {
+      expect(lengthX.hasExtendedDocumentation, isTrue);
+      expect(lengthX.oneLineDoc, equals('Returns a length. <a href="fake/WithGetterAndSetter/lengthX.html">[...]</a>'));
+      expect(lengthX.documentation, contains('the fourth dimension'));
+      expect(lengthX.documentation, isNot(contains('[...]')));
+    });
+
     test('has valid documentation', () {
       expect(mFromApple.hasDocumentation, isTrue);
       expect(mFromApple.documentation, "The read-write field `m`.");
