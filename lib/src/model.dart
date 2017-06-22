@@ -1524,9 +1524,13 @@ class Library extends ModelElement {
         .toList(growable: false);
   }
 
+  List<TopLevelVariable> _constants;
   List<TopLevelVariable> get constants {
-    return _getVariables().where((v) => v.isConst).toList(growable: false)
-      ..sort(byName);
+    if (_constants == null) {
+      // _getVariables() is already sorted.
+      _constants = _getVariables().where((v) => v.isConst).toList(growable: false);
+    }
+    return _constants;
   }
 
   String get dirName => name.replaceAll(':', '-');
@@ -1624,7 +1628,7 @@ class Library extends ModelElement {
 
   bool get hasClasses => classes.isNotEmpty;
 
-  bool get hasConstants => _getVariables().any((v) => v.isConst);
+  bool get hasConstants => constants.isNotEmpty;
 
   bool get hasEnums => enums.isNotEmpty;
 
@@ -1706,10 +1710,13 @@ class Library extends ModelElement {
 
   String get path => _libraryElement.definingCompilationUnit.name;
 
+  List<TopLevelVariable> _properties;
   /// All variables ("properties") except constants.
   List<TopLevelVariable> get properties {
-    return _getVariables().where((v) => !v.isConst).toList(growable: false)
-      ..sort(byName);
+    if (_properties == null) {
+      _properties = _getVariables().where((v) => !v.isConst).toList(growable: false);
+    }
+    return _properties;
   }
 
   List<Typedef> get typedefs {
