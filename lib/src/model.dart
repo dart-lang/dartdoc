@@ -1528,7 +1528,8 @@ class Library extends ModelElement {
   List<TopLevelVariable> get constants {
     if (_constants == null) {
       // _getVariables() is already sorted.
-      _constants = _getVariables().where((v) => v.isConst).toList(growable: false);
+      _constants =
+          _getVariables().where((v) => v.isConst).toList(growable: false);
     }
     return _constants;
   }
@@ -1711,10 +1712,12 @@ class Library extends ModelElement {
   String get path => _libraryElement.definingCompilationUnit.name;
 
   List<TopLevelVariable> _properties;
+
   /// All variables ("properties") except constants.
   List<TopLevelVariable> get properties {
     if (_properties == null) {
-      _properties = _getVariables().where((v) => !v.isConst).toList(growable: false);
+      _properties =
+          _getVariables().where((v) => !v.isConst).toList(growable: false);
     }
     return _properties;
   }
