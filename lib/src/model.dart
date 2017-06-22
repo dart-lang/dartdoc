@@ -293,8 +293,9 @@ class Accessor extends ModelElement
             possibleFields.addAll(parentClass.allInstanceProperties);
             possibleFields.addAll(parentClass.staticProperties);
             String fieldName = accessor.name.replaceFirst('=', '');
-            Field foundField =
-                possibleFields.firstWhere((f) => f.element.name == fieldName, orElse: () => null);
+            Field foundField = possibleFields.firstWhere(
+                (f) => f.element.name == fieldName,
+                orElse: () => null);
             if (foundField != null) {
               if (this.isGetter) {
                 _overriddenElement = foundField.getter;
