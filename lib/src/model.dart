@@ -760,10 +760,16 @@ class Class extends ModelElement implements EnclosedElement {
   // now, we're creating a flat list. We're not paying attention to where
   // these methods are actually coming from. This might turn out to be a
   // problem if we want to show that info later.
-  List<Field> get propertiesForPages => []
-    ..addAll(instanceProperties)
-    ..addAll(inheritedProperties)
-    ..sort(byName);
+  List<Field> _propertiesForPages;
+  List<Field> get propertiesForPages {
+    if (_propertiesForPages == null) {
+      _propertiesForPages = []
+        ..addAll(instanceProperties)
+        ..addAll(inheritedProperties)
+        ..sort(byName);
+    }
+    return _propertiesForPages;
+  }
 
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
