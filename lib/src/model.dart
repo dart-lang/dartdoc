@@ -270,12 +270,13 @@ class Accessor extends ModelElement
 
   bool get isGetter => _accessor.isGetter;
 
+  bool _overriddenElementIsSet = false;
   ModelElement _overriddenElement;
-
   @override
   Accessor get overriddenElement {
     assert(package.allLibrariesAdded);
-    if (_overriddenElement == null) {
+    if (!_overriddenElementIsSet) {
+      _overriddenElementIsSet = true;
       Element parent = element.enclosingElement;
       if (parent is ClassElement) {
         for (InterfaceType t in getAllSupertypes(parent)) {
@@ -293,14 +294,16 @@ class Accessor extends ModelElement
             possibleFields.addAll(parentClass.staticProperties);
             String fieldName = accessor.name.replaceFirst('=', '');
             Field foundField =
-                possibleFields.firstWhere((f) => f.element.name == fieldName);
-            if (this.isGetter) {
-              _overriddenElement = foundField.getter;
-            } else {
-              _overriddenElement = foundField.setter;
+                possibleFields.firstWhere((f) => f.element.name == fieldName, orElse: () => null);
+            if (foundField != null) {
+              if (this.isGetter) {
+                _overriddenElement = foundField.getter;
+              } else {
+                _overriddenElement = foundField.setter;
+              }
+              assert(!(_overriddenElement as Accessor).isInherited);
+              break;
             }
-            assert(!(_overriddenElement as Accessor).isInherited);
-            break;
           }
         }
       }
