@@ -294,7 +294,20 @@ MatchingLinkResult _getMatchingLinkElement(
   }
   // From this point on, we haven't been able to find a canonical ModelElement.
   // So in this case, just find any ModelElement we can.
-  refModelElement = new ModelElement.from(searchElement, refLibrary);
+  Accessor getter;
+  Accessor setter;
+  if (searchElement is FieldElement) {
+    // TODO(jcollins-g): consolidate field element construction with inheritance
+    // checking.
+    if (searchElement.getter != null) {
+      getter = new ModelElement.from(searchElement.getter, refLibrary);
+    }
+    if (searchElement.setter != null) {
+      setter = new ModelElement.from(searchElement.setter, refLibrary);
+    }
+  }
+  refModelElement = new ModelElement.from(searchElement, refLibrary,
+      getter: getter, setter: setter);
   if (!refModelElement.isCanonical) {
     refModelElement
         .warn(PackageWarning.noCanonicalFound, referredFrom: [element]);
