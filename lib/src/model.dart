@@ -2114,7 +2114,10 @@ abstract class ModelElement extends Nameable
   // clean that up.
   // TODO(jcollins-g): Refactor this into class-specific factories that
   // call this one.
-  // TODO(jcollins-g): enforce this.
+  // TODO(jcollins-g): Enforce construction restraint.
+  // TODO(jcollins-g): Allow e to be null and drop extraneous null checks.
+  // TODO(jcollins-g): Auto-vivify element's defining library for library
+  // parameter when given a null.
   /// Do not construct any ModelElements unless they are from this constructor.
   /// Specify enclosingClass only if this is to be an inherited object.
   /// Specify index only if this is to be an EnumField.forConstant.
@@ -4404,12 +4407,6 @@ class TopLevelVariable extends ModelElement
 
   @override
   ModelElement get enclosingElement => library;
-
-  //@override
-  //bool get hasGetter => _variable.getter != null;
-
-  //@override
-  //bool get hasSetter => _variable.setter != null;
 
   @override
   String get href {
