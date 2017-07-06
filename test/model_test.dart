@@ -1201,11 +1201,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Field', () {
-    Class c, LongFirstLine, CatString;
+    Class c, LongFirstLine, CatString, UnusualProperties;
     Field f1, f2, constField, dynamicGetter, onlySetter;
     Field lengthX;
     Field sFromApple, mFromApple, mInB, autoCompress;
     Field isEmpty;
+    Field implicitGetterExplicitSetter, explicitGetterImplicitSetter;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
@@ -1215,6 +1216,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       LongFirstLine =
           fakeLibrary.classes.firstWhere((c) => c.name == 'LongFirstLine');
       CatString = exLibrary.classes.firstWhere((c) => c.name == 'CatString');
+
+      UnusualProperties = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'ClassWithUnusualProperties');
+      implicitGetterExplicitSetter = UnusualProperties.allModelElements
+          .firstWhere((e) => e.name == 'implicitGetterExplicitSetter');
+      explicitGetterImplicitSetter = UnusualProperties.allModelElements
+          .firstWhere((e) => e.name == 'explicitGetterImplicitSetter');
+
       isEmpty = CatString.allInstanceProperties
           .firstWhere((p) => p.name == 'isEmpty');
       dynamicGetter = LongFirstLine.instanceProperties
@@ -1245,8 +1254,53 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((p) => p.name == 'autoCompress');
     });
 
+    test('split inheritance with explicit setter works', () {
+      expect(implicitGetterExplicitSetter.getter.isInherited, isTrue);
+      expect(implicitGetterExplicitSetter.setter.isInherited, isFalse);
+      expect(implicitGetterExplicitSetter.isInherited, isFalse);
+      expect(implicitGetterExplicitSetter.features.contains('inherited-getter'),
+          isTrue);
+      expect(implicitGetterExplicitSetter.features.contains('read / write'),
+          isTrue);
+      expect(
+          implicitGetterExplicitSetter.oneLineDoc,
+          equals(
+              'Docs for implicitGetterExplicitSetter from ImplicitProperties.'));
+      expect(
+          implicitGetterExplicitSetter.documentation,
+          equals(
+              'Docs for implicitGetterExplicitSetter from ImplicitProperties.'));
+    });
+
+    test('split inheritance with explicit getter works', () {
+      expect(explicitGetterImplicitSetter.getter.isInherited, isFalse);
+      expect(explicitGetterImplicitSetter.setter.isInherited, isTrue);
+      expect(explicitGetterImplicitSetter.isInherited, isFalse);
+      expect(explicitGetterImplicitSetter.features.contains('inherited-setter'),
+          isTrue);
+      expect(explicitGetterImplicitSetter.features.contains('read / write'),
+          isTrue);
+      expect(explicitGetterImplicitSetter.oneLineDoc,
+          equals('Getter doc for explicitGetterImplicitSetter'));
+      // Even though we have some new setter docs, getter still takes priority.
+      expect(
+          explicitGetterImplicitSetter.documentation,
+          equals(
+              'Docs for explicitGetterImplicitSetter from ImplicitProperties.'));
+    });
+
     test('has a fully qualified name', () {
       expect(lengthX.fullyQualifiedName, 'fake.WithGetterAndSetter.lengthX');
+    });
+
+    test('has extended documentation', () {
+      expect(lengthX.hasExtendedDocumentation, isTrue);
+      expect(
+          lengthX.oneLineDoc,
+          equals(
+              'Returns a length. <a href="fake/WithGetterAndSetter/lengthX.html">[...]</a>'));
+      expect(lengthX.documentation, contains('the fourth dimension'));
+      expect(lengthX.documentation, isNot(contains('[...]')));
     });
 
     test('has valid documentation', () {

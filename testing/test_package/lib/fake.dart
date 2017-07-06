@@ -182,20 +182,38 @@ typedef void myCoolTypedef(Cool x, bool y);
 /// Names are actually wrong in this class, but when we extend it,
 /// they are correct.
 class ImplicitProperties {
+  /// Docs for implicitGetterExplicitSetter from ImplicitProperties.
   String implicitGetterExplicitSetter;
+
+  /// Docs for explicitGetterImplicitSetter from ImplicitProperties.
   List<int> explicitGetterImplicitSetter;
+
+  /// A simple property to inherit.
+  int forInheriting;
+
+  /// Explicit getter for inheriting.
+  int get explicitGetterSetterForInheriting => 12;
+
+  /// Explicit setter for inheriting.
+  set explicitGetterSetterForInheriting(int foo) {}
 }
 
 /// Classes with unusual properties?  I don't think they exist.
+///
+/// Or rather, dartdoc used to think they didn't exist.  Check the variations
+/// on inheritance and overrides here.
 class ClassWithUnusualProperties extends ImplicitProperties {
   @override
   set implicitGetterExplicitSetter(String x) {}
 
   @override
+
+  /// Getter doc for explicitGetterImplicitSetter
   List<int> get explicitGetterImplicitSetter => new List<int>();
 
   myCoolTypedef _aFunction;
 
+  /// Getter doc for explicitGetterSetter.
   myCoolTypedef get explicitGetterSetter {
     return _aFunction;
   }
@@ -211,6 +229,7 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   /// Set to [f], and don't warn about [bar] or [baz].
   set explicitSetter(f(int bar, Cool baz, List<int> macTruck)) {}
 
+  /// This property has some docs, too.
   final Set finalProperty = new Set();
 
   Map implicitReadWrite;

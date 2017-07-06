@@ -70,6 +70,7 @@ bool isPrivate(Element e) {
   return false;
 }
 
+// TODO(jcollins-g): this does not take into account inheritance
 bool isPublic(Element e) {
   if (isPrivate(e)) return false;
   // check to see if element is part of the public api, that is it does not
