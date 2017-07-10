@@ -473,7 +473,7 @@ class Class extends ModelElement implements EnclosedElement {
   List<Constructor> get constructors {
     if (_constructors != null) return _constructors;
 
-    _constructors = _cls.constructors.where(isPublic).map((e) {
+    _constructors = _cls.constructors.where(hasPublicName).map((e) {
       return new ModelElement.from(e, library);
     }).toList(growable: true)
       ..sort(byName);
@@ -589,7 +589,7 @@ class Class extends ModelElement implements EnclosedElement {
     for (ExecutableElement value in values) {
       if (value != null &&
           value is MethodElement &&
-          isPublic(value) &&
+          hasPublicName(value) &&
           !value.isOperator &&
           value.enclosingElement != null) {
         if (!package.isDocumented(value.enclosingElement)) {
@@ -734,7 +734,7 @@ class Class extends ModelElement implements EnclosedElement {
   List<ElementType> filterNonPublicTypes(List<ElementType> rawTypes) {
     List<ElementType> publicList = [];
     for (ElementType type in rawTypes) {
-      if (!isPrivate(type.element.element)) publicList.add(type);
+      if (!hasPrivateName(type.element.element)) publicList.add(type);
     }
     return publicList;
   }
@@ -841,14 +841,14 @@ class Class extends ModelElement implements EnclosedElement {
     inheritedAccessors.addAll(cmap.values
         .where((e) => e is PropertyAccessorElement)
         .map((e) => Package.getBasestElement(e) as PropertyAccessorElement)
-        .where(isPublic));
+        .where(hasPublicName));
 
     // Interfaces are subordinate to members inherited from classes, so don't
     // add this to our accessor set if we already have something inherited from classes.
     inheritedAccessors.addAll(imap.values
         .where((e) => e is PropertyAccessorElement && !cmap.containsKey(e.name))
         .map((e) => Package.getBasestElement(e) as PropertyAccessorElement)
-        .where(isPublic));
+        .where(hasPublicName));
 
     assert(!inheritedAccessors.any((e) => e is Member));
     // This structure keeps track of inherited accessors, allowing lookup
@@ -863,7 +863,7 @@ class Class extends ModelElement implements EnclosedElement {
     // For half-inherited fields, the analyzer only links the non-inherited
     // to the [FieldElement].  Compose our [Field] class by hand by looking up
     // inherited accessors that may be related.
-    for (FieldElement f in _cls.fields.where(isPublic)) {
+    for (FieldElement f in _cls.fields.where(hasPublicName)) {
       PropertyAccessorElement getterElement = f.getter;
       if (getterElement == null && accessorMap.containsKey(f.name)) {
         getterElement = accessorMap[f.name]
@@ -950,7 +950,7 @@ class Class extends ModelElement implements EnclosedElement {
   List<Method> get _methods {
     if (_allMethods != null) return _allMethods;
 
-    _allMethods = _cls.methods.where(isPublic).map((e) {
+    _allMethods = _cls.methods.where(hasPublicName).map((e) {
       return new ModelElement.from(e, library);
     }).toList(growable: false)
       ..sort(byName);
@@ -1078,7 +1078,7 @@ class Enum extends Class {
 
     _enumFields = [];
     for (FieldElement f
-        in _cls.fields.where(isPublic).where((f) => f.isConst)) {
+        in _cls.fields.where(hasPublicName).where((f) => f.isConst)) {
       // Enums do not have inheritance.
       Accessor accessor = new ModelElement.from(f.getter, library);
       _enumFields.add(
@@ -1595,7 +1595,7 @@ class Library extends ModelElement {
     enumClasses.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is ClassElement && element.isEnum));
     _enums = enumClasses
-        .where(isPublic)
+        .where(hasPublicName)
         .map((e) => new ModelElement.from(e, this))
         .toList(growable: false)
           ..sort(byName);
@@ -1623,7 +1623,7 @@ class Library extends ModelElement {
     elements.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is FunctionElement));
 
-    _functions = elements.where(isPublic).map((e) {
+    _functions = elements.where(hasPublicName).map((e) {
       return new ModelElement.from(e, this);
     }).toList(growable: false)
       ..sort(byName);
@@ -1738,7 +1738,7 @@ class Library extends ModelElement {
 
     elements.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is FunctionTypeAliasElement));
-    elements..removeWhere(isPrivate);
+    elements..removeWhere(hasPrivateName);
     _typeDefs = elements
         .map((e) => new ModelElement.from(e, this))
         .toList(growable: false)
@@ -1765,7 +1765,7 @@ class Library extends ModelElement {
         .where((element) => element is ClassElement && !element.isEnum));
 
     _classes = types
-        .where(isPublic)
+        .where(hasPublicName)
         .map((e) => new ModelElement.from(e, this))
         .toList(growable: false)
           ..sort(byName);
@@ -1805,7 +1805,7 @@ class Library extends ModelElement {
       }
     });
     _variables = [];
-    for (TopLevelVariableElement element in elements.where(isPublic)) {
+    for (TopLevelVariableElement element in elements.where(hasPublicName)) {
       Accessor getter;
       if (element.getter != null)
         getter = new ModelElement.from(element.getter, this);
@@ -2962,7 +2962,7 @@ abstract class ModelElement extends Nameable
         (this.element is TypeDefiningElement &&
             (this.element as TypeDefiningElement).type.name == "dynamic"));
 
-    if (isPrivate(element)) {
+    if (hasPrivateName(element)) {
       return HTML_ESCAPE.convert(name);
     }
 
@@ -3555,7 +3555,7 @@ class Package extends Nameable implements Documentable {
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
     libraryElements.forEach((element) {
       // add only if the element should be included in the public api
-      if (isPublic(element)) {
+      if (hasPublicName(element)) {
         var lib = new Library._(element, this);
         _libraries.add(lib);
         allLibraries[element] = lib;
@@ -3757,7 +3757,7 @@ class Package extends Nameable implements Documentable {
           final library = package.findLibraryFor(modelTypeElement.element);
           if (library == null &&
               modelTypeElement.library != null &&
-              !isPrivate(modelTypeElement.library.element) &&
+              !hasPrivateName(modelTypeElement.library.element) &&
               modelTypeElement.library.canonicalLibrary == null &&
               !libraryElements.contains(modelTypeElement.library.element)) {
             libraryElements.add(modelTypeElement.library.element);
@@ -3963,7 +3963,7 @@ class Package extends Nameable implements Documentable {
   bool isDocumented(Element element) {
     // If this isn't a private element and we have a canonical Library for it,
     // this element will be documented.
-    if (isPrivate(element)) return false;
+    if (hasPrivateName(element)) return false;
     return findCanonicalLibraryFor(element) != null;
   }
 
