@@ -67,6 +67,8 @@ typedef String processMessage<T>(String msg);
 
 typedef String ParameterizedTypedef<T>(T msg, int foo);
 
+/// Referencing [processMessage] (or other things) here should not break
+/// enum constants ala #1445
 enum Animal {
   /// Single line docs.
   CAT,

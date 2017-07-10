@@ -451,13 +451,13 @@ class Class extends ModelElement implements EnclosedElement {
   List<ModelElement> get allModelElements {
     if (_allModelElements.isEmpty) {
       _allModelElements
+        ..addAll(allInstanceMethods)
         ..addAll(allInstanceProperties)
         ..addAll(allOperators)
         ..addAll(constants)
         ..addAll(constructors)
         ..addAll(staticMethods)
         ..addAll(staticProperties)
-        ..addAll(allInstanceMethods)
         ..addAll(_typeParameters);
     }
     return _allModelElements.toList();
@@ -1069,7 +1069,8 @@ class Enum extends Class {
   List<EnumField> get instanceProperties {
     return super
         .instanceProperties
-        .map((Field p) => new ModelElement.from(p.element, p.library, getter: p.getter, setter: p.setter))
+        .map((Field p) => new ModelElement.from(p.element, p.library,
+            getter: p.getter, setter: p.setter))
         .toList(growable: false);
   }
 
@@ -2102,7 +2103,7 @@ abstract class ModelElement extends Nameable
       e = Package.getBasestElement(e);
     }
     Tuple3<Element, Library, Class> key =
-    new Tuple3(e, library, enclosingClass);
+        new Tuple3(e, library, enclosingClass);
     ModelElement newModelElement;
     if (e.kind != ElementKind.DYNAMIC &&
         library.package._allConstructedModelElements.containsKey(key)) {
@@ -2134,29 +2135,34 @@ abstract class ModelElement extends Nameable
         newModelElement = new Typedef(e, library);
       }
       if (e is FieldElement) {
+        assert(getter != null || setter != null);
         if (enclosingClass == null) {
-          if (e.enclosingElement.isEnum && (!(e.name == 'index' || e.name == 'hashCode' || e.name == 'values'))) {
-            // We should never build a Field for something that should be
-            // a EnumField.forConstant with an index, instead (#1445)
-            assert(e.isConst);
-            assert(getter != null);
-            assert(setter == null);
-            int index = e.computeConstantValue().getField('index').toIntValue();
-            assert(index != null);
-            newModelElement = new EnumField.forConstant(e.computeConstantValue().getField('index').toIntValue(), e, library, getter);
-          } else {
-            assert(getter != null || setter != null);
-            if (e.enclosingElement.isEnum) {
-              newModelElement = new EnumField(e, library, getter, setter);
+          if (e.enclosingElement.isEnum) {
+            int index =
+                e.computeConstantValue()?.getField('index')?.toIntValue();
+            if (index != null) {
+              // We should never build a Field for something that should be
+              // a EnumField.forConstant with an index, instead (#1445).
+              // "Special" enum-only fields including 'values' and confusingly,
+              // 'index', will return a null for index, so this is guaranteed
+              // to be one of the constants associated with the enum.
+              // TODO(jcollins-g): is this actually true?
+              assert(e.isConst);
+              assert(getter != null);
+              assert(setter == null);
+              newModelElement =
+                  new EnumField.forConstant(index, e, library, getter);
             } else {
-              newModelElement = new Field(e, library, getter, setter);
+              assert(['index', 'values'].contains(e.name));
+              newModelElement = new EnumField(e, library, getter, setter);
             }
+          } else {
+            newModelElement = new Field(e, library, getter, setter);
           }
         } else {
           // EnumFields can't be inherited, so this case is simpler.
-          assert(getter != null || setter != null);
           newModelElement =
-          new Field.inherited(e, enclosingClass, library, getter, setter);
+              new Field.inherited(e, enclosingClass, library, getter, setter);
         }
       }
       if (e is ConstructorElement) {
@@ -2189,7 +2195,8 @@ abstract class ModelElement extends Nameable
           if (enclosingClass == null)
             newModelElement = new InheritableAccessor(e, library);
           else
-            newModelElement = new InheritableAccessor.inherited(e, library, enclosingClass);
+            newModelElement =
+                new InheritableAccessor.inherited(e, library, enclosingClass);
         } else {
           newModelElement = new Accessor(e, library);
         }
