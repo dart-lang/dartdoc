@@ -76,6 +76,8 @@
     
       <li class="section-title"><a href="fake/fake-library.html#properties">Properties</a></li>
       <li><a href="fake/dynamicGetter.html">dynamicGetter</a></li>
+      <li><a href="fake/getterSetterNodocGetter.html">getterSetterNodocGetter</a></li>
+      <li><a href="fake/getterSetterNodocSetter.html">getterSetterNodocSetter</a></li>
       <li><a href="fake/justGetter.html">justGetter</a></li>
       <li><a href="fake/justSetter.html">justSetter</a></li>
       <li><a href="fake/mapWithDynamicKeys.html">mapWithDynamicKeys</a></li>
@@ -156,6 +158,14 @@ on inheritance and overrides here.</p>
       <h2>Properties</h2>
 
       <dl class="properties">
+        <dt id="documentedPartialFieldInSubclassOnly" class="property">
+          <span class="name"><a href="fake/ClassWithUnusualProperties/documentedPartialFieldInSubclassOnly.html">documentedPartialFieldInSubclassOnly</a></span>
+          <span class="signature">&#8594; String</span>
+        </dt>
+        <dd>
+          This getter is documented, so we should see a read-only property here.
+          <div class="features">@override, read-only</div>
+</dd>
         <dt id="explicitGetter" class="property">
           <span class="name"><a href="fake/ClassWithUnusualProperties/explicitGetter.html">explicitGetter</a></span>
           <span class="signature">&#8594; <a href="fake/myCoolTypedef.html">myCoolTypedef</a></span>
@@ -181,6 +191,14 @@ on inheritance and overrides here.</p>
         <dd>
           Getter doc for explicitGetterSetter.
           <div class="features">read / write</div>
+</dd>
+        <dt id="explicitNonDocumentedInBaseClassGetter" class="property">
+          <span class="name"><a href="fake/ClassWithUnusualProperties/explicitNonDocumentedInBaseClassGetter.html">explicitNonDocumentedInBaseClassGetter</a></span>
+          <span class="signature">&#8594; String</span>
+        </dt>
+        <dd>
+          Since I have a different doc, I should be documented.
+          <div class="features">@override, read-only</div>
 </dd>
         <dt id="explicitSetter" class="property">
           <span class="name"><a href="fake/ClassWithUnusualProperties/explicitSetter.html">explicitSetter</a></span><span class="signature">
@@ -225,6 +243,14 @@ on inheritance and overrides here.</p>
         <dd class="inherited">
           Explicit getter for inheriting.
           <div class="features">read / write, inherited</div>
+</dd>
+        <dt id="explicitPartiallyDocumentedField" class="property inherited">
+          <span class="name"><a href="fake/ImplicitProperties/explicitPartiallyDocumentedField.html">explicitPartiallyDocumentedField</a></span>
+          <span class="signature">&#8594; double</span>
+        </dt>
+        <dd class="inherited">
+          but documented here.
+          <div class="features">read-only, inherited</div>
 </dd>
         <dt id="forInheriting" class="property inherited">
           <span class="name"><a href="fake/ImplicitProperties/forInheriting.html">forInheriting</a></span><span class="signature">
@@ -316,14 +342,17 @@ on inheritance and overrides here.</p>
       <li class="section-title">
         <a href="fake/ClassWithUnusualProperties-class.html#instance-properties">Properties</a>
       </li>
+      <li><a href="fake/ClassWithUnusualProperties/documentedPartialFieldInSubclassOnly.html">documentedPartialFieldInSubclassOnly</a></li>
       <li><a href="fake/ClassWithUnusualProperties/explicitGetter.html">explicitGetter</a></li>
       <li><a href="fake/ClassWithUnusualProperties/explicitGetterImplicitSetter.html">explicitGetterImplicitSetter</a></li>
       <li><a href="fake/ClassWithUnusualProperties/explicitGetterSetter.html">explicitGetterSetter</a></li>
+      <li><a href="fake/ClassWithUnusualProperties/explicitNonDocumentedInBaseClassGetter.html">explicitNonDocumentedInBaseClassGetter</a></li>
       <li><a href="fake/ClassWithUnusualProperties/explicitSetter.html">explicitSetter</a></li>
       <li><a href="fake/ClassWithUnusualProperties/finalProperty.html">finalProperty</a></li>
       <li><a href="fake/ClassWithUnusualProperties/implicitGetterExplicitSetter.html">implicitGetterExplicitSetter</a></li>
       <li><a href="fake/ClassWithUnusualProperties/implicitReadWrite.html">implicitReadWrite</a></li>
       <li class="inherited"><a href="fake/ImplicitProperties/explicitGetterSetterForInheriting.html">explicitGetterSetterForInheriting</a></li>
+      <li class="inherited"><a href="fake/ImplicitProperties/explicitPartiallyDocumentedField.html">explicitPartiallyDocumentedField</a></li>
       <li class="inherited"><a href="fake/ImplicitProperties/forInheriting.html">forInheriting</a></li>
       <li class="inherited"><a href="fake/ImplicitProperties/hashCode.html">hashCode</a></li>
       <li class="inherited"><a href="fake/ImplicitProperties/runtimeType.html">runtimeType</a></li>

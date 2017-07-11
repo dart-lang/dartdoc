@@ -3364,6 +3364,17 @@
   }
  },
  {
+  "name": "documentedPartialFieldInSubclassOnly",
+  "qualifiedName": "fake.ClassWithUnusualProperties.documentedPartialFieldInSubclassOnly",
+  "href": "fake/ClassWithUnusualProperties/documentedPartialFieldInSubclassOnly.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
   "name": "explicitGetter",
   "qualifiedName": "fake.ClassWithUnusualProperties.explicitGetter",
   "href": "fake/ClassWithUnusualProperties/explicitGetter.html",
@@ -3389,6 +3400,17 @@
   "name": "explicitGetterSetter",
   "qualifiedName": "fake.ClassWithUnusualProperties.explicitGetterSetter",
   "href": "fake/ClassWithUnusualProperties/explicitGetterSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ClassWithUnusualProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitNonDocumentedInBaseClassGetter",
+  "qualifiedName": "fake.ClassWithUnusualProperties.explicitNonDocumentedInBaseClassGetter",
+  "href": "fake/ClassWithUnusualProperties/explicitNonDocumentedInBaseClassGetter.html",
   "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -4203,6 +4225,17 @@
   "name": "explicitGetterSetterForInheriting",
   "qualifiedName": "fake.ImplicitProperties.explicitGetterSetterForInheriting",
   "href": "fake/ImplicitProperties/explicitGetterSetterForInheriting.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplicitProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "explicitPartiallyDocumentedField",
+  "qualifiedName": "fake.ImplicitProperties.explicitPartiallyDocumentedField",
+  "href": "fake/ImplicitProperties/explicitPartiallyDocumentedField.html",
   "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -5909,6 +5942,28 @@
   "qualifiedName": "fake.functionWithFunctionParameters",
   "href": "fake/functionWithFunctionParameters.html",
   "type": "function",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "getterSetterNodocGetter",
+  "qualifiedName": "fake.getterSetterNodocGetter",
+  "href": "fake/getterSetterNodocGetter.html",
+  "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "getterSetterNodocSetter",
+  "qualifiedName": "fake.getterSetterNodocSetter",
+  "href": "fake/getterSetterNodocSetter.html",
+  "type": "top-level property",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",

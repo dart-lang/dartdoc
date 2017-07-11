@@ -1206,7 +1206,7 @@ class Field extends ModelElement
   String get documentation {
     // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
     // to prevent displaying more or less than one summary.
-    Set<bool> assertCheck = new Set()..addAll([hasSetter, hasGetterNoSetter]);
+    Set<bool> assertCheck = new Set()..addAll([hasPublicSetter, hasPublicGetterNoSetter]);
     assert(assertCheck.containsAll([true, false]));
     return super.documentation;
   }
@@ -1291,7 +1291,7 @@ class Field extends ModelElement
     if (readOnly && !isFinal && !isConst) all_features.add('read-only');
     if (writeOnly) all_features.add('write-only');
     if (readWrite) all_features.add('read / write');
-    if (getter != null && setter != null) {
+    if (hasPublicGetter && hasPublicSetter) {
       if (getter.isInherited && setter.isInherited) {
         all_features.add('inherited');
       } else {
@@ -1336,25 +1336,28 @@ abstract class GetterSetterCombo implements ModelElement {
 
   /// Returns true if both accessors are synthetic.
   bool get hasSyntheticAccessors {
-    if ((getter != null && getter.element.isSynthetic) ||
-        (setter != null && setter.element.isSynthetic)) {
+    if ((hasPublicGetter && getter.element.isSynthetic) ||
+        (hasPublicSetter && setter.element.isSynthetic)) {
       return true;
     }
     return false;
   }
 
+  bool get hasPublicGetter => hasGetter && getter.isPublic;
+  bool get hasPublicSetter => hasSetter && setter.isPublic;
+
   @override
-  bool get isPublic => getter.isPublic || setter.isPublic;
+  bool get isPublic => hasPublicGetter || hasPublicSetter;
 
   @override
   List<ModelElement> get documentationFrom {
     if (_documentationFrom == null) {
       _documentationFrom = [];
-      if (getter != null && getter.isPublic) {
+      if (hasPublicGetter) {
         _documentationFrom.addAll(getter.documentationFrom.where((e) =>
             e.computeDocumentationComment != computeDocumentationComment));
       }
-      if (setter != null && setter.isPublic)
+      if (hasPublicSetter)
         _documentationFrom.addAll(setter.documentationFrom.where((e) =>
             e.computeDocumentationComment != computeDocumentationComment));
       if (_documentationFrom.length == 0 ||
@@ -1369,23 +1372,23 @@ abstract class GetterSetterCombo implements ModelElement {
   String get oneLineDoc {
     if (_oneLineDoc == null) {
       bool hasAccessorsWithDocs =
-          (getter != null && getter.oneLineDoc.isNotEmpty ||
-              setter != null && setter.oneLineDoc.isNotEmpty);
+          (hasPublicGetter && getter.oneLineDoc.isNotEmpty ||
+              hasPublicSetter && setter.oneLineDoc.isNotEmpty);
       if (!hasAccessorsWithDocs) {
         _oneLineDoc = _documentation.asOneLiner;
       } else {
         StringBuffer buffer = new StringBuffer();
         bool getterSetterBothAvailable = false;
-        if (getter != null &&
+        if (hasPublicGetter &&
             getter.oneLineDoc.isNotEmpty &&
-            setter != null &&
+            hasPublicSetter &&
             setter.oneLineDoc.isNotEmpty) {
           getterSetterBothAvailable = true;
         }
-        if (getter != null && getter.oneLineDoc.isNotEmpty) {
+        if (hasPublicGetter && getter.oneLineDoc.isNotEmpty) {
           buffer.write('${getter.oneLineDoc}');
         }
-        if (setter != null && setter.oneLineDoc.isNotEmpty) {
+        if (hasPublicSetter && setter.oneLineDoc.isNotEmpty) {
           buffer.write('${getterSetterBothAvailable ? "": setter.oneLineDoc}');
         }
         _oneLineDoc = buffer.toString();
@@ -1397,13 +1400,13 @@ abstract class GetterSetterCombo implements ModelElement {
   String get getterSetterDocumentationComment {
     var buffer = new StringBuffer();
 
-    if (hasGetter && !getter.element.isSynthetic) {
+    if (hasPublicGetter && !getter.element.isSynthetic) {
       assert(getter.documentationFrom.length == 1);
       String docs = getter.documentationFrom.first.computeDocumentationComment;
       if (docs != null) buffer.write(docs);
     }
 
-    if (hasSetter && !setter.element.isSynthetic) {
+    if (hasPublicSetter && !setter.element.isSynthetic) {
       assert(setter.documentationFrom.length == 1);
       String docs = setter.documentationFrom.first.computeDocumentationComment;
       if (docs != null) {
@@ -1437,10 +1440,10 @@ abstract class GetterSetterCombo implements ModelElement {
     return null;
   }
 
-  bool get hasExplicitGetter => hasGetter && !getter.element.isSynthetic;
+  bool get hasExplicitGetter => hasPublicGetter && !getter.element.isSynthetic;
 
-  bool get hasExplicitSetter => hasSetter && !setter.element.isSynthetic;
-  bool get hasImplicitSetter => hasSetter && setter.element.isSynthetic;
+  bool get hasExplicitSetter => hasPublicSetter && !setter.element.isSynthetic;
+  bool get hasImplicitSetter => hasPublicSetter && setter.element.isSynthetic;
 
   bool get hasGetter => getter != null;
 
@@ -1448,7 +1451,7 @@ abstract class GetterSetterCombo implements ModelElement {
 
   bool get hasSetter => setter != null;
 
-  bool get hasGetterNoSetter => (hasGetter && !hasSetter);
+  bool get hasPublicGetterNoSetter => (hasPublicGetter && !hasPublicSetter);
 
   String get arrow {
     // →
@@ -1458,15 +1461,15 @@ abstract class GetterSetterCombo implements ModelElement {
     // ↔
     if (readWrite) return r'&#8596;';
     // A GetterSetterCombo should always be one of readOnly, writeOnly,
-    // or readWrite.
-    assert(false);
+    // or readWrite (if documented).
+    assert(!isPublic);
     return null;
   }
 
-  bool get readOnly => hasGetter && !hasSetter;
-  bool get readWrite => hasGetter && hasSetter;
+  bool get readOnly => hasPublicGetter && !hasPublicSetter;
+  bool get readWrite => hasPublicGetter && hasPublicSetter;
 
-  bool get writeOnly => hasSetter && !hasGetter;
+  bool get writeOnly => hasPublicSetter && !hasPublicGetter;
 
   Accessor get setter;
 }
@@ -1507,11 +1510,11 @@ class Library extends ModelElement {
         Accessor getter;
         Accessor setter;
         if (e is GetterSetterCombo) {
-          if (e.getter != null) {
+          if (e.hasGetter) {
             getter = new ModelElement.from(e.getter.element,
                 package.findOrCreateLibraryFor(e.getter.element));
           }
-          if (e.setter != null) {
+          if (e.hasSetter) {
             setter = new ModelElement.from(e.setter.element,
                 package.findOrCreateLibraryFor(e.setter.element));
           }
@@ -2411,11 +2414,11 @@ abstract class ModelElement extends Nameable
       InheritableAccessor newSetter;
       if (this is GetterSetterCombo) {
         GetterSetterCombo thisAsCombo = this as GetterSetterCombo;
-        if (thisAsCombo.getter != null) {
+        if (thisAsCombo.hasGetter) {
           newGetter = new ModelElement.from(
               thisAsCombo.getter.element, thisAsCombo.getter.definingLibrary);
         }
-        if (thisAsCombo.setter != null) {
+        if (thisAsCombo.hasSetter) {
           newSetter = new ModelElement.from(
               thisAsCombo.setter.element, thisAsCombo.setter.definingLibrary);
         }
@@ -4419,7 +4422,7 @@ class TopLevelVariable extends ModelElement
   String get documentation {
     // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
     // to prevent displaying more or less than one summary.
-    Set<bool> assertCheck = new Set()..addAll([hasSetter, hasGetterNoSetter]);
+    Set<bool> assertCheck = new Set()..addAll([hasPublicSetter, hasPublicGetterNoSetter]);
     assert(assertCheck.containsAll([true, false]));
     return super.documentation;
   }
