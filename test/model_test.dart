@@ -1260,6 +1260,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((p) => p.name == 'autoCompress');
     });
 
+    test('@nodoc on simple property works', () {
+      Field simpleHidden = UnusualProperties.allModelElements.firstWhere((e) => e.name == 'simpleHidden', orElse: () => null);
+      expect(simpleHidden, isNull);
+    });
+
     test('@nodoc on explicit getters/setters hides entire field', () {
       Field explicitNodocGetterSetter = UnusualProperties.allModelElements.firstWhere((e) => e.name == 'explicitNodocGetterSetter', orElse: () => null);
       expect(explicitNodocGetterSetter, isNull);

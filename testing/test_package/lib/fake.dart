@@ -239,6 +239,9 @@ class ClassWithUnusualProperties extends ImplicitProperties {
     return _aFunction;
   }
 
+  /// @nodoc for a simple hidden property.
+  String simpleHidden;
+
   /// @nodoc on setter
   set explicitNodocGetterSetter(String s) {}
   /// @nodoc on getter
