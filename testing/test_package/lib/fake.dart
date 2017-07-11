@@ -191,6 +191,18 @@ class ImplicitProperties {
   /// A simple property to inherit.
   int forInheriting;
 
+  /// @nodoc for you
+  String get explicitNonDocumentedGetter => "something";
+
+  /// @nodoc for you but check downstream
+  String get explicitNonDocumentedInBaseClassGetter => "something else";
+
+  /// but documented here.
+  double get explicitPartiallyDocumentedField => 1.3;
+  /// @nodoc here.
+  set explicitPartiallyDocumentedField(double foo) {}
+
+
   /// Explicit getter for inheriting.
   int get explicitGetterSetterForInheriting => 12;
 
@@ -212,6 +224,10 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   List<int> get explicitGetterImplicitSetter => new List<int>();
 
   myCoolTypedef _aFunction;
+
+  /// Since I have a different doc, I should be documented.
+  @override
+  String get explicitNonDocumentedInBaseClassGetter => "something else";
 
   /// Getter doc for explicitGetterSetter.
   myCoolTypedef get explicitGetterSetter {
