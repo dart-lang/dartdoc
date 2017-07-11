@@ -199,6 +199,7 @@ class ImplicitProperties {
 
   /// but documented here.
   double get explicitPartiallyDocumentedField => 1.3;
+
   /// @nodoc here, you should never see this
   set explicitPartiallyDocumentedField(double foo) {}
 
@@ -225,6 +226,7 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   set implicitGetterExplicitSetter(String x) {}
 
   @override
+
   /// Getter doc for explicitGetterImplicitSetter
   List<int> get explicitGetterImplicitSetter => new List<int>();
 
@@ -244,6 +246,7 @@ class ClassWithUnusualProperties extends ImplicitProperties {
 
   /// @nodoc on setter
   set explicitNodocGetterSetter(String s) {}
+
   /// @nodoc on getter
   String get explicitNodocGetterSetter => "something";
 
@@ -396,16 +399,19 @@ String simplePropertyHidden;
 
 /// Setter docs should be shown.
 set getterSetterNodocGetter(int value) {}
+
 /// @nodoc on getter.
 int get getterSetterNodocGetter => 3;
 
 /// @nodoc on setter
 set getterSetterNodocSetter(int value) {}
+
 /// Getter docs should be shown.
 int get getterSetterNodocSetter => 4;
 
 /// @nodoc on the setter
 set getterSetterNodocBoth(String value) {}
+
 /// And @nodoc on the getter, so entire TopLevelVariable should be invisible.
 String get getterSetterNodocBoth => "I do not exist";
 

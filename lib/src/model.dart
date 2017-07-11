@@ -474,10 +474,13 @@ class Class extends ModelElement implements EnclosedElement {
   List<Constructor> get constructors {
     if (_constructors != null) return _constructors;
 
-    _constructors = _cls.constructors.map((e) {
-      return new ModelElement.from(e, library);
-    }).where((e) => e.isPublic).toList(growable: true)
-      ..sort(byName);
+    _constructors = _cls.constructors
+        .map((e) {
+          return new ModelElement.from(e, library);
+        })
+        .where((e) => e.isPublic)
+        .toList(growable: true)
+          ..sort(byName);
 
     return _constructors;
   }
@@ -934,7 +937,8 @@ class Class extends ModelElement implements EnclosedElement {
     if ((getter == null || getter.isInherited) &&
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
-      field = new ModelElement.from(f, library, enclosingClass: this, getter: getter, setter: setter);
+      field = new ModelElement.from(f, library,
+          enclosingClass: this, getter: getter, setter: setter);
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
@@ -952,10 +956,13 @@ class Class extends ModelElement implements EnclosedElement {
   List<Method> get _methods {
     if (_allMethods != null) return _allMethods;
 
-    _allMethods = _cls.methods.map((e) {
-      return new ModelElement.from(e, library);
-    }).where((e) => e.isPublic).toList(growable: false)
-      ..sort(byName);
+    _allMethods = _cls.methods
+        .map((e) {
+          return new ModelElement.from(e, library);
+        })
+        .where((e) => e.isPublic)
+        .toList(growable: false)
+          ..sort(byName);
 
     return _allMethods;
   }
@@ -1079,11 +1086,11 @@ class Enum extends Class {
     var index = -1;
 
     _enumFields = [];
-    for (FieldElement f
-        in _cls.fields.where((f) => f.isConst)) {
+    for (FieldElement f in _cls.fields.where((f) => f.isConst)) {
       // Enums do not have inheritance.
       Accessor accessor = new ModelElement.from(f.getter, library);
-      EnumField enumField = new ModelElement.from(f, library, index: index++, getter: accessor);
+      EnumField enumField =
+          new ModelElement.from(f, library, index: index++, getter: accessor);
       if (enumField.isPublic) _enumFields.add(enumField);
     }
     _enumFields.sort(byName);
@@ -1206,7 +1213,8 @@ class Field extends ModelElement
   String get documentation {
     // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
     // to prevent displaying more or less than one summary.
-    Set<bool> assertCheck = new Set()..addAll([hasPublicSetter, hasPublicGetterNoSetter]);
+    Set<bool> assertCheck = new Set()
+      ..addAll([hasPublicSetter, hasPublicGetterNoSetter]);
     assert(assertCheck.containsAll([true, false]));
     return super.documentation;
   }
@@ -1631,10 +1639,13 @@ class Library extends ModelElement {
     elements.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is FunctionElement));
 
-    _functions = elements.map((e) {
-      return new ModelElement.from(e, this);
-    }).where((e) => e.isPublic).toList(growable: false)
-      ..sort(byName);
+    _functions = elements
+        .map((e) {
+          return new ModelElement.from(e, this);
+        })
+        .where((e) => e.isPublic)
+        .toList(growable: false)
+          ..sort(byName);
 
     return _functions;
   }
@@ -1820,7 +1831,8 @@ class Library extends ModelElement {
       Accessor setter;
       if (element.setter != null)
         setter = new ModelElement.from(element.setter, this);
-      ModelElement me = new ModelElement.from(element, this, getter: getter, setter: setter);
+      ModelElement me =
+          new ModelElement.from(element, this, getter: getter, setter: setter);
       if (me.isPublic) _variables.add(me);
     }
 
@@ -2354,7 +2366,8 @@ abstract class ModelElement extends Nameable
       if (docComment == null) {
         _isPublic = hasPublicName(element);
       } else {
-        _isPublic = hasPublicName(element) && !(docComment.contains('@nodoc') || docComment.contains('<nodoc>'));
+        _isPublic = hasPublicName(element) &&
+            !(docComment.contains('@nodoc') || docComment.contains('<nodoc>'));
       }
     }
     return _isPublic;
@@ -4422,7 +4435,8 @@ class TopLevelVariable extends ModelElement
   String get documentation {
     // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
     // to prevent displaying more or less than one summary.
-    Set<bool> assertCheck = new Set()..addAll([hasPublicSetter, hasPublicGetterNoSetter]);
+    Set<bool> assertCheck = new Set()
+      ..addAll([hasPublicSetter, hasPublicGetterNoSetter]);
     assert(assertCheck.containsAll([true, false]));
     return super.documentation;
   }

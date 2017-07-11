@@ -1225,8 +1225,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((e) => e.name == 'implicitGetterExplicitSetter');
       explicitGetterImplicitSetter = UnusualProperties.allModelElements
           .firstWhere((e) => e.name == 'explicitGetterImplicitSetter');
-      explicitNonDocumentedInBaseClassGetter = UnusualProperties.allModelElements
-          .firstWhere((e) => e.name == 'explicitNonDocumentedInBaseClassGetter');
+      explicitNonDocumentedInBaseClassGetter =
+          UnusualProperties.allModelElements.firstWhere(
+              (e) => e.name == 'explicitNonDocumentedInBaseClassGetter');
       documentedPartialFieldInSubclassOnly = UnusualProperties.allModelElements
           .firstWhere((e) => e.name == 'documentedPartialFieldInSubclassOnly');
 
@@ -1261,26 +1262,36 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('@nodoc on simple property works', () {
-      Field simpleHidden = UnusualProperties.allModelElements.firstWhere((e) => e.name == 'simpleHidden', orElse: () => null);
+      Field simpleHidden = UnusualProperties.allModelElements
+          .firstWhere((e) => e.name == 'simpleHidden', orElse: () => null);
       expect(simpleHidden, isNull);
     });
 
     test('@nodoc on explicit getters/setters hides entire field', () {
-      Field explicitNodocGetterSetter = UnusualProperties.allModelElements.firstWhere((e) => e.name == 'explicitNodocGetterSetter', orElse: () => null);
+      Field explicitNodocGetterSetter = UnusualProperties.allModelElements
+          .firstWhere((e) => e.name == 'explicitNodocGetterSetter',
+              orElse: () => null);
       expect(explicitNodocGetterSetter, isNull);
     });
 
-    test('@nodoc overridden in subclass with explicit getter over simple property works', () {
+    test(
+        '@nodoc overridden in subclass with explicit getter over simple property works',
+        () {
       expect(documentedPartialFieldInSubclassOnly.isPublic, isTrue);
       expect(documentedPartialFieldInSubclassOnly.readOnly, isTrue);
-      expect(documentedPartialFieldInSubclassOnly.computeDocumentationComment, contains('This getter is documented'));
-      expect(documentedPartialFieldInSubclassOnly.annotations.contains('inherited-setter'), isFalse);
+      expect(documentedPartialFieldInSubclassOnly.computeDocumentationComment,
+          contains('This getter is documented'));
+      expect(
+          documentedPartialFieldInSubclassOnly.annotations
+              .contains('inherited-setter'),
+          isFalse);
     });
 
     test('@nodoc overridden in subclass for getter works', () {
       expect(explicitNonDocumentedInBaseClassGetter.isPublic, isTrue);
       expect(explicitNonDocumentedInBaseClassGetter.hasPublicGetter, isTrue);
-      expect(explicitNonDocumentedInBaseClassGetter.computeDocumentationComment, contains('I should be documented'));
+      expect(explicitNonDocumentedInBaseClassGetter.computeDocumentationComment,
+          contains('I should be documented'));
       expect(explicitNonDocumentedInBaseClassGetter.readOnly, isTrue);
     });
 
@@ -1488,10 +1499,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     setUp(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
       v3 = exLibrary.properties.firstWhere((p) => p.name == 'y');
-      nodocGetter =
-          fakeLibrary.properties.firstWhere((p) => p.name == 'getterSetterNodocGetter');
-      nodocSetter =
-          fakeLibrary.properties.firstWhere((p) => p.name == 'getterSetterNodocSetter');
+      nodocGetter = fakeLibrary.properties
+          .firstWhere((p) => p.name == 'getterSetterNodocGetter');
+      nodocSetter = fakeLibrary.properties
+          .firstWhere((p) => p.name == 'getterSetterNodocSetter');
       justGetter =
           fakeLibrary.properties.firstWhere((p) => p.name == 'justGetter');
       justSetter =
@@ -1503,25 +1514,31 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('@nodoc on simple property works', () {
-      TopLevelVariable nodocSimple = fakeLibrary.properties.firstWhere((p) => p.name == 'simplePropertyHidden', orElse: () => null);
+      TopLevelVariable nodocSimple = fakeLibrary.properties.firstWhere(
+          (p) => p.name == 'simplePropertyHidden',
+          orElse: () => null);
       expect(nodocSimple, isNull);
     });
 
     test('@nodoc on both hides both', () {
-      TopLevelVariable nodocBoth = fakeLibrary.properties.firstWhere((p) => p.name == 'getterSetterNodocBoth', orElse: () => null);
+      TopLevelVariable nodocBoth = fakeLibrary.properties.firstWhere(
+          (p) => p.name == 'getterSetterNodocBoth',
+          orElse: () => null);
       expect(nodocBoth, isNull);
     });
 
     test('@nodoc on setter only works', () {
       expect(nodocSetter.isPublic, isTrue);
       expect(nodocSetter.readOnly, isTrue);
-      expect(nodocSetter.computeDocumentationComment, equals('Getter docs should be shown.'));
+      expect(nodocSetter.computeDocumentationComment,
+          equals('Getter docs should be shown.'));
     });
 
     test('@nodoc on getter only works', () {
       expect(nodocGetter.isPublic, isTrue);
       expect(nodocGetter.writeOnly, isTrue);
-      expect(nodocGetter.computeDocumentationComment, equals('Setter docs should be shown.'));
+      expect(nodocGetter.computeDocumentationComment,
+          equals('Setter docs should be shown.'));
     });
 
     test('has a fully qualified name', () {
