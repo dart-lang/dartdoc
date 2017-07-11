@@ -2137,25 +2137,11 @@ abstract class ModelElement extends Nameable
       if (e is FieldElement) {
         assert(getter != null || setter != null);
         if (enclosingClass == null) {
-          if (e.enclosingElement.isEnum) {
-            int index =
-                e.computeConstantValue()?.getField('index')?.toIntValue();
-            if (index != null) {
-              // We should never build a Field for something that should be
-              // a EnumField.forConstant with an index, instead (#1445).
-              // "Special" enum-only fields including 'values' and confusingly,
-              // 'index', will return a null for index, so this is guaranteed
-              // to be one of the constants associated with the enum.
-              // TODO(jcollins-g): is this actually true?
-              assert(e.isConst);
-              assert(getter != null);
-              assert(setter == null);
-              newModelElement =
-                  new EnumField.forConstant(index, e, library, getter);
-            } else {
-              assert(['index', 'values'].contains(e.name));
-              newModelElement = new EnumField(e, library, getter, setter);
-            }
+          if (e.isEnumConstant) {
+            int index = e.computeConstantValue().getField('index').toIntValue();
+            newModelElement = new EnumField.forConstant(index, e, library, getter);
+          } else if (e.enclosingElement.isEnum) {
+            newModelElement = new EnumField(e, library, getter, setter);
           } else {
             newModelElement = new Field(e, library, getter, setter);
           }
