@@ -66,6 +66,28 @@
   - "value"
   - 3.14
 </code></pre>
+<pre class="language-css prettyprint"><code class="language-css">/* issue 1484 regression */
+#id {
+  background: green;
+}
+
+.class {
+  background: red;
+}
+
+div {
+  background: green;
+}
+</code></pre>
+<pre class="language-html prettyprint"><code class="language-html">&lt;div&gt;
+  &lt;strong&gt;Hello!&lt;/strong&gt;
+  &lt;h1&gt;World!&lt;/h1&gt;
+&lt;/div&gt;
+</code></pre>
+<pre class="language-js prettyprint"><code class="language-js">var f = function(a, b) {
+  return a + b;  
+};
+</code></pre>
 <p>It sometimes generates warnings in commentRefs like this: <code>unknownThingy.FromSomewhere</code></p>
 <p>Be sure to check out other awesome packages on <a href="https://pub.dartlang.org">pub</a>.</p>
       </section>
