@@ -797,7 +797,6 @@ class MarkdownDocument extends md.Document {
       }
 
       bool specifiesLanguage = pre.classes.isNotEmpty;
-      pre.classes.add('prettyprint');
       // Assume the user intended Dart if there are no other classes present.
       if (!specifiesLanguage) pre.classes.add('language-dart');
     }
