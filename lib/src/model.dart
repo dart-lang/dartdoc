@@ -2226,11 +2226,7 @@ abstract class ModelElement extends Nameable
       }
     }
     if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
-    if (enclosingClass != null) {
-      if (newModelElement is! Inheritable)
-        1 + 1;
-      assert(newModelElement is Inheritable);
-    }
+    if (enclosingClass != null) assert(newModelElement is Inheritable);
     if (library != null) {
       library.package._allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
