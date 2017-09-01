@@ -2332,7 +2332,8 @@ abstract class ModelElement extends Nameable
     if (md == null) md = new List<dynamic>();
     return md.map((dynamic a) {
       String annotation = (const HtmlEscape()).convert(a.toSource());
-      var me = package.findCanonicalModelElementFor(a.element.enclosingElement);
+      // a.element can be null if the element can't be resolved.
+      var me = package.findCanonicalModelElementFor(a.element?.enclosingElement);
       if (me != null)
         annotation = annotation.replaceFirst(me.name, me.linkedName);
       return annotation;
