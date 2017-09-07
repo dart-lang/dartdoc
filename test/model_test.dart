@@ -1258,8 +1258,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('inheritance of docs from SDK works', () {
-      expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
       expect(ExtraSpecialListLength.getter.documentationFrom.first.element.library.name == 'dart.core', isTrue);
+      expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
     });
 
     test('split inheritance with explicit setter works', () {
