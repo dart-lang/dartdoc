@@ -1394,16 +1394,24 @@ abstract class GetterSetterCombo implements ModelElement {
 
     if (hasGetter && !getter.element.isSynthetic) {
       assert(getter.documentationFrom.length == 1);
-      String docs = getter.documentationFrom.first.computeDocumentationComment;
-      if (docs != null) buffer.write(docs);
+      // We have to check against dropTextList here since documentationFrom
+      // doesn't yield the real elements for GetterSetterCombos.
+      if (!config.dropTextFrom.contains(
+          getter.documentationFrom.first.element.library.name)) {
+        String docs = getter.documentationFrom.first.computeDocumentationComment;
+        if (docs != null) buffer.write(docs);
+      }
     }
 
     if (hasSetter && !setter.element.isSynthetic) {
       assert(setter.documentationFrom.length == 1);
-      String docs = setter.documentationFrom.first.computeDocumentationComment;
-      if (docs != null) {
-        if (buffer.isNotEmpty) buffer.write('\n\n');
-        buffer.write(docs);
+      if (!config.dropTextFrom.contains(
+          setter.documentationFrom.first.element.library.name)) {
+        String docs = setter.documentationFrom.first.computeDocumentationComment;
+        if (docs != null) {
+          if (buffer.isNotEmpty) buffer.write('\n\n');
+          buffer.write(docs);
+        }
       }
     }
     return buffer.toString();
@@ -2229,8 +2237,6 @@ abstract class ModelElement extends Nameable
     if (e is GenericFunctionTypeElement) {
       newModelElement = new ModelFunctionTyped(e, library);
     }
-    if (newModelElement == null)
-      1+1;
     if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
     if (enclosingClass != null) assert(newModelElement is Inheritable);
     if (library != null) {
@@ -3165,8 +3171,6 @@ class ModelFunctionTyped extends ModelElement
 
   @override
   String get name {
-    if (enclosingElement.name == 'writeMsg')
-      1+1;
     if (element.enclosingElement is ParameterElement && super.name.isEmpty)
       return element.enclosingElement.name;
     return super.name;
