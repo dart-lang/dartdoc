@@ -1207,6 +1207,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Field sFromApple, mFromApple, mInB, autoCompress;
     Field isEmpty;
     Field implicitGetterExplicitSetter, explicitGetterImplicitSetter;
+    Field ExtraSpecialListLength;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
@@ -1252,7 +1253,15 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'B')
           .allInstanceProperties
           .firstWhere((p) => p.name == 'autoCompress');
+      ExtraSpecialListLength =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList').allInstanceProperties.firstWhere((f) => f.name == 'length');
     });
+
+    test('inheritance of docs from SDK works for getter/setter combos', () {
+      expect(ExtraSpecialListLength.getter.documentationFrom.first.element.library.name == 'dart.core', isTrue);
+      expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
+    }, skip:
+              'Passes on Analyzer 0.31.0+');
 
     test('split inheritance with explicit setter works', () {
       expect(implicitGetterExplicitSetter.getter.isInherited, isTrue);
