@@ -487,7 +487,7 @@ class DartDoc {
       sources.add(source);
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
-        if (!isPrivate(library)) libraries.add(library);
+        if (!hasPrivateName(library)) libraries.add(library);
       }
     }
 

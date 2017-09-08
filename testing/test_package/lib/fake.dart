@@ -191,6 +191,21 @@ class ImplicitProperties {
   /// A simple property to inherit.
   int forInheriting;
 
+  /// @nodoc for you
+  String get explicitNonDocumentedGetter => "something";
+
+  /// @nodoc for you but check downstream
+  String get explicitNonDocumentedInBaseClassGetter => "something else";
+
+  /// but documented here.
+  double get explicitPartiallyDocumentedField => 1.3;
+
+  /// @nodoc here, you should never see this
+  set explicitPartiallyDocumentedField(double foo) {}
+
+  /// @nodoc here, you should never see this
+  String documentedPartialFieldInSubclassOnly;
+
   /// Explicit getter for inheriting.
   int get explicitGetterSetterForInheriting => 12;
 
@@ -203,6 +218,10 @@ class ImplicitProperties {
 /// Or rather, dartdoc used to think they didn't exist.  Check the variations
 /// on inheritance and overrides here.
 class ClassWithUnusualProperties extends ImplicitProperties {
+  /// This getter is documented, so we should see a read-only property here.
+  @override
+  String get documentedPartialFieldInSubclassOnly => "overridden getter";
+
   @override
   set implicitGetterExplicitSetter(String x) {}
 
@@ -213,10 +232,23 @@ class ClassWithUnusualProperties extends ImplicitProperties {
 
   myCoolTypedef _aFunction;
 
+  /// Since I have a different doc, I should be documented.
+  @override
+  String get explicitNonDocumentedInBaseClassGetter => "something else";
+
   /// Getter doc for explicitGetterSetter.
   myCoolTypedef get explicitGetterSetter {
     return _aFunction;
   }
+
+  /// @nodoc for a simple hidden property.
+  String simpleHidden;
+
+  /// @nodoc on setter
+  set explicitNodocGetterSetter(String s) {}
+
+  /// @nodoc on getter
+  String get explicitNodocGetterSetter => "something";
 
   /// This property is not synthetic, so it might reference [f] -- display it.
   set explicitGetterSetter(myCoolTypedef f) => _aFunction = f;
@@ -361,6 +393,27 @@ final int meaningOfLife = 42;
 
 /// Simple property
 String simpleProperty;
+
+/// Simple @nodoc property.
+String simplePropertyHidden;
+
+/// Setter docs should be shown.
+set getterSetterNodocGetter(int value) {}
+
+/// @nodoc on getter.
+int get getterSetterNodocGetter => 3;
+
+/// @nodoc on setter
+set getterSetterNodocSetter(int value) {}
+
+/// Getter docs should be shown.
+int get getterSetterNodocSetter => 4;
+
+/// @nodoc on the setter
+set getterSetterNodocBoth(String value) {}
+
+/// And @nodoc on the getter, so entire TopLevelVariable should be invisible.
+String get getterSetterNodocBoth => "I do not exist";
 
 /// Just a setter. No partner getter.
 void set justSetter(int value) {}

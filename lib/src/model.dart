@@ -106,6 +106,7 @@ abstract class Inheritable {
   ModelElement get enclosingElement;
   Package get package;
   bool get isInherited;
+  bool get isPublic;
   bool _canonicalEnclosingClassIsSet = false;
   Class _canonicalEnclosingClass;
   Class _definingEnclosingClass;
@@ -140,7 +141,7 @@ abstract class Inheritable {
             }
           }
         }
-        if (definingEnclosingElement.isCanonical) {
+        if (definingEnclosingElement.isCanonical && isPublic) {
           assert(definingEnclosingElement == _canonicalEnclosingClass);
         }
       } else {
@@ -473,10 +474,13 @@ class Class extends ModelElement implements EnclosedElement {
   List<Constructor> get constructors {
     if (_constructors != null) return _constructors;
 
-    _constructors = _cls.constructors.where(isPublic).map((e) {
-      return new ModelElement.from(e, library);
-    }).toList(growable: true)
-      ..sort(byName);
+    _constructors = _cls.constructors
+        .map((e) {
+          return new ModelElement.from(e, library);
+        })
+        .where((e) => e.isPublic)
+        .toList(growable: true)
+          ..sort(byName);
 
     return _constructors;
   }
@@ -589,17 +593,18 @@ class Class extends ModelElement implements EnclosedElement {
     for (ExecutableElement value in values) {
       if (value != null &&
           value is MethodElement &&
-          isPublic(value) &&
           !value.isOperator &&
           value.enclosingElement != null) {
+        Method m;
         if (!package.isDocumented(value.enclosingElement)) {
-          Method m =
-              new ModelElement.from(value, library, enclosingClass: this);
-          _inheritedMethods.add(m);
-          _genPageMethods.add(m);
+          m = new ModelElement.from(value, library, enclosingClass: this);
+          if (m.isPublic) {
+            _inheritedMethods.add(m);
+            _genPageMethods.add(m);
+          }
         } else {
-          _inheritedMethods
-              .add(new ModelElement.from(value, library, enclosingClass: this));
+          m = new ModelElement.from(value, library, enclosingClass: this);
+          if (m.isPublic) _inheritedMethods.add(m);
         }
       }
     }
@@ -734,7 +739,7 @@ class Class extends ModelElement implements EnclosedElement {
   List<ElementType> filterNonPublicTypes(List<ElementType> rawTypes) {
     List<ElementType> publicList = [];
     for (ElementType type in rawTypes) {
-      if (!isPrivate(type.element.element)) publicList.add(type);
+      if (!hasPrivateName(type.element.element)) publicList.add(type);
     }
     return publicList;
   }
@@ -840,15 +845,13 @@ class Class extends ModelElement implements EnclosedElement {
     Set<PropertyAccessorElement> inheritedAccessors = new Set();
     inheritedAccessors.addAll(cmap.values
         .where((e) => e is PropertyAccessorElement)
-        .map((e) => Package.getBasestElement(e) as PropertyAccessorElement)
-        .where(isPublic));
+        .map((e) => Package.getBasestElement(e) as PropertyAccessorElement));
 
     // Interfaces are subordinate to members inherited from classes, so don't
     // add this to our accessor set if we already have something inherited from classes.
     inheritedAccessors.addAll(imap.values
         .where((e) => e is PropertyAccessorElement && !cmap.containsKey(e.name))
-        .map((e) => Package.getBasestElement(e) as PropertyAccessorElement)
-        .where(isPublic));
+        .map((e) => Package.getBasestElement(e) as PropertyAccessorElement));
 
     assert(!inheritedAccessors.any((e) => e is Member));
     // This structure keeps track of inherited accessors, allowing lookup
@@ -863,7 +866,7 @@ class Class extends ModelElement implements EnclosedElement {
     // For half-inherited fields, the analyzer only links the non-inherited
     // to the [FieldElement].  Compose our [Field] class by hand by looking up
     // inherited accessors that may be related.
-    for (FieldElement f in _cls.fields.where(isPublic)) {
+    for (FieldElement f in _cls.fields) {
       PropertyAccessorElement getterElement = f.getter;
       if (getterElement == null && accessorMap.containsKey(f.name)) {
         getterElement = accessorMap[f.name]
@@ -930,18 +933,21 @@ class Class extends ModelElement implements EnclosedElement {
         }
       }
     }
+    Field field;
     if ((getter == null || getter.isInherited) &&
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
-      _fields.add(new ModelElement.from(f, library,
-          enclosingClass: this, getter: getter, setter: setter));
+      field = new ModelElement.from(f, library,
+          enclosingClass: this, getter: getter, setter: setter);
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
       // half-inherited fields when traversing the inheritance tree.  Make
       // this better, somehow.
-      _fields.add(
-          new ModelElement.from(f, library, getter: getter, setter: setter));
+      field = new ModelElement.from(f, library, getter: getter, setter: setter);
+    }
+    if (field.isPublic) {
+      _fields.add(field);
     }
   }
 
@@ -950,10 +956,13 @@ class Class extends ModelElement implements EnclosedElement {
   List<Method> get _methods {
     if (_allMethods != null) return _allMethods;
 
-    _allMethods = _cls.methods.where(isPublic).map((e) {
-      return new ModelElement.from(e, library);
-    }).toList(growable: false)
-      ..sort(byName);
+    _allMethods = _cls.methods
+        .map((e) {
+          return new ModelElement.from(e, library);
+        })
+        .where((e) => e.isPublic)
+        .toList(growable: false)
+          ..sort(byName);
 
     return _allMethods;
   }
@@ -1077,12 +1086,12 @@ class Enum extends Class {
     var index = -1;
 
     _enumFields = [];
-    for (FieldElement f
-        in _cls.fields.where(isPublic).where((f) => f.isConst)) {
+    for (FieldElement f in _cls.fields.where((f) => f.isConst)) {
       // Enums do not have inheritance.
       Accessor accessor = new ModelElement.from(f.getter, library);
-      _enumFields.add(
-          new ModelElement.from(f, library, index: index++, getter: accessor));
+      EnumField enumField =
+          new ModelElement.from(f, library, index: index++, getter: accessor);
+      if (enumField.isPublic) _enumFields.add(enumField);
     }
     _enumFields.sort(byName);
 
@@ -1204,7 +1213,8 @@ class Field extends ModelElement
   String get documentation {
     // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
     // to prevent displaying more or less than one summary.
-    Set<bool> assertCheck = new Set()..addAll([hasSetter, hasGetterNoSetter]);
+    Set<bool> assertCheck = new Set()
+      ..addAll([hasPublicSetter, hasPublicGetterNoSetter]);
     assert(assertCheck.containsAll([true, false]));
     return super.documentation;
   }
@@ -1289,7 +1299,7 @@ class Field extends ModelElement
     if (readOnly && !isFinal && !isConst) all_features.add('read-only');
     if (writeOnly) all_features.add('write-only');
     if (readWrite) all_features.add('read / write');
-    if (getter != null && setter != null) {
+    if (hasPublicGetter && hasPublicSetter) {
       if (getter.isInherited && setter.isInherited) {
         all_features.add('inherited');
       } else {
@@ -1334,22 +1344,28 @@ abstract class GetterSetterCombo implements ModelElement {
 
   /// Returns true if both accessors are synthetic.
   bool get hasSyntheticAccessors {
-    if ((getter != null && getter.element.isSynthetic) ||
-        (setter != null && setter.element.isSynthetic)) {
+    if ((hasPublicGetter && getter.element.isSynthetic) ||
+        (hasPublicSetter && setter.element.isSynthetic)) {
       return true;
     }
     return false;
   }
 
+  bool get hasPublicGetter => hasGetter && getter.isPublic;
+  bool get hasPublicSetter => hasSetter && setter.isPublic;
+
+  @override
+  bool get isPublic => hasPublicGetter || hasPublicSetter;
+
   @override
   List<ModelElement> get documentationFrom {
     if (_documentationFrom == null) {
       _documentationFrom = [];
-      if (getter != null) {
+      if (hasPublicGetter) {
         _documentationFrom.addAll(getter.documentationFrom.where((e) =>
             e.computeDocumentationComment != computeDocumentationComment));
       }
-      if (setter != null)
+      if (hasPublicSetter)
         _documentationFrom.addAll(setter.documentationFrom.where((e) =>
             e.computeDocumentationComment != computeDocumentationComment));
       if (_documentationFrom.length == 0 ||
@@ -1364,23 +1380,23 @@ abstract class GetterSetterCombo implements ModelElement {
   String get oneLineDoc {
     if (_oneLineDoc == null) {
       bool hasAccessorsWithDocs =
-          (getter != null && getter.oneLineDoc.isNotEmpty ||
-              setter != null && setter.oneLineDoc.isNotEmpty);
+          (hasPublicGetter && getter.oneLineDoc.isNotEmpty ||
+              hasPublicSetter && setter.oneLineDoc.isNotEmpty);
       if (!hasAccessorsWithDocs) {
         _oneLineDoc = _documentation.asOneLiner;
       } else {
         StringBuffer buffer = new StringBuffer();
         bool getterSetterBothAvailable = false;
-        if (getter != null &&
+        if (hasPublicGetter &&
             getter.oneLineDoc.isNotEmpty &&
-            setter != null &&
+            hasPublicSetter &&
             setter.oneLineDoc.isNotEmpty) {
           getterSetterBothAvailable = true;
         }
-        if (getter != null && getter.oneLineDoc.isNotEmpty) {
+        if (hasPublicGetter && getter.oneLineDoc.isNotEmpty) {
           buffer.write('${getter.oneLineDoc}');
         }
-        if (setter != null && setter.oneLineDoc.isNotEmpty) {
+        if (hasPublicSetter && setter.oneLineDoc.isNotEmpty) {
           buffer.write('${getterSetterBothAvailable ? "": setter.oneLineDoc}');
         }
         _oneLineDoc = buffer.toString();
@@ -1392,7 +1408,7 @@ abstract class GetterSetterCombo implements ModelElement {
   String get getterSetterDocumentationComment {
     var buffer = new StringBuffer();
 
-    if (hasGetter && !getter.element.isSynthetic) {
+    if (hasPublicGetter && !getter.element.isSynthetic) {
       assert(getter.documentationFrom.length == 1);
       // We have to check against dropTextFrom here since documentationFrom
       // doesn't yield the real elements for GetterSetterCombos.
@@ -1404,7 +1420,7 @@ abstract class GetterSetterCombo implements ModelElement {
       }
     }
 
-    if (hasSetter && !setter.element.isSynthetic) {
+    if (hasPublicSetter && !setter.element.isSynthetic) {
       assert(setter.documentationFrom.length == 1);
       if (!config.dropTextFrom
           .contains(setter.documentationFrom.first.element.library.name)) {
@@ -1442,10 +1458,10 @@ abstract class GetterSetterCombo implements ModelElement {
     return null;
   }
 
-  bool get hasExplicitGetter => hasGetter && !getter.element.isSynthetic;
+  bool get hasExplicitGetter => hasPublicGetter && !getter.element.isSynthetic;
 
-  bool get hasExplicitSetter => hasSetter && !setter.element.isSynthetic;
-  bool get hasImplicitSetter => hasSetter && setter.element.isSynthetic;
+  bool get hasExplicitSetter => hasPublicSetter && !setter.element.isSynthetic;
+  bool get hasImplicitSetter => hasPublicSetter && setter.element.isSynthetic;
 
   bool get hasGetter => getter != null;
 
@@ -1453,7 +1469,7 @@ abstract class GetterSetterCombo implements ModelElement {
 
   bool get hasSetter => setter != null;
 
-  bool get hasGetterNoSetter => (hasGetter && !hasSetter);
+  bool get hasPublicGetterNoSetter => (hasPublicGetter && !hasPublicSetter);
 
   String get arrow {
     // →
@@ -1463,15 +1479,15 @@ abstract class GetterSetterCombo implements ModelElement {
     // ↔
     if (readWrite) return r'&#8596;';
     // A GetterSetterCombo should always be one of readOnly, writeOnly,
-    // or readWrite.
-    assert(false);
+    // or readWrite (if documented).
+    assert(!isPublic);
     return null;
   }
 
-  bool get readOnly => hasGetter && !hasSetter;
-  bool get readWrite => hasGetter && hasSetter;
+  bool get readOnly => hasPublicGetter && !hasPublicSetter;
+  bool get readWrite => hasPublicGetter && hasPublicSetter;
 
-  bool get writeOnly => hasSetter && !hasGetter;
+  bool get writeOnly => hasPublicSetter && !hasPublicGetter;
 
   Accessor get setter;
 }
@@ -1512,11 +1528,11 @@ class Library extends ModelElement {
         Accessor getter;
         Accessor setter;
         if (e is GetterSetterCombo) {
-          if (e.getter != null) {
+          if (e.hasGetter) {
             getter = new ModelElement.from(e.getter.element,
                 package.findOrCreateLibraryFor(e.getter.element));
           }
-          if (e.setter != null) {
+          if (e.hasSetter) {
             setter = new ModelElement.from(e.setter.element,
                 package.findOrCreateLibraryFor(e.setter.element));
           }
@@ -1605,8 +1621,8 @@ class Library extends ModelElement {
     enumClasses.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is ClassElement && element.isEnum));
     _enums = enumClasses
-        .where(isPublic)
         .map((e) => new ModelElement.from(e, this))
+        .where((e) => e.isPublic)
         .toList(growable: false)
           ..sort(byName);
 
@@ -1633,10 +1649,13 @@ class Library extends ModelElement {
     elements.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is FunctionElement));
 
-    _functions = elements.where(isPublic).map((e) {
-      return new ModelElement.from(e, this);
-    }).toList(growable: false)
-      ..sort(byName);
+    _functions = elements
+        .map((e) {
+          return new ModelElement.from(e, this);
+        })
+        .where((e) => e.isPublic)
+        .toList(growable: false)
+          ..sort(byName);
 
     return _functions;
   }
@@ -1748,7 +1767,7 @@ class Library extends ModelElement {
 
     elements.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is FunctionTypeAliasElement));
-    elements..removeWhere(isPrivate);
+    elements..removeWhere(hasPrivateName);
     _typeDefs = elements
         .map((e) => new ModelElement.from(e, this))
         .toList(growable: false)
@@ -1775,8 +1794,8 @@ class Library extends ModelElement {
         .where((element) => element is ClassElement && !element.isEnum));
 
     _classes = types
-        .where(isPublic)
         .map((e) => new ModelElement.from(e, this))
+        .where((e) => e.isPublic)
         .toList(growable: false)
           ..sort(byName);
 
@@ -1815,15 +1834,16 @@ class Library extends ModelElement {
       }
     });
     _variables = [];
-    for (TopLevelVariableElement element in elements.where(isPublic)) {
+    for (TopLevelVariableElement element in elements) {
       Accessor getter;
       if (element.getter != null)
         getter = new ModelElement.from(element.getter, this);
       Accessor setter;
       if (element.setter != null)
         setter = new ModelElement.from(element.setter, this);
-      _variables.add(
-          new ModelElement.from(element, this, getter: getter, setter: setter));
+      ModelElement me =
+          new ModelElement.from(element, this, getter: getter, setter: setter);
+      if (me.isPublic) _variables.add(me);
     }
 
     _variables.sort(byName);
@@ -2355,6 +2375,20 @@ abstract class ModelElement extends Nameable
     }).toList(growable: false);
   }
 
+  bool _isPublic;
+  bool get isPublic {
+    if (_isPublic == null) {
+      String docComment = computeDocumentationComment;
+      if (docComment == null) {
+        _isPublic = hasPublicName(element);
+      } else {
+        _isPublic = hasPublicName(element) &&
+            !(docComment.contains('@nodoc') || docComment.contains('<nodoc>'));
+      }
+    }
+    return _isPublic;
+  }
+
   Set<String> get features {
     Set<String> all_features = new Set<String>();
     all_features.addAll(annotations);
@@ -2409,11 +2443,11 @@ abstract class ModelElement extends Nameable
       InheritableAccessor newSetter;
       if (this is GetterSetterCombo) {
         GetterSetterCombo thisAsCombo = this as GetterSetterCombo;
-        if (thisAsCombo.getter != null) {
+        if (thisAsCombo.hasGetter) {
           newGetter = new ModelElement.from(
               thisAsCombo.getter.element, thisAsCombo.getter.definingLibrary);
         }
-        if (thisAsCombo.setter != null) {
+        if (thisAsCombo.hasSetter) {
           newSetter = new ModelElement.from(
               thisAsCombo.setter.element, thisAsCombo.setter.definingLibrary);
         }
@@ -2973,7 +3007,7 @@ abstract class ModelElement extends Nameable
         (this.element is TypeDefiningElement &&
             (this.element as TypeDefiningElement).type.name == "dynamic"));
 
-    if (isPrivate(element)) {
+    if (!isPublic) {
       return HTML_ESCAPE.convert(name);
     }
 
@@ -3576,8 +3610,8 @@ class Package extends Nameable implements Documentable {
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
     libraryElements.forEach((element) {
       // add only if the element should be included in the public api
-      if (isPublic(element)) {
-        var lib = new Library._(element, this);
+      var lib = new Library._(element, this);
+      if (lib.isPublic) {
         _libraries.add(lib);
         allLibraries[element] = lib;
         assert(!_elementToLibrary.containsKey(lib.element));
@@ -3778,7 +3812,7 @@ class Package extends Nameable implements Documentable {
           final library = package.findLibraryFor(modelTypeElement.element);
           if (library == null &&
               modelTypeElement.library != null &&
-              !isPrivate(modelTypeElement.library.element) &&
+              !hasPrivateName(modelTypeElement.library.element) &&
               modelTypeElement.library.canonicalLibrary == null &&
               !libraryElements.contains(modelTypeElement.library.element)) {
             libraryElements.add(modelTypeElement.library.element);
@@ -3981,10 +4015,11 @@ class Package extends Nameable implements Documentable {
     return foundLibrary;
   }
 
+  /// @deprecated('Whether something is documented should be a ModelElement property')
   bool isDocumented(Element element) {
     // If this isn't a private element and we have a canonical Library for it,
     // this element will be documented.
-    if (isPrivate(element)) return false;
+    if (hasPrivateName(element)) return false;
     return findCanonicalLibraryFor(element) != null;
   }
 
@@ -4428,7 +4463,8 @@ class TopLevelVariable extends ModelElement
   String get documentation {
     // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
     // to prevent displaying more or less than one summary.
-    Set<bool> assertCheck = new Set()..addAll([hasSetter, hasGetterNoSetter]);
+    Set<bool> assertCheck = new Set()
+      ..addAll([hasPublicSetter, hasPublicGetterNoSetter]);
     assert(assertCheck.containsAll([true, false]));
     return super.documentation;
   }
