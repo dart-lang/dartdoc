@@ -103,7 +103,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
         // ModelElements show up in these lists
         if (!clazz.isCanonical) continue;
 
-
         generateClass(package, lib, clazz);
 
         for (var constructor in clazz.constructors) {

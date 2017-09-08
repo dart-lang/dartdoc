@@ -1396,18 +1396,20 @@ abstract class GetterSetterCombo implements ModelElement {
       assert(getter.documentationFrom.length == 1);
       // We have to check against dropTextList here since documentationFrom
       // doesn't yield the real elements for GetterSetterCombos.
-      if (!config.dropTextFrom.contains(
-          getter.documentationFrom.first.element.library.name)) {
-        String docs = getter.documentationFrom.first.computeDocumentationComment;
+      if (!config.dropTextFrom
+          .contains(getter.documentationFrom.first.element.library.name)) {
+        String docs =
+            getter.documentationFrom.first.computeDocumentationComment;
         if (docs != null) buffer.write(docs);
       }
     }
 
     if (hasSetter && !setter.element.isSynthetic) {
       assert(setter.documentationFrom.length == 1);
-      if (!config.dropTextFrom.contains(
-          setter.documentationFrom.first.element.library.name)) {
-        String docs = setter.documentationFrom.first.computeDocumentationComment;
+      if (!config.dropTextFrom
+          .contains(setter.documentationFrom.first.element.library.name)) {
+        String docs =
+            setter.documentationFrom.first.computeDocumentationComment;
         if (docs != null) {
           if (buffer.isNotEmpty) buffer.write('\n\n');
           buffer.write(docs);
@@ -2345,7 +2347,8 @@ abstract class ModelElement extends Nameable
     return md.map((dynamic a) {
       String annotation = (const HtmlEscape()).convert(a.toSource());
       // a.element can be null if the element can't be resolved.
-      var me = package.findCanonicalModelElementFor(a.element?.enclosingElement);
+      var me =
+          package.findCanonicalModelElementFor(a.element?.enclosingElement);
       if (me != null)
         annotation = annotation.replaceFirst(me.name, me.linkedName);
       return annotation;
@@ -3135,16 +3138,16 @@ abstract class ModelElement extends Nameable
 }
 
 class ModelFunction extends ModelFunctionTyped {
- ModelFunction(FunctionElement element, Library library)
-     : super(element, library);
+  ModelFunction(FunctionElement element, Library library)
+      : super(element, library);
 
- @override
- bool get isStatic {
-   return _func.isStatic;
- }
+  @override
+  bool get isStatic {
+    return _func.isStatic;
+  }
 
- @override
- FunctionElement get _func => (element as FunctionElement);
+  @override
+  FunctionElement get _func => (element as FunctionElement);
 }
 
 class ModelFunctionTyped extends ModelElement
