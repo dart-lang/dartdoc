@@ -5,9 +5,9 @@ author: Dart Team <misc@dartlang.org>
 description: A documentation generator for Dart.
 homepage: https://github.com/dart-lang/dartdoc
 environment:
-  sdk: '>=1.23.0-dev.11.5 <2.0.0-dev.infinity'
+  sdk: '>=1.24.2 <2.0.0-dev.infinity'
 dependencies:
-  analyzer: ^0.30.0
+  analyzer: '>=0.31.0-alpha.0 <0.32.0'
   args: ^0.13.0
   collection: ^1.2.0
   html: '>=0.12.1 <0.14.0'
