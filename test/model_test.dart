@@ -1257,10 +1257,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList').allInstanceProperties.firstWhere((f) => f.name == 'length');
     });
 
-    test('inheritance of docs from SDK works', () {
+    test('inheritance of docs from SDK works for getter/setter combos', () {
       expect(ExtraSpecialListLength.getter.documentationFrom.first.element.library.name == 'dart.core', isTrue);
       expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
-    });
+    }, skip:
+              'Wait for an analyzer with https://github.com/dart-lang/sdk/commit/a3f8740bbd6f4ff99a17f71ebc5d808606d5a373 not rolled back.');
 
     test('split inheritance with explicit setter works', () {
       expect(implicitGetterExplicitSetter.getter.isInherited, isTrue);
