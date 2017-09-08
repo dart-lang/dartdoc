@@ -1988,6 +1988,10 @@ abstract class ModelElement extends Nameable
         newModelElement = new Parameter(e, library);
       }
     }
+    // TODO(jcollins-g): Consider subclass for ModelFunctionTyped.
+    if (e is GenericFunctionTypeElement) {
+      newModelElement = new ModelFunctionTyped(e, library);
+    }
     if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
     if (enclosingClass != null) assert(newModelElement is Inheritable);
     if (library != null) {
@@ -2097,7 +2101,8 @@ abstract class ModelElement extends Nameable
     return md.map((dynamic a) {
       String annotation = (const HtmlEscape()).convert(a.toSource());
       // a.element can be null if the element can't be resolved.
-      var me = package.findCanonicalModelElementFor(a.element?.enclosingElement);
+      var me =
+          package.findCanonicalModelElementFor(a.element?.enclosingElement);
       if (me != null)
         annotation = annotation.replaceFirst(me.name, me.linkedName);
       return annotation;
@@ -2127,7 +2132,7 @@ abstract class ModelElement extends Nameable
   }
 
   bool get canHaveParameters =>
-      element is ExecutableElement || element is FunctionTypeAliasElement;
+      element is ExecutableElement || element is FunctionTypedElement;
 
   /// Returns the docs, stripped of their leading comments syntax.
   ModelElement _documentationFrom;
@@ -2503,13 +2508,8 @@ abstract class ModelElement extends Nameable
 
     List<ParameterElement> params;
 
-    if (element is ExecutableElement) {
-      // the as check silences the warning
-      params = (element as ExecutableElement).parameters;
-    }
-
-    if (element is FunctionTypeAliasElement) {
-      params = (element as FunctionTypeAliasElement).parameters;
+    if (element is FunctionTypedElement) {
+      params = (element as FunctionTypedElement).parameters;
     }
 
     _parameters = new UnmodifiableListView<Parameter>(params
@@ -2866,12 +2866,25 @@ abstract class ModelElement extends Nameable
   }
 }
 
-class ModelFunction extends ModelElement
+class ModelFunction extends ModelFunctionTyped {
+  ModelFunction(FunctionElement element, Library library)
+      : super(element, library);
+
+  @override
+  bool get isStatic {
+    return _func.isStatic;
+  }
+
+  @override
+  FunctionElement get _func => (element as FunctionElement);
+}
+
+class ModelFunctionTyped extends ModelElement
     with SourceCodeMixin
     implements EnclosedElement {
   List<TypeParameter> typeParameters = [];
 
-  ModelFunction(FunctionElement element, Library library)
+  ModelFunctionTyped(FunctionTypedElement element, Library library)
       : super(element, library) {
     _modelType = new ElementType(_func.type, this);
     _calcTypeParameters();
@@ -2902,9 +2915,6 @@ class ModelFunction extends ModelElement
   }
 
   @override
-  bool get isStatic => _func.isStatic;
-
-  @override
   String get kind => 'function';
 
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
@@ -2921,7 +2931,7 @@ class ModelFunction extends ModelElement
     return '&lt;${typeParameters.map((t) => t.name).join(', ')}&gt;';
   }
 
-  FunctionElement get _func => (element as FunctionElement);
+  FunctionTypedElement get _func => (element as FunctionTypedElement);
 }
 
 /// Something that has a name.
@@ -3938,7 +3948,14 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
-  String get htmlId => '${_parameter.enclosingElement.name}-param-${name}';
+  String get htmlId {
+    String enclosingName = _parameter.enclosingElement.name;
+    if (_parameter.enclosingElement is GenericFunctionTypeElement) {
+      // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates name.
+      enclosingName = _parameter.enclosingElement.enclosingElement.name;
+    }
+    return '${enclosingName}-param-${name}';
+  }
 
   bool get isOptional => _parameter.parameterKind.isOptional;
 
