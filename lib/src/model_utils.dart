@@ -53,7 +53,7 @@ bool isInExportedLibraries(
 }
 
 final RegExp slashes = new RegExp('[\/]');
-bool isPrivate(Element e) {
+bool hasPrivateName(Element e) {
   if (e.name.startsWith('_') ||
       (e is LibraryElement &&
           (e.identifier == 'dart:_internal' ||
@@ -70,30 +70,7 @@ bool isPrivate(Element e) {
   return false;
 }
 
-// TODO(jcollins-g): this does not take into account inheritance
-bool isPublic(Element e) {
-  if (isPrivate(e)) return false;
-  // check to see if element is part of the public api, that is it does not
-  // have a '<nodoc>' or '@nodoc' in the documentation comment
-  if (e is PropertyAccessorElement && e.isSynthetic) {
-    var accessor = (e as PropertyAccessorElement);
-    if (accessor.correspondingSetter != null &&
-        !accessor.correspondingSetter.isSynthetic) {
-      e = accessor.correspondingSetter;
-    } else if (accessor.correspondingGetter != null &&
-        !accessor.correspondingGetter.isSynthetic) {
-      e = accessor.correspondingGetter;
-    } else if (accessor.variable != null) {
-      e = accessor.variable;
-    }
-  }
-
-  var docComment = e.documentationComment;
-  if (docComment != null &&
-      (docComment.contains('<nodoc>') || docComment.contains('@nodoc')))
-    return false;
-  return true;
-}
+bool hasPublicName(Element e) => !hasPrivateName(e);
 
 /// Strip leading dartdoc comments from the given source code.
 String stripDartdocCommentsFromSource(String source) {
