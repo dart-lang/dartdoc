@@ -6,7 +6,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.31.0-alpha.1"
+    version: "0.30.0"
   ansicolor:
     description:
       name: ansicolor
@@ -48,7 +48,7 @@ packages:
       name: cli_util
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.2"
+    version: "0.0.1+2"
   collection:
     description:
       name: collection
@@ -66,7 +66,7 @@ packages:
       name: crypto
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.2"
+    version: "2.0.1"
   csslib:
     description:
       name: csslib
@@ -78,7 +78,7 @@ packages:
       name: front_end
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.0-alpha.6"
+    version: "0.1.0-alpha.4"
   glob:
     description:
       name: glob
@@ -121,18 +121,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  js:
-    description:
-      name: js
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.1"
   kernel:
     description:
       name: kernel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0-alpha.3"
+    version: "0.3.0-alpha.1"
   logging:
     description:
       name: logging
@@ -156,7 +150,7 @@ packages:
       name: meta
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.1"
+    version: "1.0.4"
   mime:
     description:
       name: mime
@@ -175,18 +169,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  node_preamble:
-    description:
-      name: node_preamble
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.4.0"
   package_config:
     description:
       name: package_config
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "1.0.0"
   package_resolver:
     description:
       name: package_resolver
@@ -306,7 +294,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.24+2"
+    version: "0.12.20+13"
   tuple:
     description:
       name: tuple
@@ -343,6 +331,18 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  when:
+    description:
+      name: when
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
+  which:
+    description:
+      name: which
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.3"
   yaml:
     description:
       name: yaml
@@ -350,4 +350,4 @@ packages:
     source: hosted
     version: "2.1.12"
 sdks:
-  dart: ">=1.24.2 <2.0.0-dev.infinity"
+  dart: ">=1.23.0-dev.11.5 <2.0.0-dev.infinity"
