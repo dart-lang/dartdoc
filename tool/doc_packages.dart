@@ -106,7 +106,7 @@ void generateForPackages(List<String> packages) {
   });
 }
 
-Future _printGenerationResult(PackageInfo package, Future generationResult) {
+Future _printGenerationResult(PackageInfo package, Future<bool> generationResult) {
   String name = package.name.padRight(20);
 
   return generationResult.then((bool result) {
