@@ -1394,7 +1394,7 @@ abstract class GetterSetterCombo implements ModelElement {
 
     if (hasGetter && !getter.element.isSynthetic) {
       assert(getter.documentationFrom.length == 1);
-      // We have to check against dropTextList here since documentationFrom
+      // We have to check against dropTextFrom here since documentationFrom
       // doesn't yield the real elements for GetterSetterCombos.
       if (!config.dropTextFrom
           .contains(getter.documentationFrom.first.element.library.name)) {
