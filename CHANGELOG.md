@@ -1,3 +1,6 @@
+## 0.13.0+3
+* Add support for GenericFunctionTypeElementImpl (#1495)
+
 ## 0.13.0+2
 * Allow null annotation elements (#1491)
 
