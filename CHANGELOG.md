@@ -1,3 +1,6 @@
+## 0.13.0+2
+* Allow null annotation elements (#1491)
+
 ## 0.13.0+1
 * Remove unnecessary dependency on meta.
 * Drop --force from pub publish arguments to avoid publishing more broken
