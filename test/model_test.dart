@@ -842,6 +842,9 @@ void main() {
 
     setUp(() {
       animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
+
+      /// Trigger code reference resolution
+      animal.documentationAsHtml;
     });
 
     test('has a fully qualified name', () {

@@ -459,7 +459,6 @@ class Class extends ModelElement implements EnclosedElement {
         ..addAll(constructors)
         ..addAll(staticMethods)
         ..addAll(staticProperties)
-        ..addAll(allInstanceMethods)
         ..addAll(_typeParameters);
     }
     return _allModelElements.toList();
@@ -694,7 +693,7 @@ class Class extends ModelElement implements EnclosedElement {
   List<Field> get instanceProperties {
     if (_instanceFields != null) return _instanceFields;
     _instanceFields = _allFields
-        .where((f) => !f.isStatic && !f.isInherited)
+        .where((f) => !f.isStatic && !f.isInherited && !f.isConst)
         .toList(growable: false)
           ..sort(byName);
 
@@ -1073,36 +1072,14 @@ abstract class EnclosedElement {
 }
 
 class Enum extends Class {
-  List<EnumField> _enumFields;
-
   Enum(ClassElement element, Library library) : super(element, library);
-
-  @override
-  List<EnumField> get constants {
-    if (_enumFields != null) return _enumFields;
-
-    // This is a hack to give 'values' an index of -1 and all other fields
-    // their expected indices. https://github.com/dart-lang/dartdoc/issues/1176
-    var index = -1;
-
-    _enumFields = [];
-    for (FieldElement f in _cls.fields.where((f) => f.isConst)) {
-      // Enums do not have inheritance.
-      Accessor accessor = new ModelElement.from(f.getter, library);
-      EnumField enumField =
-          new ModelElement.from(f, library, index: index++, getter: accessor);
-      if (enumField.isPublic) _enumFields.add(enumField);
-    }
-    _enumFields.sort(byName);
-
-    return _enumFields;
-  }
 
   @override
   List<EnumField> get instanceProperties {
     return super
         .instanceProperties
-        .map((Field p) => new ModelElement.from(p.element, p.library))
+        .map((Field p) => new ModelElement.from(p.element, p.library,
+            getter: p.getter, setter: p.setter))
         .toList(growable: false);
   }
 
@@ -2150,13 +2127,8 @@ abstract class ModelElement extends Nameable
   // parameter when given a null.
   /// Do not construct any ModelElements unless they are from this constructor.
   /// Specify enclosingClass only if this is to be an inherited object.
-  /// Specify index only if this is to be an EnumField.forConstant.
   factory ModelElement.from(Element e, Library library,
-      {Class enclosingClass, int index, Accessor getter, Accessor setter}) {
-    // We don't need index in this key because it isn't a disambiguator.
-    // It isn't a disambiguator because EnumFields are not inherited, ever.
-    // TODO(jcollins-g): cleanup class hierarchy so that EnumFields aren't
-    // Inheritable, somehow?
+      {Class enclosingClass, Accessor getter, Accessor setter}) {
     if (e is Member) {
       e = Package.getBasestElement(e);
     }
@@ -2193,21 +2165,18 @@ abstract class ModelElement extends Nameable
         newModelElement = new Typedef(e, library);
       }
       if (e is FieldElement) {
+        assert(getter != null || setter != null);
         if (enclosingClass == null) {
-          if (index != null) {
-            assert(getter != null);
-            newModelElement =
-                new EnumField.forConstant(index, e, library, getter);
+          if (e.isEnumConstant) {
+            int index = e.computeConstantValue().getField('index').toIntValue();
+            newModelElement = new EnumField.forConstant(index, e, library, getter);
+          } else if (e.enclosingElement.isEnum) {
+            newModelElement = new EnumField(e, library, getter, setter);
           } else {
-            if (e.enclosingElement.isEnum) {
-              newModelElement = new EnumField(e, library, getter, setter);
-            } else {
-              assert(getter != null || setter != null);
-              newModelElement = new Field(e, library, getter, setter);
-            }
+            newModelElement = new Field(e, library, getter, setter);
           }
         } else {
-          assert(getter != null || setter != null);
+          // EnumFields can't be inherited, so this case is simpler.
           newModelElement =
               new Field.inherited(e, enclosingClass, library, getter, setter);
         }
