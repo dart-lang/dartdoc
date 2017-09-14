@@ -372,7 +372,6 @@ bool _ConsiderIfConstructor(String codeRef, ModelElement modelElement) {
   return false;
 }
 
-
 // Basic map of reference to ModelElement, for cases where we're searching
 // outside of scope.
 // TODO(jcollins-g): function caches with maps are very common in dartdoc.

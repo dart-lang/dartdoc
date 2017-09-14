@@ -897,8 +897,6 @@ class Class extends ModelElement implements EnclosedElement {
     return _fields;
   }
 
-
-
   /// Add a single Field to _fields.
   ///
   /// If [f] is not specified, pick the FieldElement from the PropertyAccessorElement
@@ -2081,10 +2079,12 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
 /// Return the [Inheritable] [ModelElement] in the list whose class is a parent to
 /// all others.  Assumes that all [Inheritable]s are in the same inheritance path;
 /// if they aren't, this function will have undefined behavior.
-Inheritable _findFarthestInheritable (Iterable<Inheritable> inheritables) {
+Inheritable _findFarthestInheritable(Iterable<Inheritable> inheritables) {
   Inheritable farthestSoFar;
   for (Inheritable e in inheritables) {
-    if (farthestSoFar == null || (farthestSoFar.enclosingElement as Class).isInheritingFrom(e.enclosingElement as Class)) {
+    if (farthestSoFar == null ||
+        (farthestSoFar.enclosingElement as Class)
+            .isInheritingFrom(e.enclosingElement as Class)) {
       farthestSoFar = e;
     }
   }
@@ -2094,10 +2094,12 @@ Inheritable _findFarthestInheritable (Iterable<Inheritable> inheritables) {
 /// Return the [Inheritable] [ModelElement] in the list whose class inherits from
 /// all others.  Assumes that all [Inheritable]s are in the same inheritance path;
 /// if they aren't, this function will have undefined behavior.
-Inheritable _findNearestInheritable (Iterable<Inheritable> inheritables) {
+Inheritable _findNearestInheritable(Iterable<Inheritable> inheritables) {
   Inheritable topSoFar;
   for (Inheritable e in inheritables) {
-    if (topSoFar == null || (e.enclosingElement as Class).isInheritingFrom(topSoFar.enclosingElement)) {
+    if (topSoFar == null ||
+        (e.enclosingElement as Class)
+            .isInheritingFrom(topSoFar.enclosingElement)) {
       topSoFar = e;
     }
   }
@@ -2176,7 +2178,14 @@ abstract class ModelElement extends Nameable
         newModelElement = new Dynamic(e, library);
       }
       if (e is MultiplyInheritedExecutableElement) {
-        newModelElement = new ModelElement.from((_findNearestInheritable(e.inheritedElements.map((ee) => new ModelElement.from(ee, library.package.findOrCreateLibraryFor(ee.library))).toList() as List<Inheritable>) as ModelElement).element, library, enclosingClass: enclosingClass);
+        newModelElement = new ModelElement.from(
+            (_findNearestInheritable(e.inheritedElements
+                    .map((ee) => new ModelElement.from(
+                        ee, library.package.findOrCreateLibraryFor(ee.library)))
+                    .toList() as List<Inheritable>) as ModelElement)
+                .element,
+            library,
+            enclosingClass: enclosingClass);
         assert(newModelElement.element is! MultiplyInheritedExecutableElement);
       } else {
         if (e is LibraryElement) {
@@ -2204,12 +2213,14 @@ abstract class ModelElement extends Nameable
         if (e is FieldElement) {
           if (enclosingClass == null) {
             if (e.isEnumConstant) {
-              int index = e.computeConstantValue().getField('index').toIntValue();
-              newModelElement = new EnumField.forConstant(index, e, library, getter);
+              int index =
+                  e.computeConstantValue().getField('index').toIntValue();
+              newModelElement =
+                  new EnumField.forConstant(index, e, library, getter);
             } else if (e.enclosingElement.isEnum) {
-                newModelElement = new EnumField(e, library, getter, setter);
+              newModelElement = new EnumField(e, library, getter, setter);
             } else {
-                newModelElement = new Field(e, library, getter, setter);
+              newModelElement = new Field(e, library, getter, setter);
             }
           } else {
             // EnumFields can't be inherited, so this case is simpler.
@@ -2224,7 +2235,8 @@ abstract class ModelElement extends Nameable
           if (enclosingClass == null)
             newModelElement = new Operator(e, library);
           else
-            newModelElement = new Operator.inherited(e, enclosingClass, library);
+            newModelElement =
+                new Operator.inherited(e, enclosingClass, library);
         }
         if (e is MethodElement && !e.isOperator) {
           if (enclosingClass == null)
@@ -2244,12 +2256,13 @@ abstract class ModelElement extends Nameable
         }
         if (e is PropertyAccessorElement) {
           // TODO(jcollins-g): why test for ClassElement in enclosingElement?
-          if (e.enclosingElement is ClassElement || e is MultiplyInheritedExecutableElement) {
+          if (e.enclosingElement is ClassElement ||
+              e is MultiplyInheritedExecutableElement) {
             if (enclosingClass == null)
               newModelElement = new InheritableAccessor(e, library);
             else
               newModelElement =
-              new InheritableAccessor.inherited(e, library, enclosingClass);
+                  new InheritableAccessor.inherited(e, library, enclosingClass);
           } else {
             newModelElement = new Accessor(e, library);
           }
@@ -4136,7 +4149,9 @@ class Package extends Nameable implements Documentable {
       // This is for situations where multiple classes may actually be canonical
       // for an inherited element whose defining Class is not canonical.
       if (matches.length > 1 && matches.every((e) => e is Inheritable)) {
-        matches = new Set()..add(_findFarthestInheritable(matches as Iterable<Inheritable>) as ModelElement);
+        matches = new Set()
+          ..add(_findFarthestInheritable(matches as Iterable<Inheritable>)
+              as ModelElement);
       }
 
       /*

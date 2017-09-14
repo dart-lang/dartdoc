@@ -404,7 +404,8 @@ class DartDoc {
       }
     }
     for (Tuple2 visitPaths in toVisit) {
-      _doCheck(package, origin, visited, visitPaths.item1, pathToCheck, visitPaths.item2);
+      _doCheck(package, origin, visited, visitPaths.item1, pathToCheck,
+          visitPaths.item2);
     }
     _onCheckProgress.add(pathToCheck);
   }
