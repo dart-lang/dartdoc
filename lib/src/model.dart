@@ -2182,7 +2182,6 @@ abstract class ModelElement extends Nameable
         if (e is LibraryElement) {
           newModelElement = new Library(e, library.package);
         }
-<<<<<<< HEAD
         // Also handles enums
         if (e is ClassElement) {
           if (!e.isEnum) {
