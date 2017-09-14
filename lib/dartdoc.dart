@@ -366,14 +366,28 @@ class DartDoc {
           path.normalize(origin),
           referredFrom: source);
       _onCheckProgress.add(pathToCheck);
+      // Remove so that we properly count that the file doesn't exist for
+      // the orphan check.
+      visited.remove(fullPath);
       return null;
     }
     visited.add(fullPath);
     Iterable<String> stringLinks = stringLinksAndHref.item1;
     String baseHref = stringLinksAndHref.item2;
 
+    // Prevent extremely large stacks by storing the paths we are using
+    // here instead -- occasionally, very large jobs have overflowed
+    // the stack without this.
+    // (newPathToCheck, newFullPath)
+    Set<Tuple2<String, String>> toVisit = new Set();
+
     for (String href in stringLinks) {
-      if (!href.startsWith('http') && !href.contains('#')) {
+      Uri uri;
+      try {
+        uri = Uri.parse(href);
+      } catch (FormatError) {}
+
+      if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
         var full;
         if (baseHref != null) {
           full = '${path.dirname(pathToCheck)}/$baseHref/$href';
@@ -384,10 +398,13 @@ class DartDoc {
         String newFullPath = path.joinAll([origin, newPathToCheck]);
         newFullPath = path.normalize(newFullPath);
         if (!visited.contains(newFullPath)) {
-          _doCheck(package, origin, visited, newPathToCheck, pathToCheck,
-              newFullPath);
+          toVisit.add(new Tuple2(newPathToCheck, newFullPath));
+          visited.add(newFullPath);
         }
       }
+    }
+    for (Tuple2 visitPaths in toVisit) {
+      _doCheck(package, origin, visited, visitPaths.item1, pathToCheck, visitPaths.item2);
     }
     _onCheckProgress.add(pathToCheck);
   }

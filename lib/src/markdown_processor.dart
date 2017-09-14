@@ -357,6 +357,8 @@ bool _ConsiderIfConstructor(String codeRef, ModelElement modelElement) {
   Constructor aConstructor = modelElement;
   List<String> codeRefParts = codeRef.split('.');
   if (codeRefParts.length > 1) {
+    // Pick the last two parts, in case a specific library was part of the
+    // codeRef.
     if (codeRefParts[codeRefParts.length - 1] ==
         codeRefParts[codeRefParts.length - 2]) {
       // Foobar.Foobar -- assume they really do mean the constructor for this class.
@@ -369,6 +371,7 @@ bool _ConsiderIfConstructor(String codeRef, ModelElement modelElement) {
   }
   return false;
 }
+
 
 // Basic map of reference to ModelElement, for cases where we're searching
 // outside of scope.
