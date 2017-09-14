@@ -4,10 +4,11 @@
 
 library dartdoc.html_generator_test;
 
-import 'dart:io' show File, Directory, FileSystemEntity, FileSystemEntityType;
+import 'dart:io' show File, Directory;
 
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/html/templates.dart';
+import 'package:dartdoc/src/html/resources.g.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -88,15 +89,11 @@ void main() {
         Directory output =
             new Directory(p.join(tempOutput.path, 'static-assets'));
         expect(output, doesExist);
-        new Directory(p.join('lib', 'resources'))
-            .listSync(recursive: true)
-            .forEach((FileSystemEntity f) {
-          if (f.statSync().type == FileSystemEntityType.FILE) {
-            String subPath =
-                f.path.substring(p.join('lib', 'resources').length + 1);
-            expect(new File(p.join(output.path, subPath)), doesExist);
-          }
-        });
+
+        for (var resource in resource_names.map(
+            (r) => p.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
+          expect(new File(p.join(output.path, resource)), doesExist);
+        }
       });
     });
   });

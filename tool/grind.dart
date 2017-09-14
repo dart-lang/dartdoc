@@ -20,8 +20,7 @@ final Directory docsDir =
 
 @Task('Analyze dartdoc to ensure there are no errors and warnings')
 analyze() {
-  Analyzer.analyze(['bin/dartdoc.dart', 'lib/dartdoc.dart', 'test/all.dart'],
-      fatalWarnings: true);
+  Analyzer.analyze(['bin', 'lib', 'test', 'tool'], fatalWarnings: true);
 }
 
 @Task('analyze, test, and self-test dartdoc')
@@ -181,9 +180,9 @@ publish() async {
 
 @Task('Run all the tests.')
 test() {
-  // this is 5 seconds faster than `pub run test`, so
-  // using straight-up VM here
-  return Dart.runAsync('test/all.dart', vmArgs: ['--checked']);
+  // `pub run test` is a bit slower than running an `test_all.dart` script
+  // But it provides more useful output in the case of failures.
+  return Pub.runAsync('test');
 }
 
 @Task('Generate docs for dartdoc')

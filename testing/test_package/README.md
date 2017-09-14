@@ -23,6 +23,34 @@ and_yaml:
   - 3.14
 ```
 
+```css
+/* issue 1484 regression */
+#id {
+  background: green;
+}
+
+.class {
+  background: red;
+}
+
+div {
+  background: green;
+}
+```
+
+```html
+<div>
+  <strong>Hello!</strong>
+  <h1>World!</h1>
+</div>
+```
+
+```js
+var f = function(a, b) {
+  return a + b;  
+};
+```
+
 It sometimes generates warnings in commentRefs like this: [unknownThingy.FromSomewhere]
 
 Be sure to check out other awesome packages on [pub][].

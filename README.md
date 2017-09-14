@@ -167,6 +167,12 @@ Some examples of likely triage priorities:
 
 Please see the [dartdoc license][].
 
+Generated docs include:
+
+ * Highlight.js -
+   [LICENSE](https://github.com/isagalaev/highlight.js/blob/master/LICENSE)
+   * With `github.css` (c) Vasily Polovnyov <vast@whiteants.net>
+
 [GitHub Issue Tracker]: https://github.com/dart-lang/dartdoc/issues
 [contributor docs]: https://github.com/dart-lang/dartdoc/blob/master/CONTRIBUTING.md
 [dartdoc license]: https://github.com/dart-lang/dartdoc/blob/master/LICENSE

@@ -17,17 +17,6 @@ import 'package:test/test.dart';
 import 'src/utils.dart' as utils;
 
 void main() {
-  utils.init();
-
-  final Package package = utils.testPackage;
-  final Package ginormousPackage = utils.testPackageGinormous;
-  final Library exLibrary =
-      package.libraries.firstWhere((lib) => lib.name == 'ex');
-  final Library fakeLibrary =
-      package.libraries.firstWhere((lib) => lib.name == 'fake');
-  final Library twoExportsLib =
-      package.libraries.firstWhere((lib) => lib.name == 'two_exports');
-
   Directory sdkDir = getSdkDir();
 
   if (sdkDir == null) {
@@ -35,10 +24,27 @@ void main() {
     exit(1);
   }
 
-  Package sdkAsPackage = Package.withAutoIncludedDependencies(
-      getSdkLibrariesToDocument(utils.sdkDir, utils.analyzerHelper.context),
-      new PackageMeta.fromSdk(sdkDir),
-      new PackageWarningOptions());
+  Package package;
+  Package ginormousPackage;
+  Library exLibrary;
+  Library fakeLibrary;
+  Library twoExportsLib;
+  Package sdkAsPackage;
+
+  setUpAll(() {
+    utils.init();
+    package = utils.testPackage;
+    ginormousPackage = utils.testPackageGinormous;
+    exLibrary = package.libraries.firstWhere((lib) => lib.name == 'ex');
+    fakeLibrary = package.libraries.firstWhere((lib) => lib.name == 'fake');
+    twoExportsLib =
+        package.libraries.firstWhere((lib) => lib.name == 'two_exports');
+
+    sdkAsPackage = Package.withAutoIncludedDependencies(
+        getSdkLibrariesToDocument(utils.sdkDir, utils.analyzerHelper.context),
+        new PackageMeta.fromSdk(sdkDir),
+        new PackageWarningOptions());
+  });
 
   group('Package', () {
     group('test package', () {
@@ -526,7 +532,7 @@ void main() {
     test('no references', () {
       expect(
           Apple.documentationAsHtml,
-          '<p>Sample class <code>String</code></p><pre class="prettyprint language-dart">  A\n'
+          '<p>Sample class <code>String</code></p><pre class="language-dart">  A\n'
           '   B\n'
           '</pre>');
     });
@@ -842,6 +848,9 @@ void main() {
 
     setUp(() {
       animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
+
+      /// Trigger code reference resolution
+      animal.documentationAsHtml;
     });
 
     test('has a fully qualified name', () {

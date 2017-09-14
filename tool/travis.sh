@@ -57,5 +57,5 @@ else
   (cd testing/test_package_small; dart -c ../../bin/dartdoc.dart)
 
   # Run the tests.
-  pub run grinder test
+  pub run test
 fi
