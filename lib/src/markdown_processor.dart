@@ -484,7 +484,7 @@ Element _findRefElementInLibrary(
       _findRefElementCache.containsKey(codeRefChomped)) {
     for (final modelElement in _findRefElementCache[codeRefChomped]) {
       if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
-      results.add(package.findCanonicalModelElementFor(modelElement.element));
+      results.add(package.findCanonicalModelElementFor(modelElement.element, preferredClass: _getPreferredClass(element)));
     }
   }
   results.remove(null);
@@ -494,7 +494,7 @@ Element _findRefElementInLibrary(
     for (final modelElement in library.allModelElements) {
       if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
       if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary) {
-        results.add(package.findCanonicalModelElementFor(modelElement.element));
+        results.add(package.findCanonicalModelElementFor(modelElement.element, preferredClass: _getPreferredClass(element)));
       }
     }
   }

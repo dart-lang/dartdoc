@@ -2098,27 +2098,9 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
       "${library.name}: ${score.toStringAsPrecision(4)} - ${reasons.join(', ')}";
 }
 
-/// Return the [Inheritable] [ModelElement] in the list whose enclosingElement
-/// is a base class to all others (lowest depth in the inheritance tree).
-///
-/// Assumes that all [Inheritable]s are in the same inheritance path; if they
-/// aren't, this function will have undefined behavior.
-Inheritable _findShallowestInheritable(Iterable<Inheritable> inheritables) {
-  Inheritable shallowestSoFar;
-  for (Inheritable e in inheritables) {
-    if (shallowestSoFar == null ||
-        (shallowestSoFar.enclosingElement as Class)
-            .isInheritingFrom(e.enclosingElement as Class)) {
-      shallowestSoFar = e;
-    }
-  }
-  return shallowestSoFar;
-}
-
-// This function should synthesize (or have the analyzer synthesize) an
-// ExecutableElement according to the specification.  It currently does not,
-// rather picking the first implementation or declaration (for abstract classes)
-// in the inheritance & interface lists.
+// TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39 #22.
+/// Resolves this incorrectly by picking the closest element in the inheritance
+/// and interface chains from the analyzer.
 ModelElement resolveMultiplyInheritedElement(MultiplyInheritedExecutableElement e, Library library, Class enclosingClass) {
   Iterable<Inheritable> inheritables = e.inheritedElements.map((ee) => new ModelElement.from(ee, library.package.findOrCreateLibraryFor(ee.library)) as Inheritable);
   Inheritable foundInheritable;
@@ -4167,10 +4149,13 @@ class Package extends Nameable implements Documentable {
 
       // This is for situations where multiple classes may actually be canonical
       // for an inherited element whose defining Class is not canonical.
-      if (matches.length > 1 && matches.every((e) => e is Inheritable)) {
-        matches = new Set()
-          ..add(_findShallowestInheritable(matches as Iterable<Inheritable>)
-              as ModelElement);
+      if (matches.length > 1 && preferredClass != null) {
+        // Search for matches inside our superchain.
+        List<Class> superChain =
+        preferredClass.superChainRaw.map((et) => et.element).toList();
+        superChain.add(preferredClass);
+        matches.removeWhere((me) =>
+        !superChain.contains((me as EnclosedElement).enclosingElement));
       }
 
       assert(matches.length <= 1);
