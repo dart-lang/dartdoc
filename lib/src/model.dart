@@ -377,6 +377,16 @@ class Class extends ModelElement implements EnclosedElement {
         .toList(growable: false);
   }
 
+  List<Class> _inheritanceAndInterfaces;
+  List<Class> get inheritanceAndInterfaces {
+    if (_inheritanceAndInterfaces == null) {
+      _inheritanceAndInterfaces = []
+        ..addAll(inheritanceChain)
+        ..addAll(interfaceChain.map((et) => et.element as Class));
+    }
+    return _inheritanceAndInterfaces;
+  }
+
   List<Method> get allInstanceMethods {
     if (_allInstanceMethods != null) return _allInstanceMethods;
     _allInstanceMethods = []
@@ -702,6 +712,18 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<ElementType> get interfaces => _interfaces;
 
+  List<ElementType> _interfaceChain;
+  List<ElementType> get interfaceChain {
+    if (_interfaceChain == null) {
+      _interfaceChain = [];
+      for (ElementType interface in interfaces) {
+        _interfaceChain.add(interface);
+        _interfaceChain.addAll((interface.element as Class).interfaceChain);
+      }
+    }
+    return _interfaceChain;
+  }
+
   bool get isAbstract => _cls.isAbstract;
 
   // TODO(jcollins-g): Something still not quite right with privacy detection,
@@ -721,7 +743,7 @@ class Class extends ModelElement implements EnclosedElement {
     return _cls.allSupertypes.any(_doCheck);
   }
 
-  /// Returns true if [other] is a parent class or mixin for this class.
+  /// Returns true if [other] is a parent class for this class.
   bool isInheritingFrom(Class other) =>
       superChain.map((et) => (et.element as Class)).contains(other);
 
@@ -2076,34 +2098,39 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
       "${library.name}: ${score.toStringAsPrecision(4)} - ${reasons.join(', ')}";
 }
 
-/// Return the [Inheritable] [ModelElement] in the list whose class is a parent to
-/// all others.  Assumes that all [Inheritable]s are in the same inheritance path;
-/// if they aren't, this function will have undefined behavior.
-Inheritable _findFarthestInheritable(Iterable<Inheritable> inheritables) {
-  Inheritable farthestSoFar;
+/// Return the [Inheritable] [ModelElement] in the list whose enclosingElement
+/// is a base class to all others (lowest depth in the inheritance tree).
+///
+/// Assumes that all [Inheritable]s are in the same inheritance path; if they
+/// aren't, this function will have undefined behavior.
+Inheritable _findShallowestInheritable(Iterable<Inheritable> inheritables) {
+  Inheritable shallowestSoFar;
   for (Inheritable e in inheritables) {
-    if (farthestSoFar == null ||
-        (farthestSoFar.enclosingElement as Class)
+    if (shallowestSoFar == null ||
+        (shallowestSoFar.enclosingElement as Class)
             .isInheritingFrom(e.enclosingElement as Class)) {
-      farthestSoFar = e;
+      shallowestSoFar = e;
     }
   }
-  return farthestSoFar;
+  return shallowestSoFar;
 }
 
-/// Return the [Inheritable] [ModelElement] in the list whose class inherits from
-/// all others.  Assumes that all [Inheritable]s are in the same inheritance path;
-/// if they aren't, this function will have undefined behavior.
-Inheritable _findNearestInheritable(Iterable<Inheritable> inheritables) {
-  Inheritable topSoFar;
-  for (Inheritable e in inheritables) {
-    if (topSoFar == null ||
-        (e.enclosingElement as Class)
-            .isInheritingFrom(topSoFar.enclosingElement)) {
-      topSoFar = e;
+// This function should synthesize (or have the analyzer synthesize) an
+// ExecutableElement according to the specification.  It currently does not,
+// rather picking the first implementation or declaration (for abstract classes)
+// in the inheritance & interface lists.
+ModelElement resolveMultiplyInheritedElement(MultiplyInheritedExecutableElement e, Library library, Class enclosingClass) {
+  Iterable<Inheritable> inheritables = e.inheritedElements.map((ee) => new ModelElement.from(ee, library.package.findOrCreateLibraryFor(ee.library)) as Inheritable);
+  Inheritable foundInheritable;
+  int lowIndex = enclosingClass.inheritanceAndInterfaces.length;
+  for (var inheritable in inheritables) {
+    int index = enclosingClass.inheritanceAndInterfaces.indexOf(inheritable.enclosingElement);
+    if (index < lowIndex) {
+      foundInheritable = inheritable;
+      lowIndex = index;
     }
   }
-  return topSoFar;
+  return new ModelElement.from(foundInheritable.element, library, enclosingClass: enclosingClass);
 }
 
 /// This class is the foundation of Dartdoc's model for source code.
@@ -2178,15 +2205,7 @@ abstract class ModelElement extends Nameable
         newModelElement = new Dynamic(e, library);
       }
       if (e is MultiplyInheritedExecutableElement) {
-        newModelElement = new ModelElement.from(
-            (_findNearestInheritable(e.inheritedElements
-                    .map((ee) => new ModelElement.from(
-                        ee, library.package.findOrCreateLibraryFor(ee.library)))
-                    .toList() as List<Inheritable>) as ModelElement)
-                .element,
-            library,
-            enclosingClass: enclosingClass);
-        assert(newModelElement.element is! MultiplyInheritedExecutableElement);
+        newModelElement = resolveMultiplyInheritedElement(e, library, enclosingClass);
       } else {
         if (e is LibraryElement) {
           newModelElement = new Library(e, library.package);
@@ -4150,19 +4169,10 @@ class Package extends Nameable implements Documentable {
       // for an inherited element whose defining Class is not canonical.
       if (matches.length > 1 && matches.every((e) => e is Inheritable)) {
         matches = new Set()
-          ..add(_findFarthestInheritable(matches as Iterable<Inheritable>)
+          ..add(_findShallowestInheritable(matches as Iterable<Inheritable>)
               as ModelElement);
       }
 
-      /*
-      if (matches.length > 1 && preferredClass != null) {
-        // Search for matches inside our superchain.
-        List<Class> superChain =
-            preferredClass.superChainRaw.map((et) => et.element).toList();
-        superChain.add(preferredClass);
-        matches.removeWhere((me) =>
-            !superChain.contains((me as EnclosedElement).enclosingElement));
-      }*/
       assert(matches.length <= 1);
       if (!matches.isEmpty) modelElement = matches.first;
     } else {
