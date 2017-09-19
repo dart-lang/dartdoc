@@ -252,7 +252,8 @@ MatchingLinkResult _getMatchingLinkElement(
   // Try expensive not-scoped lookup.
   if (refElement == null) {
     Class preferredClass = _getPreferredClass(element);
-    refElement = _findRefElementInLibrary(codeRef, element, commentRefs, preferredClass);
+    refElement =
+        _findRefElementInLibrary(codeRef, element, commentRefs, preferredClass);
   }
 
   // This is faster but does not take canonicalization into account; try
@@ -383,8 +384,8 @@ Map<String, Set<ModelElement>> _findRefElementCache;
 // TODO(jcollins-g): Subcomponents of this function shouldn't be adding nulls to results, strip the
 //                   removes out that are gratuitous and debug the individual pieces.
 // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
-Element _findRefElementInLibrary(
-    String codeRef, ModelElement element, List<CommentReference> commentRefs, Class preferredClass) {
+Element _findRefElementInLibrary(String codeRef, ModelElement element,
+    List<CommentReference> commentRefs, Class preferredClass) {
   assert(element != null);
   assert(element.package.allLibrariesAdded);
 
@@ -397,21 +398,24 @@ Element _findRefElementInLibrary(
   // This might be an operator.  Strip the operator prefix and try again.
   if (results.isEmpty && codeRef.startsWith('operator')) {
     String newCodeRef = codeRef.replaceFirst('operator', '');
-    return _findRefElementInLibrary(newCodeRef, element, commentRefs, preferredClass);
+    return _findRefElementInLibrary(
+        newCodeRef, element, commentRefs, preferredClass);
   }
 
   results.remove(null);
   // Oh, and someone might have some type parameters or other garbage.
   if (results.isEmpty && codeRef.contains(trailingIgnoreStuff)) {
     String newCodeRef = codeRef.replaceFirst(trailingIgnoreStuff, '');
-    return _findRefElementInLibrary(newCodeRef, element, commentRefs, preferredClass);
+    return _findRefElementInLibrary(
+        newCodeRef, element, commentRefs, preferredClass);
   }
 
   results.remove(null);
   // Oh, and someone might have thrown on a 'const' or 'final' in front.
   if (results.isEmpty && codeRef.contains(leadingIgnoreStuff)) {
     String newCodeRef = codeRef.replaceFirst(leadingIgnoreStuff, '');
-    return _findRefElementInLibrary(newCodeRef, element, commentRefs, preferredClass);
+    return _findRefElementInLibrary(
+        newCodeRef, element, commentRefs, preferredClass);
   }
 
   // Maybe this ModelElement has parameters, and this is one of them.
@@ -485,7 +489,8 @@ Element _findRefElementInLibrary(
       _findRefElementCache.containsKey(codeRefChomped)) {
     for (final modelElement in _findRefElementCache[codeRefChomped]) {
       if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
-      results.add(package.findCanonicalModelElementFor(modelElement.element, preferredClass: preferredClass));
+      results.add(package.findCanonicalModelElementFor(modelElement.element,
+          preferredClass: preferredClass));
     }
   }
   results.remove(null);
@@ -495,7 +500,8 @@ Element _findRefElementInLibrary(
     for (final modelElement in library.allModelElements) {
       if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
       if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary) {
-        results.add(package.findCanonicalModelElementFor(modelElement.element, preferredClass: preferredClass));
+        results.add(package.findCanonicalModelElementFor(modelElement.element,
+            preferredClass: preferredClass));
       }
     }
   }

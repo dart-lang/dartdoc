@@ -2101,18 +2101,26 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
 // TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39 #22.
 /// Resolves this very rare case incorrectly by picking the closest element in
 /// the inheritance and interface chains from the analyzer.
-ModelElement resolveMultiplyInheritedElement(MultiplyInheritedExecutableElement e, Library library, Class enclosingClass) {
-  Iterable<Inheritable> inheritables = e.inheritedElements.map((ee) => new ModelElement.from(ee, library.package.findOrCreateLibraryFor(ee.library)) as Inheritable);
+ModelElement resolveMultiplyInheritedElement(
+    MultiplyInheritedExecutableElement e,
+    Library library,
+    Class enclosingClass) {
+  Iterable<Inheritable> inheritables = e.inheritedElements.map((ee) =>
+      new ModelElement.from(
+              ee, library.package.findOrCreateLibraryFor(ee.library))
+          as Inheritable);
   Inheritable foundInheritable;
   int lowIndex = enclosingClass.inheritanceAndInterfaces.length;
   for (var inheritable in inheritables) {
-    int index = enclosingClass.inheritanceAndInterfaces.indexOf(inheritable.enclosingElement);
+    int index = enclosingClass.inheritanceAndInterfaces
+        .indexOf(inheritable.enclosingElement);
     if (index < lowIndex) {
       foundInheritable = inheritable;
       lowIndex = index;
     }
   }
-  return new ModelElement.from(foundInheritable.element, library, enclosingClass: enclosingClass);
+  return new ModelElement.from(foundInheritable.element, library,
+      enclosingClass: enclosingClass);
 }
 
 /// This class is the foundation of Dartdoc's model for source code.
@@ -2187,7 +2195,8 @@ abstract class ModelElement extends Nameable
         newModelElement = new Dynamic(e, library);
       }
       if (e is MultiplyInheritedExecutableElement) {
-        newModelElement = resolveMultiplyInheritedElement(e, library, enclosingClass);
+        newModelElement =
+            resolveMultiplyInheritedElement(e, library, enclosingClass);
       } else {
         if (e is LibraryElement) {
           newModelElement = new Library(e, library.package);
@@ -3817,8 +3826,6 @@ class Package extends Nameable implements Documentable {
     }
 
     packageWarningCounter.addWarning(warnable, kind, message, fullMessage);
-    if (kind == PackageWarning.ambiguousDocReference)
-      1 + 1;
   }
 
   static Package _withAutoIncludedDependencies(
@@ -4154,10 +4161,10 @@ class Package extends Nameable implements Documentable {
       if (matches.length > 1 && preferredClass != null) {
         // Search for matches inside our superchain.
         List<Class> superChain =
-        preferredClass.superChainRaw.map((et) => et.element).toList();
+            preferredClass.superChainRaw.map((et) => et.element).toList();
         superChain.add(preferredClass);
         matches.removeWhere((me) =>
-        !superChain.contains((me as EnclosedElement).enclosingElement));
+            !superChain.contains((me as EnclosedElement).enclosingElement));
       }
 
       assert(matches.length <= 1);
