@@ -2099,8 +2099,8 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
 }
 
 // TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39 #22.
-/// Resolves this incorrectly by picking the closest element in the inheritance
-/// and interface chains from the analyzer.
+/// Resolves this very rare case incorrectly by picking the closest element in
+/// the inheritance and interface chains from the analyzer.
 ModelElement resolveMultiplyInheritedElement(MultiplyInheritedExecutableElement e, Library library, Class enclosingClass) {
   Iterable<Inheritable> inheritables = e.inheritedElements.map((ee) => new ModelElement.from(ee, library.package.findOrCreateLibraryFor(ee.library)) as Inheritable);
   Inheritable foundInheritable;
@@ -3817,6 +3817,8 @@ class Package extends Nameable implements Documentable {
     }
 
     packageWarningCounter.addWarning(warnable, kind, message, fullMessage);
+    if (kind == PackageWarning.ambiguousDocReference)
+      1 + 1;
   }
 
   static Package _withAutoIncludedDependencies(
