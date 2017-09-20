@@ -175,7 +175,7 @@ indexResources() {
 @Task('Publish to pub.dartlang')
 @Depends(checkChangelogHasVersion, checkVersionMatches)
 publish() async {
-  await run('pub', arguments: ['publish']);
+  log('run : pub publish');
 }
 
 @Task('Run all the tests.')

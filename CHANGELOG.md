@@ -1,3 +1,19 @@
+## 0.14.0
+* Fix multiple issues with properties and top level variables in cases
+of split inheritance (#1394, #1116)
+* Fix issue with generation of 'null' value enum fields (#1445)
+* Fix multiple issues with nodoc handling (#1352, #1337)
+* Use highlight js for code blocks and fix colors (#1487)
+* Eliminate excessive stack depth in link checker
+* Use preferredClass in more cases to disambiguate doc links
+* Add basic support and tests for MultiplyInheritedExecutableElements (#1478)
+
+## 0.13.0+3
+* Add support for GenericFunctionTypeElementImpl (#1495)
+
+## 0.13.0+2
+* Allow null annotation elements (#1491)
+
 ## 0.13.0+1
 * Remove unnecessary dependency on meta.
 * Drop --force from pub publish arguments to avoid publishing more broken
