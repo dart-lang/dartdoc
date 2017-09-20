@@ -56,6 +56,24 @@ import 'css.dart' as css;
 
 import 'two_exports.dart' show BaseClass;
 
+abstract class ImplementingThingy implements BaseThingy {}
+
+abstract class BaseThingy {
+  // ignore: public_member_api_docs
+  ImplementingThingy get aImplementingThingy;
+  ImplementingThingy aImplementingThingyField;
+  void aImplementingThingyMethod(ImplementingThingy parameter);
+}
+
+abstract class ImplementingThingy2 implements BaseThingy2, ImplementingThingy {}
+
+/// Test for MultiplyInheritedExecutableElement handling.
+abstract class BaseThingy2 implements BaseThingy {
+  @override
+  /// BaseThingy2's doc for aImplementingThingy.
+  ImplementingThingy2 get aImplementingThingy;
+}
+
 class HasGenerics<X, Y, Z> {
   HasGenerics(X x, Y y, Z z) {}
 

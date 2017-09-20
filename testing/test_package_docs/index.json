@@ -3309,6 +3309,204 @@
   }
  },
  {
+  "name": "BaseThingy",
+  "qualifiedName": "fake.BaseThingy",
+  "href": "fake/BaseThingy-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "BaseThingy",
+  "qualifiedName": "fake.BaseThingy",
+  "href": "fake/BaseThingy/BaseThingy.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.BaseThingy.==",
+  "href": "fake/BaseThingy/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aImplementingThingy",
+  "qualifiedName": "fake.BaseThingy.aImplementingThingy",
+  "href": "fake/BaseThingy/aImplementingThingy.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aImplementingThingyField",
+  "qualifiedName": "fake.BaseThingy.aImplementingThingyField",
+  "href": "fake/BaseThingy/aImplementingThingyField.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aImplementingThingyMethod",
+  "qualifiedName": "fake.BaseThingy.aImplementingThingyMethod",
+  "href": "fake/BaseThingy/aImplementingThingyMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.BaseThingy.hashCode",
+  "href": "fake/BaseThingy/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.BaseThingy.noSuchMethod",
+  "href": "fake/BaseThingy/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.BaseThingy.runtimeType",
+  "href": "fake/BaseThingy/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.BaseThingy.toString",
+  "href": "fake/BaseThingy/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "BaseThingy2",
+  "qualifiedName": "fake.BaseThingy2",
+  "href": "fake/BaseThingy2-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "BaseThingy2",
+  "qualifiedName": "fake.BaseThingy2",
+  "href": "fake/BaseThingy2/BaseThingy2.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.BaseThingy2.==",
+  "href": "fake/BaseThingy2/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aImplementingThingy",
+  "qualifiedName": "fake.BaseThingy2.aImplementingThingy",
+  "href": "fake/BaseThingy2/aImplementingThingy.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.BaseThingy2.hashCode",
+  "href": "fake/BaseThingy2/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.BaseThingy2.noSuchMethod",
+  "href": "fake/BaseThingy2/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.BaseThingy2.runtimeType",
+  "href": "fake/BaseThingy2/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.BaseThingy2.toString",
+  "href": "fake/BaseThingy2/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseThingy2",
+   "type": "class"
+  }
+ },
+ {
   "name": "CUSTOM_CLASS",
   "qualifiedName": "fake.CUSTOM_CLASS",
   "href": "fake/CUSTOM_CLASS-constant.html",
@@ -4174,6 +4372,160 @@
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "HasGenerics",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ImplementingThingy",
+  "qualifiedName": "fake.ImplementingThingy",
+  "href": "fake/ImplementingThingy-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ImplementingThingy",
+  "qualifiedName": "fake.ImplementingThingy",
+  "href": "fake/ImplementingThingy/ImplementingThingy.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ImplementingThingy.==",
+  "href": "fake/ImplementingThingy/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ImplementingThingy.hashCode",
+  "href": "fake/ImplementingThingy/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ImplementingThingy.noSuchMethod",
+  "href": "fake/ImplementingThingy/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ImplementingThingy.runtimeType",
+  "href": "fake/ImplementingThingy/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ImplementingThingy.toString",
+  "href": "fake/ImplementingThingy/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ImplementingThingy2",
+  "qualifiedName": "fake.ImplementingThingy2",
+  "href": "fake/ImplementingThingy2-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ImplementingThingy2",
+  "qualifiedName": "fake.ImplementingThingy2",
+  "href": "fake/ImplementingThingy2/ImplementingThingy2.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ImplementingThingy2.==",
+  "href": "fake/ImplementingThingy2/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ImplementingThingy2.hashCode",
+  "href": "fake/ImplementingThingy2/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ImplementingThingy2.noSuchMethod",
+  "href": "fake/ImplementingThingy2/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ImplementingThingy2.runtimeType",
+  "href": "fake/ImplementingThingy2/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ImplementingThingy2.toString",
+  "href": "fake/ImplementingThingy2/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementingThingy2",
    "type": "class"
   }
  },
