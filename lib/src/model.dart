@@ -377,6 +377,16 @@ class Class extends ModelElement implements EnclosedElement {
         .toList(growable: false);
   }
 
+  List<Class> _inheritanceAndInterfaces;
+  List<Class> get inheritanceAndInterfaces {
+    if (_inheritanceAndInterfaces == null) {
+      _inheritanceAndInterfaces = []
+        ..addAll(inheritanceChain)
+        ..addAll(interfaceChain.map((et) => et.element as Class));
+    }
+    return _inheritanceAndInterfaces;
+  }
+
   List<Method> get allInstanceMethods {
     if (_allInstanceMethods != null) return _allInstanceMethods;
     _allInstanceMethods = []
@@ -702,6 +712,18 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<ElementType> get interfaces => _interfaces;
 
+  List<ElementType> _interfaceChain;
+  List<ElementType> get interfaceChain {
+    if (_interfaceChain == null) {
+      _interfaceChain = [];
+      for (ElementType interface in interfaces) {
+        _interfaceChain.add(interface);
+        _interfaceChain.addAll((interface.element as Class).interfaceChain);
+      }
+    }
+    return _interfaceChain;
+  }
+
   bool get isAbstract => _cls.isAbstract;
 
   // TODO(jcollins-g): Something still not quite right with privacy detection,
@@ -721,7 +743,7 @@ class Class extends ModelElement implements EnclosedElement {
     return _cls.allSupertypes.any(_doCheck);
   }
 
-  /// Returns true if [other] is a parent class or mixin for this class.
+  /// Returns true if [other] is a parent class for this class.
   bool isInheritingFrom(Class other) =>
       superChain.map((et) => (et.element as Class)).contains(other);
 
@@ -911,6 +933,10 @@ class Class extends ModelElement implements EnclosedElement {
         new InheritableAccessor.from(getterElement, inheritedAccessors, this);
     Accessor setter =
         new InheritableAccessor.from(setterElement, inheritedAccessors, this);
+    // Rebind getterElement/setterElement as ModelElement.from can resolve
+    // MultiplyInheritedExecutableElements.
+    getterElement = getter?.element;
+    setterElement = setter?.element;
     assert(!(getter == null && setter == null));
     if (f == null) {
       // Pick an appropriate FieldElement to represent this element.
@@ -2072,6 +2098,31 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
       "${library.name}: ${score.toStringAsPrecision(4)} - ${reasons.join(', ')}";
 }
 
+// TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39 #22.
+/// Resolves this very rare case incorrectly by picking the closest element in
+/// the inheritance and interface chains from the analyzer.
+ModelElement resolveMultiplyInheritedElement(
+    MultiplyInheritedExecutableElement e,
+    Library library,
+    Class enclosingClass) {
+  Iterable<Inheritable> inheritables = e.inheritedElements.map((ee) =>
+      new ModelElement.from(
+              ee, library.package.findOrCreateLibraryFor(ee.library))
+          as Inheritable);
+  Inheritable foundInheritable;
+  int lowIndex = enclosingClass.inheritanceAndInterfaces.length;
+  for (var inheritable in inheritables) {
+    int index = enclosingClass.inheritanceAndInterfaces
+        .indexOf(inheritable.enclosingElement);
+    if (index < lowIndex) {
+      foundInheritable = inheritable;
+      lowIndex = index;
+    }
+  }
+  return new ModelElement.from(foundInheritable.element, library,
+      enclosingClass: enclosingClass);
+}
+
 /// This class is the foundation of Dartdoc's model for source code.
 /// All ModelElements are contained within a [Package], and laid out in a
 /// structure that mirrors the availability of identifiers in the various
@@ -2138,96 +2189,107 @@ abstract class ModelElement extends Nameable
     if (e.kind != ElementKind.DYNAMIC &&
         library.package._allConstructedModelElements.containsKey(key)) {
       newModelElement = library.package._allConstructedModelElements[key];
+      assert(newModelElement.element is! MultiplyInheritedExecutableElement);
     } else {
       if (e.kind == ElementKind.DYNAMIC) {
         newModelElement = new Dynamic(e, library);
       }
-      if (e is LibraryElement) {
-        newModelElement = new Library(e, library.package);
-      }
-      // Also handles enums
-      if (e is ClassElement) {
-        if (!e.isEnum) {
-          newModelElement = new Class(e, library);
-          if (newModelElement.library.name == 'dart:core' &&
-              newModelElement.name == 'Object') {
-            // We've found Object.  This is an important object, so save it in the package.
-            newModelElement.library.package._objectElement = newModelElement;
-          }
-        } else {
-          newModelElement = new Enum(e, library);
+      if (e is MultiplyInheritedExecutableElement) {
+        newModelElement =
+            resolveMultiplyInheritedElement(e, library, enclosingClass);
+      } else {
+        if (e is LibraryElement) {
+          newModelElement = new Library(e, library.package);
         }
-      }
-      if (e is FunctionElement) {
-        newModelElement = new ModelFunction(e, library);
-      }
-      if (e is FunctionTypeAliasElement) {
-        newModelElement = new Typedef(e, library);
-      }
-      if (e is FieldElement) {
-        assert(getter != null || setter != null);
-        if (enclosingClass == null) {
-          if (e.isEnumConstant) {
-            int index = e.computeConstantValue().getField('index').toIntValue();
-            newModelElement = new EnumField.forConstant(index, e, library, getter);
-          } else if (e.enclosingElement.isEnum) {
-            newModelElement = new EnumField(e, library, getter, setter);
+        // Also handles enums
+        if (e is ClassElement) {
+          if (!e.isEnum) {
+            newModelElement = new Class(e, library);
+            if (newModelElement.library.name == 'dart:core' &&
+                newModelElement.name == 'Object') {
+              // We've found Object.  This is an important object, so save it in the package.
+              newModelElement.library.package._objectElement = newModelElement;
+            }
           } else {
-            newModelElement = new Field(e, library, getter, setter);
+            newModelElement = new Enum(e, library);
           }
-        } else {
-          // EnumFields can't be inherited, so this case is simpler.
-          newModelElement =
-              new Field.inherited(e, enclosingClass, library, getter, setter);
         }
-      }
-      if (e is ConstructorElement) {
-        newModelElement = new Constructor(e, library);
-      }
-      if (e is MethodElement && e.isOperator) {
-        if (enclosingClass == null)
-          newModelElement = new Operator(e, library);
-        else
-          newModelElement = new Operator.inherited(e, enclosingClass, library);
-      }
-      if (e is MethodElement && !e.isOperator) {
-        if (enclosingClass == null)
-          newModelElement = new Method(e, library);
-        else
-          newModelElement = new Method.inherited(e, enclosingClass, library);
-      }
-      if (e is TopLevelVariableElement) {
-        if (getter == null && setter == null) {
-          List<TopLevelVariable> allVariables = []
-            ..addAll(library.properties)
-            ..addAll(library.constants);
-          newModelElement = allVariables.firstWhere((v) => v.element == e);
-        } else {
-          newModelElement = new TopLevelVariable(e, library, getter, setter);
+        if (e is FunctionElement) {
+          newModelElement = new ModelFunction(e, library);
         }
-      }
-      if (e is PropertyAccessorElement) {
-        if (e.enclosingElement is ClassElement) {
+        if (e is FunctionTypeAliasElement) {
+          newModelElement = new Typedef(e, library);
+        }
+        if (e is FieldElement) {
+          if (enclosingClass == null) {
+            if (e.isEnumConstant) {
+              int index =
+                  e.computeConstantValue().getField('index').toIntValue();
+              newModelElement =
+                  new EnumField.forConstant(index, e, library, getter);
+            } else if (e.enclosingElement.isEnum) {
+              newModelElement = new EnumField(e, library, getter, setter);
+            } else {
+              newModelElement = new Field(e, library, getter, setter);
+            }
+          } else {
+            // EnumFields can't be inherited, so this case is simpler.
+            newModelElement =
+                new Field.inherited(e, enclosingClass, library, getter, setter);
+          }
+        }
+        if (e is ConstructorElement) {
+          newModelElement = new Constructor(e, library);
+        }
+        if (e is MethodElement && e.isOperator) {
           if (enclosingClass == null)
-            newModelElement = new InheritableAccessor(e, library);
+            newModelElement = new Operator(e, library);
           else
             newModelElement =
-                new InheritableAccessor.inherited(e, library, enclosingClass);
-        } else {
-          newModelElement = new Accessor(e, library);
+                new Operator.inherited(e, enclosingClass, library);
         }
-      }
-      if (e is TypeParameterElement) {
-        newModelElement = new TypeParameter(e, library);
-      }
-      if (e is ParameterElement) {
-        newModelElement = new Parameter(e, library);
+        if (e is MethodElement && !e.isOperator) {
+          if (enclosingClass == null)
+            newModelElement = new Method(e, library);
+          else
+            newModelElement = new Method.inherited(e, enclosingClass, library);
+        }
+        if (e is TopLevelVariableElement) {
+          if (getter == null && setter == null) {
+            List<TopLevelVariable> allVariables = []
+              ..addAll(library.properties)
+              ..addAll(library.constants);
+            newModelElement = allVariables.firstWhere((v) => v.element == e);
+          } else {
+            newModelElement = new TopLevelVariable(e, library, getter, setter);
+          }
+        }
+        if (e is PropertyAccessorElement) {
+          // TODO(jcollins-g): why test for ClassElement in enclosingElement?
+          if (e.enclosingElement is ClassElement ||
+              e is MultiplyInheritedExecutableElement) {
+            if (enclosingClass == null)
+              newModelElement = new InheritableAccessor(e, library);
+            else
+              newModelElement =
+                  new InheritableAccessor.inherited(e, library, enclosingClass);
+          } else {
+            newModelElement = new Accessor(e, library);
+          }
+        }
+        if (e is TypeParameterElement) {
+          newModelElement = new TypeParameter(e, library);
+        }
+        if (e is ParameterElement) {
+          newModelElement = new Parameter(e, library);
+        }
       }
     }
     // TODO(jcollins-g): Consider subclass for ModelFunctionTyped.
     if (e is GenericFunctionTypeElement) {
       newModelElement = new ModelFunctionTyped(e, library);
     }
+
     if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
     if (enclosingClass != null) assert(newModelElement is Inheritable);
     if (library != null) {
@@ -2244,6 +2306,7 @@ abstract class ModelElement extends Nameable
       assert(setter == null || newModelElement.setter.enclosingCombo != null);
     }
 
+    assert(newModelElement.element is! MultiplyInheritedExecutableElement);
     return newModelElement;
   }
 
@@ -4103,6 +4166,7 @@ class Package extends Nameable implements Documentable {
         matches.removeWhere((me) =>
             !superChain.contains((me as EnclosedElement).enclosingElement));
       }
+
       assert(matches.length <= 1);
       if (!matches.isEmpty) modelElement = matches.first;
     } else {

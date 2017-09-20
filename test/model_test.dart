@@ -312,6 +312,32 @@ void main() {
     });
   });
 
+  group('MultiplyInheritedExecutableElement handling', () {
+    Class BaseThingy, BaseThingy2, ImplementingThingy2;
+    Method aImplementingThingyMethod;
+    Field aImplementingThingyField;
+    Field aImplementingThingy;
+    Accessor aImplementingThingyAccessor;
+
+    setUp(() {
+      BaseThingy = fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy');
+      BaseThingy2 = fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy2');
+      ImplementingThingy2 = fakeLibrary.classes.firstWhere((c) => c.name == 'ImplementingThingy2');
+
+      aImplementingThingy = ImplementingThingy2.allInstanceProperties.firstWhere((m) => m.name == 'aImplementingThingy');
+      aImplementingThingyMethod = ImplementingThingy2.allInstanceMethods.firstWhere((m) => m.name == 'aImplementingThingyMethod');
+      aImplementingThingyField = ImplementingThingy2.allInstanceProperties.firstWhere((m) => m.name == 'aImplementingThingyField');
+      aImplementingThingyAccessor = aImplementingThingyField.getter;
+    });
+
+    test('Verify behavior of imperfect resolver', () {
+      expect(aImplementingThingy.element.enclosingElement, equals(BaseThingy2.element));
+      expect(aImplementingThingyMethod.element.enclosingElement, equals(BaseThingy.element));
+      expect(aImplementingThingyField.element.enclosingElement, equals(BaseThingy.element));
+      expect(aImplementingThingyAccessor.element.enclosingElement, equals(BaseThingy.element));
+    });
+  });
+
   group('Docs as HTML', () {
     Class Apple, B, superAwesomeClass, foo2;
     TopLevelVariable incorrectDocReferenceFromEx;
