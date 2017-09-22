@@ -17,11 +17,13 @@ body {
   padding: 0;
   height: 100%;
 }
+
 body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
+
 header {
   flex: 0 0 56px;
   display: flex;
@@ -29,33 +31,36 @@ header {
   align-items: center;
   padding-left: 30px;
 }
+
 header ol {
   list-style: none;
   margin: 0;
   padding: 0;
 }
+
 header ol li {
   display: inline;
 }
+
 header form {
   display: flex;
   flex: 1;
   justify-content: flex-end;
   padding-right: 30px;
-  
 }
+
 footer {
   flex: 0 0 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
+  text-align: center;
+  padding: 16px 20px;
 }
+
 main {
   flex: 1;
   display: flex;
   flex-direction: row;
 }
+
 .sidebar-offcanvas-left {
   flex: 0 1 195px;
   overflow-y: scroll;
