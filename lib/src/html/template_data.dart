@@ -180,8 +180,7 @@ class ClassTemplateData extends TemplateData<Class> {
       '${library.name} library, for the Dart programming language.';
 
   @override
-  String get layoutTitle =>
-      _layoutTitle(clazz.nameWithGenerics, clazz.fullkind, clazz.isDeprecated);
+  String get layoutTitle => _layoutTitle(clazz.nameWithGenerics, clazz.fullkind, clazz.isDeprecated);
   @override
   List get navLinks => [package, library];
   @override

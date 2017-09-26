@@ -424,3 +424,9 @@ class _RetainedEnum {
   @override
   String toString() => name;
 }
+
+/// This class has a complicated type situation.
+abstract class TypedFunctionsWithoutTypedefs {
+  void Function(T1, T2) getAFunctionReturningVoid<T1, T2>(
+      void callback(T1 argument1, T2 argument2));
+}

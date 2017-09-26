@@ -769,7 +769,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   @override
   String get nameWithGenerics {
-    if (!modelType.isParameterizedType) return name;
+    if (!modelType.isParameterizedType || _typeParameters.isEmpty) return name;
     return '$name&lt;${_typeParameters.map((t) => t.name).join(', ')}&gt;';
   }
 
@@ -2285,9 +2285,13 @@ abstract class ModelElement extends Nameable
         }
       }
     }
-    // TODO(jcollins-g): Consider subclass for ModelFunctionTyped.
+
     if (e is GenericFunctionTypeElement) {
-      newModelElement = new ModelFunctionTyped(e, library);
+      if (ModelFunctionTyped.isPartOfTypedef(e)) {
+        newModelElement = new ModelFunctionTypedef(e, library);
+      } else {
+        newModelElement = new ModelFunctionAnonymous(e, library);
+      }
     }
 
     if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
@@ -3203,6 +3207,7 @@ abstract class ModelElement extends Nameable
   }
 }
 
+/// A ModelElement for a FunctionElement that isn't part of a type definition.
 class ModelFunction extends ModelFunctionTyped {
   ModelFunction(FunctionElement element, Library library)
       : super(element, library);
@@ -3213,7 +3218,47 @@ class ModelFunction extends ModelFunctionTyped {
   }
 
   @override
+  String get name {
+    if (element.enclosingElement is ParameterElement && super.name.isEmpty)
+      return element.enclosingElement.name;
+    return super.name;
+  }
+
+  @override
   FunctionElement get _func => (element as FunctionElement);
+}
+
+
+/// A ModelElement for a GenericModelFunctionElement that is not part of an
+/// explicit typedef.
+class ModelFunctionAnonymous extends ModelFunctionTyped {
+  ModelFunctionAnonymous(FunctionTypedElement element, Library library)
+      : super(element, library) {}
+
+  @override
+  String get name => 'Function';
+
+  @override
+  bool get isPublic => false;
+}
+
+/// A ModelElement for a GenericModelFunctionElement that may be part of an
+/// explicit typedef.
+class ModelFunctionTypedef extends ModelFunctionTyped {
+  ModelFunctionTypedef(FunctionTypedElement element, Library library)
+      : super(element, library) {}
+
+  @override
+  String get name {
+    Element e = element;
+    while (e != null) {
+      if (e is FunctionTypeAliasElement)
+        return e.name;
+      e = e.enclosingElement;
+    }
+    assert(false);
+    return super.name;
+  }
 }
 
 class ModelFunctionTyped extends ModelElement
@@ -3239,13 +3284,6 @@ class ModelFunctionTyped extends ModelElement
   String get fileName => "$name.html";
 
   @override
-  String get name {
-    if (element.enclosingElement is ParameterElement && super.name.isEmpty)
-      return element.enclosingElement.name;
-    return super.name;
-  }
-
-  @override
   String get href {
     if (canonicalLibrary == null) return null;
     return '${canonicalLibrary.dirName}/$fileName';
@@ -3266,6 +3304,17 @@ class ModelFunctionTyped extends ModelElement
   String get genericParameters {
     if (typeParameters.isEmpty) return '';
     return '&lt;${typeParameters.map((t) => t.name).join(', ')}&gt;';
+  }
+
+  /// Returns true if the given [FunctionTypedElement] is enclosed by a
+  /// [FunctionTypeAliasElement].
+  static bool isPartOfTypedef(FunctionTypedElement e) {
+    Element next = e;
+    while (next != null) {
+      if (next is FunctionTypeAliasElement) return true;
+      next = next.enclosingElement;
+    }
+    return false;
   }
 
   FunctionTypedElement get _func => (element as FunctionTypedElement);
@@ -4590,7 +4639,7 @@ class Typedef extends ModelElement
 
   @override
   String get nameWithGenerics {
-    if (!modelType.isParameterizedType) return name;
+    if (!modelType.isParameterizedType || _typeParameters.isEmpty) return name;
     return '$name&lt;${_typeParameters.map((t) => t.name).join(', ')}&gt;';
   }
 

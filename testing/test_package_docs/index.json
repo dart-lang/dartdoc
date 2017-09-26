@@ -2708,6 +2708,94 @@
   }
  },
  {
+  "name": "TypedFunctionsWithoutTypedefs",
+  "qualifiedName": "ex.TypedFunctionsWithoutTypedefs",
+  "href": "ex/TypedFunctionsWithoutTypedefs-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "TypedFunctionsWithoutTypedefs",
+  "qualifiedName": "ex.TypedFunctionsWithoutTypedefs",
+  "href": "ex/TypedFunctionsWithoutTypedefs/TypedFunctionsWithoutTypedefs.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedFunctionsWithoutTypedefs",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "ex.TypedFunctionsWithoutTypedefs.==",
+  "href": "ex/TypedFunctionsWithoutTypedefs/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedFunctionsWithoutTypedefs",
+   "type": "class"
+  }
+ },
+ {
+  "name": "getAFunctionReturningVoid",
+  "qualifiedName": "ex.TypedFunctionsWithoutTypedefs.getAFunctionReturningVoid",
+  "href": "ex/TypedFunctionsWithoutTypedefs/getAFunctionReturningVoid.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedFunctionsWithoutTypedefs",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "ex.TypedFunctionsWithoutTypedefs.hashCode",
+  "href": "ex/TypedFunctionsWithoutTypedefs/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedFunctionsWithoutTypedefs",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "ex.TypedFunctionsWithoutTypedefs.noSuchMethod",
+  "href": "ex/TypedFunctionsWithoutTypedefs/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedFunctionsWithoutTypedefs",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "ex.TypedFunctionsWithoutTypedefs.runtimeType",
+  "href": "ex/TypedFunctionsWithoutTypedefs/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedFunctionsWithoutTypedefs",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "ex.TypedFunctionsWithoutTypedefs.toString",
+  "href": "ex/TypedFunctionsWithoutTypedefs/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedFunctionsWithoutTypedefs",
+   "type": "class"
+  }
+ },
+ {
   "name": "WithGeneric",
   "qualifiedName": "ex.WithGeneric",
   "href": "ex/WithGeneric-class.html",
