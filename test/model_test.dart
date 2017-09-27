@@ -1769,12 +1769,25 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Typedef', () {
     Typedef t;
     Typedef generic;
+    Typedef aComplexTypedef;
 
     setUp(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
       generic =
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
+      aComplexTypedef = exLibrary.typedefs.firstWhere((t) => t.name == 'aComplexTypedef');
     });
+
+    test('anonymous nested functions inside typedefs are handled', () {
+      expect(aComplexTypedef, isNotNull);
+      expect(aComplexTypedef.linkedReturnType, startsWith('Function'));
+      expect(aComplexTypedef.nameWithGenerics, equals('aComplexTypedef&lt;A1, A2, A3&gt;'));
+    });
+
+    test('anonymous nested functions inside typedefs are handled correctly', () {
+      expect(aComplexTypedef.linkedReturnType, equals('Function(<span class="parameter" id="-param-"><span class="type-annotation">A1</span></span> <span class="parameter" id="-param-"><span class="type-annotation">A2</span></span> <span class="parameter" id="-param-"><span class="type-annotation">A3</span></span>)'));
+      expect(aComplexTypedef.linkedParamsLines, equals('<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">String</span></span>'));
+    }, skip: 'blocked on https://github.com/dart-lang/sdk/issues/30146');
 
     test('has a fully qualified name', () {
       expect(t.fullyQualifiedName, 'ex.processMessage');

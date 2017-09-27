@@ -2741,6 +2741,17 @@
   }
  },
  {
+  "name": "getAComplexTypedef",
+  "qualifiedName": "ex.TypedFunctionsWithoutTypedefs.getAComplexTypedef",
+  "href": "ex/TypedFunctionsWithoutTypedefs/getAComplexTypedef.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedFunctionsWithoutTypedefs",
+   "type": "class"
+  }
+ },
+ {
   "name": "getAFunctionReturningVoid",
   "qualifiedName": "ex.TypedFunctionsWithoutTypedefs.getAFunctionReturningVoid",
   "href": "ex/TypedFunctionsWithoutTypedefs/getAFunctionReturningVoid.html",
@@ -2903,6 +2914,17 @@
   "enclosedBy": {
    "name": "WithGenericSub",
    "type": "class"
+  }
+ },
+ {
+  "name": "aComplexTypedef",
+  "qualifiedName": "ex.aComplexTypedef",
+  "href": "ex/aComplexTypedef.html",
+  "type": "typedef",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
   }
  },
  {

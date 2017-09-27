@@ -21,13 +21,7 @@ class ElementType {
 
   bool get isFunctionType => (_type is FunctionType);
 
-  bool get isParameterizedType {
-    // _type can be both; prioritize ParameterizedType.
-    if (_type is ParameterizedType || _type is FunctionType) {
-      return true;
-    }
-    return false;
-  }
+  bool get isParameterizedType => (_type is ParameterizedType);
 
   bool get isParameterType => (_type is TypeParameterType);
 
@@ -49,7 +43,9 @@ class ElementType {
           buf.writeAll(typeArguments.map((t) => t.linkedName), ', ');
           buf.write('&gt;');
         }
-        if (element.canHaveParameters && !ModelFunctionTyped.isPartOfTypedef(element.element)) {
+        // Hide parameters if there's a an explicit typedef behind this
+        // element, but if there is no typedef, be explicit.
+        if (element is ModelFunctionAnonymous) {
           buf.write('(');
           buf.write(element.linkedParams());
           buf.write(')');

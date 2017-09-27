@@ -2287,9 +2287,11 @@ abstract class ModelElement extends Nameable
     }
 
     if (e is GenericFunctionTypeElement) {
-      if (ModelFunctionTyped.isPartOfTypedef(e)) {
+      if (e is FunctionTypeAliasElement) {
+        assert(e.name != '');
         newModelElement = new ModelFunctionTypedef(e, library);
       } else {
+        assert(e.name == '');
         newModelElement = new ModelFunctionAnonymous(e, library);
       }
     }
@@ -3229,8 +3231,12 @@ class ModelFunction extends ModelFunctionTyped {
 }
 
 
-/// A ModelElement for a GenericModelFunctionElement that is not part of an
+/// A [ModelElement] for a [GenericModelFunctionElement] that is not an
 /// explicit typedef.
+///
+/// Distinct from ModelFunctionTypedef in that it doesn't
+/// have a name, but we document it as "Function" to match how these are
+/// written in method declarations.
 class ModelFunctionAnonymous extends ModelFunctionTyped {
   ModelFunctionAnonymous(FunctionTypedElement element, Library library)
       : super(element, library) {}
@@ -3304,17 +3310,6 @@ class ModelFunctionTyped extends ModelElement
   String get genericParameters {
     if (typeParameters.isEmpty) return '';
     return '&lt;${typeParameters.map((t) => t.name).join(', ')}&gt;';
-  }
-
-  /// Returns true if the given [FunctionTypedElement] is enclosed by a
-  /// [FunctionTypeAliasElement].
-  static bool isPartOfTypedef(FunctionTypedElement e) {
-    Element next = e;
-    while (next != null) {
-      if (next is FunctionTypeAliasElement) return true;
-      next = next.enclosingElement;
-    }
-    return false;
   }
 
   FunctionTypedElement get _func => (element as FunctionTypedElement);
