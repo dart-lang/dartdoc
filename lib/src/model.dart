@@ -3230,7 +3230,6 @@ class ModelFunction extends ModelFunctionTyped {
   FunctionElement get _func => (element as FunctionElement);
 }
 
-
 /// A [ModelElement] for a [GenericModelFunctionElement] that is not an
 /// explicit typedef.
 ///
@@ -3258,8 +3257,7 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
   String get name {
     Element e = element;
     while (e != null) {
-      if (e is FunctionTypeAliasElement)
-        return e.name;
+      if (e is FunctionTypeAliasElement) return e.name;
       e = e.enclosingElement;
     }
     assert(false);
