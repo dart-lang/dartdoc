@@ -3208,7 +3208,7 @@ abstract class ModelElement extends Nameable
   }
 }
 
-/// A ModelElement for a FunctionElement that isn't part of a type definition.
+/// A [ModelElement] for a [FunctionElement] that isn't part of a type definition.
 class ModelFunction extends ModelFunctionTyped {
   ModelFunction(FunctionElement element, Library library)
       : super(element, library);
@@ -3229,12 +3229,12 @@ class ModelFunction extends ModelFunctionTyped {
   FunctionElement get _func => (element as FunctionElement);
 }
 
-/// A [ModelElement] for a [GenericModelFunctionElement] that is not an
+/// A [ModelElement] for a [GenericModelFunctionElement] that is an
 /// explicit typedef.
 ///
 /// Distinct from ModelFunctionTypedef in that it doesn't
 /// have a name, but we document it as "Function" to match how these are
-/// written in method declarations.
+/// written in declarations.
 class ModelFunctionAnonymous extends ModelFunctionTyped {
   ModelFunctionAnonymous(FunctionTypedElement element, Library library)
       : super(element, library) {}
@@ -3246,7 +3246,7 @@ class ModelFunctionAnonymous extends ModelFunctionTyped {
   bool get isPublic => false;
 }
 
-/// A ModelElement for a GenericModelFunctionElement that may be part of an
+/// A [ModelElement] for a [GenericModelFunctionElement] that is part of an
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
   ModelFunctionTypedef(FunctionTypedElement element, Library library)
