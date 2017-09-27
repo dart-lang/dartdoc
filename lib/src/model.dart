@@ -2216,6 +2216,14 @@ abstract class ModelElement extends Nameable
         }
         if (e is FunctionElement) {
           newModelElement = new ModelFunction(e, library);
+        } else if (e is GenericFunctionTypeElement) {
+          if (e is FunctionTypeAliasElement) {
+            assert(e.name != '');
+            newModelElement = new ModelFunctionTypedef(e, library);
+          } else {
+            assert(e.name == '');
+            newModelElement = new ModelFunctionAnonymous(e, library);
+          }
         }
         if (e is FunctionTypeAliasElement) {
           newModelElement = new Typedef(e, library);
@@ -2286,15 +2294,6 @@ abstract class ModelElement extends Nameable
       }
     }
 
-    if (e is GenericFunctionTypeElement) {
-      if (e is FunctionTypeAliasElement) {
-        assert(e.name != '');
-        newModelElement = new ModelFunctionTypedef(e, library);
-      } else {
-        assert(e.name == '');
-        newModelElement = new ModelFunctionAnonymous(e, library);
-      }
-    }
 
     if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
     if (enclosingClass != null) assert(newModelElement is Inheritable);
