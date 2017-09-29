@@ -1,3 +1,9 @@
+## 0.15.0
+* Enable `strong mode` when analyzing, which is required for some types (#1482)
+* Now requires Dart SDK `>=1.24.0` (as we test for [`FutureOr`][future_or])
+
+[future_or]: https://github.com/dart-lang/sdk/blob/master/CHANGELOG.md#1240---12-06-2017
+
 ## 0.14.0
 * Fix multiple issues with properties and top level variables in cases
 of split inheritance (#1394, #1116)
