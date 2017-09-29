@@ -37,9 +37,10 @@ elif [ "$DARTDOC_BOT" = "flutter" ]; then
   ./bin/flutter --version
   ./bin/flutter precache
   ( cd  dev/tools; pub get )
+  set +e
   ls -lt pubspec.*
   ls -lt dev/tools/pubspec.*
-  ./bin/cache/dart-sdk/bin/dart dev/tools/dartdoc.dart
+  ./bin/cache/dart-sdk/bin/dart dev/tools/dartdoc.dart || exit $?
 
   # The above script validates the generation; we echo the main file here.
   cat dev/docs/doc/index.html
