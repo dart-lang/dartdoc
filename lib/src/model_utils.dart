@@ -54,11 +54,13 @@ bool isInExportedLibraries(
 
 final RegExp slashes = new RegExp('[\/]');
 bool hasPrivateName(Element e) {
-  if (e.name.startsWith('_') ||
-      (e is LibraryElement &&
-          (e.identifier == 'dart:_internal' ||
-              e.identifier == 'dart:nativewrappers'))) {
+  if (e.name.startsWith('_')) {
     return true;
+  }
+  if (e is LibraryElement &&
+      (e.identifier.startsWith('dart:_') ||
+          ['dart:nativewrappers'].contains(e.identifier))) {
+      return true;
   }
   if (e is LibraryElement) {
     List<String> locationParts = e.location.components[0].split(slashes);
