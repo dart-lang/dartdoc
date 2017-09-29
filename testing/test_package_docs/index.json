@@ -6466,6 +6466,17 @@
   }
  },
  {
+  "name": "paramOfFutureOrNull",
+  "qualifiedName": "fake.paramOfFutureOrNull",
+  "href": "fake/paramOfFutureOrNull.html",
+  "type": "function",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "required",
   "qualifiedName": "fake.required",
   "href": "fake/required-constant.html",
@@ -6554,9 +6565,53 @@
   }
  },
  {
+  "name": "thisIsFutureOr",
+  "qualifiedName": "fake.thisIsFutureOr",
+  "href": "fake/thisIsFutureOr.html",
+  "type": "function",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "thisIsFutureOrNull",
+  "qualifiedName": "fake.thisIsFutureOrNull",
+  "href": "fake/thisIsFutureOrNull.html",
+  "type": "function",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "thisIsFutureOrT",
+  "qualifiedName": "fake.thisIsFutureOrT",
+  "href": "fake/thisIsFutureOrT.html",
+  "type": "function",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "topLevelFunction",
   "qualifiedName": "fake.topLevelFunction",
   "href": "fake/topLevelFunction.html",
+  "type": "function",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "typeParamOfFutureOr",
+  "qualifiedName": "fake.typeParamOfFutureOr",
+  "href": "fake/typeParamOfFutureOr.html",
   "type": "function",
   "overriddenDepth": 0,
   "enclosedBy": {

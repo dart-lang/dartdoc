@@ -5,6 +5,7 @@
 /// The models used to represent Dart code.
 library dartdoc.element_type;
 
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 

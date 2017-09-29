@@ -97,6 +97,10 @@ class AnalyzerHelper {
     SourceFactory sourceFactory = new SourceFactory(resolvers);
     AnalysisEngine.instance.processRequiredPlugins();
     context = AnalysisEngine.instance.createAnalysisContext();
+    // Consistency with analysis context configuration in dartdoc.dart.
+    context.analysisOptions = new AnalysisOptionsImpl()
+      ..enableAssertInitializer = true
+      ..strongMode = true;
     context.sourceFactory = sourceFactory;
   }
 
