@@ -29,5 +29,7 @@ dev_dependencies:
   meta: ^1.0.0
   pub_semver: ^1.0.0
   test: '>=0.12.20+24 <0.13.0'
+  test_package_imported:
+    path: 'testing/test_package_imported'
 executables:
   dartdoc: null
