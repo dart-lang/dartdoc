@@ -11,7 +11,9 @@ install:
   - pub get
   - cmd: cd testing
   - cmd: cd test_package
+  - cmd: type .packages
   - cmd: pub get
+  - cmd: type .packages
   - cmd: cd ..
   - cmd: cd ..
 
