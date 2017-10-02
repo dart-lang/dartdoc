@@ -307,6 +307,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.24+6"
+  test_package_imported:
+    description:
+      path: "testing/test_package_imported"
+      relative: true
+    source: path
+    version: "0.0.1"
   tuple:
     description:
       name: tuple
