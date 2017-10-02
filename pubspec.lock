@@ -306,13 +306,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.24"
-  test_package_imported:
-    description:
-      path: "testing/test_package_imported"
-      relative: true
-    source: path
-    version: "0.0.1"
+    version: "0.12.24+6"
   tuple:
     description:
       name: tuple
@@ -368,4 +362,4 @@ packages:
     source: hosted
     version: "2.1.12"
 sdks:
-  dart: ">=1.23.0 <=2.0.0-edge.ac9ff3f3afb8b5c8f6173781aa4d282b9cec6d05"
+  dart: ">=1.23.0 <=2.0.0-dev.1.0"
