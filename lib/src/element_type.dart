@@ -21,42 +21,38 @@ class ElementType {
 
   bool get isFunctionType => (_type is FunctionType);
 
-  bool get isParameterizedType {
-    if (_type is FunctionType) {
-      return typeArguments.isNotEmpty;
-    } else if (_type is ParameterizedType) {
-      return (_type as ParameterizedType).typeArguments.isNotEmpty;
-    }
-    return false;
-  }
+  bool get isParameterizedType => (_type is ParameterizedType);
 
   bool get isParameterType => (_type is TypeParameterType);
 
   String get linkedName {
-    if (_linkedName != null) return _linkedName;
+    if (_linkedName == null) {
+      StringBuffer buf = new StringBuffer();
 
-    StringBuffer buf = new StringBuffer();
-
-    if (isParameterType) {
-      buf.write(name);
-    } else {
-      buf.write(element.linkedName);
-    }
-
-    // not TypeParameterType or Void or Union type
-    if (isParameterizedType) {
-      if (typeArguments.every((t) => t.linkedName == 'dynamic')) {
-        _linkedName = buf.toString();
-        return _linkedName;
+      if (isParameterType) {
+        buf.write(name);
+      } else {
+        buf.write(element.linkedName);
       }
-      if (typeArguments.isNotEmpty) {
-        buf.write('&lt;');
-        buf.writeAll(typeArguments.map((t) => t.linkedName), ', ');
-        buf.write('&gt;');
-      }
-    }
-    _linkedName = buf.toString();
 
+      // not TypeParameterType or Void or Union type
+      if (isParameterizedType) {
+        if (!typeArguments.every((t) => t.linkedName == 'dynamic') &&
+            typeArguments.isNotEmpty) {
+          buf.write('&lt;');
+          buf.writeAll(typeArguments.map((t) => t.linkedName), ', ');
+          buf.write('&gt;');
+        }
+        // Hide parameters if there's a an explicit typedef behind this
+        // element, but if there is no typedef, be explicit.
+        if (element is ModelFunctionAnonymous) {
+          buf.write('(');
+          buf.write(element.linkedParams());
+          buf.write(')');
+        }
+      }
+      _linkedName = buf.toString();
+    }
     return _linkedName;
   }
 

@@ -686,7 +686,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(21));
+      expect(classes, hasLength(22));
     });
 
     test('abstract', () {
@@ -1027,9 +1027,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Method', () {
-    Class classB, klass, HasGenerics, Cat, CatString;
+    Class classB, klass, HasGenerics, Cat, CatString, TypedFunctionsWithoutTypedefs;
     Method m1, isGreaterThan, m4, m5, m6, m7, convertToMap, abstractMethod;
     Method inheritedClear, testGeneric, testGenericMethod;
+    Method getAFunctionReturningVoid;
 
     setUp(() {
       klass = exLibrary.classes.singleWhere((c) => c.name == 'Klass');
@@ -1061,6 +1062,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'testGenericMethod');
       convertToMap = HasGenerics.instanceMethods
           .singleWhere((m) => m.name == 'convertToMap');
+      TypedFunctionsWithoutTypedefs = exLibrary.classes.singleWhere((c) => c.name == 'TypedFunctionsWithoutTypedefs');
+      getAFunctionReturningVoid = TypedFunctionsWithoutTypedefs.instanceMethods.singleWhere((m) => m.name == 'getAFunctionReturningVoid');
     });
 
     tearDown(() {
@@ -1069,6 +1072,15 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         file.deleteSync();
       }
     });
+
+    test('verify parameters to types are displayed', () {
+      var matcher = new RegExp('Function\\(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T.</span></span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T.</span></span>\\)');
+      expect(matcher.hasMatch(getAFunctionReturningVoid.linkedReturnType), isTrue);
+    });
+
+    test('verify parameter types are correctly displayed', () {
+      expect(getAFunctionReturningVoid.linkedReturnType, equals('Function(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T1</span></span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T2</span></span>)'));
+    }, skip: 'blocked on https://github.com/dart-lang/sdk/issues/30146');
 
     test('has a fully qualified name', () {
       expect(m1.fullyQualifiedName, 'ex.B.m1');
@@ -1757,12 +1769,25 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Typedef', () {
     Typedef t;
     Typedef generic;
+    Typedef aComplexTypedef;
 
     setUp(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
       generic =
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
+      aComplexTypedef = exLibrary.typedefs.firstWhere((t) => t.name == 'aComplexTypedef');
     });
+
+    test('anonymous nested functions inside typedefs are handled', () {
+      expect(aComplexTypedef, isNotNull);
+      expect(aComplexTypedef.linkedReturnType, startsWith('Function'));
+      expect(aComplexTypedef.nameWithGenerics, equals('aComplexTypedef&lt;A1, A2, A3&gt;'));
+    });
+
+    test('anonymous nested functions inside typedefs are handled correctly', () {
+      expect(aComplexTypedef.linkedReturnType, equals('Function(<span class="parameter" id="-param-"><span class="type-annotation">A1</span></span> <span class="parameter" id="-param-"><span class="type-annotation">A2</span></span> <span class="parameter" id="-param-"><span class="type-annotation">A3</span></span>)'));
+      expect(aComplexTypedef.linkedParamsLines, equals('<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">String</span></span>'));
+    }, skip: 'blocked on https://github.com/dart-lang/sdk/issues/30146');
 
     test('has a fully qualified name', () {
       expect(t.fullyQualifiedName, 'ex.processMessage');

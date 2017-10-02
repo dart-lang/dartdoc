@@ -121,6 +121,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  js:
+    description:
+      name: js
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.1"
   kernel:
     description:
       name: kernel
@@ -169,6 +175,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  node_preamble:
+    description:
+      name: node_preamble
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.4.0"
   package_config:
     description:
       name: package_config
@@ -294,7 +306,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.20+13"
+    version: "0.12.24+6"
   tuple:
     description:
       name: tuple
@@ -350,4 +362,4 @@ packages:
     source: hosted
     version: "2.1.12"
 sdks:
-  dart: ">=1.23.0-dev.11.5 <2.0.0-dev.infinity"
+  dart: ">=1.23.0 <=2.0.0-dev.2.0"

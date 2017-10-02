@@ -424,3 +424,16 @@ class _RetainedEnum {
   @override
   String toString() => name;
 }
+
+/// Someone might do this some day.
+typedef aComplexTypedef<A1, A2, A3> = void Function(A1, A2, A3) Function(A3, String);
+
+/// This class has a complicated type situation.
+abstract class TypedFunctionsWithoutTypedefs {
+  /// Returns a function that returns a void with some generic types sprinkled in.
+  void Function(T1, T2) getAFunctionReturningVoid<T1, T2>(
+      void callback(T1 argument1, T2 argument2));
+
+  /// Returns a complex typedef that includes some anonymous typed functions.
+  aComplexTypedef getAComplexTypedef<A4, A5, A6>();
+}
