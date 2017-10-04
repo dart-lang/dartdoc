@@ -5491,7 +5491,7 @@
   "qualifiedName": "fake.SpecialList.[]",
   "href": "fake/SpecialList/operator_get.html",
   "type": "method",
-  "overriddenDepth": 0,
+  "overriddenDepth": 1,
   "enclosedBy": {
    "name": "SpecialList",
    "type": "class"
@@ -5502,7 +5502,7 @@
   "qualifiedName": "fake.SpecialList.[]=",
   "href": "fake/SpecialList/operator_put.html",
   "type": "method",
-  "overriddenDepth": 0,
+  "overriddenDepth": 1,
   "enclosedBy": {
    "name": "SpecialList",
    "type": "class"

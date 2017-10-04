@@ -13,9 +13,12 @@ import 'model.dart';
 class ElementType {
   final DartType _type;
   final ModelElement element;
+  ElementType _returningFrom;
   String _linkedName;
 
-  ElementType(this._type, this.element);
+  ElementType(this._type, this.element, {ElementType returningFrom = null}) {
+    _returningFrom = returningFrom;
+  }
 
   bool get isDynamic => _type.isDynamic;
 
@@ -52,6 +55,8 @@ class ElementType {
         }
       }
       _linkedName = buf.toString();
+      if (_linkedName.contains('ex/ParameterizedTypedef.html') && _linkedName.contains('>ParameterizedTypedef<'))
+        1+1;
     }
     return _linkedName;
   }
@@ -76,16 +81,21 @@ class ElementType {
 
   List<ElementType> get typeArguments {
     var type = _type;
+    if (element.element.enclosingElement.name == 'getAFunctionReturningVoid') {
+      1+1;
+    }
     if (type is FunctionType) {
       Iterable<DartType> typeArguments;
-      if (type.element is FunctionTypeAliasElement &&
-          type.typeFormals.isEmpty) {
-        // TODO(jmesserly): simplify check above; we should have a way
-        // to find instantiated typedefs without consulting the element.
-        // Also, it will not work if we support typedefs declared inside classes.
+      if (element is! ModelFunctionAnonymous && type.typeFormals.isEmpty) {
+        // TODO(jcollins-g): replace with if (FunctionType.isInstantiated) once
+        // that's reliable and revealed through the interface.
         typeArguments = type.typeArguments;
       } else {
         typeArguments = type.typeFormals.map((f) => f.type);
+      }
+      if (type.element is FunctionTypeAliasElement &&
+          type.element.name == '') {
+          1+1;
       }
       return typeArguments.map(_getElementTypeFrom).toList();
     } else {
@@ -100,9 +110,9 @@ class ElementType {
     var rt = _returnTypeCore;
     Library lib = element.package.findLibraryFor(rt.element);
     if (lib == null) {
-      lib = new Library(rt.element.library, element.package);
+      lib = new ModelElement.from(rt.element.library, element.library);
     }
-    return new ElementType(rt, new ModelElement.from(rt.element, lib));
+    return new ElementType(rt, new ModelElement.from(rt.element, lib), returningFrom: this);
   }
 
   DartType get _returnTypeCore => (_type as FunctionType).returnType;
@@ -110,6 +120,8 @@ class ElementType {
   String get _returnTypeName => _returnTypeCore.name;
 
   String createLinkedReturnTypeName() {
+    if (element.name == 'getAFunctionReturningVoid')
+      1+1;
     if (_returnTypeCore.element == null ||
         _returnTypeCore.element.library == null) {
       if (_returnTypeName != null) {
