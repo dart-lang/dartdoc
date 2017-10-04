@@ -3225,12 +3225,6 @@ class ModelFunction extends ModelFunctionTyped {
   }
 
   @override
-  String get name {
-    assert (!super.name.isEmpty);
-    return super.name;
-  }
-
-  @override
   FunctionElement get _func => (element as FunctionElement);
 }
 
@@ -3255,11 +3249,7 @@ class ModelFunctionAnonymous extends ModelFunctionTyped {
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
   ModelFunctionTypedef(FunctionTypedElement element, Library library)
-      : super(element, library) {
-    if (element.name == '' && element.enclosingElement is GenericTypeAliasElement) {
-      1+1;
-    }
-  }
+      : super(element, library);
 
   @override
   String get name {

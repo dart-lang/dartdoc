@@ -52,8 +52,6 @@ class ElementType {
         }
       }
       _linkedName = buf.toString();
-      if (_linkedName.contains('ex/ParameterizedTypedef.html') && _linkedName.contains('>ParameterizedTypedef<'))
-        1+1;
     }
     return _linkedName;
   }
@@ -75,9 +73,6 @@ class ElementType {
 
   List<ElementType> get typeArguments {
     var type = _type;
-    if (element.element.enclosingElement.name == 'getAFunctionReturningVoid') {
-      1+1;
-    }
     if (type is FunctionType) {
       Iterable<DartType> typeArguments;
       if (element is! ModelFunctionAnonymous && type.typeFormals.isEmpty) {
@@ -86,10 +81,6 @@ class ElementType {
         typeArguments = type.typeArguments;
       } else {
         typeArguments = type.typeFormals.map((f) => f.type);
-      }
-      if (type.element is FunctionTypeAliasElement &&
-          type.element.name == '') {
-          1+1;
       }
       return typeArguments.map(_getElementTypeFrom).toList();
     } else {
