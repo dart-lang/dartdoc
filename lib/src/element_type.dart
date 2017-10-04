@@ -120,8 +120,6 @@ class ElementType {
   String get _returnTypeName => _returnTypeCore.name;
 
   String createLinkedReturnTypeName() {
-    if (element.name == 'getAFunctionReturningVoid')
-      1+1;
     if (_returnTypeCore.element == null ||
         _returnTypeCore.element.library == null) {
       if (_returnTypeName != null) {
