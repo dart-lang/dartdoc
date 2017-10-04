@@ -13,12 +13,9 @@ import 'model.dart';
 class ElementType {
   final DartType _type;
   final ModelElement element;
-  ElementType _returningFrom;
   String _linkedName;
 
-  ElementType(this._type, this.element, {ElementType returningFrom = null}) {
-    _returningFrom = returningFrom;
-  }
+  ElementType(this._type, this.element);
 
   bool get isDynamic => _type.isDynamic;
 
@@ -72,10 +69,7 @@ class ElementType {
     if (e == null || e.library == null) {
       return null;
     }
-    Library lib = element.package.findLibraryFor(e);
-    if (lib == null) {
-      lib = new Library(e.library, element.package);
-    }
+    Library lib = new ModelElement.from(e.library, element.library);
     return (new ModelElement.from(e, lib));
   }
 
@@ -112,7 +106,7 @@ class ElementType {
     if (lib == null) {
       lib = new ModelElement.from(rt.element.library, element.library);
     }
-    return new ElementType(rt, new ModelElement.from(rt.element, lib), returningFrom: this);
+    return new ElementType(rt, new ModelElement.from(rt.element, lib));
   }
 
   DartType get _returnTypeCore => (_type as FunctionType).returnType;
@@ -142,9 +136,8 @@ class ElementType {
   ElementType _getElementTypeFrom(DartType f) {
     Library lib;
     // can happen if element is dynamic
-    lib = element.package.findLibraryFor(f.element);
-    if (lib == null && f.element.library != null) {
-      lib = new Library(f.element.library, element.package);
+    if (f.element.library != null) {
+      lib = new ModelElement.from(f.element.library, element.library);
     }
     return new ElementType(f, new ModelElement.from(f.element, lib));
   }

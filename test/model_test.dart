@@ -1030,7 +1030,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class classB, klass, HasGenerics, Cat, CatString, TypedFunctionsWithoutTypedefs;
     Method m1, isGreaterThan, m4, m5, m6, m7, convertToMap, abstractMethod;
     Method inheritedClear, testGeneric, testGenericMethod;
-    Method getAFunctionReturningVoid;
+    Method getAFunctionReturningVoid, getAFunctionReturningBool;
 
     setUp(() {
       klass = exLibrary.classes.singleWhere((c) => c.name == 'Klass');
@@ -1064,6 +1064,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'convertToMap');
       TypedFunctionsWithoutTypedefs = exLibrary.classes.singleWhere((c) => c.name == 'TypedFunctionsWithoutTypedefs');
       getAFunctionReturningVoid = TypedFunctionsWithoutTypedefs.instanceMethods.singleWhere((m) => m.name == 'getAFunctionReturningVoid');
+      getAFunctionReturningBool = TypedFunctionsWithoutTypedefs.instanceMethods.singleWhere((m) => m.name == 'getAFunctionReturningBool');
     });
 
     tearDown(() {
@@ -1080,6 +1081,15 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('verify parameter types are correctly displayed', () {
       expect(getAFunctionReturningVoid.linkedReturnType, equals('Function(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T1</span></span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T2</span></span>)'));
+    }, skip: 'blocked on https://github.com/dart-lang/sdk/issues/30146');
+
+    test('verify type parameters to anonymous functions are distinct from normal parameters and instantiated type parameters from method', () {
+      var matcher = new RegExp('Function&lt;T4&gt;\\(<span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">String</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">[^<]*</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">[^<]*</span></span>\\)');
+      expect(matcher.hasMatch(getAFunctionReturningBool.linkedReturnType), isTrue);
+    });
+
+    test('verify type parameters to anonymous functions are distinct from normal parameters and instantiated type parameters from method, displayed correctly', () {
+      expect(getAFunctionReturningBool.linkedReturnType, equals('Function&lt;T4&gt;(<span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">String</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T1</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T4</span></span>)'));
     }, skip: 'blocked on https://github.com/dart-lang/sdk/issues/30146');
 
     test('has a fully qualified name', () {
