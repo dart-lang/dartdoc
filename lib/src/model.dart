@@ -2299,7 +2299,6 @@ abstract class ModelElement extends Nameable
       }
     }
 
-
     if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
     if (enclosingClass != null) assert(newModelElement is Inheritable);
     if (library != null) {
@@ -3255,7 +3254,8 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
   String get name {
     Element e = element;
     while (e != null) {
-      if (e is FunctionTypeAliasElement || e is GenericTypeAliasElement) return e.name;
+      if (e is FunctionTypeAliasElement || e is GenericTypeAliasElement)
+        return e.name;
       e = e.enclosingElement;
     }
     assert(false);
