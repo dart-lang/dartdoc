@@ -434,6 +434,10 @@ abstract class TypedFunctionsWithoutTypedefs {
   void Function(T1, T2) getAFunctionReturningVoid<T1, T2>(
       void callback(T1 argument1, T2 argument2));
 
+  /// This helps us make sure we get both the empty and the non-empty
+  /// case right for anonymous functions.
+  bool Function<T4>(String, T1, T4) getAFunctionReturningBool<T1, T2, T3>();
+
   /// Returns a complex typedef that includes some anonymous typed functions.
   aComplexTypedef getAComplexTypedef<A4, A5, A6>();
 }

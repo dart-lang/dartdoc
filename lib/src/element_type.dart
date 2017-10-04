@@ -67,10 +67,7 @@ class ElementType {
     if (e == null || e.library == null) {
       return null;
     }
-    Library lib = element.package.findLibraryFor(e);
-    if (lib == null) {
-      lib = new Library(e.library, element.package);
-    }
+    Library lib = new ModelElement.from(e.library, element.library);
     return (new ModelElement.from(e, lib));
   }
 
@@ -78,11 +75,9 @@ class ElementType {
     var type = _type;
     if (type is FunctionType) {
       Iterable<DartType> typeArguments;
-      if (type.element is FunctionTypeAliasElement &&
-          type.typeFormals.isEmpty) {
-        // TODO(jmesserly): simplify check above; we should have a way
-        // to find instantiated typedefs without consulting the element.
-        // Also, it will not work if we support typedefs declared inside classes.
+      if (element is! ModelFunctionAnonymous && type.typeFormals.isEmpty) {
+        // TODO(jcollins-g): replace with if (FunctionType.isInstantiated) once
+        // that's reliable and revealed through the interface.
         typeArguments = type.typeArguments;
       } else {
         typeArguments = type.typeFormals.map((f) => f.type);
@@ -100,7 +95,7 @@ class ElementType {
     var rt = _returnTypeCore;
     Library lib = element.package.findLibraryFor(rt.element);
     if (lib == null) {
-      lib = new Library(rt.element.library, element.package);
+      lib = new ModelElement.from(rt.element.library, element.library);
     }
     return new ElementType(rt, new ModelElement.from(rt.element, lib));
   }
@@ -132,9 +127,8 @@ class ElementType {
   ElementType _getElementTypeFrom(DartType f) {
     Library lib;
     // can happen if element is dynamic
-    lib = element.package.findLibraryFor(f.element);
-    if (lib == null && f.element.library != null) {
-      lib = new Library(f.element.library, element.package);
+    if (f.element.library != null) {
+      lib = new ModelElement.from(f.element.library, element.library);
     }
     return new ElementType(f, new ModelElement.from(f.element, lib));
   }

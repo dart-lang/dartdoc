@@ -60,7 +60,7 @@ bool hasPrivateName(Element e) {
   if (e is LibraryElement &&
       (e.identifier.startsWith('dart:_') ||
           ['dart:nativewrappers'].contains(e.identifier))) {
-      return true;
+    return true;
   }
   if (e is LibraryElement) {
     List<String> locationParts = e.location.components[0].split(slashes);

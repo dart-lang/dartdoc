@@ -2752,6 +2752,17 @@
   }
  },
  {
+  "name": "getAFunctionReturningBool",
+  "qualifiedName": "ex.TypedFunctionsWithoutTypedefs.getAFunctionReturningBool",
+  "href": "ex/TypedFunctionsWithoutTypedefs/getAFunctionReturningBool.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedFunctionsWithoutTypedefs",
+   "type": "class"
+  }
+ },
+ {
   "name": "getAFunctionReturningVoid",
   "qualifiedName": "ex.TypedFunctionsWithoutTypedefs.getAFunctionReturningVoid",
   "href": "ex/TypedFunctionsWithoutTypedefs/getAFunctionReturningVoid.html",

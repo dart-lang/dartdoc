@@ -2221,8 +2221,13 @@ abstract class ModelElement extends Nameable
             assert(e.name != '');
             newModelElement = new ModelFunctionTypedef(e, library);
           } else {
-            assert(e.name == '');
-            newModelElement = new ModelFunctionAnonymous(e, library);
+            if (e.enclosingElement is GenericTypeAliasElement) {
+              assert(e.enclosingElement.name != '');
+              newModelElement = new ModelFunctionTypedef(e, library);
+            } else {
+              assert(e.name == '');
+              newModelElement = new ModelFunctionAnonymous(e, library);
+            }
           }
         }
         if (e is FunctionTypeAliasElement) {
@@ -2293,7 +2298,6 @@ abstract class ModelElement extends Nameable
         }
       }
     }
-
 
     if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
     if (enclosingClass != null) assert(newModelElement is Inheritable);
@@ -2902,7 +2906,8 @@ abstract class ModelElement extends Nameable
       }
       if (param.modelType.isFunctionType) {
         var returnTypeName;
-        bool isTypedef = param.modelType.element is Typedef;
+        bool isTypedef = (param.modelType.element is Typedef ||
+            param.modelType.element is ModelFunctionTypedef);
         if (isTypedef) {
           returnTypeName = param.modelType.linkedName;
         } else {
@@ -3219,13 +3224,6 @@ class ModelFunction extends ModelFunctionTyped {
   }
 
   @override
-  String get name {
-    if (element.enclosingElement is ParameterElement && super.name.isEmpty)
-      return element.enclosingElement.name;
-    return super.name;
-  }
-
-  @override
   FunctionElement get _func => (element as FunctionElement);
 }
 
@@ -3250,13 +3248,14 @@ class ModelFunctionAnonymous extends ModelFunctionTyped {
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
   ModelFunctionTypedef(FunctionTypedElement element, Library library)
-      : super(element, library) {}
+      : super(element, library);
 
   @override
   String get name {
     Element e = element;
     while (e != null) {
-      if (e is FunctionTypeAliasElement) return e.name;
+      if (e is FunctionTypeAliasElement || e is GenericTypeAliasElement)
+        return e.name;
       e = e.enclosingElement;
     }
     assert(false);
