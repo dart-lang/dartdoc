@@ -1,3 +1,8 @@
+## 0.14.1
+* Add better support for GenericFunctionTypeElementImpl (#1506, #1509)
+* Fix up dartdoc so it can be used with the head analyzer again (#1509)
+* SDK constraint fixed (#1503)
+
 ## 0.14.0
 * Fix multiple issues with properties and top level variables in cases
 of split inheritance (#1394, #1116)
