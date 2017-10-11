@@ -769,7 +769,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   @override
   String get nameWithGenerics {
-    if (!modelType.isParameterizedType) return name;
+    if (!modelType.isParameterizedType || _typeParameters.isEmpty) return name;
     return '$name&lt;${_typeParameters.map((t) => t.name).join(', ')}&gt;';
   }
 
@@ -2216,6 +2216,19 @@ abstract class ModelElement extends Nameable
         }
         if (e is FunctionElement) {
           newModelElement = new ModelFunction(e, library);
+        } else if (e is GenericFunctionTypeElement) {
+          if (e is FunctionTypeAliasElement) {
+            assert(e.name != '');
+            newModelElement = new ModelFunctionTypedef(e, library);
+          } else {
+            if (e.enclosingElement is GenericTypeAliasElement) {
+              assert(e.enclosingElement.name != '');
+              newModelElement = new ModelFunctionTypedef(e, library);
+            } else {
+              assert(e.name == '');
+              newModelElement = new ModelFunctionAnonymous(e, library);
+            }
+          }
         }
         if (e is FunctionTypeAliasElement) {
           newModelElement = new Typedef(e, library);
@@ -2284,10 +2297,6 @@ abstract class ModelElement extends Nameable
           newModelElement = new Parameter(e, library);
         }
       }
-    }
-    // TODO(jcollins-g): Consider subclass for ModelFunctionTyped.
-    if (e is GenericFunctionTypeElement) {
-      newModelElement = new ModelFunctionTyped(e, library);
     }
 
     if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
@@ -2897,7 +2906,8 @@ abstract class ModelElement extends Nameable
       }
       if (param.modelType.isFunctionType) {
         var returnTypeName;
-        bool isTypedef = param.modelType.element is Typedef;
+        bool isTypedef = (param.modelType.element is Typedef ||
+            param.modelType.element is ModelFunctionTypedef);
         if (isTypedef) {
           returnTypeName = param.modelType.linkedName;
         } else {
@@ -3203,6 +3213,7 @@ abstract class ModelElement extends Nameable
   }
 }
 
+/// A [ModelElement] for a [FunctionElement] that isn't part of a type definition.
 class ModelFunction extends ModelFunctionTyped {
   ModelFunction(FunctionElement element, Library library)
       : super(element, library);
@@ -3214,6 +3225,42 @@ class ModelFunction extends ModelFunctionTyped {
 
   @override
   FunctionElement get _func => (element as FunctionElement);
+}
+
+/// A [ModelElement] for a [GenericModelFunctionElement] that is an
+/// explicit typedef.
+///
+/// Distinct from ModelFunctionTypedef in that it doesn't
+/// have a name, but we document it as "Function" to match how these are
+/// written in declarations.
+class ModelFunctionAnonymous extends ModelFunctionTyped {
+  ModelFunctionAnonymous(FunctionTypedElement element, Library library)
+      : super(element, library) {}
+
+  @override
+  String get name => 'Function';
+
+  @override
+  bool get isPublic => false;
+}
+
+/// A [ModelElement] for a [GenericModelFunctionElement] that is part of an
+/// explicit typedef.
+class ModelFunctionTypedef extends ModelFunctionTyped {
+  ModelFunctionTypedef(FunctionTypedElement element, Library library)
+      : super(element, library);
+
+  @override
+  String get name {
+    Element e = element;
+    while (e != null) {
+      if (e is FunctionTypeAliasElement || e is GenericTypeAliasElement)
+        return e.name;
+      e = e.enclosingElement;
+    }
+    assert(false);
+    return super.name;
+  }
 }
 
 class ModelFunctionTyped extends ModelElement
@@ -3237,13 +3284,6 @@ class ModelFunctionTyped extends ModelElement
   ModelElement get enclosingElement => library;
 
   String get fileName => "$name.html";
-
-  @override
-  String get name {
-    if (element.enclosingElement is ParameterElement && super.name.isEmpty)
-      return element.enclosingElement.name;
-    return super.name;
-  }
 
   @override
   String get href {
@@ -4590,7 +4630,7 @@ class Typedef extends ModelElement
 
   @override
   String get nameWithGenerics {
-    if (!modelType.isParameterizedType) return name;
+    if (!modelType.isParameterizedType || _typeParameters.isEmpty) return name;
     return '$name&lt;${_typeParameters.map((t) => t.name).join(', ')}&gt;';
   }
 
