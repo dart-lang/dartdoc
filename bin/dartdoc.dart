@@ -5,6 +5,7 @@
 library dartdoc.bin;
 
 import 'dart:io';
+import 'dart:isolate' show Isolate;
 
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
@@ -44,10 +45,7 @@ main(List<String> arguments) async {
     exit(1);
   }
 
-  bool sdkDocs = false;
-  if (args['sdk-docs']) {
-    sdkDocs = true;
-  }
+  final bool sdkDocs = args['sdk-docs'];
 
   if (args['show-progress']) {
     _showProgress = true;
@@ -63,7 +61,8 @@ main(List<String> arguments) async {
   Directory inputDir = new Directory(args['input']);
   if (!inputDir.existsSync()) {
     stderr.writeln(
-        " fatal error: unable to locate the input directory at ${inputDir.path}.");
+        " fatal error: unable to locate the input directory at ${inputDir
+            .path}.");
     exit(1);
   }
 
@@ -95,6 +94,14 @@ main(List<String> arguments) async {
 
   List<String> footerTextFilePaths =
       args['footer-text'].map(_resolveTildePath).toList() as List<String>;
+
+  // If we're generating docs for the Dart SDK, we insert a copyright footer.
+  if (sdkDocs) {
+    Uri footerCopyrightUri = await Isolate.resolvePackageUri(
+        Uri.parse('package:dartdoc/src/sdk_footer_text.html'));
+    footerTextFilePaths = [footerCopyrightUri.toFilePath()];
+  }
+
   for (String footerFilePath in footerTextFilePaths) {
     if (!new File(footerFilePath).existsSync()) {
       stderr.writeln(
@@ -122,8 +129,9 @@ main(List<String> arguments) async {
       : new PackageMeta.fromDir(inputDir);
 
   if (!packageMeta.isValid) {
+    final String firstError = packageMeta.getInvalidReasons().first;
     stderr.writeln(
-        ' fatal error: Unable to generate documentation: ${packageMeta.getInvalidReasons().first}.');
+        ' fatal error: Unable to generate documentation: $firstError.');
     exit(1);
   }
 
@@ -245,8 +253,8 @@ ArgParser _createArgsParser() {
   parser.addOption('footer-text',
       allowMultiple: true,
       splitCommas: true,
-      help:
-          'paths to footer-text files (optional text next to the copyright).');
+      help: 'paths to footer-text files '
+          '(optional text next to the package name and version).');
   parser.addOption('exclude',
       allowMultiple: true, splitCommas: true, help: 'Library names to ignore.');
   parser.addOption('include',
@@ -311,6 +319,7 @@ ArgParser _createArgsParser() {
 }
 
 int _progressCounter = 0;
+
 void _onProgress(var file) {
   if (_showProgress && _progressCounter % 5 == 0) {
     stdout.write('.');
