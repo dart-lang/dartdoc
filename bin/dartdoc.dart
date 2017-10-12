@@ -129,10 +129,9 @@ main(List<String> arguments) async {
       : new PackageMeta.fromDir(inputDir);
 
   if (!packageMeta.isValid) {
-    stderr
-        .writeln(' fatal error: Unable to generate documentation: ${packageMeta
-        .getInvalidReasons()
-        .first}.');
+    final String firstError = packageMeta.getInvalidReasons().first;
+    stderr.writeln(
+        ' fatal error: Unable to generate documentation: $firstError.');
     exit(1);
   }
 
