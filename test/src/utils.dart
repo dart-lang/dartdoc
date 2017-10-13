@@ -16,6 +16,7 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as p;

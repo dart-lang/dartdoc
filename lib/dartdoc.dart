@@ -36,6 +36,7 @@ import 'src/io_utils.dart';
 import 'src/model.dart';
 import 'src/model_utils.dart';
 import 'src/package_meta.dart';
+import 'src/warnings.dart';
 
 export 'src/config.dart';
 export 'src/element_type.dart';
