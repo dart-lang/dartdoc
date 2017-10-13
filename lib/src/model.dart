@@ -3641,9 +3641,10 @@ class Package extends Nameable implements Documentable {
       });
     });
 
-    if (libraryElements.length > startLength)
+    if (libraryElements.length > startLength) {
       package =
           _withAutoIncludedDependencies(libraryElements, packageMeta, options);
+    }
     options.autoFlush = true;
     package.flushWarnings;
     return package;
