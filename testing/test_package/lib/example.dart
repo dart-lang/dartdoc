@@ -426,7 +426,8 @@ class _RetainedEnum {
 }
 
 /// Someone might do this some day.
-typedef aComplexTypedef<A1, A2, A3> = void Function(A1, A2, A3) Function(A3, String);
+typedef aComplexTypedef<A1, A2, A3> = void Function(A1, A2, A3) Function(
+    A3, String);
 
 /// This class has a complicated type situation.
 abstract class TypedFunctionsWithoutTypedefs {

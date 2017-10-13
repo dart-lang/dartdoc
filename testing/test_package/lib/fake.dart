@@ -70,6 +70,7 @@ abstract class ImplementingThingy2 implements BaseThingy2, ImplementingThingy {}
 /// Test for MultiplyInheritedExecutableElement handling.
 abstract class BaseThingy2 implements BaseThingy {
   @override
+
   /// BaseThingy2's doc for aImplementingThingy.
   ImplementingThingy2 get aImplementingThingy;
 }

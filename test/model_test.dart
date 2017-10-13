@@ -320,21 +320,31 @@ void main() {
     Accessor aImplementingThingyAccessor;
 
     setUp(() {
-      BaseThingy = fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy');
-      BaseThingy2 = fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy2');
-      ImplementingThingy2 = fakeLibrary.classes.firstWhere((c) => c.name == 'ImplementingThingy2');
+      BaseThingy =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy');
+      BaseThingy2 =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy2');
+      ImplementingThingy2 = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'ImplementingThingy2');
 
-      aImplementingThingy = ImplementingThingy2.allInstanceProperties.firstWhere((m) => m.name == 'aImplementingThingy');
-      aImplementingThingyMethod = ImplementingThingy2.allInstanceMethods.firstWhere((m) => m.name == 'aImplementingThingyMethod');
-      aImplementingThingyField = ImplementingThingy2.allInstanceProperties.firstWhere((m) => m.name == 'aImplementingThingyField');
+      aImplementingThingy = ImplementingThingy2.allInstanceProperties
+          .firstWhere((m) => m.name == 'aImplementingThingy');
+      aImplementingThingyMethod = ImplementingThingy2.allInstanceMethods
+          .firstWhere((m) => m.name == 'aImplementingThingyMethod');
+      aImplementingThingyField = ImplementingThingy2.allInstanceProperties
+          .firstWhere((m) => m.name == 'aImplementingThingyField');
       aImplementingThingyAccessor = aImplementingThingyField.getter;
     });
 
     test('Verify behavior of imperfect resolver', () {
-      expect(aImplementingThingy.element.enclosingElement, equals(BaseThingy2.element));
-      expect(aImplementingThingyMethod.element.enclosingElement, equals(BaseThingy.element));
-      expect(aImplementingThingyField.element.enclosingElement, equals(BaseThingy.element));
-      expect(aImplementingThingyAccessor.element.enclosingElement, equals(BaseThingy.element));
+      expect(aImplementingThingy.element.enclosingElement,
+          equals(BaseThingy2.element));
+      expect(aImplementingThingyMethod.element.enclosingElement,
+          equals(BaseThingy.element));
+      expect(aImplementingThingyField.element.enclosingElement,
+          equals(BaseThingy.element));
+      expect(aImplementingThingyAccessor.element.enclosingElement,
+          equals(BaseThingy.element));
     });
   });
 
@@ -1027,7 +1037,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Method', () {
-    Class classB, klass, HasGenerics, Cat, CatString, TypedFunctionsWithoutTypedefs;
+    Class classB,
+        klass,
+        HasGenerics,
+        Cat,
+        CatString,
+        TypedFunctionsWithoutTypedefs;
     Method m1, isGreaterThan, m4, m5, m6, m7, convertToMap, abstractMethod;
     Method inheritedClear, testGeneric, testGenericMethod;
     Method getAFunctionReturningVoid, getAFunctionReturningBool;
@@ -1062,9 +1077,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'testGenericMethod');
       convertToMap = HasGenerics.instanceMethods
           .singleWhere((m) => m.name == 'convertToMap');
-      TypedFunctionsWithoutTypedefs = exLibrary.classes.singleWhere((c) => c.name == 'TypedFunctionsWithoutTypedefs');
-      getAFunctionReturningVoid = TypedFunctionsWithoutTypedefs.instanceMethods.singleWhere((m) => m.name == 'getAFunctionReturningVoid');
-      getAFunctionReturningBool = TypedFunctionsWithoutTypedefs.instanceMethods.singleWhere((m) => m.name == 'getAFunctionReturningBool');
+      TypedFunctionsWithoutTypedefs = exLibrary.classes
+          .singleWhere((c) => c.name == 'TypedFunctionsWithoutTypedefs');
+      getAFunctionReturningVoid = TypedFunctionsWithoutTypedefs.instanceMethods
+          .singleWhere((m) => m.name == 'getAFunctionReturningVoid');
+      getAFunctionReturningBool = TypedFunctionsWithoutTypedefs.instanceMethods
+          .singleWhere((m) => m.name == 'getAFunctionReturningBool');
     });
 
     tearDown(() {
@@ -1075,21 +1093,35 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('verify parameters to types are displayed', () {
-      var matcher = new RegExp('Function\\(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T.</span></span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T.</span></span>\\)');
-      expect(matcher.hasMatch(getAFunctionReturningVoid.linkedReturnType), isTrue);
+      var matcher = new RegExp(
+          'Function\\(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T.</span></span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T.</span></span>\\)');
+      expect(
+          matcher.hasMatch(getAFunctionReturningVoid.linkedReturnType), isTrue);
     });
 
     test('verify parameter types are correctly displayed', () {
-      expect(getAFunctionReturningVoid.linkedReturnType, equals('Function(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T1</span></span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T2</span></span>)'));
+      expect(
+          getAFunctionReturningVoid.linkedReturnType,
+          equals(
+              'Function(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T1</span></span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T2</span></span>)'));
     }, skip: 'blocked on https://github.com/dart-lang/sdk/issues/30146');
 
-    test('verify type parameters to anonymous functions are distinct from normal parameters and instantiated type parameters from method', () {
-      var matcher = new RegExp('Function&lt;T4&gt;\\(<span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">String</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">[^<]*</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">[^<]*</span></span>\\)');
-      expect(matcher.hasMatch(getAFunctionReturningBool.linkedReturnType), isTrue);
+    test(
+        'verify type parameters to anonymous functions are distinct from normal parameters and instantiated type parameters from method',
+        () {
+      var matcher = new RegExp(
+          'Function&lt;T4&gt;\\(<span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">String</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">[^<]*</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">[^<]*</span></span>\\)');
+      expect(
+          matcher.hasMatch(getAFunctionReturningBool.linkedReturnType), isTrue);
     });
 
-    test('verify type parameters to anonymous functions are distinct from normal parameters and instantiated type parameters from method, displayed correctly', () {
-      expect(getAFunctionReturningBool.linkedReturnType, equals('Function&lt;T4&gt;(<span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">String</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T1</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T4</span></span>)'));
+    test(
+        'verify type parameters to anonymous functions are distinct from normal parameters and instantiated type parameters from method, displayed correctly',
+        () {
+      expect(
+          getAFunctionReturningBool.linkedReturnType,
+          equals(
+              'Function&lt;T4&gt;(<span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">String</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T1</span></span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T4</span></span>)'));
     }, skip: 'blocked on https://github.com/dart-lang/sdk/issues/30146');
 
     test('has a fully qualified name', () {
@@ -1317,8 +1349,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'B')
           .allInstanceProperties
           .firstWhere((p) => p.name == 'autoCompress');
-      ExtraSpecialListLength =
-          fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList').allInstanceProperties.firstWhere((f) => f.name == 'length');
+      ExtraSpecialListLength = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'SpecialList')
+          .allInstanceProperties
+          .firstWhere((f) => f.name == 'length');
     });
 
     test('@nodoc on simple property works', () {
@@ -1356,10 +1390,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('inheritance of docs from SDK works for getter/setter combos', () {
-      expect(ExtraSpecialListLength.getter.documentationFrom.first.element.library.name == 'dart.core', isTrue);
+      expect(
+          ExtraSpecialListLength
+                  .getter.documentationFrom.first.element.library.name ==
+              'dart.core',
+          isTrue);
       expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
-    }, skip:
-              'Passes on Analyzer 0.31.0+');
+    }, skip: 'Passes on Analyzer 0.31.0+');
 
     test('split inheritance with explicit setter works', () {
       expect(implicitGetterExplicitSetter.getter.isInherited, isTrue);
@@ -1785,18 +1822,27 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
       generic =
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
-      aComplexTypedef = exLibrary.typedefs.firstWhere((t) => t.name == 'aComplexTypedef');
+      aComplexTypedef =
+          exLibrary.typedefs.firstWhere((t) => t.name == 'aComplexTypedef');
     });
 
     test('anonymous nested functions inside typedefs are handled', () {
       expect(aComplexTypedef, isNotNull);
       expect(aComplexTypedef.linkedReturnType, startsWith('Function'));
-      expect(aComplexTypedef.nameWithGenerics, equals('aComplexTypedef&lt;A1, A2, A3&gt;'));
+      expect(aComplexTypedef.nameWithGenerics,
+          equals('aComplexTypedef&lt;A1, A2, A3&gt;'));
     });
 
-    test('anonymous nested functions inside typedefs are handled correctly', () {
-      expect(aComplexTypedef.linkedReturnType, equals('Function(<span class="parameter" id="-param-"><span class="type-annotation">A1</span></span> <span class="parameter" id="-param-"><span class="type-annotation">A2</span></span> <span class="parameter" id="-param-"><span class="type-annotation">A3</span></span>)'));
-      expect(aComplexTypedef.linkedParamsLines, equals('<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">String</span></span>'));
+    test('anonymous nested functions inside typedefs are handled correctly',
+        () {
+      expect(
+          aComplexTypedef.linkedReturnType,
+          equals(
+              'Function(<span class="parameter" id="-param-"><span class="type-annotation">A1</span></span> <span class="parameter" id="-param-"><span class="type-annotation">A2</span></span> <span class="parameter" id="-param-"><span class="type-annotation">A3</span></span>)'));
+      expect(
+          aComplexTypedef.linkedParamsLines,
+          equals(
+              '<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">String</span></span>'));
     }, skip: 'blocked on https://github.com/dart-lang/sdk/issues/30146');
 
     test('has a fully qualified name', () {
