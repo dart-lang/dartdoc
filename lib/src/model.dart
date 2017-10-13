@@ -3542,7 +3542,7 @@ class PackageWarningCounter {
   final Map<PackageWarning, int> _warningCounts = new Map();
   final PackageWarningOptions options;
 
-  StringBuffer buffer = new StringBuffer();
+  final _buffer = new StringBuffer();
 
   PackageWarningCounter(this.options);
 
@@ -3552,8 +3552,8 @@ class PackageWarningCounter {
   /// warnings here might be duplicated across multiple Package constructions.
   void maybeFlush() {
     if (options.autoFlush) {
-      stderr.write(buffer.toString());
-      buffer = new StringBuffer();
+      stderr.write(_buffer.toString());
+      _buffer.clear();
     }
   }
 
@@ -3568,7 +3568,7 @@ class PackageWarningCounter {
       if (options.asErrors.contains(kind)) toWrite = "error: ${fullMessage}";
     }
     if (toWrite != null) {
-      buffer.write("\n ${toWrite}");
+      _buffer.write("\n ${toWrite}");
       if (_warningCounts[kind] == 1 &&
           config.verboseWarnings &&
           packageWarningText[kind].longHelp.isNotEmpty) {
@@ -3578,7 +3578,7 @@ class PackageWarningCounter {
         String verboseOut =
             '$separator${packageWarningText[kind].longHelp.join(separator)}';
         verboseOut = verboseOut.replaceAll(nameSub, name);
-        buffer.write(verboseOut);
+        _buffer.write(verboseOut);
       }
     }
     maybeFlush();
