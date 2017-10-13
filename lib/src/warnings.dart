@@ -182,13 +182,14 @@ class PackageWarningCounter {
 
   /// Actually write out the warning.  Assumes it is already counted with add.
   void _writeWarning(PackageWarning kind, String name, String fullMessage) {
-    if (options.ignoreWarnings.contains(kind)) return;
+    if (options.ignoreWarnings.contains(kind)) {
+      return;
+    }
     String toWrite;
-    if (!options.asErrors.contains(kind)) {
-      if (options.asWarnings.contains(kind))
-        toWrite = "warning: ${fullMessage}";
-    } else {
-      if (options.asErrors.contains(kind)) toWrite = "error: ${fullMessage}";
+    if (options.asErrors.contains(kind)) {
+      toWrite = "error: ${fullMessage}";
+    } else if (options.asWarnings.contains(kind)) {
+      toWrite = "warning: ${fullMessage}";
     }
     if (toWrite != null) {
       _buffer.write("\n ${toWrite}");
