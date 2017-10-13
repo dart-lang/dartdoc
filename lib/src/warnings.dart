@@ -114,51 +114,47 @@ enum PackageWarning {
 
 class PackageWarningOptions {
   // PackageWarnings must be in one of _ignoreWarnings or union(_asWarnings, _asErrors)
-  final Set<PackageWarning> _ignoreWarnings = new Set();
+  final Set<PackageWarning> ignoreWarnings = new Set<PackageWarning>();
   // PackageWarnings can be in both asWarnings and asErrors, latter takes precedence
-  final Set<PackageWarning> _asWarnings = new Set();
-  final Set<PackageWarning> _asErrors = new Set();
+  final Set<PackageWarning> asWarnings = new Set<PackageWarning>();
+  final Set<PackageWarning> asErrors = new Set<PackageWarning>();
 
   bool autoFlush = true;
 
-  Set<PackageWarning> get ignoreWarnings => _ignoreWarnings;
-  Set<PackageWarning> get asWarnings => _asWarnings;
-  Set<PackageWarning> get asErrors => _asErrors;
-
   PackageWarningOptions() {
-    _asWarnings.addAll(PackageWarning.values);
+    asWarnings.addAll(PackageWarning.values);
     ignore(PackageWarning.typeAsHtml);
   }
 
   void _assertInvariantsOk() {
-    assert(_asWarnings
-        .union(_asErrors)
-        .union(_ignoreWarnings)
+    assert(asWarnings
+        .union(asErrors)
+        .union(ignoreWarnings)
         .containsAll(PackageWarning.values.toSet()));
-    assert(_asWarnings.union(_asErrors).intersection(_ignoreWarnings).isEmpty);
+    assert(asWarnings.union(asErrors).intersection(ignoreWarnings).isEmpty);
   }
 
   void ignore(PackageWarning kind) {
     _assertInvariantsOk();
-    _asWarnings.remove(kind);
-    _asErrors.remove(kind);
-    _ignoreWarnings.add(kind);
+    asWarnings.remove(kind);
+    asErrors.remove(kind);
+    ignoreWarnings.add(kind);
     _assertInvariantsOk();
   }
 
   void warn(PackageWarning kind) {
     _assertInvariantsOk();
-    _ignoreWarnings.remove(kind);
-    _asWarnings.add(kind);
-    _asErrors.remove(kind);
+    ignoreWarnings.remove(kind);
+    asWarnings.add(kind);
+    asErrors.remove(kind);
     _assertInvariantsOk();
   }
 
   void error(PackageWarning kind) {
     _assertInvariantsOk();
-    _ignoreWarnings.remove(kind);
-    _asWarnings.add(kind);
-    _asErrors.add(kind);
+    ignoreWarnings.remove(kind);
+    asWarnings.add(kind);
+    asErrors.add(kind);
     _assertInvariantsOk();
   }
 }
