@@ -3596,8 +3596,9 @@ class Package extends Nameable implements Documentable {
         }
       }
     }
-    if (config.verboseWarnings && extendedDebug != null)
+    if (config.verboseWarnings && extendedDebug != null) {
       messageParts.addAll(extendedDebug.map((s) => "    $s"));
+    }
     String fullMessage;
     if (messageParts.length <= 2) {
       fullMessage = messageParts.join(', ');
