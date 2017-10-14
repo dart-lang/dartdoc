@@ -108,15 +108,14 @@ class DartDoc {
   final Set<String> writtenFiles = new Set();
 
   // Fires when the self checks make progress.
-  StreamController<String> _onCheckProgress;
+  final StreamController<String> _onCheckProgress =
+      new StreamController(sync: true);
 
   Stopwatch _stopwatch;
 
   DartDoc(this.rootDir, this.excludes, this.sdkDir, this.generators,
       this.outputDir, this.packageMeta, this.includes,
-      {this.includeExternals: const []}) {
-    _onCheckProgress = new StreamController(sync: true);
-  }
+      {this.includeExternals: const []});
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
 

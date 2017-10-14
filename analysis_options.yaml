@@ -15,4 +15,5 @@ linter:
     - no_adjacent_strings_in_list
     - package_api_docs
     - slash_for_doc_comments
+    - prefer_final_fields
 #    - unnecessary_brace_in_string_interps
