@@ -3482,17 +3482,6 @@ class Package extends Nameable implements Documentable {
         extendedDebug: extendedDebug);
   }
 
-  /// Returns colon-stripped name and location of the given locatable.
-  static Tuple2<String, String> nameAndLocation(Locatable locatable) {
-    String locatableName = '<unknown>';
-    String locatableLocation = '';
-    if (locatable != null) {
-      locatableName = locatable.fullyQualifiedName.replaceFirst(':', '-');
-      locatableLocation = locatable.elementLocation;
-    }
-    return new Tuple2(locatableName, locatableLocation);
-  }
-
   void warnOnElement(Warnable warnable, PackageWarning kind,
       {String message,
       Iterable<Locatable> referredFrom,
@@ -3525,10 +3514,10 @@ class Package extends Nameable implements Documentable {
     // TODO(jcollins-g): What about messages that may include colons?  Substituting
     //                   them out doesn't work as well there since it might confuse
     //                   the user, yet we still want IntelliJ to link properly.
-    Tuple2<String, String> warnableStrings = nameAndLocation(warnable);
+    final warnableStrings = new _LocatableStrings.fromLocatable(warnable);
+
     String warnablePrefix = 'from';
     String referredFromPrefix = 'referred to by';
-    String name = warnableStrings.item1;
     String warningMessage;
     switch (kind) {
       case PackageWarning.noCanonicalFound:
@@ -3536,14 +3525,15 @@ class Package extends Nameable implements Documentable {
         // --auto-include-dependencies.
         // TODO(jcollins-g): add a dartdoc flag to enable external website linking for non-canonical elements, using .packages for versioning
         // TODO(jcollins-g): support documenting multiple packages at once and linking between them
-        warningMessage = "no canonical library found for ${name}, not linking";
+        warningMessage =
+            "no canonical library found for ${warnableStrings.name}, not linking";
         break;
       case PackageWarning.ambiguousReexport:
         // Fix these warnings by adding the original library exporting the
         // symbol with --include, by using --auto-include-dependencies,
         // or by using --exclude to hide one of the libraries involved
         warningMessage =
-            "ambiguous reexport of ${name}, canonicalization candidates: ${message}";
+            "ambiguous reexport of ${warnableStrings.name}, canonicalization candidates: ${message}";
         break;
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
@@ -3591,16 +3581,18 @@ class Package extends Nameable implements Documentable {
     }
 
     List<String> messageParts = [warningMessage];
-    if (warnable != null)
-      messageParts.add(
-          "${warnablePrefix} ${warnableStrings.item1}: ${warnableStrings.item2}");
+    if (warnable != null) {
+      messageParts
+          .add("${warnablePrefix} ${warnableStrings.name}: ${warnableStrings
+              .location}");
+    }
     if (referredFrom != null) {
       for (Locatable referral in referredFrom) {
         if (referral != warnable) {
-          Tuple2<String, String> referredFromStrings =
-              nameAndLocation(referral);
+          var referredFromStrings =
+              new _LocatableStrings.fromLocatable(referral);
           messageParts.add(
-              "${referredFromPrefix} ${referredFromStrings.item1}: ${referredFromStrings.item2}");
+              "${referredFromPrefix} ${referredFromStrings.name}: ${referredFromStrings.location}");
         }
       }
     }
@@ -4422,4 +4414,21 @@ class TypeParameter extends ModelElement {
 
   @override
   String toString() => element.name;
+}
+
+class _LocatableStrings {
+  final String name;
+  final String location;
+
+  const _LocatableStrings(this.name, this.location);
+
+  factory _LocatableStrings.fromLocatable(Locatable locatable) {
+    if (locatable == null) {
+      return const _LocatableStrings('<unknown>', '');
+    }
+
+    return new _LocatableStrings(
+        locatable.fullyQualifiedName.replaceFirst(':', '-'),
+        locatable.elementLocation);
+  }
 }
