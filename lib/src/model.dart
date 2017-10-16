@@ -3514,7 +3514,7 @@ class Package extends Nameable implements Documentable {
     // TODO(jcollins-g): What about messages that may include colons?  Substituting
     //                   them out doesn't work as well there since it might confuse
     //                   the user, yet we still want IntelliJ to link properly.
-    final warnableStrings = new _LocatableStrings.fromLocatable(warnable);
+    final warnableName = _safeWarnableName(warnable);
 
     String warnablePrefix = 'from';
     String referredFromPrefix = 'referred to by';
@@ -3526,14 +3526,14 @@ class Package extends Nameable implements Documentable {
         // TODO(jcollins-g): add a dartdoc flag to enable external website linking for non-canonical elements, using .packages for versioning
         // TODO(jcollins-g): support documenting multiple packages at once and linking between them
         warningMessage =
-            "no canonical library found for ${warnableStrings.name}, not linking";
+            "no canonical library found for ${warnableName}, not linking";
         break;
       case PackageWarning.ambiguousReexport:
         // Fix these warnings by adding the original library exporting the
         // symbol with --include, by using --auto-include-dependencies,
         // or by using --exclude to hide one of the libraries involved
         warningMessage =
-            "ambiguous reexport of ${warnableStrings.name}, canonicalization candidates: ${message}";
+            "ambiguous reexport of ${warnableName}, canonicalization candidates: ${message}";
         break;
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
@@ -3582,17 +3582,15 @@ class Package extends Nameable implements Documentable {
 
     List<String> messageParts = [warningMessage];
     if (warnable != null) {
-      messageParts
-          .add("${warnablePrefix} ${warnableStrings.name}: ${warnableStrings
-              .location}");
+      messageParts.add(
+          "${warnablePrefix} ${warnableName}: ${warnable.elementLocation ?? ''}");
     }
     if (referredFrom != null) {
       for (Locatable referral in referredFrom) {
         if (referral != warnable) {
-          var referredFromStrings =
-              new _LocatableStrings.fromLocatable(referral);
+          var referredFromStrings = _safeWarnableName(referral);
           messageParts.add(
-              "${referredFromPrefix} ${referredFromStrings.name}: ${referredFromStrings.location}");
+              "${referredFromPrefix} ${referredFromStrings}: ${referral.elementLocation ?? ''}");
         }
       }
     }
@@ -3607,6 +3605,14 @@ class Package extends Nameable implements Documentable {
     }
 
     packageWarningCounter.addWarning(warnable, kind, message, fullMessage);
+  }
+
+  String _safeWarnableName(Locatable locatable) {
+    if (locatable == null) {
+      return '<unknown>';
+    }
+
+    return locatable.fullyQualifiedName.replaceFirst(':', '-');
   }
 
   static Package _withAutoIncludedDependencies(
@@ -4415,21 +4421,4 @@ class TypeParameter extends ModelElement {
 
   @override
   String toString() => element.name;
-}
-
-class _LocatableStrings {
-  final String name;
-  final String location;
-
-  const _LocatableStrings(this.name, this.location);
-
-  factory _LocatableStrings.fromLocatable(Locatable locatable) {
-    if (locatable == null) {
-      return const _LocatableStrings('<unknown>', '');
-    }
-
-    return new _LocatableStrings(
-        locatable.fullyQualifiedName.replaceFirst(':', '-'),
-        locatable.elementLocation);
-  }
 }
