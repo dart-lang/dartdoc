@@ -11,6 +11,7 @@ import 'package:collection/collection.dart' show compareNatural;
 import 'package:path/path.dart' as path;
 
 import '../model.dart';
+import '../warnings.dart';
 import 'html_generator.dart' show HtmlGeneratorOptions;
 import 'resource_loader.dart' as loader;
 import 'resources.g.dart' as resources;

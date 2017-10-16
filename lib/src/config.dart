@@ -4,7 +4,6 @@
 
 library dartdoc.config;
 
-import 'dart:collection' show UnmodifiableListView;
 import 'dart:io';
 
 class Config {
@@ -46,10 +45,8 @@ void setConfig(
     bool autoIncludeDependencies: false,
     List<String> categoryOrder,
     double reexportMinConfidence: 0.1,
-    verboseWarnings: true,
+    bool verboseWarnings: true,
     List<String> dropTextFrom}) {
-  categoryOrder ??= new UnmodifiableListView<String>([]);
-  dropTextFrom ??= new UnmodifiableListView<String>([]);
   _config = new Config._(
       inputDir,
       showWarnings,
@@ -58,8 +55,8 @@ void setConfig(
       includeSource,
       sdkVersion,
       autoIncludeDependencies,
-      categoryOrder,
+      categoryOrder ?? const <String>[],
       reexportMinConfidence,
       verboseWarnings,
-      dropTextFrom);
+      dropTextFrom ?? const <String>[]);
 }

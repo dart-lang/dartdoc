@@ -16,6 +16,7 @@ import 'package:markdown/markdown.dart' as md;
 import 'package:tuple/tuple.dart';
 
 import 'model.dart';
+import 'warnings.dart';
 
 const validHtmlTags = const [
   "a",
