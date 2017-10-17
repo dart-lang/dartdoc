@@ -22,3 +22,14 @@ void logInfo(Object message) {
 void logProgress(Object message) {
   _logger.log(progressLevel, message);
 }
+
+abstract class Jsonable {
+  /// The `String` to print when in human-readable mode
+  String get text;
+
+  /// The JSON content to print when in JSON-output mode.
+  Object toJson();
+
+  @override
+  String toString() => text;
+}
