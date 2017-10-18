@@ -47,7 +47,7 @@ export 'src/sdk.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.14.1';
+const String version = '0.15.0';
 
 final String defaultOutDir = path.join('doc', 'api');
 
@@ -465,7 +465,9 @@ class DartDoc {
     SourceFactory sourceFactory = new SourceFactory(resolvers);
 
     // TODO(jcollins-g): fix this so it actually obeys analyzer options files.
-    var options = new AnalysisOptionsImpl()..enableAssertInitializer = true;
+    var options = new AnalysisOptionsImpl()
+      ..enableAssertInitializer = true
+      ..strongMode = true;
 
     AnalysisEngine.instance.processRequiredPlugins();
 

@@ -941,6 +941,7 @@ void main() {
     ModelFunction f1;
     ModelFunction genericFunction;
     ModelFunction thisIsAsync;
+    ModelFunction thisIsFutureOr;
     ModelFunction topLevelFunction;
 
     setUp(() {
@@ -949,6 +950,8 @@ void main() {
           exLibrary.functions.firstWhere((f) => f.name == 'genericFunction');
       thisIsAsync =
           fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsAsync');
+      thisIsFutureOr =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsFutureOr');
       topLevelFunction =
           fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
     });
@@ -992,6 +995,11 @@ void main() {
           thisIsAsync.documentationAsHtml,
           equals(
               '<p>An async function. It should look like I return a <code>Future</code>.</p>'));
+    });
+
+    test('function returning FutureOr', () {
+      expect(thisIsFutureOr.isAsynchronous, isFalse);
+      expect(thisIsFutureOr.linkedReturnType, equals('FutureOr'));
     });
 
     test('docs do not lose brackets in code blocks', () {
