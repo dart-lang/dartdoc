@@ -2,9 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:async' show Future, StreamController;
+import 'dart:async' show Future;
 import 'dart:convert' show JsonEncoder;
-import 'dart:io' show Directory, File;
+import 'dart:io' show File;
 
 import 'package:collection/collection.dart' show compareNatural;
 import 'package:dartdoc/src/model_utils.dart';
@@ -19,13 +19,14 @@ import 'resources.g.dart' as resources;
 import 'template_data.dart';
 import 'templates.dart';
 
+typedef void FileWriter(String path, Object content, {bool allowOverwrite});
+
 class HtmlGeneratorInstance implements HtmlOptions {
   final HtmlGeneratorOptions _options;
   final Templates _templates;
   final Package _package;
-  final String _outputDirectoryPath;
   final List<ModelElement> _documentedElements = <ModelElement>[];
-  final StreamController<File> _onFileCreated;
+  final FileWriter _writer;
 
   @override
   String get relCanonicalPrefix => _options.relCanonicalPrefix;
@@ -36,12 +37,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
   String get _faviconPath => _options.faviconPath;
   bool get _useCategories => _options.useCategories;
 
-  // Protect against bugs in canonicalization by tracking what files we
-  // write.
-  final Set<String> writtenFiles = new Set<String>();
-
-  HtmlGeneratorInstance(this._options, this._templates, this._package,
-      this._outputDirectoryPath, this._onFileCreated);
+  HtmlGeneratorInstance(
+      this._options, this._templates, this._package, this._writer);
 
   Future generate() async {
     if (_package != null) {
@@ -53,10 +50,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
     if (_faviconPath != null) {
       var bytes = new File(_faviconPath).readAsBytesSync();
       // Allow overwrite of favicon.
-      String filename =
-          path.join(_outputDirectoryPath, 'static-assets', 'favicon.png');
-      writtenFiles.remove(filename);
-      _writeFile(filename, bytes);
+      _writer(path.join('static-assets', 'favicon.png'), bytes,
+          allowOverwrite: true);
     }
   }
 
@@ -95,7 +90,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
     });
 
     String json = encoder.convert(indexItems);
-    _writeFile(path.join(_outputDirectoryPath, 'index.json'), '${json}\n');
+    _writer(path.join('index.json'), '${json}\n');
   }
 
   void _generateDocs() {
@@ -285,44 +280,16 @@ class HtmlGeneratorInstance implements HtmlOptions {
             'encountered $resourcePath');
       }
       String destFileName = resourcePath.substring(prefix.length);
-      _writeFile(path.join(_outputDirectoryPath, 'static-assets', destFileName),
+      _writer(path.join('static-assets', destFileName),
           await loader.loadAsBytes(resourcePath));
     }
   }
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
-    String fullName = path.join(_outputDirectoryPath, filename);
-
     String content = template(data,
         assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
-    _writeFile(fullName, content);
-    if (data.self is ModelElement) {
-      _documentedElements.add(data.self);
-    }
-  }
-
-  /// [content] must be either [String] or [List<int>].
-  void _writeFile(String filename, Object content) {
-    // If you see this assert, we're probably being called to build non-canonical
-    // docs somehow.  Check data.self.isCanonical and callers for bugs.
-    assert(!writtenFiles.contains(filename));
-
-    File file = new File(filename);
-    Directory parent = file.parent;
-    if (!parent.existsSync()) {
-      parent.createSync(recursive: true);
-    }
-
-    if (content is String) {
-      file.writeAsStringSync(content);
-    } else if (content is List<int>) {
-      file.writeAsBytesSync(content);
-    } else {
-      throw new ArgumentError.value(
-          content, 'content', '`content` must be `String` or `List<int>`.');
-    }
-    _onFileCreated.add(file);
-    writtenFiles.add(filename);
+    _writer(filename, content);
+    if (data.self is ModelElement) _documentedElements.add(data.self);
   }
 }
