@@ -14,6 +14,11 @@ It also has some awesome code
 void main() {
   // in Dart!
 }
+
+/*
+80-characters: to ensure default styles accommodate Dart line length convention.
+01234567890123456789012345678901234567890123456789012345678901234567890123456789
+*/
 ```
 
 ```yaml
