@@ -79,10 +79,6 @@ main {
   padding: 20px 15px 0 30px;
 }
 
-.main-content p {
-  max-width: 700px;
-}
-
 .sidebar,
 .main-content {
   margin: 20px 0;
@@ -414,6 +410,10 @@ footer .container-fluid {
 
 footer a, footer a:hover {
   color: #fff;
+}
+
+.markdown.desc {
+  max-width: 700px;
 }
 
 .markdown h1 {
