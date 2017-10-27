@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:tuple/tuple.dart';
 
 import 'config.dart';
+import 'logging.dart';
 
 class PackageWarningHelpText {
   final String warningName;
@@ -165,7 +164,7 @@ class PackageWarningCounter {
   final _warningCounts = new Map<PackageWarning, int>();
   final PackageWarningOptions options;
 
-  final _buffer = new StringBuffer();
+  final _items = <String>[];
 
   PackageWarningCounter(this.options);
 
@@ -175,8 +174,10 @@ class PackageWarningCounter {
   /// warnings here might be duplicated across multiple Package constructions.
   void maybeFlush() {
     if (options.autoFlush) {
-      stderr.write(_buffer.toString());
-      _buffer.clear();
+      for (var item in _items) {
+        logWarning(item);
+      }
+      _items.clear();
     }
   }
 
@@ -192,7 +193,7 @@ class PackageWarningCounter {
       toWrite = "warning: ${fullMessage}";
     }
     if (toWrite != null) {
-      _buffer.write("\n ${toWrite}");
+      var entry = "  ${toWrite}";
       if (_warningCounts[kind] == 1 &&
           config.verboseWarnings &&
           packageWarningText[kind].longHelp.isNotEmpty) {
@@ -200,10 +201,12 @@ class PackageWarningCounter {
         final String separator = '\n            ';
         final String nameSub = r'@@name@@';
         String verboseOut =
-            '$separator${packageWarningText[kind].longHelp.join(separator)}';
-        verboseOut = verboseOut.replaceAll(nameSub, name);
-        _buffer.write(verboseOut);
+            '$separator${packageWarningText[kind].longHelp.join(separator)}'
+                .replaceAll(nameSub, name);
+        entry = '$entry$verboseOut';
       }
+      assert(entry == entry.trimRight());
+      _items.add(entry);
     }
     maybeFlush();
   }

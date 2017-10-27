@@ -12,6 +12,8 @@ import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/logging.dart';
+import 'package:logging/logging.dart' as logging;
 import 'package:path/path.dart' as path;
 import 'package:stack_trace/stack_trace.dart';
 
@@ -23,8 +25,8 @@ main(List<String> arguments) async {
   try {
     args = parser.parse(arguments);
   } on FormatException catch (e) {
-    print(e.message);
-    print('');
+    stderr.writeln(e.message);
+    stderr.writeln('');
     // http://linux.die.net/include/sysexits.h
     // #define EX_USAGE	64	/* command line usage error */
     _printUsageAndExit(parser, exitCode: 64);
@@ -46,12 +48,9 @@ main(List<String> arguments) async {
   }
 
   final bool sdkDocs = args['sdk-docs'];
+  final bool showProgress = args['show-progress'];
 
-  if (args['show-progress']) {
-    _showProgress = true;
-  }
-
-  var readme = args['sdk-readme'];
+  final String readme = args['sdk-readme'];
   if (readme != null && !(new File(readme).existsSync())) {
     stderr.writeln(
         " fatal error: unable to locate the SDK description file at $readme.");
@@ -123,6 +122,49 @@ main(List<String> arguments) async {
     _printUsageAndExit(parser, exitCode: 1);
   }
 
+  // By default, get all log output at `progressLevel` or greater.
+  // This allows us to capture progress events and print `...`.
+  logging.Logger.root.level = progressLevel;
+  final stopwatch = new Stopwatch()..start();
+
+  // Used to track if we're printing `...` to show progress.
+  // Allows unified new-line tracking
+  var writingProgress = false;
+
+  logging.Logger.root.onRecord.listen((record) {
+    if (record.level == progressLevel) {
+      if (showProgress && stopwatch.elapsed.inMilliseconds > 250) {
+        writingProgress = true;
+        stdout.write('.');
+        stopwatch.reset();
+      }
+      return;
+    }
+
+    stopwatch.reset();
+    if (writingProgress) {
+      // print a new line after progress dots...
+      print('');
+      writingProgress = false;
+    }
+    var message = record.message;
+    assert(message == message.trimRight());
+    assert(message.isNotEmpty);
+
+    if (record.level < logging.Level.WARNING) {
+      if (message.endsWith('...')) {
+        // Assume there may be more progress to print, so omit the trailing
+        // newline
+        writingProgress = true;
+        stdout.write(message);
+      } else {
+        print(message);
+      }
+    } else {
+      stderr.writeln(message);
+    }
+  });
+
   PackageMeta packageMeta = sdkDocs
       ? new PackageMeta.fromSdk(sdkDir,
           sdkReadmePath: readme, useCategories: args['use-categories'])
@@ -144,9 +186,8 @@ main(List<String> arguments) async {
     }
   }
 
-  print("Generating documentation for '${packageMeta}' into "
+  logInfo("Generating documentation for '${packageMeta}' into "
       "${outputDir.absolute.path}${Platform.pathSeparator}");
-  print('');
 
   var generators = await initGenerators(url, args['rel-canonical-prefix'],
       headerFilePaths: headerFilePaths,
@@ -157,7 +198,7 @@ main(List<String> arguments) async {
       prettyIndexJson: args['pretty-index-json']);
 
   for (var generator in generators) {
-    generator.onFileCreated.listen(_onProgress);
+    generator.onFileCreated.listen(logProgress);
   }
 
   DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
@@ -203,10 +244,10 @@ main(List<String> arguments) async {
       outputDir, packageMeta, includeLibraries,
       includeExternals: includeExternals);
 
-  dartdoc.onCheckProgress.listen(_onProgress);
-  Chain.capture(() async {
+  dartdoc.onCheckProgress.listen(logProgress);
+  await Chain.capture(() async {
     DartDocResults results = await dartdoc.generateDocs();
-    print('\nSuccess! Docs generated into ${results.outDir.absolute.path}');
+    logInfo('Success! Docs generated into ${results.outDir.absolute.path}');
   }, onError: (e, Chain chain) {
     if (e is DartDocFailure) {
       stderr.writeln('\nGeneration failed: ${e}.');
@@ -217,8 +258,6 @@ main(List<String> arguments) async {
     }
   });
 }
-
-bool _showProgress = false;
 
 ArgParser _createArgsParser() {
   var parser = new ArgParser();
@@ -232,7 +271,8 @@ ArgParser _createArgsParser() {
       defaultsTo: false);
   parser.addFlag('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
-  parser.addFlag('show-warnings', help: 'Display warnings.', negatable: false);
+  parser.addFlag('show-warnings',
+      help: 'Display warnings.', negatable: false, defaultsTo: false);
   parser.addFlag('show-progress',
       help: 'Display progress indications to console stdout', negatable: false);
   parser.addOption('sdk-readme',
@@ -316,15 +356,6 @@ ArgParser _createArgsParser() {
   );
 
   return parser;
-}
-
-int _progressCounter = 0;
-
-void _onProgress(var file) {
-  if (_showProgress && _progressCounter % 5 == 0) {
-    stdout.write('.');
-  }
-  _progressCounter += 1;
 }
 
 /// Print help if we are passed the help option.

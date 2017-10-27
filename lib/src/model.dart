@@ -30,6 +30,7 @@ import 'package:tuple/tuple.dart';
 import 'config.dart';
 import 'element_type.dart';
 import 'line_number_cache.dart';
+import 'logging.dart';
 import 'markdown_processor.dart' show Documentation;
 import 'model_utils.dart';
 import 'package_meta.dart' show PackageMeta, FileContents;
@@ -3116,9 +3117,9 @@ abstract class ModelElement extends Nameable
         // TODO(jcollins-g): move this to Package.warn system
         var filePath =
             this.element.source.fullName.substring(dirPath.length + 1);
-        final msg =
-            '\nwarning: ${filePath}: @example file not found, ${fragmentFile.path}';
-        stderr.write(msg);
+
+        logWarning(
+            'warning: ${filePath}: @example file not found, ${fragmentFile.path}');
       }
       return replacement;
     });

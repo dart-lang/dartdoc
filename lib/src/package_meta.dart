@@ -9,6 +9,8 @@ import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
+import 'logging.dart';
+
 abstract class PackageMeta {
   final Directory dir;
   final bool useCategories;
@@ -103,8 +105,9 @@ class _FilePackageMeta extends PackageMeta {
     ProcessResult result =
         Process.runSync(pubPath, ['get'], workingDirectory: dir.path);
 
-    if (result.stdout.isNotEmpty) {
-      print(result.stdout.trim());
+    var trimmedStdout = (result.stdout as String).trim();
+    if (trimmedStdout.isNotEmpty) {
+      logInfo(trimmedStdout);
     }
 
     if (result.exitCode != 0) {

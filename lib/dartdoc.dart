@@ -33,6 +33,7 @@ import 'src/config.dart';
 import 'src/generator.dart';
 import 'src/html/html_generator.dart';
 import 'src/io_utils.dart';
+import 'src/logging.dart';
 import 'src/model.dart';
 import 'src/model_utils.dart';
 import 'src/package_meta.dart';
@@ -192,15 +193,15 @@ class DartDoc {
     int warnings = package.packageWarningCounter.warningCount;
     int errors = package.packageWarningCounter.errorCount;
     if (warnings == 0 && errors == 0) {
-      print("\nno issues found");
+      logInfo("no issues found");
     } else {
-      print("\nfound ${warnings} ${pluralize('warning', warnings)} "
+      logWarning("found ${warnings} ${pluralize('warning', warnings)} "
           "and ${errors} ${pluralize('error', errors)}");
     }
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
-    print(
-        "\ndocumented ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "
+    logInfo(
+        "Documented ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds");
 
     if (package.libraries.isEmpty) {
@@ -420,7 +421,7 @@ class DartDoc {
 
     final Set<String> visited = new Set();
     final String start = 'index.html';
-    stdout.write('\nvalidating docs...');
+    logInfo('Validating docs...');
     _doCheck(package, origin, visited, start);
     _doOrphanCheck(package, origin, visited);
     _doSearchIndexCheck(package, origin, visited);
@@ -486,7 +487,7 @@ class DartDoc {
         name = name.substring(Directory.current.path.length);
         if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
       }
-      print('parsing ${name}...');
+      logInfo('parsing ${name}...');
       JavaFile javaFile = new JavaFile(filePath).getAbsoluteFile();
       Source source = new FileBasedSource(javaFile);
 
@@ -578,12 +579,12 @@ class DartDoc {
           ..sort();
 
     double seconds = _stopwatch.elapsedMilliseconds / 1000.0;
-    print("parsed ${libraries.length} ${pluralize('file', libraries.length)} "
+    logInfo("parsed ${libraries.length} ${pluralize('file', libraries.length)} "
         "in ${seconds.toStringAsFixed(1)} seconds");
     _stopwatch.reset();
 
     if (errors.isNotEmpty) {
-      errors.forEach(print);
+      errors.forEach(logWarning);
       int len = errors.length;
       throw new DartDocFailure(
           "encountered ${len} analysis error${len == 1 ? '' : 's'}");
