@@ -31,7 +31,7 @@ main(List<String> arguments) async {
   }
 
   if (args['help']) {
-    _printHelp(parser);
+    _printHelpAndExit(parser);
   }
 
   if (args['version']) {
@@ -328,7 +328,7 @@ void _onProgress(var file) {
 }
 
 /// Print help if we are passed the help option.
-void _printHelp(ArgParser parser, {int exitCode: 0}) {
+void _printHelpAndExit(ArgParser parser, {int exitCode: 0}) {
   print('Generate HTML documentation for Dart libraries.\n');
   _printUsageAndExit(parser, exitCode: exitCode);
 }
