@@ -35,9 +35,10 @@ class HtmlGeneratorInstance implements HtmlOptions {
   String get faviconPath => _options.faviconPath;
   bool get useCategories => _options.useCategories;
   bool get prettyIndexJson => _options.prettyIndexJson;
+
   // Protect against bugs in canonicalization by tracking what files we
   // write.
-  final Set<String> _writtenFiles = new Set();
+  final Set<String> writtenFiles = new Set<String>();
 
   HtmlGeneratorInstance(this._options, this._templates, this.package, this.out,
       this._onFileCreated);
@@ -297,8 +298,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
     }
   }
 
-  Set<String> get writtenFiles => _writtenFiles;
-
   void _build(String filename, TemplateRenderer template, TemplateData data) {
     String fullName = path.join(out.path, filename);
 
@@ -307,9 +306,9 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
     // If you see this assert, we're probably being called to build non-canonical
     // docs somehow.  Check data.self.isCanonical and callers for bugs.
-    assert(!_writtenFiles.contains(fullName));
+    assert(!writtenFiles.contains(fullName));
     _writeFile(fullName, content);
-    _writtenFiles.add(fullName);
+    writtenFiles.add(fullName);
     if (data.self is ModelElement) documentedElements.add(data.self);
   }
 
