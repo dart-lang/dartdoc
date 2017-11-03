@@ -9,7 +9,12 @@ final _logger = new Logger('dartdoc');
 /// A custom [Level] for tracking file writes and verification.
 ///
 /// Has a value of `501` – one more than [Level.FINE].
-final Level progressLevel = new Level('progress', 501);
+final Level progressLevel = new Level('PROGRESS', 501);
+
+/// A custom [Level] for errant print statements.
+///
+/// Has a value of `1201` – one more than [Level.SHOUT].
+final Level printLevel = new Level('PRINT', 1201);
 
 void logWarning(Object message) {
   _logger.log(Level.WARNING, message);
@@ -21,4 +26,19 @@ void logInfo(Object message) {
 
 void logProgress(Object message) {
   _logger.log(progressLevel, message);
+}
+
+void logPrint(Object message) {
+  _logger.log(printLevel, message);
+}
+
+abstract class Jsonable {
+  /// The `String` to print when in human-readable mode
+  String get text;
+
+  /// The JSON content to print when in JSON-output mode.
+  Object toJson();
+
+  @override
+  String toString() => text;
 }

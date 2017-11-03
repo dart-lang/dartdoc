@@ -4,6 +4,8 @@
 
 library dartdoc.bin;
 
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate' show Isolate;
 
@@ -122,48 +124,69 @@ main(List<String> arguments) async {
     _printUsageAndExit(parser, exitCode: 1);
   }
 
+  final logJson = args['json'] as bool;
+
   // By default, get all log output at `progressLevel` or greater.
   // This allows us to capture progress events and print `...`.
   logging.Logger.root.level = progressLevel;
-  final stopwatch = new Stopwatch()..start();
 
-  // Used to track if we're printing `...` to show progress.
-  // Allows unified new-line tracking
-  var writingProgress = false;
-
-  logging.Logger.root.onRecord.listen((record) {
-    if (record.level == progressLevel) {
-      if (showProgress && stopwatch.elapsed.inMilliseconds > 250) {
-        writingProgress = true;
-        stdout.write('.');
-        stopwatch.reset();
+  if (logJson) {
+    logging.Logger.root.onRecord.listen((record) {
+      if (record.level == progressLevel) {
+        return;
       }
-      return;
-    }
 
-    stopwatch.reset();
-    if (writingProgress) {
-      // print a new line after progress dots...
-      print('');
-      writingProgress = false;
-    }
-    var message = record.message;
-    assert(message == message.trimRight());
-    assert(message.isNotEmpty);
+      var output = <String, dynamic>{'level': record.level.name};
 
-    if (record.level < logging.Level.WARNING) {
-      if (message.endsWith('...')) {
-        // Assume there may be more progress to print, so omit the trailing
-        // newline
-        writingProgress = true;
-        stdout.write(message);
+      if (record.object is Jsonable) {
+        output['data'] = record.object;
       } else {
-        print(message);
+        output['message'] = record.message;
       }
-    } else {
-      stderr.writeln(message);
-    }
-  });
+
+      print(JSON.encode(output));
+    });
+  } else {
+    final stopwatch = new Stopwatch()..start();
+
+    // Used to track if we're printing `...` to show progress.
+    // Allows unified new-line tracking
+    var writingProgress = false;
+
+    logging.Logger.root.onRecord.listen((record) {
+      if (record.level == progressLevel) {
+        if (showProgress && stopwatch.elapsed.inMilliseconds > 250) {
+          writingProgress = true;
+          stdout.write('.');
+          stopwatch.reset();
+        }
+        return;
+      }
+
+      stopwatch.reset();
+      if (writingProgress) {
+        // print a new line after progress dots...
+        print('');
+        writingProgress = false;
+      }
+      var message = record.message;
+      assert(message == message.trimRight());
+      assert(message.isNotEmpty);
+
+      if (record.level < logging.Level.WARNING) {
+        if (message.endsWith('...')) {
+          // Assume there may be more progress to print, so omit the trailing
+          // newline
+          writingProgress = true;
+          stdout.write(message);
+        } else {
+          print(message);
+        }
+      } else {
+        stderr.writeln(message);
+      }
+    });
+  }
 
   PackageMeta packageMeta = sdkDocs
       ? new PackageMeta.fromSdk(sdkDir,
@@ -246,8 +269,13 @@ main(List<String> arguments) async {
 
   dartdoc.onCheckProgress.listen(logProgress);
   await Chain.capture(() async {
-    DartDocResults results = await dartdoc.generateDocs();
-    logInfo('Success! Docs generated into ${results.outDir.absolute.path}');
+    await runZoned(() async {
+      DartDocResults results = await dartdoc.generateDocs();
+      logInfo('Success! Docs generated into ${results.outDir.absolute.path}');
+    },
+        zoneSpecification: new ZoneSpecification(
+            print: (Zone self, ZoneDelegate parent, Zone zone, String line) =>
+                logPrint(line)  ));
   }, onError: (e, Chain chain) {
     if (e is DartDocFailure) {
       stderr.writeln('\nGeneration failed: ${e}.');
@@ -354,6 +382,10 @@ ArgParser _createArgsParser() {
     defaultsTo: false,
     hide: true,
   );
+  parser.addFlag('json',
+      help: 'Prints out progress JSON maps. One entry per line.',
+      defaultsTo: false,
+      negatable: true);
 
   return parser;
 }

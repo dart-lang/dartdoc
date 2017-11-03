@@ -151,6 +151,39 @@ void main() {
       }
     });
 
+    test('Validate JSON output', () {
+      var args = <String>[
+        dartdocBin,
+        '--include',
+        'ex',
+        '--no-include-source',
+        '--output',
+        tempDir.path,
+        '--json'
+      ];
+
+      var result = Process.runSync(Platform.resolvedExecutable, args,
+          workingDirectory: _testPackagePath);
+
+      if (result.exitCode != 0) {
+        print(result.exitCode);
+        print(result.stdout);
+        print(result.stderr);
+        fail('dartdoc failed');
+      }
+
+      var jsonValues = LineSplitter
+          .split(result.stdout)
+          .map((j) => JSON.decode(j) as Map<String, dynamic>)
+          .toList();
+
+      expect(jsonValues, isNotEmpty,
+          reason: 'All STDOUT lines should be JSON-encoded maps.');
+
+      expect(result.stderr as String, isEmpty,
+          reason: 'STDERR should be empty.');
+    });
+
     test('--footer-text includes text', () {
       String footerTextPath =
           path.join(Directory.systemTemp.path, 'footer.txt');

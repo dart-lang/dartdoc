@@ -1,3 +1,6 @@
+## unreleased
+* Add a `--json` flag to providing logging in a machine-readable format.
+
 ## 0.14.1
 * Add better support for GenericFunctionTypeElementImpl (#1506, #1509)
 * Fix up dartdoc so it can be used with the head analyzer again (#1509)

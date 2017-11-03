@@ -1,3 +1,7 @@
+// Copyright (c) 2017, the Dart project authors.  Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:tuple/tuple.dart';
 
@@ -164,7 +168,7 @@ class PackageWarningCounter {
   final _warningCounts = new Map<PackageWarning, int>();
   final PackageWarningOptions options;
 
-  final _items = <String>[];
+  final _items = <Jsonable>[];
 
   PackageWarningCounter(this.options);
 
@@ -186,14 +190,14 @@ class PackageWarningCounter {
     if (options.ignoreWarnings.contains(kind)) {
       return;
     }
-    String toWrite;
+    String type;
     if (options.asErrors.contains(kind)) {
-      toWrite = "error: ${fullMessage}";
+      type = "error";
     } else if (options.asWarnings.contains(kind)) {
-      toWrite = "warning: ${fullMessage}";
+      type = "warning";
     }
-    if (toWrite != null) {
-      var entry = "  ${toWrite}";
+    if (type != null) {
+      var entry = "  $type: $fullMessage";
       if (_warningCounts[kind] == 1 &&
           config.verboseWarnings &&
           packageWarningText[kind].longHelp.isNotEmpty) {
@@ -206,7 +210,7 @@ class PackageWarningCounter {
         entry = '$entry$verboseOut';
       }
       assert(entry == entry.trimRight());
-      _items.add(entry);
+      _items.add(new _JsonWarning(type, kind, fullMessage, entry));
     }
     maybeFlush();
   }
@@ -255,4 +259,23 @@ class PackageWarningCounter {
         '$warningCount ${warningCount == 1 ? "warning" : "warnings"}';
     return [errors, warnings].join(', ');
   }
+}
+
+class _JsonWarning extends Jsonable {
+  final String type;
+  final PackageWarning kind;
+  final String message;
+
+  @override
+  final String text;
+
+  _JsonWarning(this.type, this.kind, this.message, this.text);
+
+  @override
+  Map<String, dynamic> toJson() => {
+        'type': type,
+        'kind': packageWarningText[kind].warningName,
+        'message': message,
+        'text': text
+      };
 }
