@@ -1,4 +1,4 @@
-## 0.14.2
+## unreleased
 * Add a `--json` flag to providing logging in a machine-readable format.
 
 ## 0.14.1

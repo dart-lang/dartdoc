@@ -4,6 +4,7 @@
 
 library dartdoc.bin;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate' show Isolate;
@@ -268,8 +269,13 @@ main(List<String> arguments) async {
 
   dartdoc.onCheckProgress.listen(logProgress);
   await Chain.capture(() async {
-    DartDocResults results = await dartdoc.generateDocs();
-    logInfo('Success! Docs generated into ${results.outDir.absolute.path}');
+    await runZoned(() async {
+      DartDocResults results = await dartdoc.generateDocs();
+      logInfo('Success! Docs generated into ${results.outDir.absolute.path}');
+    },
+        zoneSpecification: new ZoneSpecification(
+            print: (Zone self, ZoneDelegate parent, Zone zone, String line) =>
+                logPrint(line)  ));
   }, onError: (e, Chain chain) {
     if (e is DartDocFailure) {
       stderr.writeln('\nGeneration failed: ${e}.');
