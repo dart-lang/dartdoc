@@ -23,7 +23,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
   final HtmlGeneratorOptions _options;
   final Templates _templates;
   final Package _package;
-  final Directory _outputDirectory;
+  final String _outputDirectoryPath;
   final List<ModelElement> _documentedElements = <ModelElement>[];
   final StreamController<File> _onFileCreated;
 
@@ -41,11 +41,9 @@ class HtmlGeneratorInstance implements HtmlOptions {
   final Set<String> writtenFiles = new Set<String>();
 
   HtmlGeneratorInstance(this._options, this._templates, this._package,
-      this._outputDirectory, this._onFileCreated);
+      this._outputDirectoryPath, this._onFileCreated);
 
   Future generate() async {
-    if (!_outputDirectory.existsSync()) _outputDirectory.createSync();
-
     if (_package != null) {
       _generateDocs();
       _generateSearchIndex();
@@ -55,7 +53,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
     if (_faviconPath != null) {
       var bytes = new File(_faviconPath).readAsBytesSync();
       _writeFile(
-          path.join(_outputDirectory.path, 'static-assets', 'favicon.png'),
+          path.join(_outputDirectoryPath, 'static-assets', 'favicon.png'),
           bytes);
     }
   }
@@ -95,7 +93,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
     });
 
     String json = encoder.convert(indexItems);
-    _writeFile(path.join(_outputDirectory.path, 'index.json'), '${json}\n');
+    _writeFile(path.join(_outputDirectoryPath, 'index.json'), '${json}\n');
   }
 
   void _generateDocs() {
@@ -285,14 +283,13 @@ class HtmlGeneratorInstance implements HtmlOptions {
             'encountered $resourcePath');
       }
       String destFileName = resourcePath.substring(prefix.length);
-      _writeFile(
-          path.join(_outputDirectory.path, 'static-assets', destFileName),
+      _writeFile(path.join(_outputDirectoryPath, 'static-assets', destFileName),
           await loader.loadAsBytes(resourcePath));
     }
   }
 
   void _build(String filename, TemplateRenderer template, TemplateData data) {
-    String fullName = path.join(_outputDirectory.path, filename);
+    String fullName = path.join(_outputDirectoryPath, filename);
 
     String content = template(data,
         assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
