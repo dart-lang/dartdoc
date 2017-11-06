@@ -62,8 +62,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
     var encoder =
         prettyIndexJson ? new JsonEncoder.withIndent(' ') : new JsonEncoder();
 
-    File jsonFile = _createOutputFile(path.join(out.path, 'index.json'));
-    String json = encoder.convert(
+    final List<Map> indexItems =
         documentedElements.where((e) => e.isCanonical).map((ModelElement e) {
       Map data = {
         'name': e.name,
@@ -82,15 +81,18 @@ class HtmlGeneratorInstance implements HtmlOptions {
         data['qualifiedName'] = e.fullyQualifiedName;
       }
       return data;
-    }).toList()
-          ..sort((a, b) {
-            var value = compareNatural(a['qualifiedName'], b['qualifiedName']);
-            if (value == 0) {
-              value = compareNatural(a['type'], b['type']);
-            }
-            return value;
-          }));
-    jsonFile.writeAsStringSync('${json}\n');
+    }).toList();
+
+    indexItems.sort((a, b) {
+      var value = compareNatural(a['qualifiedName'], b['qualifiedName']);
+      if (value == 0) {
+        value = compareNatural(a['type'], b['type']);
+      }
+      return value;
+    });
+
+    String json = encoder.convert(indexItems);
+    _writeFile(path.join(out.path, 'index.json'), '${json}\n');
   }
 
   void _generateDocs() {
