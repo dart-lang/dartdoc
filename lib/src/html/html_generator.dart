@@ -46,7 +46,6 @@ class HtmlGenerator extends Generator {
   @override
   Set<String> get writtenFiles => _instance.writtenFiles;
 
-  /// [url] - optional URL for where the docs will be hosted.
   static Future<HtmlGenerator> create(
       {HtmlGeneratorOptions options,
       List<String> headers,
