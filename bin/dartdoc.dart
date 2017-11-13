@@ -174,7 +174,7 @@ main(List<String> arguments) async {
       assert(message.isNotEmpty);
 
       if (record.level < logging.Level.WARNING) {
-        if (message.endsWith('...')) {
+        if (showProgress && message.endsWith('...')) {
           // Assume there may be more progress to print, so omit the trailing
           // newline
           writingProgress = true;
