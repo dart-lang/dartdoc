@@ -2151,7 +2151,8 @@ ModelElement resolveMultiplyInheritedElement(
 /// helps prevent subtle bugs as generated output for a non-canonical
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
-abstract class ModelElement extends Nameable with Warnable
+abstract class ModelElement extends Nameable
+    with Warnable
     implements Comparable, Documentable {
   final Element _element;
   final Library _library;
@@ -3479,8 +3480,8 @@ class Package extends Nameable with Documentable, Warnable {
       new Set();
   void warnOnElement(Warnable warnable, PackageWarning kind,
       {String message,
-        Iterable<Locatable> referredFrom,
-        Iterable<String> extendedDebug}) {
+      Iterable<Locatable> referredFrom,
+      Iterable<String> extendedDebug}) {
     var newEntry = new Tuple3(warnable?.element, kind, message);
     if (_warnAlreadySeen.contains(newEntry)) {
       return;
@@ -3497,8 +3498,8 @@ class Package extends Nameable with Documentable, Warnable {
 
   void _warnOnElement(Warnable warnable, PackageWarning kind,
       {String message,
-        Iterable<Locatable> referredFrom,
-        Iterable<String> extendedDebug}) {
+      Iterable<Locatable> referredFrom,
+      Iterable<String> extendedDebug}) {
     if (warnable != null) {
       // This sort of warning is only applicable to top level elements.
       if (kind == PackageWarning.ambiguousReexport) {
