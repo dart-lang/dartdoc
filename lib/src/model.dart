@@ -1186,7 +1186,7 @@ class EnumField extends Field {
 }
 
 class Field extends ModelElement
-    with GetterSetterCombo, Inheritable
+    with GetterSetterCombo, Inheritable, SourceCodeMixin
     implements EnclosedElement {
   String _constantValue;
   bool _isInherited = false;
@@ -1327,6 +1327,32 @@ class Field extends ModelElement
   FieldElement get _field => (element as FieldElement);
 
   String get _fileName => isConst ? '$name-constant.html' : '$name.html';
+
+  @override
+  String get sourceCode {
+    if (_sourceCodeCache == null) {
+      // We could use a set to figure the dupes out, but that would lose ordering.
+      String fieldSourceCode = sourceCodeFor(element) ?? '';
+      String getterSourceCode = getter?.sourceCode ?? '';
+      String setterSourceCode = setter?.sourceCode ?? '';
+      StringBuffer buffer = new StringBuffer();
+      if (fieldSourceCode.isNotEmpty) {
+        buffer.write(fieldSourceCode);
+      }
+      if (buffer.isNotEmpty) buffer.write('\n\n');
+      if (fieldSourceCode != getterSourceCode) {
+        if (getterSourceCode != setterSourceCode) {
+          buffer.write(getterSourceCode);
+          if (buffer.isNotEmpty) buffer.write('\n\n');
+        }
+      }
+      if (fieldSourceCode != setterSourceCode) {
+        buffer.write(setterSourceCode);
+      }
+      _sourceCodeCache = buffer.toString();
+    }
+    return _sourceCodeCache;
+  }
 
   void _setModelType() {
     if (hasGetter) {
@@ -3310,6 +3336,9 @@ class ModelFunctionTyped extends ModelElement
     return '&lt;${typeParameters.map((t) => t.name).join(', ')}&gt;';
   }
 
+  // Food for mustache. TODO(jcollins-g): what about enclosing elements?
+  bool get isInherited => false;
+
   FunctionTypedElement get _func => (element as FunctionTypedElement);
 }
 
@@ -4149,37 +4178,41 @@ abstract class SourceCodeMixin {
 
   Library get library;
 
+  String sourceCodeFor(Element element) {
+    String contents = getFileContentsFor(element);
+    var node = element.computeNode();
+    if (node != null) {
+      // Find the start of the line, so that we can line up all the indents.
+      int i = node.offset;
+      while (i > 0) {
+        i -= 1;
+        if (contents[i] == '\n' || contents[i] == '\r') {
+          i += 1;
+          break;
+        }
+      }
+
+      // Trim the common indent from the source snippet.
+      var start = node.offset - (node.offset - i);
+      String source = contents.substring(start, node.end);
+
+      if (config != null && config.addCrossdart) {
+        source = crossdartifySource(_crossdartJson, source, element, start);
+      } else {
+        source = const HtmlEscape().convert(source);
+      }
+      source = stripIndentFromSource(source);
+      source = stripDartdocCommentsFromSource(source);
+
+      return source.trim();
+    } else {
+      return '';
+    }
+  }
+
   String get sourceCode {
     if (_sourceCodeCache == null) {
-      String contents = getFileContentsFor(element);
-      var node = element.computeNode();
-      if (node != null) {
-        // Find the start of the line, so that we can line up all the indents.
-        int i = node.offset;
-        while (i > 0) {
-          i -= 1;
-          if (contents[i] == '\n' || contents[i] == '\r') {
-            i += 1;
-            break;
-          }
-        }
-
-        // Trim the common indent from the source snippet.
-        var start = node.offset - (node.offset - i);
-        String source = contents.substring(start, node.end);
-
-        if (config != null && config.addCrossdart) {
-          source = crossdartifySource(_crossdartJson, source, element, start);
-        } else {
-          source = const HtmlEscape().convert(source);
-        }
-        source = stripIndentFromSource(source);
-        source = stripDartdocCommentsFromSource(source);
-
-        _sourceCodeCache = source.trim();
-      } else {
-        _sourceCodeCache = '';
-      }
+      _sourceCodeCache = sourceCodeFor(element);
     }
 
     return _sourceCodeCache;
@@ -4240,7 +4273,7 @@ abstract class SourceCodeMixin {
 
 /// Top-level variables. But also picks up getters and setters?
 class TopLevelVariable extends ModelElement
-    with GetterSetterCombo
+    with GetterSetterCombo, SourceCodeMixin
     implements EnclosedElement {
   @override
   final Accessor getter;
@@ -4369,6 +4402,9 @@ class Typedef extends ModelElement
     if (canonicalLibrary == null) return null;
     return '${canonicalLibrary.dirName}/$fileName';
   }
+
+  // Food for mustache.
+  bool get isInherited => false;
 
   @override
   String get kind => 'typedef';
