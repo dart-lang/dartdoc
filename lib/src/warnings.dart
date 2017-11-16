@@ -90,11 +90,10 @@ abstract class Warnable implements Locatable {
   Warnable get enclosingElement;
 
   Set<String> get locationPieces {
-    return new Set()
-      ..addAll(element.location
-          .toString()
-          .split(locationSplitter)
-          .where((s) => s.isNotEmpty));
+    return new Set.from(element.location
+        .toString()
+        .split(locationSplitter)
+        .where((s) => s.isNotEmpty));
   }
 }
 
