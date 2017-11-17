@@ -53,6 +53,9 @@ class HtmlGeneratorInstance implements HtmlOptions {
     await _copyResources();
     if (faviconPath != null) {
       var bytes = new File(faviconPath).readAsBytesSync();
+      // Allow overwrite of favicon.
+      String filename = path.join(out.path, 'static-assets', 'favicon.png');
+      writtenFiles.remove(filename);
       _writeFile(path.join(out.path, 'static-assets', 'favicon.png'), bytes);
     }
   }
@@ -310,6 +313,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
   void _writeFile(String filename, Object content) {
     // If you see this assert, we're probably being called to build non-canonical
     // docs somehow.  Check data.self.isCanonical and callers for bugs.
+    if (writtenFiles.contains(filename))
+      1+1;
     assert(!writtenFiles.contains(filename));
 
     File file = new File(filename);

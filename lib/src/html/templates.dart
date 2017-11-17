@@ -28,6 +28,8 @@ const _partials = const <String>[
   'sidebar_for_enum',
   'source_code',
   'sidebar_for_library',
+  'accessor_getter',
+  'accessor_setter'
 ];
 
 Future<Map<String, String>> _loadPartials(List<String> headerPaths,

@@ -6,18 +6,25 @@
   </div><!--/.sidebar-offcanvas-left-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
-
     {{#self}}
+    {{#hasNoGetterSetter}}
     <section class="multi-line-signature">
       <span class="returntype">{{{ linkedReturnType }}}</span>
       {{>name_summary}}
       {{>features}}
     </section>
-
     {{>documentation}}
     {{>source_code}}
-    {{/self}}
+    {{/hasNoGetterSetter}}
 
+    {{#hasExplicitGetter}}
+    {{>accessor_getter}}
+    {{/hasExplicitGetter}}
+
+    {{#hasExplicitSetter}}
+    {{>accessor_setter}}
+    {{/hasExplicitSetter}}
+    {{/self}}
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">

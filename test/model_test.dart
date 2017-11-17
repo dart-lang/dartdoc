@@ -1431,7 +1431,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           explicitGetterImplicitSetter.documentation,
           equals(
-              'Docs for explicitGetterImplicitSetter from ImplicitProperties.'));
+              'Getter doc for explicitGetterImplicitSetter'));
     });
 
     test('has a fully qualified name', () {
@@ -1500,11 +1500,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('setter documentation', () {
       expect(onlySetter.documentation,
           equals('Only a setter, with a single param, of type double.'));
-    });
-
-    test('explicit getter and setter docs are unified', () {
-      expect(lengthX.documentation, contains('Sets the length.'));
-      expect(lengthX.documentation, contains('Returns a length.'));
     });
 
     test('Field with no explicit getter/setter has documentation', () {
@@ -1681,11 +1676,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('just a setter has documentation', () {
       expect(justSetter.documentation,
           equals('Just a setter. No partner getter.'));
-    });
-
-    test('a distinct getter and setters docs appear in the propertys docs', () {
-      expect(setAndGet.documentation, contains('The getter for setAndGet.'));
-      expect(setAndGet.documentation, contains('The setter for setAndGet.'));
     });
 
     test('has a getter accessor', () {
