@@ -1297,6 +1297,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Field sFromApple, mFromApple, mInB, autoCompress;
     Field isEmpty;
     Field implicitGetterExplicitSetter, explicitGetterImplicitSetter;
+    Field explicitGetterSetter;
     Field explicitNonDocumentedInBaseClassGetter;
     Field documentedPartialFieldInSubclassOnly;
     Field ExtraSpecialListLength;
@@ -1316,6 +1317,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((e) => e.name == 'implicitGetterExplicitSetter');
       explicitGetterImplicitSetter = UnusualProperties.allModelElements
           .firstWhere((e) => e.name == 'explicitGetterImplicitSetter');
+      explicitGetterSetter = UnusualProperties.allModelElements
+          .firstWhere((e) => e.name == 'explicitGetterSetter');
       explicitNonDocumentedInBaseClassGetter =
           UnusualProperties.allModelElements.firstWhere(
               (e) => e.name == 'explicitNonDocumentedInBaseClassGetter');
@@ -1354,6 +1357,20 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'SpecialList')
           .allInstanceProperties
           .firstWhere((f) => f.name == 'length');
+    });
+
+    test('annotations from getters and setters are accumulated in Fields', () {
+      expect(
+          explicitGetterSetter.featuresAsString.contains('a Getter Annotation'),
+          isTrue);
+      expect(
+          explicitGetterSetter.featuresAsString.contains('a Setter Annotation'),
+          isTrue);
+    });
+
+    test('Docs from inherited implicit accessors are preserved', () {
+      expect(explicitGetterImplicitSetter.setter.computeDocumentationComment,
+          isNot(''));
     });
 
     test('@nodoc on simple property works', () {
@@ -1428,10 +1445,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(explicitGetterImplicitSetter.oneLineDoc,
           equals('Getter doc for explicitGetterImplicitSetter'));
       // Even though we have some new setter docs, getter still takes priority.
-      expect(
-          explicitGetterImplicitSetter.documentation,
-          equals(
-              'Getter doc for explicitGetterImplicitSetter'));
+      expect(explicitGetterImplicitSetter.documentation,
+          equals('Getter doc for explicitGetterImplicitSetter'));
     });
 
     test('has a fully qualified name', () {
