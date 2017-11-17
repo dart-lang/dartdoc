@@ -313,8 +313,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
   void _writeFile(String filename, Object content) {
     // If you see this assert, we're probably being called to build non-canonical
     // docs somehow.  Check data.self.isCanonical and callers for bugs.
-    if (writtenFiles.contains(filename))
-      1+1;
     assert(!writtenFiles.contains(filename));
 
     File file = new File(filename);
