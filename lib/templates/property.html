@@ -6,31 +6,27 @@
   </div><!--/.sidebar-offcanvas-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+    {{#self}}
+      {{#hasNoGetterSetter}}
+        <section class="multi-line-signature">
+          <span class="returntype">{{{ linkedReturnType }}}</span>
+          {{>name_summary}}
+          {{>features}}
+        </section>
+        {{>documentation}}
+        {{>source_code}}
+      {{/hasNoGetterSetter}}
 
-    {{#property.hasNoGetterSetter}}
-    <section class="multi-line-signature">
-      <span class="returntype">{{{ linkedReturnType }}}</span>
-        {{>name_summary}}
-        {{>features}}
-    </section>
+      {{#hasGetterOrSetter}}
+        {{#hasGetter}}
+        {{>accessor_getter}}
+        {{/hasGetter}}
 
-    {{>documentation}}
-    {{/property.hasNoGetterSetter}}
-
-    {{#property.hasExplicitGetter}}
-    {{#property.getter}}
-      {{>accessor_getter}}
-      {{>source_code}}
-    {{/property.getter}}
-    {{/property.hasExplicitGetter}}
-
-    {{#property.hasExplicitSetter}}
-    {{#property.setter}}
-      {{>accessor_setter}}
-      {{>source_code}}
-    {{/property.setter}}
-    {{/property.hasExplicitSetter}}
-
+        {{#hasSetter}}
+        {{>accessor_setter}}
+        {{/hasSetter}}
+      {{/hasGetterOrSetter}}
+    {{/self}}
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">

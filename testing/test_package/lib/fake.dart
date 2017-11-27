@@ -255,6 +255,7 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   String get explicitNonDocumentedInBaseClassGetter => "something else";
 
   /// Getter doc for explicitGetterSetter.
+  @Annotation('a Getter Annotation')
   myCoolTypedef get explicitGetterSetter {
     return _aFunction;
   }
@@ -269,6 +270,7 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   String get explicitNodocGetterSetter => "something";
 
   /// This property is not synthetic, so it might reference [f] -- display it.
+  @Annotation('a Setter Annotation')
   set explicitGetterSetter(myCoolTypedef f) => _aFunction = f;
 
   /// This property only has a getter and no setter; no parameters to print.

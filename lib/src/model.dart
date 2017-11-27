@@ -206,6 +206,13 @@ class InheritableAccessor extends Accessor with Inheritable {
     }
     return _enclosingElement;
   }
+
+  @override
+  Set<String> get features {
+    Set<String> allFeatures = super.features;
+    if (isInherited) allFeatures.add('inherited');
+    return allFeatures;
+  }
 }
 
 /// Getters and setters.
@@ -217,18 +224,72 @@ class Accessor extends ModelElement
   Accessor(PropertyAccessorElement element, Library library)
       : super(element, library);
 
-  ModelElement get enclosingCombo => _enclosingCombo;
+  get linkedReturnType {
+    assert(isGetter);
+    return modelType.createLinkedReturnTypeName();
+  }
+
+  GetterSetterCombo get enclosingCombo {
+    if (_enclosingCombo == null) {
+      if (enclosingElement is Class) {
+        // TODO(jcollins-g): this side effect is rather hacky.  Make sure
+        // enclosingCombo always gets set at accessor creation time, somehow, to
+        // avoid this.
+        // TODO(jcollins-g): This also doesn't work for private accessors sometimes.
+        (enclosingElement as Class).allFields;
+      }
+      assert(_enclosingCombo != null);
+    }
+    return _enclosingCombo;
+  }
 
   /// Call exactly once to set the enclosing combo for this Accessor.
-  void set enclosingCombo(GetterSetterCombo combo) {
-    assert(_enclosingCombo == null || combo == _enclosingCombo);
-    _enclosingCombo = combo;
+  set enclosingCombo(GetterSetterCombo combo) {
+      assert(_enclosingCombo == null || combo == _enclosingCombo);
+        assert(combo != null);
+      _enclosingCombo = combo;
+  }
+
+  bool get isSynthetic => element.isSynthetic;
+
+  @override
+  String get sourceCode {
+    if (_sourceCodeCache == null) {
+      if (isSynthetic) {
+        _sourceCodeCache =
+            sourceCodeFor((element as PropertyAccessorElement).variable);
+      } else {
+        _sourceCodeCache = super.sourceCode;
+      }
+    }
+    return _sourceCodeCache;
+  }
+
+  @override
+  List<ModelElement> get computeDocumentationFrom {
+    if (isSynthetic) return [this];
+    return super.computeDocumentationFrom;
   }
 
   @override
   String get computeDocumentationComment {
-    if (element.isSynthetic) {
-      return (element as PropertyAccessorElement).variable.documentationComment;
+    if (isSynthetic) {
+      String docComment = (element as PropertyAccessorElement).variable.documentationComment;
+      // If we're a setter, only display something if we have something different than the getter.
+      // TODO(jcollins-g): modify analyzer to do this itself?
+      if (isGetter ||
+          // TODO(jcollins-g): @nodoc reading from comments is at the wrong abstraction level here.
+          (docComment != null &&
+              (docComment.contains('<nodoc>') ||
+                  docComment.contains('@nodoc'))) ||
+          (isSetter &&
+              enclosingCombo.hasGetter &&
+              enclosingCombo.getter.computeDocumentationComment !=
+                  docComment)) {
+        return stripComments(docComment);
+      } else {
+        return '';
+      }
     }
     return stripComments(super.computeDocumentationComment);
   }
@@ -272,6 +333,7 @@ class Accessor extends ModelElement
   }
 
   bool get isGetter => _accessor.isGetter;
+  bool get isSetter => _accessor.isSetter;
 
   bool _overriddenElementIsSet = false;
   ModelElement _overriddenElement;
@@ -422,6 +484,15 @@ class Class extends ModelElement implements EnclosedElement {
   bool get allInstancePropertiesInherited =>
       instanceProperties.every((f) => f.isInherited);
 
+  Iterable<Accessor> get allAccessors {
+    return allInstanceProperties.expand((f) {
+      List<Accessor> getterSetters = [];
+      if (f.hasGetter) getterSetters.add(f.getter);
+      if (f.hasSetter) getterSetters.add(f.setter);
+      return getterSetters;
+    });
+  }
+
   List<Operator> get allOperators {
     if (_allOperators != null) return _allOperators;
     _allOperators = []
@@ -438,7 +509,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<Field> get constants {
     if (_constants != null) return _constants;
-    _constants = _allFields.where((f) => f.isConst).toList(growable: false)
+    _constants = allFields.where((f) => f.isConst).toList(growable: false)
       ..sort(byName);
 
     return _constants;
@@ -466,6 +537,7 @@ class Class extends ModelElement implements EnclosedElement {
       _allModelElements
         ..addAll(allInstanceMethods)
         ..addAll(allInstanceProperties)
+        ..addAll(allAccessors)
         ..addAll(allOperators)
         ..addAll(constants)
         ..addAll(constructors)
@@ -684,7 +756,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<Field> get inheritedProperties {
     if (_inheritedProperties == null) {
-      _inheritedProperties = _allFields.where((f) => f.isInherited).toList()
+      _inheritedProperties = allFields.where((f) => f.isInherited).toList()
         ..sort(byName);
     }
     return _inheritedProperties;
@@ -704,7 +776,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<Field> get instanceProperties {
     if (_instanceFields != null) return _instanceFields;
-    _instanceFields = _allFields
+    _instanceFields = allFields
         .where((f) => !f.isStatic && !f.isInherited && !f.isConst)
         .toList(growable: false)
           ..sort(byName);
@@ -814,7 +886,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   List<Field> get staticProperties {
     if (_staticFields != null) return _staticFields;
-    _staticFields = _allFields
+    _staticFields = allFields
         .where((f) => f.isStatic)
         .where((f) => !f.isConst)
         .toList(growable: false)
@@ -857,7 +929,7 @@ class Class extends ModelElement implements EnclosedElement {
 
   ElementType get supertype => _supertype;
 
-  List<Field> get _allFields {
+  List<Field> get allFields {
     if (_fields != null) return _fields;
     _fields = [];
     Map<String, ExecutableElement> cmap =
@@ -1186,7 +1258,7 @@ class EnumField extends Field {
 }
 
 class Field extends ModelElement
-    with GetterSetterCombo, Inheritable
+    with GetterSetterCombo, Inheritable, SourceCodeMixin
     implements EnclosedElement {
   String _constantValue;
   bool _isInherited = false;
@@ -1231,7 +1303,7 @@ class Field extends ModelElement
     var v = _field.computeNode().toSource();
     if (v == null) return null;
     var string = v.substring(v.indexOf('=') + 1, v.length).trim();
-    _constantValue = string.replaceAll(modelType.name, modelType.linkedName);
+    _constantValue = string.replaceAll("${modelType.name}", "${modelType.linkedName}");
 
     return _constantValue;
   }
@@ -1297,24 +1369,18 @@ class Field extends ModelElement
 
   @override
   Set<String> get features {
-    Set<String> all_features = super.features;
-    all_features.addAll(annotations);
-
-    /// final/const implies read-only, so don't display both strings.
-    if (readOnly && !isFinal && !isConst) all_features.add('read-only');
-    if (writeOnly) all_features.add('write-only');
-    if (readWrite) all_features.add('read / write');
+    Set<String> allFeatures = super.features..addAll(comboFeatures);
     if (hasPublicGetter && hasPublicSetter) {
       if (getter.isInherited && setter.isInherited) {
-        all_features.add('inherited');
+        allFeatures.add('inherited');
       } else {
-        if (getter.isInherited) all_features.add('inherited-getter');
-        if (setter.isInherited) all_features.add('inherited-setter');
+        if (getter.isInherited) allFeatures.add('inherited-getter');
+        if (setter.isInherited) allFeatures.add('inherited-setter');
       }
     } else {
-      if (isInherited) all_features.add('inherited');
+      if (isInherited) allFeatures.add('inherited');
     }
-    return all_features;
+    return allFeatures;
   }
 
   @override
@@ -1328,13 +1394,35 @@ class Field extends ModelElement
 
   String get _fileName => isConst ? '$name-constant.html' : '$name.html';
 
+  @override
+  String get sourceCode {
+    if (_sourceCodeCache == null) {
+      // We could use a set to figure the dupes out, but that would lose ordering.
+      String fieldSourceCode = sourceCodeFor(element) ?? '';
+      String getterSourceCode = getter?.sourceCode ?? '';
+      String setterSourceCode = setter?.sourceCode ?? '';
+      StringBuffer buffer = new StringBuffer();
+      if (fieldSourceCode.isNotEmpty) {
+        buffer.write(fieldSourceCode);
+      }
+      if (buffer.isNotEmpty) buffer.write('\n\n');
+      if (fieldSourceCode != getterSourceCode) {
+        if (getterSourceCode != setterSourceCode) {
+          buffer.write(getterSourceCode);
+          if (buffer.isNotEmpty) buffer.write('\n\n');
+        }
+      }
+      if (fieldSourceCode != setterSourceCode) {
+        buffer.write(setterSourceCode);
+      }
+      _sourceCodeCache = buffer.toString();
+    }
+    return _sourceCodeCache;
+  }
+
   void _setModelType() {
     if (hasGetter) {
-      var t = (getter.element as PropertyAccessorElement).returnType;
-      _modelType = new ElementType(
-          t,
-          new ModelElement.from(
-              t.element, _findOrCreateEnclosingLibraryFor(t.element)));
+      _modelType = getter.modelType;
     }
   }
 }
@@ -1342,6 +1430,17 @@ class Field extends ModelElement
 /// Mixin for top-level variables and fields (aka properties)
 abstract class GetterSetterCombo implements ModelElement {
   Accessor get getter;
+
+  Set<String> get comboFeatures {
+    Set<String> allFeatures = new Set();
+    if (hasExplicitGetter) allFeatures.addAll(getter.features);
+    if (hasExplicitSetter) allFeatures.addAll(setter.features);
+    if (readOnly && !isFinal && !isConst) allFeatures.add('read-only');
+    if (writeOnly) allFeatures.add('write-only');
+    if (readWrite) allFeatures.add('read / write');
+    return allFeatures;
+  }
+
 
   @override
   ModelElement enclosingElement;
@@ -1367,12 +1466,10 @@ abstract class GetterSetterCombo implements ModelElement {
     if (_documentationFrom == null) {
       _documentationFrom = [];
       if (hasPublicGetter) {
-        _documentationFrom.addAll(getter.documentationFrom.where((e) =>
-            e.computeDocumentationComment != computeDocumentationComment));
+        _documentationFrom.addAll(getter.documentationFrom);
+      } else if (hasPublicSetter) {
+        _documentationFrom.addAll(setter.documentationFrom);
       }
-      if (hasPublicSetter)
-        _documentationFrom.addAll(setter.documentationFrom.where((e) =>
-            e.computeDocumentationComment != computeDocumentationComment));
       if (_documentationFrom.length == 0 ||
           _documentationFrom.every((e) => e.documentation == ''))
         _documentationFrom = computeDocumentationFrom;
@@ -1380,24 +1477,22 @@ abstract class GetterSetterCombo implements ModelElement {
     return _documentationFrom;
   }
 
+  bool get hasAccessorsWithDocs =>
+      (hasPublicGetter && getter.documentation.isNotEmpty ||
+          hasPublicSetter && setter.documentation.isNotEmpty);
+  bool get getterSetterBothAvailable => (hasPublicGetter &&
+      getter.documentation.isNotEmpty &&
+      hasPublicSetter &&
+      setter.documentation.isNotEmpty);
+
   String _oneLineDoc;
   @override
   String get oneLineDoc {
     if (_oneLineDoc == null) {
-      bool hasAccessorsWithDocs =
-          (hasPublicGetter && getter.oneLineDoc.isNotEmpty ||
-              hasPublicSetter && setter.oneLineDoc.isNotEmpty);
       if (!hasAccessorsWithDocs) {
         _oneLineDoc = _documentation.asOneLiner;
       } else {
         StringBuffer buffer = new StringBuffer();
-        bool getterSetterBothAvailable = false;
-        if (hasPublicGetter &&
-            getter.oneLineDoc.isNotEmpty &&
-            hasPublicSetter &&
-            setter.oneLineDoc.isNotEmpty) {
-          getterSetterBothAvailable = true;
-        }
         if (hasPublicGetter && getter.oneLineDoc.isNotEmpty) {
           buffer.write('${getter.oneLineDoc}');
         }
@@ -1413,7 +1508,7 @@ abstract class GetterSetterCombo implements ModelElement {
   String get getterSetterDocumentationComment {
     var buffer = new StringBuffer();
 
-    if (hasPublicGetter && !getter.element.isSynthetic) {
+    if (hasPublicGetter && !getter.isSynthetic) {
       assert(getter.documentationFrom.length == 1);
       // We have to check against dropTextFrom here since documentationFrom
       // doesn't yield the real elements for GetterSetterCombos.
@@ -1425,7 +1520,7 @@ abstract class GetterSetterCombo implements ModelElement {
       }
     }
 
-    if (hasPublicSetter && !setter.element.isSynthetic) {
+    if (hasPublicSetter && !setter.isSynthetic) {
       assert(setter.documentationFrom.length == 1);
       if (!config.dropTextFrom
           .contains(setter.documentationFrom.first.element.library.name)) {
@@ -1441,8 +1536,11 @@ abstract class GetterSetterCombo implements ModelElement {
   }
 
   String get linkedReturnType {
-    if (hasGetter) return modelType.linkedName;
-    return null;
+    if (hasGetter) {
+      return getter.linkedReturnType;
+    } else {
+      return setter.linkedParamsNoMetadataOrNames;
+    }
   }
 
   @override
@@ -1463,14 +1561,16 @@ abstract class GetterSetterCombo implements ModelElement {
     return null;
   }
 
-  bool get hasExplicitGetter => hasPublicGetter && !getter.element.isSynthetic;
+  bool get hasExplicitGetter => hasPublicGetter && !getter.isSynthetic;
 
-  bool get hasExplicitSetter => hasPublicSetter && !setter.element.isSynthetic;
-  bool get hasImplicitSetter => hasPublicSetter && setter.element.isSynthetic;
+  bool get hasExplicitSetter => hasPublicSetter && !setter.isSynthetic;
+  bool get hasImplicitSetter => hasPublicSetter && setter.isSynthetic;
+  bool get hasImplicitGetter => hasPublicGetter && getter.isSynthetic;
 
   bool get hasGetter => getter != null;
 
-  bool get hasNoGetterSetter => !hasExplicitGetter && !hasExplicitSetter;
+  bool get hasNoGetterSetter => !hasGetterOrSetter;
+  bool get hasGetterOrSetter => hasExplicitGetter || hasExplicitSetter;
 
   bool get hasSetter => setter != null;
 
@@ -2022,9 +2122,9 @@ class Method extends ModelElement
 
   @override
   Set<String> get features {
-    Set<String> all_features = super.features;
-    if (isInherited) all_features.add('inherited');
-    return all_features;
+    Set<String> allFeatures = super.features;
+    if (isInherited) allFeatures.add('inherited');
+    return allFeatures;
   }
 
   @override
@@ -2426,25 +2526,25 @@ abstract class ModelElement extends Nameable
   }
 
   Set<String> get features {
-    Set<String> all_features = new Set<String>();
-    all_features.addAll(annotations);
+    Set<String> allFeatures = new Set<String>();
+    allFeatures.addAll(annotations);
 
     // override as an annotation should be replaced with direct information
     // from the analyzer if we decide to display it at this level.
-    all_features.remove('@override');
+    allFeatures.remove('@override');
 
     // Drop the plain "deprecated" annotation, that's indicated via
     // strikethroughs. Custom @Deprecated() will still appear.
-    all_features.remove('@deprecated');
+    allFeatures.remove('@deprecated');
     // const and static are not needed here because const/static elements get
     // their own sections in the doc.
-    if (isFinal) all_features.add('final');
-    return all_features;
+    if (isFinal) allFeatures.add('final');
+    return allFeatures;
   }
 
   String get featuresAsString {
-    List<String> all_features = features.toList()..sort(byFeatureOrdering);
-    return all_features.join(', ');
+    List<String> allFeatures = features.toList()..sort(byFeatureOrdering);
+    return allFeatures.join(', ');
   }
 
   bool get canHaveParameters =>
@@ -2758,7 +2858,25 @@ abstract class ModelElement extends Nameable
     return linkedParams(showMetadata: false, showNames: false);
   }
 
-  ElementType get modelType => _modelType;
+  ElementType get modelType {
+    if (_modelType == null) {
+      if (element is ExecutableElement ||
+          element is FunctionTypedElement ||
+          element is ParameterElement ||
+          element is TypeDefiningElement ||
+          element is PropertyInducingElement) {
+        Library lib;
+        // TODO(jcollins-g): get rid of dynamic special casing
+        if (element.kind != ElementKind.DYNAMIC) {
+          lib = _findOrCreateEnclosingLibraryFor((element as dynamic).type.element);
+        }
+        _modelType = new ElementType(
+            (element as dynamic).type, new ModelElement.from((element as dynamic).type.element, lib));
+      }
+    }
+    return _modelType;
+  }
+
 
   @override
   String get name => element.name;
@@ -3303,6 +3421,9 @@ class ModelFunctionTyped extends ModelElement
     return '&lt;${typeParameters.map((t) => t.name).join(', ')}&gt;';
   }
 
+  // Food for mustache. TODO(jcollins-g): what about enclosing elements?
+  bool get isInherited => false;
+
   FunctionTypedElement get _func => (element as FunctionTypedElement);
 }
 
@@ -3742,6 +3863,7 @@ class Package extends Nameable with Documentable, Warnable {
       // only here, but since the warnings that depend on this debug
       // canonicalization problems, don't limit ourselves in case an href is
       // generated for something non-canonical.
+      if (modelElement is Dynamic) continue;
       if (modelElement.href == null) continue;
       hrefMap.putIfAbsent(modelElement.href, () => new Set());
       hrefMap[modelElement.href].add(modelElement);
@@ -4162,37 +4284,41 @@ abstract class SourceCodeMixin {
 
   Library get library;
 
+  String sourceCodeFor(Element element) {
+    String contents = getFileContentsFor(element);
+    var node = element.computeNode();
+    if (node != null) {
+      // Find the start of the line, so that we can line up all the indents.
+      int i = node.offset;
+      while (i > 0) {
+        i -= 1;
+        if (contents[i] == '\n' || contents[i] == '\r') {
+          i += 1;
+          break;
+        }
+      }
+
+      // Trim the common indent from the source snippet.
+      var start = node.offset - (node.offset - i);
+      String source = contents.substring(start, node.end);
+
+      if (config != null && config.addCrossdart) {
+        source = crossdartifySource(_crossdartJson, source, element, start);
+      } else {
+        source = const HtmlEscape().convert(source);
+      }
+      source = stripIndentFromSource(source);
+      source = stripDartdocCommentsFromSource(source);
+
+      return source.trim();
+    } else {
+      return '';
+    }
+  }
+
   String get sourceCode {
     if (_sourceCodeCache == null) {
-      String contents = getFileContentsFor(element);
-      var node = element.computeNode();
-      if (node != null) {
-        // Find the start of the line, so that we can line up all the indents.
-        int i = node.offset;
-        while (i > 0) {
-          i -= 1;
-          if (contents[i] == '\n' || contents[i] == '\r') {
-            i += 1;
-            break;
-          }
-        }
-
-        // Trim the common indent from the source snippet.
-        var start = node.offset - (node.offset - i);
-        String source = contents.substring(start, node.end);
-
-        if (config != null && config.addCrossdart) {
-          source = crossdartifySource(_crossdartJson, source, element, start);
-        } else {
-          source = const HtmlEscape().convert(source);
-        }
-        source = stripIndentFromSource(source);
-        source = stripDartdocCommentsFromSource(source);
-
-        _sourceCodeCache = source.trim();
-      } else {
-        _sourceCodeCache = '';
-      }
+      _sourceCodeCache = sourceCodeFor(element);
     }
 
     return _sourceCodeCache;
@@ -4253,7 +4379,7 @@ abstract class SourceCodeMixin {
 
 /// Top-level variables. But also picks up getters and setters?
 class TopLevelVariable extends ModelElement
-    with GetterSetterCombo
+    with GetterSetterCombo, SourceCodeMixin
     implements EnclosedElement {
   @override
   final Accessor getter;
@@ -4263,22 +4389,14 @@ class TopLevelVariable extends ModelElement
   TopLevelVariable(TopLevelVariableElement element, Library library,
       this.getter, this.setter)
       : super(element, library) {
-    if (hasGetter) {
-      var t = _variable.getter.returnType;
-
-      _modelType = new ElementType(
-          t,
-          new ModelElement.from(
-              t.element, package.findOrCreateLibraryFor(t.element)));
-    } else {
-      var s = _variable.setter.parameters.first.type;
-      _modelType = new ElementType(
-          s,
-          new ModelElement.from(
-              s.element, package.findOrCreateLibraryFor(s.element)));
+    if (getter != null) {
+      getter.enclosingCombo = this;
+      assert(getter.enclosingCombo != null);
     }
-    if (getter != null) getter.enclosingCombo = this;
-    if (setter != null) setter.enclosingCombo = this;
+    if (setter != null) {
+      setter.enclosingCombo = this;
+      assert(setter.enclosingCombo != null);
+    }
   }
 
   @override
@@ -4328,15 +4446,7 @@ class TopLevelVariable extends ModelElement
   String get kind => 'top-level property';
 
   @override
-  Set<String> get features {
-    Set<String> all_features = super.features;
-
-    /// final/const implies read-only, so don't display both strings.
-    if (readOnly && !isFinal && !isConst) all_features.add('read-only');
-    if (writeOnly) all_features.add('write-only');
-    if (readWrite) all_features.add('read / write');
-    return all_features;
-  }
+  Set<String> get features => super.features..addAll(comboFeatures);
 
   @override
   String get computeDocumentationComment {
@@ -4382,6 +4492,9 @@ class Typedef extends ModelElement
     if (canonicalLibrary == null) return null;
     return '${canonicalLibrary.dirName}/$fileName';
   }
+
+  // Food for mustache.
+  bool get isInherited => false;
 
   @override
   String get kind => 'typedef';

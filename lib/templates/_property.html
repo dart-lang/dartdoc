@@ -1,16 +1,7 @@
-{{ #hasPublicSetter }}
-<dt id="{{htmlId}}" class="property{{ #isInherited }} inherited{{ /isInherited}}">
-  <span class="name{{#isDeprecated}} deprecated{{/isDeprecated}}">{{{linkedName}}}</span><span class="signature">{{{genericParameters}}}
-    <span class="returntype parameter">{{{ arrow }}} {{ #hasExplicitSetter }} {{{ linkedParamsNoMetadata }}} {{/hasExplicitSetter}} {{#hasImplicitSetter}} {{{linkedParamsNoMetadataOrNames}}} {{/hasImplicitSetter}}</span>
-  </span>
-</dt>
-{{ /hasPublicSetter }}
-{{ #hasPublicGetterNoSetter }}
 <dt id="{{htmlId}}" class="property{{ #isInherited }} inherited{{ /isInherited}}">
   <span class="name">{{{linkedName}}}</span>
   <span class="signature">{{{ arrow }}} {{{ linkedReturnType }}}</span>
 </dt>
-{{ /hasPublicGetterNoSetter }}
 <dd{{ #isInherited }} class="inherited"{{ /isInherited}}>
   {{{ oneLineDoc }}}
   {{>features}}
