@@ -1204,7 +1204,7 @@ class EnumField extends Field {
       : super(element, library, getter, null);
 
   @override
-  String get constantValue {
+  String get constantValueBase {
     if (name == 'values') {
       return 'const List&lt;${_field.enclosingElement.name}&gt;';
     } else {
@@ -1260,7 +1260,6 @@ class EnumField extends Field {
 class Field extends ModelElement
     with GetterSetterCombo, Inheritable, SourceCodeMixin
     implements EnclosedElement {
-  String _constantValue;
   bool _isInherited = false;
   Class _enclosingClass;
   @override
@@ -1295,20 +1294,6 @@ class Field extends ModelElement
     assert(assertCheck.containsAll([true, false]));
     return super.documentation;
   }
-
-  String get constantValue {
-    if (_constantValue != null) return _constantValue;
-
-    if (_field.computeNode() == null) return null;
-    var v = _field.computeNode().toSource();
-    if (v == null) return null;
-    var string = v.substring(v.indexOf('=') + 1, v.length).trim();
-    _constantValue = string.replaceAll("${modelType.name}", "${modelType.linkedName}");
-
-    return _constantValue;
-  }
-
-  String get constantValueTruncated => truncateString(constantValue, 200);
 
   @override
   ModelElement get enclosingElement {
@@ -1441,10 +1426,34 @@ abstract class GetterSetterCombo implements ModelElement {
     return allFeatures;
   }
 
-
   @override
   ModelElement enclosingElement;
   bool get isInherited;
+
+  String _constantValueBase;
+  String get constantValueBase {
+    if (_constantValueBase == null) {
+      if (element.computeNode() != null) {
+        var v = element.computeNode().toSource();
+        if (v == null) return null;
+        var string = v.substring(v.indexOf('=') + 1, v.length).trim();
+        _constantValueBase =
+            const HtmlEscape(HtmlEscapeMode.UNKNOWN).convert(string);
+      }
+    }
+    return _constantValueBase;
+  }
+
+  String linkifyWithModelType(String text) {
+    RegExp r = new RegExp("\\b${modelType.name}\\b");
+    return text?.replaceAll(r, modelType.linkedName);
+  }
+
+  String get constantValue => linkifyWithModelType(constantValueBase);
+
+  String get constantValueTruncated =>
+       linkifyWithModelType(truncateString(constantValueBase, 200));
+
 
   /// Returns true if both accessors are synthetic.
   bool get hasSyntheticAccessors {
@@ -4401,16 +4410,6 @@ class TopLevelVariable extends ModelElement
 
   @override
   bool get isInherited => false;
-
-  String get constantValue {
-    var v = _variable.computeNode().toSource();
-    if (v == null) return '';
-    var string = v.substring(v.indexOf('=') + 1, v.length).trim();
-    string = HTML_ESCAPE.convert(string);
-    return string.replaceAll(modelType.name, modelType.linkedName);
-  }
-
-  String get constantValueTruncated => truncateString(constantValue, 200);
 
   @override
   String get documentation {
