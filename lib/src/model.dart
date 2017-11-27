@@ -209,9 +209,9 @@ class InheritableAccessor extends Accessor with Inheritable {
 
   @override
   Set<String> get features {
-    Set<String> all_features = super.features;
-    if (isInherited) all_features.add('inherited');
-    return all_features;
+    Set<String> allFeatures = super.features;
+    if (isInherited) allFeatures.add('inherited');
+    return allFeatures;
   }
 }
 
@@ -1369,18 +1369,18 @@ class Field extends ModelElement
 
   @override
   Set<String> get features {
-    Set<String> all_features = super.features..addAll(comboFeatures);
+    Set<String> allFeatures = super.features..addAll(comboFeatures);
     if (hasPublicGetter && hasPublicSetter) {
       if (getter.isInherited && setter.isInherited) {
-        all_features.add('inherited');
+        allFeatures.add('inherited');
       } else {
-        if (getter.isInherited) all_features.add('inherited-getter');
-        if (setter.isInherited) all_features.add('inherited-setter');
+        if (getter.isInherited) allFeatures.add('inherited-getter');
+        if (setter.isInherited) allFeatures.add('inherited-setter');
       }
     } else {
-      if (isInherited) all_features.add('inherited');
+      if (isInherited) allFeatures.add('inherited');
     }
-    return all_features;
+    return allFeatures;
   }
 
   @override
@@ -1432,13 +1432,13 @@ abstract class GetterSetterCombo implements ModelElement {
   Accessor get getter;
 
   Set<String> get comboFeatures {
-    Set<String> all_features = new Set();
-    if (hasExplicitGetter) all_features.addAll(getter.features);
-    if (hasExplicitSetter) all_features.addAll(setter.features);
-    if (readOnly && !isFinal && !isConst) all_features.add('read-only');
-    if (writeOnly) all_features.add('write-only');
-    if (readWrite) all_features.add('read / write');
-    return all_features;
+    Set<String> allFeatures = new Set();
+    if (hasExplicitGetter) allFeatures.addAll(getter.features);
+    if (hasExplicitSetter) allFeatures.addAll(setter.features);
+    if (readOnly && !isFinal && !isConst) allFeatures.add('read-only');
+    if (writeOnly) allFeatures.add('write-only');
+    if (readWrite) allFeatures.add('read / write');
+    return allFeatures;
   }
 
 
@@ -2122,9 +2122,9 @@ class Method extends ModelElement
 
   @override
   Set<String> get features {
-    Set<String> all_features = super.features;
-    if (isInherited) all_features.add('inherited');
-    return all_features;
+    Set<String> allFeatures = super.features;
+    if (isInherited) allFeatures.add('inherited');
+    return allFeatures;
   }
 
   @override
@@ -2526,25 +2526,25 @@ abstract class ModelElement extends Nameable
   }
 
   Set<String> get features {
-    Set<String> all_features = new Set<String>();
-    all_features.addAll(annotations);
+    Set<String> allFeatures = new Set<String>();
+    allFeatures.addAll(annotations);
 
     // override as an annotation should be replaced with direct information
     // from the analyzer if we decide to display it at this level.
-    all_features.remove('@override');
+    allFeatures.remove('@override');
 
     // Drop the plain "deprecated" annotation, that's indicated via
     // strikethroughs. Custom @Deprecated() will still appear.
-    all_features.remove('@deprecated');
+    allFeatures.remove('@deprecated');
     // const and static are not needed here because const/static elements get
     // their own sections in the doc.
-    if (isFinal) all_features.add('final');
-    return all_features;
+    if (isFinal) allFeatures.add('final');
+    return allFeatures;
   }
 
   String get featuresAsString {
-    List<String> all_features = features.toList()..sort(byFeatureOrdering);
-    return all_features.join(', ');
+    List<String> allFeatures = features.toList()..sort(byFeatureOrdering);
+    return allFeatures.join(', ');
   }
 
   bool get canHaveParameters =>
