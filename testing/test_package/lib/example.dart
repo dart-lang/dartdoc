@@ -67,6 +67,15 @@ typedef String processMessage<T>(String msg);
 
 typedef String ParameterizedTypedef<T>(T msg, int foo);
 
+class ShortName {
+  final String aParameter;
+  const ShortName(this.aParameter);
+}
+
+class ExtendedShortName extends ShortName {
+  const ExtendedShortName(String aParameter) : super(aParameter);
+}
+
 /// Referencing [processMessage] (or other things) here should not break
 /// enum constants ala #1445
 enum Animal {
@@ -245,6 +254,9 @@ class Dog implements Cat, E {
 
   final int aFinalField;
   static const String aStaticConstField = "A Constant Dog";
+
+  /// Verify link substitution in constants (#1535)
+  static const ShortName aName = const ExtendedShortName("hello there");
 
   @protected
   final int aProtectedFinalField;

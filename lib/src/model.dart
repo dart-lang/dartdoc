@@ -245,9 +245,9 @@ class Accessor extends ModelElement
 
   /// Call exactly once to set the enclosing combo for this Accessor.
   set enclosingCombo(GetterSetterCombo combo) {
-      assert(_enclosingCombo == null || combo == _enclosingCombo);
-        assert(combo != null);
-      _enclosingCombo = combo;
+    assert(_enclosingCombo == null || combo == _enclosingCombo);
+    assert(combo != null);
+    _enclosingCombo = combo;
   }
 
   bool get isSynthetic => element.isSynthetic;
@@ -274,7 +274,8 @@ class Accessor extends ModelElement
   @override
   String get computeDocumentationComment {
     if (isSynthetic) {
-      String docComment = (element as PropertyAccessorElement).variable.documentationComment;
+      String docComment =
+          (element as PropertyAccessorElement).variable.documentationComment;
       // If we're a setter, only display something if we have something different than the getter.
       // TODO(jcollins-g): modify analyzer to do this itself?
       if (isGetter ||
@@ -1452,7 +1453,7 @@ abstract class GetterSetterCombo implements ModelElement {
   String get constantValue => linkifyWithModelType(constantValueBase);
 
   String get constantValueTruncated =>
-       linkifyWithModelType(truncateString(constantValueBase, 200));
+      linkifyWithModelType(truncateString(constantValueBase, 200));
 
   /// Returns true if both accessors are synthetic.
   bool get hasSyntheticAccessors {
@@ -2876,15 +2877,15 @@ abstract class ModelElement extends Nameable
         Library lib;
         // TODO(jcollins-g): get rid of dynamic special casing
         if (element.kind != ElementKind.DYNAMIC) {
-          lib = _findOrCreateEnclosingLibraryFor((element as dynamic).type.element);
+          lib = _findOrCreateEnclosingLibraryFor(
+              (element as dynamic).type.element);
         }
-        _modelType = new ElementType(
-            (element as dynamic).type, new ModelElement.from((element as dynamic).type.element, lib));
+        _modelType = new ElementType((element as dynamic).type,
+            new ModelElement.from((element as dynamic).type.element, lib));
       }
     }
     return _modelType;
   }
-
 
   @override
   String get name => element.name;
