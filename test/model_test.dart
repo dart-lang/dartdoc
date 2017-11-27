@@ -1711,6 +1711,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         prettyColorsConstant,
         deprecated;
 
+    Field aStaticConstField;
+
     setUp(() {
       greenConstant =
           exLibrary.constants.firstWhere((c) => c.name == 'COLOR_GREEN');
@@ -1721,6 +1723,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       cat = exLibrary.constants.firstWhere((c) => c.name == 'MY_CAT');
       deprecated =
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
+      aStaticConstField =
+          exLibrary.allClasses.firstWhere((c) => c.name == 'Dog')
+              .allFields.firstWhere((f) => f.name == 'aStaticConstField');
+    });
+
+    test('constant field values are escaped', () {
+      expect(aStaticConstField.constantValue, '&quot;A Constant Dog&quot;');
     });
 
     test('has a fully qualified name', () {

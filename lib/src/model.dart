@@ -1454,7 +1454,6 @@ abstract class GetterSetterCombo implements ModelElement {
   String get constantValueTruncated =>
        linkifyWithModelType(truncateString(constantValueBase, 200));
 
-
   /// Returns true if both accessors are synthetic.
   bool get hasSyntheticAccessors {
     if ((hasPublicGetter && getter.element.isSynthetic) ||
