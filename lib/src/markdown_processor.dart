@@ -137,6 +137,8 @@ final RegExp isConstructor = new RegExp(r'^new[\s]+', multiLine: true);
 // Covers anything with leading digits/symbols, empty string, weird punctuation, spaces.
 final RegExp notARealDocReference = new RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
 
+final RegExp operatorPrefix = new RegExp(r'^operator[ ]*');
+
 final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.ELEMENT);
 
 final List<md.InlineSyntax> _markdown_syntaxes = [
@@ -397,8 +399,8 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element,
   final Set<ModelElement> results = new Set();
 
   // This might be an operator.  Strip the operator prefix and try again.
-  if (results.isEmpty && codeRef.startsWith('operator')) {
-    String newCodeRef = codeRef.replaceFirst('operator', '');
+  if (results.isEmpty && codeRef.startsWith(operatorPrefix)) {
+    String newCodeRef = codeRef.replaceFirst(operatorPrefix, '');
     return _findRefElementInLibrary(
         newCodeRef, element, commentRefs, preferredClass);
   }
@@ -594,9 +596,13 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element,
   } else if (results.length == 1) {
     result = results.first.element;
   } else {
-    element.warn(PackageWarning.ambiguousDocReference,
-        message:
-            "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
+    // Squelch ambiguous doc reference warnings for parameters, because we
+    // don't link those anyway.
+    if (!results.every((r) => r is Parameter)) {
+      element.warn(PackageWarning.ambiguousDocReference,
+          message:
+              "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
+    }
     result = results.first.element;
   }
   return result;
@@ -635,6 +641,11 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
         for (final modelElement in c.allModelElements) {
           if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
           String namePart = modelElement.fullyQualifiedName.split('.').last;
+          if (modelElement is Accessor) {
+            // TODO(jcollins-g): Individual classes should be responsible for
+            // this name comparison munging.
+            namePart = namePart.split('=').first;
+          }
           // TODO(jcollins-g): fix operators so we can use 'name' here or similar.
           if (codeRefChomped == namePart) {
             results.add(package.findCanonicalModelElementFor(

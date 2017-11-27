@@ -3,6 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/model.dart';
 import 'package:tuple/tuple.dart';
 
 import 'config.dart';
@@ -82,10 +83,18 @@ final Map<PackageWarning, PackageWarningHelpText> packageWarningText = const {
 };
 
 /// Something that package warnings can be called on.
+/// TODO(jcollins-g): Complete object model refactoring for #1524.
 abstract class Warnable implements Locatable {
   void warn(PackageWarning warning,
       {String message, Iterable<Locatable> referredFrom});
   Warnable get enclosingElement;
+
+  Set<String> get locationPieces {
+    return new Set.from(element.location
+        .toString()
+        .split(locationSplitter)
+        .where((s) => s.isNotEmpty));
+  }
 }
 
 /// Something that can be located for warning purposes.
@@ -240,7 +249,7 @@ class PackageWarningCounter {
   int get errorCount {
     return _warningCounts.keys
         .map((w) => options.asErrors.contains(w) ? _warningCounts[w] : 0)
-        .reduce((a, b) => a + b);
+        .fold(0, (a, b) => a + b);
   }
 
   int get warningCount {
@@ -249,7 +258,7 @@ class PackageWarningCounter {
             options.asWarnings.contains(w) && !options.asErrors.contains(w)
                 ? _warningCounts[w]
                 : 0)
-        .reduce((a, b) => a + b);
+        .fold(0, (a, b) => a + b);
   }
 
   @override

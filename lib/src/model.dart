@@ -85,7 +85,7 @@ int byFeatureOrdering(String a, String b) {
   return compareAsciiLowerCaseNatural(a, b);
 }
 
-final RegExp _locationSplitter = new RegExp(r"(package:|[\\/;.])");
+final RegExp locationSplitter = new RegExp(r"(package:|[\\/;.])");
 
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
@@ -2252,6 +2252,7 @@ ModelElement resolveMultiplyInheritedElement(
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
 abstract class ModelElement extends Nameable
+    with Warnable
     implements Comparable, Documentable {
   final Element _element;
   final Library _library;
@@ -2423,14 +2424,6 @@ abstract class ModelElement extends Nameable
 
   Set<Library> get exportedInLibraries {
     return library.package.libraryElementReexportedBy[this.element.library];
-  }
-
-  Set<String> get locationPieces {
-    return new Set()
-      ..addAll(element.location
-          .toString()
-          .split(_locationSplitter)
-          .where((s) => s.isNotEmpty));
   }
 
   // Use components of this element's location to return a score for library
@@ -3439,7 +3432,7 @@ abstract class Nameable {
   String get name;
 
   Set<String> get namePieces => new Set()
-    ..addAll(name.split(_locationSplitter).where((s) => s.isNotEmpty));
+    ..addAll(name.split(locationSplitter).where((s) => s.isNotEmpty));
 }
 
 class Operator extends Method {
@@ -3500,7 +3493,7 @@ class Operator extends Method {
   String get typeName => 'operator';
 }
 
-class Package extends Nameable implements Documentable {
+class Package extends Nameable with Documentable, Warnable {
   // Library objects serving as entry points for documentation.
   final List<Library> _libraries = [];
 
@@ -3604,7 +3597,27 @@ class Package extends Nameable implements Documentable {
         extendedDebug: extendedDebug);
   }
 
+  final Set<Tuple3<Element, PackageWarning, String>> _warnAlreadySeen =
+      new Set();
   void warnOnElement(Warnable warnable, PackageWarning kind,
+      {String message,
+      Iterable<Locatable> referredFrom,
+      Iterable<String> extendedDebug}) {
+    var newEntry = new Tuple3(warnable?.element, kind, message);
+    if (_warnAlreadySeen.contains(newEntry)) {
+      return;
+    }
+    // Warnings can cause other warnings.  Queue them up via the stack but
+    // don't allow warnings we're already working on to get in there.
+    _warnAlreadySeen.add(newEntry);
+    _warnOnElement(warnable, kind,
+        message: message,
+        referredFrom: referredFrom,
+        extendedDebug: extendedDebug);
+    _warnAlreadySeen.remove(newEntry);
+  }
+
+  void _warnOnElement(Warnable warnable, PackageWarning kind,
       {String message,
       Iterable<Locatable> referredFrom,
       Iterable<String> extendedDebug}) {
