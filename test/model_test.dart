@@ -1902,9 +1902,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           "const &lt;String&gt; [COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;]");
     });
 
-    test('MY_CAT is linked', () {
+    test('MY_CAT is not linked', () {
       expect(cat.constantValue,
-          'const <a href="ex/ConstantCat-class.html">ConstantCat</a>(&#39;tabby&#39;)');
+          'const ConstantCat(&#39;tabby&#39;)');
     });
 
     test('exported property', () {
