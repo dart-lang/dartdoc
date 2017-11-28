@@ -6,9 +6,9 @@
     <ol>
       {{#package.categories}}
         <li class="section-title">{{name}}</li>
-        {{#libraries}}
+        {{#publicLibraries}}
         <li>{{{linkedName}}}</li>
-        {{/libraries}}
+        {{/publicLibraries}}
       {{/package.categories}}
     </ol>
     {{/useCategories}}
@@ -16,9 +16,9 @@
     {{^useCategories}}
     <ol>
       <li class="section-title"><a href="{{package.href}}#libraries">Libraries</a></li>
-      {{#package.libraries}}
+      {{#package.publicLibraries}}
       <li>{{{linkedName}}}</li>
-      {{/package.libraries}}
+      {{/package.publicLibraries}}
     </ol>
     {{/useCategories}}
   </div>
@@ -29,104 +29,104 @@
     {{>documentation}}
     {{/library}}
 
-    {{#library.hasClasses}}
+    {{#library.hasPublicClasses}}
     <section class="summary offset-anchor" id="classes">
       <h2>Classes</h2>
 
       <dl>
-        {{#library.classes}}
+        {{#library.publicClasses}}
         <dt id="{{htmlId}}">
           <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{linkedName}}}</span>
         </dt>
         <dd>
           {{{ oneLineDoc }}}
         </dd>
-        {{/library.classes}}
+        {{/library.publicClasses}}
       </dl>
     </section>
-    {{/library.hasClasses}}
+    {{/library.hasPublicClasses}}
 
-    {{#library.hasConstants}}
+    {{#library.hasPublicConstants}}
     <section class="summary offset-anchor" id="constants">
       <h2>Constants</h2>
 
       <dl class="properties">
-        {{#library.constants}}
+        {{#library.publicConstants}}
         {{>constant}}
-        {{/library.constants}}
+        {{/library.publicConstants}}
       </dl>
     </section>
-    {{/library.hasConstants}}
+    {{/library.hasPublicConstants}}
 
-    {{#library.hasProperties}}
+    {{#library.hasPublicProperties}}
     <section class="summary offset-anchor" id="properties">
       <h2>Properties</h2>
 
       <dl class="properties">
-        {{#library.properties}}
+        {{#library.publicProperties}}
         {{>property}}
-        {{/library.properties}}
+        {{/library.publicProperties}}
       </dl>
     </section>
-    {{/library.hasProperties}}
+    {{/library.hasPublicProperties}}
 
-    {{#library.hasFunctions}}
+    {{#library.hasPublicFunctions}}
     <section class="summary offset-anchor" id="functions">
       <h2>Functions</h2>
 
       <dl class="callables">
-        {{#library.functions}}
+        {{#library.publicFunctions}}
         {{>callable}}
-        {{/library.functions}}
+        {{/library.publicFunctions}}
       </dl>
     </section>
-    {{/library.hasFunctions}}
+    {{/library.hasPublicFunctions}}
 
-    {{#library.hasEnums}}
+    {{#library.hasPublicEnums}}
     <section class="summary offset-anchor" id="enums">
       <h2>Enums</h2>
 
       <dl>
-        {{#library.enums}}
+        {{#library.publicEnums}}
         <dt id="{{htmlId}}">
           {{{linkedName}}}
         </dt>
         <dd>
           {{{ oneLineDoc }}}
         </dd>
-        {{/library.enums}}
+        {{/library.publicEnums}}
       </dl>
     </section>
-    {{/library.hasEnums}}
+    {{/library.hasPublicEnums}}
 
-    {{#library.hasTypedefs}}
+    {{#library.hasPublicTypedefs}}
     <section class="summary offset-anchor" id="typedefs">
       <h2>Typedefs</h2>
 
       <dl class="callables">
-        {{#library.typedefs}}
+        {{#library.publicTypedefs}}
         {{>callable}}
-        {{/library.typedefs}}
+        {{/library.publicTypedefs}}
       </dl>
     </section>
-    {{/library.hasTypedefs}}
+    {{/library.hasPublicTypedefs}}
 
-    {{#library.hasExceptions}}
+    {{#library.hasPublicExceptions}}
     <section class="summary offset-anchor" id="exceptions">
       <h2>Exceptions / Errors</h2>
 
       <dl>
-        {{#library.exceptions}}
+        {{#library.publicExceptions}}
         <dt id="{{htmlId}}">
           <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{linkedName}}}</span>
         </dt>
         <dd>
           {{{ oneLineDoc }}}
         </dd>
-        {{/library.exceptions}}
+        {{/library.publicExceptions}}
       </dl>
     </section>
-    {{/library.hasExceptions}}
+    {{/library.hasPublicExceptions}}
 
   </div> <!-- /.main-content -->
 

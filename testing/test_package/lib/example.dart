@@ -67,6 +67,42 @@ typedef String processMessage<T>(String msg);
 
 typedef String ParameterizedTypedef<T>(T msg, int foo);
 
+/// Support class to test inheritance + type expansion from implements clause.
+abstract class ParameterizedClass<T> {
+  AnotherParameterizedClass<T> aInheritedMethod(int foo);
+  ParameterizedTypedef<T> aInheritedTypedefReturningMethod();
+  AnotherParameterizedClass<T> aInheritedField;
+  AnotherParameterizedClass<T> get aInheritedGetter;
+  ParameterizedClass<T> operator+ (ParameterizedClass<T> other);
+  set aInheritedSetter(AnotherParameterizedClass<T> thingToSet);
+}
+
+class AnotherParameterizedClass<B> {}
+
+/// Class for testing expansion of type from implements clause.
+abstract class TemplatedInterface<A> implements ParameterizedClass<List<int>> {
+  AnotherParameterizedClass<List<int>> aMethodInterface(A value);
+  ParameterizedTypedef<List<String>> aTypedefReturningMethodInterface();
+  AnotherParameterizedClass<Stream<List<int>>> aField;
+  AnotherParameterizedClass<Map<A, List<String>>> get aGetter;
+  set aSetter(AnotherParameterizedClass<List<bool>> thingToSet);
+}
+
+class TemplatedClass<X> {
+  int aMethod(X input) {
+    return 5;
+  }
+}
+
+class ShortName {
+  final String aParameter;
+  const ShortName(this.aParameter);
+}
+
+class ExtendedShortName extends ShortName {
+  const ExtendedShortName(String aParameter) : super(aParameter);
+}
+
 /// Referencing [processMessage] (or other things) here should not break
 /// enum constants ala #1445
 enum Animal {
@@ -245,6 +281,9 @@ class Dog implements Cat, E {
 
   final int aFinalField;
   static const String aStaticConstField = "A Constant Dog";
+
+  /// Verify link substitution in constants (#1535)
+  static const ShortName aName = const ExtendedShortName("hello there");
 
   @protected
   final int aProtectedFinalField;

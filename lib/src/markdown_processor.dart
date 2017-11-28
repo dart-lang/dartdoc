@@ -11,6 +11,7 @@ import 'dart:math';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart' show Member;
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 import 'package:tuple/tuple.dart';
@@ -237,7 +238,7 @@ NodeList<CommentReference> _getCommentRefs(Documentable documentable) {
 
 /// Returns null if element is a parameter.
 MatchingLinkResult _getMatchingLinkElement(
-    String codeRef, Documentable element, List<CommentReference> commentRefs) {
+    String codeRef, Warnable element, List<CommentReference> commentRefs) {
   // By debugging inspection, it seems correct to not warn when we don't have
   // CommentReferences; there's actually nothing that needs resolving in
   // that case.
@@ -314,8 +315,10 @@ MatchingLinkResult _getMatchingLinkElement(
   refModelElement = new ModelElement.from(searchElement, refLibrary,
       getter: getter, setter: setter);
   if (!refModelElement.isCanonical) {
-    refModelElement
-        .warn(PackageWarning.noCanonicalFound, referredFrom: [element]);
+    if (refLibrary.isPublicAndPackageDocumented) {
+      refModelElement
+          .warn(PackageWarning.noCanonicalFound, referredFrom: [element]);
+    }
     // Don't warn about doc references because that's covered by the no
     // canonical library found message.
     return new MatchingLinkResult(null, null, warn: false);
@@ -387,14 +390,14 @@ Map<String, Set<ModelElement>> _findRefElementCache;
 // TODO(jcollins-g): Subcomponents of this function shouldn't be adding nulls to results, strip the
 //                   removes out that are gratuitous and debug the individual pieces.
 // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
-Element _findRefElementInLibrary(String codeRef, ModelElement element,
+Element _findRefElementInLibrary(String codeRef, Warnable element,
     List<CommentReference> commentRefs, Class preferredClass) {
   assert(element != null);
   assert(element.package.allLibrariesAdded);
 
   String codeRefChomped = codeRef.replaceFirst(isConstructor, '');
 
-  final Library library = element.library;
+  final Library library = element is ModelElement ? element.library : null;
   final Package package = library.package;
   final Set<ModelElement> results = new Set();
 
@@ -425,8 +428,19 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element,
   // We don't link these, but this keeps us from emitting warnings.  Be sure to
   // get members of parameters too.
   // TODO(jcollins-g): link to classes that are the types of parameters, where known
-  results.addAll(element.allParameters.where((p) =>
-      p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
+  if (element is ModelElement) {
+    results.addAll(element.allParameters.where((p) =>
+        p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
+  }
+
+  results.remove(null);
+  // Maybe this ModelElement has type parameters, and this is one of them.
+  if (results.isEmpty) {
+    if (element is TypeParameters) {
+      results.addAll((element as TypeParameters).typeParameters.where((p) =>
+          p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
+    }
+  }
 
   results.remove(null);
   if (results.isEmpty) {
@@ -454,7 +468,7 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element,
 
     if (results.isEmpty && realClass != null) {
       for (Class superClass
-          in realClass.superChain.map((et) => et.element as Class)) {
+          in realClass.publicSuperChain.map((et) => et.element as Class)) {
         if (!tryClasses.contains(superClass)) {
           _getResultsForClass(
               superClass, codeRefChomped, results, codeRef, package);
@@ -474,7 +488,7 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element,
   if (results.isEmpty && _findRefElementCache == null) {
     assert(package.allLibrariesAdded);
     _findRefElementCache = new Map();
-    for (final modelElement in package.allModelElements) {
+    for (final modelElement in filterNonDocumented(package.allModelElements)) {
       _findRefElementCache.putIfAbsent(
           modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
       _findRefElementCache.putIfAbsent(
@@ -520,6 +534,7 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element,
       }
     }
   }
+  results.remove(null);
 
   // This could conceivably be a reference to an enum member.  They don't show up in allModelElements.
   // TODO(jcollins-g): Put enum members in allModelElements with useful hrefs without blowing up other assumptions about what that means.
@@ -543,10 +558,10 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element,
       }
     }
   }
+  results.remove(null);
 
   Element result;
 
-  results.remove(null);
   if (results.length > 1) {
     // If this name could refer to a class or a constructor, prefer the class.
     if (results.any((r) => r is Class)) {
@@ -555,12 +570,30 @@ Element _findRefElementInLibrary(String codeRef, ModelElement element,
   }
 
   if (results.length > 1) {
+    if (results.any((r) => r.library.packageName == library.packageName)) {
+      results.removeWhere((r) => r.library.packageName != library.packageName);
+    }
+  }
+
+  if (results.length > 1 && element is ModelElement) {
     // Attempt to disambiguate using the library.
     // TODO(jcollins-g): we could have saved ourselves some work by using the analyzer
     //                   to search the namespace, somehow.  Do that instead.
     if (results.any((r) => r.element.isAccessibleIn(element.library.element))) {
       results.removeWhere(
           (r) => !r.element.isAccessibleIn(element.library.element));
+    }
+  }
+
+  if (results.length > 1) {
+    // This may refer to an element with the same name in multiple libraries
+    // in an external package, e.g. Matrix4 in vector_math and vector_math_64.
+    // Disambiguate by attempting to figure out which of them our package
+    // is actually using by checking the import/export graph.
+    if (results.any(
+        (r) => library.packageImportedExportedLibraries.contains(r.library))) {
+      results.removeWhere(
+          (r) => !library.packageImportedExportedLibraries.contains(r.library));
     }
   }
 
@@ -634,7 +667,7 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
       // TODO(jcollins-g): This makes our caller ~O(n^2) vs length of superChain.
       //                   Fortunately superChains are short, but optimize this if it matters.
       superChain
-          .addAll(tryClass.superChainRaw.map((t) => t.returnElement as Class));
+          .addAll(tryClass.superChain.map((t) => t.returnElement as Class));
       List<String> codeRefParts = codeRefChomped.split('.');
       for (final c in superChain) {
         // TODO(jcollins-g): add a hash-map-enabled lookup function to Class?
@@ -693,10 +726,10 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
   }
 }
 
-String _linkDocReference(String codeRef, Documentable documentable,
-    NodeList<CommentReference> commentRefs) {
+String _linkDocReference(
+    String codeRef, Warnable warnable, NodeList<CommentReference> commentRefs) {
   MatchingLinkResult result;
-  result = _getMatchingLinkElement(codeRef, documentable, commentRefs);
+  result = _getMatchingLinkElement(codeRef, warnable, commentRefs);
   final ModelElement linkedElement = result.element;
   final String label = result.label ?? codeRef;
   if (linkedElement != null) {
@@ -713,8 +746,8 @@ String _linkDocReference(String codeRef, Documentable documentable,
     }
   } else {
     if (result.warn) {
-      documentable.warn(PackageWarning.unresolvedDocReference,
-          message: codeRef, referredFrom: documentable.documentationFrom);
+      warnable.warn(PackageWarning.unresolvedDocReference,
+          message: codeRef, referredFrom: warnable.documentationFrom);
     }
     return '<code>${HTML_ESCAPE.convert(label)}</code>';
   }
@@ -889,7 +922,7 @@ class MarkdownDocument extends md.Document {
 }
 
 class Documentation {
-  final Documentable _element;
+  final Canonicalization _element;
   Documentation.forElement(this._element) {}
 
   bool _hasExtendedDocs;

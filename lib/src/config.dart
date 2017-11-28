@@ -18,6 +18,7 @@ class Config {
   final double reexportMinConfidence;
   final bool verboseWarnings;
   final List<String> dropTextFrom;
+  final List<String> excludePackages;
   Config._(
       this.inputDir,
       this.showWarnings,
@@ -29,7 +30,8 @@ class Config {
       this.categoryOrder,
       this.reexportMinConfidence,
       this.verboseWarnings,
-      this.dropTextFrom);
+      this.dropTextFrom,
+      this.excludePackages);
 }
 
 Config _config;
@@ -46,7 +48,8 @@ void setConfig(
     List<String> categoryOrder,
     double reexportMinConfidence: 0.1,
     bool verboseWarnings: true,
-    List<String> dropTextFrom}) {
+    List<String> dropTextFrom,
+    List<String> excludePackages}) {
   _config = new Config._(
       inputDir,
       showWarnings,
@@ -58,5 +61,6 @@ void setConfig(
       categoryOrder ?? const <String>[],
       reexportMinConfidence,
       verboseWarnings,
-      dropTextFrom ?? const <String>[]);
+      dropTextFrom ?? const <String>[],
+      excludePackages ?? const <String>[]);
 }

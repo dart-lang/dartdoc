@@ -8,16 +8,32 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:dartdoc/src/model.dart';
 
 import 'config.dart';
 
 final Map<String, String> _fileContents = <String, String>{};
 
-List<InterfaceType> getAllSupertypes(ClassElement c) => c.allSupertypes;
+/// Remove elements that aren't documented.
+Iterable<T> filterNonDocumented<T extends Documentable>(
+    Iterable<T> maybeDocumentedItems) {
+  return maybeDocumentedItems.where((me) => me.isDocumented);
+}
+
+/// Returns an iterable containing only public elements from [privacyItems].
+Iterable<T> filterNonPublic<T extends Privacy>(Iterable<T> privacyItems) {
+  return privacyItems.where((me) => me.isPublic);
+}
+
+/// Finds canonical classes for all classes in the iterable, if possible.
+/// If a canonical class can not be found, returns the original class.
+Iterable<Class> findCanonicalFor(Iterable<Class> classes) {
+  return classes.map(
+      (c) => c.package.findCanonicalModelElementFor(c.element) as Class ?? c);
+}
 
 String getFileContentsFor(Element e) {
   var location = e.source.fullName;
@@ -28,20 +44,14 @@ String getFileContentsFor(Element e) {
   return _fileContents[location];
 }
 
-Iterable<LibraryElement> getSdkLibrariesToDocument(
+Iterable<LibraryElement> getRequiredSdkLibraries(
     DartSdk sdk, AnalysisContext context) {
-  var sdkApiLibs = sdk.sdkLibraries
-      .where((SdkLibrary sdkLib) => !sdkLib.isInternal && sdkLib.isDocumented)
-      .toList();
-  sdkApiLibs.sort((lib1, lib2) => lib1.shortName.compareTo(lib2.shortName));
-
+  var requiredLibs = sdk.sdkLibraries
+      .where((sdkLib) => sdkLib.shortName == 'dart:_interceptors');
   final Set<LibraryElement> allLibraryElements = new Set();
-
-  for (var sdkLib in sdkApiLibs) {
+  for (var sdkLib in requiredLibs) {
     Source source = sdk.mapDartUri(sdkLib.shortName);
-    LibraryElement library = context.computeLibraryElement(source);
-    allLibraryElements.add(library);
-    allLibraryElements.addAll(library.exportedLibraries);
+    allLibraryElements.add(context.computeLibraryElement(source));
   }
   return allLibraryElements;
 }

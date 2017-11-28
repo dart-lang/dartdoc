@@ -241,10 +241,10 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   String get documentedPartialFieldInSubclassOnly => "overridden getter";
 
   @override
+  /// Docs for setter of implicitGetterExplicitSetter.
   set implicitGetterExplicitSetter(String x) {}
 
   @override
-
   /// Getter doc for explicitGetterImplicitSetter
   List<int> get explicitGetterImplicitSetter => new List<int>();
 

@@ -7,7 +7,9 @@ library dartdoc.io_utils;
 
 import 'dart:io';
 
+import 'package:dartdoc/src/config.dart';
 import 'package:path/path.dart' as path;
+import 'package:package_config/discovery.dart' as package_config;
 
 /// Lists the contents of [dir].
 ///
@@ -48,61 +50,6 @@ Iterable<String> _doList(String dir, Set<String> listedDirectories,
   }
 }
 
-/// Given a package name, explore the directory and pull out all top level
-/// library files in the "lib" directory to document.
-Iterable<String> findFilesToDocumentInPackage(String packageDir) sync* {
-  final String sep = path.separator;
-
-  var packageLibDir = path.join(packageDir, 'lib');
-  var packageLibSrcDir = path.join(packageLibDir, 'src');
-
-  // To avoid analyzing package files twice, only files with paths not
-  // containing '/packages' will be added. The only exception is if the file
-  // to analyze already has a '/package' in its path.
-  for (var lib
-      in listDir(packageDir, recursive: true, listDir: _packageDirList)) {
-    if (lib.endsWith('.dart') &&
-        (!lib.contains('${sep}packages${sep}') ||
-            packageDir.contains('${sep}packages${sep}'))) {
-      // Only include libraries within the lib dir that are not in lib/src
-      if (path.isWithin(packageLibDir, lib) &&
-          !path.isWithin(packageLibSrcDir, lib)) {
-        // Only add the file if it does not contain 'part of'
-        var contents = new File(lib).readAsStringSync();
-
-        if (contents.contains(_newLinePartOfRegexp) ||
-            contents.startsWith(_partOfRegexp)) {
-          // NOOP: it's a part file
-        } else {
-          yield lib;
-        }
-      }
-    }
-  }
-}
-
-/// If [dir] contains both a `lib` directory and a `pubspec.yaml` file treat
-/// it like a package and only return the `lib` dir.
-///
-/// This ensures that packages don't have non-`lib` content documented.
-Iterable<FileSystemEntity> _packageDirList(Directory dir) sync* {
-  var entities = dir.listSync();
-
-  var pubspec = entities.firstWhere(
-      (e) => e is File && path.basename(e.path) == 'pubspec.yaml',
-      orElse: () => null);
-
-  var libDir = entities.firstWhere(
-      (e) => e is Directory && path.basename(e.path) == 'lib',
-      orElse: () => null);
-
-  if (pubspec != null && libDir != null) {
-    yield libDir;
-  } else {
-    yield* entities;
-  }
-}
-
 /// Converts `.` and `:` into `-`, adding a ".html" extension.
 ///
 /// For example:
@@ -110,8 +57,8 @@ Iterable<FileSystemEntity> _packageDirList(Directory dir) sync* {
 /// * dart.dartdoc => dart_dartdoc.html
 /// * dart:core => dart_core.html
 String getFileNameFor(String name) =>
-    '${name.replaceAll(_libraryNameRegexp, '-')}.html';
+    '${name.replaceAll(libraryNameRegexp, '-')}.html';
 
-final _libraryNameRegexp = new RegExp('[.:]');
-final _partOfRegexp = new RegExp('part of ');
-final _newLinePartOfRegexp = new RegExp('\npart of ');
+final libraryNameRegexp = new RegExp('[.:]');
+final partOfRegexp = new RegExp('part of ');
+final newLinePartOfRegexp = new RegExp('\npart of ');

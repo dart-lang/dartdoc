@@ -234,7 +234,7 @@ packages:
       name: shelf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.0"
+    version: "0.7.1"
   shelf_packages_handler:
     description:
       name: shelf_packages_handler
@@ -350,4 +350,4 @@ packages:
     source: hosted
     version: "2.1.13"
 sdks:
-  dart: ">=1.23.0 <=2.0.0-dev.7.0"
+  dart: ">=1.23.0 <=2.0.0-dev.8.0"

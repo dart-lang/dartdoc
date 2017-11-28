@@ -7,6 +7,7 @@ import 'dart:convert' show JsonEncoder;
 import 'dart:io' show Directory, File;
 
 import 'package:collection/collection.dart' show compareNatural;
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:path/path.dart' as path;
 
 import '../logging.dart';
@@ -102,86 +103,75 @@ class HtmlGeneratorInstance implements HtmlOptions {
 
     generatePackage();
 
-    for (var lib in package.libraries) {
+    for (var lib in filterNonDocumented(package.libraries)) {
+      // if (lib.name != 'extract_messages') continue;
       generateLibrary(package, lib);
 
-      for (var clazz in lib.allClasses) {
-        // TODO(jcollins-g): consider refactor so that only the canonical
-        // ModelElements show up in these lists
-        if (!clazz.isCanonical) continue;
-
+      for (var clazz in filterNonDocumented(lib.allClasses)) {
         generateClass(package, lib, clazz);
 
-        for (var constructor in clazz.constructors) {
+        for (var constructor in filterNonDocumented(clazz.constructors)) {
           if (!constructor.isCanonical) continue;
           generateConstructor(package, lib, clazz, constructor);
         }
 
-        for (var constant in clazz.constants) {
+        for (var constant in filterNonDocumented(clazz.constants)) {
           if (!constant.isCanonical) continue;
           generateConstant(package, lib, clazz, constant);
         }
 
-        for (var property in clazz.staticProperties) {
+        for (var property in filterNonDocumented(clazz.staticProperties)) {
           if (!property.isCanonical) continue;
           generateProperty(package, lib, clazz, property);
         }
 
-        for (var property in clazz.propertiesForPages) {
+        for (var property in filterNonDocumented(clazz.propertiesForPages)) {
           if (!property.isCanonical) continue;
           generateProperty(package, lib, clazz, property);
         }
 
-        for (var method in clazz.methodsForPages) {
+        for (var method in filterNonDocumented(clazz.methodsForPages)) {
           if (!method.isCanonical) continue;
           generateMethod(package, lib, clazz, method);
         }
 
-        for (var operator in clazz.operatorsForPages) {
+        for (var operator in filterNonDocumented(clazz.operatorsForPages)) {
           if (!operator.isCanonical) continue;
           generateMethod(package, lib, clazz, operator);
         }
 
-        for (var method in clazz.staticMethods) {
+        for (var method in filterNonDocumented(clazz.staticMethods)) {
           if (!method.isCanonical) continue;
           generateMethod(package, lib, clazz, method);
         }
       }
 
-      for (var eNum in lib.enums) {
-        if (!eNum.isCanonical) continue;
+      for (var eNum in filterNonDocumented(lib.enums)) {
         generateEnum(package, lib, eNum);
-        for (var property in eNum.propertiesForPages) {
-          if (!property.isCanonical) continue;
+        for (var property in filterNonDocumented(eNum.propertiesForPages)) {
           generateProperty(package, lib, eNum, property);
         }
-        for (var operator in eNum.operatorsForPages) {
-          if (!operator.isCanonical) continue;
+        for (var operator in filterNonDocumented(eNum.operatorsForPages)) {
           generateMethod(package, lib, eNum, operator);
         }
-        for (var method in eNum.methodsForPages) {
-          if (!method.isCanonical) continue;
+        for (var method in filterNonDocumented(eNum.methodsForPages)) {
           generateMethod(package, lib, eNum, method);
         }
       }
 
-      for (var constant in lib.constants) {
-        if (!constant.isCanonical) continue;
+      for (var constant in filterNonDocumented(lib.constants)) {
         generateTopLevelConstant(package, lib, constant);
       }
 
-      for (var property in lib.properties) {
-        if (!property.isCanonical) continue;
+      for (var property in filterNonDocumented(lib.properties)) {
         generateTopLevelProperty(package, lib, property);
       }
 
-      for (var function in lib.functions) {
-        if (!function.isCanonical) continue;
+      for (var function in filterNonDocumented(lib.functions)) {
         generateFunction(package, lib, function);
       }
 
-      for (var typeDef in lib.typedefs) {
-        if (!typeDef.isCanonical) continue;
+      for (var typeDef in filterNonDocumented(lib.typedefs)) {
         generateTypeDef(package, lib, typeDef);
       }
     }
@@ -195,7 +185,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void generateLibrary(Package package, Library lib) {
-    logInfo('Generating docs for library ${lib.name} from ${lib.path}...');
+    logInfo(
+        'Generating docs for library ${lib.name} from ${lib.element.source.uri}...');
     if (!lib.isAnonymous && !lib.hasDocumentation) {
       package.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);
     }
@@ -306,7 +297,9 @@ class HtmlGeneratorInstance implements HtmlOptions {
         assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
     _writeFile(fullName, content);
-    if (data.self is ModelElement) documentedElements.add(data.self);
+    if (data.self is ModelElement) {
+      documentedElements.add(data.self);
+    }
   }
 
   /// [content] must be either [String] or [List<int>].

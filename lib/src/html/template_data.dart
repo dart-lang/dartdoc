@@ -135,18 +135,19 @@ class LibraryTemplateData extends TemplateData<Library> {
   List get navLinks => [package];
   @override
   Iterable<Subnav> getSubNavItems() sync* {
-    if (library.hasClasses)
+    if (library.hasPublicClasses)
       yield new Subnav('Classes', '${library.href}#classes');
-    if (library.hasConstants)
+    if (library.hasPublicConstants)
       yield new Subnav('Constants', '${library.href}#constants');
-    if (library.hasProperties)
+    if (library.hasPublicProperties)
       yield new Subnav('Properties', '${library.href}#properties');
-    if (library.hasFunctions)
+    if (library.hasPublicFunctions)
       yield new Subnav('Functions', '${library.href}#functions');
-    if (library.hasEnums) yield new Subnav('Enums', '${library.href}#enums');
-    if (library.hasTypedefs)
+    if (library.hasPublicEnums)
+      yield new Subnav('Enums', '${library.href}#enums');
+    if (library.hasPublicTypedefs)
       yield new Subnav('Typedefs', '${library.href}#typedefs');
-    if (library.hasExceptions)
+    if (library.hasPublicExceptions)
       yield new Subnav('Exceptions', '${library.href}#exceptions');
   }
 
@@ -188,19 +189,19 @@ class ClassTemplateData extends TemplateData<Class> {
   String get htmlBase => '..';
   @override
   Iterable<Subnav> getSubNavItems() sync* {
-    if (clazz.hasConstructors)
+    if (clazz.hasPublicConstructors)
       yield new Subnav('Constructors', '${clazz.href}#constructors');
-    if (clazz.hasProperties)
+    if (clazz.hasPublicProperties)
       yield new Subnav('Properties', '${clazz.href}#instance-properties');
-    if (clazz.hasMethods)
+    if (clazz.hasPublicMethods)
       yield new Subnav('Methods', '${clazz.href}#instance-methods');
-    if (clazz.hasOperators)
+    if (clazz.hasPublicOperators)
       yield new Subnav('Operators', '${clazz.href}#operators');
-    if (clazz.hasStaticProperties)
+    if (clazz.hasPublicStaticProperties)
       yield new Subnav('Static Properties', '${clazz.href}#static-properties');
-    if (clazz.hasStaticMethods)
+    if (clazz.hasPublicStaticMethods)
       yield new Subnav('Static Methods', '${clazz.href}#static-methods');
-    if (clazz.hasConstants)
+    if (clazz.hasPublicConstants)
       yield new Subnav('Constants', '${clazz.href}#constants');
   }
 

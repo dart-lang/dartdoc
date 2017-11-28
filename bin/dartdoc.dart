@@ -261,11 +261,11 @@ main(List<String> arguments) async {
       reexportMinConfidence:
           double.parse(args['ambiguous-reexport-scorer-min-confidence']),
       verboseWarnings: args['verbose-warnings'],
+      excludePackages: args['exclude-packages'],
       dropTextFrom: dropTextFrom);
 
   DartDoc dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
-      outputDir, packageMeta, includeLibraries,
-      includeExternals: includeExternals);
+      outputDir, packageMeta, includeLibraries, includeExternals);
 
   dartdoc.onCheckProgress.listen(logProgress);
   await Chain.capture(() async {
@@ -275,7 +275,7 @@ main(List<String> arguments) async {
     },
         zoneSpecification: new ZoneSpecification(
             print: (Zone self, ZoneDelegate parent, Zone zone, String line) =>
-                logPrint(line)  ));
+                logPrint(line)));
   }, onError: (e, Chain chain) {
     if (e is DartDocFailure) {
       stderr.writeln('\nGeneration failed: ${e}.');
@@ -325,6 +325,8 @@ ArgParser _createArgsParser() {
           '(optional text next to the package name and version).');
   parser.addOption('exclude',
       allowMultiple: true, splitCommas: true, help: 'Library names to ignore.');
+  parser.addOption('exclude-packages',
+      allowMultiple: true, splitCommas: true, help: 'Package names to ignore.');
   parser.addOption('include',
       allowMultiple: true,
       splitCommas: true,

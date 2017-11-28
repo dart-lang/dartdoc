@@ -6,26 +6,19 @@ library test_utils;
 
 import 'dart:io';
 
-import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/file_system/file_system.dart';
-import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:analyzer/src/dart/sdk/sdk.dart';
-import 'package:analyzer/src/generated/engine.dart';
-import 'package:analyzer/src/generated/java_io.dart';
-import 'package:analyzer/src/generated/sdk.dart';
-import 'package:analyzer/src/generated/source_io.dart';
+import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/model.dart';
-import 'package:dartdoc/src/warnings.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as p;
 
-AnalyzerHelper analyzerHelper;
-DartSdk sdkDir;
+Directory sdkDir;
+PackageMeta sdkPackageMeta;
 Package testPackage;
 Package testPackageGinormous;
 Package testPackageSmall;
+Package testPackageSdk;
 
 final Directory testPackageBadDir = new Directory('testing/test_package_bad');
 final Directory testPackageDir = new Directory('testing/test_package');
@@ -39,53 +32,43 @@ void delete(Directory dir) {
 }
 
 void init() {
-  ResourceProvider resourceProvider = PhysicalResourceProvider.INSTANCE;
-  sdkDir = new FolderBasedDartSdk(
-      resourceProvider, resourceProvider.getFolder(getSdkDir().path));
-
+  sdkDir = getSdkDir();
+  sdkPackageMeta = new PackageMeta.fromSdk(sdkDir);
   setConfig();
 
-  analyzerHelper = new AnalyzerHelper();
-  var pathsForTestLib = [
-    'lib/example.dart',
-    'lib/two_exports.dart',
-    'lib/fake.dart',
-    'lib/anonymous_library.dart',
-    'lib/another_anonymous_lib.dart',
-    'lib/is_deprecated.dart',
-    'lib/reexport_one.dart',
-    'lib/reexport_two.dart',
-  ];
+  testPackage = bootBasicPackage(
+      'testing/test_package', ['css', 'code_in_comments', 'excluded'], false);
+  testPackageGinormous = bootBasicPackage(
+      'testing/test_package', ['css', 'code_in_commnets', 'excluded'], true);
 
-  testPackage = _bootPackage(pathsForTestLib, 'testing/test_package', false);
-  testPackageGinormous =
-      _bootPackage(pathsForTestLib, 'testing/test_package', true);
-
-  testPackageSmall =
-      _bootPackage(['lib/main.dart'], 'testing/test_package_small', false);
+  testPackageSmall = bootBasicPackage('testing/test_package_small', [], false);
+  testPackageSdk = bootSdkPackage();
 }
 
-Package _bootPackage(Iterable<String> libPaths, String dirPath,
-    bool withAutoIncludedDependencies) {
-  String fullDirPath = p.join(Directory.current.path, dirPath);
-  Iterable<LibraryElement> libElements = libPaths.map((libFile) {
-    Source source = analyzerHelper.addSource(p.join(fullDirPath, libFile));
-    return analyzerHelper.resolve(source);
-  });
-
-  if (withAutoIncludedDependencies) {
-    return Package.withAutoIncludedDependencies(
-        libElements,
-        new PackageMeta.fromDir(new Directory(dirPath)),
-        new PackageWarningOptions());
-  } else {
-    return new Package(
-        libElements,
-        new PackageMeta.fromDir(new Directory(dirPath)),
-        new PackageWarningOptions());
-  }
+Package bootSdkPackage() {
+  Directory dir = new Directory(p.current);
+  return new PackageBuilder(
+          dir, [], [], sdkDir, sdkPackageMeta, [], [], true, false)
+      .buildPackage();
 }
 
+Package bootBasicPackage(
+    String dirPath, List<String> excludes, bool withAutoIncludedDependencies) {
+  Directory dir = new Directory(dirPath);
+  return new PackageBuilder(
+          dir,
+          excludes,
+          [],
+          sdkDir,
+          new PackageMeta.fromDir(new Directory(dirPath)),
+          [],
+          [],
+          true,
+          withAutoIncludedDependencies)
+      .buildPackage();
+}
+/*
+@deprecated
 class AnalyzerHelper {
   AnalysisContext context;
 
@@ -106,9 +89,15 @@ class AnalyzerHelper {
     ChangeSet changeSet = new ChangeSet();
     changeSet.addedSource(source);
     context.applyChanges(changeSet);
+    // Ensure that the analysis engine performs all remaining work.
+    AnalysisResult result = context.performAnalysisTask();
+    while (result.hasMoreWork) {
+      result = context.performAnalysisTask();
+    }
     return source;
   }
 
   LibraryElement resolve(Source librarySource) =>
       context.computeLibraryElement(librarySource);
 }
+*/

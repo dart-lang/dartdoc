@@ -1,7 +1,6 @@
 // Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
-
 library dartdoc.utils;
 
 String stripComments(String str) {
@@ -44,10 +43,11 @@ String stripComments(String str) {
 
 String truncateString(String str, int length) {
   if (str != null && str.length > length) {
-    return str.substring(0, length) + '…';
-  } else {
-    return str;
+    // Do not call this on unsanitized HTML.
+    assert(!str.contains("<"));
+    return '${str.substring(0, length)}…';
   }
+  return str;
 }
 
 String pluralize(String word, int count) => count == 1 ? word : '${word}s';
