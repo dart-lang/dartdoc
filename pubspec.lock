@@ -6,7 +6,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.30.0+4"
+    version: "0.31.0-alpha.1"
   ansicolor:
     description:
       name: ansicolor
@@ -78,7 +78,7 @@ packages:
       name: front_end
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.0-alpha.4.1"
+    version: "0.1.0-alpha.6"
   glob:
     description:
       name: glob
@@ -132,7 +132,7 @@ packages:
       name: kernel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.0-alpha.1.1"
+    version: "0.3.0-alpha.3"
   logging:
     description:
       name: logging

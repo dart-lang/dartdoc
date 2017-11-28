@@ -1414,7 +1414,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
               'dart.core',
           isTrue);
       expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
-    }, skip: 'Passes on Analyzer 0.31.0+');
+    });
 
     test('split inheritance with explicit setter works', () {
       expect(implicitGetterExplicitSetter.getter.isInherited, isTrue);
