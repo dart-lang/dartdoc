@@ -84,9 +84,7 @@ class ElementType {
       } else {
         typeArguments = type.typeFormals.map((f) => f.type);
       }
-      return typeArguments
-          .map(_getElementTypeFrom)
-          .toList();
+      return typeArguments.map(_getElementTypeFrom).toList();
     } else {
       return (_type as ParameterizedType)
           .typeArguments

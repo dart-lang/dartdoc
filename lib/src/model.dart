@@ -245,9 +245,9 @@ class Accessor extends ModelElement
 
   /// Call exactly once to set the enclosing combo for this Accessor.
   set enclosingCombo(GetterSetterCombo combo) {
-      assert(_enclosingCombo == null || combo == _enclosingCombo);
-        assert(combo != null);
-      _enclosingCombo = combo;
+    assert(_enclosingCombo == null || combo == _enclosingCombo);
+    assert(combo != null);
+    _enclosingCombo = combo;
   }
 
   bool get isSynthetic => element.isSynthetic;
@@ -274,7 +274,8 @@ class Accessor extends ModelElement
   @override
   String get computeDocumentationComment {
     if (isSynthetic) {
-      String docComment = (element as PropertyAccessorElement).variable.documentationComment;
+      String docComment =
+          (element as PropertyAccessorElement).variable.documentationComment;
       // If we're a setter, only display something if we have something different than the getter.
       // TODO(jcollins-g): modify analyzer to do this itself?
       if (isGetter ||
@@ -1204,7 +1205,7 @@ class EnumField extends Field {
       : super(element, library, getter, null);
 
   @override
-  String get constantValue {
+  String get constantValueBase {
     if (name == 'values') {
       return 'const List&lt;${_field.enclosingElement.name}&gt;';
     } else {
@@ -1260,7 +1261,6 @@ class EnumField extends Field {
 class Field extends ModelElement
     with GetterSetterCombo, Inheritable, SourceCodeMixin
     implements EnclosedElement {
-  String _constantValue;
   bool _isInherited = false;
   Class _enclosingClass;
   @override
@@ -1295,20 +1295,6 @@ class Field extends ModelElement
     assert(assertCheck.containsAll([true, false]));
     return super.documentation;
   }
-
-  String get constantValue {
-    if (_constantValue != null) return _constantValue;
-
-    if (_field.computeNode() == null) return null;
-    var v = _field.computeNode().toSource();
-    if (v == null) return null;
-    var string = v.substring(v.indexOf('=') + 1, v.length).trim();
-    _constantValue = string.replaceAll("${modelType.name}", "${modelType.linkedName}");
-
-    return _constantValue;
-  }
-
-  String get constantValueTruncated => truncateString(constantValue, 200);
 
   @override
   ModelElement get enclosingElement {
@@ -1441,10 +1427,33 @@ abstract class GetterSetterCombo implements ModelElement {
     return allFeatures;
   }
 
-
   @override
   ModelElement enclosingElement;
   bool get isInherited;
+
+  String _constantValueBase;
+  String get constantValueBase {
+    if (_constantValueBase == null) {
+      if (element.computeNode() != null) {
+        var v = element.computeNode().toSource();
+        if (v == null) return null;
+        var string = v.substring(v.indexOf('=') + 1, v.length).trim();
+        _constantValueBase =
+            const HtmlEscape(HtmlEscapeMode.UNKNOWN).convert(string);
+      }
+    }
+    return _constantValueBase;
+  }
+
+  String linkifyWithModelType(String text) {
+    RegExp r = new RegExp("\\b${modelType.name}\\b");
+    return text?.replaceAll(r, modelType.linkedName);
+  }
+
+  String get constantValue => linkifyWithModelType(constantValueBase);
+
+  String get constantValueTruncated =>
+      linkifyWithModelType(truncateString(constantValueBase, 200));
 
   /// Returns true if both accessors are synthetic.
   bool get hasSyntheticAccessors {
@@ -2868,15 +2877,15 @@ abstract class ModelElement extends Nameable
         Library lib;
         // TODO(jcollins-g): get rid of dynamic special casing
         if (element.kind != ElementKind.DYNAMIC) {
-          lib = _findOrCreateEnclosingLibraryFor((element as dynamic).type.element);
+          lib = _findOrCreateEnclosingLibraryFor(
+              (element as dynamic).type.element);
         }
-        _modelType = new ElementType(
-            (element as dynamic).type, new ModelElement.from((element as dynamic).type.element, lib));
+        _modelType = new ElementType((element as dynamic).type,
+            new ModelElement.from((element as dynamic).type.element, lib));
       }
     }
     return _modelType;
   }
-
 
   @override
   String get name => element.name;
@@ -4401,16 +4410,6 @@ class TopLevelVariable extends ModelElement
 
   @override
   bool get isInherited => false;
-
-  String get constantValue {
-    var v = _variable.computeNode().toSource();
-    if (v == null) return '';
-    var string = v.substring(v.indexOf('=') + 1, v.length).trim();
-    string = HTML_ESCAPE.convert(string);
-    return string.replaceAll(modelType.name, modelType.linkedName);
-  }
-
-  String get constantValueTruncated => truncateString(constantValue, 200);
 
   @override
   String get documentation {

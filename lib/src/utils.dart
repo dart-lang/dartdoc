@@ -44,10 +44,11 @@ String stripComments(String str) {
 
 String truncateString(String str, int length) {
   if (str != null && str.length > length) {
-    return str.substring(0, length) + '…';
-  } else {
-    return str;
+    // Do not call this on unsanitized HTML.
+    assert(!str.contains("<"));
+    return '${str.substring(0, length)}…';
   }
+  return str;
 }
 
 String pluralize(String word, int count) => count == 1 ? word : '${word}s';

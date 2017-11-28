@@ -697,7 +697,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(22));
+      expect(classes, hasLength(24));
     });
 
     test('abstract', () {
@@ -1711,6 +1711,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         prettyColorsConstant,
         deprecated;
 
+    Field aStaticConstField, aName;
+
     setUp(() {
       greenConstant =
           exLibrary.constants.firstWhere((c) => c.name == 'COLOR_GREEN');
@@ -1721,6 +1723,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       cat = exLibrary.constants.firstWhere((c) => c.name == 'MY_CAT');
       deprecated =
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
+      Class Dog = exLibrary.allClasses.firstWhere((c) => c.name == 'Dog');
+      aStaticConstField =
+          Dog.allFields.firstWhere((f) => f.name == 'aStaticConstField');
+      aName = Dog.allFields.firstWhere((f) => f.name == 'aName');
+    });
+
+    test('substrings of the constant values type are not linked (#1535)', () {
+      expect(aName.constantValue,
+          'const ExtendedShortName(&quot;hello there&quot;)');
+    });
+
+    test('constant field values are escaped', () {
+      expect(aStaticConstField.constantValue, '&quot;A Constant Dog&quot;');
     });
 
     test('has a fully qualified name', () {
