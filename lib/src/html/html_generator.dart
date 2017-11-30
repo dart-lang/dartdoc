@@ -12,6 +12,7 @@ import 'package:path/path.dart' as p;
 import '../generator.dart';
 import '../model.dart';
 import 'html_generator_instance.dart';
+import 'template_data.dart';
 import 'templates.dart';
 
 typedef String Renderer(String input);
@@ -109,13 +110,19 @@ class HtmlGenerator extends Generator {
   }
 }
 
-class HtmlGeneratorOptions {
+class HtmlGeneratorOptions implements HtmlOptions {
   final String url;
-  final String relCanonicalPrefix;
   final String faviconPath;
-  final String toolVersion;
-  final bool useCategories;
   final bool prettyIndexJson;
+
+  @override
+  final bool useCategories;
+
+  @override
+  final String relCanonicalPrefix;
+
+  @override
+  final String toolVersion;
 
   HtmlGeneratorOptions(
       {this.url,

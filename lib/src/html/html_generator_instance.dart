@@ -21,21 +21,12 @@ import 'templates.dart';
 
 typedef void FileWriter(String path, Object content, {bool allowOverwrite});
 
-class HtmlGeneratorInstance implements HtmlOptions {
+class HtmlGeneratorInstance {
   final HtmlGeneratorOptions _options;
   final Templates _templates;
   final Package _package;
   final List<ModelElement> _documentedElements = <ModelElement>[];
   final FileWriter _writer;
-
-  @override
-  String get relCanonicalPrefix => _options.relCanonicalPrefix;
-
-  @override
-  String get toolVersion => _options.toolVersion;
-
-  String get _faviconPath => _options.faviconPath;
-  bool get _useCategories => _options.useCategories;
 
   HtmlGeneratorInstance(
       this._options, this._templates, this._package, this._writer);
@@ -47,8 +38,8 @@ class HtmlGeneratorInstance implements HtmlOptions {
     }
 
     await _copyResources();
-    if (_faviconPath != null) {
-      var bytes = new File(_faviconPath).readAsBytesSync();
+    if (_options.faviconPath != null) {
+      var bytes = new File(_options.faviconPath).readAsBytesSync();
       // Allow overwrite of favicon.
       _writer(path.join('static-assets', 'favicon.png'), bytes,
           allowOverwrite: true);
@@ -173,7 +164,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
   }
 
   void generatePackage() {
-    TemplateData data = new PackageTemplateData(this, _package, _useCategories);
+    TemplateData data = new PackageTemplateData(_options, _package);
     logInfo('documenting ${_package.name}');
 
     _build('index.html', _templates.indexTemplate, data);
@@ -185,35 +176,35 @@ class HtmlGeneratorInstance implements HtmlOptions {
     if (!lib.isAnonymous && !lib.hasDocumentation) {
       package.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);
     }
-    TemplateData data =
-        new LibraryTemplateData(this, package, lib, _useCategories);
+    TemplateData data = new LibraryTemplateData(_options, package, lib);
 
     _build(path.join(lib.dirName, '${lib.fileName}'),
         _templates.libraryTemplate, data);
   }
 
   void generateClass(Package package, Library lib, Class clazz) {
-    TemplateData data = new ClassTemplateData(this, package, lib, clazz);
+    TemplateData data = new ClassTemplateData(_options, package, lib, clazz);
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
 
   void generateConstructor(
       Package package, Library lib, Class clazz, Constructor constructor) {
     TemplateData data =
-        new ConstructorTemplateData(this, package, lib, clazz, constructor);
+        new ConstructorTemplateData(_options, package, lib, clazz, constructor);
 
     _build(path.joinAll(constructor.href.split('/')),
         _templates.constructorTemplate, data);
   }
 
   void generateEnum(Package package, Library lib, Enum eNum) {
-    TemplateData data = new EnumTemplateData(this, package, lib, eNum);
+    TemplateData data = new EnumTemplateData(_options, package, lib, eNum);
 
     _build(path.joinAll(eNum.href.split('/')), _templates.enumTemplate, data);
   }
 
   void generateFunction(Package package, Library lib, ModelFunction function) {
-    TemplateData data = new FunctionTemplateData(this, package, lib, function);
+    TemplateData data =
+        new FunctionTemplateData(_options, package, lib, function);
 
     _build(path.joinAll(function.href.split('/')), _templates.functionTemplate,
         data);
@@ -222,7 +213,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
   void generateMethod(
       Package package, Library lib, Class clazz, Method method) {
     TemplateData data =
-        new MethodTemplateData(this, package, lib, clazz, method);
+        new MethodTemplateData(_options, package, lib, clazz, method);
 
     _build(
         path.joinAll(method.href.split('/')), _templates.methodTemplate, data);
@@ -231,7 +222,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
   void generateConstant(
       Package package, Library lib, Class clazz, Field property) {
     TemplateData data =
-        new ConstantTemplateData(this, package, lib, clazz, property);
+        new ConstantTemplateData(_options, package, lib, clazz, property);
 
     _build(path.joinAll(property.href.split('/')), _templates.constantTemplate,
         data);
@@ -240,7 +231,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
   void generateProperty(
       Package package, Library lib, Class clazz, Field property) {
     TemplateData data =
-        new PropertyTemplateData(this, package, lib, clazz, property);
+        new PropertyTemplateData(_options, package, lib, clazz, property);
 
     _build(path.joinAll(property.href.split('/')), _templates.propertyTemplate,
         data);
@@ -249,7 +240,7 @@ class HtmlGeneratorInstance implements HtmlOptions {
   void generateTopLevelProperty(
       Package package, Library lib, TopLevelVariable property) {
     TemplateData data =
-        new TopLevelPropertyTemplateData(this, package, lib, property);
+        new TopLevelPropertyTemplateData(_options, package, lib, property);
 
     _build(path.joinAll(property.href.split('/')),
         _templates.topLevelPropertyTemplate, data);
@@ -258,14 +249,15 @@ class HtmlGeneratorInstance implements HtmlOptions {
   void generateTopLevelConstant(
       Package package, Library lib, TopLevelVariable property) {
     TemplateData data =
-        new TopLevelConstTemplateData(this, package, lib, property);
+        new TopLevelConstTemplateData(_options, package, lib, property);
 
     _build(path.joinAll(property.href.split('/')),
         _templates.topLevelConstantTemplate, data);
   }
 
   void generateTypeDef(Package package, Library lib, Typedef typeDef) {
-    TemplateData data = new TypedefTemplateData(this, package, lib, typeDef);
+    TemplateData data =
+        new TypedefTemplateData(_options, package, lib, typeDef);
 
     _build(path.joinAll(typeDef.href.split('/')), _templates.typeDefTemplate,
         data);
