@@ -18,9 +18,9 @@
     {{^useCategories}}
     <ol>
       <li class="section-title"><a href="{{package.href}}#libraries">Libraries</a></li>
-      {{#package.libraries}}
+      {{#package.publicLibraries}}
       <li>{{{linkedName}}}</li>
-      {{/package.libraries}}
+      {{/package.publicLibraries}}
     </ol>
     {{/useCategories}}
   </div>
@@ -53,14 +53,14 @@
       <section class="summary" id="libraries">
         <h2>Libraries</h2>
         <dl>
-          {{#package.libraries}}
+          {{#package.publicLibraries}}
             <dt id="{{htmlId}}">
               <span class="name">{{{ linkedName }}}</span>
             </dt>
             <dd>
-              {{#isDocumented}}{{{ oneLineDoc }}}{{/isDocumented}}
+              {{{ oneLineDoc }}}
             </dd>
-          {{/package.libraries}}
+          {{/package.publicLibraries}}
         </dl>
       </section>
     {{/useCategories}}

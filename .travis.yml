@@ -6,7 +6,8 @@ env:
   - DARTDOC_BOT=main
   # TODO(devoncarew): add angulardart support
   #- DARTDOC_BOT=angular
-  - DARTDOC_BOT=flutter
+  # TODO(jcollins-g): reenable flutter once it gets flags changed post #1524
+  #- DARTDOC_BOT=flutter
   - DARTDOC_BOT=sdk-docs
 script: ./tool/travis.sh
 branches:

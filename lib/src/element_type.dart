@@ -10,7 +10,7 @@ import 'package:analyzer/dart/element/type.dart';
 
 import 'model.dart';
 
-class ElementType {
+class ElementType extends Privacy {
   final DartType _type;
   final ModelElement element;
   String _linkedName;
@@ -19,6 +19,8 @@ class ElementType {
     assert(element != null);
   }
 
+  DartType get type => _type;
+
   bool get isDynamic => _type.isDynamic;
 
   bool get isFunctionType => (_type is FunctionType);
@@ -26,6 +28,17 @@ class ElementType {
   bool get isParameterizedType => (_type is ParameterizedType);
 
   bool get isParameterType => (_type is TypeParameterType);
+
+  /// This type is a public type if the underlying, canonical element is public.
+  /// This avoids discarding the resolved type information as canonicalization
+  /// would ordinarily do.
+  @override
+  bool get isPublic {
+    Class canonicalClass =
+        element.package.findCanonicalModelElementFor(element.element) ??
+            element;
+    return canonicalClass.isPublic;
+  }
 
   String get linkedName {
     if (_linkedName == null) {
@@ -58,7 +71,7 @@ class ElementType {
     return _linkedName;
   }
 
-  String get name => _type.name;
+  String get name => _type.name ?? _type.element.name;
 
   ModelElement get returnElement {
     Element e;

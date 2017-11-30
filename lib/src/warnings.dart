@@ -83,18 +83,10 @@ final Map<PackageWarning, PackageWarningHelpText> packageWarningText = const {
 };
 
 /// Something that package warnings can be called on.
-/// TODO(jcollins-g): Complete object model refactoring for #1524.
-abstract class Warnable implements Locatable {
+abstract class Warnable implements Canonicalization {
   void warn(PackageWarning warning,
       {String message, Iterable<Locatable> referredFrom});
   Warnable get enclosingElement;
-
-  Set<String> get locationPieces {
-    return new Set.from(element.location
-        .toString()
-        .split(locationSplitter)
-        .where((s) => s.isNotEmpty));
-  }
 }
 
 /// Something that can be located for warning purposes.
@@ -105,7 +97,13 @@ abstract class Locatable {
   Element get element;
   String get elementLocation;
   Tuple2<int, int> get lineAndColumn;
-  bool get isCanonical;
+
+  Set<String> get locationPieces {
+    return new Set.from(element.location
+        .toString()
+        .split(locationSplitter)
+        .where((s) => s.isNotEmpty));
+  }
 }
 
 // The kinds of warnings that can be displayed when documenting a package.
@@ -123,6 +121,13 @@ enum PackageWarning {
   missingFromSearchIndex,
   typeAsHtml,
 }
+
+/// Warnings it is OK to skip if we can determine the warnable isn't documented.
+/// In particular, this set should not include warnings around public/private
+/// or canonicalization problems, because those can break the isDocumented()
+/// check.
+final Set<PackageWarning> skipWarningIfNotDocumentedFor = new Set()
+  ..addAll([PackageWarning.unresolvedDocReference, PackageWarning.typeAsHtml]);
 
 class PackageWarningOptions {
   // PackageWarnings must be in one of _ignoreWarnings or union(_asWarnings, _asErrors)

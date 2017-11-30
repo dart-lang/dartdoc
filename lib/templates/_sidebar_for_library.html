@@ -1,50 +1,50 @@
 <ol>
-  {{#library.hasClasses}}
+  {{#library.hasPublicClasses}}
   <li class="section-title"><a href="{{library.href}}#classes">Classes</a></li>
-  {{#library.classes}}
+  {{#library.publicClasses}}
   <li>{{{ linkedName }}}</li>
-  {{/library.classes}}
-  {{/library.hasClasses}}
+  {{/library.publicClasses}}
+  {{/library.hasPublicClasses}}
 
-  {{#library.hasConstants}}
+  {{#library.hasPublicConstants}}
   <li class="section-title"><a href="{{library.href}}#constants">Constants</a></li>
-  {{#library.constants}}
+  {{#library.publicConstants}}
   <li>{{{ linkedName }}}</li>
-  {{/library.constants}}
-  {{/library.hasConstants}}
+  {{/library.publicConstants}}
+  {{/library.hasPublicConstants}}
 
-  {{#library.hasProperties}}
+  {{#library.hasPublicProperties}}
   <li class="section-title"><a href="{{library.href}}#properties">Properties</a></li>
-  {{#library.properties}}
+  {{#library.publicProperties}}
   <li>{{{ linkedName }}}</li>
-  {{/library.properties}}
-  {{/library.hasProperties}}
+  {{/library.publicProperties}}
+  {{/library.hasPublicProperties}}
 
-  {{#library.hasFunctions}}
+  {{#library.hasPublicFunctions}}
   <li class="section-title"><a href="{{library.href}}#functions">Functions</a></li>
-  {{#library.functions}}
+  {{#library.publicFunctions}}
   <li>{{{ linkedName }}}</li>
-  {{/library.functions}}
-  {{/library.hasFunctions}}
+  {{/library.publicFunctions}}
+  {{/library.hasPublicFunctions}}
 
-  {{#library.hasEnums}}
+  {{#library.hasPublicEnums}}
   <li class="section-title"><a href="{{library.href}}#enums">Enums</a></li>
-  {{#library.enums}}
+  {{#library.publicEnums}}
   <li>{{{ linkedName }}}</li>
-  {{/library.enums}}
-  {{/library.hasEnums}}
+  {{/library.publicEnums}}
+  {{/library.hasPublicEnums}}
 
-  {{#library.hasTypedefs}}
+  {{#library.hasPublicTypedefs}}
   <li class="section-title"><a href="{{library.href}}#typedefs">Typedefs</a></li>
-  {{#library.typedefs}}
+  {{#library.publicTypedefs}}
   <li>{{{ linkedName }}}</li>
-  {{/library.typedefs}}
-  {{/library.hasTypedefs}}
+  {{/library.publicTypedefs}}
+  {{/library.hasPublicTypedefs}}
 
-  {{#library.hasExceptions}}
+  {{#library.hasPublicExceptions}}
   <li class="section-title"><a href="{{library.href}}#exceptions">Exceptions</a></li>
-  {{#library.exceptions}}
+  {{#library.publicExceptions}}
   <li>{{{ linkedName }}}</li>
-  {{/library.exceptions}}
-  {{/library.hasExceptions}}
+  {{/library.publicExceptions}}
+  {{/library.hasPublicExceptions}}
 </ol>

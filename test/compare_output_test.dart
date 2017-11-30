@@ -56,7 +56,7 @@ void main() {
         'examples',
         '--hide-sdk-text',
         '--exclude',
-        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,meta',
+        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,package:meta/meta.dart',
         '--no-include-source',
         '--pretty-index-json',
         '--output',
