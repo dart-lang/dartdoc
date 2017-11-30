@@ -3290,7 +3290,7 @@ abstract class ModelElement extends Canonicalization
         buf.write('<span class="type-annotation">${returnTypeName}</span>');
         if (showNames) {
           buf.write(' <span class="parameter-name">${param.name}</span>');
-        } else if (param.modelType.element is ModelFunction) {
+        } else if (param.modelType.element is ModelFunctionAnonymous) {
           buf.write(' <span class="parameter-name">Function</span>');
         }
         if (!isTypedef) {
