@@ -103,7 +103,7 @@ class DartDoc extends PackageBuilder {
     List<AnalysisErrorInfo> errorInfos = [];
     // TODO(jcollins-g): figure out why sources can't contain includeExternals
     // or embedded SDK components without having spurious(?) analysis errors.
-    // That seems wrong.
+    // That seems wrong. dart-lang/dartdoc#1547
     for (Source source in sources) {
       context.computeErrors(source);
       AnalysisErrorInfo info = context.getErrors(source);
@@ -116,7 +116,7 @@ class DartDoc extends PackageBuilder {
           .toList()
             ..sort();
       // TODO(jcollins-g): Why does the SDK have analysis errors?  Annotations
-      // seem correctly formed.
+      // seem correctly formed.  dart-lang/dartdoc#1547
       if (errors.isNotEmpty && !source.uri.toString().startsWith('dart:')) {
         errorInfos.add(info);
         logWarning(

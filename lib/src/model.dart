@@ -2507,9 +2507,8 @@ abstract class ModelElement extends Canonicalization
   String _fullyQualifiedName;
   String _fullyQualifiedNameWithoutLibrary;
 
-  // WARNING: putting anything into the body of this seems
-  // to lead to stack overflows. Need to make a registry of ModelElements
-  // somehow.
+  // TODO(jcollins-g): make _originalMember optional after dart-lang/sdk#15101
+  // is fixed.
   ModelElement(this._element, this._library, this._originalMember) {}
 
   factory ModelElement.fromElement(Element e, Package p) {

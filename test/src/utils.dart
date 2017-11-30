@@ -67,37 +67,3 @@ Package bootBasicPackage(
           withAutoIncludedDependencies)
       .buildPackage();
 }
-/*
-@deprecated
-class AnalyzerHelper {
-  AnalysisContext context;
-
-  AnalyzerHelper() {
-    List<UriResolver> resolvers = [
-      new DartUriResolver(sdkDir),
-      new ResourceUriResolver(PhysicalResourceProvider.INSTANCE)
-    ];
-
-    SourceFactory sourceFactory = new SourceFactory(resolvers);
-    AnalysisEngine.instance.processRequiredPlugins();
-    context = AnalysisEngine.instance.createAnalysisContext();
-    context.sourceFactory = sourceFactory;
-  }
-
-  Source addSource(String filePath) {
-    Source source = new FileBasedSource(new JavaFile(filePath));
-    ChangeSet changeSet = new ChangeSet();
-    changeSet.addedSource(source);
-    context.applyChanges(changeSet);
-    // Ensure that the analysis engine performs all remaining work.
-    AnalysisResult result = context.performAnalysisTask();
-    while (result.hasMoreWork) {
-      result = context.performAnalysisTask();
-    }
-    return source;
-  }
-
-  LibraryElement resolve(Source librarySource) =>
-      context.computeLibraryElement(librarySource);
-}
-*/
