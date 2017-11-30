@@ -71,10 +71,7 @@ class ElementType extends Privacy {
     return _linkedName;
   }
 
-  String get name {
-    if (_type.name == null) return _type.element.name;
-    return _type.name;
-  }
+  String get name => _type.name ?? _type.element.name;
 
   ModelElement get returnElement {
     Element e;

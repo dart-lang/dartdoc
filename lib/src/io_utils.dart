@@ -7,9 +7,7 @@ library dartdoc.io_utils;
 
 import 'dart:io';
 
-import 'package:dartdoc/src/config.dart';
 import 'package:path/path.dart' as path;
-import 'package:package_config/discovery.dart' as package_config;
 
 /// Lists the contents of [dir].
 ///
