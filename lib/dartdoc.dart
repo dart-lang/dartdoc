@@ -162,7 +162,7 @@ class DartDoc extends PackageBuilder {
     if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
 
     for (var generator in generators) {
-      await generator.generate(package, outputDir);
+      await generator.generate(package, outputDir.path);
       writtenFiles.addAll(generator.writtenFiles.map(path.normalize));
     }
 

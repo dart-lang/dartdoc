@@ -5,7 +5,7 @@
 library dartdoc.html_generator;
 
 import 'dart:async' show Future, StreamController, Stream;
-import 'dart:io' show Directory, File;
+import 'dart:io' show File;
 
 import '../generator.dart';
 import '../model.dart';
@@ -46,7 +46,6 @@ class HtmlGenerator extends Generator {
   @override
   Set<String> get writtenFiles => _instance.writtenFiles;
 
-  /// [url] - optional URL for where the docs will be hosted.
   static Future<HtmlGenerator> create(
       {HtmlGeneratorOptions options,
       List<String> headers,
@@ -67,10 +66,10 @@ class HtmlGenerator extends Generator {
 
   /// Actually write out the documentation for [package].
   /// Stores the HtmlGeneratorInstance so we can access it in [writtenFiles].
-  Future generate(Package package, Directory out) {
+  Future generate(Package package, String outputDirectoryPath) {
     assert(_instance == null);
     _instance = new HtmlGeneratorInstance(
-        _options, _templates, package, out, _onFileCreated);
+        _options, _templates, package, outputDirectoryPath, _onFileCreated);
     return _instance.generate();
   }
 }
