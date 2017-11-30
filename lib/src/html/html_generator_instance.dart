@@ -52,9 +52,11 @@ class HtmlGeneratorInstance implements HtmlOptions {
     await _copyResources();
     if (_faviconPath != null) {
       var bytes = new File(_faviconPath).readAsBytesSync();
-      _writeFile(
-          path.join(_outputDirectoryPath, 'static-assets', 'favicon.png'),
-          bytes);
+      // Allow overwrite of favicon.
+      String filename =
+          path.join(_outputDirectoryPath, 'static-assets', 'favicon.png');
+      writtenFiles.remove(filename);
+      _writeFile(filename, bytes);
     }
   }
 
