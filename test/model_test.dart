@@ -1915,15 +1915,26 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Constructor', () {
     Constructor appleDefaultConstructor, constCatConstructor;
     Constructor appleConstructorFromString;
-    Class apple, constCat;
+    Constructor constructorTesterDefault, constructorTesterFromSomething;
+    Class apple, constCat, constructorTester;
     setUp(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       constCat = exLibrary.classes.firstWhere((c) => c.name == 'ConstantCat');
+      constructorTester = fakeLibrary.classes.firstWhere((c) => c.name == 'ConstructorTester');
       constCatConstructor = constCat.constructors[0];
       appleDefaultConstructor =
           apple.constructors.firstWhere((c) => c.name == 'Apple');
       appleConstructorFromString =
           apple.constructors.firstWhere((c) => c.name == 'Apple.fromString');
+      constructorTesterDefault =
+          constructorTester.constructors.firstWhere((c) => c.name == 'ConstructorTester');
+      constructorTesterFromSomething =
+          constructorTester.constructors.firstWhere((c) => c.name == 'ConstructorTester.fromSomething');
+    });
+
+    test('displays generic parameters correctly', () {
+      expect(constructorTesterDefault.nameWithGenerics, 'ConstructorTester&lt;A, B&gt;');
+      expect(constructorTesterFromSomething.nameWithGenerics, 'ConstructorTester&lt;A, B&gt;.fromSomething');
     });
 
     test('has a fully qualified name', () {
