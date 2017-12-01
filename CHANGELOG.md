@@ -1,5 +1,21 @@
-## unreleased
+## 0.15.0
+* Allow super in mixins (#1541)
+* Anonymous libraries are now laid out on disk differently
+  to avoid conflicts (#1526)
+* Source code included with docs highlights again (#1525)
+* Remove constant value linking via string substitution (#1535)
+* Update version of mustache4dart (#1540)
+* Eliminate remaining places where dartdoc exposed private interfaces
+  (#1173)
+* Fix private super classes appearing with dead links (#1476)
+* Major internal refactoring of public/private, type definitions,
+  templates, and warnings  (#1394, #1539)
+* Fix resolution of generic types (#1514)
+* Limit width of code blocks (#1522)
 * Add a `--json` flag to providing logging in a machine-readable format.
+  (#1531)
+* Use the logging package for dartdoc output. (#1518)
+* Remove cc commons license text from default footer (#1262)
 
 ## 0.14.1
 * Add better support for GenericFunctionTypeElementImpl (#1506, #1509)
