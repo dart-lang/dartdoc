@@ -1,4 +1,6 @@
 ## 0.15.0
+* Document correct parameters for new-style generic function types
+  (#1472)
 * Allow super in mixins (#1541)
 * Anonymous libraries are now laid out on disk differently
   to avoid conflicts (#1526)
