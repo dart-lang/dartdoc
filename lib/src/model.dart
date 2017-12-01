@@ -1561,15 +1561,9 @@ abstract class GetterSetterCombo implements ModelElement {
     return _constantValueBase;
   }
 
-  String linkifyWithModelType(String text) {
-    RegExp r = new RegExp("\\b${modelType.name}\\b");
-    return text?.replaceAll(r, modelType.linkedName);
-  }
+  String get constantValue => constantValueBase;
 
-  String get constantValue => linkifyWithModelType(constantValueBase);
-
-  String get constantValueTruncated =>
-      linkifyWithModelType(truncateString(constantValueBase, 200));
+  String get constantValueTruncated => truncateString(constantValueBase, 200);
 
   /// Returns true if both accessors are synthetic.
   bool get hasSyntheticAccessors {

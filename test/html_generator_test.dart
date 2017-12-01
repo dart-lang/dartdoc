@@ -76,7 +76,7 @@ void main() {
       setUp(() async {
         generator = await HtmlGenerator.create();
         tempOutput = Directory.systemTemp.createTempSync('doc_test_temp');
-        return generator.generate(null, tempOutput);
+        return generator.generate(null, tempOutput.path);
       });
 
       tearDown(() {
