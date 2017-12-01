@@ -339,7 +339,9 @@ class MethodTemplateData extends TemplateData<Method> {
       'API docs for the ${method.name} method from the ${clazz.name} class, '
       'for the Dart programming language.';
   @override
-  List get navLinks => [package, library, clazz];
+  List get navLinks => [package, library];
+  @override
+  List get navLinksWithGenerics => [clazz];
   @override
   Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(method);
   @override
@@ -369,7 +371,9 @@ class PropertyTemplateData extends TemplateData<Field> {
       'API docs for the ${property.name} $type from the ${clazz.name} class, '
       'for the Dart programming language.';
   @override
-  List get navLinks => [package, library, clazz];
+  List get navLinks => [package, library];
+  @override
+  List get navLinksWithGenerics => [clazz];
   @override
   String get htmlBase => '../..';
 
