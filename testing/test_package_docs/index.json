@@ -4365,6 +4365,94 @@
   }
  },
  {
+  "name": "ConstructorTester",
+  "qualifiedName": "fake.ConstructorTester",
+  "href": "fake/ConstructorTester-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ConstructorTester",
+  "qualifiedName": "fake.ConstructorTester",
+  "href": "fake/ConstructorTester/ConstructorTester.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ConstructorTester.==",
+  "href": "fake/ConstructorTester/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ConstructorTester.fromSomething",
+  "qualifiedName": "fake.ConstructorTester.fromSomething",
+  "href": "fake/ConstructorTester/ConstructorTester.fromSomething.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ConstructorTester.hashCode",
+  "href": "fake/ConstructorTester/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ConstructorTester.noSuchMethod",
+  "href": "fake/ConstructorTester/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ConstructorTester.runtimeType",
+  "href": "fake/ConstructorTester/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ConstructorTester.toString",
+  "href": "fake/ConstructorTester/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
   "name": "Cool",
   "qualifiedName": "fake.Cool",
   "href": "fake/Cool-class.html",

@@ -74,6 +74,11 @@ abstract class BaseThingy2 implements BaseThingy {
   ImplementingThingy2 get aImplementingThingy;
 }
 
+class ConstructorTester<A, B> {
+  ConstructorTester(String param1) {}
+  ConstructorTester.fromSomething(A foo) {}
+}
+
 class HasGenerics<X, Y, Z> {
   HasGenerics(X x, Y y, Z z) {}
 

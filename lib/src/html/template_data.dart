@@ -36,7 +36,13 @@ abstract class TemplateData<T extends Documentable> {
   String get kind => self is ModelElement ? (self as ModelElement).kind : null;
 
   List get navLinks;
-  Documentable get parent => navLinks.isNotEmpty ? navLinks.last : null;
+  List get navLinksWithGenerics => [];
+  Documentable get parent {
+    if (navLinksWithGenerics.isEmpty) {
+      return navLinks.isNotEmpty ? navLinks.last : null;
+    }
+    return navLinksWithGenerics.last;
+  }
 
   bool get includeVersion => false;
 
@@ -236,7 +242,9 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
   String get layoutTitle => _layoutTitle(
       constructor.name, constructor.fullKind, constructor.isDeprecated);
   @override
-  List get navLinks => [package, library, clazz];
+  List get navLinks => [package, library];
+  @override
+  List get navLinksWithGenerics => [clazz];
   @override
   Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(constructor);
   @override
@@ -331,7 +339,9 @@ class MethodTemplateData extends TemplateData<Method> {
       'API docs for the ${method.name} method from the ${clazz.name} class, '
       'for the Dart programming language.';
   @override
-  List get navLinks => [package, library, clazz];
+  List get navLinks => [package, library];
+  @override
+  List get navLinksWithGenerics => [clazz];
   @override
   Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(method);
   @override
@@ -361,7 +371,9 @@ class PropertyTemplateData extends TemplateData<Field> {
       'API docs for the ${property.name} $type from the ${clazz.name} class, '
       'for the Dart programming language.';
   @override
-  List get navLinks => [package, library, clazz];
+  List get navLinks => [package, library];
+  @override
+  List get navLinksWithGenerics => [clazz];
   @override
   String get htmlBase => '../..';
 

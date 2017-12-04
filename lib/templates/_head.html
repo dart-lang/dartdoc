@@ -37,6 +37,9 @@
     {{#navLinks}}
     <li><a href="{{href}}">{{name}}</a></li>
     {{/navLinks}}
+    {{#navLinksWithGenerics}}
+    <li><a href="{{href}}">{{name}}{{{genericParameters}}}</a></li>
+    {{/navLinksWithGenerics}}
     {{^hasHomepage}}
     <li class="self-crumb">{{{ layoutTitle }}}</li>
     {{/hasHomepage}}
