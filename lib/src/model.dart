@@ -4983,8 +4983,9 @@ class PackageBuilder {
   AnalysisContext get context {
     if (_context == null) {
       // TODO(jcollins-g): fix this so it actually obeys analyzer options files.
-      var options = new AnalysisOptionsImpl()..enableAssertInitializer = true;
-
+      var options = new AnalysisOptionsImpl();
+      options.enableAssertInitializer = true;
+      options.enableSuperMixins = true;
       AnalysisEngine.instance.processRequiredPlugins();
 
       _context = AnalysisEngine.instance.createAnalysisContext()

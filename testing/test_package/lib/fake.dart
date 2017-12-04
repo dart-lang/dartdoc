@@ -178,6 +178,18 @@ abstract class Interface {}
 /// Yet another interface that can be implemented.
 abstract class AnotherInterface {}
 
+class NotAMixin {
+  String get superString => "A string that's clearly important";
+}
+
+class AMixinCallingSuper extends NotAMixin {
+  @override
+  String get superString => "${super.superString} but not as important as this";
+}
+
+/// Verify super-mixins don't break Dartdoc.
+class AClassUsingASuperMixin extends AnotherInterface with AMixinCallingSuper {}
+
 /// A super class, with many powers. Link to [Apple] from another library.
 @deprecated
 class SuperAwesomeClass {
