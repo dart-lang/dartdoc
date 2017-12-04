@@ -418,6 +418,36 @@ void main() {
       short = fakeLibrary.functions.firstWhere((f) => f.name == 'short');
     });
 
+    group('markdown extensions', () {
+      Class DocumentWithATable;
+      String docsAsHtml;
+
+      setUp(() {
+        DocumentWithATable = fakeLibrary.classes
+            .firstWhere((cls) => cls.name == 'DocumentWithATable');
+        docsAsHtml = DocumentWithATable.documentationAsHtml;
+      });
+
+      test('Verify table appearance', () {
+        expect(docsAsHtml.contains('<table><thead><tr><th>Component</th>'),
+            isTrue);
+      });
+
+      test('Verify links inside of table headers', () {
+        expect(
+            docsAsHtml.contains(
+                '<th><a href="fake/Annotation-class.html">Annotation</a></th>'),
+            isTrue);
+      });
+
+      test('Verify links inside of table body', () {
+        expect(
+            docsAsHtml.contains(
+                '<tbody><tr><td><a href="fake/DocumentWithATable/foo-constant.html">foo</a></td>'),
+            isTrue);
+      });
+    });
+
     group('doc references', () {
       String docsAsHtml;
 
@@ -1863,9 +1893,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
       Class Dog = exLibrary.allClasses.firstWhere((c) => c.name == 'Dog');
       aStaticConstField =
-              Dog.allFields.firstWhere((f) => f.name == 'aStaticConstField');
-      aName =
-          Dog.allFields.firstWhere((f) => f.name == 'aName');
+          Dog.allFields.firstWhere((f) => f.name == 'aStaticConstField');
+      aName = Dog.allFields.firstWhere((f) => f.name == 'aName');
     });
 
     test('substrings of the constant values type are not linked (#1535)', () {
@@ -1903,8 +1932,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('MY_CAT is not linked', () {
-      expect(cat.constantValue,
-          'const ConstantCat(&#39;tabby&#39;)');
+      expect(cat.constantValue, 'const ConstantCat(&#39;tabby&#39;)');
     });
 
     test('exported property', () {
@@ -1920,21 +1948,24 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     setUp(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       constCat = exLibrary.classes.firstWhere((c) => c.name == 'ConstantCat');
-      constructorTester = fakeLibrary.classes.firstWhere((c) => c.name == 'ConstructorTester');
+      constructorTester =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'ConstructorTester');
       constCatConstructor = constCat.constructors[0];
       appleDefaultConstructor =
           apple.constructors.firstWhere((c) => c.name == 'Apple');
       appleConstructorFromString =
           apple.constructors.firstWhere((c) => c.name == 'Apple.fromString');
-      constructorTesterDefault =
-          constructorTester.constructors.firstWhere((c) => c.name == 'ConstructorTester');
-      constructorTesterFromSomething =
-          constructorTester.constructors.firstWhere((c) => c.name == 'ConstructorTester.fromSomething');
+      constructorTesterDefault = constructorTester.constructors
+          .firstWhere((c) => c.name == 'ConstructorTester');
+      constructorTesterFromSomething = constructorTester.constructors
+          .firstWhere((c) => c.name == 'ConstructorTester.fromSomething');
     });
 
     test('displays generic parameters correctly', () {
-      expect(constructorTesterDefault.nameWithGenerics, 'ConstructorTester&lt;A, B&gt;');
-      expect(constructorTesterFromSomething.nameWithGenerics, 'ConstructorTester&lt;A, B&gt;.fromSomething');
+      expect(constructorTesterDefault.nameWithGenerics,
+          'ConstructorTester&lt;A, B&gt;');
+      expect(constructorTesterFromSomething.nameWithGenerics,
+          'ConstructorTester&lt;A, B&gt;.fromSomething');
     });
 
     test('has a fully qualified name', () {
