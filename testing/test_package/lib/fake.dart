@@ -92,6 +92,42 @@ class HasGenerics<X, Y, Z> {
   Map<X, Y> convertToMap() => null;
 }
 
+
+/// This is a class with a table.
+///
+/// It has multiple sentences before the table.  Because testing is a good
+/// idea.
+///
+/// | Component | Symbol | Short Form   | Long Form         | Numeric   | 2-digit   |
+/// |-----------|:------:|--------------|-------------------|-----------|-----------|
+/// | era       |   G    | G (AD)       | GGGG (Anno Domini)| -         | -         |
+/// | year      |   y    | -            | -                 | y (2015)  | yy (15)   |
+/// | month     |   M    | MMM (Sep)    | MMMM (September)  | M (9)     | MM (09)   |
+/// | day       |   d    | -            | -                 | d (3)     | dd (03)   |
+/// | weekday   |   E    | EEE (Sun)    | EEEE (Sunday)     | -         | -         |
+/// | hour      |   j    | -            | -                 | j (13)    | jj (13)   |
+/// | hour12    |   h    | -            | -                 | h (1 PM)  | hh (01 PM)|
+/// | hour24    |   H    | -            | -                 | H (13)    | HH (13)   |
+/// | minute    |   m    | -            | -                 | m (5)     | mm (05)   |
+/// | second    |   s    | -            | -                 | s (9)     | ss (09)   |
+/// | timezone  |   z    | -            | z (Pacific Standard Time)| -  | -         |
+/// | timezone  |   Z    | Z (GMT-8:00) | -                 | -         | -         |
+///
+/// It also has a short table with embedded links.
+///
+/// | [DocumentWithATable] | [Annotation] | [aMethod] |
+/// |----------------------|--------------|-----------|
+/// | [foo]                | Not really   | "blah"    |
+/// | [bar]                | Maybe        | "stuff"   |
+class DocumentWithATable {
+  static const DocumentWithATable foo = const DocumentWithATable();
+  static const DocumentWithATable bar = const DocumentWithATable();
+
+  const DocumentWithATable();
+  void aMethod(String parameter) {}
+}
+
+
 Map<dynamic, String> mapWithDynamicKeys = {};
 
 /// Useful for annotations.

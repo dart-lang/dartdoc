@@ -145,7 +145,10 @@ final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.ELEMENT);
 final List<md.InlineSyntax> _markdown_syntaxes = [
   new _InlineCodeSyntax(),
   new _AutolinkWithoutScheme()
-];
+]..addAll(md.ExtensionSet.gitHub.inlineSyntaxes);
+
+final List<md.BlockSyntax> _markdown_block_syntaxes = []
+  ..addAll(md.ExtensionSet.gitHub.blockSyntaxes);
 
 // Remove these schemas from the display text for hyperlinks.
 final RegExp _hide_schemes = new RegExp('^(http|https)://');
@@ -984,7 +987,9 @@ class Documentation {
     String text = _element.documentation;
     _showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
     MarkdownDocument document = new MarkdownDocument(
-        inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
+        inlineSyntaxes: _markdown_syntaxes,
+        blockSyntaxes: _markdown_block_syntaxes,
+        linkResolver: _linkResolver);
     List<String> lines = text.replaceAll('\r\n', '\n').split('\n');
     return document.renderLinesToHtml(lines, processFullDocs);
   }
