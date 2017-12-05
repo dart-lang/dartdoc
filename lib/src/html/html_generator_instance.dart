@@ -104,7 +104,6 @@ class HtmlGeneratorInstance implements HtmlOptions {
     generatePackage();
 
     for (var lib in filterNonDocumented(_package.libraries)) {
-      // if (lib.name != 'extract_messages') continue;
       generateLibrary(_package, lib);
 
       for (var clazz in filterNonDocumented(lib.allClasses)) {

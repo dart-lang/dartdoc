@@ -1086,21 +1086,21 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
       expect(explicitSetter.linkedReturnType,
-          '<span class="parameter" id="explicitSetter=-param-f"><span class="type-annotation">dynamic</span> <span class="parameter-name">Function</span>(<span class="parameter" id="f-param-bar"><span class="type-annotation">int</span>, </span> <span class="parameter" id="f-param-baz"><span class="type-annotation"><a href="fake/Cool-class.html">Cool</a></span>, </span> <span class="parameter" id="f-param-macTruck"><span class="type-annotation">List&lt;int&gt;</span></span>)</span>');
+          '<span class="parameter" id="explicitSetter=-param-f"><span class="type-annotation">dynamic</span> <span class="parameter-name">Function</span>(<span class="parameter" id="f-param-bar"><span class="type-annotation">int</span>, </span> <span class="parameter" id="f-param-baz"><span class="type-annotation"><a href="fake/Cool-class.html">Cool</a></span>, </span> <span class="parameter" id="f-param-macTruck"><span class="type-annotation">List<span class="signature">&lt;int&gt;</span></span></span>)</span>');
     });
 
     test('parameterized type from field is correctly displayed', () {
       Field aField = TemplatedInterface.instanceProperties
           .singleWhere((f) => f.name == 'aField');
       expect(aField.linkedReturnType,
-          '<a href=\"ex/AnotherParameterizedClass-class.html\">AnotherParameterizedClass</a>&lt;Stream&lt;List&lt;int&gt;&gt;&gt;');
+          '<a href=\"ex/AnotherParameterizedClass-class.html\">AnotherParameterizedClass</a><span class="signature">&lt;Stream<span class="signature">&lt;List<span class="signature">&lt;int&gt;</span>&gt;</span>&gt;</span>');
     });
 
     test('parameterized type from inherited field is correctly displayed', () {
       Field aInheritedField = TemplatedInterface.inheritedProperties
           .singleWhere((f) => f.name == 'aInheritedField');
       expect(aInheritedField.linkedReturnType,
-          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a>&lt;List&lt;int&gt;&gt;');
+          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;List<span class="signature">&lt;int&gt;</span>&gt;</span>');
     });
 
     test(
@@ -1110,7 +1110,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((f) => f.name == 'aGetter')
           .getter;
       expect(aGetter.linkedReturnType,
-          '<a href=\"ex/AnotherParameterizedClass-class.html\">AnotherParameterizedClass</a>&lt;Map&lt;A, List&lt;String&gt;&gt;&gt;');
+          '<a href=\"ex/AnotherParameterizedClass-class.html\">AnotherParameterizedClass</a><span class="signature">&lt;Map<span class="signature">&lt;A, List<span class="signature">&lt;String&gt;</span>&gt;</span>&gt;</span>');
     });
 
     test(
@@ -1120,7 +1120,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((f) => f.name == 'aInheritedGetter')
           .getter;
       expect(aInheritedGetter.linkedReturnType,
-          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a>&lt;List&lt;int&gt;&gt;');
+          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;List<span class="signature">&lt;int&gt;</span>&gt;</span>');
     });
 
     test(
@@ -1130,11 +1130,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((f) => f.name == 'aInheritedSetter')
           .setter;
       expect(aInheritedSetter.allParameters.first.modelType.linkedName,
-          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a>&lt;List&lt;int&gt;&gt;');
+          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;List<span class="signature">&lt;int&gt;</span>&gt;</span>');
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
       expect(aInheritedSetter.enclosingCombo.linkedReturnType,
-          '<span class="parameter" id="aInheritedSetter=-param-thingToSet"><span class="type-annotation"><a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a>&lt;List&lt;int&gt;&gt;</span></span>');
+          '<span class="parameter" id="aInheritedSetter=-param-thingToSet"><span class="type-annotation"><a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;List<span class="signature">&lt;int&gt;</span>&gt;</span></span></span>');
     });
 
     test(
@@ -1143,7 +1143,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       Method aMethodInterface = TemplatedInterface.allInstanceMethods
           .singleWhere((m) => m.name == 'aMethodInterface');
       expect(aMethodInterface.linkedReturnType,
-          '<a href=\"ex/AnotherParameterizedClass-class.html\">AnotherParameterizedClass</a>&lt;List&lt;int&gt;&gt;');
+          '<a href=\"ex/AnotherParameterizedClass-class.html\">AnotherParameterizedClass</a><span class="signature">&lt;List<span class="signature">&lt;int&gt;</span>&gt;</span>');
     });
 
     test(
@@ -1152,7 +1152,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       Method aInheritedMethod = TemplatedInterface.allInstanceMethods
           .singleWhere((m) => m.name == 'aInheritedMethod');
       expect(aInheritedMethod.linkedReturnType,
-          '<a href=\"ex/AnotherParameterizedClass-class.html\">AnotherParameterizedClass</a>&lt;List&lt;int&gt;&gt;');
+          '<a href=\"ex/AnotherParameterizedClass-class.html\">AnotherParameterizedClass</a><span class="signature">&lt;List<span class="signature">&lt;int&gt;</span>&gt;</span>');
     });
 
     test(
@@ -1162,7 +1162,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .allInstanceMethods
           .singleWhere((m) => m.name == 'aTypedefReturningMethodInterface');
       expect(aTypedefReturningMethodInterface.linkedReturnType,
-          '<a href=\"ex/ParameterizedTypedef.html\">ParameterizedTypedef</a>&lt;List&lt;String&gt;&gt;');
+          '<a href=\"ex/ParameterizedTypedef.html\">ParameterizedTypedef</a><span class="signature">&lt;List<span class="signature">&lt;String&gt;</span>&gt;</span>');
     });
 
     test(
@@ -1172,7 +1172,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .allInstanceMethods
           .singleWhere((m) => m.name == 'aInheritedTypedefReturningMethod');
       expect(aInheritedTypedefReturningMethod.linkedReturnType,
-          '<a href=\"ex/ParameterizedTypedef.html\">ParameterizedTypedef</a>&lt;List&lt;int&gt;&gt;');
+          '<a href=\"ex/ParameterizedTypedef.html\">ParameterizedTypedef</a><span class="signature">&lt;List<span class="signature">&lt;int&gt;</span>&gt;</span>');
     });
 
     test('parameterized types for inherited operator is correctly displayed',
@@ -1181,9 +1181,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .inheritedOperators
           .singleWhere((m) => m.name == 'operator +');
       expect(aInheritedAdditionOperator.linkedReturnType,
-          '<a href=\"ex/ParameterizedClass-class.html\">ParameterizedClass</a>&lt;List&lt;int&gt;&gt;');
+          '<a href=\"ex/ParameterizedClass-class.html\">ParameterizedClass</a><span class="signature">&lt;List<span class="signature">&lt;int&gt;</span>&gt;</span>');
       expect(aInheritedAdditionOperator.linkedParams(),
-          '<span class="parameter" id="+-param-other"><span class="type-annotation"><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a>&lt;List&lt;int&gt;&gt;</span> <span class="parameter-name">other</span></span>');
+          '<span class="parameter" id="+-param-other"><span class="type-annotation"><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;List<span class="signature">&lt;int&gt;</span>&gt;</span></span> <span class="parameter-name">other</span></span>');
     });
 
     test('', () {});
@@ -1249,7 +1249,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           getAFunctionReturningVoid.linkedReturnType,
           equals(
-              'Function(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T2</span></span>)'));
+              'Function<span class="signature">(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T2</span></span>)</span>'));
     });
 
     test(
@@ -1258,7 +1258,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           getAFunctionReturningBool.linkedReturnType,
           equals(
-              'Function&lt;T4&gt;(<span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">String</span>, </span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T4</span></span>)'));
+              'Function<span class="signature">&lt;T4&gt;</span><span class="signature">(<span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">String</span>, </span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T4</span></span>)</span>'));
     });
 
     test('has a fully qualified name', () {
@@ -1332,7 +1332,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('parameter has generics in signature', () {
       expect(testGeneric.parameters[0].modelType.linkedName,
-          'Map&lt;String, dynamic&gt;');
+          'Map<span class="signature">&lt;String, dynamic&gt;</span>');
     });
 
     test('parameter is a function', () {
@@ -1738,7 +1738,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           fieldWithTypedef.linkedReturnType,
           equals(
-              '<a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a>&lt;bool&gt;'));
+              '<a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;bool&gt;</span>'));
     });
   });
 
@@ -2009,7 +2009,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           aComplexTypedef.linkedReturnType,
           equals(
-              'Function(<span class="parameter" id="-param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">A3</span></span>)'));
+              'Function<span class="signature">(<span class="parameter" id="-param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">A3</span></span>)</span>'));
       expect(
           aComplexTypedef.linkedParamsLines,
           equals(
@@ -2034,7 +2034,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('linked return type', () {
       expect(t.linkedReturnType, equals('String'));
-      expect(generic.linkedReturnType, equals('List&lt;S&gt;'));
+      expect(generic.linkedReturnType, equals('List<span class="signature">&lt;S&gt;</span>'));
     });
 
     test("name with generics", () {
