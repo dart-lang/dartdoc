@@ -4552,6 +4552,116 @@
   }
  },
  {
+  "name": "DocumentWithATable",
+  "qualifiedName": "fake.DocumentWithATable",
+  "href": "fake/DocumentWithATable-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "DocumentWithATable",
+  "qualifiedName": "fake.DocumentWithATable",
+  "href": "fake/DocumentWithATable/DocumentWithATable.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.DocumentWithATable.==",
+  "href": "fake/DocumentWithATable/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aMethod",
+  "qualifiedName": "fake.DocumentWithATable.aMethod",
+  "href": "fake/DocumentWithATable/aMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "bar",
+  "qualifiedName": "fake.DocumentWithATable.bar",
+  "href": "fake/DocumentWithATable/bar-constant.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "foo",
+  "qualifiedName": "fake.DocumentWithATable.foo",
+  "href": "fake/DocumentWithATable/foo-constant.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.DocumentWithATable.hashCode",
+  "href": "fake/DocumentWithATable/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.DocumentWithATable.noSuchMethod",
+  "href": "fake/DocumentWithATable/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.DocumentWithATable.runtimeType",
+  "href": "fake/DocumentWithATable/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.DocumentWithATable.toString",
+  "href": "fake/DocumentWithATable/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
   "name": "Doh",
   "qualifiedName": "fake.Doh",
   "href": "fake/Doh-class.html",

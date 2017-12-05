@@ -1133,7 +1133,8 @@ class Constructor extends ModelElement
 
   @override
   // TODO(jcollins-g): Revisit this when dart-lang/sdk#31517 is implemented.
-  List<TypeParameter> get typeParameters => (enclosingElement as Class).typeParameters;
+  List<TypeParameter> get typeParameters =>
+      (enclosingElement as Class).typeParameters;
 
   @override
   ModelElement get enclosingElement =>
@@ -1184,7 +1185,8 @@ class Constructor extends ModelElement
       if (constructorName.isEmpty) {
         _nameWithGenerics = '${enclosingElement.name}${genericParameters}';
       } else {
-        _nameWithGenerics = '${enclosingElement.name}${genericParameters}.$constructorName';
+        _nameWithGenerics =
+            '${enclosingElement.name}${genericParameters}.$constructorName';
       }
     }
     return _nameWithGenerics;
