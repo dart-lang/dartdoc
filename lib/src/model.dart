@@ -1126,10 +1126,15 @@ class Class extends ModelElement
 }
 
 class Constructor extends ModelElement
-    with SourceCodeMixin
+    with SourceCodeMixin, TypeParameters
     implements EnclosedElement {
   Constructor(ConstructorElement element, Library library)
       : super(element, library, null);
+
+  @override
+  // TODO(jcollins-g): Revisit this when dart-lang/sdk#31517 is implemented.
+  List<TypeParameter> get typeParameters =>
+      (enclosingElement as Class).typeParameters;
 
   @override
   ModelElement get enclosingElement =>
@@ -1170,6 +1175,21 @@ class Constructor extends ModelElement
       }
     }
     return _name;
+  }
+
+  String _nameWithGenerics;
+  @override
+  String get nameWithGenerics {
+    if (_nameWithGenerics == null) {
+      String constructorName = element.name;
+      if (constructorName.isEmpty) {
+        _nameWithGenerics = '${enclosingElement.name}${genericParameters}';
+      } else {
+        _nameWithGenerics =
+            '${enclosingElement.name}${genericParameters}.$constructorName';
+      }
+    }
+    return _nameWithGenerics;
   }
 
   String get shortName {
@@ -4689,8 +4709,6 @@ abstract class SourceCodeMixin {
 }
 
 abstract class TypeParameters implements Nameable {
-  Element get element;
-
   String get nameWithGenerics => '$name$genericParameters';
 
   String get genericParameters {
@@ -4967,8 +4985,9 @@ class PackageBuilder {
   AnalysisContext get context {
     if (_context == null) {
       // TODO(jcollins-g): fix this so it actually obeys analyzer options files.
-      var options = new AnalysisOptionsImpl()..enableAssertInitializer = true;
-
+      var options = new AnalysisOptionsImpl();
+      options.enableAssertInitializer = true;
+      options.enableSuperMixins = true;
       AnalysisEngine.instance.processRequiredPlugins();
 
       _context = AnalysisEngine.instance.createAnalysisContext()

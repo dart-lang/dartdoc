@@ -3573,6 +3573,61 @@
   "overriddenDepth": 0
  },
  {
+  "name": "AClassUsingASuperMixin",
+  "qualifiedName": "fake.AClassUsingASuperMixin",
+  "href": "fake/AClassUsingASuperMixin-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "AClassUsingASuperMixin",
+  "qualifiedName": "fake.AClassUsingASuperMixin",
+  "href": "fake/AClassUsingASuperMixin/AClassUsingASuperMixin.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AClassUsingASuperMixin",
+   "type": "class"
+  }
+ },
+ {
+  "name": "AMixinCallingSuper",
+  "qualifiedName": "fake.AMixinCallingSuper",
+  "href": "fake/AMixinCallingSuper-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "AMixinCallingSuper",
+  "qualifiedName": "fake.AMixinCallingSuper",
+  "href": "fake/AMixinCallingSuper/AMixinCallingSuper.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AMixinCallingSuper",
+   "type": "class"
+  }
+ },
+ {
+  "name": "superString",
+  "qualifiedName": "fake.AMixinCallingSuper.superString",
+  "href": "fake/AMixinCallingSuper/superString.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AMixinCallingSuper",
+   "type": "class"
+  }
+ },
+ {
   "name": "Annotation",
   "qualifiedName": "fake.Annotation",
   "href": "fake/Annotation-class.html",
@@ -4310,6 +4365,94 @@
   }
  },
  {
+  "name": "ConstructorTester",
+  "qualifiedName": "fake.ConstructorTester",
+  "href": "fake/ConstructorTester-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ConstructorTester",
+  "qualifiedName": "fake.ConstructorTester",
+  "href": "fake/ConstructorTester/ConstructorTester.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ConstructorTester.==",
+  "href": "fake/ConstructorTester/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ConstructorTester.fromSomething",
+  "qualifiedName": "fake.ConstructorTester.fromSomething",
+  "href": "fake/ConstructorTester/ConstructorTester.fromSomething.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ConstructorTester.hashCode",
+  "href": "fake/ConstructorTester/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ConstructorTester.noSuchMethod",
+  "href": "fake/ConstructorTester/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ConstructorTester.runtimeType",
+  "href": "fake/ConstructorTester/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ConstructorTester.toString",
+  "href": "fake/ConstructorTester/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ConstructorTester",
+   "type": "class"
+  }
+ },
+ {
   "name": "Cool",
   "qualifiedName": "fake.Cool",
   "href": "fake/Cool-class.html",
@@ -4406,6 +4549,116 @@
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "DocumentWithATable",
+  "qualifiedName": "fake.DocumentWithATable",
+  "href": "fake/DocumentWithATable-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "DocumentWithATable",
+  "qualifiedName": "fake.DocumentWithATable",
+  "href": "fake/DocumentWithATable/DocumentWithATable.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.DocumentWithATable.==",
+  "href": "fake/DocumentWithATable/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aMethod",
+  "qualifiedName": "fake.DocumentWithATable.aMethod",
+  "href": "fake/DocumentWithATable/aMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "bar",
+  "qualifiedName": "fake.DocumentWithATable.bar",
+  "href": "fake/DocumentWithATable/bar-constant.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "foo",
+  "qualifiedName": "fake.DocumentWithATable.foo",
+  "href": "fake/DocumentWithATable/foo-constant.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.DocumentWithATable.hashCode",
+  "href": "fake/DocumentWithATable/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.DocumentWithATable.noSuchMethod",
+  "href": "fake/DocumentWithATable/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.DocumentWithATable.runtimeType",
+  "href": "fake/DocumentWithATable/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.DocumentWithATable.toString",
+  "href": "fake/DocumentWithATable/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "DocumentWithATable",
+   "type": "class"
   }
  },
  {
@@ -5440,6 +5693,94 @@
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "NotAMixin",
+  "qualifiedName": "fake.NotAMixin",
+  "href": "fake/NotAMixin-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "NotAMixin",
+  "qualifiedName": "fake.NotAMixin",
+  "href": "fake/NotAMixin/NotAMixin.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NotAMixin",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.NotAMixin.==",
+  "href": "fake/NotAMixin/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NotAMixin",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.NotAMixin.hashCode",
+  "href": "fake/NotAMixin/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NotAMixin",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.NotAMixin.noSuchMethod",
+  "href": "fake/NotAMixin/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NotAMixin",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.NotAMixin.runtimeType",
+  "href": "fake/NotAMixin/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NotAMixin",
+   "type": "class"
+  }
+ },
+ {
+  "name": "superString",
+  "qualifiedName": "fake.NotAMixin.superString",
+  "href": "fake/NotAMixin/superString.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NotAMixin",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.NotAMixin.toString",
+  "href": "fake/NotAMixin/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NotAMixin",
+   "type": "class"
   }
  },
  {

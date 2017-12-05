@@ -7,6 +7,7 @@ import '../model.dart';
 abstract class HtmlOptions {
   String get relCanonicalPrefix;
   String get toolVersion;
+  bool get useCategories;
 }
 
 class Subnav {
@@ -36,7 +37,13 @@ abstract class TemplateData<T extends Documentable> {
   String get kind => self is ModelElement ? (self as ModelElement).kind : null;
 
   List get navLinks;
-  Documentable get parent => navLinks.isNotEmpty ? navLinks.last : null;
+  List get navLinksWithGenerics => [];
+  Documentable get parent {
+    if (navLinksWithGenerics.isEmpty) {
+      return navLinks.isNotEmpty ? navLinks.last : null;
+    }
+    return navLinksWithGenerics.last;
+  }
 
   bool get includeVersion => false;
 
@@ -56,6 +63,7 @@ abstract class TemplateData<T extends Documentable> {
   T get self;
   String get version => htmlOptions.toolVersion;
   String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
+  bool get useCategories => htmlOptions.useCategories;
 
   Iterable<Subnav> getSubNavItems() => <Subnav>[];
 
@@ -78,13 +86,11 @@ abstract class TemplateData<T extends Documentable> {
 }
 
 class PackageTemplateData extends TemplateData<Package> {
-  PackageTemplateData(
-      HtmlOptions htmlOptions, Package package, this.useCategories)
+  PackageTemplateData(HtmlOptions htmlOptions, Package package)
       : super(htmlOptions, package);
 
   @override
   bool get includeVersion => true;
-  final bool useCategories;
   @override
   List get navLinks => [];
   @override
@@ -117,15 +123,13 @@ class PackageTemplateData extends TemplateData<Package> {
 class LibraryTemplateData extends TemplateData<Library> {
   final Library library;
 
-  LibraryTemplateData(HtmlOptions htmlOptions, Package package, this.library,
-      this.useCategories)
+  LibraryTemplateData(HtmlOptions htmlOptions, Package package, this.library)
       : super(htmlOptions, package);
 
   @override
   String get title => '${library.name} library - Dart API';
   @override
   String get documentation => library.documentation;
-  final bool useCategories;
   @override
   String get htmlBase => '..';
   @override
@@ -236,7 +240,9 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
   String get layoutTitle => _layoutTitle(
       constructor.name, constructor.fullKind, constructor.isDeprecated);
   @override
-  List get navLinks => [package, library, clazz];
+  List get navLinks => [package, library];
+  @override
+  List get navLinksWithGenerics => [clazz];
   @override
   Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(constructor);
   @override
@@ -331,7 +337,9 @@ class MethodTemplateData extends TemplateData<Method> {
       'API docs for the ${method.name} method from the ${clazz.name} class, '
       'for the Dart programming language.';
   @override
-  List get navLinks => [package, library, clazz];
+  List get navLinks => [package, library];
+  @override
+  List get navLinksWithGenerics => [clazz];
   @override
   Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(method);
   @override
@@ -361,7 +369,9 @@ class PropertyTemplateData extends TemplateData<Field> {
       'API docs for the ${property.name} $type from the ${clazz.name} class, '
       'for the Dart programming language.';
   @override
-  List get navLinks => [package, library, clazz];
+  List get navLinks => [package, library];
+  @override
+  List get navLinksWithGenerics => [clazz];
   @override
   String get htmlBase => '../..';
 
