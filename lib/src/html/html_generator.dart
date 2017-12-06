@@ -7,9 +7,12 @@ library dartdoc.html_generator;
 import 'dart:async' show Future, StreamController, Stream;
 import 'dart:io' show File;
 
+import 'package:path/path.dart' as p;
+
 import '../generator.dart';
 import '../model.dart';
 import 'html_generator_instance.dart';
+import 'template_data.dart';
 import 'templates.dart';
 
 typedef String Renderer(String input);
@@ -44,7 +47,7 @@ class HtmlGenerator extends Generator {
   Stream<File> get onFileCreated => _onFileCreated.stream;
 
   @override
-  Set<String> get writtenFiles => _instance.writtenFiles;
+  final Set<String> writtenFiles = new Set<String>();
 
   static Future<HtmlGenerator> create(
       {HtmlGeneratorOptions options,
@@ -66,21 +69,60 @@ class HtmlGenerator extends Generator {
 
   /// Actually write out the documentation for [package].
   /// Stores the HtmlGeneratorInstance so we can access it in [writtenFiles].
-  Future generate(Package package, String outputDirectoryPath) {
+  Future generate(Package package, String outputDirectoryPath) async {
     assert(_instance == null);
-    _instance = new HtmlGeneratorInstance(
-        _options, _templates, package, outputDirectoryPath, _onFileCreated);
-    return _instance.generate();
+
+    var enabled = true;
+    void write(String filePath, Object content, {bool allowOverwrite}) {
+      allowOverwrite ??= false;
+      if (!enabled) {
+        throw new StateError('`write` was called after `generate` completed.');
+      }
+      // If you see this assert, we're probably being called to build non-canonical
+      // docs somehow.  Check data.self.isCanonical and callers for bugs.
+      assert(allowOverwrite || !writtenFiles.contains(filePath));
+
+      var file = new File(p.join(outputDirectoryPath, filePath));
+      var parent = file.parent;
+      if (!parent.existsSync()) {
+        parent.createSync(recursive: true);
+      }
+
+      if (content is String) {
+        file.writeAsStringSync(content);
+      } else if (content is List<int>) {
+        file.writeAsBytesSync(content);
+      } else {
+        throw new ArgumentError.value(
+            content, 'content', '`content` must be `String` or `List<int>`.');
+      }
+      _onFileCreated.add(file);
+      writtenFiles.add(filePath);
+    }
+
+    try {
+      _instance =
+          new HtmlGeneratorInstance(_options, _templates, package, write);
+      await _instance.generate();
+    } finally {
+      enabled = false;
+    }
   }
 }
 
-class HtmlGeneratorOptions {
+class HtmlGeneratorOptions implements HtmlOptions {
   final String url;
-  final String relCanonicalPrefix;
   final String faviconPath;
-  final String toolVersion;
-  final bool useCategories;
   final bool prettyIndexJson;
+
+  @override
+  final bool useCategories;
+
+  @override
+  final String relCanonicalPrefix;
+
+  @override
+  final String toolVersion;
 
   HtmlGeneratorOptions(
       {this.url,
