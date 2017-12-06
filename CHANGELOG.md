@@ -1,4 +1,6 @@
 ## 0.15.0
+* Breaking change: Major internal refactoring of public/private,
+  type definitions, templates, and warnings.   (#1524, #1539)
 * Breaking change: Allow mixins that call their super-classes. (#1555)
 * Breaking change: Anonymous libraries are now laid out on disk
   differently to avoid conflicts (#1526)
@@ -8,6 +10,7 @@
 * Breaking change: The meaning of --include and --exclude has changed to
   require import paths for anonymous libraries, and accept them for other
   libraries. (#1524)
+* The Interceptor class from the SDK is now cloaked (#1524)
 * Type parameters for classes now appear next to them on the library page
   (#1558)
 * GFM-style tables are now supported in Dartdoc markdown (#1557, #1453)
@@ -24,8 +27,6 @@
 * Eliminate remaining places where dartdoc exposed private interfaces
   (#1173)
 * Fix private super classes appearing with dead links (#1476)
-* Breaking change: Major internal refactoring of public/private,
-  type definitions, templates, and warnings  (#1394, #1539)
 * Fix resolution of generic types (#1514)
 * Limit width of code blocks (#1522)
 * Add a `--json` flag to providing logging in a machine-readable format.
