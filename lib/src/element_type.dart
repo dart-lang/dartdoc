@@ -54,21 +54,50 @@ class ElementType extends Privacy {
       if (isParameterizedType) {
         if (!typeArguments.every((t) => t.linkedName == 'dynamic') &&
             typeArguments.isNotEmpty) {
+          buf.write('<span class="signature">');
           buf.write('&lt;');
           buf.writeAll(typeArguments.map((t) => t.linkedName), ', ');
           buf.write('&gt;');
+          buf.write('</span>');
         }
         // Hide parameters if there's a an explicit typedef behind this
         // element, but if there is no typedef, be explicit.
         if (element is ModelFunctionAnonymous) {
+          buf.write('<span class="signature">');
           buf.write('(');
           buf.write(element.linkedParams());
           buf.write(')');
+          buf.write('</span>');
         }
       }
       _linkedName = buf.toString();
     }
     return _linkedName;
+  }
+
+  String _nameWithGenerics;
+  String get nameWithGenerics {
+    if (_nameWithGenerics == null) {
+      StringBuffer buf = new StringBuffer();
+
+      if (isParameterType) {
+        buf.write(name);
+      } else {
+        buf.write(element.name);
+      }
+
+      // not TypeParameterType or Void or Union type
+      if (isParameterizedType) {
+        if (!typeArguments.every((t) => t.linkedName == 'dynamic') &&
+            typeArguments.isNotEmpty) {
+          buf.write('&lt;');
+          buf.writeAll(typeArguments.map((t) => t.nameWithGenerics), ', ');
+          buf.write('&gt;');
+        }
+      }
+      _nameWithGenerics = buf.toString();
+    }
+    return _nameWithGenerics;
   }
 
   String get name => _type.name ?? _type.element.name;
