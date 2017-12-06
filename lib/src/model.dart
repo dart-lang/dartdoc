@@ -497,7 +497,6 @@ class Class extends ModelElement
       ..addAll([]
         ..addAll(inheritedProperties)
         ..sort(byName));
-
     return _allInstanceProperties;
   }
 
@@ -4711,9 +4710,18 @@ abstract class SourceCodeMixin {
 abstract class TypeParameters implements Nameable {
   String get nameWithGenerics => '$name$genericParameters';
 
+  String get nameWithLinkedGenerics => '$name$linkedGenericParameters';
+
+  bool get hasGenericParameters => typeParameters.isNotEmpty;
+
   String get genericParameters {
     if (typeParameters.isEmpty) return '';
     return '&lt;${typeParameters.map((t) => t.name).join(', ')}&gt;';
+  }
+
+  String get linkedGenericParameters {
+    if (typeParameters.isEmpty) return '';
+    return '<span class="signature">&lt;${typeParameters.map((t) => t.linkedName).join(', ')}&gt;</span>';
   }
 
   List<TypeParameter> get typeParameters;
@@ -4862,11 +4870,28 @@ class TypeParameter extends ModelElement {
   @override
   String get kind => 'type parameter';
 
+  ElementType get boundType {
+    var bound = _typeParameter.bound;
+    if (bound != null) {
+      ModelElement boundClass =
+          new ModelElement.fromElement(bound.element, package);
+      return new ElementType(bound, boundClass);
+    }
+    return null;
+  }
+
   @override
   String get name {
     var bound = _typeParameter.bound;
-    return bound != null
-        ? '${_typeParameter.name} extends ${bound.name}'
+    return _typeParameter.bound != null
+        ? '${_typeParameter.name} extends ${boundType.nameWithGenerics}'
+        : _typeParameter.name;
+  }
+
+  @override
+  String get linkedName {
+    return _typeParameter.bound != null
+        ? '${_typeParameter.name} extends ${boundType.linkedName}'
         : _typeParameter.name;
   }
 
