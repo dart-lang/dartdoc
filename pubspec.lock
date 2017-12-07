@@ -115,6 +115,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.1"
+  io:
+    description:
+      name: io
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.1"
   isolate:
     description:
       name: isolate
@@ -162,13 +168,19 @@ packages:
       name: mime
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.9.3"
+    version: "0.9.4"
   mockable_filesystem:
     description:
       name: mockable_filesystem
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.3"
+  multi_server_socket:
+    description:
+      name: multi_server_socket
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   mustache4dart:
     description:
       name: mustache4dart
@@ -198,7 +210,7 @@ packages:
       name: path
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.2"
+    version: "1.5.1"
   plugin:
     description:
       name: plugin
@@ -228,7 +240,7 @@ packages:
       name: resource
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "2.1.2"
   shelf:
     description:
       name: shelf
@@ -246,7 +258,7 @@ packages:
       name: shelf_static
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.5"
+    version: "0.2.6"
   shelf_web_socket:
     description:
       name: shelf_web_socket
@@ -276,7 +288,7 @@ packages:
       name: stack_trace
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.8.2"
+    version: "1.9.1"
   stream_channel:
     description:
       name: stream_channel
@@ -306,7 +318,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.12.24+8"
+    version: "0.12.29"
   tuple:
     description:
       name: tuple
