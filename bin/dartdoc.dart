@@ -99,7 +99,7 @@ main(List<String> arguments) async {
   // If we're generating docs for the Dart SDK, we insert a copyright footer.
   if (sdkDocs) {
     Uri footerCopyrightUri = await Isolate.resolvePackageUri(
-        Uri.parse('package:dartdoc/src/sdk_footer_text.html'));
+        Uri.parse('package:dartdoc/resources/sdk_footer_text.html'));
     footerTextFilePaths = [footerCopyrightUri.toFilePath()];
   }
 
