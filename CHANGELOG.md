@@ -1,3 +1,7 @@
+## 0.15.0+1
+* Move sdk_footer_text to resources directory for compatibility
+  with SDK build system (#1563)
+
 ## 0.15.0
 * Breaking change: Major internal refactoring of public/private,
   type definitions, templates, and warnings.   (#1524, #1539)
