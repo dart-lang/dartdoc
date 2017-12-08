@@ -4882,7 +4882,6 @@ class TypeParameter extends ModelElement {
 
   @override
   String get name {
-    var bound = _typeParameter.bound;
     return _typeParameter.bound != null
         ? '${_typeParameter.name} extends ${boundType.nameWithGenerics}'
         : _typeParameter.name;
@@ -5011,7 +5010,6 @@ class PackageBuilder {
     if (_context == null) {
       // TODO(jcollins-g): fix this so it actually obeys analyzer options files.
       var options = new AnalysisOptionsImpl();
-      options.enableAssertInitializer = true;
       options.enableSuperMixins = true;
       AnalysisEngine.instance.processRequiredPlugins();
 
