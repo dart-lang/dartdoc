@@ -307,6 +307,10 @@ testDartdoc() async {
 @Task('update test_package_docs')
 updateTestPackageDocs() async {
   var launcher = new SubprocessLauncher('dartdoc[update-test-package]');
+  var testPackageDocs = new Directory(path.join('testing', 'test_package_docs'));
+  var testPackage = new Directory(path.join('testing', 'test_package'));
+  await launcher.runStreamed(pubPath, ['get'], workingDirectory: testPackage.path);
+  delete(testPackageDocs);
   // This must be synced with ../test/compare_output_test.dart's
   // "Validate html output of test_package" test.
   await launcher.runStreamed(Platform.resolvedExecutable, [
@@ -322,7 +326,7 @@ updateTestPackageDocs() async {
     'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,package:meta/meta.dart',
     '--output',
     '../test_package_docs',
-  ], workingDirectory: path.join('testing', 'test_package_docs'));
+  ], workingDirectory: testPackage.path);
 }
 
 @Task('Validate the SDK doc build.')
