@@ -16,14 +16,16 @@ main([List<String> args]) => grind(args);
 final Directory dartdocDocsDir = Directory.systemTemp.createTempSync('dartdoc');
 final Directory sdkDocsDir = Directory.systemTemp.createTempSync('sdkdocs');
 final Directory flutterDir = Directory.systemTemp.createTempSync('flutter');
-final Directory flutterDirDevTools = new Directory(path.join(flutterDir.path, 'dev', 'tools'));
-final String pubPath = path.join(path.dirname(Platform.resolvedExecutable),
-    'pub');
+final Directory flutterDirDevTools =
+    new Directory(path.join(flutterDir.path, 'dev', 'tools'));
+final String pubPath =
+    path.join(path.dirname(Platform.resolvedExecutable), 'pub');
 
 final RegExp quotables = new RegExp(r'[ "\r\n\$]');
 
 // from flutter:dev/tools/dartdoc.dart, modified
-void printStream(Stream<List<int>> stream, Stdout output, { String prefix: '' }) {
+void _printStream(Stream<List<int>> stream, Stdout output,
+    {String prefix: ''}) {
   assert(prefix != null);
   stream
       .transform(UTF8.decoder)
@@ -34,7 +36,22 @@ void printStream(Stream<List<int>> stream, Stdout output, { String prefix: '' })
   });
 }
 
-class SubprocessLauncher {
+/// Creates a throwaway pub cache and returns the environment variables
+/// necessary to use it.
+Map<String, String> _createThrowawayPubCache() {
+  final Directory pubCache = Directory.systemTemp.createTempSync('pubcache');
+  final Directory pubCacheBin = new Directory(path.join(pubCache.path, 'bin'));
+  pubCacheBin.createSync();
+  return new Map.fromIterables([
+    'PUB_CACHE',
+    'PATH'
+  ], [
+    pubCache.path,
+    [pubCacheBin.path, Platform.environment['PATH']].join(':')
+  ]);
+}
+
+class _SubprocessLauncher {
   final String context;
   Map<String, String> _environment;
 
@@ -42,7 +59,7 @@ class SubprocessLauncher {
 
   String get prefix => context.isNotEmpty ? '$context: ' : '';
 
-  SubprocessLauncher(this.context, [Map<String, String> environment]) {
+  _SubprocessLauncher(this.context, [Map<String, String> environment]) {
     if (environment == null) this._environment = new Map();
   }
 
@@ -78,11 +95,10 @@ class SubprocessLauncher {
     if (workingDirectory != null) stderr.write(')');
     stderr.write('\n');
     Process process = await Process.start(executable, arguments,
-        workingDirectory: workingDirectory,
-        environment: environment);
+        workingDirectory: workingDirectory, environment: environment);
 
-    printStream(process.stdout, stdout, prefix: prefix);
-    printStream(process.stderr, stderr, prefix: prefix);
+    _printStream(process.stdout, stdout, prefix: prefix);
+    _printStream(process.stderr, stderr, prefix: prefix);
     await process.exitCode;
 
     int exitCode = await process.exitCode;
@@ -104,7 +120,7 @@ buildbot() => null;
 @Task('Generate docs for the Dart SDK')
 Future buildSdkDocs() async {
   log('building SDK docs');
-  var launcher = new SubprocessLauncher('dartdoc[sdk]');
+  var launcher = new _SubprocessLauncher('build-sdk-docs');
   await launcher.runStreamed(Platform.resolvedExecutable, [
     '--checked',
     'bin/dartdoc.dart',
@@ -119,9 +135,10 @@ Future buildSdkDocs() async {
 @Depends(buildSdkDocs)
 Future serveSdkDocs() async {
   log('launching dhttpd on port 8000 for SDK');
-  var launcher = new SubprocessLauncher('dhttpd[sdk]');
+  var launcher = new _SubprocessLauncher('serve-sdk-docs');
   await launcher.runStreamed(pubPath, [
-    'run', 'dhttpd',
+    'run',
+    'dhttpd',
     '--port',
     '8000',
     '--path',
@@ -133,10 +150,11 @@ Future serveSdkDocs() async {
 @Depends(buildFlutterDocs)
 Future serveFlutterDocs() async {
   log('launching dhttpd on port 8001 for Flutter');
-  var launcher = new SubprocessLauncher('dhttpd[flutter]');
+  var launcher = new _SubprocessLauncher('serve-flutter-docs');
   await launcher.runStreamed(pubPath, ['get']);
   await launcher.runStreamed(pubPath, [
-    'run', 'dhttpd',
+    'run',
+    'dhttpd',
     '--port',
     '8001',
     '--path',
@@ -144,43 +162,44 @@ Future serveFlutterDocs() async {
   ]);
 }
 
-/// Creates a throwaway pub cache and returns the environment variables
-/// necessary to use it.
-Map<String, String> _createThrowawayPubCache() {
-  final Directory pubCache = Directory.systemTemp.createTempSync('pubcache');
-  final Directory pubCacheBin = new Directory(path.join(pubCache.path, 'bin'));
-  pubCacheBin.createSync();
-  return new Map.fromIterables(['PUB_CACHE', 'PATH'], [pubCache.path,
-    [pubCacheBin.path, Platform.environment['PATH']].join(':')]);
-}
-
 @Task('Build flutter docs')
 Future buildFlutterDocs() async {
   log('building flutter docs into: $flutterDir');
-  var launcher = new SubprocessLauncher('dartdoc[flutter]', _createThrowawayPubCache());
-  await launcher.runStreamed('git', [
-    'clone',
-    '--depth', '1',
-    'https://github.com/flutter/flutter.git',
-    '.'
-  ], workingDirectory: flutterDir.path);
+  var launcher =
+      new _SubprocessLauncher('build-flutter-docs', _createThrowawayPubCache());
+  await launcher.runStreamed('git',
+      ['clone', '--depth', '1', 'https://github.com/flutter/flutter.git', '.'],
+      workingDirectory: flutterDir.path);
   String flutterBin = path.join('bin', 'flutter');
-  String flutterCacheDart = path.join(flutterDir.path, 'bin', 'cache', 'dart-sdk', 'bin', 'dart');
-  String flutterCachePub = path.join(flutterDir.path, 'bin', 'cache', 'dart-sdk', 'bin', 'pub');
-  await launcher.runStreamed(flutterBin, ['--version'],
+  String flutterCacheDart =
+      path.join(flutterDir.path, 'bin', 'cache', 'dart-sdk', 'bin', 'dart');
+  String flutterCachePub =
+      path.join(flutterDir.path, 'bin', 'cache', 'dart-sdk', 'bin', 'pub');
+  await launcher.runStreamed(
+    flutterBin,
+    ['--version'],
     workingDirectory: flutterDir.path,
   );
-  await launcher.runStreamed(flutterBin, ['precache'],
+  await launcher.runStreamed(
+    flutterBin,
+    ['precache'],
     workingDirectory: flutterDir.path,
   );
-  await launcher.runStreamed(flutterCachePub, ['get'],
+  await launcher.runStreamed(
+    flutterCachePub,
+    ['get'],
     workingDirectory: path.join(flutterDir.path, 'dev', 'tools'),
   );
-  await launcher.runStreamed(flutterCachePub, ['global', 'activate', '-spath', '.']);
-  await launcher.runStreamed(flutterCacheDart, [path.join('dev', 'tools', 'dartdoc.dart')],
+  await launcher
+      .runStreamed(flutterCachePub, ['global', 'activate', '-spath', '.']);
+  await launcher.runStreamed(
+    flutterCacheDart,
+    [path.join('dev', 'tools', 'dartdoc.dart')],
     workingDirectory: flutterDir.path,
   );
-  String index = new File(path.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html')).readAsStringSync();
+  String index =
+      new File(path.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
+          .readAsStringSync();
   stdout.write(index);
 }
 
@@ -289,15 +308,15 @@ publish() async {
 }
 
 @Task('Run all the tests.')
-test() {
+test() async {
   // `pub run test` is a bit slower than running an `test_all.dart` script
   // But it provides more useful output in the case of failures.
-  return Pub.runAsync('test');
+  await new _SubprocessLauncher('test').runStreamed(pubPath, ['run', 'test']);
 }
 
 @Task('Generate docs for dartdoc')
 testDartdoc() async {
-  var launcher = new SubprocessLauncher('dartdoc[test]');
+  var launcher = new _SubprocessLauncher('test-dartdoc');
   await launcher.runStreamed(Platform.resolvedExecutable,
       ['--checked', 'bin/dartdoc.dart', '--output', dartdocDocsDir.path]);
   File indexHtml = joinFile(dartdocDocsDir, ['index.html']);
@@ -306,27 +325,32 @@ testDartdoc() async {
 
 @Task('update test_package_docs')
 updateTestPackageDocs() async {
-  var launcher = new SubprocessLauncher('dartdoc[update-test-package]');
-  var testPackageDocs = new Directory(path.join('testing', 'test_package_docs'));
+  var launcher = new _SubprocessLauncher('update-test-package-docs');
+  var testPackageDocs =
+      new Directory(path.join('testing', 'test_package_docs'));
   var testPackage = new Directory(path.join('testing', 'test_package'));
-  await launcher.runStreamed(pubPath, ['get'], workingDirectory: testPackage.path);
+  await launcher.runStreamed(pubPath, ['get'],
+      workingDirectory: testPackage.path);
   delete(testPackageDocs);
   // This must be synced with ../test/compare_output_test.dart's
   // "Validate html output of test_package" test.
-  await launcher.runStreamed(Platform.resolvedExecutable, [
-    '--checked',
-    path.join('..', '..', 'bin', 'dartdoc.dart'),
-    '--auto-include-dependencies',
-    '--example-path-prefix',
-    'examples',
-    '--no-include-source',
-    '--pretty-index-json',
-    '--hide-sdk-text',
-    '--exclude',
-    'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,package:meta/meta.dart',
-    '--output',
-    '../test_package_docs',
-  ], workingDirectory: testPackage.path);
+  await launcher.runStreamed(
+      Platform.resolvedExecutable,
+      [
+        '--checked',
+        path.join('..', '..', 'bin', 'dartdoc.dart'),
+        '--auto-include-dependencies',
+        '--example-path-prefix',
+        'examples',
+        '--no-include-source',
+        '--pretty-index-json',
+        '--hide-sdk-text',
+        '--exclude',
+        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,package:meta/meta.dart',
+        '--output',
+        '../test_package_docs',
+      ],
+      workingDirectory: testPackage.path);
 }
 
 @Task('Validate the SDK doc build.')
