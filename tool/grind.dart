@@ -40,6 +40,8 @@ class SubprocessLauncher {
 
   Map<String, String> get environment => _environment;
 
+  String get prefix => context.isNotEmpty ? '$context: ' : '';
+
   SubprocessLauncher(this.context, [Map<String, String> environment]) {
     if (environment == null) this._environment = new Map();
   }
@@ -51,7 +53,7 @@ class SubprocessLauncher {
   /// TODO(jcollins-g): move this to grinder?
   Future runStreamed(String executable, List<String> arguments,
       {String workingDirectory}) async {
-    stderr.write('+ ');
+    stderr.write('$prefix+ ');
     if (workingDirectory != null) stderr.write('cd "$workingDirectory" && ');
     if (environment != null) {
       stderr.write(environment.keys.map((String key) {
@@ -79,8 +81,8 @@ class SubprocessLauncher {
         workingDirectory: workingDirectory,
         environment: environment);
 
-    printStream(process.stdout, stdout, prefix: '$context: ');
-    printStream(process.stderr, stderr, prefix: '$context: ');
+    printStream(process.stdout, stdout, prefix: prefix);
+    printStream(process.stderr, stderr, prefix: prefix);
     await process.exitCode;
 
     int exitCode = await process.exitCode;
@@ -294,35 +296,33 @@ test() {
 }
 
 @Task('Generate docs for dartdoc')
-testDartdoc() {
+testDartdoc() async {
   var launcher = new SubprocessLauncher('dartdoc[test]');
-  launcher.runStreamed(Platform.resolvedExecutable,
-      ['-c', 'bin/dartdoc.dart', '--output', dartdocDocsDir.path]);
-  File indexHtml = joinFile(sdkDocsDir, ['index.html']);
+  await launcher.runStreamed(Platform.resolvedExecutable,
+      ['--checked', 'bin/dartdoc.dart', '--output', dartdocDocsDir.path]);
+  File indexHtml = joinFile(dartdocDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) fail('docs not generated');
 }
 
 @Task('update test_package_docs')
-updateTestPackageDocs() {
-  var options = new RunOptions(workingDirectory: 'testing/test_package');
+updateTestPackageDocs() async {
+  var launcher = new SubprocessLauncher('dartdoc[update-test-package]');
   // This must be synced with ../test/compare_output_test.dart's
   // "Validate html output of test_package" test.
-  delete(getDir('testing/test_package_docs'));
-  Dart.run('../../bin/dartdoc.dart',
-      arguments: [
-        '--auto-include-dependencies',
-        '--example-path-prefix',
-        'examples',
-        '--no-include-source',
-        '--pretty-index-json',
-        '--hide-sdk-text',
-        '--exclude',
-        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,package:meta/meta.dart',
-        '--output',
-        '../test_package_docs',
-      ],
-      runOptions: options,
-      vmArgs: ['--checked']);
+  await launcher.runStreamed(Platform.resolvedExecutable, [
+    '--checked',
+    path.join('..', '..', 'bin', 'dartdoc.dart'),
+    '--auto-include-dependencies',
+    '--example-path-prefix',
+    'examples',
+    '--no-include-source',
+    '--pretty-index-json',
+    '--hide-sdk-text',
+    '--exclude',
+    'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,package:meta/meta.dart',
+    '--output',
+    '../test_package_docs',
+  ], workingDirectory: path.join('testing', 'test_package_docs'));
 }
 
 @Task('Validate the SDK doc build.')
