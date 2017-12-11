@@ -18,9 +18,6 @@ final Directory sdkDocsDir = Directory.systemTemp.createTempSync('sdkdocs');
 final Directory flutterDir = Directory.systemTemp.createTempSync('flutter');
 final Directory flutterDirDevTools =
     new Directory(path.join(flutterDir.path, 'dev', 'tools'));
-final String pubPath = path.join(path.dirname(Platform.resolvedExecutable),
-    Platform.isWindows ? 'pub.bat' : 'pub');
-
 final RegExp quotables = new RegExp(r'[ "\r\n\$]');
 
 // from flutter:dev/tools/dartdoc.dart, modified
@@ -109,8 +106,17 @@ class _SubprocessLauncher {
 }
 
 @Task('Analyze dartdoc to ensure there are no errors and warnings')
-analyze() {
-  Analyzer.analyze(['bin', 'lib', 'test', 'tool'], fatalWarnings: true);
+analyze() async {
+  await new _SubprocessLauncher('analyze').runStreamed(
+    sdkBin('dartanalyzer'),
+    [
+      '--fatal-warnings',
+      'bin',
+      'lib',
+      'test',
+      'tool',
+    ],
+  );
 }
 
 @Task('analyze, test, and self-test dartdoc')
@@ -136,7 +142,7 @@ Future buildSdkDocs() async {
 Future serveSdkDocs() async {
   log('launching dhttpd on port 8000 for SDK');
   var launcher = new _SubprocessLauncher('serve-sdk-docs');
-  await launcher.runStreamed(pubPath, [
+  await launcher.runStreamed(sdkBin('pub'), [
     'run',
     'dhttpd',
     '--port',
@@ -151,8 +157,8 @@ Future serveSdkDocs() async {
 Future serveFlutterDocs() async {
   log('launching dhttpd on port 8001 for Flutter');
   var launcher = new _SubprocessLauncher('serve-flutter-docs');
-  await launcher.runStreamed(pubPath, ['get']);
-  await launcher.runStreamed(pubPath, [
+  await launcher.runStreamed(sdkBin('pub'), ['get']);
+  await launcher.runStreamed(sdkBin('pub'), [
     'run',
     'dhttpd',
     '--port',
@@ -311,7 +317,8 @@ publish() async {
 test() async {
   // `pub run test` is a bit slower than running an `test_all.dart` script
   // But it provides more useful output in the case of failures.
-  await new _SubprocessLauncher('test').runStreamed(pubPath, ['run', 'test']);
+  await new _SubprocessLauncher('test')
+      .runStreamed(sdkBin('pub'), ['run', 'test']);
 }
 
 @Task('Generate docs for dartdoc')
@@ -329,7 +336,7 @@ updateTestPackageDocs() async {
   var testPackageDocs =
       new Directory(path.join('testing', 'test_package_docs'));
   var testPackage = new Directory(path.join('testing', 'test_package'));
-  await launcher.runStreamed(pubPath, ['get'],
+  await launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: testPackage.path);
   delete(testPackageDocs);
   // This must be synced with ../test/compare_output_test.dart's
