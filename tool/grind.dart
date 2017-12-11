@@ -18,8 +18,7 @@ final Directory sdkDocsDir = Directory.systemTemp.createTempSync('sdkdocs');
 final Directory flutterDir = Directory.systemTemp.createTempSync('flutter');
 final Directory flutterDirDevTools =
     new Directory(path.join(flutterDir.path, 'dev', 'tools'));
-final String pubPath =
-    path.join(path.dirname(Platform.resolvedExecutable), 'pub');
+final String pubPath = 'pub';
 
 final RegExp quotables = new RegExp(r'[ "\r\n\$]');
 
