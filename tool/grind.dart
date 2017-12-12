@@ -14,14 +14,16 @@ import 'package:yaml/yaml.dart' as yaml;
 
 main([List<String> args]) => grind(args);
 
+// Directory.systemTemp is not a constant.  So wrap it.
+Directory createTempSync(String prefix) =>
+    Directory.systemTemp.createTempSync(prefix);
+
 final Memoizer tempdirsCache = new Memoizer();
 
 Directory get dartdocDocsDir =>
-    tempdirsCache.memoized1(Directory.systemTemp.createTempSync, 'dartdoc');
-Directory get sdkDocsDir =>
-    tempdirsCache.memoized1(Directory.systemTemp.createTempSync, 'sdkdocs');
-Directory get flutterDir =>
-    tempdirsCache.memoized1(Directory.systemTemp.createTempSync, 'flutter');
+    tempdirsCache.memoized1(createTempSync, 'dartdoc');
+Directory get sdkDocsDir => tempdirsCache.memoized1(createTempSync, 'sdkdocs');
+Directory get flutterDir => tempdirsCache.memoized1(createTempSync, 'flutter');
 
 final Directory flutterDirDevTools =
     new Directory(path.join(flutterDir.path, 'dev', 'tools'));
@@ -129,6 +131,8 @@ analyze() async {
 @Task('analyze, test, and self-test dartdoc')
 @Depends(analyze, test, testDartdoc)
 buildbot() => null;
+
+void anOrdinaryFunction() {}
 
 @Task('Generate docs for the Dart SDK')
 Future buildSdkDocs() async {
