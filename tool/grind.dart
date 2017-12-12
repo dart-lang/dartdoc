@@ -132,8 +132,6 @@ analyze() async {
 @Depends(analyze, test, testDartdoc)
 buildbot() => null;
 
-void anOrdinaryFunction() {}
-
 @Task('Generate docs for the Dart SDK')
 Future buildSdkDocs() async {
   log('building SDK docs');
