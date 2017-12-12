@@ -4,6 +4,7 @@
 
 library dartdoc.model_utils;
 
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -12,6 +13,8 @@ import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/model.dart';
+import 'package:quiver_hashcode/hashcode.dart';
+import 'package:tuple/tuple.dart';
 
 import 'config.dart';
 
@@ -165,4 +168,136 @@ String crossdartifySource(
     newSource = sanitizer.convert(source);
   }
   return newSource;
+}
+
+/// An UnmodifiableListView that computes equality and hashCode based on the
+/// equality and hashCode of its contained objects.
+class HashableList extends UnmodifiableListView<dynamic> {
+  HashableList(Iterable<dynamic> iterable) : super(iterable);
+
+  @override
+  bool operator==(other) {
+    if (this.length == other.length) {
+      for (var index = 0; index < length; ++index) {
+        if (this[index] != other[index]) return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  get hashCode => hashObjects(this);
+}
+
+/// Extend or use as a mixin to track object-specific cached values, or
+/// instantiate directly to track other values.
+class MethodMemoizer {
+  /// Map of a function and its positional parameters (if any), to a value.
+  Map<Tuple2<Function, HashableList>, dynamic> _memoizationTable;
+
+  MethodMemoizer() {
+    invalidateMemos();
+  }
+
+  /// Reset the memoization table, forcing calls of the underlying functions.
+  void invalidateMemos() { _memoizationTable = new Map(); }
+
+  /// Calls and caches the return value of [f]() if not in the cache, then
+  /// returns the cached value of [f]().
+  R memoized<R>(Function f) {
+    Tuple2<Function, HashableList> key = new Tuple2(f, new HashableList([]));
+    if (!_memoizationTable.containsKey(key)) {
+      _memoizationTable[key] = f();
+    }
+    return _memoizationTable[key];
+  }
+
+  /// Calls and caches the return value of [f]([param1]) if not in the cache, then
+  /// returns the cached value of [f]([param1]).
+  R memoized1<R, A>(R Function(A) f, A param1) {
+    Tuple2<Function, HashableList> key = new Tuple2(f, new HashableList([param1]));
+     if (!_memoizationTable.containsKey(key)) {
+      _memoizationTable[key] = f(param1);
+    }
+    return _memoizationTable[key];
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2]) if not in the
+  /// cache, then returns the cached value of [f]([param1], [param2]).
+  R memoized2<R, A, B>(R Function(A, B) f, A param1, B param2) {
+    Tuple2<Function, HashableList> key = new Tuple2(f, new HashableList([param1, param2]));
+    if (!_memoizationTable.containsKey(key)) {
+      _memoizationTable[key] = f(param1, param2);
+    }
+    return _memoizationTable[key];
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3]) if
+  /// not in the cache, then returns the cached value of [f]([param1],
+  /// [param2], [param3]).
+  R memoized3<R, A, B, C>(R Function(A, B, C) f, A param1, B param2, C param3) {
+    Tuple2<Function, HashableList> key = new Tuple2(f, new HashableList([param1, param2, param3]));
+    if (!_memoizationTable.containsKey(key)) {
+      _memoizationTable[key] = f(param1, param2, param3);
+    }
+    return _memoizationTable[key];
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3],
+  /// [param4]) if not in the cache, then returns the cached value of
+  /// [f]([param1], [param2], [param3], [param4]).
+  R memoized4<R, A, B, C, D>(R Function(A, B, C, D) f, A param1, B param2, C param3, D param4) {
+    Tuple2<Function, HashableList> key = new Tuple2(f, new HashableList([param1, param2, param3, param4]));
+    if (!_memoizationTable.containsKey(key)) {
+      _memoizationTable[key] = f(param1, param2, param3, param4);
+    }
+    return _memoizationTable[key];
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3],
+  /// [param4], [param5]) if not in the cache, then returns the cached value of [f](
+  /// [param1], [param2], [param3], [param4], [param5]).
+  R memoized5<R, A, B, C, D, E>(R Function(A, B, C, D, E) f, A param1, B param2, C param3, D param4, E param5) {
+    Tuple2<Function, HashableList> key = new Tuple2(f, new HashableList([param1, param2, param3, param4, param5]));
+    if (!_memoizationTable.containsKey(key)) {
+      _memoizationTable[key] = f(param1, param2, param3, param4, param5);
+    }
+    return _memoizationTable[key];
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3],
+  /// [param4], [param5], [param6]) if not in the cache, then returns the cached
+  /// value of [f]([param1], [param2], [param3], [param4], [param5], [param6]).
+  R memoized6<R, A, B, C, D, E, F>(R Function(A, B, C, D, E, F) f, A param1, B param2, C param3, D param4, E param5, F param6) {
+    Tuple2<Function, HashableList> key = new Tuple2(f, new HashableList([param1, param2, param3, param4, param5, param6]));
+    if (!_memoizationTable.containsKey(key)) {
+      _memoizationTable[key] = f(param1, param2, param3, param4, param5, param6);
+    }
+    return _memoizationTable[key];
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3],
+  /// [param4], [param5], [param6], [param7]) if not in the cache, then returns
+  /// the cached value of [f]([param1], [param2], [param3], [param4], [param5],
+  /// [param6], [param7]).
+  R memoized7<R, A, B, C, D, E, F, G>(R Function(A, B, C, D, E, F, G) f, A param1, B param2, C param3, D param4, E param5, F param6, G param7) {
+    Tuple2<Function, HashableList> key = new Tuple2(f, new HashableList([param1, param2, param3, param4, param5, param6, param7]));
+    if (!_memoizationTable.containsKey(key)) {
+      _memoizationTable[key] = f(param1, param2, param3, param4, param5, param6, param7);
+    }
+    return _memoizationTable[key];
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3],
+  /// [param4], [param5], [param6], [param7], [param8]) if not in the cache,
+  /// then returns the cached value of [f]([param1], [param2], [param3],
+  /// [param4], [param5], [param6], [param7], [param8]).
+  R memoized8<R, A, B, C, D, E, F, G, H>(R Function(A, B, C, D, E, F, G, H) f, A param1, B param2, C param3, D param4, E param5, F param6, G param7, H param8) {
+    Tuple2<Function, HashableList> key = new Tuple2(f, new HashableList([param1, param2, param3, param4, param5, param6, param7, param8]));
+    if (!_memoizationTable.containsKey(key)) {
+      _memoizationTable[key] = f(param1, param2, param3, param4, param5, param6, param7, param8);
+    }
+    return _memoizationTable[key];
+  }
 }
