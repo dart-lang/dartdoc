@@ -219,7 +219,7 @@ class MethodMemoizer {
   /// returns the cached value of [f]().
   R memoized<R>(Function f) {
     _MemoKey key = new _MemoKey(f, new HashableList([]));
-    return _getOrUpdateCache(() => f(), key);
+    return _getOrUpdateCache(f, key);
   }
 
   /// Calls and caches the return value of [f]([param1]) if not in the cache, then
