@@ -176,7 +176,7 @@ class HashableList extends UnmodifiableListView<dynamic> {
   HashableList(Iterable<dynamic> iterable) : super(iterable);
 
   @override
-  bool operator==(other) {
+  bool operator ==(other) {
     if (this.length == other.length) {
       for (var index = 0; index < length; ++index) {
         if (this[index] != other[index]) return false;
@@ -205,7 +205,9 @@ class MethodMemoizer {
   }
 
   /// Reset the memoization table, forcing calls of the underlying functions.
-  void invalidateMemos() { _memoizationTable = new Map(); }
+  void invalidateMemos() {
+    _memoizationTable = new Map();
+  }
 
   // Never write this if statement again.
   R _getOrUpdateCache<R>(R Function() f, _MemoKey key) {
@@ -247,42 +249,69 @@ class MethodMemoizer {
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
   /// [param4]) if not in the cache, then returns the cached value of
   /// [f]([param1], [param2], [param3], [param4]).
-  R memoized4<R, A, B, C, D>(R Function(A, B, C, D) f, A param1, B param2, C param3, D param4) {
-    _MemoKey key = new _MemoKey(f, new HashableList([param1, param2, param3, param4]));
+  R memoized4<R, A, B, C, D>(
+      R Function(A, B, C, D) f, A param1, B param2, C param3, D param4) {
+    _MemoKey key =
+        new _MemoKey(f, new HashableList([param1, param2, param3, param4]));
     return _getOrUpdateCache(() => f(param1, param2, param3, param4), key);
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
   /// [param4], [param5]) if not in the cache, then returns the cached value of [f](
   /// [param1], [param2], [param3], [param4], [param5]).
-  R memoized5<R, A, B, C, D, E>(R Function(A, B, C, D, E) f, A param1, B param2, C param3, D param4, E param5) {
-    _MemoKey key = new _MemoKey(f, new HashableList([param1, param2, param3, param4, param5]));
-    return _getOrUpdateCache(() => f(param1, param2, param3, param4, param5), key);
+  R memoized5<R, A, B, C, D, E>(R Function(A, B, C, D, E) f, A param1, B param2,
+      C param3, D param4, E param5) {
+    _MemoKey key = new _MemoKey(
+        f, new HashableList([param1, param2, param3, param4, param5]));
+    return _getOrUpdateCache(
+        () => f(param1, param2, param3, param4, param5), key);
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
   /// [param4], [param5], [param6]) if not in the cache, then returns the cached
   /// value of [f]([param1], [param2], [param3], [param4], [param5], [param6]).
-  R memoized6<R, A, B, C, D, E, F>(R Function(A, B, C, D, E, F) f, A param1, B param2, C param3, D param4, E param5, F param6) {
-    _MemoKey key = new _MemoKey(f, new HashableList([param1, param2, param3, param4, param5, param6]));
-    return _getOrUpdateCache(() => f(param1, param2, param3, param4, param5, param6), key);
+  R memoized6<R, A, B, C, D, E, F>(R Function(A, B, C, D, E, F) f, A param1,
+      B param2, C param3, D param4, E param5, F param6) {
+    _MemoKey key = new _MemoKey(
+        f, new HashableList([param1, param2, param3, param4, param5, param6]));
+    return _getOrUpdateCache(
+        () => f(param1, param2, param3, param4, param5, param6), key);
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
   /// [param4], [param5], [param6], [param7]) if not in the cache, then returns
   /// the cached value of [f]([param1], [param2], [param3], [param4], [param5],
   /// [param6], [param7]).
-  R memoized7<R, A, B, C, D, E, F, G>(R Function(A, B, C, D, E, F, G) f, A param1, B param2, C param3, D param4, E param5, F param6, G param7) {
-    _MemoKey key = new _MemoKey(f, new HashableList([param1, param2, param3, param4, param5, param6, param7]));
-    return _getOrUpdateCache(() => f(param1, param2, param3, param4, param5, param6, param7), key);
+  R memoized7<R, A, B, C, D, E, F, G>(R Function(A, B, C, D, E, F, G) f,
+      A param1, B param2, C param3, D param4, E param5, F param6, G param7) {
+    _MemoKey key = new _MemoKey(
+        f,
+        new HashableList(
+            [param1, param2, param3, param4, param5, param6, param7]));
+    return _getOrUpdateCache(
+        () => f(param1, param2, param3, param4, param5, param6, param7), key);
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
   /// [param4], [param5], [param6], [param7], [param8]) if not in the cache,
   /// then returns the cached value of [f]([param1], [param2], [param3],
   /// [param4], [param5], [param6], [param7], [param8]).
-  R memoized8<R, A, B, C, D, E, F, G, H>(R Function(A, B, C, D, E, F, G, H) f, A param1, B param2, C param3, D param4, E param5, F param6, G param7, H param8) {
-    _MemoKey key = new _MemoKey(f, new HashableList([param1, param2, param3, param4, param5, param6, param7, param8]));
-    return _getOrUpdateCache(() => f(param1, param2, param3, param4, param5, param6, param7, param8), key);
+  R memoized8<R, A, B, C, D, E, F, G, H>(
+      R Function(A, B, C, D, E, F, G, H) f,
+      A param1,
+      B param2,
+      C param3,
+      D param4,
+      E param5,
+      F param6,
+      G param7,
+      H param8) {
+    _MemoKey key = new _MemoKey(
+        f,
+        new HashableList(
+            [param1, param2, param3, param4, param5, param6, param7, param8]));
+    return _getOrUpdateCache(
+        () => f(param1, param2, param3, param4, param5, param6, param7, param8),
+        key);
   }
 }
