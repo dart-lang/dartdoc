@@ -3,24 +3,141 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' hide ProcessException;
 
-import 'package:dartdoc/dartdoc.dart' show defaultOutDir;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:grinder/grinder.dart';
-import 'package:html/dom.dart';
-import 'package:html/parser.dart' show parse;
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart' as yaml;
 
 main([List<String> args]) => grind(args);
 
-final Directory docsDir =
-    new Directory(path.join('${Directory.systemTemp.path}', defaultOutDir));
+Directory _dartdocDocsDir;
+Directory get dartdocDocsDir {
+  if (_dartdocDocsDir == null) {
+    _dartdocDocsDir = Directory.systemTemp.createTempSync('dartdoc');
+  }
+  return _dartdocDocsDir;
+}
+
+Directory _sdkDocsDir;
+Directory get sdkDocsDir {
+  if (_sdkDocsDir == null) {
+    _sdkDocsDir = Directory.systemTemp.createTempSync('sdkdocs');
+  }
+  return _sdkDocsDir;
+}
+
+Directory _flutterDir;
+Directory get flutterDir {
+  if (_flutterDir == null) {
+    _flutterDir = Directory.systemTemp.createTempSync('flutter');
+  }
+  return _flutterDir;
+}
+
+final Directory flutterDirDevTools =
+    new Directory(path.join(flutterDir.path, 'dev', 'tools'));
+
+final RegExp quotables = new RegExp(r'[ "\r\n\$]');
+// from flutter:dev/tools/dartdoc.dart, modified
+void _printStream(Stream<List<int>> stream, Stdout output,
+    {String prefix: ''}) {
+  assert(prefix != null);
+  stream
+      .transform(UTF8.decoder)
+      .transform(const LineSplitter())
+      .listen((String line) {
+    output.write('$prefix$line'.trim());
+    output.write('\n');
+  });
+}
+
+/// Creates a throwaway pub cache and returns the environment variables
+/// necessary to use it.
+Map<String, String> _createThrowawayPubCache() {
+  final Directory pubCache = Directory.systemTemp.createTempSync('pubcache');
+  final Directory pubCacheBin = new Directory(path.join(pubCache.path, 'bin'));
+  pubCacheBin.createSync();
+  return new Map.fromIterables([
+    'PUB_CACHE',
+    'PATH'
+  ], [
+    pubCache.path,
+    [pubCacheBin.path, Platform.environment['PATH']].join(':')
+  ]);
+}
+
+class _SubprocessLauncher {
+  final String context;
+  Map<String, String> _environment;
+
+  Map<String, String> get environment => _environment;
+
+  String get prefix => context.isNotEmpty ? '$context: ' : '';
+
+  _SubprocessLauncher(this.context, [Map<String, String> environment]) {
+    if (environment == null) this._environment = new Map();
+  }
+
+  /// A wrapper around start/await process.exitCode that will display the
+  /// output of the executable continuously and fail on non-zero exit codes.
+  /// Makes running programs in grinder similar to set -ex for bash, even on
+  /// Windows (though some of the bashisms will no longer make sense).
+  /// TODO(jcollins-g): move this to grinder?
+  Future runStreamed(String executable, List<String> arguments,
+      {String workingDirectory}) async {
+    stderr.write('$prefix+ ');
+    if (workingDirectory != null) stderr.write('cd "$workingDirectory" && ');
+    if (environment != null) {
+      stderr.write(environment.keys.map((String key) {
+        if (environment[key].contains(quotables)) {
+          return "$key='${environment[key]}'";
+        } else {
+          return "$key=${environment[key]}";
+        }
+      }).join(' '));
+      stderr.write(' ');
+    }
+    stderr.write('$executable');
+    if (arguments.isNotEmpty) {
+      for (String arg in arguments) {
+        if (arg.contains(quotables)) {
+          stderr.write(" '$arg'");
+        } else {
+          stderr.write(" $arg");
+        }
+      }
+    }
+    if (workingDirectory != null) stderr.write(')');
+    stderr.write('\n');
+    Process process = await Process.start(executable, arguments,
+        workingDirectory: workingDirectory, environment: environment);
+
+    _printStream(process.stdout, stdout, prefix: prefix);
+    _printStream(process.stderr, stderr, prefix: prefix);
+    await process.exitCode;
+
+    int exitCode = await process.exitCode;
+    if (exitCode != 0) {
+      fail("exitCode: $exitCode");
+    }
+  }
+}
 
 @Task('Analyze dartdoc to ensure there are no errors and warnings')
-analyze() {
-  Analyzer.analyze(['bin', 'lib', 'test', 'tool'], fatalWarnings: true);
+analyze() async {
+  await new _SubprocessLauncher('analyze').runStreamed(
+    sdkBin('dartanalyzer'),
+    [
+      '--fatal-warnings',
+      'bin',
+      'lib',
+      'test',
+      'tool',
+    ],
+  );
 }
 
 @Task('analyze, test, and self-test dartdoc')
@@ -29,23 +146,88 @@ buildbot() => null;
 
 @Task('Generate docs for the Dart SDK')
 Future buildSdkDocs() async {
-  delete(docsDir);
   log('building SDK docs');
-  Process process = await Process.start(Platform.resolvedExecutable, [
+  var launcher = new _SubprocessLauncher('build-sdk-docs');
+  await launcher.runStreamed(Platform.resolvedExecutable, [
     '--checked',
     'bin/dartdoc.dart',
     '--output',
-    '${docsDir.path}',
+    '${sdkDocsDir.path}',
     '--sdk-docs',
     '--show-progress'
   ]);
-  stdout.addStream(process.stdout);
-  stderr.addStream(process.stderr);
+}
 
-  int exitCode = await process.exitCode;
-  if (exitCode != 0) {
-    fail("exitCode: $exitCode");
-  }
+@Task('Serve generated SDK docs locally with dhttpd on port 8000')
+@Depends(buildSdkDocs)
+Future serveSdkDocs() async {
+  log('launching dhttpd on port 8000 for SDK');
+  var launcher = new _SubprocessLauncher('serve-sdk-docs');
+  await launcher.runStreamed(sdkBin('pub'), [
+    'run',
+    'dhttpd',
+    '--port',
+    '8000',
+    '--path',
+    '${sdkDocsDir.path}',
+  ]);
+}
+
+@Task('Serve generated Flutter docs locally with dhttpd on port 8001')
+@Depends(buildFlutterDocs)
+Future serveFlutterDocs() async {
+  log('launching dhttpd on port 8001 for Flutter');
+  var launcher = new _SubprocessLauncher('serve-flutter-docs');
+  await launcher.runStreamed(sdkBin('pub'), ['get']);
+  await launcher.runStreamed(sdkBin('pub'), [
+    'run',
+    'dhttpd',
+    '--port',
+    '8001',
+    '--path',
+    path.join(flutterDir.path, 'dev', 'docs', 'doc'),
+  ]);
+}
+
+@Task('Build flutter docs')
+Future buildFlutterDocs() async {
+  log('building flutter docs into: $flutterDir');
+  var launcher =
+      new _SubprocessLauncher('build-flutter-docs', _createThrowawayPubCache());
+  await launcher.runStreamed('git',
+      ['clone', '--depth', '1', 'https://github.com/flutter/flutter.git', '.'],
+      workingDirectory: flutterDir.path);
+  String flutterBin = path.join('bin', 'flutter');
+  String flutterCacheDart =
+      path.join(flutterDir.path, 'bin', 'cache', 'dart-sdk', 'bin', 'dart');
+  String flutterCachePub =
+      path.join(flutterDir.path, 'bin', 'cache', 'dart-sdk', 'bin', 'pub');
+  await launcher.runStreamed(
+    flutterBin,
+    ['--version'],
+    workingDirectory: flutterDir.path,
+  );
+  await launcher.runStreamed(
+    flutterBin,
+    ['precache'],
+    workingDirectory: flutterDir.path,
+  );
+  await launcher.runStreamed(
+    flutterCachePub,
+    ['get'],
+    workingDirectory: path.join(flutterDir.path, 'dev', 'tools'),
+  );
+  await launcher
+      .runStreamed(flutterCachePub, ['global', 'activate', '-spath', '.']);
+  await launcher.runStreamed(
+    flutterCacheDart,
+    [path.join('dev', 'tools', 'dartdoc.dart')],
+    workingDirectory: flutterDir.path,
+  );
+  String index =
+      new File(path.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
+          .readAsStringSync();
+  stdout.write(index);
 }
 
 @Task('Checks that CHANGELOG mentions current version')
@@ -73,32 +255,6 @@ _getPackageVersion() {
   }
   var version = yamlDoc['version'];
   return version;
-}
-
-@Task('Check links')
-checkLinks() {
-  bool foundError = false;
-  Set<String> visited = new Set();
-  final origin = 'testing/test_package_docs/';
-  var start = 'index.html';
-
-  _doCheck(origin, visited, start, foundError);
-  _doFileCheck(origin, visited, foundError);
-
-  if (foundError) exit(1);
-}
-
-@Task('Check sdk links')
-checkSdkLinks() {
-  bool foundError = false;
-  Set<String> visited = new Set();
-  final origin = '${docsDir.path}/';
-  var start = 'index.html';
-
-  _doCheck(origin, visited, start, foundError);
-  _doFileCheck(origin, visited, foundError);
-
-  if (foundError) exit(1);
 }
 
 @Task('Checks that version is matched in relevant places')
@@ -179,35 +335,38 @@ publish() async {
 }
 
 @Task('Run all the tests.')
-test() {
+test() async {
   // `pub run test` is a bit slower than running an `test_all.dart` script
   // But it provides more useful output in the case of failures.
-  return Pub.runAsync('test');
+  await new _SubprocessLauncher('test')
+      .runStreamed(sdkBin('pub'), ['run', 'test']);
 }
 
 @Task('Generate docs for dartdoc')
-testDartdoc() {
-  delete(docsDir);
-  try {
-    log('running dartdoc');
-    Dart.run('bin/dartdoc.dart',
-        arguments: ['--output', '${docsDir.path}'], vmArgs: ['--checked']);
-
-    File indexHtml = joinFile(docsDir, ['index.html']);
-    if (!indexHtml.existsSync()) fail('docs not generated');
-  } catch (e) {
-    rethrow;
-  }
+testDartdoc() async {
+  var launcher = new _SubprocessLauncher('test-dartdoc');
+  await launcher.runStreamed(Platform.resolvedExecutable,
+      ['--checked', 'bin/dartdoc.dart', '--output', dartdocDocsDir.path]);
+  File indexHtml = joinFile(dartdocDocsDir, ['index.html']);
+  if (!indexHtml.existsSync()) fail('docs not generated');
 }
 
 @Task('update test_package_docs')
-updateTestPackageDocs() {
-  var options = new RunOptions(workingDirectory: 'testing/test_package');
+updateTestPackageDocs() async {
+  var launcher = new _SubprocessLauncher('update-test-package-docs');
+  var testPackageDocs =
+      new Directory(path.join('testing', 'test_package_docs'));
+  var testPackage = new Directory(path.join('testing', 'test_package'));
+  await launcher.runStreamed(sdkBin('pub'), ['get'],
+      workingDirectory: testPackage.path);
+  delete(testPackageDocs);
   // This must be synced with ../test/compare_output_test.dart's
   // "Validate html output of test_package" test.
-  delete(getDir('testing/test_package_docs'));
-  Dart.run('../../bin/dartdoc.dart',
-      arguments: [
+  await launcher.runStreamed(
+      Platform.resolvedExecutable,
+      [
+        '--checked',
+        path.join('..', '..', 'bin', 'dartdoc.dart'),
         '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',
@@ -219,8 +378,7 @@ updateTestPackageDocs() {
         '--output',
         '../test_package_docs',
       ],
-      runOptions: options,
-      vmArgs: ['--checked']);
+      workingDirectory: testPackage.path);
 }
 
 @Task('Validate the SDK doc build.')
@@ -228,7 +386,7 @@ updateTestPackageDocs() {
 validateSdkDocs() {
   const expectedLibCount = 18;
 
-  File indexHtml = joinFile(docsDir, ['index.html']);
+  File indexHtml = joinFile(sdkDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
     fail('no index.html found for SDK docs');
   }
@@ -243,7 +401,7 @@ validateSdkDocs() {
 
   // check for the existence of certain files/dirs
   var libsLength =
-      docsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
+      sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
   if (libsLength != expectedLibCount) {
     fail('docs not generated for all the SDK libraries, '
         'expected $expectedLibCount directories, generated $libsLength directories');
@@ -251,7 +409,7 @@ validateSdkDocs() {
   log('$libsLength dart: libraries found');
 
   var futureConstFile =
-      joinFile(docsDir, [path.join('dart-async', 'Future', 'Future.html')]);
+      joinFile(sdkDocsDir, [path.join('dart-async', 'Future', 'Future.html')]);
   if (!futureConstFile.existsSync()) {
     fail('no Future.html found for dart:async Future constructor');
   }
@@ -266,71 +424,4 @@ int _findCount(String str, String match) {
     index = str.indexOf(match, index + match.length);
   }
   return count;
-}
-
-Stream<FileSystemEntity> dirContents(String dir) {
-  return new Directory(dir).list(recursive: true);
-}
-
-void _doFileCheck(String origin, Set<String> visited, bool error) {
-  String normalOrigin = path.normalize(origin);
-  dirContents(normalOrigin).toList().then((allFiles) {
-    bool foundIndex = false;
-    for (FileSystemEntity f in allFiles) {
-      if (f is Directory) continue;
-      var fullPath = path.normalize(f.path);
-      if (fullPath.startsWith("${normalOrigin}/static-assets/")) continue;
-      if (fullPath == "${normalOrigin}/index.json") {
-        foundIndex = true;
-        continue;
-      }
-      if (visited.contains(fullPath)) continue;
-      log('   * Orphaned: $fullPath');
-      error = true;
-    }
-    if (!foundIndex) {
-      log('  * Not found: ${normalOrigin}/index.json');
-      error = true;
-    }
-  });
-}
-
-void _doCheck(
-    String origin, Set<String> visited, String pathToCheck, bool error,
-    [String source]) {
-  var fullPath = path.normalize("$origin$pathToCheck");
-  if (visited.contains(fullPath)) return;
-  visited.add(fullPath);
-
-  File file = new File("$fullPath");
-  if (!file.existsSync()) {
-    // There is a deliberately broken link in one place.
-    if (!fullPath.endsWith("ftp:/ftp.myfakepackage.com/donthidemyschema")) {
-      error = true;
-      log('  * Not found: $fullPath from $source');
-    }
-    return;
-  }
-  Document doc = parse(file.readAsStringSync());
-  Element base = doc.querySelector('base');
-  String baseHref;
-  if (base != null) {
-    baseHref = base.attributes['href'];
-  }
-  List<Element> links = doc.querySelectorAll('a');
-  links
-      .map((link) => link.attributes['href'])
-      .where((href) => href != null)
-      .forEach((href) {
-    if (!href.startsWith('http') && !href.contains('#')) {
-      var full;
-      if (baseHref != null) {
-        full = '${path.dirname(pathToCheck)}/$baseHref/$href';
-      } else {
-        full = '${path.dirname(pathToCheck)}/$href';
-      }
-      var normalized = path.normalize(full);
-      _doCheck(origin, visited, normalized, error, pathToCheck);
-    }
-  });
 }

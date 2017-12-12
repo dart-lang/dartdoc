@@ -73,6 +73,12 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.14.1"
+  dhttpd:
+    description:
+      name: dhttpd
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.1"
   front_end:
     description:
       name: front_end
@@ -246,7 +252,13 @@ packages:
       name: shelf
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.7.1"
+    version: "0.6.8"
+  shelf_cors:
+    description:
+      name: shelf_cors
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
   shelf_packages_handler:
     description:
       name: shelf_packages_handler
