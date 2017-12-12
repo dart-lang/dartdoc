@@ -13,13 +13,32 @@ import 'package:yaml/yaml.dart' as yaml;
 
 main([List<String> args]) => grind(args);
 
-final Directory dartdocDocsDir = Directory.systemTemp.createTempSync('dartdoc');
-final Directory sdkDocsDir = Directory.systemTemp.createTempSync('sdkdocs');
-final Directory flutterDir = Directory.systemTemp.createTempSync('flutter');
+Directory _dartdocDocsDir;
+Directory get dartdocDocsDir {
+  if (_dartdocDocsDir == null)
+    _dartdocDocsDir = Directory.systemTemp.createTempSync('dartdoc');
+  return _dartdocDocsDir;
+}
+
+Directory _sdkDocsDir;
+Directory get sdkDocsDir {
+  if (_dartdocDocsDir == null)
+    _sdkDocsDir = Directory.systemTemp.createTempSync('sdkdocs');
+  return _sdkDocsDir;
+}
+
+Directory _flutterDir;
+Directory get flutterDir {
+  if (_flutterDir == null) {
+    _flutterDir = Directory.systemTemp.createTempSync('flutter');
+  }
+  return _flutterDir;
+}
+
 final Directory flutterDirDevTools =
     new Directory(path.join(flutterDir.path, 'dev', 'tools'));
-final RegExp quotables = new RegExp(r'[ "\r\n\$]');
 
+final RegExp quotables = new RegExp(r'[ "\r\n\$]');
 // from flutter:dev/tools/dartdoc.dart, modified
 void _printStream(Stream<List<int>> stream, Stdout output,
     {String prefix: ''}) {
