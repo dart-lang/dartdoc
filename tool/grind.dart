@@ -15,15 +15,17 @@ main([List<String> args]) => grind(args);
 
 Directory _dartdocDocsDir;
 Directory get dartdocDocsDir {
-  if (_dartdocDocsDir == null)
+  if (_dartdocDocsDir == null) {
     _dartdocDocsDir = Directory.systemTemp.createTempSync('dartdoc');
+  }
   return _dartdocDocsDir;
 }
 
 Directory _sdkDocsDir;
 Directory get sdkDocsDir {
-  if (_dartdocDocsDir == null)
+  if (_sdkDocsDir == null) {
     _sdkDocsDir = Directory.systemTemp.createTempSync('sdkdocs');
+  }
   return _sdkDocsDir;
 }
 
