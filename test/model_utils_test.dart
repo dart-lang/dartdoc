@@ -7,7 +7,7 @@ library dartdoc.model_utils_test;
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:test/test.dart';
 
-class MemoizerUser extends MethodMemoizer {
+class MemoizerUser extends Memoizer {
   int foo = 0;
   // These are actually not things you would ordinarily memoize, because
   // they change.  But they are useful for testing.

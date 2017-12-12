@@ -190,17 +190,18 @@ class HashableList extends UnmodifiableListView<dynamic> {
   get hashCode => hashObjects(this);
 }
 
+/// A type alias for [Tuple2]`<Function, HashableList>`.
 class _MemoKey extends Tuple2<Function, HashableList> {
   _MemoKey(Function f, HashableList l) : super(f, l) {}
 }
 
 /// Extend or use as a mixin to track object-specific cached values, or
 /// instantiate directly to track other values.
-class MethodMemoizer {
+class Memoizer {
   /// Map of a function and its positional parameters (if any), to a value.
   Map<_MemoKey, dynamic> _memoizationTable;
 
-  MethodMemoizer() {
+  Memoizer() {
     invalidateMemos();
   }
 
