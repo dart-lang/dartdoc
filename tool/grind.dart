@@ -34,7 +34,6 @@ String get dartdocOriginalBranch {
   return branch;
 }
 
-
 final Directory flutterDirDevTools =
     new Directory(path.join(flutterDir.path, 'dev', 'tools'));
 
@@ -175,14 +174,17 @@ buildbot() => null;
 @Task('Generate docs for the Dart SDK')
 Future buildSdkDocs() async {
   log('building SDK docs');
-  await _buildSdkDocs(sdkDocsDir.path, new Future.value(Directory.current.path));
+  await _buildSdkDocs(
+      sdkDocsDir.path, new Future.value(Directory.current.path));
 }
 
 /// Returns a map of warning texts to the number of times each has been seen.
 Map<String, int> jsonMessageIterableToWarnings(Iterable<Map> messageIterable) {
   Map<String, int> warningTexts = new Map();
   for (Map<String, dynamic> message in messageIterable) {
-    if (message.containsKey('level') && message['level'] == 'WARNING' && message.containsKey('data')) {
+    if (message.containsKey('level') &&
+        message['level'] == 'WARNING' &&
+        message.containsKey('data')) {
       warningTexts.putIfAbsent(message['data']['text'], () => 0);
       warningTexts[message['data']['text']]++;
     }
@@ -190,53 +192,68 @@ Map<String, int> jsonMessageIterableToWarnings(Iterable<Map> messageIterable) {
   return warningTexts;
 }
 
-void printWarningDelta(String title, Map<String, int> original, Map<String, int> current) {
+void printWarningDelta(
+    String title, Map<String, int> original, Map<String, int> current) {
   Set<String> quantityChangedOuts = new Set();
   Set<String> onlyOriginal = new Set();
   Set<String> onlyCurrent = new Set();
-  Set<String> allKeys = new Set.from([]..addAll(original.keys)..addAll(current.keys));
+  Set<String> allKeys =
+      new Set.from([]..addAll(original.keys)..addAll(current.keys));
 
   for (String key in allKeys) {
     if (original.containsKey(key) && !current.containsKey(key)) {
       onlyOriginal.add(key);
     } else if (!original.containsKey(key) && current.containsKey(key)) {
       onlyCurrent.add(key);
-    } else if (original.containsKey(key) && current.containsKey(key) &&
-               original[key] != current[key]) {
+    } else if (original.containsKey(key) &&
+        current.containsKey(key) &&
+        original[key] != current[key]) {
       quantityChangedOuts.add(key);
     }
   }
 
   if (onlyOriginal.isNotEmpty) {
-    print('*** $title : ${onlyOriginal.length} warnings from original ($dartdocOriginalBranch) missing in current:');
+    print(
+        '*** $title : ${onlyOriginal.length} warnings from original ($dartdocOriginalBranch) missing in current:');
     onlyOriginal.forEach((warning) => print(warning));
   }
   if (onlyCurrent.isNotEmpty) {
-    print('*** $title : ${onlyCurrent.length} new warnings not in original ($dartdocOriginalBranch)');
+    print(
+        '*** $title : ${onlyCurrent.length} new warnings not in original ($dartdocOriginalBranch)');
     onlyCurrent.forEach((warning) => print(warning));
   }
   if (quantityChangedOuts.isNotEmpty) {
     print('*** $title : Identical warning quantity changed');
     for (String key in quantityChangedOuts) {
-      print("* Appeared ${original[key]} times in original ($dartdocOriginalBranch), now ${current[key]}:");
+      print(
+          "* Appeared ${original[key]} times in original ($dartdocOriginalBranch), now ${current[key]}:");
       print(key);
     }
   }
-  if (onlyOriginal.isEmpty && onlyCurrent.isEmpty && quantityChangedOuts.isEmpty) {
-    print('*** $title : No difference in warning output from original ($dartdocOriginalBranch)${allKeys.isEmpty ? "" : " (${allKeys.length} warnings found)"}');
+  if (onlyOriginal.isEmpty &&
+      onlyCurrent.isEmpty &&
+      quantityChangedOuts.isEmpty) {
+    print(
+        '*** $title : No difference in warning output from original ($dartdocOriginalBranch)${allKeys.isEmpty ? "" : " (${allKeys.length} warnings found)"}');
   }
 }
 
 @Task('Display delta in SDK warnings')
 Future compareSdkWarnings() async {
-  Directory originalDartdocSdkDocs = Directory.systemTemp.createTempSync('dartdoc-comparison-sdkdocs');
+  Directory originalDartdocSdkDocs =
+      Directory.systemTemp.createTempSync('dartdoc-comparison-sdkdocs');
   Future originalDartdoc = createComparisonDartdoc();
-  Future currentDartdocSdkBuild = _buildSdkDocs(sdkDocsDir.path, new Future.value(Directory.current.path), 'current');
-  Future originalDartdocSdkBuild =  _buildSdkDocs(originalDartdocSdkDocs.path, originalDartdoc, 'original');
-  Map<String, int> currentDartdocWarnings = jsonMessageIterableToWarnings(await currentDartdocSdkBuild);
-  Map<String, int> originalDartdocWarnings = jsonMessageIterableToWarnings(await originalDartdocSdkBuild);
+  Future currentDartdocSdkBuild = _buildSdkDocs(
+      sdkDocsDir.path, new Future.value(Directory.current.path), 'current');
+  Future originalDartdocSdkBuild =
+      _buildSdkDocs(originalDartdocSdkDocs.path, originalDartdoc, 'original');
+  Map<String, int> currentDartdocWarnings =
+      jsonMessageIterableToWarnings(await currentDartdocSdkBuild);
+  Map<String, int> originalDartdocWarnings =
+      jsonMessageIterableToWarnings(await originalDartdocSdkBuild);
 
-  printWarningDelta('SDK docs', originalDartdocWarnings, currentDartdocWarnings);
+  printWarningDelta(
+      'SDK docs', originalDartdocWarnings, currentDartdocWarnings);
 }
 
 /// Helper function to create a clean version of dartdoc (based on the current
@@ -244,30 +261,36 @@ Future compareSdkWarnings() async {
 /// to checkout a branch or tag.
 Future<String> createComparisonDartdoc() async {
   var launcher = new _SubprocessLauncher('create-comparison-dartdoc');
-  Directory dartdocClean = Directory.systemTemp.createTempSync('dartdoc-comparison');
-  await launcher.runStreamed('git',
-      ['clone', Directory.current.path, dartdocClean.path]);
-  await launcher.runStreamed('git',
-      ['checkout', dartdocOriginalBranch], workingDirectory: dartdocClean.path);
-  await launcher.runStreamed(sdkBin('pub'), ['get'], workingDirectory: dartdocClean.path);
+  Directory dartdocClean =
+      Directory.systemTemp.createTempSync('dartdoc-comparison');
+  await launcher
+      .runStreamed('git', ['clone', Directory.current.path, dartdocClean.path]);
+  await launcher.runStreamed('git', ['checkout', dartdocOriginalBranch],
+      workingDirectory: dartdocClean.path);
+  await launcher.runStreamed(sdkBin('pub'), ['get'],
+      workingDirectory: dartdocClean.path);
   return dartdocClean.path;
 }
 
-Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd, [String label]) async {
+Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
+    [String label]) async {
   if (label == null) label = '';
   if (label != '') label = '-$label';
   var launcher = new _SubprocessLauncher('build-sdk-docs$label');
   String cwd = await futureCwd;
   await launcher.runStreamed(sdkBin('pub'), ['get'], workingDirectory: cwd);
-  return await launcher.runStreamed(Platform.resolvedExecutable, [
-    '--checked',
-    'bin/dartdoc.dart',
-    '--output',
-    '${sdkDocsDir.path}',
-    '--sdk-docs',
-    '--json',
-    '--show-progress',
-  ], workingDirectory: cwd);
+  return await launcher.runStreamed(
+      Platform.resolvedExecutable,
+      [
+        '--checked',
+        'bin/dartdoc.dart',
+        '--output',
+        '${sdkDocsDir.path}',
+        '--sdk-docs',
+        '--json',
+        '--show-progress',
+      ],
+      workingDirectory: cwd);
 }
 
 @Task('Serve generated SDK docs locally with dhttpd on port 8000')
@@ -312,8 +335,9 @@ Future buildFlutterDocs() async {
 }
 
 Future _buildFlutterDocs(String flutterPath, [String label]) async {
-  var launcher =
-      new _SubprocessLauncher('build-flutter-docs${label == null ? "" : "-$label"}', _createThrowawayPubCache());
+  var launcher = new _SubprocessLauncher(
+      'build-flutter-docs${label == null ? "" : "-$label"}',
+      _createThrowawayPubCache());
   await launcher.runStreamed('git',
       ['clone', '--depth', '1', 'https://github.com/flutter/flutter.git', '.'],
       workingDirectory: flutterPath);
@@ -344,7 +368,6 @@ Future _buildFlutterDocs(String flutterPath, [String label]) async {
     [path.join('dev', 'tools', 'dartdoc.dart')],
     workingDirectory: flutterPath,
   );
-
 }
 
 @Task('Checks that CHANGELOG mentions current version')
