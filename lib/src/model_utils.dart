@@ -265,7 +265,8 @@ class Memoizer {
   R memoized4<R, A, B, C, D>(
       R Function(A, B, C, D) f, A param1, B param2, C param3, D param4) {
     _HashableList key = new _HashableList([f, param1, param2, param3, param4]);
-    return _memoizationTable.putIfAbsent(key, () => f(param1, param2, param3, param4));
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4));
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
@@ -275,8 +276,8 @@ class Memoizer {
       C param3, D param4, E param5) {
     _HashableList key =
         new _HashableList([f, param1, param2, param3, param4, param5]);
-    return _memoizationTable.putIfAbsent(key,
-        () => f(param1, param2, param3, param4, param5));
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4, param5));
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
@@ -286,8 +287,8 @@ class Memoizer {
       B param2, C param3, D param4, E param5, F param6) {
     _HashableList key =
         new _HashableList([f, param1, param2, param3, param4, param5, param6]);
-    return _memoizationTable.putIfAbsent(key,
-        () => f(param1, param2, param3, param4, param5, param6));
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4, param5, param6));
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
@@ -298,8 +299,8 @@ class Memoizer {
       A param1, B param2, C param3, D param4, E param5, F param6, G param7) {
     _HashableList key = new _HashableList(
         [f, param1, param2, param3, param4, param5, param6, param7]);
-    return _memoizationTable.putIfAbsent(key,
-        () => f(param1, param2, param3, param4, param5, param6, param7));
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4, param5, param6, param7));
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
@@ -318,7 +319,9 @@ class Memoizer {
       H param8) {
     _HashableList key = new _HashableList(
         [f, param1, param2, param3, param4, param5, param6, param7, param8]);
-    return _memoizationTable.putIfAbsent(key,
-        () => f(param1, param2, param3, param4, param5, param6, param7, param8));
+    return _memoizationTable.putIfAbsent(
+        key,
+        () =>
+            f(param1, param2, param3, param4, param5, param6, param7, param8));
   }
 }
