@@ -374,4 +374,4 @@ packages:
     source: hosted
     version: "2.1.13"
 sdks:
-  dart: ">=1.23.0 <=2.0.0-dev.10.0"
+  dart: ">=1.23.0 <=2.0.0-dev.12.0"
