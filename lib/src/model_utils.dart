@@ -14,7 +14,6 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:quiver_hashcode/hashcode.dart';
-import 'package:tuple/tuple.dart';
 
 import 'config.dart';
 
@@ -172,16 +171,18 @@ String crossdartifySource(
 
 /// An UnmodifiableListView that computes equality and hashCode based on the
 /// equality and hashCode of its contained objects.
-class HashableList extends UnmodifiableListView<dynamic> {
-  HashableList(Iterable<dynamic> iterable) : super(iterable);
+class _HashableList extends UnmodifiableListView<dynamic> {
+  _HashableList(Iterable<dynamic> iterable) : super(iterable);
 
   @override
   bool operator ==(other) {
-    if (this.length == other.length) {
-      for (var index = 0; index < length; ++index) {
-        if (this[index] != other[index]) return false;
+    if (other is _HashableList) {
+      if (this.length == other.length) {
+        for (var index = 0; index < length; ++index) {
+          if (this[index] != other[index]) return false;
+        }
+        return true;
       }
-      return true;
     }
     return false;
   }
@@ -190,16 +191,35 @@ class HashableList extends UnmodifiableListView<dynamic> {
   get hashCode => hashObjects(this);
 }
 
-/// A type alias for [Tuple2]`<Function, HashableList>`.
-class _MemoKey extends Tuple2<Function, HashableList> {
-  _MemoKey(Function f, HashableList l) : super(f, l) {}
-}
-
 /// Extend or use as a mixin to track object-specific cached values, or
 /// instantiate directly to track other values.
+///
+/// For all methods in this class, the parameter [f] must be a tear-off method
+/// or top level function (not an inline closure) for memoization to work.
+/// [Memoizer] depends on the equality operator on the given function to detect
+/// when we are calling the same function.
+///
+/// Use:
+///
+/// ```dart
+/// String aTestFunction(String greeting, String name) => "${greeting}, ${name}";
+/// int aSlowFunction() { doSome(); return expensiveCalculations(); }
+///
+/// myMemoizer.memoized2(aTestFunction, "Hello, "world");
+/// myMemoizer.memoized(aSlowFunction);
+/// ```
+///
+/// *Not*:
+///
+/// ```dart
+/// String aTestFunction(String greeting, String name) => "${greeting}, ${name}";
+///
+/// myMemoizer.memoized2((a, b) => aTestFunction(a, b), "Hello", "world");
+/// myMemoizer.memoized(() => aSlowFunction());;
+/// ```
 class Memoizer {
   /// Map of a function and its positional parameters (if any), to a value.
-  Map<_MemoKey, dynamic> _memoizationTable;
+  Map<_HashableList, dynamic> _memoizationTable;
 
   Memoizer() {
     invalidateMemos();
@@ -211,7 +231,7 @@ class Memoizer {
   }
 
   // Never write this if statement again.
-  R _getOrUpdateCache<R>(R Function() f, _MemoKey key) {
+  R _getOrUpdateCache<R>(R Function() f, _HashableList key) {
     if (!_memoizationTable.containsKey(key)) {
       _memoizationTable[key] = f();
     }
@@ -220,22 +240,24 @@ class Memoizer {
 
   /// Calls and caches the return value of [f]() if not in the cache, then
   /// returns the cached value of [f]().
+  ///
+
   R memoized<R>(Function f) {
-    _MemoKey key = new _MemoKey(f, new HashableList([]));
+    _HashableList key =  new _HashableList([f]);
     return _getOrUpdateCache(f, key);
   }
 
   /// Calls and caches the return value of [f]([param1]) if not in the cache, then
   /// returns the cached value of [f]([param1]).
   R memoized1<R, A>(R Function(A) f, A param1) {
-    _MemoKey key = new _MemoKey(f, new HashableList([param1]));
+    _HashableList key =  new _HashableList([f, param1]);
     return _getOrUpdateCache(() => f(param1), key);
   }
 
   /// Calls and caches the return value of [f]([param1], [param2]) if not in the
   /// cache, then returns the cached value of [f]([param1], [param2]).
   R memoized2<R, A, B>(R Function(A, B) f, A param1, B param2) {
-    _MemoKey key = new _MemoKey(f, new HashableList([param1, param2]));
+    _HashableList key =  new _HashableList([f, param1, param2]);
     return _getOrUpdateCache(() => f(param1, param2), key);
   }
 
@@ -243,7 +265,7 @@ class Memoizer {
   /// not in the cache, then returns the cached value of [f]([param1],
   /// [param2], [param3]).
   R memoized3<R, A, B, C>(R Function(A, B, C) f, A param1, B param2, C param3) {
-    _MemoKey key = new _MemoKey(f, new HashableList([param1, param2, param3]));
+    _HashableList key =  new _HashableList([f, param1, param2, param3]);
     return _getOrUpdateCache(() => f(param1, param2, param3), key);
   }
 
@@ -252,8 +274,8 @@ class Memoizer {
   /// [f]([param1], [param2], [param3], [param4]).
   R memoized4<R, A, B, C, D>(
       R Function(A, B, C, D) f, A param1, B param2, C param3, D param4) {
-    _MemoKey key =
-        new _MemoKey(f, new HashableList([param1, param2, param3, param4]));
+    _HashableList key =
+         new _HashableList([f, param1, param2, param3, param4]);
     return _getOrUpdateCache(() => f(param1, param2, param3, param4), key);
   }
 
@@ -262,8 +284,7 @@ class Memoizer {
   /// [param1], [param2], [param3], [param4], [param5]).
   R memoized5<R, A, B, C, D, E>(R Function(A, B, C, D, E) f, A param1, B param2,
       C param3, D param4, E param5) {
-    _MemoKey key = new _MemoKey(
-        f, new HashableList([param1, param2, param3, param4, param5]));
+    _HashableList key = new _HashableList([f, param1, param2, param3, param4, param5]);
     return _getOrUpdateCache(
         () => f(param1, param2, param3, param4, param5), key);
   }
@@ -273,8 +294,7 @@ class Memoizer {
   /// value of [f]([param1], [param2], [param3], [param4], [param5], [param6]).
   R memoized6<R, A, B, C, D, E, F>(R Function(A, B, C, D, E, F) f, A param1,
       B param2, C param3, D param4, E param5, F param6) {
-    _MemoKey key = new _MemoKey(
-        f, new HashableList([param1, param2, param3, param4, param5, param6]));
+    _HashableList key = new _HashableList([f, param1, param2, param3, param4, param5, param6]);
     return _getOrUpdateCache(
         () => f(param1, param2, param3, param4, param5, param6), key);
   }
@@ -285,10 +305,8 @@ class Memoizer {
   /// [param6], [param7]).
   R memoized7<R, A, B, C, D, E, F, G>(R Function(A, B, C, D, E, F, G) f,
       A param1, B param2, C param3, D param4, E param5, F param6, G param7) {
-    _MemoKey key = new _MemoKey(
-        f,
-        new HashableList(
-            [param1, param2, param3, param4, param5, param6, param7]));
+    _HashableList key = new _HashableList(
+            [f, param1, param2, param3, param4, param5, param6, param7]);
     return _getOrUpdateCache(
         () => f(param1, param2, param3, param4, param5, param6, param7), key);
   }
@@ -307,10 +325,8 @@ class Memoizer {
       F param6,
       G param7,
       H param8) {
-    _MemoKey key = new _MemoKey(
-        f,
-        new HashableList(
-            [param1, param2, param3, param4, param5, param6, param7, param8]));
+    _HashableList key = new _HashableList(
+            [f, param1, param2, param3, param4, param5, param6, param7, param8]);
     return _getOrUpdateCache(
         () => f(param1, param2, param3, param4, param5, param6, param7, param8),
         key);
