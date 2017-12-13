@@ -243,21 +243,21 @@ class Memoizer {
   ///
 
   R memoized<R>(Function f) {
-    _HashableList key =  new _HashableList([f]);
+    _HashableList key = new _HashableList([f]);
     return _getOrUpdateCache(f, key);
   }
 
   /// Calls and caches the return value of [f]([param1]) if not in the cache, then
   /// returns the cached value of [f]([param1]).
   R memoized1<R, A>(R Function(A) f, A param1) {
-    _HashableList key =  new _HashableList([f, param1]);
+    _HashableList key = new _HashableList([f, param1]);
     return _getOrUpdateCache(() => f(param1), key);
   }
 
   /// Calls and caches the return value of [f]([param1], [param2]) if not in the
   /// cache, then returns the cached value of [f]([param1], [param2]).
   R memoized2<R, A, B>(R Function(A, B) f, A param1, B param2) {
-    _HashableList key =  new _HashableList([f, param1, param2]);
+    _HashableList key = new _HashableList([f, param1, param2]);
     return _getOrUpdateCache(() => f(param1, param2), key);
   }
 
@@ -265,7 +265,7 @@ class Memoizer {
   /// not in the cache, then returns the cached value of [f]([param1],
   /// [param2], [param3]).
   R memoized3<R, A, B, C>(R Function(A, B, C) f, A param1, B param2, C param3) {
-    _HashableList key =  new _HashableList([f, param1, param2, param3]);
+    _HashableList key = new _HashableList([f, param1, param2, param3]);
     return _getOrUpdateCache(() => f(param1, param2, param3), key);
   }
 
@@ -274,8 +274,7 @@ class Memoizer {
   /// [f]([param1], [param2], [param3], [param4]).
   R memoized4<R, A, B, C, D>(
       R Function(A, B, C, D) f, A param1, B param2, C param3, D param4) {
-    _HashableList key =
-         new _HashableList([f, param1, param2, param3, param4]);
+    _HashableList key = new _HashableList([f, param1, param2, param3, param4]);
     return _getOrUpdateCache(() => f(param1, param2, param3, param4), key);
   }
 
@@ -284,7 +283,8 @@ class Memoizer {
   /// [param1], [param2], [param3], [param4], [param5]).
   R memoized5<R, A, B, C, D, E>(R Function(A, B, C, D, E) f, A param1, B param2,
       C param3, D param4, E param5) {
-    _HashableList key = new _HashableList([f, param1, param2, param3, param4, param5]);
+    _HashableList key =
+        new _HashableList([f, param1, param2, param3, param4, param5]);
     return _getOrUpdateCache(
         () => f(param1, param2, param3, param4, param5), key);
   }
@@ -294,7 +294,8 @@ class Memoizer {
   /// value of [f]([param1], [param2], [param3], [param4], [param5], [param6]).
   R memoized6<R, A, B, C, D, E, F>(R Function(A, B, C, D, E, F) f, A param1,
       B param2, C param3, D param4, E param5, F param6) {
-    _HashableList key = new _HashableList([f, param1, param2, param3, param4, param5, param6]);
+    _HashableList key =
+        new _HashableList([f, param1, param2, param3, param4, param5, param6]);
     return _getOrUpdateCache(
         () => f(param1, param2, param3, param4, param5, param6), key);
   }
@@ -306,7 +307,7 @@ class Memoizer {
   R memoized7<R, A, B, C, D, E, F, G>(R Function(A, B, C, D, E, F, G) f,
       A param1, B param2, C param3, D param4, E param5, F param6, G param7) {
     _HashableList key = new _HashableList(
-            [f, param1, param2, param3, param4, param5, param6, param7]);
+        [f, param1, param2, param3, param4, param5, param6, param7]);
     return _getOrUpdateCache(
         () => f(param1, param2, param3, param4, param5, param6, param7), key);
   }
@@ -326,7 +327,7 @@ class Memoizer {
       G param7,
       H param8) {
     _HashableList key = new _HashableList(
-            [f, param1, param2, param3, param4, param5, param6, param7, param8]);
+        [f, param1, param2, param3, param4, param5, param6, param7, param8]);
     return _getOrUpdateCache(
         () => f(param1, param2, param3, param4, param5, param6, param7, param8),
         key);
