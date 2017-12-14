@@ -4,6 +4,7 @@
 
 library dartdoc.model_utils;
 
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -12,6 +13,7 @@ import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/model.dart';
+import 'package:quiver_hashcode/hashcode.dart';
 
 import 'config.dart';
 
@@ -165,4 +167,161 @@ String crossdartifySource(
     newSource = sanitizer.convert(source);
   }
   return newSource;
+}
+
+/// An UnmodifiableListView that computes equality and hashCode based on the
+/// equality and hashCode of its contained objects.
+class _HashableList extends UnmodifiableListView<dynamic> {
+  _HashableList(Iterable<dynamic> iterable) : super(iterable);
+
+  @override
+  bool operator ==(other) {
+    if (other is _HashableList) {
+      if (this.length == other.length) {
+        for (var index = 0; index < length; ++index) {
+          if (this[index] != other[index]) return false;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @override
+  get hashCode => hashObjects(this);
+}
+
+/// Extend or use as a mixin to track object-specific cached values, or
+/// instantiate directly to track other values.
+///
+/// For all methods in this class, the parameter [f] must be a tear-off method
+/// or top level function (not an inline closure) for memoization to work.
+/// [Memoizer] depends on the equality operator on the given function to detect
+/// when we are calling the same function.
+///
+/// Use:
+///
+/// ```dart
+/// String aTestFunction(String greeting, String name) => "${greeting}, ${name}";
+/// int aSlowFunction() { doSome(); return expensiveCalculations(); }
+///
+/// myMemoizer.memoized2(aTestFunction, "Hello, "world");
+/// myMemoizer.memoized(aSlowFunction);
+/// ```
+///
+/// *Not*:
+///
+/// ```dart
+/// String aTestFunction(String greeting, String name) => "${greeting}, ${name}";
+///
+/// myMemoizer.memoized2((a, b) => aTestFunction(a, b), "Hello", "world");
+/// myMemoizer.memoized(() => aSlowFunction());;
+/// ```
+class Memoizer {
+  /// Map of a function and its positional parameters (if any), to a value.
+  Map<_HashableList, dynamic> _memoizationTable;
+
+  Memoizer() {
+    invalidateMemos();
+  }
+
+  /// Reset the memoization table, forcing calls of the underlying functions.
+  void invalidateMemos() {
+    _memoizationTable = new Map();
+  }
+
+  /// Calls and caches the return value of [f]() if not in the cache, then
+  /// returns the cached value of [f]().
+  R memoized<R>(Function f) {
+    _HashableList key = new _HashableList([f]);
+    return _memoizationTable.putIfAbsent(key, f);
+  }
+
+  /// Calls and caches the return value of [f]([param1]) if not in the cache, then
+  /// returns the cached value of [f]([param1]).
+  R memoized1<R, A>(R Function(A) f, A param1) {
+    _HashableList key = new _HashableList([f, param1]);
+    return _memoizationTable.putIfAbsent(key, () => f(param1));
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2]) if not in the
+  /// cache, then returns the cached value of [f]([param1], [param2]).
+  R memoized2<R, A, B>(R Function(A, B) f, A param1, B param2) {
+    _HashableList key = new _HashableList([f, param1, param2]);
+    return _memoizationTable.putIfAbsent(key, () => f(param1, param2));
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3]) if
+  /// not in the cache, then returns the cached value of [f]([param1],
+  /// [param2], [param3]).
+  R memoized3<R, A, B, C>(R Function(A, B, C) f, A param1, B param2, C param3) {
+    _HashableList key = new _HashableList([f, param1, param2, param3]);
+    return _memoizationTable.putIfAbsent(key, () => f(param1, param2, param3));
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3],
+  /// [param4]) if not in the cache, then returns the cached value of
+  /// [f]([param1], [param2], [param3], [param4]).
+  R memoized4<R, A, B, C, D>(
+      R Function(A, B, C, D) f, A param1, B param2, C param3, D param4) {
+    _HashableList key = new _HashableList([f, param1, param2, param3, param4]);
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4));
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3],
+  /// [param4], [param5]) if not in the cache, then returns the cached value of [f](
+  /// [param1], [param2], [param3], [param4], [param5]).
+  R memoized5<R, A, B, C, D, E>(R Function(A, B, C, D, E) f, A param1, B param2,
+      C param3, D param4, E param5) {
+    _HashableList key =
+        new _HashableList([f, param1, param2, param3, param4, param5]);
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4, param5));
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3],
+  /// [param4], [param5], [param6]) if not in the cache, then returns the cached
+  /// value of [f]([param1], [param2], [param3], [param4], [param5], [param6]).
+  R memoized6<R, A, B, C, D, E, F>(R Function(A, B, C, D, E, F) f, A param1,
+      B param2, C param3, D param4, E param5, F param6) {
+    _HashableList key =
+        new _HashableList([f, param1, param2, param3, param4, param5, param6]);
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4, param5, param6));
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3],
+  /// [param4], [param5], [param6], [param7]) if not in the cache, then returns
+  /// the cached value of [f]([param1], [param2], [param3], [param4], [param5],
+  /// [param6], [param7]).
+  R memoized7<R, A, B, C, D, E, F, G>(R Function(A, B, C, D, E, F, G) f,
+      A param1, B param2, C param3, D param4, E param5, F param6, G param7) {
+    _HashableList key = new _HashableList(
+        [f, param1, param2, param3, param4, param5, param6, param7]);
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4, param5, param6, param7));
+  }
+
+  /// Calls and caches the return value of [f]([param1], [param2], [param3],
+  /// [param4], [param5], [param6], [param7], [param8]) if not in the cache,
+  /// then returns the cached value of [f]([param1], [param2], [param3],
+  /// [param4], [param5], [param6], [param7], [param8]).
+  R memoized8<R, A, B, C, D, E, F, G, H>(
+      R Function(A, B, C, D, E, F, G, H) f,
+      A param1,
+      B param2,
+      C param3,
+      D param4,
+      E param5,
+      F param6,
+      G param7,
+      H param8) {
+    _HashableList key = new _HashableList(
+        [f, param1, param2, param3, param4, param5, param6, param7, param8]);
+    return _memoizationTable.putIfAbsent(
+        key,
+        () =>
+            f(param1, param2, param3, param4, param5, param6, param7, param8));
+  }
 }

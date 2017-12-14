@@ -7,35 +7,23 @@ import 'dart:convert';
 import 'dart:io' hide ProcessException;
 
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/model_utils.dart';
 import 'package:grinder/grinder.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart' as yaml;
 
 main([List<String> args]) => grind(args);
 
-Directory _dartdocDocsDir;
-Directory get dartdocDocsDir {
-  if (_dartdocDocsDir == null) {
-    _dartdocDocsDir = Directory.systemTemp.createTempSync('dartdoc');
-  }
-  return _dartdocDocsDir;
-}
+// Directory.systemTemp is not a constant.  So wrap it.
+Directory createTempSync(String prefix) =>
+    Directory.systemTemp.createTempSync(prefix);
 
-Directory _sdkDocsDir;
-Directory get sdkDocsDir {
-  if (_sdkDocsDir == null) {
-    _sdkDocsDir = Directory.systemTemp.createTempSync('sdkdocs');
-  }
-  return _sdkDocsDir;
-}
+final Memoizer tempdirsCache = new Memoizer();
 
-Directory _flutterDir;
-Directory get flutterDir {
-  if (_flutterDir == null) {
-    _flutterDir = Directory.systemTemp.createTempSync('flutter');
-  }
-  return _flutterDir;
-}
+Directory get dartdocDocsDir =>
+    tempdirsCache.memoized1(createTempSync, 'dartdoc');
+Directory get sdkDocsDir => tempdirsCache.memoized1(createTempSync, 'sdkdocs');
+Directory get flutterDir => tempdirsCache.memoized1(createTempSync, 'flutter');
 
 final Directory flutterDirDevTools =
     new Directory(path.join(flutterDir.path, 'dev', 'tools'));
