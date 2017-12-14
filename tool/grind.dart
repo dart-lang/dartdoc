@@ -36,8 +36,6 @@ String get dartdocOriginalBranch {
 final Directory flutterDirDevTools =
     new Directory(path.join(flutterDir.path, 'dev', 'tools'));
 
-
-
 /// Creates a throwaway pub cache and returns the environment variables
 /// necessary to use it.
 Map<String, String> _createThrowawayPubCache() {
@@ -92,8 +90,6 @@ Map<String, int> jsonMessageIterableToWarnings(Iterable<Map> messageIterable) {
   return warningTexts;
 }
 
-
-
 @Task('Display delta in SDK warnings')
 Future compareSdkWarnings() async {
   Directory originalDartdocSdkDocs =
@@ -108,8 +104,8 @@ Future compareSdkWarnings() async {
   Map<String, int> originalDartdocWarnings =
       jsonMessageIterableToWarnings(await originalDartdocSdkBuild);
 
-  print(printWarningDelta(
-      'SDK docs', dartdocOriginalBranch, originalDartdocWarnings, currentDartdocWarnings));
+  print(printWarningDelta('SDK docs', dartdocOriginalBranch,
+      originalDartdocWarnings, currentDartdocWarnings));
 }
 
 /// Helper function to create a clean version of dartdoc (based on the current

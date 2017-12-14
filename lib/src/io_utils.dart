@@ -162,21 +162,22 @@ class SubprocessLauncher {
 
     int exitCode = await process.exitCode;
     if (exitCode != 0) {
-      throw new ProcessException(executable, arguments, "SubprocessLauncher got non-zero exitCode", exitCode);
+      throw new ProcessException(executable, arguments,
+          "SubprocessLauncher got non-zero exitCode", exitCode);
     }
     return jsonObjects;
   }
 }
 
 /// Output formatter for comparing warnings.
-String printWarningDelta(
-    String title, String dartdocOriginalBranch, Map<String, int> original, Map<String, int> current) {
+String printWarningDelta(String title, String dartdocOriginalBranch,
+    Map<String, int> original, Map<String, int> current) {
   StringBuffer printBuffer = new StringBuffer();
   Set<String> quantityChangedOuts = new Set();
   Set<String> onlyOriginal = new Set();
   Set<String> onlyCurrent = new Set();
   Set<String> allKeys =
-  new Set.from([]..addAll(original.keys)..addAll(current.keys));
+      new Set.from([]..addAll(original.keys)..addAll(current.keys));
 
   for (String key in allKeys) {
     if (original.containsKey(key) && !current.containsKey(key)) {

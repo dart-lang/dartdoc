@@ -22,15 +22,18 @@ void main() {
     Map<String, int> original;
     Map<String, int> current;
     setUp(() {
-      original = new Map.fromIterables(["originalwarning", "morewarning", "duplicateoriginalwarning"],
-                                       [1, 1, 2]);
-      current = new Map.fromIterables(["newwarning", "morewarning", "duplicateoriginalwarning"],
-          [1, 1, 1]);
+      original = new Map.fromIterables(
+          ["originalwarning", "morewarning", "duplicateoriginalwarning"],
+          [1, 1, 2]);
+      current = new Map.fromIterables(
+          ["newwarning", "morewarning", "duplicateoriginalwarning"], [1, 1, 1]);
     });
 
     test('verify output of printWarningDelta', () {
-      expect(printWarningDelta('Diff Title', 'oldbranch', original, current),
-          equals('*** Diff Title : 1 warnings from original (oldbranch) missing in current:\n'
+      expect(
+          printWarningDelta('Diff Title', 'oldbranch', original, current),
+          equals(
+              '*** Diff Title : 1 warnings from original (oldbranch) missing in current:\n'
               'originalwarning\n'
               '*** Diff Title : 1 new warnings not in original (oldbranch)\n'
               'newwarning\n'
@@ -40,8 +43,10 @@ void main() {
     });
 
     test('verify output when nothing changes', () {
-      expect(printWarningDelta('Diff Title 2', 'oldbranch2', original, original),
-          equals('*** Diff Title 2 : No difference in warning output from original (oldbranch2) (3 warnings found)\n'));
+      expect(
+          printWarningDelta('Diff Title 2', 'oldbranch2', original, original),
+          equals(
+              '*** Diff Title 2 : No difference in warning output from original (oldbranch2) (3 warnings found)\n'));
     });
   });
 }
