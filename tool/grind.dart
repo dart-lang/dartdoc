@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io' hide ProcessException;
 
 import 'package:dartdoc/src/io_utils.dart';
@@ -37,23 +36,7 @@ String get dartdocOriginalBranch {
 final Directory flutterDirDevTools =
     new Directory(path.join(flutterDir.path, 'dev', 'tools'));
 
-final RegExp quotables = new RegExp(r'[ "\r\n\$]');
-// from flutter:dev/tools/dartdoc.dart, modified
-void _printStream(Stream<List<int>> stream, Stdout output,
-    {String prefix: '', Iterable<String> Function(String line) filter}) {
-  assert(prefix != null);
-  if (filter == null) filter = (line) => [line];
-  stream
-      .transform(UTF8.decoder)
-      .transform(const LineSplitter())
-      .expand(filter)
-      .listen((String line) {
-    if (line != null) {
-      output.write('$prefix$line'.trim());
-      output.write('\n');
-    }
-  });
-}
+
 
 /// Creates a throwaway pub cache and returns the environment variables
 /// necessary to use it.
@@ -70,92 +53,9 @@ Map<String, String> _createThrowawayPubCache() {
   ]);
 }
 
-class _SubprocessLauncher {
-  final String context;
-  Map<String, String> _environment;
-
-  Map<String, String> get environment => _environment;
-
-  String get prefix => context.isNotEmpty ? '$context: ' : '';
-
-  _SubprocessLauncher(this.context, [Map<String, String> environment]) {
-    if (environment == null) this._environment = new Map();
-  }
-
-  /// A wrapper around start/await process.exitCode that will display the
-  /// output of the executable continuously and fail on non-zero exit codes.
-  /// It will also parse any valid JSON objects (one per line) it encounters
-  /// on stdout/stderr, and return them.
-  ///
-  /// Makes running programs in grinder similar to set -ex for bash, even on
-  /// Windows (though some of the bashisms will no longer make sense).
-  /// TODO(jcollins-g): move this to grinder?
-  Future<Iterable<Map>> runStreamed(String executable, List<String> arguments,
-      {String workingDirectory}) async {
-    List<Map> jsonObjects = new List();
-
-    /// Allow us to pretend we didn't pass the JSON flag in to dartdoc by
-    /// printing what dartdoc would have printed without it, yet storing
-    /// json objects into [jsonObjects].
-    Iterable<String> jsonCallback(String line) {
-      Map result;
-      try {
-        result = json.decoder.convert(line);
-      } catch (FormatException) {}
-      if (result != null) {
-        jsonObjects.add(result);
-        if (result.containsKey('message')) {
-          line = result['message'];
-        } else if (result.containsKey('data')) {
-          line = result['data']['text'];
-        }
-      }
-      return line.split('\n');
-    }
-
-    stderr.write('$prefix+ ');
-    if (workingDirectory != null) stderr.write('(cd "$workingDirectory" && ');
-    if (environment != null) {
-      stderr.write(environment.keys.map((String key) {
-        if (environment[key].contains(quotables)) {
-          return "$key='${environment[key]}'";
-        } else {
-          return "$key=${environment[key]}";
-        }
-      }).join(' '));
-      stderr.write(' ');
-    }
-    stderr.write('$executable');
-    if (arguments.isNotEmpty) {
-      for (String arg in arguments) {
-        if (arg.contains(quotables)) {
-          stderr.write(" '$arg'");
-        } else {
-          stderr.write(" $arg");
-        }
-      }
-    }
-    if (workingDirectory != null) stderr.write(')');
-    stderr.write('\n');
-    Process process = await Process.start(executable, arguments,
-        workingDirectory: workingDirectory, environment: environment);
-
-    _printStream(process.stdout, stdout, prefix: prefix, filter: jsonCallback);
-    _printStream(process.stderr, stderr, prefix: prefix, filter: jsonCallback);
-    await process.exitCode;
-
-    int exitCode = await process.exitCode;
-    if (exitCode != 0) {
-      fail("exitCode: $exitCode");
-    }
-
-    return jsonObjects;
-  }
-}
-
 @Task('Analyze dartdoc to ensure there are no errors and warnings')
 analyze() async {
-  await new _SubprocessLauncher('analyze').runStreamed(
+  await new SubprocessLauncher('analyze').runStreamed(
     sdkBin('dartanalyzer'),
     [
       '--fatal-warnings',
@@ -192,51 +92,7 @@ Map<String, int> jsonMessageIterableToWarnings(Iterable<Map> messageIterable) {
   return warningTexts;
 }
 
-void printWarningDelta(
-    String title, Map<String, int> original, Map<String, int> current) {
-  Set<String> quantityChangedOuts = new Set();
-  Set<String> onlyOriginal = new Set();
-  Set<String> onlyCurrent = new Set();
-  Set<String> allKeys =
-      new Set.from([]..addAll(original.keys)..addAll(current.keys));
 
-  for (String key in allKeys) {
-    if (original.containsKey(key) && !current.containsKey(key)) {
-      onlyOriginal.add(key);
-    } else if (!original.containsKey(key) && current.containsKey(key)) {
-      onlyCurrent.add(key);
-    } else if (original.containsKey(key) &&
-        current.containsKey(key) &&
-        original[key] != current[key]) {
-      quantityChangedOuts.add(key);
-    }
-  }
-
-  if (onlyOriginal.isNotEmpty) {
-    print(
-        '*** $title : ${onlyOriginal.length} warnings from original ($dartdocOriginalBranch) missing in current:');
-    onlyOriginal.forEach((warning) => print(warning));
-  }
-  if (onlyCurrent.isNotEmpty) {
-    print(
-        '*** $title : ${onlyCurrent.length} new warnings not in original ($dartdocOriginalBranch)');
-    onlyCurrent.forEach((warning) => print(warning));
-  }
-  if (quantityChangedOuts.isNotEmpty) {
-    print('*** $title : Identical warning quantity changed');
-    for (String key in quantityChangedOuts) {
-      print(
-          "* Appeared ${original[key]} times in original ($dartdocOriginalBranch), now ${current[key]}:");
-      print(key);
-    }
-  }
-  if (onlyOriginal.isEmpty &&
-      onlyCurrent.isEmpty &&
-      quantityChangedOuts.isEmpty) {
-    print(
-        '*** $title : No difference in warning output from original ($dartdocOriginalBranch)${allKeys.isEmpty ? "" : " (${allKeys.length} warnings found)"}');
-  }
-}
 
 @Task('Display delta in SDK warnings')
 Future compareSdkWarnings() async {
@@ -252,15 +108,15 @@ Future compareSdkWarnings() async {
   Map<String, int> originalDartdocWarnings =
       jsonMessageIterableToWarnings(await originalDartdocSdkBuild);
 
-  printWarningDelta(
-      'SDK docs', originalDartdocWarnings, currentDartdocWarnings);
+  print(printWarningDelta(
+      'SDK docs', dartdocOriginalBranch, originalDartdocWarnings, currentDartdocWarnings));
 }
 
 /// Helper function to create a clean version of dartdoc (based on the current
 /// directory, assumed to be a git repository).  Uses [dartdocOriginalBranch]
 /// to checkout a branch or tag.
 Future<String> createComparisonDartdoc() async {
-  var launcher = new _SubprocessLauncher('create-comparison-dartdoc');
+  var launcher = new SubprocessLauncher('create-comparison-dartdoc');
   Directory dartdocClean =
       Directory.systemTemp.createTempSync('dartdoc-comparison');
   await launcher
@@ -276,7 +132,7 @@ Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
     [String label]) async {
   if (label == null) label = '';
   if (label != '') label = '-$label';
-  var launcher = new _SubprocessLauncher('build-sdk-docs$label');
+  var launcher = new SubprocessLauncher('build-sdk-docs$label');
   String cwd = await futureCwd;
   await launcher.runStreamed(sdkBin('pub'), ['get'], workingDirectory: cwd);
   return await launcher.runStreamed(
@@ -297,7 +153,7 @@ Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
 @Depends(buildSdkDocs)
 Future serveSdkDocs() async {
   log('launching dhttpd on port 8000 for SDK');
-  var launcher = new _SubprocessLauncher('serve-sdk-docs');
+  var launcher = new SubprocessLauncher('serve-sdk-docs');
   await launcher.runStreamed(sdkBin('pub'), [
     'run',
     'dhttpd',
@@ -312,7 +168,7 @@ Future serveSdkDocs() async {
 @Depends(buildFlutterDocs)
 Future serveFlutterDocs() async {
   log('launching dhttpd on port 8001 for Flutter');
-  var launcher = new _SubprocessLauncher('serve-flutter-docs');
+  var launcher = new SubprocessLauncher('serve-flutter-docs');
   await launcher.runStreamed(sdkBin('pub'), ['get']);
   await launcher.runStreamed(sdkBin('pub'), [
     'run',
@@ -335,7 +191,7 @@ Future buildFlutterDocs() async {
 }
 
 Future _buildFlutterDocs(String flutterPath, [String label]) async {
-  var launcher = new _SubprocessLauncher(
+  var launcher = new SubprocessLauncher(
       'build-flutter-docs${label == null ? "" : "-$label"}',
       _createThrowawayPubCache());
   await launcher.runStreamed('git',
@@ -478,13 +334,13 @@ publish() async {
 test() async {
   // `pub run test` is a bit slower than running an `test_all.dart` script
   // But it provides more useful output in the case of failures.
-  await new _SubprocessLauncher('test')
+  await new SubprocessLauncher('test')
       .runStreamed(sdkBin('pub'), ['run', 'test']);
 }
 
 @Task('Generate docs for dartdoc')
 testDartdoc() async {
-  var launcher = new _SubprocessLauncher('test-dartdoc');
+  var launcher = new SubprocessLauncher('test-dartdoc');
   await launcher.runStreamed(Platform.resolvedExecutable,
       ['--checked', 'bin/dartdoc.dart', '--output', dartdocDocsDir.path]);
   File indexHtml = joinFile(dartdocDocsDir, ['index.html']);
@@ -493,7 +349,7 @@ testDartdoc() async {
 
 @Task('update test_package_docs')
 updateTestPackageDocs() async {
-  var launcher = new _SubprocessLauncher('update-test-package-docs');
+  var launcher = new SubprocessLauncher('update-test-package-docs');
   var testPackageDocs =
       new Directory(path.join('testing', 'test_package_docs'));
   var testPackage = new Directory(path.join('testing', 'test_package'));

@@ -5,6 +5,8 @@
 /// This is a helper library to make working with io easier.
 library dartdoc.io_utils;
 
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as path;
@@ -60,3 +62,157 @@ String getFileNameFor(String name) =>
 final libraryNameRegexp = new RegExp('[.:]');
 final partOfRegexp = new RegExp('part of ');
 final newLinePartOfRegexp = new RegExp('\npart of ');
+
+final RegExp quotables = new RegExp(r'[ "\r\n\$]');
+
+class SubprocessLauncher {
+  final String context;
+  Map<String, String> _environment;
+
+  Map<String, String> get environment => _environment;
+
+  String get prefix => context.isNotEmpty ? '$context: ' : '';
+
+  // from flutter:dev/tools/dartdoc.dart, modified
+  static void _printStream(Stream<List<int>> stream, Stdout output,
+      {String prefix: '', Iterable<String> Function(String line) filter}) {
+    assert(prefix != null);
+    if (filter == null) filter = (line) => [line];
+    stream
+        .transform(UTF8.decoder)
+        .transform(const LineSplitter())
+        .expand(filter)
+        .listen((String line) {
+      if (line != null) {
+        output.write('$prefix$line'.trim());
+        output.write('\n');
+      }
+    });
+  }
+
+  SubprocessLauncher(this.context, [Map<String, String> environment]) {
+    if (environment == null) this._environment = new Map();
+  }
+
+  /// A wrapper around start/await process.exitCode that will display the
+  /// output of the executable continuously and fail on non-zero exit codes.
+  /// It will also parse any valid JSON objects (one per line) it encounters
+  /// on stdout/stderr, and return them.  Returns null if no JSON objects
+  /// were encountered.
+  ///
+  /// Makes running programs in grinder similar to set -ex for bash, even on
+  /// Windows (though some of the bashisms will no longer make sense).
+  /// TODO(jcollins-g): move this to grinder?
+  Future<Iterable<Map>> runStreamed(String executable, List<String> arguments,
+      {String workingDirectory}) async {
+    List<Map> jsonObjects;
+
+    /// Allow us to pretend we didn't pass the JSON flag in to dartdoc by
+    /// printing what dartdoc would have printed without it, yet storing
+    /// json objects into [jsonObjects].
+    Iterable<String> jsonCallback(String line) {
+      Map result;
+      try {
+        result = json.decoder.convert(line);
+      } catch (FormatException) {}
+      if (result != null) {
+        if (jsonObjects == null) {
+          jsonObjects = new List();
+        }
+        jsonObjects.add(result);
+        if (result.containsKey('message')) {
+          line = result['message'];
+        } else if (result.containsKey('data')) {
+          line = result['data']['text'];
+        }
+      }
+      return line.split('\n');
+    }
+
+    stderr.write('$prefix+ ');
+    if (workingDirectory != null) stderr.write('(cd "$workingDirectory" && ');
+    if (environment != null) {
+      stderr.write(environment.keys.map((String key) {
+        if (environment[key].contains(quotables)) {
+          return "$key='${environment[key]}'";
+        } else {
+          return "$key=${environment[key]}";
+        }
+      }).join(' '));
+      stderr.write(' ');
+    }
+    stderr.write('$executable');
+    if (arguments.isNotEmpty) {
+      for (String arg in arguments) {
+        if (arg.contains(quotables)) {
+          stderr.write(" '$arg'");
+        } else {
+          stderr.write(" $arg");
+        }
+      }
+    }
+    if (workingDirectory != null) stderr.write(')');
+    stderr.write('\n');
+    Process process = await Process.start(executable, arguments,
+        workingDirectory: workingDirectory, environment: environment);
+
+    _printStream(process.stdout, stdout, prefix: prefix, filter: jsonCallback);
+    _printStream(process.stderr, stderr, prefix: prefix, filter: jsonCallback);
+    await process.exitCode;
+
+    int exitCode = await process.exitCode;
+    if (exitCode != 0) {
+      throw new ProcessException(executable, arguments, "SubprocessLauncher got non-zero exitCode", exitCode);
+    }
+    return jsonObjects;
+  }
+}
+
+/// Output formatter for comparing warnings.
+String printWarningDelta(
+    String title, String dartdocOriginalBranch, Map<String, int> original, Map<String, int> current) {
+  StringBuffer printBuffer = new StringBuffer();
+  Set<String> quantityChangedOuts = new Set();
+  Set<String> onlyOriginal = new Set();
+  Set<String> onlyCurrent = new Set();
+  Set<String> allKeys =
+  new Set.from([]..addAll(original.keys)..addAll(current.keys));
+
+  for (String key in allKeys) {
+    if (original.containsKey(key) && !current.containsKey(key)) {
+      onlyOriginal.add(key);
+    } else if (!original.containsKey(key) && current.containsKey(key)) {
+      onlyCurrent.add(key);
+    } else if (original.containsKey(key) &&
+        current.containsKey(key) &&
+        original[key] != current[key]) {
+      quantityChangedOuts.add(key);
+    }
+  }
+
+  if (onlyOriginal.isNotEmpty) {
+    printBuffer.writeln(
+        '*** $title : ${onlyOriginal.length} warnings from original ($dartdocOriginalBranch) missing in current:');
+    onlyOriginal.forEach((warning) => printBuffer.writeln(warning));
+  }
+  if (onlyCurrent.isNotEmpty) {
+    printBuffer.writeln(
+        '*** $title : ${onlyCurrent.length} new warnings not in original ($dartdocOriginalBranch)');
+    onlyCurrent.forEach((warning) => printBuffer.writeln(warning));
+  }
+  if (quantityChangedOuts.isNotEmpty) {
+    printBuffer.writeln('*** $title : Identical warning quantity changed');
+    for (String key in quantityChangedOuts) {
+      printBuffer.writeln(
+          "* Appeared ${original[key]} times in original ($dartdocOriginalBranch), now ${current[key]}:");
+      printBuffer.writeln(key);
+    }
+  }
+  if (onlyOriginal.isEmpty &&
+      onlyCurrent.isEmpty &&
+      quantityChangedOuts.isEmpty) {
+    printBuffer.writeln(
+        '*** $title : No difference in warning output from original ($dartdocOriginalBranch)${allKeys.isEmpty ? "" : " (${allKeys.length} warnings found)"}');
+  }
+  return printBuffer.toString();
+}
