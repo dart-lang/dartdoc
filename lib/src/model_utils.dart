@@ -230,35 +230,25 @@ class Memoizer {
     _memoizationTable = new Map();
   }
 
-  // Never write this if statement again.
-  R _getOrUpdateCache<R>(R Function() f, _HashableList key) {
-    if (!_memoizationTable.containsKey(key)) {
-      _memoizationTable[key] = f();
-    }
-    return _memoizationTable[key];
-  }
-
   /// Calls and caches the return value of [f]() if not in the cache, then
   /// returns the cached value of [f]().
-  ///
-
   R memoized<R>(Function f) {
     _HashableList key = new _HashableList([f]);
-    return _getOrUpdateCache(f, key);
+    return _memoizationTable.putIfAbsent(key, f);
   }
 
   /// Calls and caches the return value of [f]([param1]) if not in the cache, then
   /// returns the cached value of [f]([param1]).
   R memoized1<R, A>(R Function(A) f, A param1) {
     _HashableList key = new _HashableList([f, param1]);
-    return _getOrUpdateCache(() => f(param1), key);
+    return _memoizationTable.putIfAbsent(key, () => f(param1));
   }
 
   /// Calls and caches the return value of [f]([param1], [param2]) if not in the
   /// cache, then returns the cached value of [f]([param1], [param2]).
   R memoized2<R, A, B>(R Function(A, B) f, A param1, B param2) {
     _HashableList key = new _HashableList([f, param1, param2]);
-    return _getOrUpdateCache(() => f(param1, param2), key);
+    return _memoizationTable.putIfAbsent(key, () => f(param1, param2));
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3]) if
@@ -266,7 +256,7 @@ class Memoizer {
   /// [param2], [param3]).
   R memoized3<R, A, B, C>(R Function(A, B, C) f, A param1, B param2, C param3) {
     _HashableList key = new _HashableList([f, param1, param2, param3]);
-    return _getOrUpdateCache(() => f(param1, param2, param3), key);
+    return _memoizationTable.putIfAbsent(key, () => f(param1, param2, param3));
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
@@ -275,7 +265,8 @@ class Memoizer {
   R memoized4<R, A, B, C, D>(
       R Function(A, B, C, D) f, A param1, B param2, C param3, D param4) {
     _HashableList key = new _HashableList([f, param1, param2, param3, param4]);
-    return _getOrUpdateCache(() => f(param1, param2, param3, param4), key);
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4));
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
@@ -285,8 +276,8 @@ class Memoizer {
       C param3, D param4, E param5) {
     _HashableList key =
         new _HashableList([f, param1, param2, param3, param4, param5]);
-    return _getOrUpdateCache(
-        () => f(param1, param2, param3, param4, param5), key);
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4, param5));
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
@@ -296,8 +287,8 @@ class Memoizer {
       B param2, C param3, D param4, E param5, F param6) {
     _HashableList key =
         new _HashableList([f, param1, param2, param3, param4, param5, param6]);
-    return _getOrUpdateCache(
-        () => f(param1, param2, param3, param4, param5, param6), key);
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4, param5, param6));
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
@@ -308,8 +299,8 @@ class Memoizer {
       A param1, B param2, C param3, D param4, E param5, F param6, G param7) {
     _HashableList key = new _HashableList(
         [f, param1, param2, param3, param4, param5, param6, param7]);
-    return _getOrUpdateCache(
-        () => f(param1, param2, param3, param4, param5, param6, param7), key);
+    return _memoizationTable.putIfAbsent(
+        key, () => f(param1, param2, param3, param4, param5, param6, param7));
   }
 
   /// Calls and caches the return value of [f]([param1], [param2], [param3],
@@ -328,8 +319,9 @@ class Memoizer {
       H param8) {
     _HashableList key = new _HashableList(
         [f, param1, param2, param3, param4, param5, param6, param7, param8]);
-    return _getOrUpdateCache(
-        () => f(param1, param2, param3, param4, param5, param6, param7, param8),
-        key);
+    return _memoizationTable.putIfAbsent(
+        key,
+        () =>
+            f(param1, param2, param3, param4, param5, param6, param7, param8));
   }
 }
