@@ -30,15 +30,17 @@ final Directory flutterDirDevTools =
 
 final RegExp quotables = new RegExp(r'[ "\r\n\$]');
 // from flutter:dev/tools/dartdoc.dart, modified
-void _printStream(Stream<List<int>> stream, Stdout output,
-    {String prefix: ''}) {
+void _printStream(
+  Stream<List<int>> stream,
+  Stdout output, {
+  String prefix: '',
+}) {
   assert(prefix != null);
   stream
       .transform(UTF8.decoder)
       .transform(const LineSplitter())
       .listen((String line) {
-    output.write('$prefix$line'.trim());
-    output.write('\n');
+    output.write('  $prefix${line.trim()}\n');
   });
 }
 
@@ -76,7 +78,7 @@ class _SubprocessLauncher {
   /// TODO(jcollins-g): move this to grinder?
   Future runStreamed(String executable, List<String> arguments,
       {String workingDirectory}) async {
-    stderr.write('$prefix+ ');
+    stderr.write('  $prefix+ ');
     if (workingDirectory != null) stderr.write('cd "$workingDirectory" && ');
     if (environment != null) {
       stderr.write(environment.keys.map((String key) {
