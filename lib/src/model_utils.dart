@@ -192,8 +192,40 @@ class _HashableList extends UnmodifiableListView<dynamic> {
   get hashCode => hashObjects(this);
 }
 
-/// Extend or use as a mixin to track object-specific cached values, or
-/// instantiate directly to track other values.
+/// Like [Memoizer], except in checked mode will validate that the value of the
+/// memoized function is unchanging using [DeepCollectionEquality].  Still
+/// returns the cached value assuming the assertion passes.
+class ValidatingMemoizer extends Memoizer {
+  bool _assert_on_difference;
+
+  ValidatingMemoizer() : super() {
+    // Assignment within assert to take advantage of the expression only
+    // being executed in checked mode.
+    assert(_assert_on_difference = true);
+    invalidateMemos();
+  }
+
+  /// In checked mode and when constructed with assert_on_difference == true,
+  /// validate that the return value from f() equals the memoized value.
+  /// Otherwise, a wrapper around putIfAbsent.
+  @override
+  R _cacheIfAbsent<R>(_HashableList key, R Function() f) {
+    if (_assert_on_difference) {
+      if (_memoizationTable.containsKey(key)) {
+        R value = f();
+        if (!new DeepCollectionEquality()
+            .equals(value, _memoizationTable[key])) {
+          throw new AssertionError('${value} != $_memoizationTable[key]');
+        }
+      }
+    }
+    return super._cacheIfAbsent(key, f);
+  }
+}
+
+/// A basic Memoizer class.  Instantiate as a member variable, extend, or use
+/// as a mixin to track object-specific cached values, or instantiate directly
+/// to track other values.
 ///
 /// For all methods in this class, the parameter [f] must be a tear-off method
 /// or top level function (not an inline closure) for memoization to work.
@@ -219,30 +251,18 @@ class _HashableList extends UnmodifiableListView<dynamic> {
 /// myMemoizer.memoized(() => aSlowFunction());;
 /// ```
 class Memoizer {
-  bool _checked_mode = false;
-
   /// Map of a function and its positional parameters (if any), to a value.
-  Map<_HashableList, dynamic> _memoizationTable;
-
-  Memoizer() {
-    assert(_checked_mode = true);
-    invalidateMemos();
-  }
+  Map<_HashableList, dynamic> _memoizationTable = new Map();
 
   /// Reset the memoization table, forcing calls of the underlying functions.
   void invalidateMemos() {
     _memoizationTable = new Map();
   }
 
-  /// In checked mode, validate that the return value from f() equals the
-  /// memoized value.
+  /// In checked mode and when constructed with assert_on_difference == true,
+  /// validate that the return value from f() equals the memoized value.
+  /// Otherwise, a wrapper around putIfAbsent.
   R _cacheIfAbsent<R>(_HashableList key, R Function() f) {
-    if (_checked_mode) {
-      if (_memoizationTable.containsKey(key)) {
-        assert(
-            new DeepCollectionEquality().equals(f(), _memoizationTable[key]));
-      }
-    }
     return _memoizationTable.putIfAbsent(key, f);
   }
 
