@@ -29,6 +29,7 @@ String get dartdocOriginalBranch {
   String branch = 'master';
   if (Platform.environment.containsKey('DARTDOC_ORIGINAL')) {
     branch = Platform.environment['DARTDOC_ORIGINAL'];
+    log('using branch/tag: $branch for comparison from \$DARTDOC_ORIGINAL');
   }
   return branch;
 }
