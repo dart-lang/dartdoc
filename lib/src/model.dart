@@ -119,73 +119,63 @@ final RegExp locationSplitter = new RegExp(r"(package:|[\\/;.])");
 /// the one in the public namespace that will be documented.
 abstract class Inheritable implements ModelElement {
   bool get isInherited;
-  bool _canonicalEnclosingClassIsSet = false;
-  Class _canonicalEnclosingClass;
-  Class _definingEnclosingClass;
 
-  ModelElement get definingEnclosingElement {
-    if (_definingEnclosingClass == null) {
-      _definingEnclosingClass =
+  ModelElement _definingEnclosingElement() =>
           new ModelElement.fromElement(element.enclosingElement, package);
-    }
-    return _definingEnclosingClass;
-  }
+  ModelElement get definingEnclosingElement => _memoizer.memoized(_definingEnclosingElement);
 
-  ModelElement get canonicalEnclosingElement {
+  ModelElement _canonicalEnclosingElement() {
+    Class canonicalEnclosingClass;
     Element searchElement = element;
-    if (!_canonicalEnclosingClassIsSet) {
-      if (isInherited) {
-        searchElement = searchElement is Member
-            ? Package.getBasestElement(searchElement)
-            : searchElement;
-        // TODO(jcollins-g): generate warning if an inherited element's definition
-        // is in an intermediate non-canonical class in the inheritance chain?
-        Class previous;
-        Class previousNonSkippable;
-        for (Class c in inheritance.reversed) {
-          // Filter out mixins.
-          if (c.contains(searchElement)) {
-            if ((package.inheritThrough.contains(previous) &&
-                    c != definingEnclosingElement) ||
-                (package.inheritThrough.contains(c) &&
-                    c == definingEnclosingElement)) {
-              return (previousNonSkippable.memberByExample(this) as Inheritable)
-                  .canonicalEnclosingElement;
-            }
-            Class canonicalC = package.findCanonicalModelElementFor(c.element);
-            // TODO(jcollins-g): invert this lookup so traversal is recursive
-            // starting from the ModelElement.
-            if (canonicalC != null) {
-              assert(canonicalC.isCanonical);
-              //assert(this.inheritance.contains(canonicalC));
-              assert(canonicalC.contains(searchElement));
-              _canonicalEnclosingClass = canonicalC;
-              break;
-            }
+    if (isInherited) {
+      searchElement = searchElement is Member
+          ? Package.getBasestElement(searchElement)
+          : searchElement;
+      // TODO(jcollins-g): generate warning if an inherited element's definition
+      // is in an intermediate non-canonical class in the inheritance chain?
+      Class previous;
+      Class previousNonSkippable;
+      for (Class c in inheritance.reversed) {
+        // Filter out mixins.
+        if (c.contains(searchElement)) {
+          if ((package.inheritThrough.contains(previous) &&
+              c != definingEnclosingElement) ||
+              (package.inheritThrough.contains(c) &&
+                  c == definingEnclosingElement)) {
+            return (previousNonSkippable.memberByExample(this) as Inheritable)
+                .canonicalEnclosingElement;
           }
-          previous = c;
-          if (!package.inheritThrough.contains(c)) {
-            previousNonSkippable = c;
+          Class canonicalC = package.findCanonicalModelElementFor(c.element);
+          // TODO(jcollins-g): invert this lookup so traversal is recursive
+          // starting from the ModelElement.
+          if (canonicalC != null) {
+            assert(canonicalC.isCanonical);
+            //assert(this.inheritance.contains(canonicalC));
+            assert(canonicalC.contains(searchElement));
+            canonicalEnclosingClass = canonicalC;
+            break;
           }
         }
-        // This is still OK because we're never supposed to cloak public
-        // classes.
-        if (definingEnclosingElement.isCanonical &&
-            definingEnclosingElement.isPublic) {
-          assert(definingEnclosingElement == _canonicalEnclosingClass);
+        previous = c;
+        if (!package.inheritThrough.contains(c)) {
+          previousNonSkippable = c;
         }
-      } else {
-        _canonicalEnclosingClass =
-            package.findCanonicalModelElementFor(enclosingElement.element);
       }
-      _canonicalEnclosingClassIsSet = true;
-      assert(_canonicalEnclosingClass == null ||
-          _canonicalEnclosingClass.isDocumented);
+      // This is still OK because we're never supposed to cloak public
+      // classes.
+      if (definingEnclosingElement.isCanonical &&
+          definingEnclosingElement.isPublic) {
+        assert(definingEnclosingElement == canonicalEnclosingClass);
+      }
+    } else {
+      canonicalEnclosingClass =
+          package.findCanonicalModelElementFor(enclosingElement.element);
     }
-    assert(_canonicalEnclosingClass == null ||
-        (_canonicalEnclosingClass.isDocumented));
-    return _canonicalEnclosingClass;
+    assert(canonicalEnclosingClass == null ||
+        (canonicalEnclosingClass.isDocumented));
+    return canonicalEnclosingClass;
   }
+  ModelElement get canonicalEnclosingElement => _memoizer.memoized(_canonicalEnclosingElement);
 
   List<Class> get inheritance {
     List<Class> inheritance = [];
@@ -291,18 +281,9 @@ class Accessor extends ModelElement
 
   bool get isSynthetic => element.isSynthetic;
 
+  String _sourceCode() => isSynthetic ? sourceCodeFor((element as PropertyAccessorElement).variable, config.addCrossdart) : super.sourceCode;
   @override
-  String get sourceCode {
-    if (_sourceCodeCache == null) {
-      if (isSynthetic) {
-        _sourceCodeCache =
-            sourceCodeFor((element as PropertyAccessorElement).variable);
-      } else {
-        _sourceCodeCache = super.sourceCode;
-      }
-    }
-    return _sourceCodeCache;
-  }
+  String get sourceCode => _memoizer.memoized(_sourceCode);
 
   @override
   List<ModelElement> get computeDocumentationFrom {
@@ -375,47 +356,44 @@ class Accessor extends ModelElement
   bool get isGetter => _accessor.isGetter;
   bool get isSetter => _accessor.isSetter;
 
-  bool _overriddenElementIsSet = false;
-  ModelElement _overriddenElement;
-  @override
-  Accessor get overriddenElement {
+  Accessor _overriddenElement() {
+    Accessor overriddenAccessor;
     assert(package.allLibrariesAdded);
-    if (!_overriddenElementIsSet) {
-      _overriddenElementIsSet = true;
-      Element parent = element.enclosingElement;
-      if (parent is ClassElement) {
-        for (InterfaceType t in parent.allSupertypes) {
-          Element accessor = this.isGetter
-              ? t.getGetter(element.name)
-              : t.getSetter(element.name);
-          if (accessor != null) {
-            if (accessor is Member) {
-              accessor = Package.getBasestElement(accessor);
+    Element parent = element.enclosingElement;
+    if (parent is ClassElement) {
+      for (InterfaceType t in parent.allSupertypes) {
+        Element accessor = this.isGetter
+            ? t.getGetter(element.name)
+            : t.getSetter(element.name);
+        if (accessor != null) {
+          if (accessor is Member) {
+            accessor = Package.getBasestElement(accessor);
+          }
+          Class parentClass =
+          new ModelElement.fromElement(t.element, package);
+          List<Field> possibleFields = [];
+          possibleFields.addAll(parentClass.allInstanceProperties);
+          possibleFields.addAll(parentClass.staticProperties);
+          String fieldName = accessor.name.replaceFirst('=', '');
+          Field foundField = possibleFields.firstWhere(
+                  (f) => f.element.name == fieldName,
+              orElse: () => null);
+          if (foundField != null) {
+            if (this.isGetter) {
+              overriddenAccessor = foundField.getter;
+            } else {
+              overriddenAccessor = foundField.setter;
             }
-            Class parentClass =
-                new ModelElement.fromElement(t.element, package);
-            List<Field> possibleFields = [];
-            possibleFields.addAll(parentClass.allInstanceProperties);
-            possibleFields.addAll(parentClass.staticProperties);
-            String fieldName = accessor.name.replaceFirst('=', '');
-            Field foundField = possibleFields.firstWhere(
-                (f) => f.element.name == fieldName,
-                orElse: () => null);
-            if (foundField != null) {
-              if (this.isGetter) {
-                _overriddenElement = foundField.getter;
-              } else {
-                _overriddenElement = foundField.setter;
-              }
-              assert(!(_overriddenElement as Accessor).isInherited);
-              break;
-            }
+            assert(!overriddenAccessor.isInherited);
+            break;
           }
         }
       }
     }
-    return _overriddenElement;
+    return overriddenAccessor;
   }
+  @override
+  Accessor get overriddenElement => _memoizer.memoized(_overriddenElement);
 
   @override
   String get kind => 'accessor';
@@ -429,23 +407,16 @@ class Class extends ModelElement
   List<ElementType> _mixins;
   ElementType _supertype;
   List<ElementType> _interfaces;
-  List<Constructor> _constructors;
   List<Method> _allMethods;
   List<Operator> _operators;
-  List<Operator> _inheritedOperators;
-  List<Operator> _allOperators;
   final Set<Operator> _genPageOperators = new Set();
-  List<Method> _inheritedMethods;
   List<Method> _staticMethods;
   List<Method> _instanceMethods;
-  List<Method> _allInstanceMethods;
   final Set<Method> _genPageMethods = new Set();
   List<Field> _fields;
   List<Field> _staticFields;
-  List<Field> _constants;
   List<Field> _instanceFields;
   List<Field> _inheritedProperties;
-  List<Field> _allInstanceProperties;
 
   Class(ClassElement element, Library library) : super(element, library, null) {
     _mixins = _cls.mixins
@@ -468,17 +439,16 @@ class Class extends ModelElement
         .toList(growable: false);
   }
 
-  List<Method> get allInstanceMethods {
-    if (_allInstanceMethods != null) return _allInstanceMethods;
-    _allInstanceMethods = []
+  List<Method> _allInstanceMethods() {
+    return []
       ..addAll([]
         ..addAll(instanceMethods)
         ..sort(byName))
       ..addAll([]
         ..addAll(inheritedMethods)
         ..sort(byName));
-    return _allInstanceMethods;
   }
+  List<Method> get allInstanceMethods => _memoizer.memoized(_allInstanceMethods);
 
   Iterable<Method> get allPublicInstanceMethods =>
       filterNonPublic(allInstanceMethods);
@@ -486,19 +456,17 @@ class Class extends ModelElement
   bool get allPublicInstanceMethodsInherited =>
       instanceMethods.every((f) => f.isInherited);
 
-  List<Field> get allInstanceProperties {
-    if (_allInstanceProperties != null) return _allInstanceProperties;
-
+  List<Field> _allInstanceProperties() {
     // TODO best way to make this a fixed length list?
-    _allInstanceProperties = []
+    return []
       ..addAll([]
         ..addAll(instanceProperties)
         ..sort(byName))
       ..addAll([]
         ..addAll(inheritedProperties)
         ..sort(byName));
-    return _allInstanceProperties;
   }
+  List<Field> get allInstanceProperties => _memoizer.memoized(_allInstanceProperties);
 
   Iterable<Accessor> get allAccessors {
     return allInstanceProperties.expand((f) {
@@ -515,30 +483,27 @@ class Class extends ModelElement
   bool get allPublicInstancePropertiesInherited =>
       allPublicInstanceProperties.every((f) => f.isInherited);
 
-  List<Operator> get allOperators {
-    if (_allOperators != null) return _allOperators;
-    _allOperators = []
+  List<Operator> _allOperators() {
+    return []
       ..addAll([]
         ..addAll(operators)
         ..sort(byName))
       ..addAll([]
         ..addAll(inheritedOperators)
         ..sort(byName));
-    return _allOperators;
   }
+  List<Operator> get allOperators => _memoizer.memoized(_allOperators);
 
   Iterable<Operator> get allPublicOperators => filterNonPublic(allOperators);
 
   bool get allPublicOperatorsInherited =>
       allPublicOperators.every((f) => f.isInherited);
 
-  List<Field> get constants {
-    if (_constants != null) return _constants;
-    _constants = allFields.where((f) => f.isConst).toList(growable: false)
+  List<Field> _constants() {
+    return allFields.where((f) => f.isConst).toList(growable: false)
       ..sort(byName);
-
-    return _constants;
   }
+  List<Field> get constants => _memoizer.memoized(_constants);
 
   Iterable<Field> get publicConstants => filterNonPublic(constants);
 
@@ -560,7 +525,16 @@ class Class extends ModelElement
 
   ModelElement findModelElement(Element element) => allElements[element];
 
-  Map<String, List<ModelElement>> _membersByName;
+  Map<String, List<ModelElement>> _membersByName() {
+    Map memberMap = new Map();
+    for (ModelElement me in allModelElements) {
+      if (!memberMap.containsKey(me.name))
+        memberMap[me.name] = new List();
+      memberMap[me.name].add(me);
+    }
+    return memberMap;
+  }
+  Map<String, List<ModelElement>> get membersByName => _memoizer.memoized(_membersByName);
 
   /// Given a ModelElement that is a member of some other class, return
   /// a member of this class that has the same name and return type.
@@ -568,16 +542,8 @@ class Class extends ModelElement
   /// This enables object substitution for canonicalization, such as Interceptor
   /// for Object.
   ModelElement memberByExample(ModelElement example) {
-    if (_membersByName == null) {
-      _membersByName = new Map();
-      for (ModelElement me in allModelElements) {
-        if (!_membersByName.containsKey(me.name))
-          _membersByName[me.name] = new List();
-        _membersByName[me.name].add(me);
-      }
-    }
     ModelElement member;
-    Iterable<ModelElement> possibleMembers = _membersByName[example.name]
+    Iterable<ModelElement> possibleMembers = membersByName[example.name]
         .where((e) => e.runtimeType == example.runtimeType);
     if (example.runtimeType == Accessor) {
       possibleMembers = possibleMembers.where(
@@ -588,22 +554,19 @@ class Class extends ModelElement
     return member;
   }
 
-  final Set<ModelElement> _allModelElements = new Set();
-  List<ModelElement> get allModelElements {
-    if (_allModelElements.isEmpty) {
-      _allModelElements
-        ..addAll(allInstanceMethods)
-        ..addAll(allInstanceProperties)
-        ..addAll(allAccessors)
-        ..addAll(allOperators)
-        ..addAll(constants)
-        ..addAll(constructors)
-        ..addAll(staticMethods)
-        ..addAll(staticProperties)
-        ..addAll(typeParameters);
-    }
-    return _allModelElements.toList();
+  List<ModelElement> _allModelElements() {
+    return (new Set()
+      ..addAll(allInstanceMethods)
+      ..addAll(allInstanceProperties)
+      ..addAll(allAccessors)
+      ..addAll(allOperators)
+      ..addAll(constants)
+      ..addAll(constructors)
+      ..addAll(staticMethods)
+      ..addAll(staticProperties)
+      ..addAll(typeParameters)).toList();
   }
+  List<ModelElement> get allModelElements => _memoizer.memoized(_allModelElements);
 
   List<ModelElement> _allCanonicalModelElements;
   List<ModelElement> get allCanonicalModelElements {
@@ -611,16 +574,13 @@ class Class extends ModelElement
         allModelElements.where((e) => e.isCanonical).toList());
   }
 
-  List<Constructor> get constructors {
-    if (_constructors != null) return _constructors;
-
-    _constructors = _cls.constructors.map((e) {
+  List<Constructor> _constructors() {
+    return _cls.constructors.map((e) {
       return new ModelElement.from(e, library);
     }).toList(growable: true)
       ..sort(byName);
-
-    return _constructors;
   }
+  List<Constructor> get constructors => _memoizer.memoized(_constructors);
 
   Iterable<Constructor> get publicConstructors => filterNonPublic(constructors);
 
@@ -685,9 +645,7 @@ class Class extends ModelElement
         : []));
   }
 
-  List<Method> get inheritedMethods {
-    if (_inheritedMethods != null) return _inheritedMethods;
-
+  List<Method> _inheritedMethods() {
     Map<String, ExecutableElement> cmap =
         library.inheritanceManager.getMembersInheritedFromClasses(element);
     Map<String, ExecutableElement> imap =
@@ -699,7 +657,7 @@ class Class extends ModelElement
       imap.remove(method.name);
     });
 
-    _inheritedMethods = [];
+    List<Method> methodsFound = [];
     List<ExecutableElement> values = [];
     Set<String> uniqueNames = new Set();
 
@@ -733,15 +691,16 @@ class Class extends ModelElement
           value.enclosingElement != null) {
         Method m;
         m = new ModelElement.from(value, library, enclosingClass: this);
-        _inheritedMethods.add(m);
+        methodsFound.add(m);
         _genPageMethods.add(m);
       }
     }
 
-    _inheritedMethods.sort(byName);
+    methodsFound.sort(byName);
 
-    return _inheritedMethods;
+    return methodsFound;
   }
+  List<Method> get inheritedMethods => _memoizer.memoized(_inheritedMethods);
 
   Iterable get publicInheritedMethods => filterNonPublic(inheritedMethods);
 
@@ -749,8 +708,7 @@ class Class extends ModelElement
 
   // TODO(jcollins-g): this is very copy-paste from inheritedMethods now that the
   // constructor is always [ModelElement.from].  Fix this.
-  List<Operator> get inheritedOperators {
-    if (_inheritedOperators != null) return _inheritedOperators;
+  List<Operator> _inheritedOperators() {
     Map<String, ExecutableElement> cmap =
         library.inheritanceManager.getMembersInheritedFromClasses(element);
     Map<String, ExecutableElement> imap =
@@ -759,7 +717,7 @@ class Class extends ModelElement
       cmap.remove(operator.element.name);
       imap.remove(operator.element.name);
     });
-    _inheritedOperators = [];
+    List<Operator> _inheritedOperators = [];
     Map<String, ExecutableElement> values = {};
 
     bool _isInheritedOperator(ExecutableElement value) {
@@ -797,6 +755,7 @@ class Class extends ModelElement
 
     return _inheritedOperators;
   }
+  Iterable<Operator> get inheritedOperators => _memoizer.memoized(_inheritedOperators);
 
   Iterable<Operator> get publicInheritedOperators =>
       filterNonPublic(inheritedOperators);
@@ -1515,31 +1474,29 @@ class Field extends ModelElement
 
   String get _fileName => isConst ? '$name-constant.html' : '$name.html';
 
-  @override
-  String get sourceCode {
-    if (_sourceCodeCache == null) {
-      // We could use a set to figure the dupes out, but that would lose ordering.
-      String fieldSourceCode = sourceCodeFor(element) ?? '';
-      String getterSourceCode = getter?.sourceCode ?? '';
-      String setterSourceCode = setter?.sourceCode ?? '';
-      StringBuffer buffer = new StringBuffer();
-      if (fieldSourceCode.isNotEmpty) {
-        buffer.write(fieldSourceCode);
-      }
-      if (buffer.isNotEmpty) buffer.write('\n\n');
-      if (fieldSourceCode != getterSourceCode) {
-        if (getterSourceCode != setterSourceCode) {
-          buffer.write(getterSourceCode);
-          if (buffer.isNotEmpty) buffer.write('\n\n');
-        }
-      }
-      if (fieldSourceCode != setterSourceCode) {
-        buffer.write(setterSourceCode);
-      }
-      _sourceCodeCache = buffer.toString();
+  String _sourceCode() {
+    // We could use a set to figure the dupes out, but that would lose ordering.
+    String fieldSourceCode = sourceCodeFor(element, config.addCrossdart) ?? '';
+    String getterSourceCode = getter?.sourceCode ?? '';
+    String setterSourceCode = setter?.sourceCode ?? '';
+    StringBuffer buffer = new StringBuffer();
+    if (fieldSourceCode.isNotEmpty) {
+      buffer.write(fieldSourceCode);
     }
-    return _sourceCodeCache;
+    if (buffer.isNotEmpty) buffer.write('\n\n');
+    if (fieldSourceCode != getterSourceCode) {
+      if (getterSourceCode != setterSourceCode) {
+        buffer.write(getterSourceCode);
+        if (buffer.isNotEmpty) buffer.write('\n\n');
+      }
+    }
+    if (fieldSourceCode != setterSourceCode) {
+      buffer.write(setterSourceCode);
+    }
+    return buffer.toString();
   }
+  @override
+  String get sourceCode => _memoizer.memoized(_sourceCode);
 
   void _setModelType() {
     if (hasGetter) {
@@ -2506,6 +2463,7 @@ abstract class Privacy {
 abstract class ModelElement extends Canonicalization
     with Privacy, Warnable, Nameable
     implements Comparable, Documentable {
+  Memoizer _memoizer;
   final Element _element;
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Member _originalMember;
@@ -2522,7 +2480,9 @@ abstract class ModelElement extends Canonicalization
 
   // TODO(jcollins-g): make _originalMember optional after dart-lang/sdk#15101
   // is fixed.
-  ModelElement(this._element, this._library, this._originalMember) {}
+  ModelElement(this._element, this._library, this._originalMember) {
+    _memoizer = new Memoizer();
+  }
 
   factory ModelElement.fromElement(Element e, Package p) {
     Library lib = _findOrCreateEnclosingLibraryForStatic(e, p);
@@ -4597,7 +4557,7 @@ class Parameter extends ModelElement implements EnclosedElement {
 }
 
 abstract class SourceCodeMixin {
-  String _sourceCodeCache;
+  Memoizer _memoizer;
   String get crossdartHtmlTag {
     if (config != null && config.addCrossdart && _crossdartUrl != null) {
       return "<a class='crossdart' href='${_crossdartUrl}'>Link to Crossdart</a>";
@@ -4614,7 +4574,7 @@ abstract class SourceCodeMixin {
 
   Library get library;
 
-  String sourceCodeFor(Element element) {
+  String sourceCodeFor(Element element, bool addCrossdart) {
     String contents = getFileContentsFor(element);
     var node = element.computeNode();
     if (node != null) {
@@ -4632,7 +4592,7 @@ abstract class SourceCodeMixin {
       var start = node.offset - (node.offset - i);
       String source = contents.substring(start, node.end);
 
-      if (config != null && config.addCrossdart) {
+      if (addCrossdart) {
         source = crossdartifySource(_crossdartJson, source, element, start);
       } else {
         source = const HtmlEscape().convert(source);
@@ -4646,13 +4606,7 @@ abstract class SourceCodeMixin {
     }
   }
 
-  String get sourceCode {
-    if (_sourceCodeCache == null) {
-      _sourceCodeCache = sourceCodeFor(element);
-    }
-
-    return _sourceCodeCache;
-  }
+  String get sourceCode => _memoizer.memoized2(sourceCodeFor, element, config.addCrossdart);
 
   String get _crossdartPath {
     var node = element.computeNode();
@@ -4700,10 +4654,6 @@ abstract class SourceCodeMixin {
     } else {
       return null;
     }
-  }
-
-  void clearSourceCodeCache() {
-    _sourceCodeCache = null;
   }
 }
 
