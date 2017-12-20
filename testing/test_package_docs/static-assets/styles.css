@@ -237,6 +237,7 @@ pre.prettyprint {
 pre code {
   white-space: pre;
   word-wrap: initial;
+  font-size: 100%
 }
 
 .fixed {
@@ -253,7 +254,10 @@ code {
   font-family: 'Source Code Pro', monospace;
   /* overriding bootstrap */
   color: inherit;
-  background-color: #eee;
+  padding: 0.2em 0.4em;
+  font-size: 85%;
+  background-color: rgba(27,31,35,0.05);
+  border-radius: 3px;
 }
 
 h2 .crossdart {
