@@ -259,9 +259,7 @@ class Memoizer {
     _memoizationTable = new Map();
   }
 
-  /// In checked mode and when constructed with assert_on_difference == true,
-  /// validate that the return value from f() equals the memoized value.
-  /// Otherwise, a wrapper around putIfAbsent.
+  /// A wrapper around putIfAbsent, exposed to allow overrides.
   R _cacheIfAbsent<R>(_HashableList key, R Function() f) {
     return _memoizationTable.putIfAbsent(key, f);
   }
