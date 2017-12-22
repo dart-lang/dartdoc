@@ -121,8 +121,9 @@ abstract class Inheritable implements ModelElement {
   bool get isInherited;
 
   ModelElement _definingEnclosingElement() =>
-          new ModelElement.fromElement(element.enclosingElement, package);
-  ModelElement get definingEnclosingElement => _memoizer.memoized(_definingEnclosingElement);
+      new ModelElement.fromElement(element.enclosingElement, package);
+  ModelElement get definingEnclosingElement =>
+      _memoizer.memoized(_definingEnclosingElement);
 
   ModelElement _canonicalEnclosingElement() {
     Class canonicalEnclosingClass;
@@ -139,7 +140,7 @@ abstract class Inheritable implements ModelElement {
         // Filter out mixins.
         if (c.contains(searchElement)) {
           if ((package.inheritThrough.contains(previous) &&
-              c != definingEnclosingElement) ||
+                  c != definingEnclosingElement) ||
               (package.inheritThrough.contains(c) &&
                   c == definingEnclosingElement)) {
             return (previousNonSkippable.memberByExample(this) as Inheritable)
@@ -175,7 +176,9 @@ abstract class Inheritable implements ModelElement {
         (canonicalEnclosingClass.isDocumented));
     return canonicalEnclosingClass;
   }
-  ModelElement get canonicalEnclosingElement => _memoizer.memoized(_canonicalEnclosingElement);
+
+  ModelElement get canonicalEnclosingElement =>
+      _memoizer.memoized(_canonicalEnclosingElement);
 
   List<Class> get inheritance {
     List<Class> inheritance = [];
@@ -281,7 +284,10 @@ class Accessor extends ModelElement
 
   bool get isSynthetic => element.isSynthetic;
 
-  String _sourceCode() => isSynthetic ? sourceCodeFor((element as PropertyAccessorElement).variable, config.addCrossdart) : super.sourceCode;
+  String _sourceCode() => isSynthetic
+      ? sourceCodeFor(
+          (element as PropertyAccessorElement).variable, config.addCrossdart)
+      : super.sourceCode;
   @override
   String get sourceCode => _memoizer.memoized(_sourceCode);
 
@@ -369,14 +375,13 @@ class Accessor extends ModelElement
           if (accessor is Member) {
             accessor = Package.getBasestElement(accessor);
           }
-          Class parentClass =
-          new ModelElement.fromElement(t.element, package);
+          Class parentClass = new ModelElement.fromElement(t.element, package);
           List<Field> possibleFields = [];
           possibleFields.addAll(parentClass.allInstanceProperties);
           possibleFields.addAll(parentClass.staticProperties);
           String fieldName = accessor.name.replaceFirst('=', '');
           Field foundField = possibleFields.firstWhere(
-                  (f) => f.element.name == fieldName,
+              (f) => f.element.name == fieldName,
               orElse: () => null);
           if (foundField != null) {
             if (this.isGetter) {
@@ -392,6 +397,7 @@ class Accessor extends ModelElement
     }
     return overriddenAccessor;
   }
+
   @override
   Accessor get overriddenElement => _memoizer.memoized(_overriddenElement);
 
@@ -448,7 +454,9 @@ class Class extends ModelElement
         ..addAll(inheritedMethods)
         ..sort(byName));
   }
-  List<Method> get allInstanceMethods => _memoizer.memoized(_allInstanceMethods);
+
+  List<Method> get allInstanceMethods =>
+      _memoizer.memoized(_allInstanceMethods);
 
   Iterable<Method> get allPublicInstanceMethods =>
       filterNonPublic(allInstanceMethods);
@@ -466,7 +474,9 @@ class Class extends ModelElement
         ..addAll(inheritedProperties)
         ..sort(byName));
   }
-  List<Field> get allInstanceProperties => _memoizer.memoized(_allInstanceProperties);
+
+  List<Field> get allInstanceProperties =>
+      _memoizer.memoized(_allInstanceProperties);
 
   Iterable<Accessor> get allAccessors {
     return allInstanceProperties.expand((f) {
@@ -492,6 +502,7 @@ class Class extends ModelElement
         ..addAll(inheritedOperators)
         ..sort(byName));
   }
+
   List<Operator> get allOperators => _memoizer.memoized(_allOperators);
 
   Iterable<Operator> get allPublicOperators => filterNonPublic(allOperators);
@@ -503,6 +514,7 @@ class Class extends ModelElement
     return allFields.where((f) => f.isConst).toList(growable: false)
       ..sort(byName);
   }
+
   List<Field> get constants => _memoizer.memoized(_constants);
 
   Iterable<Field> get publicConstants => filterNonPublic(constants);
@@ -528,13 +540,14 @@ class Class extends ModelElement
   Map<String, List<ModelElement>> _membersByName() {
     Map memberMap = new Map();
     for (ModelElement me in allModelElements) {
-      if (!memberMap.containsKey(me.name))
-        memberMap[me.name] = new List();
+      if (!memberMap.containsKey(me.name)) memberMap[me.name] = new List();
       memberMap[me.name].add(me);
     }
     return memberMap;
   }
-  Map<String, List<ModelElement>> get membersByName => _memoizer.memoized(_membersByName);
+
+  Map<String, List<ModelElement>> get membersByName =>
+      _memoizer.memoized(_membersByName);
 
   /// Given a ModelElement that is a member of some other class, return
   /// a member of this class that has the same name and return type.
@@ -556,17 +569,20 @@ class Class extends ModelElement
 
   List<ModelElement> _allModelElements() {
     return (new Set()
-      ..addAll(allInstanceMethods)
-      ..addAll(allInstanceProperties)
-      ..addAll(allAccessors)
-      ..addAll(allOperators)
-      ..addAll(constants)
-      ..addAll(constructors)
-      ..addAll(staticMethods)
-      ..addAll(staticProperties)
-      ..addAll(typeParameters)).toList();
+          ..addAll(allInstanceMethods)
+          ..addAll(allInstanceProperties)
+          ..addAll(allAccessors)
+          ..addAll(allOperators)
+          ..addAll(constants)
+          ..addAll(constructors)
+          ..addAll(staticMethods)
+          ..addAll(staticProperties)
+          ..addAll(typeParameters))
+        .toList();
   }
-  List<ModelElement> get allModelElements => _memoizer.memoized(_allModelElements);
+
+  List<ModelElement> get allModelElements =>
+      _memoizer.memoized(_allModelElements);
 
   List<ModelElement> _allCanonicalModelElements;
   List<ModelElement> get allCanonicalModelElements {
@@ -580,6 +596,7 @@ class Class extends ModelElement
     }).toList(growable: true)
       ..sort(byName);
   }
+
   List<Constructor> get constructors => _memoizer.memoized(_constructors);
 
   Iterable<Constructor> get publicConstructors => filterNonPublic(constructors);
@@ -700,6 +717,7 @@ class Class extends ModelElement
 
     return methodsFound;
   }
+
   List<Method> get inheritedMethods => _memoizer.memoized(_inheritedMethods);
 
   Iterable get publicInheritedMethods => filterNonPublic(inheritedMethods);
@@ -755,7 +773,9 @@ class Class extends ModelElement
 
     return _inheritedOperators;
   }
-  Iterable<Operator> get inheritedOperators => _memoizer.memoized(_inheritedOperators);
+
+  Iterable<Operator> get inheritedOperators =>
+      _memoizer.memoized(_inheritedOperators);
 
   Iterable<Operator> get publicInheritedOperators =>
       filterNonPublic(inheritedOperators);
@@ -1558,14 +1578,14 @@ abstract class GetterSetterCombo implements ModelElement {
     } else if (hasPublicSetter) {
       from.addAll(setter.documentationFrom);
     }
-    if (from.length == 0 ||
-        from.every((e) => e.documentation == ''))
+    if (from.length == 0 || from.every((e) => e.documentation == ''))
       from = computeDocumentationFrom();
     return from;
   }
 
   @override
-  List<ModelElement> get documentationFrom => _memoizer.memoized(_documentationFrom);
+  List<ModelElement> get documentationFrom =>
+      _memoizer.memoized(_documentationFrom);
 
   bool get hasAccessorsWithDocs =>
       (hasPublicGetter && getter.documentation.isNotEmpty ||
@@ -1710,12 +1730,14 @@ class Library extends ModelElement {
         }
       }
       return new ModelElement.from(
-          e.element, package.findOrCreateLibraryFor(e.element),
-          getter: getter, setter: setter)
+              e.element, package.findOrCreateLibraryFor(e.element),
+              getter: getter, setter: setter)
           .fullyQualifiedName;
     }).toList();
   }
-  Iterable<String> get allOriginalModelElementNames => _memoizer.memoized(_allOriginalModelElementNames);
+
+  Iterable<String> get allOriginalModelElementNames =>
+      _memoizer.memoized(_allOriginalModelElementNames);
 
   List<Class> get allClasses => _memoizer.memoized(_allClasses);
 
@@ -1750,9 +1772,10 @@ class Library extends ModelElement {
   Iterable<Class> get publicClasses => filterNonPublic(classes);
 
   Iterable<TopLevelVariable> _constants() {
-      // _getVariables() is already sorted.
+    // _getVariables() is already sorted.
     return variables.where((v) => v.isConst).toList(growable: false);
   }
+
   Iterable<TopLevelVariable> get constants => _memoizer.memoized(_constants);
 
   /// Returns all libraries either imported by or exported by any public library
@@ -1763,34 +1786,42 @@ class Library extends ModelElement {
   // TODO(jcollins-g): move this to [Package] once it really knows about
   // more than one package.
   Set<Library> _packageImportedExportedLibraries() {
-     return package.publicLibraries
-          .where((l) => l.packageName == packageName).toSet();
+    return package.publicLibraries
+        .where((l) => l.packageName == packageName)
+        .toSet();
   }
-  Set<Library> get packageImportedExportedLibraries => _memoizer.memoized(_packageImportedExportedLibraries);
+
+  Set<Library> get packageImportedExportedLibraries =>
+      _memoizer.memoized(_packageImportedExportedLibraries);
 
   /// Returns all libraries either imported by or exported by this library,
   /// recursively.
   Set<Library> _importedExportedLibraries() {
-      Set<Library> importedExported = new Set();
-      Set<LibraryElement> importedExportedLibraryElements = new Set();
-      importedExportedLibraryElements
-          .addAll((element as LibraryElement).importedLibraries);
-      importedExportedLibraryElements
-          .addAll((element as LibraryElement).exportedLibraries);
-      for (LibraryElement l in importedExportedLibraryElements) {
-        Library lib = new ModelElement.from(l, library);
-        importedExported.add(lib);
-        importedExported.addAll(lib.importedExportedLibraries);
-      }
-      return importedExported;
+    Set<Library> importedExported = new Set();
+    Set<LibraryElement> importedExportedLibraryElements = new Set();
+    importedExportedLibraryElements
+        .addAll((element as LibraryElement).importedLibraries);
+    importedExportedLibraryElements
+        .addAll((element as LibraryElement).exportedLibraries);
+    for (LibraryElement l in importedExportedLibraryElements) {
+      Library lib = new ModelElement.from(l, library);
+      importedExported.add(lib);
+      importedExported.addAll(lib.importedExportedLibraries);
+    }
+    return importedExported;
   }
-  Set<Library> get importedExportedLibraries => _memoizer.memoized(_importedExportedLibraries);
+
+  Set<Library> get importedExportedLibraries =>
+      _memoizer.memoized(_importedExportedLibraries);
 
   Iterable<TopLevelVariable> get publicConstants => filterNonPublic(constants);
 
   String _dirName() {
-     return (isAnonymous ? nameFromPath : name).replaceAll(':', '-').replaceAll('/', '_');
+    return (isAnonymous ? nameFromPath : name)
+        .replaceAll(':', '-')
+        .replaceAll('/', '_');
   }
+
   String get dirName => _memoizer.memoized(_dirName);
 
   Set<String> _canonicalFor;
@@ -1829,7 +1860,8 @@ class Library extends ModelElement {
   }
 
   @override
-  String get documentation => _memoizer.memoized1(_setCanonicalFor, super.documentation);
+  String get documentation =>
+      _memoizer.memoized1(_setCanonicalFor, super.documentation);
 
   /// Libraries are not enclosed by anything.
   @override
@@ -1844,15 +1876,14 @@ class Library extends ModelElement {
         .toList(growable: false)
           ..sort(byName);
   }
+
   List<Class> get enums => _memoizer.memoized(_enums);
 
   Iterable<Class> get publicEnums => filterNonPublic(enums);
 
   List<Class> get exceptions {
-    return allClasses
-        .where((c) => c.isErrorOrException)
-        .toList(growable: false)
-          ..sort(byName);
+    return allClasses.where((c) => c.isErrorOrException).toList(growable: false)
+      ..sort(byName);
   }
 
   Iterable<Class> get publicExceptions => filterNonPublic(exceptions);
@@ -1873,6 +1904,7 @@ class Library extends ModelElement {
     }).toList(growable: false)
       ..sort(byName);
   }
+
   List<ModelFunction> get functions => _memoizer.memoized(_functions);
 
   Iterable<ModelFunction> get publicFunctions => filterNonPublic(functions);
@@ -1898,7 +1930,8 @@ class Library extends ModelElement {
   }
 
   InheritanceManager _inheritanceManager() => new InheritanceManager(element);
-  InheritanceManager get inheritanceManager => _memoizer.memoized(_inheritanceManager);
+  InheritanceManager get inheritanceManager =>
+      _memoizer.memoized(_inheritanceManager);
 
   bool get isAnonymous => element.name == null || element.name.isEmpty;
 
@@ -1920,22 +1953,26 @@ class Library extends ModelElement {
   /// the name calculation.  Simple cases (such as an anonymous library in
   /// 'lib') are the same, but this will include slashes and possibly colons
   /// for anonymous libraries in subdirectories or other packages.
-  String get nameFromPath => _memoizer.memoized3(getNameFromPath, _libraryElement, package.context, package.packageMeta);
+  String get nameFromPath => _memoizer.memoized3(
+      getNameFromPath, _libraryElement, package.context, package.packageMeta);
 
   String _packageName() => packageMeta?.name ?? '';
+
   /// The real package, as opposed to the package we are documenting it with,
   /// [Package.name]
   String get packageName => _memoizer.memoized(_packageName);
 
   /// The real packageMeta, as opposed to the package we are documenting with.
-  PackageMeta get packageMeta => _memoizer.memoized1(getPackageMeta, _libraryElement);
+  PackageMeta get packageMeta =>
+      _memoizer.memoized1(getPackageMeta, _libraryElement);
 
   String get path => _libraryElement.definingCompilationUnit.name;
 
   /// All variables ("properties") except constants.
-  Iterable<TopLevelVariable>  _properties() {
+  Iterable<TopLevelVariable> _properties() {
     return variables.where((v) => !v.isConst).toList(growable: false);
   }
+
   Iterable<TopLevelVariable> get properties => _memoizer.memoized(_properties);
 
   Iterable<TopLevelVariable> get publicProperties =>
@@ -1956,6 +1993,7 @@ class Library extends ModelElement {
         .toList(growable: false)
           ..sort(byName);
   }
+
   List<Typedef> get typedefs => _memoizer.memoized(_typedefs);
 
   Iterable<Typedef> get publicTypedefs => filterNonPublic(typedefs);
@@ -2026,6 +2064,7 @@ class Library extends ModelElement {
     _variables.sort(byName);
     return _variables;
   }
+
   List<TopLevelVariable> get variables => _memoizer.memoized(_variables);
 
   /// Reverses URIs if needed to get a package URI.
@@ -2127,15 +2166,22 @@ class Library extends ModelElement {
     _modelElementsMap[element].add(this);
     return _modelElementsMap;
   }
-  Map<Element, Set<ModelElement>> get modelElementsMap => _memoizer.memoized(_modelElementsMap);
 
-  Iterable<ModelElement> _allModelElements() => modelElementsMap.values.expand((s) => s);
-  Iterable<ModelElement> get allModelElements => _memoizer.memoized(_allModelElements);
+  Map<Element, Set<ModelElement>> get modelElementsMap =>
+      _memoizer.memoized(_modelElementsMap);
 
-  Iterable<ModelElement> _allCanonicalModelElements() => allModelElements.where((e) => e.isCanonical).toList();
-  Iterable<ModelElement> get allCanonicalModelElements => _memoizer.memoized(_allCanonicalModelElements);
+  Iterable<ModelElement> _allModelElements() =>
+      modelElementsMap.values.expand((s) => s);
+  Iterable<ModelElement> get allModelElements =>
+      _memoizer.memoized(_allModelElements);
+
+  Iterable<ModelElement> _allCanonicalModelElements() =>
+      allModelElements.where((e) => e.isCanonical).toList();
+  Iterable<ModelElement> get allCanonicalModelElements =>
+      _memoizer.memoized(_allCanonicalModelElements);
 
   final Map<Library, bool> _isReexportedBy = {};
+
   /// Heuristic that tries to guess if this library is actually largely
   /// reexported by some other library.  We guess this by comparing the elements
   /// inside each of allModelElements for both libraries.  Don't use this
@@ -2585,22 +2631,22 @@ abstract class ModelElement extends Canonicalization
   }
 
   bool _isPublic() {
-      if (name == '') {
-        return false;
-      } else if (this is! Library && (library == null || !library.isPublic)) {
-        return false;
-      } else if (enclosingElement is Class &&
-          !(enclosingElement as Class).isPublic) {
-        return false;
-      }
-      String docComment = computeDocumentationComment;
-      if (docComment == null) {
-        return hasPublicName(element);
-      }
-      return hasPublicName(element) &&
-          !(docComment.contains('@nodoc') ||
-              docComment.contains('<nodoc>'));
+    if (name == '') {
+      return false;
+    } else if (this is! Library && (library == null || !library.isPublic)) {
+      return false;
+    } else if (enclosingElement is Class &&
+        !(enclosingElement as Class).isPublic) {
+      return false;
+    }
+    String docComment = computeDocumentationComment;
+    if (docComment == null) {
+      return hasPublicName(element);
+    }
+    return hasPublicName(element) &&
+        !(docComment.contains('@nodoc') || docComment.contains('<nodoc>'));
   }
+
   @override
   bool get isPublic => _memoizer.memoized(_isPublic);
 
@@ -2631,7 +2677,8 @@ abstract class ModelElement extends Canonicalization
 
   // TODO(jcollins-g): untangle when mixins can call super
   @override
-  List<ModelElement> get documentationFrom => _memoizer.memoized(computeDocumentationFrom);
+  List<ModelElement> get documentationFrom =>
+      _memoizer.memoized(computeDocumentationFrom);
 
   /// Returns the ModelElement(s) from which we will get documentation.
   /// Can be more than one if this is a Field composing documentation from
@@ -2729,15 +2776,14 @@ abstract class ModelElement extends Canonicalization
         }).toList();
         // Start with our top-level element.
         ModelElement warnable =
-        new ModelElement.fromElement(topLevelElement, package);
+            new ModelElement.fromElement(topLevelElement, package);
         if (candidateLibraries.length > 1) {
           // Heuristic scoring to determine which library a human likely
           // considers this element to be primarily 'from', and therefore,
           // canonical.  Still warn if the heuristic isn't that confident.
           List<ScoredCandidate> scoredCandidates =
-          warnable.scoreCanonicalCandidates(candidateLibraries);
-          candidateLibraries =
-              scoredCandidates.map((s) => s.library).toList();
+              warnable.scoreCanonicalCandidates(candidateLibraries);
+          candidateLibraries = scoredCandidates.map((s) => s.library).toList();
           double secondHighestScore =
               scoredCandidates[scoredCandidates.length - 2].score;
           double highestScore = scoredCandidates.last.score;
@@ -2827,18 +2873,23 @@ abstract class ModelElement extends Canonicalization
 
   String _fullyQualifiedNameWithoutLibrary() {
     // Remember, periods are legal in library names.
-    return fullyQualifiedName.replaceFirst("${library.fullyQualifiedName}.", '');
+    return fullyQualifiedName.replaceFirst(
+        "${library.fullyQualifiedName}.", '');
   }
 
   // TODO(jcollins-g): The commented out version should work, but unwrapping
   // library.fullyQualifiedName seems somehow to break things.
   //String get fullyQualifiedNameWithoutLibrary => _memoizer.memoized2(fullyQualifiedName.replaceFirst, "${library.fullyQualifiedName}.", '');
-  String get fullyQualifiedNameWithoutLibrary => _memoizer.memoized(_fullyQualifiedNameWithoutLibrary);
+  String get fullyQualifiedNameWithoutLibrary =>
+      _memoizer.memoized(_fullyQualifiedNameWithoutLibrary);
 
   String get sourceFileName => element.source.fullName;
 
   @override
-  Tuple2<int, int> get lineAndColumn => _memoizer.memoized2(lineNumberCache.lineAndColumn, element.source.fullName, element.nameOffset);
+  Tuple2<int, int> get lineAndColumn => _memoizer.memoized2(
+      lineNumberCache.lineAndColumn,
+      element.source.fullName,
+      element.nameOffset);
 
   bool get hasAnnotations => annotations.isNotEmpty;
 
@@ -2924,23 +2975,23 @@ abstract class ModelElement extends Canonicalization
   }
 
   ElementType _modelType() {
-      // TODO(jcollins-g): Need an interface for a "member with a type" (or changed object model).
-      if (_originalMember != null &&
-          (_originalMember is ExecutableMember ||
-              _originalMember is ParameterMember)) {
-        dynamic originalMember = _originalMember;
-        return new ElementType(originalMember.type,
-            new ModelElement.fromElement(originalMember.type.element, package));
-      } else if (element is ExecutableElement ||
-          element is FunctionTypedElement ||
-          element is ParameterElement ||
-          element is TypeDefiningElement ||
-          element is PropertyInducingElement) {
-        return new ElementType(
-            (element as dynamic).type,
-            new ModelElement.fromElement(
-                (element as dynamic).type.element, package));
-      }
+    // TODO(jcollins-g): Need an interface for a "member with a type" (or changed object model).
+    if (_originalMember != null &&
+        (_originalMember is ExecutableMember ||
+            _originalMember is ParameterMember)) {
+      dynamic originalMember = _originalMember;
+      return new ElementType(originalMember.type,
+          new ModelElement.fromElement(originalMember.type.element, package));
+    } else if (element is ExecutableElement ||
+        element is FunctionTypedElement ||
+        element is ParameterElement ||
+        element is TypeDefiningElement ||
+        element is PropertyInducingElement) {
+      return new ElementType(
+          (element as dynamic).type,
+          new ModelElement.fromElement(
+              (element as dynamic).type.element, package));
+    }
     return null;
   }
 
@@ -2949,7 +3000,8 @@ abstract class ModelElement extends Canonicalization
   @override
   String get name => element.name;
 
-  String _oneLineDoc() => '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
+  String _oneLineDoc() =>
+      '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
   @override
   String get oneLineDoc => _memoizer.memoized(_oneLineDoc);
 
@@ -2962,15 +3014,17 @@ abstract class ModelElement extends Canonicalization
   ModelElement _overriddenDocumentedElement() {
     ModelElement found = this;
     while ((found.element.documentationComment == null ||
-        found.element.documentationComment == "") &&
+            found.element.documentationComment == "") &&
         !found.isCanonical &&
         found.overriddenElement != null) {
       found = found.overriddenElement;
     }
     return found;
   }
+
   @override
-  ModelElement get overriddenDocumentedElement => _memoizer.memoized(_overriddenDocumentedElement);
+  ModelElement get overriddenDocumentedElement =>
+      _memoizer.memoized(_overriddenDocumentedElement);
 
   int _overriddenDepth() {
     int _overriddenDepth = 0;
@@ -2981,6 +3035,7 @@ abstract class ModelElement extends Canonicalization
     }
     return _overriddenDepth;
   }
+
   int get overriddenDepth => _memoizer.memoized(_overriddenDepth);
 
   @override
@@ -3013,6 +3068,7 @@ abstract class ModelElement extends Canonicalization
     }
     return recursedParameters.toList();
   }
+
   List<Parameter> get allParameters => _memoizer.memoized(_allParameters);
 
   List<Parameter> _parameters() {
@@ -3062,6 +3118,7 @@ abstract class ModelElement extends Canonicalization
   Documentation __documentation() {
     return new Documentation.forElement(this);
   }
+
   Documentation get _documentation => _memoizer.memoized(__documentation);
 
   bool canOverride() =>
@@ -3497,8 +3554,10 @@ abstract class Nameable extends Memoizeable {
   String get name;
 
   Set<String> _namePieces() {
-    return new Set()..addAll(name.split(locationSplitter).where((s) => s.isNotEmpty));
+    return new Set()
+      ..addAll(name.split(locationSplitter).where((s) => s.isNotEmpty));
   }
+
   Set<String> get namePieces => _memoizer.memoized(_namePieces);
 }
 
@@ -3608,7 +3667,9 @@ class Package extends Canonicalization with Nameable, Warnable, Memoizeable {
     }
     return sources;
   }
-  Map<Source, SdkLibrary> get sdkLibrarySources => _memoizer.memoized(_sdkLibrarySources);
+
+  Map<Source, SdkLibrary> get sdkLibrarySources =>
+      _memoizer.memoized(_sdkLibrarySources);
 
   @override
   bool get isDocumented => true;
@@ -3656,9 +3717,8 @@ class Package extends Canonicalization with Nameable, Warnable, Memoizeable {
     allCanonicalModelElements.forEach((m) => m.documentation);
   }
 
-
-  Set<String> _allRootDirs() => new Set()
-    ..addAll(libraries.map((l) => l.packageMeta?.resolvedDir));
+  Set<String> _allRootDirs() =>
+      new Set()..addAll(libraries.map((l) => l.packageMeta?.resolvedDir));
   Set<String> get allRootDirs => _memoizer.memoized(_allRootDirs);
 
   /// Returns true if there's at least one library documented in the package
@@ -4102,7 +4162,9 @@ class Package extends Canonicalization with Nameable, Warnable, Memoizeable {
     }
     return null;
   }
-  Library findCanonicalLibraryFor(Element e) => _memoizer.memoized1(_findCanonicalLibraryFor, e);
+
+  Library findCanonicalLibraryFor(Element e) =>
+      _memoizer.memoized1(_findCanonicalLibraryFor, e);
 
   // TODO(jcollins-g): Revise when dart-lang/sdk#29600 is fixed.
   static Element getBasestElement(Element possibleMember) {
@@ -4253,10 +4315,14 @@ class Package extends Canonicalization with Nameable, Warnable, Memoizeable {
     });
     return _allModelElements;
   }
-  Iterable<ModelElement> get allModelElements => _memoizer.memoized(_allModelElements);
 
-  List<ModelElement> _allCanonicalModelElements() => allModelElements.where((e) => e.isCanonical).toList();
-  Iterable<ModelElement> get allCanonicalModelElements => _memoizer.memoized(_allCanonicalModelElements);
+  Iterable<ModelElement> get allModelElements =>
+      _memoizer.memoized(_allModelElements);
+
+  List<ModelElement> _allCanonicalModelElements() =>
+      allModelElements.where((e) => e.isCanonical).toList();
+  Iterable<ModelElement> get allCanonicalModelElements =>
+      _memoizer.memoized(_allCanonicalModelElements);
 
   String getMacro(String name) => _macros[name];
 
@@ -4419,7 +4485,8 @@ abstract class SourceCodeMixin {
     }
   }
 
-  String get sourceCode => _memoizer.memoized2(sourceCodeFor, element, config.addCrossdart);
+  String get sourceCode =>
+      _memoizer.memoized2(sourceCodeFor, element, config.addCrossdart);
 
   String get _crossdartPath {
     var node = element.computeNode();
@@ -4698,6 +4765,7 @@ class PackageBuilder extends Memoizeable {
     return new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
         PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
   }
+
   DartSdk get sdk => _memoizer.memoized(_sdk);
 
   EmbedderSdk _embedderSdk() {
@@ -4707,6 +4775,7 @@ class PackageBuilder extends Memoizeable {
     }
     return null;
   }
+
   EmbedderSdk get embedderSdk => _memoizer.memoized(_embedderSdk);
 
   static Map<String, List<fileSystem.Folder>> _calculatePackageMap(
@@ -4727,9 +4796,12 @@ class PackageBuilder extends Memoizeable {
   }
 
   Map<String, List<fileSystem.Folder>> _packageMap() {
-    return _calculatePackageMap(PhysicalResourceProvider.INSTANCE.getResource(rootDir.path));
+    return _calculatePackageMap(
+        PhysicalResourceProvider.INSTANCE.getResource(rootDir.path));
   }
-  Map<String, List<fileSystem.Folder>> get packageMap => _memoizer.memoized(_packageMap);
+
+  Map<String, List<fileSystem.Folder>> get packageMap =>
+      _memoizer.memoized(_packageMap);
 
   DartUriResolver _embedderResolver() => new DartUriResolver(embedderSdk);
   DartUriResolver get embedderResolver => _memoizer.memoized(_embedderResolver);
@@ -4765,6 +4837,7 @@ class PackageBuilder extends Memoizeable {
       ..analysisOptions = options
       ..sourceFactory = sourceFactory;
   }
+
   AnalysisContext get context => _memoizer.memoized(_context);
 
   PackageWarningOptions getWarningOptions() {
