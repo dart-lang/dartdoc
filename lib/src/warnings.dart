@@ -64,6 +64,10 @@ final Map<PackageWarning, PackageWarningHelpText> packageWarningText = const {
       PackageWarning.brokenLink,
       "brokenLink",
       "Dartdoc generated a link to a non-existent file"),
+  PackageWarning.unknownMacro: const PackageWarningHelpText(
+      PackageWarning.unknownMacro,
+      "unknownMacro",
+      "A comment reference contains an unknown macro"),
   PackageWarning.orphanedFile: const PackageWarningHelpText(
       PackageWarning.orphanedFile,
       "orphanedFile",
@@ -115,6 +119,7 @@ enum PackageWarning {
   noLibraryLevelDocs,
   categoryOrderGivesMissingPackageName,
   unresolvedDocReference,
+  unknownMacro,
   brokenLink,
   orphanedFile,
   unknownFile,
