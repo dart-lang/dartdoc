@@ -10,12 +10,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart'
-    show
-        AnnotatedNode,
-        Declaration,
-        FieldDeclaration,
-        VariableDeclaration,
-        VariableDeclarationList;
+    show AnnotatedNode, Declaration, Expression, FieldDeclaration, InstanceCreationExpression, VariableDeclaration, VariableDeclarationList;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/file_system.dart' as fileSystem;
@@ -24,6 +19,8 @@ import 'package:analyzer/source/package_map_resolver.dart';
 import 'package:analyzer/source/sdk_ext.dart';
 // TODO(jcollins-g): Stop using internal analyzer structures somehow.
 import 'package:analyzer/src/context/builder.dart';
+import 'package:analyzer/src/dart/constant/value.dart';
+import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
@@ -1566,15 +1563,27 @@ abstract class GetterSetterCombo implements ModelElement {
   ModelElement enclosingElement;
   bool get isInherited;
 
+  Expression get constantInitializer => (element as ConstVariableElement).constantInitializer;
+
+  String linkifyConstantValue(String constructorName, Element staticElement, String original) {
+    if (constantInitializer is! InstanceCreationExpression) return original;
+    String constructorName = (constantInitializer as InstanceCreationExpression).constructorName.toString();
+    Element staticElement = (constantInitializer as InstanceCreationExpression).staticElement;
+    Constructor target = new ModelElement.fromElement(staticElement, package);
+    Class targetClass = target.enclosingElement;
+    return original.replaceAll(constructorName, "${targetClass.linkedName}.${target.linkedName}");
+  }
+
   String _constantValueBase;
   String get constantValueBase {
     if (_constantValueBase == null) {
-      if (element.computeNode() != null) {
-        var v = element.computeNode().toSource();
-        if (v == null) return null;
-        var string = v.substring(v.indexOf('=') + 1, v.length).trim();
-        _constantValueBase =
-            const HtmlEscape(HtmlEscapeMode.UNKNOWN).convert(string);
+      if (constantInitializer != null) {
+        _constantValueBase = const HtmlEscape(HtmlEscapeMode.UNKNOWN).convert(constantInitializer.toString());
+        if (constantInitializer is InstanceCreationExpression) {
+          _constantValueBase = linkifyConstantValue((constantInitializer as InstanceCreationExpression).constructorName.toString(), (constantInitializer as InstanceCreationExpression).staticElement, _constantValueBase);
+        }
+        if (_constantValueBase.contains('Stuff'))
+          1+1;
       }
     }
     return _constantValueBase;

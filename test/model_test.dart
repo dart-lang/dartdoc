@@ -1877,6 +1877,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         cat,
         orangeConstant,
         prettyColorsConstant,
+        stuffConstant,
         deprecated;
 
     Field aStaticConstField, aName;
@@ -1888,6 +1889,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           exLibrary.constants.firstWhere((c) => c.name == 'COLOR_ORANGE');
       prettyColorsConstant =
           exLibrary.constants.firstWhere((c) => c.name == 'PRETTY_COLORS');
+      stuffConstant =
+          fakeLibrary.constants.firstWhere((c) => c.name == 'STUFF');
       cat = exLibrary.constants.firstWhere((c) => c.name == 'MY_CAT');
       deprecated =
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
