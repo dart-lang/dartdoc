@@ -2859,7 +2859,8 @@ abstract class ModelElement extends Canonicalization
   /// Returns the docs, stripped of their leading comments syntax.
   @override
   String get documentation {
-    return _injectMacros(documentationFrom.map((e) => e.documentationLocal).join('<p>'));
+    return _injectMacros(
+        documentationFrom.map((e) => e.documentationLocal).join('<p>'));
   }
 
   Library get definingLibrary => package.findOrCreateLibraryFor(element);
