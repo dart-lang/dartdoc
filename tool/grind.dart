@@ -189,7 +189,7 @@ Future buildTestPackageDocs() async {
 @Depends(buildTestPackageDocs)
 Future serveTestPackageDocs() async {
   log('launching dhttpd on port 8002 for SDK');
-  var launcher = new SubprocessLauncher('serve-sdk-docs');
+  var launcher = new SubprocessLauncher('serve-test-package-docs');
   await launcher.runStreamed(sdkBin('pub'), [
     'run',
     'dhttpd',
