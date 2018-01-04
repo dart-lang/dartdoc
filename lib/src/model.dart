@@ -1474,9 +1474,9 @@ class Field extends ModelElement
   bool get isInherited => _isInherited;
 
   @override
-  String get kind => 'property';
+  String get kind => isConst ? 'constant' : 'property';
 
-  String get typeName => "property";
+  String get typeName => kind;
 
   @override
   List<String> get annotations {
@@ -4806,7 +4806,7 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  String get kind => 'top-level property';
+  String get kind => isConst ? 'top-level constant' : 'top-level property';
 
   @override
   Set<String> get features => super.features..addAll(comboFeatures);

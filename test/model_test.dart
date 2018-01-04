@@ -797,10 +797,12 @@ void main() {
 
     test('get constants', () {
       expect(Apple.publicConstants, hasLength(1));
+      expect(Apple.publicConstants.first.kind, equals('constant'));
     });
 
     test('get instance fields', () {
       expect(Apple.publicInstanceProperties, hasLength(3));
+      expect(Apple.publicInstanceProperties.first.kind, equals('property'));
     });
 
     test('get inherited properties, including properties of Object', () {
@@ -1908,6 +1910,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has a fully qualified name', () {
       expect(greenConstant.fullyQualifiedName, 'ex.COLOR_GREEN');
+    });
+
+    test('has the correct kind', () {
+      expect(greenConstant.kind, equals('top-level constant'));
     });
 
     test('has enclosing element', () {
