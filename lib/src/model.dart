@@ -10,7 +10,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart'
-    show AnnotatedNode, Declaration, Expression, FieldDeclaration, InstanceCreationExpression, VariableDeclaration, VariableDeclarationList;
+    show
+        AnnotatedNode,
+        Declaration,
+        Expression,
+        FieldDeclaration,
+        InstanceCreationExpression,
+        VariableDeclaration,
+        VariableDeclarationList;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/file_system.dart' as fileSystem;
@@ -1562,12 +1569,16 @@ abstract class GetterSetterCombo implements ModelElement {
   ModelElement enclosingElement;
   bool get isInherited;
 
-  Expression get constantInitializer => (element as ConstVariableElement).constantInitializer;
+  Expression get constantInitializer =>
+      (element as ConstVariableElement).constantInitializer;
 
   String linkifyConstantValue(String original) {
     if (constantInitializer is! InstanceCreationExpression) return original;
-    String constructorName = (constantInitializer as InstanceCreationExpression).constructorName.toString();
-    Element staticElement = (constantInitializer as InstanceCreationExpression).staticElement;
+    String constructorName = (constantInitializer as InstanceCreationExpression)
+        .constructorName
+        .toString();
+    Element staticElement =
+        (constantInitializer as InstanceCreationExpression).staticElement;
     Constructor target = new ModelElement.fromElement(staticElement, package);
     Class targetClass = target.enclosingElement;
     // TODO(jcollins-g): this logic really should be integrated into Constructor,
@@ -1575,7 +1586,8 @@ abstract class GetterSetterCombo implements ModelElement {
     if (targetClass.name == target.name) {
       return original.replaceAll(constructorName, "${target.linkedName}");
     }
-    return original.replaceAll(constructorName, "${targetClass.linkedName}.${target.linkedName}");
+    return original.replaceAll(
+        constructorName, "${targetClass.linkedName}.${target.linkedName}");
   }
 
   String _constantValueBase;
@@ -1590,7 +1602,8 @@ abstract class GetterSetterCombo implements ModelElement {
   }
 
   String get constantValue => linkifyConstantValue(constantValueBase);
-  String get constantValueTruncated => linkifyConstantValue(truncateString(constantValueBase, 200));
+  String get constantValueTruncated =>
+      linkifyConstantValue(truncateString(constantValueBase, 200));
 
   /// Returns true if both accessors are synthetic.
   bool get hasSyntheticAccessors {
