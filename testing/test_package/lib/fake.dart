@@ -595,12 +595,6 @@ class SpecialList<E> extends ListBase<E> {
   void operator []=(int index, E value) {}
 }
 
-class AClassWithConstConstructor {
-  const AClassWithConstConstructor.Stuff(String one, String two);
-}
-
-const AClassWithConstConstructor STUFF = const AClassWithConstConstructor.Stuff('one', 'two');
-
 /// This inherits operators.
 class ExtraSpecialList<E> extends SpecialList {}
 

@@ -1877,7 +1877,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         cat,
         orangeConstant,
         prettyColorsConstant,
-        stuffConstant,
         deprecated;
 
     Field aStaticConstField, aName;
@@ -1889,8 +1888,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           exLibrary.constants.firstWhere((c) => c.name == 'COLOR_ORANGE');
       prettyColorsConstant =
           exLibrary.constants.firstWhere((c) => c.name == 'PRETTY_COLORS');
-      stuffConstant =
-          fakeLibrary.constants.firstWhere((c) => c.name == 'STUFF');
       cat = exLibrary.constants.firstWhere((c) => c.name == 'MY_CAT');
       deprecated =
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
@@ -1902,7 +1899,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('substrings of the constant values type are not linked (#1535)', () {
       expect(aName.constantValue,
-          'const ExtendedShortName(&quot;hello there&quot;)');
+          'const <a href="ex/ExtendedShortName/ExtendedShortName.html">ExtendedShortName</a>(&quot;hello there&quot;)');
     });
 
     test('constant field values are escaped', () {
@@ -1934,8 +1931,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           "const &lt;String&gt; [COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;]");
     });
 
-    test('MY_CAT is not linked', () {
-      expect(cat.constantValue, 'const ConstantCat(&#39;tabby&#39;)');
+    test('MY_CAT is linked', () {
+      expect(cat.constantValue, 'const <a href="ex/ConstantCat/ConstantCat.html">ConstantCat</a>(&#39;tabby&#39;)');
     });
 
     test('exported property', () {

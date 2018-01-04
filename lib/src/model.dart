@@ -19,7 +19,6 @@ import 'package:analyzer/source/package_map_resolver.dart';
 import 'package:analyzer/source/sdk_ext.dart';
 // TODO(jcollins-g): Stop using internal analyzer structures somehow.
 import 'package:analyzer/src/context/builder.dart';
-import 'package:analyzer/src/dart/constant/value.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
@@ -1565,33 +1564,33 @@ abstract class GetterSetterCombo implements ModelElement {
 
   Expression get constantInitializer => (element as ConstVariableElement).constantInitializer;
 
-  String linkifyConstantValue(String constructorName, Element staticElement, String original) {
+  String linkifyConstantValue(String original) {
     if (constantInitializer is! InstanceCreationExpression) return original;
     String constructorName = (constantInitializer as InstanceCreationExpression).constructorName.toString();
     Element staticElement = (constantInitializer as InstanceCreationExpression).staticElement;
     Constructor target = new ModelElement.fromElement(staticElement, package);
     Class targetClass = target.enclosingElement;
+    // TODO(jcollins-g): this logic really should be integrated into Constructor,
+    // but that's not trivial because of linkedName's usage.
+    if (targetClass.name == target.name) {
+      return original.replaceAll(constructorName, "${target.linkedName}");
+    }
     return original.replaceAll(constructorName, "${targetClass.linkedName}.${target.linkedName}");
   }
 
   String _constantValueBase;
   String get constantValueBase {
     if (_constantValueBase == null) {
-      if (constantInitializer != null) {
-        _constantValueBase = const HtmlEscape(HtmlEscapeMode.UNKNOWN).convert(constantInitializer.toString());
-        if (constantInitializer is InstanceCreationExpression) {
-          _constantValueBase = linkifyConstantValue((constantInitializer as InstanceCreationExpression).constructorName.toString(), (constantInitializer as InstanceCreationExpression).staticElement, _constantValueBase);
-        }
-        if (_constantValueBase.contains('Stuff'))
-          1+1;
-      }
+      _constantValueBase = constantInitializer?.toString();
+      if (_constantValueBase == null) _constantValueBase = '';
+      _constantValueBase =
+          const HtmlEscape(HtmlEscapeMode.UNKNOWN).convert(_constantValueBase);
     }
     return _constantValueBase;
   }
 
-  String get constantValue => constantValueBase;
-
-  String get constantValueTruncated => truncateString(constantValueBase, 200);
+  String get constantValue => linkifyConstantValue(constantValueBase);
+  String get constantValueTruncated => linkifyConstantValue(truncateString(constantValueBase, 200));
 
   /// Returns true if both accessors are synthetic.
   bool get hasSyntheticAccessors {
