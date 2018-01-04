@@ -7,6 +7,17 @@ library dartdoc.model_utils_test;
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:test/test.dart';
 
+class ValidatingMemoizerUser extends ValidatingMemoizer {
+  int foo = 0;
+  // These are actually not things you would ordinarily memoize, because
+  // they change.  But they are useful for testing.
+  List<int> _toMemoize() {
+    return [foo++];
+  }
+
+  List<int> get toMemoize => memoized(_toMemoize);
+}
+
 class MemoizerUser extends Memoizer {
   int foo = 0;
   // These are actually not things you would ordinarily memoize, because
@@ -130,7 +141,15 @@ void main() {
     });
   });
 
-  group('model_utils MethodMemoizer', () {
+  group('model_utils ValidatingMemoizer', () {
+    test('assert on changing underlying function', () {
+      var m = new ValidatingMemoizerUser();
+      expect(m.toMemoize.first, equals(0));
+      expect(() => m.toMemoize, throwsA(new isInstanceOf<AssertionError>()));
+    });
+  });
+
+  group('model_utils Memoizer', () {
     test('basic memoization and invalidation', () {
       var m = new MemoizerUser();
       expect(m.toMemoize, equals(0), reason: "initialization problem");
