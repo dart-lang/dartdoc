@@ -8,13 +8,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.31.0-alpha.2"
-  ansicolor:
-    dependency: transitive
-    description:
-      name: ansicolor
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.9"
   args:
     dependency: "direct main"
     description:
@@ -112,7 +105,7 @@ packages:
       name: grinder
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.0+3"
+    version: "0.8.1"
   html:
     dependency: "direct main"
     description:
@@ -204,13 +197,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.4"
-  mockable_filesystem:
-    dependency: transitive
-    description:
-      name: mockable_filesystem
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.3"
   multi_server_socket:
     dependency: transitive
     description:
@@ -365,13 +351,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
-  supports_color:
-    dependency: transitive
-    description:
-      name: supports_color
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.1"
   term_glyph:
     dependency: transitive
     description:
@@ -400,13 +379,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.5"
-  unscripted:
-    dependency: transitive
-    description:
-      name: unscripted
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.2"
   utf:
     dependency: transitive
     description:
