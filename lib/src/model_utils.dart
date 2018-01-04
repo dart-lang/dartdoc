@@ -196,7 +196,7 @@ class _HashableList extends UnmodifiableListView<dynamic> {
 /// memoized function is unchanging using [DeepCollectionEquality].  Still
 /// returns the cached value assuming the assertion passes.
 class ValidatingMemoizer extends Memoizer {
-  bool _assert_on_difference;
+  bool _assert_on_difference = false;
 
   ValidatingMemoizer() : super() {
     // Assignment within assert to take advantage of the expression only
