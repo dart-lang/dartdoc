@@ -2798,8 +2798,9 @@ abstract class ModelElement extends Canonicalization
                 message: message, extendedDebug: debugLines);
           }
         }
-        if (candidateLibraries.isNotEmpty)
+        if (candidateLibraries.isNotEmpty) {
           _foundLibrary = candidateLibraries.last;
+        }
       }
     } else {
       _foundLibrary = definingLibrary;
