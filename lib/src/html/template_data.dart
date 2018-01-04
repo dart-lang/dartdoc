@@ -69,9 +69,9 @@ abstract class TemplateData<T extends Documentable> {
 
   String _layoutTitle(String name, String kind, bool isDeprecated) {
     if (isDeprecated) {
-      return '${kind} <span class="deprecated">${name}</span>';
+      return '<span class="deprecated">${name}</span> ${kind}';
     } else {
-      return '${kind} ${name}';
+      return '${name} ${kind}';
     }
   }
 
