@@ -1278,6 +1278,28 @@
   }
  },
  {
+  "name": "withPrivateMacro",
+  "qualifiedName": "ex.Dog.withPrivateMacro",
+  "href": "ex/Dog/withPrivateMacro.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
+  "name": "withUndefinedMacro",
+  "qualifiedName": "ex.Dog.withUndefinedMacro",
+  "href": "ex/Dog/withUndefinedMacro.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
   "name": "E",
   "qualifiedName": "ex.E",
   "href": "ex/E-class.html",

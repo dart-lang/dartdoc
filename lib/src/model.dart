@@ -2718,7 +2718,7 @@ abstract class ModelElement extends Canonicalization
     return docFrom;
   }
 
-  String __documentationLocal() {
+  String _documentationLocal() {
     if (config.dropTextFrom.contains(element.library.name)) {
       return '';
     }
@@ -2726,16 +2726,20 @@ abstract class ModelElement extends Canonicalization
     _rawDocs = stripComments(_rawDocs) ?? '';
     _rawDocs = _injectExamples(_rawDocs);
     _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
-    _rawDocs = _injectMacros(_rawDocs);
     return _rawDocs;
   }
 
-  String get _documentationLocal => _memoizer.memoized(__documentationLocal);
+  /// Returns the documentation for this literal element unless
+  /// [config.dropTextFrom] indicates it should not be returned.  Macro
+  /// definitions are stripped, but macros themselves are not injected.  This
+  /// is a two stage process to avoid ordering problems.
+  String get documentationLocal => _memoizer.memoized(_documentationLocal);
 
   /// Returns the docs, stripped of their leading comments syntax.
   @override
   String get documentation {
-    return documentationFrom.map((e) => e._documentationLocal).join('<p>');
+    return _injectMacros(
+        documentationFrom.map((e) => e.documentationLocal).join('<p>'));
   }
 
   Library get definingLibrary => package.findOrCreateLibraryFor(element);
@@ -3376,7 +3380,7 @@ abstract class ModelElement extends Canonicalization
   ///
   /// Example:
   ///
-  /// You define the template anywhere in the comments like:
+  /// You define the template in any comment for a documentable entity like:
   ///
   ///     {@template foo}
   ///     Foo contents!
@@ -3397,7 +3401,11 @@ abstract class ModelElement extends Canonicalization
   String _injectMacros(String rawDocs) {
     final macroRegExp = new RegExp(r'{@macro\s+([^}]+)}');
     return rawDocs.replaceAllMapped(macroRegExp, (match) {
-      return package.getMacro(match[1]);
+      String macro = package.getMacro(match[1]);
+      if (macro == null) {
+        warn(PackageWarning.unknownMacro, message: match[1]);
+      }
+      return macro;
     });
   }
 
@@ -3414,7 +3422,7 @@ abstract class ModelElement extends Canonicalization
         r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?',
         multiLine: true);
     return rawDocs.replaceAllMapped(templateRegExp, (match) {
-      package.addMacro(match[1].trim(), match[2].trim());
+      package._addMacro(match[1].trim(), match[2].trim());
       return "";
     });
   }
@@ -3690,6 +3698,7 @@ class Package extends Canonicalization with Nameable, Warnable, Memoizeable {
   final Map<Element, Library> _elementToLibrary = {};
   final Map<String, String> _macros = {};
   bool allLibrariesAdded = false;
+  bool _macrosAdded = false;
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta,
       this._packageWarningOptions, this.context,
@@ -3712,10 +3721,10 @@ class Package extends Canonicalization with Nameable, Warnable, Memoizeable {
     });
 
     _implementors.values.forEach((l) => l.sort());
-    // Go through docs of every model element in package to prebuild the macros index
-    // TODO(jcollins-g): move index building into a cached-on-demand generation
-    // like most other bits in [Package].
-    allCanonicalModelElements.forEach((m) => m.documentation);
+    // Go through docs of every model element in package to prebuild the macros
+    // index.
+    allModelElements.forEach((m) => m.documentationLocal);
+    _macrosAdded = true;
   }
 
   Set<String> _allRootDirs() =>
@@ -3876,6 +3885,9 @@ class Package extends Canonicalization with Nameable, Warnable, Memoizeable {
           referredFrom = warnable.documentationFrom;
         }
         referredFromPrefix = 'in documentation inherited from';
+        break;
+      case PackageWarning.unknownMacro:
+        warningMessage = "undefined macro [${message}]";
         break;
       case PackageWarning.brokenLink:
         warningMessage = 'dartdoc generated a broken link to: ${message}';
@@ -4325,9 +4337,13 @@ class Package extends Canonicalization with Nameable, Warnable, Memoizeable {
   Iterable<ModelElement> get allCanonicalModelElements =>
       _memoizer.memoized(_allCanonicalModelElements);
 
-  String getMacro(String name) => _macros[name];
+  String getMacro(String name) {
+    assert(_macrosAdded);
+    return _macros[name];
+  }
 
-  void addMacro(String name, String content) {
+  void _addMacro(String name, String content) {
+    assert(!_macrosAdded);
     _macros[name] = content;
   }
 }
