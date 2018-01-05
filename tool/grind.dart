@@ -23,6 +23,10 @@ Directory get dartdocDocsDir =>
     tempdirsCache.memoized1(createTempSync, 'dartdoc');
 Directory get sdkDocsDir => tempdirsCache.memoized1(createTempSync, 'sdkdocs');
 Directory get flutterDir => tempdirsCache.memoized1(createTempSync, 'flutter');
+Directory get testPackage =>
+    new Directory(path.joinAll(['testing', 'test_package']));
+Directory get testPackageDocsDir =>
+    tempdirsCache.memoized1(createTempSync, 'test_package');
 
 /// Version of dartdoc we should use when making comparisons.
 String get dartdocOriginalBranch {
@@ -136,7 +140,7 @@ Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
       Platform.resolvedExecutable,
       [
         '--checked',
-        'bin/dartdoc.dart',
+        path.join('bin', 'dartdoc.dart'),
         '--output',
         '${sdkDocsDir.path}',
         '--sdk-docs',
@@ -144,6 +148,56 @@ Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
         '--show-progress',
       ],
       workingDirectory: cwd);
+}
+
+Future<List<Map>> _buildTestPackageDocs(
+    String outputDir, Future<String> futureCwd,
+    [String label]) async {
+  if (label == null) label = '';
+  if (label != '') label = '-$label';
+  var launcher = new SubprocessLauncher('build-test-package-docs$label');
+  await launcher.runStreamed(sdkBin('pub'), ['get'],
+      workingDirectory: testPackage.absolute.path);
+  String cwd = await futureCwd;
+  await launcher.runStreamed(sdkBin('pub'), ['get'], workingDirectory: cwd);
+  return await launcher.runStreamed(
+      Platform.resolvedExecutable,
+      [
+        '--checked',
+        path.join(cwd, 'bin', 'dartdoc.dart'),
+        '--output',
+        outputDir,
+        '--auto-include-dependencies',
+        '--example-path-prefix',
+        'examples',
+        '--include-source',
+        '--json',
+        '--pretty-index-json',
+        '--exclude',
+        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,meta',
+      ],
+      workingDirectory: testPackage.absolute.path);
+}
+
+@Task('Build generated test package docs (with inherited docs and source code)')
+Future buildTestPackageDocs() async {
+  await _buildTestPackageDocs(testPackageDocsDir.absolute.path,
+      new Future.value(Directory.current.path));
+}
+
+@Task('Serve test package docs locally with dhttpd on port 8002')
+@Depends(buildTestPackageDocs)
+Future serveTestPackageDocs() async {
+  log('launching dhttpd on port 8002 for SDK');
+  var launcher = new SubprocessLauncher('serve-test-package-docs');
+  await launcher.runStreamed(sdkBin('pub'), [
+    'run',
+    'dhttpd',
+    '--port',
+    '8002',
+    '--path',
+    '${testPackageDocsDir.absolute.path}',
+  ]);
 }
 
 @Task('Serve generated SDK docs locally with dhttpd on port 8000')
