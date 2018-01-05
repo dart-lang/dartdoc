@@ -1587,7 +1587,7 @@ abstract class GetterSetterCombo implements ModelElement {
       return original.replaceAll(constructorName, "${target.linkedName}");
     }
     return original.replaceAll(
-        constructorName, "${targetClass.linkedName}.${target.linkedName}");
+        "${targetClass.name}.${target.name}", "${targetClass.linkedName}.${target.linkedName}");
   }
 
   String _constantValueBase;
