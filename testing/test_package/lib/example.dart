@@ -343,6 +343,17 @@ class Dog implements Cat, E {
   /// {@macro foo}
   void withMacro2() {}
 
+  /// {@template private}
+  /// Private macro content
+  /// {@endtemplate}
+  void _macroDefinedPrivately() {}
+
+  /// Use a privately defined macro: {@macro private}
+  void withPrivateMacro() {}
+
+  /// Don't define this:  {@macro ThatDoesNotExist}
+  void withUndefinedMacro() {}
+
   void testGeneric(Map<String, dynamic> args) {}
 
   void testMethod(Iterable it) {}

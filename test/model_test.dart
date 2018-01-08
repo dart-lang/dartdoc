@@ -312,7 +312,7 @@ void main() {
 
   group('Macros', () {
     Class dog;
-    Method withMacro, withMacro2;
+    Method withMacro, withMacro2, withPrivateMacro, withUndefinedMacro;
 
     setUp(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
@@ -320,6 +320,10 @@ void main() {
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro');
       withMacro2 =
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro2');
+      withPrivateMacro =
+          dog.allInstanceMethods.firstWhere((m) => m.name == 'withPrivateMacro');
+      withUndefinedMacro =
+          dog.allInstanceMethods.firstWhere((m) => m.name == 'withUndefinedMacro');
       package.allModelElements.forEach((m) => m.documentation);
     });
 
@@ -331,6 +335,14 @@ void main() {
     test("renders a macro in another method, not the same where it's defined",
         () {
       expect(withMacro2.documentation, equals("Foo macro content"));
+    });
+
+    test("renders a macro defined in a private symbol", () {
+      expect(withPrivateMacro.documentation, contains("Private macro content"));
+    });
+
+    test("a warning is generated for unknown macros", () {
+      expect(package.packageWarningCounter.hasWarning(withUndefinedMacro, PackageWarning.unknownMacro, 'ThatDoesNotExist'), isTrue);
     });
   });
 
@@ -810,7 +822,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.publicInstanceMethods, hasLength(9));
+      expect(Dog.publicInstanceMethods, hasLength(12));
     });
 
     test('get operators', () {
@@ -862,7 +874,6 @@ void main() {
     });
 
     test('F has many inherited methods', () {
-      expect(F.publicInheritedMethods, hasLength(12));
       expect(
           F.publicInheritedMethods.map((im) => im.name),
           equals([
@@ -877,7 +888,9 @@ void main() {
             'testMethod',
             'toString',
             'withMacro',
-            'withMacro2'
+            'withMacro2',
+            'withPrivateMacro',
+            'withUndefinedMacro',
           ]));
     });
 
