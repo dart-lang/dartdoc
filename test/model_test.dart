@@ -809,10 +809,12 @@ void main() {
 
     test('get constants', () {
       expect(Apple.publicConstants, hasLength(1));
+      expect(Apple.publicConstants.first.kind, equals('constant'));
     });
 
     test('get instance fields', () {
       expect(Apple.publicInstanceProperties, hasLength(3));
+      expect(Apple.publicInstanceProperties.first.kind, equals('property'));
     });
 
     test('get inherited properties, including properties of Object', () {
@@ -1911,7 +1913,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('substrings of the constant values type are not linked (#1535)', () {
       expect(aName.constantValue,
-          'const ExtendedShortName(&quot;hello there&quot;)');
+          'const <a href="ex/ExtendedShortName/ExtendedShortName.html">ExtendedShortName</a>(&quot;hello there&quot;)');
     });
 
     test('constant field values are escaped', () {
@@ -1920,6 +1922,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has a fully qualified name', () {
       expect(greenConstant.fullyQualifiedName, 'ex.COLOR_GREEN');
+    });
+
+    test('has the correct kind', () {
+      expect(greenConstant.kind, equals('top-level constant'));
     });
 
     test('has enclosing element', () {
@@ -1943,8 +1949,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           "const &lt;String&gt; [COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;]");
     });
 
-    test('MY_CAT is not linked', () {
-      expect(cat.constantValue, 'const ConstantCat(&#39;tabby&#39;)');
+    test('MY_CAT is linked', () {
+      expect(cat.constantValue, 'const <a href="ex/ConstantCat/ConstantCat.html">ConstantCat</a>(&#39;tabby&#39;)');
     });
 
     test('exported property', () {

@@ -13,7 +13,9 @@ import 'package:analyzer/dart/ast/ast.dart'
     show
         AnnotatedNode,
         Declaration,
+        Expression,
         FieldDeclaration,
+        InstanceCreationExpression,
         VariableDeclaration,
         VariableDeclarationList;
 import 'package:analyzer/dart/element/element.dart';
@@ -24,6 +26,7 @@ import 'package:analyzer/source/package_map_resolver.dart';
 import 'package:analyzer/source/sdk_ext.dart';
 // TODO(jcollins-g): Stop using internal analyzer structures somehow.
 import 'package:analyzer/src/context/builder.dart';
+import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
@@ -1449,9 +1452,9 @@ class Field extends ModelElement
   bool get isInherited => _isInherited;
 
   @override
-  String get kind => 'property';
+  String get kind => isConst ? 'constant' : 'property';
 
-  String get typeName => "property";
+  String get typeName => kind;
 
   @override
   List<String> get annotations {
@@ -1540,21 +1543,36 @@ abstract class GetterSetterCombo implements ModelElement {
   ModelElement enclosingElement;
   bool get isInherited;
 
-  String _constantValueBase() {
-    if (element.computeNode() != null) {
-      var v = element.computeNode().toSource();
-      if (v == null) return null;
-      var string = v.substring(v.indexOf('=') + 1, v.length).trim();
-      return const HtmlEscape(HtmlEscapeMode.UNKNOWN).convert(string);
+  Expression get constantInitializer =>
+      (element as ConstVariableElement).constantInitializer;
+
+  String linkifyConstantValue(String original) {
+    if (constantInitializer is! InstanceCreationExpression) return original;
+    String constructorName = (constantInitializer as InstanceCreationExpression)
+        .constructorName
+        .toString();
+    Element staticElement =
+        (constantInitializer as InstanceCreationExpression).staticElement;
+    Constructor target = new ModelElement.fromElement(staticElement, package);
+    Class targetClass = target.enclosingElement;
+    // TODO(jcollins-g): this logic really should be integrated into Constructor,
+    // but that's not trivial because of linkedName's usage.
+    if (targetClass.name == target.name) {
+      return original.replaceAll(constructorName, "${target.linkedName}");
     }
-    return null;
+    return original.replaceAll(
+        "${targetClass.name}.${target.name}", "${targetClass.linkedName}.${target.linkedName}");
   }
 
+  String _constantValueBase() {
+    String result = constantInitializer?.toString() ?? '';
+    return const HtmlEscape(HtmlEscapeMode.UNKNOWN).convert(result);
+  }
+
+  String get constantValue => linkifyConstantValue(constantValueBase);
+  String get constantValueTruncated =>
+      linkifyConstantValue(truncateString(constantValueBase, 200));
   String get constantValueBase => _memoizer.memoized(_constantValueBase);
-
-  String get constantValue => constantValueBase;
-
-  String get constantValueTruncated => truncateString(constantValueBase, 200);
 
   /// Returns true if both accessors are synthetic.
   bool get hasSyntheticAccessors {
@@ -4632,7 +4650,7 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  String get kind => 'top-level property';
+  String get kind => isConst ? 'top-level constant' : 'top-level property';
 
   @override
   Set<String> get features => super.features..addAll(comboFeatures);

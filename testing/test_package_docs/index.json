@@ -335,7 +335,7 @@
   "name": "n",
   "qualifiedName": "ex.Apple.n",
   "href": "ex/Apple/n-constant.html",
-  "type": "property",
+  "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Apple",
@@ -544,7 +544,7 @@
   "name": "COLOR",
   "qualifiedName": "ex.COLOR",
   "href": "ex/COLOR-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
@@ -555,7 +555,7 @@
   "name": "COLOR_GREEN",
   "qualifiedName": "ex.COLOR_GREEN",
   "href": "ex/COLOR_GREEN-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
@@ -566,7 +566,7 @@
   "name": "COLOR_ORANGE",
   "qualifiedName": "ex.COLOR_ORANGE",
   "href": "ex/COLOR_ORANGE-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
@@ -577,7 +577,7 @@
   "name": "COMPLEX_COLOR",
   "qualifiedName": "ex.COMPLEX_COLOR",
   "href": "ex/COMPLEX_COLOR-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
@@ -1050,7 +1050,7 @@
   "name": "aName",
   "qualifiedName": "ex.Dog.aName",
   "href": "ex/Dog/aName-constant.html",
-  "type": "property",
+  "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Dog",
@@ -1072,7 +1072,7 @@
   "name": "aStaticConstField",
   "qualifiedName": "ex.Dog.aStaticConstField",
   "href": "ex/Dog/aStaticConstField-constant.html",
-  "type": "property",
+  "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Dog",
@@ -1831,7 +1831,7 @@
   "name": "MY_CAT",
   "qualifiedName": "ex.MY_CAT",
   "href": "ex/MY_CAT-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
@@ -2172,7 +2172,7 @@
   "name": "PRETTY_COLORS",
   "qualifiedName": "ex.PRETTY_COLORS",
   "href": "ex/PRETTY_COLORS-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
@@ -2535,7 +2535,7 @@
   "name": "ellipse",
   "qualifiedName": "ex.ShapeType.ellipse",
   "href": "ex/ShapeType/ellipse-constant.html",
-  "type": "property",
+  "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ShapeType",
@@ -2579,7 +2579,7 @@
   "name": "rect",
   "qualifiedName": "ex.ShapeType.rect",
   "href": "ex/ShapeType/rect-constant.html",
-  "type": "property",
+  "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ShapeType",
@@ -3470,7 +3470,7 @@
   "name": "deprecated",
   "qualifiedName": "ex.deprecated",
   "href": "ex/deprecated-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
@@ -3536,7 +3536,7 @@
   "name": "incorrectDocReference",
   "qualifiedName": "ex.incorrectDocReference",
   "href": "ex/incorrectDocReference-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
@@ -3547,7 +3547,7 @@
   "name": "incorrectDocReferenceFromEx",
   "qualifiedName": "ex.incorrectDocReferenceFromEx",
   "href": "ex/incorrectDocReferenceFromEx-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
@@ -4060,7 +4060,7 @@
   "name": "CUSTOM_CLASS",
   "qualifiedName": "fake.CUSTOM_CLASS",
   "href": "fake/CUSTOM_CLASS-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -4566,7 +4566,7 @@
   "name": "DOWN",
   "qualifiedName": "fake.DOWN",
   "href": "fake/DOWN-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -4621,7 +4621,7 @@
   "name": "bar",
   "qualifiedName": "fake.DocumentWithATable.bar",
   "href": "fake/DocumentWithATable/bar-constant.html",
-  "type": "property",
+  "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "DocumentWithATable",
@@ -4632,7 +4632,7 @@
   "name": "foo",
   "qualifiedName": "fake.DocumentWithATable.foo",
   "href": "fake/DocumentWithATable/foo-constant.html",
-  "type": "property",
+  "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "DocumentWithATable",
@@ -4841,7 +4841,7 @@
   "name": "BAR",
   "qualifiedName": "fake.Foo2.BAR",
   "href": "fake/Foo2/BAR-constant.html",
-  "type": "property",
+  "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Foo2",
@@ -4852,7 +4852,7 @@
   "name": "BAZ",
   "qualifiedName": "fake.Foo2.BAZ",
   "href": "fake/Foo2/BAZ-constant.html",
-  "type": "property",
+  "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "Foo2",
@@ -5424,7 +5424,7 @@
   "name": "ANSWER",
   "qualifiedName": "fake.LongFirstLine.ANSWER",
   "href": "fake/LongFirstLine/ANSWER-constant.html",
-  "type": "property",
+  "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "LongFirstLine",
@@ -5435,7 +5435,7 @@
   "name": "THING",
   "qualifiedName": "fake.LongFirstLine.THING",
   "href": "fake/LongFirstLine/THING-constant.html",
-  "type": "property",
+  "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "LongFirstLine",
@@ -5688,7 +5688,7 @@
   "name": "NAME_SINGLEUNDERSCORE",
   "qualifiedName": "fake.NAME_SINGLEUNDERSCORE",
   "href": "fake/NAME_SINGLEUNDERSCORE-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -5699,7 +5699,7 @@
   "name": "NAME_WITH_TWO_UNDERSCORES",
   "qualifiedName": "fake.NAME_WITH_TWO_UNDERSCORES",
   "href": "fake/NAME_WITH_TWO_UNDERSCORES-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -6062,7 +6062,7 @@
   "name": "PI",
   "qualifiedName": "fake.PI",
   "href": "fake/PI-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -6865,7 +6865,7 @@
   "name": "UP",
   "qualifiedName": "fake.UP",
   "href": "fake/UP-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -6975,7 +6975,7 @@
   "name": "ZERO",
   "qualifiedName": "fake.ZERO",
   "href": "fake/ZERO-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -7052,7 +7052,7 @@
   "name": "greatAnnotation",
   "qualifiedName": "fake.greatAnnotation",
   "href": "fake/greatAnnotation-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -7063,7 +7063,7 @@
   "name": "greatestAnnotation",
   "qualifiedName": "fake.greatestAnnotation",
   "href": "fake/greatestAnnotation-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -7074,7 +7074,7 @@
   "name": "incorrectDocReference",
   "qualifiedName": "fake.incorrectDocReference",
   "href": "fake/incorrectDocReference-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -7195,7 +7195,7 @@
   "name": "required",
   "qualifiedName": "fake.required",
   "href": "fake/required-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
@@ -7250,7 +7250,7 @@
   "name": "testingCodeSyntaxInOneLiners",
   "qualifiedName": "fake.testingCodeSyntaxInOneLiners",
   "href": "fake/testingCodeSyntaxInOneLiners-constant.html",
-  "type": "top-level property",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
