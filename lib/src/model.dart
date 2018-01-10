@@ -130,7 +130,8 @@ abstract class Inheritable implements ModelElement {
 
   @override
   ModelElement _canonicalModelElement() {
-    return canonicalEnclosingElement?.allCanonicalModelElements?.firstWhere((m) => m.name == name, orElse: () => null);
+    return canonicalEnclosingElement?.allCanonicalModelElements
+        ?.firstWhere((m) => m.name == name, orElse: () => null);
   }
 
   Class _canonicalEnclosingElement() {
@@ -613,6 +614,7 @@ class Class extends ModelElement
   @override
   ModelElement get enclosingElement => library;
 
+  @override
   String get fileName => "${name}-class.html";
 
   String get fullkind {
@@ -659,9 +661,8 @@ class Class extends ModelElement
 
   @override
   String get href {
-    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
-    if (canonicalLibrary != library)
-      1+1;
+    if (!identical(canonicalModelElement, this))
+      return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
     return '${library.dirName}/$fileName';
@@ -1141,7 +1142,8 @@ class Constructor extends ModelElement
 
   @override
   String get href {
-    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    if (!identical(canonicalModelElement, this))
+      return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
     return '${enclosingElement.library.dirName}/${enclosingElement.name}/$name.html';
@@ -1357,7 +1359,8 @@ class EnumField extends Field {
 
   @override
   String get href {
-    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    if (!identical(canonicalModelElement, this))
+      return canonicalModelElement?.href;
     assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingElement == enclosingElement);
@@ -1435,7 +1438,8 @@ class Field extends ModelElement
 
   @override
   String get href {
-    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    if (!identical(canonicalModelElement, this))
+      return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalEnclosingElement == enclosingElement);
     assert(canonicalLibrary == library);
@@ -1499,6 +1503,7 @@ class Field extends ModelElement
 
   FieldElement get _field => (element as FieldElement);
 
+  @override
   String get fileName => isConst ? '$name-constant.html' : '$name.html';
 
   String _sourceCode() {
@@ -1565,8 +1570,8 @@ abstract class GetterSetterCombo implements ModelElement {
     if (targetClass.name == target.name) {
       return original.replaceAll(constructorName, "${target.linkedName}");
     }
-    return original.replaceAll(
-        "${targetClass.name}.${target.name}", "${targetClass.linkedName}.${target.linkedName}");
+    return original.replaceAll("${targetClass.name}.${target.name}",
+        "${targetClass.linkedName}.${target.linkedName}");
   }
 
   String _constantValueBase() {
@@ -1911,6 +1916,7 @@ class Library extends ModelElement {
 
   Iterable<Class> get publicExceptions => filterNonPublic(exceptions);
 
+  @override
   String get fileName => '$dirName-library.html';
 
   List<ModelFunction> _functions() {
@@ -1948,7 +1954,8 @@ class Library extends ModelElement {
 
   @override
   String get href {
-    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    if (!identical(canonicalModelElement, this))
+      return canonicalModelElement?.href;
     return '${library.dirName}/$fileName';
   }
 
@@ -2280,8 +2287,6 @@ class Method extends ModelElement
     return _enclosingClass;
   }
 
-  String get fileName => "${name}.html";
-
   String get fullkind {
     if (_method.isAbstract) return 'abstract $kind';
     return kind;
@@ -2289,7 +2294,8 @@ class Method extends ModelElement
 
   @override
   String get href {
-    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    if (!identical(canonicalModelElement, this))
+      return canonicalModelElement?.href;
     assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingElement == enclosingElement);
@@ -2705,12 +2711,14 @@ abstract class ModelElement extends Canonicalization
     if (enclosingElement is Class) {
       preferredClass = enclosingElement;
     }
-    return package.findCanonicalModelElementFor(element, preferredClass: preferredClass);
+    return package.findCanonicalModelElementFor(element,
+        preferredClass: preferredClass);
   }
 
   // Returns the canonical ModelElement for this ModelElement, or null
   // if there isn't one.
-  ModelElement get canonicalModelElement => _memoizer.memoized(_canonicalModelElement);
+  ModelElement get canonicalModelElement =>
+      _memoizer.memoized(_canonicalModelElement);
 
   // TODO(jcollins-g): untangle when mixins can call super
   @override
@@ -2906,6 +2914,8 @@ abstract class ModelElement extends Canonicalization
     }
     return '';
   }
+
+  String get fileName => "${name}.html";
 
   /// Returns the fully qualified name.
   ///
@@ -3576,11 +3586,10 @@ class ModelFunctionTyped extends ModelElement
   @override
   ModelElement get enclosingElement => library;
 
-  String get fileName => "$name.html";
-
   @override
   String get href {
-    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    if (!identical(canonicalModelElement, this))
+      return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
     return '${library.dirName}/$fileName';
@@ -4652,7 +4661,8 @@ class TopLevelVariable extends ModelElement
 
   @override
   String get href {
-    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    if (!identical(canonicalModelElement, this))
+      return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
     return '${library.dirName}/$fileName';
@@ -4682,6 +4692,7 @@ class TopLevelVariable extends ModelElement
     return docs;
   }
 
+  @override
   String get fileName => isConst ? '$name-constant.html' : '$name.html';
 
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
@@ -4695,8 +4706,6 @@ class Typedef extends ModelElement
 
   @override
   ModelElement get enclosingElement => library;
-
-  String get fileName => '$name.html';
 
   @override
   String get nameWithGenerics => '$name${super.genericParameters}';
@@ -4715,7 +4724,8 @@ class Typedef extends ModelElement
 
   @override
   String get href {
-    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    if (!identical(canonicalModelElement, this))
+      return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
     return '${library.dirName}/$fileName';
@@ -4750,7 +4760,8 @@ class TypeParameter extends ModelElement {
 
   @override
   String get href {
-    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    if (!identical(canonicalModelElement, this))
+      return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
     return '${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
