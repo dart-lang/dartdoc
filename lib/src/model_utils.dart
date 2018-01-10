@@ -14,7 +14,7 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model.dart';
-import 'package:quiver_hashcode/hashcode.dart';
+import 'package:quiver/core.dart';
 
 import 'config.dart';
 

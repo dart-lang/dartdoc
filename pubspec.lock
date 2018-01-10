@@ -260,6 +260,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.2"
+  quiver:
+    dependency: "direct main"
+    description:
+      name: quiver
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.27.0"
   quiver_hashcode:
     dependency: transitive
     description:
@@ -408,4 +415,4 @@ packages:
     source: hosted
     version: "2.1.13"
 sdks:
-  dart: ">=1.23.0 <=2.0.0-dev.15.0"
+  dart: ">=1.23.0 <=2.0.0-edge.f5580e540847b411bd10b6836a9f62b1c27f076f"

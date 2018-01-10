@@ -1,3 +1,16 @@
+## 0.15.1
+* Add SDK warning comparison to grind script (#1572)
+* Improve rendering of inline `<code>` (#1573)
+* Rename "Source Code" to "Implementation" (#1580)
+* Make page titles more prominent (#1581)
+* Detect macros declared in non-public symbols (#1584)
+* Const value cosmetic improvements with some restored linking (#1585)
+* Update to latest versions of args, resource, grinder (#1566, #1579)
+* Update to grinder scripts to serve flutter, SDK, and the test
+  package locally for testing (#1570, #1578)
+* Begin using a Memoizer class to consistently handle caching
+  in dartdoc (#1577, #1575, #1571)
+
 ## 0.15.0+1
 * Move sdk_footer_text to resources directory for compatibility
   with SDK build system (#1563)
