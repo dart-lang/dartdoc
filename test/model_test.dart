@@ -1889,6 +1889,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Constant', () {
     TopLevelVariable greenConstant,
         cat,
+        customClassPrivate,
         orangeConstant,
         prettyColorsConstant,
         deprecated;
@@ -1906,6 +1907,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       deprecated =
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
       Class Dog = exLibrary.allClasses.firstWhere((c) => c.name == 'Dog');
+      customClassPrivate = fakeLibrary.constants.firstWhere((c) => c.name == 'CUSTOM_CLASS_PRIVATE');
       aStaticConstField =
           Dog.allFields.firstWhere((f) => f.name == 'aStaticConstField');
       aName = Dog.allFields.firstWhere((f) => f.name == 'aName');
@@ -1918,6 +1920,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('constant field values are escaped', () {
       expect(aStaticConstField.constantValue, '&quot;A Constant Dog&quot;');
+    });
+
+    test('privately constructed constants are unlinked', () {
+      expect(customClassPrivate.constantValue, 'const _APrivateConstClass()');
     });
 
     test('has a fully qualified name', () {
