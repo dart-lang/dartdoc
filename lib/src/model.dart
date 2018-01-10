@@ -128,7 +128,12 @@ abstract class Inheritable implements ModelElement {
   ModelElement get definingEnclosingElement =>
       _memoizer.memoized(_definingEnclosingElement);
 
-  ModelElement _canonicalEnclosingElement() {
+  @override
+  ModelElement _canonicalModelElement() {
+    return canonicalEnclosingElement?.allCanonicalModelElements?.firstWhere((m) => m.name == name, orElse: () => null);
+  }
+
+  Class _canonicalEnclosingElement() {
     Class canonicalEnclosingClass;
     Element searchElement = element;
     if (isInherited) {
@@ -180,7 +185,7 @@ abstract class Inheritable implements ModelElement {
     return canonicalEnclosingClass;
   }
 
-  ModelElement get canonicalEnclosingElement =>
+  Class get canonicalEnclosingElement =>
       _memoizer.memoized(_canonicalEnclosingElement);
 
   List<Class> get inheritance {
@@ -654,8 +659,12 @@ class Class extends ModelElement
 
   @override
   String get href {
-    if (canonicalLibrary == null) return null;
-    return '${canonicalLibrary.dirName}/$fileName';
+    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    if (canonicalLibrary != library)
+      1+1;
+    assert(canonicalLibrary != null);
+    assert(canonicalLibrary == library);
+    return '${library.dirName}/$fileName';
   }
 
   /// Returns all the implementors of this class.
@@ -1132,8 +1141,10 @@ class Constructor extends ModelElement
 
   @override
   String get href {
-    if (canonicalLibrary == null) return null;
-    return '${canonicalLibrary.dirName}/${_constructor.enclosingElement.name}/$name.html';
+    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    assert(canonicalLibrary != null);
+    assert(canonicalLibrary == library);
+    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$name.html';
   }
 
   @override
@@ -1346,9 +1357,11 @@ class EnumField extends Field {
 
   @override
   String get href {
-    if (canonicalLibrary == null || canonicalEnclosingElement == null)
-      return null;
-    return '${canonicalEnclosingElement.library.dirName}/${(canonicalEnclosingElement as Class).fileName}';
+    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
+    assert(canonicalLibrary == library);
+    assert(canonicalEnclosingElement == enclosingElement);
+    return '${enclosingElement.library.dirName}/${(enclosingElement as Class).fileName}';
   }
 
   @override
@@ -1422,19 +1435,11 @@ class Field extends ModelElement
 
   @override
   String get href {
-    String retval;
-    if (canonicalLibrary == null) return null;
-    if (enclosingElement is Class) {
-      if (canonicalEnclosingElement == null) return null;
-      retval =
-          '${canonicalEnclosingElement.canonicalLibrary.dirName}/${canonicalEnclosingElement.name}/$_fileName';
-    } else if (enclosingElement is Library) {
-      retval = '${canonicalLibrary.dirName}/$_fileName';
-    } else {
-      throw new StateError(
-          '$name is not in a class or library, instead it is a ${enclosingElement.element}');
-    }
-    return retval;
+    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    assert(canonicalLibrary != null);
+    assert(canonicalEnclosingElement == enclosingElement);
+    assert(canonicalLibrary == library);
+    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
   }
 
   @override
@@ -1494,7 +1499,7 @@ class Field extends ModelElement
 
   FieldElement get _field => (element as FieldElement);
 
-  String get _fileName => isConst ? '$name-constant.html' : '$name.html';
+  String get fileName => isConst ? '$name-constant.html' : '$name.html';
 
   String _sourceCode() {
     // We could use a set to figure the dupes out, but that would lose ordering.
@@ -1943,8 +1948,8 @@ class Library extends ModelElement {
 
   @override
   String get href {
-    if (canonicalLibrary == null) return null;
-    return '${canonicalLibrary.dirName}/$fileName';
+    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    return '${library.dirName}/$fileName';
   }
 
   InheritanceManager _inheritanceManager() => new InheritanceManager(element);
@@ -2284,9 +2289,11 @@ class Method extends ModelElement
 
   @override
   String get href {
-    if (canonicalLibrary == null || canonicalEnclosingElement == null)
-      return null;
-    return '${canonicalEnclosingElement.canonicalLibrary.dirName}/${canonicalEnclosingElement.name}/${fileName}';
+    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
+    assert(canonicalLibrary == library);
+    assert(canonicalEnclosingElement == enclosingElement);
+    return '${enclosingElement.library.dirName}/${enclosingElement.name}/${fileName}';
   }
 
   @override
@@ -2692,6 +2699,18 @@ abstract class ModelElement extends Canonicalization
 
   bool get canHaveParameters =>
       element is ExecutableElement || element is FunctionTypedElement;
+
+  ModelElement _canonicalModelElement() {
+    Class preferredClass;
+    if (enclosingElement is Class) {
+      preferredClass = enclosingElement;
+    }
+    return package.findCanonicalModelElementFor(element, preferredClass: preferredClass);
+  }
+
+  // Returns the canonical ModelElement for this ModelElement, or null
+  // if there isn't one.
+  ModelElement get canonicalModelElement => _memoizer.memoized(_canonicalModelElement);
 
   // TODO(jcollins-g): untangle when mixins can call super
   @override
@@ -3561,8 +3580,10 @@ class ModelFunctionTyped extends ModelElement
 
   @override
   String get href {
-    if (canonicalLibrary == null) return null;
-    return '${canonicalLibrary.dirName}/$fileName';
+    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    assert(canonicalLibrary != null);
+    assert(canonicalLibrary == library);
+    return '${library.dirName}/$fileName';
   }
 
   @override
@@ -4180,6 +4201,9 @@ class Package extends Canonicalization with Nameable, Warnable, Memoizeable {
     if (e is PropertyAccessorElement) {
       searchElement = e.variable;
     }
+    if (e is GenericFunctionTypeElement) {
+      searchElement = e.enclosingElement;
+    }
 
     for (Library library in publicLibraries) {
       if (library.modelElementsMap.containsKey(searchElement)) {
@@ -4209,6 +4233,10 @@ class Package extends Canonicalization with Nameable, Warnable, Memoizeable {
   /// Tries to find a canonical ModelElement for this element.  If we know
   /// this element is related to a particular class, pass preferredClass to
   /// disambiguate.
+  ///
+  /// This doesn't know anything about [Package.inheritThrough] and probably
+  /// shouldn't, so using it with [Inheritable]s without special casing is
+  /// not advised.
   ModelElement findCanonicalModelElementFor(Element e, {Class preferredClass}) {
     assert(allLibrariesAdded);
     Library lib = findCanonicalLibraryFor(e);
@@ -4293,7 +4321,9 @@ class Package extends Canonicalization with Nameable, Warnable, Memoizeable {
       }
 
       assert(matches.length <= 1);
-      if (!matches.isEmpty) modelElement = matches.first;
+      if (matches.isNotEmpty) {
+        modelElement = matches.first;
+      }
     } else {
       if (lib != null) {
         Accessor getter;
@@ -4429,19 +4459,7 @@ class Parameter extends ModelElement implements EnclosedElement {
 
   @override
   String get href {
-    if (canonicalLibrary == null) return null;
-    var p = _parameter.enclosingElement;
-
-    if (p is FunctionElement) {
-      return '${canonicalLibrary.dirName}/${p.name}.html';
-    } else {
-      // TODO: why is this logic here?
-      var name = Operator.friendlyNames.containsKey(p.name)
-          ? Operator.friendlyNames[p.name]
-          : p.name;
-      return '${canonicalLibrary.dirName}/${p.enclosingElement.name}/' +
-          '${name}.html#${htmlId}';
-    }
+    throw new StateError('href not implemented for parameters');
   }
 
   @override
@@ -4634,8 +4652,10 @@ class TopLevelVariable extends ModelElement
 
   @override
   String get href {
-    if (canonicalLibrary == null) return null;
-    return '${canonicalLibrary.dirName}/$_fileName';
+    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    assert(canonicalLibrary != null);
+    assert(canonicalLibrary == library);
+    return '${library.dirName}/$fileName';
   }
 
   @override
@@ -4662,7 +4682,7 @@ class TopLevelVariable extends ModelElement
     return docs;
   }
 
-  String get _fileName => isConst ? '$name-constant.html' : '$name.html';
+  String get fileName => isConst ? '$name-constant.html' : '$name.html';
 
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 }
@@ -4695,8 +4715,10 @@ class Typedef extends ModelElement
 
   @override
   String get href {
-    if (canonicalLibrary == null) return null;
-    return '${canonicalLibrary.dirName}/$fileName';
+    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    assert(canonicalLibrary != null);
+    assert(canonicalLibrary == library);
+    return '${library.dirName}/$fileName';
   }
 
   // Food for mustache.
@@ -4728,8 +4750,10 @@ class TypeParameter extends ModelElement {
 
   @override
   String get href {
-    if (canonicalLibrary == null) return null;
-    return '${canonicalLibrary.dirName}/${_typeParameter.enclosingElement.name}/$name';
+    if (!identical(canonicalModelElement, this)) return canonicalModelElement?.href;
+    assert(canonicalLibrary != null);
+    assert(canonicalLibrary == library);
+    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
   }
 
   @override
