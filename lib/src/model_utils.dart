@@ -70,6 +70,13 @@ bool hasPrivateName(Element e) {
   if (e.name.startsWith('_')) {
     return true;
   }
+  // GenericFunctionTypeElements have the name we care about in the enclosing
+  // element.
+  if (e is GenericFunctionTypeElement) {
+    if (e.enclosingElement.name.startsWith('_')) {
+      return true;
+    }
+  }
   if (e is LibraryElement &&
       (e.identifier.startsWith('dart:_') ||
           ['dart:nativewrappers'].contains(e.identifier))) {

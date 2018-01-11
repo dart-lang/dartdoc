@@ -160,6 +160,12 @@ class ConstantClass {
   ConstantClass.notConstant(this.value);
 }
 
+class _APrivateConstClass {
+  const _APrivateConstClass();
+}
+
+const _APrivateConstClass CUSTOM_CLASS_PRIVATE = const _APrivateConstClass();
+
 // No dart docs on purpose. Also, a non-primitive const class.
 const ConstantClass CUSTOM_CLASS = const ConstantClass('custom');
 
