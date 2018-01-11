@@ -266,8 +266,9 @@ class Memoizer {
 
   /// Calls and caches the return value of [f]() if not in the cache, then
   /// returns the cached value of [f]().
-  R memoized<R>(Function f) {
-    _HashableList key = new _HashableList([f]);
+  R memoized<R>(Function f, {String altKey}) {
+    Object obj = altKey ?? f;
+    _HashableList key = new _HashableList([obj]);
     return _cacheIfAbsent(key, f);
   }
 
