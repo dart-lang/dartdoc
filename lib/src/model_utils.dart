@@ -172,15 +172,17 @@ String crossdartifySource(
 
 /// An UnmodifiableListView that computes equality and hashCode based on the
 /// equality and hashCode of its contained objects.
-class _HashableList extends UnmodifiableListView<dynamic> {
-  _HashableList(Iterable<dynamic> iterable) : super(iterable);
+class _HashableList {
+  final List _source;
+  int _hashCache;
+  _HashableList(this._source);
 
   @override
   bool operator ==(other) {
     if (other is _HashableList) {
-      if (this.length == other.length) {
-        for (var index = 0; index < length; ++index) {
-          if (this[index] != other[index]) return false;
+      if (_source.length == other._source.length) {
+        for (var index = 0; index < _source.length; ++index) {
+          if (_source[index] != other._source[index]) return false;
         }
         return true;
       }
@@ -189,7 +191,7 @@ class _HashableList extends UnmodifiableListView<dynamic> {
   }
 
   @override
-  get hashCode => hashObjects(this);
+  get hashCode => _hashCache ??= hashObjects(_source);
 }
 
 /// Like [Memoizer], except in checked mode will validate that the value of the
@@ -252,11 +254,11 @@ class ValidatingMemoizer extends Memoizer {
 /// ```
 class Memoizer {
   /// Map of a function and its positional parameters (if any), to a value.
-  Map<_HashableList, dynamic> _memoizationTable = new Map();
+  final Map<_HashableList, dynamic> _memoizationTable = new HashMap();
 
   /// Reset the memoization table, forcing calls of the underlying functions.
   void invalidateMemos() {
-    _memoizationTable = new Map();
+    _memoizationTable.clear();
   }
 
   /// A wrapper around putIfAbsent, exposed to allow overrides.
