@@ -2921,7 +2921,8 @@ abstract class ModelElement extends Canonicalization
   ///
   /// For example: libraryName.className.methodName
   @override
-  String get fullyQualifiedName => _memoizer.memoized(_buildFullyQualifiedName);
+  String get fullyQualifiedName => _memoizer.memoized(_buildFullyQualifiedName,
+      altKey: 'fullyQualifiedName');
 
   String _fullyQualifiedNameWithoutLibrary() {
     // Remember, periods are legal in library names.
@@ -2933,7 +2934,8 @@ abstract class ModelElement extends Canonicalization
   // library.fullyQualifiedName seems somehow to break things.
   //String get fullyQualifiedNameWithoutLibrary => _memoizer.memoized2(fullyQualifiedName.replaceFirst, "${library.fullyQualifiedName}.", '');
   String get fullyQualifiedNameWithoutLibrary =>
-      _memoizer.memoized(_fullyQualifiedNameWithoutLibrary);
+      _memoizer.memoized(_fullyQualifiedNameWithoutLibrary,
+          altKey: 'fullyQualifiedNameWithoutLibrary');
 
   String get sourceFileName => element.source.fullName;
 
