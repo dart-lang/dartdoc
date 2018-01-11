@@ -4068,6 +4068,17 @@
   }
  },
  {
+  "name": "CUSTOM_CLASS_PRIVATE",
+  "qualifiedName": "fake.CUSTOM_CLASS_PRIVATE",
+  "href": "fake/CUSTOM_CLASS_PRIVATE-constant.html",
+  "type": "top-level constant",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "Callback2",
   "qualifiedName": "fake.Callback2",
   "href": "fake/Callback2.html",

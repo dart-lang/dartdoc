@@ -21,6 +21,8 @@ class ElementType extends Privacy {
 
   DartType get type => _type;
 
+  Library get library => element.library;
+
   bool get isDynamic => _type.isDynamic;
 
   bool get isFunctionType => (_type is FunctionType);
