@@ -135,9 +135,9 @@ abstract class Inheritable implements ModelElement {
   }
 
   @override
-
   ModelElement _buildCanonicalModelElement() {
-    return canonicalEnclosingElement?.allCanonicalModelElements?.firstWhere((m) => m.name == name, orElse: () => null);
+    return canonicalEnclosingElement?.allCanonicalModelElements
+        ?.firstWhere((m) => m.name == name, orElse: () => null);
   }
 
   Class get canonicalEnclosingElement {
@@ -155,7 +155,7 @@ abstract class Inheritable implements ModelElement {
           // Filter out mixins.
           if (c.contains(searchElement)) {
             if ((package.inheritThrough.contains(previous) &&
-                c != definingEnclosingElement) ||
+                    c != definingEnclosingElement) ||
                 (package.inheritThrough.contains(c) &&
                     c == definingEnclosingElement)) {
               return (previousNonSkippable.memberByExample(this) as Inheritable)
@@ -1609,7 +1609,8 @@ abstract class GetterSetterCombo implements ModelElement {
   String get constantValueTruncated =>
       linkifyConstantValue(truncateString(constantValueBase, 200));
   String _constantValueBase;
-  String get constantValueBase => _constantValueBase ??= _buildConstantValueBase();
+  String get constantValueBase =>
+      _constantValueBase ??= _buildConstantValueBase();
 
   /// Returns true if both accessors are synthetic.
   bool get hasSyntheticAccessors {
@@ -2833,7 +2834,8 @@ abstract class ModelElement extends Canonicalization
   // Returns the canonical ModelElement for this ModelElement, or null
   // if there isn't one.
   ModelElement _canonicalModelElement;
-  ModelElement get canonicalModelElement => _canonicalModelElement ??= _buildCanonicalModelElement();
+  ModelElement get canonicalModelElement =>
+      _canonicalModelElement ??= _buildCanonicalModelElement();
 
   List<ModelElement> _documentationFrom;
   // TODO(jcollins-g): untangle when mixins can call super
@@ -2901,7 +2903,8 @@ abstract class ModelElement extends Canonicalization
   /// definitions are stripped, but macros themselves are not injected.  This
   /// is a two stage process to avoid ordering problems.
   String _documentationLocal;
-  String get documentationLocal => _documentationLocal ??= _buildDocumentationLocal();
+  String get documentationLocal =>
+      _documentationLocal ??= _buildDocumentationLocal();
 
   /// Returns the docs, stripped of their leading comments syntax.
   @override
