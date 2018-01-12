@@ -1403,6 +1403,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('method source code crossdartifies correctly', () {
+      convertToMap.clearSourceCodeCache();
       var fakePath = "testing/test_package/lib/fake.dart";
       var offset = new File(fakePath)
           .readAsStringSync()
