@@ -8,8 +8,6 @@
 * Update to latest versions of args, resource, grinder (#1566, #1579)
 * Update to grinder scripts to serve flutter, SDK, and the test
   package locally for testing (#1570, #1578)
-* Begin using a Memoizer class to consistently handle caching
-  in dartdoc (#1577, #1575, #1571)
 
 ## 0.15.0+1
 * Move sdk_footer_text to resources directory for compatibility
