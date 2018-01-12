@@ -134,7 +134,13 @@ abstract class Inheritable implements ModelElement {
     return _definingEnclosingClass;
   }
 
-  ModelElement get canonicalEnclosingElement {
+  @override
+
+  ModelElement _buildCanonicalModelElement() {
+    return canonicalEnclosingElement?.allCanonicalModelElements?.firstWhere((m) => m.name == name, orElse: () => null);
+  }
+
+  Class get canonicalEnclosingElement {
     Element searchElement = element;
     if (!_canonicalEnclosingClassIsSet) {
       if (isInherited) {
@@ -149,7 +155,7 @@ abstract class Inheritable implements ModelElement {
           // Filter out mixins.
           if (c.contains(searchElement)) {
             if ((package.inheritThrough.contains(previous) &&
-                    c != definingEnclosingElement) ||
+                c != definingEnclosingElement) ||
                 (package.inheritThrough.contains(c) &&
                     c == definingEnclosingElement)) {
               return (previousNonSkippable.memberByExample(this) as Inheritable)
