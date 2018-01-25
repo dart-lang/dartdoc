@@ -246,7 +246,7 @@ Future _buildFlutterDocs(String flutterPath, [String label]) async {
       'build-flutter-docs${label == null ? "" : "-$label"}',
       _createThrowawayPubCache());
   await launcher.runStreamed('git',
-      ['clone', '--depth', '1', 'https://github.com/flutter/flutter.git', '.'],
+      ['clone', 'https://github.com/flutter/flutter.git', '.'],
       workingDirectory: flutterPath);
   String flutterBin = path.join('bin', 'flutter');
   String flutterCacheDart =
