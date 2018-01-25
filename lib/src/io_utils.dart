@@ -91,7 +91,11 @@ class SubprocessLauncher {
   }
 
   SubprocessLauncher(this.context, [Map<String, String> environment]) {
-    if (environment == null) this._environment = new Map();
+    if (environment == null) {
+      this._environment = new Map();
+    } else {
+      this._environment = environment;
+    }
   }
 
   /// A wrapper around start/await process.exitCode that will display the
