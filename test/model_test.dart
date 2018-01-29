@@ -31,8 +31,8 @@ void main() {
   Library interceptorsLib;
   Package sdkAsPackage;
 
-  setUpAll(() {
-    utils.init();
+  setUpAll(() async {
+    await utils.init();
     package = utils.testPackage;
     ginormousPackage = utils.testPackageGinormous;
     exLibrary = package.libraries.firstWhere((lib) => lib.name == 'ex');

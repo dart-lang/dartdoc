@@ -4,6 +4,7 @@
 
 library test_utils;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
@@ -31,28 +32,28 @@ void delete(Directory dir) {
   if (dir.existsSync()) dir.deleteSync(recursive: true);
 }
 
-void init() {
+init() async {
   sdkDir = getSdkDir();
   sdkPackageMeta = new PackageMeta.fromSdk(sdkDir);
   setConfig();
 
-  testPackage = bootBasicPackage(
+  testPackage = await bootBasicPackage(
       'testing/test_package', ['css', 'code_in_comments', 'excluded'], false);
-  testPackageGinormous = bootBasicPackage(
+  testPackageGinormous = await bootBasicPackage(
       'testing/test_package', ['css', 'code_in_commnets', 'excluded'], true);
 
-  testPackageSmall = bootBasicPackage('testing/test_package_small', [], false);
-  testPackageSdk = bootSdkPackage();
+  testPackageSmall = await bootBasicPackage('testing/test_package_small', [], false);
+  testPackageSdk = await bootSdkPackage();
 }
 
-Package bootSdkPackage() {
+Future<Package> bootSdkPackage() {
   Directory dir = new Directory(p.current);
   return new PackageBuilder(
           dir, [], [], sdkDir, sdkPackageMeta, [], [], true, false)
       .buildPackage();
 }
 
-Package bootBasicPackage(
+Future<Package> bootBasicPackage(
     String dirPath, List<String> excludes, bool withAutoIncludedDependencies) {
   Directory dir = new Directory(dirPath);
   return new PackageBuilder(

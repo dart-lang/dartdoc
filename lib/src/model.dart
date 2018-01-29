@@ -5,6 +5,7 @@
 /// The models used to represent Dart code.
 library dartdoc.models;
 
+import 'dart:async';
 import 'dart:collection' show UnmodifiableListView;
 import 'dart:convert';
 import 'dart:io';
@@ -26,9 +27,10 @@ import 'package:analyzer/source/package_map_resolver.dart';
 import 'package:analyzer/source/sdk_ext.dart';
 // TODO(jcollins-g): Stop using internal analyzer structures somehow.
 import 'package:analyzer/src/context/builder.dart';
+import 'package:analyzer/src/dart/analysis/file_state.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
-import 'package:analyzer/src/generated/engine.dart';
+import 'package:analyzer/src/generated/engine.dart' hide AnalysisResult;
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/resolver.dart'
     show Namespace, NamespaceBuilder, InheritanceManager;
@@ -38,8 +40,11 @@ import 'package:analyzer/src/generated/source_io.dart';
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
+import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:front_end/byte_store.dart';
+import 'package:front_end/src/base/performance_logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';
 import 'package:package_config/discovery.dart' as package_config;
@@ -2062,7 +2067,7 @@ class Library extends ModelElement {
   String get nameFromPath {
     if (_nameFromPath == null) {
       _nameFromPath =
-          getNameFromPath(element, package.context, package.packageMeta);
+          getNameFromPath(element, package.driver, package.packageMeta);
     }
     return _nameFromPath;
   }
@@ -2200,13 +2205,13 @@ class Library extends ModelElement {
   /// Not the same as [Package.name] because there we always strip all
   /// path components; this function only strips the package prefix if the
   /// library is part of the default package.
-  static String getNameFromPath(LibraryElement element, AnalysisContext context,
+  static String getNameFromPath(LibraryElement element, AnalysisDriver driver,
       PackageMeta defaultPackage) {
     String name;
     if (element.source.uri.toString().startsWith('dart:')) {
       name = element.source.uri.toString();
     } else {
-      name = context.sourceFactory.restoreUri(element.source).toString();
+      name = driver.sourceFactory.restoreUri(element.source).toString();
     }
     if (name.startsWith('file:')) {
       // restoreUri doesn't do anything for the package we're documenting.
@@ -3863,7 +3868,7 @@ class Package extends Canonicalization with Nameable, Warnable {
   @override
   Package get package => this;
 
-  final AnalysisContext context;
+  final AnalysisDriver driver;
   final DartSdk sdk;
 
   Map<Source, SdkLibrary> _sdkLibrarySources;
@@ -3899,7 +3904,7 @@ class Package extends Canonicalization with Nameable, Warnable {
   bool _macrosAdded = false;
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta,
-      this._packageWarningOptions, this.context,
+      this._packageWarningOptions, this.driver,
       [this.sdk]) {
     assert(_allConstructedModelElements.isEmpty);
     assert(allLibraries.isEmpty);
@@ -4999,10 +5004,10 @@ class PackageBuilder {
 
   void logAnalysisErrors(Set<Source> sources) {}
 
-  Package buildPackage() {
-    Set<LibraryElement> libraries = getLibraries(getFiles);
+  Future<Package> buildPackage() async {
+    Set<LibraryElement> libraries = await getLibraries(getFiles);
     return new Package(
-        libraries, packageMeta, getWarningOptions(), context, sdk);
+        libraries, packageMeta, getWarningOptions(), driver, sdk);
   }
 
   DartSdk _sdk;
@@ -5078,7 +5083,7 @@ class PackageBuilder {
     SourceFactory sourceFactory = new SourceFactory(resolvers);
     return sourceFactory;
   }
-
+  /*
   AnalysisContext _context;
   AnalysisContext get context {
     if (_context == null) {
@@ -5092,7 +5097,35 @@ class PackageBuilder {
         ..sourceFactory = sourceFactory;
     }
     return _context;
+  }*/
+
+  AnalysisDriver _driver;
+  AnalysisDriver get driver {
+    if (_driver == null) {
+      PerformanceLog log = new PerformanceLog(null);
+      AnalysisDriverScheduler scheduler = new AnalysisDriverScheduler(log);
+      AnalysisOptionsImpl options = new AnalysisOptionsImpl();
+      // FIXME(jcollins-g): do we still need this?  test with Flutter
+      // TODO(jcollins-g): make use of DartProject isApi()
+      options.enableSuperMixins = true;
+      _driver = new AnalysisDriver(
+        scheduler,
+        log,
+        PhysicalResourceProvider.INSTANCE,
+        new MemoryByteStore(),
+        new FileContentOverlay(),
+        null,
+        sourceFactory,
+        options
+      );
+      // FIXME(jcollins-g): do we really need to have listeners?
+      driver.results.listen((_) {});
+      driver.exceptions.listen((_) {});
+      scheduler.start();
+    }
+    return _driver;
   }
+
 
   PackageWarningOptions getWarningOptions() {
     PackageWarningOptions warningOptions = new PackageWarningOptions();
@@ -5123,7 +5156,7 @@ class PackageBuilder {
   /// Note: [libraries] and [sources] are output parameters.  Adds a libraryElement
   /// only if it has a non-private name.
   void processLibrary(
-      String filePath, Set<LibraryElement> libraries, Set<Source> sources) {
+      String filePath, Set<LibraryElement> libraries, Set<Source> sources) async {
     String name = filePath;
     if (name.startsWith(Directory.current.path)) {
       name = name.substring(Directory.current.path.length);
@@ -5140,13 +5173,22 @@ class PackageBuilder {
     if (uri != null) {
       source = new FileBasedSource(javaFile, uri);
     } else {
-      uri = context.sourceFactory.restoreUri(source);
+      uri = driver.sourceFactory.restoreUri(source);
       if (uri != null) {
         source = new FileBasedSource(javaFile, uri);
       }
     }
     // TODO(jcollins-g): Excludes can match on uri or on name.  Fix that.
     if (!isExcluded(source.uri.toString())) {
+      LibraryElement library = await driver.getLibraryByUri(source.uri.toString());
+      if (library != null) {
+         if (!isExcluded(Library.getLibraryName(library)) &&
+            !excludePackages.contains(Library.getPackageMeta(library)?.name)) {
+          libraries.add(library);
+          sources.add(source);
+        }
+      }
+      /*
       if (context.computeKindOf(source) == SourceKind.LIBRARY) {
         LibraryElement library = context.computeLibraryElement(source);
         if (!isExcluded(Library.getLibraryName(library)) &&
@@ -5155,18 +5197,25 @@ class PackageBuilder {
           sources.add(source);
         }
       }
+      */
     }
   }
 
-  List<LibraryElement> _parseLibraries(Set<String> files) {
+
+  Future<List<LibraryElement>> _parseLibraries(Set<String> files) async {
     Set<LibraryElement> libraries = new Set();
-    Set<Source> sources = new Set();
-    files.forEach((filename) => processLibrary(filename, libraries, sources));
-    // Ensure that the analysis engine performs all remaining work.
-    AnalysisResult result = context.performAnalysisTask();
-    while (result.hasMoreWork) {
-      result = context.performAnalysisTask();
+    Set<Source> sources = new Set<Source>();
+    files.forEach((filename) => driver.addFile(filename));
+    for (String filename in files) {
+      await processLibrary(filename, libraries, sources);
     }
+    /*
+    // Ensure that the analysis engine performs all remaining work.
+    AnalysisResult result = driver.performAnalysisTask();
+    while (result.hasMoreWork) {
+      result = driver.performAnalysisTask();
+    }
+    */
     logAnalysisErrors(sources);
     return libraries.toList();
   }
@@ -5238,16 +5287,18 @@ class PackageBuilder {
       });
     }
     // Use the includeExternals.
-    for (Source source in context.librarySources) {
-      if (includeExternals.any((string) => source.fullName.endsWith(string)))
-        files.add(source.fullName);
+    // FIXME(jcollins-g): this used to be context.librarySources and I doubt
+    // this actually does anything now.
+    for (String fullName in driver.knownFiles) {
+      if (includeExternals.any((string) => fullName.endsWith(string)))
+        files.add(fullName);
     }
     return files;
   }
 
-  Set<LibraryElement> getLibraries(Set<String> files) {
+  Future<Set<LibraryElement>> getLibraries(Set<String> files) async {
     Set<LibraryElement> libraries = new Set();
-    libraries.addAll(_parseLibraries(files));
+    libraries.addAll(await _parseLibraries(files));
     if (includes != null && includes.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
       Set notFound =
