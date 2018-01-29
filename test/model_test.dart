@@ -2065,7 +2065,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           aComplexTypedef.linkedReturnType,
           equals(
-              'Function<span class="signature">(<span class="parameter" id="-param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">A3</span></span>)</span>'));
+              'Function<span class="signature">(<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span>)</span>'));
       expect(
           aComplexTypedef.linkedParamsLines,
           equals(

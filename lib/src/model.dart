@@ -2637,7 +2637,8 @@ abstract class ModelElement extends Canonicalization
               assert(e.enclosingElement.name != '');
               newModelElement = new ModelFunctionTypedef(e, library);
             } else {
-              assert(e.name == '');
+              // FIXME(jcollins-g): with driver, sometimes we get null here?
+              assert(e.name == '' || e.name == null);
               newModelElement = new ModelFunctionAnonymous(e, library);
             }
           }
@@ -2648,8 +2649,7 @@ abstract class ModelElement extends Canonicalization
         if (e is FieldElement) {
           if (enclosingClass == null) {
             if (e.isEnumConstant) {
-              int index =
-                  e.computeConstantValue().getField('index').toIntValue();
+              int index = e.computeConstantValue().getField(e.name).toIntValue();
               newModelElement =
                   new EnumField.forConstant(index, e, library, getter);
             } else if (e.enclosingElement.isEnum) {
@@ -4646,7 +4646,10 @@ class Parameter extends ModelElement implements EnclosedElement {
     String enclosingName = _parameter.enclosingElement.name;
     if (_parameter.enclosingElement is GenericFunctionTypeElement) {
       // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates name.
-      enclosingName = _parameter.enclosingElement.enclosingElement.name;
+      for (Element e = _parameter.enclosingElement; e.enclosingElement != null; e = e.enclosingElement) {
+        enclosingName = e.name;
+        if (enclosingName != null && enclosingName.isNotEmpty) break;
+      }
     }
     return '${enclosingName}-param-${name}';
   }
@@ -5293,7 +5296,7 @@ class PackageBuilder {
       if (includeExternals.any((string) => fullName.endsWith(string)))
         files.add(fullName);
     }
-    return files;
+    return new Set.from(files.map((s) => new File(s).absolute.path));
   }
 
   Future<Set<LibraryElement>> getLibraries(Set<String> files) async {

@@ -67,6 +67,8 @@ bool isInExportedLibraries(
 
 final RegExp slashes = new RegExp('[\/]');
 bool hasPrivateName(Element e) {
+  if (e.name == null) return false;
+
   if (e.name.startsWith('_')) {
     return true;
   }
