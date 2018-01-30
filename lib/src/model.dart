@@ -29,6 +29,7 @@ import 'package:analyzer/source/sdk_ext.dart';
 import 'package:analyzer/src/context/builder.dart';
 import 'package:analyzer/src/dart/analysis/file_state.dart';
 import 'package:analyzer/src/dart/element/element.dart';
+import 'package:analyzer/src/dart/element/handle.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart' hide AnalysisResult;
 import 'package:analyzer/src/generated/java_io.dart';
@@ -2580,6 +2581,13 @@ abstract class ModelElement extends Canonicalization
       Accessor getter,
       Accessor setter,
       Package package}) {
+
+    // With AnalysisDriver, we sometimes get ElementHandles when building
+    // docs for the SDK, seen via [Library.importedExportedLibraries].  Why?
+    if (e is ElementHandle) {
+      e = (e as ElementHandle).actualElement;
+    }
+
     Member originalMember;
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
     //                   for members?
@@ -5086,31 +5094,19 @@ class PackageBuilder {
     SourceFactory sourceFactory = new SourceFactory(resolvers);
     return sourceFactory;
   }
-  /*
-  AnalysisContext _context;
-  AnalysisContext get context {
-    if (_context == null) {
-      // TODO(jcollins-g): fix this so it actually obeys analyzer options files.
-      var options = new AnalysisOptionsImpl();
-      options.enableSuperMixins = true;
-      AnalysisEngine.instance.processRequiredPlugins();
-
-      _context = AnalysisEngine.instance.createAnalysisContext()
-        ..analysisOptions = options
-        ..sourceFactory = sourceFactory;
-    }
-    return _context;
-  }*/
 
   AnalysisDriver _driver;
   AnalysisDriver get driver {
     if (_driver == null) {
+      // The performance log is why we have a direct dependency on front_end.
       PerformanceLog log = new PerformanceLog(null);
       AnalysisDriverScheduler scheduler = new AnalysisDriverScheduler(log);
       AnalysisOptionsImpl options = new AnalysisOptionsImpl();
-      // FIXME(jcollins-g): do we still need this?  test with Flutter
-      // TODO(jcollins-g): make use of DartProject isApi()
       options.enableSuperMixins = true;
+
+      // TODO(jcollins-g): Make use of currently not existing API for managing
+      //                   many AnalysisDrivers
+      // TODO(jcollins-g): make use of DartProject isApi()
       _driver = new AnalysisDriver(
         scheduler,
         log,
@@ -5121,14 +5117,12 @@ class PackageBuilder {
         sourceFactory,
         options
       );
-      // FIXME(jcollins-g): do we really need to have listeners?
       driver.results.listen((_) {});
       driver.exceptions.listen((_) {});
       scheduler.start();
     }
     return _driver;
   }
-
 
   PackageWarningOptions getWarningOptions() {
     PackageWarningOptions warningOptions = new PackageWarningOptions();
@@ -5158,7 +5152,7 @@ class PackageBuilder {
   /// Parse a single library at [filePath] using the current analysis context.
   /// Note: [libraries] and [sources] are output parameters.  Adds a libraryElement
   /// only if it has a non-private name.
-  void processLibrary(
+  Future processLibrary(
       String filePath, Set<LibraryElement> libraries, Set<Source> sources) async {
     String name = filePath;
     if (name.startsWith(Directory.current.path)) {
@@ -5191,16 +5185,6 @@ class PackageBuilder {
           sources.add(source);
         }
       }
-      /*
-      if (context.computeKindOf(source) == SourceKind.LIBRARY) {
-        LibraryElement library = context.computeLibraryElement(source);
-        if (!isExcluded(Library.getLibraryName(library)) &&
-            !excludePackages.contains(Library.getPackageMeta(library)?.name)) {
-          libraries.add(library);
-          sources.add(source);
-        }
-      }
-      */
     }
   }
 
@@ -5209,17 +5193,12 @@ class PackageBuilder {
     Set<LibraryElement> libraries = new Set();
     Set<Source> sources = new Set<Source>();
     files.forEach((filename) => driver.addFile(filename));
-    for (String filename in files) {
-      await processLibrary(filename, libraries, sources);
-    }
-    /*
-    // Ensure that the analysis engine performs all remaining work.
-    AnalysisResult result = driver.performAnalysisTask();
-    while (result.hasMoreWork) {
-      result = driver.performAnalysisTask();
-    }
-    */
-    logAnalysisErrors(sources);
+    //for (String filename in files) {
+    //  await processLibrary(filename, libraries, sources);
+    //}
+
+    await Future.wait(files.map((f) => processLibrary(f, libraries, sources)));
+    await logAnalysisErrors(sources);
     return libraries.toList();
   }
 
@@ -5290,8 +5269,6 @@ class PackageBuilder {
       });
     }
     // Use the includeExternals.
-    // FIXME(jcollins-g): this used to be context.librarySources and I doubt
-    // this actually does anything now.
     for (String fullName in driver.knownFiles) {
       if (includeExternals.any((string) => fullName.endsWith(string)))
         files.add(fullName);
