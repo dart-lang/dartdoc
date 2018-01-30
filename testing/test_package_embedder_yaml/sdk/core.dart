@@ -6,6 +6,7 @@ library dart.core;
 
 // Required for analyzer for now; it assumes that all imports of dart:core
 // also import dart:async somewhere.
+// ignore: unused_import
 import 'dart:async';
 
 external bool identical(Object a, Object b);

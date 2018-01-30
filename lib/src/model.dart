@@ -5188,14 +5188,10 @@ class PackageBuilder {
     }
   }
 
-
   Future<List<LibraryElement>> _parseLibraries(Set<String> files) async {
     Set<LibraryElement> libraries = new Set();
     Set<Source> sources = new Set<Source>();
     files.forEach((filename) => driver.addFile(filename));
-    //for (String filename in files) {
-    //  await processLibrary(filename, libraries, sources);
-    //}
 
     await Future.wait(files.map((f) => processLibrary(f, libraries, sources)));
     await logAnalysisErrors(sources);
