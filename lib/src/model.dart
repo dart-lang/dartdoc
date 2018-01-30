@@ -2581,7 +2581,6 @@ abstract class ModelElement extends Canonicalization
       Accessor getter,
       Accessor setter,
       Package package}) {
-
     // With AnalysisDriver, we sometimes get ElementHandles when building
     // docs for the SDK, seen via [Library.importedExportedLibraries].  Why?
     if (e is ElementHandle) {
@@ -2645,7 +2644,8 @@ abstract class ModelElement extends Canonicalization
               assert(e.enclosingElement.name != '');
               newModelElement = new ModelFunctionTypedef(e, library);
             } else {
-              // FIXME(jcollins-g): with driver, sometimes we get null here?
+              // Allowing null here is allowed as a workaround for
+              // dart-lang/sdk#32005.
               assert(e.name == '' || e.name == null);
               newModelElement = new ModelFunctionAnonymous(e, library);
             }
@@ -2657,7 +2657,8 @@ abstract class ModelElement extends Canonicalization
         if (e is FieldElement) {
           if (enclosingClass == null) {
             if (e.isEnumConstant) {
-              int index = e.computeConstantValue().getField(e.name).toIntValue();
+              int index =
+                  e.computeConstantValue().getField(e.name).toIntValue();
               newModelElement =
                   new EnumField.forConstant(index, e, library, getter);
             } else if (e.enclosingElement.isEnum) {
@@ -4654,7 +4655,11 @@ class Parameter extends ModelElement implements EnclosedElement {
     String enclosingName = _parameter.enclosingElement.name;
     if (_parameter.enclosingElement is GenericFunctionTypeElement) {
       // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates name.
-      for (Element e = _parameter.enclosingElement; e.enclosingElement != null; e = e.enclosingElement) {
+      // Also, allowing null here is allowed as a workaround for
+      // dart-lang/sdk#32005.
+      for (Element e = _parameter.enclosingElement;
+          e.enclosingElement != null;
+          e = e.enclosingElement) {
         enclosingName = e.name;
         if (enclosingName != null && enclosingName.isNotEmpty) break;
       }
@@ -5108,15 +5113,14 @@ class PackageBuilder {
       //                   many AnalysisDrivers
       // TODO(jcollins-g): make use of DartProject isApi()
       _driver = new AnalysisDriver(
-        scheduler,
-        log,
-        PhysicalResourceProvider.INSTANCE,
-        new MemoryByteStore(),
-        new FileContentOverlay(),
-        null,
-        sourceFactory,
-        options
-      );
+          scheduler,
+          log,
+          PhysicalResourceProvider.INSTANCE,
+          new MemoryByteStore(),
+          new FileContentOverlay(),
+          null,
+          sourceFactory,
+          options);
       driver.results.listen((_) {});
       driver.exceptions.listen((_) {});
       scheduler.start();
@@ -5152,8 +5156,8 @@ class PackageBuilder {
   /// Parse a single library at [filePath] using the current analysis context.
   /// Note: [libraries] and [sources] are output parameters.  Adds a libraryElement
   /// only if it has a non-private name.
-  Future processLibrary(
-      String filePath, Set<LibraryElement> libraries, Set<Source> sources) async {
+  Future processLibrary(String filePath, Set<LibraryElement> libraries,
+      Set<Source> sources) async {
     String name = filePath;
     if (name.startsWith(Directory.current.path)) {
       name = name.substring(Directory.current.path.length);
@@ -5177,9 +5181,10 @@ class PackageBuilder {
     }
     // TODO(jcollins-g): Excludes can match on uri or on name.  Fix that.
     if (!isExcluded(source.uri.toString())) {
-      LibraryElement library = await driver.getLibraryByUri(source.uri.toString());
+      LibraryElement library =
+          await driver.getLibraryByUri(source.uri.toString());
       if (library != null) {
-         if (!isExcluded(Library.getLibraryName(library)) &&
+        if (!isExcluded(Library.getLibraryName(library)) &&
             !excludePackages.contains(Library.getPackageMeta(library)?.name)) {
           libraries.add(library);
           sources.add(source);
