@@ -2751,24 +2751,7 @@ abstract class ModelElement extends Canonicalization
 
   // TODO(jcollins-g): annotations should now be able to use the utility
   // functions in package for finding elements and avoid using computeNode().
-  List<String> get annotations {
-    List<dynamic> metadata;
-    if (element.computeNode() is AnnotatedNode) {
-      AnnotatedNode node = element.computeNode() as AnnotatedNode;
-
-      // Declarations are contained inside FieldDeclarations, and that is where
-      // the actual annotations are.
-      while ((node is VariableDeclaration || node is VariableDeclarationList) &&
-          node is! FieldDeclaration) {
-        assert(null != node.parent);
-        node = node.parent;
-      }
-      metadata = node.metadata;
-    } else {
-      metadata = element.metadata;
-    }
-    return annotationsFromMetadata(metadata);
-  }
+  List<String> get annotations => annotationsFromMetadata(element.metadata);
 
   /// Returns annotations from a given metadata set, with escaping.
   /// md is a dynamic parameter since ElementAnnotation and Annotation have no
