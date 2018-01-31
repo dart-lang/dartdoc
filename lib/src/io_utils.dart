@@ -67,9 +67,7 @@ final RegExp quotables = new RegExp(r'[ "\r\n\$]');
 
 class SubprocessLauncher {
   final String context;
-  Map<String, String> _environment;
-
-  Map<String, String> get environment => _environment;
+  final Map<String, String> environment;
 
   String get prefix => context.isNotEmpty ? '$context: ' : '';
 
@@ -90,9 +88,8 @@ class SubprocessLauncher {
     });
   }
 
-  SubprocessLauncher(this.context, [Map<String, String> environment]) {
-    if (environment == null) this._environment = new Map();
-  }
+  SubprocessLauncher(this.context, [Map<String, String> environment]) :
+      this.environment = environment ?? <String, String>{};
 
   /// A wrapper around start/await process.exitCode that will display the
   /// output of the executable continuously and fail on non-zero exit codes.

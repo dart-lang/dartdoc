@@ -200,6 +200,21 @@ Future serveTestPackageDocs() async {
   ]);
 }
 
+_serveDocsFrom(String servePath, int port, String context) async {
+  log('launching dhttpd on port $port for $context');
+  var launcher = new SubprocessLauncher(context);
+  await launcher.runStreamed(sdkBin('pub'), ['get']);
+  await launcher.runStreamed(sdkBin('pub'), ['global', 'activate', 'dhttpd']);
+  await launcher.runStreamed(sdkBin('pub'), [
+    'run',
+    'dhttpd',
+    '--port',
+    '$port',
+    '--path',
+    servePath
+  ]);
+}
+
 @Task('Serve generated SDK docs locally with dhttpd on port 8000')
 @Depends(buildSdkDocs)
 Future serveSdkDocs() async {
@@ -275,6 +290,38 @@ Future _buildFlutterDocs(String flutterPath, [String label]) async {
     [path.join('dev', 'tools', 'dartdoc.dart')],
     workingDirectory: flutterPath,
   );
+}
+
+/// Returns the directory in which we generated documentation.
+Future<String> _buildPubPackageDocs(String pubPackageName, [String version, String label]) async {
+  Map<String, String> env = _createThrowawayPubCache();
+  var launcher = new SubprocessLauncher(
+       'build-${pubPackageName}${version == null ? "" : "-$version"}${label == null ? "" : "-$label"}', env);
+  List<String> args = <String>['cache', 'add'];
+  if (version != null) args.addAll(<String>['-v', version]);
+  args.add(pubPackageName);
+  await launcher.runStreamed('pub', args);
+  Directory cache = new Directory(path.join(env['PUB_CACHE'], 'hosted', 'pub.dartlang.org'));
+  Directory pubPackageDir = cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
+  await launcher.runStreamed('pub', ['get'], workingDirectory: pubPackageDir.absolute.path);
+  await launcher.runStreamed(
+      Platform.resolvedExecutable,
+      [
+        '--checked',
+        path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+        '--json',
+        '--show-progress',
+      ],
+      workingDirectory: pubPackageDir.absolute.path);
+  return path.join(pubPackageDir.absolute.path, 'doc', 'api');
+}
+
+@Task('Serve an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION environment variables')
+servePubPackage() async {
+  assert(Platform.environment.containsKey('PACKAGE_NAME'));
+  String packageName = Platform.environment['PACKAGE_NAME'];
+  String version = Platform.environment['PACKAGE_VERSION'];
+  _serveDocsFrom(await _buildPubPackageDocs(packageName, version), 9000, 'serve-pub-package');
 }
 
 @Task('Checks that CHANGELOG mentions current version')
