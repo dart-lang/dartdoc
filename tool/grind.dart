@@ -257,9 +257,11 @@ Future buildFlutterDocs() async {
 }
 
 Future _buildFlutterDocs(String flutterPath, [String label]) async {
+  Map<String, String> env = _createThrowawayPubCache();
+  env['PATH'] = '${path.join(flutterPath, "bin")}:${env['PATH']}';
   var launcher = new SubprocessLauncher(
       'build-flutter-docs${label == null ? "" : "-$label"}',
-      _createThrowawayPubCache());
+      env);
   await launcher.runStreamed('git',
       ['clone', 'https://github.com/flutter/flutter.git', '.'],
       workingDirectory: flutterPath);
