@@ -132,6 +132,8 @@ class DartDoc extends PackageBuilder {
               new _Error(error, info.lineInfo, packageMeta.dir.path));
         })
         .where((_Error error) => error.isError)
+        // TODO(jcollins-g): remove after conversion to analysis driver
+        .where((_Error error) => error.error.errorCode != CompileTimeErrorCode.URI_HAS_NOT_BEEN_GENERATED)
         .toList()
           ..sort();
 
