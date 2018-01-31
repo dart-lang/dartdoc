@@ -11,14 +11,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart'
-    show
-        AnnotatedNode,
-        Declaration,
-        Expression,
-        FieldDeclaration,
-        InstanceCreationExpression,
-        VariableDeclaration,
-        VariableDeclarationList;
+    show Declaration, Expression, InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/file_system.dart' as fileSystem;
@@ -2753,12 +2746,10 @@ abstract class ModelElement extends Canonicalization
   // functions in package for finding elements and avoid using computeNode().
   List<String> get annotations => annotationsFromMetadata(element.metadata);
 
-  /// Returns annotations from a given metadata set, with escaping.
-  /// md is a dynamic parameter since ElementAnnotation and Annotation have no
-  /// common class for calling toSource() and element.
-  List<String> annotationsFromMetadata(List<dynamic> md) {
-    if (md == null) md = new List<dynamic>();
-    return md.map((dynamic a) {
+  /// Returns linked annotations from a given metadata set, with escaping.
+  List<String> annotationsFromMetadata(List<ElementAnnotation> md) {
+    if (md == null) return <String>[];
+    return md.map((ElementAnnotation a) {
       String annotation = (const HtmlEscape()).convert(a.toSource());
       // a.element can be null if the element can't be resolved.
       var me =
