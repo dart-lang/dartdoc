@@ -23,7 +23,6 @@ Directory get dartdocDocsDir =>
     tempdirsCache.memoized1(createTempSync, 'dartdoc');
 Directory get sdkDocsDir => tempdirsCache.memoized1(createTempSync, 'sdkdocs');
 Directory get flutterDir => tempdirsCache.memoized1(createTempSync, 'flutter');
-Directory get angularComponentsDir => tempdirsCache.memoized1(createTempSync, 'angular2');
 Directory get testPackage =>
     new Directory(path.joinAll(['testing', 'test_package']));
 Directory get testPackageDocsDir =>
@@ -291,25 +290,6 @@ Future _buildFlutterDocs(String flutterPath, [String label]) async {
     [path.join('dev', 'tools', 'dartdoc.dart')],
     workingDirectory: flutterPath,
   );
-}
-
-Future _buildAngularComponentsDocs(String angularComponentsPath, [String label]) async {
-  var launcher = new SubprocessLauncher(
-      'build-angular-components-docs${label == null ? "" :"-$label"}');
-  await launcher.runStreamed('git',
-      ['clone', '--depth', '1', 'https://github.com/dart-lang/angular_components.git', '.'],
-      workingDirectory: angularComponentsPath);
-  String cwd = Directory.current.absolute.path;
-  await launcher.runStreamed(sdkBin('pub'), ['get'], workingDirectory: cwd);
-  return await launcher.runStreamed(
-      Platform.resolvedExecutable,
-      [
-        '--checked',
-        path.join(cwd, 'bin', 'dartdoc.dart'),
-        '--json',
-        '--show-progress',
-      ],
-      workingDirectory: angularComponentsPath);
 }
 
 /// Returns the directory in which we generated documentation.
