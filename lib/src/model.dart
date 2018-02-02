@@ -5127,7 +5127,7 @@ class PackageBuilder {
 
   bool isExcluded(String name) => excludes.any((pattern) => name == pattern);
 
-  /// Parse a single library at [filePath] using the current analysis context.
+  /// Parse a single library at [filePath] using the current analysis driver.
   /// Note: [libraries] and [sources] are output parameters.  Adds a libraryElement
   /// only if it has a non-private name.
   Future processLibrary(String filePath, Set<LibraryElement> libraries,
