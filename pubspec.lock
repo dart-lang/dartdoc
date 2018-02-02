@@ -86,7 +86,7 @@ packages:
     source: hosted
     version: "0.3.1"
   front_end:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: front_end
       url: "https://pub.dartlang.org"

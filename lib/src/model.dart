@@ -5,19 +5,13 @@
 /// The models used to represent Dart code.
 library dartdoc.models;
 
+import 'dart:async';
 import 'dart:collection' show UnmodifiableListView;
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart'
-    show
-        AnnotatedNode,
-        Declaration,
-        Expression,
-        FieldDeclaration,
-        InstanceCreationExpression,
-        VariableDeclaration,
-        VariableDeclarationList;
+    show Declaration, Expression, InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/file_system.dart' as fileSystem;
@@ -26,9 +20,11 @@ import 'package:analyzer/source/package_map_resolver.dart';
 import 'package:analyzer/source/sdk_ext.dart';
 // TODO(jcollins-g): Stop using internal analyzer structures somehow.
 import 'package:analyzer/src/context/builder.dart';
+import 'package:analyzer/src/dart/analysis/file_state.dart';
 import 'package:analyzer/src/dart/element/element.dart';
+import 'package:analyzer/src/dart/element/handle.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
-import 'package:analyzer/src/generated/engine.dart';
+import 'package:analyzer/src/generated/engine.dart' hide AnalysisResult;
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/resolver.dart'
     show Namespace, NamespaceBuilder, InheritanceManager;
@@ -38,8 +34,11 @@ import 'package:analyzer/src/generated/source_io.dart';
 import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
+import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:front_end/byte_store.dart';
+import 'package:front_end/src/base/performance_logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';
 import 'package:package_config/discovery.dart' as package_config;
@@ -2062,7 +2061,7 @@ class Library extends ModelElement {
   String get nameFromPath {
     if (_nameFromPath == null) {
       _nameFromPath =
-          getNameFromPath(element, package.context, package.packageMeta);
+          getNameFromPath(element, package.driver, package.packageMeta);
     }
     return _nameFromPath;
   }
@@ -2200,13 +2199,13 @@ class Library extends ModelElement {
   /// Not the same as [Package.name] because there we always strip all
   /// path components; this function only strips the package prefix if the
   /// library is part of the default package.
-  static String getNameFromPath(LibraryElement element, AnalysisContext context,
+  static String getNameFromPath(LibraryElement element, AnalysisDriver driver,
       PackageMeta defaultPackage) {
     String name;
     if (element.source.uri.toString().startsWith('dart:')) {
       name = element.source.uri.toString();
     } else {
-      name = context.sourceFactory.restoreUri(element.source).toString();
+      name = driver.sourceFactory.restoreUri(element.source).toString();
     }
     if (name.startsWith('file:')) {
       // restoreUri doesn't do anything for the package we're documenting.
@@ -2575,6 +2574,12 @@ abstract class ModelElement extends Canonicalization
       Accessor getter,
       Accessor setter,
       Package package}) {
+    // With AnalysisDriver, we sometimes get ElementHandles when building
+    // docs for the SDK, seen via [Library.importedExportedLibraries].  Why?
+    if (e is ElementHandle) {
+      e = (e as ElementHandle).actualElement;
+    }
+
     Member originalMember;
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
     //                   for members?
@@ -2632,7 +2637,9 @@ abstract class ModelElement extends Canonicalization
               assert(e.enclosingElement.name != '');
               newModelElement = new ModelFunctionTypedef(e, library);
             } else {
-              assert(e.name == '');
+              // Allowing null here is allowed as a workaround for
+              // dart-lang/sdk#32005.
+              assert(e.name == '' || e.name == null);
               newModelElement = new ModelFunctionAnonymous(e, library);
             }
           }
@@ -2644,7 +2651,7 @@ abstract class ModelElement extends Canonicalization
           if (enclosingClass == null) {
             if (e.isEnumConstant) {
               int index =
-                  e.computeConstantValue().getField('index').toIntValue();
+                  e.computeConstantValue().getField(e.name).toIntValue();
               newModelElement =
                   new EnumField.forConstant(index, e, library, getter);
             } else if (e.enclosingElement.isEnum) {
@@ -2737,31 +2744,12 @@ abstract class ModelElement extends Canonicalization
 
   // TODO(jcollins-g): annotations should now be able to use the utility
   // functions in package for finding elements and avoid using computeNode().
-  List<String> get annotations {
-    List<dynamic> metadata;
-    if (element.computeNode() is AnnotatedNode) {
-      AnnotatedNode node = element.computeNode() as AnnotatedNode;
+  List<String> get annotations => annotationsFromMetadata(element.metadata);
 
-      // Declarations are contained inside FieldDeclarations, and that is where
-      // the actual annotations are.
-      while ((node is VariableDeclaration || node is VariableDeclarationList) &&
-          node is! FieldDeclaration) {
-        assert(null != node.parent);
-        node = node.parent;
-      }
-      metadata = node.metadata;
-    } else {
-      metadata = element.metadata;
-    }
-    return annotationsFromMetadata(metadata);
-  }
-
-  /// Returns annotations from a given metadata set, with escaping.
-  /// md is a dynamic parameter since ElementAnnotation and Annotation have no
-  /// common class for calling toSource() and element.
-  List<String> annotationsFromMetadata(List<dynamic> md) {
-    if (md == null) md = new List<dynamic>();
-    return md.map((dynamic a) {
+  /// Returns linked annotations from a given metadata set, with escaping.
+  List<String> annotationsFromMetadata(List<ElementAnnotation> md) {
+    if (md == null) return <String>[];
+    return md.map((ElementAnnotation a) {
       String annotation = (const HtmlEscape()).convert(a.toSource());
       // a.element can be null if the element can't be resolved.
       var me =
@@ -3863,7 +3851,7 @@ class Package extends Canonicalization with Nameable, Warnable {
   @override
   Package get package => this;
 
-  final AnalysisContext context;
+  final AnalysisDriver driver;
   final DartSdk sdk;
 
   Map<Source, SdkLibrary> _sdkLibrarySources;
@@ -3899,7 +3887,7 @@ class Package extends Canonicalization with Nameable, Warnable {
   bool _macrosAdded = false;
 
   Package(Iterable<LibraryElement> libraryElements, this.packageMeta,
-      this._packageWarningOptions, this.context,
+      this._packageWarningOptions, this.driver,
       [this.sdk]) {
     assert(_allConstructedModelElements.isEmpty);
     assert(allLibraries.isEmpty);
@@ -4641,7 +4629,14 @@ class Parameter extends ModelElement implements EnclosedElement {
     String enclosingName = _parameter.enclosingElement.name;
     if (_parameter.enclosingElement is GenericFunctionTypeElement) {
       // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates name.
-      enclosingName = _parameter.enclosingElement.enclosingElement.name;
+      // Also, allowing null here is allowed as a workaround for
+      // dart-lang/sdk#32005.
+      for (Element e = _parameter.enclosingElement;
+          e.enclosingElement != null;
+          e = e.enclosingElement) {
+        enclosingName = e.name;
+        if (enclosingName != null && enclosingName.isNotEmpty) break;
+      }
     }
     return '${enclosingName}-param-${name}';
   }
@@ -4999,10 +4994,10 @@ class PackageBuilder {
 
   void logAnalysisErrors(Set<Source> sources) {}
 
-  Package buildPackage() {
-    Set<LibraryElement> libraries = getLibraries(getFiles);
+  Future<Package> buildPackage() async {
+    Set<LibraryElement> libraries = await getLibraries(getFiles);
     return new Package(
-        libraries, packageMeta, getWarningOptions(), context, sdk);
+        libraries, packageMeta, getWarningOptions(), driver, sdk);
   }
 
   DartSdk _sdk;
@@ -5079,19 +5074,32 @@ class PackageBuilder {
     return sourceFactory;
   }
 
-  AnalysisContext _context;
-  AnalysisContext get context {
-    if (_context == null) {
-      // TODO(jcollins-g): fix this so it actually obeys analyzer options files.
-      var options = new AnalysisOptionsImpl();
+  AnalysisDriver _driver;
+  AnalysisDriver get driver {
+    if (_driver == null) {
+      // The performance log is why we have a direct dependency on front_end.
+      PerformanceLog log = new PerformanceLog(null);
+      AnalysisDriverScheduler scheduler = new AnalysisDriverScheduler(log);
+      AnalysisOptionsImpl options = new AnalysisOptionsImpl();
       options.enableSuperMixins = true;
-      AnalysisEngine.instance.processRequiredPlugins();
 
-      _context = AnalysisEngine.instance.createAnalysisContext()
-        ..analysisOptions = options
-        ..sourceFactory = sourceFactory;
+      // TODO(jcollins-g): Make use of currently not existing API for managing
+      //                   many AnalysisDrivers
+      // TODO(jcollins-g): make use of DartProject isApi()
+      _driver = new AnalysisDriver(
+          scheduler,
+          log,
+          PhysicalResourceProvider.INSTANCE,
+          new MemoryByteStore(),
+          new FileContentOverlay(),
+          null,
+          sourceFactory,
+          options);
+      driver.results.listen((_) {});
+      driver.exceptions.listen((_) {});
+      scheduler.start();
     }
-    return _context;
+    return _driver;
   }
 
   PackageWarningOptions getWarningOptions() {
@@ -5119,11 +5127,11 @@ class PackageBuilder {
 
   bool isExcluded(String name) => excludes.any((pattern) => name == pattern);
 
-  /// Parse a single library at [filePath] using the current analysis context.
+  /// Parse a single library at [filePath] using the current analysis driver.
   /// Note: [libraries] and [sources] are output parameters.  Adds a libraryElement
   /// only if it has a non-private name.
-  void processLibrary(
-      String filePath, Set<LibraryElement> libraries, Set<Source> sources) {
+  Future processLibrary(String filePath, Set<LibraryElement> libraries,
+      Set<Source> sources) async {
     String name = filePath;
     if (name.startsWith(Directory.current.path)) {
       name = name.substring(Directory.current.path.length);
@@ -5140,15 +5148,16 @@ class PackageBuilder {
     if (uri != null) {
       source = new FileBasedSource(javaFile, uri);
     } else {
-      uri = context.sourceFactory.restoreUri(source);
+      uri = driver.sourceFactory.restoreUri(source);
       if (uri != null) {
         source = new FileBasedSource(javaFile, uri);
       }
     }
     // TODO(jcollins-g): Excludes can match on uri or on name.  Fix that.
     if (!isExcluded(source.uri.toString())) {
-      if (context.computeKindOf(source) == SourceKind.LIBRARY) {
-        LibraryElement library = context.computeLibraryElement(source);
+      LibraryElement library =
+          await driver.getLibraryByUri(source.uri.toString());
+      if (library != null) {
         if (!isExcluded(Library.getLibraryName(library)) &&
             !excludePackages.contains(Library.getPackageMeta(library)?.name)) {
           libraries.add(library);
@@ -5158,16 +5167,13 @@ class PackageBuilder {
     }
   }
 
-  List<LibraryElement> _parseLibraries(Set<String> files) {
+  Future<List<LibraryElement>> _parseLibraries(Set<String> files) async {
     Set<LibraryElement> libraries = new Set();
-    Set<Source> sources = new Set();
-    files.forEach((filename) => processLibrary(filename, libraries, sources));
-    // Ensure that the analysis engine performs all remaining work.
-    AnalysisResult result = context.performAnalysisTask();
-    while (result.hasMoreWork) {
-      result = context.performAnalysisTask();
-    }
-    logAnalysisErrors(sources);
+    Set<Source> sources = new Set<Source>();
+    files.forEach((filename) => driver.addFile(filename));
+
+    await Future.wait(files.map((f) => processLibrary(f, libraries, sources)));
+    await logAnalysisErrors(sources);
     return libraries.toList();
   }
 
@@ -5238,16 +5244,16 @@ class PackageBuilder {
       });
     }
     // Use the includeExternals.
-    for (Source source in context.librarySources) {
-      if (includeExternals.any((string) => source.fullName.endsWith(string)))
-        files.add(source.fullName);
+    for (String fullName in driver.knownFiles) {
+      if (includeExternals.any((string) => fullName.endsWith(string)))
+        files.add(fullName);
     }
-    return files;
+    return new Set.from(files.map((s) => new File(s).absolute.path));
   }
 
-  Set<LibraryElement> getLibraries(Set<String> files) {
+  Future<Set<LibraryElement>> getLibraries(Set<String> files) async {
     Set<LibraryElement> libraries = new Set();
-    libraries.addAll(_parseLibraries(files));
+    libraries.addAll(await _parseLibraries(files));
     if (includes != null && includes.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
       Set notFound =

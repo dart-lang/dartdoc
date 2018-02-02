@@ -12,6 +12,7 @@ dependencies:
   analyzer: 0.31.0-alpha.2
   args: '>=0.13.0 <2.0.0'
   collection: ^1.2.0
+  front_end: ^0.1.0-alpha.7
   html: '>=0.12.1 <0.14.0'
   # We don't use http_parser directly; this dep exists to ensure that we get at
   # least version 3.0.3 to work around an issue with 3.0.2.
