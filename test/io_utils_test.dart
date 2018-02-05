@@ -31,7 +31,7 @@ void main() {
 
     test('verify output of printWarningDelta', () {
       expect(
-          printWarningDelta('Diff Title', 'oldbranch', original, current),
+          getPrintableWarningDelta('Diff Title', 'oldbranch', original, current),
           equals(
               '*** Diff Title : 1 warnings from original (oldbranch) missing in current:\n'
               'originalwarning\n'
@@ -44,7 +44,7 @@ void main() {
 
     test('verify output when nothing changes', () {
       expect(
-          printWarningDelta('Diff Title 2', 'oldbranch2', original, original),
+          getPrintableWarningDelta('Diff Title 2', 'oldbranch2', original, original),
           equals(
               '*** Diff Title 2 : No difference in warning output from original (oldbranch2) (3 warnings found)\n'));
     });

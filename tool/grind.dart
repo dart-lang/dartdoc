@@ -81,15 +81,94 @@ Future buildSdkDocs() async {
       sdkDocsDir.path, new Future.value(Directory.current.path));
 }
 
+class WarningsCollection {
+  final String tempDir;
+  final Map<String, int> _warningKeyCounts;
+  final String branch;
+  final String pubCachePath;
+  WarningsCollection(this.tempDir, this.pubCachePath, this.branch)
+      : this._warningKeyCounts = new Map() {}
+
+  static const String kPubCachePathReplacement = '_xxxPubDirectoryxxx_';
+  static const String kTempDirReplacement = '_xxxTempDirectoryxxx_';
+
+  String _toKey(String text) {
+    String key = text.replaceAll(tempDir, kTempDirReplacement);
+    if (pubCachePath != null)
+      key = key.replaceAll(pubCachePath, kPubCachePathReplacement);
+    return key;
+  }
+  String _fromKey(String text) {
+    String key = text.replaceAll(kTempDirReplacement, tempDir);
+    if (pubCachePath != null)
+      key = key.replaceAll(kPubCachePathReplacement, pubCachePath);
+    return key;
+  }
+
+
+  void add(String text) {
+    String key = _toKey(text);
+    _warningKeyCounts.putIfAbsent(key, () => 0);
+    _warningKeyCounts[key]++;
+  }
+
+  /// Output formatter for comparing warnings.  [this] is the original.
+  String getPrintableWarningDelta(String title, WarningsCollection current) {
+    StringBuffer printBuffer = new StringBuffer();
+    Set<String> quantityChangedOuts = new Set();
+    Set<String> onlyOriginal = new Set();
+    Set<String> onlyCurrent = new Set();
+    Set<String> allKeys =
+    new Set.from([]..addAll(_warningKeyCounts.keys)..addAll(current._warningKeyCounts.keys));
+
+    for (String key in allKeys) {
+      if (_warningKeyCounts.containsKey(key) && !current._warningKeyCounts.containsKey(key)) {
+        onlyOriginal.add(key);
+      } else if (!_warningKeyCounts.containsKey(key) && !current._warningKeyCounts.containsKey(key)) {
+        onlyCurrent.add(key);
+      } else if (_warningKeyCounts.containsKey(key) &&
+          current._warningKeyCounts.containsKey(key) &&
+          _warningKeyCounts[key] != current._warningKeyCounts[key]) {
+        quantityChangedOuts.add(key);
+      }
+    }
+
+    if (onlyOriginal.isNotEmpty) {
+      printBuffer.writeln(
+          '*** $title : ${onlyOriginal.length} warnings from $branch missing in current:');
+      onlyOriginal.forEach((key) => printBuffer.writeln(_fromKey(key)));
+    }
+    if (onlyCurrent.isNotEmpty) {
+      printBuffer.writeln(
+          '*** $title : ${onlyCurrent.length} warnings in ${current.branch} not in $branch');
+      onlyCurrent.forEach((key) => printBuffer.writeln(current._fromKey(key)));
+    }
+    if (quantityChangedOuts.isNotEmpty) {
+      printBuffer.writeln('*** $title : Identical warning quantity changed');
+      for (String key in quantityChangedOuts) {
+        printBuffer.writeln(
+            "* Appeared ${_warningKeyCounts[key]} times in $branch, ${current._warningKeyCounts[key]} in ${current.branch}:");
+        printBuffer.writeln(current._fromKey(key));
+      }
+    }
+    if (onlyOriginal.isEmpty &&
+        onlyCurrent.isEmpty &&
+        quantityChangedOuts.isEmpty) {
+      printBuffer.writeln(
+          '*** $title : No difference in warning output from $branch to ${current.branch} ${allKeys.isEmpty ? "" : " (${allKeys.length} warnings found)"}');
+    }
+    return printBuffer.toString();
+  }
+}
+
 /// Returns a map of warning texts to the number of times each has been seen.
-Map<String, int> jsonMessageIterableToWarnings(Iterable<Map> messageIterable) {
-  Map<String, int> warningTexts = new Map();
+WarningsCollection jsonMessageIterableToWarnings(Iterable<Map> messageIterable, String tempPath, String pubDir, String branch) {
+  WarningsCollection warningTexts = new WarningsCollection(tempPath, pubDir, branch);
   for (Map<String, dynamic> message in messageIterable) {
     if (message.containsKey('level') &&
         message['level'] == 'WARNING' &&
         message.containsKey('data')) {
-      warningTexts.putIfAbsent(message['data']['text'], () => 0);
-      warningTexts[message['data']['text']]++;
+      warningTexts.add(message['data']['text']);
     }
   }
   return warningTexts;
@@ -104,13 +183,12 @@ Future compareSdkWarnings() async {
       sdkDocsDir.path, new Future.value(Directory.current.path), 'current');
   Future originalDartdocSdkBuild =
       _buildSdkDocs(originalDartdocSdkDocs.path, originalDartdoc, 'original');
-  Map<String, int> currentDartdocWarnings =
-      jsonMessageIterableToWarnings(await currentDartdocSdkBuild);
-  Map<String, int> originalDartdocWarnings =
-      jsonMessageIterableToWarnings(await originalDartdocSdkBuild);
+  WarningsCollection currentDartdocWarnings =
+      jsonMessageIterableToWarnings(await currentDartdocSdkBuild, sdkDocsDir.absolute.path, null, 'HEAD');
+  WarningsCollection originalDartdocWarnings =
+      jsonMessageIterableToWarnings(await originalDartdocSdkBuild, originalDartdocSdkDocs.absolute.path, null, dartdocOriginalBranch);
 
-  print(printWarningDelta('SDK docs', dartdocOriginalBranch,
-      originalDartdocWarnings, currentDartdocWarnings));
+  print(originalDartdocWarnings.getPrintableWarningDelta('SDK docs', currentDartdocWarnings));
 }
 
 /// Helper function to create a clean version of dartdoc (based on the current
@@ -142,7 +220,7 @@ Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
         '--checked',
         path.join('bin', 'dartdoc.dart'),
         '--output',
-        '${sdkDocsDir.path}',
+        '${sdkDocsPath}',
         '--sdk-docs',
         '--json',
         '--show-progress',
@@ -230,6 +308,45 @@ Future serveSdkDocs() async {
   ]);
 }
 
+@Task('Compare warnings in Dartdoc for Flutter')
+Future compareFlutterWarnings() async {
+  Directory originalDartdocFlutter =
+      Directory.systemTemp.createTempSync('dartdoc-comparison-flutter');
+  Future originalDartdoc = createComparisonDartdoc();
+  Map<String, String> envCurrent = _createThrowawayPubCache();
+  Map<String, String> envOriginal = _createThrowawayPubCache();
+  Future currentDartdocFlutterBuild = _buildFlutterDocs(flutterDir.path, new Future.value(Directory.current.path), envCurrent, 'current');
+  Future originalDartdocFlutterBuild = _buildFlutterDocs(originalDartdocFlutter.path, originalDartdoc, envOriginal, 'original');
+  WarningsCollection currentDartdocWarnings =
+      jsonMessageIterableToWarnings(await currentDartdocFlutterBuild, flutterDir.absolute.path, envCurrent['PUB_CACHE'], 'HEAD');
+  WarningsCollection originalDartdocWarnings =
+      jsonMessageIterableToWarnings(await originalDartdocFlutterBuild, originalDartdocFlutter.absolute.path, envOriginal['PUB_CACHE'], dartdocOriginalBranch);
+
+  print(originalDartdocWarnings.getPrintableWarningDelta('Flutter repo', currentDartdocWarnings));
+
+  if (Platform.environment['SERVE_FLUTTER'] == '1') {
+    var launcher = new SubprocessLauncher('serve-flutter-docs');
+    await launcher.runStreamed(sdkBin('pub'), ['get']);
+    Future original = launcher.runStreamed(sdkBin('pub'), [
+      'run',
+      'dhttpd',
+      '--port',
+      '9000',
+      '--path',
+      path.join(originalDartdocFlutter.absolute.path, 'dev', 'docs', 'doc'),
+    ]);
+    Future current = launcher.runStreamed(sdkBin('pub'), [
+      'run',
+      'dhttpd',
+      '--port',
+      '9001',
+      '--path',
+      path.join(flutterDir.absolute.path, 'dev', 'docs', 'doc'),
+    ]);
+    await Future.wait([original, current]);
+  }
+}
+
 @Task('Serve generated Flutter docs locally with dhttpd on port 8001')
 @Depends(buildFlutterDocs)
 Future serveFlutterDocs() async {
@@ -249,15 +366,15 @@ Future serveFlutterDocs() async {
 @Task('Build flutter docs')
 Future buildFlutterDocs() async {
   log('building flutter docs into: $flutterDir');
-  await _buildFlutterDocs(flutterDir.path);
+  Map<String, String> env = _createThrowawayPubCache();
+  await _buildFlutterDocs(flutterDir.path, new Future.value(Directory.current.path), env);
   String index =
       new File(path.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
           .readAsStringSync();
   stdout.write(index);
 }
 
-Future _buildFlutterDocs(String flutterPath, [String label]) async {
-  Map<String, String> env = _createThrowawayPubCache();
+Future<List<Map>> _buildFlutterDocs(String flutterPath, Future<String> futureCwd, Map<String, String> env, [String label]) async {
   env['PATH'] = '${path.join(flutterPath, "bin")}:${env['PATH']}';
   var launcher = new SubprocessLauncher(
       'build-flutter-docs${label == null ? "" : "-$label"}',
@@ -286,10 +403,10 @@ Future _buildFlutterDocs(String flutterPath, [String label]) async {
     workingDirectory: path.join(flutterPath, 'dev', 'tools'),
   );
   await launcher
-      .runStreamed(flutterCachePub, ['global', 'activate', '-spath', '.']);
-  await launcher.runStreamed(
+      .runStreamed(flutterCachePub, ['global', 'activate', '-spath', '.'], workingDirectory: await futureCwd);
+  return await launcher.runStreamed(
     flutterCacheDart,
-    [path.join('dev', 'tools', 'dartdoc.dart')],
+    [path.join('dev', 'tools', 'dartdoc.dart'), '--json'],
     workingDirectory: flutterPath,
   );
 }

@@ -167,7 +167,7 @@ class SubprocessLauncher {
 }
 
 /// Output formatter for comparing warnings.
-String printWarningDelta(String title, String dartdocOriginalBranch,
+String getPrintableWarningDelta(String title, String dartdocOriginalBranch,
     Map<String, int> original, Map<String, int> current) {
   StringBuffer printBuffer = new StringBuffer();
   Set<String> quantityChangedOuts = new Set();
