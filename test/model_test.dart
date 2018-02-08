@@ -320,10 +320,10 @@ void main() {
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro');
       withMacro2 =
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro2');
-      withPrivateMacro =
-          dog.allInstanceMethods.firstWhere((m) => m.name == 'withPrivateMacro');
-      withUndefinedMacro =
-          dog.allInstanceMethods.firstWhere((m) => m.name == 'withUndefinedMacro');
+      withPrivateMacro = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withPrivateMacro');
+      withUndefinedMacro = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withUndefinedMacro');
       package.allModelElements.forEach((m) => m.documentation);
     });
 
@@ -342,7 +342,10 @@ void main() {
     });
 
     test("a warning is generated for unknown macros", () {
-      expect(package.packageWarningCounter.hasWarning(withUndefinedMacro, PackageWarning.unknownMacro, 'ThatDoesNotExist'), isTrue);
+      expect(
+          package.packageWarningCounter.hasWarning(withUndefinedMacro,
+              PackageWarning.unknownMacro, 'ThatDoesNotExist'),
+          isTrue);
     });
   });
 
@@ -1908,7 +1911,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       deprecated =
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
       Class Dog = exLibrary.allClasses.firstWhere((c) => c.name == 'Dog');
-      customClassPrivate = fakeLibrary.constants.firstWhere((c) => c.name == 'CUSTOM_CLASS_PRIVATE');
+      customClassPrivate = fakeLibrary.constants
+          .firstWhere((c) => c.name == 'CUSTOM_CLASS_PRIVATE');
       aStaticConstField =
           Dog.allFields.firstWhere((f) => f.name == 'aStaticConstField');
       aName = Dog.allFields.firstWhere((f) => f.name == 'aName');
@@ -1957,7 +1961,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('MY_CAT is linked', () {
-      expect(cat.constantValue, 'const <a href="ex/ConstantCat/ConstantCat.html">ConstantCat</a>(&#39;tabby&#39;)');
+      expect(cat.constantValue,
+          'const <a href="ex/ConstantCat/ConstantCat.html">ConstantCat</a>(&#39;tabby&#39;)');
     });
 
     test('exported property', () {
@@ -2090,7 +2095,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('linked return type', () {
       expect(t.linkedReturnType, equals('String'));
-      expect(generic.linkedReturnType, equals('List<span class="signature">&lt;S&gt;</span>'));
+      expect(generic.linkedReturnType,
+          equals('List<span class="signature">&lt;S&gt;</span>'));
     });
 
     test("name with generics", () {
