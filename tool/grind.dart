@@ -118,29 +118,32 @@ class WarningsCollection {
     Set<String> quantityChangedOuts = new Set();
     Set<String> onlyOriginal = new Set();
     Set<String> onlyCurrent = new Set();
+    Set<String> identical = new Set();
     Set<String> allKeys =
     new Set.from([]..addAll(_warningKeyCounts.keys)..addAll(current._warningKeyCounts.keys));
 
     for (String key in allKeys) {
       if (_warningKeyCounts.containsKey(key) && !current._warningKeyCounts.containsKey(key)) {
         onlyOriginal.add(key);
-      } else if (!_warningKeyCounts.containsKey(key) && !current._warningKeyCounts.containsKey(key)) {
+      } else if (!_warningKeyCounts.containsKey(key) && current._warningKeyCounts.containsKey(key)) {
         onlyCurrent.add(key);
       } else if (_warningKeyCounts.containsKey(key) &&
           current._warningKeyCounts.containsKey(key) &&
           _warningKeyCounts[key] != current._warningKeyCounts[key]) {
         quantityChangedOuts.add(key);
+      } else {
+        identical.add(key);
       }
     }
 
     if (onlyOriginal.isNotEmpty) {
       printBuffer.writeln(
-          '*** $title : ${onlyOriginal.length} warnings from $branch missing in current:');
+          '*** $title : ${onlyOriginal.length} warnings from $branch, missing in ${current.branch}:');
       onlyOriginal.forEach((key) => printBuffer.writeln(_fromKey(key)));
     }
     if (onlyCurrent.isNotEmpty) {
       printBuffer.writeln(
-          '*** $title : ${onlyCurrent.length} warnings in ${current.branch} not in $branch');
+          '*** $title : ${onlyCurrent.length} new warnings in ${current.branch}, missing in $branch');
       onlyCurrent.forEach((key) => printBuffer.writeln(current._fromKey(key)));
     }
     if (quantityChangedOuts.isNotEmpty) {
@@ -155,7 +158,10 @@ class WarningsCollection {
         onlyCurrent.isEmpty &&
         quantityChangedOuts.isEmpty) {
       printBuffer.writeln(
-          '*** $title : No difference in warning output from $branch to ${current.branch} ${allKeys.isEmpty ? "" : " (${allKeys.length} warnings found)"}');
+          '*** $title : No difference in warning output from $branch to ${current.branch}${allKeys.isEmpty ? "" : " (${allKeys.length} warnings found)"}');
+    } else if (identical.isNotEmpty) {
+      printBuffer.writeln(
+        '*** $title : Difference in warning output found for ${allKeys.length - identical.length} warnings (${allKeys.length} warnings found)"');
     }
     return printBuffer.toString();
   }
