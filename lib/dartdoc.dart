@@ -107,7 +107,8 @@ class DartDoc extends PackageBuilder {
     // That seems wrong. dart-lang/dartdoc#1547
     for (Source source in sources) {
       ErrorsResult errorsResult = await driver.getErrors(source.fullName);
-      AnalysisErrorInfo info = new AnalysisErrorInfoImpl(errorsResult.errors, errorsResult.lineInfo);
+      AnalysisErrorInfo info =
+          new AnalysisErrorInfoImpl(errorsResult.errors, errorsResult.lineInfo);
       List<_Error> errors = [info]
           .expand((AnalysisErrorInfo info) {
             return info.errors.map((error) =>
@@ -133,7 +134,9 @@ class DartDoc extends PackageBuilder {
         })
         .where((_Error error) => error.isError)
         // TODO(jcollins-g): remove after conversion to analysis driver
-        .where((_Error error) => error.error.errorCode != CompileTimeErrorCode.URI_HAS_NOT_BEEN_GENERATED)
+        .where((_Error error) =>
+            error.error.errorCode !=
+            CompileTimeErrorCode.URI_HAS_NOT_BEEN_GENERATED)
         .toList()
           ..sort();
 
