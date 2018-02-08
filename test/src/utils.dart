@@ -42,7 +42,8 @@ init() async {
   testPackageGinormous = await bootBasicPackage(
       'testing/test_package', ['css', 'code_in_commnets', 'excluded'], true);
 
-  testPackageSmall = await bootBasicPackage('testing/test_package_small', [], false);
+  testPackageSmall =
+      await bootBasicPackage('testing/test_package_small', [], false);
   testPackageSdk = await bootSdkPackage();
 }
 

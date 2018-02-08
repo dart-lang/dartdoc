@@ -13,36 +13,49 @@ void main() {
     WarningsCollection original, current;
     WarningsCollection originalWithDirs, currentWithDirs;
     setUp(() {
-      original = new WarningsCollection('/a/tempdir', '/pubcache/path', 'oldbranch');
+      original =
+          new WarningsCollection('/a/tempdir', '/pubcache/path', 'oldbranch');
       original.add('originalwarning');
       original.add('morewarning');
       original.add('duplicateoriginalwarning');
       original.add('duplicateoriginalwarning');
-      current = new WarningsCollection('/a/tempdir2', '/pubcache/path2', 'current');
+      current =
+          new WarningsCollection('/a/tempdir2', '/pubcache/path2', 'current');
       current.add('newwarning');
       current.add('morewarning');
       current.add('duplicateoriginalwarning');
-      originalWithDirs = new WarningsCollection('/a/tempdirFOO', '/pubcache/pathFOO', 'DirsOriginal');
-      originalWithDirs.add('originalWarning found in /a/tempdirFOO/some/subdir/program.dart!!!!');
-      originalWithDirs.add('another originalWarning found in /pubcache/pathFOO/some/package/lib/thingy.dart!!!');
-      originalWithDirs.add('insufficent exclamation mark warning found in /pubcache/pathFOO/some/package/lib/thingy.dart.');
-      originalWithDirs.add('another originalWarning found in /a/tempdirFOO/some/subdir/program.dart');
-      currentWithDirs = new WarningsCollection('/a/tempdirBAR', '/pubcache/pathBAR', 'DirsCurrent');
-      currentWithDirs.add('originalWarning found in /a/tempdirBAR/some/subdir/program.dart!!!!');
-      currentWithDirs.add('another originalWarning found in /pubcache/pathBAR/some/package/lib/thingy.dart!!!');
-      currentWithDirs.add('insufficent exclamation mark warning found in /pubcache/pathBAR/some/package/lib/thingy.dart.');
-      currentWithDirs.add('another originalWarning found in /a/tempdirBAR/some/other/subdir/program.dart');
+      originalWithDirs = new WarningsCollection(
+          '/a/tempdirFOO', '/pubcache/pathFOO', 'DirsOriginal');
+      originalWithDirs.add(
+          'originalWarning found in /a/tempdirFOO/some/subdir/program.dart!!!!');
+      originalWithDirs.add(
+          'another originalWarning found in /pubcache/pathFOO/some/package/lib/thingy.dart!!!');
+      originalWithDirs.add(
+          'insufficent exclamation mark warning found in /pubcache/pathFOO/some/package/lib/thingy.dart.');
+      originalWithDirs.add(
+          'another originalWarning found in /a/tempdirFOO/some/subdir/program.dart');
+      currentWithDirs = new WarningsCollection(
+          '/a/tempdirBAR', '/pubcache/pathBAR', 'DirsCurrent');
+      currentWithDirs.add(
+          'originalWarning found in /a/tempdirBAR/some/subdir/program.dart!!!!');
+      currentWithDirs.add(
+          'another originalWarning found in /pubcache/pathBAR/some/package/lib/thingy.dart!!!');
+      currentWithDirs.add(
+          'insufficent exclamation mark warning found in /pubcache/pathBAR/some/package/lib/thingy.dart.');
+      currentWithDirs.add(
+          'another originalWarning found in /a/tempdirBAR/some/other/subdir/program.dart');
     });
 
     test('verify that paths are substituted when comparing warnings', () {
       expect(
-        originalWithDirs.getPrintableWarningDelta('Dirs diff title', currentWithDirs),
-        equals(
-            '*** Dirs diff title : 1 warnings from DirsOriginal, missing in DirsCurrent:\n'
-            'another originalWarning found in /a/tempdirFOO/some/subdir/program.dart\n'
-            '*** Dirs diff title : 1 new warnings in DirsCurrent, missing in DirsOriginal\n'
-            'another originalWarning found in /a/tempdirBAR/some/other/subdir/program.dart\n'
-            '*** Dirs diff title : Difference in warning output found for 2 warnings (5 warnings found)"\n'));
+          originalWithDirs.getPrintableWarningDelta(
+              'Dirs diff title', currentWithDirs),
+          equals(
+              '*** Dirs diff title : 1 warnings from DirsOriginal, missing in DirsCurrent:\n'
+              'another originalWarning found in /a/tempdirFOO/some/subdir/program.dart\n'
+              '*** Dirs diff title : 1 new warnings in DirsCurrent, missing in DirsOriginal\n'
+              'another originalWarning found in /a/tempdirBAR/some/other/subdir/program.dart\n'
+              '*** Dirs diff title : Difference in warning output found for 2 warnings (5 warnings found)"\n'));
     });
 
     test('verify output of printWarningDelta', () {

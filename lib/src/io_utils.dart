@@ -88,8 +88,8 @@ class SubprocessLauncher {
     });
   }
 
-  SubprocessLauncher(this.context, [Map<String, String> environment]) :
-      this.environment = environment ?? <String, String>{};
+  SubprocessLauncher(this.context, [Map<String, String> environment])
+      : this.environment = environment ?? <String, String>{};
 
   /// A wrapper around start/await process.exitCode that will display the
   /// output of the executable continuously and fail on non-zero exit codes.
