@@ -1,3 +1,7 @@
+## 0.16.0
+* Cherrypick test changes from 0.15.1 and a fix for (#1603), updating
+  dartdoc to the latest analyzer.
+
 ## 0.15.1
 * Add SDK warning comparison to grind script (#1572)
 * Improve rendering of inline `<code>` (#1573)
