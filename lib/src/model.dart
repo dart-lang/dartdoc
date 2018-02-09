@@ -37,7 +37,7 @@ import 'package:analyzer/src/dart/element/member.dart'
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/io_utils.dart';
-import 'package:front_end/byte_store.dart';
+import 'package:front_end/src/byte_store/byte_store.dart';
 import 'package:front_end/src/base/performance_logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:tuple/tuple.dart';

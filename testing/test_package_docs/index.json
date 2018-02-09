@@ -127,7 +127,7 @@
   "qualifiedName": "ex.Animal.toString",
   "href": "ex/Animal/toString.html",
   "type": "method",
-  "overriddenDepth": 0,
+  "overriddenDepth": 1,
   "enclosedBy": {
    "name": "Animal",
    "type": "enum"
@@ -4281,7 +4281,7 @@
   "qualifiedName": "fake.Color.toString",
   "href": "fake/Color/toString.html",
   "type": "method",
-  "overriddenDepth": 0,
+  "overriddenDepth": 1,
   "enclosedBy": {
    "name": "Color",
    "type": "enum"
@@ -6103,6 +6103,17 @@
   }
  },
  {
+  "name": "operator +",
+  "qualifiedName": "fake.SpecialList.+",
+  "href": "fake/SpecialList/operator_plus.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "SpecialList",
+   "type": "class"
+  }
+ },
+ {
   "name": "operator ==",
   "qualifiedName": "fake.SpecialList.==",
   "href": "fake/SpecialList/operator_equals.html",
@@ -6174,6 +6185,17 @@
   "href": "fake/SpecialList/asMap.html",
   "type": "method",
   "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "SpecialList",
+   "type": "class"
+  }
+ },
+ {
+  "name": "cast",
+  "qualifiedName": "fake.SpecialList.cast",
+  "href": "fake/SpecialList/cast.html",
+  "type": "method",
+  "overriddenDepth": 2,
   "enclosedBy": {
    "name": "SpecialList",
    "type": "class"
@@ -6279,6 +6301,17 @@
   }
  },
  {
+  "name": "followedBy",
+  "qualifiedName": "fake.SpecialList.followedBy",
+  "href": "fake/SpecialList/followedBy.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "SpecialList",
+   "type": "class"
+  }
+ },
+ {
   "name": "forEach",
   "qualifiedName": "fake.SpecialList.forEach",
   "href": "fake/SpecialList/forEach.html",
@@ -6315,6 +6348,17 @@
   "name": "indexOf",
   "qualifiedName": "fake.SpecialList.indexOf",
   "href": "fake/SpecialList/indexOf.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "SpecialList",
+   "type": "class"
+  }
+ },
+ {
+  "name": "indexWhere",
+  "qualifiedName": "fake.SpecialList.indexWhere",
+  "href": "fake/SpecialList/indexWhere.html",
   "type": "method",
   "overriddenDepth": 1,
   "enclosedBy": {
@@ -6403,6 +6447,17 @@
   "name": "lastIndexOf",
   "qualifiedName": "fake.SpecialList.lastIndexOf",
   "href": "fake/SpecialList/lastIndexOf.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "SpecialList",
+   "type": "class"
+  }
+ },
+ {
+  "name": "lastIndexWhere",
+  "qualifiedName": "fake.SpecialList.lastIndexWhere",
+  "href": "fake/SpecialList/lastIndexWhere.html",
   "type": "method",
   "overriddenDepth": 1,
   "enclosedBy": {
@@ -6537,6 +6592,17 @@
   "href": "fake/SpecialList/retainWhere.html",
   "type": "method",
   "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "SpecialList",
+   "type": "class"
+  }
+ },
+ {
+  "name": "retype",
+  "qualifiedName": "fake.SpecialList.retype",
+  "href": "fake/SpecialList/retype.html",
+  "type": "method",
+  "overriddenDepth": 2,
   "enclosedBy": {
    "name": "SpecialList",
    "type": "class"
@@ -6722,6 +6788,17 @@
   "name": "where",
   "qualifiedName": "fake.SpecialList.where",
   "href": "fake/SpecialList/where.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "SpecialList",
+   "type": "class"
+  }
+ },
+ {
+  "name": "whereType",
+  "qualifiedName": "fake.SpecialList.whereType",
+  "href": "fake/SpecialList/whereType.html",
   "type": "method",
   "overriddenDepth": 1,
   "enclosedBy": {
