@@ -10,6 +10,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/analyzer.dart';
+import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -99,14 +100,15 @@ class DartDoc extends PackageBuilder {
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
 
   @override
-  void logAnalysisErrors(Set<Source> sources) {
+  logAnalysisErrors(Set<Source> sources) async {
     List<AnalysisErrorInfo> errorInfos = [];
     // TODO(jcollins-g): figure out why sources can't contain includeExternals
     // or embedded SDK components without having spurious(?) analysis errors.
     // That seems wrong. dart-lang/dartdoc#1547
     for (Source source in sources) {
-      context.computeErrors(source);
-      AnalysisErrorInfo info = context.getErrors(source);
+      ErrorsResult errorsResult = await driver.getErrors(source.fullName);
+      AnalysisErrorInfo info =
+          new AnalysisErrorInfoImpl(errorsResult.errors, errorsResult.lineInfo);
       List<_Error> errors = [info]
           .expand((AnalysisErrorInfo info) {
             return info.errors.map((error) =>
@@ -155,7 +157,7 @@ class DartDoc extends PackageBuilder {
   Future<DartDocResults> generateDocs() async {
     Stopwatch _stopwatch = new Stopwatch()..start();
     double seconds;
-    package = buildPackage();
+    package = await buildPackage();
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     logInfo(
         "Initialized dartdoc with ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "

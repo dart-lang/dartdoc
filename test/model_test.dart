@@ -31,8 +31,8 @@ void main() {
   Library interceptorsLib;
   Package sdkAsPackage;
 
-  setUpAll(() {
-    utils.init();
+  setUpAll(() async {
+    await utils.init();
     package = utils.testPackage;
     ginormousPackage = utils.testPackageGinormous;
     exLibrary = package.libraries.firstWhere((lib) => lib.name == 'ex');
@@ -2070,7 +2070,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           aComplexTypedef.linkedReturnType,
           equals(
-              'Function<span class="signature">(<span class="parameter" id="-param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="-param-"><span class="type-annotation">A3</span></span>)</span>'));
+              'Function<span class="signature">(<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span>)</span>'));
       expect(
           aComplexTypedef.linkedParamsLines,
           equals(
