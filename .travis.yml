@@ -1,7 +1,7 @@
 language: dart
 sudo: false
 dart:
-  - "dev/release/2.0.0-dev.16.0"
+  - "dev/release/2.0.0-dev.22.0"
 env:
   - DARTDOC_BOT=main
   # TODO(devoncarew): add angulardart support
