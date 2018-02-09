@@ -181,11 +181,11 @@
 </dd>
         <dt id="first" class="property inherited">
           <span class="name"><a href="fake/SpecialList/first.html">first</a></span>
-          <span class="signature">&#8594; E</span>
+          <span class="signature">&#8596; E</span>
         </dt>
         <dd class="inherited">
           
-          <div class="features">read-only, inherited</div>
+          <div class="features">read / write, inherited</div>
 </dd>
         <dt id="hashCode" class="property inherited">
           <span class="name"><a href="fake/SpecialList/hashCode.html">hashCode</a></span>
@@ -221,11 +221,11 @@
 </dd>
         <dt id="last" class="property inherited">
           <span class="name"><a href="fake/SpecialList/last.html">last</a></span>
-          <span class="signature">&#8594; E</span>
+          <span class="signature">&#8596; E</span>
         </dt>
         <dd class="inherited">
           
-          <div class="features">read-only, inherited</div>
+          <div class="features">read / write, inherited</div>
 </dd>
         <dt id="reversed" class="property inherited">
           <span class="name"><a href="fake/SpecialList/reversed.html">reversed</a></span>
@@ -287,6 +287,15 @@
         <dt id="asMap" class="callable inherited">
           <span class="name"><a href="fake/SpecialList/asMap.html">asMap</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; Map<span class="signature">&lt;int, E&gt;</span></span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">inherited</div>
+</dd>
+        <dt id="cast" class="callable inherited">
+          <span class="name"><a href="fake/SpecialList/cast.html">cast</a></span><span class="signature">&lt;R&gt;</span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; List<span class="signature">&lt;R&gt;</span></span>
           </span>
         </dt>
         <dd class="inherited">
@@ -365,6 +374,15 @@
           
           <div class="features">inherited</div>
 </dd>
+        <dt id="followedBy" class="callable inherited">
+          <span class="name"><a href="fake/SpecialList/followedBy.html">followedBy</a></span><span class="signature">(<wbr><span class="parameter" id="followedBy-param-other"><span class="type-annotation">Iterable<span class="signature">&lt;E&gt;</span></span> <span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; Iterable<span class="signature">&lt;E&gt;</span></span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">inherited</div>
+</dd>
         <dt id="forEach" class="callable inherited">
           <span class="name"><a href="fake/SpecialList/forEach.html">forEach</a></span><span class="signature">(<wbr><span class="parameter" id="forEach-param-action"><span class="type-annotation">void</span> <span class="parameter-name">action</span>(<span class="parameter" id="action-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>)
             <span class="returntype parameter">&#8594; void</span>
@@ -384,7 +402,16 @@
           <div class="features">inherited</div>
 </dd>
         <dt id="indexOf" class="callable inherited">
-          <span class="name"><a href="fake/SpecialList/indexOf.html">indexOf</a></span><span class="signature">(<wbr><span class="parameter" id="indexOf-param-element"><span class="type-annotation">Object</span> <span class="parameter-name">element</span>, [</span> <span class="parameter" id="indexOf-param-startIndex"><span class="type-annotation">int</span> <span class="parameter-name">startIndex</span> = <span class="default-value">0</span></span> ])
+          <span class="name"><a href="fake/SpecialList/indexOf.html">indexOf</a></span><span class="signature">(<wbr><span class="parameter" id="indexOf-param-element"><span class="type-annotation">Object</span> <span class="parameter-name">element</span>, [</span> <span class="parameter" id="indexOf-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span> = <span class="default-value">0</span></span> ])
+            <span class="returntype parameter">&#8594; int</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">inherited</div>
+</dd>
+        <dt id="indexWhere" class="callable inherited">
+          <span class="name"><a href="fake/SpecialList/indexWhere.html">indexWhere</a></span><span class="signature">(<wbr><span class="parameter" id="indexWhere-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>), [</span> <span class="parameter" id="indexWhere-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span> = <span class="default-value">0</span></span> ])
             <span class="returntype parameter">&#8594; int</span>
           </span>
         </dt>
@@ -420,7 +447,16 @@
           <div class="features">inherited</div>
 </dd>
         <dt id="lastIndexOf" class="callable inherited">
-          <span class="name"><a href="fake/SpecialList/lastIndexOf.html">lastIndexOf</a></span><span class="signature">(<wbr><span class="parameter" id="lastIndexOf-param-element"><span class="type-annotation">Object</span> <span class="parameter-name">element</span>, [</span> <span class="parameter" id="lastIndexOf-param-startIndex"><span class="type-annotation">int</span> <span class="parameter-name">startIndex</span></span> ])
+          <span class="name"><a href="fake/SpecialList/lastIndexOf.html">lastIndexOf</a></span><span class="signature">(<wbr><span class="parameter" id="lastIndexOf-param-element"><span class="type-annotation">Object</span> <span class="parameter-name">element</span>, [</span> <span class="parameter" id="lastIndexOf-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span></span> ])
+            <span class="returntype parameter">&#8594; int</span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">inherited</div>
+</dd>
+        <dt id="lastIndexWhere" class="callable inherited">
+          <span class="name"><a href="fake/SpecialList/lastIndexWhere.html">lastIndexWhere</a></span><span class="signature">(<wbr><span class="parameter" id="lastIndexWhere-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>), [</span> <span class="parameter" id="lastIndexWhere-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span></span> ])
             <span class="returntype parameter">&#8594; int</span>
           </span>
         </dt>
@@ -527,6 +563,15 @@
           
           <div class="features">inherited</div>
 </dd>
+        <dt id="retype" class="callable inherited">
+          <span class="name"><a href="fake/SpecialList/retype.html">retype</a></span><span class="signature">&lt;R&gt;</span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; List<span class="signature">&lt;R&gt;</span></span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">inherited</div>
+</dd>
         <dt id="setAll" class="callable inherited">
           <span class="name"><a href="fake/SpecialList/setAll.html">setAll</a></span><span class="signature">(<wbr><span class="parameter" id="setAll-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span>, </span> <span class="parameter" id="setAll-param-iterable"><span class="type-annotation">Iterable<span class="signature">&lt;E&gt;</span></span> <span class="parameter-name">iterable</span></span>)
             <span class="returntype parameter">&#8594; void</span>
@@ -555,7 +600,7 @@
           <div class="features">inherited</div>
 </dd>
         <dt id="singleWhere" class="callable inherited">
-          <span class="name"><a href="fake/SpecialList/singleWhere.html">singleWhere</a></span><span class="signature">(<wbr><span class="parameter" id="singleWhere-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>)</span>)
+          <span class="name"><a href="fake/SpecialList/singleWhere.html">singleWhere</a></span><span class="signature">(<wbr><span class="parameter" id="singleWhere-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-element"><span class="type-annotation">E</span> <span class="parameter-name">element</span></span>), {</span> <span class="parameter" id="singleWhere-param-orElse"><span class="type-annotation">E</span> <span class="parameter-name">orElse</span>()</span> })
             <span class="returntype parameter">&#8594; E</span>
           </span>
         </dt>
@@ -653,6 +698,15 @@
           
           <div class="features">inherited</div>
 </dd>
+        <dt id="whereType" class="callable inherited">
+          <span class="name"><a href="fake/SpecialList/whereType.html">whereType</a></span><span class="signature">&lt;T&gt;</span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; Iterable<span class="signature">&lt;T&gt;</span></span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">inherited</div>
+</dd>
       </dl>
     </section>
 
@@ -676,6 +730,15 @@
         <dd>
           
           
+</dd>
+        <dt id="operator +" class="callable inherited">
+          <span class="name"><a href="fake/SpecialList/operator_plus.html">operator +</a></span><span class="signature">(<wbr><span class="parameter" id="+-param-other"><span class="type-annotation">List<span class="signature">&lt;E&gt;</span></span> <span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; List<span class="signature">&lt;E&gt;</span></span>
+          </span>
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">inherited</div>
 </dd>
         <dt id="operator ==" class="callable inherited">
           <span class="name"><a href="fake/SpecialList/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
@@ -718,6 +781,7 @@
       <li class="inherited"><a href="fake/SpecialList/addAll.html">addAll</a></li>
       <li class="inherited"><a href="fake/SpecialList/any.html">any</a></li>
       <li class="inherited"><a href="fake/SpecialList/asMap.html">asMap</a></li>
+      <li class="inherited"><a href="fake/SpecialList/cast.html">cast</a></li>
       <li class="inherited"><a href="fake/SpecialList/clear.html">clear</a></li>
       <li class="inherited"><a href="fake/SpecialList/contains.html">contains</a></li>
       <li class="inherited"><a href="fake/SpecialList/elementAt.html">elementAt</a></li>
@@ -726,13 +790,16 @@
       <li class="inherited"><a href="fake/SpecialList/fillRange.html">fillRange</a></li>
       <li class="inherited"><a href="fake/SpecialList/firstWhere.html">firstWhere</a></li>
       <li class="inherited"><a href="fake/SpecialList/fold.html">fold</a></li>
+      <li class="inherited"><a href="fake/SpecialList/followedBy.html">followedBy</a></li>
       <li class="inherited"><a href="fake/SpecialList/forEach.html">forEach</a></li>
       <li class="inherited"><a href="fake/SpecialList/getRange.html">getRange</a></li>
       <li class="inherited"><a href="fake/SpecialList/indexOf.html">indexOf</a></li>
+      <li class="inherited"><a href="fake/SpecialList/indexWhere.html">indexWhere</a></li>
       <li class="inherited"><a href="fake/SpecialList/insert.html">insert</a></li>
       <li class="inherited"><a href="fake/SpecialList/insertAll.html">insertAll</a></li>
       <li class="inherited"><a href="fake/SpecialList/join.html">join</a></li>
       <li class="inherited"><a href="fake/SpecialList/lastIndexOf.html">lastIndexOf</a></li>
+      <li class="inherited"><a href="fake/SpecialList/lastIndexWhere.html">lastIndexWhere</a></li>
       <li class="inherited"><a href="fake/SpecialList/lastWhere.html">lastWhere</a></li>
       <li class="inherited"><a href="fake/SpecialList/map.html">map</a></li>
       <li class="inherited"><a href="fake/SpecialList/noSuchMethod.html">noSuchMethod</a></li>
@@ -744,6 +811,7 @@
       <li class="inherited"><a href="fake/SpecialList/removeWhere.html">removeWhere</a></li>
       <li class="inherited"><a href="fake/SpecialList/replaceRange.html">replaceRange</a></li>
       <li class="inherited"><a href="fake/SpecialList/retainWhere.html">retainWhere</a></li>
+      <li class="inherited"><a href="fake/SpecialList/retype.html">retype</a></li>
       <li class="inherited"><a href="fake/SpecialList/setAll.html">setAll</a></li>
       <li class="inherited"><a href="fake/SpecialList/setRange.html">setRange</a></li>
       <li class="inherited"><a href="fake/SpecialList/shuffle.html">shuffle</a></li>
@@ -758,10 +826,12 @@
       <li class="inherited"><a href="fake/SpecialList/toSet.html">toSet</a></li>
       <li class="inherited"><a href="fake/SpecialList/toString.html">toString</a></li>
       <li class="inherited"><a href="fake/SpecialList/where.html">where</a></li>
+      <li class="inherited"><a href="fake/SpecialList/whereType.html">whereType</a></li>
     
       <li class="section-title"><a href="fake/SpecialList-class.html#operators">Operators</a></li>
       <li><a href="fake/SpecialList/operator_get.html">operator []</a></li>
       <li><a href="fake/SpecialList/operator_put.html">operator []=</a></li>
+      <li class="inherited"><a href="fake/SpecialList/operator_plus.html">operator +</a></li>
       <li class="inherited"><a href="fake/SpecialList/operator_equals.html">operator ==</a></li>
     
     
