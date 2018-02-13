@@ -5056,20 +5056,30 @@ class PackageBuilder {
   SourceFactory get sourceFactory {
     List<UriResolver> resolvers = [];
     resolvers.add(new SdkExtUriResolver(packageMap));
-    resolvers.add(new PackageMapUriResolver(
-        PhysicalResourceProvider.INSTANCE, packageMap));
+    final UriResolver packageResolver = new PackageMapUriResolver(
+        PhysicalResourceProvider.INSTANCE, packageMap);
+    UriResolver sdkResolver;
     if (embedderSdk == null || embedderSdk.urlMappings.length == 0) {
       // The embedder uri resolver has no mappings. Use the default Dart SDK
       // uri resolver.
-      resolvers.add(new DartUriResolver(sdk));
+      sdkResolver = new DartUriResolver(sdk);
     } else {
       // The embedder uri resolver has mappings, use it instead of the default
       // Dart SDK uri resolver.
-      resolvers.add(embedderResolver);
+      sdkResolver = embedderResolver;
     }
+
+    /// [AnalysisDriver] seems to require package resolvers that
+    /// never resolve to embedded SDK files, and the resolvers list must still
+    /// contain a DartUriResolver.  This hack won't be necessary once analyzer
+    /// has a clean public API.
+    resolvers.add(new PackageWithoutSdkResolver(packageResolver, sdkResolver));
+    resolvers.add(sdkResolver);
     resolvers.add(
         new fileSystem.ResourceUriResolver(PhysicalResourceProvider.INSTANCE));
 
+    assert(
+        resolvers.any((UriResolver resolver) => resolver is DartUriResolver));
     SourceFactory sourceFactory = new SourceFactory(resolvers);
     return sourceFactory;
   }
@@ -5287,5 +5297,39 @@ class PackageBuilder {
     } else {
       yield* entities;
     }
+  }
+}
+
+/// This class resolves package URIs, but only if a given SdkResolver doesn't
+/// resolve them.
+///
+/// TODO(jcollins-g): remove this hackery when a clean public API to analyzer
+/// exists, and port dartdoc to it.
+class PackageWithoutSdkResolver extends UriResolver {
+  final UriResolver _packageResolver;
+  final UriResolver _sdkResolver;
+
+  PackageWithoutSdkResolver(this._packageResolver, this._sdkResolver);
+
+  @override
+  Source resolveAbsolute(Uri uri, [Uri actualUri]) {
+    if (_sdkResolver.resolveAbsolute(uri, actualUri) == null) {
+      return _packageResolver.resolveAbsolute(uri, actualUri);
+    }
+    return null;
+  }
+
+  @override
+  Uri restoreAbsolute(Source source) {
+    Uri resolved;
+    try {
+      resolved = _sdkResolver.restoreAbsolute(source);
+    } catch (ArgumentError) {
+      // SDK resolvers really don't like being thrown package paths.
+    }
+    if (resolved == null) {
+      return _packageResolver.restoreAbsolute(source);
+    }
+    return null;
   }
 }
