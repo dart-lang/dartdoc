@@ -507,10 +507,14 @@ Element _findRefElementInLibrary(String codeRef, Warnable element,
   if (results.isEmpty &&
       codeRefChomped.contains('.') &&
       _findRefElementCache.containsKey(codeRefChomped)) {
-    for (final modelElement in _findRefElementCache[codeRefChomped]) {
+    for (final ModelElement modelElement in _findRefElementCache[codeRefChomped]) {
       if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
+      // For fully qualified matches, the original preferredClass passed
+      // might make no sense.  Instead, use the enclosing class from the
+      // element in [_findRefElementCache], because that element's enclosing
+      // class will be preferred from [codeRefChomped]'s perspective.
       results.add(package.findCanonicalModelElementFor(modelElement.element,
-          preferredClass: preferredClass));
+          preferredClass: modelElement.enclosingElement is Class ? modelElement.enclosingElement : null));
     }
   }
   results.remove(null);
