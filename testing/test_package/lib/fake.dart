@@ -687,3 +687,21 @@ class OperatorReferenceClass {
     return false;
   }
 }
+
+class _PrivateClassDefiningSomething {
+  bool aMethod() {
+    return false;
+  }
+}
+
+class InheritingClassOne extends _PrivateClassDefiningSomething {}
+class InheritingClassTwo extends _PrivateClassDefiningSomething {}
+
+class ReferringClass {
+  /// Here I am referring by full names, to [fake.InheritingClassOne.aMethod],
+  /// and to [fake.InheritingClassTwo.aMethod].  With luck, both of these
+  /// two resolve correctly.
+  bool notAMethodFromPrivateClass() {
+    return false;
+  }
+}

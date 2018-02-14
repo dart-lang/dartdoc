@@ -690,6 +690,12 @@ void main() {
               '<p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>'));
     });
 
+    test('code references to privately defined elements in public classes work properly', () {
+      Method notAMethodFromPrivateClass = fakeLibrary.allClasses.firstWhere((Class c) => c.name == 'ReferringClass').allPublicInstanceMethods.firstWhere((Method m) => m.name == 'notAMethodFromPrivateClass');
+      expect(notAMethodFromPrivateClass.documentationAsHtml, contains('<a href="fake/InheritingClassOne/aMethod.html">fake.InheritingClassOne.aMethod</a>'));
+      expect(notAMethodFromPrivateClass.documentationAsHtml, contains('<a href="fake/InheritingClassTwo/aMethod.html">fake.InheritingClassTwo.aMethod</a>'));
+    });
+
     test('legacy code blocks render correctly', () {
       expect(
           testingCodeSyntaxInOneLiners.oneLineDoc,
