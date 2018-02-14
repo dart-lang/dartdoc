@@ -5311,6 +5311,182 @@
   }
  },
  {
+  "name": "InheritingClassOne",
+  "qualifiedName": "fake.InheritingClassOne",
+  "href": "fake/InheritingClassOne-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "InheritingClassOne",
+  "qualifiedName": "fake.InheritingClassOne",
+  "href": "fake/InheritingClassOne/InheritingClassOne.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassOne",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.InheritingClassOne.==",
+  "href": "fake/InheritingClassOne/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassOne",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aMethod",
+  "qualifiedName": "fake.InheritingClassOne.aMethod",
+  "href": "fake/InheritingClassOne/aMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassOne",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.InheritingClassOne.hashCode",
+  "href": "fake/InheritingClassOne/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassOne",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.InheritingClassOne.noSuchMethod",
+  "href": "fake/InheritingClassOne/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassOne",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.InheritingClassOne.runtimeType",
+  "href": "fake/InheritingClassOne/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassOne",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.InheritingClassOne.toString",
+  "href": "fake/InheritingClassOne/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassOne",
+   "type": "class"
+  }
+ },
+ {
+  "name": "InheritingClassTwo",
+  "qualifiedName": "fake.InheritingClassTwo",
+  "href": "fake/InheritingClassTwo-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "InheritingClassTwo",
+  "qualifiedName": "fake.InheritingClassTwo",
+  "href": "fake/InheritingClassTwo/InheritingClassTwo.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassTwo",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.InheritingClassTwo.==",
+  "href": "fake/InheritingClassTwo/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassTwo",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aMethod",
+  "qualifiedName": "fake.InheritingClassTwo.aMethod",
+  "href": "fake/InheritingClassTwo/aMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassTwo",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.InheritingClassTwo.hashCode",
+  "href": "fake/InheritingClassTwo/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassTwo",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.InheritingClassTwo.noSuchMethod",
+  "href": "fake/InheritingClassTwo/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassTwo",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.InheritingClassTwo.runtimeType",
+  "href": "fake/InheritingClassTwo/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassTwo",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.InheritingClassTwo.toString",
+  "href": "fake/InheritingClassTwo/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "InheritingClassTwo",
+   "type": "class"
+  }
+ },
+ {
   "name": "Interface",
   "qualifiedName": "fake.Interface",
   "href": "fake/Interface-class.html",
@@ -6078,6 +6254,94 @@
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "ReferringClass",
+  "qualifiedName": "fake.ReferringClass",
+  "href": "fake/ReferringClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ReferringClass",
+  "qualifiedName": "fake.ReferringClass",
+  "href": "fake/ReferringClass/ReferringClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferringClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ReferringClass.==",
+  "href": "fake/ReferringClass/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferringClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ReferringClass.hashCode",
+  "href": "fake/ReferringClass/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferringClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ReferringClass.noSuchMethod",
+  "href": "fake/ReferringClass/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferringClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "notAMethodFromPrivateClass",
+  "qualifiedName": "fake.ReferringClass.notAMethodFromPrivateClass",
+  "href": "fake/ReferringClass/notAMethodFromPrivateClass.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferringClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ReferringClass.runtimeType",
+  "href": "fake/ReferringClass/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferringClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ReferringClass.toString",
+  "href": "fake/ReferringClass/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferringClass",
+   "type": "class"
   }
  },
  {
