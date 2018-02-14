@@ -268,8 +268,10 @@ MatchingLinkResult _getMatchingLinkElement(
   if (refModelElement == null) {
     Element refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
     if (refElement != null) {
-      refModelElement = new ModelElement.fromElement(_getRefElementFromCommentRefs(commentRefs, codeRef), element.package);
-      refModelElement = refModelElement.canonicalModelElement ?? refModelElement;
+      refModelElement = new ModelElement.fromElement(
+          _getRefElementFromCommentRefs(commentRefs, codeRef), element.package);
+      refModelElement =
+          refModelElement.canonicalModelElement ?? refModelElement;
     }
   } else {
     assert(refModelElement is! Accessor);
@@ -485,14 +487,17 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
   if (results.isEmpty &&
       codeRefChomped.contains('.') &&
       _findRefElementCache.containsKey(codeRefChomped)) {
-    for (final ModelElement modelElement in _findRefElementCache[codeRefChomped]) {
+    for (final ModelElement modelElement
+        in _findRefElementCache[codeRefChomped]) {
       if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
       // For fully qualified matches, the original preferredClass passed
       // might make no sense.  Instead, use the enclosing class from the
       // element in [_findRefElementCache], because that element's enclosing
       // class will be preferred from [codeRefChomped]'s perspective.
       results.add(package.findCanonicalModelElementFor(modelElement.element,
-          preferredClass: modelElement.enclosingElement is Class ? modelElement.enclosingElement : null));
+          preferredClass: modelElement.enclosingElement is Class
+              ? modelElement.enclosingElement
+              : null));
     }
   }
   results.remove(null);

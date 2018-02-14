@@ -4480,11 +4480,8 @@ class Package extends Canonicalization with Nameable, Warnable {
       if (matches.any((me) => me is GetterSetterCombo)) {
         matches.removeWhere((me) => me is Accessor);
       }
-      if (matches.length > 1) {
-        1+1;
-      }
 
-      //assert(matches.length <= 1);
+      assert(matches.length <= 1);
       if (matches.isNotEmpty) {
         modelElement = matches.first;
       }
