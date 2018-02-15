@@ -262,7 +262,8 @@ main(List<String> arguments) async {
           double.parse(args['ambiguous-reexport-scorer-min-confidence']),
       verboseWarnings: args['verbose-warnings'],
       excludePackages: args['exclude-packages'],
-      dropTextFrom: dropTextFrom);
+      dropTextFrom: dropTextFrom,
+      validateLinks: args['validate-links']);
 
   DartDoc dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries, includeExternals);
@@ -376,19 +377,21 @@ ArgParser _createArgsParser() {
       help: 'Display extra debugging information and help with warnings.',
       negatable: true,
       defaultsTo: true);
-  parser.addFlag(
-    'hide-sdk-text',
-    help:
-        "Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.",
-    negatable: true,
-    defaultsTo: false,
-    hide: true,
-  );
+  parser.addFlag('hide-sdk-text',
+      help:
+          "Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.",
+      negatable: true,
+      defaultsTo: false,
+      hide: true);
   parser.addFlag('json',
       help: 'Prints out progress JSON maps. One entry per line.',
       defaultsTo: false,
       negatable: true);
-
+  parser.addFlag('validate-links',
+      help:
+          'Runs the built-in link checker to display Dart context aware warnings for broken links (slow)',
+      negatable: true,
+      defaultsTo: true);
   return parser;
 }
 
