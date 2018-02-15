@@ -19,6 +19,7 @@ class Config {
   final bool verboseWarnings;
   final List<String> dropTextFrom;
   final List<String> excludePackages;
+  final bool validateLinks;
   Config._(
       this.inputDir,
       this.showWarnings,
@@ -31,7 +32,8 @@ class Config {
       this.reexportMinConfidence,
       this.verboseWarnings,
       this.dropTextFrom,
-      this.excludePackages);
+      this.excludePackages,
+      this.validateLinks);
 }
 
 Config _config;
@@ -49,7 +51,8 @@ void setConfig(
     double reexportMinConfidence: 0.1,
     bool verboseWarnings: true,
     List<String> dropTextFrom,
-    List<String> excludePackages}) {
+    List<String> excludePackages,
+    bool validateLinks: true}) {
   _config = new Config._(
       inputDir,
       showWarnings,
@@ -62,5 +65,6 @@ void setConfig(
       reexportMinConfidence,
       verboseWarnings,
       dropTextFrom ?? const <String>[],
-      excludePackages ?? const <String>[]);
+      excludePackages ?? const <String>[],
+      validateLinks);
 }

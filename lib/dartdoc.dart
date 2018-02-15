@@ -171,8 +171,7 @@ class DartDoc extends PackageBuilder {
       await generator.generate(package, outputDir.path);
       writtenFiles.addAll(generator.writtenFiles.map(path.normalize));
     }
-
-    verifyLinks(package, outputDir.path);
+    if (config.validateLinks) validateLinks(package, outputDir.path);
     int warnings = package.packageWarningCounter.warningCount;
     int errors = package.packageWarningCounter.errorCount;
     if (warnings == 0 && errors == 0) {
@@ -398,7 +397,7 @@ class DartDoc extends PackageBuilder {
 
   /// Don't call this method more than once, and only after you've
   /// generated all docs for the Package.
-  void verifyLinks(Package package, String origin) {
+  void validateLinks(Package package, String origin) {
     assert(_hrefs == null);
     _hrefs = package.allHrefs;
 
