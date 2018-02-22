@@ -8,9 +8,8 @@ library dartdoc.markdown_processor;
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/ast.dart' hide TypeParameter;
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
@@ -254,27 +253,32 @@ MatchingLinkResult _getMatchingLinkElement(
     return new MatchingLinkResult(null, null, warn: false);
   }
 
-  Element refElement;
+  ModelElement refModelElement;
 
   // Try expensive not-scoped lookup.
-  if (refElement == null) {
+  if (refModelElement == null) {
     Class preferredClass = _getPreferredClass(element);
-    refElement =
+    refModelElement =
         _findRefElementInLibrary(codeRef, element, commentRefs, preferredClass);
   }
 
-  // This is faster but does not take canonicalization into account; try
-  // only as a last resort. TODO(jcollins-g): make analyzer comment references
-  // dartdoc-canonicalization-aware?
-  if (refElement == null) {
-    refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
+  // This is faster but does not know about libraries without imports in the
+  // current context; try only as a last resort.
+  // TODO(jcollins-g): make analyzer comment references dartdoc-canonicalization-aware?
+  if (refModelElement == null) {
+    Element refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
+    if (refElement != null) {
+      refModelElement = new ModelElement.fromElement(
+          _getRefElementFromCommentRefs(commentRefs, codeRef), element.package);
+      refModelElement =
+          refModelElement.canonicalModelElement ?? refModelElement;
+    }
   } else {
-    assert(refElement is! PropertyAccessorElement);
-    assert(refElement is! PrefixElement);
+    assert(refModelElement is! Accessor);
   }
 
   // Did not find it anywhere.
-  if (refElement == null) {
+  if (refModelElement == null) {
     // TODO(jcollins-g): remove squelching of non-canonical warnings here
     //                   once we no longer process full markdown for
     //                   oneLineDocs (#1417)
@@ -282,18 +286,9 @@ MatchingLinkResult _getMatchingLinkElement(
   }
 
   // Ignore all parameters.
-  if (refElement is ParameterElement || refElement is TypeParameterElement)
+  if (refModelElement is Parameter || refModelElement is TypeParameter)
     return new MatchingLinkResult(null, null, warn: false);
 
-  Library refLibrary = element.package.findOrCreateLibraryFor(refElement);
-  Element searchElement = refElement;
-  if (searchElement is Member)
-    searchElement = Package.getBasestElement(refElement);
-
-  final Class preferredClass = _getPreferredClass(element);
-  ModelElement refModelElement = element.package.findCanonicalModelElementFor(
-      searchElement,
-      preferredClass: preferredClass);
   // There have been places in the code which helpfully cache entities
   // regardless of what package they are associated with.  This assert
   // will protect us from reintroducing that.
@@ -302,23 +297,8 @@ MatchingLinkResult _getMatchingLinkElement(
     return new MatchingLinkResult(refModelElement, null);
   }
   // From this point on, we haven't been able to find a canonical ModelElement.
-  // So in this case, just find any ModelElement we can.
-  Accessor getter;
-  Accessor setter;
-  if (searchElement is FieldElement) {
-    // TODO(jcollins-g): consolidate field element construction with inheritance
-    // checking.
-    if (searchElement.getter != null) {
-      getter = new ModelElement.from(searchElement.getter, refLibrary);
-    }
-    if (searchElement.setter != null) {
-      setter = new ModelElement.from(searchElement.setter, refLibrary);
-    }
-  }
-  refModelElement = new ModelElement.from(searchElement, refLibrary,
-      getter: getter, setter: setter);
   if (!refModelElement.isCanonical) {
-    if (refLibrary.isPublicAndPackageDocumented) {
+    if (refModelElement.library.isPublicAndPackageDocumented) {
       refModelElement
           .warn(PackageWarning.noCanonicalFound, referredFrom: [element]);
     }
@@ -393,7 +373,7 @@ Map<String, Set<ModelElement>> _findRefElementCache;
 // TODO(jcollins-g): Subcomponents of this function shouldn't be adding nulls to results, strip the
 //                   removes out that are gratuitous and debug the individual pieces.
 // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
-Element _findRefElementInLibrary(String codeRef, Warnable element,
+ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
     List<CommentReference> commentRefs, Class preferredClass) {
   assert(element != null);
   assert(element.package.allLibrariesAdded);
@@ -507,10 +487,17 @@ Element _findRefElementInLibrary(String codeRef, Warnable element,
   if (results.isEmpty &&
       codeRefChomped.contains('.') &&
       _findRefElementCache.containsKey(codeRefChomped)) {
-    for (final modelElement in _findRefElementCache[codeRefChomped]) {
+    for (final ModelElement modelElement
+        in _findRefElementCache[codeRefChomped]) {
       if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
+      // For fully qualified matches, the original preferredClass passed
+      // might make no sense.  Instead, use the enclosing class from the
+      // element in [_findRefElementCache], because that element's enclosing
+      // class will be preferred from [codeRefChomped]'s perspective.
       results.add(package.findCanonicalModelElementFor(modelElement.element,
-          preferredClass: preferredClass));
+          preferredClass: modelElement.enclosingElement is Class
+              ? modelElement.enclosingElement
+              : null));
     }
   }
   results.remove(null);
@@ -562,8 +549,6 @@ Element _findRefElementInLibrary(String codeRef, Warnable element,
     }
   }
   results.remove(null);
-
-  Element result;
 
   if (results.length > 1) {
     // If this name could refer to a class or a constructor, prefer the class.
@@ -626,11 +611,12 @@ Element _findRefElementInLibrary(String codeRef, Warnable element,
     }
   }
 
+  ModelElement result;
   // TODO(jcollins-g): further disambiguations based on package information?
   if (results.isEmpty) {
     result = null;
   } else if (results.length == 1) {
-    result = results.first.element;
+    result = results.first;
   } else {
     // Squelch ambiguous doc reference warnings for parameters, because we
     // don't link those anyway.
@@ -639,7 +625,7 @@ Element _findRefElementInLibrary(String codeRef, Warnable element,
           message:
               "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
     }
-    result = results.first.element;
+    result = results.first;
   }
   return result;
 }

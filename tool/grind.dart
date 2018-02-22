@@ -427,7 +427,7 @@ Future<List<Map>> _buildFlutterDocs(
       workingDirectory: await futureCwd);
   return await launcher.runStreamed(
     flutterCacheDart,
-    [path.join('dev', 'tools', 'dartdoc.dart'), '--json'],
+    [path.join('dev', 'tools', 'dartdoc.dart'), '-c', '--json'],
     workingDirectory: flutterPath,
   );
 }
