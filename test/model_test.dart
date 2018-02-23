@@ -6,7 +6,6 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -1048,18 +1047,33 @@ void main() {
   group('Function', () {
     ModelFunction f1;
     ModelFunction genericFunction;
+    ModelFunction paramOfFutureOrNull;
     ModelFunction thisIsAsync;
+    ModelFunction thisIsFutureOr;
+    ModelFunction thisIsFutureOrNull;
+    ModelFunction thisIsFutureOrT;
     ModelFunction topLevelFunction;
+    ModelFunction typeParamOfFutureOr;
 
     setUp(() {
       f1 = exLibrary.functions.first;
       genericFunction =
           exLibrary.functions.firstWhere((f) => f.name == 'genericFunction');
+      paramOfFutureOrNull =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'paramOfFutureOrNull');
       thisIsAsync =
           fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsAsync');
+      thisIsFutureOr =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsFutureOr');
+      thisIsFutureOrNull =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsFutureOrNull');
+      thisIsFutureOrT =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsFutureOrT');
       topLevelFunction =
           fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
-    });
+      typeParamOfFutureOr =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'typeParamOfFutureOr');
+     });
 
     test('has a fully qualified name', () {
       expect(thisIsAsync.fullyQualifiedName, 'fake.thisIsAsync');
@@ -1100,6 +1114,29 @@ void main() {
           thisIsAsync.documentationAsHtml,
           equals(
               '<p>An async function. It should look like I return a <code>Future</code>.</p>'));
+    });
+
+    test('function returning FutureOr', () {
+      expect(thisIsFutureOr.isAsynchronous, isFalse);
+      expect(thisIsFutureOr.linkedReturnType, equals('FutureOr'));
+    });
+
+    test('function returning FutureOr<Null>', () {
+      expect(thisIsFutureOrNull.isAsynchronous, isFalse);
+      expect(thisIsFutureOrNull.linkedReturnType, equals('FutureOr<span class="signature">&lt;Null&gt;</span>'));
+    });
+
+    test('function returning FutureOr<T>', () {
+      expect(thisIsFutureOrNull.isAsynchronous, isFalse);
+      expect(thisIsFutureOrT.linkedReturnType, equals('FutureOr<span class="signature">&lt;T&gt;</span>'));
+    });
+
+    test('function with a parameter having type FutureOr<Null>', () {
+      expect(paramOfFutureOrNull.linkedParams(), equals('<span class="parameter" id="paramOfFutureOrNull-param-future"><span class="type-annotation">FutureOr<span class="signature">&lt;Null&gt;</span></span> <span class="parameter-name">future</span></span>'));
+    });
+
+    test('function with a bound type to FutureOr', () {
+      expect(typeParamOfFutureOr.linkedGenericParameters, equals('<span class=\"signature\">&lt;T extends FutureOr<span class=\"signature\">&lt;List&gt;</span>&gt;</span>'));
     });
 
     test('docs do not lose brackets in code blocks', () {
