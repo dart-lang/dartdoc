@@ -18,7 +18,7 @@ String convertTabs(String str) {
       String char = new String.fromCharCode(rune);
       if (char == '\t') {
         int shiftChars = kTabWidth - position % kTabWidth;
-        for (int count = 0 ; count < shiftChars; ++count) {
+        for (int count = 0; count < shiftChars; ++count) {
           buf.write(' ');
           ++position;
         }
