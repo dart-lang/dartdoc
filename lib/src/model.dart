@@ -777,7 +777,6 @@ class Class extends ModelElement
     bool _isInheritedOperator(ExecutableElement value) {
       if (value != null &&
           value is MethodElement &&
-          !value.isPrivate &&
           value.isOperator &&
           value.enclosingElement != null) {
         return true;
@@ -785,15 +784,15 @@ class Class extends ModelElement
       return false;
     }
 
-    for (String key in imap.keys) {
-      ExecutableElement value = imap[key];
+    for (String key in cmap.keys) {
+      ExecutableElement value = cmap[key];
       if (_isInheritedOperator(value)) {
         values.putIfAbsent(value.name, () => value);
       }
     }
 
-    for (String key in cmap.keys) {
-      ExecutableElement value = cmap[key];
+    for (String key in imap.keys) {
+      ExecutableElement value = imap[key];
       if (_isInheritedOperator(value)) {
         values.putIfAbsent(value.name, () => value);
       }
@@ -5091,6 +5090,7 @@ class PackageBuilder {
       PerformanceLog log = new PerformanceLog(null);
       AnalysisDriverScheduler scheduler = new AnalysisDriverScheduler(log);
       AnalysisOptionsImpl options = new AnalysisOptionsImpl();
+      options.strongMode = true;
       options.enableSuperMixins = true;
 
       // TODO(jcollins-g): Make use of currently not existing API for managing
