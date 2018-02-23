@@ -176,4 +176,30 @@ void main() {
       expect(truncateString('foo bar baz qux', 10), 'foo bar ba…');
     });
   });
+
+  group('convertTabs', () {
+    test('basic tab conversion', () {
+      String input = '\t\t stuff\n' +
+                     '\t  \t stuff\n' +
+                     '        \t stuff\n';
+      String output = '                 stuff\n' +
+                      '                 stuff\n' +
+                      '                 stuff\n';
+      expect(convertTabs(input), equals(output));
+    });
+  });
+
+  group('leadingWhitespace', () {
+    test('strip common leading whitespace, but no more', () {
+      String input = '   3 space indent\n' +
+                     '    4 space indent (one preserved)\n' +
+                     '       7 space indent (four preserved)\n' +
+                     '   3 space indent again\n';
+      String output = '3 space indent\n' +
+                      ' 4 space indent (one preserved)\n' +
+                      '    7 space indent (four preserved)\n' +
+                      '3 space indent again\n';
+      expect(stripCommonWhitespace(input), equals(output));
+    });
+  });
 }
