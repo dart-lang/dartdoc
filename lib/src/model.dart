@@ -702,8 +702,12 @@ class Class extends ModelElement
       _inheritedMethods = new List<Method>();
       Set<String> methodNames = _methods.map((m) => m.element.name).toSet();
 
-      Set<ExecutableElement> inheritedMethodElements = _inheritedElements.where((e) {
-        return (e is MethodElement && !e.isOperator && e is! PropertyAccessorElement && !methodNames.contains(e.name));
+      Set<ExecutableElement> inheritedMethodElements =
+          _inheritedElements.where((e) {
+        return (e is MethodElement &&
+            !e.isOperator &&
+            e is! PropertyAccessorElement &&
+            !methodNames.contains(e.name));
       }).toSet();
 
       for (ExecutableElement e in inheritedMethodElements) {
@@ -725,8 +729,11 @@ class Class extends ModelElement
       _inheritedOperators = [];
       Set<String> operatorNames = _operators.map((o) => o.element.name).toSet();
 
-      Set<ExecutableElement> inheritedOperatorElements = _inheritedElements.where((e) {
-        return (e is MethodElement && e.isOperator && !operatorNames.contains(e.name));
+      Set<ExecutableElement> inheritedOperatorElements =
+          _inheritedElements.where((e) {
+        return (e is MethodElement &&
+            e.isOperator &&
+            !operatorNames.contains(e.name));
       }).toSet();
       for (ExecutableElement e in inheritedOperatorElements) {
         Operator o = new ModelElement.from(e, library, enclosingClass: this);
@@ -926,10 +933,13 @@ class Class extends ModelElement
   List<ExecutableElement> get _inheritedElements {
     if (__inheritedElements == null) {
       __inheritedElements = [];
-      Map<String, ExecutableElement> cmap = library.inheritanceManager.getMembersInheritedFromClasses(element);
-      Map<String, ExecutableElement> imap = library.inheritanceManager.getMembersInheritedFromInterfaces(element);
+      Map<String, ExecutableElement> cmap =
+          library.inheritanceManager.getMembersInheritedFromClasses(element);
+      Map<String, ExecutableElement> imap =
+          library.inheritanceManager.getMembersInheritedFromInterfaces(element);
       __inheritedElements.addAll(cmap.values);
-      __inheritedElements.addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
+      __inheritedElements
+          .addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
     }
     return __inheritedElements;
   }
@@ -937,7 +947,8 @@ class Class extends ModelElement
   List<Field> get allFields {
     if (_fields != null) return _fields;
     _fields = [];
-    Set<PropertyAccessorElement> inheritedAccessors = new Set()..addAll(_inheritedElements.where((e) => e is PropertyAccessorElement));
+    Set<PropertyAccessorElement> inheritedAccessors = new Set()
+      ..addAll(_inheritedElements.where((e) => e is PropertyAccessorElement));
 
     // This structure keeps track of inherited accessors, allowing lookup
     // by field name (stripping the '=' from setters).

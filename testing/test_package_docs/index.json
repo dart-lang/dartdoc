@@ -5795,6 +5795,182 @@
   }
  },
  {
+  "name": "MIEEBase",
+  "qualifiedName": "fake.MIEEBase",
+  "href": "fake/MIEEBase-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "MIEEBase",
+  "qualifiedName": "fake.MIEEBase",
+  "href": "fake/MIEEBase/MIEEBase.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MIEEBase",
+   "type": "class"
+  }
+ },
+ {
+  "name": "MIEEMixin",
+  "qualifiedName": "fake.MIEEMixin",
+  "href": "fake/MIEEMixin-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "MIEEMixin",
+  "qualifiedName": "fake.MIEEMixin",
+  "href": "fake/MIEEMixin/MIEEMixin.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MIEEMixin",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator []=",
+  "qualifiedName": "fake.MIEEMixin.[]=",
+  "href": "fake/MIEEMixin/operator_put.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "MIEEMixin",
+   "type": "class"
+  }
+ },
+ {
+  "name": "MIEEMixinWithOverride",
+  "qualifiedName": "fake.MIEEMixinWithOverride",
+  "href": "fake/MIEEMixinWithOverride-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "MIEEMixinWithOverride",
+  "qualifiedName": "fake.MIEEMixinWithOverride",
+  "href": "fake/MIEEMixinWithOverride/MIEEMixinWithOverride.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MIEEMixinWithOverride",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator []=",
+  "qualifiedName": "fake.MIEEMixinWithOverride.[]=",
+  "href": "fake/MIEEMixinWithOverride/operator_put.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "MIEEMixinWithOverride",
+   "type": "class"
+  }
+ },
+ {
+  "name": "MIEEThing",
+  "qualifiedName": "fake.MIEEThing",
+  "href": "fake/MIEEThing-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "MIEEThing",
+  "qualifiedName": "fake.MIEEThing",
+  "href": "fake/MIEEThing/MIEEThing.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MIEEThing",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.MIEEThing.==",
+  "href": "fake/MIEEThing/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MIEEThing",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator []=",
+  "qualifiedName": "fake.MIEEThing.[]=",
+  "href": "fake/MIEEThing/operator_put.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MIEEThing",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.MIEEThing.hashCode",
+  "href": "fake/MIEEThing/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MIEEThing",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.MIEEThing.noSuchMethod",
+  "href": "fake/MIEEThing/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MIEEThing",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.MIEEThing.runtimeType",
+  "href": "fake/MIEEThing/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MIEEThing",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.MIEEThing.toString",
+  "href": "fake/MIEEThing/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MIEEThing",
+   "type": "class"
+  }
+ },
+ {
   "name": "MixMeIn",
   "qualifiedName": "fake.MixMeIn",
   "href": "fake/MixMeIn-class.html",
