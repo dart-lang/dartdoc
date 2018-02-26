@@ -3617,6 +3617,94 @@
   }
  },
  {
+  "name": "AClassWithFancyProperties",
+  "qualifiedName": "fake.AClassWithFancyProperties",
+  "href": "fake/AClassWithFancyProperties-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "AClassWithFancyProperties",
+  "qualifiedName": "fake.AClassWithFancyProperties",
+  "href": "fake/AClassWithFancyProperties/AClassWithFancyProperties.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AClassWithFancyProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.AClassWithFancyProperties.==",
+  "href": "fake/AClassWithFancyProperties/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AClassWithFancyProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aProperty",
+  "qualifiedName": "fake.AClassWithFancyProperties.aProperty",
+  "href": "fake/AClassWithFancyProperties/aProperty.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AClassWithFancyProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.AClassWithFancyProperties.hashCode",
+  "href": "fake/AClassWithFancyProperties/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AClassWithFancyProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.AClassWithFancyProperties.noSuchMethod",
+  "href": "fake/AClassWithFancyProperties/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AClassWithFancyProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.AClassWithFancyProperties.runtimeType",
+  "href": "fake/AClassWithFancyProperties/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AClassWithFancyProperties",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.AClassWithFancyProperties.toString",
+  "href": "fake/AClassWithFancyProperties/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AClassWithFancyProperties",
+   "type": "class"
+  }
+ },
+ {
   "name": "AMixinCallingSuper",
   "qualifiedName": "fake.AMixinCallingSuper",
   "href": "fake/AMixinCallingSuper-class.html",
