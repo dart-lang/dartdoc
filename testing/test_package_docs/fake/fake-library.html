@@ -618,6 +618,15 @@ which is a bit redundant.
           <code>FooBar</code> comes from another library.
           
 </dd>
+        <dt id="paramOfFutureOrNull" class="callable">
+          <span class="name"><a href="fake/paramOfFutureOrNull.html">paramOfFutureOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="paramOfFutureOrNull-param-future"><span class="type-annotation">FutureOr<span class="signature">&lt;Null&gt;</span></span> <span class="parameter-name">future</span></span>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          Has a parameter explicitly typed <code>FutureOr&lt;Null&gt;</code>.
+          
+</dd>
         <dt id="short" class="callable">
           <span class="name"><a href="fake/short.html">short</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; void</span>
@@ -655,6 +664,33 @@ default value.
           An async function. It should look like I return a <code>Future</code>.
           
 </dd>
+        <dt id="thisIsFutureOr" class="callable">
+          <span class="name"><a href="fake/thisIsFutureOr.html">thisIsFutureOr</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; FutureOr</span>
+          </span>
+        </dt>
+        <dd>
+          Explicitly return a <code>FutureOr</code>.
+          
+</dd>
+        <dt id="thisIsFutureOrNull" class="callable">
+          <span class="name"><a href="fake/thisIsFutureOrNull.html">thisIsFutureOrNull</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;Null&gt;</span></span>
+          </span>
+        </dt>
+        <dd>
+          Explicitly return a <code>FutureOr&lt;Null&gt;</code>.
+          
+</dd>
+        <dt id="thisIsFutureOrT" class="callable">
+          <span class="name"><a href="fake/thisIsFutureOrT.html">thisIsFutureOrT</a></span><span class="signature">&lt;T&gt;</span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;T&gt;</span></span>
+          </span>
+        </dt>
+        <dd>
+          Explicitly return a <code>FutureOr&lt;T&gt;</code>.
+          
+</dd>
         <dt id="topLevelFunction" class="callable">
           <span class="name deprecated"><a class="deprecated" href="fake/topLevelFunction.html">topLevelFunction</a></span><span class="signature">(<wbr><span class="parameter" id="topLevelFunction-param-param1"><span class="type-annotation">int</span> <span class="parameter-name">param1</span>, </span> <span class="parameter" id="topLevelFunction-param-param2"><span class="type-annotation">bool</span> <span class="parameter-name">param2</span>, </span> <span class="parameter" id="topLevelFunction-param-coolBeans"><span class="type-annotation"><a href="fake/Cool-class.html">Cool</a></span> <span class="parameter-name">coolBeans</span>, [</span> <span class="parameter" id="topLevelFunction-param-optionalPositional"><span class="type-annotation">double</span> <span class="parameter-name">optionalPositional</span> = <span class="default-value">0.0</span></span> ])
             <span class="returntype parameter">&#8594; String</span>
@@ -662,6 +698,15 @@ default value.
         </dt>
         <dd>
           Top-level function 3 params and 1 optional positional param. <a href="fake/topLevelFunction.html">[...]</a>
+          
+</dd>
+        <dt id="typeParamOfFutureOr" class="callable">
+          <span class="name"><a href="fake/typeParamOfFutureOr.html">typeParamOfFutureOr</a></span><span class="signature">&lt;T extends FutureOr<span class="signature">&lt;List&gt;</span>&gt;</span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          Has a type parameter bound to <code>FutureOr&lt;List&gt;</code>.
           
 </dd>
       </dl>
@@ -848,11 +893,16 @@ default value.
       <li><a href="fake/paintImage1.html">paintImage1</a></li>
       <li><a href="fake/paintImage2.html">paintImage2</a></li>
       <li><a href="fake/paramFromAnotherLib.html">paramFromAnotherLib</a></li>
+      <li><a href="fake/paramOfFutureOrNull.html">paramOfFutureOrNull</a></li>
       <li><a href="fake/short.html">short</a></li>
       <li><a href="fake/soIntense.html">soIntense</a></li>
       <li><a href="fake/thisIsAlsoAsync.html">thisIsAlsoAsync</a></li>
       <li><a href="fake/thisIsAsync.html">thisIsAsync</a></li>
+      <li><a href="fake/thisIsFutureOr.html">thisIsFutureOr</a></li>
+      <li><a href="fake/thisIsFutureOrNull.html">thisIsFutureOrNull</a></li>
+      <li><a href="fake/thisIsFutureOrT.html">thisIsFutureOrT</a></li>
       <li><a class="deprecated" href="fake/topLevelFunction.html">topLevelFunction</a></li>
+      <li><a href="fake/typeParamOfFutureOr.html">typeParamOfFutureOr</a></li>
     
       <li class="section-title"><a href="fake/fake-library.html#enums">Enums</a></li>
       <li><a href="fake/Color-class.html">Color</a></li>

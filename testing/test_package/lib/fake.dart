@@ -564,6 +564,21 @@ thisIsAsync() async => 42;
 /// Explicitly returns a Future and is marked async.
 Future thisIsAlsoAsync() async => 43;
 
+/// Explicitly return a `FutureOr`.
+FutureOr thisIsFutureOr() => null;
+
+/// Explicitly return a `FutureOr<Null>`.
+FutureOr<Null> thisIsFutureOrNull() => null;
+
+/// Explicitly return a `FutureOr<T>`.
+FutureOr<T> thisIsFutureOrT<T>() => null;
+
+/// Has a parameter explicitly typed `FutureOr<Null>`.
+void paramOfFutureOrNull(FutureOr<Null> future) {}
+
+/// Has a type parameter bound to `FutureOr<List>`.
+void typeParamOfFutureOr<T extends FutureOr<List>>() {}
+
 /// A generic function with a type parameter.
 void myGenericFunction<S>(int a, bool b, S c) {
   return;
