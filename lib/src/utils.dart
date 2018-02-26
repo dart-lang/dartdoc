@@ -3,40 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 library dartdoc.utils;
 
-final RegExp leadingWhiteSpace = new RegExp(r'^( *)[^ ]');
-const int kTabWidth = 8;
-
-/// Try to do something with tabs, by converting them to spaces.
-String convertTabs(String str) {
-  StringBuffer buf = new StringBuffer();
-  List<String> lines = str.split('\n');
-
-  int lineno = 1;
-  for (String line in lines) {
-    int position = 0;
-    for (int rune in line.runes) {
-      String char = new String.fromCharCode(rune);
-      if (char == '\t') {
-        int shiftChars = kTabWidth - position % kTabWidth;
-        for (int count = 0; count < shiftChars; ++count) {
-          buf.write(' ');
-          ++position;
-        }
-      } else {
-        buf.write(char);
-        ++position;
-      }
-    }
-    if (lineno < lines.length) {
-      buf.write('\n');
-    }
-    ++lineno;
-  }
-  return buf.toString();
-}
+final RegExp leadingWhiteSpace = new RegExp(r'^([ \t]*)[^ ]');
 
 String stripCommonWhitespace(String str) {
-  str = convertTabs(str);
   StringBuffer buf = new StringBuffer();
   List<String> lines = str.split('\n');
   int minimumSeen;

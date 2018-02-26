@@ -177,27 +177,19 @@ void main() {
     });
   });
 
-  group('convertTabs', () {
-    test('basic tab conversion', () {
-      String input = '\t\t stuff\n'
-                     '\t  \t stuff\n'
-                     '        \t stuff\n';
-      String output = '                 stuff\n'
-                      '                 stuff\n'
-                      '                 stuff\n';
-      expect(convertTabs(input), equals(output));
-    });
-  });
-
   group('leadingWhitespace', () {
     test('strip common leading whitespace, but no more', () {
       String input = '   3 space indent\n'
                      '    4 space indent (one preserved)\n'
                      '       7 space indent (four preserved)\n'
+                     '\t  2 spaces, one tab (same as 3 space)\n'
+                     '    \t4 spaces, one tab (preserve the tab)\n'
                      '   3 space indent again\n';
       String output = '3 space indent\n'
                       ' 4 space indent (one preserved)\n'
                       '    7 space indent (four preserved)\n'
+                      '2 spaces, one tab (same as 3 space)\n'
+                      ' \t4 spaces, one tab (preserve the tab)\n'
                       '3 space indent again\n';
       expect(stripCommonWhitespace(input), equals(output));
     });
