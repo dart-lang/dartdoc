@@ -164,6 +164,22 @@ class _APrivateConstClass {
   const _APrivateConstClass();
 }
 
+class AClassWithFancyProperties {
+  /// This property is quite fancy, and requires sample code to understand.
+  ///
+  /// ```dart
+  /// AClassWithFancyProperties x = new AClassWithFancyProperties();
+  ///
+  /// if (x.aProperty.contains('Hello')) {
+  ///   print("I am indented!");
+  ///   if (x.aProperty.contains('World')) {
+  ///     print ("I am indented even more!!!");
+  ///   }
+  /// }
+  /// ```
+  String aProperty;
+}
+
 const _APrivateConstClass CUSTOM_CLASS_PRIVATE = const _APrivateConstClass();
 
 // No dart docs on purpose. Also, a non-primitive const class.
