@@ -1502,6 +1502,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Field explicitNonDocumentedInBaseClassGetter;
     Field documentedPartialFieldInSubclassOnly;
     Field ExtraSpecialListLength;
+    Field aProperty;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
@@ -1558,6 +1559,27 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'SpecialList')
           .allInstanceProperties
           .firstWhere((f) => f.name == 'length');
+      aProperty = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'AClassWithFancyProperties')
+          .allInstanceProperties
+          .firstWhere((f) => f.name == 'aProperty');
+    });
+
+    test('indentation is not lost inside indented code samples', () {
+      expect(aProperty.documentation, equals(
+          'This property is quite fancy, and requires sample code to understand.\n'
+              '\n'
+              '```dart\n'
+              'AClassWithFancyProperties x = new AClassWithFancyProperties();\n'
+              '\n'
+              'if (x.aProperty.contains(\'Hello\')) {\n'
+              '  print("I am indented!");\n'
+              '  if (x.aProperty.contains(\'World\')) {\n'
+              '    print ("I am indented even more!!!");\n'
+              '  }\n'
+              '}\n'
+              '```'
+      ));
     });
 
     test('annotations from getters and setters are accumulated in Fields', () {

@@ -3,14 +3,45 @@
 // BSD-style license that can be found in the LICENSE file.
 library dartdoc.utils;
 
+final RegExp leadingWhiteSpace = new RegExp(r'^([ \t]*)[^ ]');
+
+String stripCommonWhitespace(String str) {
+  StringBuffer buf = new StringBuffer();
+  List<String> lines = str.split('\n');
+  int minimumSeen;
+
+  for (String line in lines) {
+    if (line.isNotEmpty) {
+      Match m = leadingWhiteSpace.firstMatch(line);
+      if (m != null) {
+        if (minimumSeen == null || m.group(1).length < minimumSeen) {
+          minimumSeen = m.group(1).length;
+        }
+      }
+    }
+  }
+  minimumSeen ??= 0;
+  int lineno = 1;
+  for (String line in lines) {
+    if (line.length >= minimumSeen) {
+      buf.write('${line.substring(minimumSeen)}\n');
+    } else {
+      if (lineno < lines.length) {
+        buf.write('\n');
+      }
+    }
+    ++lineno;
+  }
+  return buf.toString();
+}
+
 String stripComments(String str) {
   if (str == null) return null;
-
   StringBuffer buf = new StringBuffer();
 
   if (str.startsWith('///')) {
+    str = stripCommonWhitespace(str);
     for (String line in str.split('\n')) {
-      line = line.trimLeft();
       if (line.startsWith('/// ')) {
         buf.write('${line.substring(4)}\n');
       } else if (line.startsWith('///')) {
@@ -26,9 +57,8 @@ String stripComments(String str) {
     if (str.endsWith('*/')) {
       str = str.substring(0, str.length - 2);
     }
-    str = str.trim();
+    str = stripCommonWhitespace(str);
     for (String line in str.split('\n')) {
-      line = line.trimLeft();
       if (line.startsWith('* ')) {
         buf.write('${line.substring(2)}\n');
       } else if (line.startsWith('*')) {
