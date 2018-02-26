@@ -6,6 +6,7 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -729,6 +730,15 @@ void main() {
       Iterable<Match> matches = new RegExp('In the super class')
           .allMatches(powers.documentationAsHtml);
       expect(matches, hasLength(1));
+    });
+  });
+
+  group('Class edge cases', () {
+    test('ExecutableElements from private classes and from public interfaces (#1561)', () {
+      Class MIEEMixinWithOverride = fakeLibrary.publicClasses.firstWhere((c) => c.name == 'MIEEMixinWithOverride');
+      Operator problematicOperator = MIEEMixinWithOverride.inheritedOperators.firstWhere((o) => o.name == 'operator []=');
+      expect(problematicOperator.element.enclosingElement.name, equals('_MIEEPrivateOverride'));
+      expect(problematicOperator.canonicalModelElement.enclosingElement.name, equals('MIEEMixinWithOverride'));
     });
   });
 

@@ -698,60 +698,25 @@ class Class extends ModelElement
   }
 
   List<Method> get inheritedMethods {
-    if (_inheritedMethods != null) return _inheritedMethods;
+    if (_inheritedMethods == null) {
+      _inheritedMethods = new List<Method>();
+      Set<String> methodNames = _methods.map((m) => m.element.name).toSet();
 
-    Map<String, ExecutableElement> cmap =
-        library.inheritanceManager.getMembersInheritedFromClasses(element);
-    Map<String, ExecutableElement> imap =
-        library.inheritanceManager.getMembersInheritedFromInterfaces(element);
+      Set<ExecutableElement> inheritedMethodElements =
+          _inheritedElements.where((e) {
+        return (e is MethodElement &&
+            !e.isOperator &&
+            e is! PropertyAccessorElement &&
+            !methodNames.contains(e.name));
+      }).toSet();
 
-    // remove methods that exist on this class
-    _methods.forEach((method) {
-      cmap.remove(method.name);
-      imap.remove(method.name);
-    });
-
-    _inheritedMethods = [];
-    List<ExecutableElement> values = [];
-    Set<String> uniqueNames = new Set();
-
-    instanceProperties.forEach((f) {
-      if (f.setter != null) uniqueNames.add(f.setter.element.name);
-      if (f.getter != null) uniqueNames.add(f.getter.element.name);
-    });
-
-    for (String key in cmap.keys) {
-      // XXX: if we care about showing a hierarchy with our inherited methods,
-      // then don't do this
-      if (uniqueNames.contains(key)) continue;
-
-      uniqueNames.add(key);
-      values.add(cmap[key]);
-    }
-
-    for (String key in imap.keys) {
-      // XXX: if we care about showing a hierarchy with our inherited methods,
-      // then don't do this
-      if (uniqueNames.contains(key)) continue;
-
-      uniqueNames.add(key);
-      values.add(imap[key]);
-    }
-
-    for (ExecutableElement value in values) {
-      if (value != null &&
-          value is MethodElement &&
-          !value.isOperator &&
-          value.enclosingElement != null) {
-        Method m;
-        m = new ModelElement.from(value, library, enclosingClass: this);
+      for (ExecutableElement e in inheritedMethodElements) {
+        Method m = new ModelElement.from(e, library, enclosingClass: this);
         _inheritedMethods.add(m);
         _genPageMethods.add(m);
       }
+      _inheritedMethods.sort(byName);
     }
-
-    _inheritedMethods.sort(byName);
-
     return _inheritedMethods;
   }
 
@@ -759,54 +724,24 @@ class Class extends ModelElement
 
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
-  // TODO(jcollins-g): this is very copy-paste from inheritedMethods now that the
-  // constructor is always [ModelElement.from].  Fix this.
   List<Operator> get inheritedOperators {
-    if (_inheritedOperators != null) return _inheritedOperators;
-    Map<String, ExecutableElement> cmap =
-        library.inheritanceManager.getMembersInheritedFromClasses(element);
-    Map<String, ExecutableElement> imap =
-        library.inheritanceManager.getMembersInheritedFromInterfaces(element);
-    operators.forEach((operator) {
-      cmap.remove(operator.element.name);
-      imap.remove(operator.element.name);
-    });
-    _inheritedOperators = [];
-    Map<String, ExecutableElement> values = {};
+    if (_inheritedOperators == null) {
+      _inheritedOperators = [];
+      Set<String> operatorNames = _operators.map((o) => o.element.name).toSet();
 
-    bool _isInheritedOperator(ExecutableElement value) {
-      if (value != null &&
-          value is MethodElement &&
-          !value.isPrivate &&
-          value.isOperator &&
-          value.enclosingElement != null) {
-        return true;
+      Set<ExecutableElement> inheritedOperatorElements =
+          _inheritedElements.where((e) {
+        return (e is MethodElement &&
+            e.isOperator &&
+            !operatorNames.contains(e.name));
+      }).toSet();
+      for (ExecutableElement e in inheritedOperatorElements) {
+        Operator o = new ModelElement.from(e, library, enclosingClass: this);
+        _inheritedOperators.add(o);
+        _genPageOperators.add(o);
       }
-      return false;
+      _inheritedOperators.sort(byName);
     }
-
-    for (String key in imap.keys) {
-      ExecutableElement value = imap[key];
-      if (_isInheritedOperator(value)) {
-        values.putIfAbsent(value.name, () => value);
-      }
-    }
-
-    for (String key in cmap.keys) {
-      ExecutableElement value = cmap[key];
-      if (_isInheritedOperator(value)) {
-        values.putIfAbsent(value.name, () => value);
-      }
-    }
-
-    for (ExecutableElement value in values.values) {
-      Operator o = new ModelElement.from(value, library, enclosingClass: this);
-      _inheritedOperators.add(o);
-      _genPageOperators.add(o);
-    }
-
-    _inheritedOperators.sort(byName);
-
     return _inheritedOperators;
   }
 
@@ -994,22 +929,26 @@ class Class extends ModelElement
 
   ElementType get supertype => _supertype;
 
+  List<ExecutableElement> __inheritedElements;
+  List<ExecutableElement> get _inheritedElements {
+    if (__inheritedElements == null) {
+      __inheritedElements = [];
+      Map<String, ExecutableElement> cmap =
+          library.inheritanceManager.getMembersInheritedFromClasses(element);
+      Map<String, ExecutableElement> imap =
+          library.inheritanceManager.getMembersInheritedFromInterfaces(element);
+      __inheritedElements.addAll(cmap.values);
+      __inheritedElements
+          .addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
+    }
+    return __inheritedElements;
+  }
+
   List<Field> get allFields {
     if (_fields != null) return _fields;
     _fields = [];
-    Map<String, ExecutableElement> cmap =
-        library.inheritanceManager.getMembersInheritedFromClasses(element);
-    Map<String, ExecutableElement> imap =
-        library.inheritanceManager.getMembersInheritedFromInterfaces(element);
-
-    Set<PropertyAccessorElement> inheritedAccessors = new Set();
-    inheritedAccessors
-        .addAll(cmap.values.where((e) => e is PropertyAccessorElement));
-
-    // Interfaces are subordinate to members inherited from classes, so don't
-    // add this to our accessor set if we already have something inherited from classes.
-    inheritedAccessors.addAll(imap.values.where(
-        (e) => e is PropertyAccessorElement && !cmap.containsKey(e.name)));
+    Set<PropertyAccessorElement> inheritedAccessors = new Set()
+      ..addAll(_inheritedElements.where((e) => e is PropertyAccessorElement));
 
     // This structure keeps track of inherited accessors, allowing lookup
     // by field name (stripping the '=' from setters).
@@ -5091,6 +5030,7 @@ class PackageBuilder {
       PerformanceLog log = new PerformanceLog(null);
       AnalysisDriverScheduler scheduler = new AnalysisDriverScheduler(log);
       AnalysisOptionsImpl options = new AnalysisOptionsImpl();
+      options.strongMode = true;
       options.enableSuperMixins = true;
 
       // TODO(jcollins-g): Make use of currently not existing API for managing
