@@ -1,4 +1,5 @@
 ## 0.17.0
+* More correctly deal with indentation inside documentation comments (#1608)
 * Strong mode enabled in dartdoc -- dartdoc will no longer read code
   that isn't strong-mode clean beginning with this version. (#1561)
 * Add a negatable flag (default on), --validate-links, to control whether
