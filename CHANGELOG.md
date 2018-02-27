@@ -1,3 +1,17 @@
+## 0.17.0
+* More correctly deal with indentation inside documentation comments,
+  fixing a set of minor markdown problems relating to indentation (like list
+  handling) (#1608, #1507)
+* Strong mode enabled in dartdoc -- dartdoc will no longer read code
+  that isn't strong-mode clean beginning with this version. (#1561)
+* Add a negatable flag (default on), --validate-links, to control whether
+  Dartdoc's built-in link checker runs. (#1607)
+* dartdoc now works in checked mode for Flutter, fixing some edge-case
+  navigation/canonicalization problems.  (#1606)
+* Dartdoc now uses AnalysisDriver to build the element tree.  (#1601, #1586)
+* Grinder now has arbitrary serving of pub packages and can compare
+  warnings from different versions (#1600, #1599)
+
 ## 0.16.0
 * Cherrypick test changes from 0.15.1 and a fix for (#1603), updating
   dartdoc to the latest analyzer.
