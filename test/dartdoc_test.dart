@@ -35,9 +35,9 @@ void main() {
           testPackageDir, [], getSdkDir(), [], tempDir, meta, [], []);
 
       DartDocResults results = await dartdoc.generateDocs();
-      expect(results.package, isNotNull);
+      expect(results.packageGraph, isNotNull);
 
-      Package p = results.package;
+      PackageGraph p = results.packageGraph;
       expect(p.name, 'test_package');
       expect(p.hasDocumentationFile, isTrue);
       expect(p.publicLibraries, hasLength(10));
@@ -63,9 +63,9 @@ void main() {
           testPackageWithNoReadme, [], getSdkDir(), [], tempDir, meta, [], []);
 
       DartDocResults results = await dartdoc.generateDocs();
-      expect(results.package, isNotNull);
+      expect(results.packageGraph, isNotNull);
 
-      Package p = results.package;
+      PackageGraph p = results.packageGraph;
       expect(p.name, 'test_package_small');
       expect(p.hasHomepage, isFalse);
       expect(p.hasDocumentationFile, isFalse);
@@ -78,9 +78,9 @@ void main() {
           testPackageDir, [], getSdkDir(), [], tempDir, meta, ['fake'], []);
 
       DartDocResults results = await dartdoc.generateDocs();
-      expect(results.package, isNotNull);
+      expect(results.packageGraph, isNotNull);
 
-      Package p = results.package;
+      PackageGraph p = results.packageGraph;
       expect(p.name, 'test_package');
       expect(p.hasDocumentationFile, isTrue);
       expect(p.libraries, hasLength(1));
@@ -112,9 +112,9 @@ void main() {
           getSdkDir(), [], tempDir, meta, [], []);
 
       DartDocResults results = await dartdoc.generateDocs();
-      expect(results.package, isNotNull);
+      expect(results.packageGraph, isNotNull);
 
-      Package p = results.package;
+      PackageGraph p = results.packageGraph;
       expect(p.name, 'test_package_embedder_yaml');
       expect(p.hasDocumentationFile, isFalse);
       expect(p.libraries, hasLength(3));

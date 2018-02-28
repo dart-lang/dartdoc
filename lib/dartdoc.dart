@@ -147,7 +147,7 @@ class DartDoc extends PackageBuilder {
     }
   }
 
-  Package package;
+  PackageGraph packageGraph;
 
   /// Generate DartDoc documentation.
   ///
@@ -157,10 +157,10 @@ class DartDoc extends PackageBuilder {
   Future<DartDocResults> generateDocs() async {
     Stopwatch _stopwatch = new Stopwatch()..start();
     double seconds;
-    package = await buildPackage();
+    packageGraph = await buildPackageGraph();
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     logInfo(
-        "Initialized dartdoc with ${package.libraries.length} librar${package.libraries.length == 1 ? 'y' : 'ies'} "
+        "Initialized dartdoc with ${packageGraph.libraries.length} librar${packageGraph.libraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds");
     _stopwatch.reset();
 
@@ -168,12 +168,12 @@ class DartDoc extends PackageBuilder {
     if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
 
     for (var generator in generators) {
-      await generator.generate(package, outputDir.path);
+      await generator.generate(packageGraph, outputDir.path);
       writtenFiles.addAll(generator.writtenFiles.map(path.normalize));
     }
-    if (config.validateLinks) validateLinks(package, outputDir.path);
-    int warnings = package.packageWarningCounter.warningCount;
-    int errors = package.packageWarningCounter.errorCount;
+    if (config.validateLinks) validateLinks(packageGraph, outputDir.path);
+    int warnings = packageGraph.packageWarningCounter.warningCount;
+    int errors = packageGraph.packageWarningCounter.errorCount;
     if (warnings == 0 && errors == 0) {
       logInfo("no issues found");
     } else {
@@ -183,23 +183,24 @@ class DartDoc extends PackageBuilder {
 
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     logInfo(
-        "Documented ${package.publicLibraries.length} public librar${package.publicLibraries.length == 1 ? 'y' : 'ies'} "
+        "Documented ${packageGraph.publicLibraries.length} public librar${packageGraph.publicLibraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds");
 
-    if (package.publicLibraries.isEmpty) {
+    if (packageGraph.publicLibraries.isEmpty) {
       throw new DartDocFailure(
           "dartdoc could not find any libraries to document. Run `pub get` and try again.");
     }
 
-    if (package.packageWarningCounter.errorCount > 0) {
+    if (packageGraph.packageWarningCounter.errorCount > 0) {
       throw new DartDocFailure("dartdoc encountered errors while processing");
     }
 
-    return new DartDocResults(packageMeta, package, outputDir);
+    return new DartDocResults(packageMeta, packageGraph, outputDir);
   }
 
   /// Warn on file paths.
-  void _warn(Package package, PackageWarning kind, String warnOn, String origin,
+  void _warn(PackageGraph packageGraph, PackageWarning kind, String warnOn,
+      String origin,
       {String referredFrom}) {
     // Ordinarily this would go in [Package.warn], but we don't actually know what
     // ModelElement to warn on yet.
@@ -235,14 +236,15 @@ class DartDoc extends PackageBuilder {
     }
 
     if (referredFromElements.isEmpty && referredFrom == 'index.html')
-      referredFromElements.add(package);
+      referredFromElements.add(packageGraph);
     String message = warnOn;
     if (referredFrom == 'index.json') message = '$warnOn (from index.json)';
-    package.warnOnElement(warnOnElement, kind,
+    packageGraph.warnOnElement(warnOnElement, kind,
         message: message, referredFrom: referredFromElements);
   }
 
-  void _doOrphanCheck(Package package, String origin, Set<String> visited) {
+  void _doOrphanCheck(
+      PackageGraph packageGraph, String origin, Set<String> visited) {
     String normalOrigin = path.normalize(origin);
     String staticAssets = path.joinAll([normalOrigin, 'static-assets', '']);
     String indexJson = path.joinAll([normalOrigin, 'index.json']);
@@ -264,15 +266,16 @@ class DartDoc extends PackageBuilder {
       if (visited.contains(fullPath)) continue;
       if (!writtenFiles.contains(fullPath)) {
         // This isn't a file we wrote (this time); don't claim we did.
-        _warn(package, PackageWarning.unknownFile, fullPath, normalOrigin);
+        _warn(packageGraph, PackageWarning.unknownFile, fullPath, normalOrigin);
       } else {
-        _warn(package, PackageWarning.orphanedFile, fullPath, normalOrigin);
+        _warn(
+            packageGraph, PackageWarning.orphanedFile, fullPath, normalOrigin);
       }
       _onCheckProgress.add(fullPath);
     }
 
     if (!foundIndexJson) {
-      _warn(package, PackageWarning.brokenLink, indexJson, normalOrigin);
+      _warn(packageGraph, PackageWarning.brokenLink, indexJson, normalOrigin);
       _onCheckProgress.add(indexJson);
     }
   }
@@ -300,7 +303,7 @@ class DartDoc extends PackageBuilder {
   }
 
   void _doSearchIndexCheck(
-      Package package, String origin, Set<String> visited) {
+      PackageGraph packageGraph, String origin, Set<String> visited) {
     String fullPath = path.joinAll([origin, 'index.json']);
     String indexPath = path.joinAll([origin, 'index.html']);
     File file = new File("$fullPath");
@@ -319,7 +322,7 @@ class DartDoc extends PackageBuilder {
       if (entry.containsKey('href')) {
         String entryPath = path.joinAll([origin, entry['href']]);
         if (!visited.contains(entryPath)) {
-          _warn(package, PackageWarning.brokenLink, entryPath,
+          _warn(packageGraph, PackageWarning.brokenLink, entryPath,
               path.normalize(origin),
               referredFrom: fullPath);
         }
@@ -329,14 +332,14 @@ class DartDoc extends PackageBuilder {
     // Missing from search index
     Set<String> missing_from_search = visited.difference(found);
     for (String s in missing_from_search) {
-      _warn(package, PackageWarning.missingFromSearchIndex, s,
+      _warn(packageGraph, PackageWarning.missingFromSearchIndex, s,
           path.normalize(origin),
           referredFrom: fullPath);
     }
   }
 
-  void _doCheck(
-      Package package, String origin, Set<String> visited, String pathToCheck,
+  void _doCheck(PackageGraph packageGraph, String origin, Set<String> visited,
+      String pathToCheck,
       [String source, String fullPath]) {
     if (fullPath == null) {
       fullPath = path.joinAll([origin, pathToCheck]);
@@ -345,7 +348,7 @@ class DartDoc extends PackageBuilder {
 
     Tuple2 stringLinksAndHref = _getStringLinksAndHref(fullPath);
     if (stringLinksAndHref == null) {
-      _warn(package, PackageWarning.brokenLink, pathToCheck,
+      _warn(packageGraph, PackageWarning.brokenLink, pathToCheck,
           path.normalize(origin),
           referredFrom: source);
       _onCheckProgress.add(pathToCheck);
@@ -387,7 +390,7 @@ class DartDoc extends PackageBuilder {
       }
     }
     for (Tuple2 visitPaths in toVisit) {
-      _doCheck(package, origin, visited, visitPaths.item1, pathToCheck,
+      _doCheck(packageGraph, origin, visited, visitPaths.item1, pathToCheck,
           visitPaths.item2);
     }
     _onCheckProgress.add(pathToCheck);
@@ -397,16 +400,16 @@ class DartDoc extends PackageBuilder {
 
   /// Don't call this method more than once, and only after you've
   /// generated all docs for the Package.
-  void validateLinks(Package package, String origin) {
+  void validateLinks(PackageGraph packageGraph, String origin) {
     assert(_hrefs == null);
-    _hrefs = package.allHrefs;
+    _hrefs = packageGraph.allHrefs;
 
     final Set<String> visited = new Set();
     final String start = 'index.html';
     logInfo('Validating docs...');
-    _doCheck(package, origin, visited, start);
-    _doOrphanCheck(package, origin, visited);
-    _doSearchIndexCheck(package, origin, visited);
+    _doCheck(packageGraph, origin, visited, start);
+    _doOrphanCheck(packageGraph, origin, visited);
+    _doSearchIndexCheck(packageGraph, origin, visited);
   }
 }
 
@@ -424,10 +427,10 @@ class DartDocFailure {
 /// The results of a [DartDoc.generateDocs] call.
 class DartDocResults {
   final PackageMeta packageMeta;
-  final Package package;
+  final PackageGraph packageGraph;
   final Directory outDir;
 
-  DartDocResults(this.packageMeta, this.package, this.outDir);
+  DartDocResults(this.packageMeta, this.packageGraph, this.outDir);
 }
 
 class _Error implements Comparable<_Error> {

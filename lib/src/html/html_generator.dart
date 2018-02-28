@@ -67,9 +67,9 @@ class HtmlGenerator extends Generator {
 
   @override
 
-  /// Actually write out the documentation for [package].
+  /// Actually write out the documentation for [packageGraph].
   /// Stores the HtmlGeneratorInstance so we can access it in [writtenFiles].
-  Future generate(Package package, String outputDirectoryPath) async {
+  Future generate(PackageGraph packageGraph, String outputDirectoryPath) async {
     assert(_instance == null);
 
     var enabled = true;
@@ -102,7 +102,7 @@ class HtmlGenerator extends Generator {
 
     try {
       _instance =
-          new HtmlGeneratorInstance(_options, _templates, package, write);
+          new HtmlGeneratorInstance(_options, _templates, packageGraph, write);
       await _instance.generate();
     } finally {
       enabled = false;
