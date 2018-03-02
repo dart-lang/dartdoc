@@ -9,6 +9,7 @@ packages
 .idea
 .atom/
 
+.dart_tool/
 .packages
 .settings/
 .DS_Store
