@@ -4,21 +4,21 @@
     <h5>{{parent.name}} {{parent.kind}}</h5>
     {{#useCategories}}
     <ol>
-      {{#package.categories}}
+      {{#packageGraph.categories}}
         <li class="section-title">{{name}}</li>
         {{#publicLibraries}}
         <li>{{{linkedName}}}</li>
         {{/publicLibraries}}
-      {{/package.categories}}
+      {{/packageGraph.categories}}
     </ol>
     {{/useCategories}}
 
     {{^useCategories}}
     <ol>
-      <li class="section-title"><a href="{{package.href}}#libraries">Libraries</a></li>
-      {{#package.publicLibraries}}
+      <li class="section-title"><a href="{{packageGraph.href}}#libraries">Libraries</a></li>
+      {{#packageGraph.publicLibraries}}
       <li>{{{linkedName}}}</li>
-      {{/package.publicLibraries}}
+      {{/packageGraph.publicLibraries}}
     </ol>
     {{/useCategories}}
   </div>

@@ -16,10 +16,10 @@ import 'package:path/path.dart' as p;
 
 Directory sdkDir;
 PackageMeta sdkPackageMeta;
-Package testPackage;
-Package testPackageGinormous;
-Package testPackageSmall;
-Package testPackageSdk;
+PackageGraph testPackageGraph;
+PackageGraph testPackageGraphGinormous;
+PackageGraph testPackageGraphSmall;
+PackageGraph testPackageGraphSdk;
 
 final Directory testPackageBadDir = new Directory('testing/test_package_bad');
 final Directory testPackageDir = new Directory('testing/test_package');
@@ -37,24 +37,24 @@ init() async {
   sdkPackageMeta = new PackageMeta.fromSdk(sdkDir);
   setConfig();
 
-  testPackage = await bootBasicPackage(
+  testPackageGraph = await bootBasicPackage(
       'testing/test_package', ['css', 'code_in_comments', 'excluded'], false);
-  testPackageGinormous = await bootBasicPackage(
+  testPackageGraphGinormous = await bootBasicPackage(
       'testing/test_package', ['css', 'code_in_commnets', 'excluded'], true);
 
-  testPackageSmall =
+  testPackageGraphSmall =
       await bootBasicPackage('testing/test_package_small', [], false);
-  testPackageSdk = await bootSdkPackage();
+  testPackageGraphSdk = await bootSdkPackage();
 }
 
-Future<Package> bootSdkPackage() {
+Future<PackageGraph> bootSdkPackage() {
   Directory dir = new Directory(p.current);
   return new PackageBuilder(
           dir, [], [], sdkDir, sdkPackageMeta, [], [], true, false)
-      .buildPackage();
+      .buildPackageGraph();
 }
 
-Future<Package> bootBasicPackage(
+Future<PackageGraph> bootBasicPackage(
     String dirPath, List<String> excludes, bool withAutoIncludedDependencies) {
   Directory dir = new Directory(dirPath);
   return new PackageBuilder(
@@ -67,5 +67,5 @@ Future<Package> bootBasicPackage(
           [],
           true,
           withAutoIncludedDependencies)
-      .buildPackage();
+      .buildPackageGraph();
 }

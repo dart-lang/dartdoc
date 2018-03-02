@@ -128,7 +128,7 @@ abstract class Inheritable implements ModelElement {
   ModelElement get definingEnclosingElement {
     if (_definingEnclosingClass == null) {
       _definingEnclosingClass =
-          new ModelElement.fromElement(element.enclosingElement, package);
+          new ModelElement.fromElement(element.enclosingElement, packageGraph);
     }
     return _definingEnclosingClass;
   }
@@ -144,7 +144,7 @@ abstract class Inheritable implements ModelElement {
     if (!_canonicalEnclosingClassIsSet) {
       if (isInherited) {
         searchElement = searchElement is Member
-            ? Package.getBasestElement(searchElement)
+            ? PackageGraph.getBasestElement(searchElement)
             : searchElement;
         // TODO(jcollins-g): generate warning if an inherited element's definition
         // is in an intermediate non-canonical class in the inheritance chain?
@@ -153,14 +153,15 @@ abstract class Inheritable implements ModelElement {
         for (Class c in inheritance.reversed) {
           // Filter out mixins.
           if (c.contains(searchElement)) {
-            if ((package.inheritThrough.contains(previous) &&
+            if ((packageGraph.inheritThrough.contains(previous) &&
                     c != definingEnclosingElement) ||
-                (package.inheritThrough.contains(c) &&
+                (packageGraph.inheritThrough.contains(c) &&
                     c == definingEnclosingElement)) {
               return (previousNonSkippable.memberByExample(this) as Inheritable)
                   .canonicalEnclosingElement;
             }
-            Class canonicalC = package.findCanonicalModelElementFor(c.element);
+            Class canonicalC =
+                packageGraph.findCanonicalModelElementFor(c.element);
             // TODO(jcollins-g): invert this lookup so traversal is recursive
             // starting from the ModelElement.
             if (canonicalC != null) {
@@ -172,7 +173,7 @@ abstract class Inheritable implements ModelElement {
             }
           }
           previous = c;
-          if (!package.inheritThrough.contains(c)) {
+          if (!packageGraph.inheritThrough.contains(c)) {
             previousNonSkippable = c;
           }
         }
@@ -184,7 +185,7 @@ abstract class Inheritable implements ModelElement {
         }
       } else {
         _canonicalEnclosingClass =
-            package.findCanonicalModelElementFor(enclosingElement.element);
+            packageGraph.findCanonicalModelElementFor(enclosingElement.element);
       }
       _canonicalEnclosingClassIsSet = true;
       assert(_canonicalEnclosingClass == null ||
@@ -200,15 +201,16 @@ abstract class Inheritable implements ModelElement {
     inheritance.addAll((enclosingElement as Class).inheritanceChain);
     if (!inheritance.contains(definingEnclosingElement) &&
         definingEnclosingElement != null) {
-      assert(definingEnclosingElement == package.objectElement);
+      assert(definingEnclosingElement == packageGraph.objectElement);
     }
     // Unless the code explicitly extends dart-core's Object, we won't get
     // an entry here.  So add it.
-    if (inheritance.last != package.objectElement &&
-        package.objectElement != null) {
-      inheritance.add(package.objectElement);
+    if (inheritance.last != packageGraph.objectElement &&
+        packageGraph.objectElement != null) {
+      inheritance.add(packageGraph.objectElement);
     }
-    assert(inheritance.where((e) => e == package.objectElement).length == 1);
+    assert(
+        inheritance.where((e) => e == packageGraph.objectElement).length == 1);
     return inheritance;
   }
 }
@@ -363,7 +365,7 @@ class Accessor extends ModelElement
   @override
   ModelElement get enclosingElement {
     if (_accessor.enclosingElement is CompilationUnitElement) {
-      return package
+      return packageGraph
           .findOrCreateLibraryFor(_accessor.enclosingElement.enclosingElement);
     }
 
@@ -387,7 +389,7 @@ class Accessor extends ModelElement
   ModelElement _overriddenElement;
   @override
   Accessor get overriddenElement {
-    assert(package.allLibrariesAdded);
+    assert(packageGraph.allLibrariesAdded);
     if (!_overriddenElementIsSet) {
       _overriddenElementIsSet = true;
       Element parent = element.enclosingElement;
@@ -398,10 +400,10 @@ class Accessor extends ModelElement
               : t.getSetter(element.name);
           if (accessor != null) {
             if (accessor is Member) {
-              accessor = Package.getBasestElement(accessor);
+              accessor = PackageGraph.getBasestElement(accessor);
             }
             Class parentClass =
-                new ModelElement.fromElement(t.element, package);
+                new ModelElement.fromElement(t.element, packageGraph);
             List<Field> possibleFields = [];
             possibleFields.addAll(parentClass.allInstanceProperties);
             possibleFields.addAll(parentClass.staticProperties);
@@ -459,7 +461,7 @@ class Class extends ModelElement
     _mixins = _cls.mixins
         .map((f) {
           ElementType t = new ElementType(
-              f, new ModelElement.fromElement(f.element, package));
+              f, new ModelElement.fromElement(f.element, packageGraph));
           return t;
         })
         .where((mixin) => mixin != null)
@@ -467,12 +469,12 @@ class Class extends ModelElement
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
       _supertype = new ElementType(_cls.supertype,
-          new ModelElement.fromElement(_cls.supertype.element, package));
+          new ModelElement.fromElement(_cls.supertype.element, packageGraph));
     }
 
     _interfaces = _cls.interfaces
         .map((f) => new ElementType(
-            f, new ModelElement.fromElement(f.element, package)))
+            f, new ModelElement.fromElement(f.element, packageGraph)))
         .toList(growable: false);
   }
 
@@ -692,9 +694,10 @@ class Class extends ModelElement
 
   /// Returns all the implementors of this class.
   Iterable<Class> get publicImplementors {
-    return filterNonPublic(findCanonicalFor(package._implementors[href] != null
-        ? package._implementors[href]
-        : []));
+    return filterNonPublic(findCanonicalFor(
+        packageGraph._implementors[href] != null
+            ? packageGraph._implementors[href]
+            : []));
   }
 
   List<Method> get inheritedMethods {
@@ -1063,7 +1066,7 @@ class Class extends ModelElement
   // a stronger hash?
   @override
   List<TypeParameter> get typeParameters => _cls.typeParameters.map((f) {
-        var lib = new Library(f.enclosingElement.library, package);
+        var lib = new Library(f.enclosingElement.library, packageGraph);
         return new ModelElement.from(f, lib);
       }).toList();
 
@@ -1072,7 +1075,7 @@ class Class extends ModelElement
       o is Class &&
       name == o.name &&
       o.library.name == library.name &&
-      o.library.package.name == library.package.name;
+      o.library.packageGraph.name == library.packageGraph.name;
 }
 
 class Constructor extends ModelElement
@@ -1165,7 +1168,7 @@ abstract class Documentable extends Nameable {
   bool get hasExtendedDocumentation;
   String get oneLineDoc;
   Documentable get overriddenDocumentedElement;
-  Package get package;
+  PackageGraph get packageGraph;
   bool get isDocumented;
 }
 
@@ -1197,7 +1200,7 @@ abstract class Canonicalization extends Object
     // Penalty for deprecated libraries.
     if (lib.isDeprecated) scoredCandidate.alterScore(-1.0, 'is deprecated');
     // Give a big boost if the library has the package name embedded in it.
-    if (package.namePieces.intersection(lib.namePieces).length > 0) {
+    if (packageGraph.namePieces.intersection(lib.namePieces).length > 0) {
       scoredCandidate.alterScore(1.0, 'embeds package name');
     }
     // Give a tiny boost for libraries with long names, assuming they're
@@ -1229,13 +1232,13 @@ abstract class Canonicalization extends Object
 
 class Dynamic extends ModelElement {
   @override
-  Package package;
+  PackageGraph packageGraph;
 
-  Dynamic(Element element, Library library, Package p)
+  Dynamic(Element element, Library library, PackageGraph p)
       : super(element, library, null) {
-    package = p;
-    assert(package != null || library != null);
-    if (p == null) package = library.package;
+    packageGraph = p;
+    assert(packageGraph != null || library != null);
+    if (p == null) packageGraph = library.packageGraph;
   }
 
   @override
@@ -1527,7 +1530,8 @@ abstract class GetterSetterCombo implements ModelElement {
         .toString();
     Element staticElement =
         (constantInitializer as InstanceCreationExpression).staticElement;
-    Constructor target = new ModelElement.fromElement(staticElement, package);
+    Constructor target =
+        new ModelElement.fromElement(staticElement, packageGraph);
     Class targetClass = target.enclosingElement;
     // TODO(jcollins-g): this logic really should be integrated into Constructor,
     // but that's not trivial because of linkedName's usage.
@@ -1696,7 +1700,7 @@ abstract class GetterSetterCombo implements ModelElement {
 
 class Library extends ModelElement {
   @override
-  final Package package;
+  final PackageGraph packageGraph;
 
   List<Class> _classes;
   List<Class> _enums;
@@ -1706,11 +1710,12 @@ class Library extends ModelElement {
   Namespace _exportedNamespace;
   String _name;
   String _packageName;
-  factory Library(LibraryElement element, Package package) {
-    return package.findOrCreateLibraryFor(element);
+  factory Library(LibraryElement element, PackageGraph packageGraph) {
+    return packageGraph.findOrCreateLibraryFor(element);
   }
 
-  Library._(LibraryElement element, this.package) : super(element, null, null) {
+  Library._(LibraryElement element, this.packageGraph)
+      : super(element, null, null) {
     if (element == null) throw new ArgumentError.notNull('element');
     _exportedNamespace =
         new NamespaceBuilder().createExportNamespaceForLibrary(element);
@@ -1731,14 +1736,16 @@ class Library extends ModelElement {
         Accessor setter;
         if (e is GetterSetterCombo) {
           if (e.hasGetter) {
-            getter = new ModelElement.fromElement(e.getter.element, package);
+            getter =
+                new ModelElement.fromElement(e.getter.element, packageGraph);
           }
           if (e.hasSetter) {
-            setter = new ModelElement.fromElement(e.setter.element, package);
+            setter =
+                new ModelElement.fromElement(e.setter.element, packageGraph);
           }
         }
         return new ModelElement.from(
-                e.element, package.findOrCreateLibraryFor(e.element),
+                e.element, packageGraph.findOrCreateLibraryFor(e.element),
                 getter: getter, setter: setter)
             .fullyQualifiedName;
       }).toList();
@@ -1755,8 +1762,8 @@ class Library extends ModelElement {
   }
 
   SdkLibrary get sdkLib {
-    if (package.sdkLibrarySources.containsKey(element.librarySource)) {
-      return package.sdkLibrarySources[element.librarySource];
+    if (packageGraph.sdkLibrarySources.containsKey(element.librarySource)) {
+      return packageGraph.sdkLibrarySources[element.librarySource];
     }
     return null;
   }
@@ -1791,7 +1798,7 @@ class Library extends ModelElement {
   Set<Library> _packageImportedExportedLibraries;
 
   /// Returns all libraries either imported by or exported by any public library
-  /// this library's package.  (Not [Package], but sharing a package name).
+  /// this library's package.  (Not [PackageGraph], but sharing a package name).
   ///
   /// Note: will still contain non-public libraries because those can be
   /// imported or exported.
@@ -1800,7 +1807,7 @@ class Library extends ModelElement {
   Set<Library> get packageImportedExportedLibraries {
     if (_packageImportedExportedLibraries == null) {
       _packageImportedExportedLibraries = new Set();
-      package.publicLibraries
+      packageGraph.publicLibraries
           .where((l) => l.packageName == packageName)
           .forEach((l) {
         _packageImportedExportedLibraries.addAll(l.importedExportedLibraries);
@@ -1999,17 +2006,21 @@ class Library extends ModelElement {
   /// for anonymous libraries in subdirectories or other packages.
   String get nameFromPath {
     if (_nameFromPath == null) {
-      _nameFromPath =
-          getNameFromPath(element, package.driver, package.packageMeta);
+      _nameFromPath = getNameFromPath(
+          element, packageGraph.driver, packageGraph.packageMeta);
     }
     return _nameFromPath;
   }
 
   /// The real package, as opposed to the package we are documenting it with,
-  /// [Package.name]
+  /// [PackageGraph.name]
   String get packageName {
     if (_packageName == null) {
-      _packageName = packageMeta?.name ?? '';
+      if (name.startsWith('dart:')) {
+        _packageName = 'Dart Core';
+      } else {
+        _packageName = packageMeta?.name ?? '';
+      }
     }
     return _packageName;
   }
@@ -2135,7 +2146,7 @@ class Library extends ModelElement {
   }
 
   /// Reverses URIs if needed to get a package URI.
-  /// Not the same as [Package.name] because there we always strip all
+  /// Not the same as [PackageGraph.name] because there we always strip all
   /// path components; this function only strips the package prefix if the
   /// library is part of the default package.
   static String getNameFromPath(LibraryElement element, AnalysisDriver driver,
@@ -2269,7 +2280,7 @@ class Library extends ModelElement {
   /// If not, then the situation is either ambiguous, or the reverse is true.
   /// Computing this is expensive, so cache it.
   bool isReexportedBy(Library library) {
-    assert(package.allLibrariesAdded);
+    assert(packageGraph.allLibrariesAdded);
     if (_isReexportedBy.containsKey(library)) return _isReexportedBy[library];
     Set<Element> otherElements = new Set()
       ..addAll(library.allModelElements.map((l) => l.element));
@@ -2373,7 +2384,7 @@ class Method extends ModelElement
       Element e = t.getMethod(element.name);
       if (e != null) {
         assert(e.enclosingElement is ClassElement);
-        return new ModelElement.fromElement(e, package);
+        return new ModelElement.fromElement(e, packageGraph);
       }
     }
     return null;
@@ -2425,8 +2436,8 @@ ModelElement resolveMultiplyInheritedElement(
     MultiplyInheritedExecutableElement e,
     Library library,
     Class enclosingClass) {
-  Iterable<Inheritable> inheritables = e.inheritedElements.map(
-      (ee) => new ModelElement.fromElement(ee, library.package) as Inheritable);
+  Iterable<Inheritable> inheritables = e.inheritedElements.map((ee) =>
+      new ModelElement.fromElement(ee, library.packageGraph) as Inheritable);
   Inheritable foundInheritable;
   int lowIndex = enclosingClass.inheritanceChain.length;
   for (var inheritable in inheritables) {
@@ -2447,7 +2458,7 @@ abstract class Privacy {
 }
 
 /// This class is the foundation of Dartdoc's model for source code.
-/// All ModelElements are contained within a [Package], and laid out in a
+/// All ModelElements are contained within a [PackageGraph], and laid out in a
 /// structure that mirrors the availability of identifiers in the various
 /// namespaces within that package.  For example, multiple [Class] objects
 /// for a particular identifier ([ModelElement.element]) may show up in
@@ -2457,14 +2468,14 @@ abstract class Privacy {
 /// documentation: canonicalization.
 ///
 /// A ModelElement is canonical if it is the element in the namespace where that
-/// element 'comes from' in the public interface to this [Package].  That often
-/// means the [ModelElement.library] is contained in [Package.libraries], but
+/// element 'comes from' in the public interface to this [PackageGraph].  That often
+/// means the [ModelElement.library] is contained in [PackageGraph.libraries], but
 /// there are many exceptions and ambiguities the code tries to address here.
 ///
 /// Non-canonical elements should refer to their canonical counterparts, making
 /// it easy to calculate links via [ModelElement.href] without having to
 /// know in a particular namespace which elements are canonical or not.
-/// A number of [Package] methods, such as [Package.findCanonicalModelElementFor]
+/// A number of [PackageGraph] methods, such as [PackageGraph.findCanonicalModelElementFor]
 /// can help with this.
 ///
 /// When documenting, Dartdoc should only write out files corresponding to
@@ -2493,9 +2504,9 @@ abstract class ModelElement extends Canonicalization
   // is fixed.
   ModelElement(this._element, this._library, this._originalMember) {}
 
-  factory ModelElement.fromElement(Element e, Package p) {
+  factory ModelElement.fromElement(Element e, PackageGraph p) {
     Library lib = _findOrCreateEnclosingLibraryForStatic(e, p);
-    return new ModelElement.from(e, lib, package: p);
+    return new ModelElement.from(e, lib, packageGraph: p);
   }
 
   // TODO(jcollins-g): this way of using the optional parameter is messy,
@@ -2512,7 +2523,7 @@ abstract class ModelElement extends Canonicalization
       {Class enclosingClass,
       Accessor getter,
       Accessor setter,
-      Package package}) {
+      PackageGraph packageGraph}) {
     // With AnalysisDriver, we sometimes get ElementHandles when building
     // docs for the SDK, seen via [Library.importedExportedLibraries].  Why?
     if (e is ElementHandle) {
@@ -2523,7 +2534,7 @@ abstract class ModelElement extends Canonicalization
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
     //                   for members?
     if (e is Member) {
-      var basest = Package.getBasestElement(e);
+      var basest = PackageGraph.getBasestElement(e);
       originalMember = e;
       e = basest;
     }
@@ -2531,19 +2542,19 @@ abstract class ModelElement extends Canonicalization
         new Tuple3(e, library, enclosingClass);
     ModelElement newModelElement;
     if (e.kind != ElementKind.DYNAMIC &&
-        library.package._allConstructedModelElements.containsKey(key)) {
-      newModelElement = library.package._allConstructedModelElements[key];
+        library.packageGraph._allConstructedModelElements.containsKey(key)) {
+      newModelElement = library.packageGraph._allConstructedModelElements[key];
       assert(newModelElement.element is! MultiplyInheritedExecutableElement);
     } else {
       if (e.kind == ElementKind.DYNAMIC) {
-        newModelElement = new Dynamic(e, library, package);
+        newModelElement = new Dynamic(e, library, packageGraph);
       }
       if (e is MultiplyInheritedExecutableElement) {
         newModelElement =
             resolveMultiplyInheritedElement(e, library, enclosingClass);
       } else {
         if (e is LibraryElement) {
-          newModelElement = new Library(e, library.package);
+          newModelElement = new Library(e, library.packageGraph);
         }
         // Also handles enums
         if (e is ClassElement) {
@@ -2552,14 +2563,17 @@ abstract class ModelElement extends Canonicalization
             if (newModelElement.name == 'Object' &&
                 newModelElement.library.name == 'dart:core') {
               // We've found Object.  This is an important object, so save it in the package.
-              assert(newModelElement.library.package._objectElement == null);
-              newModelElement.library.package._objectElement = newModelElement;
+              assert(
+                  newModelElement.library.packageGraph._objectElement == null);
+              newModelElement.library.packageGraph._objectElement =
+                  newModelElement;
             }
             if (newModelElement.name == 'Interceptor' &&
                 newModelElement.library.name == 'dart:_interceptors') {
               // We've found Interceptor.  Another important object.
-              assert(!newModelElement.library.package._interceptorUsed);
-              newModelElement.library.package.interceptor = newModelElement;
+              assert(!newModelElement.library.packageGraph._interceptorUsed);
+              newModelElement.library.packageGraph.interceptor =
+                  newModelElement;
             }
           } else {
             newModelElement = new Enum(e, library);
@@ -2660,12 +2674,12 @@ abstract class ModelElement extends Canonicalization
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
     if (library != null && newModelElement is! Parameter) {
-      library.package._allConstructedModelElements[key] = newModelElement;
+      library.packageGraph._allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
         Tuple2<Element, Library> iKey = new Tuple2(e, library);
-        library.package._allInheritableElements
+        library.packageGraph._allInheritableElements
             .putIfAbsent(iKey, () => new Set());
-        library.package._allInheritableElements[iKey].add(newModelElement);
+        library.packageGraph._allInheritableElements[iKey].add(newModelElement);
       }
     }
     if (newModelElement is GetterSetterCombo) {
@@ -2678,7 +2692,8 @@ abstract class ModelElement extends Canonicalization
   }
 
   Set<Library> get exportedInLibraries {
-    return library.package.libraryElementReexportedBy[this.element.library];
+    return library
+        .packageGraph.libraryElementReexportedBy[this.element.library];
   }
 
   // TODO(jcollins-g): annotations should now be able to use the utility
@@ -2691,8 +2706,8 @@ abstract class ModelElement extends Canonicalization
     return md.map((ElementAnnotation a) {
       String annotation = (const HtmlEscape()).convert(a.toSource());
       // a.element can be null if the element can't be resolved.
-      var me =
-          package.findCanonicalModelElementFor(a.element?.enclosingElement);
+      var me = packageGraph
+          .findCanonicalModelElementFor(a.element?.enclosingElement);
       if (me != null)
         annotation = annotation.replaceFirst(me.name, me.linkedName);
       return annotation;
@@ -2754,7 +2769,7 @@ abstract class ModelElement extends Canonicalization
     if (enclosingElement is Class) {
       preferredClass = enclosingElement;
     }
-    return package.findCanonicalModelElementFor(element,
+    return packageGraph.findCanonicalModelElementFor(element,
         preferredClass: preferredClass);
   }
 
@@ -2840,7 +2855,7 @@ abstract class ModelElement extends Canonicalization
         documentationFrom.map((e) => e.documentationLocal).join('<p>'));
   }
 
-  Library get definingLibrary => package.findOrCreateLibraryFor(element);
+  Library get definingLibrary => packageGraph.findOrCreateLibraryFor(element);
 
   Library _canonicalLibrary;
   // _canonicalLibrary can be null so we can't check against null to see whether
@@ -2850,7 +2865,7 @@ abstract class ModelElement extends Canonicalization
   Library get canonicalLibrary {
     if (!_canonicalLibraryIsSet) {
       // This is not accurate if we are constructing the Package.
-      assert(package.allLibrariesAdded);
+      assert(packageGraph.allLibrariesAdded);
       // Since we're may be looking for a library, find the [Element] immediately
       // contained by a [CompilationUnitElement] in the tree.
       Element topLevelElement = element;
@@ -2865,8 +2880,8 @@ abstract class ModelElement extends Canonicalization
       // just shortcut them out.
       if (!hasPublicName(element)) {
         _canonicalLibrary = null;
-      } else if (!package.publicLibraries.contains(definingLibrary)) {
-        List<Library> candidateLibraries = package
+      } else if (!packageGraph.publicLibraries.contains(definingLibrary)) {
+        List<Library> candidateLibraries = packageGraph
             .libraryElementReexportedBy[definingLibrary.element]
             ?.where((l) => l.isPublic)
             ?.toList();
@@ -2883,7 +2898,7 @@ abstract class ModelElement extends Canonicalization
           }).toList();
           // Start with our top-level element.
           ModelElement warnable =
-              new ModelElement.fromElement(topLevelElement, package);
+              new ModelElement.fromElement(topLevelElement, packageGraph);
           if (candidateLibraries.length > 1) {
             // Heuristic scoring to determine which library a human likely
             // considers this element to be primarily 'from', and therefore,
@@ -2915,7 +2930,7 @@ abstract class ModelElement extends Canonicalization
       if (this is Inheritable) {
         if ((this as Inheritable).isInherited &&
             _canonicalLibrary == null &&
-            package.publicLibraries.contains(library)) {
+            packageGraph.publicLibraries.contains(library)) {
           // In the event we've inherited a field from an object that isn't directly reexported,
           // we may need to pretend we are canonical for this.
           _canonicalLibrary = library;
@@ -2924,7 +2939,7 @@ abstract class ModelElement extends Canonicalization
       _canonicalLibraryIsSet = true;
     }
     assert(_canonicalLibrary == null ||
-        package.publicLibraries.contains(_canonicalLibrary));
+        packageGraph.publicLibraries.contains(_canonicalLibrary));
     return _canonicalLibrary;
   }
 
@@ -3100,8 +3115,10 @@ abstract class ModelElement extends Canonicalization
           (_originalMember is ExecutableMember ||
               _originalMember is ParameterMember)) {
         dynamic originalMember = _originalMember;
-        _modelType = new ElementType(originalMember.type,
-            new ModelElement.fromElement(originalMember.type.element, package));
+        _modelType = new ElementType(
+            originalMember.type,
+            new ModelElement.fromElement(
+                originalMember.type.element, packageGraph));
       } else if (element is ExecutableElement ||
           element is FunctionTypedElement ||
           element is ParameterElement ||
@@ -3110,7 +3127,7 @@ abstract class ModelElement extends Canonicalization
         _modelType = new ElementType(
             (element as dynamic).type,
             new ModelElement.fromElement(
-                (element as dynamic).type.element, package));
+                (element as dynamic).type.element, packageGraph));
       }
     }
     return _modelType;
@@ -3167,11 +3184,12 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
-  Package get package =>
-      (this is Library) ? (this as Library).package : this.library.package;
+  PackageGraph get packageGraph => (this is Library)
+      ? (this as Library).packageGraph
+      : this.library.packageGraph;
 
   bool get isPublicAndPackageDocumented =>
-      isPublic && library.package.packageDocumentedFor(this);
+      isPublic && library.packageGraph.packageDocumentedFor(this);
 
   List<Parameter> _allParameters;
   // TODO(jcollins-g): This is in the wrong place.  Move parts to GetterSetterCombo,
@@ -3237,7 +3255,7 @@ abstract class ModelElement extends Canonicalization
       {String message,
       Iterable<Locatable> referredFrom,
       Iterable<String> extendedDebug}) {
-    package.warnOnElement(this, kind,
+    packageGraph.warnOnElement(this, kind,
         message: message,
         referredFrom: referredFrom,
         extendedDebug: extendedDebug);
@@ -3437,14 +3455,14 @@ abstract class ModelElement extends Canonicalization
   // searching for the [Library] associated with this element's enclosing
   // Library before trying to create one.
   static Library _findOrCreateEnclosingLibraryForStatic(
-      Element e, Package package) {
+      Element e, PackageGraph packageGraph) {
     var element = e.getAncestor((l) => l is LibraryElement);
     var lib;
     if (element != null) {
-      lib = package.findLibraryFor(element);
+      lib = packageGraph.findLibraryFor(element);
     }
     if (lib == null) {
-      lib = package.findOrCreateLibraryFor(e);
+      lib = packageGraph.findOrCreateLibraryFor(e);
     }
     if (lib == null) {
       assert(e.kind == ElementKind.DYNAMIC);
@@ -3471,7 +3489,7 @@ abstract class ModelElement extends Canonicalization
   ///     {@example abc/def/xyz_component.dart region=template lang=html}
   ///
   String _injectExamples(String rawdocs) {
-    final dirPath = this.package.packageMeta.dir.path;
+    final dirPath = this.packageGraph.packageMeta.dir.path;
     RegExp exampleRE = new RegExp(r'{@example\s+([^}]+)}');
     return rawdocs.replaceAllMapped(exampleRE, (match) {
       var args = _getExampleArgs(match[1]);
@@ -3526,7 +3544,7 @@ abstract class ModelElement extends Canonicalization
   String _injectMacros(String rawDocs) {
     final macroRegExp = new RegExp(r'{@macro\s+([^}]+)}');
     return rawDocs.replaceAllMapped(macroRegExp, (match) {
-      String macro = package.getMacro(match[1]);
+      String macro = packageGraph.getMacro(match[1]);
       if (macro == null) {
         warn(PackageWarning.unknownMacro, message: match[1]);
       }
@@ -3547,7 +3565,7 @@ abstract class ModelElement extends Canonicalization
         r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?',
         multiLine: true);
     return rawDocs.replaceAllMapped(templateRegExp, (match) {
-      package._addMacro(match[1].trim(), match[2].trim());
+      packageGraph._addMacro(match[1].trim(), match[2].trim());
       return "";
     });
   }
@@ -3760,10 +3778,7 @@ class Operator extends Method {
 
 // TODO(jcollins-g): Break [Package] out into a real single-package only
 // class, and a container class for a set of packages.
-class Package extends Canonicalization with Nameable, Warnable {
-  // Library objects serving as entry points for documentation.
-  final List<Library> _libraries = [];
-
+class PackageGraph extends Canonicalization with Nameable, Warnable {
   // All library objects related to this package; a superset of _libraries.
   final Map<LibraryElement, Library> allLibraries = new Map();
 
@@ -3788,7 +3803,10 @@ class Package extends Canonicalization with Nameable, Warnable {
   Library get canonicalLibrary => null;
 
   @override
-  Package get package => this;
+  PackageGraph get packageGraph => this;
+
+  /// Map of package name to Package.
+  final Map<String, Package> packages = {};
 
   final AnalysisDriver driver;
   final DartSdk sdk;
@@ -3825,7 +3843,7 @@ class Package extends Canonicalization with Nameable, Warnable {
   bool allLibrariesAdded = false;
   bool _macrosAdded = false;
 
-  Package(Iterable<LibraryElement> libraryElements, this.packageMeta,
+  PackageGraph(Iterable<LibraryElement> libraryElements, this.packageMeta,
       this._packageWarningOptions, this.driver,
       [this.sdk]) {
     assert(_allConstructedModelElements.isEmpty);
@@ -3833,16 +3851,20 @@ class Package extends Canonicalization with Nameable, Warnable {
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
     libraryElements.forEach((element) {
       var lib = new Library._(element, this);
-      _libraries.add(lib);
+      packages.putIfAbsent(
+          lib.packageName, () => new Package(lib.packageName, this));
+      packages[lib.packageName]._libraries.add(lib);
       allLibraries[element] = lib;
       assert(!_elementToLibrary.containsKey(lib.element));
       _elementToLibrary[element] = lib;
     });
 
-    _libraries.sort((a, b) => compareNatural(a.name, b.name));
     allLibrariesAdded = true;
-    _libraries.forEach((library) {
-      library._allClasses.forEach(_addToImplementors);
+    packages.values.forEach((package) {
+      package._libraries.sort((a, b) => compareNatural(a.name, b.name));
+      package._libraries.forEach((library) {
+        library._allClasses.forEach(_addToImplementors);
+      });
     });
 
     _implementors.values.forEach((l) => l.sort());
@@ -4072,31 +4094,17 @@ class Package extends Canonicalization with Nameable, Warnable {
     return locatable.fullyQualifiedName.replaceFirst(':', '-');
   }
 
-  List<PackageCategory> get categories {
-    Map<String, PackageCategory> result = {};
-
-    for (Library library in publicLibraries) {
-      String name = '';
-
-      if (library.name.startsWith('dart:')) {
-        name = 'Dart Core';
-      } else {
-        name = library.packageName;
-      }
-
-      if (!result.containsKey(name)) {
-        result[name] = new PackageCategory(name, this);
-      }
-      result[name]._libraries.add(library);
-    }
+  List<Package> get categories {
     // Help the user if they pass us a category that doesn't exist.
     for (String categoryName in config.categoryOrder) {
-      if (!result.containsKey(categoryName))
+      if (!packages.containsKey(categoryName))
         warnOnElement(null, PackageWarning.categoryOrderGivesMissingPackageName,
-            message: "${categoryName}, categories: ${result.keys.join(',')}");
+            message: "${categoryName}, categories: ${packages.keys.join(',')}");
     }
-    List<PackageCategory> packageCategories = result.values.toList()..sort();
-    return packageCategories;
+    List<Package> publicPackages = packages.values
+        .where((p) => p.libraries.any((l) => l.isPublic))
+        .toList();
+    return publicPackages..sort();
   }
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
@@ -4149,10 +4157,12 @@ class Package extends Canonicalization with Nameable, Warnable {
       hrefMap.putIfAbsent(modelElement.href, () => new Set());
       hrefMap[modelElement.href].add(modelElement);
     }
-    for (Library library in _libraries) {
-      if (library.href == null) continue;
-      hrefMap.putIfAbsent(library.href, () => new Set());
-      hrefMap[library.href].add(library);
+    for (Package package in packages.values) {
+      for (Library library in package._libraries) {
+        if (library.href == null) continue;
+        hrefMap.putIfAbsent(library.href, () => new Set());
+        hrefMap[library.href].add(library);
+      }
     }
     return hrefMap;
   }
@@ -4209,7 +4219,8 @@ class Package extends Canonicalization with Nameable, Warnable {
     }
   }
 
-  List<Library> get libraries => _libraries.toList(growable: false);
+  List<Library> get libraries =>
+      packages.values.expand((p) => p.libraries).toList()..sort();
   Iterable<Library> get publicLibraries => filterNonPublic(libraries);
 
   bool get hasHomepage =>
@@ -4220,7 +4231,7 @@ class Package extends Canonicalization with Nameable, Warnable {
   String get name => packageMeta.name;
 
   String get kind =>
-      (packageMeta.useCategories || package.isSdk) ? '' : 'package';
+      (packageMeta.useCategories || packageGraph.isSdk) ? '' : 'package';
 
   @override
   String get oneLineDoc => '';
@@ -4334,7 +4345,7 @@ class Package extends Canonicalization with Nameable, Warnable {
   /// this element is related to a particular class, pass preferredClass to
   /// disambiguate.
   ///
-  /// This doesn't know anything about [Package.inheritThrough] and probably
+  /// This doesn't know anything about [PackageGraph.inheritThrough] and probably
   /// shouldn't, so using it with [Inheritable]s without special casing is
   /// not advised.
   ModelElement findCanonicalModelElementFor(Element e, {Class preferredClass}) {
@@ -4497,12 +4508,12 @@ class Package extends Canonicalization with Nameable, Warnable {
   }
 }
 
-class PackageCategory implements Comparable<PackageCategory> {
+class Package implements Comparable<Package> {
   final String name;
   final List<Library> _libraries = [];
-  Package package;
+  PackageGraph packageGraph;
 
-  PackageCategory(this.name, this.package);
+  Package(this.name, this.packageGraph);
 
   List<Library> get libraries => _libraries;
 
@@ -4520,14 +4531,14 @@ class PackageCategory implements Comparable<PackageCategory> {
   /// 3 otherwise.
   int get _group {
     if (config.categoryOrder.contains(name)) return -1;
-    if (name.toLowerCase() == package.name.toLowerCase()) return 0;
+    if (name.toLowerCase() == packageGraph.name.toLowerCase()) return 0;
     if (name == "Dart Core") return 1;
-    if (name.toLowerCase().contains(package.name.toLowerCase())) return 2;
+    if (name.toLowerCase().contains(packageGraph.name.toLowerCase())) return 2;
     return 3;
   }
 
   @override
-  int compareTo(PackageCategory other) {
+  int compareTo(Package other) {
     if (_group == other._group) {
       if (_group == -1) {
         return Comparable.compare(config.categoryOrder.indexOf(name),
@@ -4660,7 +4671,7 @@ abstract class SourceCodeMixin {
       var source = node.element.source;
       var filePath = source.fullName;
       var uri = source.uri.toString();
-      var packageMeta = library.package.packageMeta;
+      var packageMeta = library.packageGraph.packageMeta;
       if (uri.startsWith("package:")) {
         var splittedUri =
             uri.replaceAll(new RegExp(r"^package:"), "").split("/");
@@ -4882,7 +4893,7 @@ class TypeParameter extends ModelElement {
     var bound = _typeParameter.bound;
     if (bound != null) {
       ModelElement boundClass =
-          new ModelElement.fromElement(bound.element, package);
+          new ModelElement.fromElement(bound.element, packageGraph);
       return new ElementType(bound, boundClass);
     }
     return null;
@@ -4933,9 +4944,9 @@ class PackageBuilder {
 
   void logAnalysisErrors(Set<Source> sources) {}
 
-  Future<Package> buildPackage() async {
+  Future<PackageGraph> buildPackageGraph() async {
     Set<LibraryElement> libraries = await getLibraries(getFiles);
-    return new Package(
+    return new PackageGraph(
         libraries, packageMeta, getWarningOptions(), driver, sdk);
   }
 

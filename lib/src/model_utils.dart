@@ -34,8 +34,8 @@ Iterable<T> filterNonPublic<T extends Privacy>(Iterable<T> privacyItems) {
 /// Finds canonical classes for all classes in the iterable, if possible.
 /// If a canonical class can not be found, returns the original class.
 Iterable<Class> findCanonicalFor(Iterable<Class> classes) {
-  return classes.map(
-      (c) => c.package.findCanonicalModelElementFor(c.element) as Class ?? c);
+  return classes.map((c) =>
+      c.packageGraph.findCanonicalModelElementFor(c.element) as Class ?? c);
 }
 
 String getFileContentsFor(Element e) {
