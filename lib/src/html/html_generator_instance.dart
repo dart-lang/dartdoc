@@ -24,15 +24,15 @@ typedef void FileWriter(String path, Object content, {bool allowOverwrite});
 class HtmlGeneratorInstance {
   final HtmlGeneratorOptions _options;
   final Templates _templates;
-  final Package _package;
+  final PackageGraph _packageGraph;
   final List<ModelElement> _documentedElements = <ModelElement>[];
   final FileWriter _writer;
 
   HtmlGeneratorInstance(
-      this._options, this._templates, this._package, this._writer);
+      this._options, this._templates, this._packageGraph, this._writer);
 
   Future generate() async {
-    if (_package != null) {
+    if (_packageGraph != null) {
       _generateDocs();
       _generateSearchIndex();
     }
@@ -85,178 +85,181 @@ class HtmlGeneratorInstance {
   }
 
   void _generateDocs() {
-    if (_package == null) return;
+    if (_packageGraph == null) return;
 
     generatePackage();
 
-    for (var lib in filterNonDocumented(_package.libraries)) {
-      generateLibrary(_package, lib);
+    for (var lib in filterNonDocumented(_packageGraph.libraries)) {
+      generateLibrary(_packageGraph, lib);
 
       for (var clazz in filterNonDocumented(lib.allClasses)) {
-        generateClass(_package, lib, clazz);
+        generateClass(_packageGraph, lib, clazz);
 
         for (var constructor in filterNonDocumented(clazz.constructors)) {
           if (!constructor.isCanonical) continue;
-          generateConstructor(_package, lib, clazz, constructor);
+          generateConstructor(_packageGraph, lib, clazz, constructor);
         }
 
         for (var constant in filterNonDocumented(clazz.constants)) {
           if (!constant.isCanonical) continue;
-          generateConstant(_package, lib, clazz, constant);
+          generateConstant(_packageGraph, lib, clazz, constant);
         }
 
         for (var property in filterNonDocumented(clazz.staticProperties)) {
           if (!property.isCanonical) continue;
-          generateProperty(_package, lib, clazz, property);
+          generateProperty(_packageGraph, lib, clazz, property);
         }
 
         for (var property in filterNonDocumented(clazz.propertiesForPages)) {
           if (!property.isCanonical) continue;
-          generateProperty(_package, lib, clazz, property);
+          generateProperty(_packageGraph, lib, clazz, property);
         }
 
         for (var method in filterNonDocumented(clazz.methodsForPages)) {
           if (!method.isCanonical) continue;
-          generateMethod(_package, lib, clazz, method);
+          generateMethod(_packageGraph, lib, clazz, method);
         }
 
         for (var operator in filterNonDocumented(clazz.operatorsForPages)) {
           if (!operator.isCanonical) continue;
-          generateMethod(_package, lib, clazz, operator);
+          generateMethod(_packageGraph, lib, clazz, operator);
         }
 
         for (var method in filterNonDocumented(clazz.staticMethods)) {
           if (!method.isCanonical) continue;
-          generateMethod(_package, lib, clazz, method);
+          generateMethod(_packageGraph, lib, clazz, method);
         }
       }
 
       for (var eNum in filterNonDocumented(lib.enums)) {
-        generateEnum(_package, lib, eNum);
+        generateEnum(_packageGraph, lib, eNum);
         for (var property in filterNonDocumented(eNum.propertiesForPages)) {
-          generateProperty(_package, lib, eNum, property);
+          generateProperty(_packageGraph, lib, eNum, property);
         }
         for (var operator in filterNonDocumented(eNum.operatorsForPages)) {
-          generateMethod(_package, lib, eNum, operator);
+          generateMethod(_packageGraph, lib, eNum, operator);
         }
         for (var method in filterNonDocumented(eNum.methodsForPages)) {
-          generateMethod(_package, lib, eNum, method);
+          generateMethod(_packageGraph, lib, eNum, method);
         }
       }
 
       for (var constant in filterNonDocumented(lib.constants)) {
-        generateTopLevelConstant(_package, lib, constant);
+        generateTopLevelConstant(_packageGraph, lib, constant);
       }
 
       for (var property in filterNonDocumented(lib.properties)) {
-        generateTopLevelProperty(_package, lib, property);
+        generateTopLevelProperty(_packageGraph, lib, property);
       }
 
       for (var function in filterNonDocumented(lib.functions)) {
-        generateFunction(_package, lib, function);
+        generateFunction(_packageGraph, lib, function);
       }
 
       for (var typeDef in filterNonDocumented(lib.typedefs)) {
-        generateTypeDef(_package, lib, typeDef);
+        generateTypeDef(_packageGraph, lib, typeDef);
       }
     }
   }
 
   void generatePackage() {
-    TemplateData data = new PackageTemplateData(_options, _package);
-    logInfo('documenting ${_package.name}');
+    TemplateData data = new PackageTemplateData(_options, _packageGraph);
+    logInfo('documenting ${_packageGraph.name}');
 
     _build('index.html', _templates.indexTemplate, data);
   }
 
-  void generateLibrary(Package package, Library lib) {
+  void generateLibrary(PackageGraph packageGraph, Library lib) {
     logInfo(
         'Generating docs for library ${lib.name} from ${lib.element.source.uri}...');
     if (!lib.isAnonymous && !lib.hasDocumentation) {
-      package.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);
+      packageGraph.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);
     }
-    TemplateData data = new LibraryTemplateData(_options, package, lib);
+    TemplateData data = new LibraryTemplateData(_options, packageGraph, lib);
 
     _build(path.join(lib.dirName, '${lib.fileName}'),
         _templates.libraryTemplate, data);
   }
 
-  void generateClass(Package package, Library lib, Class clazz) {
-    TemplateData data = new ClassTemplateData(_options, package, lib, clazz);
+  void generateClass(PackageGraph packageGraph, Library lib, Class clazz) {
+    TemplateData data =
+        new ClassTemplateData(_options, packageGraph, lib, clazz);
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
 
-  void generateConstructor(
-      Package package, Library lib, Class clazz, Constructor constructor) {
-    TemplateData data =
-        new ConstructorTemplateData(_options, package, lib, clazz, constructor);
+  void generateConstructor(PackageGraph packageGraph, Library lib, Class clazz,
+      Constructor constructor) {
+    TemplateData data = new ConstructorTemplateData(
+        _options, packageGraph, lib, clazz, constructor);
 
     _build(path.joinAll(constructor.href.split('/')),
         _templates.constructorTemplate, data);
   }
 
-  void generateEnum(Package package, Library lib, Enum eNum) {
-    TemplateData data = new EnumTemplateData(_options, package, lib, eNum);
+  void generateEnum(PackageGraph packageGraph, Library lib, Enum eNum) {
+    TemplateData data = new EnumTemplateData(_options, packageGraph, lib, eNum);
 
     _build(path.joinAll(eNum.href.split('/')), _templates.enumTemplate, data);
   }
 
-  void generateFunction(Package package, Library lib, ModelFunction function) {
+  void generateFunction(
+      PackageGraph packageGraph, Library lib, ModelFunction function) {
     TemplateData data =
-        new FunctionTemplateData(_options, package, lib, function);
+        new FunctionTemplateData(_options, packageGraph, lib, function);
 
     _build(path.joinAll(function.href.split('/')), _templates.functionTemplate,
         data);
   }
 
   void generateMethod(
-      Package package, Library lib, Class clazz, Method method) {
+      PackageGraph packageGraph, Library lib, Class clazz, Method method) {
     TemplateData data =
-        new MethodTemplateData(_options, package, lib, clazz, method);
+        new MethodTemplateData(_options, packageGraph, lib, clazz, method);
 
     _build(
         path.joinAll(method.href.split('/')), _templates.methodTemplate, data);
   }
 
   void generateConstant(
-      Package package, Library lib, Class clazz, Field property) {
+      PackageGraph packageGraph, Library lib, Class clazz, Field property) {
     TemplateData data =
-        new ConstantTemplateData(_options, package, lib, clazz, property);
+        new ConstantTemplateData(_options, packageGraph, lib, clazz, property);
 
     _build(path.joinAll(property.href.split('/')), _templates.constantTemplate,
         data);
   }
 
   void generateProperty(
-      Package package, Library lib, Class clazz, Field property) {
+      PackageGraph packageGraph, Library lib, Class clazz, Field property) {
     TemplateData data =
-        new PropertyTemplateData(_options, package, lib, clazz, property);
+        new PropertyTemplateData(_options, packageGraph, lib, clazz, property);
 
     _build(path.joinAll(property.href.split('/')), _templates.propertyTemplate,
         data);
   }
 
   void generateTopLevelProperty(
-      Package package, Library lib, TopLevelVariable property) {
+      PackageGraph packageGraph, Library lib, TopLevelVariable property) {
     TemplateData data =
-        new TopLevelPropertyTemplateData(_options, package, lib, property);
+        new TopLevelPropertyTemplateData(_options, packageGraph, lib, property);
 
     _build(path.joinAll(property.href.split('/')),
         _templates.topLevelPropertyTemplate, data);
   }
 
   void generateTopLevelConstant(
-      Package package, Library lib, TopLevelVariable property) {
+      PackageGraph packageGraph, Library lib, TopLevelVariable property) {
     TemplateData data =
-        new TopLevelConstTemplateData(_options, package, lib, property);
+        new TopLevelConstTemplateData(_options, packageGraph, lib, property);
 
     _build(path.joinAll(property.href.split('/')),
         _templates.topLevelConstantTemplate, data);
   }
 
-  void generateTypeDef(Package package, Library lib, Typedef typeDef) {
+  void generateTypeDef(
+      PackageGraph packageGraph, Library lib, Typedef typeDef) {
     TemplateData data =
-        new TypedefTemplateData(_options, package, lib, typeDef);
+        new TypedefTemplateData(_options, packageGraph, lib, typeDef);
 
     _build(path.joinAll(typeDef.href.split('/')), _templates.typeDefTemplate,
         data);

@@ -37,7 +37,7 @@ class ElementType extends Privacy {
   @override
   bool get isPublic {
     Class canonicalClass =
-        element.package.findCanonicalModelElementFor(element.element) ??
+        element.packageGraph.findCanonicalModelElementFor(element.element) ??
             element;
     return canonicalClass.isPublic;
   }
@@ -139,7 +139,7 @@ class ElementType extends Privacy {
 
   ElementType get _returnType {
     var rt = _returnTypeCore;
-    Library lib = element.package.findLibraryFor(rt.element);
+    Library lib = element.packageGraph.findLibraryFor(rt.element);
     if (lib == null) {
       lib = new ModelElement.from(rt.element.library, element.library);
     }

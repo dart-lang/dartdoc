@@ -269,7 +269,8 @@ MatchingLinkResult _getMatchingLinkElement(
     Element refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
     if (refElement != null) {
       refModelElement = new ModelElement.fromElement(
-          _getRefElementFromCommentRefs(commentRefs, codeRef), element.package);
+          _getRefElementFromCommentRefs(commentRefs, codeRef),
+          element.packageGraph);
       refModelElement =
           refModelElement.canonicalModelElement ?? refModelElement;
     }
@@ -292,7 +293,8 @@ MatchingLinkResult _getMatchingLinkElement(
   // There have been places in the code which helpfully cache entities
   // regardless of what package they are associated with.  This assert
   // will protect us from reintroducing that.
-  assert(refModelElement == null || refModelElement.package == element.package);
+  assert(refModelElement == null ||
+      refModelElement.packageGraph == element.packageGraph);
   if (refModelElement != null) {
     return new MatchingLinkResult(refModelElement, null);
   }
@@ -376,12 +378,12 @@ Map<String, Set<ModelElement>> _findRefElementCache;
 ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
     List<CommentReference> commentRefs, Class preferredClass) {
   assert(element != null);
-  assert(element.package.allLibrariesAdded);
+  assert(element.packageGraph.allLibrariesAdded);
 
   String codeRefChomped = codeRef.replaceFirst(isConstructor, '');
 
   final Library library = element is ModelElement ? element.library : null;
-  final Package package = library.package;
+  final PackageGraph packageGraph = library.packageGraph;
   final Set<ModelElement> results = new Set();
 
   // This might be an operator.  Strip the operator prefix and try again.
@@ -443,7 +445,7 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
     for (Class tryClass in tryClasses) {
       if (tryClass != null) {
         _getResultsForClass(
-            tryClass, codeRefChomped, results, codeRef, package);
+            tryClass, codeRefChomped, results, codeRef, packageGraph);
       }
       results.remove(null);
       if (results.isNotEmpty) break;
@@ -454,7 +456,7 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
           in realClass.publicSuperChain.map((et) => et.element as Class)) {
         if (!tryClasses.contains(superClass)) {
           _getResultsForClass(
-              superClass, codeRefChomped, results, codeRef, package);
+              superClass, codeRefChomped, results, codeRef, packageGraph);
         }
         results.remove(null);
         if (results.isNotEmpty) break;
@@ -469,9 +471,10 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
   //                   when referring to objects in libraries outside the
   //                   documented set.
   if (results.isEmpty && _findRefElementCache == null) {
-    assert(package.allLibrariesAdded);
+    assert(packageGraph.allLibrariesAdded);
     _findRefElementCache = new Map();
-    for (final modelElement in filterNonDocumented(package.allModelElements)) {
+    for (final modelElement
+        in filterNonDocumented(packageGraph.allModelElements)) {
       _findRefElementCache.putIfAbsent(
           modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
       _findRefElementCache.putIfAbsent(
@@ -494,7 +497,8 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
       // might make no sense.  Instead, use the enclosing class from the
       // element in [_findRefElementCache], because that element's enclosing
       // class will be preferred from [codeRefChomped]'s perspective.
-      results.add(package.findCanonicalModelElementFor(modelElement.element,
+      results.add(packageGraph.findCanonicalModelElementFor(
+          modelElement.element,
           preferredClass: modelElement.enclosingElement is Class
               ? modelElement.enclosingElement
               : null));
@@ -507,7 +511,8 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
     for (final modelElement in library.allModelElements) {
       if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
       if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary) {
-        results.add(package.findCanonicalModelElementFor(modelElement.element,
+        results.add(packageGraph.findCanonicalModelElementFor(
+            modelElement.element,
             preferredClass: preferredClass));
       }
     }
@@ -520,7 +525,8 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
       if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary ||
           (modelElement is Library &&
               codeRefChomped == modelElement.fullyQualifiedName)) {
-        results.add(package.findCanonicalModelElementFor(modelElement.element));
+        results.add(
+            packageGraph.findCanonicalModelElementFor(modelElement.element));
       }
     }
   }
@@ -633,7 +639,7 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
 // _getResultsForClass assumes codeRefChomped might be a member of tryClass (inherited or not)
 // and will add to [results]
 void _getResultsForClass(Class tryClass, String codeRefChomped,
-    Set<ModelElement> results, String codeRef, Package package) {
+    Set<ModelElement> results, String codeRef, PackageGraph packageGraph) {
   // This might be part of the type arguments for the class, if so, add them.
   // Otherwise, search the class.
   if ((tryClass.modelType.typeArguments.map((e) => e.name))
@@ -644,7 +650,7 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
   } else {
     // People like to use 'this' in docrefs too.
     if (codeRef == 'this') {
-      results.add(package.findCanonicalModelElementFor(tryClass.element));
+      results.add(packageGraph.findCanonicalModelElementFor(tryClass.element));
     } else {
       // TODO(jcollins-g): get rid of reimplementation of identifier resolution
       //                   or integrate into ModelElement in a simpler way.
@@ -670,7 +676,7 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
           }
           // TODO(jcollins-g): fix operators so we can use 'name' here or similar.
           if (codeRefChomped == namePart) {
-            results.add(package.findCanonicalModelElementFor(
+            results.add(packageGraph.findCanonicalModelElementFor(
                 modelElement.element,
                 preferredClass: tryClass));
             continue;
@@ -682,7 +688,7 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
           // when it is referenced from a non-documented element?
           // TODO(jcollins-g): We could probably check this early.
           if (codeRefParts.first == c.name && codeRefParts.last == namePart) {
-            results.add(package.findCanonicalModelElementFor(
+            results.add(packageGraph.findCanonicalModelElementFor(
                 modelElement.element,
                 preferredClass: tryClass));
             continue;
@@ -696,7 +702,7 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
               if (codeRefClass == c.name &&
                   codeRefConstructor ==
                       modelElement.fullyQualifiedName.split('.').last) {
-                results.add(package.findCanonicalModelElementFor(
+                results.add(packageGraph.findCanonicalModelElementFor(
                     modelElement.element,
                     preferredClass: tryClass));
                 continue;

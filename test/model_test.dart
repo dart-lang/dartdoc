@@ -23,25 +23,26 @@ void main() {
     exit(1);
   }
 
-  Package package;
-  Package ginormousPackage;
+  PackageGraph packageGraph;
+  PackageGraph ginormousPackageGraph;
   Library exLibrary;
   Library fakeLibrary;
   Library twoExportsLib;
   Library interceptorsLib;
-  Package sdkAsPackage;
+  PackageGraph sdkAsPackageGraph;
 
   setUpAll(() async {
     await utils.init();
-    package = utils.testPackage;
-    ginormousPackage = utils.testPackageGinormous;
-    exLibrary = package.libraries.firstWhere((lib) => lib.name == 'ex');
-    fakeLibrary = package.libraries.firstWhere((lib) => lib.name == 'fake');
+    packageGraph = utils.testPackageGraph;
+    ginormousPackageGraph = utils.testPackageGraphGinormous;
+    exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
+    fakeLibrary =
+        packageGraph.libraries.firstWhere((lib) => lib.name == 'fake');
     twoExportsLib =
-        package.libraries.firstWhere((lib) => lib.name == 'two_exports');
-    interceptorsLib =
-        package.libraries.firstWhere((lib) => lib.name == 'dart:_interceptors');
-    sdkAsPackage = utils.testPackageSdk;
+        packageGraph.libraries.firstWhere((lib) => lib.name == 'two_exports');
+    interceptorsLib = packageGraph.libraries
+        .firstWhere((lib) => lib.name == 'dart:_interceptors');
+    sdkAsPackageGraph = utils.testPackageGraphSdk;
   });
 
   group('Package', () {
@@ -51,36 +52,37 @@ void main() {
       });
 
       test('name', () {
-        expect(package.name, 'test_package');
+        expect(packageGraph.name, 'test_package');
       });
 
       test('libraries', () {
-        expect(package.libraries, hasLength(9));
+        expect(packageGraph.libraries, hasLength(9));
         expect(interceptorsLib.isPublic, isFalse);
       });
 
       test('homepage', () {
-        expect(package.hasHomepage, true);
-        expect(package.homepage, equals('http://github.com/dart-lang'));
+        expect(packageGraph.hasHomepage, true);
+        expect(packageGraph.homepage, equals('http://github.com/dart-lang'));
       });
 
       test('categories', () {
-        expect(package.categories, hasLength(1));
+        expect(packageGraph.categories, hasLength(1));
 
-        PackageCategory category = package.categories.first;
+        Package category = packageGraph.categories.first;
         expect(category.name, 'test_package');
         expect(category.libraries, hasLength(8));
       });
 
       test('multiple categories, sorted default', () {
-        expect(ginormousPackage.categories, hasLength(3));
-        expect(ginormousPackage.categories.first.name, equals('test_package'));
+        expect(ginormousPackageGraph.categories, hasLength(3));
+        expect(ginormousPackageGraph.categories.first.name,
+            equals('test_package'));
       });
 
       test('multiple categories, specified sort order', () {
         setConfig(categoryOrder: ['meta', 'test_package']);
-        expect(ginormousPackage.categories, hasLength(3));
-        expect(ginormousPackage.categories.first.name, equals('meta'));
+        expect(ginormousPackageGraph.categories, hasLength(3));
+        expect(ginormousPackageGraph.categories.first.name, equals('meta'));
       });
 
       test('is documented in library', () {
@@ -88,43 +90,45 @@ void main() {
       });
 
       test('has documentation', () {
-        expect(package.hasDocumentationFile, isTrue);
-        expect(package.hasDocumentation, isTrue);
+        expect(packageGraph.hasDocumentationFile, isTrue);
+        expect(packageGraph.hasDocumentation, isTrue);
       });
 
       test('documentation exists', () {
-        expect(package.documentation.startsWith('# Best Package'), isTrue);
+        expect(packageGraph.documentation.startsWith('# Best Package'), isTrue);
       });
 
       test('documentation can be rendered as HTML', () {
-        expect(package.documentationAsHtml, contains('<h1>Best Package</h1>'));
+        expect(packageGraph.documentationAsHtml,
+            contains('<h1>Best Package</h1>'));
       });
 
       test('sdk name', () {
-        expect(sdkAsPackage.name, equals('Dart SDK'));
+        expect(sdkAsPackageGraph.name, equals('Dart SDK'));
       });
 
       test('sdk homepage', () {
-        expect(sdkAsPackage.hasHomepage, isTrue);
-        expect(
-            sdkAsPackage.homepage, equals('https://github.com/dart-lang/sdk'));
+        expect(sdkAsPackageGraph.hasHomepage, isTrue);
+        expect(sdkAsPackageGraph.homepage,
+            equals('https://github.com/dart-lang/sdk'));
       });
 
       test('sdk version', () {
-        expect(sdkAsPackage.version, isNotNull);
+        expect(sdkAsPackageGraph.version, isNotNull);
       });
 
       test('sdk description', () {
-        expect(sdkAsPackage.documentation,
+        expect(sdkAsPackageGraph.documentation,
             startsWith('Welcome to the Dart API reference doc'));
       });
 
       test('has anonymous libraries', () {
         expect(
-            package.libraries.where((lib) => lib.name == 'anonymous_library'),
+            packageGraph.libraries
+                .where((lib) => lib.name == 'anonymous_library'),
             hasLength(1));
         expect(
-            package.libraries
+            packageGraph.libraries
                 .where((lib) => lib.name == 'another_anonymous_lib'),
             hasLength(1));
       });
@@ -132,22 +136,22 @@ void main() {
 
     group('test small package', () {
       test('does not have documentation', () {
-        expect(utils.testPackageSmall.hasDocumentation, isFalse);
-        expect(utils.testPackageSmall.hasDocumentationFile, isFalse);
-        expect(utils.testPackageSmall.documentationFile, isNull);
-        expect(utils.testPackageSmall.documentation, isNull);
+        expect(utils.testPackageGraphSmall.hasDocumentation, isFalse);
+        expect(utils.testPackageGraphSmall.hasDocumentationFile, isFalse);
+        expect(utils.testPackageGraphSmall.documentationFile, isNull);
+        expect(utils.testPackageGraphSmall.documentation, isNull);
       });
     });
 
     group('SDK-specific cases', () {
       test('Verify Interceptor is hidden from inheritance in docs', () {
-        Library htmlLibrary =
-            sdkAsPackage.libraries.singleWhere((l) => l.name == 'dart:html');
+        Library htmlLibrary = sdkAsPackageGraph.libraries
+            .singleWhere((l) => l.name == 'dart:html');
         Class EventTarget =
             htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
         Field hashCode = EventTarget.allPublicInstanceProperties
             .singleWhere((f) => f.name == 'hashCode');
-        Class objectModelElement = sdkAsPackage.objectElement;
+        Class objectModelElement = sdkAsPackageGraph.objectElement;
         // If this fails, EventTarget might have been changed to no longer
         // inherit from Interceptor.  If that's true, adjust test case to
         // another class that does.
@@ -175,25 +179,25 @@ void main() {
     Class SomeClass, SomeOtherClass, YetAnotherClass, AUnicornClass;
 
     setUp(() {
-      dartAsyncLib = utils.testPackageSdk.libraries
+      dartAsyncLib = utils.testPackageGraphSdk.libraries
           .firstWhere((l) => l.name == 'dart:async');
 
-      anonLib = package.libraries
+      anonLib = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'anonymous_library');
 
-      someLib = package.allLibraries.values
+      someLib = packageGraph.allLibraries.values
           .firstWhere((lib) => lib.name == 'reexport.somelib');
-      reexportOneLib =
-          package.libraries.firstWhere((lib) => lib.name == 'reexport_one');
-      reexportTwoLib =
-          package.libraries.firstWhere((lib) => lib.name == 'reexport_two');
+      reexportOneLib = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'reexport_one');
+      reexportTwoLib = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'reexport_two');
       SomeClass = someLib.getClassByName('SomeClass');
       SomeOtherClass = someLib.getClassByName('SomeOtherClass');
       YetAnotherClass = someLib.getClassByName('YetAnotherClass');
       AUnicornClass = someLib.getClassByName('AUnicornClass');
 
-      isDeprecated =
-          package.libraries.firstWhere((lib) => lib.name == 'is_deprecated');
+      isDeprecated = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'is_deprecated');
 
       // Make sure the first library is dart:async
       expect(dartAsyncLib.name, 'dart:async');
@@ -280,26 +284,26 @@ void main() {
           '(reexport_one, reexport_two) -> reexport_two (confidence 0.000)';
       // Unicorn class has a warning because two @canonicalFors cancel each other out.
       expect(
-          package.packageWarningCounter.hasWarning(
+          packageGraph.packageWarningCounter.hasWarning(
               AUnicornClass, PackageWarning.ambiguousReexport, warningMsg),
           isTrue);
       // This class is ambiguous without a @canonicalFor
       expect(
-          package.packageWarningCounter.hasWarning(
+          packageGraph.packageWarningCounter.hasWarning(
               YetAnotherClass, PackageWarning.ambiguousReexport, warningMsg),
           isTrue);
       // These two classes have a @canonicalFor
       expect(
-          package.packageWarningCounter.hasWarning(
+          packageGraph.packageWarningCounter.hasWarning(
               SomeClass, PackageWarning.ambiguousReexport, warningMsg),
           isFalse);
       expect(
-          package.packageWarningCounter.hasWarning(
+          packageGraph.packageWarningCounter.hasWarning(
               SomeOtherClass, PackageWarning.ambiguousReexport, warningMsg),
           isFalse);
       // This library has a canonicalFor with no corresponding item
       expect(
-          package.packageWarningCounter.hasWarning(reexportTwoLib,
+          packageGraph.packageWarningCounter.hasWarning(reexportTwoLib,
               PackageWarning.ignoredCanonicalFor, 'something.ThatDoesntExist'),
           isTrue);
     });
@@ -324,7 +328,7 @@ void main() {
           .firstWhere((m) => m.name == 'withPrivateMacro');
       withUndefinedMacro = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withUndefinedMacro');
-      package.allModelElements.forEach((m) => m.documentation);
+      packageGraph.allModelElements.forEach((m) => m.documentation);
     });
 
     test("renders a macro within the same comment where it's defined", () {
@@ -343,7 +347,7 @@ void main() {
 
     test("a warning is generated for unknown macros", () {
       expect(
-          package.packageWarningCounter.hasWarning(withUndefinedMacro,
+          packageGraph.packageWarningCounter.hasWarning(withUndefinedMacro,
               PackageWarning.unknownMacro, 'ThatDoesNotExist'),
           isTrue);
     });
@@ -733,11 +737,17 @@ void main() {
   });
 
   group('Class edge cases', () {
-    test('ExecutableElements from private classes and from public interfaces (#1561)', () {
-      Class MIEEMixinWithOverride = fakeLibrary.publicClasses.firstWhere((c) => c.name == 'MIEEMixinWithOverride');
-      Operator problematicOperator = MIEEMixinWithOverride.inheritedOperators.firstWhere((o) => o.name == 'operator []=');
-      expect(problematicOperator.element.enclosingElement.name, equals('_MIEEPrivateOverride'));
-      expect(problematicOperator.canonicalModelElement.enclosingElement.name, equals('MIEEMixinWithOverride'));
+    test(
+        'ExecutableElements from private classes and from public interfaces (#1561)',
+        () {
+      Class MIEEMixinWithOverride = fakeLibrary.publicClasses
+          .firstWhere((c) => c.name == 'MIEEMixinWithOverride');
+      Operator problematicOperator = MIEEMixinWithOverride.inheritedOperators
+          .firstWhere((o) => o.name == 'operator []=');
+      expect(problematicOperator.element.enclosingElement.name,
+          equals('_MIEEPrivateOverride'));
+      expect(problematicOperator.canonicalModelElement.enclosingElement.name,
+          equals('MIEEMixinWithOverride'));
     });
   });
 
@@ -1059,21 +1069,21 @@ void main() {
       f1 = exLibrary.functions.first;
       genericFunction =
           exLibrary.functions.firstWhere((f) => f.name == 'genericFunction');
-      paramOfFutureOrNull =
-          fakeLibrary.functions.firstWhere((f) => f.name == 'paramOfFutureOrNull');
+      paramOfFutureOrNull = fakeLibrary.functions
+          .firstWhere((f) => f.name == 'paramOfFutureOrNull');
       thisIsAsync =
           fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsAsync');
       thisIsFutureOr =
           fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsFutureOr');
-      thisIsFutureOrNull =
-          fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsFutureOrNull');
+      thisIsFutureOrNull = fakeLibrary.functions
+          .firstWhere((f) => f.name == 'thisIsFutureOrNull');
       thisIsFutureOrT =
           fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsFutureOrT');
       topLevelFunction =
           fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
-      typeParamOfFutureOr =
-          fakeLibrary.functions.firstWhere((f) => f.name == 'typeParamOfFutureOr');
-     });
+      typeParamOfFutureOr = fakeLibrary.functions
+          .firstWhere((f) => f.name == 'typeParamOfFutureOr');
+    });
 
     test('has a fully qualified name', () {
       expect(thisIsAsync.fullyQualifiedName, 'fake.thisIsAsync');
@@ -1123,20 +1133,28 @@ void main() {
 
     test('function returning FutureOr<Null>', () {
       expect(thisIsFutureOrNull.isAsynchronous, isFalse);
-      expect(thisIsFutureOrNull.linkedReturnType, equals('FutureOr<span class="signature">&lt;Null&gt;</span>'));
+      expect(thisIsFutureOrNull.linkedReturnType,
+          equals('FutureOr<span class="signature">&lt;Null&gt;</span>'));
     });
 
     test('function returning FutureOr<T>', () {
       expect(thisIsFutureOrNull.isAsynchronous, isFalse);
-      expect(thisIsFutureOrT.linkedReturnType, equals('FutureOr<span class="signature">&lt;T&gt;</span>'));
+      expect(thisIsFutureOrT.linkedReturnType,
+          equals('FutureOr<span class="signature">&lt;T&gt;</span>'));
     });
 
     test('function with a parameter having type FutureOr<Null>', () {
-      expect(paramOfFutureOrNull.linkedParams(), equals('<span class="parameter" id="paramOfFutureOrNull-param-future"><span class="type-annotation">FutureOr<span class="signature">&lt;Null&gt;</span></span> <span class="parameter-name">future</span></span>'));
+      expect(
+          paramOfFutureOrNull.linkedParams(),
+          equals(
+              '<span class="parameter" id="paramOfFutureOrNull-param-future"><span class="type-annotation">FutureOr<span class="signature">&lt;Null&gt;</span></span> <span class="parameter-name">future</span></span>'));
     });
 
     test('function with a bound type to FutureOr', () {
-      expect(typeParamOfFutureOr.linkedGenericParameters, equals('<span class=\"signature\">&lt;T extends FutureOr<span class=\"signature\">&lt;List&gt;</span>&gt;</span>'));
+      expect(
+          typeParamOfFutureOr.linkedGenericParameters,
+          equals(
+              '<span class=\"signature\">&lt;T extends FutureOr<span class=\"signature\">&lt;List&gt;</span>&gt;</span>'));
     });
 
     test('docs do not lose brackets in code blocks', () {
@@ -1613,8 +1631,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('indentation is not lost inside indented code samples', () {
-      expect(aProperty.documentation, equals(
-          'This property is quite fancy, and requires sample code to understand.\n'
+      expect(
+          aProperty.documentation,
+          equals(
+              'This property is quite fancy, and requires sample code to understand.\n'
               '\n'
               '```dart\n'
               'AClassWithFancyProperties x = new AClassWithFancyProperties();\n'
@@ -1625,8 +1645,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
               '    print ("I am indented even more!!!");\n'
               '  }\n'
               '}\n'
-              '```'
-      ));
+              '```'));
     });
 
     test('annotations from getters and setters are accumulated in Fields', () {
