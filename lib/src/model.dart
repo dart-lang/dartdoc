@@ -3128,8 +3128,6 @@ abstract class ModelElement extends Canonicalization
           element is ParameterElement ||
           element is TypeDefiningElement ||
           element is PropertyInducingElement) {
-        if (element is ParameterElement)
-          1+1;
         _modelType = new ElementType.from((element as dynamic).type, packageGraph);
       }
     }
@@ -3282,62 +3280,63 @@ abstract class ModelElement extends Canonicalization
     }
   }
 
+  String renderParam(Parameter param, String suffix, bool showMetadata, bool showNames) {
+    StringBuffer buf = new StringBuffer();
+    ElementType paramModelType = param.modelType;
+    if (paramModelType is GenericTypeAliasElementType) {
+      if (name == 'fieldWithTypedef' && paramModelType.declaredType.name == 'VoidCallback')
+        1+1;
+      1+1;
+    }
+
+    buf.write('<span class="parameter" id="${param.htmlId}">');
+    if (showMetadata && param.hasAnnotations) {
+      param.annotations.forEach((String annotation) {
+        buf.write('<span>$annotation</span> ');
+      });
+    }
+    if (paramModelType is CallableElementTypeMixin) {
+      var returnTypeName = paramModelType.createLinkedReturnTypeName();
+      buf.write('<span class="type-annotation">${returnTypeName}</span>');
+      if (showNames) {
+        buf.write(' <span class="parameter-name">${param.name}</span>');
+      } else if (paramModelType.isTypedef || paramModelType is CallableAnonymousElementType) {
+        buf.write(' <span class="parameter-name">${paramModelType.name}</span>');
+      }
+      if (!paramModelType.isTypedef) {
+        buf.write('(');
+        buf.write(paramModelType.element
+            .linkedParams(showNames: showNames, showMetadata: showMetadata));
+        buf.write(')');
+      }
+    } else if (param.modelType != null && param.modelType is DefinedElementType) {
+      String typeName = paramModelType.linkedName;
+      if (typeName.isNotEmpty) {
+        buf.write('<span class="type-annotation">$typeName</span>');
+      }
+      if (typeName.isNotEmpty && showNames && param.name.isNotEmpty)
+        buf.write(' ');
+      if (showNames && param.name.isNotEmpty) {
+        buf.write('<span class="parameter-name">${param.name}</span>');
+      }
+    }
+
+    if (param.hasDefaultValue) {
+      if (param.isOptionalNamed) {
+        buf.write(': ');
+      } else {
+        buf.write(' = ');
+      }
+      buf.write('<span class="default-value">${param.defaultValue}</span>');
+    }
+    buf.write('${suffix}</span>');
+    return buf.toString();
+  }
+
   String linkedParams(
       {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
     if (name == 'addCallback')
       1+1;
-    String renderParam(Parameter param, String suffix) {
-      StringBuffer buf = new StringBuffer();
-      ElementType paramModelType = param.modelType;
-      if (paramModelType is GenericTypeAliasElementType) {
-        if (name == 'fieldWithTypedef' && paramModelType.declaredType.name == 'VoidCallback')
-          1+1;
-        1+1;
-      }
-
-      buf.write('<span class="parameter" id="${param.htmlId}">');
-      if (showMetadata && param.hasAnnotations) {
-        param.annotations.forEach((String annotation) {
-          buf.write('<span>$annotation</span> ');
-        });
-      }
-      if (paramModelType is CallableElementTypeMixin) {
-        var returnTypeName = paramModelType.createLinkedReturnTypeName();
-        buf.write('<span class="type-annotation">${returnTypeName}</span>');
-        if (showNames) {
-          buf.write(' <span class="parameter-name">${param.name}</span>');
-        } else if (paramModelType is CallableAnonymousElementType) {
-          buf.write(' <span class="parameter-name">${paramModelType.name}</span>');
-        }
-        if (!paramModelType.isTypedef) {
-          buf.write('(');
-          buf.write(paramModelType.element
-              .linkedParams(showNames: showNames, showMetadata: showMetadata));
-          buf.write(')');
-        }
-      } else if (param.modelType != null && param.modelType is DefinedElementType) {
-        String typeName = paramModelType.linkedName;
-        if (typeName.isNotEmpty) {
-          buf.write('<span class="type-annotation">$typeName</span>');
-        }
-        if (typeName.isNotEmpty && showNames && param.name.isNotEmpty)
-          buf.write(' ');
-        if (showNames && param.name.isNotEmpty) {
-          buf.write('<span class="parameter-name">${param.name}</span>');
-        }
-      }
-
-      if (param.hasDefaultValue) {
-        if (param.isOptionalNamed) {
-          buf.write(': ');
-        } else {
-          buf.write(' = ');
-        }
-        buf.write('<span class="default-value">${param.defaultValue}</span>');
-      }
-      buf.write('${suffix}</span>');
-      return buf.toString();
-    }
 
     List<Parameter> requiredParams =
         parameters.where((Parameter p) => !p.isOptional).toList();
@@ -3366,17 +3365,17 @@ abstract class ModelElement extends Canonicalization
       } else {
         ext = isLast ? '' : ', ';
       }
-      builder.write(renderParam(param, ext));
+      builder.write(renderParam(param, ext, showMetadata, showNames));
       builder.write(' ');
     }
     for (Parameter param in positionalParams) {
       bool isLast = param == positionalParams.last;
-      builder.write(renderParam(param, isLast ? '' : ', '));
+      builder.write(renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
       builder.write(' ');
     }
     for (Parameter param in namedParams) {
       bool isLast = param == namedParams.last;
-      builder.write(renderParam(param, isLast ? '' : ', '));
+      builder.write(renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
       builder.write(' ');
     }
 
@@ -4830,9 +4829,7 @@ class Typedef extends ModelElement
   @override
   String get kind => 'typedef';
 
-  String get linkedReturnType => modelType != null
-      ? modelType.createLinkedReturnTypeName()
-      : _typedef.returnType.name;
+  String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
   FunctionTypeAliasElement get _typedef =>
       (element as FunctionTypeAliasElement);

@@ -1176,6 +1176,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       // void addCallback(VoidCallback callback) { }
       ModelFunction function =
           fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback');
+      ElementType t = function.parameters.first.modelType;
       String params = function.linkedParams();
       expect(
           params,
@@ -1215,6 +1216,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((f) => f.name == 'explicitSetter');
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
+      ElementType t = explicitSetter.modelType;
       expect(explicitSetter.linkedReturnType,
           '<span class="parameter" id="explicitSetter=-param-f"><span class="type-annotation">dynamic</span> <span class="parameter-name">Function</span>(<span class="parameter" id="f-param-bar"><span class="type-annotation">int</span>, </span> <span class="parameter" id="f-param-baz"><span class="type-annotation"><a href="fake/Cool-class.html">Cool</a></span>, </span> <span class="parameter" id="f-param-macTruck"><span class="type-annotation">List<span class="signature">&lt;int&gt;</span></span></span>)</span>');
     });
@@ -2165,6 +2167,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('anonymous nested functions inside typedefs are handled', () {
+      ElementType t = aComplexTypedef.modelType;
       expect(aComplexTypedef, isNotNull);
       expect(aComplexTypedef.linkedReturnType, startsWith('Function'));
       expect(aComplexTypedef.nameWithGenerics,

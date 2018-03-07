@@ -225,6 +225,9 @@ abstract class CallableElementTypeMixin implements DefinedElementType {
 
 class CallableElementType extends DefinedElementType with CallableElementTypeMixin {
   CallableElementType(FunctionType t, PackageGraph graph, ModelElement element, ElementType returnedFrom) : super(t, graph, element, returnedFrom);
+
+  @override
+  String createLinkedReturnTypeName() => returnType.linkedName;
 }
 
 class CallableAnonymousElementType extends CallableElementType {
@@ -245,11 +248,8 @@ class CallableGenericTypeAliasElementType extends GenericTypeAliasElementType wi
   CallableGenericTypeAliasElementType(FunctionType t, PackageGraph graph, ModelElement element, ElementType returnedFrom) : super(t, graph, element, returnedFrom);
 
   @override
-  String get name => declaredType.name;
+  ModelElement get returnElement => new ModelElement.fromElement(type.element.enclosingElement, packageGraph);
 
   @override
-  String get linkedName => createLinkedReturnTypeName();
-
-  @override
-  String createLinkedReturnTypeName() => declaredType.linkedName;
+  ElementType get returnType => returnElement.modelType;
 }
