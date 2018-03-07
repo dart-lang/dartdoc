@@ -52,12 +52,14 @@
       <li><a href="fake/ConstructorTester-class.html">ConstructorTester</a></li>
       <li><a href="fake/Cool-class.html">Cool</a></li>
       <li><a href="fake/DocumentWithATable-class.html">DocumentWithATable</a></li>
+      <li><a href="fake/ExtendingFutureVoid-class.html">ExtendingFutureVoid</a></li>
       <li><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></li>
       <li><a href="fake/Foo2-class.html">Foo2</a></li>
       <li><a href="fake/HasGenerics-class.html">HasGenerics</a></li>
       <li><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></li>
       <li><a href="fake/ImplementingThingy-class.html">ImplementingThingy</a></li>
       <li><a href="fake/ImplementingThingy2-class.html">ImplementingThingy2</a></li>
+      <li><a href="fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a></li>
       <li><a href="fake/ImplicitProperties-class.html">ImplicitProperties</a></li>
       <li><a href="fake/InheritingClassOne-class.html">InheritingClassOne</a></li>
       <li><a href="fake/InheritingClassTwo-class.html">InheritingClassTwo</a></li>
@@ -106,6 +108,7 @@
       <li class="section-title"><a href="fake/fake-library.html#functions">Functions</a></li>
       <li><a href="fake/addCallback.html">addCallback</a></li>
       <li><a href="fake/addCallback2.html">addCallback2</a></li>
+      <li><a href="fake/aVoidParameter.html">aVoidParameter</a></li>
       <li><a href="fake/functionWithFunctionParameters.html">functionWithFunctionParameters</a></li>
       <li><a href="fake/myGenericFunction.html">myGenericFunction</a></li>
       <li><a href="fake/onlyPositionalWithNoDefaultNoType.html">onlyPositionalWithNoDefaultNoType</a></li>
@@ -113,6 +116,7 @@
       <li><a href="fake/paintImage2.html">paintImage2</a></li>
       <li><a href="fake/paramFromAnotherLib.html">paramFromAnotherLib</a></li>
       <li><a href="fake/paramOfFutureOrNull.html">paramOfFutureOrNull</a></li>
+      <li><a href="fake/returningFutureVoid.html">returningFutureVoid</a></li>
       <li><a href="fake/short.html">short</a></li>
       <li><a href="fake/soIntense.html">soIntense</a></li>
       <li><a href="fake/thisIsAlsoAsync.html">thisIsAlsoAsync</a></li>
@@ -268,7 +272,7 @@
       <h2>Methods</h2>
       <dl class="callables">
         <dt id="add" class="callable inherited">
-          <span class="name"><a href="fake/SpecialList/add.html">add</a></span><span class="signature">(<wbr><span class="parameter" id="add-param-element"><span class="parameter-name">element</span></span>)
+          <span class="name"><a href="fake/SpecialList/add.html">add</a></span><span class="signature">(<wbr><span class="parameter" id="add-param-element"><span class="type-annotation">dynamic</span> <span class="parameter-name">element</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -358,7 +362,7 @@
           <div class="features">inherited</div>
 </dd>
         <dt id="fillRange" class="callable inherited">
-          <span class="name"><a href="fake/SpecialList/fillRange.html">fillRange</a></span><span class="signature">(<wbr><span class="parameter" id="fillRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span>, </span> <span class="parameter" id="fillRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span>, [</span> <span class="parameter" id="fillRange-param-fill"><span class="parameter-name">fill</span></span> ])
+          <span class="name"><a href="fake/SpecialList/fillRange.html">fillRange</a></span><span class="signature">(<wbr><span class="parameter" id="fillRange-param-start"><span class="type-annotation">int</span> <span class="parameter-name">start</span>, </span> <span class="parameter" id="fillRange-param-end"><span class="type-annotation">int</span> <span class="parameter-name">end</span>, [</span> <span class="parameter" id="fillRange-param-fill"><span class="type-annotation">dynamic</span> <span class="parameter-name">fill</span></span> ])
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -430,7 +434,7 @@
           <div class="features">inherited</div>
 </dd>
         <dt id="insert" class="callable inherited">
-          <span class="name"><a href="fake/SpecialList/insert.html">insert</a></span><span class="signature">(<wbr><span class="parameter" id="insert-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span>, </span> <span class="parameter" id="insert-param-element"><span class="parameter-name">element</span></span>)
+          <span class="name"><a href="fake/SpecialList/insert.html">insert</a></span><span class="signature">(<wbr><span class="parameter" id="insert-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span>, </span> <span class="parameter" id="insert-param-element"><span class="type-annotation">dynamic</span> <span class="parameter-name">element</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -733,7 +737,7 @@
           <div class="features">inherited</div>
 </dd>
         <dt id="operator ==" class="callable inherited">
-          <span class="name"><a href="fake/SpecialList/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
+          <span class="name"><a href="fake/SpecialList/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">dynamic</span> <span class="parameter-name">other</span></span>)
             <span class="returntype parameter">&#8594; bool</span>
           </span>
         </dt>
@@ -751,7 +755,7 @@
           <div class="features">inherited</div>
 </dd>
         <dt id="operator []=" class="callable inherited">
-          <span class="name"><a href="fake/SpecialList/operator_put.html">operator []=</a></span><span class="signature">(<wbr><span class="parameter" id="[]=-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span>, </span> <span class="parameter" id="[]=-param-value"><span class="parameter-name">value</span></span>)
+          <span class="name"><a href="fake/SpecialList/operator_put.html">operator []=</a></span><span class="signature">(<wbr><span class="parameter" id="[]=-param-index"><span class="type-annotation">int</span> <span class="parameter-name">index</span>, </span> <span class="parameter" id="[]=-param-value"><span class="type-annotation">dynamic</span> <span class="parameter-name">value</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>

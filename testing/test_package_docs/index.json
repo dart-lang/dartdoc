@@ -4871,6 +4871,138 @@
   }
  },
  {
+  "name": "ExtendingFutureVoid",
+  "qualifiedName": "fake.ExtendingFutureVoid",
+  "href": "fake/ExtendingFutureVoid-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ExtendingFutureVoid",
+  "qualifiedName": "fake.ExtendingFutureVoid",
+  "href": "fake/ExtendingFutureVoid/ExtendingFutureVoid.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ExtendingFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ExtendingFutureVoid.==",
+  "href": "fake/ExtendingFutureVoid/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ExtendingFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "asStream",
+  "qualifiedName": "fake.ExtendingFutureVoid.asStream",
+  "href": "fake/ExtendingFutureVoid/asStream.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ExtendingFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "catchError",
+  "qualifiedName": "fake.ExtendingFutureVoid.catchError",
+  "href": "fake/ExtendingFutureVoid/catchError.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ExtendingFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ExtendingFutureVoid.hashCode",
+  "href": "fake/ExtendingFutureVoid/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ExtendingFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ExtendingFutureVoid.noSuchMethod",
+  "href": "fake/ExtendingFutureVoid/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ExtendingFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ExtendingFutureVoid.runtimeType",
+  "href": "fake/ExtendingFutureVoid/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ExtendingFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "then",
+  "qualifiedName": "fake.ExtendingFutureVoid.then",
+  "href": "fake/ExtendingFutureVoid/then.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ExtendingFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "timeout",
+  "qualifiedName": "fake.ExtendingFutureVoid.timeout",
+  "href": "fake/ExtendingFutureVoid/timeout.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ExtendingFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ExtendingFutureVoid.toString",
+  "href": "fake/ExtendingFutureVoid/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ExtendingFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "whenComplete",
+  "qualifiedName": "fake.ExtendingFutureVoid.whenComplete",
+  "href": "fake/ExtendingFutureVoid/whenComplete.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ExtendingFutureVoid",
+   "type": "class"
+  }
+ },
+ {
   "name": "ExtraSpecialList",
   "qualifiedName": "fake.ExtraSpecialList",
   "href": "fake/ExtraSpecialList-class.html",
@@ -5263,6 +5395,138 @@
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ImplementingThingy2",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ImplementsFutureVoid",
+  "qualifiedName": "fake.ImplementsFutureVoid",
+  "href": "fake/ImplementsFutureVoid-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ImplementsFutureVoid",
+  "qualifiedName": "fake.ImplementsFutureVoid",
+  "href": "fake/ImplementsFutureVoid/ImplementsFutureVoid.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementsFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ImplementsFutureVoid.==",
+  "href": "fake/ImplementsFutureVoid/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementsFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "asStream",
+  "qualifiedName": "fake.ImplementsFutureVoid.asStream",
+  "href": "fake/ImplementsFutureVoid/asStream.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementsFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "catchError",
+  "qualifiedName": "fake.ImplementsFutureVoid.catchError",
+  "href": "fake/ImplementsFutureVoid/catchError.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementsFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ImplementsFutureVoid.hashCode",
+  "href": "fake/ImplementsFutureVoid/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementsFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ImplementsFutureVoid.noSuchMethod",
+  "href": "fake/ImplementsFutureVoid/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementsFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ImplementsFutureVoid.runtimeType",
+  "href": "fake/ImplementsFutureVoid/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementsFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "then",
+  "qualifiedName": "fake.ImplementsFutureVoid.then",
+  "href": "fake/ImplementsFutureVoid/then.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementsFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "timeout",
+  "qualifiedName": "fake.ImplementsFutureVoid.timeout",
+  "href": "fake/ImplementsFutureVoid/timeout.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementsFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ImplementsFutureVoid.toString",
+  "href": "fake/ImplementsFutureVoid/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementsFutureVoid",
+   "type": "class"
+  }
+ },
+ {
+  "name": "whenComplete",
+  "qualifiedName": "fake.ImplementsFutureVoid.whenComplete",
+  "href": "fake/ImplementsFutureVoid/whenComplete.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ImplementsFutureVoid",
    "type": "class"
   }
  },
@@ -7599,6 +7863,17 @@
   }
  },
  {
+  "name": "aVoidParameter",
+  "qualifiedName": "fake.aVoidParameter",
+  "href": "fake/aVoidParameter.html",
+  "type": "function",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "addCallback",
   "qualifiedName": "fake.addCallback",
   "href": "fake/addCallback.html",
@@ -7823,6 +8098,17 @@
   "qualifiedName": "fake.required",
   "href": "fake/required-constant.html",
   "type": "top-level constant",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "returningFutureVoid",
+  "qualifiedName": "fake.returningFutureVoid",
+  "href": "fake/returningFutureVoid.html",
+  "type": "function",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",

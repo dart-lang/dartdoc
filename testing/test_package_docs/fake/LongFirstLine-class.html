@@ -52,12 +52,14 @@
       <li><a href="fake/ConstructorTester-class.html">ConstructorTester</a></li>
       <li><a href="fake/Cool-class.html">Cool</a></li>
       <li><a href="fake/DocumentWithATable-class.html">DocumentWithATable</a></li>
+      <li><a href="fake/ExtendingFutureVoid-class.html">ExtendingFutureVoid</a></li>
       <li><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></li>
       <li><a href="fake/Foo2-class.html">Foo2</a></li>
       <li><a href="fake/HasGenerics-class.html">HasGenerics</a></li>
       <li><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></li>
       <li><a href="fake/ImplementingThingy-class.html">ImplementingThingy</a></li>
       <li><a href="fake/ImplementingThingy2-class.html">ImplementingThingy2</a></li>
+      <li><a href="fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a></li>
       <li><a href="fake/ImplicitProperties-class.html">ImplicitProperties</a></li>
       <li><a href="fake/InheritingClassOne-class.html">InheritingClassOne</a></li>
       <li><a href="fake/InheritingClassTwo-class.html">InheritingClassTwo</a></li>
@@ -106,6 +108,7 @@
       <li class="section-title"><a href="fake/fake-library.html#functions">Functions</a></li>
       <li><a href="fake/addCallback.html">addCallback</a></li>
       <li><a href="fake/addCallback2.html">addCallback2</a></li>
+      <li><a href="fake/aVoidParameter.html">aVoidParameter</a></li>
       <li><a href="fake/functionWithFunctionParameters.html">functionWithFunctionParameters</a></li>
       <li><a href="fake/myGenericFunction.html">myGenericFunction</a></li>
       <li><a href="fake/onlyPositionalWithNoDefaultNoType.html">onlyPositionalWithNoDefaultNoType</a></li>
@@ -113,6 +116,7 @@
       <li><a href="fake/paintImage2.html">paintImage2</a></li>
       <li><a href="fake/paramFromAnotherLib.html">paramFromAnotherLib</a></li>
       <li><a href="fake/paramOfFutureOrNull.html">paramOfFutureOrNull</a></li>
+      <li><a href="fake/returningFutureVoid.html">returningFutureVoid</a></li>
       <li><a href="fake/short.html">short</a></li>
       <li><a href="fake/soIntense.html">soIntense</a></li>
       <li><a href="fake/thisIsAlsoAsync.html">thisIsAlsoAsync</a></li>
@@ -273,7 +277,7 @@ across... wait for it... two physical lines.</p>
           
 </dd>
         <dt id="optionalParams" class="callable">
-          <span class="name"><a href="fake/LongFirstLine/optionalParams.html">optionalParams</a></span><span class="signature">(<wbr><span class="parameter" id="optionalParams-param-first"><span class="parameter-name">first</span>, {</span> <span class="parameter" id="optionalParams-param-second"><span class="parameter-name">second</span>, </span> <span class="parameter" id="optionalParams-param-third"><span class="type-annotation">int</span> <span class="parameter-name">third</span></span> })
+          <span class="name"><a href="fake/LongFirstLine/optionalParams.html">optionalParams</a></span><span class="signature">(<wbr><span class="parameter" id="optionalParams-param-first"><span class="type-annotation">dynamic</span> <span class="parameter-name">first</span>, {</span> <span class="parameter" id="optionalParams-param-second"><span class="type-annotation">dynamic</span> <span class="parameter-name">second</span>, </span> <span class="parameter" id="optionalParams-param-third"><span class="type-annotation">int</span> <span class="parameter-name">third</span></span> })
             <span class="returntype parameter">&#8594; bool</span>
           </span>
         </dt>
@@ -291,7 +295,7 @@ across... wait for it... two physical lines.</p>
           
 </dd>
         <dt id="twoParams" class="callable">
-          <span class="name"><a href="fake/LongFirstLine/twoParams.html">twoParams</a></span><span class="signature">(<wbr><span class="parameter" id="twoParams-param-one"><span class="type-annotation">String</span> <span class="parameter-name">one</span>, </span> <span class="parameter" id="twoParams-param-two"><span class="parameter-name">two</span></span>)
+          <span class="name"><a href="fake/LongFirstLine/twoParams.html">twoParams</a></span><span class="signature">(<wbr><span class="parameter" id="twoParams-param-one"><span class="type-annotation">String</span> <span class="parameter-name">one</span>, </span> <span class="parameter" id="twoParams-param-two"><span class="type-annotation">dynamic</span> <span class="parameter-name">two</span></span>)
             <span class="returntype parameter">&#8594; int</span>
           </span>
         </dt>
@@ -351,7 +355,7 @@ across... wait for it... two physical lines.</p>
           
 </dd>
         <dt id="operator -" class="callable inherited">
-          <span class="name"><a href="fake/SuperAwesomeClass/operator_minus.html">operator -</a></span><span class="signature">(<wbr><span class="parameter" id="--param-other"><span class="parameter-name">other</span></span>)
+          <span class="name"><a href="fake/SuperAwesomeClass/operator_minus.html">operator -</a></span><span class="signature">(<wbr><span class="parameter" id="--param-other"><span class="type-annotation">dynamic</span> <span class="parameter-name">other</span></span>)
             <span class="returntype parameter">&#8594; <a class="deprecated" href="fake/SuperAwesomeClass-class.html">SuperAwesomeClass</a></span>
           </span>
         </dt>
@@ -360,7 +364,7 @@ across... wait for it... two physical lines.</p>
           <div class="features">inherited</div>
 </dd>
         <dt id="operator ==" class="callable inherited">
-          <span class="name"><a href="fake/AnotherInterface/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
+          <span class="name"><a href="fake/AnotherInterface/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">dynamic</span> <span class="parameter-name">other</span></span>)
             <span class="returntype parameter">&#8594; bool</span>
           </span>
         </dt>
@@ -415,7 +419,7 @@ across... wait for it... two physical lines.</p>
           
 </dd>
         <dt id="staticMethodReturnsVoid" class="callable">
-          <span class="name"><a href="fake/LongFirstLine/staticMethodReturnsVoid.html">staticMethodReturnsVoid</a></span><span class="signature">(<wbr><span class="parameter" id="staticMethodReturnsVoid-param-dynamicThing"><span class="parameter-name">dynamicThing</span></span>)
+          <span class="name"><a href="fake/LongFirstLine/staticMethodReturnsVoid.html">staticMethodReturnsVoid</a></span><span class="signature">(<wbr><span class="parameter" id="staticMethodReturnsVoid-param-dynamicThing"><span class="type-annotation">dynamic</span> <span class="parameter-name">dynamicThing</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>

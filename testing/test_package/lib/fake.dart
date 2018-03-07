@@ -286,10 +286,6 @@ abstract class ExtendingFutureVoid extends Future<void> {
 /// This class implements Future<void>
 abstract class ImplementsFutureVoid implements Future<void> {}
 
-/// This class mixes in Future<void>
-abstract class MixesInFutureVoid extends List<int> with Future<void> {
-  factory MixesInFutureVoid(FutureOr<void> computation()) {}
-}
 
 /// Names are actually wrong in this class, but when we extend it,
 /// they are correct.
