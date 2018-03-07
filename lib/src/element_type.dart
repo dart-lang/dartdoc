@@ -98,8 +98,6 @@ class DefinedElementType extends ElementType {
     return _element;
   }
 
-  bool get isFunctionType => (_type is FunctionType);
-
   bool get isParameterizedType => (_type is ParameterizedType);
 
   bool get isParameterType => (_type is TypeParameterType);

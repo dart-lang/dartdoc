@@ -3595,6 +3595,83 @@
   "overriddenDepth": 0
  },
  {
+  "name": "ABaseClass",
+  "qualifiedName": "fake.ABaseClass",
+  "href": "fake/ABaseClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ABaseClass",
+  "qualifiedName": "fake.ABaseClass",
+  "href": "fake/ABaseClass/ABaseClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ABaseClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ABaseClass.==",
+  "href": "fake/ABaseClass/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ABaseClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ABaseClass.hashCode",
+  "href": "fake/ABaseClass/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ABaseClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ABaseClass.noSuchMethod",
+  "href": "fake/ABaseClass/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ABaseClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ABaseClass.runtimeType",
+  "href": "fake/ABaseClass/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ABaseClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ABaseClass.toString",
+  "href": "fake/ABaseClass/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ABaseClass",
+   "type": "class"
+  }
+ },
+ {
   "name": "AClassUsingASuperMixin",
   "qualifiedName": "fake.AClassUsingASuperMixin",
   "href": "fake/AClassUsingASuperMixin-class.html",
@@ -3734,6 +3811,116 @@
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "AMixinCallingSuper",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ATypeTakingClass",
+  "qualifiedName": "fake.ATypeTakingClass",
+  "href": "fake/ATypeTakingClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ATypeTakingClass",
+  "qualifiedName": "fake.ATypeTakingClass",
+  "href": "fake/ATypeTakingClass/ATypeTakingClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ATypeTakingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ATypeTakingClass.==",
+  "href": "fake/ATypeTakingClass/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ATypeTakingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aMethodMaybeReturningVoid",
+  "qualifiedName": "fake.ATypeTakingClass.aMethodMaybeReturningVoid",
+  "href": "fake/ATypeTakingClass/aMethodMaybeReturningVoid.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ATypeTakingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ATypeTakingClass.hashCode",
+  "href": "fake/ATypeTakingClass/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ATypeTakingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ATypeTakingClass.noSuchMethod",
+  "href": "fake/ATypeTakingClass/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ATypeTakingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ATypeTakingClass.runtimeType",
+  "href": "fake/ATypeTakingClass/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ATypeTakingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ATypeTakingClass.toString",
+  "href": "fake/ATypeTakingClass/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ATypeTakingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ATypeTakingClassMixedIn",
+  "qualifiedName": "fake.ATypeTakingClassMixedIn",
+  "href": "fake/ATypeTakingClassMixedIn-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ATypeTakingClassMixedIn",
+  "qualifiedName": "fake.ATypeTakingClassMixedIn",
+  "href": "fake/ATypeTakingClassMixedIn/ATypeTakingClassMixedIn.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ATypeTakingClassMixedIn",
    "type": "class"
   }
  },

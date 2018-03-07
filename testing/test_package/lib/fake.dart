@@ -286,6 +286,15 @@ abstract class ExtendsFutureVoid extends Future<void> {
 /// This class implements Future<void>
 abstract class ImplementsFutureVoid implements Future<void> {}
 
+/// This class takes a type, and it might be void.
+class ATypeTakingClass<T> {
+  T aMethodMaybeReturningVoid() {}
+}
+
+class ABaseClass {}
+
+class ATypeTakingClassMixedIn extends ABaseClass with ATypeTakingClass<void> {}
+
 /// Names are actually wrong in this class, but when we extend it,
 /// they are correct.
 class ImplicitProperties {

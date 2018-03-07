@@ -2140,13 +2140,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
   group('void as type', () {
     ModelFunction returningFutureVoid, aVoidParameter;
-    Class ExtendsFutureVoid, ImplementsFutureVoid;
+    Class ExtendsFutureVoid, ImplementsFutureVoid, ATypeTakingClassMixedIn;
 
     setUp(() {
       returningFutureVoid = fakeLibrary.functions.firstWhere((f) => f.name == 'returningFutureVoid');
       aVoidParameter = fakeLibrary.functions.firstWhere((f) => f.name == 'aVoidParameter');
       ExtendsFutureVoid = fakeLibrary.classes.firstWhere((f) => f.name == 'ExtendsFutureVoid');
       ImplementsFutureVoid = fakeLibrary.classes.firstWhere((f) => f.name == 'ImplementsFutureVoid');
+      ATypeTakingClassMixedIn = fakeLibrary.classes.firstWhere((f) => f.name == 'ATypeTakingClassMixedIn');
     });
 
     test('a function returning a Future<void>', () {
@@ -2168,6 +2169,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       DefinedElementType FutureVoid = ImplementsFutureVoid.publicInterfaces.firstWhere((c) => c.name == 'Future');
       expect(FutureVoid.linkedName, equals('Future<span class="signature">&lt;void&gt;</span>'));
     });
+
+    test('Verify that a mixin with a void type parameter works', () {
+      expect(ATypeTakingClassMixedIn.linkedName, equals('<a href="fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>'));
+      DefinedElementType ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixins.firstWhere((c) => c.name == 'ATypeTakingClass');
+      expect(ATypeTakingClassVoid.linkedName, equals('<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;void&gt;</span>'));
+    });
+
   });
 
   group('ModelType', () {
