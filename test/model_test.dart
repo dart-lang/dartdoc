@@ -2297,10 +2297,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(param.library.name, equals('ex'));
     });
 
-    test('typedef param is linked', () {
-      var params = methodWithTypedefParam.linkedParams();
+    test('typedef param is linked and does not include types', () {
       ElementType t = methodWithTypedefParam.parameters.first.modelType;
-      expect(params, contains('<a href="ex/processMessage.html">'));
+      var params = methodWithTypedefParam.linkedParams();
+      expect(params, equals('<span class="parameter" id="methodWithTypedefParam-param-p"><span class="type-annotation"><a href="ex/processMessage.html">processMessage</a></span> <span class="parameter-name">p</span></span>'));
+      //expect(params, contains('<a href="ex/processMessage.html">'));
     });
   });
 

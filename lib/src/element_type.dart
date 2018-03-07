@@ -209,15 +209,18 @@ abstract class CallableElementTypeMixin implements DefinedElementType {
   FunctionType get type => _type;
 
   @override
+  // TODO(jcollins-g): Rewrite this so it doesn't require type checking everywhere.
   List<DefinedElementType> get typeArguments {
-      Iterable<DartType> typeArguments;
-      if (type.typeFormals.isEmpty && element is! ModelFunctionAnonymous && returnedFrom?.element is! ModelFunctionAnonymous) {
-        typeArguments = type.typeArguments;
-      } else {
-        typeArguments = type.typeFormals.map((f) => f.type);
-      }
+    Iterable<DartType> typeArguments;
+    if (type.typeFormals.isEmpty && element is! ModelFunctionAnonymous && returnedFrom?.element is! ModelFunctionAnonymous) {
+      typeArguments = type.typeArguments;
+    } else if (returnedFrom != null && returnedFrom.type.element is GenericFunctionTypeElement) {
+      typeArguments = type.typeArguments;
+    } else {
+      typeArguments = type.typeFormals.map((f) => f.type);
+    }
 
-      return typeArguments.map((f) => new ElementType.from(f, packageGraph)).toList();
+    return typeArguments.map((f) => new ElementType.from(f, packageGraph)).toList();
   }
 
 }
