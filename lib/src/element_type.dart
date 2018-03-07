@@ -192,6 +192,13 @@ class DefinedElementType extends ElementType {
   List<DefinedElementType> get typeArguments {
     if (type is FunctionType) {
       FunctionType type = _type;
+
+      /*if (returnedFrom == null) {
+        type = _type;
+      } else {
+        type = returnedFrom._type;
+      } */
+
       Iterable<DartType> typeArguments;
       if (_element is! ModelFunctionAnonymous && type.typeFormals.isEmpty) {
         // TODO(jcollins-g): replace with if (FunctionType.isInstantiated) once

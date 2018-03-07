@@ -3309,7 +3309,7 @@ abstract class ModelElement extends Canonicalization
             .linkedParams(showNames: showNames, showMetadata: showMetadata));
         buf.write(')');
       }
-    } else if (param.modelType != null && param.modelType is DefinedElementType) {
+    } else if (param.modelType != null) {
       String typeName = paramModelType.linkedName;
       if (typeName.isNotEmpty) {
         buf.write('<span class="type-annotation">$typeName</span>');
@@ -3335,7 +3335,7 @@ abstract class ModelElement extends Canonicalization
 
   String linkedParams(
       {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
-    if (name == 'addCallback')
+    if (name == 'operator ==' && enclosingElement.name == 'Cat')
       1+1;
 
     List<Parameter> requiredParams =

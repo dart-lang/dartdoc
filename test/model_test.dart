@@ -2297,8 +2297,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(param.library.name, equals('ex'));
     });
 
-    test('typdef param is linked', () {
+    test('typedef param is linked', () {
       var params = methodWithTypedefParam.linkedParams();
+      ElementType t = methodWithTypedefParam.parameters.first.modelType;
       expect(params, contains('<a href="ex/processMessage.html">'));
     });
   });
