@@ -272,6 +272,25 @@ class SuperAwesomeClass {
 
 typedef void myCoolTypedef(Cool x, bool y);
 
+/// This function returns Future<void>
+Future<void> returningFutureVoid() async {}
+
+/// This function requires a Future<void> as a parameter
+void aVoidParameter(Future<void> p1) {}
+
+/// This class extends Future<void>
+abstract class ExtendingFutureVoid extends Future<void> {
+  factory ExtendingFutureVoid(FutureOr<void> computation()) {}
+}
+
+/// This class implements Future<void>
+abstract class ImplementsFutureVoid implements Future<void> {}
+
+/// This class mixes in Future<void>
+abstract class MixesInFutureVoid extends List<int> with Future<void> {
+  factory MixesInFutureVoid(FutureOr<void> computation()) {}
+}
+
 /// Names are actually wrong in this class, but when we extend it,
 /// they are correct.
 class ImplicitProperties {

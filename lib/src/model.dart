@@ -103,6 +103,13 @@ int byFeatureOrdering(String a, String b) {
 
 final RegExp locationSplitter = new RegExp(r"(package:|[\\/;.])");
 
+/// Mixin for [ModelElement]s that may have a returnType associated with their
+/// modelType.
+abstract class Callable implements ModelElement {
+  @override
+  ElementType get modelType => super.modelType;
+}
+
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
 ///
@@ -265,7 +272,7 @@ class InheritableAccessor extends Accessor with Inheritable {
 
 /// Getters and setters.
 class Accessor extends ModelElement
-    with SourceCodeMixin
+    with SourceCodeMixin, Callable
     implements EnclosedElement {
   GetterSetterCombo _enclosingCombo;
 
@@ -436,9 +443,9 @@ class Accessor extends ModelElement
 class Class extends ModelElement
     with TypeParameters
     implements EnclosedElement {
-  List<ElementType> _mixins;
-  ElementType _supertype;
-  List<ElementType> _interfaces;
+  List<DefinedElementType> _mixins;
+  DefinedElementType _supertype;
+  List<DefinedElementType> _interfaces;
   List<Constructor> _constructors;
   List<Method> _allMethods;
   List<Operator> _operators;
@@ -460,21 +467,19 @@ class Class extends ModelElement
   Class(ClassElement element, Library library) : super(element, library, null) {
     _mixins = _cls.mixins
         .map((f) {
-          ElementType t = new ElementType(
-              f, new ModelElement.fromElement(f.element, packageGraph));
+          ElementType t = new ElementType.from(
+              f, packageGraph);
           return t;
         })
         .where((mixin) => mixin != null)
         .toList(growable: false);
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
-      _supertype = new ElementType(_cls.supertype,
-          new ModelElement.fromElement(_cls.supertype.element, packageGraph));
+      _supertype = new ElementType.from(_cls.supertype, packageGraph);
     }
 
     _interfaces = _cls.interfaces
-        .map((f) => new ElementType(
-            f, new ModelElement.fromElement(f.element, packageGraph)))
+        .map((f) => new ElementType.from(f, packageGraph))
         .toList(growable: false);
   }
 
@@ -788,14 +793,14 @@ class Class extends ModelElement
 
   Iterable<Field> get publicInstanceProperties =>
       filterNonPublic(instanceProperties);
-  List<ElementType> get interfaces => _interfaces;
-  Iterable<ElementType> get publicInterfaces => filterNonPublic(interfaces);
+  List<DefinedElementType> get interfaces => _interfaces;
+  Iterable<DefinedElementType> get publicInterfaces => filterNonPublic(interfaces);
 
-  List<ElementType> _interfaceChain;
-  List<ElementType> get interfaceChain {
+  List<DefinedElementType> _interfaceChain;
+  List<DefinedElementType> get interfaceChain {
     if (_interfaceChain == null) {
       _interfaceChain = [];
-      for (ElementType interface in interfaces) {
+      for (DefinedElementType interface in interfaces) {
         _interfaceChain.add(interface);
         _interfaceChain.addAll((interface.element as Class).interfaceChain);
       }
@@ -829,9 +834,9 @@ class Class extends ModelElement
 
   List<Method> get methodsForPages => _genPageMethods.toList(growable: false);
 
-  List<ElementType> get mixins => _mixins;
+  List<DefinedElementType> get mixins => _mixins;
 
-  Iterable<ElementType> get publicMixins => filterNonPublic(mixins);
+  Iterable<DefinedElementType> get publicMixins => filterNonPublic(mixins);
 
   List<Operator> get operators {
     if (_operators != null) return _operators;
@@ -899,11 +904,11 @@ class Class extends ModelElement
       _inheritanceChain.add(this);
 
       /// Caching should make this recursion a little less painful.
-      for (Class c in mixins.reversed.map((e) => (e.returnElement as Class))) {
+      for (Class c in mixins.reversed.map((e) => (e.element as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
 
-      for (Class c in superChain.map((e) => (e.returnElement as Class))) {
+      for (Class c in superChain.map((e) => (e.element as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
 
@@ -915,8 +920,8 @@ class Class extends ModelElement
     return _inheritanceChain.toList(growable: false);
   }
 
-  List<ElementType> get superChain {
-    List<ElementType> typeChain = [];
+  List<DefinedElementType> get superChain {
+    List<DefinedElementType> typeChain = [];
     var parent = _supertype;
     while (parent != null) {
       typeChain.add(parent);
@@ -925,12 +930,12 @@ class Class extends ModelElement
     return typeChain;
   }
 
-  Iterable<ElementType> get superChainReversed => superChain.reversed;
-  Iterable<ElementType> get publicSuperChain => filterNonPublic(superChain);
-  Iterable<ElementType> get publicSuperChainReversed =>
+  Iterable<DefinedElementType> get superChainReversed => superChain.reversed;
+  Iterable<DefinedElementType> get publicSuperChain => filterNonPublic(superChain);
+  Iterable<DefinedElementType> get publicSuperChainReversed =>
       publicSuperChain.toList().reversed;
 
-  ElementType get supertype => _supertype;
+  DefinedElementType get supertype => _supertype;
 
   List<ExecutableElement> __inheritedElements;
   List<ExecutableElement> get _inheritedElements {
@@ -2308,7 +2313,7 @@ class Library extends ModelElement {
 }
 
 class Method extends ModelElement
-    with SourceCodeMixin, Inheritable, TypeParameters
+    with SourceCodeMixin, Inheritable, TypeParameters, Callable
     implements EnclosedElement {
   bool _isInherited = false;
   Class _enclosingClass;
@@ -3111,23 +3116,21 @@ abstract class ModelElement extends Canonicalization
   ElementType get modelType {
     if (_modelType == null) {
       // TODO(jcollins-g): Need an interface for a "member with a type" (or changed object model).
-      if (_originalMember != null &&
-          (_originalMember is ExecutableMember ||
-              _originalMember is ParameterMember)) {
-        dynamic originalMember = _originalMember;
-        _modelType = new ElementType(
-            originalMember.type,
-            new ModelElement.fromElement(
-                originalMember.type.element, packageGraph));
+      if (_originalMember != null && (_originalMember is ExecutableMember ||
+          _originalMember is ParameterMember)) {
+        if (_originalMember is ExecutableMember) {
+          _modelType = new ElementType.from((_originalMember as ExecutableMember).type, packageGraph);
+        } else { // ParameterMember
+          _modelType = new ElementType.from((_originalMember as ParameterMember).type, packageGraph);
+        }
       } else if (element is ExecutableElement ||
           element is FunctionTypedElement ||
           element is ParameterElement ||
           element is TypeDefiningElement ||
           element is PropertyInducingElement) {
-        _modelType = new ElementType(
-            (element as dynamic).type,
-            new ModelElement.fromElement(
-                (element as dynamic).type.element, packageGraph));
+        if (element is ParameterElement)
+          1+1;
+        _modelType = new ElementType.from((element as dynamic).type, packageGraph);
       }
     }
     return _modelType;
@@ -3208,10 +3211,8 @@ abstract class ModelElement extends Canonicalization
         recursedParameters.addAll(newParameters);
         newParameters.clear();
         for (Parameter p in recursedParameters) {
-          if (p.modelType.element.canHaveParameters) {
-            newParameters.addAll(p.modelType.element.parameters
-                .where((p) => !recursedParameters.contains(p)));
-          }
+          newParameters.addAll(p.modelType.parameters
+              .where((p) => !recursedParameters.contains(p)));
         }
       }
       _allParameters = recursedParameters.toList();
@@ -3283,41 +3284,39 @@ abstract class ModelElement extends Canonicalization
 
   String linkedParams(
       {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
+    if (name == 'addCallback')
+      1+1;
     String renderParam(Parameter param, String suffix) {
       StringBuffer buf = new StringBuffer();
+      ElementType paramModelType = param.modelType;
+      if (paramModelType is GenericTypeAliasElementType) {
+        if (name == 'fieldWithTypedef' && paramModelType.declaredType.name == 'VoidCallback')
+          1+1;
+        1+1;
+      }
+
       buf.write('<span class="parameter" id="${param.htmlId}">');
       if (showMetadata && param.hasAnnotations) {
         param.annotations.forEach((String annotation) {
           buf.write('<span>$annotation</span> ');
         });
       }
-      if (param.modelType.isFunctionType) {
-        var returnTypeName;
-        bool isTypedef = (param.modelType.element is Typedef ||
-            param.modelType.element is ModelFunctionTypedef);
-        if (isTypedef) {
-          returnTypeName = param.modelType.linkedName;
-        } else {
-          returnTypeName = param.modelType.createLinkedReturnTypeName();
-        }
+      if (paramModelType is CallableElementTypeMixin) {
+        var returnTypeName = paramModelType.createLinkedReturnTypeName();
         buf.write('<span class="type-annotation">${returnTypeName}</span>');
         if (showNames) {
           buf.write(' <span class="parameter-name">${param.name}</span>');
-        } else if (param.modelType.element is ModelFunctionAnonymous) {
-          buf.write(' <span class="parameter-name">Function</span>');
+        } else if (paramModelType is CallableAnonymousElementType) {
+          buf.write(' <span class="parameter-name">${paramModelType.name}</span>');
         }
-        if (!isTypedef) {
+        if (!paramModelType.isTypedef) {
           buf.write('(');
-          buf.write(param.modelType.element
+          buf.write(paramModelType.element
               .linkedParams(showNames: showNames, showMetadata: showMetadata));
           buf.write(')');
         }
-      } else if (param.modelType != null && param.modelType.element != null) {
-        var mt = param.modelType;
-        String typeName = "";
-        if (mt != null && !mt.isDynamic) {
-          typeName = mt.linkedName;
-        }
+      } else if (param.modelType != null && param.modelType is DefinedElementType) {
+        String typeName = paramModelType.linkedName;
         if (typeName.isNotEmpty) {
           buf.write('<span class="type-annotation">$typeName</span>');
         }
@@ -3389,31 +3388,6 @@ abstract class ModelElement extends Canonicalization
     }
 
     return builder.toString().trim();
-  }
-
-  /// Gather all the used elements, from the parameters and return type, for example
-  /// E.g. method <code>Iterable<String> blah(List<int> foo)</code> will return
-  /// <code>[Iterable, String, List, int]</code>
-  Iterable<ModelElement> get usedElements {
-    final set = new Set<ModelElement>();
-    if (modelType != null) {
-      if (modelType.isFunctionType) {
-        if (modelType.returnElement != null) {
-          set.addAll(modelType.returnElement.usedElements);
-        }
-        if (canHaveParameters) {
-          set.addAll(parameters.map((p) => p.usedElements).expand((i) => i));
-        }
-      } else if (modelType.element != null) {
-        set.add(modelType.element);
-        if (modelType.isParameterizedType) {
-          set.addAll(modelType.typeArguments
-              .map((arg) => arg.element.usedElements)
-              .expand((i) => i));
-        }
-      }
-    }
-    return set;
   }
 
   @override
@@ -3663,7 +3637,7 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
 }
 
 class ModelFunctionTyped extends ModelElement
-    with SourceCodeMixin, TypeParameters
+    with SourceCodeMixin, TypeParameters, Callable
     implements EnclosedElement {
   @override
   List<TypeParameter> typeParameters = [];
@@ -4551,7 +4525,7 @@ class Package implements Comparable<Package> {
   }
 }
 
-class Parameter extends ModelElement implements EnclosedElement {
+class Parameter extends ModelElement with Callable implements EnclosedElement {
   Parameter(ParameterElement element, Library library, {Member originalMember})
       : super(element, library, originalMember);
 
@@ -4818,7 +4792,7 @@ class TopLevelVariable extends ModelElement
 }
 
 class Typedef extends ModelElement
-    with SourceCodeMixin, TypeParameters
+    with SourceCodeMixin, TypeParameters, Callable
     implements EnclosedElement {
   Typedef(FunctionTypeAliasElement element, Library library)
       : super(element, library, null);
@@ -4892,9 +4866,7 @@ class TypeParameter extends ModelElement {
   ElementType get boundType {
     var bound = _typeParameter.bound;
     if (bound != null) {
-      ModelElement boundClass =
-          new ModelElement.fromElement(bound.element, packageGraph);
-      return new ElementType(bound, boundClass);
+      return new ElementType.from(bound, packageGraph);
     }
     return null;
   }

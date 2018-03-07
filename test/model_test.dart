@@ -163,7 +163,7 @@ void main() {
         expect(hashCode.canonicalEnclosingElement, equals(objectModelElement));
         expect(
             EventTarget.publicSuperChainReversed
-                .any((et) => et.element.name == 'Interceptor'),
+                .any((et) => et.name == 'Interceptor'),
             isFalse);
       });
     });
@@ -1291,6 +1291,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       Method aTypedefReturningMethodInterface = TemplatedInterface
           .allInstanceMethods
           .singleWhere((m) => m.name == 'aTypedefReturningMethodInterface');
+      ElementType mt = aTypedefReturningMethodInterface.modelType;
       expect(aTypedefReturningMethodInterface.linkedReturnType,
           '<a href=\"ex/ParameterizedTypedef.html\">ParameterizedTypedef</a><span class="signature">&lt;List<span class="signature">&lt;String&gt;</span>&gt;</span>');
     });
@@ -2295,7 +2296,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('typdef param is linked', () {
       var params = methodWithTypedefParam.linkedParams();
-      expect(params.contains('<a href="ex/processMessage.html">'), isTrue);
+      expect(params, contains('<a href="ex/processMessage.html">'));
     });
   });
 

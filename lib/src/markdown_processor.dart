@@ -10,6 +10,7 @@ import 'dart:math';
 
 import 'package:analyzer/dart/ast/ast.dart' hide TypeParameter;
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
@@ -644,8 +645,8 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
   // Otherwise, search the class.
   if ((tryClass.modelType.typeArguments.map((e) => e.name))
       .contains(codeRefChomped)) {
-    results.add(tryClass.modelType.typeArguments
-        .firstWhere((e) => e.name == codeRefChomped)
+    results.add((tryClass.modelType.typeArguments
+        .firstWhere((e) => e.name == codeRefChomped && e is DefinedElementType) as DefinedElementType)
         .element);
   } else {
     // People like to use 'this' in docrefs too.
@@ -656,13 +657,13 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
       //                   or integrate into ModelElement in a simpler way.
       List<Class> superChain = [tryClass];
       superChain
-          .addAll(tryClass.interfaces.map((t) => t.returnElement as Class));
+          .addAll(tryClass.interfaces.map((t) => t.element as Class));
       // This seems duplicitous with our caller, but the preferredClass
       // hint matters with findCanonicalModelElementFor.
       // TODO(jcollins-g): This makes our caller ~O(n^2) vs length of superChain.
       //                   Fortunately superChains are short, but optimize this if it matters.
       superChain
-          .addAll(tryClass.superChain.map((t) => t.returnElement as Class));
+          .addAll(tryClass.superChain.map((t) => t.element as Class));
       List<String> codeRefParts = codeRefChomped.split('.');
       for (final c in superChain) {
         // TODO(jcollins-g): add a hash-map-enabled lookup function to Class?
