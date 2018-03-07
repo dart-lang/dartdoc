@@ -2138,6 +2138,38 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
   });
 
+  group('void as type', () {
+    ModelFunction returningFutureVoid, aVoidParameter;
+    Class ExtendsFutureVoid, ImplementsFutureVoid;
+
+    setUp(() {
+      returningFutureVoid = fakeLibrary.functions.firstWhere((f) => f.name == 'returningFutureVoid');
+      aVoidParameter = fakeLibrary.functions.firstWhere((f) => f.name == 'aVoidParameter');
+      ExtendsFutureVoid = fakeLibrary.classes.firstWhere((f) => f.name == 'ExtendsFutureVoid');
+      ImplementsFutureVoid = fakeLibrary.classes.firstWhere((f) => f.name == 'ImplementsFutureVoid');
+    });
+
+    test('a function returning a Future<void>', () {
+      expect(returningFutureVoid.linkedReturnType, equals('Future<span class="signature">&lt;void&gt;</span>'));
+    });
+
+    test('a function requiring a Future<void> parameter', () {
+      expect(aVoidParameter.linkedParams(showMetadata: true, showNames: true), equals('<span class="parameter" id="aVoidParameter-param-p1"><span class="type-annotation">Future<span class="signature">&lt;void&gt;</span></span> <span class="parameter-name">p1</span></span>'));
+    });
+
+    test('a class that extends Future<void>', () {
+      expect(ExtendsFutureVoid.linkedName, equals('<a href="fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a>'));
+      DefinedElementType FutureVoid = ExtendsFutureVoid.publicSuperChain.firstWhere((c) => c.name == 'Future');
+      expect(FutureVoid.linkedName, equals('Future<span class="signature">&lt;void&gt;</span>'));
+    });
+
+    test('a class that implements Future<void>', () {
+      expect(ImplementsFutureVoid.linkedName, equals('<a href="fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
+      DefinedElementType FutureVoid = ImplementsFutureVoid.publicInterfaces.firstWhere((c) => c.name == 'Future');
+      expect(FutureVoid.linkedName, equals('Future<span class="signature">&lt;void&gt;</span>'));
+    });
+  });
+
   group('ModelType', () {
     Field fList;
 
@@ -2149,7 +2181,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('parameterized type', () {
-      expect(fList.modelType.isParameterizedType, isTrue);
+      expect((fList.modelType as DefinedElementType).isParameterizedType, isTrue);
     });
   });
 

@@ -4871,9 +4871,9 @@
   }
  },
  {
-  "name": "ExtendingFutureVoid",
-  "qualifiedName": "fake.ExtendingFutureVoid",
-  "href": "fake/ExtendingFutureVoid-class.html",
+  "name": "ExtendsFutureVoid",
+  "qualifiedName": "fake.ExtendsFutureVoid",
+  "href": "fake/ExtendsFutureVoid-class.html",
   "type": "class",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -4882,123 +4882,123 @@
   }
  },
  {
-  "name": "ExtendingFutureVoid",
-  "qualifiedName": "fake.ExtendingFutureVoid",
-  "href": "fake/ExtendingFutureVoid/ExtendingFutureVoid.html",
+  "name": "ExtendsFutureVoid",
+  "qualifiedName": "fake.ExtendsFutureVoid",
+  "href": "fake/ExtendsFutureVoid/ExtendsFutureVoid.html",
   "type": "constructor",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "ExtendingFutureVoid",
+   "name": "ExtendsFutureVoid",
    "type": "class"
   }
  },
  {
   "name": "operator ==",
-  "qualifiedName": "fake.ExtendingFutureVoid.==",
-  "href": "fake/ExtendingFutureVoid/operator_equals.html",
+  "qualifiedName": "fake.ExtendsFutureVoid.==",
+  "href": "fake/ExtendsFutureVoid/operator_equals.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "ExtendingFutureVoid",
+   "name": "ExtendsFutureVoid",
    "type": "class"
   }
  },
  {
   "name": "asStream",
-  "qualifiedName": "fake.ExtendingFutureVoid.asStream",
-  "href": "fake/ExtendingFutureVoid/asStream.html",
+  "qualifiedName": "fake.ExtendsFutureVoid.asStream",
+  "href": "fake/ExtendsFutureVoid/asStream.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "ExtendingFutureVoid",
+   "name": "ExtendsFutureVoid",
    "type": "class"
   }
  },
  {
   "name": "catchError",
-  "qualifiedName": "fake.ExtendingFutureVoid.catchError",
-  "href": "fake/ExtendingFutureVoid/catchError.html",
+  "qualifiedName": "fake.ExtendsFutureVoid.catchError",
+  "href": "fake/ExtendsFutureVoid/catchError.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "ExtendingFutureVoid",
+   "name": "ExtendsFutureVoid",
    "type": "class"
   }
  },
  {
   "name": "hashCode",
-  "qualifiedName": "fake.ExtendingFutureVoid.hashCode",
-  "href": "fake/ExtendingFutureVoid/hashCode.html",
+  "qualifiedName": "fake.ExtendsFutureVoid.hashCode",
+  "href": "fake/ExtendsFutureVoid/hashCode.html",
   "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "ExtendingFutureVoid",
+   "name": "ExtendsFutureVoid",
    "type": "class"
   }
  },
  {
   "name": "noSuchMethod",
-  "qualifiedName": "fake.ExtendingFutureVoid.noSuchMethod",
-  "href": "fake/ExtendingFutureVoid/noSuchMethod.html",
+  "qualifiedName": "fake.ExtendsFutureVoid.noSuchMethod",
+  "href": "fake/ExtendsFutureVoid/noSuchMethod.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "ExtendingFutureVoid",
+   "name": "ExtendsFutureVoid",
    "type": "class"
   }
  },
  {
   "name": "runtimeType",
-  "qualifiedName": "fake.ExtendingFutureVoid.runtimeType",
-  "href": "fake/ExtendingFutureVoid/runtimeType.html",
+  "qualifiedName": "fake.ExtendsFutureVoid.runtimeType",
+  "href": "fake/ExtendsFutureVoid/runtimeType.html",
   "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "ExtendingFutureVoid",
+   "name": "ExtendsFutureVoid",
    "type": "class"
   }
  },
  {
   "name": "then",
-  "qualifiedName": "fake.ExtendingFutureVoid.then",
-  "href": "fake/ExtendingFutureVoid/then.html",
+  "qualifiedName": "fake.ExtendsFutureVoid.then",
+  "href": "fake/ExtendsFutureVoid/then.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "ExtendingFutureVoid",
+   "name": "ExtendsFutureVoid",
    "type": "class"
   }
  },
  {
   "name": "timeout",
-  "qualifiedName": "fake.ExtendingFutureVoid.timeout",
-  "href": "fake/ExtendingFutureVoid/timeout.html",
+  "qualifiedName": "fake.ExtendsFutureVoid.timeout",
+  "href": "fake/ExtendsFutureVoid/timeout.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "ExtendingFutureVoid",
+   "name": "ExtendsFutureVoid",
    "type": "class"
   }
  },
  {
   "name": "toString",
-  "qualifiedName": "fake.ExtendingFutureVoid.toString",
-  "href": "fake/ExtendingFutureVoid/toString.html",
+  "qualifiedName": "fake.ExtendsFutureVoid.toString",
+  "href": "fake/ExtendsFutureVoid/toString.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "ExtendingFutureVoid",
+   "name": "ExtendsFutureVoid",
    "type": "class"
   }
  },
  {
   "name": "whenComplete",
-  "qualifiedName": "fake.ExtendingFutureVoid.whenComplete",
-  "href": "fake/ExtendingFutureVoid/whenComplete.html",
+  "qualifiedName": "fake.ExtendsFutureVoid.whenComplete",
+  "href": "fake/ExtendsFutureVoid/whenComplete.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
-   "name": "ExtendingFutureVoid",
+   "name": "ExtendsFutureVoid",
    "type": "class"
   }
  },

@@ -279,13 +279,12 @@ Future<void> returningFutureVoid() async {}
 void aVoidParameter(Future<void> p1) {}
 
 /// This class extends Future<void>
-abstract class ExtendingFutureVoid extends Future<void> {
-  factory ExtendingFutureVoid(FutureOr<void> computation()) {}
+abstract class ExtendsFutureVoid extends Future<void> {
+  factory ExtendsFutureVoid(FutureOr<void> computation()) {}
 }
 
 /// This class implements Future<void>
 abstract class ImplementsFutureVoid implements Future<void> {}
-
 
 /// Names are actually wrong in this class, but when we extend it,
 /// they are correct.
