@@ -2380,7 +2380,11 @@ class Method extends ModelElement
   @override
   String get kind => 'method';
 
-  String get linkedReturnType => modelType.createLinkedReturnTypeName();
+  String get linkedReturnType {
+    if (name == 'aInheritedTypedefReturningMethod')
+      1+1;
+    return modelType.createLinkedReturnTypeName();
+  }
 
   @override
   Method get overriddenElement {

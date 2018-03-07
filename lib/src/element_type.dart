@@ -16,7 +16,7 @@ abstract class ElementType extends Privacy {
   final PackageGraph packageGraph;
   final DefinedElementType returnedFrom;
 
-  ElementType(this._type, this.packageGraph, [this.returnedFrom]);
+  ElementType(this._type, this.packageGraph, this.returnedFrom);
 
   factory ElementType.from(DartType f, PackageGraph packageGraph, [ElementType returnedFrom]) {
     if (f.element == null || f.element.kind == ElementKind.DYNAMIC) {
@@ -91,7 +91,7 @@ class DefinedElementType extends ElementType {
   final ModelElement _element;
   String _linkedName;
 
-  DefinedElementType(DartType type, PackageGraph packageGraph, this._element, ElementType returnedFrom) : super(type, packageGraph) {}
+  DefinedElementType(DartType type, PackageGraph packageGraph, this._element, ElementType returnedFrom) : super(type, packageGraph, returnedFrom) {}
 
   ModelElement get element {
     assert(_element != null);
@@ -188,37 +188,13 @@ class DefinedElementType extends ElementType {
 
   DartType get type => _type;
 
-  @override
-  List<DefinedElementType> get typeArguments {
-    if (type is FunctionType) {
-      FunctionType type = _type;
 
-      /*if (returnedFrom == null) {
-        type = _type;
-      } else {
-        type = returnedFrom._type;
-      } */
-
-      Iterable<DartType> typeArguments;
-      if (_element is! ModelFunctionAnonymous && type.typeFormals.isEmpty) {
-        // TODO(jcollins-g): replace with if (FunctionType.isInstantiated) once
-        // that's reliable and revealed through the interface.
-        typeArguments = type.typeArguments;
-      } else {
-        typeArguments = type.typeFormals.map((f) => f.type);
-      }
-      return typeArguments.map((f) => new ElementType.from(f, packageGraph)).toList();
-    } else {
-      return super.typeArguments;
-    }
-  }
 
   ModelElement get returnElement => element;
   ElementType get returnType => new ElementType.from(_type, packageGraph, this);
 
   @override
   String createLinkedReturnTypeName()  {
-    if (element is Typedef) return linkedName;
     return returnType.linkedName;
   }
 }
@@ -228,6 +204,22 @@ abstract class CallableElementTypeMixin implements DefinedElementType {
   ModelElement get returnElement => returnType is DefinedElementType ? (returnType as DefinedElementType).element : null;
   @override
   ElementType get returnType => new ElementType.from((_type as FunctionType).returnType, packageGraph, this);
+
+  @override
+  FunctionType get type => _type;
+
+  @override
+  List<DefinedElementType> get typeArguments {
+      Iterable<DartType> typeArguments;
+      if (type.typeFormals.isEmpty && element is! ModelFunctionAnonymous && returnedFrom?.element is! ModelFunctionAnonymous) {
+        typeArguments = type.typeArguments;
+      } else {
+        typeArguments = type.typeFormals.map((f) => f.type);
+      }
+
+      return typeArguments.map((f) => new ElementType.from(f, packageGraph)).toList();
+  }
+
 }
 
 class CallableElementType extends DefinedElementType with CallableElementTypeMixin {
@@ -258,5 +250,5 @@ class CallableGenericTypeAliasElementType extends GenericTypeAliasElementType wi
   ModelElement get returnElement => new ModelElement.fromElement(type.element.enclosingElement, packageGraph);
 
   @override
-  ElementType get returnType => returnElement.modelType;
+  ElementType get returnType => new ElementType.from(returnElement.modelType._type, packageGraph, this);
 }
