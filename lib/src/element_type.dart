@@ -33,24 +33,28 @@ abstract class ElementType extends Privacy {
       if (f is FunctionType) {
         assert(f is ParameterizedType);
         if (isGenericTypeAlias) {
-          ModelElement me = new ModelElement.fromElement(f.element, packageGraph);
+          assert(element is! ModelFunctionAnonymous);
           return new CallableGenericTypeAliasElementType(f, packageGraph, element, returnedFrom);
         } else {
-          if ((f.name ?? f.element.name) == '') {
-            ModelElement me = new ModelElement.fromElement(f.element, packageGraph);
+          if ((f.name ?? f.element.name) == ''  || (f.name ?? f.element.name) == null) {
+            assert(element is ModelFunctionAnonymous);
             return new CallableAnonymousElementType(f, packageGraph, element, returnedFrom);
           } else {
+            assert(element is! ModelFunctionAnonymous);
             return new CallableElementType(f, packageGraph, element, returnedFrom);
           }
         }
       } else if (isGenericTypeAlias) {
         assert(f is TypeParameterType);
+        assert(element is! ModelFunctionAnonymous);
         return new GenericTypeAliasElementType(f, packageGraph, element, returnedFrom);
       }
       if (f is TypeParameterType) {
+        assert(element is! ModelFunctionAnonymous);
         return new TypeParameterElementType(f, packageGraph, element, returnedFrom);
       }
       assert(f is ParameterizedType);
+      assert(element is! ModelFunctionAnonymous);
       return new ParameterizedElementType(f, packageGraph, element, returnedFrom);
     }
   }
@@ -117,6 +121,7 @@ class ParameterizedElementType extends DefinedElementType {
       // Hide parameters if there's a an explicit typedef behind this
       // element, but if there is no typedef, be explicit.
       if (element is ModelFunctionAnonymous) {
+        assert(this is CallableElementTypeMixin);
         buf.write('<span class="signature">');
         buf.write('(');
         buf.write(element.linkedParams());
@@ -260,7 +265,7 @@ class GenericTypeAliasElementType extends TypeParameterElementType with GenericT
 
 /// A Callable generic type alias that may or may not have a name.
 class CallableGenericTypeAliasElementType extends ParameterizedElementType with CallableElementTypeMixin, GenericTypeAliasElementTypeMixin {
-  CallableGenericTypeAliasElementType(FunctionType t, PackageGraph graph, ModelElement element, ElementType returnedFrom) : super(t, graph, element, returnedFrom);
+  CallableGenericTypeAliasElementType(FunctionType t, PackageGraph packageGraph, ModelElement element, ElementType returnedFrom) : super(t, packageGraph, element, returnedFrom);
 
   @override
   ModelElement get returnElement => new ModelElement.fromElement(type.element.enclosingElement, packageGraph);
