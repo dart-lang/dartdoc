@@ -2189,7 +2189,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('parameterized type', () {
-      expect((fList.modelType as DefinedElementType).isParameterizedType, isTrue);
+      expect(fList.modelType is ParameterizedElementType, isTrue);
     });
   });
 

@@ -69,6 +69,9 @@ abstract class ElementType extends Privacy {
 
   List<Parameter> get parameters => [];
 
+  @override
+  String toString() => "$type";
+
   DartType get type => _type;
 }
 
@@ -93,14 +96,15 @@ class UndefinedElementType extends ElementType {
 }
 
 class ParameterizedElementType extends DefinedElementType {
-  ParameterizedElementType(DartType type, PackageGraph packageGraph, ModelElement element, ElementType returnedFrom) : super(type, packageGraph, element, returnedFrom);
+  ParameterizedElementType(ParameterizedType type, PackageGraph packageGraph, ModelElement element, ElementType returnedFrom) : super(type, packageGraph, element, returnedFrom);
 
+  String _linkedName;
   @override
   String get linkedName {
     if (_linkedName == null) {
       StringBuffer buf = new StringBuffer();
 
-      buf.write(_element.linkedName);
+      buf.write(element.linkedName);
 
       if (!typeArguments.every((t) => t.linkedName == 'dynamic') &&
           typeArguments.isNotEmpty) {
@@ -112,10 +116,10 @@ class ParameterizedElementType extends DefinedElementType {
       }
       // Hide parameters if there's a an explicit typedef behind this
       // element, but if there is no typedef, be explicit.
-      if (_element is ModelFunctionAnonymous) {
+      if (element is ModelFunctionAnonymous) {
         buf.write('<span class="signature">');
         buf.write('(');
-        buf.write(_element.linkedParams());
+        buf.write(element.linkedParams());
         buf.write(')');
         buf.write('</span>');
       }
@@ -123,27 +127,41 @@ class ParameterizedElementType extends DefinedElementType {
     }
     return _linkedName;
   }
-}
 
-class TypeParameterElementType extends DefinedElementType {
-  TypeParameterElementType(DartType type, PackageGraph packageGraph, ModelElement element, ElementType returnedFrom) : super(type, packageGraph, element, returnedFrom);
-
+  String _nameWithGenerics;
   @override
-  String get linkedName {
-    if (_linkedName == null) {
-      _linkedName = name;
+  String get nameWithGenerics {
+    if (_nameWithGenerics == null) {
+      StringBuffer buf = new StringBuffer();
+
+      buf.write(element.name);
+
+      if (!typeArguments.every((t) => t.linkedName == 'dynamic') &&
+          typeArguments.isNotEmpty) {
+        buf.write('&lt;');
+        buf.writeAll(typeArguments.map((t) => t.nameWithGenerics), ', ');
+        buf.write('&gt;');
+      }
+      _nameWithGenerics = buf.toString();
     }
-    return _linkedName;
+    return _nameWithGenerics;
   }
 }
 
+class TypeParameterElementType extends DefinedElementType {
+  TypeParameterElementType(TypeParameterType type, PackageGraph packageGraph, ModelElement element, ElementType returnedFrom) : super(type, packageGraph, element, returnedFrom);
+
+  @override
+  String get linkedName => element.linkedName;
+
+  @override
+  String get nameWithGenerics => element.linkedName;
+}
 
 /// An [ElementType] associated with an [Element].
-/// TODO(jcollins-g): split this out into subclasses where appropriate.
 abstract class DefinedElementType extends ElementType {
   @visibleForTesting
   final ModelElement _element;
-  String _linkedName;
 
   DefinedElementType(DartType type, PackageGraph packageGraph, this._element, ElementType returnedFrom) : super(type, packageGraph, returnedFrom);
 
@@ -151,8 +169,6 @@ abstract class DefinedElementType extends ElementType {
     assert(_element != null);
     return _element;
   }
-
-  bool get isParameterizedType => (type is ParameterizedType);
 
   bool get isParameterType => (type is TypeParameterType);
 
@@ -162,41 +178,13 @@ abstract class DefinedElementType extends ElementType {
   @override
   bool get isPublic {
     Class canonicalClass =
-        _element.packageGraph.findCanonicalModelElementFor(_element.element) ??
-            _element;
-    return canonicalClass?.isPublic;
+        element.packageGraph.findCanonicalModelElementFor(element.element) ??
+            element;
+    return canonicalClass.isPublic;
   }
 
   @override
   bool get isTypedef => element is Typedef || element is ModelFunctionTypedef;
-
-
-
-  String _nameWithGenerics;
-  @override
-  String get nameWithGenerics {
-    if (_nameWithGenerics == null) {
-      StringBuffer buf = new StringBuffer();
-
-      if (isParameterType) {
-        buf.write(name);
-      } else {
-        buf.write(_element.name);
-      }
-
-      // not TypeParameterType or Void or Union type
-      if (isParameterizedType) {
-        if (!typeArguments.every((t) => t.linkedName == 'dynamic') &&
-            typeArguments.isNotEmpty) {
-          buf.write('&lt;');
-          buf.writeAll(typeArguments.map((t) => t.nameWithGenerics), ', ');
-          buf.write('&gt;');
-        }
-      }
-      _nameWithGenerics = buf.toString();
-    }
-    return _nameWithGenerics;
-  }
 
   @override
   List<Parameter> get parameters => element.canHaveParameters ? element.parameters : [];
@@ -216,9 +204,6 @@ abstract class DefinedElementType extends ElementType {
         .map((f) => new ElementType.from(f, packageGraph))
         .toList();
   }
-
-  @override
-  String toString() => "$type";
 }
 
 /// Any callable ElementType will mix-in this class, whether anonymous or not.
@@ -270,7 +255,7 @@ abstract class GenericTypeAliasElementTypeMixin {}
 
 /// A non-callable type backed by a [GenericTypeAliasElement].
 class GenericTypeAliasElementType extends TypeParameterElementType with GenericTypeAliasElementTypeMixin{
-  GenericTypeAliasElementType(DartType t, PackageGraph packageGraph, ModelElement element, ElementType returnedFrom) : super(t, packageGraph, element, returnedFrom) {}
+  GenericTypeAliasElementType(TypeParameterType t, PackageGraph packageGraph, ModelElement element, ElementType returnedFrom) : super(t, packageGraph, element, returnedFrom) {}
 }
 
 /// A Callable generic type alias that may or may not have a name.
