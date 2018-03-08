@@ -103,13 +103,6 @@ int byFeatureOrdering(String a, String b) {
 
 final RegExp locationSplitter = new RegExp(r"(package:|[\\/;.])");
 
-/// Mixin for [ModelElement]s that may have a returnType associated with their
-/// modelType.
-abstract class Callable implements ModelElement {
-  @override
-  ElementType get modelType => super.modelType;
-}
-
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
 ///
@@ -272,7 +265,7 @@ class InheritableAccessor extends Accessor with Inheritable {
 
 /// Getters and setters.
 class Accessor extends ModelElement
-    with SourceCodeMixin, Callable
+    with SourceCodeMixin
     implements EnclosedElement {
   GetterSetterCombo _enclosingCombo;
 
@@ -2313,7 +2306,7 @@ class Library extends ModelElement {
 }
 
 class Method extends ModelElement
-    with SourceCodeMixin, Inheritable, TypeParameters, Callable
+    with SourceCodeMixin, Inheritable, TypeParameters
     implements EnclosedElement {
   bool _isInherited = false;
   Class _enclosingClass;
@@ -3287,11 +3280,6 @@ abstract class ModelElement extends Canonicalization
   String renderParam(Parameter param, String suffix, bool showMetadata, bool showNames) {
     StringBuffer buf = new StringBuffer();
     ElementType paramModelType = param.modelType;
-    if (paramModelType is GenericTypeAliasElementType) {
-      if (name == 'fieldWithTypedef' && paramModelType.declaredType.name == 'VoidCallback')
-        1+1;
-      1+1;
-    }
 
     buf.write('<span class="parameter" id="${param.htmlId}">');
     if (showMetadata && param.hasAnnotations) {
@@ -3640,7 +3628,7 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
 }
 
 class ModelFunctionTyped extends ModelElement
-    with SourceCodeMixin, TypeParameters, Callable
+    with SourceCodeMixin, TypeParameters
     implements EnclosedElement {
   @override
   List<TypeParameter> typeParameters = [];
@@ -4528,7 +4516,7 @@ class Package implements Comparable<Package> {
   }
 }
 
-class Parameter extends ModelElement with Callable implements EnclosedElement {
+class Parameter extends ModelElement implements EnclosedElement {
   Parameter(ParameterElement element, Library library, {Member originalMember})
       : super(element, library, originalMember);
 
@@ -4695,7 +4683,7 @@ abstract class SourceCodeMixin {
   }
 }
 
-abstract class TypeParameters implements Nameable {
+abstract class TypeParameters implements ModelElement {
   String get nameWithGenerics => '$name$genericParameters';
 
   String get nameWithLinkedGenerics => '$name$linkedGenericParameters';
@@ -4711,6 +4699,9 @@ abstract class TypeParameters implements Nameable {
     if (typeParameters.isEmpty) return '';
     return '<span class="signature">&lt;${typeParameters.map((t) => t.linkedName).join(', ')}&gt;</span>';
   }
+
+  @override
+  DefinedElementType get modelType => super.modelType;
 
   List<TypeParameter> get typeParameters;
 }
@@ -4795,7 +4786,7 @@ class TopLevelVariable extends ModelElement
 }
 
 class Typedef extends ModelElement
-    with SourceCodeMixin, TypeParameters, Callable
+    with SourceCodeMixin, TypeParameters
     implements EnclosedElement {
   Typedef(FunctionTypeAliasElement element, Library library)
       : super(element, library, null);

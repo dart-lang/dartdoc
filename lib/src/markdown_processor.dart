@@ -423,7 +423,7 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
   // Maybe this ModelElement has type parameters, and this is one of them.
   if (results.isEmpty) {
     if (element is TypeParameters) {
-      results.addAll((element as TypeParameters).typeParameters.where((p) =>
+      results.addAll(element.typeParameters.where((p) =>
           p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
     }
   }
