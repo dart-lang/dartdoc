@@ -2373,11 +2373,7 @@ class Method extends ModelElement
   @override
   String get kind => 'method';
 
-  String get linkedReturnType {
-    if (name == 'aInheritedTypedefReturningMethod')
-      1+1;
-    return modelType.createLinkedReturnTypeName();
-  }
+  String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
   @override
   Method get overriddenElement {
@@ -3327,9 +3323,6 @@ abstract class ModelElement extends Canonicalization
 
   String linkedParams(
       {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
-    if (name == 'operator ==' && enclosingElement.name == 'Cat')
-      1+1;
-
     List<Parameter> requiredParams =
         parameters.where((Parameter p) => !p.isOptional).toList();
     List<Parameter> positionalParams =

@@ -11,7 +11,6 @@ import 'package:meta/meta.dart';
 
 import 'model.dart';
 
-
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
 abstract class ElementType extends Privacy {
@@ -61,6 +60,8 @@ abstract class ElementType extends Privacy {
 
   bool get canHaveParameters => false;
 
+  // TODO(jcollins-g): change clients of ElementType to use subtypes more consistently
+  // and eliminate createLinkedReturnTypeName (instead, using returnType.linkedName);
   String createLinkedReturnTypeName() => linkedName;
 
   bool get isTypedef => false;
@@ -118,16 +119,7 @@ class ParameterizedElementType extends DefinedElementType {
         buf.write('&gt;');
         buf.write('</span>');
       }
-      // Hide parameters if there's a an explicit typedef behind this
-      // element, but if there is no typedef, be explicit.
-      if (element is ModelFunctionAnonymous) {
-        assert(this is CallableElementTypeMixin);
-        buf.write('<span class="signature">');
-        buf.write('(');
-        buf.write(element.linkedParams());
-        buf.write(')');
-        buf.write('</span>');
-      }
+
       _linkedName = buf.toString();
     }
     return _linkedName;
@@ -199,9 +191,7 @@ abstract class DefinedElementType extends ElementType {
   ElementType get returnType => new ElementType.from(type, packageGraph, this);
 
   @override
-  String createLinkedReturnTypeName()  {
-    return returnType.linkedName;
-  }
+  String createLinkedReturnTypeName() => returnType.linkedName;
 
   List<ElementType> get typeArguments {
     return (type as ParameterizedType)
@@ -241,9 +231,6 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
 /// function syntax.
 class CallableElementType extends ParameterizedElementType with CallableElementTypeMixin {
   CallableElementType(FunctionType t, PackageGraph packageGraph, ModelElement element, ElementType returnedFrom) : super(t, packageGraph, element, returnedFrom);
-
-  @override
-  String createLinkedReturnTypeName() => returnType.linkedName;
 }
 
 /// This is an anonymous function using the generic function syntax (declared
@@ -252,11 +239,13 @@ class CallableAnonymousElementType extends CallableElementType {
   CallableAnonymousElementType(FunctionType t, PackageGraph packageGraph, ModelElement element, ElementType returnedFrom) : super(t, packageGraph, element, returnedFrom);
   @override
   String get name => 'Function';
+
+  @override
+  String get linkedName => '${super.linkedName}<span class="signature">(${element.linkedParams()})</span>';
 }
 
 /// Types backed by a [GenericTypeAliasElement] that may or may not be callable.
 abstract class GenericTypeAliasElementTypeMixin {}
-
 
 /// A non-callable type backed by a [GenericTypeAliasElement].
 class GenericTypeAliasElementType extends TypeParameterElementType with GenericTypeAliasElementTypeMixin{
