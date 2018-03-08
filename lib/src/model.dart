@@ -460,8 +460,7 @@ class Class extends ModelElement
   Class(ClassElement element, Library library) : super(element, library, null) {
     _mixins = _cls.mixins
         .map((f) {
-          ElementType t = new ElementType.from(
-              f, packageGraph);
+          ElementType t = new ElementType.from(f, packageGraph);
           return t;
         })
         .where((mixin) => mixin != null)
@@ -787,7 +786,8 @@ class Class extends ModelElement
   Iterable<Field> get publicInstanceProperties =>
       filterNonPublic(instanceProperties);
   List<DefinedElementType> get interfaces => _interfaces;
-  Iterable<DefinedElementType> get publicInterfaces => filterNonPublic(interfaces);
+  Iterable<DefinedElementType> get publicInterfaces =>
+      filterNonPublic(interfaces);
 
   List<DefinedElementType> _interfaceChain;
   List<DefinedElementType> get interfaceChain {
@@ -924,7 +924,8 @@ class Class extends ModelElement
   }
 
   Iterable<DefinedElementType> get superChainReversed => superChain.reversed;
-  Iterable<DefinedElementType> get publicSuperChain => filterNonPublic(superChain);
+  Iterable<DefinedElementType> get publicSuperChain =>
+      filterNonPublic(superChain);
   Iterable<DefinedElementType> get publicSuperChainReversed =>
       publicSuperChain.toList().reversed;
 
@@ -3109,19 +3110,24 @@ abstract class ModelElement extends Canonicalization
   ElementType get modelType {
     if (_modelType == null) {
       // TODO(jcollins-g): Need an interface for a "member with a type" (or changed object model).
-      if (_originalMember != null && (_originalMember is ExecutableMember ||
-          _originalMember is ParameterMember)) {
+      if (_originalMember != null &&
+          (_originalMember is ExecutableMember ||
+              _originalMember is ParameterMember)) {
         if (_originalMember is ExecutableMember) {
-          _modelType = new ElementType.from((_originalMember as ExecutableMember).type, packageGraph);
-        } else { // ParameterMember
-          _modelType = new ElementType.from((_originalMember as ParameterMember).type, packageGraph);
+          _modelType = new ElementType.from(
+              (_originalMember as ExecutableMember).type, packageGraph);
+        } else {
+          // ParameterMember
+          _modelType = new ElementType.from(
+              (_originalMember as ParameterMember).type, packageGraph);
         }
       } else if (element is ExecutableElement ||
           element is FunctionTypedElement ||
           element is ParameterElement ||
           element is TypeDefiningElement ||
           element is PropertyInducingElement) {
-        _modelType = new ElementType.from((element as dynamic).type, packageGraph);
+        _modelType =
+            new ElementType.from((element as dynamic).type, packageGraph);
       }
     }
     return _modelType;
@@ -3273,7 +3279,8 @@ abstract class ModelElement extends Canonicalization
     }
   }
 
-  String renderParam(Parameter param, String suffix, bool showMetadata, bool showNames) {
+  String renderParam(
+      Parameter param, String suffix, bool showMetadata, bool showNames) {
     StringBuffer buf = new StringBuffer();
     ElementType paramModelType = param.modelType;
 
@@ -3288,8 +3295,10 @@ abstract class ModelElement extends Canonicalization
       buf.write('<span class="type-annotation">${returnTypeName}</span>');
       if (showNames) {
         buf.write(' <span class="parameter-name">${param.name}</span>');
-      } else if (paramModelType.isTypedef || paramModelType is CallableAnonymousElementType) {
-        buf.write(' <span class="parameter-name">${paramModelType.name}</span>');
+      } else if (paramModelType.isTypedef ||
+          paramModelType is CallableAnonymousElementType) {
+        buf.write(
+            ' <span class="parameter-name">${paramModelType.name}</span>');
       }
       if (!paramModelType.isTypedef) {
         buf.write('(');
@@ -3355,12 +3364,14 @@ abstract class ModelElement extends Canonicalization
     }
     for (Parameter param in positionalParams) {
       bool isLast = param == positionalParams.last;
-      builder.write(renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
+      builder.write(
+          renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
       builder.write(' ');
     }
     for (Parameter param in namedParams) {
       bool isLast = param == namedParams.last;
-      builder.write(renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
+      builder.write(
+          renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
       builder.write(' ');
     }
 

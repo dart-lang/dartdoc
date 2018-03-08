@@ -645,8 +645,9 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
   // Otherwise, search the class.
   if ((tryClass.modelType.typeArguments.map((e) => e.name))
       .contains(codeRefChomped)) {
-    results.add((tryClass.modelType.typeArguments
-        .firstWhere((e) => e.name == codeRefChomped && e is DefinedElementType) as DefinedElementType)
+    results.add((tryClass.modelType.typeArguments.firstWhere(
+                (e) => e.name == codeRefChomped && e is DefinedElementType)
+            as DefinedElementType)
         .element);
   } else {
     // People like to use 'this' in docrefs too.
@@ -656,14 +657,12 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
       // TODO(jcollins-g): get rid of reimplementation of identifier resolution
       //                   or integrate into ModelElement in a simpler way.
       List<Class> superChain = [tryClass];
-      superChain
-          .addAll(tryClass.interfaces.map((t) => t.element as Class));
+      superChain.addAll(tryClass.interfaces.map((t) => t.element as Class));
       // This seems duplicitous with our caller, but the preferredClass
       // hint matters with findCanonicalModelElementFor.
       // TODO(jcollins-g): This makes our caller ~O(n^2) vs length of superChain.
       //                   Fortunately superChains are short, but optimize this if it matters.
-      superChain
-          .addAll(tryClass.superChain.map((t) => t.element as Class));
+      superChain.addAll(tryClass.superChain.map((t) => t.element as Class));
       List<String> codeRefParts = codeRefChomped.split('.');
       for (final c in superChain) {
         // TODO(jcollins-g): add a hash-map-enabled lookup function to Class?

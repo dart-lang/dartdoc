@@ -2143,39 +2143,64 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class ExtendsFutureVoid, ImplementsFutureVoid, ATypeTakingClassMixedIn;
 
     setUp(() {
-      returningFutureVoid = fakeLibrary.functions.firstWhere((f) => f.name == 'returningFutureVoid');
-      aVoidParameter = fakeLibrary.functions.firstWhere((f) => f.name == 'aVoidParameter');
-      ExtendsFutureVoid = fakeLibrary.classes.firstWhere((f) => f.name == 'ExtendsFutureVoid');
-      ImplementsFutureVoid = fakeLibrary.classes.firstWhere((f) => f.name == 'ImplementsFutureVoid');
-      ATypeTakingClassMixedIn = fakeLibrary.classes.firstWhere((f) => f.name == 'ATypeTakingClassMixedIn');
+      returningFutureVoid = fakeLibrary.functions
+          .firstWhere((f) => f.name == 'returningFutureVoid');
+      aVoidParameter =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'aVoidParameter');
+      ExtendsFutureVoid =
+          fakeLibrary.classes.firstWhere((f) => f.name == 'ExtendsFutureVoid');
+      ImplementsFutureVoid = fakeLibrary.classes
+          .firstWhere((f) => f.name == 'ImplementsFutureVoid');
+      ATypeTakingClassMixedIn = fakeLibrary.classes
+          .firstWhere((f) => f.name == 'ATypeTakingClassMixedIn');
     });
 
     test('a function returning a Future<void>', () {
-      expect(returningFutureVoid.linkedReturnType, equals('Future<span class="signature">&lt;void&gt;</span>'));
+      expect(returningFutureVoid.linkedReturnType,
+          equals('Future<span class="signature">&lt;void&gt;</span>'));
     });
 
     test('a function requiring a Future<void> parameter', () {
-      expect(aVoidParameter.linkedParams(showMetadata: true, showNames: true), equals('<span class="parameter" id="aVoidParameter-param-p1"><span class="type-annotation">Future<span class="signature">&lt;void&gt;</span></span> <span class="parameter-name">p1</span></span>'));
+      expect(
+          aVoidParameter.linkedParams(showMetadata: true, showNames: true),
+          equals(
+              '<span class="parameter" id="aVoidParameter-param-p1"><span class="type-annotation">Future<span class="signature">&lt;void&gt;</span></span> <span class="parameter-name">p1</span></span>'));
     });
 
     test('a class that extends Future<void>', () {
-      expect(ExtendsFutureVoid.linkedName, equals('<a href="fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a>'));
-      DefinedElementType FutureVoid = ExtendsFutureVoid.publicSuperChain.firstWhere((c) => c.name == 'Future');
-      expect(FutureVoid.linkedName, equals('Future<span class="signature">&lt;void&gt;</span>'));
+      expect(
+          ExtendsFutureVoid.linkedName,
+          equals(
+              '<a href="fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a>'));
+      DefinedElementType FutureVoid = ExtendsFutureVoid.publicSuperChain
+          .firstWhere((c) => c.name == 'Future');
+      expect(FutureVoid.linkedName,
+          equals('Future<span class="signature">&lt;void&gt;</span>'));
     });
 
     test('a class that implements Future<void>', () {
-      expect(ImplementsFutureVoid.linkedName, equals('<a href="fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
-      DefinedElementType FutureVoid = ImplementsFutureVoid.publicInterfaces.firstWhere((c) => c.name == 'Future');
-      expect(FutureVoid.linkedName, equals('Future<span class="signature">&lt;void&gt;</span>'));
+      expect(
+          ImplementsFutureVoid.linkedName,
+          equals(
+              '<a href="fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
+      DefinedElementType FutureVoid = ImplementsFutureVoid.publicInterfaces
+          .firstWhere((c) => c.name == 'Future');
+      expect(FutureVoid.linkedName,
+          equals('Future<span class="signature">&lt;void&gt;</span>'));
     });
 
     test('Verify that a mixin with a void type parameter works', () {
-      expect(ATypeTakingClassMixedIn.linkedName, equals('<a href="fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>'));
-      DefinedElementType ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixins.firstWhere((c) => c.name == 'ATypeTakingClass');
-      expect(ATypeTakingClassVoid.linkedName, equals('<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;void&gt;</span>'));
+      expect(
+          ATypeTakingClassMixedIn.linkedName,
+          equals(
+              '<a href="fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>'));
+      DefinedElementType ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixins
+          .firstWhere((c) => c.name == 'ATypeTakingClass');
+      expect(
+          ATypeTakingClassVoid.linkedName,
+          equals(
+              '<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;void&gt;</span>'));
     });
-
   });
 
   group('ModelType', () {
@@ -2340,7 +2365,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('typedef param is linked and does not include types', () {
       ElementType t = methodWithTypedefParam.parameters.first.modelType;
       var params = methodWithTypedefParam.linkedParams();
-      expect(params, equals('<span class="parameter" id="methodWithTypedefParam-param-p"><span class="type-annotation"><a href="ex/processMessage.html">processMessage</a></span> <span class="parameter-name">p</span></span>'));
+      expect(
+          params,
+          equals(
+              '<span class="parameter" id="methodWithTypedefParam-param-p"><span class="type-annotation"><a href="ex/processMessage.html">processMessage</a></span> <span class="parameter-name">p</span></span>'));
       //expect(params, contains('<a href="ex/processMessage.html">'));
     });
   });
