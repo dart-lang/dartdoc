@@ -4862,26 +4862,36 @@ class TypeParameter extends ModelElement {
   @override
   String get kind => 'type parameter';
 
+  ElementType _boundType;
   ElementType get boundType {
-    var bound = _typeParameter.bound;
-    if (bound != null) {
-      return new ElementType.from(bound, packageGraph);
+    if (_boundType == null) {
+      var bound = _typeParameter.bound;
+      if (bound != null) {
+        _boundType = new ElementType.from(bound, packageGraph);
+      }
     }
-    return null;
+    return _boundType;
   }
 
+  String _name;
   @override
   String get name {
-    return _typeParameter.bound != null
-        ? '${_typeParameter.name} extends ${boundType.nameWithGenerics}'
-        : _typeParameter.name;
+    if (_name == null) {
+      _name = _typeParameter.bound != null
+          ? '${_typeParameter.name} extends ${boundType.nameWithGenerics}'
+          : _typeParameter.name;
+    }
+    return _name;
   }
 
   @override
   String get linkedName {
-    return _typeParameter.bound != null
-        ? '${_typeParameter.name} extends ${boundType.linkedName}'
-        : _typeParameter.name;
+    if (_linkedName == null) {
+      _linkedName = _typeParameter.bound != null
+          ? '${_typeParameter.name} extends ${boundType.linkedName}'
+          : _typeParameter.name;
+    }
+    return _linkedName;
   }
 
   TypeParameterElement get _typeParameter => element as TypeParameterElement;
