@@ -256,7 +256,8 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
   FunctionType get type => _type;
 
   @override
-  // TODO(jcollins-g): Rewrite this so it doesn't require type checking everywhere.
+  // TODO(jcollins-g): Rewrite this and improve object model so this doesn't
+  // require type checking everywhere.
   Iterable<DefinedElementType> get typeArguments {
     if (_typeArguments == null) {
       Iterable<DartType> dartTypeArguments;
@@ -266,14 +267,15 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
         dartTypeArguments = type.typeArguments;
       } else if (returnedFrom != null &&
           returnedFrom.type.element is GenericFunctionTypeElement) {
-        dartTypeArguments = type.typeArguments;
+        _typeArguments = returnedFrom.typeArguments;
       } else {
         dartTypeArguments = type.typeFormals.map((f) => f.type);
       }
-
-      _typeArguments = dartTypeArguments
-          .map((f) => new ElementType.from(f, packageGraph))
-          .toList();
+      if (dartTypeArguments != null) {
+        _typeArguments = dartTypeArguments
+            .map((f) => new ElementType.from(f, packageGraph))
+            .toList();
+      }
     }
     return _typeArguments;
   }

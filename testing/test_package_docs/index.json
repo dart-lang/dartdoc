@@ -7929,6 +7929,94 @@
   }
  },
  {
+  "name": "TypedefUsingClass",
+  "qualifiedName": "fake.TypedefUsingClass",
+  "href": "fake/TypedefUsingClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "TypedefUsingClass",
+  "qualifiedName": "fake.TypedefUsingClass",
+  "href": "fake/TypedefUsingClass/TypedefUsingClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedefUsingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.TypedefUsingClass.==",
+  "href": "fake/TypedefUsingClass/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedefUsingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.TypedefUsingClass.hashCode",
+  "href": "fake/TypedefUsingClass/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedefUsingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.TypedefUsingClass.noSuchMethod",
+  "href": "fake/TypedefUsingClass/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedefUsingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.TypedefUsingClass.runtimeType",
+  "href": "fake/TypedefUsingClass/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedefUsingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.TypedefUsingClass.toString",
+  "href": "fake/TypedefUsingClass/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedefUsingClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "x",
+  "qualifiedName": "fake.TypedefUsingClass.x",
+  "href": "fake/TypedefUsingClass/x.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypedefUsingClass",
+   "type": "class"
+  }
+ },
+ {
   "name": "UP",
   "qualifiedName": "fake.UP",
   "href": "fake/UP-constant.html",

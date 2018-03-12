@@ -2222,6 +2222,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Typedef t;
     Typedef generic;
     Typedef aComplexTypedef;
+    Class TypedefUsingClass;
 
     setUp(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
@@ -2229,6 +2230,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
       aComplexTypedef =
           exLibrary.typedefs.firstWhere((t) => t.name == 'aComplexTypedef');
+      TypedefUsingClass =
+          fakeLibrary.classes.firstWhere((t) => t.name == 'TypedefUsingClass');
+    });
+
+    test('Typedefs with bound type parameters indirectly referred in parameters are displayed', () {
+      Constructor theConstructor = TypedefUsingClass.constructors.first;
+      expect(theConstructor.linkedParams(), equals('<span class="parameter" id="-param-x"><span class="type-annotation"><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;double&gt;</span></span> <span class="parameter-name">x</span></span>'));
     });
 
     test('anonymous nested functions inside typedefs are handled', () {

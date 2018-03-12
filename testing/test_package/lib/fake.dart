@@ -270,6 +270,11 @@ class SuperAwesomeClass {
   }
 }
 
+class TypedefUsingClass {
+  ParameterizedTypedef<double> x;
+  TypedefUsingClass(this.x);
+}
+
 typedef void myCoolTypedef(Cool x, bool y);
 
 /// This function returns Future<void>
