@@ -47,13 +47,10 @@
 library fake;
 
 import 'dart:async';
-
 import 'dart:collection';
 
-import 'example.dart';
-
 import 'css.dart' as css;
-
+import 'example.dart';
 import 'two_exports.dart' show BaseClass;
 
 abstract class ImplementingThingy implements BaseThingy {}
@@ -224,6 +221,7 @@ typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,
 
 /// This class is cool!
 class Cool {
+  // ignore: missing_return
   Cool returnCool() {}
 }
 
@@ -258,7 +256,9 @@ class SuperAwesomeClass {
   ///
   /// Another comment line.
   void fly(int height, Cool superCool, {String msg}) {
+    // ignore: unused_local_variable, avoid_init_to_null
     var x = null;
+    // ignore: unused_local_variable
     int i, y;
     for (int z = 0; z < 100; z++) {
       print('hi');
@@ -372,6 +372,7 @@ class ClassWithUnusualProperties extends ImplicitProperties {
 ///
 /// The rest of this is not in the first paragraph.
 @Annotation('value')
+// ignore: deprecated_member_use
 class LongFirstLine extends SuperAwesomeClass
     with MixMeIn
     implements Interface, AnotherInterface {
@@ -621,14 +622,18 @@ class HasGenericWithExtends<T extends Foo2> {}
 
 /// Extends [ListBase]
 class SpecialList<E> extends ListBase<E> {
+  // ignore: annotate_overrides
   E operator [](int index) {
     return null;
   }
 
+  // ignore: annotate_overrides
   int get length => 0;
 
+  // ignore: annotate_overrides
   void set length(int length) {}
 
+  // ignore: annotate_overrides
   void operator []=(int index, E value) {}
 }
 
@@ -648,6 +653,7 @@ class BaseForDocComments {
   ///
   /// Reference to another method in this class [anotherMethod] xx
   ///
+  // ignore: deprecated_member_use
   /// Reference to a top-level function in this library [topLevelFunction] xx
   ///
   /// Reference to a top-level function in another library that is imported into this library (example lib) [function1] xx
@@ -743,6 +749,7 @@ class ReferringClass {
 abstract class MIEEMixinWithOverride<K, V> = MIEEBase<K, V> with _MIEEPrivateOverride<K, V>;
 
 abstract class _MIEEPrivateOverride<K, V> implements MIEEThing<K, V> {
+  // ignore: annotate_overrides
   void operator[]=(K key, V value) {
     throw new UnsupportedError("Never use this");
   }
@@ -751,6 +758,7 @@ abstract class _MIEEPrivateOverride<K, V> implements MIEEThing<K, V> {
 abstract class MIEEBase<K, V> extends MIEEMixin<K, V> {}
 
 abstract class MIEEMixin<K, V> implements MIEEThing<K, V> {
+  // ignore: annotate_overrides
   operator []=(K key, V value);
 }
 

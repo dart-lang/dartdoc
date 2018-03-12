@@ -144,7 +144,7 @@ main(List<String> arguments) async {
         output['message'] = record.message;
       }
 
-      print(JSON.encode(output));
+      print(json.encode(output));
     });
   } else {
     final stopwatch = new Stopwatch()..start();
@@ -311,29 +311,24 @@ ArgParser _createArgsParser() {
       help: 'Path to source directory.', defaultsTo: Directory.current.path);
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
-  parser.addOption('header',
-      allowMultiple: true,
+  parser.addMultiOption('header',
       splitCommas: true,
       help: 'paths to header files containing HTML text.');
-  parser.addOption('footer',
-      allowMultiple: true,
+  parser.addMultiOption('footer',
       splitCommas: true,
       help: 'paths to footer files containing HTML text.');
-  parser.addOption('footer-text',
-      allowMultiple: true,
+  parser.addMultiOption('footer-text',
       splitCommas: true,
       help: 'paths to footer-text files '
           '(optional text next to the package name and version).');
-  parser.addOption('exclude',
-      allowMultiple: true, splitCommas: true, help: 'Library names to ignore.');
-  parser.addOption('exclude-packages',
-      allowMultiple: true, splitCommas: true, help: 'Package names to ignore.');
-  parser.addOption('include',
-      allowMultiple: true,
+  parser.addMultiOption('exclude',
+      splitCommas: true, help: 'Library names to ignore.');
+  parser.addMultiOption('exclude-packages',
+      splitCommas: true, help: 'Package names to ignore.');
+  parser.addMultiOption('include',
       splitCommas: true,
       help: 'Library names to generate docs for.');
-  parser.addOption('include-external',
-      allowMultiple: true,
+  parser.addMultiOption('include-external',
       help: 'Additional (external) dart files to include; use "dir/fileName", '
           'as in lib/material.dart.');
   parser.addOption('hosted-url',
@@ -353,10 +348,9 @@ ArgParser _createArgsParser() {
       help: 'Group libraries from the same package into categories.',
       negatable: false,
       defaultsTo: false);
-  parser.addOption('category-order',
+  parser.addMultiOption('category-order',
       help: 'A list of category names to place first when --use-categories is '
           'set.  Unmentioned categories are sorted after these.',
-      allowMultiple: true,
       splitCommas: true);
   parser.addFlag('auto-include-dependencies',
       help:

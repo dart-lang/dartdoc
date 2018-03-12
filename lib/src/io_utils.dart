@@ -77,7 +77,7 @@ class SubprocessLauncher {
     assert(prefix != null);
     if (filter == null) filter = (line) => [line];
     stream
-        .transform(UTF8.decoder)
+        .transform(utf8.decoder)
         .transform(const LineSplitter())
         .expand(filter)
         .listen((String line) {
