@@ -227,6 +227,12 @@ class Cool {
   Cool returnCool() {}
 }
 
+/// A map initialization making use of optional const.
+const Map<int, String> myMap = { 1: "hello" };
+
+/// A variable initalization making use of optional new.
+Cool aCoolVariable = Cool();
+
 /// Perfect for mix-ins.
 abstract class MixMeIn {}
 
