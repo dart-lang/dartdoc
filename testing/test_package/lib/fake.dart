@@ -270,7 +270,35 @@ class SuperAwesomeClass {
   }
 }
 
+class TypedefUsingClass {
+  ParameterizedTypedef<double> x;
+  TypedefUsingClass(this.x);
+}
+
 typedef void myCoolTypedef(Cool x, bool y);
+
+/// This function returns Future<void>
+Future<void> returningFutureVoid() async {}
+
+/// This function requires a Future<void> as a parameter
+void aVoidParameter(Future<void> p1) {}
+
+/// This class extends Future<void>
+abstract class ExtendsFutureVoid extends Future<void> {
+  factory ExtendsFutureVoid(FutureOr<void> computation()) {}
+}
+
+/// This class implements Future<void>
+abstract class ImplementsFutureVoid implements Future<void> {}
+
+/// This class takes a type, and it might be void.
+class ATypeTakingClass<T> {
+  T aMethodMaybeReturningVoid() {}
+}
+
+class ABaseClass {}
+
+class ATypeTakingClassMixedIn extends ABaseClass with ATypeTakingClass<void> {}
 
 /// Names are actually wrong in this class, but when we extend it,
 /// they are correct.
