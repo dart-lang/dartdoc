@@ -7,7 +7,6 @@ library dartdoc.element_type;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:meta/meta.dart';
 
 import 'model.dart';
 
@@ -181,7 +180,6 @@ class TypeParameterElementType extends DefinedElementType {
 
 /// An [ElementType] associated with an [Element].
 abstract class DefinedElementType extends ElementType {
-  @visibleForTesting
   final ModelElement _element;
 
   DefinedElementType(DartType type, PackageGraph packageGraph, this._element,
