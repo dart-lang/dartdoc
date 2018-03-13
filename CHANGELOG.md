@@ -1,3 +1,8 @@
+## 0.17.1
+* Fix rendering of bold markdown (#1618)
+* Internal cleanups and refactors (#1626, #1624, #1622)
+* Support void as a type parameter (#1625)
+
 ## 0.17.0
 * More correctly deal with indentation inside documentation comments,
   fixing a set of minor markdown problems relating to indentation (like list
