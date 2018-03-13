@@ -1,3 +1,6 @@
+## 0.17.1+1
+* Fix pub warning regarding unnecessary meta import.
+
 ## 0.17.1
 * Fix rendering of bold markdown (#1618)
 * Internal cleanups and refactors (#1626, #1624, #1622)
