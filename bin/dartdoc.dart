@@ -190,7 +190,9 @@ main(List<String> arguments) async {
 
   PackageMeta packageMeta = sdkDocs
       ? new PackageMeta.fromSdk(sdkDir,
-          sdkReadmePath: readme, displayAsPackages: args['use-categories'] || args['display-as-packages'])
+          sdkReadmePath: readme,
+          displayAsPackages:
+              args['use-categories'] || args['display-as-packages'])
       : new PackageMeta.fromDir(inputDir);
 
   if (!packageMeta.isValid) {
@@ -257,7 +259,9 @@ main(List<String> arguments) async {
       inputDir: inputDir,
       sdkVersion: sdk.sdkVersion,
       autoIncludeDependencies: args['auto-include-dependencies'],
-      packageOrder: args['package-order'].isEmpty ? args['category-order'] : args['package-order'],
+      packageOrder: args['package-order'].isEmpty
+          ? args['category-order']
+          : args['package-order'],
       reexportMinConfidence:
           double.parse(args['ambiguous-reexport-scorer-min-confidence']),
       verboseWarnings: args['verbose-warnings'],
@@ -342,7 +346,8 @@ ArgParser _createArgsParser() {
   parser.addOption('favicon',
       help: 'A path to a favicon for the generated docs.');
   parser.addFlag('use-categories',
-      help: 'Group libraries from the same package in the libraries sidebar. (deprecated, replaced by display-as-packages)',
+      help:
+          'Group libraries from the same package in the libraries sidebar. (deprecated, replaced by display-as-packages)',
       negatable: false,
       defaultsTo: false);
   parser.addFlag('display-as-packages',
@@ -350,11 +355,13 @@ ArgParser _createArgsParser() {
       negatable: false,
       defaultsTo: false);
   parser.addMultiOption('category-order',
-      help: 'A list of category names to place first when --display-as-packages is '
+      help:
+          'A list of category names to place first when --display-as-packages is '
           'set.  Unmentioned categories are sorted after these. (deprecated, replaced by package-order)',
       splitCommas: true);
   parser.addMultiOption('package-order',
-      help: 'A list of category names to place first when --display-as-packages is '
+      help:
+          'A list of category names to place first when --display-as-packages is '
           'set.  Unmentioned categories are sorted after these.',
       splitCommas: true);
   parser.addFlag('auto-include-dependencies',
