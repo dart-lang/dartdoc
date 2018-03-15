@@ -163,7 +163,7 @@ void main() {
         expect(hashCode.canonicalEnclosingElement, equals(objectModelElement));
         expect(
             EventTarget.publicSuperChainReversed
-                .any((et) => et.element.name == 'Interceptor'),
+                .any((et) => et.name == 'Interceptor'),
             isFalse);
       });
     });
@@ -1176,6 +1176,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       // void addCallback(VoidCallback callback) { }
       ModelFunction function =
           fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback');
+      ElementType t = function.parameters.first.modelType;
       String params = function.linkedParams();
       expect(
           params,
@@ -1215,6 +1216,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((f) => f.name == 'explicitSetter');
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
+      ElementType t = explicitSetter.modelType;
       expect(explicitSetter.linkedReturnType,
           '<span class="parameter" id="explicitSetter=-param-f"><span class="type-annotation">dynamic</span> <span class="parameter-name">Function</span>(<span class="parameter" id="f-param-bar"><span class="type-annotation">int</span>, </span> <span class="parameter" id="f-param-baz"><span class="type-annotation"><a href="fake/Cool-class.html">Cool</a></span>, </span> <span class="parameter" id="f-param-macTruck"><span class="type-annotation">List<span class="signature">&lt;int&gt;</span></span></span>)</span>');
     });
@@ -1291,6 +1293,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       Method aTypedefReturningMethodInterface = TemplatedInterface
           .allInstanceMethods
           .singleWhere((m) => m.name == 'aTypedefReturningMethodInterface');
+      ElementType mt = aTypedefReturningMethodInterface.modelType;
       expect(aTypedefReturningMethodInterface.linkedReturnType,
           '<a href=\"ex/ParameterizedTypedef.html\">ParameterizedTypedef</a><span class="signature">&lt;List<span class="signature">&lt;String&gt;</span>&gt;</span>');
     });
@@ -2135,6 +2138,71 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
   });
 
+  group('void as type', () {
+    ModelFunction returningFutureVoid, aVoidParameter;
+    Class ExtendsFutureVoid, ImplementsFutureVoid, ATypeTakingClassMixedIn;
+
+    setUp(() {
+      returningFutureVoid = fakeLibrary.functions
+          .firstWhere((f) => f.name == 'returningFutureVoid');
+      aVoidParameter =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'aVoidParameter');
+      ExtendsFutureVoid =
+          fakeLibrary.classes.firstWhere((f) => f.name == 'ExtendsFutureVoid');
+      ImplementsFutureVoid = fakeLibrary.classes
+          .firstWhere((f) => f.name == 'ImplementsFutureVoid');
+      ATypeTakingClassMixedIn = fakeLibrary.classes
+          .firstWhere((f) => f.name == 'ATypeTakingClassMixedIn');
+    });
+
+    test('a function returning a Future<void>', () {
+      expect(returningFutureVoid.linkedReturnType,
+          equals('Future<span class="signature">&lt;void&gt;</span>'));
+    });
+
+    test('a function requiring a Future<void> parameter', () {
+      expect(
+          aVoidParameter.linkedParams(showMetadata: true, showNames: true),
+          equals(
+              '<span class="parameter" id="aVoidParameter-param-p1"><span class="type-annotation">Future<span class="signature">&lt;void&gt;</span></span> <span class="parameter-name">p1</span></span>'));
+    });
+
+    test('a class that extends Future<void>', () {
+      expect(
+          ExtendsFutureVoid.linkedName,
+          equals(
+              '<a href="fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a>'));
+      DefinedElementType FutureVoid = ExtendsFutureVoid.publicSuperChain
+          .firstWhere((c) => c.name == 'Future');
+      expect(FutureVoid.linkedName,
+          equals('Future<span class="signature">&lt;void&gt;</span>'));
+    });
+
+    test('a class that implements Future<void>', () {
+      expect(
+          ImplementsFutureVoid.linkedName,
+          equals(
+              '<a href="fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
+      DefinedElementType FutureVoid = ImplementsFutureVoid.publicInterfaces
+          .firstWhere((c) => c.name == 'Future');
+      expect(FutureVoid.linkedName,
+          equals('Future<span class="signature">&lt;void&gt;</span>'));
+    });
+
+    test('Verify that a mixin with a void type parameter works', () {
+      expect(
+          ATypeTakingClassMixedIn.linkedName,
+          equals(
+              '<a href="fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>'));
+      DefinedElementType ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixins
+          .firstWhere((c) => c.name == 'ATypeTakingClass');
+      expect(
+          ATypeTakingClassVoid.linkedName,
+          equals(
+              '<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;void&gt;</span>'));
+    });
+  });
+
   group('ModelType', () {
     Field fList;
 
@@ -2146,7 +2214,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('parameterized type', () {
-      expect(fList.modelType.isParameterizedType, isTrue);
+      expect(fList.modelType is ParameterizedElementType, isTrue);
     });
   });
 
@@ -2154,6 +2222,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Typedef t;
     Typedef generic;
     Typedef aComplexTypedef;
+    Class TypedefUsingClass;
 
     setUp(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
@@ -2161,9 +2230,17 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
       aComplexTypedef =
           exLibrary.typedefs.firstWhere((t) => t.name == 'aComplexTypedef');
+      TypedefUsingClass =
+          fakeLibrary.classes.firstWhere((t) => t.name == 'TypedefUsingClass');
+    });
+
+    test('Typedefs with bound type parameters indirectly referred in parameters are displayed', () {
+      Constructor theConstructor = TypedefUsingClass.constructors.first;
+      expect(theConstructor.linkedParams(), equals('<span class="parameter" id="-param-x"><span class="type-annotation"><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;double&gt;</span></span> <span class="parameter-name">x</span></span>'));
     });
 
     test('anonymous nested functions inside typedefs are handled', () {
+      ElementType t = aComplexTypedef.modelType;
       expect(aComplexTypedef, isNotNull);
       expect(aComplexTypedef.linkedReturnType, startsWith('Function'));
       expect(aComplexTypedef.nameWithGenerics,
@@ -2293,9 +2370,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(param.library.name, equals('ex'));
     });
 
-    test('typdef param is linked', () {
+    test('typedef param is linked and does not include types', () {
+      ElementType t = methodWithTypedefParam.parameters.first.modelType;
       var params = methodWithTypedefParam.linkedParams();
-      expect(params.contains('<a href="ex/processMessage.html">'), isTrue);
+      expect(
+          params,
+          equals(
+              '<span class="parameter" id="methodWithTypedefParam-param-p"><span class="type-annotation"><a href="ex/processMessage.html">processMessage</a></span> <span class="parameter-name">p</span></span>'));
+      //expect(params, contains('<a href="ex/processMessage.html">'));
     });
   });
 
