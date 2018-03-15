@@ -312,11 +312,9 @@ ArgParser _createArgsParser() {
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
   parser.addMultiOption('header',
-      splitCommas: true,
-      help: 'paths to header files containing HTML text.');
+      splitCommas: true, help: 'paths to header files containing HTML text.');
   parser.addMultiOption('footer',
-      splitCommas: true,
-      help: 'paths to footer files containing HTML text.');
+      splitCommas: true, help: 'paths to footer files containing HTML text.');
   parser.addMultiOption('footer-text',
       splitCommas: true,
       help: 'paths to footer-text files '
@@ -326,8 +324,7 @@ ArgParser _createArgsParser() {
   parser.addMultiOption('exclude-packages',
       splitCommas: true, help: 'Package names to ignore.');
   parser.addMultiOption('include',
-      splitCommas: true,
-      help: 'Library names to generate docs for.');
+      splitCommas: true, help: 'Library names to generate docs for.');
   parser.addMultiOption('include-external',
       help: 'Additional (external) dart files to include; use "dir/fileName", '
           'as in lib/material.dart.');
