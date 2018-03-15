@@ -36,6 +36,7 @@ import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:collection/collection.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:front_end/src/byte_store/byte_store.dart';
 import 'package:front_end/src/base/performance_logger.dart';
@@ -1759,6 +1760,7 @@ class Library extends ModelElement {
         .where((c) => !c.isErrorOrException)
         .toList(growable: false);
   }
+
 
   SdkLibrary get sdkLib {
     if (packageGraph.sdkLibrarySources.containsKey(element.librarySource)) {
@@ -4482,16 +4484,87 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   }
 }
 
+class SubCategory implements Comparable<SubCategory> {
+  Package package;
+  final String name;
+  final List<Library> libraries;
+
+  SubCategory(this.name, this.package, this.libraries) {}
+
+  static List<SubCategory> buildSubCategories(Package package) {
+    Map<String, List<Library>> libraryLists;
+    for (Library lib in package.libraries) {
+
+    }
+  }
+
+
+  Iterable<Library> get publicLibraries => filterNonPublic(libraries);
+}
+
 class Package implements Comparable<Package> {
   final String name;
+
+  // Initialized by [PackageGraph.PackageGraph].
   final List<Library> _libraries = [];
   PackageGraph packageGraph;
 
   Package(this.name, this.packageGraph);
 
+
+  DartdocOptions _dartdocOptions;
+  DartdocOptions get dartdocOptions {
+    if (_dartdocOptions == null) {
+      _dartdocOptions = new DartdocOptions.fromDir(new Directory(packagePath));
+    }
+    return _dartdocOptions;
+  }
+
+  bool get isSdk => packageMeta.isSdk;
+
+  String _packagePath;
+  String get packagePath {
+    if (_packagePath == null) {
+      if (isSdk) {
+        _packagePath = packageMeta.resolvedDir;
+      } else {
+        assert(_libraries.isNotEmpty);
+        File file = new File(p.canonicalize(_libraries.first.element.source.fullName));
+        Directory dir = file.parent;
+        while (dir.parent.path != dir.path && dir.existsSync()) {
+          File pubspec = new File(p.join(dir.path, 'pubspec.yaml'));
+          if (pubspec.existsSync()) {
+            _packagePath = dir.absolute.path;
+            break;
+          }
+          dir = dir.parent;
+        }
+      }
+    }
+    return _packagePath;
+  }
+
   List<Library> get libraries => _libraries;
 
   Iterable<Library> get publicLibraries => filterNonPublic(libraries);
+
+  PackageMeta _packageMeta;
+  // TODO(jcollins-g): packageMeta should be passed in with the object rather
+  // than calculated indirectly from libraries.
+  PackageMeta get packageMeta {
+    if (_packageMeta == null) {
+      _packageMeta = _libraries.first.packageMeta;
+    }
+    return _packageMeta;
+  }
+
+  List<SubCategory> _subCategories;
+  List<SubCategory> get subCategories {
+    if (_subCategories == null) {
+
+    }
+    return _subCategories;
+  }
 
   @override
   String toString() => name;
@@ -4905,7 +4978,7 @@ class TypeParameter extends ModelElement {
   String toString() => element.name;
 }
 
-/// Everything you need to instantiate a Package object for documenting.
+/// Everything you need to instantiate a PackageGraph object for documenting.
 class PackageBuilder {
   final bool autoIncludeDependencies;
   final List<String> excludes;
