@@ -7,7 +7,7 @@ homepage: https://github.com/dart-lang/dartdoc
 # For development, recommend 1.25.0-dev.0.0 or higher to allow
 # dartanalyzer to work on dartdoc itself.
 environment:
-  sdk: '>=1.23.0-dev.11.5 <2.0.0'
+  sdk: '>=2.0.0-dev.9.0 <3.0.0'
 dependencies:
   analyzer: '0.31.2-alpha.0'
   args: '>=0.13.0 <2.0.0'
