@@ -13,15 +13,15 @@ import 'logging.dart';
 
 abstract class PackageMeta {
   final Directory dir;
-  final bool useCategories;
+  final bool displayAsPackages;
 
-  PackageMeta(this.dir, {this.useCategories: false});
+  PackageMeta(this.dir, {this.displayAsPackages: false});
 
   factory PackageMeta.fromDir(Directory dir) => new _FilePackageMeta(dir);
   factory PackageMeta.fromSdk(Directory sdkDir,
-          {String sdkReadmePath, bool useCategories}) =>
+          {String sdkReadmePath, bool displayAsPackages}) =>
       new _SdkMeta(sdkDir,
-          sdkReadmePath: sdkReadmePath, useCategories: useCategories);
+          sdkReadmePath: sdkReadmePath, displayAsPackages: displayAsPackages);
 
   bool get isSdk;
   bool get needsPubGet => false;
@@ -186,8 +186,8 @@ File _locate(Directory dir, List<String> fileNames) {
 class _SdkMeta extends PackageMeta {
   final String sdkReadmePath;
 
-  _SdkMeta(Directory dir, {this.sdkReadmePath, bool useCategories})
-      : super(dir, useCategories: useCategories);
+  _SdkMeta(Directory dir, {this.sdkReadmePath, bool displayAsPackages})
+      : super(dir, displayAsPackages: displayAsPackages);
 
   @override
   bool get isSdk => true;
