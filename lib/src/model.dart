@@ -3991,9 +3991,9 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
         warningMessage =
             "library says it is {@canonicalFor ${message}} but ${message} can't be canonical there";
         break;
-      case PackageWarning.categoryOrderGivesMissingPackageName:
+      case PackageWarning.packageOrderGivesMissingPackageName:
         warningMessage =
-            "--category-order gives invalid package name: '${message}'";
+            "--package-order gives invalid package name: '${message}'";
         break;
       case PackageWarning.unresolvedDocReference:
         warningMessage = "unresolved doc reference [${message}]";
@@ -4063,17 +4063,20 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     return locatable.fullyQualifiedName.replaceFirst(':', '-');
   }
 
-  List<Package> get categories {
-    // Help the user if they pass us a category that doesn't exist.
-    for (String categoryName in config.categoryOrder) {
-      if (!packages.containsKey(categoryName))
-        warnOnElement(null, PackageWarning.categoryOrderGivesMissingPackageName,
-            message: "${categoryName}, categories: ${packages.keys.join(',')}");
+  List<Package> _publicPackages;
+  List<Package> get publicPackages {
+    if (_publicPackages == null) {
+      // Help the user if they pass us a package that doesn't exist.
+      for (String packageName in config.packageOrder) {
+        if (!packages.containsKey(packageName))
+          warnOnElement(null, PackageWarning.packageOrderGivesMissingPackageName,
+              message: "${packageName}, packages: ${packages.keys.join(',')}");
+      }
+      _publicPackages = packages.values
+          .where((p) => p.libraries.any((l) => l.isPublic))
+          .toList()..sort();
     }
-    List<Package> publicPackages = packages.values
-        .where((p) => p.libraries.any((l) => l.isPublic))
-        .toList();
-    return publicPackages..sort();
+    return _publicPackages;
   }
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
@@ -4200,7 +4203,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   String get name => packageMeta.name;
 
   String get kind =>
-      (packageMeta.useCategories || packageGraph.isSdk) ? '' : 'package';
+      (packageMeta.displayAsPackages || packageGraph.isSdk) ? '' : 'package';
 
   @override
   String get oneLineDoc => '';
@@ -4492,14 +4495,14 @@ class Package implements Comparable<Package> {
   String toString() => name;
 
   /// Returns:
-  /// -1 if this category is listed in --category-order.
-  /// 0 if this category is the original package we are documenting.
+  /// -1 if this package is listed in --package-order.
+  /// 0 if this package is the original package we are documenting.
   /// 1 if this group represents the Dart SDK.
   /// 2 if this group has a name that contains the name of the original
   ///   package we are documenting.
   /// 3 otherwise.
   int get _group {
-    if (config.categoryOrder.contains(name)) return -1;
+    if (config.packageOrder.contains(name)) return -1;
     if (name.toLowerCase() == packageGraph.name.toLowerCase()) return 0;
     if (name == "Dart Core") return 1;
     if (name.toLowerCase().contains(packageGraph.name.toLowerCase())) return 2;
@@ -4510,8 +4513,8 @@ class Package implements Comparable<Package> {
   int compareTo(Package other) {
     if (_group == other._group) {
       if (_group == -1) {
-        return Comparable.compare(config.categoryOrder.indexOf(name),
-            config.categoryOrder.indexOf(other.name));
+        return Comparable.compare(config.packageOrder.indexOf(name),
+            config.packageOrder.indexOf(other.name));
       } else {
         return name.toLowerCase().compareTo(other.name.toLowerCase());
       }
