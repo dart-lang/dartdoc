@@ -25,11 +25,8 @@ abstract class DartdocOptions {
   /// default setting. Intended for printing only.
   String get _path;
 
-  /// A map of library name to subcategory name.
-  Map<String, String> get subCategoryMap;
-
   /// A list indicating the preferred subcategory sorting order.
-  List<String> get subCategoryOrder;
+  List<String> get categoryOrder;
 
   factory DartdocOptions.fromDir(Directory dir) {
     if (!_dartdocOptionsCache.containsKey(dir.absolute.path)) {
@@ -74,10 +71,7 @@ class _DefaultDartdocOptions extends DartdocOptions {
   String get _path => '<default>';
 
   @override
-  Map<String, String> get subCategoryMap => new Map.unmodifiable({});
-
-  @override
-  List<String> get subCategoryOrder => new List.unmodifiable([]);
+  List<String> get categoryOrder => new List.unmodifiable([]);
 }
 
 class _FileDartdocOptions extends DartdocOptions {
@@ -96,53 +90,24 @@ class _FileDartdocOptions extends DartdocOptions {
   @override
   String get _path => dartdocOptionsFile.path;
 
-  List<String> _subCategoryOrder;
+  List<String> _categoryOrder;
   @override
-  /// subCategoryOrder overrides parents.
-  List<String> get subCategoryOrder {
-    if (_subCategoryOrder == null) {
-      _subCategoryOrder = [];
-      if (_dartdocOptions.containsKey('subCategoryOrder')) {
-        if (_dartdocOptions['subCategoryOrder'] is YamlList) {
-          if (parent.subCategoryOrder.isNotEmpty) {
-            logWarning('${dartdocOptionsFile.path}: subCategoryOrder can not override from ${parent._path}');
-          } else {
-            _subCategoryOrder.addAll(_dartdocOptions['subCategoryOrder']);
-          }
+  /// categoryOrder overrides parents.
+  List<String> get categoryOrder {
+    if (_categoryOrder == null) {
+      _categoryOrder = [];
+      if (_dartdocOptions.containsKey('categoryOrder')) {
+        if (_dartdocOptions['categoryOrder'] is YamlList) {
+          _categoryOrder.addAll(_dartdocOptions['categoryOrder']);
         } else {
-          logWarning("${dartdocOptionsFile.path}: subCategoryOrder must be a list (ignoring)");
-          _subCategoryOrder = parent.subCategoryOrder;
+          logWarning("${dartdocOptionsFile.path}: categoryOrder must be a list (ignoring)");
+          _categoryOrder = parent.categoryOrder;
         }
       } else {
-        _subCategoryOrder = parent.subCategoryOrder;
+        _categoryOrder = parent.categoryOrder;
       }
-      _subCategoryOrder = new List.unmodifiable(_subCategoryOrder);
+      _categoryOrder = new List.unmodifiable(_categoryOrder);
     }
-    return _subCategoryOrder;
-  }
-
-  List<String> _allSubCategories;
-  List<String> allSubCategories;
-  Map<String, String> _subCategoryMap;
-  @override
-  /// subCategoryMap adds to parents.
-  Map<String, String> get subCategoryMap {
-    if (_subCategoryMap == null) {
-      _subCategoryMap = new Map();
-      if (parent != null) _subCategoryMap.addAll(parent.subCategoryMap);
-      if (_dartdocOptions.containsKey('subcategories')) {
-        for (String key in _dartdocOptions['subcategories'].keys()) {
-          if (_dartdocOptions['subcategories'][key] is YamlList) {
-            for (var value in _dartdocOptions['subcategories'][key]) {
-              _subCategoryMap[value] = key;
-            }
-          } else {
-            logWarning('${dartdocOptionsFile.path}: subcategory "$key" must be a list (ignoring)');
-          }
-        }
-      }
-      _subCategoryMap = new Map.unmodifiable(_subCategoryMap);
-    }
-    return _subCategoryMap;
+    return _categoryOrder;
   }
 }
