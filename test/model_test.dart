@@ -66,23 +66,23 @@ void main() {
       });
 
       test('categories', () {
-        expect(packageGraph.categories, hasLength(1));
+        expect(packageGraph.publicPackages, hasLength(1));
 
-        Package category = packageGraph.categories.first;
+        Package category = packageGraph.publicPackages.first;
         expect(category.name, 'test_package');
         expect(category.libraries, hasLength(8));
       });
 
       test('multiple categories, sorted default', () {
-        expect(ginormousPackageGraph.categories, hasLength(3));
-        expect(ginormousPackageGraph.categories.first.name,
+        expect(ginormousPackageGraph.publicPackages, hasLength(3));
+        expect(ginormousPackageGraph.publicPackages.first.name,
             equals('test_package'));
       });
 
       test('multiple categories, specified sort order', () {
-        setConfig(categoryOrder: ['meta', 'test_package']);
-        expect(ginormousPackageGraph.categories, hasLength(3));
-        expect(ginormousPackageGraph.categories.first.name, equals('meta'));
+        setConfig(packageOrder: ['meta', 'test_package']);
+        expect(ginormousPackageGraph.publicPackages, hasLength(3));
+        expect(ginormousPackageGraph.publicPackages.first.name, equals('meta'));
       });
 
       test('is documented in library', () {

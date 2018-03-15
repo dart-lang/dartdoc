@@ -52,8 +52,8 @@ final Map<PackageWarning, PackageWarningHelpText> packageWarningText = const {
       PackageWarning.noLibraryLevelDocs,
       "no-library-level-docs",
       "There are no library level docs for this library"),
-  PackageWarning.categoryOrderGivesMissingPackageName: const PackageWarningHelpText(
-      PackageWarning.categoryOrderGivesMissingPackageName,
+  PackageWarning.packageOrderGivesMissingPackageName: const PackageWarningHelpText(
+      PackageWarning.packageOrderGivesMissingPackageName,
       "category-order-gives-missing-package-name",
       "The category-order flag on the command line was given the name of a nonexistent package"),
   PackageWarning.unresolvedDocReference: const PackageWarningHelpText(
@@ -117,7 +117,7 @@ enum PackageWarning {
   ignoredCanonicalFor,
   noCanonicalFound,
   noLibraryLevelDocs,
-  categoryOrderGivesMissingPackageName,
+  packageOrderGivesMissingPackageName,
   unresolvedDocReference,
   unknownMacro,
   brokenLink,
