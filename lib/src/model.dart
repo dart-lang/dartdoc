@@ -4069,12 +4069,14 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
       // Help the user if they pass us a package that doesn't exist.
       for (String packageName in config.packageOrder) {
         if (!packages.containsKey(packageName))
-          warnOnElement(null, PackageWarning.packageOrderGivesMissingPackageName,
+          warnOnElement(
+              null, PackageWarning.packageOrderGivesMissingPackageName,
               message: "${packageName}, packages: ${packages.keys.join(',')}");
       }
       _publicPackages = packages.values
           .where((p) => p.libraries.any((l) => l.isPublic))
-          .toList()..sort();
+          .toList()
+            ..sort();
     }
     return _publicPackages;
   }
