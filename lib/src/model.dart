@@ -4066,22 +4066,19 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     return locatable.fullyQualifiedName.replaceFirst(':', '-');
   }
 
-  List<Package> _publicPackages;
   List<Package> get publicPackages {
-    if (_publicPackages == null) {
-      // Help the user if they pass us a package that doesn't exist.
-      for (String packageName in config.packageOrder) {
-        if (!packages.containsKey(packageName))
-          warnOnElement(
-              null, PackageWarning.packageOrderGivesMissingPackageName,
-              message: "${packageName}, packages: ${packages.keys.join(',')}");
-      }
-      _publicPackages = packages.values
-          .where((p) => p.libraries.any((l) => l.isPublic))
-          .toList()
-            ..sort();
+    List<Package> _publicPackages;
+    // Help the user if they pass us a package that doesn't exist.
+    for (String packageName in config.packageOrder) {
+      if (!packages.containsKey(packageName))
+        warnOnElement(
+            null, PackageWarning.packageOrderGivesMissingPackageName,
+            message: "${packageName}, packages: ${packages.keys.join(',')}");
     }
-    return _publicPackages;
+    _publicPackages = packages.values
+        .where((p) => p.libraries.any((l) => l.isPublic))
+        .toList();
+    return _publicPackages..sort();
   }
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
