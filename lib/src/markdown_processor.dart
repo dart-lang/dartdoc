@@ -140,15 +140,15 @@ final RegExp notARealDocReference = new RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
 
 final RegExp operatorPrefix = new RegExp(r'^operator[ ]*');
 
-final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.ELEMENT);
+final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.element);
 
 final List<md.InlineSyntax> _markdown_syntaxes = [
   new _InlineCodeSyntax(),
   new _AutolinkWithoutScheme()
-]..addAll(md.ExtensionSet.gitHub.inlineSyntaxes);
+]..addAll(md.ExtensionSet.gitHubFlavored.inlineSyntaxes);
 
 final List<md.BlockSyntax> _markdown_block_syntaxes = []
-  ..addAll(md.ExtensionSet.gitHub.blockSyntaxes);
+  ..addAll(md.ExtensionSet.gitHubFlavored.blockSyntaxes);
 
 // Remove these schemas from the display text for hyperlinks.
 final RegExp _hide_schemes = new RegExp('^(http|https)://');
@@ -735,7 +735,7 @@ String _linkDocReference(
     // This would be linkedElement.linkedName, but link bodies are slightly
     // different for doc references.
     if (linkedElement.href == null) {
-      return '<code>${HTML_ESCAPE.convert(label)}</code>';
+      return '<code>${htmlEscape.convert(label)}</code>';
     } else {
       return '<a ${classContent}href="${linkedElement.href}">$label</a>';
     }
@@ -744,7 +744,7 @@ String _linkDocReference(
       warnable.warn(PackageWarning.unresolvedDocReference,
           message: codeRef, referredFrom: warnable.documentationFrom);
     }
-    return '<code>${HTML_ESCAPE.convert(label)}</code>';
+    return '<code>${htmlEscape.convert(label)}</code>';
   }
 }
 
@@ -992,7 +992,7 @@ class _InlineCodeSyntax extends md.InlineSyntax {
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
-    var element = new md.Element.text('code', HTML_ESCAPE.convert(match[1]));
+    var element = new md.Element.text('code', htmlEscape.convert(match[1]));
     parser.addNode(element);
     return true;
   }

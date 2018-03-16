@@ -174,7 +174,7 @@ void main() {
 
       var jsonValues = LineSplitter
           .split(result.stdout)
-          .map((j) => JSON.decode(j) as Map<String, dynamic>)
+          .map((j) => json.decode(j) as Map<String, dynamic>)
           .toList();
 
       expect(jsonValues, isNotEmpty,

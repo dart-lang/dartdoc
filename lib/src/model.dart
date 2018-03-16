@@ -61,7 +61,7 @@ Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
       var crossdartFile =
           new File(p.join(config.inputDir.path, "crossdart.json"));
       if (crossdartFile.existsSync()) {
-        __crossdartJson = JSON.decode(crossdartFile.readAsStringSync())
+        __crossdartJson = json.decode(crossdartFile.readAsStringSync())
             as Map<String, Map<String, List<Map<String, dynamic>>>>;
       } else {
         __crossdartJson = {};
@@ -1543,7 +1543,7 @@ abstract class GetterSetterCombo implements ModelElement {
 
   String _buildConstantValueBase() {
     String result = constantInitializer?.toString() ?? '';
-    return const HtmlEscape(HtmlEscapeMode.UNKNOWN).convert(result);
+    return const HtmlEscape(HtmlEscapeMode.unknown).convert(result);
   }
 
   String get constantValue => linkifyConstantValue(constantValueBase);
@@ -3413,7 +3413,7 @@ abstract class ModelElement extends Canonicalization
       if (isPublicAndPackageDocumented) {
         warn(PackageWarning.noCanonicalFound);
       }
-      return HTML_ESCAPE.convert(name);
+      return htmlEscape.convert(name);
     }
 
     var classContent = isDeprecated ? ' class="deprecated"' : '';
