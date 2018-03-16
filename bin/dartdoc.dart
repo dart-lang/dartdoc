@@ -356,12 +356,12 @@ ArgParser _createArgsParser() {
       defaultsTo: false);
   parser.addMultiOption('category-order',
       help:
-          'A list of category names to place first when --display-as-packages is '
+          'A list of package names to place first when --display-as-packages is '
           'set.  Unmentioned categories are sorted after these. (deprecated, replaced by package-order)',
       splitCommas: true);
   parser.addMultiOption('package-order',
       help:
-          'A list of category names to place first when --display-as-packages is '
+          'A list of package names to place first when --display-as-packages is '
           'set.  Unmentioned categories are sorted after these.',
       splitCommas: true);
   parser.addFlag('auto-include-dependencies',
