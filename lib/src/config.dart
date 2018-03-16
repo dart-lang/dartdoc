@@ -14,7 +14,7 @@ class Config {
   final bool includeSource;
   final String sdkVersion;
   final bool autoIncludeDependencies;
-  final List<String> categoryOrder;
+  final List<String> packageOrder;
   final double reexportMinConfidence;
   final bool verboseWarnings;
   final List<String> dropTextFrom;
@@ -28,7 +28,7 @@ class Config {
       this.includeSource,
       this.sdkVersion,
       this.autoIncludeDependencies,
-      this.categoryOrder,
+      this.packageOrder,
       this.reexportMinConfidence,
       this.verboseWarnings,
       this.dropTextFrom,
@@ -47,7 +47,7 @@ void setConfig(
     bool includeSource: true,
     String sdkVersion,
     bool autoIncludeDependencies: false,
-    List<String> categoryOrder,
+    List<String> packageOrder,
     double reexportMinConfidence: 0.1,
     bool verboseWarnings: true,
     List<String> dropTextFrom,
@@ -61,7 +61,7 @@ void setConfig(
       includeSource,
       sdkVersion,
       autoIncludeDependencies,
-      categoryOrder ?? const <String>[],
+      packageOrder ?? const <String>[],
       reexportMinConfidence,
       verboseWarnings,
       dropTextFrom ?? const <String>[],
