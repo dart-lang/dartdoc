@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
 ///
 /// dartdoc's dartdoc_options.yaml configuration file follows similar loading
 /// semantics to that of analysis_options.yaml,
@@ -19,7 +18,6 @@ import 'package:yaml/yaml.dart';
 
 import 'logging.dart';
 
-
 Map<String, DartdocOptions> _dartdocOptionsCache = {};
 
 abstract class DartdocOptions {
@@ -34,7 +32,8 @@ abstract class DartdocOptions {
 
   factory DartdocOptions.fromDir(Directory dir) {
     if (!_dartdocOptionsCache.containsKey(dir.absolute.path)) {
-      _dartdocOptionsCache[dir.absolute.path] = new DartdocOptions._fromDir(dir);
+      _dartdocOptionsCache[dir.absolute.path] =
+          new DartdocOptions._fromDir(dir);
     }
     return _dartdocOptionsCache[dir.absolute.path];
   }
@@ -46,10 +45,9 @@ abstract class DartdocOptions {
     File f;
     dir = dir.absolute;
 
-    while(true) {
+    while (true) {
       f = new File(p.join(dir.path, 'dartdoc_options.yaml'));
-      if (f.existsSync() || dir.parent.path == dir.path)
-        break;
+      if (f.existsSync() || dir.parent.path == dir.path) break;
       dir = dir.parent.absolute;
     }
 

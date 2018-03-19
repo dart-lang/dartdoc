@@ -36,7 +36,6 @@ class LocalConfig {
     }
     return null;
   }
-
 }
 
 class Config {

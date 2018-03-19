@@ -1762,7 +1762,6 @@ class Library extends ModelElement {
         .toList(growable: false);
   }
 
-
   SdkLibrary get sdkLib {
     if (packageGraph.sdkLibrarySources.containsKey(element.librarySource)) {
       return packageGraph.sdkLibrarySources[element.librarySource];
@@ -4507,7 +4506,8 @@ class Package implements Comparable<Package> {
         _packagePath = getSdkDir().path;
       } else {
         assert(_libraries.isNotEmpty);
-        File file = new File(p.canonicalize(_libraries.first.element.source.fullName));
+        File file =
+            new File(p.canonicalize(_libraries.first.element.source.fullName));
         Directory dir = file.parent;
         while (dir.parent.path != dir.path && dir.existsSync()) {
           File pubspec = new File(p.join(dir.path, 'pubspec.yaml'));
