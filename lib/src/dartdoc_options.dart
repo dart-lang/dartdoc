@@ -2,6 +2,14 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+
+///
+/// dartdoc's dartdoc_options.yaml configuration file follows similar loading
+/// semantics to that of analysis_options.yaml,
+/// [documented here](https://www.dartlang.org/guides/language/analysis-options).
+/// It searches parent directories until it finds an analysis_options.yaml file,
+/// and uses built-in defaults if one is not found.
+///
 library dartdoc.dartdoc_options;
 
 import 'dart:io';
@@ -14,12 +22,8 @@ import 'logging.dart';
 
 Map<String, DartdocOptions> _dartdocOptionsCache = {};
 
-/// dartdoc_options.yaml handling.
 abstract class DartdocOptions {
-  /// The parent of this DartdocOptions object, or null if there is none.
-  final DartdocOptions parent;
-
-  DartdocOptions(this.parent);
+  DartdocOptions();
 
   /// Path to the dartdoc options file, or '<default>' if this object is the
   /// default setting. Intended for printing only.
@@ -36,36 +40,34 @@ abstract class DartdocOptions {
   }
 
   /// Search for a dartdoc_options file in this and parent directories.
-  /// Refuses to cross a package boundary (demarcated by pubspec.yaml).
   factory DartdocOptions._fromDir(Directory dir) {
     if (!dir.existsSync()) return new _DefaultDartdocOptions();
 
-    File f, pb;
+    File f;
     dir = dir.absolute;
 
     while(true) {
       f = new File(p.join(dir.path, 'dartdoc_options.yaml'));
-      pb = new File(p.join(dir.path, 'pubspec.yaml'));
-      if (f.existsSync() || pb.existsSync() || dir.parent.path == dir.path)
+      if (f.existsSync() || dir.parent.path == dir.path)
         break;
       dir = dir.parent.absolute;
     }
 
     DartdocOptions parent;
-    if (dir.parent.path != dir.path && !pb.existsSync()) {
+    if (dir.parent.path != dir.path) {
       parent = new DartdocOptions.fromDir(dir.parent);
     } else {
       parent = new _DefaultDartdocOptions();
     }
     if (f.existsSync()) {
-      return new _FileDartdocOptions(parent, f);
+      return new _FileDartdocOptions(f);
     }
     return parent;
   }
 }
 
 class _DefaultDartdocOptions extends DartdocOptions {
-  _DefaultDartdocOptions() : super(null);
+  _DefaultDartdocOptions() : super();
 
   @override
   String get _path => '<default>';
@@ -77,13 +79,13 @@ class _DefaultDartdocOptions extends DartdocOptions {
 class _FileDartdocOptions extends DartdocOptions {
   File dartdocOptionsFile;
   Map _dartdocOptions;
-  _FileDartdocOptions(DartdocOptions parent, this.dartdocOptionsFile) : super(parent) {
+  _FileDartdocOptions(this.dartdocOptionsFile) : super() {
     Map allDartdocOptions = loadYaml(dartdocOptionsFile.readAsStringSync());
     if (allDartdocOptions.containsKey('dartdoc')) {
       _dartdocOptions = allDartdocOptions['dartdoc'];
     } else {
       _dartdocOptions = {};
-      logWarning("${dartdocOptionsFile.path}: must contain 'dartdoc' section");
+      logWarning("${_path}: must contain 'dartdoc' section");
     }
   }
 
@@ -92,7 +94,6 @@ class _FileDartdocOptions extends DartdocOptions {
 
   List<String> _categoryOrder;
   @override
-  /// categoryOrder overrides parents.
   List<String> get categoryOrder {
     if (_categoryOrder == null) {
       _categoryOrder = [];
@@ -100,11 +101,8 @@ class _FileDartdocOptions extends DartdocOptions {
         if (_dartdocOptions['categoryOrder'] is YamlList) {
           _categoryOrder.addAll(_dartdocOptions['categoryOrder']);
         } else {
-          logWarning("${dartdocOptionsFile.path}: categoryOrder must be a list (ignoring)");
-          _categoryOrder = parent.categoryOrder;
+          logWarning("${_path}: categoryOrder must be a list (ignoring)");
         }
-      } else {
-        _categoryOrder = parent.categoryOrder;
       }
       _categoryOrder = new List.unmodifiable(_categoryOrder);
     }
