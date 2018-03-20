@@ -11,17 +11,26 @@ import 'package:yaml/yaml.dart';
 
 import 'logging.dart';
 
+
+Map<String, PackageMeta> _packageMetaCache = {};
+
 abstract class PackageMeta {
   final Directory dir;
-  final bool displayAsPackages;
 
-  PackageMeta(this.dir, {this.displayAsPackages: false});
+  PackageMeta(this.dir);
 
-  factory PackageMeta.fromDir(Directory dir) => new _FilePackageMeta(dir);
-  factory PackageMeta.fromSdk(Directory sdkDir,
-          {String sdkReadmePath, bool displayAsPackages}) =>
-      new _SdkMeta(sdkDir,
-          sdkReadmePath: sdkReadmePath, displayAsPackages: displayAsPackages);
+  factory PackageMeta.fromDir(Directory dir) {
+    if (!_packageMetaCache.containsKey(dir.absolute.path)) {
+      PackageMeta packageMeta;
+      if (path.join(dir.absolute.path, 'bin', path.split(Platform.resolvedExecutable).last) == Platform.resolvedExecutable) {
+        packageMeta = new _SdkMeta(dir);
+      } else {
+        packageMeta = new _FilePackageMeta(dir);
+      }
+      _packageMetaCache[dir.absolute.path] = packageMeta;
+    }
+    return _packageMetaCache[dir.absolute.path];
+  }
 
   bool get isSdk;
   bool get needsPubGet => false;
@@ -46,7 +55,7 @@ abstract class PackageMeta {
   FileContents getChangelogContents();
 
   /// Returns true if we are a valid package, valid enough to generate docs.
-  bool get isValid;
+  bool get isValid => getInvalidReasons().isEmpty;
 
   /// Returns a list of reasons this package is invalid, or an
   /// empty list if no reasons found.
@@ -151,8 +160,6 @@ class _FilePackageMeta extends PackageMeta {
     return _changelog;
   }
 
-  @override
-  bool get isValid => getInvalidReasons().isEmpty;
 
   /// Returns a list of reasons this package is invalid, or an
   /// empty list if no reasons found.
@@ -184,10 +191,12 @@ File _locate(Directory dir, List<String> fileNames) {
 }
 
 class _SdkMeta extends PackageMeta {
-  final String sdkReadmePath;
+  String sdkReadmePath;
 
-  _SdkMeta(Directory dir, {this.sdkReadmePath, bool displayAsPackages})
-      : super(dir, displayAsPackages: displayAsPackages);
+  _SdkMeta(Directory dir)
+      : super(dir) {
+    sdkReadmePath = path.join(dir.path, 'lib', 'api_readme.md');
+  }
 
   @override
   bool get isSdk => true;
@@ -211,14 +220,9 @@ class _SdkMeta extends PackageMeta {
 
   @override
   FileContents getReadmeContents() {
-    File f = sdkReadmePath != null
-        ? new File(sdkReadmePath)
-        : new File(path.join(dir.path, 'lib', 'api_readme.md'));
+    File f = new File(path.join(dir.path, 'lib', 'api_readme.md'));
     return f.existsSync() ? new FileContents(f) : null;
   }
-
-  @override
-  bool get isValid => true;
 
   @override
   List<String> getInvalidReasons() => [];

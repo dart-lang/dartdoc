@@ -76,7 +76,7 @@ void main() {
   });
 
   group('PackageMeta.fromSdk', () {
-    PackageMeta p = new PackageMeta.fromSdk(getSdkDir());
+    PackageMeta p = new PackageMeta.fromDir(getSdkDir());
 
     test('has a name', () {
       expect(p.name, 'Dart SDK');
@@ -85,6 +85,7 @@ void main() {
     test('is valid', () {
       expect(p.isValid, isTrue);
       expect(p.getInvalidReasons(), isEmpty);
+      expect(p.isSdk, isTrue);
     });
 
     test('has a version', () {

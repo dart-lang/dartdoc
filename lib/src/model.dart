@@ -4203,7 +4203,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   String get name => packageMeta.name;
 
   String get kind =>
-      (packageMeta.displayAsPackages || packageGraph.isSdk) ? '' : 'package';
+      (publicPackages.length > 1 || packageGraph.isSdk) ? '' : 'package';
 
   @override
   String get oneLineDoc => '';

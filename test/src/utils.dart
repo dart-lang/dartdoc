@@ -34,7 +34,7 @@ void delete(Directory dir) {
 
 init() async {
   sdkDir = getSdkDir();
-  sdkPackageMeta = new PackageMeta.fromSdk(sdkDir);
+  sdkPackageMeta = new PackageMeta.fromDir(sdkDir);
   setConfig();
 
   testPackageGraph = await bootBasicPackage(
