@@ -6,6 +6,7 @@ library dartdoc.package_meta;
 
 import 'dart:io';
 
+import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
@@ -19,13 +20,28 @@ abstract class PackageMeta {
 
   PackageMeta(this.dir);
 
+  /// This factory is guaranteed to return the same object for any given
+  /// [dir.absolute.path].  Multiple [dir.absolute.path]s will resolve to the
+  /// same object if they are part of the same package.  Returns null
+  /// if the directory is not part of a known package.
   factory PackageMeta.fromDir(Directory dir) {
     if (!_packageMetaCache.containsKey(dir.absolute.path)) {
       PackageMeta packageMeta;
-      if (path.join(dir.absolute.path, 'bin', path.split(Platform.resolvedExecutable).last) == Platform.resolvedExecutable) {
-        packageMeta = new _SdkMeta(dir);
+      // There are pubspec.yaml files inside the SDK.  Ignore them.
+      if (path.isWithin(getSdkDir().absolute.path, dir.absolute.path) || getSdkDir().absolute.path == dir.absolute.path) {
+        packageMeta = new _SdkMeta(getSdkDir());
       } else {
-        packageMeta = new _FilePackageMeta(dir);
+        while (dir.existsSync()) {
+          File pubspec = new File(path.join(dir.path, 'pubspec.yaml'));
+          if (pubspec.existsSync()) {
+            packageMeta = new _FilePackageMeta(dir);
+            break;
+          }
+          // Allow a package to be at root (possible in a Windows setting with
+          // drive letter mappings).
+          if (dir == dir.parent) break;
+          dir = dir.parent;
+        }
       }
       _packageMetaCache[dir.absolute.path] = packageMeta;
     }

@@ -52,13 +52,6 @@ main(List<String> arguments) async {
   final bool sdkDocs = args['sdk-docs'];
   final bool showProgress = args['show-progress'];
 
-  final String readme = args['sdk-readme'];
-  if (readme != null && !(new File(readme).existsSync())) {
-    stderr.writeln(
-        " fatal error: unable to locate the SDK description file at $readme.");
-    exit(1);
-  }
-
   Directory inputDir;
   if (sdkDocs) {
     inputDir = sdkDir;
@@ -314,7 +307,7 @@ ArgParser _createArgsParser() {
       help: 'Display progress indications to console stdout', negatable: false);
   parser.addOption('sdk-readme',
       help:
-          'Path to the SDK description file; use if generating Dart SDK docs.');
+          'Path to the SDK description file.  Deprecated (ignored)');
   parser.addOption('input',
       help: 'Path to source directory.');
   parser.addOption('output',

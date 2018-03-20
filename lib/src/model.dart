@@ -2187,16 +2187,7 @@ class Library extends ModelElement {
 
   static PackageMeta getPackageMeta(LibraryElement element) {
     String sourcePath = element.source.fullName;
-    File file = new File(p.canonicalize(sourcePath));
-    Directory dir = file.parent;
-    while (dir.parent.path != dir.path && dir.existsSync()) {
-      File pubspec = new File(p.join(dir.path, 'pubspec.yaml'));
-      if (pubspec.existsSync()) {
-        return new PackageMeta.fromDir(dir);
-      }
-      dir = dir.parent;
-    }
-    return null;
+    return new PackageMeta.fromDir(new File(p.canonicalize(sourcePath)).parent);
   }
 
   static String getLibraryName(LibraryElement element) {
