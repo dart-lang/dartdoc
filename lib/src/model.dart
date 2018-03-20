@@ -1710,7 +1710,6 @@ class Library extends ModelElement {
   List<TopLevelVariable> _variables;
   Namespace _exportedNamespace;
   String _name;
-  String _packageName;
   factory Library(LibraryElement element, PackageGraph packageGraph) {
     return packageGraph.findOrCreateLibraryFor(element);
   }
@@ -2015,16 +2014,7 @@ class Library extends ModelElement {
 
   /// The real package, as opposed to the package we are documenting it with,
   /// [PackageGraph.name]
-  String get packageName {
-    if (_packageName == null) {
-      if (name.startsWith('dart:')) {
-        _packageName = 'Dart Core';
-      } else {
-        _packageName = packageMeta?.name ?? '';
-      }
-    }
-    return _packageName;
-  }
+  String get packageName => packageMeta?.name ?? '';
 
   /// The real packageMeta, as opposed to the package we are documenting with.
   PackageMeta _packageMeta;
@@ -4534,14 +4524,14 @@ class Package implements Comparable<Package> {
   /// Returns:
   /// -1 if this package is listed in --package-order.
   /// 0 if this package is the original package we are documenting.
-  /// 1 if this group represents the Dart SDK.
-  /// 2 if this group has a name that contains the name of the original
+  /// 1 if this package represents the Dart SDK.
+  /// 2 if this package has a name that contains the name of the original
   ///   package we are documenting.
   /// 3 otherwise.
   int get _group {
     if (config.packageOrder.contains(name)) return -1;
     if (name.toLowerCase() == packageGraph.name.toLowerCase()) return 0;
-    if (name == "Dart Core") return 1;
+    if (isSdk) return 1;
     if (name.toLowerCase().contains(packageGraph.name.toLowerCase())) return 2;
     return 3;
   }

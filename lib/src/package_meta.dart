@@ -225,7 +225,7 @@ class _SdkMeta extends PackageMeta {
   }
 
   @override
-  String get name => 'Dart Core';
+  String get name => 'Dart';
   @override
   String get version =>
       new File(pathLib.join(dir.path, 'version')).readAsStringSync().trim();

@@ -104,7 +104,7 @@ void main() {
       });
 
       test('sdk name', () {
-        expect(sdkAsPackageGraph.name, equals('Dart Core'));
+        expect(sdkAsPackageGraph.name, equals('Dart'));
         expect(sdkAsPackageGraph.kind, equals('SDK'));
       });
 
