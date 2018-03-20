@@ -6,6 +6,38 @@ library dartdoc.config;
 
 import 'dart:io';
 
+import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/dartdoc.dart';
+import 'package:path/path.dart' as pathLib;
+
+import 'model.dart';
+
+/// Class representing values possibly local to a particular [ModelElement].
+class LocalConfig {
+  final Map<String, Set<String>> categoryMap;
+  final PackageMeta packageMeta;
+
+  LocalConfig._(this.categoryMap, this.packageMeta);
+
+  factory LocalConfig.fromLibrary(LibraryElement element) {
+    return new LocalConfig._({}, getPackageMeta(element));
+  }
+
+  static PackageMeta getPackageMeta(LibraryElement element) {
+    String sourcePath = element.source.fullName;
+    File file = new File(pathLib.canonicalize(sourcePath));
+    Directory dir = file.parent;
+    while (dir.parent.path != dir.path && dir.existsSync()) {
+      File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
+      if (pubspec.existsSync()) {
+        return new PackageMeta.fromDir(dir);
+      }
+      dir = dir.parent;
+    }
+    return null;
+  }
+}
+
 class Config {
   final Directory inputDir;
   final bool showWarnings;

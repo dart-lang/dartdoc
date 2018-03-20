@@ -9,7 +9,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as pathLib;
 
 /// Lists the contents of [dir].
 ///
@@ -36,7 +36,7 @@ Iterable<String> _doList(String dir, Set<String> listedDirectories,
 
     for (var entity in listDir(new Directory(dir))) {
       // Skip hidden files and directories
-      if (path.basename(entity.path).startsWith('.')) {
+      if (pathLib.basename(entity.path).startsWith('.')) {
         continue;
       }
 
