@@ -9,7 +9,7 @@ import 'dart:io' show File, Directory;
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/html/resources.g.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
 void main() {
@@ -87,12 +87,12 @@ void main() {
 
       test('resources are put into the right place', () {
         Directory output =
-            new Directory(p.join(tempOutput.path, 'static-assets'));
+            new Directory(pathLib.join(tempOutput.path, 'static-assets'));
         expect(output, doesExist);
 
         for (var resource in resource_names.map(
-            (r) => p.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
-          expect(new File(p.join(output.path, resource)), doesExist);
+            (r) => pathLib.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
+          expect(new File(pathLib.join(output.path, resource)), doesExist);
         }
       });
     });

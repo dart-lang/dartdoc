@@ -10,7 +10,7 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:dartdoc/src/sdk.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
@@ -1365,7 +1365,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     tearDown(() {
-      var file = new File(p.join(Directory.current.path, "crossdart.json"));
+      var file = new File(pathLib.join(Directory.current.path, "crossdart.json"));
       if (file.existsSync()) {
         file.deleteSync();
       }
@@ -1492,7 +1492,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(offset, isNonNegative,
           reason: "Can't find convertToMap function in ${fakePath}");
       if (Platform.isWindows) fakePath = fakePath.replaceAll('/', r'\\');
-      new File(p.join(Directory.current.path, "crossdart.json"))
+      new File(pathLib.join(Directory.current.path, "crossdart.json"))
           .writeAsStringSync("""
               {"$fakePath":
                 {"references":[{"offset":${offset},"end":${offset+3},"remotePath":"http://www.example.com/fake.dart"}]}}
