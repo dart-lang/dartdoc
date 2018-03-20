@@ -89,7 +89,6 @@ class HasGenerics<X, Y, Z> {
   Map<X, Y> convertToMap() => null;
 }
 
-
 /// This is a class with a table.
 ///
 /// It has multiple sentences before the table.  Because testing is a good
@@ -123,7 +122,6 @@ class DocumentWithATable {
   const DocumentWithATable();
   void aMethod(String parameter) {}
 }
-
 
 Map<dynamic, String> mapWithDynamicKeys = {};
 
@@ -344,10 +342,12 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   String get documentedPartialFieldInSubclassOnly => "overridden getter";
 
   @override
+
   /// Docs for setter of implicitGetterExplicitSetter.
   set implicitGetterExplicitSetter(String x) {}
 
   @override
+
   /// Getter doc for explicitGetterImplicitSetter
   List<int> get explicitGetterImplicitSetter => new List<int>();
 
@@ -760,6 +760,7 @@ class _PrivateClassDefiningSomething {
 }
 
 class InheritingClassOne extends _PrivateClassDefiningSomething {}
+
 class InheritingClassTwo extends _PrivateClassDefiningSomething {}
 
 class ReferringClass {
@@ -774,11 +775,12 @@ class ReferringClass {
 /// Test an edge case for cases where inherited ExecutableElements can come
 /// both from private classes and public interfaces.  The test makes sure the
 /// class still takes precedence (#1561).
-abstract class MIEEMixinWithOverride<K, V> = MIEEBase<K, V> with _MIEEPrivateOverride<K, V>;
+abstract class MIEEMixinWithOverride<K, V> = MIEEBase<K, V>
+    with _MIEEPrivateOverride<K, V>;
 
 abstract class _MIEEPrivateOverride<K, V> implements MIEEThing<K, V> {
   // ignore: annotate_overrides
-  void operator[]=(K key, V value) {
+  void operator []=(K key, V value) {
     throw new UnsupportedError("Never use this");
   }
 }
@@ -791,5 +793,5 @@ abstract class MIEEMixin<K, V> implements MIEEThing<K, V> {
 }
 
 abstract class MIEEThing<K, V> {
-  void operator[]=(K key, V value);
+  void operator []=(K key, V value);
 }

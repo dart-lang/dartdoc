@@ -8,7 +8,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathLib;
 
 import 'model.dart';
 
@@ -25,10 +25,10 @@ class LocalConfig {
 
   static PackageMeta getPackageMeta(LibraryElement element) {
     String sourcePath = element.source.fullName;
-    File file = new File(p.canonicalize(sourcePath));
+    File file = new File(pathLib.canonicalize(sourcePath));
     Directory dir = file.parent;
     while (dir.parent.path != dir.path && dir.existsSync()) {
-      File pubspec = new File(p.join(dir.path, 'pubspec.yaml'));
+      File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
       if (pubspec.existsSync()) {
         return new PackageMeta.fromDir(dir);
       }

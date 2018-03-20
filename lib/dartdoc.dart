@@ -16,7 +16,7 @@ import 'package:analyzer/src/generated/source.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:html/dom.dart' show Element, Document;
 import 'package:html/parser.dart' show parse;
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as pathLib;
 
 import 'package:tuple/tuple.dart';
 import 'src/config.dart';
@@ -38,7 +38,7 @@ const String name = 'dartdoc';
 // Update when pubspec version changes.
 const String version = '0.17.1+1';
 
-final String defaultOutDir = path.join('doc', 'api');
+final String defaultOutDir = pathLib.join('doc', 'api');
 
 /// Initialize and setup the generators.
 Future<List<Generator>> initGenerators(String url, String relCanonicalPrefix,
@@ -169,7 +169,7 @@ class DartDoc extends PackageBuilder {
 
     for (var generator in generators) {
       await generator.generate(packageGraph, outputDir.path);
-      writtenFiles.addAll(generator.writtenFiles.map(path.normalize));
+      writtenFiles.addAll(generator.writtenFiles.map(pathLib.normalize));
     }
     if (config.validateLinks) validateLinks(packageGraph, outputDir.path);
     int warnings = packageGraph.packageWarningCounter.warningCount;
@@ -209,12 +209,12 @@ class DartDoc extends PackageBuilder {
     Set<Warnable> warnOnElements;
 
     // Make all paths relative to origin.
-    if (path.isWithin(origin, warnOn)) {
-      warnOn = path.relative(warnOn, from: origin);
+    if (pathLib.isWithin(origin, warnOn)) {
+      warnOn = pathLib.relative(warnOn, from: origin);
     }
     if (referredFrom != null) {
-      if (path.isWithin(origin, referredFrom)) {
-        referredFrom = path.relative(referredFrom, from: origin);
+      if (pathLib.isWithin(origin, referredFrom)) {
+        referredFrom = pathLib.relative(referredFrom, from: origin);
       }
       // Source paths are always relative.
       if (_hrefs[referredFrom] != null) {
@@ -245,13 +245,13 @@ class DartDoc extends PackageBuilder {
 
   void _doOrphanCheck(
       PackageGraph packageGraph, String origin, Set<String> visited) {
-    String normalOrigin = path.normalize(origin);
-    String staticAssets = path.joinAll([normalOrigin, 'static-assets', '']);
-    String indexJson = path.joinAll([normalOrigin, 'index.json']);
+    String normalOrigin = pathLib.normalize(origin);
+    String staticAssets = pathLib.joinAll([normalOrigin, 'static-assets', '']);
+    String indexJson = pathLib.joinAll([normalOrigin, 'index.json']);
     bool foundIndexJson = false;
     for (FileSystemEntity f
         in new Directory(normalOrigin).listSync(recursive: true)) {
-      var fullPath = path.normalize(f.path);
+      var fullPath = pathLib.normalize(f.path);
       if (f is Directory) {
         continue;
       }
@@ -304,8 +304,8 @@ class DartDoc extends PackageBuilder {
 
   void _doSearchIndexCheck(
       PackageGraph packageGraph, String origin, Set<String> visited) {
-    String fullPath = path.joinAll([origin, 'index.json']);
-    String indexPath = path.joinAll([origin, 'index.html']);
+    String fullPath = pathLib.joinAll([origin, 'index.json']);
+    String indexPath = pathLib.joinAll([origin, 'index.html']);
     File file = new File("$fullPath");
     if (!file.existsSync()) {
       return null;
@@ -320,10 +320,10 @@ class DartDoc extends PackageBuilder {
     found.add(indexPath);
     for (Map<String, String> entry in jsonData) {
       if (entry.containsKey('href')) {
-        String entryPath = path.joinAll([origin, entry['href']]);
+        String entryPath = pathLib.joinAll([origin, entry['href']]);
         if (!visited.contains(entryPath)) {
           _warn(packageGraph, PackageWarning.brokenLink, entryPath,
-              path.normalize(origin),
+              pathLib.normalize(origin),
               referredFrom: fullPath);
         }
         found.add(entryPath);
@@ -333,7 +333,7 @@ class DartDoc extends PackageBuilder {
     Set<String> missing_from_search = visited.difference(found);
     for (String s in missing_from_search) {
       _warn(packageGraph, PackageWarning.missingFromSearchIndex, s,
-          path.normalize(origin),
+          pathLib.normalize(origin),
           referredFrom: fullPath);
     }
   }
@@ -342,14 +342,14 @@ class DartDoc extends PackageBuilder {
       String pathToCheck,
       [String source, String fullPath]) {
     if (fullPath == null) {
-      fullPath = path.joinAll([origin, pathToCheck]);
-      fullPath = path.normalize(fullPath);
+      fullPath = pathLib.joinAll([origin, pathToCheck]);
+      fullPath = pathLib.normalize(fullPath);
     }
 
     Tuple2 stringLinksAndHref = _getStringLinksAndHref(fullPath);
     if (stringLinksAndHref == null) {
       _warn(packageGraph, PackageWarning.brokenLink, pathToCheck,
-          path.normalize(origin),
+          pathLib.normalize(origin),
           referredFrom: source);
       _onCheckProgress.add(pathToCheck);
       // Remove so that we properly count that the file doesn't exist for
@@ -376,13 +376,13 @@ class DartDoc extends PackageBuilder {
       if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
         var full;
         if (baseHref != null) {
-          full = '${path.dirname(pathToCheck)}/$baseHref/$href';
+          full = '${pathLib.dirname(pathToCheck)}/$baseHref/$href';
         } else {
-          full = '${path.dirname(pathToCheck)}/$href';
+          full = '${pathLib.dirname(pathToCheck)}/$href';
         }
-        var newPathToCheck = path.normalize(full);
-        String newFullPath = path.joinAll([origin, newPathToCheck]);
-        newFullPath = path.normalize(newFullPath);
+        var newPathToCheck = pathLib.normalize(full);
+        String newFullPath = pathLib.joinAll([origin, newPathToCheck]);
+        newFullPath = pathLib.normalize(newFullPath);
         if (!visited.contains(newFullPath)) {
           toVisit.add(new Tuple2(newPathToCheck, newFullPath));
           visited.add(newFullPath);

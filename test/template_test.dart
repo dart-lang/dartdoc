@@ -7,7 +7,7 @@ library dartdoc.template_test;
 import 'dart:io';
 
 import 'package:mustache4dart/mustache4dart.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
 void main() {
@@ -17,7 +17,8 @@ void main() {
 
       setUp(() {
         if (sitemap == null) {
-          var templatePath = p.join(p.current, 'lib/templates/sitemap.xml');
+          var templatePath =
+              pathLib.join(pathLib.current, 'lib/templates/sitemap.xml');
           File tmplFile = new File(templatePath);
           var siteMapTmpl = tmplFile.readAsStringSync();
           sitemap = compile(siteMapTmpl);

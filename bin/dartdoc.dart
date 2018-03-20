@@ -16,7 +16,7 @@ import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:logging/logging.dart' as logging;
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as pathLib;
 import 'package:stack_trace/stack_trace.dart';
 
 /// Analyzes Dart files and generates a representation of included libraries,
@@ -113,7 +113,7 @@ main(List<String> arguments) async {
   }
 
   Directory outputDir =
-      new Directory(path.join(Directory.current.path, defaultOutDir));
+      new Directory(pathLib.join(Directory.current.path, defaultOutDir));
   if (args['output'] != null) {
     outputDir = new Directory(_resolveTildePath(args['output']));
   }
@@ -423,10 +423,10 @@ String _resolveTildePath(String originalPath) {
   String homeDir;
 
   if (Platform.isWindows) {
-    homeDir = path.absolute(Platform.environment['USERPROFILE']);
+    homeDir = pathLib.absolute(Platform.environment['USERPROFILE']);
   } else {
-    homeDir = path.absolute(Platform.environment['HOME']);
+    homeDir = pathLib.absolute(Platform.environment['HOME']);
   }
 
-  return path.join(homeDir, originalPath.substring(2));
+  return pathLib.join(homeDir, originalPath.substring(2));
 }

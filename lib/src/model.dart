@@ -41,7 +41,7 @@ import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/sdk.dart';
 import 'package:front_end/src/byte_store/byte_store.dart';
 import 'package:front_end/src/base/performance_logger.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathLib;
 import 'package:tuple/tuple.dart';
 import 'package:package_config/discovery.dart' as package_config;
 
@@ -61,7 +61,7 @@ Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
   if (__crossdartJson == null) {
     if (config != null) {
       var crossdartFile =
-          new File(p.join(config.inputDir.path, "crossdart.json"));
+          new File(pathLib.join(config.inputDir.path, "crossdart.json"));
       if (crossdartFile.existsSync()) {
         __crossdartJson = json.decode(crossdartFile.readAsStringSync())
             as Map<String, Map<String, List<Map<String, dynamic>>>>;
@@ -2161,12 +2161,12 @@ class Library extends ModelElement {
     if (name.startsWith('file:')) {
       // restoreUri doesn't do anything for the package we're documenting.
       String canonicalPackagePath =
-          '${p.canonicalize(defaultPackage.dir.path)}${p.separator}lib${p.separator}';
+          '${pathLib.canonicalize(defaultPackage.dir.path)}${pathLib.separator}lib${pathLib.separator}';
       String canonicalElementPath =
-          p.canonicalize(element.source.uri.toFilePath());
+          pathLib.canonicalize(element.source.uri.toFilePath());
       assert(canonicalElementPath.startsWith(canonicalPackagePath));
-      List<String> pathSegments = [defaultPackage.name]..addAll(
-          p.split(canonicalElementPath.replaceFirst(canonicalPackagePath, '')));
+      List<String> pathSegments = [defaultPackage.name]..addAll(pathLib
+          .split(canonicalElementPath.replaceFirst(canonicalPackagePath, '')));
       Uri libraryUri = new Uri(
         scheme: 'package',
         pathSegments: pathSegments,
@@ -2187,7 +2187,7 @@ class Library extends ModelElement {
 
   static PackageMeta getPackageMeta(LibraryElement element) {
     String sourcePath = element.source.fullName;
-    return new PackageMeta.fromDir(new File(p.canonicalize(sourcePath)).parent);
+    return new PackageMeta.fromDir(new File(pathLib.canonicalize(sourcePath)).parent);
   }
 
   static String getLibraryName(LibraryElement element) {
@@ -2965,9 +2965,9 @@ abstract class ModelElement extends Canonicalization
   String get elementLocation {
     // Call nothing from here that can emit warnings or you'll cause stack overflows.
     if (lineAndColumn != null) {
-      return "(${p.toUri(sourceFileName)}:${lineAndColumn.item1}:${lineAndColumn.item2})";
+      return "(${pathLib.toUri(sourceFileName)}:${lineAndColumn.item1}:${lineAndColumn.item2})";
     }
-    return "(${p.toUri(sourceFileName)})";
+    return "(${pathLib.toUri(sourceFileName)})";
   }
 
   /// Returns a link to extended documentation, or the empty string if that
@@ -3455,11 +3455,12 @@ abstract class ModelElement extends Canonicalization
     RegExp exampleRE = new RegExp(r'{@example\s+([^}]+)}');
     return rawdocs.replaceAllMapped(exampleRE, (match) {
       var args = _getExampleArgs(match[1]);
-      var lang = args['lang'] ?? p.extension(args['src']).replaceFirst('.', '');
+      var lang =
+          args['lang'] ?? pathLib.extension(args['src']).replaceFirst('.', '');
 
       var replacement = match[0]; // default to fully matched string.
 
-      var fragmentFile = new File(p.join(dirPath, args['file']));
+      var fragmentFile = new File(pathLib.join(dirPath, args['file']));
       if (fragmentFile.existsSync()) {
         replacement = fragmentFile.readAsStringSync();
         if (!lang.isEmpty) {
@@ -3559,14 +3560,14 @@ abstract class ModelElement extends Canonicalization
     var file = src + fragExtension;
     var region = args['region'] ?? '';
     if (!region.isEmpty) {
-      var dir = p.dirname(src);
-      var basename = p.basenameWithoutExtension(src);
-      var ext = p.extension(src);
-      file = p.join(dir, '$basename-$region$ext$fragExtension');
+      var dir = pathLib.dirname(src);
+      var basename = pathLib.basenameWithoutExtension(src);
+      var ext = pathLib.extension(src);
+      file = pathLib.join(dir, '$basename-$region$ext$fragExtension');
     }
     args['file'] = config?.examplePathPrefix == null
         ? file
-        : p.join(config.examplePathPrefix, file);
+        : pathLib.join(config.examplePathPrefix, file);
     return args;
   }
 }
@@ -4497,11 +4498,11 @@ class Package implements Comparable<Package> {
         _packagePath = getSdkDir().path;
       } else {
         assert(_libraries.isNotEmpty);
-        File file =
-            new File(p.canonicalize(_libraries.first.element.source.fullName));
+        File file = new File(
+            pathLib.canonicalize(_libraries.first.element.source.fullName));
         Directory dir = file.parent;
         while (dir.parent.path != dir.path && dir.existsSync()) {
-          File pubspec = new File(p.join(dir.path, 'pubspec.yaml'));
+          File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
           if (pubspec.existsSync()) {
             _packagePath = dir.absolute.path;
             break;
@@ -5162,25 +5163,25 @@ class PackageBuilder {
   /// library files in the "lib" directory to document.
   Iterable<String> findFilesToDocumentInPackage(
       String basePackageDir, bool autoIncludeDependencies) sync* {
-    final String sep = p.separator;
+    final String sep = pathLib.separator;
 
     Set<String> packageDirs = new Set()..add(basePackageDir);
 
     if (autoIncludeDependencies) {
       Map<String, Uri> info = package_config
           .findPackagesFromFile(
-              new Uri.file(p.join(basePackageDir, 'pubspec.yaml')))
+              new Uri.file(pathLib.join(basePackageDir, 'pubspec.yaml')))
           .asMap();
       for (String packageName in info.keys) {
         if (!excludes.contains(packageName)) {
-          packageDirs.add(p.dirname(info[packageName].toFilePath()));
+          packageDirs.add(pathLib.dirname(info[packageName].toFilePath()));
         }
       }
     }
 
     for (String packageDir in packageDirs) {
-      var packageLibDir = p.join(packageDir, 'lib');
-      var packageLibSrcDir = p.join(packageLibDir, 'src');
+      var packageLibDir = pathLib.join(packageDir, 'lib');
+      var packageLibSrcDir = pathLib.join(packageLibDir, 'src');
       // To avoid analyzing package files twice, only files with paths not
       // containing '/packages' will be added. The only exception is if the file
       // to analyze already has a '/package' in its path.
@@ -5190,8 +5191,8 @@ class PackageBuilder {
             (!lib.contains('${sep}packages${sep}') ||
                 packageDir.contains('${sep}packages${sep}'))) {
           // Only include libraries within the lib dir that are not in lib/src
-          if (p.isWithin(packageLibDir, lib) &&
-              !p.isWithin(packageLibSrcDir, lib)) {
+          if (pathLib.isWithin(packageLibDir, lib) &&
+              !pathLib.isWithin(packageLibSrcDir, lib)) {
             // Only add the file if it does not contain 'part of'
             var contents = new File(lib).readAsStringSync();
 
@@ -5256,11 +5257,11 @@ class PackageBuilder {
     var entities = dir.listSync();
 
     var pubspec = entities.firstWhere(
-        (e) => e is File && p.basename(e.path) == 'pubspec.yaml',
+        (e) => e is File && pathLib.basename(e.path) == 'pubspec.yaml',
         orElse: () => null);
 
     var libDir = entities.firstWhere(
-        (e) => e is Directory && p.basename(e.path) == 'lib',
+        (e) => e is Directory && pathLib.basename(e.path) == 'lib',
         orElse: () => null);
 
     if (pubspec != null && libDir != null) {

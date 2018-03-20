@@ -13,12 +13,12 @@ library dartdoc.dartdoc_options;
 
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
 
 import 'logging.dart';
 
-Map<String, DartdocOptions> _dartdocOptionsCache = {};
+final Map<String, DartdocOptions> _dartdocOptionsCache = {};
 
 abstract class DartdocOptions {
   DartdocOptions();
@@ -46,7 +46,7 @@ abstract class DartdocOptions {
     dir = dir.absolute;
 
     while (true) {
-      f = new File(p.join(dir.path, 'dartdoc_options.yaml'));
+      f = new File(pathLib.join(dir.path, 'dartdoc_options.yaml'));
       if (f.existsSync() || dir.parent.path == dir.path) break;
       dir = dir.parent.absolute;
     }

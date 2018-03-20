@@ -7,7 +7,7 @@ library dartdoc.package_meta;
 import 'dart:io';
 
 import 'package:dartdoc/src/sdk.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
 
 import 'logging.dart';
@@ -30,11 +30,11 @@ abstract class PackageMeta {
     if (!_packageMetaCache.containsKey(dir.path)) {
       PackageMeta packageMeta;
       // There are pubspec.yaml files inside the SDK.  Ignore them.
-      if (path.isWithin(getSdkDir().absolute.path, dir.path) || getSdkDir().path == dir.path) {
+      if (pathLib.isWithin(getSdkDir().absolute.path, dir.path) || getSdkDir().path == dir.path) {
         packageMeta = new _SdkMeta(getSdkDir());
       } else {
         while (dir.existsSync()) {
-          File pubspec = new File(path.join(dir.path, 'pubspec.yaml'));
+          File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
           if (pubspec.existsSync()) {
             packageMeta = new _FilePackageMeta(dir);
             break;
@@ -108,7 +108,7 @@ class _FilePackageMeta extends PackageMeta {
   Map _pubspec;
 
   _FilePackageMeta(Directory dir) : super(dir) {
-    File f = new File(path.join(dir.path, 'pubspec.yaml'));
+    File f = new File(pathLib.join(dir.path, 'pubspec.yaml'));
     if (f.existsSync()) {
       _pubspec = loadYaml(f.readAsStringSync());
     } else {
@@ -121,12 +121,12 @@ class _FilePackageMeta extends PackageMeta {
 
   @override
   bool get needsPubGet =>
-      !(new File(path.join(dir.path, '.packages')).existsSync());
+      !(new File(pathLib.join(dir.path, '.packages')).existsSync());
 
   @override
   void runPubGet() {
     String pubPath =
-        path.join(path.dirname(Platform.resolvedExecutable), 'pub');
+        pathLib.join(pathLib.dirname(Platform.resolvedExecutable), 'pub');
     if (Platform.isWindows) pubPath += '.bat';
 
     ProcessResult result =
@@ -199,7 +199,7 @@ File _locate(Directory dir, List<String> fileNames) {
 
   for (String name in fileNames) {
     for (File f in files) {
-      String baseName = path.basename(f.path).toLowerCase();
+      String baseName = pathLib.basename(f.path).toLowerCase();
       if (baseName == name) return f;
       if (baseName.startsWith(name)) return f;
     }
@@ -213,7 +213,7 @@ class _SdkMeta extends PackageMeta {
 
   _SdkMeta(Directory dir)
       : super(dir) {
-    sdkReadmePath = path.join(dir.path, 'lib', 'api_readme.md');
+    sdkReadmePath = pathLib.join(dir.path, 'lib', 'api_readme.md');
   }
 
   @override
@@ -228,7 +228,7 @@ class _SdkMeta extends PackageMeta {
   String get name => 'Dart SDK';
   @override
   String get version =>
-      new File(path.join(dir.path, 'version')).readAsStringSync().trim();
+      new File(pathLib.join(dir.path, 'version')).readAsStringSync().trim();
   @override
   String get description =>
       'The Dart SDK is a set of tools and libraries for the '
@@ -238,7 +238,7 @@ class _SdkMeta extends PackageMeta {
 
   @override
   FileContents getReadmeContents() {
-    File f = new File(path.join(dir.path, 'lib', 'api_readme.md'));
+    File f = new File(pathLib.join(dir.path, 'lib', 'api_readme.md'));
     return f.existsSync() ? new FileContents(f) : null;
   }
 
