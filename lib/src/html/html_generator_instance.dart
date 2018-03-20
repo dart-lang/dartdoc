@@ -184,7 +184,8 @@ class HtmlGeneratorInstance {
   void generateClass(PackageGraph packageGraph, Library lib, Class clazz) {
     TemplateData data =
         new ClassTemplateData(_options, packageGraph, lib, clazz);
-    _build(pathLib.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
+    _build(
+        pathLib.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
 
   void generateConstructor(PackageGraph packageGraph, Library lib, Class clazz,
@@ -199,7 +200,8 @@ class HtmlGeneratorInstance {
   void generateEnum(PackageGraph packageGraph, Library lib, Enum eNum) {
     TemplateData data = new EnumTemplateData(_options, packageGraph, lib, eNum);
 
-    _build(pathLib.joinAll(eNum.href.split('/')), _templates.enumTemplate, data);
+    _build(
+        pathLib.joinAll(eNum.href.split('/')), _templates.enumTemplate, data);
   }
 
   void generateFunction(
@@ -207,8 +209,8 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new FunctionTemplateData(_options, packageGraph, lib, function);
 
-    _build(pathLib.joinAll(function.href.split('/')), _templates.functionTemplate,
-        data);
+    _build(pathLib.joinAll(function.href.split('/')),
+        _templates.functionTemplate, data);
   }
 
   void generateMethod(
@@ -216,8 +218,8 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new MethodTemplateData(_options, packageGraph, lib, clazz, method);
 
-    _build(
-        pathLib.joinAll(method.href.split('/')), _templates.methodTemplate, data);
+    _build(pathLib.joinAll(method.href.split('/')), _templates.methodTemplate,
+        data);
   }
 
   void generateConstant(
@@ -225,8 +227,8 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new ConstantTemplateData(_options, packageGraph, lib, clazz, property);
 
-    _build(pathLib.joinAll(property.href.split('/')), _templates.constantTemplate,
-        data);
+    _build(pathLib.joinAll(property.href.split('/')),
+        _templates.constantTemplate, data);
   }
 
   void generateProperty(
@@ -234,8 +236,8 @@ class HtmlGeneratorInstance {
     TemplateData data =
         new PropertyTemplateData(_options, packageGraph, lib, clazz, property);
 
-    _build(pathLib.joinAll(property.href.split('/')), _templates.propertyTemplate,
-        data);
+    _build(pathLib.joinAll(property.href.split('/')),
+        _templates.propertyTemplate, data);
   }
 
   void generateTopLevelProperty(

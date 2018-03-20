@@ -90,8 +90,8 @@ void main() {
             new Directory(pathLib.join(tempOutput.path, 'static-assets'));
         expect(output, doesExist);
 
-        for (var resource in resource_names.map(
-            (r) => pathLib.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
+        for (var resource in resource_names.map((r) =>
+            pathLib.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
           expect(new File(pathLib.join(output.path, resource)), doesExist);
         }
       });

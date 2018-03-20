@@ -17,7 +17,8 @@ void main() {
 
       setUp(() {
         if (sitemap == null) {
-          var templatePath = pathLib.join(pathLib.current, 'lib/templates/sitemap.xml');
+          var templatePath =
+              pathLib.join(pathLib.current, 'lib/templates/sitemap.xml');
           File tmplFile = new File(templatePath);
           var siteMapTmpl = tmplFile.readAsStringSync();
           sitemap = compile(siteMapTmpl);

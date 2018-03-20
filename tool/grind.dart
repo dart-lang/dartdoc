@@ -45,7 +45,8 @@ final Directory flutterDirDevTools =
 /// necessary to use it.
 Map<String, String> _createThrowawayPubCache() {
   final Directory pubCache = Directory.systemTemp.createTempSync('pubcache');
-  final Directory pubCacheBin = new Directory(pathLib.join(pubCache.path, 'bin'));
+  final Directory pubCacheBin =
+      new Directory(pathLib.join(pubCache.path, 'bin'));
   pubCacheBin.createSync();
   return new Map.fromIterables([
     'PUB_CACHE',
@@ -387,9 +388,9 @@ Future buildFlutterDocs() async {
   Map<String, String> env = _createThrowawayPubCache();
   await _buildFlutterDocs(
       flutterDir.path, new Future.value(Directory.current.path), env);
-  String index =
-      new File(pathLib.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
-          .readAsStringSync();
+  String index = new File(
+          pathLib.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
+      .readAsStringSync();
   stdout.write(index);
 }
 
@@ -443,8 +444,8 @@ Future<String> _buildPubPackageDocs(String pubPackageName,
   if (version != null) args.addAll(<String>['-v', version]);
   args.add(pubPackageName);
   await launcher.runStreamed('pub', args);
-  Directory cache =
-      new Directory(pathLib.join(env['PUB_CACHE'], 'hosted', 'pub.dartlang.org'));
+  Directory cache = new Directory(
+      pathLib.join(env['PUB_CACHE'], 'hosted', 'pub.dartlang.org'));
   Directory pubPackageDir =
       cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
   await launcher.runStreamed('pub', ['get'],
@@ -550,7 +551,8 @@ indexResources() {
     throw new StateError('lib/resources directory not found');
   }
   var outDir = new Directory(pathLib.join('lib'));
-  var out = new File(pathLib.join(outDir.path, 'src', 'html', 'resources.g.dart'));
+  var out =
+      new File(pathLib.join(outDir.path, 'src', 'html', 'resources.g.dart'));
   out.createSync(recursive: true);
   var buffer = new StringBuffer()
     ..write('// WARNING: This file is auto-generated. Do not taunt.\n\n')
@@ -649,8 +651,8 @@ validateSdkDocs() {
   }
   log('$libsLength dart: libraries found');
 
-  var futureConstFile =
-      joinFile(sdkDocsDir, [pathLib.join('dart-async', 'Future', 'Future.html')]);
+  var futureConstFile = joinFile(
+      sdkDocsDir, [pathLib.join('dart-async', 'Future', 'Future.html')]);
   if (!futureConstFile.existsSync()) {
     fail('no Future.html found for dart:async Future constructor');
   }

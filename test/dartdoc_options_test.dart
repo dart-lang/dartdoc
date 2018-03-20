@@ -23,15 +23,22 @@ void main() {
 
   setUpAll(() {
     tempDir = Directory.systemTemp.createTempSync('options_test');
-    firstDir = new Directory(pathLib.join(tempDir.path, 'firstDir'))..createSync();
-    secondDir = new Directory(pathLib.join(tempDir.path, 'secondDir'))..createSync();
+    firstDir = new Directory(pathLib.join(tempDir.path, 'firstDir'))
+      ..createSync();
+    secondDir = new Directory(pathLib.join(tempDir.path, 'secondDir'))
+      ..createSync();
 
-    secondDirFirstSub = new Directory(pathLib.join(secondDir.path, 'firstSub'))..createSync();
-    secondDirSecondSub = new Directory(pathLib.join(secondDir.path, 'secondSub'))..createSync();
+    secondDirFirstSub = new Directory(pathLib.join(secondDir.path, 'firstSub'))
+      ..createSync();
+    secondDirSecondSub =
+        new Directory(pathLib.join(secondDir.path, 'secondSub'))..createSync();
 
-    dartdocOptionsOne = new File(pathLib.join(firstDir.path, 'dartdoc_options.yaml'));
-    dartdocOptionsTwo = new File(pathLib.join(secondDir.path, 'dartdoc_options.yaml'));
-    dartdocOptionsTwoFirstSub = new File(pathLib.join(secondDirFirstSub.path, 'dartdoc_options.yaml'));
+    dartdocOptionsOne =
+        new File(pathLib.join(firstDir.path, 'dartdoc_options.yaml'));
+    dartdocOptionsTwo =
+        new File(pathLib.join(secondDir.path, 'dartdoc_options.yaml'));
+    dartdocOptionsTwoFirstSub =
+        new File(pathLib.join(secondDirFirstSub.path, 'dartdoc_options.yaml'));
 
     dartdocOptionsOne.writeAsStringSync('''
 dartdoc:

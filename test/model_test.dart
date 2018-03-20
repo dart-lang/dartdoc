@@ -1365,7 +1365,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     tearDown(() {
-      var file = new File(pathLib.join(Directory.current.path, "crossdart.json"));
+      var file =
+          new File(pathLib.join(Directory.current.path, "crossdart.json"));
       if (file.existsSync()) {
         file.deleteSync();
       }

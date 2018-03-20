@@ -2165,8 +2165,8 @@ class Library extends ModelElement {
       String canonicalElementPath =
           pathLib.canonicalize(element.source.uri.toFilePath());
       assert(canonicalElementPath.startsWith(canonicalPackagePath));
-      List<String> pathSegments = [defaultPackage.name]..addAll(
-          pathLib.split(canonicalElementPath.replaceFirst(canonicalPackagePath, '')));
+      List<String> pathSegments = [defaultPackage.name]..addAll(pathLib
+          .split(canonicalElementPath.replaceFirst(canonicalPackagePath, '')));
       Uri libraryUri = new Uri(
         scheme: 'package',
         pathSegments: pathSegments,
@@ -3464,7 +3464,8 @@ abstract class ModelElement extends Canonicalization
     RegExp exampleRE = new RegExp(r'{@example\s+([^}]+)}');
     return rawdocs.replaceAllMapped(exampleRE, (match) {
       var args = _getExampleArgs(match[1]);
-      var lang = args['lang'] ?? pathLib.extension(args['src']).replaceFirst('.', '');
+      var lang =
+          args['lang'] ?? pathLib.extension(args['src']).replaceFirst('.', '');
 
       var replacement = match[0]; // default to fully matched string.
 
@@ -4506,8 +4507,8 @@ class Package implements Comparable<Package> {
         _packagePath = getSdkDir().path;
       } else {
         assert(_libraries.isNotEmpty);
-        File file =
-            new File(pathLib.canonicalize(_libraries.first.element.source.fullName));
+        File file = new File(
+            pathLib.canonicalize(_libraries.first.element.source.fullName));
         Directory dir = file.parent;
         while (dir.parent.path != dir.path && dir.existsSync()) {
           File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
