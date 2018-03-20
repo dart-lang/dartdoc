@@ -72,7 +72,7 @@ void main() {
     PackageMeta p = new PackageMeta.fromDir(getSdkDir());
 
     test('has a name', () {
-      expect(p.name, 'Dart SDK');
+      expect(p.name, 'Dart Core');
     });
 
     test('is valid', () {

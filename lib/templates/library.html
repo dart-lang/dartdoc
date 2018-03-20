@@ -1,7 +1,7 @@
 {{>head}}
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5>{{parent.name}} {{parent.kind}}</h5>
+    <h5><span class="package-name">{{parent.name}}</span> <span class="package-kind">{{parent.kind}}</span></h5>
     {{#displayAsPackages}}
     <ol>
       {{#packageGraph.publicPackages}}
