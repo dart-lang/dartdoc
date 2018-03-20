@@ -25,10 +25,12 @@ abstract class PackageMeta {
   /// same object if they are part of the same package.  Returns null
   /// if the directory is not part of a known package.
   factory PackageMeta.fromDir(Directory dir) {
-    if (!_packageMetaCache.containsKey(dir.absolute.path)) {
+    Directory original = dir.absolute;
+    dir = original;
+    if (!_packageMetaCache.containsKey(dir.path)) {
       PackageMeta packageMeta;
       // There are pubspec.yaml files inside the SDK.  Ignore them.
-      if (path.isWithin(getSdkDir().absolute.path, dir.absolute.path) || getSdkDir().absolute.path == dir.absolute.path) {
+      if (path.isWithin(getSdkDir().absolute.path, dir.path) || getSdkDir().path == dir.path) {
         packageMeta = new _SdkMeta(getSdkDir());
       } else {
         while (dir.existsSync()) {
@@ -39,8 +41,8 @@ abstract class PackageMeta {
           }
           // Allow a package to be at root (possible in a Windows setting with
           // drive letter mappings).
-          if (dir == dir.parent) break;
-          dir = dir.parent;
+          if (dir.path == dir.parent.absolute.path) break;
+          dir = dir.parent.absolute;
         }
       }
       _packageMetaCache[dir.absolute.path] = packageMeta;

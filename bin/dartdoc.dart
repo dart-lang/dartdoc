@@ -191,6 +191,11 @@ main(List<String> arguments) async {
 
   PackageMeta packageMeta = new PackageMeta.fromDir(inputDir);
 
+  if (packageMeta == null) {
+    stderr.writeln(' fatal error: Unable to generate documentation: no pubspec.yaml found');
+    exit(1);
+  }
+
   if (!packageMeta.isValid) {
     final String firstError = packageMeta.getInvalidReasons().first;
     stderr.writeln(

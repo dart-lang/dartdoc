@@ -16,18 +16,12 @@ void main() {
     PackageMeta p;
 
     setUp(() {
-      var d = new Directory(
-          path.join(Directory.current.path, 'testing/test_package_not_valid'));
-      if (!d.existsSync()) {
-        throw "$d cannot be found";
-      }
+      var d = Directory.systemTemp.createTempSync('test_package_not_valid');
       p = new PackageMeta.fromDir(d);
     });
 
     test('is not valid', () {
-      expect(p.isValid, isFalse);
-      expect(p.getInvalidReasons(), isNotEmpty);
-      expect(p.getInvalidReasons(), contains('no pubspec.yaml found'));
+      expect(p, isNull);
     });
   });
 
