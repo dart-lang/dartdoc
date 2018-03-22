@@ -73,7 +73,7 @@ abstract class ParameterizedClass<T> {
   ParameterizedTypedef<T> aInheritedTypedefReturningMethod();
   AnotherParameterizedClass<T> aInheritedField;
   AnotherParameterizedClass<T> get aInheritedGetter;
-  ParameterizedClass<T> operator+ (ParameterizedClass<T> other);
+  ParameterizedClass<T> operator +(ParameterizedClass<T> other);
   set aInheritedSetter(AnotherParameterizedClass<T> thingToSet);
 }
 

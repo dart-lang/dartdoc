@@ -10,7 +10,7 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:dartdoc/src/sdk.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
@@ -66,23 +66,23 @@ void main() {
       });
 
       test('categories', () {
-        expect(packageGraph.categories, hasLength(1));
+        expect(packageGraph.publicPackages, hasLength(1));
 
-        Package category = packageGraph.categories.first;
+        Package category = packageGraph.publicPackages.first;
         expect(category.name, 'test_package');
         expect(category.libraries, hasLength(8));
       });
 
       test('multiple categories, sorted default', () {
-        expect(ginormousPackageGraph.categories, hasLength(3));
-        expect(ginormousPackageGraph.categories.first.name,
+        expect(ginormousPackageGraph.publicPackages, hasLength(3));
+        expect(ginormousPackageGraph.publicPackages.first.name,
             equals('test_package'));
       });
 
       test('multiple categories, specified sort order', () {
-        setConfig(categoryOrder: ['meta', 'test_package']);
-        expect(ginormousPackageGraph.categories, hasLength(3));
-        expect(ginormousPackageGraph.categories.first.name, equals('meta'));
+        setConfig(packageOrder: ['meta', 'test_package']);
+        expect(ginormousPackageGraph.publicPackages, hasLength(3));
+        expect(ginormousPackageGraph.publicPackages.first.name, equals('meta'));
       });
 
       test('is documented in library', () {
@@ -163,7 +163,7 @@ void main() {
         expect(hashCode.canonicalEnclosingElement, equals(objectModelElement));
         expect(
             EventTarget.publicSuperChainReversed
-                .any((et) => et.element.name == 'Interceptor'),
+                .any((et) => et.name == 'Interceptor'),
             isFalse);
       });
     });
@@ -1172,8 +1172,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('typedef params have proper signature', () {
-      // typedef void VoidCallback();
-      // void addCallback(VoidCallback callback) { }
       ModelFunction function =
           fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback');
       String params = function.linkedParams();
@@ -1183,8 +1181,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           '<span class="type-annotation"><a href="fake/VoidCallback.html">VoidCallback</a></span> '
           '<span class="parameter-name">callback</span></span>');
 
-      // typedef int Callback2(String);
-      // void addCallback2(Callback2 callback) { }
       function =
           fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback2');
       params = function.linkedParams();
@@ -1369,7 +1365,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     tearDown(() {
-      var file = new File(p.join(Directory.current.path, "crossdart.json"));
+      var file =
+          new File(pathLib.join(Directory.current.path, "crossdart.json"));
       if (file.existsSync()) {
         file.deleteSync();
       }
@@ -1496,7 +1493,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(offset, isNonNegative,
           reason: "Can't find convertToMap function in ${fakePath}");
       if (Platform.isWindows) fakePath = fakePath.replaceAll('/', r'\\');
-      new File(p.join(Directory.current.path, "crossdart.json"))
+      new File(pathLib.join(Directory.current.path, "crossdart.json"))
           .writeAsStringSync("""
               {"$fakePath":
                 {"references":[{"offset":${offset},"end":${offset+3},"remotePath":"http://www.example.com/fake.dart"}]}}
@@ -2135,6 +2132,71 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
   });
 
+  group('void as type', () {
+    ModelFunction returningFutureVoid, aVoidParameter;
+    Class ExtendsFutureVoid, ImplementsFutureVoid, ATypeTakingClassMixedIn;
+
+    setUp(() {
+      returningFutureVoid = fakeLibrary.functions
+          .firstWhere((f) => f.name == 'returningFutureVoid');
+      aVoidParameter =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'aVoidParameter');
+      ExtendsFutureVoid =
+          fakeLibrary.classes.firstWhere((f) => f.name == 'ExtendsFutureVoid');
+      ImplementsFutureVoid = fakeLibrary.classes
+          .firstWhere((f) => f.name == 'ImplementsFutureVoid');
+      ATypeTakingClassMixedIn = fakeLibrary.classes
+          .firstWhere((f) => f.name == 'ATypeTakingClassMixedIn');
+    });
+
+    test('a function returning a Future<void>', () {
+      expect(returningFutureVoid.linkedReturnType,
+          equals('Future<span class="signature">&lt;void&gt;</span>'));
+    });
+
+    test('a function requiring a Future<void> parameter', () {
+      expect(
+          aVoidParameter.linkedParams(showMetadata: true, showNames: true),
+          equals(
+              '<span class="parameter" id="aVoidParameter-param-p1"><span class="type-annotation">Future<span class="signature">&lt;void&gt;</span></span> <span class="parameter-name">p1</span></span>'));
+    });
+
+    test('a class that extends Future<void>', () {
+      expect(
+          ExtendsFutureVoid.linkedName,
+          equals(
+              '<a href="fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a>'));
+      DefinedElementType FutureVoid = ExtendsFutureVoid.publicSuperChain
+          .firstWhere((c) => c.name == 'Future');
+      expect(FutureVoid.linkedName,
+          equals('Future<span class="signature">&lt;void&gt;</span>'));
+    });
+
+    test('a class that implements Future<void>', () {
+      expect(
+          ImplementsFutureVoid.linkedName,
+          equals(
+              '<a href="fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
+      DefinedElementType FutureVoid = ImplementsFutureVoid.publicInterfaces
+          .firstWhere((c) => c.name == 'Future');
+      expect(FutureVoid.linkedName,
+          equals('Future<span class="signature">&lt;void&gt;</span>'));
+    });
+
+    test('Verify that a mixin with a void type parameter works', () {
+      expect(
+          ATypeTakingClassMixedIn.linkedName,
+          equals(
+              '<a href="fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>'));
+      DefinedElementType ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixins
+          .firstWhere((c) => c.name == 'ATypeTakingClass');
+      expect(
+          ATypeTakingClassVoid.linkedName,
+          equals(
+              '<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;void&gt;</span>'));
+    });
+  });
+
   group('ModelType', () {
     Field fList;
 
@@ -2146,7 +2208,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('parameterized type', () {
-      expect(fList.modelType.isParameterizedType, isTrue);
+      expect(fList.modelType is ParameterizedElementType, isTrue);
     });
   });
 
@@ -2154,6 +2216,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Typedef t;
     Typedef generic;
     Typedef aComplexTypedef;
+    Class TypedefUsingClass;
 
     setUp(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
@@ -2161,6 +2224,18 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
       aComplexTypedef =
           exLibrary.typedefs.firstWhere((t) => t.name == 'aComplexTypedef');
+      TypedefUsingClass =
+          fakeLibrary.classes.firstWhere((t) => t.name == 'TypedefUsingClass');
+    });
+
+    test(
+        'Typedefs with bound type parameters indirectly referred in parameters are displayed',
+        () {
+      Constructor theConstructor = TypedefUsingClass.constructors.first;
+      expect(
+          theConstructor.linkedParams(),
+          equals(
+              '<span class="parameter" id="-param-x"><span class="type-annotation"><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;double&gt;</span></span> <span class="parameter-name">x</span></span>'));
     });
 
     test('anonymous nested functions inside typedefs are handled', () {
@@ -2293,9 +2368,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(param.library.name, equals('ex'));
     });
 
-    test('typdef param is linked', () {
+    test('typedef param is linked and does not include types', () {
       var params = methodWithTypedefParam.linkedParams();
-      expect(params.contains('<a href="ex/processMessage.html">'), isTrue);
+      expect(
+          params,
+          equals(
+              '<span class="parameter" id="methodWithTypedefParam-param-p"><span class="type-annotation"><a href="ex/processMessage.html">processMessage</a></span> <span class="parameter-name">p</span></span>'));
     });
   });
 

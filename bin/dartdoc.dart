@@ -16,7 +16,7 @@ import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:logging/logging.dart' as logging;
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as pathLib;
 import 'package:stack_trace/stack_trace.dart';
 
 /// Analyzes Dart files and generates a representation of included libraries,
@@ -112,7 +112,7 @@ main(List<String> arguments) async {
   }
 
   Directory outputDir =
-      new Directory(path.join(Directory.current.path, defaultOutDir));
+      new Directory(pathLib.join(Directory.current.path, defaultOutDir));
   if (args['output'] != null) {
     outputDir = new Directory(_resolveTildePath(args['output']));
   }
@@ -144,7 +144,7 @@ main(List<String> arguments) async {
         output['message'] = record.message;
       }
 
-      print(JSON.encode(output));
+      print(json.encode(output));
     });
   } else {
     final stopwatch = new Stopwatch()..start();
@@ -190,7 +190,9 @@ main(List<String> arguments) async {
 
   PackageMeta packageMeta = sdkDocs
       ? new PackageMeta.fromSdk(sdkDir,
-          sdkReadmePath: readme, useCategories: args['use-categories'])
+          sdkReadmePath: readme,
+          displayAsPackages:
+              args['use-categories'] || args['display-as-packages'])
       : new PackageMeta.fromDir(inputDir);
 
   if (!packageMeta.isValid) {
@@ -217,7 +219,7 @@ main(List<String> arguments) async {
       footerFilePaths: footerFilePaths,
       footerTextFilePaths: footerTextFilePaths,
       faviconPath: args['favicon'],
-      useCategories: args['use-categories'],
+      displayAsPackages: args['use-categories'],
       prettyIndexJson: args['pretty-index-json']);
 
   for (var generator in generators) {
@@ -257,7 +259,9 @@ main(List<String> arguments) async {
       inputDir: inputDir,
       sdkVersion: sdk.sdkVersion,
       autoIncludeDependencies: args['auto-include-dependencies'],
-      categoryOrder: args['category-order'],
+      packageOrder: args['package-order'].isEmpty
+          ? args['category-order']
+          : args['package-order'],
       reexportMinConfidence:
           double.parse(args['ambiguous-reexport-scorer-min-confidence']),
       verboseWarnings: args['verbose-warnings'],
@@ -311,29 +315,21 @@ ArgParser _createArgsParser() {
       help: 'Path to source directory.', defaultsTo: Directory.current.path);
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
-  parser.addOption('header',
-      allowMultiple: true,
-      splitCommas: true,
-      help: 'paths to header files containing HTML text.');
-  parser.addOption('footer',
-      allowMultiple: true,
-      splitCommas: true,
-      help: 'paths to footer files containing HTML text.');
-  parser.addOption('footer-text',
-      allowMultiple: true,
+  parser.addMultiOption('header',
+      splitCommas: true, help: 'paths to header files containing HTML text.');
+  parser.addMultiOption('footer',
+      splitCommas: true, help: 'paths to footer files containing HTML text.');
+  parser.addMultiOption('footer-text',
       splitCommas: true,
       help: 'paths to footer-text files '
           '(optional text next to the package name and version).');
-  parser.addOption('exclude',
-      allowMultiple: true, splitCommas: true, help: 'Library names to ignore.');
-  parser.addOption('exclude-packages',
-      allowMultiple: true, splitCommas: true, help: 'Package names to ignore.');
-  parser.addOption('include',
-      allowMultiple: true,
-      splitCommas: true,
-      help: 'Library names to generate docs for.');
-  parser.addOption('include-external',
-      allowMultiple: true,
+  parser.addMultiOption('exclude',
+      splitCommas: true, help: 'Library names to ignore.');
+  parser.addMultiOption('exclude-packages',
+      splitCommas: true, help: 'Package names to ignore.');
+  parser.addMultiOption('include',
+      splitCommas: true, help: 'Library names to generate docs for.');
+  parser.addMultiOption('include-external',
       help: 'Additional (external) dart files to include; use "dir/fileName", '
           'as in lib/material.dart.');
   parser.addOption('hosted-url',
@@ -350,13 +346,23 @@ ArgParser _createArgsParser() {
   parser.addOption('favicon',
       help: 'A path to a favicon for the generated docs.');
   parser.addFlag('use-categories',
-      help: 'Group libraries from the same package into categories.',
+      help:
+          'Group libraries from the same package in the libraries sidebar. (deprecated, replaced by display-as-packages)',
       negatable: false,
       defaultsTo: false);
-  parser.addOption('category-order',
-      help: 'A list of category names to place first when --use-categories is '
+  parser.addFlag('display-as-packages',
+      help: 'Group libraries from the same package in the libraries sidebar.',
+      negatable: false,
+      defaultsTo: false);
+  parser.addMultiOption('category-order',
+      help:
+          'A list of package names to place first when --display-as-packages is '
+          'set.  Unmentioned categories are sorted after these. (deprecated, replaced by package-order)',
+      splitCommas: true);
+  parser.addMultiOption('package-order',
+      help:
+          'A list of package names to place first when --display-as-packages is '
           'set.  Unmentioned categories are sorted after these.',
-      allowMultiple: true,
       splitCommas: true);
   parser.addFlag('auto-include-dependencies',
       help:
@@ -415,10 +421,10 @@ String _resolveTildePath(String originalPath) {
   String homeDir;
 
   if (Platform.isWindows) {
-    homeDir = path.absolute(Platform.environment['USERPROFILE']);
+    homeDir = pathLib.absolute(Platform.environment['USERPROFILE']);
   } else {
-    homeDir = path.absolute(Platform.environment['HOME']);
+    homeDir = pathLib.absolute(Platform.environment['HOME']);
   }
 
-  return path.join(homeDir, originalPath.substring(2));
+  return pathLib.join(homeDir, originalPath.substring(2));
 }

@@ -8,7 +8,7 @@ import 'dart:io';
 
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/sdk.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
 void main() {
@@ -16,8 +16,8 @@ void main() {
     PackageMeta p;
 
     setUp(() {
-      var d = new Directory(
-          path.join(Directory.current.path, 'testing/test_package_not_valid'));
+      var d = new Directory(pathLib.join(
+          Directory.current.path, 'testing/test_package_not_valid'));
       if (!d.existsSync()) {
         throw "$d cannot be found";
       }

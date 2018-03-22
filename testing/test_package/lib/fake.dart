@@ -47,13 +47,10 @@
 library fake;
 
 import 'dart:async';
-
 import 'dart:collection';
 
-import 'example.dart';
-
 import 'css.dart' as css;
-
+import 'example.dart';
 import 'two_exports.dart' show BaseClass;
 
 abstract class ImplementingThingy implements BaseThingy {}
@@ -92,7 +89,6 @@ class HasGenerics<X, Y, Z> {
   Map<X, Y> convertToMap() => null;
 }
 
-
 /// This is a class with a table.
 ///
 /// It has multiple sentences before the table.  Because testing is a good
@@ -126,7 +122,6 @@ class DocumentWithATable {
   const DocumentWithATable();
   void aMethod(String parameter) {}
 }
-
 
 Map<dynamic, String> mapWithDynamicKeys = {};
 
@@ -224,6 +219,7 @@ typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,
 
 /// This class is cool!
 class Cool {
+  // ignore: missing_return
   Cool returnCool() {}
 }
 
@@ -264,7 +260,9 @@ class SuperAwesomeClass {
   ///
   /// Another comment line.
   void fly(int height, Cool superCool, {String msg}) {
+    // ignore: unused_local_variable, avoid_init_to_null
     var x = null;
+    // ignore: unused_local_variable
     int i, y;
     for (int z = 0; z < 100; z++) {
       print('hi');
@@ -276,7 +274,35 @@ class SuperAwesomeClass {
   }
 }
 
+class TypedefUsingClass {
+  ParameterizedTypedef<double> x;
+  TypedefUsingClass(this.x);
+}
+
 typedef void myCoolTypedef(Cool x, bool y);
+
+/// This function returns Future<void>
+Future<void> returningFutureVoid() async {}
+
+/// This function requires a Future<void> as a parameter
+void aVoidParameter(Future<void> p1) {}
+
+/// This class extends Future<void>
+abstract class ExtendsFutureVoid extends Future<void> {
+  factory ExtendsFutureVoid(FutureOr<void> computation()) {}
+}
+
+/// This class implements Future<void>
+abstract class ImplementsFutureVoid implements Future<void> {}
+
+/// This class takes a type, and it might be void.
+class ATypeTakingClass<T> {
+  T aMethodMaybeReturningVoid() {}
+}
+
+class ABaseClass {}
+
+class ATypeTakingClassMixedIn extends ABaseClass with ATypeTakingClass<void> {}
 
 /// Names are actually wrong in this class, but when we extend it,
 /// they are correct.
@@ -322,10 +348,12 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   String get documentedPartialFieldInSubclassOnly => "overridden getter";
 
   @override
+
   /// Docs for setter of implicitGetterExplicitSetter.
   set implicitGetterExplicitSetter(String x) {}
 
   @override
+
   /// Getter doc for explicitGetterImplicitSetter
   List<int> get explicitGetterImplicitSetter => new List<int>();
 
@@ -378,6 +406,7 @@ class ClassWithUnusualProperties extends ImplicitProperties {
 ///
 /// The rest of this is not in the first paragraph.
 @Annotation('value')
+// ignore: deprecated_member_use
 class LongFirstLine extends SuperAwesomeClass
     with MixMeIn
     implements Interface, AnotherInterface {
@@ -627,14 +656,18 @@ class HasGenericWithExtends<T extends Foo2> {}
 
 /// Extends [ListBase]
 class SpecialList<E> extends ListBase<E> {
+  // ignore: annotate_overrides
   E operator [](int index) {
     return null;
   }
 
+  // ignore: annotate_overrides
   int get length => 0;
 
+  // ignore: annotate_overrides
   void set length(int length) {}
 
+  // ignore: annotate_overrides
   void operator []=(int index, E value) {}
 }
 
@@ -654,6 +687,7 @@ class BaseForDocComments {
   ///
   /// Reference to another method in this class [anotherMethod] xx
   ///
+  // ignore: deprecated_member_use
   /// Reference to a top-level function in this library [topLevelFunction] xx
   ///
   /// Reference to a top-level function in another library that is imported into this library (example lib) [function1] xx
@@ -732,6 +766,7 @@ class _PrivateClassDefiningSomething {
 }
 
 class InheritingClassOne extends _PrivateClassDefiningSomething {}
+
 class InheritingClassTwo extends _PrivateClassDefiningSomething {}
 
 class ReferringClass {
@@ -746,10 +781,12 @@ class ReferringClass {
 /// Test an edge case for cases where inherited ExecutableElements can come
 /// both from private classes and public interfaces.  The test makes sure the
 /// class still takes precedence (#1561).
-abstract class MIEEMixinWithOverride<K, V> = MIEEBase<K, V> with _MIEEPrivateOverride<K, V>;
+abstract class MIEEMixinWithOverride<K, V> = MIEEBase<K, V>
+    with _MIEEPrivateOverride<K, V>;
 
 abstract class _MIEEPrivateOverride<K, V> implements MIEEThing<K, V> {
-  void operator[]=(K key, V value) {
+  // ignore: annotate_overrides
+  void operator []=(K key, V value) {
     throw new UnsupportedError("Never use this");
   }
 }
@@ -757,9 +794,10 @@ abstract class _MIEEPrivateOverride<K, V> implements MIEEThing<K, V> {
 abstract class MIEEBase<K, V> extends MIEEMixin<K, V> {}
 
 abstract class MIEEMixin<K, V> implements MIEEThing<K, V> {
+  // ignore: annotate_overrides
   operator []=(K key, V value);
 }
 
 abstract class MIEEThing<K, V> {
-  void operator[]=(K key, V value);
+  void operator []=(K key, V value);
 }

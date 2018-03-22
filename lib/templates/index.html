@@ -3,26 +3,26 @@
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
     <h5>{{self.name}} {{self.kind}}</h5>
 
-    {{#useCategories}}
+    {{#displayAsPackages}}
     <ol>
-      {{#packageGraph.categories}}
+      {{#packageGraph.publicPackages}}
         <li class="section-title">{{name}}</li>
-        {{#libraries}}
+        {{#publicLibraries}}
         <li>{{{linkedName}}}</li>
-        {{/libraries}}
-      {{/packageGraph.categories}}
+        {{/publicLibraries}}
+      {{/packageGraph.publicPackages}}
 
     </ol>
-    {{/useCategories}}
+    {{/displayAsPackages}}
 
-    {{^useCategories}}
+    {{^displayAsPackages}}
     <ol>
       <li class="section-title"><a href="{{packageGraph.href}}#libraries">Libraries</a></li>
       {{#packageGraph.publicLibraries}}
       <li>{{{linkedName}}}</li>
       {{/packageGraph.publicLibraries}}
     </ol>
-    {{/useCategories}}
+    {{/displayAsPackages}}
   </div>
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
@@ -30,8 +30,8 @@
       {{>documentation}}
     {{/packageGraph}}
 
-    {{#useCategories}}
-      {{#packageGraph.categories}}
+    {{#displayAsPackages}}
+      {{#packageGraph.publicPackages}}
         <section class="summary">
           <h2>{{name}}</h2>
           <dl>
@@ -45,11 +45,11 @@
             {{/libraries}}
           </dl>
         </section>
-      {{/packageGraph.categories}}
+      {{/packageGraph.publicPackages}}
 
-    {{/useCategories}}
+    {{/displayAsPackages}}
 
-    {{^useCategories}}
+    {{^displayAsPackages}}
       <section class="summary" id="libraries">
         <h2>Libraries</h2>
         <dl>
@@ -63,7 +63,7 @@
           {{/packageGraph.publicLibraries}}
         </dl>
       </section>
-    {{/useCategories}}
+    {{/displayAsPackages}}
 
   </div> <!-- /.main-content -->
 

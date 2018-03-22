@@ -6,6 +6,38 @@ library dartdoc.config;
 
 import 'dart:io';
 
+import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/dartdoc.dart';
+import 'package:path/path.dart' as pathLib;
+
+import 'model.dart';
+
+/// Class representing values possibly local to a particular [ModelElement].
+class LocalConfig {
+  final Map<String, Set<String>> categoryMap;
+  final PackageMeta packageMeta;
+
+  LocalConfig._(this.categoryMap, this.packageMeta);
+
+  factory LocalConfig.fromLibrary(LibraryElement element) {
+    return new LocalConfig._({}, getPackageMeta(element));
+  }
+
+  static PackageMeta getPackageMeta(LibraryElement element) {
+    String sourcePath = element.source.fullName;
+    File file = new File(pathLib.canonicalize(sourcePath));
+    Directory dir = file.parent;
+    while (dir.parent.path != dir.path && dir.existsSync()) {
+      File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
+      if (pubspec.existsSync()) {
+        return new PackageMeta.fromDir(dir);
+      }
+      dir = dir.parent;
+    }
+    return null;
+  }
+}
+
 class Config {
   final Directory inputDir;
   final bool showWarnings;
@@ -14,7 +46,7 @@ class Config {
   final bool includeSource;
   final String sdkVersion;
   final bool autoIncludeDependencies;
-  final List<String> categoryOrder;
+  final List<String> packageOrder;
   final double reexportMinConfidence;
   final bool verboseWarnings;
   final List<String> dropTextFrom;
@@ -28,7 +60,7 @@ class Config {
       this.includeSource,
       this.sdkVersion,
       this.autoIncludeDependencies,
-      this.categoryOrder,
+      this.packageOrder,
       this.reexportMinConfidence,
       this.verboseWarnings,
       this.dropTextFrom,
@@ -47,7 +79,7 @@ void setConfig(
     bool includeSource: true,
     String sdkVersion,
     bool autoIncludeDependencies: false,
-    List<String> categoryOrder,
+    List<String> packageOrder,
     double reexportMinConfidence: 0.1,
     bool verboseWarnings: true,
     List<String> dropTextFrom,
@@ -61,7 +93,7 @@ void setConfig(
       includeSource,
       sdkVersion,
       autoIncludeDependencies,
-      categoryOrder ?? const <String>[],
+      packageOrder ?? const <String>[],
       reexportMinConfidence,
       verboseWarnings,
       dropTextFrom ?? const <String>[],

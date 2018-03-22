@@ -12,7 +12,7 @@ import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/sdk.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathLib;
 
 Directory sdkDir;
 PackageMeta sdkPackageMeta;
@@ -48,7 +48,7 @@ init() async {
 }
 
 Future<PackageGraph> bootSdkPackage() {
-  Directory dir = new Directory(p.current);
+  Directory dir = new Directory(pathLib.current);
   return new PackageBuilder(
           dir, [], [], sdkDir, sdkPackageMeta, [], [], true, false)
       .buildPackageGraph();

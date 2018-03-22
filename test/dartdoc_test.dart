@@ -10,7 +10,7 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/sdk.dart';
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
 import 'src/utils.dart';
@@ -28,7 +28,7 @@ void main() {
       delete(tempDir);
     });
 
-    test('generate docs for ${path.basename(testPackageDir.path)} works',
+    test('generate docs for ${pathLib.basename(testPackageDir.path)} works',
         () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc = new DartDoc(
@@ -43,7 +43,7 @@ void main() {
       expect(p.publicLibraries, hasLength(10));
     });
 
-    test('generate docs for ${path.basename(testPackageBadDir.path)} fails',
+    test('generate docs for ${pathLib.basename(testPackageBadDir.path)} fails',
         () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageBadDir);
       DartDoc dartdoc = new DartDoc(

@@ -36,10 +36,12 @@ import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:collection/collection.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/sdk.dart';
 import 'package:front_end/src/byte_store/byte_store.dart';
 import 'package:front_end/src/base/performance_logger.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathLib;
 import 'package:tuple/tuple.dart';
 import 'package:package_config/discovery.dart' as package_config;
 
@@ -59,9 +61,9 @@ Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
   if (__crossdartJson == null) {
     if (config != null) {
       var crossdartFile =
-          new File(p.join(config.inputDir.path, "crossdart.json"));
+          new File(pathLib.join(config.inputDir.path, "crossdart.json"));
       if (crossdartFile.existsSync()) {
-        __crossdartJson = JSON.decode(crossdartFile.readAsStringSync())
+        __crossdartJson = json.decode(crossdartFile.readAsStringSync())
             as Map<String, Map<String, List<Map<String, dynamic>>>>;
       } else {
         __crossdartJson = {};
@@ -436,9 +438,9 @@ class Accessor extends ModelElement
 class Class extends ModelElement
     with TypeParameters
     implements EnclosedElement {
-  List<ElementType> _mixins;
-  ElementType _supertype;
-  List<ElementType> _interfaces;
+  List<DefinedElementType> _mixins;
+  DefinedElementType _supertype;
+  List<DefinedElementType> _interfaces;
   List<Constructor> _constructors;
   List<Method> _allMethods;
   List<Operator> _operators;
@@ -460,21 +462,18 @@ class Class extends ModelElement
   Class(ClassElement element, Library library) : super(element, library, null) {
     _mixins = _cls.mixins
         .map((f) {
-          ElementType t = new ElementType(
-              f, new ModelElement.fromElement(f.element, packageGraph));
+          ElementType t = new ElementType.from(f, packageGraph);
           return t;
         })
         .where((mixin) => mixin != null)
         .toList(growable: false);
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
-      _supertype = new ElementType(_cls.supertype,
-          new ModelElement.fromElement(_cls.supertype.element, packageGraph));
+      _supertype = new ElementType.from(_cls.supertype, packageGraph);
     }
 
     _interfaces = _cls.interfaces
-        .map((f) => new ElementType(
-            f, new ModelElement.fromElement(f.element, packageGraph)))
+        .map((f) => new ElementType.from(f, packageGraph))
         .toList(growable: false);
   }
 
@@ -788,14 +787,15 @@ class Class extends ModelElement
 
   Iterable<Field> get publicInstanceProperties =>
       filterNonPublic(instanceProperties);
-  List<ElementType> get interfaces => _interfaces;
-  Iterable<ElementType> get publicInterfaces => filterNonPublic(interfaces);
+  List<DefinedElementType> get interfaces => _interfaces;
+  Iterable<DefinedElementType> get publicInterfaces =>
+      filterNonPublic(interfaces);
 
-  List<ElementType> _interfaceChain;
-  List<ElementType> get interfaceChain {
+  List<DefinedElementType> _interfaceChain;
+  List<DefinedElementType> get interfaceChain {
     if (_interfaceChain == null) {
       _interfaceChain = [];
-      for (ElementType interface in interfaces) {
+      for (DefinedElementType interface in interfaces) {
         _interfaceChain.add(interface);
         _interfaceChain.addAll((interface.element as Class).interfaceChain);
       }
@@ -829,9 +829,9 @@ class Class extends ModelElement
 
   List<Method> get methodsForPages => _genPageMethods.toList(growable: false);
 
-  List<ElementType> get mixins => _mixins;
+  List<DefinedElementType> get mixins => _mixins;
 
-  Iterable<ElementType> get publicMixins => filterNonPublic(mixins);
+  Iterable<DefinedElementType> get publicMixins => filterNonPublic(mixins);
 
   List<Operator> get operators {
     if (_operators != null) return _operators;
@@ -899,11 +899,11 @@ class Class extends ModelElement
       _inheritanceChain.add(this);
 
       /// Caching should make this recursion a little less painful.
-      for (Class c in mixins.reversed.map((e) => (e.returnElement as Class))) {
+      for (Class c in mixins.reversed.map((e) => (e.element as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
 
-      for (Class c in superChain.map((e) => (e.returnElement as Class))) {
+      for (Class c in superChain.map((e) => (e.element as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
 
@@ -915,8 +915,8 @@ class Class extends ModelElement
     return _inheritanceChain.toList(growable: false);
   }
 
-  List<ElementType> get superChain {
-    List<ElementType> typeChain = [];
+  List<DefinedElementType> get superChain {
+    List<DefinedElementType> typeChain = [];
     var parent = _supertype;
     while (parent != null) {
       typeChain.add(parent);
@@ -925,12 +925,13 @@ class Class extends ModelElement
     return typeChain;
   }
 
-  Iterable<ElementType> get superChainReversed => superChain.reversed;
-  Iterable<ElementType> get publicSuperChain => filterNonPublic(superChain);
-  Iterable<ElementType> get publicSuperChainReversed =>
+  Iterable<DefinedElementType> get superChainReversed => superChain.reversed;
+  Iterable<DefinedElementType> get publicSuperChain =>
+      filterNonPublic(superChain);
+  Iterable<DefinedElementType> get publicSuperChainReversed =>
       publicSuperChain.toList().reversed;
 
-  ElementType get supertype => _supertype;
+  DefinedElementType get supertype => _supertype;
 
   List<ExecutableElement> __inheritedElements;
   List<ExecutableElement> get _inheritedElements {
@@ -1544,7 +1545,7 @@ abstract class GetterSetterCombo implements ModelElement {
 
   String _buildConstantValueBase() {
     String result = constantInitializer?.toString() ?? '';
-    return const HtmlEscape(HtmlEscapeMode.UNKNOWN).convert(result);
+    return const HtmlEscape(HtmlEscapeMode.unknown).convert(result);
   }
 
   String get constantValue => linkifyConstantValue(constantValueBase);
@@ -2160,12 +2161,12 @@ class Library extends ModelElement {
     if (name.startsWith('file:')) {
       // restoreUri doesn't do anything for the package we're documenting.
       String canonicalPackagePath =
-          '${p.canonicalize(defaultPackage.dir.path)}${p.separator}lib${p.separator}';
+          '${pathLib.canonicalize(defaultPackage.dir.path)}${pathLib.separator}lib${pathLib.separator}';
       String canonicalElementPath =
-          p.canonicalize(element.source.uri.toFilePath());
+          pathLib.canonicalize(element.source.uri.toFilePath());
       assert(canonicalElementPath.startsWith(canonicalPackagePath));
-      List<String> pathSegments = [defaultPackage.name]..addAll(
-          p.split(canonicalElementPath.replaceFirst(canonicalPackagePath, '')));
+      List<String> pathSegments = [defaultPackage.name]..addAll(pathLib
+          .split(canonicalElementPath.replaceFirst(canonicalPackagePath, '')));
       Uri libraryUri = new Uri(
         scheme: 'package',
         pathSegments: pathSegments,
@@ -2186,10 +2187,10 @@ class Library extends ModelElement {
 
   static PackageMeta getPackageMeta(LibraryElement element) {
     String sourcePath = element.source.fullName;
-    File file = new File(p.canonicalize(sourcePath));
+    File file = new File(pathLib.canonicalize(sourcePath));
     Directory dir = file.parent;
     while (dir.parent.path != dir.path && dir.existsSync()) {
-      File pubspec = new File(p.join(dir.path, 'pubspec.yaml'));
+      File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
       if (pubspec.existsSync()) {
         return new PackageMeta.fromDir(dir);
       }
@@ -2973,9 +2974,9 @@ abstract class ModelElement extends Canonicalization
   String get elementLocation {
     // Call nothing from here that can emit warnings or you'll cause stack overflows.
     if (lineAndColumn != null) {
-      return "(${p.toUri(sourceFileName)}:${lineAndColumn.item1}:${lineAndColumn.item2})";
+      return "(${pathLib.toUri(sourceFileName)}:${lineAndColumn.item1}:${lineAndColumn.item2})";
     }
-    return "(${p.toUri(sourceFileName)})";
+    return "(${pathLib.toUri(sourceFileName)})";
   }
 
   /// Returns a link to extended documentation, or the empty string if that
@@ -3114,20 +3115,21 @@ abstract class ModelElement extends Canonicalization
       if (_originalMember != null &&
           (_originalMember is ExecutableMember ||
               _originalMember is ParameterMember)) {
-        dynamic originalMember = _originalMember;
-        _modelType = new ElementType(
-            originalMember.type,
-            new ModelElement.fromElement(
-                originalMember.type.element, packageGraph));
+        if (_originalMember is ExecutableMember) {
+          _modelType = new ElementType.from(
+              (_originalMember as ExecutableMember).type, packageGraph);
+        } else {
+          // ParameterMember
+          _modelType = new ElementType.from(
+              (_originalMember as ParameterMember).type, packageGraph);
+        }
       } else if (element is ExecutableElement ||
           element is FunctionTypedElement ||
           element is ParameterElement ||
           element is TypeDefiningElement ||
           element is PropertyInducingElement) {
-        _modelType = new ElementType(
-            (element as dynamic).type,
-            new ModelElement.fromElement(
-                (element as dynamic).type.element, packageGraph));
+        _modelType =
+            new ElementType.from((element as dynamic).type, packageGraph);
       }
     }
     return _modelType;
@@ -3208,10 +3210,8 @@ abstract class ModelElement extends Canonicalization
         recursedParameters.addAll(newParameters);
         newParameters.clear();
         for (Parameter p in recursedParameters) {
-          if (p.modelType.element.canHaveParameters) {
-            newParameters.addAll(p.modelType.element.parameters
-                .where((p) => !recursedParameters.contains(p)));
-          }
+          newParameters.addAll(p.modelType.parameters
+              .where((p) => !recursedParameters.contains(p)));
         }
       }
       _allParameters = recursedParameters.toList();
@@ -3281,65 +3281,59 @@ abstract class ModelElement extends Canonicalization
     }
   }
 
-  String linkedParams(
-      {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
-    String renderParam(Parameter param, String suffix) {
-      StringBuffer buf = new StringBuffer();
-      buf.write('<span class="parameter" id="${param.htmlId}">');
-      if (showMetadata && param.hasAnnotations) {
-        param.annotations.forEach((String annotation) {
-          buf.write('<span>$annotation</span> ');
-        });
-      }
-      if (param.modelType.isFunctionType) {
-        var returnTypeName;
-        bool isTypedef = (param.modelType.element is Typedef ||
-            param.modelType.element is ModelFunctionTypedef);
-        if (isTypedef) {
-          returnTypeName = param.modelType.linkedName;
-        } else {
-          returnTypeName = param.modelType.createLinkedReturnTypeName();
-        }
-        buf.write('<span class="type-annotation">${returnTypeName}</span>');
-        if (showNames) {
-          buf.write(' <span class="parameter-name">${param.name}</span>');
-        } else if (param.modelType.element is ModelFunctionAnonymous) {
-          buf.write(' <span class="parameter-name">Function</span>');
-        }
-        if (!isTypedef) {
-          buf.write('(');
-          buf.write(param.modelType.element
-              .linkedParams(showNames: showNames, showMetadata: showMetadata));
-          buf.write(')');
-        }
-      } else if (param.modelType != null && param.modelType.element != null) {
-        var mt = param.modelType;
-        String typeName = "";
-        if (mt != null && !mt.isDynamic) {
-          typeName = mt.linkedName;
-        }
-        if (typeName.isNotEmpty) {
-          buf.write('<span class="type-annotation">$typeName</span>');
-        }
-        if (typeName.isNotEmpty && showNames && param.name.isNotEmpty)
-          buf.write(' ');
-        if (showNames && param.name.isNotEmpty) {
-          buf.write('<span class="parameter-name">${param.name}</span>');
-        }
-      }
+  String renderParam(
+      Parameter param, String suffix, bool showMetadata, bool showNames) {
+    StringBuffer buf = new StringBuffer();
+    ElementType paramModelType = param.modelType;
 
-      if (param.hasDefaultValue) {
-        if (param.isOptionalNamed) {
-          buf.write(': ');
-        } else {
-          buf.write(' = ');
-        }
-        buf.write('<span class="default-value">${param.defaultValue}</span>');
+    buf.write('<span class="parameter" id="${param.htmlId}">');
+    if (showMetadata && param.hasAnnotations) {
+      param.annotations.forEach((String annotation) {
+        buf.write('<span>$annotation</span> ');
+      });
+    }
+    if (paramModelType is CallableElementTypeMixin) {
+      var returnTypeName = paramModelType.createLinkedReturnTypeName();
+      buf.write('<span class="type-annotation">${returnTypeName}</span>');
+      if (showNames) {
+        buf.write(' <span class="parameter-name">${param.name}</span>');
+      } else if (paramModelType.isTypedef ||
+          paramModelType is CallableAnonymousElementType) {
+        buf.write(
+            ' <span class="parameter-name">${paramModelType.name}</span>');
       }
-      buf.write('${suffix}</span>');
-      return buf.toString();
+      if (!paramModelType.isTypedef) {
+        buf.write('(');
+        buf.write(paramModelType.element
+            .linkedParams(showNames: showNames, showMetadata: showMetadata));
+        buf.write(')');
+      }
+    } else if (param.modelType != null) {
+      String typeName = paramModelType.linkedName;
+      if (typeName.isNotEmpty) {
+        buf.write('<span class="type-annotation">$typeName</span>');
+      }
+      if (typeName.isNotEmpty && showNames && param.name.isNotEmpty)
+        buf.write(' ');
+      if (showNames && param.name.isNotEmpty) {
+        buf.write('<span class="parameter-name">${param.name}</span>');
+      }
     }
 
+    if (param.hasDefaultValue) {
+      if (param.isOptionalNamed) {
+        buf.write(': ');
+      } else {
+        buf.write(' = ');
+      }
+      buf.write('<span class="default-value">${param.defaultValue}</span>');
+    }
+    buf.write('${suffix}</span>');
+    return buf.toString();
+  }
+
+  String linkedParams(
+      {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
     List<Parameter> requiredParams =
         parameters.where((Parameter p) => !p.isOptional).toList();
     List<Parameter> positionalParams =
@@ -3367,17 +3361,19 @@ abstract class ModelElement extends Canonicalization
       } else {
         ext = isLast ? '' : ', ';
       }
-      builder.write(renderParam(param, ext));
+      builder.write(renderParam(param, ext, showMetadata, showNames));
       builder.write(' ');
     }
     for (Parameter param in positionalParams) {
       bool isLast = param == positionalParams.last;
-      builder.write(renderParam(param, isLast ? '' : ', '));
+      builder.write(
+          renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
       builder.write(' ');
     }
     for (Parameter param in namedParams) {
       bool isLast = param == namedParams.last;
-      builder.write(renderParam(param, isLast ? '' : ', '));
+      builder.write(
+          renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
       builder.write(' ');
     }
 
@@ -3389,31 +3385,6 @@ abstract class ModelElement extends Canonicalization
     }
 
     return builder.toString().trim();
-  }
-
-  /// Gather all the used elements, from the parameters and return type, for example
-  /// E.g. method <code>Iterable<String> blah(List<int> foo)</code> will return
-  /// <code>[Iterable, String, List, int]</code>
-  Iterable<ModelElement> get usedElements {
-    final set = new Set<ModelElement>();
-    if (modelType != null) {
-      if (modelType.isFunctionType) {
-        if (modelType.returnElement != null) {
-          set.addAll(modelType.returnElement.usedElements);
-        }
-        if (canHaveParameters) {
-          set.addAll(parameters.map((p) => p.usedElements).expand((i) => i));
-        }
-      } else if (modelType.element != null) {
-        set.add(modelType.element);
-        if (modelType.isParameterizedType) {
-          set.addAll(modelType.typeArguments
-              .map((arg) => arg.element.usedElements)
-              .expand((i) => i));
-        }
-      }
-    }
-    return set;
   }
 
   @override
@@ -3444,7 +3415,7 @@ abstract class ModelElement extends Canonicalization
       if (isPublicAndPackageDocumented) {
         warn(PackageWarning.noCanonicalFound);
       }
-      return HTML_ESCAPE.convert(name);
+      return htmlEscape.convert(name);
     }
 
     var classContent = isDeprecated ? ' class="deprecated"' : '';
@@ -3493,11 +3464,12 @@ abstract class ModelElement extends Canonicalization
     RegExp exampleRE = new RegExp(r'{@example\s+([^}]+)}');
     return rawdocs.replaceAllMapped(exampleRE, (match) {
       var args = _getExampleArgs(match[1]);
-      var lang = args['lang'] ?? p.extension(args['src']).replaceFirst('.', '');
+      var lang =
+          args['lang'] ?? pathLib.extension(args['src']).replaceFirst('.', '');
 
       var replacement = match[0]; // default to fully matched string.
 
-      var fragmentFile = new File(p.join(dirPath, args['file']));
+      var fragmentFile = new File(pathLib.join(dirPath, args['file']));
       if (fragmentFile.existsSync()) {
         replacement = fragmentFile.readAsStringSync();
         if (!lang.isEmpty) {
@@ -3597,14 +3569,14 @@ abstract class ModelElement extends Canonicalization
     var file = src + fragExtension;
     var region = args['region'] ?? '';
     if (!region.isEmpty) {
-      var dir = p.dirname(src);
-      var basename = p.basenameWithoutExtension(src);
-      var ext = p.extension(src);
-      file = p.join(dir, '$basename-$region$ext$fragExtension');
+      var dir = pathLib.dirname(src);
+      var basename = pathLib.basenameWithoutExtension(src);
+      var ext = pathLib.extension(src);
+      file = pathLib.join(dir, '$basename-$region$ext$fragExtension');
     }
     args['file'] = config?.examplePathPrefix == null
         ? file
-        : p.join(config.examplePathPrefix, file);
+        : pathLib.join(config.examplePathPrefix, file);
     return args;
   }
 }
@@ -4022,9 +3994,9 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
         warningMessage =
             "library says it is {@canonicalFor ${message}} but ${message} can't be canonical there";
         break;
-      case PackageWarning.categoryOrderGivesMissingPackageName:
+      case PackageWarning.packageOrderGivesMissingPackageName:
         warningMessage =
-            "--category-order gives invalid package name: '${message}'";
+            "--package-order gives invalid package name: '${message}'";
         break;
       case PackageWarning.unresolvedDocReference:
         warningMessage = "unresolved doc reference [${message}]";
@@ -4094,17 +4066,18 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     return locatable.fullyQualifiedName.replaceFirst(':', '-');
   }
 
-  List<Package> get categories {
-    // Help the user if they pass us a category that doesn't exist.
-    for (String categoryName in config.categoryOrder) {
-      if (!packages.containsKey(categoryName))
-        warnOnElement(null, PackageWarning.categoryOrderGivesMissingPackageName,
-            message: "${categoryName}, categories: ${packages.keys.join(',')}");
+  List<Package> get publicPackages {
+    List<Package> _publicPackages;
+    // Help the user if they pass us a package that doesn't exist.
+    for (String packageName in config.packageOrder) {
+      if (!packages.containsKey(packageName))
+        warnOnElement(null, PackageWarning.packageOrderGivesMissingPackageName,
+            message: "${packageName}, packages: ${packages.keys.join(',')}");
     }
-    List<Package> publicPackages = packages.values
+    _publicPackages = packages.values
         .where((p) => p.libraries.any((l) => l.isPublic))
         .toList();
-    return publicPackages..sort();
+    return _publicPackages..sort();
   }
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
@@ -4231,7 +4204,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   String get name => packageMeta.name;
 
   String get kind =>
-      (packageMeta.useCategories || packageGraph.isSdk) ? '' : 'package';
+      (packageMeta.displayAsPackages || packageGraph.isSdk) ? '' : 'package';
 
   @override
   String get oneLineDoc => '';
@@ -4510,27 +4483,72 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
 
 class Package implements Comparable<Package> {
   final String name;
+
+  // Initialized by [PackageGraph.PackageGraph].
   final List<Library> _libraries = [];
   PackageGraph packageGraph;
 
   Package(this.name, this.packageGraph);
 
+  DartdocOptions _dartdocOptions;
+  DartdocOptions get dartdocOptions {
+    if (_dartdocOptions == null) {
+      _dartdocOptions = new DartdocOptions.fromDir(new Directory(packagePath));
+    }
+    return _dartdocOptions;
+  }
+
+  bool get isSdk => packageMeta.isSdk;
+
+  String _packagePath;
+  String get packagePath {
+    if (_packagePath == null) {
+      if (isSdk) {
+        _packagePath = getSdkDir().path;
+      } else {
+        assert(_libraries.isNotEmpty);
+        File file = new File(
+            pathLib.canonicalize(_libraries.first.element.source.fullName));
+        Directory dir = file.parent;
+        while (dir.parent.path != dir.path && dir.existsSync()) {
+          File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
+          if (pubspec.existsSync()) {
+            _packagePath = dir.absolute.path;
+            break;
+          }
+          dir = dir.parent;
+        }
+      }
+    }
+    return _packagePath;
+  }
+
   List<Library> get libraries => _libraries;
 
   Iterable<Library> get publicLibraries => filterNonPublic(libraries);
+
+  PackageMeta _packageMeta;
+  // TODO(jcollins-g): packageMeta should be passed in with the object rather
+  // than calculated indirectly from libraries.
+  PackageMeta get packageMeta {
+    if (_packageMeta == null) {
+      _packageMeta = _libraries.first.packageMeta;
+    }
+    return _packageMeta;
+  }
 
   @override
   String toString() => name;
 
   /// Returns:
-  /// -1 if this category is listed in --category-order.
-  /// 0 if this category is the original package we are documenting.
+  /// -1 if this package is listed in --package-order.
+  /// 0 if this package is the original package we are documenting.
   /// 1 if this group represents the Dart SDK.
   /// 2 if this group has a name that contains the name of the original
   ///   package we are documenting.
   /// 3 otherwise.
   int get _group {
-    if (config.categoryOrder.contains(name)) return -1;
+    if (config.packageOrder.contains(name)) return -1;
     if (name.toLowerCase() == packageGraph.name.toLowerCase()) return 0;
     if (name == "Dart Core") return 1;
     if (name.toLowerCase().contains(packageGraph.name.toLowerCase())) return 2;
@@ -4541,8 +4559,8 @@ class Package implements Comparable<Package> {
   int compareTo(Package other) {
     if (_group == other._group) {
       if (_group == -1) {
-        return Comparable.compare(config.categoryOrder.indexOf(name),
-            config.categoryOrder.indexOf(other.name));
+        return Comparable.compare(config.packageOrder.indexOf(name),
+            config.packageOrder.indexOf(other.name));
       } else {
         return name.toLowerCase().compareTo(other.name.toLowerCase());
       }
@@ -4718,7 +4736,7 @@ abstract class SourceCodeMixin {
   }
 }
 
-abstract class TypeParameters implements Nameable {
+abstract class TypeParameters implements ModelElement {
   String get nameWithGenerics => '$name$genericParameters';
 
   String get nameWithLinkedGenerics => '$name$linkedGenericParameters';
@@ -4734,6 +4752,9 @@ abstract class TypeParameters implements Nameable {
     if (typeParameters.isEmpty) return '';
     return '<span class="signature">&lt;${typeParameters.map((t) => t.linkedName).join(', ')}&gt;</span>';
   }
+
+  @override
+  DefinedElementType get modelType => super.modelType;
 
   List<TypeParameter> get typeParameters;
 }
@@ -4814,6 +4835,9 @@ class TopLevelVariable extends ModelElement
   @override
   String get fileName => isConst ? '$name-constant.html' : '$name.html';
 
+  @override
+  DefinedElementType get modelType => super.modelType;
+
   TopLevelVariableElement get _variable => (element as TopLevelVariableElement);
 }
 
@@ -4856,9 +4880,7 @@ class Typedef extends ModelElement
   @override
   String get kind => 'typedef';
 
-  String get linkedReturnType => modelType != null
-      ? modelType.createLinkedReturnTypeName()
-      : _typedef.returnType.name;
+  String get linkedReturnType => modelType.createLinkedReturnTypeName();
 
   FunctionTypeAliasElement get _typedef =>
       (element as FunctionTypeAliasElement);
@@ -4889,28 +4911,36 @@ class TypeParameter extends ModelElement {
   @override
   String get kind => 'type parameter';
 
+  ElementType _boundType;
   ElementType get boundType {
-    var bound = _typeParameter.bound;
-    if (bound != null) {
-      ModelElement boundClass =
-          new ModelElement.fromElement(bound.element, packageGraph);
-      return new ElementType(bound, boundClass);
+    if (_boundType == null) {
+      var bound = _typeParameter.bound;
+      if (bound != null) {
+        _boundType = new ElementType.from(bound, packageGraph);
+      }
     }
-    return null;
+    return _boundType;
   }
 
+  String _name;
   @override
   String get name {
-    return _typeParameter.bound != null
-        ? '${_typeParameter.name} extends ${boundType.nameWithGenerics}'
-        : _typeParameter.name;
+    if (_name == null) {
+      _name = _typeParameter.bound != null
+          ? '${_typeParameter.name} extends ${boundType.nameWithGenerics}'
+          : _typeParameter.name;
+    }
+    return _name;
   }
 
   @override
   String get linkedName {
-    return _typeParameter.bound != null
-        ? '${_typeParameter.name} extends ${boundType.linkedName}'
-        : _typeParameter.name;
+    if (_linkedName == null) {
+      _linkedName = _typeParameter.bound != null
+          ? '${_typeParameter.name} extends ${boundType.linkedName}'
+          : _typeParameter.name;
+    }
+    return _linkedName;
   }
 
   TypeParameterElement get _typeParameter => element as TypeParameterElement;
@@ -4919,7 +4949,7 @@ class TypeParameter extends ModelElement {
   String toString() => element.name;
 }
 
-/// Everything you need to instantiate a Package object for documenting.
+/// Everything you need to instantiate a PackageGraph object for documenting.
 class PackageBuilder {
   final bool autoIncludeDependencies;
   final List<String> excludes;
@@ -5143,25 +5173,25 @@ class PackageBuilder {
   /// library files in the "lib" directory to document.
   Iterable<String> findFilesToDocumentInPackage(
       String basePackageDir, bool autoIncludeDependencies) sync* {
-    final String sep = p.separator;
+    final String sep = pathLib.separator;
 
     Set<String> packageDirs = new Set()..add(basePackageDir);
 
     if (autoIncludeDependencies) {
       Map<String, Uri> info = package_config
           .findPackagesFromFile(
-              new Uri.file(p.join(basePackageDir, 'pubspec.yaml')))
+              new Uri.file(pathLib.join(basePackageDir, 'pubspec.yaml')))
           .asMap();
       for (String packageName in info.keys) {
         if (!excludes.contains(packageName)) {
-          packageDirs.add(p.dirname(info[packageName].toFilePath()));
+          packageDirs.add(pathLib.dirname(info[packageName].toFilePath()));
         }
       }
     }
 
     for (String packageDir in packageDirs) {
-      var packageLibDir = p.join(packageDir, 'lib');
-      var packageLibSrcDir = p.join(packageLibDir, 'src');
+      var packageLibDir = pathLib.join(packageDir, 'lib');
+      var packageLibSrcDir = pathLib.join(packageLibDir, 'src');
       // To avoid analyzing package files twice, only files with paths not
       // containing '/packages' will be added. The only exception is if the file
       // to analyze already has a '/package' in its path.
@@ -5171,8 +5201,8 @@ class PackageBuilder {
             (!lib.contains('${sep}packages${sep}') ||
                 packageDir.contains('${sep}packages${sep}'))) {
           // Only include libraries within the lib dir that are not in lib/src
-          if (p.isWithin(packageLibDir, lib) &&
-              !p.isWithin(packageLibSrcDir, lib)) {
+          if (pathLib.isWithin(packageLibDir, lib) &&
+              !pathLib.isWithin(packageLibSrcDir, lib)) {
             // Only add the file if it does not contain 'part of'
             var contents = new File(lib).readAsStringSync();
 
@@ -5237,11 +5267,11 @@ class PackageBuilder {
     var entities = dir.listSync();
 
     var pubspec = entities.firstWhere(
-        (e) => e is File && p.basename(e.path) == 'pubspec.yaml',
+        (e) => e is File && pathLib.basename(e.path) == 'pubspec.yaml',
         orElse: () => null);
 
     var libDir = entities.firstWhere(
-        (e) => e is Directory && p.basename(e.path) == 'lib',
+        (e) => e is Directory && pathLib.basename(e.path) == 'lib',
         orElse: () => null);
 
     if (pubspec != null && libDir != null) {

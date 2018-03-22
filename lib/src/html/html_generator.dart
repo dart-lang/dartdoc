@@ -7,7 +7,7 @@ library dartdoc.html_generator;
 import 'dart:async' show Future, StreamController, Stream;
 import 'dart:io' show File;
 
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathLib;
 
 import '../generator.dart';
 import '../model.dart';
@@ -82,7 +82,7 @@ class HtmlGenerator extends Generator {
       // docs somehow.  Check data.self.isCanonical and callers for bugs.
       assert(allowOverwrite || !writtenFiles.contains(filePath));
 
-      var file = new File(p.join(outputDirectoryPath, filePath));
+      var file = new File(pathLib.join(outputDirectoryPath, filePath));
       var parent = file.parent;
       if (!parent.existsSync()) {
         parent.createSync(recursive: true);
@@ -116,7 +116,7 @@ class HtmlGeneratorOptions implements HtmlOptions {
   final bool prettyIndexJson;
 
   @override
-  final bool useCategories;
+  final bool displayAsPackages;
 
   @override
   final String relCanonicalPrefix;
@@ -129,7 +129,7 @@ class HtmlGeneratorOptions implements HtmlOptions {
       this.relCanonicalPrefix,
       this.faviconPath,
       String toolVersion,
-      this.useCategories: false,
+      this.displayAsPackages: false,
       this.prettyIndexJson: false})
       : this.toolVersion = toolVersion ?? 'unknown';
 }

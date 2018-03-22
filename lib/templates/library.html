@@ -2,25 +2,25 @@
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
     <h5>{{parent.name}} {{parent.kind}}</h5>
-    {{#useCategories}}
+    {{#displayAsPackages}}
     <ol>
-      {{#packageGraph.categories}}
+      {{#packageGraph.publicPackages}}
         <li class="section-title">{{name}}</li>
         {{#publicLibraries}}
         <li>{{{linkedName}}}</li>
         {{/publicLibraries}}
-      {{/packageGraph.categories}}
+      {{/packageGraph.publicPackages}}
     </ol>
-    {{/useCategories}}
+    {{/displayAsPackages}}
 
-    {{^useCategories}}
+    {{^displayAsPackages}}
     <ol>
       <li class="section-title"><a href="{{packageGraph.href}}#libraries">Libraries</a></li>
       {{#packageGraph.publicLibraries}}
       <li>{{{linkedName}}}</li>
       {{/packageGraph.publicLibraries}}
     </ol>
-    {{/useCategories}}
+    {{/displayAsPackages}}
   </div>
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">

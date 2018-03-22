@@ -11,7 +11,7 @@
 library dartdoc.resource_loader;
 
 import 'dart:async' show Future;
-import 'dart:convert' show UTF8;
+import 'dart:convert' show utf8;
 
 import 'package:resource/resource.dart';
 
@@ -19,7 +19,7 @@ import 'package:resource/resource.dart';
 Future<String> loadAsString(String path) async {
   var bytes = await loadAsBytes(path);
 
-  return UTF8.decode(bytes);
+  return utf8.decode(bytes);
 }
 
 /// Loads a `package:` resource as an [List<int>].
