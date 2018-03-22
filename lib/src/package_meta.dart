@@ -6,22 +6,49 @@ library dartdoc.package_meta;
 
 import 'dart:io';
 
+import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
 
 import 'logging.dart';
 
+
+Map<String, PackageMeta> _packageMetaCache = {};
+
 abstract class PackageMeta {
   final Directory dir;
-  final bool displayAsPackages;
 
-  PackageMeta(this.dir, {this.displayAsPackages: false});
+  PackageMeta(this.dir);
 
-  factory PackageMeta.fromDir(Directory dir) => new _FilePackageMeta(dir);
-  factory PackageMeta.fromSdk(Directory sdkDir,
-          {String sdkReadmePath, bool displayAsPackages}) =>
-      new _SdkMeta(sdkDir,
-          sdkReadmePath: sdkReadmePath, displayAsPackages: displayAsPackages);
+  /// This factory is guaranteed to return the same object for any given
+  /// [dir.absolute.path].  Multiple [dir.absolute.path]s will resolve to the
+  /// same object if they are part of the same package.  Returns null
+  /// if the directory is not part of a known package.
+  factory PackageMeta.fromDir(Directory dir) {
+    Directory original = dir.absolute;
+    dir = original;
+    if (!_packageMetaCache.containsKey(dir.path)) {
+      PackageMeta packageMeta;
+      // There are pubspec.yaml files inside the SDK.  Ignore them.
+      if (pathLib.isWithin(getSdkDir().absolute.path, dir.path) || getSdkDir().path == dir.path) {
+        packageMeta = new _SdkMeta(getSdkDir());
+      } else {
+        while (dir.existsSync()) {
+          File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
+          if (pubspec.existsSync()) {
+            packageMeta = new _FilePackageMeta(dir);
+            break;
+          }
+          // Allow a package to be at root (possible in a Windows setting with
+          // drive letter mappings).
+          if (dir.path == dir.parent.absolute.path) break;
+          dir = dir.parent.absolute;
+        }
+      }
+      _packageMetaCache[dir.absolute.path] = packageMeta;
+    }
+    return _packageMetaCache[dir.absolute.path];
+  }
 
   bool get isSdk;
   bool get needsPubGet => false;
@@ -46,7 +73,7 @@ abstract class PackageMeta {
   FileContents getChangelogContents();
 
   /// Returns true if we are a valid package, valid enough to generate docs.
-  bool get isValid;
+  bool get isValid => getInvalidReasons().isEmpty;
 
   /// Returns a list of reasons this package is invalid, or an
   /// empty list if no reasons found.
@@ -151,8 +178,6 @@ class _FilePackageMeta extends PackageMeta {
     return _changelog;
   }
 
-  @override
-  bool get isValid => getInvalidReasons().isEmpty;
 
   /// Returns a list of reasons this package is invalid, or an
   /// empty list if no reasons found.
@@ -184,10 +209,12 @@ File _locate(Directory dir, List<String> fileNames) {
 }
 
 class _SdkMeta extends PackageMeta {
-  final String sdkReadmePath;
+  String sdkReadmePath;
 
-  _SdkMeta(Directory dir, {this.sdkReadmePath, bool displayAsPackages})
-      : super(dir, displayAsPackages: displayAsPackages);
+  _SdkMeta(Directory dir)
+      : super(dir) {
+    sdkReadmePath = pathLib.join(dir.path, 'lib', 'api_readme.md');
+  }
 
   @override
   bool get isSdk => true;
@@ -198,7 +225,7 @@ class _SdkMeta extends PackageMeta {
   }
 
   @override
-  String get name => 'Dart SDK';
+  String get name => 'Dart';
   @override
   String get version =>
       new File(pathLib.join(dir.path, 'version')).readAsStringSync().trim();
@@ -211,14 +238,9 @@ class _SdkMeta extends PackageMeta {
 
   @override
   FileContents getReadmeContents() {
-    File f = sdkReadmePath != null
-        ? new File(sdkReadmePath)
-        : new File(pathLib.join(dir.path, 'lib', 'api_readme.md'));
+    File f = new File(pathLib.join(dir.path, 'lib', 'api_readme.md'));
     return f.existsSync() ? new FileContents(f) : null;
   }
-
-  @override
-  bool get isValid => true;
 
   @override
   List<String> getInvalidReasons() => [];
