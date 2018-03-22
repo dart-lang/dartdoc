@@ -1173,6 +1173,34 @@ abstract class Documentable extends Nameable {
   bool get isDocumented;
 }
 
+/// Mixin implementing dartdoc categorization for ModelElements.
+abstract class Categorization implements ModelElement {
+  @override
+  String _buildDocumentationLocal() {
+    _rawDocs = super._buildDocumentationLocal();
+    _rawDocs = _stripAndSetDartdocCategory(_rawDocs);
+    return _rawDocs;
+  }
+
+  /// Parse {@category ...} in API comments and store the category in
+  /// the [_categoryName] variable.
+  String _stripAndSetDartdocCategory(String rawDocs) {
+    final categoryRegexp =
+        new RegExp(r'[ ]*{@category (.+?)}[ ]*\n?', multiLine: true);
+    return rawDocs.replaceAllMapped(categoryRegexp, (match) {
+      _categoryName = match[1].trim();
+      return '';
+    });
+  }
+
+  String _categoryName;
+  String get categoryName {
+    // TODO(jcollins-g): avoid side-effect dependency
+    if (_categoryName == null) documentationLocal;
+    return _categoryName;
+  }
+}
+
 /// Classes extending this class have canonicalization support in Dartdoc.
 abstract class Canonicalization extends Object
     with Locatable
@@ -1699,7 +1727,7 @@ abstract class GetterSetterCombo implements ModelElement {
   Accessor get setter;
 }
 
-class Library extends ModelElement {
+class Library extends ModelElement with Categorization {
   @override
   final PackageGraph packageGraph;
 
@@ -2175,9 +2203,10 @@ class Library extends ModelElement {
     return name;
   }
 
-  static PackageMeta getPackageMeta(LibraryElement element) {
+  static PackageMeta getPackageMeta(Element element) {
     String sourcePath = element.source.fullName;
-    return new PackageMeta.fromDir(new File(pathLib.canonicalize(sourcePath)).parent);
+    return new PackageMeta.fromDir(
+        new File(pathLib.canonicalize(sourcePath)).parent);
   }
 
   static String getLibraryName(LibraryElement element) {
@@ -3729,8 +3758,6 @@ class Operator extends Method {
   String get typeName => 'operator';
 }
 
-// TODO(jcollins-g): Break [Package] out into a real single-package only
-// class, and a container class for a set of packages.
 class PackageGraph extends Canonicalization with Nameable, Warnable {
   // All library objects related to this package; a superset of _libraries.
   final Map<LibraryElement, Library> allLibraries = new Map();
@@ -4047,19 +4074,26 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     return locatable.fullyQualifiedName.replaceFirst(':', '-');
   }
 
+  bool get hasMultiplePackages => publicPackages.length > 1;
+
+  List<Package> _publicPackages;
   List<Package> get publicPackages {
-    List<Package> _publicPackages;
-    // Help the user if they pass us a package that doesn't exist.
-    for (String packageName in config.packageOrder) {
-      if (!packages.containsKey(packageName))
-        warnOnElement(null, PackageWarning.packageOrderGivesMissingPackageName,
-            message: "${packageName}, packages: ${packages.keys.join(',')}");
+    if (_publicPackages == null) {
+      // Help the user if they pass us a package that doesn't exist.
+      for (String packageName in config.packageOrder) {
+        if (!packages.containsKey(packageName))
+          warnOnElement(
+              null, PackageWarning.packageOrderGivesMissingPackageName,
+              message: "${packageName}, packages: ${packages.keys.join(',')}");
+      }
+      _publicPackages = packages.values.where((p) => p.isPublic).toList()
+        ..sort();
     }
-    _publicPackages = packages.values
-        .where((p) => p.libraries.any((l) => l.isPublic))
-        .toList();
-    return _publicPackages..sort();
+    return _publicPackages;
   }
+
+  // Use only in testing.
+  void resetPublicPackages() => _publicPackages = null;
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
   void _tagReexportsFor(
@@ -4184,8 +4218,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   @override
   String get name => packageMeta.name;
 
-  String get kind =>
-      (packageGraph.isSdk) ? 'SDK' : 'package';
+  String get kind => (packageGraph.isSdk) ? 'SDK' : 'package';
 
   @override
   String get oneLineDoc => '';
@@ -4462,14 +4495,118 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   }
 }
 
-class Package implements Comparable<Package> {
-  final String name;
-
-  // Initialized by [PackageGraph.PackageGraph].
+/// A set of libraries, initialized after construction by accessing [_libraries].
+/// Do not call any methods or members excepting [_libraries] and [name] before
+/// finishing initialization of a [LibraryContainer].
+abstract class LibraryContainer extends Nameable {
   final List<Library> _libraries = [];
-  PackageGraph packageGraph;
+  PackageGraph get packageGraph;
 
-  Package(this.name, this.packageGraph);
+  List<Library> get libraries => _libraries;
+  Iterable<Library> get publicLibraries => filterNonPublic(libraries);
+
+  @override
+  String toString() => name;
+}
+
+/// A category is a subcategory of a package, containing libraries tagged
+/// with a @category identifier.  Comparable so it can be sorted according to
+/// [dartdocOptions.categoryOrder].
+class Category extends LibraryContainer implements Comparable<Category> {
+  /// All libraries in [libraries] must come from [package].
+  Package package;
+  DartdocOptions dartdocOptions;
+  String _name;
+
+  Category(this._name, this.package, this.dartdocOptions);
+
+  @override
+  String get name => _name;
+
+  /// Returns:
+  /// -1 if this category is listed in categoryOrder.
+  /// 0 if this category is named the same as the package.
+  /// 1 if this group has a name that contains the name of the package.
+  /// 2 otherwise.
+  int get _group {
+    if (dartdocOptions.categoryOrder.contains(name)) return -1;
+    if (name.toLowerCase() == package.name.toLowerCase()) return 0;
+    if (name.toLowerCase().contains(package.name.toLowerCase())) return 1;
+    return 2;
+  }
+
+  @override
+  int compareTo(Category other) {
+    if (_group == other._group) {
+      if (_group == -1) {
+        return Comparable.compare(dartdocOptions.categoryOrder.indexOf(name),
+            dartdocOptions.categoryOrder.indexOf(other.name));
+      } else {
+        return name.toLowerCase().compareTo(other.name.toLowerCase());
+      }
+    }
+    return Comparable.compare(_group, other._group);
+  }
+
+  @override
+  PackageGraph get packageGraph => package.packageGraph;
+}
+
+/// A [LibraryContainer] that contains [Library] objects related to a particular
+/// package.
+class Package extends LibraryContainer implements Comparable<Package>, Privacy {
+  String _name;
+  PackageGraph _packageGraph;
+
+  final Map<String, Category> _nameToCategory = {};
+  Package(this._name, this._packageGraph);
+
+  /// Return true if the code has defined non-default categories for libraries
+  /// in this package.
+  bool get hasCategories => categories.isNotEmpty;
+
+  LibraryContainer get defaultCategory => nameToCategory[null];
+
+  bool _isPublic;
+  @override
+  bool get isPublic {
+    if (_isPublic == null) _isPublic = libraries.any((l) => l.isPublic);
+    return _isPublic;
+  }
+
+  @override
+  String get name => _name;
+
+  @override
+  PackageGraph get packageGraph => _packageGraph;
+
+  // Workaround for mustache4dart issue where templates do not recognize
+  // inherited properties as being in-context.
+  @override
+  List<Library> get publicLibraries => super.publicLibraries;
+
+  /// A map of category name to the category itself.
+  Map<String, Category> get nameToCategory {
+    if (_nameToCategory.isEmpty) {
+      _nameToCategory[null] = new Category(null, this, dartdocOptions);
+      for (Library lib in libraries) {
+        String category = lib.categoryName;
+        _nameToCategory.putIfAbsent(
+            category, () => new Category(category, this, dartdocOptions));
+        _nameToCategory[category]._libraries.add(lib);
+      }
+    }
+    return _nameToCategory;
+  }
+
+  List<LibraryContainer> _categories;
+  List<LibraryContainer> get categories {
+    if (_categories == null) {
+      _categories = nameToCategory.values.where((c) => c.name != null).toList()
+        ..sort();
+    }
+    return _categories;
+  }
 
   DartdocOptions _dartdocOptions;
   DartdocOptions get dartdocOptions {
@@ -4478,6 +4615,10 @@ class Package implements Comparable<Package> {
     }
     return _dartdocOptions;
   }
+
+  /// Is this the package at the top of the list?  We display the first
+  /// package specially (with "Libraries" rather than the package name).
+  bool get isFirstPackage => identical(packageGraph.publicPackages.first, this);
 
   bool get isSdk => packageMeta.isSdk;
 
@@ -4503,10 +4644,6 @@ class Package implements Comparable<Package> {
     }
     return _packagePath;
   }
-
-  List<Library> get libraries => _libraries;
-
-  Iterable<Library> get publicLibraries => filterNonPublic(libraries);
 
   PackageMeta _packageMeta;
   // TODO(jcollins-g): packageMeta should be passed in with the object rather

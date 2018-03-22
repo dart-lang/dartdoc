@@ -46,14 +46,12 @@ Future<List<Generator>> initGenerators(String url, String relCanonicalPrefix,
     List<String> footerFilePaths,
     List<String> footerTextFilePaths,
     String faviconPath,
-    bool displayAsPackages: false,
     bool prettyIndexJson: false}) async {
   var options = new HtmlGeneratorOptions(
       url: url,
       relCanonicalPrefix: relCanonicalPrefix,
       toolVersion: version,
       faviconPath: faviconPath,
-      displayAsPackages: displayAsPackages,
       prettyIndexJson: prettyIndexJson);
 
   return [

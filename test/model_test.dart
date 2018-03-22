@@ -24,6 +24,7 @@ void main() {
   }
 
   PackageGraph packageGraph;
+  PackageGraph packageGraphSmall;
   PackageGraph ginormousPackageGraph;
   Library exLibrary;
   Library fakeLibrary;
@@ -34,6 +35,7 @@ void main() {
   setUpAll(() async {
     await utils.init();
     packageGraph = utils.testPackageGraph;
+    packageGraphSmall = utils.testPackageGraphSmall;
     ginormousPackageGraph = utils.testPackageGraphGinormous;
     exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
     fakeLibrary =
@@ -45,10 +47,47 @@ void main() {
     sdkAsPackageGraph = utils.testPackageGraphSdk;
   });
 
+  group('Category', () {
+    test('Verify categories for test_package', () {
+      expect(packageGraph.publicPackages.length, equals(1));
+      expect(packageGraph.publicPackages.first.hasCategories, isTrue);
+      List<Category> packageCategories =
+          packageGraph.publicPackages.first.categories;
+      expect(packageCategories.length, equals(3));
+      expect(packageCategories.map((c) => c.name).toList(),
+          orderedEquals(['Real Libraries', 'Unreal', 'Misc']));
+      expect(packageCategories.map((c) => c.libraries.length).toList(),
+          orderedEquals([2, 2, 1]));
+      expect(
+          packageGraph
+              .publicPackages.first.defaultCategory.publicLibraries.length,
+          equals(3));
+    });
+
+    test('Verify that packages without categories get handled', () {
+      expect(packageGraphSmall.publicPackages.length, equals(1));
+      expect(packageGraphSmall.publicPackages.first.hasCategories, isFalse);
+      List<Category> packageCategories =
+          packageGraphSmall.publicPackages.first.categories;
+      expect(packageCategories.length, equals(0));
+      expect(
+          packageGraph
+              .publicPackages.first.defaultCategory.publicLibraries.length,
+          equals(3));
+    });
+  });
+
   group('Package', () {
     group('test package', () {
       setUp(() {
         setConfig();
+        ginormousPackageGraph.resetPublicPackages();
+        packageGraph.resetPublicPackages();
+      });
+      tearDown(() {
+        setConfig();
+        ginormousPackageGraph.resetPublicPackages();
+        packageGraph.resetPublicPackages();
       });
 
       test('name', () {
@@ -233,7 +272,7 @@ void main() {
 
     test('has documentation', () {
       expect(exLibrary.documentation,
-          'a library. testing string escaping: `var s = \'a string\'` <cool>');
+          'a library. testing string escaping: `var s = \'a string\'` <cool>\n');
     });
 
     test('has one line docs', () {

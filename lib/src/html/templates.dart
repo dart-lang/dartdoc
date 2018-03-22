@@ -20,6 +20,8 @@ const _partials = const <String>[
   'constant',
   'footer',
   'head',
+  'library',
+  'packages',
   'property',
   'features',
   'documentation',

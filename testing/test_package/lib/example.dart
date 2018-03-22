@@ -1,4 +1,5 @@
 /// a library. testing string escaping: `var s = 'a string'` <cool>
+/// {@category Real Libraries}
 library ex;
 
 import 'dart:async';
