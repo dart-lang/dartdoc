@@ -31,7 +31,6 @@ import 'package:analyzer/src/generated/resolver.dart'
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:analyzer/src/generated/utilities_dart.dart' show ParameterKind;
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:analyzer/src/dart/analysis/driver.dart';
@@ -4590,12 +4589,11 @@ class Parameter extends ModelElement implements EnclosedElement {
     return '${enclosingName}-param-${name}';
   }
 
-  bool get isOptional => _parameter.parameterKind.isOptional;
+  bool get isOptional => _parameter.isOptional;
 
-  bool get isOptionalNamed => _parameter.parameterKind == ParameterKind.NAMED;
+  bool get isOptionalNamed => _parameter.isNamed;
 
-  bool get isOptionalPositional =>
-      _parameter.parameterKind == ParameterKind.POSITIONAL;
+  bool get isOptionalPositional => _parameter.isOptionalPositional;
 
   @override
   String get kind => 'parameter';
