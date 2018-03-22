@@ -52,14 +52,15 @@ main(List<String> arguments) async {
   final bool sdkDocs = args['sdk-docs'];
   final bool showProgress = args['show-progress'];
 
-  final String readme = args['sdk-readme'];
-  if (readme != null && !(new File(readme).existsSync())) {
-    stderr.writeln(
-        " fatal error: unable to locate the SDK description file at $readme.");
-    exit(1);
+  Directory inputDir;
+  if (sdkDocs) {
+    inputDir = sdkDir;
+  } else if (args['input'] == null) {
+    inputDir = Directory.current;
+  } else {
+    inputDir = args['input'];
   }
 
-  Directory inputDir = new Directory(args['input']);
   if (!inputDir.existsSync()) {
     stderr.writeln(
         " fatal error: unable to locate the input directory at ${inputDir
@@ -188,12 +189,12 @@ main(List<String> arguments) async {
     });
   }
 
-  PackageMeta packageMeta = sdkDocs
-      ? new PackageMeta.fromSdk(sdkDir,
-          sdkReadmePath: readme,
-          displayAsPackages:
-              args['use-categories'] || args['display-as-packages'])
-      : new PackageMeta.fromDir(inputDir);
+  PackageMeta packageMeta = new PackageMeta.fromDir(inputDir);
+
+  if (packageMeta == null) {
+    stderr.writeln(' fatal error: Unable to generate documentation: no pubspec.yaml found');
+    exit(1);
+  }
 
   if (!packageMeta.isValid) {
     final String firstError = packageMeta.getInvalidReasons().first;
@@ -210,6 +211,7 @@ main(List<String> arguments) async {
       exit(1);
     }
   }
+
 
   logInfo("Generating documentation for '${packageMeta}' into "
       "${outputDir.absolute.path}${Platform.pathSeparator}");
@@ -310,9 +312,9 @@ ArgParser _createArgsParser() {
       help: 'Display progress indications to console stdout', negatable: false);
   parser.addOption('sdk-readme',
       help:
-          'Path to the SDK description file; use if generating Dart SDK docs.');
+          'Path to the SDK description file.  Deprecated (ignored)');
   parser.addOption('input',
-      help: 'Path to source directory.', defaultsTo: Directory.current.path);
+      help: 'Path to source directory.');
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
   parser.addMultiOption('header',
