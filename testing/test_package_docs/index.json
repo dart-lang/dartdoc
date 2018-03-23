@@ -8138,6 +8138,17 @@
   }
  },
  {
+  "name": "aCoolVariable",
+  "qualifiedName": "fake.aCoolVariable",
+  "href": "fake/aCoolVariable.html",
+  "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "aVoidParameter",
   "qualifiedName": "fake.aVoidParameter",
   "href": "fake/aVoidParameter.html",
@@ -8307,6 +8318,17 @@
   "qualifiedName": "fake.myGenericFunction",
   "href": "fake/myGenericFunction.html",
   "type": "function",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "myMap",
+  "qualifiedName": "fake.myMap",
+  "href": "fake/myMap-constant.html",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
