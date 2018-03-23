@@ -2,6 +2,7 @@ analyzer:
   strong-mode: true
   language:
     enableGenericMethods: true
+    enablePreviewDart2: true
     enableSuperMixins: true
   exclude:
     - 'doc/**'
