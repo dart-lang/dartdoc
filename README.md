@@ -95,6 +95,34 @@ authoring doc comments for Dart with `dartdoc`.
 
 ## Advanced features
 
+### dartdoc_options.yaml
+
+Creating a file named dartdoc_options.yaml at the top of your package can change how Dartdoc
+generates docs.  
+
+```yaml
+dartdoc:
+  categoryOrder: ["First Category", "Second Category"]
+
+```
+For now, there's only one option:
+
+  * **categoryOrder**:  Specify the order of categories, below, for display in the sidebar and
+    the package page.
+  
+### Categories
+
+You can tag libraries in their documentation with the string `{@category YourCategory}`, and
+that will cause the library to appear in a category when showing the sidebar on the Package
+and Library pages.
+
+```dart
+/// Here is my library.
+/// 
+/// {@category Amazing}
+library my_library;
+```
+
 ### Macros
 
 You can specify "macros", i.e. reusable pieces of documentation. For that, first specify a template
@@ -113,6 +141,9 @@ and then you can insert it via `{@macro template_name}`, like
 /// {@macro template_name}
 /// More comments
 ```
+
+
+
 
 ### Auto including dependencies
 
