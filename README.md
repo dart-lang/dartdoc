@@ -142,9 +142,6 @@ and then you can insert it via `{@macro template_name}`, like
 /// More comments
 ```
 
-
-
-
 ### Auto including dependencies
 
 If `--auto-include-dependencies` flag is provided, dartdoc tries to automatically add
