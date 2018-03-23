@@ -3,7 +3,7 @@
 # BSD-style license that can be found in the LICENSE file.
 
 install:
-  - ps: wget https://storage.googleapis.com/dart-archive/channels/dev/raw/2.0.0-dev.40.0/dartsdk-windows-x64-release.zip -OutFile dart-sdk.zip
+  - ps: wget https://storage.googleapis.com/dart-archive/channels/dev/raw/2.0.0-dev.40.0/sdk/dartsdk-windows-x64-release.zip -OutFile dart-sdk.zip
   - cmd: echo "Unzipping dart-sdk..."
   - cmd: 7z x dart-sdk.zip -o"C:\tools" -y > nul
   - set PATH=%PATH%;C:\tools\dart-sdk\bin
