@@ -1,3 +1,11 @@
+## 0.18.0
+* Rename category_order flag to package_order. (#1634, #1636)
+* Use Google's CDN for jquery. (#1637)
+* Add the beginning of support for a dartdoc_options.yaml file. (#1638)
+* Code cleanups and refactoring related to packages (#1639, #1636)
+* Enable --preview-dart-2 in analyzer (#1630)
+* Add basic categorization for libraries (#1641)
+
 ## 0.17.1+1
 * Fix pub warning regarding unnecessary meta import.
 
