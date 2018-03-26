@@ -225,23 +225,23 @@ class InheritableAccessor extends Accessor with Inheritable {
     InheritableAccessor accessor;
     if (element == null) return null;
     if (inheritedAccessors.contains(element)) {
-      accessor = new ModelElement.from(element, enclosingClass.library,
+      accessor = new ModelElement.from(element, enclosingClass.library, enclosingClass.packageGraph,
           enclosingClass: enclosingClass);
     } else {
-      accessor = new ModelElement.from(element, enclosingClass.library);
+      accessor = new ModelElement.from(element, enclosingClass.library, enclosingClass.packageGraph);
     }
     return accessor;
   }
 
   ModelElement _enclosingElement;
   bool _isInherited = false;
-  InheritableAccessor(PropertyAccessorElement element, Library library)
-      : super(element, library, null);
+  InheritableAccessor(PropertyAccessorElement element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph, null);
 
   InheritableAccessor.inherited(
-      PropertyAccessorElement element, Library library, this._enclosingElement,
+      PropertyAccessorElement element, Library library, PackageGraph packageGraph, this._enclosingElement,
       {Member originalMember})
-      : super(element, library, originalMember) {
+      : super(element, library, packageGraph, originalMember) {
     _isInherited = true;
   }
 
@@ -271,8 +271,8 @@ class Accessor extends ModelElement
   GetterSetterCombo _enclosingCombo;
 
   Accessor(
-      PropertyAccessorElement element, Library library, Member originalMember)
-      : super(element, library, originalMember);
+      PropertyAccessorElement element, Library library, PackageGraph packageGraph, Member originalMember)
+      : super(element, library, packageGraph, originalMember);
 
   get linkedReturnType {
     assert(isGetter);
@@ -370,7 +370,7 @@ class Accessor extends ModelElement
           .findOrCreateLibraryFor(_accessor.enclosingElement.enclosingElement);
     }
 
-    return new ModelElement.from(_accessor.enclosingElement, library);
+    return new ModelElement.from(_accessor.enclosingElement, library, packageGraph);
   }
 
   @override
@@ -458,7 +458,7 @@ class Class extends ModelElement
   List<Field> _inheritedProperties;
   List<Field> _allInstanceProperties;
 
-  Class(ClassElement element, Library library) : super(element, library, null) {
+  Class(ClassElement element, Library library, PackageGraph packageGraph) : super(element, library, packageGraph, null) {
     _mixins = _cls.mixins
         .map((f) {
           ElementType t = new ElementType.from(f, packageGraph);
@@ -623,7 +623,7 @@ class Class extends ModelElement
     if (_constructors != null) return _constructors;
 
     _constructors = _cls.constructors.map((e) {
-      return new ModelElement.from(e, library);
+      return new ModelElement.from(e, library, packageGraph);
     }).toList(growable: true)
       ..sort(byName);
 
@@ -712,7 +712,7 @@ class Class extends ModelElement
       }).toSet();
 
       for (ExecutableElement e in inheritedMethodElements) {
-        Method m = new ModelElement.from(e, library, enclosingClass: this);
+        Method m = new ModelElement.from(e, library, packageGraph, enclosingClass: this);
         _inheritedMethods.add(m);
         _genPageMethods.add(m);
       }
@@ -737,7 +737,7 @@ class Class extends ModelElement
             !operatorNames.contains(e.name));
       }).toSet();
       for (ExecutableElement e in inheritedOperatorElements) {
-        Operator o = new ModelElement.from(e, library, enclosingClass: this);
+        Operator o = new ModelElement.from(e, library, packageGraph, enclosingClass: this);
         _inheritedOperators.add(o);
         _genPageOperators.add(o);
       }
@@ -1038,14 +1038,14 @@ class Class extends ModelElement
     if ((getter == null || getter.isInherited) &&
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
-      field = new ModelElement.from(f, library,
+      field = new ModelElement.from(f, library, packageGraph,
           enclosingClass: this, getter: getter, setter: setter);
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
       // half-inherited fields when traversing the inheritance tree.  Make
       // this better, somehow.
-      field = new ModelElement.from(f, library, getter: getter, setter: setter);
+      field = new ModelElement.from(f, library, packageGraph, getter: getter, setter: setter);
     }
     _fields.add(field);
   }
@@ -1056,7 +1056,7 @@ class Class extends ModelElement
     if (_allMethods != null) return _allMethods;
 
     _allMethods = _cls.methods.map((e) {
-      return new ModelElement.from(e, library);
+      return new ModelElement.from(e, library, packageGraph);
     }).toList(growable: false)
       ..sort(byName);
 
@@ -1067,7 +1067,7 @@ class Class extends ModelElement
   @override
   List<TypeParameter> get typeParameters => _cls.typeParameters.map((f) {
         var lib = new Library(f.enclosingElement.library, packageGraph);
-        return new ModelElement.from(f, lib);
+        return new ModelElement.from(f, lib, packageGraph);
       }).toList();
 
   @override
@@ -1081,8 +1081,8 @@ class Class extends ModelElement
 class Constructor extends ModelElement
     with SourceCodeMixin, TypeParameters
     implements EnclosedElement {
-  Constructor(ConstructorElement element, Library library)
-      : super(element, library, null);
+  Constructor(ConstructorElement element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph, null);
 
   @override
   // TODO(jcollins-g): Revisit this when dart-lang/sdk#31517 is implemented.
@@ -1091,7 +1091,7 @@ class Constructor extends ModelElement
 
   @override
   ModelElement get enclosingElement =>
-      new ModelElement.from(_constructor.enclosingElement, library);
+      new ModelElement.from(_constructor.enclosingElement, library, packageGraph);
 
   String get fullKind {
     if (isConst) return 'const $kind';
@@ -1259,15 +1259,8 @@ abstract class Canonicalization extends Object
 }
 
 class Dynamic extends ModelElement {
-  @override
-  PackageGraph packageGraph;
-
-  Dynamic(Element element, Library library, PackageGraph p)
-      : super(element, library, null) {
-    packageGraph = p;
-    assert(packageGraph != null || library != null);
-    if (p == null) packageGraph = library.packageGraph;
-  }
+  Dynamic(Element element, PackageGraph packageGraph)
+      : super(element, null, packageGraph, null);
 
   @override
   ModelElement get enclosingElement => throw new UnsupportedError('');
@@ -1290,13 +1283,13 @@ abstract class EnclosedElement {
 }
 
 class Enum extends Class {
-  Enum(ClassElement element, Library library) : super(element, library);
+  Enum(ClassElement element, Library library, PackageGraph packageGraph) : super(element, library, packageGraph);
 
   @override
   List<EnumField> get instanceProperties {
     return super
         .instanceProperties
-        .map((Field p) => new ModelElement.from(p.element, p.library,
+        .map((Field p) => new ModelElement.from(p.element, p.library, p.packageGraph,
             getter: p.getter, setter: p.setter))
         .toList(growable: false);
   }
@@ -1314,12 +1307,12 @@ class EnumField extends Field {
   int _index;
 
   EnumField(
-      FieldElement element, Library library, Accessor getter, Accessor setter)
-      : super(element, library, getter, setter);
+      FieldElement element, Library library, PackageGraph packageGraph, Accessor getter, Accessor setter)
+      : super(element, library, packageGraph, getter, setter);
 
   EnumField.forConstant(
-      this._index, FieldElement element, Library library, Accessor getter)
-      : super(element, library, getter, null);
+      this._index, FieldElement element, Library library, PackageGraph packageGraph, Accessor getter)
+      : super(element, library, packageGraph, getter, null);
 
   @override
   String get constantValueBase {
@@ -1388,16 +1381,16 @@ class Field extends ModelElement
   @override
   final InheritableAccessor setter;
 
-  Field(FieldElement element, Library library, this.getter, this.setter)
-      : super(element, library, null) {
+  Field(FieldElement element, Library library, PackageGraph packageGraph, this.getter, this.setter)
+      : super(element, library, packageGraph, null) {
     if (getter != null) getter.enclosingCombo = this;
     if (setter != null) setter.enclosingCombo = this;
     _setModelType();
   }
 
   factory Field.inherited(FieldElement element, Class enclosingClass,
-      Library library, Accessor getter, Accessor setter) {
-    Field newField = new Field(element, library, getter, setter);
+      Library library, PackageGraph packageGraph, Accessor getter, Accessor setter) {
+    Field newField = new Field(element, library, packageGraph, getter, setter);
     newField._isInherited = true;
     newField._enclosingClass = enclosingClass;
     // Can't set _isInherited to true if this is the defining element, because
@@ -1422,7 +1415,7 @@ class Field extends ModelElement
   @override
   ModelElement get enclosingElement {
     if (_enclosingClass == null) {
-      _enclosingClass = new ModelElement.from(_field.enclosingElement, library);
+      _enclosingClass = new ModelElement.from(_field.enclosingElement, library, packageGraph);
     }
     return _enclosingClass;
   }
@@ -1727,9 +1720,6 @@ abstract class GetterSetterCombo implements ModelElement {
 }
 
 class Library extends ModelElement with Categorization {
-  @override
-  final PackageGraph packageGraph;
-
   List<Class> _classes;
   List<Class> _enums;
   List<ModelFunction> _functions;
@@ -1741,8 +1731,8 @@ class Library extends ModelElement with Categorization {
     return packageGraph.findOrCreateLibraryFor(element);
   }
 
-  Library._(LibraryElement element, this.packageGraph)
-      : super(element, null, null) {
+  Library._(LibraryElement element, PackageGraph packageGraph)
+      : super(element, null, packageGraph, null) {
     if (element == null) throw new ArgumentError.notNull('element');
     _exportedNamespace =
         new NamespaceBuilder().createExportNamespaceForLibrary(element);
@@ -1772,7 +1762,7 @@ class Library extends ModelElement with Categorization {
           }
         }
         return new ModelElement.from(
-                e.element, packageGraph.findOrCreateLibraryFor(e.element),
+                e.element, packageGraph.findOrCreateLibraryFor(e.element), packageGraph,
                 getter: getter, setter: setter)
             .fullyQualifiedName;
       }).toList();
@@ -1856,7 +1846,7 @@ class Library extends ModelElement with Categorization {
       importedExportedLibraryElements
           .addAll((element as LibraryElement).exportedLibraries);
       for (LibraryElement l in importedExportedLibraryElements) {
-        Library lib = new ModelElement.from(l, library);
+        Library lib = new ModelElement.from(l, library, packageGraph);
         _importedExportedLibraries.add(lib);
         _importedExportedLibraries.addAll(lib.importedExportedLibraries);
       }
@@ -1933,7 +1923,7 @@ class Library extends ModelElement with Categorization {
     enumClasses.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is ClassElement && element.isEnum));
     _enums = enumClasses
-        .map((e) => new ModelElement.from(e, this))
+        .map((e) => new ModelElement.from(e, this, packageGraph))
         .toList(growable: false)
           ..sort(byName);
 
@@ -1966,7 +1956,7 @@ class Library extends ModelElement with Categorization {
         .where((element) => element is FunctionElement));
 
     _functions = elements.map((e) {
-      return new ModelElement.from(e, this);
+      return new ModelElement.from(e, this, packageGraph);
     }).toList(growable: false)
       ..sort(byName);
 
@@ -2081,7 +2071,7 @@ class Library extends ModelElement with Categorization {
     elements.addAll(_exportedNamespace.definedNames.values
         .where((element) => element is FunctionTypeAliasElement));
     _typeDefs = elements
-        .map((e) => new ModelElement.from(e, this))
+        .map((e) => new ModelElement.from(e, this, packageGraph))
         .toList(growable: false)
           ..sort(byName);
 
@@ -2108,7 +2098,7 @@ class Library extends ModelElement with Categorization {
         .where((element) => element is ClassElement && !element.isEnum));
 
     _classes = types
-        .map((e) => new ModelElement.from(e, this))
+        .map((e) => new ModelElement.from(e, this, packageGraph))
         .toList(growable: false)
           ..sort(byName);
 
@@ -2150,12 +2140,12 @@ class Library extends ModelElement with Categorization {
     for (TopLevelVariableElement element in elements) {
       Accessor getter;
       if (element.getter != null)
-        getter = new ModelElement.from(element.getter, this);
+        getter = new ModelElement.from(element.getter, this, packageGraph);
       Accessor setter;
       if (element.setter != null)
-        setter = new ModelElement.from(element.setter, this);
+        setter = new ModelElement.from(element.setter, this, packageGraph);
       ModelElement me =
-          new ModelElement.from(element, this, getter: getter, setter: setter);
+          new ModelElement.from(element, this, packageGraph, getter: getter, setter: setter);
       _variables.add(me);
     }
 
@@ -2325,21 +2315,21 @@ class Method extends ModelElement
   @override
   List<TypeParameter> typeParameters = [];
 
-  Method(MethodElement element, Library library)
-      : super(element, library, null) {
+  Method(MethodElement element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph, null) {
     _calcTypeParameters();
   }
 
   Method.inherited(MethodElement element, this._enclosingClass, Library library,
-      {Member originalMember})
-      : super(element, library, originalMember) {
+      PackageGraph packageGraph, {Member originalMember})
+      : super(element, library, packageGraph, originalMember) {
     _isInherited = true;
     _calcTypeParameters();
   }
 
   void _calcTypeParameters() {
     typeParameters = _method.typeParameters.map((f) {
-      return new ModelElement.from(f, library);
+      return new ModelElement.from(f, library, packageGraph);
     }).toList();
   }
 
@@ -2347,7 +2337,7 @@ class Method extends ModelElement
   ModelElement get enclosingElement {
     if (_enclosingClass == null) {
       _enclosingClass =
-          new ModelElement.from(_method.enclosingElement, library);
+          new ModelElement.from(_method.enclosingElement, library, packageGraph);
     }
     return _enclosingClass;
   }
@@ -2445,9 +2435,10 @@ class ScoredCandidate implements Comparable<ScoredCandidate> {
 ModelElement resolveMultiplyInheritedElement(
     MultiplyInheritedExecutableElement e,
     Library library,
+    PackageGraph packageGraph,
     Class enclosingClass) {
   Iterable<Inheritable> inheritables = e.inheritedElements.map((ee) =>
-      new ModelElement.fromElement(ee, library.packageGraph) as Inheritable);
+      new ModelElement.fromElement(ee, packageGraph) as Inheritable);
   Inheritable foundInheritable;
   int lowIndex = enclosingClass.inheritanceChain.length;
   for (var inheritable in inheritables) {
@@ -2458,7 +2449,7 @@ ModelElement resolveMultiplyInheritedElement(
       lowIndex = index;
     }
   }
-  return new ModelElement.from(foundInheritable.element, library,
+  return new ModelElement.from(foundInheritable.element, library, packageGraph,
       enclosingClass: enclosingClass);
 }
 
@@ -2512,11 +2503,12 @@ abstract class ModelElement extends Canonicalization
 
   // TODO(jcollins-g): make _originalMember optional after dart-lang/sdk#15101
   // is fixed.
-  ModelElement(this._element, this._library, this._originalMember) {}
+  ModelElement(this._element, this._library, this._packageGraph,
+               this._originalMember) {}
 
   factory ModelElement.fromElement(Element e, PackageGraph p) {
     Library lib = _findOrCreateEnclosingLibraryForStatic(e, p);
-    return new ModelElement.from(e, lib, packageGraph: p);
+    return new ModelElement.from(e, lib, p);
   }
 
   // TODO(jcollins-g): this way of using the optional parameter is messy,
@@ -2529,14 +2521,12 @@ abstract class ModelElement extends Canonicalization
   // parameter when given a null.
   /// Do not construct any ModelElements unless they are from this constructor.
   /// Specify enclosingClass only if this is to be an inherited object.
-  factory ModelElement.from(Element e, Library library,
+  factory ModelElement.from(Element e, Library library, PackageGraph packageGraph,
       {Class enclosingClass,
       Accessor getter,
-      Accessor setter,
-      PackageGraph packageGraph}) {
-    if (packageGraph == null)
-      packageGraph = library?.packageGraph;
-    assert(packageGraph != null || library != null);
+      Accessor setter}) {
+    assert(packageGraph != null && e != null);
+    assert(library != null || e is ParameterElement || e is TypeParameterElement || e is GenericFunctionTypeElementImpl);
     // With AnalysisDriver, we sometimes get ElementHandles when building
     // docs for the SDK, seen via [Library.importedExportedLibraries].  Why?
     if (e is ElementHandle) {
@@ -2560,19 +2550,19 @@ abstract class ModelElement extends Canonicalization
       assert(newModelElement.element is! MultiplyInheritedExecutableElement);
     } else {
       if (e.kind == ElementKind.DYNAMIC) {
-        newModelElement = new Dynamic(e, library, packageGraph);
+        newModelElement = new Dynamic(e, packageGraph);
       }
       if (e is MultiplyInheritedExecutableElement) {
         newModelElement =
-            resolveMultiplyInheritedElement(e, library, enclosingClass);
+            resolveMultiplyInheritedElement(e, library, packageGraph, enclosingClass);
       } else {
         if (e is LibraryElement) {
-          newModelElement = new Library(e, library.packageGraph);
+          newModelElement = new Library(e, packageGraph);
         }
         // Also handles enums
         if (e is ClassElement) {
           if (!e.isEnum) {
-            newModelElement = new Class(e, library);
+            newModelElement = new Class(e, library, packageGraph);
             if (newModelElement.name == 'Object' &&
                 newModelElement.library.name == 'dart:core') {
               // We've found Object.  This is an important object, so save it in the package.
@@ -2589,30 +2579,29 @@ abstract class ModelElement extends Canonicalization
                   newModelElement;
             }
           } else {
-            newModelElement = new Enum(e, library);
+            newModelElement = new Enum(e, library, packageGraph);
           }
         }
         if (e is FunctionElement) {
-          newModelElement = new ModelFunction(e, library);
+          newModelElement = new ModelFunction(e, library, packageGraph);
         } else if (e is GenericFunctionTypeElement) {
           if (e is FunctionTypeAliasElement) {
             assert(e.name != '');
-            newModelElement = new ModelFunctionTypedef(e, library);
+            newModelElement = new ModelFunctionTypedef(e, library, packageGraph);
           } else {
             if (e.enclosingElement is GenericTypeAliasElement) {
               assert(e.enclosingElement.name != '');
-              newModelElement = new ModelFunctionTypedef(e, library);
+              newModelElement = new ModelFunctionTypedef(e, library, packageGraph);
             } else {
               // Allowing null here is allowed as a workaround for
               // dart-lang/sdk#32005.
               assert(e.name == '' || e.name == null);
-              assert(library == null);
               newModelElement = new ModelFunctionAnonymous(e, packageGraph);
             }
           }
         }
         if (e is FunctionTypeAliasElement) {
-          newModelElement = new Typedef(e, library);
+          newModelElement = new Typedef(e, library, packageGraph);
         }
         if (e is FieldElement) {
           if (enclosingClass == null) {
@@ -2620,34 +2609,34 @@ abstract class ModelElement extends Canonicalization
               int index =
                   e.computeConstantValue().getField(e.name).toIntValue();
               newModelElement =
-                  new EnumField.forConstant(index, e, library, getter);
+                  new EnumField.forConstant(index, e, library, packageGraph, getter);
             } else if (e.enclosingElement.isEnum) {
-              newModelElement = new EnumField(e, library, getter, setter);
+              newModelElement = new EnumField(e, library, packageGraph, getter, setter);
             } else {
-              newModelElement = new Field(e, library, getter, setter);
+              newModelElement = new Field(e, library, packageGraph, getter, setter);
             }
           } else {
             // EnumFields can't be inherited, so this case is simpler.
             newModelElement =
-                new Field.inherited(e, enclosingClass, library, getter, setter);
+                new Field.inherited(e, enclosingClass, library, packageGraph, getter, setter);
           }
         }
         if (e is ConstructorElement) {
-          newModelElement = new Constructor(e, library);
+          newModelElement = new Constructor(e, library, packageGraph);
         }
         if (e is MethodElement && e.isOperator) {
           if (enclosingClass == null)
-            newModelElement = new Operator(e, library);
+            newModelElement = new Operator(e, library, packageGraph);
           else
             newModelElement = new Operator.inherited(e, enclosingClass, library,
-                originalMember: originalMember);
+                packageGraph, originalMember: originalMember);
         }
         if (e is MethodElement && !e.isOperator) {
           if (enclosingClass == null)
-            newModelElement = new Method(e, library);
+            newModelElement = new Method(e, library, packageGraph);
           else
             newModelElement = new Method.inherited(e, enclosingClass, library,
-                originalMember: originalMember);
+                packageGraph, originalMember: originalMember);
         }
         if (e is TopLevelVariableElement) {
           if (getter == null && setter == null) {
@@ -2656,7 +2645,7 @@ abstract class ModelElement extends Canonicalization
               ..addAll(library.constants);
             newModelElement = allVariables.firstWhere((v) => v.element == e);
           } else {
-            newModelElement = new TopLevelVariable(e, library, getter, setter);
+            newModelElement = new TopLevelVariable(e, library, packageGraph, getter, setter);
           }
         }
         if (e is PropertyAccessorElement) {
@@ -2664,22 +2653,21 @@ abstract class ModelElement extends Canonicalization
           if (e.enclosingElement is ClassElement ||
               e is MultiplyInheritedExecutableElement) {
             if (enclosingClass == null)
-              newModelElement = new InheritableAccessor(e, library);
+              newModelElement = new InheritableAccessor(e, library, packageGraph);
             else
               newModelElement = new InheritableAccessor.inherited(
-                  e, library, enclosingClass,
+                  e, library, packageGraph, enclosingClass,
                   originalMember: originalMember);
           } else {
-            newModelElement = new Accessor(e, library, null);
+            newModelElement = new Accessor(e, library, packageGraph, null);
           }
         }
         if (e is TypeParameterElement) {
-          newModelElement = new TypeParameter(e, library);
+          newModelElement = new TypeParameter(e, library, packageGraph);
         }
         if (e is ParameterElement) {
-          assert(library == null);
           newModelElement =
-              new Parameter(e, packageGraph, originalMember: originalMember);
+              new Parameter(e, library, packageGraph, originalMember: originalMember);
         }
       }
     }
@@ -2825,15 +2813,16 @@ abstract class ModelElement extends Canonicalization
         GetterSetterCombo thisAsCombo = this as GetterSetterCombo;
         if (thisAsCombo.hasGetter) {
           newGetter = new ModelElement.from(
-              thisAsCombo.getter.element, thisAsCombo.getter.definingLibrary);
+              thisAsCombo.getter.element, thisAsCombo.getter.definingLibrary, thisAsCombo.getter.packageGraph);
         }
         if (thisAsCombo.hasSetter) {
           newSetter = new ModelElement.from(
-              thisAsCombo.setter.element, thisAsCombo.setter.definingLibrary);
+              thisAsCombo.setter.element, thisAsCombo.setter.definingLibrary, thisAsCombo.setter.packageGraph);
         }
       }
       ModelElement fromThis = new ModelElement.from(
           element, thisInheritable.definingEnclosingElement.library,
+          thisInheritable.definingEnclosingElement.packageGraph,
           getter: newGetter, setter: newSetter);
       docFrom = fromThis.documentationFrom;
     } else {
@@ -3199,10 +3188,9 @@ abstract class ModelElement extends Canonicalization
     return _overriddenDepth;
   }
 
+  final PackageGraph _packageGraph;
   @override
-  PackageGraph get packageGraph => (this is Library)
-      ? (this as Library).packageGraph
-      : this.library.packageGraph;
+  PackageGraph get packageGraph => _packageGraph;
 
   bool get isPublicAndPackageDocumented =>
       isPublic && library.packageGraph.packageDocumentedFor(this);
@@ -3258,7 +3246,7 @@ abstract class ModelElement extends Canonicalization
       }
 
       _parameters = new UnmodifiableListView<Parameter>(params
-          .map((p) => new ModelElement.from(p, library, packageGraph: packageGraph))
+          .map((p) => new ModelElement.from(p, library, packageGraph))
           .toList() as Iterable<Parameter>);
     }
     return _parameters;
@@ -3422,8 +3410,7 @@ abstract class ModelElement extends Canonicalization
     assert(!name.isEmpty ||
         (this.element is TypeDefiningElement &&
             (this.element as TypeDefiningElement).type.name == "dynamic") ||
-        (this is ModelFunction &&
-            element.enclosingElement is ParameterElement));
+        this is ModelFunction);
 
     if (href == null) {
       if (isPublicAndPackageDocumented) {
@@ -3448,9 +3435,6 @@ abstract class ModelElement extends Canonicalization
     }
     if (lib == null) {
       lib = packageGraph.findOrCreateLibraryFor(e);
-    }
-    if (lib == null) {
-      assert(e.kind == ElementKind.DYNAMIC);
     }
     return lib;
   }
@@ -3597,13 +3581,16 @@ abstract class ModelElement extends Canonicalization
 
 /// A [ModelElement] for a [FunctionElement] that isn't part of a type definition.
 class ModelFunction extends ModelFunctionTyped {
-  ModelFunction(FunctionElement element, Library library)
-      : super(element, library);
+  ModelFunction(FunctionElement element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph);
 
   @override
   bool get isStatic {
     return _func.isStatic;
   }
+
+  @override
+  String get name => element.name ?? '';
 
   @override
   FunctionElement get _func => (element as FunctionElement);
@@ -3616,12 +3603,8 @@ class ModelFunction extends ModelFunctionTyped {
 /// have a name, but we document it as "Function" to match how these are
 /// written in declarations.
 class ModelFunctionAnonymous extends ModelFunctionTyped {
-  ModelFunctionAnonymous(FunctionTypedElement element, this._packageGraph)
-      : super(element, null) {}
-
-  final PackageGraph _packageGraph;
-  @override
-  PackageGraph get packageGraph => _packageGraph;
+  ModelFunctionAnonymous(FunctionTypedElement element, PackageGraph packageGraph)
+      : super(element, null, packageGraph) {}
 
   @override
   String get name => 'Function';
@@ -3636,8 +3619,8 @@ class ModelFunctionAnonymous extends ModelFunctionTyped {
 /// A [ModelElement] for a [GenericModelFunctionElement] that is part of an
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
-  ModelFunctionTypedef(FunctionTypedElement element, Library library)
-      : super(element, library);
+  ModelFunctionTypedef(FunctionTypedElement element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph);
 
   @override
   String get name {
@@ -3658,14 +3641,14 @@ class ModelFunctionTyped extends ModelElement
   @override
   List<TypeParameter> typeParameters = [];
 
-  ModelFunctionTyped(FunctionTypedElement element, Library library)
-      : super(element, library, null) {
+  ModelFunctionTyped(FunctionTypedElement element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph, null) {
     _calcTypeParameters();
   }
 
   void _calcTypeParameters() {
     typeParameters = _func.typeParameters.map((f) {
-      return new ModelElement.from(f, library, packageGraph: packageGraph);
+      return new ModelElement.from(f, library, packageGraph);
     }).toList();
   }
 
@@ -3730,12 +3713,12 @@ class Operator extends Method {
     "%": "modulo"
   };
 
-  Operator(MethodElement element, Library library) : super(element, library);
+  Operator(MethodElement element, Library library, PackageGraph packageGraph) : super(element, library, packageGraph);
 
   Operator.inherited(
       MethodElement element, Class enclosingClass, Library library,
-      {Member originalMember})
-      : super.inherited(element, enclosingClass, library,
+      PackageGraph packageGraph, {Member originalMember})
+      : super.inherited(element, enclosingClass, library, packageGraph,
             originalMember: originalMember) {
     _isInherited = true;
   }
@@ -4435,11 +4418,11 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
         Accessor getter;
         Accessor setter;
         if (e is PropertyInducingElement) {
-          if (e.getter != null) getter = new ModelElement.from(e.getter, lib);
-          if (e.setter != null) setter = new ModelElement.from(e.setter, lib);
+          if (e.getter != null) getter = new ModelElement.from(e.getter, lib, packageGraph);
+          if (e.setter != null) setter = new ModelElement.from(e.setter, lib, packageGraph);
         }
         modelElement =
-            new ModelElement.from(e, lib, getter: getter, setter: setter);
+            new ModelElement.from(e, lib, packageGraph, getter: getter, setter: setter);
       }
       assert(modelElement is! Inheritable);
       if (modelElement != null && !modelElement.isCanonical) {
@@ -4696,8 +4679,8 @@ class Package extends LibraryContainer implements Comparable<Package>, Privacy {
 }
 
 class Parameter extends ModelElement implements EnclosedElement {
-  Parameter(ParameterElement element, this._packageGraph, {Member originalMember})
-      : super(element, null, originalMember);
+  Parameter(ParameterElement element, Library library, PackageGraph packageGraph, {Member originalMember})
+      : super(element, library, packageGraph, originalMember);
   String get defaultValue {
     if (!hasDefaultValue) return null;
     return _parameter.defaultValueCode;
@@ -4705,7 +4688,7 @@ class Parameter extends ModelElement implements EnclosedElement {
 
   @override
   ModelElement get enclosingElement =>
-      new ModelElement.from(_parameter.enclosingElement, library);
+      new ModelElement.from(_parameter.enclosingElement, library, packageGraph);
 
   bool get hasDefaultValue {
     return _parameter.defaultValueCode != null &&
@@ -4744,10 +4727,6 @@ class Parameter extends ModelElement implements EnclosedElement {
   String get kind => 'parameter';
 
   ParameterElement get _parameter => element as ParameterElement;
-
-  final PackageGraph _packageGraph;
-  @override
-  PackageGraph get packageGraph => _packageGraph;
 
   @override
   String toString() => element.name;
@@ -4896,9 +4875,9 @@ class TopLevelVariable extends ModelElement
   @override
   final Accessor setter;
 
-  TopLevelVariable(TopLevelVariableElement element, Library library,
+  TopLevelVariable(TopLevelVariableElement element, Library library, PackageGraph packageGraph,
       this.getter, this.setter)
-      : super(element, library, null) {
+      : super(element, library, packageGraph, null) {
     if (getter != null) {
       getter.enclosingCombo = this;
       assert(getter.enclosingCombo != null);
@@ -4972,8 +4951,8 @@ class TopLevelVariable extends ModelElement
 class Typedef extends ModelElement
     with SourceCodeMixin, TypeParameters
     implements EnclosedElement {
-  Typedef(FunctionTypeAliasElement element, Library library)
-      : super(element, library, null);
+  Typedef(FunctionTypeAliasElement element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph, null);
 
   @override
   ModelElement get enclosingElement => library;
@@ -5015,17 +4994,17 @@ class Typedef extends ModelElement
 
   @override
   List<TypeParameter> get typeParameters => _typedef.typeParameters.map((f) {
-        return new ModelElement.from(f, library);
+        return new ModelElement.from(f, library, packageGraph);
       }).toList();
 }
 
 class TypeParameter extends ModelElement {
-  TypeParameter(TypeParameterElement element, Library library)
-      : super(element, library, null);
+  TypeParameter(TypeParameterElement element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph, null);
 
   @override
   ModelElement get enclosingElement =>
-      new ModelElement.from(element.enclosingElement, library);
+      new ModelElement.from(element.enclosingElement, library, packageGraph);
 
   @override
   String get href {

@@ -1416,7 +1416,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           getAFunctionReturningVoid.linkedReturnType,
           equals(
-              'Function<span class="signature">(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T2</span></span>)</span>'));
+              'void Function<span class="signature">(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T2</span></span>)</span>'));
     });
 
     test(
@@ -1425,7 +1425,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           getAFunctionReturningBool.linkedReturnType,
           equals(
-              'Function<span class="signature">&lt;T4&gt;</span><span class="signature">(<span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">String</span>, </span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T4</span></span>)</span>'));
+              'bool Function<span class="signature">&lt;T4&gt;</span><span class="signature">(<span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">String</span>, </span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T4</span></span>)</span>'));
     });
 
     test('has a fully qualified name', () {
@@ -1937,10 +1937,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     TopLevelVariable v3, justGetter, justSetter;
     TopLevelVariable setAndGet, mapWithDynamicKeys;
     TopLevelVariable nodocGetter, nodocSetter;
+    TopLevelVariable complicatedReturn;
 
     setUp(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
       v3 = exLibrary.properties.firstWhere((p) => p.name == 'y');
+      complicatedReturn =
+          fakeLibrary.properties.firstWhere((f) => f.name == 'complicatedReturn');
       nodocGetter = fakeLibrary.properties
           .firstWhere((p) => p.name == 'getterSetterNodocGetter');
       nodocSetter = fakeLibrary.properties
@@ -1953,6 +1956,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.properties.firstWhere((p) => p.name == 'setAndGet');
       mapWithDynamicKeys = fakeLibrary.properties
           .firstWhere((p) => p.name == 'mapWithDynamicKeys');
+    });
+
+    test('Verify that a complex type parameter with an anonymous function works correctly', () {
+      expect(complicatedReturn.linkedReturnType, equals('<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;String Function<span class="signature">(<span class="parameter" id="-param-"><span class="type-annotation">int</span></span>)</span>&gt;</span>'));
     });
 
     test('@nodoc on simple property works', () {
@@ -2262,6 +2269,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
       generic =
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
+
       aComplexTypedef =
           exLibrary.typedefs.firstWhere((t) => t.name == 'aComplexTypedef');
       TypedefUsingClass =
@@ -2280,7 +2288,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('anonymous nested functions inside typedefs are handled', () {
       expect(aComplexTypedef, isNotNull);
-      expect(aComplexTypedef.linkedReturnType, startsWith('Function'));
+      expect(aComplexTypedef.linkedReturnType, startsWith('void Function'));
       expect(aComplexTypedef.nameWithGenerics,
           equals('aComplexTypedef&lt;A1, A2, A3&gt;'));
     });
@@ -2290,7 +2298,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           aComplexTypedef.linkedReturnType,
           equals(
-              'Function<span class="signature">(<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span>)</span>'));
+              'void Function<span class="signature">(<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span>)</span>'));
       expect(
           aComplexTypedef.linkedParamsLines,
           equals(

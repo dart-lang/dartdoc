@@ -29,8 +29,6 @@ abstract class ElementType extends Privacy {
       assert(f is ParameterizedType || f is TypeParameterType);
       bool isGenericTypeAlias =
           f.element.enclosingElement is GenericTypeAliasElement;
-      // can happen if element is dynamic
-      assert(f.element.library != null);
       if (f is FunctionType) {
         assert(f is ParameterizedType);
         if (isGenericTypeAlias) {
@@ -38,9 +36,7 @@ abstract class ElementType extends Privacy {
           return new CallableGenericTypeAliasElementType(
               f, packageGraph, element, returnedFrom);
         } else {
-          if ((f.name ?? f.element.name) == '' ||
-              (f.name ?? f.element.name) == null) {
-            assert(element is ModelFunctionAnonymous);
+          if (element is ModelFunctionAnonymous) {
             return new CallableAnonymousElementType(
                 f, packageGraph, element, returnedFrom);
           } else {
@@ -301,7 +297,7 @@ class CallableAnonymousElementType extends CallableElementType {
   String get linkedName {
     if (_linkedName == null) {
       _linkedName =
-          '${super.linkedName}<span class="signature">(${element.linkedParams()})</span>';
+          '${returnType.linkedName} ${super.linkedName}<span class="signature">(${element.linkedParams()})</span>';
     }
     return _linkedName;
   }
