@@ -235,7 +235,7 @@ class Cool {
 }
 
 /// A map initialization making use of optional const.
-const Map<int, String> myMap = { 1: "hello" };
+const Map<int, String> myMap = {1: "hello"};
 
 /// A variable initalization making use of optional new.
 Cool aCoolVariable = Cool();

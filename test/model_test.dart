@@ -1942,8 +1942,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     setUp(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
       v3 = exLibrary.properties.firstWhere((p) => p.name == 'y');
-      complicatedReturn =
-          fakeLibrary.properties.firstWhere((f) => f.name == 'complicatedReturn');
+      complicatedReturn = fakeLibrary.properties
+          .firstWhere((f) => f.name == 'complicatedReturn');
       nodocGetter = fakeLibrary.properties
           .firstWhere((p) => p.name == 'getterSetterNodocGetter');
       nodocSetter = fakeLibrary.properties
@@ -1958,8 +1958,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((p) => p.name == 'mapWithDynamicKeys');
     });
 
-    test('Verify that a complex type parameter with an anonymous function works correctly', () {
-      expect(complicatedReturn.linkedReturnType, equals('<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;String Function<span class="signature">(<span class="parameter" id="-param-"><span class="type-annotation">int</span></span>)</span>&gt;</span>'));
+    test(
+        'Verify that a complex type parameter with an anonymous function works correctly',
+        () {
+      expect(
+          complicatedReturn.linkedReturnType,
+          equals(
+              '<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;String Function<span class="signature">(<span class="parameter" id="-param-"><span class="type-annotation">int</span></span>)</span>&gt;</span>'));
     });
 
     test('@nodoc on simple property works', () {
