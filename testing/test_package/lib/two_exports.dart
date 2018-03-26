@@ -1,3 +1,4 @@
+/// {@category Misc}
 library two_exports;
 
 export 'src/base.dart';

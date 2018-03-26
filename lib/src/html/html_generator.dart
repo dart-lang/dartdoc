@@ -116,9 +116,6 @@ class HtmlGeneratorOptions implements HtmlOptions {
   final bool prettyIndexJson;
 
   @override
-  final bool displayAsPackages;
-
-  @override
   final String relCanonicalPrefix;
 
   @override
@@ -129,7 +126,6 @@ class HtmlGeneratorOptions implements HtmlOptions {
       this.relCanonicalPrefix,
       this.faviconPath,
       String toolVersion,
-      this.displayAsPackages: false,
       this.prettyIndexJson: false})
       : this.toolVersion = toolVersion ?? 'unknown';
 }

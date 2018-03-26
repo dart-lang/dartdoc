@@ -1,5 +1,5 @@
 /// # WOW FAKE PACKAGE IS __BEST__ [PACKAGE][pkg]
-///
+/// {@category Real Libraries}
 /// If you don't have this package yet, get it.
 /// Don't ask questions.
 ///
