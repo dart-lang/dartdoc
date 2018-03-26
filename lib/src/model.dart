@@ -2534,6 +2534,9 @@ abstract class ModelElement extends Canonicalization
       Accessor getter,
       Accessor setter,
       PackageGraph packageGraph}) {
+    if (packageGraph == null)
+      packageGraph = library?.packageGraph;
+    assert(packageGraph != null || library != null);
     // With AnalysisDriver, we sometimes get ElementHandles when building
     // docs for the SDK, seen via [Library.importedExportedLibraries].  Why?
     if (e is ElementHandle) {
@@ -2552,8 +2555,8 @@ abstract class ModelElement extends Canonicalization
         new Tuple3(e, library, enclosingClass);
     ModelElement newModelElement;
     if (e.kind != ElementKind.DYNAMIC &&
-        library.packageGraph._allConstructedModelElements.containsKey(key)) {
-      newModelElement = library.packageGraph._allConstructedModelElements[key];
+        packageGraph._allConstructedModelElements.containsKey(key)) {
+      newModelElement = packageGraph._allConstructedModelElements[key];
       assert(newModelElement.element is! MultiplyInheritedExecutableElement);
     } else {
       if (e.kind == ElementKind.DYNAMIC) {
@@ -2603,7 +2606,8 @@ abstract class ModelElement extends Canonicalization
               // Allowing null here is allowed as a workaround for
               // dart-lang/sdk#32005.
               assert(e.name == '' || e.name == null);
-              newModelElement = new ModelFunctionAnonymous(e, library);
+              assert(library == null);
+              newModelElement = new ModelFunctionAnonymous(e, packageGraph);
             }
           }
         }
@@ -2673,8 +2677,9 @@ abstract class ModelElement extends Canonicalization
           newModelElement = new TypeParameter(e, library);
         }
         if (e is ParameterElement) {
+          assert(library == null);
           newModelElement =
-              new Parameter(e, library, originalMember: originalMember);
+              new Parameter(e, packageGraph, originalMember: originalMember);
         }
       }
     }
@@ -3253,7 +3258,7 @@ abstract class ModelElement extends Canonicalization
       }
 
       _parameters = new UnmodifiableListView<Parameter>(params
-          .map((p) => new ModelElement.from(p, library))
+          .map((p) => new ModelElement.from(p, library, packageGraph: packageGraph))
           .toList() as Iterable<Parameter>);
     }
     return _parameters;
@@ -3611,8 +3616,12 @@ class ModelFunction extends ModelFunctionTyped {
 /// have a name, but we document it as "Function" to match how these are
 /// written in declarations.
 class ModelFunctionAnonymous extends ModelFunctionTyped {
-  ModelFunctionAnonymous(FunctionTypedElement element, Library library)
-      : super(element, library) {}
+  ModelFunctionAnonymous(FunctionTypedElement element, this._packageGraph)
+      : super(element, null) {}
+
+  final PackageGraph _packageGraph;
+  @override
+  PackageGraph get packageGraph => _packageGraph;
 
   @override
   String get name => 'Function';
@@ -3656,7 +3665,7 @@ class ModelFunctionTyped extends ModelElement
 
   void _calcTypeParameters() {
     typeParameters = _func.typeParameters.map((f) {
-      return new ModelElement.from(f, library);
+      return new ModelElement.from(f, library, packageGraph: packageGraph);
     }).toList();
   }
 
@@ -4687,9 +4696,8 @@ class Package extends LibraryContainer implements Comparable<Package>, Privacy {
 }
 
 class Parameter extends ModelElement implements EnclosedElement {
-  Parameter(ParameterElement element, Library library, {Member originalMember})
-      : super(element, library, originalMember);
-
+  Parameter(ParameterElement element, this._packageGraph, {Member originalMember})
+      : super(element, null, originalMember);
   String get defaultValue {
     if (!hasDefaultValue) return null;
     return _parameter.defaultValueCode;
@@ -4736,6 +4744,10 @@ class Parameter extends ModelElement implements EnclosedElement {
   String get kind => 'parameter';
 
   ParameterElement get _parameter => element as ParameterElement;
+
+  final PackageGraph _packageGraph;
+  @override
+  PackageGraph get packageGraph => _packageGraph;
 
   @override
   String toString() => element.name;
