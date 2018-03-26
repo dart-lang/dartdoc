@@ -33,21 +33,24 @@
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
     <h5><span class="package-name">test_package</span> <span class="package-kind">package</span></h5>
-
-
     <ol>
-      <li class="section-title"><a href="index.html#libraries">Libraries</a></li>
-      <li><a href="anonymous_library/anonymous_library-library.html">anonymous_library</a></li>
-      <li><a href="another_anonymous_lib/another_anonymous_lib-library.html">another_anonymous_lib</a></li>
-      <li><a href="code_in_comments/code_in_comments-library.html">code_in_comments</a></li>
-      <li><a href="css/css-library.html">css</a></li>
-      <li><a href="ex/ex-library.html">ex</a></li>
-      <li><a href="fake/fake-library.html">fake</a></li>
-      <li><a class="deprecated" href="is_deprecated/is_deprecated-library.html">is_deprecated</a></li>
-      <li><a href="reexport_one/reexport_one-library.html">reexport_one</a></li>
-      <li><a href="reexport_two/reexport_two-library.html">reexport_two</a></li>
-      <li><a href="test_package_imported.main/test_package_imported.main-library.html">test_package_imported.main</a></li>
-      <li><a href="two_exports/two_exports-library.html">two_exports</a></li>
+          <li class="section-title">Libraries</li>
+          <li><a href="anonymous_library/anonymous_library-library.html">anonymous_library</a></li>
+          <li><a href="another_anonymous_lib/another_anonymous_lib-library.html">another_anonymous_lib</a></li>
+          <li><a href="code_in_comments/code_in_comments-library.html">code_in_comments</a></li>
+          <li><a class="deprecated" href="is_deprecated/is_deprecated-library.html">is_deprecated</a></li>
+          <li class="section-subtitle">Real Libraries</li>
+            <li class="section-subitem"><a href="ex/ex-library.html">ex</a></li>
+            <li class="section-subitem"><a href="fake/fake-library.html">fake</a></li>
+          <li class="section-subtitle">Unreal</li>
+            <li class="section-subitem"><a href="reexport_one/reexport_one-library.html">reexport_one</a></li>
+            <li class="section-subitem"><a href="reexport_two/reexport_two-library.html">reexport_two</a></li>
+          <li class="section-subtitle">Misc</li>
+            <li class="section-subitem"><a href="two_exports/two_exports-library.html">two_exports</a></li>
+          <li class="section-subtitle">Other</li>
+            <li class="section-subitem"><a href="css/css-library.html">css</a></li>
+          <li class="section-title">test_package_imported</li>
+          <li><a href="test_package_imported.main/test_package_imported.main-library.html">test_package_imported.main</a></li>
     </ol>
   </div>
 
@@ -97,23 +100,20 @@ div {
 <p>Be sure to check out other awesome packages on <a href="https://pub.dartlang.org">pub</a>.</p>
       </section>
       
-
-      <section class="summary" id="libraries">
-        <h2>Libraries</h2>
-        <dl>
+        <section class="summary">
+            <h2>Libraries</h2>
+          <dl>
             <dt id="anonymous_library">
               <span class="name"><a href="anonymous_library/anonymous_library-library.html">anonymous_library</a></span>
             </dt>
             <dd>
               
-            </dd>
-            <dt id="another_anonymous_lib">
+            </dd>            <dt id="another_anonymous_lib">
               <span class="name"><a href="another_anonymous_lib/another_anonymous_lib-library.html">another_anonymous_lib</a></span>
             </dt>
             <dd>
               
-            </dd>
-            <dt id="code_in_comments">
+            </dd>            <dt id="code_in_comments">
               <span class="name"><a href="code_in_comments/code_in_comments-library.html">code_in_comments</a></span>
             </dt>
             <dd>
@@ -121,58 +121,58 @@ div {
   // in Dart!
 }
 </code> <a href="code_in_comments/code_in_comments-library.html">[...]</a>
-            </dd>
-            <dt id="css">
-              <span class="name"><a href="css/css-library.html">css</a></span>
-            </dt>
-            <dd>
-              Testing that a library name doesn't conflict
-with directories created by dartdoc.
-            </dd>
-            <dt id="ex">
-              <span class="name"><a href="ex/ex-library.html">ex</a></span>
-            </dt>
-            <dd>
-              a library. testing string escaping: <code>var s = 'a string'</code> <cool></cool>
-            </dd>
-            <dt id="fake">
-              <span class="name"><a href="fake/fake-library.html">fake</a></span>
-            </dt>
-            <dd>
-              WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a> <a href="fake/fake-library.html">[...]</a>
-            </dd>
-            <dt id="is_deprecated">
+            </dd>            <dt id="is_deprecated">
               <span class="name"><a class="deprecated" href="is_deprecated/is_deprecated-library.html">is_deprecated</a></span>
             </dt>
             <dd>
               This lib is deprecated. It never had a chance
-            </dd>
-            <dt id="reexport_one">
-              <span class="name"><a href="reexport_one/reexport_one-library.html">reexport_one</a></span>
-            </dt>
-            <dd>
-              
-            </dd>
-            <dt id="reexport_two">
-              <span class="name"><a href="reexport_two/reexport_two-library.html">reexport_two</a></span>
-            </dt>
-            <dd>
-              
-            </dd>
+            </dd>            <h3>Real Libraries</h3>
+              <dt id="ex">
+                <span class="name"><a href="ex/ex-library.html">ex</a></span>
+              </dt>
+              <dd>
+                a library. testing string escaping: <code>var s = 'a string'</code> <cool></cool>
+              </dd>              <dt id="fake">
+                <span class="name"><a href="fake/fake-library.html">fake</a></span>
+              </dt>
+              <dd>
+                WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a> <a href="fake/fake-library.html">[...]</a>
+              </dd>            <h3>Unreal</h3>
+              <dt id="reexport_one">
+                <span class="name"><a href="reexport_one/reexport_one-library.html">reexport_one</a></span>
+              </dt>
+              <dd>
+                
+              </dd>              <dt id="reexport_two">
+                <span class="name"><a href="reexport_two/reexport_two-library.html">reexport_two</a></span>
+              </dt>
+              <dd>
+                
+              </dd>            <h3>Misc</h3>
+              <dt id="two_exports">
+                <span class="name"><a href="two_exports/two_exports-library.html">two_exports</a></span>
+              </dt>
+              <dd>
+                
+              </dd>            <h3>Other</h3>
+              <dt id="css">
+                <span class="name"><a href="css/css-library.html">css</a></span>
+              </dt>
+              <dd>
+                Testing that a library name doesn't conflict
+with directories created by dartdoc.
+              </dd>          </dl>
+        </section>
+        <section class="summary">
+            <h2>test_package_imported</h2>
+          <dl>
             <dt id="test_package_imported.main">
               <span class="name"><a href="test_package_imported.main/test_package_imported.main-library.html">test_package_imported.main</a></span>
             </dt>
             <dd>
               
-            </dd>
-            <dt id="two_exports">
-              <span class="name"><a href="two_exports/two_exports-library.html">two_exports</a></span>
-            </dt>
-            <dd>
-              
-            </dd>
-        </dl>
-      </section>
+            </dd>          </dl>
+        </section>
 
   </div> <!-- /.main-content -->
 

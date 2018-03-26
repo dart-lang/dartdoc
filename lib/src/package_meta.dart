@@ -12,7 +12,6 @@ import 'package:yaml/yaml.dart';
 
 import 'logging.dart';
 
-
 Map<String, PackageMeta> _packageMetaCache = {};
 
 abstract class PackageMeta {
@@ -30,7 +29,8 @@ abstract class PackageMeta {
     if (!_packageMetaCache.containsKey(dir.path)) {
       PackageMeta packageMeta;
       // There are pubspec.yaml files inside the SDK.  Ignore them.
-      if (pathLib.isWithin(getSdkDir().absolute.path, dir.path) || getSdkDir().path == dir.path) {
+      if (pathLib.isWithin(getSdkDir().absolute.path, dir.path) ||
+          getSdkDir().path == dir.path) {
         packageMeta = new _SdkMeta(getSdkDir());
       } else {
         while (dir.existsSync()) {
@@ -178,7 +178,6 @@ class _FilePackageMeta extends PackageMeta {
     return _changelog;
   }
 
-
   /// Returns a list of reasons this package is invalid, or an
   /// empty list if no reasons found.
   @override
@@ -211,8 +210,7 @@ File _locate(Directory dir, List<String> fileNames) {
 class _SdkMeta extends PackageMeta {
   String sdkReadmePath;
 
-  _SdkMeta(Directory dir)
-      : super(dir) {
+  _SdkMeta(Directory dir) : super(dir) {
     sdkReadmePath = pathLib.join(dir.path, 'lib', 'api_readme.md');
   }
 

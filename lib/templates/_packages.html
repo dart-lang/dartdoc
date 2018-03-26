@@ -1,0 +1,19 @@
+<ol>
+  {{#packageGraph.publicPackages}}
+    {{#isFirstPackage}}
+      <li class="section-title">Libraries</li>
+    {{/isFirstPackage}}
+    {{^isFirstPackage}}
+      <li class="section-title">{{name}}</li>
+    {{/isFirstPackage}}
+    {{#defaultCategory.publicLibraries}}
+      <li>{{{linkedName}}}</li>
+    {{/defaultCategory.publicLibraries}}
+    {{#categories}}
+      <li class="section-subtitle">{{name}}</li>
+      {{#publicLibraries}}
+        <li class="section-subitem">{{{linkedName}}}</li>
+      {{/publicLibraries}}
+    {{/categories}}
+  {{/packageGraph.publicPackages}}
+</ol>

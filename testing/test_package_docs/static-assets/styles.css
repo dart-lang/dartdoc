@@ -630,6 +630,19 @@ ul.subnav li:last-of-type {
   padding-top: 25px;
 }
 
+.sidebar ol li.section-subtitle a {
+  color: inherit;
+}
+
+.sidebar ol li.section-subtitle {
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.sidebar ol li.section-subitem {
+  margin-left: 12px;
+}
+
 .sidebar ol li:first-child {
   padding-top: 0;
   margin-top: 0;

@@ -7,7 +7,6 @@ import '../model.dart';
 abstract class HtmlOptions {
   String get relCanonicalPrefix;
   String get toolVersion;
-  bool get displayAsPackages;
 }
 
 class Subnav {
@@ -63,7 +62,6 @@ abstract class TemplateData<T extends Documentable> {
   T get self;
   String get version => htmlOptions.toolVersion;
   String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
-  bool get displayAsPackages => htmlOptions.displayAsPackages;
 
   Iterable<Subnav> getSubNavItems() => <Subnav>[];
 
@@ -113,7 +111,7 @@ class PackageTemplateData extends TemplateData<PackageGraph> {
   String get homepage => packageGraph.homepage;
 
   @override
-  String get kind => (displayAsPackages || packageGraph.isSdk) ? '' : 'package';
+  String get kind => packageGraph.kind;
 
   /// `null` for packages because they are at the root – not needed
   @override

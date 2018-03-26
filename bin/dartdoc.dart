@@ -192,7 +192,8 @@ main(List<String> arguments) async {
   PackageMeta packageMeta = new PackageMeta.fromDir(inputDir);
 
   if (packageMeta == null) {
-    stderr.writeln(' fatal error: Unable to generate documentation: no pubspec.yaml found');
+    stderr.writeln(
+        ' fatal error: Unable to generate documentation: no pubspec.yaml found');
     exit(1);
   }
 
@@ -212,7 +213,6 @@ main(List<String> arguments) async {
     }
   }
 
-
   logInfo("Generating documentation for '${packageMeta}' into "
       "${outputDir.absolute.path}${Platform.pathSeparator}");
 
@@ -221,7 +221,6 @@ main(List<String> arguments) async {
       footerFilePaths: footerFilePaths,
       footerTextFilePaths: footerTextFilePaths,
       faviconPath: args['favicon'],
-      displayAsPackages: args['use-categories'],
       prettyIndexJson: args['pretty-index-json']);
 
   for (var generator in generators) {
@@ -311,10 +310,8 @@ ArgParser _createArgsParser() {
   parser.addFlag('show-progress',
       help: 'Display progress indications to console stdout', negatable: false);
   parser.addOption('sdk-readme',
-      help:
-          'Path to the SDK description file.  Deprecated (ignored)');
-  parser.addOption('input',
-      help: 'Path to source directory.');
+      help: 'Path to the SDK description file.  Deprecated (ignored)');
+  parser.addOption('input', help: 'Path to source directory.');
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
   parser.addMultiOption('header',
@@ -349,22 +346,18 @@ ArgParser _createArgsParser() {
       help: 'A path to a favicon for the generated docs.');
   parser.addFlag('use-categories',
       help:
-          'Group libraries from the same package in the libraries sidebar. (deprecated, replaced by display-as-packages)',
-      negatable: false,
-      defaultsTo: false);
-  parser.addFlag('display-as-packages',
-      help: 'Group libraries from the same package in the libraries sidebar.',
+          'Group libraries from the same package in the libraries sidebar. (deprecated, ignored)',
       negatable: false,
       defaultsTo: false);
   parser.addMultiOption('category-order',
       help:
-          'A list of package names to place first when --display-as-packages is '
-          'set.  Unmentioned categories are sorted after these. (deprecated, replaced by package-order)',
+          'A list of package names to place first when grouping libraries in packages. '
+          'Unmentioned categories are sorted after these. (deprecated, replaced by package-order)',
       splitCommas: true);
   parser.addMultiOption('package-order',
       help:
-          'A list of package names to place first when --display-as-packages is '
-          'set.  Unmentioned categories are sorted after these.',
+          'A list of package names to place first when grouping libraries in packages. '
+          'Unmentioned categories are sorted after these.',
       splitCommas: true);
   parser.addFlag('auto-include-dependencies',
       help:
