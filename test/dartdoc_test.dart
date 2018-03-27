@@ -6,6 +6,7 @@ library dartdoc.dartdoc_test;
 
 import 'dart:io';
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -121,6 +122,14 @@ void main() {
       expect(p.libraries.map((lib) => lib.name).contains('dart:core'), isTrue);
       expect(p.libraries.map((lib) => lib.name).contains('dart:async'), isTrue);
       expect(p.libraries.map((lib) => lib.name).contains('dart:bear'), isTrue);
+      expect(p.packages.length, equals(2));
+      // Things that do not override the core SDK belong in their own package?
+      expect(p.packages["Dart"].isSdk, isTrue);
+      expect(p.packages["test_package_embedder_yaml"].isSdk, isFalse);
+      expect(
+          p.publicLibraries,
+          everyElement((Library l) =>
+              (l.element as LibraryElement).isInSdk == l.packageMeta.isSdk));
       // Ensure that we actually parsed some source by checking for
       // the 'Bear' class.
       Library dart_bear =
@@ -128,6 +137,9 @@ void main() {
       expect(dart_bear, isNotNull);
       expect(
           dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
+      expect(p.packages["test_package_embedder_yaml"].publicLibraries,
+          contains(dart_bear));
+      expect(p.packages["Dart"].publicLibraries, hasLength(2));
     });
   });
 }

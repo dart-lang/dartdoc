@@ -2047,7 +2047,7 @@ class Library extends ModelElement with Categorization {
   PackageMeta _packageMeta;
   PackageMeta get packageMeta {
     if (_packageMeta == null) {
-      _packageMeta = getPackageMeta(element);
+      _packageMeta = new PackageMeta.fromElement(element);
     }
     return _packageMeta;
   }
@@ -2200,12 +2200,6 @@ class Library extends ModelElement with Categorization {
     }
     assert(!name.startsWith('file:'));
     return name;
-  }
-
-  static PackageMeta getPackageMeta(Element element) {
-    String sourcePath = element.source.fullName;
-    return new PackageMeta.fromDir(
-        new File(pathLib.canonicalize(sourcePath)).parent);
   }
 
   static String getLibraryName(LibraryElement element) {
@@ -4582,7 +4576,7 @@ class Package extends LibraryContainer implements Comparable<Package>, Privacy {
   // Workaround for mustache4dart issue where templates do not recognize
   // inherited properties as being in-context.
   @override
-  List<Library> get publicLibraries => super.publicLibraries;
+  Iterable<Library> get publicLibraries => super.publicLibraries;
 
   /// A map of category name to the category itself.
   Map<String, Category> get nameToCategory {
@@ -5267,7 +5261,8 @@ class PackageBuilder {
           await driver.getLibraryByUri(source.uri.toString());
       if (library != null) {
         if (!isExcluded(Library.getLibraryName(library)) &&
-            !excludePackages.contains(Library.getPackageMeta(library)?.name)) {
+            !excludePackages
+                .contains(new PackageMeta.fromElement(library)?.name)) {
           libraries.add(library);
           sources.add(source);
         }

@@ -6,6 +6,7 @@ library dartdoc.package_meta;
 
 import 'dart:io';
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
@@ -18,6 +19,13 @@ abstract class PackageMeta {
   final Directory dir;
 
   PackageMeta(this.dir);
+
+  /// Use this instead of fromDir where possible.
+  factory PackageMeta.fromElement(LibraryElement libraryElement) {
+    if (libraryElement.isInSdk) return new PackageMeta.fromDir(getSdkDir());
+    return new PackageMeta.fromDir(
+        new File(pathLib.canonicalize(libraryElement.source.fullName)).parent);
+  }
 
   /// This factory is guaranteed to return the same object for any given
   /// [dir.absolute.path].  Multiple [dir.absolute.path]s will resolve to the
