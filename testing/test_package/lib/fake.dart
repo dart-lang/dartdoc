@@ -300,6 +300,7 @@ void aVoidParameter(Future<void> p1) {}
 
 /// This class extends Future<void>
 abstract class ExtendsFutureVoid extends Future<void> {
+  // ignore: missing_return
   factory ExtendsFutureVoid(FutureOr<void> computation()) {}
 }
 
@@ -308,6 +309,7 @@ abstract class ImplementsFutureVoid implements Future<void> {}
 
 /// This class takes a type, and it might be void.
 class ATypeTakingClass<T> {
+  // ignore: missing_return
   T aMethodMaybeReturningVoid() {}
 }
 

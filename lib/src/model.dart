@@ -1328,7 +1328,7 @@ class EnumField extends Field {
   @override
   String get constantValueBase {
     if (name == 'values') {
-      return 'const List&lt;${_field.enclosingElement.name}&gt;';
+      return 'const List&lt;<wbr><span class="type-parameter">${_field.enclosingElement.name}</span>&gt;';
     } else {
       return 'const ${_field.enclosingElement.name}($_index)';
     }
@@ -4895,12 +4895,12 @@ abstract class TypeParameters implements ModelElement {
 
   String get genericParameters {
     if (typeParameters.isEmpty) return '';
-    return '&lt;${typeParameters.map((t) => t.name).join(', ')}&gt;';
+    return '&lt;<wbr><span class="type-parameter">${typeParameters.map((t) => t.name).join('</span>, <span class="type-parameter">')}</span>&gt;';
   }
 
   String get linkedGenericParameters {
     if (typeParameters.isEmpty) return '';
-    return '<span class="signature">&lt;${typeParameters.map((t) => t.linkedName).join(', ')}&gt;</span>';
+    return '<span class="signature">&lt;<wbr><span class="type-parameter">${typeParameters.map((t) => t.linkedName).join('</span>, <span class="type-parameter">')}</span>&gt;</span>';
   }
 
   @override
@@ -5010,7 +5010,7 @@ class Typedef extends ModelElement
       List<TypeParameterElement> genericTypeParameters =
           (element as GenericTypeAliasElement).function.typeParameters;
       if (genericTypeParameters.isNotEmpty) {
-        return '&lt;${genericTypeParameters.map((t) => t.name).join(', ')}&gt;';
+        return '&lt;<wbr><span class="type-parameter">${genericTypeParameters.map((t) => t.name).join('</span>, <span class="type-parameter">')}</span>&gt;';
       }
     } // else, all types are resolved.
     return '';

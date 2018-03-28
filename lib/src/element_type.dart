@@ -125,9 +125,10 @@ class ParameterizedElementType extends DefinedElementType {
       if (!typeArguments.every((t) => t.name == 'dynamic') &&
           typeArguments.isNotEmpty) {
         buf.write('<span class="signature">');
-        buf.write('&lt;');
-        buf.writeAll(typeArguments.map((t) => t.linkedName), ', ');
-        buf.write('&gt;');
+        buf.write('&lt;<wbr><span class="type-parameter">');
+        buf.writeAll(typeArguments.map((t) => t.linkedName),
+            '</span>, <span class="type-parameter">');
+        buf.write('</span>&gt;');
         buf.write('</span>');
       }
 
@@ -146,9 +147,10 @@ class ParameterizedElementType extends DefinedElementType {
 
       if (!typeArguments.every((t) => t.name == 'dynamic') &&
           typeArguments.isNotEmpty) {
-        buf.write('&lt;');
-        buf.writeAll(typeArguments.map((t) => t.nameWithGenerics), ', ');
-        buf.write('&gt;');
+        buf.write('&lt;<wbr><span class="type-parameter">');
+        buf.writeAll(typeArguments.map((t) => t.nameWithGenerics),
+            '</span>, <span class="type-parameter">');
+        buf.write('</span>&gt;');
       }
       _nameWithGenerics = buf.toString();
     }
@@ -282,6 +284,12 @@ class CallableElementType extends ParameterizedElementType
   CallableElementType(FunctionType t, PackageGraph packageGraph,
       ModelElement element, ElementType returnedFrom)
       : super(t, packageGraph, element, returnedFrom);
+
+  @override
+  String get linkedName {
+    if (name != null && name.isNotEmpty) return super.linkedName;
+    return '${nameWithGenerics}(${element.linkedParams(showNames: false).trim()}) → ${returnType.linkedName}';
+  }
 }
 
 /// This is an anonymous function using the generic function syntax (declared
