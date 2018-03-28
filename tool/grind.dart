@@ -627,8 +627,8 @@ updateTestPackageDocs() async {
 @Task('Validate the SDK doc build.')
 @Depends(buildSdkDocs)
 validateSdkDocs() {
-  const expectedLibCount = 19;
-
+  const expectedLibCount = 7;
+  const expectedSubLibCount = 12;
   File indexHtml = joinFile(sdkDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
     fail('no index.html found for SDK docs');
@@ -642,12 +642,20 @@ validateSdkDocs() {
   }
   log('$foundLibs index.html dart: entries found');
 
+  int foundSubLibs =
+      _findCount(indexContents, '<li class="section-subitem"><a href="dart-');
+  if (foundSubLibs != expectedSubLibCount) {
+    fail(
+        'expected $expectedSubLibCount dart: index.html entries in categories, found $foundSubLibs');
+  }
+  log('$foundSubLibs index.html dart: entries in categories found');
+
   // check for the existence of certain files/dirs
   var libsLength =
       sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
-  if (libsLength != expectedLibCount) {
+  if (libsLength != expectedLibCount + expectedSubLibCount) {
     fail('docs not generated for all the SDK libraries, '
-        'expected $expectedLibCount directories, generated $libsLength directories');
+        'expected ${expectedLibCount + expectedSubLibCount} directories, generated $libsLength directories');
   }
   log('$libsLength dart: libraries found');
 
