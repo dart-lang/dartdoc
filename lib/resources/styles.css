@@ -363,12 +363,9 @@ dl dt.callable .name {
   white-space: nowrap;
 }
 
-.multi-line-signature .type-parameter {
-  display: -webkit-inline-box;
-}
-
 .multi-line-signature .type-parameter .parameter {
   margin-left: 0px;
+  display: unset;
 }
 
 .signature {
