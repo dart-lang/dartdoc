@@ -9,11 +9,6 @@ install:
   - set PATH=%PATH%;C:\tools\dart-sdk\bin
   - set PATH=%PATH%;%APPDATA%\Pub\Cache\bin
   - pub get
-  - cmd: cd testing
-  - cmd: cd test_package
-  - cmd: pub get
-  - cmd: cd ..
-  - cmd: cd ..
 
 build: off
 

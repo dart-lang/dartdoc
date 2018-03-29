@@ -365,6 +365,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.32+1"
+  test_package_imported:
+    dependency: "direct dev"
+    description:
+      path: "testing/test_package_imported"
+      relative: true
+    source: path
+    version: "0.0.1"
   tuple:
     dependency: "direct main"
     description:
