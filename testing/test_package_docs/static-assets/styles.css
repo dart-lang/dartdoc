@@ -219,7 +219,7 @@ a, a:hover {
 }
 
 pre.prettyprint {
-  font-family: 'Source Code Pro', monospace;
+  font-family: 'Source Code Pro', Menlo, monospace;
   color: black;
   border-radius: 0;
   font-size: 15px;
@@ -247,7 +247,7 @@ pre {
 }
 
 code {
-  font-family: 'Source Code Pro', monospace;
+  font-family: 'Source Code Pro', Menlo, monospace;
   /* overriding bootstrap */
   color: inherit;
   padding: 0.2em 0.4em;
