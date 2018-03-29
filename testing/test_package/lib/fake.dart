@@ -177,6 +177,14 @@ class AClassWithFancyProperties {
 
 const _APrivateConstClass CUSTOM_CLASS_PRIVATE = const _APrivateConstClass();
 
+/// Type inference mixing with anonymous functions.
+final importantComputations = {
+  1: (List<num> a) => a[0] + a[1],
+  2: (List<num> a) => a[0] - a[1],
+  3: (List<num> a) => a[0] * a[1],
+  4: (List<num> a) => -a[0]
+};
+
 // No dart docs on purpose. Also, a non-primitive const class.
 const ConstantClass CUSTOM_CLASS = const ConstantClass('custom');
 
@@ -212,6 +220,9 @@ typedef T GenericTypedef<T>(T input);
 
 /// A typedef with the new style generic function syntax.
 typedef NewGenericTypedef<T> = List<S> Function<S>(T, int, bool);
+
+/// A complicated type parameter to ATypeTakingClass.
+ATypeTakingClass<String Function(int)> get complicatedReturn => null;
 
 /// Lots and lots of parameters.
 typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,

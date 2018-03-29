@@ -565,8 +565,8 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
   }
 
   if (results.length > 1) {
-    if (results.any((r) => r.library.packageName == library.packageName)) {
-      results.removeWhere((r) => r.library.packageName != library.packageName);
+    if (results.any((r) => r.library?.packageName == library.packageName)) {
+      results.removeWhere((r) => r.library?.packageName != library.packageName);
     }
   }
 

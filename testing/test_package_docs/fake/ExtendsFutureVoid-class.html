@@ -101,9 +101,11 @@
     
       <li class="section-title"><a href="fake/fake-library.html#properties">Properties</a></li>
       <li><a href="fake/aCoolVariable.html">aCoolVariable</a></li>
+      <li><a href="fake/complicatedReturn.html">complicatedReturn</a></li>
       <li><a href="fake/dynamicGetter.html">dynamicGetter</a></li>
       <li><a href="fake/getterSetterNodocGetter.html">getterSetterNodocGetter</a></li>
       <li><a href="fake/getterSetterNodocSetter.html">getterSetterNodocSetter</a></li>
+      <li><a href="fake/importantComputations.html">importantComputations</a></li>
       <li><a href="fake/justGetter.html">justGetter</a></li>
       <li><a href="fake/justSetter.html">justSetter</a></li>
       <li><a href="fake/mapWithDynamicKeys.html">mapWithDynamicKeys</a></li>
@@ -163,7 +165,7 @@
         <dt>Inheritance</dt>
         <dd><ul class="gt-separated dark clazz-relationships">
           <li>Object</li>
-          <li>Future<span class="signature">&lt;void&gt;</span></li>
+          <li>Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></li>
           <li>ExtendsFutureVoid</li>
         </ul></dd>
 
@@ -178,7 +180,7 @@
 
       <dl class="constructor-summary-list">
         <dt id="ExtendsFutureVoid" class="callable">
-          <span class="name"><a href="fake/ExtendsFutureVoid/ExtendsFutureVoid.html">ExtendsFutureVoid</a></span><span class="signature">(<span class="parameter" id="-param-computation"><span class="type-annotation">FutureOr<span class="signature">&lt;void&gt;</span></span> <span class="parameter-name">computation</span>()</span>)</span>
+          <span class="name"><a href="fake/ExtendsFutureVoid/ExtendsFutureVoid.html">ExtendsFutureVoid</a></span><span class="signature">(<span class="parameter" id="-param-computation"><span class="type-annotation">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span> <span class="parameter-name">computation</span>()</span>)</span>
         </dt>
         <dd>
           
@@ -215,7 +217,7 @@
       <dl class="callables">
         <dt id="asStream" class="callable inherited">
           <span class="name"><a href="fake/ExtendsFutureVoid/asStream.html">asStream</a></span><span class="signature">(<wbr>)
-            <span class="returntype parameter">&#8594; Stream<span class="signature">&lt;void&gt;</span></span>
+            <span class="returntype parameter">&#8594; Stream<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
           </span>
         </dt>
         <dd class="inherited">
@@ -224,7 +226,7 @@
 </dd>
         <dt id="catchError" class="callable inherited">
           <span class="name"><a href="fake/ExtendsFutureVoid/catchError.html">catchError</a></span><span class="signature">(<wbr><span class="parameter" id="catchError-param-onError"><span class="type-annotation">Function</span> <span class="parameter-name">onError</span>, {</span> <span class="parameter" id="catchError-param-test"><span class="type-annotation">bool</span> <span class="parameter-name">test</span>(<span class="parameter" id="test-param-error"><span class="type-annotation">Object</span> <span class="parameter-name">error</span></span>)</span> })
-            <span class="returntype parameter">&#8594; Future<span class="signature">&lt;void&gt;</span></span>
+            <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
           </span>
         </dt>
         <dd class="inherited">
@@ -241,8 +243,8 @@
           <div class="features">inherited</div>
 </dd>
         <dt id="then" class="callable inherited">
-          <span class="name"><a href="fake/ExtendsFutureVoid/then.html">then</a></span><span class="signature">&lt;S&gt;</span><span class="signature">(<wbr><span class="parameter" id="then-param-onValue"><span class="type-annotation">FutureOr<span class="signature">&lt;S&gt;</span></span> <span class="parameter-name">onValue</span>(<span class="parameter" id="onValue-param-value"><span class="type-annotation">T</span> <span class="parameter-name">value</span></span>), {</span> <span class="parameter" id="then-param-onError"><span class="type-annotation">Function</span> <span class="parameter-name">onError</span></span> })
-            <span class="returntype parameter">&#8594; Future<span class="signature">&lt;S&gt;</span></span>
+          <span class="name"><a href="fake/ExtendsFutureVoid/then.html">then</a></span><span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="then-param-onValue"><span class="type-annotation">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span></span> <span class="parameter-name">onValue</span>(<span class="parameter" id="onValue-param-value"><span class="type-annotation">T</span> <span class="parameter-name">value</span></span>), {</span> <span class="parameter" id="then-param-onError"><span class="type-annotation">Function</span> <span class="parameter-name">onError</span></span> })
+            <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span></span>
           </span>
         </dt>
         <dd class="inherited">
@@ -250,8 +252,8 @@
           <div class="features">inherited</div>
 </dd>
         <dt id="timeout" class="callable inherited">
-          <span class="name"><a href="fake/ExtendsFutureVoid/timeout.html">timeout</a></span><span class="signature">(<wbr><span class="parameter" id="timeout-param-timeLimit"><span class="type-annotation">Duration</span> <span class="parameter-name">timeLimit</span>, {</span> <span class="parameter" id="timeout-param-onTimeout"><span class="type-annotation">FutureOr<span class="signature">&lt;void&gt;</span></span> <span class="parameter-name">onTimeout</span>()</span> })
-            <span class="returntype parameter">&#8594; Future<span class="signature">&lt;void&gt;</span></span>
+          <span class="name"><a href="fake/ExtendsFutureVoid/timeout.html">timeout</a></span><span class="signature">(<wbr><span class="parameter" id="timeout-param-timeLimit"><span class="type-annotation">Duration</span> <span class="parameter-name">timeLimit</span>, {</span> <span class="parameter" id="timeout-param-onTimeout"><span class="type-annotation">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span> <span class="parameter-name">onTimeout</span>()</span> })
+            <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
           </span>
         </dt>
         <dd class="inherited">
@@ -269,7 +271,7 @@
 </dd>
         <dt id="whenComplete" class="callable inherited">
           <span class="name"><a href="fake/ExtendsFutureVoid/whenComplete.html">whenComplete</a></span><span class="signature">(<wbr><span class="parameter" id="whenComplete-param-action"><span class="type-annotation">FutureOr</span> <span class="parameter-name">action</span>()</span>)
-            <span class="returntype parameter">&#8594; Future<span class="signature">&lt;void&gt;</span></span>
+            <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
           </span>
         </dt>
         <dd class="inherited">
