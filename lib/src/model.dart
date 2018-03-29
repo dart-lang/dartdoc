@@ -2006,8 +2006,6 @@ class Library extends ModelElement with Categorization {
 
   bool get isAnonymous => element.name == null || element.name.isEmpty;
 
-  bool get isInSdk => _libraryElement.isInSdk;
-
   @override
   String get kind => 'library';
 
