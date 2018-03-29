@@ -366,6 +366,7 @@ packages:
     source: hosted
     version: "0.12.32+1"
   test_package_imported:
+    dependency: "direct dev"
     description:
       path: "testing/test_package_imported"
       relative: true
