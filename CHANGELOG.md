@@ -1,3 +1,10 @@
+## 0.18.1
+* Fix problems with the embedded SDK detection that cropped up in
+  the package refactor (#1648, #1651)
+* Fix issues with anonymous functions and type parameters (#1651)
+* Add Menlo to the monospace font list to improve table
+  formatting (#1647)
+
 ## 0.18.0
 * Rename category_order flag to package_order. (#1634, #1636)
 * Use Google's CDN for jquery. (#1637)
