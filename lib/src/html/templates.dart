@@ -20,6 +20,8 @@ const _partials = const <String>[
   'constant',
   'footer',
   'head',
+  'library',
+  'packages',
   'property',
   'features',
   'documentation',
@@ -29,7 +31,7 @@ const _partials = const <String>[
   'source_code',
   'sidebar_for_library',
   'accessor_getter',
-  'accessor_setter'
+  'accessor_setter',
 ];
 
 Future<Map<String, String>> _loadPartials(List<String> headerPaths,

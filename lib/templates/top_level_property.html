@@ -1,40 +1,35 @@
 {{>head}}
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5>{{parent.kind}} {{parent.name}}</h5>
+    <h5>{{parent.name}} {{parent.kind}}</h5>
     {{>sidebar_for_library}}
   </div><!--/.sidebar-offcanvas-left-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+    <h1>{{self.name}} {{self.kind}}</h1>
 
-    {{#property.hasNoGetterSetter}}
-      <section class="multi-line-signature">
-        <span class="returntype">{{{ linkedReturnType }}}</span>
-        {{>name_summary}}
-        {{>features}}
-      </section>
+    {{#self}}
+    {{#hasNoGetterSetter}}
+    <section class="multi-line-signature">
+      <span class="returntype">{{{ linkedReturnType }}}</span>
+      {{>name_summary}}
+      {{>features}}
+    </section>
+    {{>documentation}}
+    {{>source_code}}
+    {{/hasNoGetterSetter}}
 
-      {{>documentation}}
-    {{/property.hasNoGetterSetter}}
+    {{#hasExplicitGetter}}
+    {{>accessor_getter}}
+    {{/hasExplicitGetter}}
 
-    {{#property.hasExplicitGetter}}
-    {{#property.getter}}
-      {{>accessor_getter}}
-      {{>source_code}}
-    {{/property.getter}}
-    {{/property.hasExplicitGetter}}
-
-    {{#property.hasExplicitSetter}}
-    {{#property.setter}}
-      {{>accessor_setter}}
-      {{>source_code}}
-    {{/property.setter}}
-    {{/property.hasExplicitSetter}}
-
+    {{#hasExplicitSetter}}
+    {{>accessor_setter}}
+    {{/hasExplicitSetter}}
+    {{/self}}
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>{{self.kind}} {{self.name}}</h5>
   </div><!--/.sidebar-offcanvas-->
 
 {{>footer}}

@@ -20,12 +20,12 @@ class Subnav {
 }
 
 abstract class TemplateData<T extends Documentable> {
-  final Package package;
+  final PackageGraph packageGraph;
   final HtmlOptions htmlOptions;
 
   List<Subnav> _subNameItemCache;
 
-  TemplateData(this.htmlOptions, this.package);
+  TemplateData(this.htmlOptions, this.packageGraph);
 
   String get documentation => self.documentation;
   String get oneLineDoc => self.oneLineDoc;
@@ -36,7 +36,13 @@ abstract class TemplateData<T extends Documentable> {
   String get kind => self is ModelElement ? (self as ModelElement).kind : null;
 
   List get navLinks;
-  Documentable get parent => navLinks.isNotEmpty ? navLinks.last : null;
+  List get navLinksWithGenerics => [];
+  Documentable get parent {
+    if (navLinksWithGenerics.isEmpty) {
+      return navLinks.isNotEmpty ? navLinks.last : null;
+    }
+    return navLinksWithGenerics.last;
+  }
 
   bool get includeVersion => false;
 
@@ -61,9 +67,9 @@ abstract class TemplateData<T extends Documentable> {
 
   String _layoutTitle(String name, String kind, bool isDeprecated) {
     if (isDeprecated) {
-      return '${kind} <span class="deprecated">${name}</span>';
+      return '<span class="deprecated">${name}</span> ${kind}';
     } else {
-      return '${kind} ${name}';
+      return '${name} ${kind}';
     }
   }
 
@@ -77,37 +83,35 @@ abstract class TemplateData<T extends Documentable> {
   }
 }
 
-class PackageTemplateData extends TemplateData<Package> {
-  PackageTemplateData(
-      HtmlOptions htmlOptions, Package package, this.useCategories)
-      : super(htmlOptions, package);
+class PackageTemplateData extends TemplateData<PackageGraph> {
+  PackageTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph)
+      : super(htmlOptions, packageGraph);
 
   @override
   bool get includeVersion => true;
-  final bool useCategories;
   @override
   List get navLinks => [];
   @override
-  String get title => '${package.name} - Dart API docs';
+  String get title => '${packageGraph.name} - Dart API docs';
   @override
-  Package get self => package;
+  PackageGraph get self => packageGraph;
   @override
-  String get layoutTitle => _layoutTitle(package.name, kind, false);
+  String get layoutTitle => _layoutTitle(packageGraph.name, kind, false);
   @override
   String get metaDescription =>
-      '${package.name} API docs, for the Dart programming language.';
+      '${packageGraph.name} API docs, for the Dart programming language.';
   @override
   Iterable<Subnav> getSubNavItems() {
-    return [new Subnav('Libraries', '${package.href}#libraries')];
+    return [new Subnav('Libraries', '${packageGraph.href}#libraries')];
   }
 
   @override
-  bool get hasHomepage => package.hasHomepage;
+  bool get hasHomepage => packageGraph.hasHomepage;
   @override
-  String get homepage => package.homepage;
+  String get homepage => packageGraph.homepage;
 
   @override
-  String get kind => (useCategories || package.isSdk) ? '' : 'package';
+  String get kind => packageGraph.kind;
 
   /// `null` for packages because they are at the root – not needed
   @override
@@ -117,36 +121,36 @@ class PackageTemplateData extends TemplateData<Package> {
 class LibraryTemplateData extends TemplateData<Library> {
   final Library library;
 
-  LibraryTemplateData(HtmlOptions htmlOptions, Package package, this.library,
-      this.useCategories)
-      : super(htmlOptions, package);
+  LibraryTemplateData(
+      HtmlOptions htmlOptions, PackageGraph packageGraph, this.library)
+      : super(htmlOptions, packageGraph);
 
   @override
   String get title => '${library.name} library - Dart API';
   @override
   String get documentation => library.documentation;
-  final bool useCategories;
   @override
   String get htmlBase => '..';
   @override
   String get metaDescription =>
       '${library.name} library API docs, for the Dart programming language.';
   @override
-  List get navLinks => [package];
+  List get navLinks => [packageGraph];
   @override
   Iterable<Subnav> getSubNavItems() sync* {
-    if (library.hasClasses)
+    if (library.hasPublicClasses)
       yield new Subnav('Classes', '${library.href}#classes');
-    if (library.hasConstants)
+    if (library.hasPublicConstants)
       yield new Subnav('Constants', '${library.href}#constants');
-    if (library.hasProperties)
+    if (library.hasPublicProperties)
       yield new Subnav('Properties', '${library.href}#properties');
-    if (library.hasFunctions)
+    if (library.hasPublicFunctions)
       yield new Subnav('Functions', '${library.href}#functions');
-    if (library.hasEnums) yield new Subnav('Enums', '${library.href}#enums');
-    if (library.hasTypedefs)
+    if (library.hasPublicEnums)
+      yield new Subnav('Enums', '${library.href}#enums');
+    if (library.hasPublicTypedefs)
       yield new Subnav('Typedefs', '${library.href}#typedefs');
-    if (library.hasExceptions)
+    if (library.hasPublicExceptions)
       yield new Subnav('Exceptions', '${library.href}#exceptions');
   }
 
@@ -163,9 +167,9 @@ class ClassTemplateData extends TemplateData<Class> {
   final Library library;
   Class _objectType;
 
-  ClassTemplateData(
-      HtmlOptions htmlOptions, Package package, this.library, this.clazz)
-      : super(htmlOptions, package);
+  ClassTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+      this.library, this.clazz)
+      : super(htmlOptions, packageGraph);
 
   @override
   Class get self => clazz;
@@ -180,27 +184,27 @@ class ClassTemplateData extends TemplateData<Class> {
       '${library.name} library, for the Dart programming language.';
 
   @override
-  String get layoutTitle =>
-      _layoutTitle(clazz.nameWithGenerics, clazz.fullkind, clazz.isDeprecated);
+  String get layoutTitle => _layoutTitle(
+      clazz.nameWithLinkedGenerics, clazz.fullkind, clazz.isDeprecated);
   @override
-  List get navLinks => [package, library];
+  List get navLinks => [packageGraph, library];
   @override
   String get htmlBase => '..';
   @override
   Iterable<Subnav> getSubNavItems() sync* {
-    if (clazz.hasConstructors)
+    if (clazz.hasPublicConstructors)
       yield new Subnav('Constructors', '${clazz.href}#constructors');
-    if (clazz.hasProperties)
+    if (clazz.hasPublicProperties)
       yield new Subnav('Properties', '${clazz.href}#instance-properties');
-    if (clazz.hasMethods)
+    if (clazz.hasPublicMethods)
       yield new Subnav('Methods', '${clazz.href}#instance-methods');
-    if (clazz.hasOperators)
+    if (clazz.hasPublicOperators)
       yield new Subnav('Operators', '${clazz.href}#operators');
-    if (clazz.hasStaticProperties)
+    if (clazz.hasPublicStaticProperties)
       yield new Subnav('Static Properties', '${clazz.href}#static-properties');
-    if (clazz.hasStaticMethods)
+    if (clazz.hasPublicStaticMethods)
       yield new Subnav('Static Methods', '${clazz.href}#static-methods');
-    if (clazz.hasConstants)
+    if (clazz.hasPublicConstants)
       yield new Subnav('Constants', '${clazz.href}#constants');
   }
 
@@ -209,7 +213,7 @@ class ClassTemplateData extends TemplateData<Class> {
       return _objectType;
     }
 
-    Library dc = package.libraries
+    Library dc = packageGraph.libraries
         .firstWhere((it) => it.name == "dart:core", orElse: () => null);
 
     if (dc == null) {
@@ -225,9 +229,9 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
   final Class clazz;
   final Constructor constructor;
 
-  ConstructorTemplateData(HtmlOptions htmlOptions, Package package,
+  ConstructorTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
       this.library, this.clazz, this.constructor)
-      : super(htmlOptions, package);
+      : super(htmlOptions, packageGraph);
 
   @override
   Constructor get self => constructor;
@@ -235,7 +239,9 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
   String get layoutTitle => _layoutTitle(
       constructor.name, constructor.fullKind, constructor.isDeprecated);
   @override
-  List get navLinks => [package, library, clazz];
+  List get navLinks => [packageGraph, library];
+  @override
+  List get navLinksWithGenerics => [clazz];
   @override
   Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(constructor);
   @override
@@ -251,9 +257,9 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
 }
 
 class EnumTemplateData extends TemplateData<Enum> {
-  EnumTemplateData(
-      HtmlOptions htmlOptions, Package package, this.library, this.eNum)
-      : super(htmlOptions, package);
+  EnumTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+      this.library, this.eNum)
+      : super(htmlOptions, packageGraph);
 
   final Library library;
   final Enum eNum;
@@ -268,7 +274,7 @@ class EnumTemplateData extends TemplateData<Enum> {
       'API docs for the ${eNum.name} enum from the ${library.name} library, '
       'for the Dart programming language.';
   @override
-  List get navLinks => [package, library];
+  List get navLinks => [packageGraph, library];
   @override
   String get htmlBase => '..';
   @override
@@ -284,9 +290,9 @@ class FunctionTemplateData extends TemplateData<ModelFunction> {
   final ModelFunction function;
   final Library library;
 
-  FunctionTemplateData(
-      HtmlOptions htmlOptions, Package package, this.library, this.function)
-      : super(htmlOptions, package);
+  FunctionTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+      this.library, this.function)
+      : super(htmlOptions, packageGraph);
 
   @override
   ModelFunction get self => function;
@@ -301,7 +307,7 @@ class FunctionTemplateData extends TemplateData<ModelFunction> {
       'API docs for the ${function.name} function from the '
       '${library.name} library, for the Dart programming language.';
   @override
-  List get navLinks => [package, library];
+  List get navLinks => [packageGraph, library];
   @override
   Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(function);
   @override
@@ -313,9 +319,9 @@ class MethodTemplateData extends TemplateData<Method> {
   final Method method;
   final Class clazz;
 
-  MethodTemplateData(HtmlOptions htmlOptions, Package package, this.library,
-      this.clazz, this.method)
-      : super(htmlOptions, package);
+  MethodTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+      this.library, this.clazz, this.method)
+      : super(htmlOptions, packageGraph);
 
   @override
   Method get self => method;
@@ -330,7 +336,9 @@ class MethodTemplateData extends TemplateData<Method> {
       'API docs for the ${method.name} method from the ${clazz.name} class, '
       'for the Dart programming language.';
   @override
-  List get navLinks => [package, library, clazz];
+  List get navLinks => [packageGraph, library];
+  @override
+  List get navLinksWithGenerics => [clazz];
   @override
   Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(method);
   @override
@@ -342,9 +350,9 @@ class PropertyTemplateData extends TemplateData<Field> {
   final Class clazz;
   final Field property;
 
-  PropertyTemplateData(HtmlOptions htmlOptions, Package package, this.library,
-      this.clazz, this.property)
-      : super(htmlOptions, package);
+  PropertyTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+      this.library, this.clazz, this.property)
+      : super(htmlOptions, packageGraph);
 
   @override
   Field get self => property;
@@ -360,7 +368,9 @@ class PropertyTemplateData extends TemplateData<Field> {
       'API docs for the ${property.name} $type from the ${clazz.name} class, '
       'for the Dart programming language.';
   @override
-  List get navLinks => [package, library, clazz];
+  List get navLinks => [packageGraph, library];
+  @override
+  List get navLinksWithGenerics => [clazz];
   @override
   String get htmlBase => '../..';
 
@@ -368,9 +378,9 @@ class PropertyTemplateData extends TemplateData<Field> {
 }
 
 class ConstantTemplateData extends PropertyTemplateData {
-  ConstantTemplateData(HtmlOptions htmlOptions, Package package,
+  ConstantTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
       Library library, Class clazz, Field property)
-      : super(htmlOptions, package, library, clazz, property);
+      : super(htmlOptions, packageGraph, library, clazz, property);
 
   @override
   String get type => 'constant';
@@ -380,9 +390,9 @@ class TypedefTemplateData extends TemplateData<Typedef> {
   final Library library;
   final Typedef typeDef;
 
-  TypedefTemplateData(
-      HtmlOptions htmlOptions, Package package, this.library, this.typeDef)
-      : super(htmlOptions, package);
+  TypedefTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+      this.library, this.typeDef)
+      : super(htmlOptions, packageGraph);
 
   @override
   Typedef get self => typeDef;
@@ -398,7 +408,7 @@ class TypedefTemplateData extends TemplateData<Typedef> {
       'API docs for the ${typeDef.name} property from the '
       '${library.name} library, for the Dart programming language.';
   @override
-  List get navLinks => [package, library];
+  List get navLinks => [packageGraph, library];
   @override
   String get htmlBase => '..';
   @override
@@ -409,9 +419,9 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
   final Library library;
   final TopLevelVariable property;
 
-  TopLevelPropertyTemplateData(
-      HtmlOptions htmlOptions, Package package, this.library, this.property)
-      : super(htmlOptions, package);
+  TopLevelPropertyTemplateData(HtmlOptions htmlOptions,
+      PackageGraph packageGraph, this.library, this.property)
+      : super(htmlOptions, packageGraph);
 
   @override
   TopLevelVariable get self => property;
@@ -427,7 +437,7 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
       'API docs for the ${property.name} $_type from the '
       '${library.name} library, for the Dart programming language.';
   @override
-  List get navLinks => [package, library];
+  List get navLinks => [packageGraph, library];
   @override
   String get htmlBase => '..';
 
@@ -435,9 +445,9 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
 }
 
 class TopLevelConstTemplateData extends TopLevelPropertyTemplateData {
-  TopLevelConstTemplateData(HtmlOptions htmlOptions, Package package,
+  TopLevelConstTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
       Library library, TopLevelVariable property)
-      : super(htmlOptions, package, library, property);
+      : super(htmlOptions, packageGraph, library, property);
 
   @override
   String get _type => 'constant';

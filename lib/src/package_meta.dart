@@ -6,20 +6,58 @@ library dartdoc.package_meta;
 
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
+import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/sdk.dart';
+import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
+
+import 'logging.dart';
+
+Map<String, PackageMeta> _packageMetaCache = {};
 
 abstract class PackageMeta {
   final Directory dir;
-  final bool useCategories;
 
-  PackageMeta(this.dir, {this.useCategories: false});
+  PackageMeta(this.dir);
 
-  factory PackageMeta.fromDir(Directory dir) => new _FilePackageMeta(dir);
-  factory PackageMeta.fromSdk(Directory sdkDir,
-          {String sdkReadmePath, bool useCategories}) =>
-      new _SdkMeta(sdkDir,
-          sdkReadmePath: sdkReadmePath, useCategories: useCategories);
+  /// Use this instead of fromDir where possible.
+  factory PackageMeta.fromElement(LibraryElement libraryElement) {
+    // Workaround for dart-lang/sdk#32707.  Replace with isInSdk once that works.
+    if (libraryElement.source.uri.scheme == 'dart') return new PackageMeta.fromDir(getSdkDir());
+    return new PackageMeta.fromDir(
+        new File(pathLib.canonicalize(libraryElement.source.fullName)).parent);
+  }
+
+  /// This factory is guaranteed to return the same object for any given
+  /// [dir.absolute.path].  Multiple [dir.absolute.path]s will resolve to the
+  /// same object if they are part of the same package.  Returns null
+  /// if the directory is not part of a known package.
+  factory PackageMeta.fromDir(Directory dir) {
+    Directory original = dir.absolute;
+    dir = original;
+    if (!_packageMetaCache.containsKey(dir.path)) {
+      PackageMeta packageMeta;
+      // There are pubspec.yaml files inside the SDK.  Ignore them.
+      if (pathLib.isWithin(getSdkDir().absolute.path, dir.path) ||
+          getSdkDir().path == dir.path) {
+        packageMeta = new _SdkMeta(getSdkDir());
+      } else {
+        while (dir.existsSync()) {
+          File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
+          if (pubspec.existsSync()) {
+            packageMeta = new _FilePackageMeta(dir);
+            break;
+          }
+          // Allow a package to be at root (possible in a Windows setting with
+          // drive letter mappings).
+          if (dir.path == dir.parent.absolute.path) break;
+          dir = dir.parent.absolute;
+        }
+      }
+      _packageMetaCache[dir.absolute.path] = packageMeta;
+    }
+    return _packageMetaCache[dir.absolute.path];
+  }
 
   bool get isSdk;
   bool get needsPubGet => false;
@@ -44,7 +82,7 @@ abstract class PackageMeta {
   FileContents getChangelogContents();
 
   /// Returns true if we are a valid package, valid enough to generate docs.
-  bool get isValid;
+  bool get isValid => getInvalidReasons().isEmpty;
 
   /// Returns a list of reasons this package is invalid, or an
   /// empty list if no reasons found.
@@ -79,7 +117,7 @@ class _FilePackageMeta extends PackageMeta {
   Map _pubspec;
 
   _FilePackageMeta(Directory dir) : super(dir) {
-    File f = new File(path.join(dir.path, 'pubspec.yaml'));
+    File f = new File(pathLib.join(dir.path, 'pubspec.yaml'));
     if (f.existsSync()) {
       _pubspec = loadYaml(f.readAsStringSync());
     } else {
@@ -92,19 +130,20 @@ class _FilePackageMeta extends PackageMeta {
 
   @override
   bool get needsPubGet =>
-      !(new File(path.join(dir.path, '.packages')).existsSync());
+      !(new File(pathLib.join(dir.path, '.packages')).existsSync());
 
   @override
   void runPubGet() {
     String pubPath =
-        path.join(path.dirname(Platform.resolvedExecutable), 'pub');
+        pathLib.join(pathLib.dirname(Platform.resolvedExecutable), 'pub');
     if (Platform.isWindows) pubPath += '.bat';
 
     ProcessResult result =
         Process.runSync(pubPath, ['get'], workingDirectory: dir.path);
 
-    if (result.stdout.isNotEmpty) {
-      print(result.stdout.trim());
+    var trimmedStdout = (result.stdout as String).trim();
+    if (trimmedStdout.isNotEmpty) {
+      logInfo(trimmedStdout);
     }
 
     if (result.exitCode != 0) {
@@ -148,9 +187,6 @@ class _FilePackageMeta extends PackageMeta {
     return _changelog;
   }
 
-  @override
-  bool get isValid => getInvalidReasons().isEmpty;
-
   /// Returns a list of reasons this package is invalid, or an
   /// empty list if no reasons found.
   @override
@@ -171,7 +207,7 @@ File _locate(Directory dir, List<String> fileNames) {
 
   for (String name in fileNames) {
     for (File f in files) {
-      String baseName = path.basename(f.path).toLowerCase();
+      String baseName = pathLib.basename(f.path).toLowerCase();
       if (baseName == name) return f;
       if (baseName.startsWith(name)) return f;
     }
@@ -181,10 +217,11 @@ File _locate(Directory dir, List<String> fileNames) {
 }
 
 class _SdkMeta extends PackageMeta {
-  final String sdkReadmePath;
+  String sdkReadmePath;
 
-  _SdkMeta(Directory dir, {this.sdkReadmePath, bool useCategories})
-      : super(dir, useCategories: useCategories);
+  _SdkMeta(Directory dir) : super(dir) {
+    sdkReadmePath = pathLib.join(dir.path, 'lib', 'api_readme.md');
+  }
 
   @override
   bool get isSdk => true;
@@ -195,10 +232,10 @@ class _SdkMeta extends PackageMeta {
   }
 
   @override
-  String get name => 'Dart SDK';
+  String get name => 'Dart';
   @override
   String get version =>
-      new File(path.join(dir.path, 'version')).readAsStringSync().trim();
+      new File(pathLib.join(dir.path, 'version')).readAsStringSync().trim();
   @override
   String get description =>
       'The Dart SDK is a set of tools and libraries for the '
@@ -208,14 +245,9 @@ class _SdkMeta extends PackageMeta {
 
   @override
   FileContents getReadmeContents() {
-    File f = sdkReadmePath != null
-        ? new File(sdkReadmePath)
-        : new File(path.join(dir.path, 'lib', 'api_readme.md'));
+    File f = new File(pathLib.join(dir.path, 'lib', 'api_readme.md'));
     return f.existsSync() ? new FileContents(f) : null;
   }
-
-  @override
-  bool get isValid => true;
 
   @override
   List<String> getInvalidReasons() => [];

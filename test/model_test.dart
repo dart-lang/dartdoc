@@ -8,10 +8,9 @@ import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
-import 'package:dartdoc/src/model_utils.dart';
-import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:dartdoc/src/sdk.dart';
-import 'package:path/path.dart' as p;
+import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
@@ -24,108 +23,152 @@ void main() {
     exit(1);
   }
 
-  Package package;
-  Package ginormousPackage;
+  PackageGraph packageGraph;
+  PackageGraph packageGraphSmall;
+  PackageGraph ginormousPackageGraph;
   Library exLibrary;
   Library fakeLibrary;
   Library twoExportsLib;
-  Package sdkAsPackage;
+  Library interceptorsLib;
+  PackageGraph sdkAsPackageGraph;
 
-  setUpAll(() {
-    utils.init();
-    package = utils.testPackage;
-    ginormousPackage = utils.testPackageGinormous;
-    exLibrary = package.libraries.firstWhere((lib) => lib.name == 'ex');
-    fakeLibrary = package.libraries.firstWhere((lib) => lib.name == 'fake');
+  setUpAll(() async {
+    await utils.init();
+    packageGraph = utils.testPackageGraph;
+    packageGraphSmall = utils.testPackageGraphSmall;
+    ginormousPackageGraph = utils.testPackageGraphGinormous;
+    exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
+    fakeLibrary =
+        packageGraph.libraries.firstWhere((lib) => lib.name == 'fake');
     twoExportsLib =
-        package.libraries.firstWhere((lib) => lib.name == 'two_exports');
+        packageGraph.libraries.firstWhere((lib) => lib.name == 'two_exports');
+    interceptorsLib = packageGraph.libraries
+        .firstWhere((lib) => lib.name == 'dart:_interceptors');
+    sdkAsPackageGraph = utils.testPackageGraphSdk;
+  });
 
-    sdkAsPackage = Package.withAutoIncludedDependencies(
-        getSdkLibrariesToDocument(utils.sdkDir, utils.analyzerHelper.context),
-        new PackageMeta.fromSdk(sdkDir),
-        new PackageWarningOptions());
+  group('Category', () {
+    test('Verify categories for test_package', () {
+      expect(packageGraph.publicPackages.length, equals(1));
+      expect(packageGraph.publicPackages.first.hasCategories, isTrue);
+      List<Category> packageCategories =
+          packageGraph.publicPackages.first.categories;
+      expect(packageCategories.length, equals(3));
+      expect(packageCategories.map((c) => c.name).toList(),
+          orderedEquals(['Real Libraries', 'Unreal', 'Misc']));
+      expect(packageCategories.map((c) => c.libraries.length).toList(),
+          orderedEquals([2, 2, 1]));
+      expect(
+          packageGraph
+              .publicPackages.first.defaultCategory.publicLibraries.length,
+          equals(3));
+    });
+
+    test('Verify that packages without categories get handled', () {
+      expect(packageGraphSmall.publicPackages.length, equals(1));
+      expect(packageGraphSmall.publicPackages.first.hasCategories, isFalse);
+      List<Category> packageCategories =
+          packageGraphSmall.publicPackages.first.categories;
+      expect(packageCategories.length, equals(0));
+      expect(
+          packageGraph
+              .publicPackages.first.defaultCategory.publicLibraries.length,
+          equals(3));
+    });
   });
 
   group('Package', () {
     group('test package', () {
       setUp(() {
         setConfig();
+        ginormousPackageGraph.resetPublicPackages();
+        packageGraph.resetPublicPackages();
+      });
+      tearDown(() {
+        setConfig();
+        ginormousPackageGraph.resetPublicPackages();
+        packageGraph.resetPublicPackages();
       });
 
       test('name', () {
-        expect(package.name, 'test_package');
+        expect(packageGraph.name, 'test_package');
       });
 
       test('libraries', () {
-        expect(package.libraries, hasLength(8));
+        expect(packageGraph.libraries, hasLength(9));
+        expect(interceptorsLib.isPublic, isFalse);
       });
 
       test('homepage', () {
-        expect(package.hasHomepage, true);
-        expect(package.homepage, equals('http://github.com/dart-lang'));
+        expect(packageGraph.hasHomepage, true);
+        expect(packageGraph.homepage, equals('http://github.com/dart-lang'));
       });
 
       test('categories', () {
-        expect(package.categories, hasLength(1));
+        expect(packageGraph.publicPackages, hasLength(1));
 
-        PackageCategory category = package.categories.first;
+        Package category = packageGraph.publicPackages.first;
         expect(category.name, 'test_package');
         expect(category.libraries, hasLength(8));
       });
 
       test('multiple categories, sorted default', () {
-        expect(ginormousPackage.categories, hasLength(2));
-        expect(ginormousPackage.categories.first.name, equals('test_package'));
+        expect(ginormousPackageGraph.publicPackages, hasLength(3));
+        expect(ginormousPackageGraph.publicPackages.first.name,
+            equals('test_package'));
       });
 
       test('multiple categories, specified sort order', () {
-        setConfig(categoryOrder: ['Dart Core', 'test_package']);
-        expect(ginormousPackage.categories, hasLength(2));
-        expect(ginormousPackage.categories.first.name, equals('Dart Core'));
+        setConfig(packageOrder: ['meta', 'test_package']);
+        expect(ginormousPackageGraph.publicPackages, hasLength(3));
+        expect(ginormousPackageGraph.publicPackages.first.name, equals('meta'));
       });
 
       test('is documented in library', () {
-        expect(package.isDocumented(exLibrary.element), isTrue);
+        expect(exLibrary.isDocumented, isTrue);
       });
 
       test('has documentation', () {
-        expect(package.hasDocumentationFile, isTrue);
-        expect(package.hasDocumentation, isTrue);
+        expect(packageGraph.hasDocumentationFile, isTrue);
+        expect(packageGraph.hasDocumentation, isTrue);
       });
 
       test('documentation exists', () {
-        expect(package.documentation.startsWith('# Best Package'), isTrue);
+        expect(packageGraph.documentation.startsWith('# Best Package'), isTrue);
       });
 
       test('documentation can be rendered as HTML', () {
-        expect(package.documentationAsHtml, contains('<h1>Best Package</h1>'));
+        expect(packageGraph.documentationAsHtml,
+            contains('<h1>Best Package</h1>'));
       });
 
       test('sdk name', () {
-        expect(sdkAsPackage.name, equals('Dart SDK'));
+        expect(sdkAsPackageGraph.name, equals('Dart'));
+        expect(sdkAsPackageGraph.kind, equals('SDK'));
       });
 
       test('sdk homepage', () {
-        expect(sdkAsPackage.hasHomepage, isTrue);
-        expect(
-            sdkAsPackage.homepage, equals('https://github.com/dart-lang/sdk'));
+        expect(sdkAsPackageGraph.hasHomepage, isTrue);
+        expect(sdkAsPackageGraph.homepage,
+            equals('https://github.com/dart-lang/sdk'));
       });
 
       test('sdk version', () {
-        expect(sdkAsPackage.version, isNotNull);
+        expect(sdkAsPackageGraph.version, isNotNull);
       });
 
       test('sdk description', () {
-        expect(sdkAsPackage.documentation,
+        expect(sdkAsPackageGraph.documentation,
             startsWith('Welcome to the Dart API reference doc'));
       });
 
       test('has anonymous libraries', () {
         expect(
-            package.libraries.where((lib) => lib.name == 'anonymous_library'),
+            packageGraph.libraries
+                .where((lib) => lib.name == 'anonymous_library'),
             hasLength(1));
         expect(
-            package.libraries
+            packageGraph.libraries
                 .where((lib) => lib.name == 'another_anonymous_lib'),
             hasLength(1));
       });
@@ -133,10 +176,35 @@ void main() {
 
     group('test small package', () {
       test('does not have documentation', () {
-        expect(utils.testPackageSmall.hasDocumentation, isFalse);
-        expect(utils.testPackageSmall.hasDocumentationFile, isFalse);
-        expect(utils.testPackageSmall.documentationFile, isNull);
-        expect(utils.testPackageSmall.documentation, isNull);
+        expect(utils.testPackageGraphSmall.hasDocumentation, isFalse);
+        expect(utils.testPackageGraphSmall.hasDocumentationFile, isFalse);
+        expect(utils.testPackageGraphSmall.documentationFile, isNull);
+        expect(utils.testPackageGraphSmall.documentation, isNull);
+      });
+    });
+
+    group('SDK-specific cases', () {
+      test('Verify Interceptor is hidden from inheritance in docs', () {
+        Library htmlLibrary = sdkAsPackageGraph.libraries
+            .singleWhere((l) => l.name == 'dart:html');
+        Class EventTarget =
+            htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
+        Field hashCode = EventTarget.allPublicInstanceProperties
+            .singleWhere((f) => f.name == 'hashCode');
+        Class objectModelElement = sdkAsPackageGraph.objectElement;
+        // If this fails, EventTarget might have been changed to no longer
+        // inherit from Interceptor.  If that's true, adjust test case to
+        // another class that does.
+        expect(
+            hashCode.inheritance.any((c) => c.name == 'Interceptor'), isTrue);
+        // If EventTarget really does start implementing hashCode, this will
+        // fail.
+        expect(hashCode.href, equals('dart-core/Object/hashCode.html'));
+        expect(hashCode.canonicalEnclosingElement, equals(objectModelElement));
+        expect(
+            EventTarget.publicSuperChainReversed
+                .any((et) => et.name == 'Interceptor'),
+            isFalse);
       });
     });
   });
@@ -151,27 +219,25 @@ void main() {
     Class SomeClass, SomeOtherClass, YetAnotherClass, AUnicornClass;
 
     setUp(() {
-      dartAsyncLib = new Library(
-          getSdkLibrariesToDocument(utils.sdkDir, utils.analyzerHelper.context)
-              .first,
-          sdkAsPackage);
+      dartAsyncLib = utils.testPackageGraphSdk.libraries
+          .firstWhere((l) => l.name == 'dart:async');
 
-      anonLib = package.libraries
+      anonLib = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'anonymous_library');
 
-      someLib = package.allLibraries.values
+      someLib = packageGraph.allLibraries.values
           .firstWhere((lib) => lib.name == 'reexport.somelib');
-      reexportOneLib =
-          package.libraries.firstWhere((lib) => lib.name == 'reexport_one');
-      reexportTwoLib =
-          package.libraries.firstWhere((lib) => lib.name == 'reexport_two');
+      reexportOneLib = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'reexport_one');
+      reexportTwoLib = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'reexport_two');
       SomeClass = someLib.getClassByName('SomeClass');
       SomeOtherClass = someLib.getClassByName('SomeOtherClass');
       YetAnotherClass = someLib.getClassByName('YetAnotherClass');
       AUnicornClass = someLib.getClassByName('AUnicornClass');
 
-      isDeprecated =
-          package.libraries.firstWhere((lib) => lib.name == 'is_deprecated');
+      isDeprecated = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'is_deprecated');
 
       // Make sure the first library is dart:async
       expect(dartAsyncLib.name, 'dart:async');
@@ -206,7 +272,7 @@ void main() {
 
     test('has documentation', () {
       expect(exLibrary.documentation,
-          'a library. testing string escaping: `var s = \'a string\'` <cool>');
+          'a library. testing string escaping: `var s = \'a string\'` <cool>\n');
     });
 
     test('has one line docs', () {
@@ -217,27 +283,27 @@ void main() {
     });
 
     test('has properties', () {
-      expect(exLibrary.hasProperties, isTrue);
+      expect(exLibrary.hasPublicProperties, isTrue);
     });
 
     test('has constants', () {
-      expect(exLibrary.hasConstants, isTrue);
+      expect(exLibrary.hasPublicConstants, isTrue);
     });
 
     test('has exceptions', () {
-      expect(exLibrary.hasExceptions, isTrue);
+      expect(exLibrary.hasPublicExceptions, isTrue);
     });
 
     test('has enums', () {
-      expect(exLibrary.hasEnums, isTrue);
+      expect(exLibrary.hasPublicEnums, isTrue);
     });
 
     test('has functions', () {
-      expect(exLibrary.hasFunctions, isTrue);
+      expect(exLibrary.hasPublicFunctions, isTrue);
     });
 
     test('has typedefs', () {
-      expect(exLibrary.hasTypedefs, isTrue);
+      expect(exLibrary.hasPublicTypedefs, isTrue);
     });
 
     test('exported class', () {
@@ -258,26 +324,26 @@ void main() {
           '(reexport_one, reexport_two) -> reexport_two (confidence 0.000)';
       // Unicorn class has a warning because two @canonicalFors cancel each other out.
       expect(
-          package.packageWarningCounter.hasWarning(
+          packageGraph.packageWarningCounter.hasWarning(
               AUnicornClass, PackageWarning.ambiguousReexport, warningMsg),
           isTrue);
       // This class is ambiguous without a @canonicalFor
       expect(
-          package.packageWarningCounter.hasWarning(
+          packageGraph.packageWarningCounter.hasWarning(
               YetAnotherClass, PackageWarning.ambiguousReexport, warningMsg),
           isTrue);
       // These two classes have a @canonicalFor
       expect(
-          package.packageWarningCounter.hasWarning(
+          packageGraph.packageWarningCounter.hasWarning(
               SomeClass, PackageWarning.ambiguousReexport, warningMsg),
           isFalse);
       expect(
-          package.packageWarningCounter.hasWarning(
+          packageGraph.packageWarningCounter.hasWarning(
               SomeOtherClass, PackageWarning.ambiguousReexport, warningMsg),
           isFalse);
       // This library has a canonicalFor with no corresponding item
       expect(
-          package.packageWarningCounter.hasWarning(reexportTwoLib,
+          packageGraph.packageWarningCounter.hasWarning(reexportTwoLib,
               PackageWarning.ignoredCanonicalFor, 'something.ThatDoesntExist'),
           isTrue);
     });
@@ -290,7 +356,7 @@ void main() {
 
   group('Macros', () {
     Class dog;
-    Method withMacro, withMacro2;
+    Method withMacro, withMacro2, withPrivateMacro, withUndefinedMacro;
 
     setUp(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
@@ -298,7 +364,11 @@ void main() {
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro');
       withMacro2 =
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro2');
-      package.allModelElements.forEach((m) => m.documentation);
+      withPrivateMacro = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withPrivateMacro');
+      withUndefinedMacro = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withUndefinedMacro');
+      packageGraph.allModelElements.forEach((m) => m.documentation);
     });
 
     test("renders a macro within the same comment where it's defined", () {
@@ -310,6 +380,17 @@ void main() {
         () {
       expect(withMacro2.documentation, equals("Foo macro content"));
     });
+
+    test("renders a macro defined in a private symbol", () {
+      expect(withPrivateMacro.documentation, contains("Private macro content"));
+    });
+
+    test("a warning is generated for unknown macros", () {
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(withUndefinedMacro,
+              PackageWarning.unknownMacro, 'ThatDoesNotExist'),
+          isTrue);
+    });
   });
 
   group('MultiplyInheritedExecutableElement handling', () {
@@ -320,21 +401,31 @@ void main() {
     Accessor aImplementingThingyAccessor;
 
     setUp(() {
-      BaseThingy = fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy');
-      BaseThingy2 = fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy2');
-      ImplementingThingy2 = fakeLibrary.classes.firstWhere((c) => c.name == 'ImplementingThingy2');
+      BaseThingy =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy');
+      BaseThingy2 =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy2');
+      ImplementingThingy2 = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'ImplementingThingy2');
 
-      aImplementingThingy = ImplementingThingy2.allInstanceProperties.firstWhere((m) => m.name == 'aImplementingThingy');
-      aImplementingThingyMethod = ImplementingThingy2.allInstanceMethods.firstWhere((m) => m.name == 'aImplementingThingyMethod');
-      aImplementingThingyField = ImplementingThingy2.allInstanceProperties.firstWhere((m) => m.name == 'aImplementingThingyField');
+      aImplementingThingy = ImplementingThingy2.allInstanceProperties
+          .firstWhere((m) => m.name == 'aImplementingThingy');
+      aImplementingThingyMethod = ImplementingThingy2.allInstanceMethods
+          .firstWhere((m) => m.name == 'aImplementingThingyMethod');
+      aImplementingThingyField = ImplementingThingy2.allInstanceProperties
+          .firstWhere((m) => m.name == 'aImplementingThingyField');
       aImplementingThingyAccessor = aImplementingThingyField.getter;
     });
 
     test('Verify behavior of imperfect resolver', () {
-      expect(aImplementingThingy.element.enclosingElement, equals(BaseThingy2.element));
-      expect(aImplementingThingyMethod.element.enclosingElement, equals(BaseThingy.element));
-      expect(aImplementingThingyField.element.enclosingElement, equals(BaseThingy.element));
-      expect(aImplementingThingyAccessor.element.enclosingElement, equals(BaseThingy.element));
+      expect(aImplementingThingy.element.enclosingElement,
+          equals(BaseThingy2.element));
+      expect(aImplementingThingyMethod.element.enclosingElement,
+          equals(BaseThingy.element));
+      expect(aImplementingThingyField.element.enclosingElement,
+          equals(BaseThingy.element));
+      expect(aImplementingThingyAccessor.element.enclosingElement,
+          equals(BaseThingy.element));
     });
   });
 
@@ -384,6 +475,36 @@ void main() {
           .firstWhere((m) => m.name == 'doAwesomeStuff');
 
       short = fakeLibrary.functions.firstWhere((f) => f.name == 'short');
+    });
+
+    group('markdown extensions', () {
+      Class DocumentWithATable;
+      String docsAsHtml;
+
+      setUp(() {
+        DocumentWithATable = fakeLibrary.classes
+            .firstWhere((cls) => cls.name == 'DocumentWithATable');
+        docsAsHtml = DocumentWithATable.documentationAsHtml;
+      });
+
+      test('Verify table appearance', () {
+        expect(docsAsHtml.contains('<table><thead><tr><th>Component</th>'),
+            isTrue);
+      });
+
+      test('Verify links inside of table headers', () {
+        expect(
+            docsAsHtml.contains(
+                '<th><a href="fake/Annotation-class.html">Annotation</a></th>'),
+            isTrue);
+      });
+
+      test('Verify links inside of table body', () {
+        expect(
+            docsAsHtml.contains(
+                '<tbody><tr><td><a href="fake/DocumentWithATable/foo-constant.html">foo</a></td>'),
+            isTrue);
+      });
     });
 
     group('doc references', () {
@@ -613,6 +734,23 @@ void main() {
               '<p>link to method from class <a href="ex/Apple/m.html">Apple.m</a></p>'));
     });
 
+    test(
+        'code references to privately defined elements in public classes work properly',
+        () {
+      Method notAMethodFromPrivateClass = fakeLibrary.allClasses
+          .firstWhere((Class c) => c.name == 'ReferringClass')
+          .allPublicInstanceMethods
+          .firstWhere((Method m) => m.name == 'notAMethodFromPrivateClass');
+      expect(
+          notAMethodFromPrivateClass.documentationAsHtml,
+          contains(
+              '<a href="fake/InheritingClassOne/aMethod.html">fake.InheritingClassOne.aMethod</a>'));
+      expect(
+          notAMethodFromPrivateClass.documentationAsHtml,
+          contains(
+              '<a href="fake/InheritingClassTwo/aMethod.html">fake.InheritingClassTwo.aMethod</a>'));
+    });
+
     test('legacy code blocks render correctly', () {
       expect(
           testingCodeSyntaxInOneLiners.oneLineDoc,
@@ -638,13 +776,28 @@ void main() {
     });
   });
 
+  group('Class edge cases', () {
+    test(
+        'ExecutableElements from private classes and from public interfaces (#1561)',
+        () {
+      Class MIEEMixinWithOverride = fakeLibrary.publicClasses
+          .firstWhere((c) => c.name == 'MIEEMixinWithOverride');
+      Operator problematicOperator = MIEEMixinWithOverride.inheritedOperators
+          .firstWhere((o) => o.name == 'operator []=');
+      expect(problematicOperator.element.enclosingElement.name,
+          equals('_MIEEPrivateOverride'));
+      expect(problematicOperator.canonicalModelElement.enclosingElement.name,
+          equals('MIEEMixinWithOverride'));
+    });
+  });
+
   group('Class', () {
     List<Class> classes;
     Class Apple, B, Cat, Cool, Dog, F, Dep, SpecialList;
     Class ExtendingClass, CatString;
 
     setUp(() {
-      classes = exLibrary.classes;
+      classes = exLibrary.publicClasses.toList();
       Apple = classes.firstWhere((c) => c.name == 'Apple');
       B = classes.firstWhere((c) => c.name == 'B');
       Cat = classes.firstWhere((c) => c.name == 'Cat');
@@ -673,7 +826,7 @@ void main() {
     test('a class with only inherited properties has some properties', () {
       expect(CatString.hasInstanceProperties, isFalse);
       expect(CatString.instanceProperties, isEmpty);
-      expect(CatString.hasProperties, isTrue);
+      expect(CatString.hasPublicProperties, isTrue);
       expect(CatString.allInstanceProperties, isNotEmpty);
     });
 
@@ -682,11 +835,14 @@ void main() {
     });
 
     test('class name with generics', () {
-      expect(F.nameWithGenerics, equals('F&lt;T extends String&gt;'));
+      expect(
+          F.nameWithGenerics,
+          equals(
+              'F&lt;<wbr><span class="type-parameter">T extends String</span>&gt;'));
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(22));
+      expect(classes, hasLength(28));
     });
 
     test('abstract', () {
@@ -694,15 +850,15 @@ void main() {
     });
 
     test('supertype', () {
-      expect(B.hasSupertype, isTrue);
+      expect(B.hasPublicSuperChainReversed, isTrue);
     });
 
     test('mixins', () {
-      expect(Apple.mixinsRaw, hasLength(0));
+      expect(Apple.mixins, hasLength(0));
     });
 
     test('mixins private', () {
-      expect(F.mixinsRaw, hasLength(1));
+      expect(F.mixins, hasLength(1));
     });
 
     test('interfaces', () {
@@ -721,11 +877,11 @@ void main() {
     });
 
     test('get constructors', () {
-      expect(Apple.constructors, hasLength(2));
+      expect(Apple.publicConstructors, hasLength(2));
     });
 
     test('get static fields', () {
-      expect(Apple.staticProperties, hasLength(1));
+      expect(Apple.publicStaticProperties, hasLength(1));
     });
 
     test('constructors have source', () {
@@ -734,35 +890,39 @@ void main() {
     });
 
     test('get constants', () {
-      expect(Apple.constants, hasLength(1));
+      expect(Apple.publicConstants, hasLength(1));
+      expect(Apple.publicConstants.first.kind, equals('constant'));
     });
 
     test('get instance fields', () {
-      expect(Apple.instanceProperties, hasLength(3));
+      expect(Apple.publicInstanceProperties, hasLength(3));
+      expect(Apple.publicInstanceProperties.first.kind, equals('property'));
     });
 
     test('get inherited properties, including properties of Object', () {
-      expect(B.inheritedProperties, hasLength(4));
+      expect(B.publicInheritedProperties, hasLength(4));
     });
 
     test('get methods', () {
-      expect(Dog.instanceMethods, hasLength(9));
+      expect(Dog.publicInstanceMethods, hasLength(12));
     });
 
     test('get operators', () {
-      expect(Dog.operators, hasLength(1));
-      expect(Dog.operators[0].name, 'operator ==');
+      expect(Dog.publicOperators, hasLength(1));
+      expect(Dog.publicOperators.first.name, 'operator ==');
     });
 
     test('inherited methods, including from Object ', () {
-      expect(B.inheritedMethods, hasLength(7));
-      expect(B.hasInheritedMethods, isTrue);
+      expect(B.publicInheritedMethods, hasLength(7));
+      expect(B.hasPublicInheritedMethods, isTrue);
     });
 
     test('all instance methods', () {
-      expect(B.allInstanceMethods, isNotEmpty);
-      expect(B.allInstanceMethods.length,
-          equals(B.instanceMethods.length + B.inheritedMethods.length));
+      expect(B.allPublicInstanceMethods, isNotEmpty);
+      expect(
+          B.allPublicInstanceMethods.length,
+          equals(B.publicInstanceMethods.length +
+              B.publicInheritedMethods.length));
     });
 
     test('inherited methods exist', () {
@@ -790,14 +950,14 @@ void main() {
     });
 
     test('F has a single instance method', () {
-      expect(F.instanceMethods, hasLength(1));
-      expect(F.instanceMethods.first.name, equals('methodWithGenericParam'));
+      expect(F.publicInstanceMethods, hasLength(1));
+      expect(
+          F.publicInstanceMethods.first.name, equals('methodWithGenericParam'));
     });
 
     test('F has many inherited methods', () {
-      expect(F.inheritedMethods, hasLength(12));
       expect(
-          F.inheritedMethods.map((im) => im.name),
+          F.publicInheritedMethods.map((im) => im.name),
           equals([
             'abstractMethod',
             'foo',
@@ -810,18 +970,20 @@ void main() {
             'testMethod',
             'toString',
             'withMacro',
-            'withMacro2'
+            'withMacro2',
+            'withPrivateMacro',
+            'withUndefinedMacro',
           ]));
     });
 
     test('F has zero instance properties', () {
-      expect(F.instanceProperties, hasLength(0));
+      expect(F.publicInstanceProperties, hasLength(0));
     });
 
     test('F has a few inherited properties', () {
-      expect(F.inheritedProperties, hasLength(10));
+      expect(F.publicInheritedProperties, hasLength(10));
       expect(
-          F.inheritedProperties.map((ip) => ip.name),
+          F.publicInheritedProperties.map((ip) => ip.name),
           equals([
             'aFinalField',
             'aGetterReturningRandomThings',
@@ -837,13 +999,14 @@ void main() {
     });
 
     test('SpecialList has zero instance methods', () {
-      expect(SpecialList.instanceMethods, hasLength(0));
+      expect(SpecialList.publicInstanceMethods, hasLength(0));
     });
 
     test('SpecialList has many inherited methods', () {
-      expect(SpecialList.inheritedMethods, hasLength(44));
-      expect(SpecialList.inheritedMethods.first.name, equals('add'));
-      expect(SpecialList.inheritedMethods[1].name, equals('addAll'));
+      expect(SpecialList.publicInheritedMethods, hasLength(50));
+      expect(SpecialList.publicInheritedMethods.first.name, equals('add'));
+      expect(SpecialList.publicInheritedMethods.toList()[1].name,
+          equals('addAll'));
     });
 
     test('ExtendingClass is in the right library', () {
@@ -854,18 +1017,26 @@ void main() {
     // are exported out through one library
     test('ExtendingClass has a super class that is also in the same library',
         () {
+      // The real implementation of BaseClass is private, but it is exported.
       expect(ExtendingClass.superChain.first.name, equals('BaseClass'));
-      expect(ExtendingClass.superChain.first.element.canonicalLibrary.name,
+      expect(
+          ExtendingClass.superChain.first.element.isCanonical, equals(false));
+      expect(ExtendingClass.superChain.first.element.isPublic, equals(false));
+      // And it should still show up in the publicSuperChain, because it is
+      // exported.
+      expect(ExtendingClass.publicSuperChain.first.name, equals('BaseClass'));
+      expect(
+          ExtendingClass.publicSuperChain.first.element.canonicalLibrary.name,
           equals('two_exports'));
     });
 
     test(
         "ExtendingClass's super class has a library that is not in two_exports",
         () {
-      expect(ExtendingClass.superChainRaw.last.name,
-          equals('WithGetterAndSetter'));
-      expect(ExtendingClass.superChainRaw.last.element.library.name,
-          equals('fake'));
+      expect(
+          ExtendingClass.superChain.last.name, equals('WithGetterAndSetter'));
+      expect(
+          ExtendingClass.superChain.last.element.library.name, equals('fake'));
     });
   });
 
@@ -894,7 +1065,10 @@ void main() {
     test("has a (synthetic) values constant", () {
       var values = animal.constants.firstWhere((f) => f.name == 'values');
       expect(values, isNotNull);
-      expect(values.constantValue, equals('const List&lt;Animal&gt;'));
+      expect(
+          values.constantValue,
+          equals(
+              'const List&lt;<wbr><span class="type-parameter">Animal</span>&gt;'));
       expect(values.documentation, startsWith('A constant List'));
     });
 
@@ -929,17 +1103,32 @@ void main() {
   group('Function', () {
     ModelFunction f1;
     ModelFunction genericFunction;
+    ModelFunction paramOfFutureOrNull;
     ModelFunction thisIsAsync;
+    ModelFunction thisIsFutureOr;
+    ModelFunction thisIsFutureOrNull;
+    ModelFunction thisIsFutureOrT;
     ModelFunction topLevelFunction;
+    ModelFunction typeParamOfFutureOr;
 
     setUp(() {
       f1 = exLibrary.functions.first;
       genericFunction =
           exLibrary.functions.firstWhere((f) => f.name == 'genericFunction');
+      paramOfFutureOrNull = fakeLibrary.functions
+          .firstWhere((f) => f.name == 'paramOfFutureOrNull');
       thisIsAsync =
           fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsAsync');
+      thisIsFutureOr =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsFutureOr');
+      thisIsFutureOrNull = fakeLibrary.functions
+          .firstWhere((f) => f.name == 'thisIsFutureOrNull');
+      thisIsFutureOrT =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'thisIsFutureOrT');
       topLevelFunction =
           fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
+      typeParamOfFutureOr = fakeLibrary.functions
+          .firstWhere((f) => f.name == 'typeParamOfFutureOr');
     });
 
     test('has a fully qualified name', () {
@@ -983,6 +1172,41 @@ void main() {
               '<p>An async function. It should look like I return a <code>Future</code>.</p>'));
     });
 
+    test('function returning FutureOr', () {
+      expect(thisIsFutureOr.isAsynchronous, isFalse);
+      expect(thisIsFutureOr.linkedReturnType, equals('FutureOr'));
+    });
+
+    test('function returning FutureOr<Null>', () {
+      expect(thisIsFutureOrNull.isAsynchronous, isFalse);
+      expect(
+          thisIsFutureOrNull.linkedReturnType,
+          equals(
+              'FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">Null</span>&gt;</span>'));
+    });
+
+    test('function returning FutureOr<T>', () {
+      expect(thisIsFutureOrNull.isAsynchronous, isFalse);
+      expect(
+          thisIsFutureOrT.linkedReturnType,
+          equals(
+              'FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span>'));
+    });
+
+    test('function with a parameter having type FutureOr<Null>', () {
+      expect(
+          paramOfFutureOrNull.linkedParams(),
+          equals(
+              '<span class="parameter" id="paramOfFutureOrNull-param-future"><span class="type-annotation">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">Null</span>&gt;</span></span> <span class="parameter-name">future</span></span>'));
+    });
+
+    test('function with a bound type to FutureOr', () {
+      expect(
+          typeParamOfFutureOr.linkedGenericParameters,
+          equals(
+              '<span class="signature">&lt;<wbr><span class="type-parameter">T extends FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">List</span>&gt;</span></span>&gt;</span>'));
+    });
+
     test('docs do not lose brackets in code blocks', () {
       expect(topLevelFunction.documentation, contains("['hello from dart']"));
     });
@@ -998,8 +1222,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('typedef params have proper signature', () {
-      // typedef void VoidCallback();
-      // void addCallback(VoidCallback callback) { }
       ModelFunction function =
           fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback');
       String params = function.linkedParams();
@@ -1009,8 +1231,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           '<span class="type-annotation"><a href="fake/VoidCallback.html">VoidCallback</a></span> '
           '<span class="parameter-name">callback</span></span>');
 
-      // typedef int Callback2(String);
-      // void addCallback2(Callback2 callback) { }
       function =
           fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback2');
       params = function.linkedParams();
@@ -1022,15 +1242,140 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('supports generic methods', () {
-      expect(genericFunction.nameWithGenerics, 'genericFunction&lt;T&gt;');
+      expect(genericFunction.nameWithGenerics,
+          'genericFunction&lt;<wbr><span class="type-parameter">T</span>&gt;');
     });
   });
 
+  group('Type expansion', () {
+    Class TemplatedInterface, ClassWithUnusualProperties;
+
+    setUp(() {
+      TemplatedInterface =
+          exLibrary.classes.singleWhere((c) => c.name == 'TemplatedInterface');
+      ClassWithUnusualProperties = fakeLibrary.classes
+          .singleWhere((c) => c.name == 'ClassWithUnusualProperties');
+    });
+
+    test('setter that takes a function is correctly displayed', () {
+      Field explicitSetter = ClassWithUnusualProperties.instanceProperties
+          .singleWhere((f) => f.name == 'explicitSetter');
+      // TODO(jcollins-g): really, these shouldn't be called "parameters" in
+      // the span class.
+      expect(explicitSetter.linkedReturnType,
+          '<span class="parameter" id="explicitSetter=-param-f"><span class="type-annotation">dynamic</span> <span class="parameter-name">Function</span>(<span class="parameter" id="f-param-bar"><span class="type-annotation">int</span>, </span> <span class="parameter" id="f-param-baz"><span class="type-annotation"><a href="fake/Cool-class.html">Cool</a></span>, </span> <span class="parameter" id="f-param-macTruck"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span></span>)</span>');
+    });
+
+    test('parameterized type from field is correctly displayed', () {
+      Field aField = TemplatedInterface.instanceProperties
+          .singleWhere((f) => f.name == 'aField');
+      expect(aField.linkedReturnType,
+          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Stream<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
+    });
+
+    test('parameterized type from inherited field is correctly displayed', () {
+      Field aInheritedField = TemplatedInterface.inheritedProperties
+          .singleWhere((f) => f.name == 'aInheritedField');
+      expect(aInheritedField.linkedReturnType,
+          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+    });
+
+    test(
+        'parameterized type for return value from explicit getter is correctly displayed',
+        () {
+      Accessor aGetter = TemplatedInterface.instanceProperties
+          .singleWhere((f) => f.name == 'aGetter')
+          .getter;
+      expect(aGetter.linkedReturnType,
+          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">A</span>, <span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
+    });
+
+    test(
+        'parameterized type for return value from inherited explicit getter is correctly displayed',
+        () {
+      Accessor aInheritedGetter = TemplatedInterface.inheritedProperties
+          .singleWhere((f) => f.name == 'aInheritedGetter')
+          .getter;
+      expect(aInheritedGetter.linkedReturnType,
+          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+    });
+
+    test(
+        'parameterized type for return value from inherited explicit setter is correctly displayed',
+        () {
+      Accessor aInheritedSetter = TemplatedInterface.inheritedProperties
+          .singleWhere((f) => f.name == 'aInheritedSetter')
+          .setter;
+      expect(aInheritedSetter.allParameters.first.modelType.linkedName,
+          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+      // TODO(jcollins-g): really, these shouldn't be called "parameters" in
+      // the span class.
+      expect(aInheritedSetter.enclosingCombo.linkedReturnType,
+          '<span class="parameter" id="aInheritedSetter=-param-thingToSet"><span class="type-annotation"><a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span></span>');
+    });
+
+    test(
+        'parameterized type for return value from method is correctly displayed',
+        () {
+      Method aMethodInterface = TemplatedInterface.allInstanceMethods
+          .singleWhere((m) => m.name == 'aMethodInterface');
+      expect(aMethodInterface.linkedReturnType,
+          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+    });
+
+    test(
+        'parameterized type for return value from inherited method is correctly displayed',
+        () {
+      Method aInheritedMethod = TemplatedInterface.allInstanceMethods
+          .singleWhere((m) => m.name == 'aInheritedMethod');
+      expect(aInheritedMethod.linkedReturnType,
+          '<a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+    });
+
+    test(
+        'parameterized type for return value containing a parameterized typedef is correctly displayed',
+        () {
+      Method aTypedefReturningMethodInterface = TemplatedInterface
+          .allInstanceMethods
+          .singleWhere((m) => m.name == 'aTypedefReturningMethodInterface');
+      expect(aTypedefReturningMethodInterface.linkedReturnType,
+          '<a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>&gt;</span>');
+    });
+
+    test(
+        'parameterized type for return value containing a parameterized typedef from inherited method is correctly displayed',
+        () {
+      Method aInheritedTypedefReturningMethod = TemplatedInterface
+          .allInstanceMethods
+          .singleWhere((m) => m.name == 'aInheritedTypedefReturningMethod');
+      expect(aInheritedTypedefReturningMethod.linkedReturnType,
+          '<a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+    });
+
+    test('parameterized types for inherited operator is correctly displayed',
+        () {
+      Operator aInheritedAdditionOperator = TemplatedInterface
+          .inheritedOperators
+          .singleWhere((m) => m.name == 'operator +');
+      expect(aInheritedAdditionOperator.linkedReturnType,
+          '<a href="ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
+      expect(aInheritedAdditionOperator.linkedParams(),
+          '<span class="parameter" id="+-param-other"><span class="type-annotation"><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">other</span></span>');
+    });
+
+    test('', () {});
+  });
+
   group('Method', () {
-    Class classB, klass, HasGenerics, Cat, CatString, TypedFunctionsWithoutTypedefs;
+    Class classB,
+        klass,
+        HasGenerics,
+        Cat,
+        CatString,
+        TypedFunctionsWithoutTypedefs;
     Method m1, isGreaterThan, m4, m5, m6, m7, convertToMap, abstractMethod;
     Method inheritedClear, testGeneric, testGenericMethod;
-    Method getAFunctionReturningVoid;
+    Method getAFunctionReturningVoid, getAFunctionReturningBool;
 
     setUp(() {
       klass = exLibrary.classes.singleWhere((c) => c.name == 'Klass');
@@ -1062,25 +1407,37 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'testGenericMethod');
       convertToMap = HasGenerics.instanceMethods
           .singleWhere((m) => m.name == 'convertToMap');
-      TypedFunctionsWithoutTypedefs = exLibrary.classes.singleWhere((c) => c.name == 'TypedFunctionsWithoutTypedefs');
-      getAFunctionReturningVoid = TypedFunctionsWithoutTypedefs.instanceMethods.singleWhere((m) => m.name == 'getAFunctionReturningVoid');
+      TypedFunctionsWithoutTypedefs = exLibrary.classes
+          .singleWhere((c) => c.name == 'TypedFunctionsWithoutTypedefs');
+      getAFunctionReturningVoid = TypedFunctionsWithoutTypedefs.instanceMethods
+          .singleWhere((m) => m.name == 'getAFunctionReturningVoid');
+      getAFunctionReturningBool = TypedFunctionsWithoutTypedefs.instanceMethods
+          .singleWhere((m) => m.name == 'getAFunctionReturningBool');
     });
 
     tearDown(() {
-      var file = new File(p.join(Directory.current.path, "crossdart.json"));
+      var file =
+          new File(pathLib.join(Directory.current.path, "crossdart.json"));
       if (file.existsSync()) {
         file.deleteSync();
       }
     });
 
-    test('verify parameters to types are displayed', () {
-      var matcher = new RegExp('Function\\(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T.</span></span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T.</span></span>\\)');
-      expect(matcher.hasMatch(getAFunctionReturningVoid.linkedReturnType), isTrue);
+    test('verify parameter types are correctly displayed', () {
+      expect(
+          getAFunctionReturningVoid.linkedReturnType,
+          equals(
+              'void Function<span class="signature">(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T2</span></span>)</span>'));
     });
 
-    test('verify parameter types are correctly displayed', () {
-      expect(getAFunctionReturningVoid.linkedReturnType, equals('Function(<span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T1</span></span> <span class="parameter" id="getAFunctionReturningVoid-param-"><span class="type-annotation">T2</span></span>)'));
-    }, skip: 'blocked on https://github.com/dart-lang/sdk/issues/30146');
+    test(
+        'verify type parameters to anonymous functions are distinct from normal parameters and instantiated type parameters from method, displayed correctly',
+        () {
+      expect(
+          getAFunctionReturningBool.linkedReturnType,
+          equals(
+              'bool Function<span class="signature">&lt;<wbr><span class="type-parameter">T4</span>&gt;</span><span class="signature">(<span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">String</span>, </span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="getAFunctionReturningBool-param-"><span class="type-annotation">T4</span></span>)</span>'));
+    });
 
     test('has a fully qualified name', () {
       expect(m1.fullyQualifiedName, 'ex.B.m1');
@@ -1153,7 +1510,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('parameter has generics in signature', () {
       expect(testGeneric.parameters[0].modelType.linkedName,
-          'Map&lt;String, dynamic&gt;');
+          'Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">dynamic</span>&gt;</span>');
     });
 
     test('parameter is a function', () {
@@ -1162,7 +1519,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('generic method type args are rendered', () {
-      expect(testGenericMethod.nameWithGenerics, 'testGenericMethod&lt;T&gt;');
+      expect(testGenericMethod.nameWithGenerics,
+          'testGenericMethod&lt;<wbr><span class="type-parameter">T</span>&gt;');
     });
 
     test('doc for method with no return type', () {
@@ -1187,7 +1545,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(offset, isNonNegative,
           reason: "Can't find convertToMap function in ${fakePath}");
       if (Platform.isWindows) fakePath = fakePath.replaceAll('/', r'\\');
-      new File(p.join(Directory.current.path, "crossdart.json"))
+      new File(pathLib.join(Directory.current.path, "crossdart.json"))
           .writeAsStringSync("""
               {"$fakePath":
                 {"references":[{"offset":${offset},"end":${offset+3},"remotePath":"http://www.example.com/fake.dart"}]}}
@@ -1254,9 +1612,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Field sFromApple, mFromApple, mInB, autoCompress;
     Field isEmpty;
     Field implicitGetterExplicitSetter, explicitGetterImplicitSetter;
+    Field explicitGetterSetter;
     Field explicitNonDocumentedInBaseClassGetter;
     Field documentedPartialFieldInSubclassOnly;
     Field ExtraSpecialListLength;
+    Field aProperty;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
@@ -1273,6 +1633,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((e) => e.name == 'implicitGetterExplicitSetter');
       explicitGetterImplicitSetter = UnusualProperties.allModelElements
           .firstWhere((e) => e.name == 'explicitGetterImplicitSetter');
+      explicitGetterSetter = UnusualProperties.allModelElements
+          .firstWhere((e) => e.name == 'explicitGetterSetter');
       explicitNonDocumentedInBaseClassGetter =
           UnusualProperties.allModelElements.firstWhere(
               (e) => e.name == 'explicitNonDocumentedInBaseClassGetter');
@@ -1307,19 +1669,59 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'B')
           .allInstanceProperties
           .firstWhere((p) => p.name == 'autoCompress');
-      ExtraSpecialListLength =
-          fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList').allInstanceProperties.firstWhere((f) => f.name == 'length');
+      ExtraSpecialListLength = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'SpecialList')
+          .allInstanceProperties
+          .firstWhere((f) => f.name == 'length');
+      aProperty = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'AClassWithFancyProperties')
+          .allInstanceProperties
+          .firstWhere((f) => f.name == 'aProperty');
+    });
+
+    test('indentation is not lost inside indented code samples', () {
+      expect(
+          aProperty.documentation,
+          equals(
+              'This property is quite fancy, and requires sample code to understand.\n'
+              '\n'
+              '```dart\n'
+              'AClassWithFancyProperties x = new AClassWithFancyProperties();\n'
+              '\n'
+              'if (x.aProperty.contains(\'Hello\')) {\n'
+              '  print("I am indented!");\n'
+              '  if (x.aProperty.contains(\'World\')) {\n'
+              '    print ("I am indented even more!!!");\n'
+              '  }\n'
+              '}\n'
+              '```'));
+    });
+
+    test('annotations from getters and setters are accumulated in Fields', () {
+      expect(
+          explicitGetterSetter.featuresAsString.contains('a Getter Annotation'),
+          isTrue);
+      expect(
+          explicitGetterSetter.featuresAsString.contains('a Setter Annotation'),
+          isTrue);
+    });
+
+    test('Docs from inherited implicit accessors are preserved', () {
+      expect(explicitGetterImplicitSetter.setter.computeDocumentationComment,
+          isNot(''));
     });
 
     test('@nodoc on simple property works', () {
-      Field simpleHidden = UnusualProperties.allModelElements
-          .firstWhere((e) => e.name == 'simpleHidden', orElse: () => null);
+      Field simpleHidden = UnusualProperties.allModelElements.firstWhere(
+          (e) => e.name == 'simpleHidden' && e.isPublic,
+          orElse: () => null);
       expect(simpleHidden, isNull);
     });
 
     test('@nodoc on explicit getters/setters hides entire field', () {
       Field explicitNodocGetterSetter = UnusualProperties.allModelElements
-          .firstWhere((e) => e.name == 'explicitNodocGetterSetter',
+          .firstWhere(
+              (e) => e.name == 'explicitNodocGetterSetter' && e.isPublic,
               orElse: () => null);
       expect(explicitNodocGetterSetter, isNull);
     });
@@ -1346,10 +1748,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('inheritance of docs from SDK works for getter/setter combos', () {
-      expect(ExtraSpecialListLength.getter.documentationFrom.first.element.library.name == 'dart.core', isTrue);
+      expect(
+          ExtraSpecialListLength
+                  .getter.documentationFrom.first.element.library.name ==
+              'dart.core',
+          isTrue);
       expect(ExtraSpecialListLength.oneLineDoc == '', isFalse);
-    }, skip:
-              'Passes on Analyzer 0.31.0+');
+    });
 
     test('split inheritance with explicit setter works', () {
       expect(implicitGetterExplicitSetter.getter.isInherited, isTrue);
@@ -1380,10 +1785,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(explicitGetterImplicitSetter.oneLineDoc,
           equals('Getter doc for explicitGetterImplicitSetter'));
       // Even though we have some new setter docs, getter still takes priority.
-      expect(
-          explicitGetterImplicitSetter.documentation,
-          equals(
-              'Docs for explicitGetterImplicitSetter from ImplicitProperties.'));
+      expect(explicitGetterImplicitSetter.documentation,
+          equals('Getter doc for explicitGetterImplicitSetter'));
     });
 
     test('has a fully qualified name', () {
@@ -1452,11 +1855,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('setter documentation', () {
       expect(onlySetter.documentation,
           equals('Only a setter, with a single param, of type double.'));
-    });
-
-    test('explicit getter and setter docs are unified', () {
-      expect(lengthX.documentation, contains('Sets the length.'));
-      expect(lengthX.documentation, contains('Returns a length.'));
     });
 
     test('Field with no explicit getter/setter has documentation', () {
@@ -1542,7 +1940,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           fieldWithTypedef.linkedReturnType,
           equals(
-              '<a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a>&lt;bool&gt;'));
+              '<a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">bool</span>&gt;</span>'));
     });
   });
 
@@ -1551,10 +1949,16 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     TopLevelVariable v3, justGetter, justSetter;
     TopLevelVariable setAndGet, mapWithDynamicKeys;
     TopLevelVariable nodocGetter, nodocSetter;
+    TopLevelVariable complicatedReturn;
+    TopLevelVariable importantComputations;
 
     setUp(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
       v3 = exLibrary.properties.firstWhere((p) => p.name == 'y');
+      importantComputations = fakeLibrary.properties
+          .firstWhere((v) => v.name == 'importantComputations');
+      complicatedReturn = fakeLibrary.properties
+          .firstWhere((f) => f.name == 'complicatedReturn');
       nodocGetter = fakeLibrary.properties
           .firstWhere((p) => p.name == 'getterSetterNodocGetter');
       nodocSetter = fakeLibrary.properties
@@ -1569,15 +1973,41 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((p) => p.name == 'mapWithDynamicKeys');
     });
 
+    test(
+        'Verify that a map containing anonymous functions as values works correctly',
+        () {
+      Iterable<CallableElementType> typeArguments =
+          (importantComputations.modelType.returnType as DefinedElementType)
+              .typeArguments;
+      expect(typeArguments, isNotEmpty);
+      expect(
+          typeArguments.last.linkedName,
+          equals(
+              '(<span class="parameter" id="null-param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span></span>) → dynamic'));
+      expect(
+          importantComputations.linkedReturnType,
+          equals(
+              'Map<span class="signature">&lt;<wbr><span class="type-parameter">int</span>, <span class="type-parameter">(<span class="parameter" id="null-param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span></span>) → dynamic</span>&gt;</span>'));
+    });
+
+    test(
+        'Verify that a complex type parameter with an anonymous function works correctly',
+        () {
+      expect(
+          complicatedReturn.linkedReturnType,
+          equals(
+              '<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">String Function<span class="signature">(<span class="parameter" id="-param-"><span class="type-annotation">int</span></span>)</span></span>&gt;</span>'));
+    });
+
     test('@nodoc on simple property works', () {
-      TopLevelVariable nodocSimple = fakeLibrary.properties.firstWhere(
+      TopLevelVariable nodocSimple = fakeLibrary.publicProperties.firstWhere(
           (p) => p.name == 'simplePropertyHidden',
           orElse: () => null);
       expect(nodocSimple, isNull);
     });
 
     test('@nodoc on both hides both', () {
-      TopLevelVariable nodocBoth = fakeLibrary.properties.firstWhere(
+      TopLevelVariable nodocBoth = fakeLibrary.publicProperties.firstWhere(
           (p) => p.name == 'getterSetterNodocBoth',
           orElse: () => null);
       expect(nodocBoth, isNull);
@@ -1613,8 +2043,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(v.enclosingElement.name, equals(exLibrary.name));
     });
 
-    test('found two properties', () {
-      expect(exLibrary.properties, hasLength(5));
+    test('found five properties', () {
+      expect(exLibrary.publicProperties, hasLength(5));
     });
 
     test('linked return type is a double', () {
@@ -1635,11 +2065,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           equals('Just a setter. No partner getter.'));
     });
 
-    test('a distinct getter and setters docs appear in the propertys docs', () {
-      expect(setAndGet.documentation, contains('The getter for setAndGet.'));
-      expect(setAndGet.documentation, contains('The setter for setAndGet.'));
-    });
-
     test('has a getter accessor', () {
       expect(setAndGet.getter, isNotNull);
       expect(setAndGet.getter.name, equals('setAndGet'));
@@ -1654,9 +2079,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Constant', () {
     TopLevelVariable greenConstant,
         cat,
+        customClassPrivate,
         orangeConstant,
         prettyColorsConstant,
         deprecated;
+
+    Field aStaticConstField, aName;
 
     setUp(() {
       greenConstant =
@@ -1668,10 +2096,33 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       cat = exLibrary.constants.firstWhere((c) => c.name == 'MY_CAT');
       deprecated =
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
+      Class Dog = exLibrary.allClasses.firstWhere((c) => c.name == 'Dog');
+      customClassPrivate = fakeLibrary.constants
+          .firstWhere((c) => c.name == 'CUSTOM_CLASS_PRIVATE');
+      aStaticConstField =
+          Dog.allFields.firstWhere((f) => f.name == 'aStaticConstField');
+      aName = Dog.allFields.firstWhere((f) => f.name == 'aName');
+    });
+
+    test('substrings of the constant values type are not linked (#1535)', () {
+      expect(aName.constantValue,
+          'const <a href="ex/ExtendedShortName/ExtendedShortName.html">ExtendedShortName</a>(&quot;hello there&quot;)');
+    });
+
+    test('constant field values are escaped', () {
+      expect(aStaticConstField.constantValue, '&quot;A Constant Dog&quot;');
+    });
+
+    test('privately constructed constants are unlinked', () {
+      expect(customClassPrivate.constantValue, 'const _APrivateConstClass()');
     });
 
     test('has a fully qualified name', () {
       expect(greenConstant.fullyQualifiedName, 'ex.COLOR_GREEN');
+    });
+
+    test('has the correct kind', () {
+      expect(greenConstant.kind, equals('top-level constant'));
     });
 
     test('has enclosing element', () {
@@ -1679,7 +2130,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('found all the constants', () {
-      expect(exLibrary.constants, hasLength(9));
+      expect(exLibrary.publicConstants, hasLength(9));
     });
 
     test('COLOR_GREEN is constant', () {
@@ -1697,7 +2148,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('MY_CAT is linked', () {
       expect(cat.constantValue,
-          'const <a href="ex/ConstantCat-class.html">ConstantCat</a>(&#39;tabby&#39;)');
+          'const <a href="ex/ConstantCat/ConstantCat.html">ConstantCat</a>(&#39;tabby&#39;)');
     });
 
     test('exported property', () {
@@ -1708,15 +2159,29 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Constructor', () {
     Constructor appleDefaultConstructor, constCatConstructor;
     Constructor appleConstructorFromString;
-    Class apple, constCat;
+    Constructor constructorTesterDefault, constructorTesterFromSomething;
+    Class apple, constCat, constructorTester;
     setUp(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       constCat = exLibrary.classes.firstWhere((c) => c.name == 'ConstantCat');
+      constructorTester =
+          fakeLibrary.classes.firstWhere((c) => c.name == 'ConstructorTester');
       constCatConstructor = constCat.constructors[0];
       appleDefaultConstructor =
           apple.constructors.firstWhere((c) => c.name == 'Apple');
       appleConstructorFromString =
           apple.constructors.firstWhere((c) => c.name == 'Apple.fromString');
+      constructorTesterDefault = constructorTester.constructors
+          .firstWhere((c) => c.name == 'ConstructorTester');
+      constructorTesterFromSomething = constructorTester.constructors
+          .firstWhere((c) => c.name == 'ConstructorTester.fromSomething');
+    });
+
+    test('displays generic parameters correctly', () {
+      expect(constructorTesterDefault.nameWithGenerics,
+          'ConstructorTester&lt;<wbr><span class="type-parameter">A</span>, <span class="type-parameter">B</span>&gt;');
+      expect(constructorTesterFromSomething.nameWithGenerics,
+          'ConstructorTester&lt;<wbr><span class="type-parameter">A</span>, <span class="type-parameter">B</span>&gt;.fromSomething');
     });
 
     test('has a fully qualified name', () {
@@ -1751,6 +2216,77 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
   });
 
+  group('void as type', () {
+    ModelFunction returningFutureVoid, aVoidParameter;
+    Class ExtendsFutureVoid, ImplementsFutureVoid, ATypeTakingClassMixedIn;
+
+    setUp(() {
+      returningFutureVoid = fakeLibrary.functions
+          .firstWhere((f) => f.name == 'returningFutureVoid');
+      aVoidParameter =
+          fakeLibrary.functions.firstWhere((f) => f.name == 'aVoidParameter');
+      ExtendsFutureVoid =
+          fakeLibrary.classes.firstWhere((f) => f.name == 'ExtendsFutureVoid');
+      ImplementsFutureVoid = fakeLibrary.classes
+          .firstWhere((f) => f.name == 'ImplementsFutureVoid');
+      ATypeTakingClassMixedIn = fakeLibrary.classes
+          .firstWhere((f) => f.name == 'ATypeTakingClassMixedIn');
+    });
+
+    test('a function returning a Future<void>', () {
+      expect(
+          returningFutureVoid.linkedReturnType,
+          equals(
+              'Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span>'));
+    });
+
+    test('a function requiring a Future<void> parameter', () {
+      expect(
+          aVoidParameter.linkedParams(showMetadata: true, showNames: true),
+          equals(
+              '<span class="parameter" id="aVoidParameter-param-p1"><span class="type-annotation">Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span> <span class="parameter-name">p1</span></span>'));
+    });
+
+    test('a class that extends Future<void>', () {
+      expect(
+          ExtendsFutureVoid.linkedName,
+          equals(
+              '<a href="fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a>'));
+      DefinedElementType FutureVoid = ExtendsFutureVoid.publicSuperChain
+          .firstWhere((c) => c.name == 'Future');
+      expect(
+          FutureVoid.linkedName,
+          equals(
+              'Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span>'));
+    });
+
+    test('a class that implements Future<void>', () {
+      expect(
+          ImplementsFutureVoid.linkedName,
+          equals(
+              '<a href="fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
+      DefinedElementType FutureVoid = ImplementsFutureVoid.publicInterfaces
+          .firstWhere((c) => c.name == 'Future');
+      expect(
+          FutureVoid.linkedName,
+          equals(
+              'Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span>'));
+    });
+
+    test('Verify that a mixin with a void type parameter works', () {
+      expect(
+          ATypeTakingClassMixedIn.linkedName,
+          equals(
+              '<a href="fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>'));
+      DefinedElementType ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixins
+          .firstWhere((c) => c.name == 'ATypeTakingClass');
+      expect(
+          ATypeTakingClassVoid.linkedName,
+          equals(
+              '<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span>'));
+    });
+  });
+
   group('ModelType', () {
     Field fList;
 
@@ -1762,7 +2298,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('parameterized type', () {
-      expect(fList.modelType.isParameterizedType, isTrue);
+      expect(fList.modelType is ParameterizedElementType, isTrue);
     });
   });
 
@@ -1770,24 +2306,49 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Typedef t;
     Typedef generic;
     Typedef aComplexTypedef;
+    Class TypedefUsingClass;
 
     setUp(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
       generic =
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
-      aComplexTypedef = exLibrary.typedefs.firstWhere((t) => t.name == 'aComplexTypedef');
+
+      aComplexTypedef =
+          exLibrary.typedefs.firstWhere((t) => t.name == 'aComplexTypedef');
+      TypedefUsingClass =
+          fakeLibrary.classes.firstWhere((t) => t.name == 'TypedefUsingClass');
+    });
+
+    test(
+        'Typedefs with bound type parameters indirectly referred in parameters are displayed',
+        () {
+      Constructor theConstructor = TypedefUsingClass.constructors.first;
+      expect(
+          theConstructor.linkedParams(),
+          equals(
+              '<span class="parameter" id="-param-x"><span class="type-annotation"><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">double</span>&gt;</span></span> <span class="parameter-name">x</span></span>'));
     });
 
     test('anonymous nested functions inside typedefs are handled', () {
       expect(aComplexTypedef, isNotNull);
-      expect(aComplexTypedef.linkedReturnType, startsWith('Function'));
-      expect(aComplexTypedef.nameWithGenerics, equals('aComplexTypedef&lt;A1, A2, A3&gt;'));
+      expect(aComplexTypedef.linkedReturnType, startsWith('void Function'));
+      expect(
+          aComplexTypedef.nameWithGenerics,
+          equals(
+              'aComplexTypedef&lt;<wbr><span class="type-parameter">A1</span>, <span class="type-parameter">A2</span>, <span class="type-parameter">A3</span>&gt;'));
     });
 
-    test('anonymous nested functions inside typedefs are handled correctly', () {
-      expect(aComplexTypedef.linkedReturnType, equals('Function(<span class="parameter" id="-param-"><span class="type-annotation">A1</span></span> <span class="parameter" id="-param-"><span class="type-annotation">A2</span></span> <span class="parameter" id="-param-"><span class="type-annotation">A3</span></span>)'));
-      expect(aComplexTypedef.linkedParamsLines, equals('<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">String</span></span>'));
-    }, skip: 'blocked on https://github.com/dart-lang/sdk/issues/30146');
+    test('anonymous nested functions inside typedefs are handled correctly',
+        () {
+      expect(
+          aComplexTypedef.linkedReturnType,
+          equals(
+              'void Function<span class="signature">(<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span>)</span>'));
+      expect(
+          aComplexTypedef.linkedParamsLines,
+          equals(
+              '<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">String</span></span>'));
+    });
 
     test('has a fully qualified name', () {
       expect(t.fullyQualifiedName, 'ex.processMessage');
@@ -1807,17 +2368,27 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('linked return type', () {
       expect(t.linkedReturnType, equals('String'));
-      expect(generic.linkedReturnType, equals('List&lt;S&gt;'));
+      expect(
+          generic.linkedReturnType,
+          equals(
+              'List<span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span>'));
     });
 
     test("name with generics", () {
-      expect(t.nameWithGenerics, equals('processMessage&lt;T&gt;'));
-      expect(generic.nameWithGenerics, equals('NewGenericTypedef&lt;T&gt;'));
+      expect(
+          t.nameWithGenerics,
+          equals(
+              'processMessage&lt;<wbr><span class="type-parameter">T</span>&gt;'));
+      expect(
+          generic.nameWithGenerics,
+          equals(
+              'NewGenericTypedef&lt;<wbr><span class="type-parameter">T</span>&gt;'));
     });
 
     test("generic parameters", () {
       expect(t.genericParameters, equals(''));
-      expect(generic.genericParameters, equals('&lt;S&gt;'));
+      expect(generic.genericParameters,
+          equals('&lt;<wbr><span class="type-parameter">S</span>&gt;'));
     });
   });
 
@@ -1899,9 +2470,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(param.library.name, equals('ex'));
     });
 
-    test('typdef param is linked', () {
+    test('typedef param is linked and does not include types', () {
       var params = methodWithTypedefParam.linkedParams();
-      expect(params.contains('<a href="ex/processMessage.html">'), isTrue);
+      expect(
+          params,
+          equals(
+              '<span class="parameter" id="methodWithTypedefParam-param-p"><span class="type-annotation"><a href="ex/processMessage.html">processMessage</a></span> <span class="parameter-name">p</span></span>'));
     });
   });
 
@@ -1913,8 +2487,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     setUp(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       b = exLibrary.classes.firstWhere((c) => c.name == 'B');
-      implA = apple.implementors;
-      implC = exLibrary.classes.firstWhere((c) => c.name == 'Cat').implementors;
+      implA = apple.publicImplementors.toList();
+      implC = exLibrary.classes
+          .firstWhere((c) => c.name == 'Cat')
+          .publicImplementors
+          .toList();
     });
 
     test('the first class is Apple', () {
@@ -1922,7 +2499,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('apple has some implementors', () {
-      expect(apple.hasImplementors, isTrue);
+      expect(apple.hasPublicImplementors, isTrue);
       expect(implA, isNotNull);
       expect(implA, hasLength(1));
       expect(implA[0].name, equals('B'));
@@ -1939,7 +2516,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('B does not have implementors', () {
       expect(b, isNotNull);
       expect(b.name, equals('B'));
-      expect(b.implementors, hasLength(0));
+      expect(b.publicImplementors, hasLength(0));
     });
   });
 

@@ -5,9 +5,11 @@
 /// This is a helper library to make working with io easier.
 library dartdoc.io_utils;
 
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as pathLib;
 
 /// Lists the contents of [dir].
 ///
@@ -34,7 +36,7 @@ Iterable<String> _doList(String dir, Set<String> listedDirectories,
 
     for (var entity in listDir(new Directory(dir))) {
       // Skip hidden files and directories
-      if (path.basename(entity.path).startsWith('.')) {
+      if (pathLib.basename(entity.path).startsWith('.')) {
         continue;
       }
 
@@ -48,61 +50,6 @@ Iterable<String> _doList(String dir, Set<String> listedDirectories,
   }
 }
 
-/// Given a package name, explore the directory and pull out all top level
-/// library files in the "lib" directory to document.
-Iterable<String> findFilesToDocumentInPackage(String packageDir) sync* {
-  final String sep = path.separator;
-
-  var packageLibDir = path.join(packageDir, 'lib');
-  var packageLibSrcDir = path.join(packageLibDir, 'src');
-
-  // To avoid analyzing package files twice, only files with paths not
-  // containing '/packages' will be added. The only exception is if the file
-  // to analyze already has a '/package' in its path.
-  for (var lib
-      in listDir(packageDir, recursive: true, listDir: _packageDirList)) {
-    if (lib.endsWith('.dart') &&
-        (!lib.contains('${sep}packages${sep}') ||
-            packageDir.contains('${sep}packages${sep}'))) {
-      // Only include libraries within the lib dir that are not in lib/src
-      if (path.isWithin(packageLibDir, lib) &&
-          !path.isWithin(packageLibSrcDir, lib)) {
-        // Only add the file if it does not contain 'part of'
-        var contents = new File(lib).readAsStringSync();
-
-        if (contents.contains(_newLinePartOfRegexp) ||
-            contents.startsWith(_partOfRegexp)) {
-          // NOOP: it's a part file
-        } else {
-          yield lib;
-        }
-      }
-    }
-  }
-}
-
-/// If [dir] contains both a `lib` directory and a `pubspec.yaml` file treat
-/// it like a package and only return the `lib` dir.
-///
-/// This ensures that packages don't have non-`lib` content documented.
-Iterable<FileSystemEntity> _packageDirList(Directory dir) sync* {
-  var entities = dir.listSync();
-
-  var pubspec = entities.firstWhere(
-      (e) => e is File && path.basename(e.path) == 'pubspec.yaml',
-      orElse: () => null);
-
-  var libDir = entities.firstWhere(
-      (e) => e is Directory && path.basename(e.path) == 'lib',
-      orElse: () => null);
-
-  if (pubspec != null && libDir != null) {
-    yield libDir;
-  } else {
-    yield* entities;
-  }
-}
-
 /// Converts `.` and `:` into `-`, adding a ".html" extension.
 ///
 /// For example:
@@ -110,8 +57,111 @@ Iterable<FileSystemEntity> _packageDirList(Directory dir) sync* {
 /// * dart.dartdoc => dart_dartdoc.html
 /// * dart:core => dart_core.html
 String getFileNameFor(String name) =>
-    '${name.replaceAll(_libraryNameRegexp, '-')}.html';
+    '${name.replaceAll(libraryNameRegexp, '-')}.html';
 
-final _libraryNameRegexp = new RegExp('[.:]');
-final _partOfRegexp = new RegExp('part of ');
-final _newLinePartOfRegexp = new RegExp('\npart of ');
+final libraryNameRegexp = new RegExp('[.:]');
+final partOfRegexp = new RegExp('part of ');
+final newLinePartOfRegexp = new RegExp('\npart of ');
+
+final RegExp quotables = new RegExp(r'[ "\r\n\$]');
+
+class SubprocessLauncher {
+  final String context;
+  final Map<String, String> environment;
+
+  String get prefix => context.isNotEmpty ? '$context: ' : '';
+
+  // from flutter:dev/tools/dartdoc.dart, modified
+  static void _printStream(Stream<List<int>> stream, Stdout output,
+      {String prefix: '', Iterable<String> Function(String line) filter}) {
+    assert(prefix != null);
+    if (filter == null) filter = (line) => [line];
+    stream
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .expand(filter)
+        .listen((String line) {
+      if (line != null) {
+        output.write('$prefix$line'.trim());
+        output.write('\n');
+      }
+    });
+  }
+
+  SubprocessLauncher(this.context, [Map<String, String> environment])
+      : this.environment = environment ?? <String, String>{};
+
+  /// A wrapper around start/await process.exitCode that will display the
+  /// output of the executable continuously and fail on non-zero exit codes.
+  /// It will also parse any valid JSON objects (one per line) it encounters
+  /// on stdout/stderr, and return them.  Returns null if no JSON objects
+  /// were encountered.
+  ///
+  /// Makes running programs in grinder similar to set -ex for bash, even on
+  /// Windows (though some of the bashisms will no longer make sense).
+  /// TODO(jcollins-g): move this to grinder?
+  Future<Iterable<Map>> runStreamed(String executable, List<String> arguments,
+      {String workingDirectory}) async {
+    List<Map> jsonObjects;
+
+    /// Allow us to pretend we didn't pass the JSON flag in to dartdoc by
+    /// printing what dartdoc would have printed without it, yet storing
+    /// json objects into [jsonObjects].
+    Iterable<String> jsonCallback(String line) {
+      Map result;
+      try {
+        result = json.decoder.convert(line);
+      } catch (FormatException) {}
+      if (result != null) {
+        if (jsonObjects == null) {
+          jsonObjects = new List();
+        }
+        jsonObjects.add(result);
+        if (result.containsKey('message')) {
+          line = result['message'];
+        } else if (result.containsKey('data')) {
+          line = result['data']['text'];
+        }
+      }
+      return line.split('\n');
+    }
+
+    stderr.write('$prefix+ ');
+    if (workingDirectory != null) stderr.write('(cd "$workingDirectory" && ');
+    if (environment != null) {
+      stderr.write(environment.keys.map((String key) {
+        if (environment[key].contains(quotables)) {
+          return "$key='${environment[key]}'";
+        } else {
+          return "$key=${environment[key]}";
+        }
+      }).join(' '));
+      stderr.write(' ');
+    }
+    stderr.write('$executable');
+    if (arguments.isNotEmpty) {
+      for (String arg in arguments) {
+        if (arg.contains(quotables)) {
+          stderr.write(" '$arg'");
+        } else {
+          stderr.write(" $arg");
+        }
+      }
+    }
+    if (workingDirectory != null) stderr.write(')');
+    stderr.write('\n');
+    Process process = await Process.start(executable, arguments,
+        workingDirectory: workingDirectory, environment: environment);
+
+    _printStream(process.stdout, stdout, prefix: prefix, filter: jsonCallback);
+    _printStream(process.stderr, stderr, prefix: prefix, filter: jsonCallback);
+    await process.exitCode;
+
+    int exitCode = await process.exitCode;
+    if (exitCode != 0) {
+      throw new ProcessException(executable, arguments,
+          "SubprocessLauncher got non-zero exitCode", exitCode);
+    }
+    return jsonObjects;
+  }
+}

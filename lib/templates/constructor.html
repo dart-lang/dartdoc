@@ -1,15 +1,26 @@
 {{>head}}
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5>{{parent.kind}} {{parent.name}}</h5>
+    <h5>{{parent.name}} {{parent.kind}}</h5>
     {{>sidebar_for_class}}
   </div><!--/.sidebar-offcanvas-left-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+    <h1>{{{self.nameWithGenerics}}} {{self.kind}}</h1>
+
     {{#constructor}}
     <section class="multi-line-signature">
+      {{#hasAnnotations}}
+      <div>
+        <ol class="annotation-list">
+          {{#annotations}}
+          <li>{{{.}}}</li>
+          {{/annotations}}
+        </ol>
+      </div>
+      {{/hasAnnotations}}
       {{#isConst}}const{{/isConst}}
-      {{>name_summary}}(<wbr>{{#hasParameters}}{{{linkedParamsLines}}}{{/hasParameters}})
+      <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{nameWithGenerics}}}</span>(<wbr>{{#hasParameters}}{{{linkedParamsLines}}}{{/hasParameters}})
     </section>
 
     {{>documentation}}
@@ -20,7 +31,6 @@
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>{{self.kind}} {{self.name}}</h5>
   </div><!--/.sidebar-offcanvas-->
 
 {{>footer}}

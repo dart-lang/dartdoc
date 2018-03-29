@@ -25,7 +25,7 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="index.html">test_package</a></li>
     <li><a href="ex/ex-library.html">ex</a></li>
-    <li class="self-crumb">class Apple</li>
+    <li class="self-crumb">Apple class</li>
   </ol>
   <div class="self-name">Apple</div>
   <form class="search navbar-right" role="search">
@@ -36,9 +36,10 @@
 <main>
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5>library ex</h5>
+    <h5>ex library</h5>
     <ol>
       <li class="section-title"><a href="ex/ex-library.html#classes">Classes</a></li>
+      <li><a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a></li>
       <li><a href="ex/Apple-class.html">Apple</a></li>
       <li><a href="ex/aThingToDo-class.html">aThingToDo</a></li>
       <li><a href="ex/B-class.html">B</a></li>
@@ -49,15 +50,20 @@
       <li><a href="ex/Deprecated-class.html">Deprecated</a></li>
       <li><a href="ex/Dog-class.html">Dog</a></li>
       <li><a href="ex/E-class.html">E</a></li>
+      <li><a href="ex/ExtendedShortName-class.html">ExtendedShortName</a></li>
       <li><a href="ex/F-class.html">F</a></li>
       <li><a href="ex/ForAnnotation-class.html">ForAnnotation</a></li>
       <li><a href="ex/HasAnnotation-class.html">HasAnnotation</a></li>
       <li><a href="ex/Helper-class.html">Helper</a></li>
       <li><a href="ex/Klass-class.html">Klass</a></li>
+      <li><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a></li>
       <li><a href="ex/PublicClassExtendsPrivateClass-class.html">PublicClassExtendsPrivateClass</a></li>
       <li><a href="ex/PublicClassImplementsPrivateInterface-class.html">PublicClassImplementsPrivateInterface</a></li>
       <li><a href="ex/ShapeType-class.html">ShapeType</a></li>
+      <li><a href="ex/ShortName-class.html">ShortName</a></li>
       <li><a href="ex/SpecializedDuration-class.html">SpecializedDuration</a></li>
+      <li><a href="ex/TemplatedClass-class.html">TemplatedClass</a></li>
+      <li><a href="ex/TemplatedInterface-class.html">TemplatedInterface</a></li>
       <li><a href="ex/TypedFunctionsWithoutTypedefs-class.html">TypedFunctionsWithoutTypedefs</a></li>
       <li><a href="ex/WithGeneric-class.html">WithGeneric</a></li>
       <li><a href="ex/WithGenericSub-class.html">WithGenericSub</a></li>
@@ -101,6 +107,7 @@
   </div>
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+    <h1>Apple class</h1>
 
     <section class="desc markdown">
       <p>Sample class <code>String</code></p><pre class="language-dart">  A
@@ -147,25 +154,23 @@
       <dl class="properties">
         <dt id="fieldWithTypedef" class="property">
           <span class="name"><a href="ex/Apple/fieldWithTypedef.html">fieldWithTypedef</a></span>
-          <span class="signature">&#8594; <a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a>&lt;bool&gt;</span>
+          <span class="signature">&#8594; <a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">bool</span>&gt;</span></span>
         </dt>
         <dd>
           fieldWithTypedef docs here
           <div class="features">final</div>
 </dd>
         <dt id="m" class="property">
-          <span class="name"><a href="ex/Apple/m.html">m</a></span><span class="signature">
-            <span class="returntype parameter">&#8596;   <span class="parameter" id="m=-param-_m"><span class="type-annotation">int</span></span> </span>
-          </span>
+          <span class="name"><a href="ex/Apple/m.html">m</a></span>
+          <span class="signature">&#8596; int</span>
         </dt>
         <dd>
           The read-write field <code>m</code>.
           <div class="features">read / write</div>
 </dd>
         <dt id="s" class="property">
-          <span class="name"><a href="ex/Apple/s.html">s</a></span><span class="signature">
-            <span class="returntype parameter">&#8596;  <span class="parameter" id="s=-param-something"><span class="type-annotation">String</span> <span class="parameter-name">something</span></span>  </span>
-          </span>
+          <span class="name"><a href="ex/Apple/s.html">s</a></span>
+          <span class="signature">&#8596; String</span>
         </dt>
         <dd>
           The getter for <code>s</code>
@@ -239,7 +244,7 @@
           
 </dd>
         <dt id="whataclass" class="callable">
-          <span class="name"><a href="ex/Apple/whataclass.html">whataclass</a></span><span class="signature">(<wbr><span class="parameter" id="whataclass-param-list"><span class="type-annotation">List&lt;<a href="test_package_imported.main/Whataclass-class.html">Whataclass</a>&lt;bool&gt;&gt;</span> <span class="parameter-name">list</span></span>)
+          <span class="name"><a href="ex/Apple/whataclass.html">whataclass</a></span><span class="signature">(<wbr><span class="parameter" id="whataclass-param-list"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter"><a href="test_package_imported.main/Whataclass-class.html">Whataclass</a><span class="signature">&lt;<wbr><span class="type-parameter">bool</span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">list</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -281,7 +286,7 @@
           
 </dd>
         <dt id="operator ==" class="callable inherited">
-          <span class="name"><a href="ex/Apple/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
+          <span class="name"><a href="ex/Apple/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">dynamic</span> <span class="parameter-name">other</span></span>)
             <span class="returntype parameter">&#8594; bool</span>
           </span>
         </dt>
@@ -297,9 +302,8 @@
 
       <dl class="properties">
         <dt id="string" class="property">
-          <span class="name"><a href="ex/Apple/string.html">string</a></span><span class="signature">
-            <span class="returntype parameter">&#8596;   <span class="parameter" id="string=-param-_string"><span class="type-annotation">String</span></span> </span>
-          </span>
+          <span class="name"><a href="ex/Apple/string.html">string</a></span>
+          <span class="signature">&#8596; String</span>
         </dt>
         <dd>
           
@@ -315,7 +319,7 @@
       <dl class="properties">
         <dt id="n" class="constant">
           <span class="name "><a href="ex/Apple/n-constant.html">n</a></span>
-          <span class="signature">&#8594; int</span>
+          <span class="signature">&#8594; const int</span>
         </dt>
         <dd>
           
@@ -330,7 +334,6 @@
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>class Apple</h5>
     <ol>
       <li class="section-title"><a href="ex/Apple-class.html#constructors">Constructors</a></li>
       <li><a href="ex/Apple/Apple.html">Apple</a></li>
@@ -374,14 +377,10 @@
   <span class="no-break">
     test_package 0.0.1
   </span>
-  &bull;
-  <span class="copyright no-break">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
-  </span>
 
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="static-assets/typeahead.bundle.min.js"></script>
 <script src="static-assets/highlight.pack.js"></script>
 <script src="static-assets/URI.js"></script>

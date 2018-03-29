@@ -176,4 +176,22 @@ void main() {
       expect(truncateString('foo bar baz qux', 10), 'foo bar ba…');
     });
   });
+
+  group('leadingWhitespace', () {
+    test('strip common leading whitespace, but no more', () {
+      String input = '   3 space indent\n'
+          '    4 space indent (one preserved)\n'
+          '       7 space indent (four preserved)\n'
+          '\t  2 spaces, one tab (same as 3 space)\n'
+          '    \t4 spaces, one tab (preserve the tab)\n'
+          '   3 space indent again\n';
+      String output = '3 space indent\n'
+          ' 4 space indent (one preserved)\n'
+          '    7 space indent (four preserved)\n'
+          '2 spaces, one tab (same as 3 space)\n'
+          ' \t4 spaces, one tab (preserve the tab)\n'
+          '3 space indent again\n';
+      expect(stripCommonWhitespace(input), equals(output));
+    });
+  });
 }

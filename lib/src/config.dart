@@ -4,8 +4,24 @@
 
 library dartdoc.config;
 
-import 'dart:collection' show UnmodifiableListView;
 import 'dart:io';
+
+import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/dartdoc.dart';
+
+import 'model.dart';
+
+/// Class representing values possibly local to a particular [ModelElement].
+class LocalConfig {
+  final Map<String, Set<String>> categoryMap;
+  final PackageMeta packageMeta;
+
+  LocalConfig._(this.categoryMap, this.packageMeta);
+
+  factory LocalConfig.fromLibrary(LibraryElement element) {
+    return new LocalConfig._({}, new PackageMeta.fromElement(element));
+  }
+}
 
 class Config {
   final Directory inputDir;
@@ -15,10 +31,12 @@ class Config {
   final bool includeSource;
   final String sdkVersion;
   final bool autoIncludeDependencies;
-  final List<String> categoryOrder;
+  final List<String> packageOrder;
   final double reexportMinConfidence;
   final bool verboseWarnings;
   final List<String> dropTextFrom;
+  final List<String> excludePackages;
+  final bool validateLinks;
   Config._(
       this.inputDir,
       this.showWarnings,
@@ -27,10 +45,12 @@ class Config {
       this.includeSource,
       this.sdkVersion,
       this.autoIncludeDependencies,
-      this.categoryOrder,
+      this.packageOrder,
       this.reexportMinConfidence,
       this.verboseWarnings,
-      this.dropTextFrom);
+      this.dropTextFrom,
+      this.excludePackages,
+      this.validateLinks);
 }
 
 Config _config;
@@ -44,12 +64,12 @@ void setConfig(
     bool includeSource: true,
     String sdkVersion,
     bool autoIncludeDependencies: false,
-    List<String> categoryOrder,
+    List<String> packageOrder,
     double reexportMinConfidence: 0.1,
-    verboseWarnings: true,
-    List<String> dropTextFrom}) {
-  categoryOrder ??= new UnmodifiableListView<String>([]);
-  dropTextFrom ??= new UnmodifiableListView<String>([]);
+    bool verboseWarnings: true,
+    List<String> dropTextFrom,
+    List<String> excludePackages,
+    bool validateLinks: true}) {
   _config = new Config._(
       inputDir,
       showWarnings,
@@ -58,8 +78,10 @@ void setConfig(
       includeSource,
       sdkVersion,
       autoIncludeDependencies,
-      categoryOrder,
+      packageOrder ?? const <String>[],
       reexportMinConfidence,
       verboseWarnings,
-      dropTextFrom);
+      dropTextFrom ?? const <String>[],
+      excludePackages ?? const <String>[],
+      validateLinks);
 }

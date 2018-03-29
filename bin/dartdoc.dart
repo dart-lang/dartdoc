@@ -4,14 +4,19 @@
 
 library dartdoc.bin;
 
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate' show Isolate;
 
 import 'package:analyzer/file_system/physical_file_system.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:path/path.dart' as path;
+import 'package:dartdoc/src/logging.dart';
+import 'package:logging/logging.dart' as logging;
+import 'package:path/path.dart' as pathLib;
 import 'package:stack_trace/stack_trace.dart';
 
 /// Analyzes Dart files and generates a representation of included libraries,
@@ -22,15 +27,15 @@ main(List<String> arguments) async {
   try {
     args = parser.parse(arguments);
   } on FormatException catch (e) {
-    print(e.message);
-    print('');
+    stderr.writeln(e.message);
+    stderr.writeln('');
     // http://linux.die.net/include/sysexits.h
     // #define EX_USAGE	64	/* command line usage error */
     _printUsageAndExit(parser, exitCode: 64);
   }
 
   if (args['help']) {
-    _printHelp(parser);
+    _printHelpAndExit(parser);
   }
 
   if (args['version']) {
@@ -44,26 +49,22 @@ main(List<String> arguments) async {
     exit(1);
   }
 
-  bool sdkDocs = false;
-  if (args['sdk-docs']) {
-    sdkDocs = true;
+  final bool sdkDocs = args['sdk-docs'];
+  final bool showProgress = args['show-progress'];
+
+  Directory inputDir;
+  if (sdkDocs) {
+    inputDir = sdkDir;
+  } else if (args['input'] == null) {
+    inputDir = Directory.current;
+  } else {
+    inputDir = args['input'];
   }
 
-  if (args['show-progress']) {
-    _showProgress = true;
-  }
-
-  var readme = args['sdk-readme'];
-  if (readme != null && !(new File(readme).existsSync())) {
-    stderr.writeln(
-        " fatal error: unable to locate the SDK description file at $readme.");
-    exit(1);
-  }
-
-  Directory inputDir = new Directory(args['input']);
   if (!inputDir.existsSync()) {
     stderr.writeln(
-        " fatal error: unable to locate the input directory at ${inputDir.path}.");
+        " fatal error: unable to locate the input directory at ${inputDir
+            .path}.");
     exit(1);
   }
 
@@ -95,6 +96,14 @@ main(List<String> arguments) async {
 
   List<String> footerTextFilePaths =
       args['footer-text'].map(_resolveTildePath).toList() as List<String>;
+
+  // If we're generating docs for the Dart SDK, we insert a copyright footer.
+  if (sdkDocs) {
+    Uri footerCopyrightUri = await Isolate.resolvePackageUri(
+        Uri.parse('package:dartdoc/resources/sdk_footer_text.html'));
+    footerTextFilePaths = [footerCopyrightUri.toFilePath()];
+  }
+
   for (String footerFilePath in footerTextFilePaths) {
     if (!new File(footerFilePath).existsSync()) {
       stderr.writeln(
@@ -104,7 +113,7 @@ main(List<String> arguments) async {
   }
 
   Directory outputDir =
-      new Directory(path.join(Directory.current.path, defaultOutDir));
+      new Directory(pathLib.join(Directory.current.path, defaultOutDir));
   if (args['output'] != null) {
     outputDir = new Directory(_resolveTildePath(args['output']));
   }
@@ -116,14 +125,82 @@ main(List<String> arguments) async {
     _printUsageAndExit(parser, exitCode: 1);
   }
 
-  PackageMeta packageMeta = sdkDocs
-      ? new PackageMeta.fromSdk(sdkDir,
-          sdkReadmePath: readme, useCategories: args['use-categories'])
-      : new PackageMeta.fromDir(inputDir);
+  final logJson = args['json'] as bool;
+
+  // By default, get all log output at `progressLevel` or greater.
+  // This allows us to capture progress events and print `...`.
+  logging.Logger.root.level = progressLevel;
+
+  if (logJson) {
+    logging.Logger.root.onRecord.listen((record) {
+      if (record.level == progressLevel) {
+        return;
+      }
+
+      var output = <String, dynamic>{'level': record.level.name};
+
+      if (record.object is Jsonable) {
+        output['data'] = record.object;
+      } else {
+        output['message'] = record.message;
+      }
+
+      print(json.encode(output));
+    });
+  } else {
+    final stopwatch = new Stopwatch()..start();
+
+    // Used to track if we're printing `...` to show progress.
+    // Allows unified new-line tracking
+    var writingProgress = false;
+
+    logging.Logger.root.onRecord.listen((record) {
+      if (record.level == progressLevel) {
+        if (showProgress && stopwatch.elapsed.inMilliseconds > 250) {
+          writingProgress = true;
+          stdout.write('.');
+          stopwatch.reset();
+        }
+        return;
+      }
+
+      stopwatch.reset();
+      if (writingProgress) {
+        // print a new line after progress dots...
+        print('');
+        writingProgress = false;
+      }
+      var message = record.message;
+      assert(message == message.trimRight());
+      assert(message.isNotEmpty);
+
+      if (record.level < logging.Level.WARNING) {
+        if (showProgress && message.endsWith('...')) {
+          // Assume there may be more progress to print, so omit the trailing
+          // newline
+          writingProgress = true;
+          stdout.write(message);
+        } else {
+          print(message);
+        }
+      } else {
+        stderr.writeln(message);
+      }
+    });
+  }
+
+  PackageMeta packageMeta = new PackageMeta.fromDir(inputDir);
+
+  if (packageMeta == null) {
+    stderr.writeln(
+        ' fatal error: Unable to generate documentation: no pubspec.yaml found');
+    exit(1);
+  }
 
   if (!packageMeta.isValid) {
+    final String firstError = packageMeta.getInvalidReasons().first;
     stderr.writeln(
-        ' fatal error: Unable to generate documentation: ${packageMeta.getInvalidReasons().first}.');
+        ' fatal error: Unable to generate documentation: $firstError.');
     exit(1);
   }
 
@@ -136,20 +213,18 @@ main(List<String> arguments) async {
     }
   }
 
-  print("Generating documentation for '${packageMeta}' into "
+  logInfo("Generating documentation for '${packageMeta}' into "
       "${outputDir.absolute.path}${Platform.pathSeparator}");
-  print('');
 
   var generators = await initGenerators(url, args['rel-canonical-prefix'],
       headerFilePaths: headerFilePaths,
       footerFilePaths: footerFilePaths,
       footerTextFilePaths: footerTextFilePaths,
       faviconPath: args['favicon'],
-      useCategories: args['use-categories'],
       prettyIndexJson: args['pretty-index-json']);
 
   for (var generator in generators) {
-    generator.onFileCreated.listen(_onProgress);
+    generator.onFileCreated.listen(logProgress);
   }
 
   DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
@@ -185,20 +260,28 @@ main(List<String> arguments) async {
       inputDir: inputDir,
       sdkVersion: sdk.sdkVersion,
       autoIncludeDependencies: args['auto-include-dependencies'],
-      categoryOrder: args['category-order'],
+      packageOrder: args['package-order'].isEmpty
+          ? args['category-order']
+          : args['package-order'],
       reexportMinConfidence:
           double.parse(args['ambiguous-reexport-scorer-min-confidence']),
       verboseWarnings: args['verbose-warnings'],
-      dropTextFrom: dropTextFrom);
+      excludePackages: args['exclude-packages'],
+      dropTextFrom: dropTextFrom,
+      validateLinks: args['validate-links']);
 
   DartDoc dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
-      outputDir, packageMeta, includeLibraries,
-      includeExternals: includeExternals);
+      outputDir, packageMeta, includeLibraries, includeExternals);
 
-  dartdoc.onCheckProgress.listen(_onProgress);
-  Chain.capture(() async {
-    DartDocResults results = await dartdoc.generateDocs();
-    print('\nSuccess! Docs generated into ${results.outDir.absolute.path}');
+  dartdoc.onCheckProgress.listen(logProgress);
+  await Chain.capture(() async {
+    await runZoned(() async {
+      DartDocResults results = await dartdoc.generateDocs();
+      logInfo('Success! Docs generated into ${results.outDir.absolute.path}');
+    },
+        zoneSpecification: new ZoneSpecification(
+            print: (Zone self, ZoneDelegate parent, Zone zone, String line) =>
+                logPrint(line)));
   }, onError: (e, Chain chain) {
     if (e is DartDocFailure) {
       stderr.writeln('\nGeneration failed: ${e}.');
@@ -209,8 +292,6 @@ main(List<String> arguments) async {
     }
   });
 }
-
-bool _showProgress = false;
 
 ArgParser _createArgsParser() {
   var parser = new ArgParser();
@@ -224,37 +305,30 @@ ArgParser _createArgsParser() {
       defaultsTo: false);
   parser.addFlag('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
-  parser.addFlag('show-warnings', help: 'Display warnings.', negatable: false);
+  parser.addFlag('show-warnings',
+      help: 'Display warnings.', negatable: false, defaultsTo: false);
   parser.addFlag('show-progress',
       help: 'Display progress indications to console stdout', negatable: false);
   parser.addOption('sdk-readme',
-      help:
-          'Path to the SDK description file; use if generating Dart SDK docs.');
-  parser.addOption('input',
-      help: 'Path to source directory.', defaultsTo: Directory.current.path);
+      help: 'Path to the SDK description file.  Deprecated (ignored)');
+  parser.addOption('input', help: 'Path to source directory.');
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
-  parser.addOption('header',
-      allowMultiple: true,
+  parser.addMultiOption('header',
+      splitCommas: true, help: 'paths to header files containing HTML text.');
+  parser.addMultiOption('footer',
+      splitCommas: true, help: 'paths to footer files containing HTML text.');
+  parser.addMultiOption('footer-text',
       splitCommas: true,
-      help: 'paths to header files containing HTML text.');
-  parser.addOption('footer',
-      allowMultiple: true,
-      splitCommas: true,
-      help: 'paths to footer files containing HTML text.');
-  parser.addOption('footer-text',
-      allowMultiple: true,
-      splitCommas: true,
-      help:
-          'paths to footer-text files (optional text next to the copyright).');
-  parser.addOption('exclude',
-      allowMultiple: true, splitCommas: true, help: 'Library names to ignore.');
-  parser.addOption('include',
-      allowMultiple: true,
-      splitCommas: true,
-      help: 'Library names to generate docs for.');
-  parser.addOption('include-external',
-      allowMultiple: true,
+      help: 'paths to footer-text files '
+          '(optional text next to the package name and version).');
+  parser.addMultiOption('exclude',
+      splitCommas: true, help: 'Library names to ignore.');
+  parser.addMultiOption('exclude-packages',
+      splitCommas: true, help: 'Package names to ignore.');
+  parser.addMultiOption('include',
+      splitCommas: true, help: 'Library names to generate docs for.');
+  parser.addMultiOption('include-external',
       help: 'Additional (external) dart files to include; use "dir/fileName", '
           'as in lib/material.dart.');
   parser.addOption('hosted-url',
@@ -271,13 +345,19 @@ ArgParser _createArgsParser() {
   parser.addOption('favicon',
       help: 'A path to a favicon for the generated docs.');
   parser.addFlag('use-categories',
-      help: 'Group libraries from the same package into categories.',
+      help:
+          'Group libraries from the same package in the libraries sidebar. (deprecated, ignored)',
       negatable: false,
       defaultsTo: false);
-  parser.addOption('category-order',
-      help: 'A list of category names to place first when --use-categories is '
-          'set.  Unmentioned categories are sorted after these.',
-      allowMultiple: true,
+  parser.addMultiOption('category-order',
+      help:
+          'A list of package names to place first when grouping libraries in packages. '
+          'Unmentioned categories are sorted after these. (deprecated, replaced by package-order)',
+      splitCommas: true);
+  parser.addMultiOption('package-order',
+      help:
+          'A list of package names to place first when grouping libraries in packages. '
+          'Unmentioned categories are sorted after these.',
       splitCommas: true);
   parser.addFlag('auto-include-dependencies',
       help:
@@ -298,28 +378,26 @@ ArgParser _createArgsParser() {
       help: 'Display extra debugging information and help with warnings.',
       negatable: true,
       defaultsTo: true);
-  parser.addFlag(
-    'hide-sdk-text',
-    help:
-        "Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.",
-    negatable: true,
-    defaultsTo: false,
-    hide: true,
-  );
-
+  parser.addFlag('hide-sdk-text',
+      help:
+          "Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.",
+      negatable: true,
+      defaultsTo: false,
+      hide: true);
+  parser.addFlag('json',
+      help: 'Prints out progress JSON maps. One entry per line.',
+      defaultsTo: false,
+      negatable: true);
+  parser.addFlag('validate-links',
+      help:
+          'Runs the built-in link checker to display Dart context aware warnings for broken links (slow)',
+      negatable: true,
+      defaultsTo: true);
   return parser;
 }
 
-int _progressCounter = 0;
-void _onProgress(var file) {
-  if (_showProgress && _progressCounter % 5 == 0) {
-    stdout.write('.');
-  }
-  _progressCounter += 1;
-}
-
 /// Print help if we are passed the help option.
-void _printHelp(ArgParser parser, {int exitCode: 0}) {
+void _printHelpAndExit(ArgParser parser, {int exitCode: 0}) {
   print('Generate HTML documentation for Dart libraries.\n');
   _printUsageAndExit(parser, exitCode: exitCode);
 }
@@ -338,10 +416,10 @@ String _resolveTildePath(String originalPath) {
   String homeDir;
 
   if (Platform.isWindows) {
-    homeDir = path.absolute(Platform.environment['USERPROFILE']);
+    homeDir = pathLib.absolute(Platform.environment['USERPROFILE']);
   } else {
-    homeDir = path.absolute(Platform.environment['HOME']);
+    homeDir = pathLib.absolute(Platform.environment['HOME']);
   }
 
-  return path.join(homeDir, originalPath.substring(2));
+  return pathLib.join(homeDir, originalPath.substring(2));
 }

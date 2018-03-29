@@ -79,10 +79,6 @@ main {
   padding: 20px 15px 0 30px;
 }
 
-.main-content p {
-  max-width: 700px;
-}
-
 .sidebar,
 .main-content {
   margin: 20px 0;
@@ -202,10 +198,6 @@ h5 {
   font-size: 16px;
 }
 
-strong {
-  font-weight: 500;
-}
-
 .subtitle {
   font-size: 17px;
   min-height: 1.4em;
@@ -227,7 +219,7 @@ a, a:hover {
 }
 
 pre.prettyprint {
-  font-family: 'Source Code Pro', monospace;
+  font-family: 'Source Code Pro', Menlo, monospace;
   color: black;
   border-radius: 0;
   font-size: 15px;
@@ -241,6 +233,7 @@ pre.prettyprint {
 pre code {
   white-space: pre;
   word-wrap: initial;
+  font-size: 100%
 }
 
 .fixed {
@@ -254,10 +247,13 @@ pre {
 }
 
 code {
-  font-family: 'Source Code Pro', monospace;
+  font-family: 'Source Code Pro', Menlo, monospace;
   /* overriding bootstrap */
   color: inherit;
-  background-color: #eee;
+  padding: 0.2em 0.4em;
+  font-size: 85%;
+  background-color: rgba(27,31,35,0.05);
+  border-radius: 3px;
 }
 
 h2 .crossdart {
@@ -363,6 +359,15 @@ dl dt.callable .name {
   white-space: nowrap;
 }
 
+.type-parameter {
+  white-space: nowrap;
+}
+
+.multi-line-signature .type-parameter .parameter {
+  margin-left: 0px;
+  display: unset;
+}
+
 .signature {
   color: #727272;
 }
@@ -414,6 +419,10 @@ footer .container-fluid {
 
 footer a, footer a:hover {
   color: #fff;
+}
+
+.markdown.desc {
+  max-width: 700px;
 }
 
 .markdown h1 {
@@ -595,6 +604,7 @@ ul.subnav li:last-of-type {
 .sidebar ol {
   list-style: none;
   line-height: 22px;
+  margin-top: 0;
   margin-bottom: 0;
   padding: 0 0 15px 0;
 }
@@ -627,6 +637,19 @@ ul.subnav li:last-of-type {
   font-weight: normal;
   text-transform: uppercase;
   padding-top: 25px;
+}
+
+.sidebar ol li.section-subtitle a {
+  color: inherit;
+}
+
+.sidebar ol li.section-subtitle {
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.sidebar ol li.section-subitem {
+  margin-left: 12px;
 }
 
 .sidebar ol li:first-child {
