@@ -8182,6 +8182,17 @@
   }
  },
  {
+  "name": "complicatedReturn",
+  "qualifiedName": "fake.complicatedReturn",
+  "href": "fake/complicatedReturn.html",
+  "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "dynamicGetter",
   "qualifiedName": "fake.dynamicGetter",
   "href": "fake/dynamicGetter.html",
@@ -8241,6 +8252,17 @@
   "qualifiedName": "fake.greatestAnnotation",
   "href": "fake/greatestAnnotation-constant.html",
   "type": "top-level constant",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "importantComputations",
+  "qualifiedName": "fake.importantComputations",
+  "href": "fake/importantComputations.html",
+  "type": "top-level property",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",

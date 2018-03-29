@@ -29,8 +29,6 @@ abstract class ElementType extends Privacy {
       assert(f is ParameterizedType || f is TypeParameterType);
       bool isGenericTypeAlias =
           f.element.enclosingElement is GenericTypeAliasElement;
-      // can happen if element is dynamic
-      assert(f.element.library != null);
       if (f is FunctionType) {
         assert(f is ParameterizedType);
         if (isGenericTypeAlias) {
@@ -38,9 +36,7 @@ abstract class ElementType extends Privacy {
           return new CallableGenericTypeAliasElementType(
               f, packageGraph, element, returnedFrom);
         } else {
-          if ((f.name ?? f.element.name) == '' ||
-              (f.name ?? f.element.name) == null) {
-            assert(element is ModelFunctionAnonymous);
+          if (element is ModelFunctionAnonymous) {
             return new CallableAnonymousElementType(
                 f, packageGraph, element, returnedFrom);
           } else {
@@ -129,9 +125,10 @@ class ParameterizedElementType extends DefinedElementType {
       if (!typeArguments.every((t) => t.name == 'dynamic') &&
           typeArguments.isNotEmpty) {
         buf.write('<span class="signature">');
-        buf.write('&lt;');
-        buf.writeAll(typeArguments.map((t) => t.linkedName), ', ');
-        buf.write('&gt;');
+        buf.write('&lt;<wbr><span class="type-parameter">');
+        buf.writeAll(typeArguments.map((t) => t.linkedName),
+            '</span>, <span class="type-parameter">');
+        buf.write('</span>&gt;');
         buf.write('</span>');
       }
 
@@ -150,9 +147,10 @@ class ParameterizedElementType extends DefinedElementType {
 
       if (!typeArguments.every((t) => t.name == 'dynamic') &&
           typeArguments.isNotEmpty) {
-        buf.write('&lt;');
-        buf.writeAll(typeArguments.map((t) => t.nameWithGenerics), ', ');
-        buf.write('&gt;');
+        buf.write('&lt;<wbr><span class="type-parameter">');
+        buf.writeAll(typeArguments.map((t) => t.nameWithGenerics),
+            '</span>, <span class="type-parameter">');
+        buf.write('</span>&gt;');
       }
       _nameWithGenerics = buf.toString();
     }
@@ -286,6 +284,12 @@ class CallableElementType extends ParameterizedElementType
   CallableElementType(FunctionType t, PackageGraph packageGraph,
       ModelElement element, ElementType returnedFrom)
       : super(t, packageGraph, element, returnedFrom);
+
+  @override
+  String get linkedName {
+    if (name != null && name.isNotEmpty) return super.linkedName;
+    return '${nameWithGenerics}(${element.linkedParams(showNames: false).trim()}) → ${returnType.linkedName}';
+  }
 }
 
 /// This is an anonymous function using the generic function syntax (declared
@@ -301,7 +305,7 @@ class CallableAnonymousElementType extends CallableElementType {
   String get linkedName {
     if (_linkedName == null) {
       _linkedName =
-          '${super.linkedName}<span class="signature">(${element.linkedParams()})</span>';
+          '${returnType.linkedName} ${super.linkedName}<span class="signature">(${element.linkedParams()})</span>';
     }
     return _linkedName;
   }
