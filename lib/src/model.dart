@@ -268,9 +268,7 @@ class InheritableAccessor extends Accessor with Inheritable {
 }
 
 /// Getters and setters.
-class Accessor extends ModelElement
-    with SourceCodeMixin
-    implements EnclosedElement {
+class Accessor extends ModelElement implements EnclosedElement {
   GetterSetterCombo _enclosingCombo;
 
   Accessor(PropertyAccessorElement element, Library library,
@@ -1087,7 +1085,7 @@ class Class extends ModelElement
 }
 
 class Constructor extends ModelElement
-    with SourceCodeMixin, TypeParameters
+    with TypeParameters
     implements EnclosedElement {
   Constructor(
       ConstructorElement element, Library library, PackageGraph packageGraph)
@@ -1176,7 +1174,6 @@ abstract class Documentable extends Nameable {
   bool get hasDocumentation;
   bool get hasExtendedDocumentation;
   String get oneLineDoc;
-  Documentable get overriddenDocumentedElement;
   PackageGraph get packageGraph;
   bool get isDocumented;
 }
@@ -1215,6 +1212,10 @@ abstract class Canonicalization extends Object
     implements Documentable {
   bool get isCanonical;
   Library get canonicalLibrary;
+
+  /// Pieces of the location split by [locationSplitter] (removing package: and
+  /// slashes).
+  Set<String> get locationPieces;
 
   List<ScoredCandidate> scoreCanonicalCandidates(List<Library> libraries) {
     return libraries.map((l) => scoreElementWithLibrary(l)).toList()..sort();
@@ -1383,7 +1384,7 @@ class EnumField extends Field {
 }
 
 class Field extends ModelElement
-    with GetterSetterCombo, Inheritable, SourceCodeMixin
+    with GetterSetterCombo, Inheritable
     implements EnclosedElement {
   bool _isInherited = false;
   Class _enclosingClass;
@@ -2318,7 +2319,7 @@ class Library extends ModelElement with Categorization {
 }
 
 class Method extends ModelElement
-    with SourceCodeMixin, Inheritable, TypeParameters
+    with Inheritable, TypeParameters
     implements EnclosedElement {
   bool _isInherited = false;
   Class _enclosingClass;
@@ -2496,7 +2497,7 @@ abstract class Privacy {
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
 abstract class ModelElement extends Canonicalization
-    with Privacy, Warnable, Nameable
+    with Privacy, Warnable, Nameable, SourceCodeMixin
     implements Comparable, Documentable {
   final Element _element;
   // TODO(jcollins-g): This really wants a "member that has a type" class.
@@ -2763,6 +2764,14 @@ abstract class ModelElement extends Canonicalization
     return _isPublic;
   }
 
+  @override
+  Set<String> get locationPieces {
+    return new Set.from(element.location
+        .toString()
+        .split(locationSplitter)
+        .where((s) => s.isNotEmpty));
+  }
+
   Set<String> get features {
     Set<String> allFeatures = new Set<String>();
     allFeatures.addAll(annotations);
@@ -3001,7 +3010,7 @@ abstract class ModelElement extends Canonicalization
   Element get element => _element;
 
   @override
-  String get elementLocation {
+  String get location {
     // Call nothing from here that can emit warnings or you'll cause stack overflows.
     if (lineAndColumn != null) {
       return "(${pathLib.toUri(sourceFileName)}:${lineAndColumn.item1}:${lineAndColumn.item2})";
@@ -3122,6 +3131,7 @@ abstract class ModelElement extends Canonicalization
   /// A human-friendly name for the kind of element this is.
   String get kind;
 
+  @override
   Library get library => _library;
 
   String get linkedName {
@@ -3181,26 +3191,6 @@ abstract class ModelElement extends Canonicalization
   Member get originalMember => _originalMember;
 
   ModelElement get overriddenElement => null;
-
-  ModelElement _overriddenDocumentedElement;
-  bool _overriddenDocumentedElementIsSet = false;
-  // TODO(jcollins-g): This method prefers canonical elements, but it isn't
-  // guaranteed and is probably the source of bugs or confusing warnings.
-  @override
-  ModelElement get overriddenDocumentedElement {
-    if (!_overriddenDocumentedElementIsSet) {
-      ModelElement found = this;
-      while ((found.element.documentationComment == null ||
-              found.element.documentationComment == "") &&
-          !found.isCanonical &&
-          found.overriddenElement != null) {
-        found = found.overriddenElement;
-      }
-      _overriddenDocumentedElement = found;
-      _overriddenDocumentedElementIsSet = true;
-    }
-    return _overriddenDocumentedElement;
-  }
 
   int _overriddenDepth;
   int get overriddenDepth {
@@ -3666,7 +3656,7 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
 }
 
 class ModelFunctionTyped extends ModelElement
-    with SourceCodeMixin, TypeParameters
+    with TypeParameters
     implements EnclosedElement {
   @override
   List<TypeParameter> typeParameters = [];
@@ -3781,6 +3771,37 @@ class Operator extends Method {
 }
 
 class PackageGraph extends Canonicalization with Nameable, Warnable {
+  PackageGraph(Iterable<LibraryElement> libraryElements, this.packageMeta,
+      this._packageWarningOptions, this.driver,
+      [this.sdk]) {
+    assert(_allConstructedModelElements.isEmpty);
+    assert(allLibraries.isEmpty);
+    _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
+    libraryElements.forEach((element) {
+      var lib = new Library._(element, this);
+      packages.putIfAbsent(
+          lib.packageName, () => new Package(lib.packageName, this, lib.packageMeta));
+      packages[lib.packageName]._libraries.add(lib);
+      allLibraries[element] = lib;
+      assert(!_elementToLibrary.containsKey(lib.element));
+      _elementToLibrary[element] = lib;
+    });
+
+    allLibrariesAdded = true;
+    packages.values.forEach((package) {
+      package._libraries.sort((a, b) => compareNatural(a.name, b.name));
+      package._libraries.forEach((library) {
+        library._allClasses.forEach(_addToImplementors);
+      });
+    });
+
+    _implementors.values.forEach((l) => l.sort());
+    // Go through docs of every model element in package to prebuild the macros
+    // index.
+    allModelElements.forEach((m) => m.documentationLocal);
+    _macrosAdded = true;
+  }
+
   // All library objects related to this package; a superset of _libraries.
   final Map<LibraryElement, Library> allLibraries = new Map();
 
@@ -3802,7 +3823,13 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   final PackageMeta packageMeta;
 
   @override
+  Set<String> get locationPieces => new Set();
+
+  @override
   Library get canonicalLibrary => null;
+
+  Package get defaultPackage =>
+      publicPackages.firstWhere((p) => p.packageMeta == packageMeta);
 
   @override
   PackageGraph get packageGraph => this;
@@ -3828,10 +3855,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   bool get isDocumented => true;
 
   @override
-  Documentable get overriddenDocumentedElement => this;
-
-  @override
-  List<Locatable> get documentationFrom => [this];
+  List<Locatable> get documentationFrom => [defaultPackage];
 
   @override
   Warnable get enclosingElement => null;
@@ -3844,37 +3868,6 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   final Map<String, String> _macros = {};
   bool allLibrariesAdded = false;
   bool _macrosAdded = false;
-
-  PackageGraph(Iterable<LibraryElement> libraryElements, this.packageMeta,
-      this._packageWarningOptions, this.driver,
-      [this.sdk]) {
-    assert(_allConstructedModelElements.isEmpty);
-    assert(allLibraries.isEmpty);
-    _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
-    libraryElements.forEach((element) {
-      var lib = new Library._(element, this);
-      packages.putIfAbsent(
-          lib.packageName, () => new Package(lib.packageName, this));
-      packages[lib.packageName]._libraries.add(lib);
-      allLibraries[element] = lib;
-      assert(!_elementToLibrary.containsKey(lib.element));
-      _elementToLibrary[element] = lib;
-    });
-
-    allLibrariesAdded = true;
-    packages.values.forEach((package) {
-      package._libraries.sort((a, b) => compareNatural(a.name, b.name));
-      package._libraries.forEach((library) {
-        library._allClasses.forEach(_addToImplementors);
-      });
-    });
-
-    _implementors.values.forEach((l) => l.sort());
-    // Go through docs of every model element in package to prebuild the macros
-    // index.
-    allModelElements.forEach((m) => m.documentationLocal);
-    _macrosAdded = true;
-  }
 
   /// Returns true if there's at least one library documented in the package
   /// that has the same package path as the library for the given element.
@@ -3893,7 +3886,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   Element get element => null;
 
   @override
-  String get elementLocation => '(top level package)';
+  String get location => '(top level package)';
 
   /// Flush out any warnings we might have collected while
   /// [_packageWarningOptions.autoFlush] was false.
@@ -3901,7 +3894,6 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     _packageWarningCounter.maybeFlush();
   }
 
-  @override
   Tuple2<int, int> get lineAndColumn => null;
 
   @override
@@ -3929,7 +3921,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     String locatableLocation = '';
     if (locatable != null) {
       locatableName = locatable.fullyQualifiedName.replaceFirst(':', '-');
-      locatableLocation = locatable.elementLocation;
+      locatableLocation = locatable.location;
     }
     return new Tuple2(locatableName, locatableLocation);
   }
@@ -4063,15 +4055,15 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
 
     List<String> messageParts = [warningMessage];
     if (warnable != null) {
-      messageParts.add(
-          "${warnablePrefix} ${warnableName}: ${warnable.elementLocation ?? ''}");
+      messageParts
+          .add("${warnablePrefix} ${warnableName}: ${warnable.location ?? ''}");
     }
     if (referredFrom != null) {
       for (Locatable referral in referredFrom) {
         if (referral != warnable) {
           var referredFromStrings = _safeWarnableName(referral);
           messageParts.add(
-              "${referredFromPrefix} ${referredFromStrings}: ${referral.elementLocation ?? ''}");
+              "${referredFromPrefix} ${referredFromStrings}: ${referral.location ?? ''}");
         }
       }
     }
@@ -4578,12 +4570,14 @@ class Category extends LibraryContainer implements Comparable<Category> {
 
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
-class Package extends LibraryContainer implements Comparable<Package>, Privacy {
+class Package extends LibraryContainer
+    with Locatable
+    implements Comparable<Package>, Privacy {
   String _name;
   PackageGraph _packageGraph;
 
   final Map<String, Category> _nameToCategory = {};
-  Package(this._name, this._packageGraph);
+  Package(this._name, this._packageGraph, this._packageMeta);
 
   /// Return true if the code has defined non-default categories for libraries
   /// in this package.
@@ -4591,12 +4585,24 @@ class Package extends LibraryContainer implements Comparable<Package>, Privacy {
 
   LibraryContainer get defaultCategory => nameToCategory[null];
 
+  @override
+  List<Locatable> get documentationFrom => [this];
+
   bool _isPublic;
   @override
   bool get isPublic {
     if (_isPublic == null) _isPublic = libraries.any((l) => l.isPublic);
     return _isPublic;
   }
+
+  @override
+  String get fullyQualifiedName => 'package:$name';
+
+  @override
+  String get href => 'index.html';
+
+  @override
+  String get location => pathLib.toUri(packageMeta.resolvedDir).toString();
 
   @override
   String get name => _name;
@@ -4607,7 +4613,10 @@ class Package extends LibraryContainer implements Comparable<Package>, Privacy {
   // Workaround for mustache4dart issue where templates do not recognize
   // inherited properties as being in-context.
   @override
-  Iterable<Library> get publicLibraries => super.publicLibraries;
+  Iterable<Library> get publicLibraries {
+    assert(_libraries.every((l) => l.packageMeta == _packageMeta));
+    return super.publicLibraries;
+  }
 
   /// A map of category name to the category itself.
   Map<String, Category> get nameToCategory {
@@ -4669,15 +4678,8 @@ class Package extends LibraryContainer implements Comparable<Package>, Privacy {
     return _packagePath;
   }
 
-  PackageMeta _packageMeta;
-  // TODO(jcollins-g): packageMeta should be passed in with the object rather
-  // than calculated indirectly from libraries.
-  PackageMeta get packageMeta {
-    if (_packageMeta == null) {
-      _packageMeta = _libraries.first.packageMeta;
-    }
-    return _packageMeta;
-  }
+  final PackageMeta _packageMeta;
+  PackageMeta get packageMeta => _packageMeta;
 
   @override
   String toString() => name;
@@ -4903,7 +4905,7 @@ abstract class TypeParameters implements ModelElement {
 
 /// Top-level variables. But also picks up getters and setters?
 class TopLevelVariable extends ModelElement
-    with GetterSetterCombo, SourceCodeMixin
+    with GetterSetterCombo
     implements EnclosedElement {
   @override
   final Accessor getter;
@@ -4984,7 +4986,7 @@ class TopLevelVariable extends ModelElement
 }
 
 class Typedef extends ModelElement
-    with SourceCodeMixin, TypeParameters
+    with TypeParameters
     implements EnclosedElement {
   Typedef(FunctionTypeAliasElement element, Library library,
       PackageGraph packageGraph)

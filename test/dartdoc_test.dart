@@ -6,7 +6,6 @@ library dartdoc.dartdoc_test;
 
 import 'dart:io';
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
