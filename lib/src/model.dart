@@ -1746,18 +1746,28 @@ class Library extends ModelElement with Categorization {
   List<TopLevelVariable> _variables;
   Namespace _exportedNamespace;
   String _name;
+
   factory Library(LibraryElement element, PackageGraph packageGraph) {
     return packageGraph.findOrCreateLibraryFor(element);
   }
 
-  Library._(LibraryElement element, PackageGraph packageGraph)
+  Library._(LibraryElement element, PackageGraph packageGraph, this._package)
       : super(element, null, packageGraph, null) {
     if (element == null) throw new ArgumentError.notNull('element');
     _exportedNamespace =
         new NamespaceBuilder().createExportNamespaceForLibrary(element);
+    _package._allLibraries.add(this);
   }
 
   List<String> _allOriginalModelElementNames;
+
+  final Package _package;
+  Package get package {
+    // Everything must be in a package.  TODO(jcollins-g): Support other things
+    // that look like packages.
+    assert(_package != null);
+    return _package;
+  }
 
   /// [allModelElements] resolved to their original names.
   ///
@@ -3771,35 +3781,43 @@ class Operator extends Method {
 }
 
 class PackageGraph extends Canonicalization with Nameable, Warnable {
+  // TODO(jcollins-g): This constructor is convoluted, clean this up.
   PackageGraph(Iterable<LibraryElement> libraryElements, this.packageMeta,
       this._packageWarningOptions, this.driver,
       [this.sdk]) {
     assert(_allConstructedModelElements.isEmpty);
     assert(allLibraries.isEmpty);
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
+
+    // Build [Package] objects.
+    libraryElements.forEach((element) {});
+
+    // Build [Library] objects, and link them to [Package]s.
     libraryElements.forEach((element) {
-      var lib = new Library._(element, this);
-      packages.putIfAbsent(
-          lib.packageName, () => new Package(lib.packageName, this, lib.packageMeta));
-      packages[lib.packageName]._libraries.add(lib);
+      var packageMeta = new PackageMeta.fromElement(element);
+      var lib = new Library._(
+          element, this, new Package.fromPackageMeta(packageMeta, this));
+      packages[packageMeta.name]._libraries.add(lib);
       allLibraries[element] = lib;
       assert(!_elementToLibrary.containsKey(lib.element));
       _elementToLibrary[element] = lib;
     });
-
     allLibrariesAdded = true;
+
+    // Go through docs of every model element in package to prebuild the macros
+    // index.
+    allModelElements.forEach((m) => m.documentationLocal);
+    _macrosAdded = true;
+
+    // After the allModelElements traversal to be sure that any packages
+    // not picked up yet are found.
     packages.values.forEach((package) {
       package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
         library._allClasses.forEach(_addToImplementors);
       });
     });
-
     _implementors.values.forEach((l) => l.sort());
-    // Go through docs of every model element in package to prebuild the macros
-    // index.
-    allModelElements.forEach((m) => m.documentationLocal);
-    _macrosAdded = true;
   }
 
   // All library objects related to this package; a superset of _libraries.
@@ -4160,7 +4178,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
       hrefMap[modelElement.href].add(modelElement);
     }
     for (Package package in packages.values) {
-      for (Library library in package._libraries) {
+      for (Library library in package.libraries) {
         if (library.href == null) continue;
         hrefMap.putIfAbsent(library.href, () => new Set());
         hrefMap[library.href].add(library);
@@ -4476,7 +4494,11 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     Library foundLibrary = findLibraryFor(e);
 
     if (foundLibrary == null) {
-      foundLibrary = new Library._(e.library, this);
+      foundLibrary = new Library._(
+          e.library,
+          this,
+          new Package.fromPackageMeta(
+              new PackageMeta.fromElement(e.library), packageGraph));
       allLibraries[e.library] = foundLibrary;
     }
     return foundLibrary;
@@ -4568,6 +4590,16 @@ class Category extends LibraryContainer implements Comparable<Category> {
   PackageGraph get packageGraph => package.packageGraph;
 }
 
+/// For a given package, indicate with this enum whether it should be documented
+/// [local]ly, whether we should treat the package as [missing] and any references
+/// to it made canonical to this package, or [remote], indicating that
+/// we can build hrefs to an external source.
+enum DocumentLocation {
+  local,
+  missing,
+  remote,
+}
+
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 class Package extends LibraryContainer
@@ -4575,9 +4607,30 @@ class Package extends LibraryContainer
     implements Comparable<Package>, Privacy {
   String _name;
   PackageGraph _packageGraph;
+  final _isLocal;
 
   final Map<String, Category> _nameToCategory = {};
-  Package(this._name, this._packageGraph, this._packageMeta);
+
+  // Creates a package, if necessary, and adds it to the [packageGraph].
+  factory Package.fromPackageMeta(
+      PackageMeta packageMeta, PackageGraph packageGraph) {
+    String packageName = packageMeta.name;
+    bool isLocal = packageMeta == packageGraph.packageMeta ||
+        config.autoIncludeDependencies;
+    packageGraph.packages.putIfAbsent(packageName,
+        () => new Package._(packageName, packageGraph, packageMeta, isLocal));
+    return packageGraph.packages[packageName];
+  }
+
+  Package._(this._name, this._packageGraph, this._packageMeta, this._isLocal);
+
+  final Set<Library> _allLibraries = new Set();
+
+  /// Returns all libraries added to this package.  May include non-documented
+  /// libraries, but is not guaranteed to include a complete list of
+  /// non-documented libraries unless they are all referenced by documented ones.
+  /// Not sorted.
+  Set<Library> get allLibraries => _allLibraries;
 
   /// Return true if the code has defined non-default categories for libraries
   /// in this package.
@@ -4593,6 +4646,16 @@ class Package extends LibraryContainer
   bool get isPublic {
     if (_isPublic == null) _isPublic = libraries.any((l) => l.isPublic);
     return _isPublic;
+  }
+
+  /// Returns true if this package is being documented locally.  If it isn't
+  /// documented locally, it still might be documented remotely; see documentedWhere.
+  bool get isLocal => _isLocal;
+
+  DocumentLocation get documentedWhere {
+    if (!isLocal) return DocumentLocation.missing;
+    // TODO(jcollins-g): Implement remote.
+    return DocumentLocation.local;
   }
 
   @override
@@ -4614,7 +4677,7 @@ class Package extends LibraryContainer
   // inherited properties as being in-context.
   @override
   Iterable<Library> get publicLibraries {
-    assert(_libraries.every((l) => l.packageMeta == _packageMeta));
+    assert(libraries.every((l) => l.packageMeta == _packageMeta));
     return super.publicLibraries;
   }
 
@@ -4661,9 +4724,9 @@ class Package extends LibraryContainer
       if (isSdk) {
         _packagePath = getSdkDir().path;
       } else {
-        assert(_libraries.isNotEmpty);
+        assert(libraries.isNotEmpty);
         File file = new File(
-            pathLib.canonicalize(_libraries.first.element.source.fullName));
+            pathLib.canonicalize(libraries.first.element.source.fullName));
         Directory dir = file.parent;
         while (dir.parent.path != dir.path && dir.existsSync()) {
           File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
