@@ -72,13 +72,17 @@ void main() {
               .libraries
               .length,
           greaterThan(1));
-      expect(ginormousPackageGraph.packages.firstWhere((p) => p.isSdk).documentedWhere,
+      expect(
+          ginormousPackageGraph.packages
+              .firstWhere((p) => p.isSdk)
+              .documentedWhere,
           equals(DocumentLocation.local));
     });
 
-    test('Verify that packageGraph has an SDK but will not document it locally', () {
+    test('Verify that packageGraph has an SDK but will not document it locally',
+        () {
       expect(packageGraph.packages.firstWhere((p) => p.isSdk).documentedWhere,
-        isNot(equals(DocumentLocation.local)));
+          isNot(equals(DocumentLocation.local)));
     });
   });
 
@@ -403,7 +407,7 @@ void main() {
           .firstWhere((m) => m.name == 'withPrivateMacro');
       withUndefinedMacro = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withUndefinedMacro');
-      packageGraph.allModelElements.forEach((m) => m.documentation);
+      packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
 
     test("renders a macro within the same comment where it's defined", () {

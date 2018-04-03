@@ -3822,7 +3822,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
 
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
-    allModelElements.forEach((m) => m.documentationLocal);
+    allLocalModelElements.forEach((m) => m.documentationLocal);
     _macrosAdded = true;
 
     // After the allModelElements traversal to be sure that all packages
@@ -4208,7 +4208,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   /// A lookup index for hrefs to allow warnings to indicate where a broken
   /// link or orphaned file may have come from.  Not cached because
   /// [ModelElement]s can be created at any time and we're basing this
-  /// on more than just [allModelElements] to make the error messages
+  /// on more than just [allLocalModelElements] to make the error messages
   /// comprehensive.
   Map<String, Set<ModelElement>> get allHrefs {
     Map<String, Set<ModelElement>> hrefMap = new Map();
@@ -4583,11 +4583,11 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   }
 
   List<ModelElement> _allModelElements;
-  Iterable<ModelElement> get allModelElements {
+  Iterable<ModelElement> get allLocalModelElements {
     assert(allLibrariesAdded);
     if (_allModelElements == null) {
       _allModelElements = [];
-      this.libraries.forEach((library) {
+      this.localLibraries.forEach((library) {
         _allModelElements.addAll(library.allModelElements);
       });
     }
@@ -4597,7 +4597,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   List<ModelElement> _allCanonicalModelElements;
   Iterable<ModelElement> get allCanonicalModelElements {
     return (_allCanonicalModelElements ??=
-        allModelElements.where((e) => e.isCanonical).toList());
+        allLocalModelElements.where((e) => e.isCanonical).toList());
   }
 
   String getMacro(String name) {
@@ -5485,7 +5485,7 @@ class PackageBuilder {
 
       /// We don't care about upstream analysis errors, so save the first
       /// source list.
-      if (originalSources == null) originalSources = sources;
+      if (originalSources == null) originalSources = new Set()..addAll(sources);
       files.addAll(driver.knownFiles);
       current = _packageMetasForFiles(files);
       // To get canonicalization correct for non-locally documented packages
