@@ -52,11 +52,21 @@ void main() {
 
   group('Missing and Remote', () {
     test('Verify that SDK libraries are not canonical when missing', () {
-      expect(dartAsync.package.documentedWhere, equals(DocumentLocation.missing));
+      expect(
+          dartAsync.package.documentedWhere, equals(DocumentLocation.missing));
       expect(dartAsync.isCanonical, isFalse);
+      expect(ginormousPackageGraph.publicPackages, isNotEmpty);
     });
-  });
 
+    test('Verify that autoIncludeDependencies makes everything document locally', () {
+      expect(ginormousPackageGraph.packages.map((p) => p.documentedWhere), everyElement((x) => x == DocumentLocation.local));
+    });
+
+    test('Verify that ginormousPackageGraph takes in the SDK', () {
+      expect(ginormousPackageGraph.packages.firstWhere((p) => p.isSdk).libraries.length, greaterThan(1));
+    });
+
+  });
 
   group('Category', () {
     test('Verify categories for test_package', () {
@@ -106,7 +116,7 @@ void main() {
       });
 
       test('libraries', () {
-        expect(packageGraph.localLibraries, hasLength(8));
+        expect(packageGraph.localPublicLibraries, hasLength(8));
         expect(interceptorsLib.isPublic, isFalse);
       });
 
@@ -115,23 +125,23 @@ void main() {
         expect(packageGraph.homepage, equals('http://github.com/dart-lang'));
       });
 
-      test('categories', () {
+      test('packages', () {
         expect(packageGraph.localPackages, hasLength(1));
 
-        Package category = packageGraph.localPackages.first;
-        expect(category.name, 'test_package');
-        expect(category.publicLibraries, hasLength(8));
+        Package package = packageGraph.localPackages.first;
+        expect(package.name, 'test_package');
+        expect(package.publicLibraries, hasLength(8));
       });
 
-      test('multiple categories, sorted default', () {
-        expect(ginormousPackageGraph.localPackages, hasLength(3));
+      test('multiple packages, sorted default', () {
+        expect(ginormousPackageGraph.localPackages, hasLength(4));
         expect(ginormousPackageGraph.localPackages.first.name,
             equals('test_package'));
       });
 
-      test('multiple categories, specified sort order', () {
+      test('multiple packages, specified sort order', () {
         setConfig(packageOrder: ['meta', 'test_package']);
-        expect(ginormousPackageGraph.localPackages, hasLength(3));
+        expect(ginormousPackageGraph.localPackages, hasLength(4));
         expect(ginormousPackageGraph.localPackages.first.name, equals('meta'));
       });
 

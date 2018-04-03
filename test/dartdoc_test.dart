@@ -70,7 +70,7 @@ void main() {
       expect(p.name, 'test_package_small');
       expect(p.hasHomepage, isFalse);
       expect(p.hasDocumentationFile, isFalse);
-      expect(p.publicLibraries, hasLength(1));
+      expect(p.localPublicLibraries, hasLength(1));
     });
 
     test('generate docs including a single library', () async {

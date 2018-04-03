@@ -54,6 +54,8 @@ import 'package_meta.dart' show PackageMeta, FileContents;
 import 'utils.dart';
 import 'warnings.dart';
 
+int _debug = 0;
+
 Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
 
 Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
@@ -1821,7 +1823,8 @@ class Library extends ModelElement with Categorization {
     if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
-    if (packageGraph.isLibraryExcluded(name) || packageGraph.isLibraryExcluded(element.librarySource.uri.toString()))
+    if (packageGraph.isLibraryExcluded(name) ||
+        packageGraph.isLibraryExcluded(element.librarySource.uri.toString()))
       return false;
     return true;
   }
@@ -2722,8 +2725,6 @@ abstract class ModelElement extends Canonicalization
     }
     if (newModelElement is GetterSetterCombo) {
       assert(getter == null || newModelElement?.getter?.enclosingCombo != null);
-      if (!(setter == null || newModelElement?.setter?.enclosingCombo != null))
-        1+1;
       assert(setter == null || newModelElement?.setter?.enclosingCombo != null);
     }
 
@@ -2869,14 +2870,10 @@ abstract class ModelElement extends Canonicalization
               thisAsCombo.setter.packageGraph);
         }
       }
-      Class definingEnclosingClass = thisInheritable.definingEnclosingElement as Class;
-      ModelElement fromThis = new ModelElement.from(
-          element,
-          definingEnclosingClass.library,
-          definingEnclosingClass.packageGraph,
-          getter: newGetter,
-          setter: newSetter,
-          enclosingClass: definingEnclosingClass);
+      Class definingEnclosingClass =
+          thisInheritable.definingEnclosingElement as Class;
+      ModelElement fromThis = new ModelElement.fromElement(
+          element, definingEnclosingClass.packageGraph);
       docFrom = fromThis.documentationFrom;
     } else {
       docFrom = [this];
@@ -2940,7 +2937,9 @@ abstract class ModelElement extends Canonicalization
       } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
         List<Library> candidateLibraries = packageGraph
             .libraryElementReexportedBy[definingLibrary.element]
-            ?.where((l) => l.isPublic && l.package.documentedWhere != DocumentLocation.missing)
+            ?.where((l) =>
+                l.isPublic &&
+                l.package.documentedWhere != DocumentLocation.missing)
             ?.toList();
 
         if (candidateLibraries != null) {
@@ -3793,9 +3792,15 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   // TODO(jcollins-g): This constructor is convoluted.  Clean this up by
   // building Libraries and adding them to Packages, then adding Packages
   // to this graph.
-  PackageGraph(Iterable<LibraryElement> libraryElements, this.packageMeta,
-      this._packageWarningOptions, this.driver,
-      this.sdk, this.autoIncludeDependencies, this.excludes, this.excludePackages) {
+  PackageGraph(
+      Iterable<LibraryElement> libraryElements,
+      this.packageMeta,
+      this._packageWarningOptions,
+      this.driver,
+      this.sdk,
+      this.autoIncludeDependencies,
+      this.excludes,
+      this.excludePackages) {
     assert(_allConstructedModelElements.isEmpty);
     assert(allLibraries.isEmpty);
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
@@ -3841,13 +3846,16 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
 
   /// A list of library names to treat as private.
   final List<String> excludes;
+
   /// A list of package names to exclude from local documentation.
   final List<String> excludePackages;
 
   // TODO(jcollins-g): refactor to eliminate the duplication with PackageBuilder
   // (currently necessary for better use of the analyzer).
-  bool isLibraryExcluded(String name) => excludes.any((pattern) => name == pattern);
-  bool isPackageExcluded(String name) => excludePackages.any((pattern) => name == pattern);
+  bool isLibraryExcluded(String name) =>
+      excludes.any((pattern) => name == pattern);
+  bool isPackageExcluded(String name) =>
+      excludePackages.any((pattern) => name == pattern);
 
   Map<String, List<Class>> get implementors {
     assert(allImplementorsAdded);
@@ -4143,7 +4151,6 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
 
   bool get hasMultiplePackages => localPackages.length > 1;
 
-
   List<Package> get packages => packageMap.values.toList();
 
   List<Package> _publicPackages;
@@ -4155,16 +4162,17 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
         if (!packageMap.containsKey(packageName))
           warnOnElement(
               null, PackageWarning.packageOrderGivesMissingPackageName,
-              message: "${packageName}, packages: ${packageMap.keys.join(',')}");
+              message:
+                  "${packageName}, packages: ${packageMap.keys.join(',')}");
       }
-      _publicPackages = filterNonPublic(packages).toList()
-        ..sort();
+      _publicPackages = filterNonPublic(packages).toList()..sort();
     }
     return _publicPackages;
   }
 
   /// Local packages are to be documented locally vs. remote or not at all.
-  List<Package> get localPackages => publicPackages.where((p) => p.isLocal).toList();
+  List<Package> get localPackages =>
+      publicPackages.where((p) => p.isLocal).toList();
 
   // Use only in testing.
   void resetPublicPackages() => _publicPackages = null;
@@ -4289,7 +4297,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   Iterable<Library> get publicLibraries {
     if (_publicLibraries == null) {
       assert(allLibrariesAdded);
-      _publicLibraries = filterNonPublic(libraries);
+      _publicLibraries = filterNonPublic(libraries).toList();
     }
     return _publicLibraries;
   }
@@ -4298,7 +4306,8 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   Iterable<Library> get localLibraries {
     if (_localLibraries == null) {
       assert(allLibrariesAdded);
-      _localLibraries = localPackages.expand((p) => p.publicLibraries).toList()..sort();
+      _localLibraries = localPackages.expand((p) => p.libraries).toList()
+        ..sort();
     }
     return _localLibraries;
   }
@@ -4307,7 +4316,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   Iterable<Library> get localPublicLibraries {
     if (_localPublicLibraries == null) {
       assert(allLibrariesAdded);
-      _localPublicLibraries = filterNonPublic(localLibraries);
+      _localPublicLibraries = filterNonPublic(localLibraries).toList();
     }
     return _localPublicLibraries;
   }
@@ -4689,15 +4698,17 @@ class Package extends LibraryContainer
     isLocal = isLocal && !packageGraph.isPackageExcluded(packageName);
     bool expectNonLocal = false;
 
-    if (!packageGraph.packageMap.containsKey(packageName) && packageGraph.allLibrariesAdded)
-      expectNonLocal = true;
+    if (!packageGraph.packageMap.containsKey(packageName) &&
+        packageGraph.allLibrariesAdded) expectNonLocal = true;
     packageGraph.packageMap.putIfAbsent(packageName,
         () => new Package._(packageName, packageGraph, packageMeta, isLocal));
     // Verify that we don't somehow decide to document locally a package picked
     // up after all documented libraries are added, because that breaks the
     // assumption that we've picked up all documented libraries and packages
     // before allLibrariesAdded is true.
-    assert(!(expectNonLocal && packageGraph.packageMap[packageName].documentedWhere == DocumentLocation.local));
+    assert(!(expectNonLocal &&
+        packageGraph.packageMap[packageName].documentedWhere ==
+            DocumentLocation.local));
     return packageGraph.packageMap[packageName];
   }
 
@@ -5264,9 +5275,8 @@ class PackageBuilder {
 
   Future<PackageGraph> buildPackageGraph() async {
     Set<LibraryElement> libraries = await getLibraries(getFiles);
-    return new PackageGraph(
-        libraries, packageMeta, getWarningOptions(), driver, sdk, autoIncludeDependencies,
-        excludes, excludePackages);
+    return new PackageGraph(libraries, packageMeta, getWarningOptions(), driver,
+        sdk, autoIncludeDependencies, excludes, excludePackages);
   }
 
   DartSdk _sdk;
@@ -5466,8 +5476,13 @@ class PackageBuilder {
     Set<String> addedFiles = new Set();
     do {
       lastPass = _packageMetasForFiles(files);
-      files.difference(addedFiles).forEach((filename) {driver.addFile(filename); addedFiles.add(filename);});
-      await Future.wait(files.map((f) => processLibrary(f, libraries, sources)));
+      files.difference(addedFiles).forEach((filename) {
+        driver.addFile(filename);
+        addedFiles.add(filename);
+      });
+      await Future
+          .wait(files.map((f) => processLibrary(f, libraries, sources)));
+
       /// We don't care about upstream analysis errors, so save the first
       /// source list.
       if (originalSources == null) originalSources = sources;
@@ -5475,14 +5490,15 @@ class PackageBuilder {
       current = _packageMetasForFiles(files);
       // To get canonicalization correct for non-locally documented packages
       // (so we can generate the right hyperlinks), it's vital that we
-      // add all libraries in dependant packages.  So if the analyzer
+      // add all libraries in dependent packages.  So if the analyzer
       // discovers some files in a package we haven't seen yet, add files
       // for that package.
       for (PackageMeta meta in current.difference(lastPass)) {
         if (meta.isSdk) {
           files.addAll(getSdkFilesToDocument());
         } else {
-          files.addAll(findFilesToDocumentInPackage(meta.dir.path, false, false));
+          files.addAll(
+              findFilesToDocumentInPackage(meta.dir.path, false, false));
         }
       }
     } while (!lastPass.containsAll(current));
@@ -5494,7 +5510,8 @@ class PackageBuilder {
   /// Given a package name, explore the directory and pull out all top level
   /// library files in the "lib" directory to document.
   Iterable<String> findFilesToDocumentInPackage(
-      String basePackageDir, bool autoIncludeDependencies, [bool filterExcludes = true]) sync* {
+      String basePackageDir, bool autoIncludeDependencies,
+      [bool filterExcludes = true]) sync* {
     final String sep = pathLib.separator;
 
     Set<String> packageDirs = new Set()..add(basePackageDir);
@@ -5502,7 +5519,7 @@ class PackageBuilder {
     if (autoIncludeDependencies) {
       Map<String, Uri> info = package_config
           .findPackagesFromFile(
-          new Uri.file(pathLib.join(basePackageDir, 'pubspec.yaml')))
+              new Uri.file(pathLib.join(basePackageDir, 'pubspec.yaml')))
           .asMap();
       for (String packageName in info.keys) {
         if (!filterExcludes || !excludes.contains(packageName)) {
@@ -5547,11 +5564,7 @@ class PackageBuilder {
         : findFilesToDocumentInPackage(rootDir.path, autoIncludeDependencies));
     if (packageMeta.isSdk) {
       files.addAll(getSdkFilesToDocument());
-    } else if (embedderSdk == null || embedderSdk.urlMappings.isEmpty) {
-      // Always throw in the interceptors; this library is needed for
-      // canonicalization assuming that the Interceptor class still exists.
-      files.addAll(getSdkFilesToDocument('dart:_interceptors'));
-    } else /* embedderSdk.urlMappings.isNotEmpty && !packageMeta.isSdk */ {
+    } else if (embedderSdk.urlMappings.isNotEmpty && !packageMeta.isSdk) {
       embedderSdk.urlMappings.keys.forEach((String dartUri) {
         Source source = embedderSdk.mapDartUri(dartUri);
         files.add(source.fullName);
