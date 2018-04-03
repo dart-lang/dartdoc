@@ -58,14 +58,28 @@ void main() {
       expect(ginormousPackageGraph.publicPackages, isNotEmpty);
     });
 
-    test('Verify that autoIncludeDependencies makes everything document locally', () {
-      expect(ginormousPackageGraph.packages.map((p) => p.documentedWhere), everyElement((x) => x == DocumentLocation.local));
+    test(
+        'Verify that autoIncludeDependencies makes everything document locally',
+        () {
+      expect(ginormousPackageGraph.packages.map((p) => p.documentedWhere),
+          everyElement((x) => x == DocumentLocation.local));
     });
 
     test('Verify that ginormousPackageGraph takes in the SDK', () {
-      expect(ginormousPackageGraph.packages.firstWhere((p) => p.isSdk).libraries.length, greaterThan(1));
+      expect(
+          ginormousPackageGraph.packages
+              .firstWhere((p) => p.isSdk)
+              .libraries
+              .length,
+          greaterThan(1));
+      expect(ginormousPackageGraph.packages.firstWhere((p) => p.isSdk).documentedWhere,
+          equals(DocumentLocation.local));
     });
 
+    test('Verify that packageGraph has an SDK but will not document it locally', () {
+      expect(packageGraph.packages.firstWhere((p) => p.isSdk).documentedWhere,
+        isNot(equals(DocumentLocation.local)));
+    });
   });
 
   group('Category', () {
