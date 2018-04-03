@@ -1,5 +1,5 @@
 <ol>
-  {{#packageGraph.publicPackages}}
+  {{#packageGraph.localPackages}}
     {{#isFirstPackage}}
       <li class="section-title">Libraries</li>
     {{/isFirstPackage}}
@@ -15,5 +15,5 @@
         <li class="section-subitem">{{{linkedName}}}</li>
       {{/publicLibraries}}
     {{/categories}}
-  {{/packageGraph.publicPackages}}
+  {{/packageGraph.localPackages}}
 </ol>

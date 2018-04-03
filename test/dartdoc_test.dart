@@ -40,7 +40,8 @@ void main() {
       PackageGraph p = results.packageGraph;
       expect(p.name, 'test_package');
       expect(p.hasDocumentationFile, isTrue);
-      expect(p.publicLibraries, hasLength(10));
+      expect(p.defaultPackage.publicLibraries, hasLength(10));
+      expect(p.localPackages.length, equals(1));
     });
 
     test('generate docs for ${pathLib.basename(testPackageBadDir.path)} fails',
@@ -121,10 +122,10 @@ void main() {
       expect(p.libraries.map((lib) => lib.name).contains('dart:core'), isTrue);
       expect(p.libraries.map((lib) => lib.name).contains('dart:async'), isTrue);
       expect(p.libraries.map((lib) => lib.name).contains('dart:bear'), isTrue);
-      expect(p.packages.length, equals(1));
+      expect(p.packageMap.length, equals(1));
       // Things that do not override the core SDK do not belong in their own package.
-      expect(p.packages["Dart"].isSdk, isTrue);
-      expect(p.packages["test_package_embedder_yaml"], isNull);
+      expect(p.packageMap["Dart"].isSdk, isTrue);
+      expect(p.packageMap["test_package_embedder_yaml"], isNull);
       // Should be true once dart-lang/sdk#32707 is fixed.
       //expect(
       //    p.publicLibraries,
@@ -137,7 +138,7 @@ void main() {
       expect(dart_bear, isNotNull);
       expect(
           dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
-      expect(p.packages["Dart"].publicLibraries, hasLength(3));
+      expect(p.packageMap["Dart"].publicLibraries, hasLength(3));
     });
   });
 }

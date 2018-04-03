@@ -49,10 +49,10 @@ void main() {
 
   group('Category', () {
     test('Verify categories for test_package', () {
-      expect(packageGraph.publicPackages.length, equals(1));
-      expect(packageGraph.publicPackages.first.hasCategories, isTrue);
+      expect(packageGraph.localPackages.length, equals(1));
+      expect(packageGraph.localPackages.first.hasCategories, isTrue);
       List<Category> packageCategories =
-          packageGraph.publicPackages.first.categories;
+          packageGraph.localPackages.first.categories;
       expect(packageCategories.length, equals(3));
       expect(packageCategories.map((c) => c.name).toList(),
           orderedEquals(['Real Libraries', 'Unreal', 'Misc']));
@@ -60,19 +60,19 @@ void main() {
           orderedEquals([2, 2, 1]));
       expect(
           packageGraph
-              .publicPackages.first.defaultCategory.publicLibraries.length,
+              .localPackages.first.defaultCategory.publicLibraries.length,
           equals(3));
     });
 
     test('Verify that packages without categories get handled', () {
-      expect(packageGraphSmall.publicPackages.length, equals(1));
-      expect(packageGraphSmall.publicPackages.first.hasCategories, isFalse);
+      expect(packageGraphSmall.localPackages.length, equals(1));
+      expect(packageGraphSmall.localPackages.first.hasCategories, isFalse);
       List<Category> packageCategories =
-          packageGraphSmall.publicPackages.first.categories;
+          packageGraphSmall.localPackages.first.categories;
       expect(packageCategories.length, equals(0));
       expect(
           packageGraph
-              .publicPackages.first.defaultCategory.publicLibraries.length,
+              .localPackages.first.defaultCategory.publicLibraries.length,
           equals(3));
     });
   });
@@ -95,7 +95,7 @@ void main() {
       });
 
       test('libraries', () {
-        expect(packageGraph.libraries, hasLength(9));
+        expect(packageGraph.localLibraries, hasLength(8));
         expect(interceptorsLib.isPublic, isFalse);
       });
 
@@ -105,23 +105,23 @@ void main() {
       });
 
       test('categories', () {
-        expect(packageGraph.publicPackages, hasLength(1));
+        expect(packageGraph.localPackages, hasLength(1));
 
-        Package category = packageGraph.publicPackages.first;
+        Package category = packageGraph.localPackages.first;
         expect(category.name, 'test_package');
         expect(category.libraries, hasLength(8));
       });
 
       test('multiple categories, sorted default', () {
-        expect(ginormousPackageGraph.publicPackages, hasLength(3));
-        expect(ginormousPackageGraph.publicPackages.first.name,
+        expect(ginormousPackageGraph.localPackages, hasLength(3));
+        expect(ginormousPackageGraph.localPackages.first.name,
             equals('test_package'));
       });
 
       test('multiple categories, specified sort order', () {
         setConfig(packageOrder: ['meta', 'test_package']);
-        expect(ginormousPackageGraph.publicPackages, hasLength(3));
-        expect(ginormousPackageGraph.publicPackages.first.name, equals('meta'));
+        expect(ginormousPackageGraph.localPackages, hasLength(3));
+        expect(ginormousPackageGraph.localPackages.first.name, equals('meta'));
       });
 
       test('is documented in library', () {

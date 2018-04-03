@@ -696,8 +696,8 @@ class Class extends ModelElement
   /// Returns all the implementors of this class.
   Iterable<Class> get publicImplementors {
     return filterNonPublic(findCanonicalFor(
-        packageGraph._implementors[href] != null
-            ? packageGraph._implementors[href]
+        packageGraph.implementors[href] != null
+            ? packageGraph.implementors[href]
             : []));
   }
 
@@ -1762,6 +1762,7 @@ class Library extends ModelElement with Categorization {
   List<String> _allOriginalModelElementNames;
 
   final Package _package;
+  @override
   Package get package {
     // Everything must be in a package.  TODO(jcollins-g): Support other things
     // that look like packages.
@@ -2933,7 +2934,7 @@ abstract class ModelElement extends Canonicalization
       } else if (!packageGraph.publicLibraries.contains(definingLibrary)) {
         List<Library> candidateLibraries = packageGraph
             .libraryElementReexportedBy[definingLibrary.element]
-            ?.where((l) => l.isPublic)
+            ?.where((l) => l.isPublic && l.package.documentedWhere != DocumentLocation.missing)
             ?.toList();
 
         if (candidateLibraries != null) {
@@ -3219,6 +3220,8 @@ abstract class ModelElement extends Canonicalization
   @override
   PackageGraph get packageGraph => _packageGraph;
 
+  Package get package => library.package;
+
   bool get isPublicAndPackageDocumented =>
       isPublic && library.packageGraph.packageDocumentedFor(this);
 
@@ -3485,7 +3488,7 @@ abstract class ModelElement extends Canonicalization
   ///     {@example abc/def/xyz_component.dart region=template lang=html}
   ///
   String _injectExamples(String rawdocs) {
-    final dirPath = this.packageGraph.packageMeta.dir.path;
+    final dirPath = package.packageMeta.dir.path;
     RegExp exampleRE = new RegExp(r'{@example\s+([^}]+)}');
     return rawdocs.replaceAllMapped(exampleRE, (match) {
       var args = _getExampleArgs(match[1]);
@@ -3781,10 +3784,12 @@ class Operator extends Method {
 }
 
 class PackageGraph extends Canonicalization with Nameable, Warnable {
-  // TODO(jcollins-g): This constructor is convoluted, clean this up.
+  // TODO(jcollins-g): This constructor is convoluted.  Clean this up by
+  // building Libraries and adding them to Packages, then adding Packages
+  // to this graph.
   PackageGraph(Iterable<LibraryElement> libraryElements, this.packageMeta,
       this._packageWarningOptions, this.driver,
-      [this.sdk]) {
+      this.sdk, this.autoIncludeDependencies) {
     assert(_allConstructedModelElements.isEmpty);
     assert(allLibraries.isEmpty);
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
@@ -3797,47 +3802,60 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
       var packageMeta = new PackageMeta.fromElement(element);
       var lib = new Library._(
           element, this, new Package.fromPackageMeta(packageMeta, this));
-      packages[packageMeta.name]._libraries.add(lib);
+      packageMap[packageMeta.name]._libraries.add(lib);
       allLibraries[element] = lib;
       assert(!_elementToLibrary.containsKey(lib.element));
       _elementToLibrary[element] = lib;
     });
     allLibrariesAdded = true;
 
-    // Go through docs of every model element in package to prebuild the macros
+    // Go through docs of every ModelElement in package to pre-build the macros
     // index.
     allModelElements.forEach((m) => m.documentationLocal);
     _macrosAdded = true;
 
-    // After the allModelElements traversal to be sure that any packages
-    // not picked up yet are found.
-    packages.values.forEach((package) {
+    // After the allModelElements traversal to be sure that all packages
+    // are picked up.
+    packageMap.values.toList().forEach((package) {
       package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
         library._allClasses.forEach(_addToImplementors);
       });
     });
     _implementors.values.forEach((l) => l.sort());
+    allImplementorsAdded = true;
+  }
+
+  /// Write files for packages outside the default.
+  final bool autoIncludeDependencies;
+
+  /// It safe to cache values derived from the _implementors table if this is true.
+  bool allImplementorsAdded = false;
+
+  Map<String, List<Class>> get implementors {
+    assert(allImplementorsAdded);
+    return _implementors;
   }
 
   // All library objects related to this package; a superset of _libraries.
   final Map<LibraryElement, Library> allLibraries = new Map();
 
-  // Objects to keep track of warnings.
+  /// Objects to keep track of warnings.
   final PackageWarningOptions _packageWarningOptions;
   PackageWarningCounter _packageWarningCounter;
 
-  // All ModelElements constructed for this package; a superset of allModelElements.
+  /// All ModelElements constructed for this package; a superset of allModelElements.
   final Map<Tuple3<Element, Library, Class>, ModelElement>
       _allConstructedModelElements = new Map();
 
-  // Anything that might be inheritable, place here for later lookup.
+  /// Anything that might be inheritable, place here for later lookup.
   final Map<Tuple2<Element, Library>, Set<ModelElement>>
       _allInheritableElements = new Map();
 
   /// Map of Class.href to a list of classes implementing that class
   final Map<String, List<Class>> _implementors = new Map();
 
+  /// PackageMeta for the default package.
   final PackageMeta packageMeta;
 
   @override
@@ -3847,13 +3865,13 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   Library get canonicalLibrary => null;
 
   Package get defaultPackage =>
-      publicPackages.firstWhere((p) => p.packageMeta == packageMeta);
+      localPackages.firstWhere((p) => p.packageMeta == packageMeta);
 
   @override
   PackageGraph get packageGraph => this;
 
   /// Map of package name to Package.
-  final Map<String, Package> packages = {};
+  final Map<String, Package> packageMap = {};
 
   final AnalysisDriver driver;
   final DartSdk sdk;
@@ -3895,7 +3913,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   bool packageDocumentedFor(ModelElement element) {
     if (_allRootDirs == null) {
       _allRootDirs = new Set()
-        ..addAll(libraries.map((l) => l.packageMeta?.resolvedDir));
+        ..addAll(publicLibraries.map((l) => l.packageMeta?.resolvedDir));
     }
     return (_allRootDirs.contains(element.library.packageMeta?.resolvedDir));
   }
@@ -4106,23 +4124,30 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     return locatable.fullyQualifiedName.replaceFirst(':', '-');
   }
 
-  bool get hasMultiplePackages => publicPackages.length > 1;
+  bool get hasMultiplePackages => localPackages.length > 1;
+
+
+  List<Package> get packages => packageMap.values.toList();
 
   List<Package> _publicPackages;
   List<Package> get publicPackages {
     if (_publicPackages == null) {
+      assert(allLibrariesAdded);
       // Help the user if they pass us a package that doesn't exist.
       for (String packageName in config.packageOrder) {
-        if (!packages.containsKey(packageName))
+        if (!packageMap.containsKey(packageName))
           warnOnElement(
               null, PackageWarning.packageOrderGivesMissingPackageName,
-              message: "${packageName}, packages: ${packages.keys.join(',')}");
+              message: "${packageName}, packages: ${packageMap.keys.join(',')}");
       }
-      _publicPackages = packages.values.where((p) => p.isPublic).toList()
+      _publicPackages = filterNonPublic(packages).toList()
         ..sort();
     }
     return _publicPackages;
   }
+
+  /// Local packages are to be documented locally vs. remote or not at all.
+  List<Package> get localPackages => publicPackages.where((p) => p.isLocal).toList();
 
   // Use only in testing.
   void resetPublicPackages() => _publicPackages = null;
@@ -4177,7 +4202,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
       hrefMap.putIfAbsent(modelElement.href, () => new Set());
       hrefMap[modelElement.href].add(modelElement);
     }
-    for (Package package in packages.values) {
+    for (Package package in packageMap.values) {
       for (Library library in package.libraries) {
         if (library.href == null) continue;
         hrefMap.putIfAbsent(library.href, () => new Set());
@@ -4214,6 +4239,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   bool get isSdk => packageMeta.isSdk;
 
   void _addToImplementors(Class c) {
+    assert(!allImplementorsAdded);
     _implementors.putIfAbsent(c.href, () => []);
     void _checkAndAddClass(Class key, Class implClass) {
       _implementors.putIfAbsent(key.href, () => []);
@@ -4240,8 +4266,9 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   }
 
   List<Library> get libraries =>
-      packages.values.expand((p) => p.libraries).toList()..sort();
+      packages.expand((p) => p.libraries).toList()..sort();
   Iterable<Library> get publicLibraries => filterNonPublic(libraries);
+  Iterable<Library> get localLibraries => localPackages.expand((p) => p.publicLibraries).toList()..sort();
 
   bool get hasHomepage =>
       packageMeta.homepage != null && packageMeta.homepage.isNotEmpty;
@@ -4616,10 +4643,19 @@ class Package extends LibraryContainer
       PackageMeta packageMeta, PackageGraph packageGraph) {
     String packageName = packageMeta.name;
     bool isLocal = packageMeta == packageGraph.packageMeta ||
-        config.autoIncludeDependencies;
-    packageGraph.packages.putIfAbsent(packageName,
+        packageGraph.autoIncludeDependencies;
+    bool expectNonLocal = false;
+
+    if (!packageGraph.packageMap.containsKey(packageName) && packageGraph.allLibrariesAdded)
+      expectNonLocal = true;
+    packageGraph.packageMap.putIfAbsent(packageName,
         () => new Package._(packageName, packageGraph, packageMeta, isLocal));
-    return packageGraph.packages[packageName];
+    // Verify that we don't somehow decide to document locally a package picked
+    // up after all documented libraries are added, because that breaks the
+    // assumption that we've picked up all documented libraries and packages
+    // before allLibrariesAdded is true.
+    assert(!(expectNonLocal && packageGraph.packageMap[packageName].documentedWhere == DocumentLocation.local));
+    return packageGraph.packageMap[packageName];
   }
 
   Package._(this._name, this._packageGraph, this._packageMeta, this._isLocal);
@@ -4714,7 +4750,7 @@ class Package extends LibraryContainer
 
   /// Is this the package at the top of the list?  We display the first
   /// package specially (with "Libraries" rather than the package name).
-  bool get isFirstPackage => identical(packageGraph.publicPackages.first, this);
+  bool get isFirstPackage => identical(packageGraph.localPackages.first, this);
 
   bool get isSdk => packageMeta.isSdk;
 
@@ -5186,7 +5222,7 @@ class PackageBuilder {
   Future<PackageGraph> buildPackageGraph() async {
     Set<LibraryElement> libraries = await getLibraries(getFiles);
     return new PackageGraph(
-        libraries, packageMeta, getWarningOptions(), driver, sdk);
+        libraries, packageMeta, getWarningOptions(), driver, sdk, autoIncludeDependencies);
   }
 
   DartSdk _sdk;
@@ -5390,7 +5426,7 @@ class PackageBuilder {
     if (autoIncludeDependencies) {
       Map<String, Uri> info = package_config
           .findPackagesFromFile(
-              new Uri.file(pathLib.join(basePackageDir, 'pubspec.yaml')))
+          new Uri.file(pathLib.join(basePackageDir, 'pubspec.yaml')))
           .asMap();
       for (String packageName in info.keys) {
         if (!excludes.contains(packageName)) {

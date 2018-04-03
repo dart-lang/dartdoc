@@ -89,75 +89,77 @@ class HtmlGeneratorInstance {
 
     generatePackage();
 
-    for (var lib in filterNonDocumented(_packageGraph.libraries)) {
-      generateLibrary(_packageGraph, lib);
+    for (var package in _packageGraph.localPackages) {
+      for (var lib in filterNonDocumented(package.libraries)) {
+        generateLibrary(_packageGraph, lib);
 
-      for (var clazz in filterNonDocumented(lib.allClasses)) {
-        generateClass(_packageGraph, lib, clazz);
+        for (var clazz in filterNonDocumented(lib.allClasses)) {
+          generateClass(_packageGraph, lib, clazz);
 
-        for (var constructor in filterNonDocumented(clazz.constructors)) {
-          if (!constructor.isCanonical) continue;
-          generateConstructor(_packageGraph, lib, clazz, constructor);
+          for (var constructor in filterNonDocumented(clazz.constructors)) {
+            if (!constructor.isCanonical) continue;
+            generateConstructor(_packageGraph, lib, clazz, constructor);
+          }
+
+          for (var constant in filterNonDocumented(clazz.constants)) {
+            if (!constant.isCanonical) continue;
+            generateConstant(_packageGraph, lib, clazz, constant);
+          }
+
+          for (var property in filterNonDocumented(clazz.staticProperties)) {
+            if (!property.isCanonical) continue;
+            generateProperty(_packageGraph, lib, clazz, property);
+          }
+
+          for (var property in filterNonDocumented(clazz.propertiesForPages)) {
+            if (!property.isCanonical) continue;
+            generateProperty(_packageGraph, lib, clazz, property);
+          }
+
+          for (var method in filterNonDocumented(clazz.methodsForPages)) {
+            if (!method.isCanonical) continue;
+            generateMethod(_packageGraph, lib, clazz, method);
+          }
+
+          for (var operator in filterNonDocumented(clazz.operatorsForPages)) {
+            if (!operator.isCanonical) continue;
+            generateMethod(_packageGraph, lib, clazz, operator);
+          }
+
+          for (var method in filterNonDocumented(clazz.staticMethods)) {
+            if (!method.isCanonical) continue;
+            generateMethod(_packageGraph, lib, clazz, method);
+          }
         }
 
-        for (var constant in filterNonDocumented(clazz.constants)) {
-          if (!constant.isCanonical) continue;
-          generateConstant(_packageGraph, lib, clazz, constant);
+        for (var eNum in filterNonDocumented(lib.enums)) {
+          generateEnum(_packageGraph, lib, eNum);
+          for (var property in filterNonDocumented(eNum.propertiesForPages)) {
+            generateProperty(_packageGraph, lib, eNum, property);
+          }
+          for (var operator in filterNonDocumented(eNum.operatorsForPages)) {
+            generateMethod(_packageGraph, lib, eNum, operator);
+          }
+          for (var method in filterNonDocumented(eNum.methodsForPages)) {
+            generateMethod(_packageGraph, lib, eNum, method);
+          }
         }
 
-        for (var property in filterNonDocumented(clazz.staticProperties)) {
-          if (!property.isCanonical) continue;
-          generateProperty(_packageGraph, lib, clazz, property);
+        for (var constant in filterNonDocumented(lib.constants)) {
+          generateTopLevelConstant(_packageGraph, lib, constant);
         }
 
-        for (var property in filterNonDocumented(clazz.propertiesForPages)) {
-          if (!property.isCanonical) continue;
-          generateProperty(_packageGraph, lib, clazz, property);
+        for (var property in filterNonDocumented(lib.properties)) {
+          generateTopLevelProperty(_packageGraph, lib, property);
         }
 
-        for (var method in filterNonDocumented(clazz.methodsForPages)) {
-          if (!method.isCanonical) continue;
-          generateMethod(_packageGraph, lib, clazz, method);
+        for (var function in filterNonDocumented(lib.functions)) {
+          generateFunction(_packageGraph, lib, function);
         }
 
-        for (var operator in filterNonDocumented(clazz.operatorsForPages)) {
-          if (!operator.isCanonical) continue;
-          generateMethod(_packageGraph, lib, clazz, operator);
+        for (var typeDef in filterNonDocumented(lib.typedefs)) {
+          generateTypeDef(_packageGraph, lib, typeDef);
         }
-
-        for (var method in filterNonDocumented(clazz.staticMethods)) {
-          if (!method.isCanonical) continue;
-          generateMethod(_packageGraph, lib, clazz, method);
-        }
-      }
-
-      for (var eNum in filterNonDocumented(lib.enums)) {
-        generateEnum(_packageGraph, lib, eNum);
-        for (var property in filterNonDocumented(eNum.propertiesForPages)) {
-          generateProperty(_packageGraph, lib, eNum, property);
-        }
-        for (var operator in filterNonDocumented(eNum.operatorsForPages)) {
-          generateMethod(_packageGraph, lib, eNum, operator);
-        }
-        for (var method in filterNonDocumented(eNum.methodsForPages)) {
-          generateMethod(_packageGraph, lib, eNum, method);
-        }
-      }
-
-      for (var constant in filterNonDocumented(lib.constants)) {
-        generateTopLevelConstant(_packageGraph, lib, constant);
-      }
-
-      for (var property in filterNonDocumented(lib.properties)) {
-        generateTopLevelProperty(_packageGraph, lib, property);
-      }
-
-      for (var function in filterNonDocumented(lib.functions)) {
-        generateFunction(_packageGraph, lib, function);
-      }
-
-      for (var typeDef in filterNonDocumented(lib.typedefs)) {
-        generateTypeDef(_packageGraph, lib, typeDef);
       }
     }
   }
