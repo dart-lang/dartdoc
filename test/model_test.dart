@@ -31,6 +31,7 @@ void main() {
   Library twoExportsLib;
   Library interceptorsLib;
   PackageGraph sdkAsPackageGraph;
+  Library dartAsync;
 
   setUpAll(() async {
     await utils.init();
@@ -40,12 +41,22 @@ void main() {
     exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
     fakeLibrary =
         packageGraph.libraries.firstWhere((lib) => lib.name == 'fake');
+    dartAsync =
+        packageGraph.libraries.firstWhere((lib) => lib.name == 'dart:async');
     twoExportsLib =
         packageGraph.libraries.firstWhere((lib) => lib.name == 'two_exports');
     interceptorsLib = packageGraph.libraries
         .firstWhere((lib) => lib.name == 'dart:_interceptors');
     sdkAsPackageGraph = utils.testPackageGraphSdk;
   });
+
+  group('Missing and Remote', () {
+    test('Verify that SDK libraries are not canonical when missing', () {
+      expect(dartAsync.package.documentedWhere, equals(DocumentLocation.missing));
+      expect(dartAsync.isCanonical, isFalse);
+    });
+  });
+
 
   group('Category', () {
     test('Verify categories for test_package', () {
@@ -109,7 +120,7 @@ void main() {
 
         Package category = packageGraph.localPackages.first;
         expect(category.name, 'test_package');
-        expect(category.libraries, hasLength(8));
+        expect(category.publicLibraries, hasLength(8));
       });
 
       test('multiple categories, sorted default', () {

@@ -1821,6 +1821,8 @@ class Library extends ModelElement with Categorization {
     if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
+    if (packageGraph.isLibraryExcluded(name) || packageGraph.isLibraryExcluded(element.librarySource.uri.toString()))
+      return false;
     return true;
   }
 
@@ -2720,6 +2722,8 @@ abstract class ModelElement extends Canonicalization
     }
     if (newModelElement is GetterSetterCombo) {
       assert(getter == null || newModelElement?.getter?.enclosingCombo != null);
+      if (!(setter == null || newModelElement?.setter?.enclosingCombo != null))
+        1+1;
       assert(setter == null || newModelElement?.setter?.enclosingCombo != null);
     }
 
@@ -2865,12 +2869,14 @@ abstract class ModelElement extends Canonicalization
               thisAsCombo.setter.packageGraph);
         }
       }
+      Class definingEnclosingClass = thisInheritable.definingEnclosingElement as Class;
       ModelElement fromThis = new ModelElement.from(
           element,
-          thisInheritable.definingEnclosingElement.library,
-          thisInheritable.definingEnclosingElement.packageGraph,
+          definingEnclosingClass.library,
+          definingEnclosingClass.packageGraph,
           getter: newGetter,
-          setter: newSetter);
+          setter: newSetter,
+          enclosingClass: definingEnclosingClass);
       docFrom = fromThis.documentationFrom;
     } else {
       docFrom = [this];
@@ -2931,7 +2937,7 @@ abstract class ModelElement extends Canonicalization
       // just shortcut them out.
       if (!hasPublicName(element)) {
         _canonicalLibrary = null;
-      } else if (!packageGraph.publicLibraries.contains(definingLibrary)) {
+      } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
         List<Library> candidateLibraries = packageGraph
             .libraryElementReexportedBy[definingLibrary.element]
             ?.where((l) => l.isPublic && l.package.documentedWhere != DocumentLocation.missing)
@@ -3789,7 +3795,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   // to this graph.
   PackageGraph(Iterable<LibraryElement> libraryElements, this.packageMeta,
       this._packageWarningOptions, this.driver,
-      this.sdk, this.autoIncludeDependencies) {
+      this.sdk, this.autoIncludeDependencies, this.excludes, this.excludePackages) {
     assert(_allConstructedModelElements.isEmpty);
     assert(allLibraries.isEmpty);
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
@@ -3829,8 +3835,19 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   /// Write files for packages outside the default.
   final bool autoIncludeDependencies;
 
-  /// It safe to cache values derived from the _implementors table if this is true.
+  /// It is safe to cache values derived from the _implementors table if this
+  /// is true.
   bool allImplementorsAdded = false;
+
+  /// A list of library names to treat as private.
+  final List<String> excludes;
+  /// A list of package names to exclude from local documentation.
+  final List<String> excludePackages;
+
+  // TODO(jcollins-g): refactor to eliminate the duplication with PackageBuilder
+  // (currently necessary for better use of the analyzer).
+  bool isLibraryExcluded(String name) => excludes.any((pattern) => name == pattern);
+  bool isPackageExcluded(String name) => excludePackages.any((pattern) => name == pattern);
 
   Map<String, List<Class>> get implementors {
     assert(allImplementorsAdded);
@@ -4267,8 +4284,33 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
 
   List<Library> get libraries =>
       packages.expand((p) => p.libraries).toList()..sort();
-  Iterable<Library> get publicLibraries => filterNonPublic(libraries);
-  Iterable<Library> get localLibraries => localPackages.expand((p) => p.publicLibraries).toList()..sort();
+
+  List<Library> _publicLibraries;
+  Iterable<Library> get publicLibraries {
+    if (_publicLibraries == null) {
+      assert(allLibrariesAdded);
+      _publicLibraries = filterNonPublic(libraries);
+    }
+    return _publicLibraries;
+  }
+
+  List<Library> _localLibraries;
+  Iterable<Library> get localLibraries {
+    if (_localLibraries == null) {
+      assert(allLibrariesAdded);
+      _localLibraries = localPackages.expand((p) => p.publicLibraries).toList()..sort();
+    }
+    return _localLibraries;
+  }
+
+  List<Library> _localPublicLibraries;
+  Iterable<Library> get localPublicLibraries {
+    if (_localPublicLibraries == null) {
+      assert(allLibrariesAdded);
+      _localPublicLibraries = filterNonPublic(localLibraries);
+    }
+    return _localPublicLibraries;
+  }
 
   bool get hasHomepage =>
       packageMeta.homepage != null && packageMeta.homepage.isNotEmpty;
@@ -4644,6 +4686,7 @@ class Package extends LibraryContainer
     String packageName = packageMeta.name;
     bool isLocal = packageMeta == packageGraph.packageMeta ||
         packageGraph.autoIncludeDependencies;
+    isLocal = isLocal && !packageGraph.isPackageExcluded(packageName);
     bool expectNonLocal = false;
 
     if (!packageGraph.packageMap.containsKey(packageName) && packageGraph.allLibrariesAdded)
@@ -4690,7 +4733,7 @@ class Package extends LibraryContainer
 
   DocumentLocation get documentedWhere {
     if (!isLocal) return DocumentLocation.missing;
-    // TODO(jcollins-g): Implement remote.
+    // TODO(jcollins-g): Implement DocumentLocation.remote.
     return DocumentLocation.local;
   }
 
@@ -5222,7 +5265,8 @@ class PackageBuilder {
   Future<PackageGraph> buildPackageGraph() async {
     Set<LibraryElement> libraries = await getLibraries(getFiles);
     return new PackageGraph(
-        libraries, packageMeta, getWarningOptions(), driver, sdk, autoIncludeDependencies);
+        libraries, packageMeta, getWarningOptions(), driver, sdk, autoIncludeDependencies,
+        excludes, excludePackages);
   }
 
   DartSdk _sdk;
@@ -5405,20 +5449,52 @@ class PackageBuilder {
     }
   }
 
+  Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) {
+    Set<PackageMeta> metas = new Set();
+    for (String filename in files) {
+      metas.add(new PackageMeta.fromFilename(filename));
+    }
+    return metas;
+  }
+
   Future<List<LibraryElement>> _parseLibraries(Set<String> files) async {
     Set<LibraryElement> libraries = new Set();
+    Set<Source> originalSources;
     Set<Source> sources = new Set<Source>();
-    files.forEach((filename) => driver.addFile(filename));
+    Set<PackageMeta> lastPass = new Set();
+    Set<PackageMeta> current;
+    Set<String> addedFiles = new Set();
+    do {
+      lastPass = _packageMetasForFiles(files);
+      files.difference(addedFiles).forEach((filename) {driver.addFile(filename); addedFiles.add(filename);});
+      await Future.wait(files.map((f) => processLibrary(f, libraries, sources)));
+      /// We don't care about upstream analysis errors, so save the first
+      /// source list.
+      if (originalSources == null) originalSources = sources;
+      files.addAll(driver.knownFiles);
+      current = _packageMetasForFiles(files);
+      // To get canonicalization correct for non-locally documented packages
+      // (so we can generate the right hyperlinks), it's vital that we
+      // add all libraries in dependant packages.  So if the analyzer
+      // discovers some files in a package we haven't seen yet, add files
+      // for that package.
+      for (PackageMeta meta in current.difference(lastPass)) {
+        if (meta.isSdk) {
+          files.addAll(getSdkFilesToDocument());
+        } else {
+          files.addAll(findFilesToDocumentInPackage(meta.dir.path, false, false));
+        }
+      }
+    } while (!lastPass.containsAll(current));
 
-    await Future.wait(files.map((f) => processLibrary(f, libraries, sources)));
-    await logAnalysisErrors(sources);
+    await logAnalysisErrors(originalSources);
     return libraries.toList();
   }
 
   /// Given a package name, explore the directory and pull out all top level
   /// library files in the "lib" directory to document.
   Iterable<String> findFilesToDocumentInPackage(
-      String basePackageDir, bool autoIncludeDependencies) sync* {
+      String basePackageDir, bool autoIncludeDependencies, [bool filterExcludes = true]) sync* {
     final String sep = pathLib.separator;
 
     Set<String> packageDirs = new Set()..add(basePackageDir);
@@ -5429,7 +5505,7 @@ class PackageBuilder {
           new Uri.file(pathLib.join(basePackageDir, 'pubspec.yaml')))
           .asMap();
       for (String packageName in info.keys) {
-        if (!excludes.contains(packageName)) {
+        if (!filterExcludes || !excludes.contains(packageName)) {
           packageDirs.add(pathLib.dirname(info[packageName].toFilePath()));
         }
       }
