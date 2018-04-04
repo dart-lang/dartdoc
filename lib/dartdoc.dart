@@ -117,7 +117,6 @@ class DartDoc extends PackageBuilder {
             ..sort();
       // TODO(jcollins-g): Why does the SDK have analysis errors?  Annotations
       // seem correctly formed.  dart-lang/dartdoc#1547
-      // URI_DOES_NOT_EXIST is ignored because of flutter.
       if (errors.isNotEmpty && !source.uri.toString().startsWith('dart:')) {
         errorInfos.add(info);
         logWarning(
