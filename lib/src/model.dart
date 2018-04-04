@@ -54,8 +54,6 @@ import 'package_meta.dart' show PackageMeta, FileContents;
 import 'utils.dart';
 import 'warnings.dart';
 
-int _debug = 0;
-
 Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
 
 Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
@@ -2853,23 +2851,6 @@ abstract class ModelElement extends Canonicalization
       docFrom = [overriddenElement];
     } else if (this is Inheritable && (this as Inheritable).isInherited) {
       Inheritable thisInheritable = (this as Inheritable);
-      InheritableAccessor newGetter;
-      InheritableAccessor newSetter;
-      if (this is GetterSetterCombo) {
-        GetterSetterCombo thisAsCombo = this as GetterSetterCombo;
-        if (thisAsCombo.hasGetter) {
-          newGetter = new ModelElement.from(
-              thisAsCombo.getter.element,
-              thisAsCombo.getter.definingLibrary,
-              thisAsCombo.getter.packageGraph);
-        }
-        if (thisAsCombo.hasSetter) {
-          newSetter = new ModelElement.from(
-              thisAsCombo.setter.element,
-              thisAsCombo.setter.definingLibrary,
-              thisAsCombo.setter.packageGraph);
-        }
-      }
       Class definingEnclosingClass =
           thisInheritable.definingEnclosingElement as Class;
       ModelElement fromThis = new ModelElement.fromElement(
@@ -3827,7 +3808,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
 
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
-    packageMap.values.toList().forEach((package) {
+    documentedPackages.toList().forEach((package) {
       package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
         library._allClasses.forEach(_addToImplementors);
@@ -4173,6 +4154,9 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   /// Local packages are to be documented locally vs. remote or not at all.
   List<Package> get localPackages =>
       publicPackages.where((p) => p.isLocal).toList();
+
+  /// Documented packages are documented somewhere (local or remote).
+  Iterable<Package> get documentedPackages => packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
   // Use only in testing.
   void resetPublicPackages() => _publicPackages = null;
