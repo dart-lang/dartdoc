@@ -23,11 +23,11 @@ abstract class PackageMeta {
   @override
   bool operator ==(other) {
     if (other is! PackageMeta) return false;
-    return dir.absolute.path == other.dir.absolute.path;
+    return pathLib.equals(dir.absolute.path, other.dir.absolute.path);
   }
 
   @override
-  int get hashCode => dir.absolute.path.hashCode;
+  int get hashCode => pathLib.hash(dir.absolute.path);
 
   /// Use this instead of fromDir where possible.
   factory PackageMeta.fromElement(LibraryElement libraryElement) {
