@@ -103,6 +103,7 @@ int byFeatureOrdering(String a, String b) {
 }
 
 final RegExp locationSplitter = new RegExp(r"(package:|[\\/;.])");
+final RegExp substituteName = new RegExp(r"%([nv])%");
 
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
@@ -690,7 +691,7 @@ class Class extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${library.dirName}/$fileName';
+    return '${package.baseHref}${library.dirName}/$fileName';
   }
 
   /// Returns all the implementors of this class.
@@ -1115,7 +1116,7 @@ class Constructor extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$name.html';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$name.html';
   }
 
   @override
@@ -1359,7 +1360,7 @@ class EnumField extends Field {
     assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingElement == enclosingElement);
-    return '${enclosingElement.library.dirName}/${(enclosingElement as Class).fileName}';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${(enclosingElement as Class).fileName}';
   }
 
   @override
@@ -1446,7 +1447,7 @@ class Field extends ModelElement
     assert(canonicalLibrary != null);
     assert(canonicalEnclosingElement == enclosingElement);
     assert(canonicalLibrary == library);
-    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
   }
 
   @override
@@ -2016,7 +2017,7 @@ class Library extends ModelElement with Categorization {
   String get href {
     if (!identical(canonicalModelElement, this))
       return canonicalModelElement?.href;
-    return '${library.dirName}/$fileName';
+    return '${package.baseHref}${library.dirName}/$fileName';
   }
 
   InheritanceManager _inheritanceManager;
@@ -2380,7 +2381,7 @@ class Method extends ModelElement
     assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingElement == enclosingElement);
-    return '${enclosingElement.library.dirName}/${enclosingElement.name}/${fileName}';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/${fileName}';
   }
 
   @override
@@ -3681,7 +3682,7 @@ class ModelFunctionTyped extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${library.dirName}/$fileName';
+    return '${package.baseHref}${library.dirName}/$fileName';
   }
 
   @override
@@ -4727,7 +4728,13 @@ class Package extends LibraryContainer
   bool get isLocal => _isLocal;
 
   DocumentLocation get documentedWhere {
-    if (!isLocal) return DocumentLocation.missing;
+    if (!isLocal) {
+      if (dartdocOptions.linkToUrl.isEmpty) {
+        return DocumentLocation.missing;
+      } else {
+        return DocumentLocation.remote;
+      }
+    }
     // TODO(jcollins-g): Implement DocumentLocation.remote.
     return DocumentLocation.local;
   }
@@ -4735,8 +4742,26 @@ class Package extends LibraryContainer
   @override
   String get fullyQualifiedName => 'package:$name';
 
+  String _baseHref;
+  String get baseHref {
+    if (_baseHref == null) {
+      if (documentedWhere == DocumentLocation.remote) {
+        _baseHref = dartdocOptions.linkToUrl.replaceAllMapped(substituteName, (m) {
+          switch (m.group(1)) {
+            case 'n':  return name;
+            case 'v':  return packageMeta.version;
+          };
+        });
+        if (!_baseHref.endsWith('/')) _baseHref = '${_baseHref}/';
+      } else {
+        _baseHref = '';
+      }
+    }
+    return _baseHref;
+  }
+
   @override
-  String get href => 'index.html';
+  String get href => '${baseHref}index.html';
 
   @override
   String get location => pathLib.toUri(packageMeta.resolvedDir).toString();
@@ -5086,7 +5111,7 @@ class TopLevelVariable extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${library.dirName}/$fileName';
+    return '${package.baseHref}${library.dirName}/$fileName';
   }
 
   @override
@@ -5153,7 +5178,7 @@ class Typedef extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${library.dirName}/$fileName';
+    return '${package.baseHref}${library.dirName}/$fileName';
   }
 
   // Food for mustache.
@@ -5188,7 +5213,7 @@ class TypeParameter extends ModelElement {
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
   }
 
   @override

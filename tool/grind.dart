@@ -261,16 +261,11 @@ Future<List<Map>> _buildTestPackageDocs(
         pathLib.join(cwd, 'bin', 'dartdoc.dart'),
         '--output',
         outputDir,
-        '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',
         '--include-source',
         '--json',
         '--pretty-index-json',
-        '--exclude',
-        'package:meta/meta.dart',
-        '--exclude-packages',
-        'Dart',
       ],
       workingDirectory: testPackage.absolute.path);
 }

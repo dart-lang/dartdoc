@@ -7,6 +7,7 @@ library dartdoc.package_meta;
 import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';

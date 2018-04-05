@@ -30,6 +30,9 @@ abstract class DartdocOptions {
   /// A list indicating the preferred subcategory sorting order.
   List<String> get categoryOrder;
 
+  /// If non-empty, the URL template that can be prepended to the calculated href.
+  String linkToUrl;
+
   factory DartdocOptions.fromDir(Directory dir) {
     if (!_dartdocOptionsCache.containsKey(dir.absolute.path)) {
       _dartdocOptionsCache[dir.absolute.path] =
@@ -71,6 +74,9 @@ class _DefaultDartdocOptions extends DartdocOptions {
   String get _path => '<default>';
 
   @override
+  String get linkToUrl => '';
+
+  @override
   List<String> get categoryOrder => new List.unmodifiable([]);
 }
 
@@ -106,4 +112,18 @@ class _FileDartdocOptions extends DartdocOptions {
     }
     return _categoryOrder;
   }
+
+  String _linkToUrl;
+  @override
+  String get linkToUrl {
+    if (_linkToUrl == null) {
+      if (_dartdocOptions.containsKey('linkTo') && _dartdocOptions['linkTo'].containsKey('url')) {
+        _linkToUrl = _dartdocOptions['linkTo']['url'];
+      } else {
+        _linkToUrl = '';
+      }
+    }
+    return _linkToUrl;
+  }
+
 }

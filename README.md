@@ -103,12 +103,19 @@ generates docs.
 ```yaml
 dartdoc:
   categoryOrder: ["First Category", "Second Category"]
-
+  linkTo:
+    url: "https://pub.dartlang.org/documentation/%n%/%v%"
 ```
-For now, there's only one option:
+Options:
 
-  * **categoryOrder**:  Specify the order of categories, below, for display in the sidebar and
-    the package page.
+  * **categoryOrder**:  A list, specifying the order of categories, below, for display in the
+    sidebar and the package page.
+  * **linkTo**:  For other packages depending on this one, if this map is defined those packages
+    will try to link to pre-generated documentation for this package.
+    * url:  A string indicating the base URL for documentation of this package.  The following
+      strings will be substituted in to complete the URL:
+      * `%n%`: The name of this package, as defined in pubspec.yaml.
+      * `%v%`: The version of this package as defined in pubspec.yaml.
   
 ### Categories
 
