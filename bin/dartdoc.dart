@@ -252,7 +252,7 @@ main(List<String> arguments) async {
     ]);
   }
 
-  setConfig(
+  DartDocConfig config = new DartDocConfig.fromParameters(
       addCrossdart: args['add-crossdart'],
       examplePathPrefix: args['example-path-prefix'],
       showWarnings: args['show-warnings'],
@@ -270,7 +270,7 @@ main(List<String> arguments) async {
       dropTextFrom: dropTextFrom,
       validateLinks: args['validate-links']);
 
-  DartDoc dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
+  DartDoc dartdoc = new DartDoc(config, excludeLibraries, sdkDir, generators,
       outputDir, packageMeta, includeLibraries, includeExternals);
 
   dartdoc.onCheckProgress.listen(logProgress);

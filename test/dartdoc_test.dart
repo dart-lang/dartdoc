@@ -21,7 +21,6 @@ void main() {
 
     setUp(() {
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
-      setConfig();
     });
 
     tearDown(() {
@@ -32,7 +31,14 @@ void main() {
         () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc = new DartDoc(
-          testPackageDir, [], getSdkDir(), [], tempDir, meta, [], []);
+          new DartDocConfig.fromParameters(inputDir: testPackageDir),
+          [],
+          getSdkDir(),
+          [],
+          tempDir,
+          meta,
+          [],
+          []);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -48,7 +54,14 @@ void main() {
         () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageBadDir);
       DartDoc dartdoc = new DartDoc(
-          testPackageBadDir, [], getSdkDir(), [], tempDir, meta, [], []);
+          new DartDocConfig.fromParameters(inputDir: testPackageBadDir),
+          [],
+          getSdkDir(),
+          [],
+          tempDir,
+          meta,
+          [],
+          []);
 
       try {
         await dartdoc.generateDocs();
@@ -61,7 +74,14 @@ void main() {
     test('generate docs for a package that does not have a readme', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageWithNoReadme);
       DartDoc dartdoc = new DartDoc(
-          testPackageWithNoReadme, [], getSdkDir(), [], tempDir, meta, [], []);
+          new DartDocConfig.fromParameters(inputDir: testPackageWithNoReadme),
+          [],
+          getSdkDir(),
+          [],
+          tempDir,
+          meta,
+          [],
+          []);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -76,7 +96,14 @@ void main() {
     test('generate docs including a single library', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc = new DartDoc(
-          testPackageDir, [], getSdkDir(), [], tempDir, meta, ['fake'], []);
+          new DartDocConfig.fromParameters(inputDir: testPackageDir),
+          [],
+          getSdkDir(),
+          [],
+          tempDir,
+          meta,
+          ['fake'],
+          []);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -109,8 +136,16 @@ void main() {
     test('generate docs for package with embedder yaml', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageWithEmbedderYaml);
       if (meta.needsPubGet) meta.runPubGet();
-      DartDoc dartdoc = new DartDoc(testPackageWithEmbedderYaml, [],
-          getSdkDir(), [], tempDir, meta, [], []);
+      DartDoc dartdoc = new DartDoc(
+          new DartDocConfig.fromParameters(
+              inputDir: testPackageWithEmbedderYaml),
+          [],
+          getSdkDir(),
+          [],
+          tempDir,
+          meta,
+          [],
+          []);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);

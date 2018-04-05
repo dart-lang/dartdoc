@@ -54,26 +54,6 @@ import 'package_meta.dart' show PackageMeta, FileContents;
 import 'utils.dart';
 import 'warnings.dart';
 
-Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
-
-Map<String, Map<String, List<Map<String, dynamic>>>> get _crossdartJson {
-  if (__crossdartJson == null) {
-    if (config != null) {
-      var crossdartFile =
-          new File(pathLib.join(config.inputDir.path, "crossdart.json"));
-      if (crossdartFile.existsSync()) {
-        __crossdartJson = json.decode(crossdartFile.readAsStringSync())
-            as Map<String, Map<String, List<Map<String, dynamic>>>>;
-      } else {
-        __crossdartJson = {};
-      }
-    } else {
-      __crossdartJson = {};
-    }
-  }
-  return __crossdartJson;
-}
-
 int byName(Nameable a, Nameable b) =>
     compareAsciiLowerCaseNatural(a.name, b.name);
 
@@ -1176,6 +1156,7 @@ abstract class Documentable extends Nameable {
   String get oneLineDoc;
   PackageGraph get packageGraph;
   bool get isDocumented;
+  DartDocConfig get config;
 }
 
 /// Mixin implementing dartdoc categorization for ModelElements.
@@ -2779,6 +2760,9 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
+  DartDocConfig get config => packageGraph.config;
+
+  @override
   Set<String> get locationPieces {
     return new Set.from(element.location
         .toString()
@@ -2953,7 +2937,7 @@ abstract class ModelElement extends Canonicalization
             List<String> debugLines = [];
             debugLines.addAll(scoredCandidates.map((s) => '${s.toString()}'));
 
-            if (config == null || confidence < config.reexportMinConfidence) {
+            if (confidence < config.reexportMinConfidence) {
               warnable.warn(PackageWarning.ambiguousReexport,
                   message: message, extendedDebug: debugLines);
             }
@@ -3588,7 +3572,7 @@ abstract class ModelElement extends Canonicalization
       var ext = pathLib.extension(src);
       file = pathLib.join(dir, '$basename-$region$ext$fragExtension');
     }
-    args['file'] = config?.examplePathPrefix == null
+    args['file'] = config.examplePathPrefix == null
         ? file
         : pathLib.join(config.examplePathPrefix, file);
     return args;
@@ -3769,12 +3753,14 @@ class Operator extends Method {
   String get typeName => 'operator';
 }
 
-class PackageGraph extends Canonicalization with Nameable, Warnable {
+class PackageGraph extends Canonicalization
+    with Nameable, Warnable, LibraryContainer {
   // TODO(jcollins-g): This constructor is convoluted.  Clean this up by
   // building Libraries and adding them to Packages, then adding Packages
   // to this graph.
   PackageGraph(
       Iterable<LibraryElement> libraryElements,
+      this.config,
       this.packageMeta,
       this._packageWarningOptions,
       this.driver,
@@ -3825,6 +3811,12 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   /// is true.
   bool allImplementorsAdded = false;
 
+  @override
+  List<String> get containerOrder => [];
+
+  @override
+  LibraryContainer get enclosingContainer => null;
+
   /// A list of library names to treat as private.
   final List<String> excludes;
 
@@ -3863,6 +3855,31 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
 
   /// PackageMeta for the default package.
   final PackageMeta packageMeta;
+
+  /// Dartdoc's configuration flags.
+  @override
+  final DartDocConfig config;
+
+  Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
+  // TODO(jcollins-g): move to [Package]
+  Map<String, Map<String, List<Map<String, dynamic>>>> get crossdartJson {
+    if (__crossdartJson == null) {
+      // TODO(jcollins-g): allow crossdart.json location to be configurable
+      var crossdartFile =
+          new File(pathLib.join(config.inputDir.path, "crossdart.json"));
+      if (crossdartFile.existsSync()) {
+        var __crossdartJsonTmp = json.decode(crossdartFile.readAsStringSync())
+            as Map<String, Map<String, List<Map<String, dynamic>>>>;
+        __crossdartJson = {};
+        for (String key in __crossdartJsonTmp.keys) {
+          __crossdartJson[pathLib.canonicalize(key)] = __crossdartJsonTmp[key];
+        }
+      } else {
+        __crossdartJson = {};
+      }
+    }
+    return __crossdartJson;
+  }
 
   @override
   Set<String> get locationPieces => new Set();
@@ -4156,10 +4173,8 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
       publicPackages.where((p) => p.isLocal).toList();
 
   /// Documented packages are documented somewhere (local or remote).
-  Iterable<Package> get documentedPackages => packages.where((p) => p.documentedWhere != DocumentLocation.missing);
-
-  // Use only in testing.
-  void resetPublicPackages() => _publicPackages = null;
+  Iterable<Package> get documentedPackages =>
+      packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
   void _tagReexportsFor(
@@ -4244,7 +4259,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   @override
   String get href => 'index.html';
 
-  /// Does this package represent the SDK?
+  @override
   bool get isSdk => packageMeta.isSdk;
 
   void _addToImplementors(Class c) {
@@ -4274,10 +4289,12 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     }
   }
 
+  @override
   List<Library> get libraries =>
       packages.expand((p) => p.libraries).toList()..sort();
 
   List<Library> _publicLibraries;
+  @override
   Iterable<Library> get publicLibraries {
     if (_publicLibraries == null) {
       assert(allLibrariesAdded);
@@ -4596,59 +4613,79 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
 }
 
 /// A set of libraries, initialized after construction by accessing [_libraries].
-/// Do not call any methods or members excepting [_libraries] and [name] before
-/// finishing initialization of a [LibraryContainer].
-abstract class LibraryContainer extends Nameable {
+/// Do not cache return values of any methods or members excepting [_libraries]
+/// and [name] before finishing initialization of a [LibraryContainer].
+abstract class LibraryContainer extends Nameable
+    implements Comparable<LibraryContainer> {
   final List<Library> _libraries = [];
-  PackageGraph get packageGraph;
+
+  /// An enclosing container's [libraries] must be a superset of this object's
+  /// [libraries].
+  LibraryContainer get enclosingContainer;
 
   List<Library> get libraries => _libraries;
   Iterable<Library> get publicLibraries => filterNonPublic(libraries);
 
   @override
   String toString() => name;
-}
 
-/// A category is a subcategory of a package, containing libraries tagged
-/// with a @category identifier.  Comparable so it can be sorted according to
-/// [dartdocOptions.categoryOrder].
-class Category extends LibraryContainer implements Comparable<Category> {
-  /// All libraries in [libraries] must come from [package].
-  Package package;
-  DartdocOptions dartdocOptions;
-  String _name;
+  /// Does this container represent the SDK?  This can be false for containers
+  /// that only represent a part of the SDK.
+  bool get isSdk => false;
 
-  Category(this._name, this.package, this.dartdocOptions);
-
-  @override
-  String get name => _name;
+  // Order by which this container should be sorted.
+  List<String> get containerOrder;
 
   /// Returns:
-  /// -1 if this category is listed in categoryOrder.
-  /// 0 if this category is named the same as the package.
-  /// 1 if this group has a name that contains the name of the package.
-  /// 2 otherwise.
+  /// -1 if this container is listed in [containerOrder].
+  /// 0 if this container is named the same as the [enclosingContainer].
+  /// 1 if this container represents the SDK.
+  /// 2 if this group has a name that contains the name of the [enclosingContainer].
+  /// 3 otherwise.
   int get _group {
-    if (dartdocOptions.categoryOrder.contains(name)) return -1;
-    if (name.toLowerCase() == package.name.toLowerCase()) return 0;
-    if (name.toLowerCase().contains(package.name.toLowerCase())) return 1;
-    return 2;
+    if (containerOrder.contains(name)) return -1;
+    if (equalsIgnoreAsciiCase(name, enclosingContainer.name)) return 0;
+    if (isSdk) return 1;
+    if (name.toLowerCase().contains(enclosingContainer.name.toLowerCase()))
+      return 2;
+    return 3;
   }
 
   @override
-  int compareTo(Category other) {
+  int compareTo(LibraryContainer other) {
     if (_group == other._group) {
       if (_group == -1) {
-        return Comparable.compare(dartdocOptions.categoryOrder.indexOf(name),
-            dartdocOptions.categoryOrder.indexOf(other.name));
+        return Comparable.compare(
+            containerOrder.indexOf(name), containerOrder.indexOf(other.name));
       } else {
         return name.toLowerCase().compareTo(other.name.toLowerCase());
       }
     }
     return Comparable.compare(_group, other._group);
   }
+}
+
+/// A category is a subcategory of a package, containing libraries tagged
+/// with a @category identifier.  Comparable so it can be sorted according to
+/// [dartdocOptions.categoryOrder].
+class Category extends LibraryContainer {
+  final String _name;
+
+  /// All libraries in [libraries] must come from [package].
+  final Package package;
+  final DartdocOptions dartdocOptions;
+
+  Category(this._name, this.package, this.dartdocOptions);
 
   @override
+  String get name => _name;
+
+  @override
+  List<String> get containerOrder => dartdocOptions.categoryOrder;
+
+  @override
+  Package get enclosingContainer => package;
+
   PackageGraph get packageGraph => package.packageGraph;
 }
 
@@ -4665,8 +4702,11 @@ enum DocumentLocation {
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 class Package extends LibraryContainer
-    with Locatable
-    implements Comparable<Package>, Privacy {
+    with
+        Locatable
+    // TODO(jcollins-g): implements Documentable
+    implements
+        Privacy {
   String _name;
   PackageGraph _packageGraph;
   final _isLocal;
@@ -4710,6 +4750,9 @@ class Package extends LibraryContainer
   /// in this package.
   bool get hasCategories => categories.isNotEmpty;
 
+  @override
+  List<String> get containerOrder => packageGraph.config.packageOrder;
+
   LibraryContainer get defaultCategory => nameToCategory[null];
 
   @override
@@ -4733,6 +4776,9 @@ class Package extends LibraryContainer
   }
 
   @override
+  PackageGraph get enclosingContainer => packageGraph;
+
+  @override
   String get fullyQualifiedName => 'package:$name';
 
   @override
@@ -4744,7 +4790,6 @@ class Package extends LibraryContainer
   @override
   String get name => _name;
 
-  @override
   PackageGraph get packageGraph => _packageGraph;
 
   // Workaround for mustache4dart issue where templates do not recognize
@@ -4790,6 +4835,7 @@ class Package extends LibraryContainer
   /// package specially (with "Libraries" rather than the package name).
   bool get isFirstPackage => identical(packageGraph.localPackages.first, this);
 
+  @override
   bool get isSdk => packageMeta.isSdk;
 
   String _packagePath;
@@ -4820,34 +4866,6 @@ class Package extends LibraryContainer
 
   @override
   String toString() => name;
-
-  /// Returns:
-  /// -1 if this package is listed in --package-order.
-  /// 0 if this package is the original package we are documenting.
-  /// 1 if this package represents the Dart SDK.
-  /// 2 if this package has a name that contains the name of the original
-  ///   package we are documenting.
-  /// 3 otherwise.
-  int get _group {
-    if (config.packageOrder.contains(name)) return -1;
-    if (name.toLowerCase() == packageGraph.name.toLowerCase()) return 0;
-    if (isSdk) return 1;
-    if (name.toLowerCase().contains(packageGraph.name.toLowerCase())) return 2;
-    return 3;
-  }
-
-  @override
-  int compareTo(Package other) {
-    if (_group == other._group) {
-      if (_group == -1) {
-        return Comparable.compare(config.packageOrder.indexOf(name),
-            config.packageOrder.indexOf(other.name));
-      } else {
-        return name.toLowerCase().compareTo(other.name.toLowerCase());
-      }
-    }
-    return Comparable.compare(_group, other._group);
-  }
 }
 
 class Parameter extends ModelElement implements EnclosedElement {
@@ -4906,10 +4924,10 @@ class Parameter extends ModelElement implements EnclosedElement {
   String toString() => element.name;
 }
 
-abstract class SourceCodeMixin {
+abstract class SourceCodeMixin implements Documentable {
   String _sourceCodeCache;
   String get crossdartHtmlTag {
-    if (config != null && config.addCrossdart && _crossdartUrl != null) {
+    if (config.addCrossdart && _crossdartUrl != null) {
       return "<a class='crossdart' href='${_crossdartUrl}'>Link to Crossdart</a>";
     } else {
       return "";
@@ -4942,8 +4960,9 @@ abstract class SourceCodeMixin {
       var start = node.offset - (node.offset - i);
       String source = contents.substring(start, node.end);
 
-      if (config != null && config.addCrossdart) {
-        source = crossdartifySource(_crossdartJson, source, element, start);
+      if (config.addCrossdart) {
+        source = crossdartifySource(config.inputDir.path,
+            packageGraph.crossdartJson, source, element, start);
       } else {
         source = const HtmlEscape().convert(source);
       }
@@ -4960,7 +4979,6 @@ abstract class SourceCodeMixin {
     if (_sourceCodeCache == null) {
       _sourceCodeCache = sourceCodeFor(element);
     }
-
     return _sourceCodeCache;
   }
 
@@ -5010,10 +5028,6 @@ abstract class SourceCodeMixin {
     } else {
       return null;
     }
-  }
-
-  void clearSourceCodeCache() {
-    _sourceCodeCache = null;
   }
 }
 
@@ -5243,8 +5257,10 @@ class PackageBuilder {
   final Directory rootDir;
   final Directory sdkDir;
   final bool showWarnings;
+  final DartDocConfig config;
 
   PackageBuilder(
+      this.config,
       this.rootDir,
       this.excludes,
       this.excludePackages,
@@ -5259,8 +5275,8 @@ class PackageBuilder {
 
   Future<PackageGraph> buildPackageGraph() async {
     Set<LibraryElement> libraries = await getLibraries(getFiles);
-    return new PackageGraph(libraries, packageMeta, getWarningOptions(), driver,
-        sdk, autoIncludeDependencies, excludes, excludePackages);
+    return new PackageGraph(libraries, config, packageMeta, getWarningOptions(),
+        driver, sdk, autoIncludeDependencies, excludes, excludePackages);
   }
 
   DartSdk _sdk;
@@ -5378,9 +5394,10 @@ class PackageBuilder {
   }
 
   PackageWarningOptions getWarningOptions() {
-    PackageWarningOptions warningOptions = new PackageWarningOptions();
+    PackageWarningOptions warningOptions =
+        new PackageWarningOptions(config.verboseWarnings);
     // TODO(jcollins-g): explode this into detailed command line options.
-    if (config != null && showWarnings) {
+    if (showWarnings) {
       for (PackageWarning kind in PackageWarning.values) {
         warningOptions.warn(kind);
       }

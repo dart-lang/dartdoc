@@ -76,7 +76,7 @@ class DartDoc extends PackageBuilder {
       new StreamController(sync: true);
 
   DartDoc(
-      Directory rootDir,
+      DartDocConfig config,
       List<String> excludes,
       Directory sdkDir,
       this.generators,
@@ -85,7 +85,8 @@ class DartDoc extends PackageBuilder {
       List<String> includes,
       List<String> includeExternals)
       : super(
-            rootDir,
+            config,
+            config.inputDir,
             excludes,
             config.excludePackages,
             sdkDir,

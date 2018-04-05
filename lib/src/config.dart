@@ -23,7 +23,7 @@ class LocalConfig {
   }
 }
 
-class Config {
+class DartDocConfig {
   final Directory inputDir;
   final bool showWarnings;
   final bool addCrossdart;
@@ -37,7 +37,7 @@ class Config {
   final List<String> dropTextFrom;
   final List<String> excludePackages;
   final bool validateLinks;
-  Config._(
+  DartDocConfig._(
       this.inputDir,
       this.showWarnings,
       this.addCrossdart,
@@ -51,37 +51,34 @@ class Config {
       this.dropTextFrom,
       this.excludePackages,
       this.validateLinks);
-}
 
-Config _config;
-Config get config => _config;
-
-void setConfig(
-    {Directory inputDir,
-    bool showWarnings: false,
-    bool addCrossdart: false,
-    String examplePathPrefix,
-    bool includeSource: true,
-    String sdkVersion,
-    bool autoIncludeDependencies: false,
-    List<String> packageOrder,
-    double reexportMinConfidence: 0.1,
-    bool verboseWarnings: true,
-    List<String> dropTextFrom,
-    List<String> excludePackages,
-    bool validateLinks: true}) {
-  _config = new Config._(
-      inputDir,
-      showWarnings,
-      addCrossdart,
-      examplePathPrefix,
-      includeSource,
-      sdkVersion,
-      autoIncludeDependencies,
-      packageOrder ?? const <String>[],
-      reexportMinConfidence,
-      verboseWarnings,
-      dropTextFrom ?? const <String>[],
-      excludePackages ?? const <String>[],
-      validateLinks);
+  factory DartDocConfig.fromParameters(
+      {Directory inputDir,
+      bool showWarnings: false,
+      bool addCrossdart: false,
+      String examplePathPrefix,
+      bool includeSource: true,
+      String sdkVersion,
+      bool autoIncludeDependencies: false,
+      List<String> packageOrder,
+      double reexportMinConfidence: 0.1,
+      bool verboseWarnings: true,
+      List<String> dropTextFrom,
+      List<String> excludePackages,
+      bool validateLinks: true}) {
+    return new DartDocConfig._(
+        inputDir,
+        showWarnings,
+        addCrossdart,
+        examplePathPrefix,
+        includeSource,
+        sdkVersion,
+        autoIncludeDependencies,
+        packageOrder ?? const <String>[],
+        reexportMinConfidence,
+        verboseWarnings,
+        dropTextFrom ?? const <String>[],
+        excludePackages ?? const <String>[],
+        validateLinks);
+  }
 }
