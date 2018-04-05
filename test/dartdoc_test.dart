@@ -9,7 +9,6 @@ import 'dart:io';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
@@ -33,7 +32,6 @@ void main() {
       DartDoc dartdoc = new DartDoc(
           new DartDocConfig.fromParameters(inputDir: testPackageDir),
           [],
-          getSdkDir(),
           [],
           tempDir,
           meta,
@@ -56,7 +54,6 @@ void main() {
       DartDoc dartdoc = new DartDoc(
           new DartDocConfig.fromParameters(inputDir: testPackageBadDir),
           [],
-          getSdkDir(),
           [],
           tempDir,
           meta,
@@ -76,7 +73,6 @@ void main() {
       DartDoc dartdoc = new DartDoc(
           new DartDocConfig.fromParameters(inputDir: testPackageWithNoReadme),
           [],
-          getSdkDir(),
           [],
           tempDir,
           meta,
@@ -98,7 +94,6 @@ void main() {
       DartDoc dartdoc = new DartDoc(
           new DartDocConfig.fromParameters(inputDir: testPackageDir),
           [],
-          getSdkDir(),
           [],
           tempDir,
           meta,
@@ -140,7 +135,6 @@ void main() {
           new DartDocConfig.fromParameters(
               inputDir: testPackageWithEmbedderYaml),
           [],
-          getSdkDir(),
           [],
           tempDir,
           meta,

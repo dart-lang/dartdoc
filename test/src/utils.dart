@@ -49,8 +49,11 @@ init() async {
 
 Future<PackageGraph> bootSdkPackage() {
   Directory dir = new Directory(pathLib.current);
-  return new PackageBuilder(new DartDocConfig.fromParameters(inputDir: dir),
-          dir, [], [], sdkDir, sdkPackageMeta, [], [], true, false)
+  return new PackageBuilder(
+      new DartDocConfig.fromParameters(
+          inputDir: dir,
+          sdkDir: sdkDir,
+      ), [], sdkPackageMeta, [], [])
       .buildPackageGraph();
 }
 
@@ -60,16 +63,12 @@ Future<PackageGraph> bootBasicPackage(String dirPath, List<String> excludes,
   return new PackageBuilder(
           new DartDocConfig.fromParameters(
               inputDir: dir,
+              sdkDir: sdkDir,
               addCrossdart: withCrossdart,
               autoIncludeDependencies: withAutoIncludedDependencies),
-          dir,
           excludes,
-          [],
-          sdkDir,
           new PackageMeta.fromDir(new Directory(dirPath)),
           [],
-          [],
-          true,
-          withAutoIncludedDependencies)
+          [])
       .buildPackageGraph();
 }

@@ -25,6 +25,7 @@ class LocalConfig {
 
 class DartDocConfig {
   final Directory inputDir;
+  final Directory sdkDir;
   final bool showWarnings;
   final bool addCrossdart;
   final String examplePathPrefix;
@@ -39,6 +40,7 @@ class DartDocConfig {
   final bool validateLinks;
   DartDocConfig._(
       this.inputDir,
+      this.sdkDir,
       this.showWarnings,
       this.addCrossdart,
       this.examplePathPrefix,
@@ -54,6 +56,7 @@ class DartDocConfig {
 
   factory DartDocConfig.fromParameters(
       {Directory inputDir,
+      Directory sdkDir,
       bool showWarnings: false,
       bool addCrossdart: false,
       String examplePathPrefix,
@@ -68,6 +71,7 @@ class DartDocConfig {
       bool validateLinks: true}) {
     return new DartDocConfig._(
         inputDir,
+        sdkDir ?? getSdkDir(),
         showWarnings,
         addCrossdart,
         examplePathPrefix,

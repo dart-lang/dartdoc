@@ -78,7 +78,6 @@ class DartDoc extends PackageBuilder {
   DartDoc(
       DartDocConfig config,
       List<String> excludes,
-      Directory sdkDir,
       this.generators,
       this.outputDir,
       PackageMeta packageMeta,
@@ -86,15 +85,10 @@ class DartDoc extends PackageBuilder {
       List<String> includeExternals)
       : super(
             config,
-            config.inputDir,
             excludes,
-            config.excludePackages,
-            sdkDir,
             packageMeta,
             includes,
-            includeExternals,
-            config.showWarnings,
-            config.autoIncludeDependencies);
+            includeExternals);
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
 

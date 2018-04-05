@@ -258,6 +258,7 @@ main(List<String> arguments) async {
       showWarnings: args['show-warnings'],
       includeSource: args['include-source'],
       inputDir: inputDir,
+      sdkDir: sdkDir,
       sdkVersion: sdk.sdkVersion,
       autoIncludeDependencies: args['auto-include-dependencies'],
       packageOrder: args['package-order'].isEmpty
@@ -270,7 +271,7 @@ main(List<String> arguments) async {
       dropTextFrom: dropTextFrom,
       validateLinks: args['validate-links']);
 
-  DartDoc dartdoc = new DartDoc(config, excludeLibraries, sdkDir, generators,
+  DartDoc dartdoc = new DartDoc(config, excludeLibraries, generators,
       outputDir, packageMeta, includeLibraries, includeExternals);
 
   dartdoc.onCheckProgress.listen(logProgress);

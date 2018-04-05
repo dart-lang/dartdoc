@@ -37,7 +37,6 @@ import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
-import 'package:dartdoc/src/sdk.dart';
 import 'package:front_end/src/byte_store/byte_store.dart';
 import 'package:front_end/src/base/performance_logger.dart';
 import 'package:path/path.dart' as pathLib;
@@ -3765,9 +3764,7 @@ class PackageGraph extends Canonicalization
       this._packageWarningOptions,
       this.driver,
       this.sdk,
-      this.autoIncludeDependencies,
-      this.excludes,
-      this.excludePackages) {
+      this.excludes) {
     assert(_allConstructedModelElements.isEmpty);
     assert(allLibraries.isEmpty);
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
@@ -3804,9 +3801,6 @@ class PackageGraph extends Canonicalization
     allImplementorsAdded = true;
   }
 
-  /// Write files for packages outside the default.
-  final bool autoIncludeDependencies;
-
   /// It is safe to cache values derived from the _implementors table if this
   /// is true.
   bool allImplementorsAdded = false;
@@ -3820,15 +3814,12 @@ class PackageGraph extends Canonicalization
   /// A list of library names to treat as private.
   final List<String> excludes;
 
-  /// A list of package names to exclude from local documentation.
-  final List<String> excludePackages;
-
   // TODO(jcollins-g): refactor to eliminate the duplication with PackageBuilder
   // (currently necessary for better use of the analyzer).
   bool isLibraryExcluded(String name) =>
       excludes.any((pattern) => name == pattern);
   bool isPackageExcluded(String name) =>
-      excludePackages.any((pattern) => name == pattern);
+      config.excludePackages.any((pattern) => name == pattern);
 
   Map<String, List<Class>> get implementors {
     assert(allImplementorsAdded);
@@ -4718,7 +4709,7 @@ class Package extends LibraryContainer
       PackageMeta packageMeta, PackageGraph packageGraph) {
     String packageName = packageMeta.name;
     bool isLocal = packageMeta == packageGraph.packageMeta ||
-        packageGraph.autoIncludeDependencies;
+        packageGraph.config.autoIncludeDependencies;
     isLocal = isLocal && !packageGraph.isPackageExcluded(packageName);
     bool expectNonLocal = false;
 
@@ -4842,7 +4833,7 @@ class Package extends LibraryContainer
   String get packagePath {
     if (_packagePath == null) {
       if (isSdk) {
-        _packagePath = getSdkDir().path;
+        _packagePath = packageGraph.config.sdkDir.path;
       } else {
         assert(libraries.isNotEmpty);
         File file = new File(
@@ -5248,42 +5239,32 @@ class TypeParameter extends ModelElement {
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 class PackageBuilder {
-  final bool autoIncludeDependencies;
   final List<String> excludes;
-  final List<String> excludePackages;
   final List<String> includes;
   final List<String> includeExternals;
   final PackageMeta packageMeta;
-  final Directory rootDir;
-  final Directory sdkDir;
-  final bool showWarnings;
   final DartDocConfig config;
 
   PackageBuilder(
       this.config,
-      this.rootDir,
       this.excludes,
-      this.excludePackages,
-      this.sdkDir,
       this.packageMeta,
       this.includes,
-      this.includeExternals,
-      this.showWarnings,
-      this.autoIncludeDependencies);
+      this.includeExternals);
 
   void logAnalysisErrors(Set<Source> sources) {}
 
   Future<PackageGraph> buildPackageGraph() async {
     Set<LibraryElement> libraries = await getLibraries(getFiles);
     return new PackageGraph(libraries, config, packageMeta, getWarningOptions(),
-        driver, sdk, autoIncludeDependencies, excludes, excludePackages);
+        driver, sdk, excludes);
   }
 
   DartSdk _sdk;
   DartSdk get sdk {
     if (_sdk == null) {
       _sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
-          PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
+          PhysicalResourceProvider.INSTANCE.getFolder(config.sdkDir.path));
     }
     return _sdk;
   }
@@ -5318,7 +5299,7 @@ class PackageBuilder {
   Map<String, List<fileSystem.Folder>> get packageMap {
     if (_packageMap == null) {
       fileSystem.Folder cwd =
-          PhysicalResourceProvider.INSTANCE.getResource(rootDir.path);
+          PhysicalResourceProvider.INSTANCE.getResource(config.inputDir.path);
       _packageMap = _calculatePackageMap(cwd);
     }
     return _packageMap;
@@ -5397,7 +5378,7 @@ class PackageBuilder {
     PackageWarningOptions warningOptions =
         new PackageWarningOptions(config.verboseWarnings);
     // TODO(jcollins-g): explode this into detailed command line options.
-    if (showWarnings) {
+    if (config.showWarnings) {
       for (PackageWarning kind in PackageWarning.values) {
         warningOptions.warn(kind);
       }
@@ -5451,7 +5432,7 @@ class PackageBuilder {
           await driver.getLibraryByUri(source.uri.toString());
       if (library != null) {
         if (!isExcluded(Library.getLibraryName(library)) &&
-            !excludePackages
+            !config.excludePackages
                 .contains(new PackageMeta.fromElement(library)?.name)) {
           libraries.add(library);
           sources.add(source);
@@ -5562,7 +5543,7 @@ class PackageBuilder {
     Set<String> files = new Set();
     files.addAll(packageMeta.isSdk
         ? new Set()
-        : findFilesToDocumentInPackage(rootDir.path, autoIncludeDependencies));
+        : findFilesToDocumentInPackage(config.inputDir.path, config.autoIncludeDependencies));
     if (packageMeta.isSdk) {
       files.addAll(getSdkFilesToDocument());
     } else if (embedderSdk.urlMappings.isNotEmpty && !packageMeta.isSdk) {
