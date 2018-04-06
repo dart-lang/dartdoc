@@ -23,7 +23,8 @@ abstract class PackageMeta {
   /// Use this instead of fromDir where possible.
   factory PackageMeta.fromElement(LibraryElement libraryElement) {
     // Workaround for dart-lang/sdk#32707.  Replace with isInSdk once that works.
-    if (libraryElement.source.uri.scheme == 'dart') return new PackageMeta.fromDir(getSdkDir());
+    if (libraryElement.source.uri.scheme == 'dart')
+      return new PackageMeta.fromDir(getSdkDir());
     return new PackageMeta.fromDir(
         new File(pathLib.canonicalize(libraryElement.source.fullName)).parent);
   }
