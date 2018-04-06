@@ -249,30 +249,29 @@ main(List<String> arguments) async {
   }
 
   DartDocConfig config = new DartDocConfig.fromParameters(
-      addCrossdart: args['add-crossdart'],
-      autoIncludeDependencies: args['auto-include-dependencies'],
-      dropTextFrom: dropTextFrom,
-      examplePathPrefix: args['example-path-prefix'],
-      excludeLibraries: args['exclude'],
-      excludePackages: args['exclude-packages'],
-      includeExternals: args['include-external'],
-      includeLibraries: args['include'],
-      includeSource: args['include-source'],
-      inputDir: inputDir,
-      packageOrder: args['package-order'].isEmpty
-          ? args['category-order']
-          : args['package-order'],
-      reexportMinConfidence:
-          double.parse(args['ambiguous-reexport-scorer-min-confidence']),
-      sdkDir: sdkDir,
-      sdkVersion: sdk.sdkVersion,
-      showWarnings: args['show-warnings'],
-      validateLinks: args['validate-links'],
-      verboseWarnings: args['verbose-warnings'],
+    addCrossdart: args['add-crossdart'],
+    autoIncludeDependencies: args['auto-include-dependencies'],
+    dropTextFrom: dropTextFrom,
+    examplePathPrefix: args['example-path-prefix'],
+    excludeLibraries: args['exclude'],
+    excludePackages: args['exclude-packages'],
+    includeExternals: args['include-external'],
+    includeLibraries: args['include'],
+    includeSource: args['include-source'],
+    inputDir: inputDir,
+    packageOrder: args['package-order'].isEmpty
+        ? args['category-order']
+        : args['package-order'],
+    reexportMinConfidence:
+        double.parse(args['ambiguous-reexport-scorer-min-confidence']),
+    sdkDir: sdkDir,
+    sdkVersion: sdk.sdkVersion,
+    showWarnings: args['show-warnings'],
+    validateLinks: args['validate-links'],
+    verboseWarnings: args['verbose-warnings'],
   );
 
-  DartDoc dartdoc = new DartDoc(config, generators,
-      outputDir, packageMeta);
+  DartDoc dartdoc = new DartDoc(config, generators, outputDir, packageMeta);
 
   dartdoc.onCheckProgress.listen(logProgress);
   await Chain.capture(() async {

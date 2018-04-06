@@ -75,14 +75,9 @@ class DartDoc extends PackageBuilder {
   final StreamController<String> _onCheckProgress =
       new StreamController(sync: true);
 
-  DartDoc(
-      DartDocConfig config,
-      this.generators,
-      this.outputDir,
+  DartDoc(DartDocConfig config, this.generators, this.outputDir,
       PackageMeta packageMeta)
-      : super(
-            config,
-            packageMeta);
+      : super(config, packageMeta);
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
 

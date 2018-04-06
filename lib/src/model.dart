@@ -3757,13 +3757,8 @@ class PackageGraph extends Canonicalization
   // TODO(jcollins-g): This constructor is convoluted.  Clean this up by
   // building Libraries and adding them to Packages, then adding Packages
   // to this graph.
-  PackageGraph(
-      Iterable<LibraryElement> libraryElements,
-      this.config,
-      this.packageMeta,
-      this._packageWarningOptions,
-      this.driver,
-      this.sdk) {
+  PackageGraph(Iterable<LibraryElement> libraryElements, this.config,
+      this.packageMeta, this._packageWarningOptions, this.driver, this.sdk) {
     assert(_allConstructedModelElements.isEmpty);
     assert(allLibraries.isEmpty);
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
@@ -3809,8 +3804,6 @@ class PackageGraph extends Canonicalization
 
   @override
   LibraryContainer get enclosingContainer => null;
-
-
 
   Map<String, List<Class>> get implementors {
     assert(allImplementorsAdded);
@@ -5233,16 +5226,14 @@ class PackageBuilder {
   final PackageMeta packageMeta;
   final DartDocConfig config;
 
-  PackageBuilder(
-      this.config,
-      this.packageMeta);
+  PackageBuilder(this.config, this.packageMeta);
 
   void logAnalysisErrors(Set<Source> sources) {}
 
   Future<PackageGraph> buildPackageGraph() async {
     Set<LibraryElement> libraries = await getLibraries(getFiles);
-    return new PackageGraph(libraries, config, packageMeta, getWarningOptions(),
-        driver, sdk);
+    return new PackageGraph(
+        libraries, config, packageMeta, getWarningOptions(), driver, sdk);
   }
 
   DartSdk _sdk;
@@ -5526,7 +5517,8 @@ class PackageBuilder {
     Set<String> files = new Set();
     files.addAll(packageMeta.isSdk
         ? new Set()
-        : findFilesToDocumentInPackage(config.inputDir.path, config.autoIncludeDependencies));
+        : findFilesToDocumentInPackage(
+            config.inputDir.path, config.autoIncludeDependencies));
     if (packageMeta.isSdk) {
       files.addAll(getSdkFilesToDocument());
     } else if (embedderSdk.urlMappings.isNotEmpty && !packageMeta.isSdk) {
@@ -5548,13 +5540,14 @@ class PackageBuilder {
     libraries.addAll(await _parseLibraries(files));
     if (config.includeLibraries.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
-      Set notFound =
-          new Set.from(config.includeLibraries).difference(new Set.from(knownLibraryNames));
+      Set notFound = new Set.from(config.includeLibraries)
+          .difference(new Set.from(knownLibraryNames));
       if (notFound.isNotEmpty) {
         throw 'Did not find: [${notFound.join(', ')}] in '
             'known libraries: [${knownLibraryNames.join(', ')}]';
       }
-      libraries.removeWhere((lib) => !config.includeLibraries.contains(lib.name));
+      libraries
+          .removeWhere((lib) => !config.includeLibraries.contains(lib.name));
     }
     return libraries;
   }

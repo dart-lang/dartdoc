@@ -83,7 +83,8 @@ void main() {
     test('generate docs including a single library', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc = new DartDoc(
-          new DartDocConfig.fromParameters(inputDir: testPackageDir, includeLibraries: ['fake']),
+          new DartDocConfig.fromParameters(
+              inputDir: testPackageDir, includeLibraries: ['fake']),
           [],
           tempDir,
           meta);
