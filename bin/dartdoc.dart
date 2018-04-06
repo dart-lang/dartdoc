@@ -68,10 +68,6 @@ main(List<String> arguments) async {
     exit(1);
   }
 
-  List<String> excludeLibraries = args['exclude'] as List<String>;
-  List<String> includeLibraries = args['include'] as List<String>;
-  List<String> includeExternals = args['include-external'] as List<String>;
-
   String url = args['hosted-url'];
 
   List<String> headerFilePaths =
@@ -254,25 +250,29 @@ main(List<String> arguments) async {
 
   DartDocConfig config = new DartDocConfig.fromParameters(
       addCrossdart: args['add-crossdart'],
+      autoIncludeDependencies: args['auto-include-dependencies'],
+      dropTextFrom: dropTextFrom,
       examplePathPrefix: args['example-path-prefix'],
-      showWarnings: args['show-warnings'],
+      excludeLibraries: args['exclude'],
+      excludePackages: args['exclude-packages'],
+      includeExternals: args['include-external'],
+      includeLibraries: args['include'],
       includeSource: args['include-source'],
       inputDir: inputDir,
-      sdkDir: sdkDir,
-      sdkVersion: sdk.sdkVersion,
-      autoIncludeDependencies: args['auto-include-dependencies'],
       packageOrder: args['package-order'].isEmpty
           ? args['category-order']
           : args['package-order'],
       reexportMinConfidence:
           double.parse(args['ambiguous-reexport-scorer-min-confidence']),
+      sdkDir: sdkDir,
+      sdkVersion: sdk.sdkVersion,
+      showWarnings: args['show-warnings'],
+      validateLinks: args['validate-links'],
       verboseWarnings: args['verbose-warnings'],
-      excludePackages: args['exclude-packages'],
-      dropTextFrom: dropTextFrom,
-      validateLinks: args['validate-links']);
+  );
 
-  DartDoc dartdoc = new DartDoc(config, excludeLibraries, generators,
-      outputDir, packageMeta, includeLibraries, includeExternals);
+  DartDoc dartdoc = new DartDoc(config, generators,
+      outputDir, packageMeta);
 
   dartdoc.onCheckProgress.listen(logProgress);
   await Chain.capture(() async {

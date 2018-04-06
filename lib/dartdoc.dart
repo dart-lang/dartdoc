@@ -77,18 +77,12 @@ class DartDoc extends PackageBuilder {
 
   DartDoc(
       DartDocConfig config,
-      List<String> excludes,
       this.generators,
       this.outputDir,
-      PackageMeta packageMeta,
-      List<String> includes,
-      List<String> includeExternals)
+      PackageMeta packageMeta)
       : super(
             config,
-            excludes,
-            packageMeta,
-            includes,
-            includeExternals);
+            packageMeta);
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
 

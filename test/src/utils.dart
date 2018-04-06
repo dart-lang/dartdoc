@@ -53,22 +53,20 @@ Future<PackageGraph> bootSdkPackage() {
       new DartDocConfig.fromParameters(
           inputDir: dir,
           sdkDir: sdkDir,
-      ), [], sdkPackageMeta, [], [])
+      ), sdkPackageMeta)
       .buildPackageGraph();
 }
 
-Future<PackageGraph> bootBasicPackage(String dirPath, List<String> excludes,
+Future<PackageGraph> bootBasicPackage(String dirPath, List<String> excludeLibraries,
     {bool withAutoIncludedDependencies = false, bool withCrossdart = false}) {
   Directory dir = new Directory(dirPath);
   return new PackageBuilder(
           new DartDocConfig.fromParameters(
               inputDir: dir,
               sdkDir: sdkDir,
+              excludeLibraries: excludeLibraries,
               addCrossdart: withCrossdart,
               autoIncludeDependencies: withAutoIncludedDependencies),
-          excludes,
-          new PackageMeta.fromDir(new Directory(dirPath)),
-          [],
-          [])
+          new PackageMeta.fromDir(new Directory(dirPath)))
       .buildPackageGraph();
 }

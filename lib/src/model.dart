@@ -1801,8 +1801,8 @@ class Library extends ModelElement with Categorization {
     if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
-    if (packageGraph.isLibraryExcluded(name) ||
-        packageGraph.isLibraryExcluded(element.librarySource.uri.toString()))
+    if (config.isLibraryExcluded(name) ||
+        config.isLibraryExcluded(element.librarySource.uri.toString()))
       return false;
     return true;
   }
@@ -3763,8 +3763,7 @@ class PackageGraph extends Canonicalization
       this.packageMeta,
       this._packageWarningOptions,
       this.driver,
-      this.sdk,
-      this.excludes) {
+      this.sdk) {
     assert(_allConstructedModelElements.isEmpty);
     assert(allLibraries.isEmpty);
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
@@ -3811,15 +3810,7 @@ class PackageGraph extends Canonicalization
   @override
   LibraryContainer get enclosingContainer => null;
 
-  /// A list of library names to treat as private.
-  final List<String> excludes;
 
-  // TODO(jcollins-g): refactor to eliminate the duplication with PackageBuilder
-  // (currently necessary for better use of the analyzer).
-  bool isLibraryExcluded(String name) =>
-      excludes.any((pattern) => name == pattern);
-  bool isPackageExcluded(String name) =>
-      config.excludePackages.any((pattern) => name == pattern);
 
   Map<String, List<Class>> get implementors {
     assert(allImplementorsAdded);
@@ -4710,7 +4701,7 @@ class Package extends LibraryContainer
     String packageName = packageMeta.name;
     bool isLocal = packageMeta == packageGraph.packageMeta ||
         packageGraph.config.autoIncludeDependencies;
-    isLocal = isLocal && !packageGraph.isPackageExcluded(packageName);
+    isLocal = isLocal && !packageGraph.config.isPackageExcluded(packageName);
     bool expectNonLocal = false;
 
     if (!packageGraph.packageMap.containsKey(packageName) &&
@@ -5239,25 +5230,19 @@ class TypeParameter extends ModelElement {
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 class PackageBuilder {
-  final List<String> excludes;
-  final List<String> includes;
-  final List<String> includeExternals;
   final PackageMeta packageMeta;
   final DartDocConfig config;
 
   PackageBuilder(
       this.config,
-      this.excludes,
-      this.packageMeta,
-      this.includes,
-      this.includeExternals);
+      this.packageMeta);
 
   void logAnalysisErrors(Set<Source> sources) {}
 
   Future<PackageGraph> buildPackageGraph() async {
     Set<LibraryElement> libraries = await getLibraries(getFiles);
     return new PackageGraph(libraries, config, packageMeta, getWarningOptions(),
-        driver, sdk, excludes);
+        driver, sdk);
   }
 
   DartSdk _sdk;
@@ -5398,8 +5383,6 @@ class PackageBuilder {
     }
   }
 
-  bool isExcluded(String name) => excludes.any((pattern) => name == pattern);
-
   /// Parse a single library at [filePath] using the current analysis driver.
   /// Note: [libraries] and [sources] are output parameters.  Adds a libraryElement
   /// only if it has a non-private name.
@@ -5427,11 +5410,11 @@ class PackageBuilder {
       }
     }
     // TODO(jcollins-g): Excludes can match on uri or on name.  Fix that.
-    if (!isExcluded(source.uri.toString())) {
+    if (!config.isLibraryExcluded(source.uri.toString())) {
       LibraryElement library =
           await driver.getLibraryByUri(source.uri.toString());
       if (library != null) {
-        if (!isExcluded(Library.getLibraryName(library)) &&
+        if (!config.isLibraryExcluded(Library.getLibraryName(library)) &&
             !config.excludePackages
                 .contains(new PackageMeta.fromElement(library)?.name)) {
           libraries.add(library);
@@ -5504,7 +5487,7 @@ class PackageBuilder {
               new Uri.file(pathLib.join(basePackageDir, 'pubspec.yaml')))
           .asMap();
       for (String packageName in info.keys) {
-        if (!filterExcludes || !excludes.contains(packageName)) {
+        if (!filterExcludes || !config.excludeLibraries.contains(packageName)) {
           packageDirs.add(pathLib.dirname(info[packageName].toFilePath()));
         }
       }
@@ -5554,7 +5537,7 @@ class PackageBuilder {
     }
     // Use the includeExternals.
     for (String fullName in driver.knownFiles) {
-      if (includeExternals.any((string) => fullName.endsWith(string)))
+      if (config.includeExternals.any((string) => fullName.endsWith(string)))
         files.add(fullName);
     }
     return new Set.from(files.map((s) => new File(s).absolute.path));
@@ -5563,15 +5546,15 @@ class PackageBuilder {
   Future<Set<LibraryElement>> getLibraries(Set<String> files) async {
     Set<LibraryElement> libraries = new Set();
     libraries.addAll(await _parseLibraries(files));
-    if (includes != null && includes.isNotEmpty) {
+    if (config.includeLibraries.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
       Set notFound =
-          new Set.from(includes).difference(new Set.from(knownLibraryNames));
+          new Set.from(config.includeLibraries).difference(new Set.from(knownLibraryNames));
       if (notFound.isNotEmpty) {
         throw 'Did not find: [${notFound.join(', ')}] in '
             'known libraries: [${knownLibraryNames.join(', ')}]';
       }
-      libraries.removeWhere((lib) => !includes.contains(lib.name));
+      libraries.removeWhere((lib) => !config.includeLibraries.contains(lib.name));
     }
     return libraries;
   }
