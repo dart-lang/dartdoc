@@ -86,10 +86,12 @@ final Map<PackageWarning, PackageWarningHelpText> packageWarningText = const {
       "Use of <> in a comment for type parameters is being treated as HTML by markdown"),
 };
 
-/// Something that package warnings can be called on.
+/// Something that package warnings can be called on.  Optionally associated
+/// with an analyzer [element].
 abstract class Warnable implements Canonicalization {
   void warn(PackageWarning warning,
       {String message, Iterable<Locatable> referredFrom});
+  Element get element;
   Warnable get enclosingElement;
 }
 
@@ -97,17 +99,12 @@ abstract class Warnable implements Canonicalization {
 abstract class Locatable {
   String get fullyQualifiedName;
   String get href;
-  List<Locatable> get documentationFrom;
-  Element get element;
-  String get elementLocation;
-  Tuple2<int, int> get lineAndColumn;
 
-  Set<String> get locationPieces {
-    return new Set.from(element.location
-        .toString()
-        .split(locationSplitter)
-        .where((s) => s.isNotEmpty));
-  }
+  List<Locatable> get documentationFrom;
+
+  /// A string indicating the URI of this Locatable, usually derived from
+  /// [Element.location].
+  String get location;
 }
 
 // The kinds of warnings that can be displayed when documenting a package.

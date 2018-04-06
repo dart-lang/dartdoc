@@ -31,6 +31,7 @@ void main() {
   Library twoExportsLib;
   Library interceptorsLib;
   PackageGraph sdkAsPackageGraph;
+  Library dartAsync;
 
   setUpAll(() async {
     await utils.init();
@@ -40,6 +41,8 @@ void main() {
     exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
     fakeLibrary =
         packageGraph.libraries.firstWhere((lib) => lib.name == 'fake');
+    dartAsync =
+        packageGraph.libraries.firstWhere((lib) => lib.name == 'dart:async');
     twoExportsLib =
         packageGraph.libraries.firstWhere((lib) => lib.name == 'two_exports');
     interceptorsLib = packageGraph.libraries
@@ -47,12 +50,48 @@ void main() {
     sdkAsPackageGraph = utils.testPackageGraphSdk;
   });
 
+  group('Missing and Remote', () {
+    test('Verify that SDK libraries are not canonical when missing', () {
+      expect(
+          dartAsync.package.documentedWhere, equals(DocumentLocation.missing));
+      expect(dartAsync.isCanonical, isFalse);
+      expect(ginormousPackageGraph.publicPackages, isNotEmpty);
+    });
+
+    test(
+        'Verify that autoIncludeDependencies makes everything document locally',
+        () {
+      expect(ginormousPackageGraph.packages.map((p) => p.documentedWhere),
+          everyElement((x) => x == DocumentLocation.local));
+    });
+
+    test('Verify that ginormousPackageGraph takes in the SDK', () {
+      expect(
+          ginormousPackageGraph.packages
+              .firstWhere((p) => p.isSdk)
+              .libraries
+              .length,
+          greaterThan(1));
+      expect(
+          ginormousPackageGraph.packages
+              .firstWhere((p) => p.isSdk)
+              .documentedWhere,
+          equals(DocumentLocation.local));
+    });
+
+    test('Verify that packageGraph has an SDK but will not document it locally',
+        () {
+      expect(packageGraph.packages.firstWhere((p) => p.isSdk).documentedWhere,
+          isNot(equals(DocumentLocation.local)));
+    });
+  });
+
   group('Category', () {
     test('Verify categories for test_package', () {
-      expect(packageGraph.publicPackages.length, equals(1));
-      expect(packageGraph.publicPackages.first.hasCategories, isTrue);
+      expect(packageGraph.localPackages.length, equals(1));
+      expect(packageGraph.localPackages.first.hasCategories, isTrue);
       List<Category> packageCategories =
-          packageGraph.publicPackages.first.categories;
+          packageGraph.localPackages.first.categories;
       expect(packageCategories.length, equals(3));
       expect(packageCategories.map((c) => c.name).toList(),
           orderedEquals(['Real Libraries', 'Unreal', 'Misc']));
@@ -60,19 +99,19 @@ void main() {
           orderedEquals([2, 2, 1]));
       expect(
           packageGraph
-              .publicPackages.first.defaultCategory.publicLibraries.length,
+              .localPackages.first.defaultCategory.publicLibraries.length,
           equals(3));
     });
 
     test('Verify that packages without categories get handled', () {
-      expect(packageGraphSmall.publicPackages.length, equals(1));
-      expect(packageGraphSmall.publicPackages.first.hasCategories, isFalse);
+      expect(packageGraphSmall.localPackages.length, equals(1));
+      expect(packageGraphSmall.localPackages.first.hasCategories, isFalse);
       List<Category> packageCategories =
-          packageGraphSmall.publicPackages.first.categories;
+          packageGraphSmall.localPackages.first.categories;
       expect(packageCategories.length, equals(0));
       expect(
           packageGraph
-              .publicPackages.first.defaultCategory.publicLibraries.length,
+              .localPackages.first.defaultCategory.publicLibraries.length,
           equals(3));
     });
   });
@@ -95,7 +134,7 @@ void main() {
       });
 
       test('libraries', () {
-        expect(packageGraph.libraries, hasLength(9));
+        expect(packageGraph.localPublicLibraries, hasLength(8));
         expect(interceptorsLib.isPublic, isFalse);
       });
 
@@ -104,24 +143,24 @@ void main() {
         expect(packageGraph.homepage, equals('http://github.com/dart-lang'));
       });
 
-      test('categories', () {
-        expect(packageGraph.publicPackages, hasLength(1));
+      test('packages', () {
+        expect(packageGraph.localPackages, hasLength(1));
 
-        Package category = packageGraph.publicPackages.first;
-        expect(category.name, 'test_package');
-        expect(category.libraries, hasLength(8));
+        Package package = packageGraph.localPackages.first;
+        expect(package.name, 'test_package');
+        expect(package.publicLibraries, hasLength(8));
       });
 
-      test('multiple categories, sorted default', () {
-        expect(ginormousPackageGraph.publicPackages, hasLength(3));
-        expect(ginormousPackageGraph.publicPackages.first.name,
+      test('multiple packages, sorted default', () {
+        expect(ginormousPackageGraph.localPackages, hasLength(4));
+        expect(ginormousPackageGraph.localPackages.first.name,
             equals('test_package'));
       });
 
-      test('multiple categories, specified sort order', () {
+      test('multiple packages, specified sort order', () {
         setConfig(packageOrder: ['meta', 'test_package']);
-        expect(ginormousPackageGraph.publicPackages, hasLength(3));
-        expect(ginormousPackageGraph.publicPackages.first.name, equals('meta'));
+        expect(ginormousPackageGraph.localPackages, hasLength(4));
+        expect(ginormousPackageGraph.localPackages.first.name, equals('meta'));
       });
 
       test('is documented in library', () {
@@ -368,7 +407,7 @@ void main() {
           .firstWhere((m) => m.name == 'withPrivateMacro');
       withUndefinedMacro = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withUndefinedMacro');
-      packageGraph.allModelElements.forEach((m) => m.documentation);
+      packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
 
     test("renders a macro within the same comment where it's defined", () {

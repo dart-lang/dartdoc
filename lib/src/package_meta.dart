@@ -20,6 +20,15 @@ abstract class PackageMeta {
 
   PackageMeta(this.dir);
 
+  @override
+  bool operator ==(other) {
+    if (other is! PackageMeta) return false;
+    return pathLib.equals(dir.absolute.path, other.dir.absolute.path);
+  }
+
+  @override
+  int get hashCode => pathLib.hash(dir.absolute.path);
+
   /// Use this instead of fromDir where possible.
   factory PackageMeta.fromElement(LibraryElement libraryElement) {
     // Workaround for dart-lang/sdk#32707.  Replace with isInSdk once that works.
@@ -27,6 +36,10 @@ abstract class PackageMeta {
       return new PackageMeta.fromDir(getSdkDir());
     return new PackageMeta.fromDir(
         new File(pathLib.canonicalize(libraryElement.source.fullName)).parent);
+  }
+
+  factory PackageMeta.fromFilename(String filename) {
+    return new PackageMeta.fromDir(new File(filename).parent);
   }
 
   /// This factory is guaranteed to return the same object for any given
