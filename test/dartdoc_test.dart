@@ -99,6 +99,22 @@ void main() {
       expect(p.libraries.map((lib) => lib.name), contains('fake'));
     });
 
+    test('generate docs excluding a single library', () async {
+      PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
+      DartDoc dartdoc = new DartDoc(
+        new DartDocConfig.fromParameters(inputDir: testPackageDir, excludeLibraries: ['fake']),
+          [], tempDir, meta);
+
+      DartDocResults results = await dartdoc.generateDocs();
+      expect(results.packageGraph, isNotNull);
+
+      PackageGraph p = results.packageGraph;
+      expect(p.name, 'test_package');
+      expect(p.hasDocumentationFile, isTrue);
+      expect(p.publicLibraries, hasLength(9));
+      expect(p.publicLibraries.map((lib) => lib.name).contains('fake'), isFalse);
+    });
+
     test('generate docs for package with embedder yaml', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageWithEmbedderYaml);
       if (meta.needsPubGet) meta.runPubGet();
