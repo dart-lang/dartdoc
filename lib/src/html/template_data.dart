@@ -74,8 +74,7 @@ abstract class TemplateData<T extends Documentable> {
   }
 
   Iterable<Subnav> _gatherSubnavForInvokable(ModelElement element) {
-    if (element is SourceCodeMixin &&
-        (element as SourceCodeMixin).hasSourceCode) {
+    if (element.hasSourceCode) {
       return [new Subnav('Source', '${element.href}#source')];
     } else {
       return <Subnav>[];

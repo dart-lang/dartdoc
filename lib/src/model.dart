@@ -268,9 +268,7 @@ class InheritableAccessor extends Accessor with Inheritable {
 }
 
 /// Getters and setters.
-class Accessor extends ModelElement
-    with SourceCodeMixin
-    implements EnclosedElement {
+class Accessor extends ModelElement implements EnclosedElement {
   GetterSetterCombo _enclosingCombo;
 
   Accessor(PropertyAccessorElement element, Library library,
@@ -698,8 +696,8 @@ class Class extends ModelElement
   /// Returns all the implementors of this class.
   Iterable<Class> get publicImplementors {
     return filterNonPublic(findCanonicalFor(
-        packageGraph._implementors[href] != null
-            ? packageGraph._implementors[href]
+        packageGraph.implementors[href] != null
+            ? packageGraph.implementors[href]
             : []));
   }
 
@@ -1087,7 +1085,7 @@ class Class extends ModelElement
 }
 
 class Constructor extends ModelElement
-    with SourceCodeMixin, TypeParameters
+    with TypeParameters
     implements EnclosedElement {
   Constructor(
       ConstructorElement element, Library library, PackageGraph packageGraph)
@@ -1176,7 +1174,6 @@ abstract class Documentable extends Nameable {
   bool get hasDocumentation;
   bool get hasExtendedDocumentation;
   String get oneLineDoc;
-  Documentable get overriddenDocumentedElement;
   PackageGraph get packageGraph;
   bool get isDocumented;
 }
@@ -1215,6 +1212,10 @@ abstract class Canonicalization extends Object
     implements Documentable {
   bool get isCanonical;
   Library get canonicalLibrary;
+
+  /// Pieces of the location split by [locationSplitter] (removing package: and
+  /// slashes).
+  Set<String> get locationPieces;
 
   List<ScoredCandidate> scoreCanonicalCandidates(List<Library> libraries) {
     return libraries.map((l) => scoreElementWithLibrary(l)).toList()..sort();
@@ -1383,7 +1384,7 @@ class EnumField extends Field {
 }
 
 class Field extends ModelElement
-    with GetterSetterCombo, Inheritable, SourceCodeMixin
+    with GetterSetterCombo, Inheritable
     implements EnclosedElement {
   bool _isInherited = false;
   Class _enclosingClass;
@@ -1745,18 +1746,29 @@ class Library extends ModelElement with Categorization {
   List<TopLevelVariable> _variables;
   Namespace _exportedNamespace;
   String _name;
+
   factory Library(LibraryElement element, PackageGraph packageGraph) {
     return packageGraph.findOrCreateLibraryFor(element);
   }
 
-  Library._(LibraryElement element, PackageGraph packageGraph)
+  Library._(LibraryElement element, PackageGraph packageGraph, this._package)
       : super(element, null, packageGraph, null) {
     if (element == null) throw new ArgumentError.notNull('element');
     _exportedNamespace =
         new NamespaceBuilder().createExportNamespaceForLibrary(element);
+    _package._allLibraries.add(this);
   }
 
   List<String> _allOriginalModelElementNames;
+
+  final Package _package;
+  @override
+  Package get package {
+    // Everything must be in a package.  TODO(jcollins-g): Support other things
+    // that look like packages.
+    assert(_package != null);
+    return _package;
+  }
 
   /// [allModelElements] resolved to their original names.
   ///
@@ -1809,6 +1821,9 @@ class Library extends ModelElement with Categorization {
     if (sdkLib != null && (sdkLib.isInternal || !sdkLib.isDocumented)) {
       return false;
     }
+    if (packageGraph.isLibraryExcluded(name) ||
+        packageGraph.isLibraryExcluded(element.librarySource.uri.toString()))
+      return false;
     return true;
   }
 
@@ -2318,7 +2333,7 @@ class Library extends ModelElement with Categorization {
 }
 
 class Method extends ModelElement
-    with SourceCodeMixin, Inheritable, TypeParameters
+    with Inheritable, TypeParameters
     implements EnclosedElement {
   bool _isInherited = false;
   Class _enclosingClass;
@@ -2496,7 +2511,7 @@ abstract class Privacy {
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
 abstract class ModelElement extends Canonicalization
-    with Privacy, Warnable, Nameable
+    with Privacy, Warnable, Nameable, SourceCodeMixin
     implements Comparable, Documentable {
   final Element _element;
   // TODO(jcollins-g): This really wants a "member that has a type" class.
@@ -2763,6 +2778,14 @@ abstract class ModelElement extends Canonicalization
     return _isPublic;
   }
 
+  @override
+  Set<String> get locationPieces {
+    return new Set.from(element.location
+        .toString()
+        .split(locationSplitter)
+        .where((s) => s.isNotEmpty));
+  }
+
   Set<String> get features {
     Set<String> allFeatures = new Set<String>();
     allFeatures.addAll(annotations);
@@ -2828,29 +2851,10 @@ abstract class ModelElement extends Canonicalization
       docFrom = [overriddenElement];
     } else if (this is Inheritable && (this as Inheritable).isInherited) {
       Inheritable thisInheritable = (this as Inheritable);
-      InheritableAccessor newGetter;
-      InheritableAccessor newSetter;
-      if (this is GetterSetterCombo) {
-        GetterSetterCombo thisAsCombo = this as GetterSetterCombo;
-        if (thisAsCombo.hasGetter) {
-          newGetter = new ModelElement.from(
-              thisAsCombo.getter.element,
-              thisAsCombo.getter.definingLibrary,
-              thisAsCombo.getter.packageGraph);
-        }
-        if (thisAsCombo.hasSetter) {
-          newSetter = new ModelElement.from(
-              thisAsCombo.setter.element,
-              thisAsCombo.setter.definingLibrary,
-              thisAsCombo.setter.packageGraph);
-        }
-      }
-      ModelElement fromThis = new ModelElement.from(
-          element,
-          thisInheritable.definingEnclosingElement.library,
-          thisInheritable.definingEnclosingElement.packageGraph,
-          getter: newGetter,
-          setter: newSetter);
+      Class definingEnclosingClass =
+          thisInheritable.definingEnclosingElement as Class;
+      ModelElement fromThis = new ModelElement.fromElement(
+          element, definingEnclosingClass.packageGraph);
       docFrom = fromThis.documentationFrom;
     } else {
       docFrom = [this];
@@ -2911,10 +2915,12 @@ abstract class ModelElement extends Canonicalization
       // just shortcut them out.
       if (!hasPublicName(element)) {
         _canonicalLibrary = null;
-      } else if (!packageGraph.publicLibraries.contains(definingLibrary)) {
+      } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
         List<Library> candidateLibraries = packageGraph
             .libraryElementReexportedBy[definingLibrary.element]
-            ?.where((l) => l.isPublic)
+            ?.where((l) =>
+                l.isPublic &&
+                l.package.documentedWhere != DocumentLocation.missing)
             ?.toList();
 
         if (candidateLibraries != null) {
@@ -3001,7 +3007,7 @@ abstract class ModelElement extends Canonicalization
   Element get element => _element;
 
   @override
-  String get elementLocation {
+  String get location {
     // Call nothing from here that can emit warnings or you'll cause stack overflows.
     if (lineAndColumn != null) {
       return "(${pathLib.toUri(sourceFileName)}:${lineAndColumn.item1}:${lineAndColumn.item2})";
@@ -3122,6 +3128,7 @@ abstract class ModelElement extends Canonicalization
   /// A human-friendly name for the kind of element this is.
   String get kind;
 
+  @override
   Library get library => _library;
 
   String get linkedName {
@@ -3182,26 +3189,6 @@ abstract class ModelElement extends Canonicalization
 
   ModelElement get overriddenElement => null;
 
-  ModelElement _overriddenDocumentedElement;
-  bool _overriddenDocumentedElementIsSet = false;
-  // TODO(jcollins-g): This method prefers canonical elements, but it isn't
-  // guaranteed and is probably the source of bugs or confusing warnings.
-  @override
-  ModelElement get overriddenDocumentedElement {
-    if (!_overriddenDocumentedElementIsSet) {
-      ModelElement found = this;
-      while ((found.element.documentationComment == null ||
-              found.element.documentationComment == "") &&
-          !found.isCanonical &&
-          found.overriddenElement != null) {
-        found = found.overriddenElement;
-      }
-      _overriddenDocumentedElement = found;
-      _overriddenDocumentedElementIsSet = true;
-    }
-    return _overriddenDocumentedElement;
-  }
-
   int _overriddenDepth;
   int get overriddenDepth {
     if (_overriddenDepth == null) {
@@ -3218,6 +3205,8 @@ abstract class ModelElement extends Canonicalization
   final PackageGraph _packageGraph;
   @override
   PackageGraph get packageGraph => _packageGraph;
+
+  Package get package => library.package;
 
   bool get isPublicAndPackageDocumented =>
       isPublic && library.packageGraph.packageDocumentedFor(this);
@@ -3485,7 +3474,7 @@ abstract class ModelElement extends Canonicalization
   ///     {@example abc/def/xyz_component.dart region=template lang=html}
   ///
   String _injectExamples(String rawdocs) {
-    final dirPath = this.packageGraph.packageMeta.dir.path;
+    final dirPath = package.packageMeta.dir.path;
     RegExp exampleRE = new RegExp(r'{@example\s+([^}]+)}');
     return rawdocs.replaceAllMapped(exampleRE, (match) {
       var args = _getExampleArgs(match[1]);
@@ -3666,7 +3655,7 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
 }
 
 class ModelFunctionTyped extends ModelElement
-    with SourceCodeMixin, TypeParameters
+    with TypeParameters
     implements EnclosedElement {
   @override
   List<TypeParameter> typeParameters = [];
@@ -3781,34 +3770,114 @@ class Operator extends Method {
 }
 
 class PackageGraph extends Canonicalization with Nameable, Warnable {
+  // TODO(jcollins-g): This constructor is convoluted.  Clean this up by
+  // building Libraries and adding them to Packages, then adding Packages
+  // to this graph.
+  PackageGraph(
+      Iterable<LibraryElement> libraryElements,
+      this.packageMeta,
+      this._packageWarningOptions,
+      this.driver,
+      this.sdk,
+      this.autoIncludeDependencies,
+      this.excludes,
+      this.excludePackages) {
+    assert(_allConstructedModelElements.isEmpty);
+    assert(allLibraries.isEmpty);
+    _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
+
+    // Build [Package] objects.
+    libraryElements.forEach((element) {});
+
+    // Build [Library] objects, and link them to [Package]s.
+    libraryElements.forEach((element) {
+      var packageMeta = new PackageMeta.fromElement(element);
+      var lib = new Library._(
+          element, this, new Package.fromPackageMeta(packageMeta, this));
+      packageMap[packageMeta.name]._libraries.add(lib);
+      allLibraries[element] = lib;
+      assert(!_elementToLibrary.containsKey(lib.element));
+      _elementToLibrary[element] = lib;
+    });
+    allLibrariesAdded = true;
+
+    // Go through docs of every ModelElement in package to pre-build the macros
+    // index.
+    allLocalModelElements.forEach((m) => m.documentationLocal);
+    _macrosAdded = true;
+
+    // After the allModelElements traversal to be sure that all packages
+    // are picked up.
+    documentedPackages.toList().forEach((package) {
+      package._libraries.sort((a, b) => compareNatural(a.name, b.name));
+      package._libraries.forEach((library) {
+        library._allClasses.forEach(_addToImplementors);
+      });
+    });
+    _implementors.values.forEach((l) => l.sort());
+    allImplementorsAdded = true;
+  }
+
+  /// Write files for packages outside the default.
+  final bool autoIncludeDependencies;
+
+  /// It is safe to cache values derived from the _implementors table if this
+  /// is true.
+  bool allImplementorsAdded = false;
+
+  /// A list of library names to treat as private.
+  final List<String> excludes;
+
+  /// A list of package names to exclude from local documentation.
+  final List<String> excludePackages;
+
+  // TODO(jcollins-g): refactor to eliminate the duplication with PackageBuilder
+  // (currently necessary for better use of the analyzer).
+  bool isLibraryExcluded(String name) =>
+      excludes.any((pattern) => name == pattern);
+  bool isPackageExcluded(String name) =>
+      excludePackages.any((pattern) => name == pattern);
+
+  Map<String, List<Class>> get implementors {
+    assert(allImplementorsAdded);
+    return _implementors;
+  }
+
   // All library objects related to this package; a superset of _libraries.
   final Map<LibraryElement, Library> allLibraries = new Map();
 
-  // Objects to keep track of warnings.
+  /// Objects to keep track of warnings.
   final PackageWarningOptions _packageWarningOptions;
   PackageWarningCounter _packageWarningCounter;
 
-  // All ModelElements constructed for this package; a superset of allModelElements.
+  /// All ModelElements constructed for this package; a superset of allModelElements.
   final Map<Tuple3<Element, Library, Class>, ModelElement>
       _allConstructedModelElements = new Map();
 
-  // Anything that might be inheritable, place here for later lookup.
+  /// Anything that might be inheritable, place here for later lookup.
   final Map<Tuple2<Element, Library>, Set<ModelElement>>
       _allInheritableElements = new Map();
 
   /// Map of Class.href to a list of classes implementing that class
   final Map<String, List<Class>> _implementors = new Map();
 
+  /// PackageMeta for the default package.
   final PackageMeta packageMeta;
 
   @override
+  Set<String> get locationPieces => new Set();
+
+  @override
   Library get canonicalLibrary => null;
+
+  Package get defaultPackage =>
+      localPackages.firstWhere((p) => p.packageMeta == packageMeta);
 
   @override
   PackageGraph get packageGraph => this;
 
   /// Map of package name to Package.
-  final Map<String, Package> packages = {};
+  final Map<String, Package> packageMap = {};
 
   final AnalysisDriver driver;
   final DartSdk sdk;
@@ -3828,10 +3897,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   bool get isDocumented => true;
 
   @override
-  Documentable get overriddenDocumentedElement => this;
-
-  @override
-  List<Locatable> get documentationFrom => [this];
+  List<Locatable> get documentationFrom => [defaultPackage];
 
   @override
   Warnable get enclosingElement => null;
@@ -3845,37 +3911,6 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   bool allLibrariesAdded = false;
   bool _macrosAdded = false;
 
-  PackageGraph(Iterable<LibraryElement> libraryElements, this.packageMeta,
-      this._packageWarningOptions, this.driver,
-      [this.sdk]) {
-    assert(_allConstructedModelElements.isEmpty);
-    assert(allLibraries.isEmpty);
-    _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
-    libraryElements.forEach((element) {
-      var lib = new Library._(element, this);
-      packages.putIfAbsent(
-          lib.packageName, () => new Package(lib.packageName, this));
-      packages[lib.packageName]._libraries.add(lib);
-      allLibraries[element] = lib;
-      assert(!_elementToLibrary.containsKey(lib.element));
-      _elementToLibrary[element] = lib;
-    });
-
-    allLibrariesAdded = true;
-    packages.values.forEach((package) {
-      package._libraries.sort((a, b) => compareNatural(a.name, b.name));
-      package._libraries.forEach((library) {
-        library._allClasses.forEach(_addToImplementors);
-      });
-    });
-
-    _implementors.values.forEach((l) => l.sort());
-    // Go through docs of every model element in package to prebuild the macros
-    // index.
-    allModelElements.forEach((m) => m.documentationLocal);
-    _macrosAdded = true;
-  }
-
   /// Returns true if there's at least one library documented in the package
   /// that has the same package path as the library for the given element.
   /// Usable as a cross-check for dartdoc's canonicalization to generate
@@ -3884,7 +3919,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   bool packageDocumentedFor(ModelElement element) {
     if (_allRootDirs == null) {
       _allRootDirs = new Set()
-        ..addAll(libraries.map((l) => l.packageMeta?.resolvedDir));
+        ..addAll(publicLibraries.map((l) => l.packageMeta?.resolvedDir));
     }
     return (_allRootDirs.contains(element.library.packageMeta?.resolvedDir));
   }
@@ -3893,7 +3928,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   Element get element => null;
 
   @override
-  String get elementLocation => '(top level package)';
+  String get location => '(top level package)';
 
   /// Flush out any warnings we might have collected while
   /// [_packageWarningOptions.autoFlush] was false.
@@ -3901,7 +3936,6 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     _packageWarningCounter.maybeFlush();
   }
 
-  @override
   Tuple2<int, int> get lineAndColumn => null;
 
   @override
@@ -3929,7 +3963,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     String locatableLocation = '';
     if (locatable != null) {
       locatableName = locatable.fullyQualifiedName.replaceFirst(':', '-');
-      locatableLocation = locatable.elementLocation;
+      locatableLocation = locatable.location;
     }
     return new Tuple2(locatableName, locatableLocation);
   }
@@ -4063,15 +4097,15 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
 
     List<String> messageParts = [warningMessage];
     if (warnable != null) {
-      messageParts.add(
-          "${warnablePrefix} ${warnableName}: ${warnable.elementLocation ?? ''}");
+      messageParts
+          .add("${warnablePrefix} ${warnableName}: ${warnable.location ?? ''}");
     }
     if (referredFrom != null) {
       for (Locatable referral in referredFrom) {
         if (referral != warnable) {
           var referredFromStrings = _safeWarnableName(referral);
           messageParts.add(
-              "${referredFromPrefix} ${referredFromStrings}: ${referral.elementLocation ?? ''}");
+              "${referredFromPrefix} ${referredFromStrings}: ${referral.location ?? ''}");
         }
       }
     }
@@ -4096,23 +4130,33 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     return locatable.fullyQualifiedName.replaceFirst(':', '-');
   }
 
-  bool get hasMultiplePackages => publicPackages.length > 1;
+  bool get hasMultiplePackages => localPackages.length > 1;
+
+  List<Package> get packages => packageMap.values.toList();
 
   List<Package> _publicPackages;
   List<Package> get publicPackages {
     if (_publicPackages == null) {
+      assert(allLibrariesAdded);
       // Help the user if they pass us a package that doesn't exist.
       for (String packageName in config.packageOrder) {
-        if (!packages.containsKey(packageName))
+        if (!packageMap.containsKey(packageName))
           warnOnElement(
               null, PackageWarning.packageOrderGivesMissingPackageName,
-              message: "${packageName}, packages: ${packages.keys.join(',')}");
+              message:
+                  "${packageName}, packages: ${packageMap.keys.join(',')}");
       }
-      _publicPackages = packages.values.where((p) => p.isPublic).toList()
-        ..sort();
+      _publicPackages = filterNonPublic(packages).toList()..sort();
     }
     return _publicPackages;
   }
+
+  /// Local packages are to be documented locally vs. remote or not at all.
+  List<Package> get localPackages =>
+      publicPackages.where((p) => p.isLocal).toList();
+
+  /// Documented packages are documented somewhere (local or remote).
+  Iterable<Package> get documentedPackages => packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
   // Use only in testing.
   void resetPublicPackages() => _publicPackages = null;
@@ -4148,7 +4192,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   /// A lookup index for hrefs to allow warnings to indicate where a broken
   /// link or orphaned file may have come from.  Not cached because
   /// [ModelElement]s can be created at any time and we're basing this
-  /// on more than just [allModelElements] to make the error messages
+  /// on more than just [allLocalModelElements] to make the error messages
   /// comprehensive.
   Map<String, Set<ModelElement>> get allHrefs {
     Map<String, Set<ModelElement>> hrefMap = new Map();
@@ -4167,8 +4211,8 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
       hrefMap.putIfAbsent(modelElement.href, () => new Set());
       hrefMap[modelElement.href].add(modelElement);
     }
-    for (Package package in packages.values) {
-      for (Library library in package._libraries) {
+    for (Package package in packageMap.values) {
+      for (Library library in package.libraries) {
         if (library.href == null) continue;
         hrefMap.putIfAbsent(library.href, () => new Set());
         hrefMap[library.href].add(library);
@@ -4204,6 +4248,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   bool get isSdk => packageMeta.isSdk;
 
   void _addToImplementors(Class c) {
+    assert(!allImplementorsAdded);
     _implementors.putIfAbsent(c.href, () => []);
     void _checkAndAddClass(Class key, Class implClass) {
       _implementors.putIfAbsent(key.href, () => []);
@@ -4230,8 +4275,35 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   }
 
   List<Library> get libraries =>
-      packages.values.expand((p) => p.libraries).toList()..sort();
-  Iterable<Library> get publicLibraries => filterNonPublic(libraries);
+      packages.expand((p) => p.libraries).toList()..sort();
+
+  List<Library> _publicLibraries;
+  Iterable<Library> get publicLibraries {
+    if (_publicLibraries == null) {
+      assert(allLibrariesAdded);
+      _publicLibraries = filterNonPublic(libraries).toList();
+    }
+    return _publicLibraries;
+  }
+
+  List<Library> _localLibraries;
+  Iterable<Library> get localLibraries {
+    if (_localLibraries == null) {
+      assert(allLibrariesAdded);
+      _localLibraries = localPackages.expand((p) => p.libraries).toList()
+        ..sort();
+    }
+    return _localLibraries;
+  }
+
+  List<Library> _localPublicLibraries;
+  Iterable<Library> get localPublicLibraries {
+    if (_localPublicLibraries == null) {
+      assert(allLibrariesAdded);
+      _localPublicLibraries = filterNonPublic(localLibraries).toList();
+    }
+    return _localPublicLibraries;
+  }
 
   bool get hasHomepage =>
       packageMeta.homepage != null && packageMeta.homepage.isNotEmpty;
@@ -4484,18 +4556,22 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
     Library foundLibrary = findLibraryFor(e);
 
     if (foundLibrary == null) {
-      foundLibrary = new Library._(e.library, this);
+      foundLibrary = new Library._(
+          e.library,
+          this,
+          new Package.fromPackageMeta(
+              new PackageMeta.fromElement(e.library), packageGraph));
       allLibraries[e.library] = foundLibrary;
     }
     return foundLibrary;
   }
 
   List<ModelElement> _allModelElements;
-  Iterable<ModelElement> get allModelElements {
+  Iterable<ModelElement> get allLocalModelElements {
     assert(allLibrariesAdded);
     if (_allModelElements == null) {
       _allModelElements = [];
-      this.libraries.forEach((library) {
+      this.localLibraries.forEach((library) {
         _allModelElements.addAll(library.allModelElements);
       });
     }
@@ -4505,7 +4581,7 @@ class PackageGraph extends Canonicalization with Nameable, Warnable {
   List<ModelElement> _allCanonicalModelElements;
   Iterable<ModelElement> get allCanonicalModelElements {
     return (_allCanonicalModelElements ??=
-        allModelElements.where((e) => e.isCanonical).toList());
+        allLocalModelElements.where((e) => e.isCanonical).toList());
   }
 
   String getMacro(String name) {
@@ -4576,14 +4652,59 @@ class Category extends LibraryContainer implements Comparable<Category> {
   PackageGraph get packageGraph => package.packageGraph;
 }
 
+/// For a given package, indicate with this enum whether it should be documented
+/// [local]ly, whether we should treat the package as [missing] and any references
+/// to it made canonical to this package, or [remote], indicating that
+/// we can build hrefs to an external source.
+enum DocumentLocation {
+  local,
+  missing,
+  remote,
+}
+
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
-class Package extends LibraryContainer implements Comparable<Package>, Privacy {
+class Package extends LibraryContainer
+    with Locatable
+    implements Comparable<Package>, Privacy {
   String _name;
   PackageGraph _packageGraph;
+  final _isLocal;
 
   final Map<String, Category> _nameToCategory = {};
-  Package(this._name, this._packageGraph);
+
+  // Creates a package, if necessary, and adds it to the [packageGraph].
+  factory Package.fromPackageMeta(
+      PackageMeta packageMeta, PackageGraph packageGraph) {
+    String packageName = packageMeta.name;
+    bool isLocal = packageMeta == packageGraph.packageMeta ||
+        packageGraph.autoIncludeDependencies;
+    isLocal = isLocal && !packageGraph.isPackageExcluded(packageName);
+    bool expectNonLocal = false;
+
+    if (!packageGraph.packageMap.containsKey(packageName) &&
+        packageGraph.allLibrariesAdded) expectNonLocal = true;
+    packageGraph.packageMap.putIfAbsent(packageName,
+        () => new Package._(packageName, packageGraph, packageMeta, isLocal));
+    // Verify that we don't somehow decide to document locally a package picked
+    // up after all documented libraries are added, because that breaks the
+    // assumption that we've picked up all documented libraries and packages
+    // before allLibrariesAdded is true.
+    assert(!(expectNonLocal &&
+        packageGraph.packageMap[packageName].documentedWhere ==
+            DocumentLocation.local));
+    return packageGraph.packageMap[packageName];
+  }
+
+  Package._(this._name, this._packageGraph, this._packageMeta, this._isLocal);
+
+  final Set<Library> _allLibraries = new Set();
+
+  /// Returns all libraries added to this package.  May include non-documented
+  /// libraries, but is not guaranteed to include a complete list of
+  /// non-documented libraries unless they are all referenced by documented ones.
+  /// Not sorted.
+  Set<Library> get allLibraries => _allLibraries;
 
   /// Return true if the code has defined non-default categories for libraries
   /// in this package.
@@ -4591,12 +4712,34 @@ class Package extends LibraryContainer implements Comparable<Package>, Privacy {
 
   LibraryContainer get defaultCategory => nameToCategory[null];
 
+  @override
+  List<Locatable> get documentationFrom => [this];
+
   bool _isPublic;
   @override
   bool get isPublic {
     if (_isPublic == null) _isPublic = libraries.any((l) => l.isPublic);
     return _isPublic;
   }
+
+  /// Returns true if this package is being documented locally.  If it isn't
+  /// documented locally, it still might be documented remotely; see documentedWhere.
+  bool get isLocal => _isLocal;
+
+  DocumentLocation get documentedWhere {
+    if (!isLocal) return DocumentLocation.missing;
+    // TODO(jcollins-g): Implement DocumentLocation.remote.
+    return DocumentLocation.local;
+  }
+
+  @override
+  String get fullyQualifiedName => 'package:$name';
+
+  @override
+  String get href => 'index.html';
+
+  @override
+  String get location => pathLib.toUri(packageMeta.resolvedDir).toString();
 
   @override
   String get name => _name;
@@ -4607,7 +4750,10 @@ class Package extends LibraryContainer implements Comparable<Package>, Privacy {
   // Workaround for mustache4dart issue where templates do not recognize
   // inherited properties as being in-context.
   @override
-  Iterable<Library> get publicLibraries => super.publicLibraries;
+  Iterable<Library> get publicLibraries {
+    assert(libraries.every((l) => l.packageMeta == _packageMeta));
+    return super.publicLibraries;
+  }
 
   /// A map of category name to the category itself.
   Map<String, Category> get nameToCategory {
@@ -4642,7 +4788,7 @@ class Package extends LibraryContainer implements Comparable<Package>, Privacy {
 
   /// Is this the package at the top of the list?  We display the first
   /// package specially (with "Libraries" rather than the package name).
-  bool get isFirstPackage => identical(packageGraph.publicPackages.first, this);
+  bool get isFirstPackage => identical(packageGraph.localPackages.first, this);
 
   bool get isSdk => packageMeta.isSdk;
 
@@ -4652,9 +4798,9 @@ class Package extends LibraryContainer implements Comparable<Package>, Privacy {
       if (isSdk) {
         _packagePath = getSdkDir().path;
       } else {
-        assert(_libraries.isNotEmpty);
+        assert(libraries.isNotEmpty);
         File file = new File(
-            pathLib.canonicalize(_libraries.first.element.source.fullName));
+            pathLib.canonicalize(libraries.first.element.source.fullName));
         Directory dir = file.parent;
         while (dir.parent.path != dir.path && dir.existsSync()) {
           File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
@@ -4669,15 +4815,8 @@ class Package extends LibraryContainer implements Comparable<Package>, Privacy {
     return _packagePath;
   }
 
-  PackageMeta _packageMeta;
-  // TODO(jcollins-g): packageMeta should be passed in with the object rather
-  // than calculated indirectly from libraries.
-  PackageMeta get packageMeta {
-    if (_packageMeta == null) {
-      _packageMeta = _libraries.first.packageMeta;
-    }
-    return _packageMeta;
-  }
+  final PackageMeta _packageMeta;
+  PackageMeta get packageMeta => _packageMeta;
 
   @override
   String toString() => name;
@@ -4903,7 +5042,7 @@ abstract class TypeParameters implements ModelElement {
 
 /// Top-level variables. But also picks up getters and setters?
 class TopLevelVariable extends ModelElement
-    with GetterSetterCombo, SourceCodeMixin
+    with GetterSetterCombo
     implements EnclosedElement {
   @override
   final Accessor getter;
@@ -4984,7 +5123,7 @@ class TopLevelVariable extends ModelElement
 }
 
 class Typedef extends ModelElement
-    with SourceCodeMixin, TypeParameters
+    with TypeParameters
     implements EnclosedElement {
   Typedef(FunctionTypeAliasElement element, Library library,
       PackageGraph packageGraph)
@@ -5120,8 +5259,8 @@ class PackageBuilder {
 
   Future<PackageGraph> buildPackageGraph() async {
     Set<LibraryElement> libraries = await getLibraries(getFiles);
-    return new PackageGraph(
-        libraries, packageMeta, getWarningOptions(), driver, sdk);
+    return new PackageGraph(libraries, packageMeta, getWarningOptions(), driver,
+        sdk, autoIncludeDependencies, excludes, excludePackages);
   }
 
   DartSdk _sdk;
@@ -5304,20 +5443,59 @@ class PackageBuilder {
     }
   }
 
+  Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) {
+    Set<PackageMeta> metas = new Set();
+    for (String filename in files) {
+      metas.add(new PackageMeta.fromFilename(filename));
+    }
+    return metas;
+  }
+
   Future<List<LibraryElement>> _parseLibraries(Set<String> files) async {
     Set<LibraryElement> libraries = new Set();
+    Set<Source> originalSources;
     Set<Source> sources = new Set<Source>();
-    files.forEach((filename) => driver.addFile(filename));
+    Set<PackageMeta> lastPass = new Set();
+    Set<PackageMeta> current;
+    Set<String> addedFiles = new Set();
+    do {
+      lastPass = _packageMetasForFiles(files);
+      files.difference(addedFiles).forEach((filename) {
+        driver.addFile(filename);
+        addedFiles.add(filename);
+      });
+      await Future
+          .wait(files.map((f) => processLibrary(f, libraries, sources)));
 
-    await Future.wait(files.map((f) => processLibrary(f, libraries, sources)));
-    await logAnalysisErrors(sources);
+      /// We don't care about upstream analysis errors, so save the first
+      /// source list.
+      if (originalSources == null) originalSources = new Set()..addAll(sources);
+      files.addAll(driver.knownFiles);
+      current = _packageMetasForFiles(files);
+      // To get canonicalization correct for non-locally documented packages
+      // (so we can generate the right hyperlinks), it's vital that we
+      // add all libraries in dependent packages.  So if the analyzer
+      // discovers some files in a package we haven't seen yet, add files
+      // for that package.
+      for (PackageMeta meta in current.difference(lastPass)) {
+        if (meta.isSdk) {
+          files.addAll(getSdkFilesToDocument());
+        } else {
+          files.addAll(
+              findFilesToDocumentInPackage(meta.dir.path, false, false));
+        }
+      }
+    } while (!lastPass.containsAll(current));
+
+    await logAnalysisErrors(originalSources);
     return libraries.toList();
   }
 
   /// Given a package name, explore the directory and pull out all top level
   /// library files in the "lib" directory to document.
   Iterable<String> findFilesToDocumentInPackage(
-      String basePackageDir, bool autoIncludeDependencies) sync* {
+      String basePackageDir, bool autoIncludeDependencies,
+      [bool filterExcludes = true]) sync* {
     final String sep = pathLib.separator;
 
     Set<String> packageDirs = new Set()..add(basePackageDir);
@@ -5328,7 +5506,7 @@ class PackageBuilder {
               new Uri.file(pathLib.join(basePackageDir, 'pubspec.yaml')))
           .asMap();
       for (String packageName in info.keys) {
-        if (!excludes.contains(packageName)) {
+        if (!filterExcludes || !excludes.contains(packageName)) {
           packageDirs.add(pathLib.dirname(info[packageName].toFilePath()));
         }
       }
@@ -5370,11 +5548,7 @@ class PackageBuilder {
         : findFilesToDocumentInPackage(rootDir.path, autoIncludeDependencies));
     if (packageMeta.isSdk) {
       files.addAll(getSdkFilesToDocument());
-    } else if (embedderSdk == null || embedderSdk.urlMappings.isEmpty) {
-      // Always throw in the interceptors; this library is needed for
-      // canonicalization assuming that the Interceptor class still exists.
-      files.addAll(getSdkFilesToDocument('dart:_interceptors'));
-    } else /* embedderSdk.urlMappings.isNotEmpty && !packageMeta.isSdk */ {
+    } else if (embedderSdk.urlMappings.isNotEmpty && !packageMeta.isSdk) {
       embedderSdk.urlMappings.keys.forEach((String dartUri) {
         Source source = embedderSdk.mapDartUri(dartUri);
         files.add(source.fullName);

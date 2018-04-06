@@ -81,6 +81,7 @@ bool hasPrivateName(Element e) {
   }
   if (e is LibraryElement &&
       (e.identifier.startsWith('dart:_') ||
+          e.identifier.startsWith('dart:nativewrappers/') ||
           ['dart:nativewrappers'].contains(e.identifier))) {
     return true;
   }

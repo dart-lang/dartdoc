@@ -475,7 +475,7 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
     assert(packageGraph.allLibrariesAdded);
     _findRefElementCache = new Map();
     for (final modelElement
-        in filterNonDocumented(packageGraph.allModelElements)) {
+        in filterNonDocumented(packageGraph.allLocalModelElements)) {
       _findRefElementCache.putIfAbsent(
           modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
       _findRefElementCache.putIfAbsent(

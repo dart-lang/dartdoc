@@ -268,7 +268,9 @@ Future<List<Map>> _buildTestPackageDocs(
         '--json',
         '--pretty-index-json',
         '--exclude',
-        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,meta',
+        'package:meta/meta.dart',
+        '--exclude-packages',
+        'Dart',
       ],
       workingDirectory: testPackage.absolute.path);
 }
@@ -617,7 +619,9 @@ updateTestPackageDocs() async {
         '--pretty-index-json',
         '--hide-sdk-text',
         '--exclude',
-        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,package:meta/meta.dart',
+        'package:meta/meta.dart',
+        '--exclude-packages',
+        'Dart',
         '--output',
         '../test_package_docs',
       ],
