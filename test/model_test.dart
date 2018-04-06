@@ -553,6 +553,20 @@ void main() {
         docsAsHtml = doAwesomeStuff.documentationAsHtml;
       });
 
+      test('operator [] reference within a class works', () {
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="fake/BaseForDocComments/operator_get.html">operator []</a> '));
+      });
+
+      test('operator [] reference outside of a class works', () {
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="fake/SpecialList/operator_get.html">SpecialList.operator []</a> '));
+      }, skip: 'https://github.com/dart-lang/dartdoc/issues/1285');
+
       test('codeifies a class from the SDK', () {
         expect(docsAsHtml, contains('<code>String</code>'));
       });
@@ -649,9 +663,7 @@ void main() {
           () {
         expect(docsAsHtml,
             contains('<a href="">css.theOnlyThingInTheLibrary</a>'));
-      },
-          skip:
-              'Wait for https://github.com/dart-lang/dartdoc/issues/767 to be fixed');
+      }, skip: 'https://github.com/dart-lang/dartdoc/issues/1402');
 
       // remove this test when the above test is fixed. just here to
       // track when the behavior changes
