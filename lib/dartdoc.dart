@@ -41,7 +41,7 @@ const String version = '0.18.1';
 final String defaultOutDir = pathLib.join('doc', 'api');
 
 /// Initialize and setup the generators.
-Future<List<Generator>> initGenerators(String url, String relCanonicalPrefix,
+Future<List<Generator>> _initGenerators(String url, String relCanonicalPrefix,
     {List<String> headerFilePaths,
     List<String> footerFilePaths,
     List<String> footerTextFilePaths,
@@ -75,9 +75,29 @@ class DartDoc extends PackageBuilder {
   final StreamController<String> _onCheckProgress =
       new StreamController(sync: true);
 
-  DartDoc(DartDocConfig config, this.generators, this.outputDir,
+  DartDoc._(DartDocConfig config, this.generators, this.outputDir,
       PackageMeta packageMeta)
       : super(config, packageMeta);
+
+  /// An asynchronous factory method that builds Dartdoc's file writers
+  /// and returns a DartDoc object with them.
+  static withDefaultGenerators(DartDocConfig config, Directory outputDir, PackageMeta packageMeta) async {
+    var generators = await _initGenerators(config.hostedUrl, config.relCanonicalPrefix,
+        headerFilePaths: config.headerFilePaths,
+        footerFilePaths: config.footerFilePaths,
+        footerTextFilePaths: config.footerTextFilePaths,
+        faviconPath: config.faviconPath,
+        prettyIndexJson: config.prettyIndexJson);
+    for (var generator in generators) {
+      generator.onFileCreated.listen(logProgress);
+    }
+    return new DartDoc._(config, generators, outputDir, packageMeta);
+  }
+
+  factory DartDoc.withoutGenerators(DartDocConfig config, Directory outputDir,
+      PackageMeta packageMeta) {
+    return new DartDoc._(config, [], outputDir, packageMeta);
+  }
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
 
@@ -146,14 +166,17 @@ class DartDoc extends PackageBuilder {
         "in ${seconds.toStringAsFixed(1)} seconds");
     _stopwatch.reset();
 
-    // Create the out directory.
-    if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
+    if (generators.isNotEmpty) {
+      // Create the out directory.
+      if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
 
-    for (var generator in generators) {
-      await generator.generate(packageGraph, outputDir.path);
-      writtenFiles.addAll(generator.writtenFiles.map(pathLib.normalize));
+      for (var generator in generators) {
+        await generator.generate(packageGraph, outputDir.path);
+        writtenFiles.addAll(generator.writtenFiles.map(pathLib.normalize));
+      }
+      if (config.validateLinks) validateLinks(packageGraph, outputDir.path);
     }
-    if (config.validateLinks) validateLinks(packageGraph, outputDir.path);
+
     int warnings = packageGraph.packageWarningCounter.warningCount;
     int errors = packageGraph.packageWarningCounter.errorCount;
     if (warnings == 0 && errors == 0) {

@@ -44,11 +44,6 @@ main(List<String> arguments) async {
   }
 
   Directory sdkDir = getSdkDir();
-  if (sdkDir == null) {
-    stderr.writeln(" Error: unable to locate the Dart SDK.");
-    exit(1);
-  }
-
   final bool sdkDocs = args['sdk-docs'];
   final bool showProgress = args['show-progress'];
 
@@ -61,52 +56,14 @@ main(List<String> arguments) async {
     inputDir = args['input'];
   }
 
-  if (!inputDir.existsSync()) {
-    stderr.writeln(
-        " fatal error: unable to locate the input directory at ${inputDir
-            .path}.");
-    exit(1);
-  }
-
-  String url = args['hosted-url'];
-
-  List<String> headerFilePaths =
-      args['header'].map(_resolveTildePath).toList() as List<String>;
-  for (String headerFilePath in headerFilePaths) {
-    if (!new File(headerFilePath).existsSync()) {
-      stderr.writeln(
-          " fatal error: unable to locate header file: ${headerFilePath}.");
-      exit(1);
-    }
-  }
-
-  List<String> footerFilePaths =
-      args['footer'].map(_resolveTildePath).toList() as List<String>;
-  for (String footerFilePath in footerFilePaths) {
-    if (!new File(footerFilePath).existsSync()) {
-      stderr.writeln(
-          " fatal error: unable to locate footer file: ${footerFilePath}.");
-      exit(1);
-    }
-  }
-
-  List<String> footerTextFilePaths =
-      args['footer-text'].map(_resolveTildePath).toList() as List<String>;
-
+  List<String> footerTextFilePaths = [];
   // If we're generating docs for the Dart SDK, we insert a copyright footer.
   if (sdkDocs) {
     Uri footerCopyrightUri = await Isolate.resolvePackageUri(
         Uri.parse('package:dartdoc/resources/sdk_footer_text.html'));
     footerTextFilePaths = [footerCopyrightUri.toFilePath()];
   }
-
-  for (String footerFilePath in footerTextFilePaths) {
-    if (!new File(footerFilePath).existsSync()) {
-      stderr.writeln(
-          " fatal error: unable to locate footer-text file: ${footerFilePath}.");
-      exit(1);
-    }
-  }
+  footerTextFilePaths.addAll(args['footer-text']);
 
   Directory outputDir =
       new Directory(pathLib.join(Directory.current.path, defaultOutDir));
@@ -212,16 +169,6 @@ main(List<String> arguments) async {
   logInfo("Generating documentation for '${packageMeta}' into "
       "${outputDir.absolute.path}${Platform.pathSeparator}");
 
-  var generators = await initGenerators(url, args['rel-canonical-prefix'],
-      headerFilePaths: headerFilePaths,
-      footerFilePaths: footerFilePaths,
-      footerTextFilePaths: footerTextFilePaths,
-      faviconPath: args['favicon'],
-      prettyIndexJson: args['pretty-index-json']);
-
-  for (var generator in generators) {
-    generator.onFileCreated.listen(logProgress);
-  }
 
   DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
       PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
@@ -255,6 +202,11 @@ main(List<String> arguments) async {
     examplePathPrefix: args['example-path-prefix'],
     excludeLibraries: args['exclude'],
     excludePackages: args['exclude-packages'],
+    faviconPath: args['favicon'],
+    footerFilePaths: args['footer'],
+    footerTextFilePaths: footerTextFilePaths,
+    headerFilePaths: args['header'],
+    hostedUrl: args['hosted-url'],
     includeExternals: args['include-external'],
     includeLibraries: args['include'],
     includeSource: args['include-source'],
@@ -262,8 +214,10 @@ main(List<String> arguments) async {
     packageOrder: args['package-order'].isEmpty
         ? args['category-order']
         : args['package-order'],
+    prettyIndexJson: args['pretty-index-json'],
     reexportMinConfidence:
         double.parse(args['ambiguous-reexport-scorer-min-confidence']),
+    relCanonicalPrefix: args['rel-canonical-prefix'],
     sdkDir: sdkDir,
     sdkVersion: sdk.sdkVersion,
     showWarnings: args['show-warnings'],
@@ -271,7 +225,7 @@ main(List<String> arguments) async {
     verboseWarnings: args['verbose-warnings'],
   );
 
-  DartDoc dartdoc = new DartDoc(config, generators, outputDir, packageMeta);
+  DartDoc dartdoc = await DartDoc.withDefaultGenerators(config, outputDir, packageMeta);
 
   dartdoc.onCheckProgress.listen(logProgress);
   await Chain.capture(() async {

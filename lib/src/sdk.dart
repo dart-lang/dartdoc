@@ -5,6 +5,7 @@
 import 'dart:io';
 
 /// Use config.sdkDir instead outside of initialization.
+// TODO(jcollins-g): Avoid this function in PackageMeta, too.
 Directory getSdkDir() {
   File vmExecutable = new File(Platform.resolvedExecutable);
   return vmExecutable.parent.parent;
