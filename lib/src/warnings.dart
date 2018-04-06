@@ -104,9 +104,6 @@ abstract class Locatable {
   /// A string indicating the URI of this Locatable, usually derived from
   /// [Element.location].
   String get location;
-
-  /// The line and column within [location] of this Locatable.
-  //Tuple2<int, int> get lineAndColumn;
 }
 
 // The kinds of warnings that can be displayed when documenting a package.
