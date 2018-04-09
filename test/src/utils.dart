@@ -11,7 +11,6 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as pathLib;
 
 Directory sdkDir;
@@ -33,7 +32,7 @@ void delete(Directory dir) {
 }
 
 init() async {
-  sdkDir = getSdkDir();
+  sdkDir = defaultSdkDir;
   sdkPackageMeta = new PackageMeta.fromDir(sdkDir);
 
   testPackageGraph = await bootBasicPackage(

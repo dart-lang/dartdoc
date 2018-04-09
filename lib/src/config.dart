@@ -6,11 +6,8 @@ library dartdoc.config;
 
 import 'dart:io';
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:path/path.dart' as pathLib;
-
-import 'model.dart';
 
 String _resolveTildePath(String originalPath) {
   if (originalPath == null || !originalPath.startsWith('~/')) {
@@ -26,18 +23,6 @@ String _resolveTildePath(String originalPath) {
   }
 
   return pathLib.join(homeDir, originalPath.substring(2));
-}
-
-/// Class representing values possibly local to a particular [ModelElement].
-class LocalConfig {
-  final Map<String, Set<String>> categoryMap;
-  final PackageMeta packageMeta;
-
-  LocalConfig._(this.categoryMap, this.packageMeta);
-
-  factory LocalConfig.fromLibrary(LibraryElement element) {
-    return new LocalConfig._({}, new PackageMeta.fromElement(element));
-  }
 }
 
 class DartDocConfig {
@@ -98,11 +83,13 @@ class DartDocConfig {
     footerFilePaths = footerFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String footerFilePath in footerFilePaths) {
       if (!new File(footerFilePath).existsSync()) {
-        throw DartDocFailure("fatal error: unable to locate footer file: ${footerFilePath}.");
+        throw DartDocFailure(
+            "fatal error: unable to locate footer file: ${footerFilePath}.");
       }
     }
 
-    footerTextFilePaths = footerTextFilePaths.map((p) => _resolveTildePath(p)).toList();
+    footerTextFilePaths =
+        footerTextFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String footerTextFilePath in footerTextFilePaths) {
       if (!new File(footerTextFilePath).existsSync()) {
         throw DartDocFailure(
@@ -113,7 +100,8 @@ class DartDocConfig {
     headerFilePaths = headerFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String headerFilePath in headerFilePaths) {
       if (!new File(headerFilePath).existsSync()) {
-        throw DartDocFailure("fatal error: unable to locate header file: ${headerFilePath}.");
+        throw DartDocFailure(
+            "fatal error: unable to locate header file: ${headerFilePath}.");
       }
     }
   }
@@ -153,7 +141,7 @@ class DartDocConfig {
       excludePackages ?? const <String>[],
       faviconPath,
       footerFilePaths ?? const <String>[],
-      footerTextFilePaths ?? const<String>[],
+      footerTextFilePaths ?? const <String>[],
       headerFilePaths ?? const <String>[],
       hostedUrl,
       includeExternals ?? const <String>[],
@@ -164,7 +152,7 @@ class DartDocConfig {
       prettyIndexJson,
       reexportMinConfidence,
       relCanonicalPrefix,
-      sdkDir ?? getSdkDir(),
+      sdkDir ?? defaultSdkDir,
       sdkVersion,
       showWarnings,
       validateLinks,

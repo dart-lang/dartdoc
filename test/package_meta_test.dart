@@ -7,7 +7,6 @@ library dartdoc.package_utils_test;
 import 'dart:io';
 
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/sdk.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -69,7 +68,7 @@ void main() {
   });
 
   group('PackageMeta.fromSdk', () {
-    PackageMeta p = new PackageMeta.fromDir(getSdkDir());
+    PackageMeta p = new PackageMeta.fromDir(defaultSdkDir);
 
     test('has a name', () {
       expect(p.name, 'Dart');

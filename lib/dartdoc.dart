@@ -32,7 +32,6 @@ export 'src/element_type.dart';
 export 'src/generator.dart';
 export 'src/model.dart';
 export 'src/package_meta.dart';
-export 'src/sdk.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
@@ -81,8 +80,10 @@ class DartDoc extends PackageBuilder {
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a DartDoc object with them.
-  static withDefaultGenerators(DartDocConfig config, Directory outputDir, PackageMeta packageMeta) async {
-    var generators = await _initGenerators(config.hostedUrl, config.relCanonicalPrefix,
+  static withDefaultGenerators(DartDocConfig config, Directory outputDir,
+      PackageMeta packageMeta) async {
+    var generators = await _initGenerators(
+        config.hostedUrl, config.relCanonicalPrefix,
         headerFilePaths: config.headerFilePaths,
         footerFilePaths: config.footerFilePaths,
         footerTextFilePaths: config.footerTextFilePaths,
@@ -94,8 +95,8 @@ class DartDoc extends PackageBuilder {
     return new DartDoc._(config, generators, outputDir, packageMeta);
   }
 
-  factory DartDoc.withoutGenerators(DartDocConfig config, Directory outputDir,
-      PackageMeta packageMeta) {
+  factory DartDoc.withoutGenerators(
+      DartDocConfig config, Directory outputDir, PackageMeta packageMeta) {
     return new DartDoc._(config, [], outputDir, packageMeta);
   }
 

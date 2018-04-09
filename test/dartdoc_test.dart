@@ -98,8 +98,10 @@ void main() {
     test('generate docs excluding a single library', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       DartDoc dartdoc = new DartDoc.withoutGenerators(
-        new DartDocConfig.fromParameters(inputDir: testPackageDir, excludeLibraries: ['fake']),
-          tempDir, meta);
+          new DartDocConfig.fromParameters(
+              inputDir: testPackageDir, excludeLibraries: ['fake']),
+          tempDir,
+          meta);
 
       DartDocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -108,7 +110,8 @@ void main() {
       expect(p.name, 'test_package');
       expect(p.hasDocumentationFile, isTrue);
       expect(p.localPublicLibraries, hasLength(9));
-      expect(p.localPublicLibraries.map((lib) => lib.name).contains('fake'), isFalse);
+      expect(p.localPublicLibraries.map((lib) => lib.name).contains('fake'),
+          isFalse);
     });
 
     test('generate docs for package with embedder yaml', () async {
