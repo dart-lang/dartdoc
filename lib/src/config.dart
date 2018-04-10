@@ -98,11 +98,13 @@ class DartDocConfig {
     footerFilePaths = footerFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String footerFilePath in footerFilePaths) {
       if (!new File(footerFilePath).existsSync()) {
-        throw DartDocFailure("fatal error: unable to locate footer file: ${footerFilePath}.");
+        throw DartDocFailure(
+            "fatal error: unable to locate footer file: ${footerFilePath}.");
       }
     }
 
-    footerTextFilePaths = footerTextFilePaths.map((p) => _resolveTildePath(p)).toList();
+    footerTextFilePaths =
+        footerTextFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String footerTextFilePath in footerTextFilePaths) {
       if (!new File(footerTextFilePath).existsSync()) {
         throw DartDocFailure(
@@ -113,7 +115,8 @@ class DartDocConfig {
     headerFilePaths = headerFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String headerFilePath in headerFilePaths) {
       if (!new File(headerFilePath).existsSync()) {
-        throw DartDocFailure("fatal error: unable to locate header file: ${headerFilePath}.");
+        throw DartDocFailure(
+            "fatal error: unable to locate header file: ${headerFilePath}.");
       }
     }
   }
@@ -153,7 +156,7 @@ class DartDocConfig {
       excludePackages ?? const <String>[],
       faviconPath,
       footerFilePaths ?? const <String>[],
-      footerTextFilePaths ?? const<String>[],
+      footerTextFilePaths ?? const <String>[],
       headerFilePaths ?? const <String>[],
       hostedUrl,
       includeExternals ?? const <String>[],

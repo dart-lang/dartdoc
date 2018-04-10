@@ -81,8 +81,10 @@ class DartDoc extends PackageBuilder {
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a DartDoc object with them.
-  static withDefaultGenerators(DartDocConfig config, Directory outputDir, PackageMeta packageMeta) async {
-    var generators = await _initGenerators(config.hostedUrl, config.relCanonicalPrefix,
+  static withDefaultGenerators(DartDocConfig config, Directory outputDir,
+      PackageMeta packageMeta) async {
+    var generators = await _initGenerators(
+        config.hostedUrl, config.relCanonicalPrefix,
         headerFilePaths: config.headerFilePaths,
         footerFilePaths: config.footerFilePaths,
         footerTextFilePaths: config.footerTextFilePaths,
@@ -94,8 +96,8 @@ class DartDoc extends PackageBuilder {
     return new DartDoc._(config, generators, outputDir, packageMeta);
   }
 
-  factory DartDoc.withoutGenerators(DartDocConfig config, Directory outputDir,
-      PackageMeta packageMeta) {
+  factory DartDoc.withoutGenerators(
+      DartDocConfig config, Directory outputDir, PackageMeta packageMeta) {
     return new DartDoc._(config, [], outputDir, packageMeta);
   }
 

@@ -169,7 +169,6 @@ main(List<String> arguments) async {
   logInfo("Generating documentation for '${packageMeta}' into "
       "${outputDir.absolute.path}${Platform.pathSeparator}");
 
-
   DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
       PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
 
@@ -225,7 +224,8 @@ main(List<String> arguments) async {
     verboseWarnings: args['verbose-warnings'],
   );
 
-  DartDoc dartdoc = await DartDoc.withDefaultGenerators(config, outputDir, packageMeta);
+  DartDoc dartdoc =
+      await DartDoc.withDefaultGenerators(config, outputDir, packageMeta);
 
   dartdoc.onCheckProgress.listen(logProgress);
   await Chain.capture(() async {
