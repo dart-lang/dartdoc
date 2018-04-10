@@ -6,7 +6,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:tuple/tuple.dart';
 
-import 'config.dart';
 import 'logging.dart';
 
 class PackageWarningHelpText {
@@ -137,10 +136,12 @@ class PackageWarningOptions {
   // PackageWarnings can be in both asWarnings and asErrors, latter takes precedence
   final Set<PackageWarning> asWarnings = new Set<PackageWarning>();
   final Set<PackageWarning> asErrors = new Set<PackageWarning>();
+  // Display verbose warnings.
+  final bool verboseWarnings;
 
   bool autoFlush = true;
 
-  PackageWarningOptions() {
+  PackageWarningOptions(this.verboseWarnings) {
     asWarnings.addAll(PackageWarning.values);
     ignore(PackageWarning.typeAsHtml);
   }
@@ -215,7 +216,7 @@ class PackageWarningCounter {
     if (type != null) {
       var entry = "  $type: $fullMessage";
       if (_warningCounts[kind] == 1 &&
-          config.verboseWarnings &&
+          options.verboseWarnings &&
           packageWarningText[kind].longHelp.isNotEmpty) {
         // First time we've seen this warning.  Give a little extra info.
         final String separator = '\n            ';

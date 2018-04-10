@@ -23,65 +23,86 @@ class LocalConfig {
   }
 }
 
-class Config {
-  final Directory inputDir;
-  final bool showWarnings;
+class DartDocConfig {
   final bool addCrossdart;
-  final String examplePathPrefix;
-  final bool includeSource;
-  final String sdkVersion;
   final bool autoIncludeDependencies;
+  final List<String> dropTextFrom;
+  final List<String> excludeLibraries;
+  final List<String> excludePackages;
+  final String examplePathPrefix;
+  final List<String> includeExternals;
+  final List<String> includeLibraries;
+  final bool includeSource;
+  final Directory inputDir;
   final List<String> packageOrder;
   final double reexportMinConfidence;
-  final bool verboseWarnings;
-  final List<String> dropTextFrom;
-  final List<String> excludePackages;
+  final Directory sdkDir;
+  final String sdkVersion;
+  final bool showWarnings;
   final bool validateLinks;
-  Config._(
-      this.inputDir,
-      this.showWarnings,
-      this.addCrossdart,
-      this.examplePathPrefix,
-      this.includeSource,
-      this.sdkVersion,
-      this.autoIncludeDependencies,
-      this.packageOrder,
-      this.reexportMinConfidence,
-      this.verboseWarnings,
-      this.dropTextFrom,
-      this.excludePackages,
-      this.validateLinks);
-}
+  final bool verboseWarnings;
+  DartDocConfig._(
+    this.addCrossdart,
+    this.autoIncludeDependencies,
+    this.dropTextFrom,
+    this.examplePathPrefix,
+    this.excludeLibraries,
+    this.excludePackages,
+    this.includeExternals,
+    this.includeLibraries,
+    this.includeSource,
+    this.inputDir,
+    this.packageOrder,
+    this.reexportMinConfidence,
+    this.sdkDir,
+    this.sdkVersion,
+    this.showWarnings,
+    this.validateLinks,
+    this.verboseWarnings,
+  );
 
-Config _config;
-Config get config => _config;
-
-void setConfig(
-    {Directory inputDir,
-    bool showWarnings: false,
+  factory DartDocConfig.fromParameters({
     bool addCrossdart: false,
-    String examplePathPrefix,
-    bool includeSource: true,
-    String sdkVersion,
     bool autoIncludeDependencies: false,
+    List<String> dropTextFrom,
+    String examplePathPrefix,
+    List<String> excludeLibraries,
+    List<String> excludePackages,
+    List<String> includeExternals,
+    List<String> includeLibraries,
+    bool includeSource: true,
+    Directory inputDir,
     List<String> packageOrder,
     double reexportMinConfidence: 0.1,
+    Directory sdkDir,
+    String sdkVersion,
+    bool showWarnings: false,
+    bool validateLinks: true,
     bool verboseWarnings: true,
-    List<String> dropTextFrom,
-    List<String> excludePackages,
-    bool validateLinks: true}) {
-  _config = new Config._(
-      inputDir,
-      showWarnings,
+  }) {
+    return new DartDocConfig._(
       addCrossdart,
-      examplePathPrefix,
-      includeSource,
-      sdkVersion,
       autoIncludeDependencies,
+      dropTextFrom ?? const <String>[],
+      examplePathPrefix,
+      excludeLibraries ?? const <String>[],
+      excludePackages ?? const <String>[],
+      includeExternals ?? const <String>[],
+      includeLibraries ?? const <String>[],
+      includeSource,
+      inputDir,
       packageOrder ?? const <String>[],
       reexportMinConfidence,
+      sdkDir ?? getSdkDir(),
+      sdkVersion,
+      showWarnings,
+      validateLinks,
       verboseWarnings,
-      dropTextFrom ?? const <String>[],
-      excludePackages ?? const <String>[],
-      validateLinks);
+    );
+  }
+
+  bool isLibraryExcluded(String name) =>
+      excludeLibraries.any((pattern) => name == pattern);
+  bool isPackageExcluded(String name) =>
+      excludePackages.any((pattern) => name == pattern);
 }

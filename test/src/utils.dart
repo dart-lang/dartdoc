@@ -35,37 +35,40 @@ void delete(Directory dir) {
 init() async {
   sdkDir = getSdkDir();
   sdkPackageMeta = new PackageMeta.fromDir(sdkDir);
-  setConfig();
 
   testPackageGraph = await bootBasicPackage(
-      'testing/test_package', ['css', 'code_in_comments', 'excluded'], false);
+      'testing/test_package', ['css', 'code_in_comments', 'excluded']);
   testPackageGraphGinormous = await bootBasicPackage(
-      'testing/test_package', ['css', 'code_in_commnets', 'excluded'], true);
+      'testing/test_package', ['css', 'code_in_commnets', 'excluded'],
+      withAutoIncludedDependencies: true);
 
   testPackageGraphSmall =
-      await bootBasicPackage('testing/test_package_small', [], false);
+      await bootBasicPackage('testing/test_package_small', []);
   testPackageGraphSdk = await bootSdkPackage();
 }
 
 Future<PackageGraph> bootSdkPackage() {
   Directory dir = new Directory(pathLib.current);
   return new PackageBuilder(
-          dir, [], [], sdkDir, sdkPackageMeta, [], [], true, false)
+          new DartDocConfig.fromParameters(
+            inputDir: dir,
+            sdkDir: sdkDir,
+          ),
+          sdkPackageMeta)
       .buildPackageGraph();
 }
 
 Future<PackageGraph> bootBasicPackage(
-    String dirPath, List<String> excludes, bool withAutoIncludedDependencies) {
+    String dirPath, List<String> excludeLibraries,
+    {bool withAutoIncludedDependencies = false, bool withCrossdart = false}) {
   Directory dir = new Directory(dirPath);
   return new PackageBuilder(
-          dir,
-          excludes,
-          [],
-          sdkDir,
-          new PackageMeta.fromDir(new Directory(dirPath)),
-          [],
-          [],
-          true,
-          withAutoIncludedDependencies)
+          new DartDocConfig.fromParameters(
+              inputDir: dir,
+              sdkDir: sdkDir,
+              excludeLibraries: excludeLibraries,
+              addCrossdart: withCrossdart,
+              autoIncludeDependencies: withAutoIncludedDependencies),
+          new PackageMeta.fromDir(new Directory(dirPath)))
       .buildPackageGraph();
 }

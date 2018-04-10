@@ -15,6 +15,29 @@ import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
 
+/// For testing sort behavior.
+class TestLibraryContainer extends LibraryContainer {
+  @override
+  final List<String> containerOrder;
+  @override
+  final LibraryContainer enclosingContainer;
+  @override
+  final String name;
+  @override
+  bool get isSdk => false;
+
+  TestLibraryContainer(this.name, this.containerOrder, this.enclosingContainer);
+}
+
+class TestLibraryContainerSdk extends TestLibraryContainer {
+  TestLibraryContainerSdk(String name, List<String> containerOrder,
+      LibraryContainer enclosingContainer)
+      : super(name, containerOrder, enclosingContainer);
+
+  @override
+  bool get isSdk => true;
+}
+
 void main() {
   Directory sdkDir = getSdkDir();
 
@@ -116,19 +139,67 @@ void main() {
     });
   });
 
+  group('LibraryContainer', () {
+    TestLibraryContainer topLevel;
+    List<String> sortOrderBasic;
+    List<String> containerNames;
+
+    setUpAll(() {
+      topLevel = new TestLibraryContainer('topLevel', [], null);
+      sortOrderBasic = ['theFirst', 'second', 'fruit'];
+      containerNames = [
+        'moo',
+        'woot',
+        'theFirst',
+        'topLevel Things',
+        'toplevel',
+        'fruit'
+      ];
+    });
+
+    test('multiple containers with specified sort order', () {
+      List<LibraryContainer> containers = [];
+      for (String name in containerNames)
+        containers
+            .add(new TestLibraryContainer(name, sortOrderBasic, topLevel));
+      containers
+          .add(new TestLibraryContainerSdk('SDK', sortOrderBasic, topLevel));
+      containers.sort();
+      expect(
+          containers.map((c) => c.name),
+          orderedEquals([
+            'theFirst',
+            'fruit',
+            'toplevel',
+            'SDK',
+            'topLevel Things',
+            'moo',
+            'woot'
+          ]));
+    });
+
+    test('multiple containers, no specified sort order', () {
+      List<LibraryContainer> containers = [];
+      for (String name in containerNames)
+        containers.add(new TestLibraryContainer(name, [], topLevel));
+      containers.add(new TestLibraryContainerSdk('SDK', [], topLevel));
+      containers.sort();
+      expect(
+          containers.map((c) => c.name),
+          orderedEquals([
+            'toplevel',
+            'SDK',
+            'topLevel Things',
+            'fruit',
+            'moo',
+            'theFirst',
+            'woot'
+          ]));
+    });
+  });
+
   group('Package', () {
     group('test package', () {
-      setUp(() {
-        setConfig();
-        ginormousPackageGraph.resetPublicPackages();
-        packageGraph.resetPublicPackages();
-      });
-      tearDown(() {
-        setConfig();
-        ginormousPackageGraph.resetPublicPackages();
-        packageGraph.resetPublicPackages();
-      });
-
       test('name', () {
         expect(packageGraph.name, 'test_package');
       });
@@ -155,12 +226,6 @@ void main() {
         expect(ginormousPackageGraph.localPackages, hasLength(4));
         expect(ginormousPackageGraph.localPackages.first.name,
             equals('test_package'));
-      });
-
-      test('multiple packages, specified sort order', () {
-        setConfig(packageOrder: ['meta', 'test_package']);
-        expect(ginormousPackageGraph.localPackages, hasLength(4));
-        expect(ginormousPackageGraph.localPackages.first.name, equals('meta'));
       });
 
       test('is documented in library', () {
@@ -553,6 +618,20 @@ void main() {
         docsAsHtml = doAwesomeStuff.documentationAsHtml;
       });
 
+      test('operator [] reference within a class works', () {
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="fake/BaseForDocComments/operator_get.html">operator []</a> '));
+      });
+
+      test('operator [] reference outside of a class works', () {
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="fake/SpecialList/operator_get.html">SpecialList.operator []</a> '));
+      }, skip: 'https://github.com/dart-lang/dartdoc/issues/1285');
+
       test('codeifies a class from the SDK', () {
         expect(docsAsHtml, contains('<code>String</code>'));
       });
@@ -649,9 +728,7 @@ void main() {
           () {
         expect(docsAsHtml,
             contains('<a href="">css.theOnlyThingInTheLibrary</a>'));
-      },
-          skip:
-              'Wait for https://github.com/dart-lang/dartdoc/issues/767 to be fixed');
+      }, skip: 'https://github.com/dart-lang/dartdoc/issues/1402');
 
       // remove this test when the above test is fixed. just here to
       // track when the behavior changes
@@ -1251,7 +1328,6 @@ void main() {
     });
 
     test('has source code', () {
-      setConfig(addCrossdart: false);
       expect(topLevelFunction.sourceCode, startsWith('@deprecated'));
       expect(topLevelFunction.sourceCode, endsWith('''
 String topLevelFunction(int param1, bool param2, Cool coolBeans,
@@ -1405,6 +1481,47 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('', () {});
   });
 
+  group('Crossdart', () {
+    PackageGraph crossdartPackageGraph;
+    Library crossdartFakeLibrary;
+    Class HasGenerics;
+    Method convertToMap;
+
+    setUpAll(() async {
+      var fakePath = "testing/test_package/lib/fake.dart";
+      var offset = new File(fakePath)
+          .readAsStringSync()
+          .indexOf('Map<X, Y> convertToMap');
+      expect(offset, isNonNegative,
+          reason: "Can't find convertToMap function in ${fakePath}");
+      if (Platform.isWindows) fakePath = fakePath.replaceAll('/', r'\\');
+
+      crossdartPackageGraph = await utils
+          .bootBasicPackage(utils.testPackageDir.path, [], withCrossdart: true);
+      crossdartFakeLibrary =
+          crossdartPackageGraph.libraries.firstWhere((l) => l.name == 'fake');
+      HasGenerics = crossdartFakeLibrary.classes
+          .singleWhere((c) => c.name == 'HasGenerics');
+      convertToMap = HasGenerics.instanceMethods
+          .singleWhere((m) => m.name == 'convertToMap');
+      var crossDartFile =
+          new File(pathLib.join(utils.testPackageDir.path, "crossdart.json"));
+      crossDartFile.writeAsStringSync("""
+              {"$fakePath":
+                {"references":[{"offset":${offset},"end":${offset+3},"remotePath":"http://www.example.com/fake.dart"}]}}
+      """);
+      // Indirectly load the file.
+      crossdartPackageGraph.crossdartJson;
+      if (crossDartFile.existsSync()) crossDartFile.deleteSync();
+    });
+
+    test('Source code crossdartifies correctly end to end', () {
+      crossdartPackageGraph;
+      expect(convertToMap.sourceCode,
+          "<a class='crossdart-link' href='http://www.example.com/fake.dart'>Map</a>&lt;X, Y&gt; convertToMap() =&gt; null;");
+    });
+  });
+
   group('Method', () {
     Class classB,
         klass,
@@ -1452,14 +1569,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'getAFunctionReturningVoid');
       getAFunctionReturningBool = TypedFunctionsWithoutTypedefs.instanceMethods
           .singleWhere((m) => m.name == 'getAFunctionReturningBool');
-    });
-
-    tearDown(() {
-      var file =
-          new File(pathLib.join(Directory.current.path, "crossdart.json"));
-      if (file.existsSync()) {
-        file.deleteSync();
-      }
     });
 
     test('verify parameter types are correctly displayed', () {
@@ -1570,37 +1679,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('method source code indents correctly', () {
-      setConfig(addCrossdart: false);
       expect(convertToMap.sourceCode,
           'Map&lt;X, Y&gt; convertToMap() =&gt; null;');
     });
 
-    test('method source code crossdartifies correctly', () {
-      convertToMap.clearSourceCodeCache();
-      var fakePath = "testing/test_package/lib/fake.dart";
-      var offset = new File(fakePath)
-          .readAsStringSync()
-          .indexOf('Map<X, Y> convertToMap');
-      expect(offset, isNonNegative,
-          reason: "Can't find convertToMap function in ${fakePath}");
-      if (Platform.isWindows) fakePath = fakePath.replaceAll('/', r'\\');
-      new File(pathLib.join(Directory.current.path, "crossdart.json"))
-          .writeAsStringSync("""
-              {"$fakePath":
-                {"references":[{"offset":${offset},"end":${offset+3},"remotePath":"http://www.example.com/fake.dart"}]}}
-      """);
-
-      setConfig(addCrossdart: true, inputDir: Directory.current);
-
-      expect(convertToMap.sourceCode,
-          "<a class='crossdart-link' href='http://www.example.com/fake.dart'>Map</a>&lt;X, Y&gt; convertToMap() =&gt; null;");
-    });
-
-    group(".crossdartHtmlTag()", () {
-      test('it returns an empty string when Crossdart support is disabled', () {
-        setConfig(addCrossdart: false);
-        expect(m1.crossdartHtmlTag, "");
-      });
+    test(
+        'crossdartHtmlTag returns an empty string when Crossdart support is disabled',
+        () {
+      expect(m1.crossdartHtmlTag, "");
     });
   });
 

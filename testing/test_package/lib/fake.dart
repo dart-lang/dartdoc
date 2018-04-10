@@ -719,9 +719,15 @@ class BaseForDocComments {
   ///
   /// Reference to a name of a class from an import of a library that exported
   /// the name [BaseClass] xx
+  ///
+  /// Reference to a bracket operator within this class [operator []] xxx
+  ///
+  /// Reference to a bracket operator in another class [SpecialList.operator []] xxx
   String doAwesomeStuff(int value) => null;
 
   void anotherMethod() {}
+
+  String operator [](String key) => "${key}'s value";
 }
 
 /// Testing if docs for inherited method are correct.
