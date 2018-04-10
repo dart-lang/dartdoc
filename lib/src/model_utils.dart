@@ -14,9 +14,8 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model.dart';
+import 'package:path/path.dart' as pathLib;
 import 'package:quiver/core.dart';
-
-import 'config.dart';
 
 final Map<String, String> _fileContents = <String, String>{};
 
@@ -140,16 +139,17 @@ String stripIndentFromSource(String source) {
 
 /// Add links to crossdart.info to the given source fragment
 String crossdartifySource(
+    String inputPath,
     Map<String, Map<String, List<Map<String, dynamic>>>> json,
     String source,
     Element element,
     int start) {
+  inputPath = pathLib.canonicalize(inputPath);
   var sanitizer = const HtmlEscape();
   String newSource;
   if (json.isNotEmpty) {
     var node = element.computeNode();
-    var file = element.source.fullName
-        .replaceAll("${config.inputDir.path}${Platform.pathSeparator}", "");
+    var file = pathLib.canonicalize(element.source.fullName);
     var filesData = json[file];
     if (filesData != null) {
       var data = filesData["references"]

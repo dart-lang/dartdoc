@@ -4,6 +4,7 @@
 
 import 'dart:io';
 
+/// Use config.sdkDir instead outside of initialization.
 Directory getSdkDir() {
   File vmExecutable = new File(Platform.resolvedExecutable);
   return vmExecutable.parent.parent;
