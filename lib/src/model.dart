@@ -4608,7 +4608,7 @@ abstract class LibraryContainer extends Nameable
   /// that only represent a part of the SDK.
   bool get isSdk => false;
 
-  // Order by which this container should be sorted.
+  /// Order by which this container should be sorted.
   List<String> get containerOrder;
 
   /// Returns:
