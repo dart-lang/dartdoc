@@ -55,7 +55,7 @@ abstract class PackageMeta {
     Directory original = dir.absolute;
     dir = original;
     if (!original.existsSync()) {
-      throw DartDocFailure(
+      throw PackageMetaFailure(
           "fatal error: unable to locate the input directory at ${original.path}.");
     }
 
