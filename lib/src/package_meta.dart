@@ -25,28 +25,43 @@ class PackageMetaFailure extends DartDocFailure {
   PackageMetaFailure(String message) : super(message);
 }
 
+/// For each list in this list, at least one of the given paths must exist
+/// for this to be detected as an SDK.
+final List<List<String>> __sdkDirFilePathsPosix = [
+  ['bin/dart.bat', 'bin/dart.exe', 'bin/dart'],
+  ['bin/pub.bat', 'bin/pub'],
+  ['lib/core/core.dart'],
+];
+
 abstract class PackageMeta {
   final Directory dir;
 
   PackageMeta(this.dir);
 
-  static List<String> get _sdkDirFilePaths {
+  static List<List<String>> get _sdkDirFilePaths {
+    List<List<String>> platformSdkDirFilePaths = [];
     if (Platform.isWindows) {
-      return const <String>[
-        r'bin\dart.bat',
-        r'bin\pub.bat',
-        r'lib\core\core.dart'
-      ];
+      for (List<String> paths in __sdkDirFilePathsPosix) {
+        List<String> windowsPaths = [];
+        for (String path in paths) {
+          windowsPaths.add(pathLib.joinAll(
+              new pathLib.Context(style: pathLib.Style.posix).split(path)));
+        }
+        platformSdkDirFilePaths.add(windowsPaths);
+      }
+    } else {
+      platformSdkDirFilePaths = __sdkDirFilePathsPosix;
     }
-    return const <String>[r'bin/dart', r'bin/pub', r'lib/core/core.dart'];
+    return platformSdkDirFilePaths;
   }
 
   /// Returns the directory of the SDK if the given directory is inside a Dart
   /// SDK.  Returns null if the directory isn't a subdirectory of the SDK.
   static Directory sdkDirParent(Directory dir) {
     while (dir.existsSync()) {
-      if (_sdkDirFilePaths
-          .every((f) => (new File(pathLib.join(dir.path, f)).existsSync()))) {
+      if (_sdkDirFilePaths.every((List<String> l) {
+        return l.any((f) => new File(pathLib.join(dir.path, f)).existsSync());
+      })) {
         return dir;
       }
       if (pathLib.equals(dir.path, dir.parent.path)) break;
