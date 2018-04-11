@@ -44,7 +44,7 @@ main(List<String> arguments) async {
   }
 
   Directory sdkDir = new Directory(args['sdk-dir']);
-  final bool sdkDocs = args['sdk-docs'];
+  bool sdkDocs = args['sdk-docs'];
   final bool showProgress = args['show-progress'];
 
   Directory inputDir;
@@ -54,6 +54,14 @@ main(List<String> arguments) async {
     inputDir = Directory.current;
   } else {
     inputDir = args['input'];
+  }
+
+  // If our input directory looks like the Dart SDK, then assume it is one,
+  // and is the one we want to document against.
+  PackageMeta packageMeta = new PackageMeta.fromDir(inputDir);
+  if (packageMeta.isSdk) {
+    sdkDir = inputDir;
+    sdkDocs = true;
   }
 
   List<String> footerTextFilePaths = [];
@@ -141,8 +149,6 @@ main(List<String> arguments) async {
       }
     });
   }
-
-  PackageMeta packageMeta = new PackageMeta.fromDir(inputDir);
 
   if (packageMeta == null) {
     stderr.writeln(
@@ -263,35 +269,27 @@ ArgParser _createArgsParser() {
           'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
       negatable: false,
       defaultsTo: false);
-
   parser.addMultiOption('category-order',
       help:
           'A list of package names to place first when grouping libraries in packages. '
           'Unmentioned categories are sorted after these. (deprecated, replaced by package-order)',
       splitCommas: true);
-
   parser.addOption('example-path-prefix',
       help: 'Prefix for @example paths.\n(defaults to the project root)');
-
   parser.addMultiOption('exclude',
       splitCommas: true, help: 'Library names to ignore.');
   parser.addMultiOption('exclude-packages',
       splitCommas: true, help: 'Package names to ignore.');
-
   parser.addOption('favicon',
       help: 'A path to a favicon for the generated docs.');
-
   parser.addMultiOption('footer',
       splitCommas: true, help: 'paths to footer files containing HTML text.');
-
   parser.addMultiOption('footer-text',
       splitCommas: true,
       help: 'paths to footer-text files '
           '(optional text next to the package name and version).');
-
   parser.addMultiOption('header',
       splitCommas: true, help: 'paths to header files containing HTML text.');
-
   parser.addFlag('help',
       abbr: 'h', negatable: false, help: 'Show command help.');
   parser.addFlag('hide-sdk-text',
@@ -300,35 +298,28 @@ ArgParser _createArgsParser() {
       negatable: true,
       defaultsTo: false,
       hide: true);
-
   parser.addOption('hosted-url',
       help:
           'URL where the docs will be hosted (used to generate the sitemap).');
-
   parser.addMultiOption('include',
       splitCommas: true, help: 'Library names to generate docs for.');
   parser.addMultiOption('include-external',
       help: 'Additional (external) dart files to include; use "dir/fileName", '
           'as in lib/material.dart.');
-
   parser.addFlag('include-source',
       help: 'Show source code blocks.', negatable: true, defaultsTo: true);
-
   parser.addOption('input', help: 'Path to source directory.');
-
   parser.addFlag('json',
       help: 'Prints out progress JSON maps. One entry per line.',
       defaultsTo: false,
       negatable: true);
   parser.addOption('output',
       help: 'Path to output directory.', defaultsTo: defaultOutDir);
-
   parser.addMultiOption('package-order',
       help:
           'A list of package names to place first when grouping libraries in packages. '
           'Unmentioned categories are sorted after these.',
       splitCommas: true);
-
   parser.addFlag('pretty-index-json',
       help:
           "Generates `index.json` with indentation and newlines. The file is larger, but it's also easier to diff.",
@@ -338,7 +329,6 @@ ArgParser _createArgsParser() {
       help: 'If provided, add a rel="canonical" prefixed with provided value. '
           'Consider using if\nbuilding many versions of the docs for public '
           'SEO; learn more at https://goo.gl/gktN6F.');
-
   parser.addFlag('sdk-docs',
       help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
   parser.addOption('sdk-readme',
@@ -350,24 +340,20 @@ ArgParser _createArgsParser() {
       help: 'Display warnings.', negatable: false, defaultsTo: false);
   parser.addFlag('show-progress',
       help: 'Display progress indications to console stdout', negatable: false);
-
   parser.addFlag('use-categories',
       help:
           'Group libraries from the same package in the libraries sidebar. (deprecated, ignored)',
       negatable: false,
       defaultsTo: false);
-
   parser.addFlag('validate-links',
       help:
           'Runs the built-in link checker to display Dart context aware warnings for broken links (slow)',
       negatable: true,
       defaultsTo: true);
-
   parser.addFlag('verbose-warnings',
       help: 'Display extra debugging information and help with warnings.',
       negatable: true,
       defaultsTo: true);
-
   parser.addFlag('version',
       help: 'Display the version for $name.', negatable: false);
 
