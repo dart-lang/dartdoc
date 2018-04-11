@@ -7,6 +7,7 @@ library dartdoc.package_meta;
 import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
@@ -14,6 +15,10 @@ import 'package:yaml/yaml.dart';
 import 'logging.dart';
 
 Map<String, PackageMeta> _packageMetaCache = {};
+
+class PackageMetaFailure extends DartDocFailure {
+  PackageMetaFailure(String message) : super(message);
+}
 
 abstract class PackageMeta {
   final Directory dir;
@@ -49,9 +54,15 @@ abstract class PackageMeta {
   factory PackageMeta.fromDir(Directory dir) {
     Directory original = dir.absolute;
     dir = original;
+    if (!original.existsSync()) {
+      throw new PackageMetaFailure(
+          "fatal error: unable to locate the input directory at ${original.path}.");
+    }
+
     if (!_packageMetaCache.containsKey(dir.path)) {
       PackageMeta packageMeta;
       // There are pubspec.yaml files inside the SDK.  Ignore them.
+      // TODO(jcollins-g): allow specifying alternate SDK directories (#1617)
       if (pathLib.isWithin(getSdkDir().absolute.path, dir.path) ||
           getSdkDir().path == dir.path) {
         packageMeta = new _SdkMeta(getSdkDir());
