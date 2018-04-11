@@ -92,13 +92,13 @@ class DartDocConfig {
     this.verboseWarnings,
   ) {
     if (sdkDir == null || !sdkDir.existsSync()) {
-      throw DartDocFailure("Error: unable to locate the Dart SDK.");
+      throw new DartDocFailure("Error: unable to locate the Dart SDK.");
     }
 
     footerFilePaths = footerFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String footerFilePath in footerFilePaths) {
       if (!new File(footerFilePath).existsSync()) {
-        throw DartDocFailure(
+        throw new DartDocFailure(
             "fatal error: unable to locate footer file: ${footerFilePath}.");
       }
     }
@@ -107,7 +107,7 @@ class DartDocConfig {
         footerTextFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String footerTextFilePath in footerTextFilePaths) {
       if (!new File(footerTextFilePath).existsSync()) {
-        throw DartDocFailure(
+        throw new DartDocFailure(
             "fatal error: unable to locate footer-text file: ${footerTextFilePath}.");
       }
     }
@@ -115,7 +115,7 @@ class DartDocConfig {
     headerFilePaths = headerFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String headerFilePath in headerFilePaths) {
       if (!new File(headerFilePath).existsSync()) {
-        throw DartDocFailure(
+        throw new DartDocFailure(
             "fatal error: unable to locate header file: ${headerFilePath}.");
       }
     }
