@@ -262,7 +262,7 @@ dartdoc:
           errorMessage,
           equals(
               'Argument --single-file, set to not_found.txt, resolves to missing path: '
-              '"${pathLib.canonicalize(Directory.current.path)}/not_found.txt"'));
+              '"${pathLib.join(pathLib.canonicalize(Directory.current.path), 'not_found.txt')}"'));
     });
 
     test('DartdocOptionArgOnly checks file existence on multi-options', () {
