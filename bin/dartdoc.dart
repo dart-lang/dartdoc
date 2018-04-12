@@ -262,7 +262,7 @@ ArgParser _createArgsParser() {
   parser.addOption('ambiguous-reexport-scorer-min-confidence',
       help:
           'Minimum scorer confidence to suppress warning on ambiguous reexport.',
-      defaultsTo: "0.1",
+      defaultsTo: '0.1',
       hide: true);
   parser.addFlag('auto-include-dependencies',
       help:
@@ -294,7 +294,7 @@ ArgParser _createArgsParser() {
       abbr: 'h', negatable: false, help: 'Show command help.');
   parser.addFlag('hide-sdk-text',
       help:
-          "Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.",
+          'Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.',
       negatable: true,
       defaultsTo: false,
       hide: true);
