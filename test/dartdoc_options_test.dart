@@ -448,7 +448,7 @@ dartdoc:
       expect(
           dartdocOptionSetFiles['dirOption'].valueAt(secondDir),
           equals(
-              pathLib.join(pathLib.canonicalize(secondDir.path), 'firstSub')));
+              pathLib.canonicalize(pathLib.join(secondDir.path, 'firstSub'))));
       String errorMessage;
       try {
         dartdocOptionSetFiles['dirOption'].valueAt(firstDir);
