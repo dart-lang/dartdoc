@@ -459,7 +459,7 @@ dartdoc:
           errorMessage,
           equals(
               'Field dartdoc.dirOption from ${pathLib.canonicalize(dartdocOptionsOne.path)}, set to notHere, resolves to missing path: '
-              '"${pathLib.joinAll([pathLib.canonicalize(firstDir.path), "notHere"])}"'));
+              '"${pathLib.canonicalize(pathLib.join(firstDir.path, "notHere"))}"'));
     });
 
     test('DartdocOptionSetFile loads defaults', () {
