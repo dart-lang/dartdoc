@@ -8,7 +8,6 @@ import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
 
@@ -16,14 +15,60 @@ import 'logging.dart';
 
 Map<String, PackageMeta> _packageMetaCache = {};
 
+Directory get defaultSdkDir {
+  Directory sdkDir = new File(Platform.resolvedExecutable).parent.parent;
+  assert(pathLib.equals(sdkDir.path, PackageMeta.sdkDirParent(sdkDir).path));
+  return sdkDir;
+}
+
 class PackageMetaFailure extends DartDocFailure {
   PackageMetaFailure(String message) : super(message);
 }
+
+/// For each list in this list, at least one of the given paths must exist
+/// for this to be detected as an SDK.
+final List<List<String>> __sdkDirFilePathsPosix = [
+  ['bin/dart.bat', 'bin/dart.exe', 'bin/dart'],
+  ['bin/pub.bat', 'bin/pub'],
+  ['lib/core/core.dart'],
+];
 
 abstract class PackageMeta {
   final Directory dir;
 
   PackageMeta(this.dir);
+
+  static List<List<String>> get _sdkDirFilePaths {
+    List<List<String>> platformSdkDirFilePaths = [];
+    if (Platform.isWindows) {
+      for (List<String> paths in __sdkDirFilePathsPosix) {
+        List<String> windowsPaths = [];
+        for (String path in paths) {
+          windowsPaths.add(pathLib.joinAll(
+              new pathLib.Context(style: pathLib.Style.posix).split(path)));
+        }
+        platformSdkDirFilePaths.add(windowsPaths);
+      }
+    } else {
+      platformSdkDirFilePaths = __sdkDirFilePathsPosix;
+    }
+    return platformSdkDirFilePaths;
+  }
+
+  /// Returns the directory of the SDK if the given directory is inside a Dart
+  /// SDK.  Returns null if the directory isn't a subdirectory of the SDK.
+  static Directory sdkDirParent(Directory dir) {
+    while (dir.existsSync()) {
+      if (_sdkDirFilePaths.every((List<String> l) {
+        return l.any((f) => new File(pathLib.join(dir.path, f)).existsSync());
+      })) {
+        return dir;
+      }
+      if (pathLib.equals(dir.path, dir.parent.path)) break;
+      dir = dir.parent;
+    }
+    return null;
+  }
 
   @override
   bool operator ==(other) {
@@ -35,10 +80,11 @@ abstract class PackageMeta {
   int get hashCode => pathLib.hash(dir.absolute.path);
 
   /// Use this instead of fromDir where possible.
-  factory PackageMeta.fromElement(LibraryElement libraryElement) {
+  factory PackageMeta.fromElement(
+      LibraryElement libraryElement, DartDocConfig config) {
     // Workaround for dart-lang/sdk#32707.  Replace with isInSdk once that works.
     if (libraryElement.source.uri.scheme == 'dart')
-      return new PackageMeta.fromDir(getSdkDir());
+      return new PackageMeta.fromDir(config.sdkDir);
     return new PackageMeta.fromDir(
         new File(pathLib.canonicalize(libraryElement.source.fullName)).parent);
   }
@@ -62,10 +108,9 @@ abstract class PackageMeta {
     if (!_packageMetaCache.containsKey(dir.path)) {
       PackageMeta packageMeta;
       // There are pubspec.yaml files inside the SDK.  Ignore them.
-      // TODO(jcollins-g): allow specifying alternate SDK directories (#1617)
-      if (pathLib.isWithin(getSdkDir().absolute.path, dir.path) ||
-          getSdkDir().path == dir.path) {
-        packageMeta = new _SdkMeta(getSdkDir());
+      Directory parentSdkDir = sdkDirParent(dir);
+      if (parentSdkDir != null) {
+        packageMeta = new _SdkMeta(parentSdkDir);
       } else {
         while (dir.existsSync()) {
           File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
@@ -75,7 +120,7 @@ abstract class PackageMeta {
           }
           // Allow a package to be at root (possible in a Windows setting with
           // drive letter mappings).
-          if (dir.path == dir.parent.absolute.path) break;
+          if (pathLib.equals(dir.path, dir.parent.path)) break;
           dir = dir.parent.absolute;
         }
       }
@@ -259,8 +304,12 @@ class _SdkMeta extends PackageMeta {
   @override
   String get name => 'Dart';
   @override
-  String get version =>
-      new File(pathLib.join(dir.path, 'version')).readAsStringSync().trim();
+  String get version {
+    File versionFile = new File(pathLib.join(dir.path, 'version'));
+    if (versionFile.existsSync()) return versionFile.readAsStringSync().trim();
+    return 'unknown';
+  }
+
   @override
   String get description =>
       'The Dart SDK is a set of tools and libraries for the '
@@ -271,6 +320,9 @@ class _SdkMeta extends PackageMeta {
   @override
   FileContents getReadmeContents() {
     File f = new File(pathLib.join(dir.path, 'lib', 'api_readme.md'));
+    if (!f.existsSync()) {
+      f = new File(pathLib.join(dir.path, 'api_readme.md'));
+    }
     return f.existsSync() ? new FileContents(f) : null;
   }
 

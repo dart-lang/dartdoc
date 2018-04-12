@@ -32,7 +32,6 @@ export 'src/element_type.dart';
 export 'src/generator.dart';
 export 'src/model.dart';
 export 'src/package_meta.dart';
-export 'src/sdk.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.

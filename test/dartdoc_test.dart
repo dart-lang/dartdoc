@@ -151,5 +151,5 @@ void main() {
           dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
       expect(p.packageMap["Dart"].publicLibraries, hasLength(3));
     });
-  }, timeout: new Timeout.factor(4));
+  }, timeout: new Timeout.factor(8));
 }

@@ -2048,7 +2048,7 @@ class Library extends ModelElement with Categorization {
   PackageMeta _packageMeta;
   PackageMeta get packageMeta {
     if (_packageMeta == null) {
-      _packageMeta = new PackageMeta.fromElement(element);
+      _packageMeta = new PackageMeta.fromElement(element, config);
     }
     return _packageMeta;
   }
@@ -3768,7 +3768,7 @@ class PackageGraph extends Canonicalization
 
     // Build [Library] objects, and link them to [Package]s.
     libraryElements.forEach((element) {
-      var packageMeta = new PackageMeta.fromElement(element);
+      var packageMeta = new PackageMeta.fromElement(element, config);
       var lib = new Library._(
           element, this, new Package.fromPackageMeta(packageMeta, this));
       packageMap[packageMeta.name]._libraries.add(lib);
@@ -4552,7 +4552,7 @@ class PackageGraph extends Canonicalization
           e.library,
           this,
           new Package.fromPackageMeta(
-              new PackageMeta.fromElement(e.library), packageGraph));
+              new PackageMeta.fromElement(e.library, config), packageGraph));
       allLibraries[e.library] = foundLibrary;
     }
     return foundLibrary;
@@ -5407,7 +5407,7 @@ class PackageBuilder {
       if (library != null) {
         if (!config.isLibraryExcluded(Library.getLibraryName(library)) &&
             !config.excludePackages
-                .contains(new PackageMeta.fromElement(library)?.name)) {
+                .contains(new PackageMeta.fromElement(library, config)?.name)) {
           libraries.add(library);
           sources.add(source);
         }
