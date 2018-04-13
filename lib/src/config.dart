@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+/// Legacy dartdoc configuration library.  TODO(jcollins-g): merge with [DartdocOption].
 library dartdoc.config;
 
 import 'dart:io';
@@ -25,7 +26,7 @@ String _resolveTildePath(String originalPath) {
   return pathLib.join(homeDir, originalPath.substring(2));
 }
 
-class DartDocConfig {
+class DartdocConfig {
   final bool addCrossdart;
   final bool autoIncludeDependencies;
   final List<String> dropTextFrom;
@@ -50,7 +51,7 @@ class DartDocConfig {
   final bool showWarnings;
   final bool validateLinks;
   final bool verboseWarnings;
-  DartDocConfig._(
+  DartdocConfig._(
     this.addCrossdart,
     this.autoIncludeDependencies,
     this.dropTextFrom,
@@ -77,13 +78,13 @@ class DartDocConfig {
     this.verboseWarnings,
   ) {
     if (sdkDir == null || !sdkDir.existsSync()) {
-      throw new DartDocFailure("Error: unable to locate the Dart SDK.");
+      throw new DartdocFailure("Error: unable to locate the Dart SDK.");
     }
 
     footerFilePaths = footerFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String footerFilePath in footerFilePaths) {
       if (!new File(footerFilePath).existsSync()) {
-        throw new DartDocFailure(
+        throw new DartdocFailure(
             "fatal error: unable to locate footer file: ${footerFilePath}.");
       }
     }
@@ -92,7 +93,7 @@ class DartDocConfig {
         footerTextFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String footerTextFilePath in footerTextFilePaths) {
       if (!new File(footerTextFilePath).existsSync()) {
-        throw new DartDocFailure(
+        throw new DartdocFailure(
             "fatal error: unable to locate footer-text file: ${footerTextFilePath}.");
       }
     }
@@ -100,13 +101,13 @@ class DartDocConfig {
     headerFilePaths = headerFilePaths.map((p) => _resolveTildePath(p)).toList();
     for (String headerFilePath in headerFilePaths) {
       if (!new File(headerFilePath).existsSync()) {
-        throw new DartDocFailure(
+        throw new DartdocFailure(
             "fatal error: unable to locate header file: ${headerFilePath}.");
       }
     }
   }
 
-  factory DartDocConfig.fromParameters({
+  factory DartdocConfig.fromParameters({
     bool addCrossdart: false,
     bool autoIncludeDependencies: false,
     List<String> dropTextFrom,
@@ -132,7 +133,7 @@ class DartDocConfig {
     bool validateLinks: true,
     bool verboseWarnings: true,
   }) {
-    return new DartDocConfig._(
+    return new DartdocConfig._(
       addCrossdart,
       autoIncludeDependencies,
       dropTextFrom ?? const <String>[],
