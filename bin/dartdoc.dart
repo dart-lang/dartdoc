@@ -200,7 +200,7 @@ main(List<String> arguments) async {
     ]);
   }
 
-  DartDocConfig config = new DartDocConfig.fromParameters(
+  DartdocConfig config = new DartdocConfig.fromParameters(
     addCrossdart: args['add-crossdart'],
     autoIncludeDependencies: args['auto-include-dependencies'],
     dropTextFrom: dropTextFrom,
@@ -230,20 +230,20 @@ main(List<String> arguments) async {
     verboseWarnings: args['verbose-warnings'],
   );
 
-  DartDoc dartdoc =
-      await DartDoc.withDefaultGenerators(config, outputDir, packageMeta);
+  Dartdoc dartdoc =
+      await Dartdoc.withDefaultGenerators(config, outputDir, packageMeta);
 
   dartdoc.onCheckProgress.listen(logProgress);
   await Chain.capture(() async {
     await runZoned(() async {
-      DartDocResults results = await dartdoc.generateDocs();
+      DartdocResults results = await dartdoc.generateDocs();
       logInfo('Success! Docs generated into ${results.outDir.absolute.path}');
     },
         zoneSpecification: new ZoneSpecification(
             print: (Zone self, ZoneDelegate parent, Zone zone, String line) =>
                 logPrint(line)));
   }, onError: (e, Chain chain) {
-    if (e is DartDocFailure) {
+    if (e is DartdocFailure) {
       stderr.writeln('\nGeneration failed: ${e}.');
       exit(1);
     } else {

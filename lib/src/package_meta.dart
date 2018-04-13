@@ -21,7 +21,7 @@ Directory get defaultSdkDir {
   return sdkDir;
 }
 
-class PackageMetaFailure extends DartDocFailure {
+class PackageMetaFailure extends DartdocFailure {
   PackageMetaFailure(String message) : super(message);
 }
 
@@ -81,7 +81,7 @@ abstract class PackageMeta {
 
   /// Use this instead of fromDir where possible.
   factory PackageMeta.fromElement(
-      LibraryElement libraryElement, DartDocConfig config) {
+      LibraryElement libraryElement, DartdocConfig config) {
     // Workaround for dart-lang/sdk#32707.  Replace with isInSdk once that works.
     if (libraryElement.source.uri.scheme == 'dart')
       return new PackageMeta.fromDir(config.sdkDir);

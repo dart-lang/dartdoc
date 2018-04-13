@@ -243,7 +243,7 @@ dartdoc:
       expect(
           dartdocOptionSetArgs['warn']['unrecognizedVegetable']
               .valueAt(tempDir),
-          equals(false));
+          isFalse);
       expect(dartdocOptionSetArgs['aFancyMapVariable'].valueAt(tempDir),
           equals({'hello': 'map world'}));
       expect(

@@ -29,12 +29,12 @@ void main() {
     test('generate docs for ${pathLib.basename(testPackageDir.path)} works',
         () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
-      DartDoc dartdoc = new DartDoc.withoutGenerators(
-          new DartDocConfig.fromParameters(inputDir: testPackageDir),
+      Dartdoc dartdoc = new Dartdoc.withoutGenerators(
+          new DartdocConfig.fromParameters(inputDir: testPackageDir),
           tempDir,
           meta);
 
-      DartDocResults results = await dartdoc.generateDocs();
+      DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
       PackageGraph p = results.packageGraph;
@@ -47,8 +47,8 @@ void main() {
     test('generate docs for ${pathLib.basename(testPackageBadDir.path)} fails',
         () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageBadDir);
-      DartDoc dartdoc = new DartDoc.withoutGenerators(
-          new DartDocConfig.fromParameters(inputDir: testPackageBadDir),
+      Dartdoc dartdoc = new Dartdoc.withoutGenerators(
+          new DartdocConfig.fromParameters(inputDir: testPackageBadDir),
           tempDir,
           meta);
 
@@ -56,18 +56,18 @@ void main() {
         await dartdoc.generateDocs();
         fail('dartdoc should fail on analysis errors');
       } catch (e) {
-        expect(e is DartDocFailure, isTrue);
+        expect(e is DartdocFailure, isTrue);
       }
     });
 
     test('generate docs for a package that does not have a readme', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageWithNoReadme);
-      DartDoc dartdoc = new DartDoc.withoutGenerators(
-          new DartDocConfig.fromParameters(inputDir: testPackageWithNoReadme),
+      Dartdoc dartdoc = new Dartdoc.withoutGenerators(
+          new DartdocConfig.fromParameters(inputDir: testPackageWithNoReadme),
           tempDir,
           meta);
 
-      DartDocResults results = await dartdoc.generateDocs();
+      DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
       PackageGraph p = results.packageGraph;
@@ -79,13 +79,13 @@ void main() {
 
     test('generate docs including a single library', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
-      DartDoc dartdoc = new DartDoc.withoutGenerators(
-          new DartDocConfig.fromParameters(
+      Dartdoc dartdoc = new Dartdoc.withoutGenerators(
+          new DartdocConfig.fromParameters(
               inputDir: testPackageDir, includeLibraries: ['fake']),
           tempDir,
           meta);
 
-      DartDocResults results = await dartdoc.generateDocs();
+      DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
       PackageGraph p = results.packageGraph;
@@ -97,13 +97,13 @@ void main() {
 
     test('generate docs excluding a single library', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
-      DartDoc dartdoc = new DartDoc.withoutGenerators(
-          new DartDocConfig.fromParameters(
+      Dartdoc dartdoc = new Dartdoc.withoutGenerators(
+          new DartdocConfig.fromParameters(
               inputDir: testPackageDir, excludeLibraries: ['fake']),
           tempDir,
           meta);
 
-      DartDocResults results = await dartdoc.generateDocs();
+      DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
       PackageGraph p = results.packageGraph;
@@ -117,13 +117,13 @@ void main() {
     test('generate docs for package with embedder yaml', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageWithEmbedderYaml);
       if (meta.needsPubGet) meta.runPubGet();
-      DartDoc dartdoc = new DartDoc.withoutGenerators(
-          new DartDocConfig.fromParameters(
+      Dartdoc dartdoc = new Dartdoc.withoutGenerators(
+          new DartdocConfig.fromParameters(
               inputDir: testPackageWithEmbedderYaml),
           tempDir,
           meta);
 
-      DartDocResults results = await dartdoc.generateDocs();
+      DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
       PackageGraph p = results.packageGraph;

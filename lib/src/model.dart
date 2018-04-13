@@ -1155,7 +1155,7 @@ abstract class Documentable extends Nameable {
   String get oneLineDoc;
   PackageGraph get packageGraph;
   bool get isDocumented;
-  DartDocConfig get config;
+  DartdocConfig get config;
 }
 
 /// Mixin implementing dartdoc categorization for ModelElements.
@@ -2759,7 +2759,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
-  DartDocConfig get config => packageGraph.config;
+  DartdocConfig get config => packageGraph.config;
 
   @override
   Set<String> get locationPieces {
@@ -3833,7 +3833,7 @@ class PackageGraph extends Canonicalization
 
   /// Dartdoc's configuration flags.
   @override
-  final DartDocConfig config;
+  final DartdocConfig config;
 
   Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
   // TODO(jcollins-g): move to [Package]
@@ -5224,7 +5224,7 @@ class TypeParameter extends ModelElement {
 /// Everything you need to instantiate a PackageGraph object for documenting.
 class PackageBuilder {
   final PackageMeta packageMeta;
-  final DartDocConfig config;
+  final DartdocConfig config;
 
   PackageBuilder(this.config, this.packageMeta);
 
