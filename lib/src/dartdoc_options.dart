@@ -33,7 +33,7 @@ const int _kIntVal = 0;
 const double _kDoubleVal = 0.0;
 const bool _kBoolVal = true;
 
-class DartdocOptionError extends DartDocFailure {
+class DartdocOptionError extends DartdocFailure {
   DartdocOptionError(String details) : super(details);
 }
 
@@ -86,7 +86,7 @@ class _OptionValueWithContext<T> {
     } else if (value is String) {
       return pathContext.canonicalize(value as String) as T;
     } else {
-      throw new UnsupportedError("Type $T is not supported for resolvedValue");
+      throw new UnsupportedError('Type $T is not supported for resolvedValue');
     }
   }
 }
@@ -378,9 +378,9 @@ class DartdocOptionBoth<T> extends DartdocOption<T>
       dartdocYaml = pathLib.canonicalize(pathLib.join(
           valueWithContext.canonicalDirectoryPath,
           valueWithContext.definingFile));
-      description = "Field ${fieldName} from ${dartdocYaml}";
+      description = 'Field ${fieldName} from ${dartdocYaml}';
     } else {
-      description = "Argument --${argName}";
+      description = 'Argument --${argName}';
     }
     throw new DartdocFileMissing(
         '$description, set to ${valueWithContext.value}, resolves to missing path: "${missingPath}"');
@@ -436,7 +436,7 @@ class DartdocOptionFileOnly<T> extends DartdocOption<T>
   bool get parentDirOverridesChild => _parentDirOverridesChild;
 }
 
-/// Implements checking for options
+/// Implements checking for options contained in dartdoc.yaml.
 abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   /// If true, the parent directory's value overrides the child's.  Otherwise, the child's
   /// value overrides values in parents.
@@ -511,7 +511,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   _OptionValueWithContext _valueAtFromFile(Directory dir) {
     _YamlFileData yamlFileData = _yamlAtDirectory(dir);
     String contextPath = yamlFileData.canonicalDirectoryPath;
-    var yamlData = yamlFileData.data;
+    dynamic yamlData = yamlFileData.data;
     for (String key in keys) {
       if (!yamlData.containsKey(key)) return null;
       yamlData = yamlData[key];
@@ -521,7 +521,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
     if (_isListString) {
       if (yamlData is YamlList) {
         returnData = <String>[];
-        for (var item in yamlData as YamlList) {
+        for (var item in yamlData) {
           returnData.add(item.toString());
         }
       }
@@ -534,14 +534,14 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
       }
     } else if (_isDouble) {
       if (yamlData is num) {
-        returnData = (yamlData as num).toDouble();
+        returnData = yamlData.toDouble();
       }
     } else if (_isInt || _isString || _isBool) {
       if (yamlData is T) {
         returnData = yamlData;
       }
     } else {
-      throw new UnsupportedError("Type ${T} is not supported");
+      throw new UnsupportedError('Type ${T} is not supported');
     }
     return new _OptionValueWithContext(returnData as T, contextPath,
         definingFile: 'dartdoc_options.yaml');
@@ -598,11 +598,11 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
   _throwErrorForTypes(String value) {
     String example;
     if (defaultsTo is Map) {
-      example = "key::value";
+      example = 'key::value';
     } else if (_isInt) {
-      example = "32";
+      example = '32';
     } else if (_isDouble) {
-      example = "0.76";
+      example = '0.76';
     }
     throw new DartdocOptionError(
         'Invalid argument value: --${argName}, set to "${value}", must be a ${T}.  Example:  --${argName} ${example}');
@@ -635,10 +635,11 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
     if (_isBool || _isListString || _isString) {
       retval = _argResults[argName];
     } else if (_isInt) {
-      retval =
-          int.parse(_argResults[argName], onError: _throwErrorForTypes) as T;
+      retval = int.tryParse(_argResults[argName]) as T;
+      if (retval == null) _throwErrorForTypes(_argResults[argName]);
     } else if (_isDouble) {
-      retval = double.parse(_argResults[argName], _throwErrorForTypes) as T;
+      retval = double.tryParse(_argResults[argName]) as T;
+      if (retval == null) _throwErrorForTypes(_argResults[argName]);
     } else if (_isMapString) {
       retval = {} as T;
       for (String pair in _argResults[argName]) {
@@ -670,7 +671,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
     argName = argName.replaceAllMapped(camelCaseRegexp, (Match m) {
       String before = m.group(1);
       String after = m.group(2).toLowerCase();
-      return "${before}-${after}";
+      return '${before}-${after}';
     });
     return argName;
   }
@@ -700,7 +701,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
       } else {
         defaultsToList.addAll((defaultsTo as Map<String, String>)
             .entries
-            .map((m) => "${m.key}::${m.value}"));
+            .map((m) => '${m.key}::${m.value}'));
       }
       argParser.addMultiOption(argName,
           abbr: abbr,
@@ -796,7 +797,7 @@ class _FileDartdocOptions extends DartdocOptions {
         if (_dartdocOptions['categoryOrder'] is YamlList) {
           _categoryOrder.addAll(_dartdocOptions['categoryOrder']);
         } else {
-          logWarning("${_path}: categoryOrder must be a list (ignoring)");
+          logWarning('${_path}: categoryOrder must be a list (ignoring)');
         }
       }
       _categoryOrder = new List.unmodifiable(_categoryOrder);

@@ -157,7 +157,7 @@ DartdocOptionSet createDartdocOptions(List<String> argv) {
 
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
-class DartDoc extends PackageBuilder {
+class Dartdoc extends PackageBuilder {
   final List<Generator> generators;
   final Directory outputDir;
   final Set<String> writtenFiles = new Set();
@@ -166,13 +166,13 @@ class DartDoc extends PackageBuilder {
   final StreamController<String> _onCheckProgress =
       new StreamController(sync: true);
 
-  DartDoc._(DartDocConfig config, this.generators, this.outputDir,
+  Dartdoc._(DartdocConfig config, this.generators, this.outputDir,
       PackageMeta packageMeta)
       : super(config, packageMeta);
 
   /// An asynchronous factory method that builds Dartdoc's file writers
-  /// and returns a DartDoc object with them.
-  static withDefaultGenerators(DartDocConfig config, Directory outputDir,
+  /// and returns a Dartdoc object with them.
+  static withDefaultGenerators(DartdocConfig config, Directory outputDir,
       PackageMeta packageMeta) async {
     var generators = await _initGenerators(
         config.hostedUrl, config.relCanonicalPrefix,
@@ -184,12 +184,12 @@ class DartDoc extends PackageBuilder {
     for (var generator in generators) {
       generator.onFileCreated.listen(logProgress);
     }
-    return new DartDoc._(config, generators, outputDir, packageMeta);
+    return new Dartdoc._(config, generators, outputDir, packageMeta);
   }
 
-  factory DartDoc.withoutGenerators(
-      DartDocConfig config, Directory outputDir, PackageMeta packageMeta) {
-    return new DartDoc._(config, [], outputDir, packageMeta);
+  factory Dartdoc.withoutGenerators(
+      DartdocConfig config, Directory outputDir, PackageMeta packageMeta) {
+    return new Dartdoc._(config, [], outputDir, packageMeta);
   }
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
@@ -237,19 +237,19 @@ class DartDoc extends PackageBuilder {
 
     if (errors.isNotEmpty) {
       int len = errors.length;
-      throw new DartDocFailure(
+      throw new DartdocFailure(
           "encountered ${len} analysis error${len == 1 ? '' : 's'}");
     }
   }
 
   PackageGraph packageGraph;
 
-  /// Generate DartDoc documentation.
+  /// Generate Dartdoc documentation.
   ///
-  /// [DartDocResults] is returned if dartdoc succeeds. [DartDocFailure] is
+  /// [DartdocResults] is returned if dartdoc succeeds. [DartdocFailure] is
   /// thrown if dartdoc fails in an expected way, for example if there is an
   /// analysis error in the code.
-  Future<DartDocResults> generateDocs() async {
+  Future<DartdocResults> generateDocs() async {
     Stopwatch _stopwatch = new Stopwatch()..start();
     double seconds;
     packageGraph = await buildPackageGraph();
@@ -285,15 +285,15 @@ class DartDoc extends PackageBuilder {
         "in ${seconds.toStringAsFixed(1)} seconds");
 
     if (packageGraph.publicLibraries.isEmpty) {
-      throw new DartDocFailure(
+      throw new DartdocFailure(
           "dartdoc could not find any libraries to document. Run `pub get` and try again.");
     }
 
     if (packageGraph.packageWarningCounter.errorCount > 0) {
-      throw new DartDocFailure("dartdoc encountered errors while processing");
+      throw new DartdocFailure("dartdoc encountered errors while processing");
     }
 
-    return new DartDocResults(packageMeta, packageGraph, outputDir);
+    return new DartdocResults(packageMeta, packageGraph, outputDir);
   }
 
   /// Warn on file paths.
@@ -513,22 +513,22 @@ class DartDoc extends PackageBuilder {
 
 /// This class is returned if dartdoc fails in an expected way (for instance, if
 /// there is an analysis error in the library).
-class DartDocFailure {
+class DartdocFailure {
   final String message;
 
-  DartDocFailure(this.message);
+  DartdocFailure(this.message);
 
   @override
   String toString() => message;
 }
 
-/// The results of a [DartDoc.generateDocs] call.
-class DartDocResults {
+/// The results of a [Dartdoc.generateDocs] call.
+class DartdocResults {
   final PackageMeta packageMeta;
   final PackageGraph packageGraph;
   final Directory outDir;
 
-  DartDocResults(this.packageMeta, this.packageGraph, this.outDir);
+  DartdocResults(this.packageMeta, this.packageGraph, this.outDir);
 }
 
 class _Error implements Comparable<_Error> {
