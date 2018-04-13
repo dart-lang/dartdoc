@@ -16,6 +16,7 @@ library dartdoc.dartdoc_options;
 
 import 'dart:io';
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:path/path.dart' as pathLib;
@@ -248,6 +249,12 @@ abstract class DartdocOption<T> {
   /// line parameters and file paths in config files that don't point to
   /// corresponding files or directories.
   T valueAt(Directory dir);
+
+  /// Calls [valueAt] with the current working directory.
+  T valueAtCurrent() => valueAt(Directory.current);
+
+  /// Calls [valueAt] on the directory this element is defined in.
+  T valueAtElement(Element element) => valueAt(new Directory(pathLib.canonicalize(pathLib.basename(element.source.fullName))));
 
   /// Adds a DartdocOption to the children of this DartdocOption.
   void add(DartdocOption option) {

@@ -13,6 +13,7 @@ import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/source.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:html/dom.dart' show Element, Document;
 import 'package:html/parser.dart' show parse;
@@ -62,6 +63,97 @@ Future<List<Generator>> _initGenerators(String url, String relCanonicalPrefix,
     )
   ];
 }
+
+/// Instantiate dartdoc's configuration object and options parser with the
+/// given command line arguments.
+DartdocOptionSet createDartdocOptions(List<String> argv) {
+  return new DartdocOptionSet('dartdoc')..addAll([
+    new DartdocOptionArgOnly<bool>('addCrossdart', false,
+        help: 'Add Crossdart links to the source code pieces.',
+        negatable: false),
+    new DartdocOptionBoth<double>('ambiguousReexportScorerMinConfidence', 0.1,
+        help: 'Minimum scorer confidence to suppress warning on ambiguous reexport.'),
+    new DartdocOptionArgOnly<bool>('autoIncludeDependencies', false,
+        help: 'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
+        negatable: false),
+    new DartdocOptionBoth<List<String>>('categoryOrder', [],
+        help: "A list of categories (not package names) to place first when grouping symbols on dartdoc's sidebar. "
+              'Unmentioned categories are sorted after these.'),
+    new DartdocOptionBoth<String>('examplePathPrefix', null,
+        isDir: true,
+        help: 'Prefix for @example paths.\n(defaults to the project root)',
+        mustExist: true),
+    new DartdocOptionBoth<List<String>>('exclude', [],
+        help: 'Library names to ignore.',
+        splitCommas: true),
+    new DartdocOptionBoth<List<String>>('excludePackages', [],
+        help: 'Package names to ignore.',
+        splitCommas: true),
+    new DartdocOptionBoth<String>('favicon', null,
+        isFile: true,
+        help: 'A path to a favicon for the generated docs.',
+        mustExist: true),
+    new DartdocOptionBoth<List<String>>('footer', [],
+        isFile: true,
+        help: 'paths to footer files containing HTML text.',
+        mustExist: true,
+        splitCommas: true),
+    new DartdocOptionBoth<List<String>>('footerText', [],
+        isFile: true,
+        help: 'paths to footer-text files (optional text next to the package name '
+              'and version).',
+        mustExist: true,
+        splitCommas: true),
+    new DartdocOptionBoth<List<String>>('header', [],
+        isFile: true,
+        help: 'paths to header files containing HTML text.',
+        splitCommas: true),
+    new DartdocOptionArgOnly<bool>('help', false,
+        abbr: 'h',
+        help: 'Show command help.',
+        negatable: false),
+    new DartdocOptionArgOnly<bool>('hideSdkText', false,
+        help: 'Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.',
+        negatable: true),
+    new DartdocOptionArgOnly<String>('hostedUrl', null,
+        help: 'URL where the docs will be hosted (used to generate the sitemap).'),
+    new DartdocOptionBoth<List<String>>('include', null,
+        help: 'Library names to generate docs for.',
+        splitCommas: true),
+    new DartdocOptionBoth<List<String>>('includeExternal', null,
+        isFile: true,
+        help: 'Additional (external) dart files to include; use "dir/fileName", '
+            'as in lib/material.dart.',
+        mustExist: true,
+        splitCommas: true),
+    new DartdocOptionBoth<bool>('includeSource', true,
+        help: 'Show source code blocks.',
+        negatable: true),
+    new DartdocOptionArgOnly<String>('input', Directory.current.path,
+        isDir: true,
+        help: 'Path to source directory',
+        mustExist: true),
+    new DartdocOptionArgOnly<bool>('json', false,
+        help: 'Prints out progress JSON maps. One entry per line.',
+        negatable: true),
+    new DartdocOptionArgOnly<String>('output', defaultOutDir,
+        isDir: true,
+        help: 'Path to output directory.'),
+    new DartdocOptionBoth<List<String>>('packageOrder', [],
+        help: 'A list of package names to place first when grouping libraries in packages. '
+              'Unmentioned categories are sorted after these.'),
+    new DartdocOptionArgOnly<bool>('prettyIndexJson', false,
+        help: "Generates `index.json` with indentation and newlines. The file is larger, but it's also easier to diff.",
+        negatable: false),
+    new DartdocOptionArgOnly<String>('relCanonicalPrefix', null,
+        help: 'If provided, add a rel="canonical" prefixed with provided value. '
+              'Consider using if\nbuilding many versions of the docs for public '
+              'SEO; learn more at https://goo.gl/gktN6F.'),
+
+
+  ]);
+}
+
 
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
