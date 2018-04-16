@@ -11,9 +11,6 @@ import 'package:mustache4dart/mustache4dart.dart';
 
 import 'resource_loader.dart' as loader;
 
-typedef String TemplateRenderer(context,
-    {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});
-
 const _partials = const <String>[
   'callable',
   'callable_multiline',
@@ -112,7 +109,7 @@ class Templates {
 
     Future<TemplateRenderer> _loadTemplate(String templatePath) async {
       String templateContents = await _getTemplateFile(templatePath);
-      return compile(templateContents, partial: _partial) as TemplateRenderer;
+      return compile(templateContents, partial: _partial);
     }
 
     var indexTemplate = await _loadTemplate('index.html');

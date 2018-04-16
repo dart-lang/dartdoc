@@ -2102,7 +2102,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       Iterable<CallableElementType> typeArguments =
           (importantComputations.modelType.returnType as DefinedElementType)
-              .typeArguments;
+              .typeArguments
+              .cast<CallableElementType>();
       expect(typeArguments, isNotEmpty);
       expect(
           typeArguments.last.linkedName,
