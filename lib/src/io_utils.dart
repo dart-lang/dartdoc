@@ -68,17 +68,21 @@ final RegExp quotables = new RegExp(r'[ "\r\n\$]');
 
 /// Best used with Future<void>.
 class MultiFutureTracker<T> {
-  // Maximum number of simultaneous active Futures.
+  /// Approximate maximum number of simultaneous active Futures.
   final int parallel;
 
   final Queue<Future<T>> _queue = new Queue();
 
   MultiFutureTracker(this.parallel);
 
+  /// Adds a Future to the queue of outstanding Futures, and returns a Future
+  /// that completes only when the number of Futures outstanding is <= parallel.
+  /// That can be extremely brief and there's no longer a guarantee after that
+  /// point that another async task has not added a Future to the list.
   void addFuture(Future<T> future) async {
-    await _waitUntil(parallel);
     _queue.add(future);
     future.then((f) => _queue.remove(future));
+    await _waitUntil(parallel);
   }
 
   /// Wait until fewer or equal to this many Futures are outstanding.
@@ -88,6 +92,7 @@ class MultiFutureTracker<T> {
     }
   }
 
+  /// Wait until all futures added so far have completed.
   void wait() async => await _waitUntil(0);
 }
 
