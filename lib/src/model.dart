@@ -2866,9 +2866,6 @@ abstract class ModelElement extends Canonicalization
       _rawDocs = stripComments(_rawDocs) ?? '';
       _rawDocs = _injectExamples(_rawDocs);
       _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
-      if (this is Categorization)
-        _rawDocs =
-            (this as Categorization)._stripAndSetDartdocCategory(_rawDocs);
     }
     return _rawDocs;
   }
