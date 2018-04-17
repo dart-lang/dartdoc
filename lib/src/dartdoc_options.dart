@@ -97,8 +97,10 @@ class _OptionValueWithContext<T> {
   /// if [T] isn't a [String] or [List<String>].
   T get resolvedValue {
     if (value is List<String>) {
-      return (value as List<String>).map((v) => pathContext.canonicalize(_resolveTildePath(v)))
-          as T;
+      return (value as List<String>)
+          .map((v) => pathContext.canonicalize(_resolveTildePath(v)))
+          .cast<String>()
+          .toList() as T;
     } else if (value is String) {
       return pathContext.canonicalize(_resolveTildePath(value as String)) as T;
     } else {
@@ -302,6 +304,38 @@ abstract class DartdocOption<T> {
   }
 }
 
+/// A synthetic option takes a closure at construction time that computes
+/// the value of the configuration option based on other configuration options.
+/// Does not protect against closures that self-reference.  If [mustExist] and
+/// [isDir] or [isFile] is set, computed values will be resolved to canonical
+/// paths.
+class DartdocOptionSynthetic<T> extends DartdocOption<T> {
+  T Function(DartdocOptionSynthetic, Directory) _compute;
+
+  DartdocOptionSynthetic(String name, this._compute,
+      {bool mustExist = false,
+      String help = '',
+      bool isDir = false,
+      bool isFile = false})
+      : super._(name, null, help, isDir, isFile, mustExist);
+
+  @override
+  T valueAt(Directory dir) {
+    _OptionValueWithContext context =
+        new _OptionValueWithContext<T>(_compute(this, dir), dir.path);
+    return _handlePathsInContext(context);
+  }
+
+  @override
+  void _onMissing(
+      _OptionValueWithContext valueWithContext, String missingPath) {
+    String description =
+        'Synthetic configuration option ${name} from <internal>';
+    throw new DartdocFileMissing(
+        '$description, computed as ${valueWithContext.value}, resolves to missing path: "${missingPath}"');
+  }
+}
+
 /// A [DartdocOption] that only contains other [DartdocOption]s and is not an option itself.
 class DartdocOptionSet extends DartdocOption<Null> {
   DartdocOptionSet(String name)
@@ -316,9 +350,8 @@ class DartdocOptionSet extends DartdocOption<Null> {
   void _onMissing(
       _OptionValueWithContext valueWithContext, String missingFilename) {}
 
-  @override
-
   /// Traverse skips this node, because it doesn't represent a real configuration object.
+  @override
   void traverse(void visitor(DartdocOption)) {
     _children.values.forEach((d) => d.traverse(visitor));
   }
@@ -336,7 +369,7 @@ class DartdocOptionArgOnly<T> extends DartdocOption<T>
   DartdocOptionArgOnly(String name, T defaultsTo,
       {String abbr,
       bool mustExist = false,
-      help: '',
+      String help = '',
       bool hide,
       bool isDir = false,
       bool isFile = false,
