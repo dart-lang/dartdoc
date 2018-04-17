@@ -9,7 +9,6 @@ import 'dart:io';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
@@ -39,7 +38,7 @@ class TestLibraryContainerSdk extends TestLibraryContainer {
 }
 
 void main() {
-  Directory sdkDir = getSdkDir();
+  Directory sdkDir = defaultSdkDir;
 
   if (sdkDir == null) {
     print("Warning: unable to locate the Dart SDK.");
@@ -2103,7 +2102,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       Iterable<CallableElementType> typeArguments =
           (importantComputations.modelType.returnType as DefinedElementType)
-              .typeArguments;
+              .typeArguments
+              .cast<CallableElementType>();
       expect(typeArguments, isNotEmpty);
       expect(
           typeArguments.last.linkedName,

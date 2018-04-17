@@ -28,7 +28,6 @@ Future<List<int>> loadAsBytes(String path) async {
     throw new ArgumentError('path must begin with package:');
   }
 
-  var uri = Uri.parse(path);
-
+  Uri uri = Uri.parse(path);
   return await ResourceLoader.defaultLoader.readAsBytes(uri);
 }

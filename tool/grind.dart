@@ -13,6 +13,9 @@ import 'package:yaml/yaml.dart' as yaml;
 
 main([List<String> args]) => grind(args);
 
+/// Run no more than 6 futures in parallel with this.
+final MultiFutureTracker testFutures = new MultiFutureTracker(6);
+
 // Directory.systemTemp is not a constant.  So wrap it.
 Directory createTempSync(String prefix) =>
     Directory.systemTemp.createTempSync(prefix);
@@ -576,10 +579,47 @@ publish() async {
 
 @Task('Run all the tests.')
 test() async {
-  // `pub run test` is a bit slower than running an `test_all.dart` script
-  // But it provides more useful output in the case of failures.
-  await new SubprocessLauncher('test')
-      .runStreamed(sdkBin('pub'), ['run', 'test']);
+  await testPreviewDart2();
+  await testDart1();
+  await testFutures.wait();
+}
+
+List<File> get testFiles => new Directory('test')
+    .listSync(recursive: true)
+    .where((e) => e is File && e.path.endsWith('test.dart'))
+    .cast<File>()
+      ..toList();
+
+testPreviewDart2() async {
+  List<String> parameters = ['--preview-dart-2', '--enable-asserts'];
+
+  // sdk#32901 is really bad on Windows.
+  for (File dartFile in testFiles.where((f) =>
+      !f.path.endsWith('html_generator_test.dart') && !Platform.isWindows)) {
+    // absolute path to work around dart-lang/sdk#32901
+    await testFutures.addFuture(new SubprocessLauncher(
+            'dart2-${pathLib.basename(dartFile.absolute.path)}')
+        .runStreamed(
+            Platform.resolvedExecutable,
+            <String>[]
+              ..addAll(parameters)
+              ..add(dartFile.absolute.path)));
+  }
+}
+
+testDart1() async {
+  List<String> parameters = ['--checked'];
+
+  for (File dartFile in testFiles) {
+    // absolute path to work around dart-lang/sdk#32901
+    await testFutures.addFuture(new SubprocessLauncher(
+            'dart1-${pathLib.basename(dartFile.absolute.path)}')
+        .runStreamed(
+            Platform.resolvedExecutable,
+            <String>[]
+              ..addAll(parameters)
+              ..add(dartFile.absolute.path)));
+  }
 }
 
 @Task('Generate docs for dartdoc')

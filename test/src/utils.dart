@@ -11,7 +11,6 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/sdk.dart';
 import 'package:path/path.dart' as pathLib;
 
 Directory sdkDir;
@@ -33,7 +32,7 @@ void delete(Directory dir) {
 }
 
 init() async {
-  sdkDir = getSdkDir();
+  sdkDir = defaultSdkDir;
   sdkPackageMeta = new PackageMeta.fromDir(sdkDir);
 
   testPackageGraph = await bootBasicPackage(
@@ -50,7 +49,7 @@ init() async {
 Future<PackageGraph> bootSdkPackage() {
   Directory dir = new Directory(pathLib.current);
   return new PackageBuilder(
-          new DartDocConfig.fromParameters(
+          new DartdocConfig.fromParameters(
             inputDir: dir,
             sdkDir: sdkDir,
           ),
@@ -63,7 +62,7 @@ Future<PackageGraph> bootBasicPackage(
     {bool withAutoIncludedDependencies = false, bool withCrossdart = false}) {
   Directory dir = new Directory(dirPath);
   return new PackageBuilder(
-          new DartDocConfig.fromParameters(
+          new DartdocConfig.fromParameters(
               inputDir: dir,
               sdkDir: sdkDir,
               excludeLibraries: excludeLibraries,

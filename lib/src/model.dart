@@ -444,7 +444,7 @@ class Class extends ModelElement
       : super(element, library, packageGraph, null) {
     _mixins = _cls.mixins
         .map((f) {
-          ElementType t = new ElementType.from(f, packageGraph);
+          DefinedElementType t = new ElementType.from(f, packageGraph);
           return t;
         })
         .where((mixin) => mixin != null)
@@ -455,7 +455,7 @@ class Class extends ModelElement
     }
 
     _interfaces = _cls.interfaces
-        .map((f) => new ElementType.from(f, packageGraph))
+        .map((f) => new ElementType.from(f, packageGraph) as DefinedElementType)
         .toList(growable: false);
   }
 
@@ -606,7 +606,7 @@ class Class extends ModelElement
     if (_constructors != null) return _constructors;
 
     _constructors = _cls.constructors.map((e) {
-      return new ModelElement.from(e, library, packageGraph);
+      return new ModelElement.from(e, library, packageGraph) as Constructor;
     }).toList(growable: true)
       ..sort(byName);
 
@@ -819,9 +819,11 @@ class Class extends ModelElement
 
   List<Operator> get operators {
     if (_operators != null) return _operators;
-
-    _operators = _methods.where((m) => m.isOperator).toList(growable: false)
-      ..sort(byName);
+    _operators = _methods
+        .where((m) => m.isOperator)
+        .cast<Operator>()
+        .toList(growable: false)
+          ..sort(byName);
     _genPageOperators.addAll(_operators);
 
     return _operators;
@@ -936,7 +938,9 @@ class Class extends ModelElement
     if (_fields != null) return _fields;
     _fields = [];
     Set<PropertyAccessorElement> inheritedAccessors = new Set()
-      ..addAll(_inheritedElements.where((e) => e is PropertyAccessorElement));
+      ..addAll(_inheritedElements
+          .where((e) => e is PropertyAccessorElement)
+          .cast<PropertyAccessorElement>());
 
     // This structure keeps track of inherited accessors, allowing lookup
     // by field name (stripping the '=' from setters).
@@ -1042,7 +1046,7 @@ class Class extends ModelElement
     if (_allMethods != null) return _allMethods;
 
     _allMethods = _cls.methods.map((e) {
-      return new ModelElement.from(e, library, packageGraph);
+      return new ModelElement.from(e, library, packageGraph) as Method;
     }).toList(growable: false)
       ..sort(byName);
 
@@ -1053,7 +1057,7 @@ class Class extends ModelElement
   @override
   List<TypeParameter> get typeParameters => _cls.typeParameters.map((f) {
         var lib = new Library(f.enclosingElement.library, packageGraph);
-        return new ModelElement.from(f, lib, packageGraph);
+        return new ModelElement.from(f, lib, packageGraph) as TypeParameter;
       }).toList();
 
   @override
@@ -1156,14 +1160,14 @@ abstract class Documentable extends Nameable {
   String get oneLineDoc;
   PackageGraph get packageGraph;
   bool get isDocumented;
-  DartDocConfig get config;
+  DartdocConfig get config;
 }
 
 /// Mixin implementing dartdoc categorization for ModelElements.
 abstract class Categorization implements ModelElement {
   @override
   String _buildDocumentationLocal() {
-    _rawDocs = super._buildDocumentationLocal();
+    _rawDocs = _buildDocumentationBase();
     _rawDocs = _stripAndSetDartdocCategory(_rawDocs);
     return _rawDocs;
   }
@@ -1283,7 +1287,7 @@ class Enum extends Class {
         .instanceProperties
         .map((Field p) => new ModelElement.from(
             p.element, p.library, p.packageGraph,
-            getter: p.getter, setter: p.setter))
+            getter: p.getter, setter: p.setter) as EnumField)
         .toList(growable: false);
   }
 
@@ -1721,7 +1725,7 @@ abstract class GetterSetterCombo implements ModelElement {
 
 class Library extends ModelElement with Categorization {
   List<Class> _classes;
-  List<Class> _enums;
+  List<Enum> _enums;
   List<ModelFunction> _functions;
   List<Typedef> _typeDefs;
   List<TopLevelVariable> _variables;
@@ -1932,12 +1936,13 @@ class Library extends ModelElement with Categorization {
 
   List<Class> get enums {
     if (_enums != null) return _enums;
-
     List<ClassElement> enumClasses = [];
     enumClasses.addAll(_exportedNamespace.definedNames.values
-        .where((element) => element is ClassElement && element.isEnum));
+        .where((e) => e is ClassElement)
+        .cast<ClassElement>()
+        .where((element) => element.isEnum));
     _enums = enumClasses
-        .map((e) => new ModelElement.from(e, this, packageGraph))
+        .map((e) => new ModelElement.from(e, this, packageGraph) as Enum)
         .toList(growable: false)
           ..sort(byName);
 
@@ -1967,10 +1972,11 @@ class Library extends ModelElement with Categorization {
       elements.addAll(cu.functions);
     }
     elements.addAll(_exportedNamespace.definedNames.values
-        .where((element) => element is FunctionElement));
+        .where((e) => e is FunctionElement)
+        .cast<FunctionElement>());
 
     _functions = elements.map((e) {
-      return new ModelElement.from(e, this, packageGraph);
+      return new ModelElement.from(e, this, packageGraph) as ModelFunction;
     }).toList(growable: false)
       ..sort(byName);
 
@@ -2049,7 +2055,7 @@ class Library extends ModelElement with Categorization {
   PackageMeta _packageMeta;
   PackageMeta get packageMeta {
     if (_packageMeta == null) {
-      _packageMeta = new PackageMeta.fromElement(element);
+      _packageMeta = new PackageMeta.fromElement(element, config);
     }
     return _packageMeta;
   }
@@ -2081,9 +2087,10 @@ class Library extends ModelElement with Categorization {
     }
 
     elements.addAll(_exportedNamespace.definedNames.values
-        .where((element) => element is FunctionTypeAliasElement));
+        .where((e) => e is FunctionTypeAliasElement)
+        .cast<FunctionTypeAliasElement>());
     _typeDefs = elements
-        .map((e) => new ModelElement.from(e, this, packageGraph))
+        .map((e) => new ModelElement.from(e, this, packageGraph) as Typedef)
         .toList(growable: false)
           ..sort(byName);
 
@@ -2107,10 +2114,12 @@ class Library extends ModelElement with Categorization {
     }
 
     types.addAll(_exportedNamespace.definedNames.values
-        .where((element) => element is ClassElement && !element.isEnum));
+        .where((e) => e is ClassElement)
+        .cast<ClassElement>()
+        .where((element) => !element.isEnum));
 
     _classes = types
-        .map((e) => new ModelElement.from(e, this, packageGraph))
+        .map((e) => new ModelElement.from(e, this, packageGraph) as Class)
         .toList(growable: false)
           ..sort(byName);
 
@@ -2336,7 +2345,7 @@ class Method extends ModelElement
 
   void _calcTypeParameters() {
     typeParameters = _method.typeParameters.map((f) {
-      return new ModelElement.from(f, library, packageGraph);
+      return new ModelElement.from(f, library, packageGraph) as TypeParameter;
     }).toList();
   }
 
@@ -2760,7 +2769,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
-  DartDocConfig get config => packageGraph.config;
+  DartdocConfig get config => packageGraph.config;
 
   @override
   Set<String> get locationPieces {
@@ -2846,7 +2855,10 @@ abstract class ModelElement extends Canonicalization
     return docFrom;
   }
 
-  String _buildDocumentationLocal() {
+  String _buildDocumentationLocal() => _buildDocumentationBase();
+
+  /// Separate from _buildDocumentationLocal for overriding.
+  String _buildDocumentationBase() {
     assert(_rawDocs == null);
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
@@ -3246,8 +3258,9 @@ abstract class ModelElement extends Canonicalization
       }
 
       _parameters = new UnmodifiableListView<Parameter>(params
-          .map((p) => new ModelElement.from(p, library, packageGraph))
-          .toList() as Iterable<Parameter>);
+          .map((p) =>
+              new ModelElement.from(p, library, packageGraph) as Parameter)
+          .toList());
     }
     return _parameters;
   }
@@ -3652,7 +3665,7 @@ class ModelFunctionTyped extends ModelElement
 
   void _calcTypeParameters() {
     typeParameters = _func.typeParameters.map((f) {
-      return new ModelElement.from(f, library, packageGraph);
+      return new ModelElement.from(f, library, packageGraph) as TypeParameter;
     }).toList();
   }
 
@@ -3769,7 +3782,7 @@ class PackageGraph extends Canonicalization
 
     // Build [Library] objects, and link them to [Package]s.
     libraryElements.forEach((element) {
-      var packageMeta = new PackageMeta.fromElement(element);
+      var packageMeta = new PackageMeta.fromElement(element, config);
       var lib = new Library._(
           element, this, new Package.fromPackageMeta(packageMeta, this));
       packageMap[packageMeta.name]._libraries.add(lib);
@@ -3834,18 +3847,18 @@ class PackageGraph extends Canonicalization
 
   /// Dartdoc's configuration flags.
   @override
-  final DartDocConfig config;
+  final DartdocConfig config;
 
-  Map<String, Map<String, List<Map<String, dynamic>>>> __crossdartJson;
+  Map<String, Map<String, dynamic>> __crossdartJson;
   // TODO(jcollins-g): move to [Package]
-  Map<String, Map<String, List<Map<String, dynamic>>>> get crossdartJson {
+  Map<String, Map<String, dynamic>> get crossdartJson {
     if (__crossdartJson == null) {
       // TODO(jcollins-g): allow crossdart.json location to be configurable
       var crossdartFile =
           new File(pathLib.join(config.inputDir.path, "crossdart.json"));
       if (crossdartFile.existsSync()) {
-        var __crossdartJsonTmp = json.decode(crossdartFile.readAsStringSync())
-            as Map<String, Map<String, List<Map<String, dynamic>>>>;
+        Map<String, dynamic> __crossdartJsonTmp =
+            json.decode(crossdartFile.readAsStringSync());
         __crossdartJson = {};
         for (String key in __crossdartJsonTmp.keys) {
           __crossdartJson[pathLib.canonicalize(key)] = __crossdartJsonTmp[key];
@@ -4481,8 +4494,10 @@ class PackageGraph extends Canonicalization
       // for an inherited element whose defining Class is not canonical.
       if (matches.length > 1 && preferredClass != null) {
         // Search for matches inside our superchain.
-        List<Class> superChain =
-            preferredClass.superChain.map((et) => et.element).toList();
+        List<Class> superChain = preferredClass.superChain
+            .map((et) => et.element)
+            .cast<Class>()
+            .toList();
         superChain.add(preferredClass);
         matches.removeWhere((me) =>
             !superChain.contains((me as EnclosedElement).enclosingElement));
@@ -4553,7 +4568,7 @@ class PackageGraph extends Canonicalization
           e.library,
           this,
           new Package.fromPackageMeta(
-              new PackageMeta.fromElement(e.library), packageGraph));
+              new PackageMeta.fromElement(e.library, config), packageGraph));
       allLibraries[e.library] = foundLibrary;
     }
     return foundLibrary;
@@ -4767,11 +4782,15 @@ class Package extends LibraryContainer
   String get baseHref {
     if (_baseHref == null) {
       if (documentedWhere == DocumentLocation.remote) {
-        _baseHref = dartdocOptions.linkToUrl.replaceAllMapped(substituteName, (m) {
+        _baseHref =
+            dartdocOptions.linkToUrl.replaceAllMapped(substituteName, (m) {
           switch (m.group(1)) {
-            case 'n':  return name;
-            case 'v':  return packageMeta.version;
-          };
+            case 'n':
+              return name;
+            case 'v':
+              return packageMeta.version;
+          }
+          ;
         });
         if (!_baseHref.endsWith('/')) _baseHref = '${_baseHref}/';
       } else {
@@ -5049,7 +5068,7 @@ abstract class TypeParameters implements ModelElement {
   }
 
   @override
-  DefinedElementType get modelType => super.modelType;
+  DefinedElementType get modelType;
 
   List<TypeParameter> get typeParameters;
 }
@@ -5183,7 +5202,7 @@ class Typedef extends ModelElement
 
   @override
   List<TypeParameter> get typeParameters => _typedef.typeParameters.map((f) {
-        return new ModelElement.from(f, library, packageGraph);
+        return new ModelElement.from(f, library, packageGraph) as TypeParameter;
       }).toList();
 }
 
@@ -5249,7 +5268,7 @@ class TypeParameter extends ModelElement {
 /// Everything you need to instantiate a PackageGraph object for documenting.
 class PackageBuilder {
   final PackageMeta packageMeta;
-  final DartDocConfig config;
+  final DartdocConfig config;
 
   PackageBuilder(this.config, this.packageMeta);
 
@@ -5432,7 +5451,7 @@ class PackageBuilder {
       if (library != null) {
         if (!config.isLibraryExcluded(Library.getLibraryName(library)) &&
             !config.excludePackages
-                .contains(new PackageMeta.fromElement(library)?.name)) {
+                .contains(new PackageMeta.fromElement(library, config)?.name)) {
           libraries.add(library);
           sources.add(source);
         }
