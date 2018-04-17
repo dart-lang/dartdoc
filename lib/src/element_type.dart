@@ -254,7 +254,7 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
   @override
   // TODO(jcollins-g): Rewrite this and improve object model so this doesn't
   // require type checking everywhere.
-  Iterable<DefinedElementType> get typeArguments {
+  Iterable<ElementType> get typeArguments {
     if (_typeArguments == null) {
       Iterable<DartType> dartTypeArguments;
       if (type.typeFormals.isEmpty &&

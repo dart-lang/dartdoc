@@ -8,6 +8,7 @@ import 'dart:io' show File;
 
 import 'package:collection/collection.dart' show compareNatural;
 import 'package:dartdoc/src/model_utils.dart';
+import 'package:mustache4dart/mustache4dart.dart';
 import 'package:path/path.dart' as pathLib;
 
 import '../logging.dart';

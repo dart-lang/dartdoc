@@ -6,6 +6,7 @@
 library dartdoc.io_utils;
 
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -64,6 +65,36 @@ final partOfRegexp = new RegExp('part of ');
 final newLinePartOfRegexp = new RegExp('\npart of ');
 
 final RegExp quotables = new RegExp(r'[ "\r\n\$]');
+
+/// Best used with Future<void>.
+class MultiFutureTracker<T> {
+  /// Approximate maximum number of simultaneous active Futures.
+  final int parallel;
+
+  final Queue<Future<T>> _queue = new Queue();
+
+  MultiFutureTracker(this.parallel);
+
+  /// Adds a Future to the queue of outstanding Futures, and returns a Future
+  /// that completes only when the number of Futures outstanding is <= parallel.
+  /// That can be extremely brief and there's no longer a guarantee after that
+  /// point that another async task has not added a Future to the list.
+  void addFuture(Future<T> future) async {
+    _queue.add(future);
+    future.then((f) => _queue.remove(future));
+    await _waitUntil(parallel);
+  }
+
+  /// Wait until fewer or equal to this many Futures are outstanding.
+  void _waitUntil(int max) async {
+    while (_queue.length > max) {
+      await Future.any(_queue);
+    }
+  }
+
+  /// Wait until all futures added so far have completed.
+  void wait() async => await _waitUntil(0);
+}
 
 class SubprocessLauncher {
   final String context;
@@ -126,6 +157,8 @@ class SubprocessLauncher {
       return line.split('\n');
     }
 
+    Process process = await Process.start(executable, arguments,
+        workingDirectory: workingDirectory, environment: environment);
     stderr.write('$prefix+ ');
     if (workingDirectory != null) stderr.write('(cd "$workingDirectory" && ');
     if (environment != null) {
@@ -150,9 +183,6 @@ class SubprocessLauncher {
     }
     if (workingDirectory != null) stderr.write(')');
     stderr.write('\n');
-    Process process = await Process.start(executable, arguments,
-        workingDirectory: workingDirectory, environment: environment);
-
     _printStream(process.stdout, stdout, prefix: prefix, filter: jsonCallback);
     _printStream(process.stderr, stderr, prefix: prefix, filter: jsonCallback);
     await process.exitCode;
