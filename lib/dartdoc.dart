@@ -28,7 +28,6 @@ import 'src/package_meta.dart';
 import 'src/warnings.dart';
 
 export 'src/config.dart';
-export 'src/dartdoc_options.dart';
 export 'src/element_type.dart';
 export 'src/generator.dart';
 export 'src/model.dart';
