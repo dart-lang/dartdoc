@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:collection';
 import 'dart:io' hide ProcessException;
 
 import 'package:dartdoc/src/io_utils.dart';

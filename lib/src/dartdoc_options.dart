@@ -33,6 +33,22 @@ const int _kIntVal = 0;
 const double _kDoubleVal = 0.0;
 const bool _kBoolVal = true;
 
+String _resolveTildePath(String originalPath) {
+  if (originalPath == null || !originalPath.startsWith('~/')) {
+    return originalPath;
+  }
+
+  String homeDir;
+
+  if (Platform.isWindows) {
+    homeDir = pathLib.absolute(Platform.environment['USERPROFILE']);
+  } else {
+    homeDir = pathLib.absolute(Platform.environment['HOME']);
+  }
+
+  return pathLib.join(homeDir, originalPath.substring(2));
+}
+
 class DartdocOptionError extends DartdocFailure {
   DartdocOptionError(String details) : super(details);
 }
@@ -81,10 +97,10 @@ class _OptionValueWithContext<T> {
   /// if [T] isn't a [String] or [List<String>].
   T get resolvedValue {
     if (value is List<String>) {
-      return (value as List<String>).map((v) => pathContext.canonicalize(v))
+      return (value as List<String>).map((v) => pathContext.canonicalize(_resolveTildePath(v)))
           as T;
     } else if (value is String) {
-      return pathContext.canonicalize(value as String) as T;
+      return pathContext.canonicalize(_resolveTildePath(value as String)) as T;
     } else {
       throw new UnsupportedError('Type $T is not supported for resolvedValue');
     }
