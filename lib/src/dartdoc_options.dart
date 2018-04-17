@@ -642,7 +642,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
       retval = double.tryParse(_argResults[argName]) as T;
       if (retval == null) _throwErrorForTypes(_argResults[argName]);
     } else if (_isMapString) {
-      retval = {} as T;
+      retval = <String, String>{} as T;
       for (String pair in _argResults[argName]) {
         List<String> pairList = pair.split('::');
         if (pairList.length != 2) {
@@ -993,7 +993,9 @@ class _FileDartdocOptions extends DartdocOptions {
       _categoryOrder = [];
       if (_dartdocOptions.containsKey('categoryOrder')) {
         if (_dartdocOptions['categoryOrder'] is YamlList) {
-          _categoryOrder.addAll(_dartdocOptions['categoryOrder']);
+          _categoryOrder.addAll(_dartdocOptions['categoryOrder']
+              .map((c) => c.toString())
+              .cast<String>());
         } else {
           logWarning('${_path}: categoryOrder must be a list (ignoring)');
         }

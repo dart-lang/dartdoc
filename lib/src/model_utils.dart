@@ -140,7 +140,7 @@ String stripIndentFromSource(String source) {
 /// Add links to crossdart.info to the given source fragment
 String crossdartifySource(
     String inputPath,
-    Map<String, Map<String, List<Map<String, dynamic>>>> json,
+    Map<String, Map<String, dynamic>> json,
     String source,
     Element element,
     int start) {
