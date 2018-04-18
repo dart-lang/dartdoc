@@ -28,6 +28,7 @@ import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 export 'package:dartdoc/src/config.dart';
+export 'package:dartdoc/src/dartdoc_options.dart';
 export 'package:dartdoc/src/element_type.dart';
 export 'package:dartdoc/src/generator.dart';
 export 'package:dartdoc/src/model.dart';
