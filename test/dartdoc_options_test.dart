@@ -95,6 +95,20 @@ void main() {
         .add(new DartdocOptionBoth<String>('notInAnyFile', 'so there'));
     dartdocOptionSetBoth.add(new DartdocOptionBoth<String>('fileOption', null,
         isFile: true, mustExist: true));
+    dartdocOptionSetBoth.add(new DartdocOptionSynthetic<List<String>>(
+        'vegetableLoader', (DartdocOptionSynthetic option, Directory dir) {
+      if (option.root['mySpecialInteger'].valueAt(dir) > 20) {
+        return <String>['existing.dart'];
+      } else {
+        return <String>['not_existing.dart'];
+      }
+    }));
+    dartdocOptionSetBoth.add(new DartdocOptionSynthetic<List<String>>(
+        'vegetableLoaderChecked',
+        (DartdocOptionSynthetic option, Directory dir) =>
+            option.root['vegetableLoader'].valueAt(dir),
+        isFile: true,
+        mustExist: true));
 
     tempDir = Directory.systemTemp.createTempSync('options_test');
     firstDir = new Directory(pathLib.join(tempDir.path, 'firstDir'))
@@ -150,6 +164,37 @@ dartdoc:
 
   tearDownAll(() {
     tempDir.deleteSync(recursive: true);
+  });
+
+  group('new style synthetic option', () {
+    test('validate argument override changes value', () {
+      dartdocOptionSetBoth.parseArguments(['--my-special-integer', '12']);
+      expect(dartdocOptionSetBoth['vegetableLoader'].valueAt(tempDir),
+          orderedEquals(['not_existing.dart']));
+    });
+
+    test('validate default value of synthetic', () {
+      dartdocOptionSetBoth.parseArguments([]);
+      expect(dartdocOptionSetBoth['vegetableLoader'].valueAt(tempDir),
+          orderedEquals(['existing.dart']));
+    });
+
+    test('file validation of synthetic', () {
+      dartdocOptionSetBoth.parseArguments([]);
+      expect(dartdocOptionSetBoth['vegetableLoaderChecked'].valueAt(firstDir),
+          orderedEquals([pathLib.canonicalize(firstExisting.path)]));
+
+      String errorMessage;
+      try {
+        dartdocOptionSetBoth['vegetableLoaderChecked'].valueAt(tempDir);
+      } on DartdocFileMissing catch (e) {
+        errorMessage = e.message;
+      }
+      expect(
+          errorMessage,
+          equals(
+              'Synthetic configuration option dartdoc from <internal>, computed as [existing.dart], resolves to missing path: "${pathLib.canonicalize(pathLib.join(tempDir.absolute.path, 'existing.dart'))}"'));
+    });
   });
 
   group('new style dartdoc both file and argument options', () {
