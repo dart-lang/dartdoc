@@ -922,9 +922,9 @@ class Class extends ModelElement
     if (__inheritedElements == null) {
       __inheritedElements = [];
       Map<String, ExecutableElement> cmap =
-          library.inheritanceManager.getMembersInheritedFromClasses(element);
+          definingLibrary.inheritanceManager.getMembersInheritedFromClasses(element);
       Map<String, ExecutableElement> imap =
-          library.inheritanceManager.getMembersInheritedFromInterfaces(element);
+          definingLibrary.inheritanceManager.getMembersInheritedFromInterfaces(element);
       __inheritedElements.addAll(cmap.values);
       __inheritedElements
           .addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
