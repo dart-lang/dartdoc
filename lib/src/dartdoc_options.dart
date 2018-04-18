@@ -18,10 +18,9 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
-
-import 'logging.dart';
 
 /// Constants to help with type checking, because T is int and so forth
 /// don't work in Dart.

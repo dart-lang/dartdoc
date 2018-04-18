@@ -9,11 +9,11 @@ import 'dart:io' show File;
 
 import 'package:path/path.dart' as pathLib;
 
-import '../generator.dart';
-import '../model.dart';
-import 'html_generator_instance.dart';
-import 'template_data.dart';
-import 'templates.dart';
+import 'package:dartdoc/src/generator.dart';
+import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/html/html_generator_instance.dart';
+import 'package:dartdoc/src/html/template_data.dart';
+import 'package:dartdoc/src/html/templates.dart';
 
 typedef String Renderer(String input);
 
