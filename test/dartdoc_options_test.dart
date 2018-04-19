@@ -548,29 +548,4 @@ dartdoc:
           equals('parent'));
     });
   });
-  /*
-  group('dartdoc options', () {
-    group('options file finding and loading', () {
-      test('DartdocOptions loads defaults', () {
-        DartdocOptions options = new DartdocOptions.fromDir(tempDir);
-        expect(options.categoryOrder, isEmpty);
-      });
-
-      test('DartdocOptions loads a file', () {
-        DartdocOptions options = new DartdocOptions.fromDir(firstDir);
-        expect(options.categoryOrder, orderedEquals(['options_one']));
-      });
-
-      test('DartdocOptions loads a file in parent directories', () {
-        DartdocOptions options = new DartdocOptions.fromDir(secondDirSecondSub);
-        expect(options.categoryOrder, orderedEquals(['options_two']));
-      });
-
-      test('DartdocOptions loads the override file instead of parents', () {
-        DartdocOptions options = new DartdocOptions.fromDir(secondDirFirstSub);
-        expect(options.categoryOrder, orderedEquals(['options_two_first_sub']));
-      });
-    });
-  });
-  */
 }
