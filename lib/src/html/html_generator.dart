@@ -7,13 +7,12 @@ library dartdoc.html_generator;
 import 'dart:async' show Future, StreamController, Stream;
 import 'dart:io' show File;
 
-import 'package:path/path.dart' as pathLib;
-
 import 'package:dartdoc/src/generator.dart';
-import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/html/html_generator_instance.dart';
 import 'package:dartdoc/src/html/template_data.dart';
 import 'package:dartdoc/src/html/templates.dart';
+import 'package:dartdoc/src/model.dart';
+import 'package:path/path.dart' as pathLib;
 
 typedef String Renderer(String input);
 

@@ -13,19 +13,18 @@ import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/source.dart';
-import 'package:dartdoc/src/utils.dart';
-import 'package:html/dom.dart' show Element, Document;
-import 'package:html/parser.dart' show parse;
-import 'package:path/path.dart' as pathLib;
-
-import 'package:tuple/tuple.dart';
 import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:html/dom.dart' show Element, Document;
+import 'package:html/parser.dart' show parse;
+import 'package:path/path.dart' as pathLib;
+import 'package:tuple/tuple.dart';
 
 export 'package:dartdoc/src/config.dart';
 export 'package:dartdoc/src/dartdoc_options.dart';

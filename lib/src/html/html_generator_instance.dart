@@ -7,15 +7,15 @@ import 'dart:convert' show JsonEncoder;
 import 'dart:io' show File;
 
 import 'package:collection/collection.dart' show compareNatural;
-import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/model.dart';
-import 'package:dartdoc/src/model_utils.dart';
-import 'package:dartdoc/src/warnings.dart';
 import 'package:dartdoc/src/html/html_generator.dart' show HtmlGeneratorOptions;
 import 'package:dartdoc/src/html/resource_loader.dart' as loader;
 import 'package:dartdoc/src/html/resources.g.dart' as resources;
 import 'package:dartdoc/src/html/template_data.dart';
 import 'package:dartdoc/src/html/templates.dart';
+import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:mustache4dart/mustache4dart.dart';
 import 'package:path/path.dart' as pathLib;
 

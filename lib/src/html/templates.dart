@@ -6,6 +6,7 @@ library dartdoc.templates;
 
 import 'dart:async' show Future;
 import 'dart:io' show File;
+
 import 'package:dartdoc/src/html/resource_loader.dart' as loader;
 import 'package:mustache4dart/mustache4dart.dart';
 
