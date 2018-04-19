@@ -81,10 +81,10 @@ abstract class PackageMeta {
 
   /// Use this instead of fromDir where possible.
   factory PackageMeta.fromElement(
-      LibraryElement libraryElement, DartdocConfig config) {
+      LibraryElement libraryElement, DartdocOptionContext config) {
     // Workaround for dart-lang/sdk#32707.  Replace with isInSdk once that works.
     if (libraryElement.source.uri.scheme == 'dart')
-      return new PackageMeta.fromDir(config.sdkDir);
+      return new PackageMeta.fromDir(new Directory(config.sdkDir));
     return new PackageMeta.fromDir(
         new File(pathLib.canonicalize(libraryElement.source.fullName)).parent);
   }
@@ -220,7 +220,7 @@ class _FilePackageMeta extends PackageMeta {
       StringBuffer buf = new StringBuffer();
       buf.writeln('${result.stdout}');
       buf.writeln('${result.stderr}');
-      throw buf.toString().trim();
+      throw DartdocFailure('pub get failed: ${buf.toString().trim()}');
     }
   }
 

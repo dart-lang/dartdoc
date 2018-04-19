@@ -15,7 +15,7 @@ import 'package:test/test.dart';
 import 'src/utils.dart';
 
 void main() {
-  group('dartdoc', () {
+  group('dartdoc without generators', () {
     Directory tempDir;
 
     setUp(() {
@@ -28,11 +28,8 @@ void main() {
 
     test('generate docs for ${pathLib.basename(testPackageDir.path)} works',
         () async {
-      PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(inputDir: testPackageDir),
-          tempDir,
-          meta);
+          await contextFromArgv(['--input', testPackageDir.path]), tempDir);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -46,11 +43,8 @@ void main() {
 
     test('generate docs for ${pathLib.basename(testPackageBadDir.path)} fails',
         () async {
-      PackageMeta meta = new PackageMeta.fromDir(testPackageBadDir);
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(inputDir: testPackageBadDir),
-          tempDir,
-          meta);
+          await contextFromArgv(['--input', testPackageBadDir.path]), tempDir);
 
       try {
         await dartdoc.generateDocs();
@@ -61,11 +55,9 @@ void main() {
     });
 
     test('generate docs for a package that does not have a readme', () async {
-      PackageMeta meta = new PackageMeta.fromDir(testPackageWithNoReadme);
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(inputDir: testPackageWithNoReadme),
-          tempDir,
-          meta);
+          await contextFromArgv(['--input', testPackageWithNoReadme.path]),
+          tempDir);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -78,12 +70,10 @@ void main() {
     });
 
     test('generate docs including a single library', () async {
-      PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(
-              inputDir: testPackageDir, includeLibraries: ['fake']),
-          tempDir,
-          meta);
+          await contextFromArgv(
+              ['--input', testPackageDir.path, '--include', 'fake']),
+          tempDir);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -96,12 +86,10 @@ void main() {
     });
 
     test('generate docs excluding a single library', () async {
-      PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(
-              inputDir: testPackageDir, excludeLibraries: ['fake']),
-          tempDir,
-          meta);
+          await contextFromArgv(
+              ['--input', testPackageDir.path, '--exclude', 'fake']),
+          tempDir);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -118,10 +106,8 @@ void main() {
       PackageMeta meta = new PackageMeta.fromDir(testPackageWithEmbedderYaml);
       if (meta.needsPubGet) meta.runPubGet();
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(
-              inputDir: testPackageWithEmbedderYaml),
-          tempDir,
-          meta);
+          await contextFromArgv(['--input', testPackageWithEmbedderYaml.path]),
+          tempDir);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);

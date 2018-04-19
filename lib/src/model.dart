@@ -35,7 +35,6 @@ import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/io_utils.dart';
@@ -921,10 +920,10 @@ class Class extends ModelElement
   List<ExecutableElement> get _inheritedElements {
     if (__inheritedElements == null) {
       __inheritedElements = [];
-      Map<String, ExecutableElement> cmap =
-          definingLibrary.inheritanceManager.getMembersInheritedFromClasses(element);
-      Map<String, ExecutableElement> imap =
-          definingLibrary.inheritanceManager.getMembersInheritedFromInterfaces(element);
+      Map<String, ExecutableElement> cmap = definingLibrary.inheritanceManager
+          .getMembersInheritedFromClasses(element);
+      Map<String, ExecutableElement> imap = definingLibrary.inheritanceManager
+          .getMembersInheritedFromInterfaces(element);
       __inheritedElements.addAll(cmap.values);
       __inheritedElements
           .addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
@@ -1158,7 +1157,7 @@ abstract class Documentable extends Nameable {
   String get oneLineDoc;
   PackageGraph get packageGraph;
   bool get isDocumented;
-  DartdocConfig get config;
+  DartdocOptionContext get config;
 }
 
 /// Mixin implementing dartdoc categorization for ModelElements.
@@ -2766,8 +2765,15 @@ abstract class ModelElement extends Canonicalization
     return _isPublic;
   }
 
+  DartdocOptionContext _config;
   @override
-  DartdocConfig get config => packageGraph.config;
+  DartdocOptionContext get config {
+    if (_config == null) {
+      _config = new DartdocOptionContext.fromContextElement(
+          packageGraph.config, element);
+    }
+    return _config;
+  }
 
   @override
   Set<String> get locationPieces {
@@ -2947,7 +2953,7 @@ abstract class ModelElement extends Canonicalization
             List<String> debugLines = [];
             debugLines.addAll(scoredCandidates.map((s) => '${s.toString()}'));
 
-            if (confidence < config.reexportMinConfidence) {
+            if (confidence < config.ambiguousReexportScorerMinConfidence) {
               warnable.warn(PackageWarning.ambiguousReexport,
                   message: message, extendedDebug: debugLines);
             }
@@ -3845,7 +3851,7 @@ class PackageGraph extends Canonicalization
 
   /// Dartdoc's configuration flags.
   @override
-  final DartdocConfig config;
+  final DartdocOptionContext config;
 
   Map<String, Map<String, dynamic>> __crossdartJson;
   // TODO(jcollins-g): move to [Package]
@@ -3853,7 +3859,7 @@ class PackageGraph extends Canonicalization
     if (__crossdartJson == null) {
       // TODO(jcollins-g): allow crossdart.json location to be configurable
       var crossdartFile =
-          new File(pathLib.join(config.inputDir.path, "crossdart.json"));
+          new File(pathLib.join(config.inputDir, 'crossdart.json'));
       if (crossdartFile.existsSync()) {
         Map<String, dynamic> __crossdartJsonTmp =
             json.decode(crossdartFile.readAsStringSync());
@@ -4656,21 +4662,21 @@ abstract class LibraryContainer extends Nameable
 
 /// A category is a subcategory of a package, containing libraries tagged
 /// with a @category identifier.  Comparable so it can be sorted according to
-/// [dartdocOptions.categoryOrder].
+/// [config.categoryOrder].
 class Category extends LibraryContainer {
   final String _name;
 
   /// All libraries in [libraries] must come from [package].
   final Package package;
-  final DartdocOptions dartdocOptions;
+  final DartdocOptionContext config;
 
-  Category(this._name, this.package, this.dartdocOptions);
+  Category(this._name, this.package, this.config);
 
   @override
   String get name => _name;
 
   @override
-  List<String> get containerOrder => dartdocOptions.categoryOrder;
+  List<String> get containerOrder => config.categoryOrder;
 
   @override
   Package get enclosingContainer => package;
@@ -4792,11 +4798,11 @@ class Package extends LibraryContainer
   /// A map of category name to the category itself.
   Map<String, Category> get nameToCategory {
     if (_nameToCategory.isEmpty) {
-      _nameToCategory[null] = new Category(null, this, dartdocOptions);
+      _nameToCategory[null] = new Category(null, this, config);
       for (Library lib in libraries) {
         String category = lib.categoryName;
         _nameToCategory.putIfAbsent(
-            category, () => new Category(category, this, dartdocOptions));
+            category, () => new Category(category, this, config));
         _nameToCategory[category]._libraries.add(lib);
       }
     }
@@ -4812,12 +4818,13 @@ class Package extends LibraryContainer
     return _categories;
   }
 
-  DartdocOptions _dartdocOptions;
-  DartdocOptions get dartdocOptions {
-    if (_dartdocOptions == null) {
-      _dartdocOptions = new DartdocOptions.fromDir(new Directory(packagePath));
+  DartdocOptionContext _config;
+  DartdocOptionContext get config {
+    if (_config == null) {
+      _config = new DartdocOptionContext.fromContext(
+          packageGraph.config, new Directory(packagePath));
     }
-    return _dartdocOptions;
+    return _config;
   }
 
   /// Is this the package at the top of the list?  We display the first
@@ -4831,7 +4838,7 @@ class Package extends LibraryContainer
   String get packagePath {
     if (_packagePath == null) {
       if (isSdk) {
-        _packagePath = packageGraph.config.sdkDir.path;
+        _packagePath = packageGraph.config.sdkDir;
       } else {
         assert(libraries.isNotEmpty);
         File file = new File(
@@ -4950,8 +4957,8 @@ abstract class SourceCodeMixin implements Documentable {
       String source = contents.substring(start, node.end);
 
       if (config.addCrossdart) {
-        source = crossdartifySource(config.inputDir.path,
-            packageGraph.crossdartJson, source, element, start);
+        source = crossdartifySource(config.inputDir, packageGraph.crossdartJson,
+            source, element, start);
       } else {
         source = const HtmlEscape().convert(source);
       }
@@ -4978,30 +4985,30 @@ abstract class SourceCodeMixin implements Documentable {
       var filePath = source.fullName;
       var uri = source.uri.toString();
       var packageMeta = library.packageGraph.packageMeta;
-      if (uri.startsWith("package:")) {
+      if (uri.startsWith('package:')) {
         var splittedUri =
-            uri.replaceAll(new RegExp(r"^package:"), "").split("/");
+            uri.replaceAll(new RegExp(r'^package:'), '').split('/');
         var packageName = splittedUri.first;
         var packageVersion;
         if (packageName == packageMeta.name) {
           packageVersion = packageMeta.version;
         } else {
           var match = new RegExp(
-                  ".pub-cache/(hosted/pub.dartlang.org|git)/${packageName}-([^/]+)")
+                  '.pub-cache/(hosted/pub.dartlang.org|git)/${packageName}-([^/]+)')
               .firstMatch(filePath);
           if (match != null) {
             packageVersion = match[2];
           }
         }
         if (packageVersion != null) {
-          return "${packageName}/${packageVersion}/${splittedUri.skip(1).join("/")}";
+          return '${packageName}/${packageVersion}/${splittedUri.skip(1).join("/")}';
         } else {
           return null;
         }
-      } else if (uri.startsWith("dart:")) {
-        var packageName = "sdk";
-        var packageVersion = config.sdkVersion;
-        return "${packageName}/${packageVersion}/lib/${uri.replaceAll(new RegExp(r"^dart:"), "")}";
+      } else if (uri.startsWith('dart:')) {
+        var packageName = 'sdk';
+        var packageVersion = packageGraph.sdk.sdkVersion;
+        return '${packageName}/${packageVersion}/lib/${uri.replaceAll(new RegExp(r"^dart:"), "")}';
       } else {
         return null;
       }
@@ -5012,8 +5019,8 @@ abstract class SourceCodeMixin implements Documentable {
 
   String get _crossdartUrl {
     if (lineAndColumn != null && _crossdartPath != null) {
-      String url = "//www.crossdart.info/p/${_crossdartPath}.html";
-      return "${url}#line-${lineAndColumn.item1}";
+      String url = '//www.crossdart.info/p/${_crossdartPath}.html';
+      return '${url}#line-${lineAndColumn.item1}';
     } else {
       return null;
     }
@@ -5237,31 +5244,34 @@ class TypeParameter extends ModelElement {
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 class PackageBuilder {
-  final PackageMeta packageMeta;
-  final DartdocConfig config;
+  final DartdocOptionContext config;
 
-  PackageBuilder(this.config, this.packageMeta);
+  PackageBuilder(this.config);
 
   void logAnalysisErrors(Set<Source> sources) {}
 
   Future<PackageGraph> buildPackageGraph() async {
+    PackageMeta packageMeta = config.packageMeta;
+    if (packageMeta.needsPubGet) {
+      packageMeta.runPubGet();
+    }
     Set<LibraryElement> libraries = await getLibraries(getFiles);
-    return new PackageGraph(
-        libraries, config, packageMeta, getWarningOptions(), driver, sdk);
+    return new PackageGraph(libraries, config, config.packageMeta,
+        getWarningOptions(), driver, sdk);
   }
 
   DartSdk _sdk;
   DartSdk get sdk {
     if (_sdk == null) {
       _sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
-          PhysicalResourceProvider.INSTANCE.getFolder(config.sdkDir.path));
+          PhysicalResourceProvider.INSTANCE.getFolder(config.sdkDir));
     }
     return _sdk;
   }
 
   EmbedderSdk _embedderSdk;
   EmbedderSdk get embedderSdk {
-    if (_embedderSdk == null && packageMeta.isSdk == false) {
+    if (_embedderSdk == null && !config.packageMeta.isSdk) {
       _embedderSdk = new EmbedderSdk(PhysicalResourceProvider.INSTANCE,
           new EmbedderYamlLocator(packageMap).embedderYamls);
     }
@@ -5289,7 +5299,7 @@ class PackageBuilder {
   Map<String, List<fileSystem.Folder>> get packageMap {
     if (_packageMap == null) {
       fileSystem.Folder cwd =
-          PhysicalResourceProvider.INSTANCE.getResource(config.inputDir.path);
+          PhysicalResourceProvider.INSTANCE.getResource(config.inputDir);
       _packageMap = _calculatePackageMap(cwd);
     }
     return _packageMap;
@@ -5492,7 +5502,7 @@ class PackageBuilder {
               new Uri.file(pathLib.join(basePackageDir, 'pubspec.yaml')))
           .asMap();
       for (String packageName in info.keys) {
-        if (!filterExcludes || !config.excludeLibraries.contains(packageName)) {
+        if (!filterExcludes || !config.exclude.contains(packageName)) {
           packageDirs.add(pathLib.dirname(info[packageName].toFilePath()));
         }
       }
@@ -5529,13 +5539,14 @@ class PackageBuilder {
 
   Set<String> get getFiles {
     Set<String> files = new Set();
-    files.addAll(packageMeta.isSdk
+    files.addAll(config.packageMeta.isSdk
         ? new Set()
         : findFilesToDocumentInPackage(
-            config.inputDir.path, config.autoIncludeDependencies));
-    if (packageMeta.isSdk) {
+            config.inputDir, config.autoIncludeDependencies));
+    if (config.packageMeta.isSdk) {
       files.addAll(getSdkFilesToDocument());
-    } else if (embedderSdk.urlMappings.isNotEmpty && !packageMeta.isSdk) {
+    } else if (embedderSdk.urlMappings.isNotEmpty &&
+        !config.packageMeta.isSdk) {
       embedderSdk.urlMappings.keys.forEach((String dartUri) {
         Source source = embedderSdk.mapDartUri(dartUri);
         files.add(source.fullName);
@@ -5543,7 +5554,7 @@ class PackageBuilder {
     }
     // Use the includeExternals.
     for (String fullName in driver.knownFiles) {
-      if (config.includeExternals.any((string) => fullName.endsWith(string)))
+      if (config.includeExternal.any((string) => fullName.endsWith(string)))
         files.add(fullName);
     }
     return new Set.from(files.map((s) => new File(s).absolute.path));
@@ -5552,16 +5563,15 @@ class PackageBuilder {
   Future<Set<LibraryElement>> getLibraries(Set<String> files) async {
     Set<LibraryElement> libraries = new Set();
     libraries.addAll(await _parseLibraries(files));
-    if (config.includeLibraries.isNotEmpty) {
+    if (config.include.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
-      Set notFound = new Set.from(config.includeLibraries)
+      Set notFound = new Set.from(config.include)
           .difference(new Set.from(knownLibraryNames));
       if (notFound.isNotEmpty) {
         throw 'Did not find: [${notFound.join(', ')}] in '
             'known libraries: [${knownLibraryNames.join(', ')}]';
       }
-      libraries
-          .removeWhere((lib) => !config.includeLibraries.contains(lib.name));
+      libraries.removeWhere((lib) => !config.include.contains(lib.name));
     }
     return libraries;
   }
