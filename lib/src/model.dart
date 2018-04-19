@@ -1158,7 +1158,7 @@ abstract class Documentable extends Nameable {
   String get oneLineDoc;
   PackageGraph get packageGraph;
   bool get isDocumented;
-  DartdocConfig get config;
+  DartdocOptionContext get config;
 }
 
 /// Mixin implementing dartdoc categorization for ModelElements.
@@ -2766,8 +2766,15 @@ abstract class ModelElement extends Canonicalization
     return _isPublic;
   }
 
+  DartdocOptionContext _config;
   @override
-  DartdocConfig get config => packageGraph.config;
+  DartdocOptionContext get config {
+    if (_config == null) {
+      _config = new DartdocOptionContext.fromContextElement(
+          packageGraph.config, element);
+    }
+    return _config;
+  }
 
   @override
   Set<String> get locationPieces {
@@ -2947,7 +2954,7 @@ abstract class ModelElement extends Canonicalization
             List<String> debugLines = [];
             debugLines.addAll(scoredCandidates.map((s) => '${s.toString()}'));
 
-            if (confidence < config.reexportMinConfidence) {
+            if (confidence < config.ambiguousReexportScorerMinConfidence) {
               warnable.warn(PackageWarning.ambiguousReexport,
                   message: message, extendedDebug: debugLines);
             }
@@ -3845,7 +3852,7 @@ class PackageGraph extends Canonicalization
 
   /// Dartdoc's configuration flags.
   @override
-  final DartdocConfig config;
+  final DartdocOptionContext config;
 
   Map<String, Map<String, dynamic>> __crossdartJson;
   // TODO(jcollins-g): move to [Package]
@@ -3853,7 +3860,7 @@ class PackageGraph extends Canonicalization
     if (__crossdartJson == null) {
       // TODO(jcollins-g): allow crossdart.json location to be configurable
       var crossdartFile =
-          new File(pathLib.join(config.inputDir.path, "crossdart.json"));
+          new File(pathLib.join(config.inputDir, "crossdart.json"));
       if (crossdartFile.existsSync()) {
         Map<String, dynamic> __crossdartJsonTmp =
             json.decode(crossdartFile.readAsStringSync());
@@ -4656,21 +4663,21 @@ abstract class LibraryContainer extends Nameable
 
 /// A category is a subcategory of a package, containing libraries tagged
 /// with a @category identifier.  Comparable so it can be sorted according to
-/// [dartdocOptions.categoryOrder].
+/// [config.categoryOrder].
 class Category extends LibraryContainer {
   final String _name;
 
   /// All libraries in [libraries] must come from [package].
   final Package package;
-  final DartdocOptions dartdocOptions;
+  final DartdocOptionContext config;
 
-  Category(this._name, this.package, this.dartdocOptions);
+  Category(this._name, this.package, this.config);
 
   @override
   String get name => _name;
 
   @override
-  List<String> get containerOrder => dartdocOptions.categoryOrder;
+  List<String> get containerOrder => config.categoryOrder;
 
   @override
   Package get enclosingContainer => package;
@@ -4792,11 +4799,11 @@ class Package extends LibraryContainer
   /// A map of category name to the category itself.
   Map<String, Category> get nameToCategory {
     if (_nameToCategory.isEmpty) {
-      _nameToCategory[null] = new Category(null, this, dartdocOptions);
+      _nameToCategory[null] = new Category(null, this, config);
       for (Library lib in libraries) {
         String category = lib.categoryName;
         _nameToCategory.putIfAbsent(
-            category, () => new Category(category, this, dartdocOptions));
+            category, () => new Category(category, this, config));
         _nameToCategory[category]._libraries.add(lib);
       }
     }
@@ -4812,12 +4819,13 @@ class Package extends LibraryContainer
     return _categories;
   }
 
-  DartdocOptions _dartdocOptions;
-  DartdocOptions get dartdocOptions {
-    if (_dartdocOptions == null) {
-      _dartdocOptions = new DartdocOptions.fromDir(new Directory(packagePath));
+  DartdocOptionContext _config;
+  DartdocOptionContext get config {
+    if (_config == null) {
+      _config = new DartdocOptionContext.fromContext(
+          packageGraph.config, new Directory(packagePath));
     }
-    return _dartdocOptions;
+    return _config;
   }
 
   /// Is this the package at the top of the list?  We display the first
@@ -4831,7 +4839,7 @@ class Package extends LibraryContainer
   String get packagePath {
     if (_packagePath == null) {
       if (isSdk) {
-        _packagePath = packageGraph.config.sdkDir.path;
+        _packagePath = packageGraph.config.sdkDir;
       } else {
         assert(libraries.isNotEmpty);
         File file = new File(
@@ -4950,8 +4958,8 @@ abstract class SourceCodeMixin implements Documentable {
       String source = contents.substring(start, node.end);
 
       if (config.addCrossdart) {
-        source = crossdartifySource(config.inputDir.path,
-            packageGraph.crossdartJson, source, element, start);
+        source = crossdartifySource(config.inputDir, packageGraph.crossdartJson,
+            source, element, start);
       } else {
         source = const HtmlEscape().convert(source);
       }
@@ -5000,7 +5008,7 @@ abstract class SourceCodeMixin implements Documentable {
         }
       } else if (uri.startsWith("dart:")) {
         var packageName = "sdk";
-        var packageVersion = config.sdkVersion;
+        var packageVersion = packageGraph.sdk.sdkVersion;
         return "${packageName}/${packageVersion}/lib/${uri.replaceAll(new RegExp(r"^dart:"), "")}";
       } else {
         return null;
@@ -5238,7 +5246,7 @@ class TypeParameter extends ModelElement {
 /// Everything you need to instantiate a PackageGraph object for documenting.
 class PackageBuilder {
   final PackageMeta packageMeta;
-  final DartdocConfig config;
+  final DartdocOptionContext config;
 
   PackageBuilder(this.config, this.packageMeta);
 
@@ -5254,7 +5262,7 @@ class PackageBuilder {
   DartSdk get sdk {
     if (_sdk == null) {
       _sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
-          PhysicalResourceProvider.INSTANCE.getFolder(config.sdkDir.path));
+          PhysicalResourceProvider.INSTANCE.getFolder(config.sdkDir));
     }
     return _sdk;
   }
@@ -5289,7 +5297,7 @@ class PackageBuilder {
   Map<String, List<fileSystem.Folder>> get packageMap {
     if (_packageMap == null) {
       fileSystem.Folder cwd =
-          PhysicalResourceProvider.INSTANCE.getResource(config.inputDir.path);
+          PhysicalResourceProvider.INSTANCE.getResource(config.inputDir);
       _packageMap = _calculatePackageMap(cwd);
     }
     return _packageMap;
@@ -5492,7 +5500,7 @@ class PackageBuilder {
               new Uri.file(pathLib.join(basePackageDir, 'pubspec.yaml')))
           .asMap();
       for (String packageName in info.keys) {
-        if (!filterExcludes || !config.excludeLibraries.contains(packageName)) {
+        if (!filterExcludes || !config.exclude.contains(packageName)) {
           packageDirs.add(pathLib.dirname(info[packageName].toFilePath()));
         }
       }
@@ -5532,7 +5540,7 @@ class PackageBuilder {
     files.addAll(packageMeta.isSdk
         ? new Set()
         : findFilesToDocumentInPackage(
-            config.inputDir.path, config.autoIncludeDependencies));
+            config.inputDir, config.autoIncludeDependencies));
     if (packageMeta.isSdk) {
       files.addAll(getSdkFilesToDocument());
     } else if (embedderSdk.urlMappings.isNotEmpty && !packageMeta.isSdk) {
@@ -5543,7 +5551,7 @@ class PackageBuilder {
     }
     // Use the includeExternals.
     for (String fullName in driver.knownFiles) {
-      if (config.includeExternals.any((string) => fullName.endsWith(string)))
+      if (config.includeExternal.any((string) => fullName.endsWith(string)))
         files.add(fullName);
     }
     return new Set.from(files.map((s) => new File(s).absolute.path));
@@ -5552,16 +5560,15 @@ class PackageBuilder {
   Future<Set<LibraryElement>> getLibraries(Set<String> files) async {
     Set<LibraryElement> libraries = new Set();
     libraries.addAll(await _parseLibraries(files));
-    if (config.includeLibraries.isNotEmpty) {
+    if (config.include.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
-      Set notFound = new Set.from(config.includeLibraries)
+      Set notFound = new Set.from(config.include)
           .difference(new Set.from(knownLibraryNames));
       if (notFound.isNotEmpty) {
         throw 'Did not find: [${notFound.join(', ')}] in '
             'known libraries: [${knownLibraryNames.join(', ')}]';
       }
-      libraries
-          .removeWhere((lib) => !config.includeLibraries.contains(lib.name));
+      libraries.removeWhere((lib) => !config.include.contains(lib.name));
     }
     return libraries;
   }

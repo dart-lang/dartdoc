@@ -7,92 +7,67 @@ library dartdoc.bin;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:isolate' show Isolate;
 
-import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:analyzer/src/dart/sdk/sdk.dart';
-import 'package:analyzer/src/generated/sdk.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:logging/logging.dart' as logging;
-import 'package:path/path.dart' as pathLib;
 import 'package:stack_trace/stack_trace.dart';
+
+class DartdocProgramOptionContext extends DartdocOptionContext {
+  DartdocProgramOptionContext(DartdocOptionSet optionSet, Directory dir)
+      : super(optionSet, dir);
+
+  bool get help => optionSet['help'].valueAt(context);
+  bool get json => optionSet['json'].valueAt(context);
+  bool get showProgress => optionSet['showProgress'].valueAt(context);
+  bool get version => optionSet['version'].valueAt(context);
+}
 
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
 main(List<String> arguments) async {
-  var parser = _createArgsParser();
-  ArgResults args;
+  DartdocOptionSet optionSet = await createDartdocOptions();
+  optionSet.addAll([
+    new DartdocOptionArgOnly<bool>('help', false,
+        abbr: 'h', help: 'Show command help.', negatable: false),
+    new DartdocOptionArgOnly<bool>('json', false,
+        help: 'Prints out progress JSON maps. One entry per line.',
+        negatable: true),
+    new DartdocOptionArgOnly<bool>('showProgress', false,
+        help: 'Display progress indications to console stdout',
+        negatable: false),
+    new DartdocOptionArgOnly<bool>('version', false,
+        help: 'Display the version for $name.', negatable: false),
+  ]);
+
+  DartdocProgramOptionContext config =
+      new DartdocProgramOptionContext(optionSet, Directory.current);
+
   try {
-    args = parser.parse(arguments);
+    optionSet.parseArguments(arguments);
   } on FormatException catch (e) {
-    stderr.writeln(e.message);
+    stderr.writeln(' fatal error: ${e.message}');
     stderr.writeln('');
-    // http://linux.die.net/include/sysexits.h
-    // #define EX_USAGE	64	/* command line usage error */
-    _printUsageAndExit(parser, exitCode: 64);
+    _printUsageAndExit(optionSet.argParser, exitCode: 64);
+  } on DartdocOptionError catch (e) {
+    stderr.writeln(' fatal error: ${e.message}');
+    stderr.writeln('');
+    _printUsageAndExit(optionSet.argParser, exitCode: 64);
+  }
+  if (optionSet['help'].valueAt(Directory.current)) {
+    _printHelpAndExit(optionSet.argParser);
   }
 
-  if (args['help']) {
-    _printHelpAndExit(parser);
+  if (optionSet['version'].valueAt(Directory.current)) {
+    _printHelpAndExit(optionSet.argParser);
   }
-
-  if (args['version']) {
-    print('$name version: $version');
-    exit(0);
-  }
-
-  Directory sdkDir = new Directory(args['sdk-dir']);
-  bool sdkDocs = args['sdk-docs'];
-  final bool showProgress = args['show-progress'];
-
-  Directory inputDir;
-  if (sdkDocs) {
-    inputDir = sdkDir;
-  } else if (args['input'] == null) {
-    inputDir = Directory.current;
-  } else {
-    inputDir = args['input'];
-  }
-
-  // If our input directory looks like the Dart SDK, then assume it is one,
-  // and is the one we want to document against.
-  PackageMeta packageMeta = new PackageMeta.fromDir(inputDir);
-  if (packageMeta.isSdk) {
-    sdkDir = inputDir;
-    sdkDocs = true;
-  }
-
-  List<String> footerTextFilePaths = [];
-  // If we're generating docs for the Dart SDK, we insert a copyright footer.
-  if (sdkDocs) {
-    Uri footerCopyrightUri = await Isolate.resolvePackageUri(
-        Uri.parse('package:dartdoc/resources/sdk_footer_text.html'));
-    footerTextFilePaths = [footerCopyrightUri.toFilePath()];
-  }
-  footerTextFilePaths.addAll(args['footer-text']);
-
-  Directory outputDir =
-      new Directory(pathLib.join(Directory.current.path, defaultOutDir));
-  if (args['output'] != null) {
-    outputDir = new Directory(_resolveTildePath(args['output']));
-  }
-
-  if (args.rest.isNotEmpty) {
-    var unknownArgs = args.rest.join(' ');
-    stderr.writeln(
-        ' fatal error: detected unknown command-line argument(s): $unknownArgs');
-    _printUsageAndExit(parser, exitCode: 1);
-  }
-
-  final logJson = args['json'] as bool;
 
   // By default, get all log output at `progressLevel` or greater.
   // This allows us to capture progress events and print `...`.
   logging.Logger.root.level = progressLevel;
 
-  if (logJson) {
+  if (config.json) {
     logging.Logger.root.onRecord.listen((record) {
       if (record.level == progressLevel) {
         return;
@@ -117,7 +92,7 @@ main(List<String> arguments) async {
 
     logging.Logger.root.onRecord.listen((record) {
       if (record.level == progressLevel) {
-        if (showProgress && stopwatch.elapsed.inMilliseconds > 250) {
+        if (config.showProgress && stopwatch.elapsed.inMilliseconds > 250) {
           writingProgress = true;
           stdout.write('.');
           stopwatch.reset();
@@ -136,7 +111,7 @@ main(List<String> arguments) async {
       assert(message.isNotEmpty);
 
       if (record.level < logging.Level.WARNING) {
-        if (showProgress && message.endsWith('...')) {
+        if (config.showProgress && message.endsWith('...')) {
           // Assume there may be more progress to print, so omit the trailing
           // newline
           writingProgress = true;
@@ -149,7 +124,7 @@ main(List<String> arguments) async {
       }
     });
   }
-
+  /*
   if (packageMeta == null) {
     stderr.writeln(
         ' fatal error: Unable to generate documentation: no pubspec.yaml found');
@@ -162,7 +137,8 @@ main(List<String> arguments) async {
         ' fatal error: Unable to generate documentation: $firstError.');
     exit(1);
   }
-
+  */
+  PackageMeta packageMeta = config.packageMeta;
   if (!packageMeta.isSdk && packageMeta.needsPubGet) {
     try {
       packageMeta.runPubGet();
@@ -172,11 +148,13 @@ main(List<String> arguments) async {
     }
   }
 
+  Directory outputDir = new Directory(config.output);
   logInfo("Generating documentation for '${packageMeta}' into "
       "${outputDir.absolute.path}${Platform.pathSeparator}");
 
+  /*
   DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
-      PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
+      PhysicalResourceProvider.INSTANCE.getFolder(config.sdkDir));
 
   List<String> dropTextFrom = [];
   if (args['hide-sdk-text']) {
@@ -199,7 +177,6 @@ main(List<String> arguments) async {
       'dart.web_audio'
     ]);
   }
-
   DartdocConfig config = new DartdocConfig.fromParameters(
     addCrossdart: args['add-crossdart'],
     autoIncludeDependencies: args['auto-include-dependencies'],
@@ -229,7 +206,7 @@ main(List<String> arguments) async {
     validateLinks: args['validate-links'],
     verboseWarnings: args['verbose-warnings'],
   );
-
+  */
   Dartdoc dartdoc =
       await Dartdoc.withDefaultGenerators(config, outputDir, packageMeta);
 
@@ -252,7 +229,7 @@ main(List<String> arguments) async {
     }
   });
 }
-
+/*
 ArgParser _createArgsParser() {
   var parser = new ArgParser();
   parser.addFlag('add-crossdart',
@@ -359,6 +336,7 @@ ArgParser _createArgsParser() {
 
   return parser;
 }
+*/
 
 /// Print help if we are passed the help option.
 void _printHelpAndExit(ArgParser parser, {int exitCode: 0}) {
@@ -372,6 +350,7 @@ void _printUsageAndExit(ArgParser parser, {int exitCode: 0}) {
   exit(exitCode);
 }
 
+/*
 String _resolveTildePath(String originalPath) {
   if (originalPath == null || !originalPath.startsWith('~/')) {
     return originalPath;
@@ -387,3 +366,4 @@ String _resolveTildePath(String originalPath) {
 
   return pathLib.join(homeDir, originalPath.substring(2));
 }
+*/

@@ -13,7 +13,7 @@ import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/source.dart';
-import 'package:dartdoc/src/config.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -74,20 +74,20 @@ class Dartdoc extends PackageBuilder {
   final StreamController<String> _onCheckProgress =
       new StreamController(sync: true);
 
-  Dartdoc._(DartdocConfig config, this.generators, this.outputDir,
+  Dartdoc._(DartdocOptionContext config, this.generators, this.outputDir,
       PackageMeta packageMeta)
       : super(config, packageMeta);
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a Dartdoc object with them.
-  static withDefaultGenerators(DartdocConfig config, Directory outputDir,
+  static withDefaultGenerators(DartdocOptionContext config, Directory outputDir,
       PackageMeta packageMeta) async {
     var generators = await _initGenerators(
         config.hostedUrl, config.relCanonicalPrefix,
-        headerFilePaths: config.headerFilePaths,
-        footerFilePaths: config.footerFilePaths,
-        footerTextFilePaths: config.footerTextFilePaths,
-        faviconPath: config.faviconPath,
+        headerFilePaths: config.header,
+        footerFilePaths: config.footer,
+        footerTextFilePaths: config.footerTextPaths,
+        faviconPath: config.favicon,
         prettyIndexJson: config.prettyIndexJson);
     for (var generator in generators) {
       generator.onFileCreated.listen(logProgress);
@@ -95,8 +95,8 @@ class Dartdoc extends PackageBuilder {
     return new Dartdoc._(config, generators, outputDir, packageMeta);
   }
 
-  factory Dartdoc.withoutGenerators(
-      DartdocConfig config, Directory outputDir, PackageMeta packageMeta) {
+  factory Dartdoc.withoutGenerators(DartdocOptionContext config,
+      Directory outputDir, PackageMeta packageMeta) {
     return new Dartdoc._(config, [], outputDir, packageMeta);
   }
 

@@ -30,7 +30,7 @@ void main() {
         () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(inputDir: testPackageDir),
+          await DartdocOptionContext.fromArgv(['--input', testPackageDir.path]),
           tempDir,
           meta);
 
@@ -48,7 +48,8 @@ void main() {
         () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageBadDir);
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(inputDir: testPackageBadDir),
+          await DartdocOptionContext
+              .fromArgv(['--input', testPackageBadDir.path]),
           tempDir,
           meta);
 
@@ -63,7 +64,8 @@ void main() {
     test('generate docs for a package that does not have a readme', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageWithNoReadme);
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(inputDir: testPackageWithNoReadme),
+          await DartdocOptionContext
+              .fromArgv(['--input', testPackageWithNoReadme.path]),
           tempDir,
           meta);
 
@@ -80,8 +82,8 @@ void main() {
     test('generate docs including a single library', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(
-              inputDir: testPackageDir, includeLibraries: ['fake']),
+          await DartdocOptionContext
+              .fromArgv(['--input', testPackageDir.path, '--include', 'fake']),
           tempDir,
           meta);
 
@@ -98,8 +100,8 @@ void main() {
     test('generate docs excluding a single library', () async {
       PackageMeta meta = new PackageMeta.fromDir(testPackageDir);
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(
-              inputDir: testPackageDir, excludeLibraries: ['fake']),
+          await DartdocOptionContext
+              .fromArgv(['--input', testPackageDir.path, '--exclude', 'fake']),
           tempDir,
           meta);
 
@@ -118,8 +120,8 @@ void main() {
       PackageMeta meta = new PackageMeta.fromDir(testPackageWithEmbedderYaml);
       if (meta.needsPubGet) meta.runPubGet();
       Dartdoc dartdoc = new Dartdoc.withoutGenerators(
-          new DartdocConfig.fromParameters(
-              inputDir: testPackageWithEmbedderYaml),
+          await DartdocOptionContext
+              .fromArgv(['--input', testPackageWithEmbedderYaml.path]),
           tempDir,
           meta);
 

@@ -46,28 +46,31 @@ init() async {
   testPackageGraphSdk = await bootSdkPackage();
 }
 
-Future<PackageGraph> bootSdkPackage() {
+Future<PackageGraph> bootSdkPackage() async {
   Directory dir = new Directory(pathLib.current);
   return new PackageBuilder(
-          new DartdocConfig.fromParameters(
-            inputDir: dir,
-            sdkDir: sdkDir,
-          ),
+          await DartdocOptionContext
+              .fromArgv(['--input', dir.path, '--sdk-dir', sdkDir.path]),
           sdkPackageMeta)
       .buildPackageGraph();
 }
 
 Future<PackageGraph> bootBasicPackage(
     String dirPath, List<String> excludeLibraries,
-    {bool withAutoIncludedDependencies = false, bool withCrossdart = false}) {
+    {bool withAutoIncludedDependencies = false,
+    bool withCrossdart = false}) async {
   Directory dir = new Directory(dirPath);
   return new PackageBuilder(
-          new DartdocConfig.fromParameters(
-              inputDir: dir,
-              sdkDir: sdkDir,
-              excludeLibraries: excludeLibraries,
-              addCrossdart: withCrossdart,
-              autoIncludeDependencies: withAutoIncludedDependencies),
+          await DartdocOptionContext.fromArgv([
+            '--input',
+            dir.path,
+            '--sdk-dir',
+            sdkDir.path,
+            '--exclude',
+            excludeLibraries.join(','),
+            '--${withCrossdart ? "" : "no-"}add-crossdart',
+            '--${withAutoIncludedDependencies ? "" : "no-"}auto-include-dependencies'
+          ]),
           new PackageMeta.fromDir(new Directory(dirPath)))
       .buildPackageGraph();
 }

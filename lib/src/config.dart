@@ -9,7 +9,7 @@ import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:path/path.dart' as pathLib;
-
+/*
 String _resolveTildePath(String originalPath) {
   if (originalPath == null || !originalPath.startsWith('~/')) {
     return originalPath;
@@ -166,3 +166,4 @@ class DartdocConfig {
   bool isPackageExcluded(String name) =>
       excludePackages.any((pattern) => name == pattern);
 }
+*/
