@@ -220,7 +220,7 @@ class _FilePackageMeta extends PackageMeta {
       StringBuffer buf = new StringBuffer();
       buf.writeln('${result.stdout}');
       buf.writeln('${result.stderr}');
-      throw buf.toString().trim();
+      throw DartdocFailure('pub get failed: ${buf.toString().trim()}');
     }
   }
 

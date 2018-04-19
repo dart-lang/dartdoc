@@ -3,6 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 
 /// A documentation generator for Dart.
+///
+/// Library interface is currently under heavy construction and may change
+/// drastically between minor revisions.
 library dartdoc;
 
 import 'dart:async';
@@ -26,7 +29,6 @@ import 'package:html/parser.dart' show parse;
 import 'package:path/path.dart' as pathLib;
 import 'package:tuple/tuple.dart';
 
-export 'package:dartdoc/src/config.dart';
 export 'package:dartdoc/src/dartdoc_options.dart';
 export 'package:dartdoc/src/element_type.dart';
 export 'package:dartdoc/src/generator.dart';
@@ -35,33 +37,7 @@ export 'package:dartdoc/src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String version = '0.18.1';
-
-final String defaultOutDir = pathLib.join('doc', 'api');
-
-/// Initialize and setup the generators.
-Future<List<Generator>> _initGenerators(String url, String relCanonicalPrefix,
-    {List<String> headerFilePaths,
-    List<String> footerFilePaths,
-    List<String> footerTextFilePaths,
-    String faviconPath,
-    bool prettyIndexJson: false}) async {
-  var options = new HtmlGeneratorOptions(
-      url: url,
-      relCanonicalPrefix: relCanonicalPrefix,
-      toolVersion: version,
-      faviconPath: faviconPath,
-      prettyIndexJson: prettyIndexJson);
-
-  return [
-    await HtmlGenerator.create(
-      options: options,
-      headers: headerFilePaths,
-      footers: footerFilePaths,
-      footerTexts: footerTextFilePaths,
-    )
-  ];
-}
+const String dartdocVersion = '0.18.1';
 
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
@@ -74,36 +50,31 @@ class Dartdoc extends PackageBuilder {
   final StreamController<String> _onCheckProgress =
       new StreamController(sync: true);
 
-  Dartdoc._(DartdocOptionContext config, this.generators, this.outputDir,
-      PackageMeta packageMeta)
-      : super(config, packageMeta);
+  Dartdoc._(DartdocOptionContext config, this.generators, this.outputDir)
+      : super(config) {
+    generators.forEach((g) => g.onFileCreated.listen(logProgress));
+  }
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a Dartdoc object with them.
-  static withDefaultGenerators(DartdocOptionContext config, Directory outputDir,
-      PackageMeta packageMeta) async {
-    var generators = await _initGenerators(
-        config.hostedUrl, config.relCanonicalPrefix,
-        headerFilePaths: config.header,
-        footerFilePaths: config.footer,
-        footerTextFilePaths: config.footerTextPaths,
-        faviconPath: config.favicon,
-        prettyIndexJson: config.prettyIndexJson);
-    for (var generator in generators) {
-      generator.onFileCreated.listen(logProgress);
-    }
-    return new Dartdoc._(config, generators, outputDir, packageMeta);
+  static withDefaultGenerators(
+      DartdocOptionContext config, Directory outputDir) async {
+    List<Generator> generators =
+        await initGenerators(config as GeneratorContext);
+    return new Dartdoc._(config, generators, outputDir);
   }
 
-  factory Dartdoc.withoutGenerators(DartdocOptionContext config,
-      Directory outputDir, PackageMeta packageMeta) {
-    return new Dartdoc._(config, [], outputDir, packageMeta);
+  /// Basic synchronous factory that gives a stripped down Dartdoc that won't
+  /// use generators.  Useful for testing.
+  factory Dartdoc.withoutGenerators(
+      DartdocOptionContext config, Directory outputDir) {
+    return new Dartdoc._(config, [], outputDir);
   }
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
 
   @override
-  logAnalysisErrors(Set<Source> sources) async {
+  void logAnalysisErrors(Set<Source> sources) async {
     List<AnalysisErrorInfo> errorInfos = [];
     // TODO(jcollins-g): figure out why sources can't contain includeExternals
     // or embedded SDK components without having spurious(?) analysis errors.
@@ -115,7 +86,7 @@ class Dartdoc extends PackageBuilder {
       List<_Error> errors = [info]
           .expand((AnalysisErrorInfo info) {
             return info.errors.map((error) =>
-                new _Error(error, info.lineInfo, packageMeta.dir.path));
+                new _Error(error, info.lineInfo, config.packageMeta.dir.path));
           })
           .where((_Error error) => error.isError)
           .toList()
@@ -133,7 +104,7 @@ class Dartdoc extends PackageBuilder {
     List<_Error> errors = errorInfos
         .expand((AnalysisErrorInfo info) {
           return info.errors.map((error) =>
-              new _Error(error, info.lineInfo, packageMeta.dir.path));
+              new _Error(error, info.lineInfo, config.packageMeta.dir.path));
         })
         .where((_Error error) => error.isError)
         // TODO(jcollins-g): remove after conversion to analysis driver
@@ -201,7 +172,7 @@ class Dartdoc extends PackageBuilder {
       throw new DartdocFailure("dartdoc encountered errors while processing");
     }
 
-    return new DartdocResults(packageMeta, packageGraph, outputDir);
+    return new DartdocResults(config.packageMeta, packageGraph, outputDir);
   }
 
   /// Warn on file paths.

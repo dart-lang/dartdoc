@@ -8,7 +8,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as pathLib;
@@ -26,6 +25,15 @@ final Directory testPackageWithEmbedderYaml =
     new Directory('testing/test_package_embedder_yaml');
 final Directory testPackageWithNoReadme =
     new Directory('testing/test_package_small');
+
+/// Convenience factory to build a [DartdocOptionContext] and associate it with a
+/// [DartdocOptionSet] based on the current working directory.
+Future<DartdocOptionContext> contextFromArgv(List<String> argv) async {
+  DartdocOptionSet optionSet = await DartdocOptionSet
+      .fromOptionGenerators('dartdoc', [createDartdocOptions]);
+  optionSet.parseArguments(argv);
+  return new DartdocOptionContext(optionSet, Directory.current);
+}
 
 void delete(Directory dir) {
   if (dir.existsSync()) dir.deleteSync(recursive: true);
@@ -47,11 +55,7 @@ init() async {
 }
 
 Future<PackageGraph> bootSdkPackage() async {
-  Directory dir = new Directory(pathLib.current);
-  return new PackageBuilder(
-          await DartdocOptionContext
-              .fromArgv(['--input', dir.path, '--sdk-dir', sdkDir.path]),
-          sdkPackageMeta)
+  return new PackageBuilder(await contextFromArgv(['--input', sdkDir.path]))
       .buildPackageGraph();
 }
 
@@ -60,17 +64,15 @@ Future<PackageGraph> bootBasicPackage(
     {bool withAutoIncludedDependencies = false,
     bool withCrossdart = false}) async {
   Directory dir = new Directory(dirPath);
-  return new PackageBuilder(
-          await DartdocOptionContext.fromArgv([
-            '--input',
-            dir.path,
-            '--sdk-dir',
-            sdkDir.path,
-            '--exclude',
-            excludeLibraries.join(','),
-            '--${withCrossdart ? "" : "no-"}add-crossdart',
-            '--${withAutoIncludedDependencies ? "" : "no-"}auto-include-dependencies'
-          ]),
-          new PackageMeta.fromDir(new Directory(dirPath)))
+  return new PackageBuilder(await contextFromArgv([
+    '--input',
+    dir.path,
+    '--sdk-dir',
+    sdkDir.path,
+    '--exclude',
+    excludeLibraries.join(','),
+    '--${withCrossdart ? "" : "no-"}add-crossdart',
+    '--${withAutoIncludedDependencies ? "" : "no-"}auto-include-dependencies'
+  ]))
       .buildPackageGraph();
 }

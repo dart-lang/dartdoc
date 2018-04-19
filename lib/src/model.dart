@@ -35,7 +35,6 @@ import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:collection/collection.dart';
-import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/io_utils.dart';
@@ -921,10 +920,10 @@ class Class extends ModelElement
   List<ExecutableElement> get _inheritedElements {
     if (__inheritedElements == null) {
       __inheritedElements = [];
-      Map<String, ExecutableElement> cmap =
-          definingLibrary.inheritanceManager.getMembersInheritedFromClasses(element);
-      Map<String, ExecutableElement> imap =
-          definingLibrary.inheritanceManager.getMembersInheritedFromInterfaces(element);
+      Map<String, ExecutableElement> cmap = definingLibrary.inheritanceManager
+          .getMembersInheritedFromClasses(element);
+      Map<String, ExecutableElement> imap = definingLibrary.inheritanceManager
+          .getMembersInheritedFromInterfaces(element);
       __inheritedElements.addAll(cmap.values);
       __inheritedElements
           .addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
@@ -5245,17 +5244,20 @@ class TypeParameter extends ModelElement {
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 class PackageBuilder {
-  final PackageMeta packageMeta;
   final DartdocOptionContext config;
 
-  PackageBuilder(this.config, this.packageMeta);
+  PackageBuilder(this.config);
 
   void logAnalysisErrors(Set<Source> sources) {}
 
   Future<PackageGraph> buildPackageGraph() async {
+    PackageMeta packageMeta = config.packageMeta;
+    if (packageMeta.needsPubGet) {
+      packageMeta.runPubGet();
+    }
     Set<LibraryElement> libraries = await getLibraries(getFiles);
-    return new PackageGraph(
-        libraries, config, packageMeta, getWarningOptions(), driver, sdk);
+    return new PackageGraph(libraries, config, config.packageMeta,
+        getWarningOptions(), driver, sdk);
   }
 
   DartSdk _sdk;
@@ -5269,7 +5271,7 @@ class PackageBuilder {
 
   EmbedderSdk _embedderSdk;
   EmbedderSdk get embedderSdk {
-    if (_embedderSdk == null && packageMeta.isSdk == false) {
+    if (_embedderSdk == null && config.packageMeta.isSdk == false) {
       _embedderSdk = new EmbedderSdk(PhysicalResourceProvider.INSTANCE,
           new EmbedderYamlLocator(packageMap).embedderYamls);
     }
@@ -5537,13 +5539,14 @@ class PackageBuilder {
 
   Set<String> get getFiles {
     Set<String> files = new Set();
-    files.addAll(packageMeta.isSdk
+    files.addAll(config.packageMeta.isSdk
         ? new Set()
         : findFilesToDocumentInPackage(
             config.inputDir, config.autoIncludeDependencies));
-    if (packageMeta.isSdk) {
+    if (config.packageMeta.isSdk) {
       files.addAll(getSdkFilesToDocument());
-    } else if (embedderSdk.urlMappings.isNotEmpty && !packageMeta.isSdk) {
+    } else if (embedderSdk.urlMappings.isNotEmpty &&
+        !config.packageMeta.isSdk) {
       embedderSdk.urlMappings.keys.forEach((String dartUri) {
         Source source = embedderSdk.mapDartUri(dartUri);
         files.add(source.fullName);
