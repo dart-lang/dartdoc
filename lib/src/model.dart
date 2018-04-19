@@ -3859,7 +3859,7 @@ class PackageGraph extends Canonicalization
     if (__crossdartJson == null) {
       // TODO(jcollins-g): allow crossdart.json location to be configurable
       var crossdartFile =
-          new File(pathLib.join(config.inputDir, "crossdart.json"));
+          new File(pathLib.join(config.inputDir, 'crossdart.json'));
       if (crossdartFile.existsSync()) {
         Map<String, dynamic> __crossdartJsonTmp =
             json.decode(crossdartFile.readAsStringSync());
@@ -4985,30 +4985,30 @@ abstract class SourceCodeMixin implements Documentable {
       var filePath = source.fullName;
       var uri = source.uri.toString();
       var packageMeta = library.packageGraph.packageMeta;
-      if (uri.startsWith("package:")) {
+      if (uri.startsWith('package:')) {
         var splittedUri =
-            uri.replaceAll(new RegExp(r"^package:"), "").split("/");
+            uri.replaceAll(new RegExp(r'^package:'), '').split('/');
         var packageName = splittedUri.first;
         var packageVersion;
         if (packageName == packageMeta.name) {
           packageVersion = packageMeta.version;
         } else {
           var match = new RegExp(
-                  ".pub-cache/(hosted/pub.dartlang.org|git)/${packageName}-([^/]+)")
+                  '.pub-cache/(hosted/pub.dartlang.org|git)/${packageName}-([^/]+)')
               .firstMatch(filePath);
           if (match != null) {
             packageVersion = match[2];
           }
         }
         if (packageVersion != null) {
-          return "${packageName}/${packageVersion}/${splittedUri.skip(1).join("/")}";
+          return '${packageName}/${packageVersion}/${splittedUri.skip(1).join("/")}';
         } else {
           return null;
         }
-      } else if (uri.startsWith("dart:")) {
-        var packageName = "sdk";
+      } else if (uri.startsWith('dart:')) {
+        var packageName = 'sdk';
         var packageVersion = packageGraph.sdk.sdkVersion;
-        return "${packageName}/${packageVersion}/lib/${uri.replaceAll(new RegExp(r"^dart:"), "")}";
+        return '${packageName}/${packageVersion}/lib/${uri.replaceAll(new RegExp(r"^dart:"), "")}';
       } else {
         return null;
       }
@@ -5019,8 +5019,8 @@ abstract class SourceCodeMixin implements Documentable {
 
   String get _crossdartUrl {
     if (lineAndColumn != null && _crossdartPath != null) {
-      String url = "//www.crossdart.info/p/${_crossdartPath}.html";
-      return "${url}#line-${lineAndColumn.item1}";
+      String url = '//www.crossdart.info/p/${_crossdartPath}.html';
+      return '${url}#line-${lineAndColumn.item1}';
     } else {
       return null;
     }
@@ -5271,7 +5271,7 @@ class PackageBuilder {
 
   EmbedderSdk _embedderSdk;
   EmbedderSdk get embedderSdk {
-    if (_embedderSdk == null && config.packageMeta.isSdk == false) {
+    if (_embedderSdk == null && !config.packageMeta.isSdk) {
       _embedderSdk = new EmbedderSdk(PhysicalResourceProvider.INSTANCE,
           new EmbedderYamlLocator(packageMap).embedderYamls);
     }
