@@ -35,23 +35,22 @@ import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:collection/collection.dart';
+import 'package:dartdoc/src/config.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/line_number_cache.dart';
+import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
+import 'package:dartdoc/src/model_utils.dart';
+import 'package:dartdoc/src/package_meta.dart' show PackageMeta, FileContents;
+import 'package:dartdoc/src/utils.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:front_end/src/byte_store/byte_store.dart';
 import 'package:front_end/src/base/performance_logger.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:tuple/tuple.dart';
 import 'package:package_config/discovery.dart' as package_config;
-
-import 'config.dart';
-import 'element_type.dart';
-import 'line_number_cache.dart';
-import 'logging.dart';
-import 'markdown_processor.dart' show Documentation;
-import 'model_utils.dart';
-import 'package_meta.dart' show PackageMeta, FileContents;
-import 'utils.dart';
-import 'warnings.dart';
 
 int byName(Nameable a, Nameable b) =>
     compareAsciiLowerCaseNatural(a.name, b.name);
@@ -923,9 +922,9 @@ class Class extends ModelElement
     if (__inheritedElements == null) {
       __inheritedElements = [];
       Map<String, ExecutableElement> cmap =
-          library.inheritanceManager.getMembersInheritedFromClasses(element);
+          definingLibrary.inheritanceManager.getMembersInheritedFromClasses(element);
       Map<String, ExecutableElement> imap =
-          library.inheritanceManager.getMembersInheritedFromInterfaces(element);
+          definingLibrary.inheritanceManager.getMembersInheritedFromInterfaces(element);
       __inheritedElements.addAll(cmap.values);
       __inheritedElements
           .addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
