@@ -14,12 +14,12 @@
 ///
 library dartdoc.dartdoc_options;
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/logging.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
 
@@ -335,10 +335,27 @@ class DartdocOptionSynthetic<T> extends DartdocOption<T> {
   }
 }
 
+typedef Future<List<DartdocOption>> OptionGenerator();
+
 /// A [DartdocOption] that only contains other [DartdocOption]s and is not an option itself.
 class DartdocOptionSet extends DartdocOption<Null> {
   DartdocOptionSet(String name)
       : super._(name, null, null, false, false, false);
+
+  /// Asynchronous factory that is the main entry point to initialize Dartdoc
+  /// options for use.
+  ///
+  /// [name] is the top level key for the option set.
+  /// [optionGenerators] is a sequence of asynchronous functions that return
+  /// [DartdocOption]s that will be added to the new option set.
+  static Future<DartdocOptionSet> fromOptionGenerators(
+      String name, Iterable<OptionGenerator> optionGenerators) async {
+    DartdocOptionSet optionSet = new DartdocOptionSet(name);
+    for (OptionGenerator generator in optionGenerators) {
+      optionSet.addAll(await generator());
+    }
+    return optionSet;
+  }
 
   /// [DartdocOptionSet] always has the null value.
   @override
@@ -770,19 +787,14 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
 /// and so this can be made a member variable of those structures.
 class DartdocOptionContext {
   final DartdocOptionSet optionSet;
-  Directory _context;
+  Directory context;
 
+  // TODO(jcollins-g): Allow passing in structured data to initialize a
+  // [DartdocOptionContext]'s arguments instead of having to parse strings
+  // via optionSet.
   DartdocOptionContext(this.optionSet, FileSystemEntity entity) {
-    _context = new Directory(pathLib
+    context = new Directory(pathLib
         .canonicalize(entity is File ? entity.parent.path : entity.path));
-  }
-
-  /// Build a [DartdocOptionSet] and associate it with a [DartdocOptionContext]
-  /// based on the input directory.
-  factory DartdocOptionContext.fromArgv(List<String> argv) {
-    DartdocOptionSet optionSet = _createDartdocOptions(argv);
-    String inputDir = optionSet['input'].valueAtCurrent();
-    return new DartdocOptionContext(optionSet, new Directory(inputDir));
   }
 
   /// Build a DartdocOptionContext from an analyzer element (using its source
@@ -807,269 +819,163 @@ class DartdocOptionContext {
   }
 
   // All values defined in createDartdocOptions should be exposed here.
-
-  bool get addCrossdart => optionSet['addCrossdart'].valueAt(_context);
+  bool get addCrossdart => optionSet['addCrossdart'].valueAt(context);
   double get ambiguousReexportScorerMinConfidence =>
-      optionSet['ambiguousReexportScorerMinConfidence'].valueAt(_context);
+      optionSet['ambiguousReexportScorerMinConfidence'].valueAt(context);
   bool get autoIncludeDependencies =>
-      optionSet['autoIncludeDependencies'].valueAt(_context);
-  List<String> get categoryOrder =>
-      optionSet['categoryOrder'].valueAt(_context);
+      optionSet['autoIncludeDependencies'].valueAt(context);
+  List<String> get categoryOrder => optionSet['categoryOrder'].valueAt(context);
+  List<String> get dropTextFrom => optionSet['dropTextFrom'].valueAt(context);
   String get examplePathPrefix =>
-      optionSet['examplePathPrefix'].valueAt(_context);
-  List<String> get exclude => optionSet['exclude'].valueAt(_context);
+      optionSet['examplePathPrefix'].valueAt(context);
+  List<String> get exclude => optionSet['exclude'].valueAt(context);
   List<String> get excludePackages =>
-      optionSet['excludePackages'].valueAt(_context);
-  String get favicon => optionSet['favicon'].valueAt(_context);
-  List<String> get footer => optionSet['footer'].valueAt(_context);
-  List<String> get footerText => optionSet['footerText'].valueAt(_context);
-  List<String> get header => optionSet['header'].valueAt(_context);
-  bool get help => optionSet['help'].valueAt(_context);
-  bool get hideSdkText => optionSet['hideSdkText'].valueAt(_context);
-  String get hostedUrl => optionSet['hostedUrl'].valueAt(_context);
-  List<String> get include => optionSet['include'].valueAt(_context);
+      optionSet['excludePackages'].valueAt(context);
+
+  bool get hideSdkText => optionSet['hideSdkText'].valueAt(context);
+  List<String> get include => optionSet['include'].valueAt(context);
   List<String> get includeExternal =>
-      optionSet['includeExternal'].valueAt(_context);
-  bool get includeSource => optionSet['includeSource'].valueAt(_context);
-  String get input => optionSet['input'].valueAt(_context);
-  bool get json => optionSet['json'].valueAt(_context);
-  String get output => optionSet['output'].valueAt(_context);
-  List<String> get packageOrder => optionSet['packageOrder'].valueAt(_context);
-  bool get prettyIndexJson => optionSet['prettyIndexJson'].valueAt(_context);
-  String get relCanonicalPrefix =>
-      optionSet['relCanonicalPrefix'].valueAt(_context);
-  bool get sdkDocs => optionSet['sdkDocs'].valueAt(_context);
-  String get sdkDir => optionSet['sdkDir'].valueAt(_context);
-  bool get showProgress => optionSet['showProgress'].valueAt(_context);
-  bool get showWarnings => optionSet['showWarnings'].valueAt(_context);
-  bool get useCategories => optionSet['useCategories'].valueAt(_context);
-  bool get validateLinks => optionSet['validateLinks'].valueAt(_context);
-  bool get verboseWarnings => optionSet['verboseWarnings'].valueAt(_context);
-  bool get version => optionSet['version'].valueAt(_context);
+      optionSet['includeExternal'].valueAt(context);
+  bool get includeSource => optionSet['includeSource'].valueAt(context);
+
+  /// _input is only used to construct synthetic options.
+  // ignore: unused_element
+  String get _input => optionSet['input'].valueAt(context);
+  String get inputDir => optionSet['inputDir'].valueAt(context);
+  String get linkToUrl => optionSet['linkTo']['url'].valueAt(context);
+  String get output => optionSet['output'].valueAt(context);
+  List<String> get packageOrder => optionSet['packageOrder'].valueAt(context);
+  PackageMeta get packageMeta => optionSet['packageMeta'].valueAt(context);
+  bool get sdkDocs => optionSet['sdkDocs'].valueAt(context);
+  String get sdkDir => optionSet['sdkDir'].valueAt(context);
+  bool get showWarnings => optionSet['showWarnings'].valueAt(context);
+  bool get useCategories => optionSet['useCategories'].valueAt(context);
+  bool get validateLinks => optionSet['validateLinks'].valueAt(context);
+  bool get verboseWarnings => optionSet['verboseWarnings'].valueAt(context);
+
+  bool isLibraryExcluded(String name) =>
+      exclude.any((pattern) => name == pattern);
+  bool isPackageExcluded(String name) =>
+      excludePackages.any((pattern) => name == pattern);
 }
 
 /// Instantiate dartdoc's configuration file and options parser with the
 /// given command line arguments.
-DartdocOptionSet _createDartdocOptions(List<String> argv) {
-  // Sync with DartdocOptionContext.
-  return new DartdocOptionSet('dartdoc')
-    ..addAll([
-      new DartdocOptionArgOnly<bool>('addCrossdart', false,
-          help: 'Add Crossdart links to the source code pieces.',
-          negatable: false),
-      new DartdocOptionBoth<double>('ambiguousReexportScorerMinConfidence', 0.1,
-          help:
-              'Minimum scorer confidence to suppress warning on ambiguous reexport.'),
-      new DartdocOptionArgOnly<bool>('autoIncludeDependencies', false,
-          help:
-              'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
-          negatable: false),
-      new DartdocOptionBoth<List<String>>('categoryOrder', [],
-          help:
-              "A list of categories (not package names) to place first when grouping symbols on dartdoc's sidebar. "
-              'Unmentioned categories are sorted after these.'),
-      new DartdocOptionBoth<String>('examplePathPrefix', null,
-          isDir: true,
-          help: 'Prefix for @example paths.\n(defaults to the project root)',
-          mustExist: true),
-      new DartdocOptionBoth<List<String>>('exclude', [],
-          help: 'Library names to ignore.', splitCommas: true),
-      new DartdocOptionBoth<List<String>>('excludePackages', [],
-          help: 'Package names to ignore.', splitCommas: true),
-      new DartdocOptionBoth<String>('favicon', null,
-          isFile: true,
-          help: 'A path to a favicon for the generated docs.',
-          mustExist: true),
-      new DartdocOptionBoth<List<String>>('footer', [],
-          isFile: true,
-          help: 'paths to footer files containing HTML text.',
-          mustExist: true,
-          splitCommas: true),
-      new DartdocOptionBoth<List<String>>('footerText', [],
-          isFile: true,
-          help:
-              'paths to footer-text files (optional text next to the package name '
-              'and version).',
-          mustExist: true,
-          splitCommas: true),
-      new DartdocOptionBoth<List<String>>('header', [],
-          isFile: true,
-          help: 'paths to header files containing HTML text.',
-          splitCommas: true),
-      new DartdocOptionArgOnly<bool>('help', false,
-          abbr: 'h', help: 'Show command help.', negatable: false),
-      new DartdocOptionArgOnly<bool>('hideSdkText', false,
-          hide: true,
-          help:
-              'Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.',
-          negatable: true),
-      new DartdocOptionArgOnly<String>('hostedUrl', null,
-          help:
-              'URL where the docs will be hosted (used to generate the sitemap).'),
-      new DartdocOptionBoth<List<String>>('include', null,
-          help: 'Library names to generate docs for.', splitCommas: true),
-      new DartdocOptionBoth<List<String>>('includeExternal', null,
-          isFile: true,
-          help:
-              'Additional (external) dart files to include; use "dir/fileName", '
-              'as in lib/material.dart.',
-          mustExist: true,
-          splitCommas: true),
-      new DartdocOptionBoth<bool>('includeSource', true,
-          help: 'Show source code blocks.', negatable: true),
-      new DartdocOptionArgOnly<String>('input', Directory.current.path,
-          isDir: true, help: 'Path to source directory', mustExist: true),
-      new DartdocOptionArgOnly<bool>('json', false,
-          help: 'Prints out progress JSON maps. One entry per line.',
-          negatable: true),
-      new DartdocOptionArgOnly<String>('output', defaultOutDir,
-          isDir: true, help: 'Path to output directory.'),
-      new DartdocOptionBoth<List<String>>('packageOrder', [],
-          help:
-              'A list of package names to place first when grouping libraries in packages. '
-              'Unmentioned categories are sorted after these.'),
-      new DartdocOptionArgOnly<bool>('prettyIndexJson', false,
-          help:
-              "Generates `index.json` with indentation and newlines. The file is larger, but it's also easier to diff.",
-          negatable: false),
-      new DartdocOptionArgOnly<String>('relCanonicalPrefix', null,
-          help:
-              'If provided, add a rel="canonical" prefixed with provided value. '
-              'Consider using if\nbuilding many versions of the docs for public '
-              'SEO; learn more at https://goo.gl/gktN6F.'),
-      new DartdocOptionArgOnly<bool>('sdk-docs', false,
-          help: 'Generate ONLY the docs for the Dart SDK.', negatable: false),
-      new DartdocOptionArgOnly<String>('sdk-dir', defaultSdkDir.absolute.path,
-          help: 'Path to the SDK directory', isDir: true, mustExist: true),
-      new DartdocOptionArgOnly<bool>('show-progress', false,
-          help: 'Display progress indications to console stdout',
-          negatable: false),
-      new DartdocOptionArgOnly<bool>('show-warnings', false,
-          help: 'Display all warnings.', negatable: false),
-      new DartdocOptionArgOnly<bool>('use-categories', true,
-          help: 'Display categories in the sidebar of packages',
-          negatable: false),
-      new DartdocOptionArgOnly<bool>('validate-links', true,
-          help:
-              'Runs the built-in link checker to display Dart context aware warnings for broken links (slow)',
-          negatable: true),
-      new DartdocOptionArgOnly<bool>('verbose-warnings', true,
-          help: 'Display extra debugging information and help with warnings.',
-          negatable: true),
-      new DartdocOptionArgOnly<bool>('version', false,
-          help: 'Display the version for $name.', negatable: false),
-    ]);
-}
-
-final Map<String, DartdocOptions> _dartdocOptionsCache = {};
-
-/// Legacy dartdoc options class.  TODO(jcollins-g): merge with [DartdocOption].
-abstract class DartdocOptions {
-  DartdocOptions();
-
-  /// Path to the dartdoc options file, or '<default>' if this object is the
-  /// default setting. Intended for printing only.
-  String get _path;
-
-  /// A list indicating the preferred subcategory sorting order.
-  List<String> get categoryOrder;
-
-  /// If non-empty, the URL template that can be prepended to the calculated href.
-  String linkToUrl;
-
-  factory DartdocOptions.fromDir(Directory dir) {
-    if (!_dartdocOptionsCache.containsKey(dir.absolute.path)) {
-      _dartdocOptionsCache[dir.absolute.path] =
-          new DartdocOptions._fromDir(dir);
-    }
-    return _dartdocOptionsCache[dir.absolute.path];
-  }
-
-  /// Search for a dartdoc_options file in this and parent directories.
-  factory DartdocOptions._fromDir(Directory dir) {
-    if (!dir.existsSync()) return new _DefaultDartdocOptions();
-
-    File f;
-    dir = dir.absolute;
-
-    while (true) {
-      f = new File(pathLib.join(dir.path, 'dartdoc_options.yaml'));
-      if (f.existsSync() || dir.parent.path == dir.path) break;
-      dir = dir.parent.absolute;
-    }
-
-    DartdocOptions parent;
-    if (dir.parent.path != dir.path) {
-      parent = new DartdocOptions.fromDir(dir.parent);
-    } else {
-      parent = new _DefaultDartdocOptions();
-    }
-    if (f.existsSync()) {
-      return new _FileDartdocOptions(f);
-    }
-    return parent;
-  }
-}
-
-class _DefaultDartdocOptions extends DartdocOptions {
-  _DefaultDartdocOptions() : super();
-
-  @override
-  String get _path => '<default>';
-
-  @override
-  String get linkToUrl => '';
-
-  @override
-  List<String> get categoryOrder => new List.unmodifiable([]);
-}
-
-class _FileDartdocOptions extends DartdocOptions {
-  File dartdocOptionsFile;
-  Map _dartdocOptions;
-  _FileDartdocOptions(this.dartdocOptionsFile) : super() {
-    Map allDartdocOptions = loadYaml(dartdocOptionsFile.readAsStringSync());
-    if (allDartdocOptions.containsKey('dartdoc')) {
-      _dartdocOptions = allDartdocOptions['dartdoc'];
-    } else {
-      _dartdocOptions = {};
-      logWarning("${_path}: must contain 'dartdoc' section");
-    }
-  }
-
-  @override
-  String get _path => dartdocOptionsFile.path;
-
-  List<String> _categoryOrder;
-  @override
-  List<String> get categoryOrder {
-    if (_categoryOrder == null) {
-      _categoryOrder = [];
-      if (_dartdocOptions.containsKey('categoryOrder')) {
-        if (_dartdocOptions['categoryOrder'] is YamlList) {
-          _categoryOrder.addAll(_dartdocOptions['categoryOrder']
-              .map((c) => c.toString())
-              .cast<String>());
-        } else {
-          logWarning('${_path}: categoryOrder must be a list (ignoring)');
-        }
+Future<List<DartdocOption>> createDartdocOptions() async {
+  return <DartdocOption>[
+    new DartdocOptionArgOnly<bool>('addCrossdart', false,
+        help: 'Add Crossdart links to the source code pieces.',
+        negatable: true),
+    new DartdocOptionBoth<double>('ambiguousReexportScorerMinConfidence', 0.1,
+        help:
+            'Minimum scorer confidence to suppress warning on ambiguous reexport.'),
+    new DartdocOptionArgOnly<bool>('autoIncludeDependencies', false,
+        help:
+            'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
+        negatable: true),
+    new DartdocOptionBoth<List<String>>('categoryOrder', [],
+        help:
+            "A list of categories (not package names) to place first when grouping symbols on dartdoc's sidebar. "
+            'Unmentioned categories are sorted after these.'),
+    new DartdocOptionSynthetic<List<String>>('dropTextFrom',
+        (DartdocOptionSynthetic option, Directory dir) {
+      if (option.parent['hideSdkText'].valueAt(dir)) {
+        return [
+          'dart.async',
+          'dart.collection',
+          'dart.convert',
+          'dart.core',
+          'dart.developer',
+          'dart.html',
+          'dart.indexed_db',
+          'dart.io',
+          'dart.lisolate',
+          'dart.js',
+          'dart.js_util',
+          'dart.math',
+          'dart.mirrors',
+          'dart.svg',
+          'dart.typed_data',
+          'dart.web_audio'
+        ];
       }
-      _categoryOrder = new List.unmodifiable(_categoryOrder);
-    }
-    return _categoryOrder;
-  }
-
-  String _linkToUrl;
-  @override
-  String get linkToUrl {
-    if (_linkToUrl == null) {
-      if (_dartdocOptions.containsKey('linkTo') &&
-          _dartdocOptions['linkTo'].containsKey('url')) {
-        _linkToUrl = _dartdocOptions['linkTo']['url'];
-      } else {
-        _linkToUrl = '';
+      return [];
+    }, help: 'Remove text from libraries with the following names.'),
+    new DartdocOptionBoth<String>('examplePathPrefix', null,
+        isDir: true,
+        help: 'Prefix for @example paths.\n(defaults to the project root)',
+        mustExist: true),
+    new DartdocOptionBoth<List<String>>('exclude', [],
+        help: 'Library names to ignore.', splitCommas: true),
+    new DartdocOptionArgOnly<List<String>>('excludePackages', [],
+        help: 'Package names to ignore.', splitCommas: true),
+    new DartdocOptionArgOnly<bool>('hideSdkText', false,
+        hide: true,
+        help:
+            'Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.',
+        negatable: true),
+    new DartdocOptionBoth<List<String>>('include', [],
+        help: 'Library names to generate docs for.', splitCommas: true),
+    new DartdocOptionBoth<List<String>>('includeExternal', null,
+        isFile: true,
+        help:
+            'Additional (external) dart files to include; use "dir/fileName", '
+            'as in lib/material.dart.',
+        mustExist: true,
+        splitCommas: true),
+    new DartdocOptionArgOnly<bool>('includeSource', true,
+        help: 'Show source code blocks.', negatable: true),
+    new DartdocOptionArgOnly<String>('input', Directory.current.path,
+        isDir: true, help: 'Path to source directory', mustExist: true),
+    new DartdocOptionSynthetic<String>('inputDir',
+        (DartdocOptionSynthetic option, Directory dir) {
+      if (option.parent['sdkDocs'].valueAt(dir)) {
+        return option.parent['sdkDir'].valueAt(dir);
       }
-    }
-    return _linkToUrl;
-  }
+      return option.parent['input'].valueAt(dir);
+    },
+        help: 'Path to source directory (with override if --sdk-docs)',
+        isDir: true,
+        mustExist: true),
+    new DartdocOptionSet('linkTo')..addAll([
+      new DartdocOptionBoth<String>('url', '',
+      help: 'Use external linkage for this package, with this base url')
+    ]),
+    new DartdocOptionArgOnly<String>('output', pathLib.join('doc', 'api'),
+        isDir: true, help: 'Path to output directory.'),
+    new DartdocOptionSynthetic<PackageMeta>('packageMeta',
+        (DartdocOptionSynthetic option, Directory dir) {
+      PackageMeta packageMeta = new PackageMeta.fromDir(
+          new Directory(option.parent['inputDir'].valueAt(dir)));
+      if (packageMeta == null) {
+        throw new DartdocOptionError(
+            'Unable to generate documentation: no package found');
+      }
+      if (!packageMeta.isValid) {
+        final String firstError = packageMeta.getInvalidReasons().first;
+        throw new DartdocOptionError('Package is invalid: $firstError');
+      }
+      return packageMeta;
+    }, help: 'PackageMeta object for the default package.'),
+    new DartdocOptionArgOnly<List<String>>('packageOrder', [],
+        help:
+            'A list of package names to place first when grouping libraries in packages. '
+            'Unmentioned categories are sorted after these.'),
+    new DartdocOptionArgOnly<bool>('sdkDocs', false,
+        help: 'Generate ONLY the docs for the Dart SDK.', negatable: false),
+    new DartdocOptionArgOnly<String>('sdkDir', defaultSdkDir.absolute.path,
+        help: 'Path to the SDK directory', isDir: true, mustExist: true),
+    new DartdocOptionArgOnly<bool>('showWarnings', false,
+        help: 'Display all warnings.', negatable: false),
+    new DartdocOptionArgOnly<bool>('useCategories', true,
+        help: 'Display categories in the sidebar of packages',
+        negatable: false),
+    new DartdocOptionArgOnly<bool>('validateLinks', true,
+        help:
+            'Runs the built-in link checker to display Dart context aware warnings for broken links (slow)',
+        negatable: true),
+    new DartdocOptionArgOnly<bool>('verboseWarnings', true,
+        help: 'Display extra debugging information and help with warnings.',
+        negatable: true),
+  ];
 }
