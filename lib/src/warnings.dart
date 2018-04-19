@@ -3,10 +3,9 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:tuple/tuple.dart';
-
-import 'logging.dart';
 
 class PackageWarningHelpText {
   final String warningName;

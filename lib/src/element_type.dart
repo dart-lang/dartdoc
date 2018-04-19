@@ -7,8 +7,7 @@ library dartdoc.element_type;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-
-import 'model.dart';
+import 'package:dartdoc/src/model.dart';
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
