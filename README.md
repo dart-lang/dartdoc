@@ -104,7 +104,7 @@ generates docs.
 dartdoc:
   categoryOrder: ["First Category", "Second Category"]
   linkTo:
-    url: "https://pub.dartlang.org/documentation/%n%/%v%"
+    url: "https://my.dartdocumentationsite.org/dev/%v%"
 ```
 
 Unrecognized options will be ignored.  Supported options:
@@ -112,12 +112,13 @@ Unrecognized options will be ignored.  Supported options:
   * **categoryOrder**:  Specify the order of categories, below, for display in the sidebar and
     the package page.
   * **linkTo**:  For other packages depending on this one, if this map is defined those packages
-    will try to link to pre-generated documentation for this package.
+    will use the settings here to control how hyperlinks to the package are generated.
+    This will override the default for packages hosted on pub.dartlang.org.
     * url:  A string indicating the base URL for documentation of this package.  The following
       strings will be substituted in to complete the URL:
       * `%n%`: The name of this package, as defined in pubspec.yaml.
       * `%v%`: The version of this package as defined in pubspec.yaml.
-  
+
 The following are experimental options whose semantics are in flux and may be buggy.  If you
 use one, please keep a close eye on the changing semantics.  In general, paths are relative
 to the directory the dartdoc_options.yaml the option is defined in and should be specified

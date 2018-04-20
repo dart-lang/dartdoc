@@ -54,15 +54,15 @@ void main() {
         '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',
-        '--hide-sdk-text',
         '--exclude',
         'package:meta/meta.dart',
         '--exclude-packages',
-        'Dart',
+        'Dart,tuple,quiver_hashcode',
+        '--hide-sdk-text',
         '--no-include-source',
-        '--pretty-index-json',
         '--output',
-        tempDir.path
+        tempDir.path,
+        '--pretty-index-json',
       ];
 
       var result = Process.runSync(Platform.resolvedExecutable, args,

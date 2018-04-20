@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:io/io.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
@@ -24,6 +25,29 @@ void main() {
 
     tearDown(() {
       delete(tempDir);
+    });
+
+    test('basic interlinking test', () async {
+      Dartdoc dartdoc = new Dartdoc.withoutGenerators(
+          await contextFromArgv(
+              ['--input', testPackageDir.path, '--link-to-external']),
+          tempDir);
+      DartdocResults results = await dartdoc.generateDocs();
+      PackageGraph p = results.packageGraph;
+      Package tuple = p.publicPackages.firstWhere((p) => p.name == 'tuple');
+      TopLevelVariable useSomethingInAnotherPackage = p.publicLibraries
+          .firstWhere((l) => l.name == 'fake')
+          .properties
+          .firstWhere((p) => p.name == 'useSomethingInAnotherPackage');
+      expect(tuple.documentedWhere, equals(DocumentLocation.remote));
+      expect(
+          useSomethingInAnotherPackage.modelType.linkedName,
+          startsWith(
+              '<a href="https://pub.dartlang.org/documentation/tuple/1.0.1/tuple/Tuple2-class.html">Tuple2</a>'));
+      RegExp stringLink = new RegExp(
+          'https://api.dartlang.org/.*/${Platform.version.split(' ').first}/dart-core/String-class.html">String</a>');
+      expect(useSomethingInAnotherPackage.modelType.linkedName,
+          contains(stringLink));
     });
 
     test('generate docs for ${pathLib.basename(testPackageDir.path)} works',

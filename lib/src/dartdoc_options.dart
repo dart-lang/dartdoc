@@ -842,13 +842,25 @@ class DartdocOptionContext {
   // ignore: unused_element
   String get _input => optionSet['input'].valueAt(context);
   String get inputDir => optionSet['inputDir'].valueAt(context);
-  String get linkToUrl => optionSet['linkTo']['url'].valueAt(context);
+  bool get linkToExternal => optionSet['linkTo']['external'].valueAt(context);
+  String get linkToExternalUrl =>
+      optionSet['linkTo']['externalUrl'].valueAt(context);
+
+  /// _linkToHosted is only used to construct synthetic options.
+  // ignore: unused_element
+  String get _linkToHosted => optionSet['linkTo']['hosted'].valueAt(context);
+
+  /// _linkToUrl is only used to construct synthetic options.
+  // ignore: unused_element
+  String get _linkToUrl => optionSet['linkTo']['url'].valueAt(context);
   String get output => optionSet['output'].valueAt(context);
-  List<String> get packageOrder => optionSet['packageOrder'].valueAt(context);
   PackageMeta get packageMeta => optionSet['packageMeta'].valueAt(context);
+  List<String> get packageOrder => optionSet['packageOrder'].valueAt(context);
   bool get sdkDocs => optionSet['sdkDocs'].valueAt(context);
   String get sdkDir => optionSet['sdkDir'].valueAt(context);
   bool get showWarnings => optionSet['showWarnings'].valueAt(context);
+  PackageMeta get topLevelPackageMeta =>
+      optionSet['topLevelPackageMeta'].valueAt(context);
   bool get useCategories => optionSet['useCategories'].valueAt(context);
   bool get validateLinks => optionSet['validateLinks'].valueAt(context);
   bool get verboseWarnings => optionSet['verboseWarnings'].valueAt(context);
@@ -937,13 +949,59 @@ Future<List<DartdocOption>> createDartdocOptions() async {
         help: 'Path to source directory (with override if --sdk-docs)',
         isDir: true,
         mustExist: true),
-    new DartdocOptionSet('linkTo')..addAll([
-      new DartdocOptionBoth<String>('url', '',
-      help: 'Use external linkage for this package, with this base url')
-    ]),
+    new DartdocOptionSet('linkTo')
+      ..addAll([
+        new DartdocOptionArgOnly<bool>('external', false,
+            help: 'Allow links to be generated for packages outside this one.',
+            negatable: true),
+        new DartdocOptionSynthetic<String>('externalUrl',
+            (DartdocOptionSynthetic option, Directory dir) {
+          String url = option.parent['url'].valueAt(dir);
+          if (url != null) {
+            return url;
+          }
+          String hostedAt =
+              option.parent.parent['packageMeta'].valueAt(dir).hostedAt;
+          if (hostedAt != null) {
+            Map<String, String> hostMap = option.parent['hosted'].valueAt(dir);
+            if (hostMap.containsKey(hostedAt)) return hostMap[hostedAt];
+          }
+          return '';
+        }, help: 'Url to use for this particular package.'),
+        new DartdocOptionArgOnly<Map<String, String>>(
+            'hosted',
+            {
+              'pub.dartlang.org':
+                  'https://pub.dartlang.org/documentation/%n%/%v%'
+            },
+            help: 'Specify URLs for hosted pub packages'),
+        new DartdocOptionFileOnly<String>('url', null,
+            help: 'Use external linkage for this package, with this base url'),
+      ]),
     new DartdocOptionArgOnly<String>('output', pathLib.join('doc', 'api'),
         isDir: true, help: 'Path to output directory.'),
-    new DartdocOptionSynthetic<PackageMeta>('packageMeta',
+    new DartdocOptionSynthetic<PackageMeta>(
+      'packageMeta',
+      (DartdocOptionSynthetic option, Directory dir) {
+        PackageMeta packageMeta = new PackageMeta.fromDir(dir);
+        if (packageMeta == null) {
+          throw new DartdocOptionError(
+              'Unable to determine package for directory: ${dir.path}');
+        }
+        return packageMeta;
+      },
+    ),
+    new DartdocOptionArgOnly<List<String>>('packageOrder', [],
+        help:
+            'A list of package names to place first when grouping libraries in packages. '
+            'Unmentioned categories are sorted after these.'),
+    new DartdocOptionArgOnly<bool>('sdkDocs', false,
+        help: 'Generate ONLY the docs for the Dart SDK.', negatable: false),
+    new DartdocOptionArgOnly<String>('sdkDir', defaultSdkDir.absolute.path,
+        help: 'Path to the SDK directory', isDir: true, mustExist: true),
+    new DartdocOptionArgOnly<bool>('showWarnings', false,
+        help: 'Display all warnings.', negatable: false),
+    new DartdocOptionSynthetic<PackageMeta>('topLevelPackageMeta',
         (DartdocOptionSynthetic option, Directory dir) {
       PackageMeta packageMeta = new PackageMeta.fromDir(
           new Directory(option.parent['inputDir'].valueAt(dir)));
@@ -957,16 +1015,6 @@ Future<List<DartdocOption>> createDartdocOptions() async {
       }
       return packageMeta;
     }, help: 'PackageMeta object for the default package.'),
-    new DartdocOptionArgOnly<List<String>>('packageOrder', [],
-        help:
-            'A list of package names to place first when grouping libraries in packages. '
-            'Unmentioned categories are sorted after these.'),
-    new DartdocOptionArgOnly<bool>('sdkDocs', false,
-        help: 'Generate ONLY the docs for the Dart SDK.', negatable: false),
-    new DartdocOptionArgOnly<String>('sdkDir', defaultSdkDir.absolute.path,
-        help: 'Path to the SDK directory', isDir: true, mustExist: true),
-    new DartdocOptionArgOnly<bool>('showWarnings', false,
-        help: 'Display all warnings.', negatable: false),
     new DartdocOptionArgOnly<bool>('useCategories', true,
         help: 'Display categories in the sidebar of packages',
         negatable: false),

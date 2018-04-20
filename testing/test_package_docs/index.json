@@ -8578,6 +8578,17 @@
   }
  },
  {
+  "name": "useSomethingInAnotherPackage",
+  "qualifiedName": "fake.useSomethingInAnotherPackage",
+  "href": "fake/useSomethingInAnotherPackage.html",
+  "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "is_deprecated",
   "qualifiedName": "is_deprecated",
   "href": "is_deprecated/is_deprecated-library.html",

@@ -66,7 +66,7 @@ main(List<String> arguments) async {
   startLogging(config);
 
   Directory outputDir = new Directory(config.output);
-  logInfo("Generating documentation for '${config.packageMeta}' into "
+  logInfo("Generating documentation for '${config.topLevelPackageMeta}' into "
       "${outputDir.absolute.path}${Platform.pathSeparator}");
 
   Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(config, outputDir);

@@ -82,6 +82,9 @@ abstract class PackageMeta {
   /// Use this instead of fromDir where possible.
   factory PackageMeta.fromElement(
       LibraryElement libraryElement, DartdocOptionContext config) {
+    // [config] is only here for sdkDir, and it's OK that it is the wrong
+    // context since sdkDir is argOnly and this is supposed to be a temporary
+    // workaround.
     // Workaround for dart-lang/sdk#32707.  Replace with isInSdk once that works.
     if (libraryElement.source.uri.scheme == 'dart')
       return new PackageMeta.fromDir(new Directory(config.sdkDir));
@@ -135,6 +138,10 @@ abstract class PackageMeta {
   void runPubGet();
 
   String get name;
+
+  /// null if not a hosted pub package.  If set, the hostname
+  /// that the package is hosted at -- usually 'pub.dartlang.org'.
+  String get hostedAt;
   String get version;
   String get description;
   String get homepage;
@@ -193,6 +200,34 @@ class _FilePackageMeta extends PackageMeta {
     } else {
       _pubspec = {};
     }
+  }
+
+  bool _setHostedAt = false;
+  String _hostedAt;
+  @override
+  String get hostedAt {
+    if (!_setHostedAt) {
+      _setHostedAt = true;
+      // Search for 'hosted/host.domain' as the immediate parent directories,
+      // and verify that a directory _temp exists alongside hosted.  Those
+      // seem to be the only guaranteed things to exist if we're from a pub
+      // cache.
+      //
+      // TODO(jcollins-g): This is a funky heuristic.  Make this better somehow,
+      // possibly by calculating hosting directly from pubspec.yaml or importing
+      // a pub library to do this.
+      // People could have a pub cache at root with Windows drive mappings.
+      if (pathLib.split(pathLib.canonicalize(dir.path)).length >= 3) {
+        String pubCacheRoot = dir.parent.parent.parent.path;
+        String hosted = pathLib.canonicalize(dir.parent.parent.path);
+        String hostname = pathLib.canonicalize(dir.parent.path);
+        if (pathLib.basename(hosted) == 'hosted' &&
+            new Directory(pathLib.join(pubCacheRoot, '_temp')).existsSync()) {
+          _hostedAt = pathLib.basename(hostname);
+        }
+      }
+    }
+    return _hostedAt;
   }
 
   @override
@@ -292,6 +327,9 @@ class _SdkMeta extends PackageMeta {
   _SdkMeta(Directory dir) : super(dir) {
     sdkReadmePath = pathLib.join(dir.path, 'lib', 'api_readme.md');
   }
+
+  @override
+  String get hostedAt => null;
 
   @override
   bool get isSdk => true;

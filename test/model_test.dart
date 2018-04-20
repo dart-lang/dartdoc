@@ -222,7 +222,7 @@ void main() {
       });
 
       test('multiple packages, sorted default', () {
-        expect(ginormousPackageGraph.localPackages, hasLength(4));
+        expect(ginormousPackageGraph.localPackages, hasLength(6));
         expect(ginormousPackageGraph.localPackages.first.name,
             equals('test_package'));
       });
