@@ -998,7 +998,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     new DartdocOptionArgOnly<bool>('sdkDocs', false,
         help: 'Generate ONLY the docs for the Dart SDK.', negatable: false),
     new DartdocOptionArgOnly<String>('sdkDir', defaultSdkDir.absolute.path,
-        help: 'Path to the SDK directory', isDir: true, mustExist: true),
+        help: 'Path to the SDK directory.', isDir: true, mustExist: true),
     new DartdocOptionArgOnly<bool>('showWarnings', false,
         help: 'Display all warnings.', negatable: false),
     new DartdocOptionSynthetic<PackageMeta>('topLevelPackageMeta',
