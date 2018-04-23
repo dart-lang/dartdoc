@@ -41,6 +41,21 @@ String get dartdocOriginalBranch {
   return branch;
 }
 
+List<String> _extraDartdocParams;
+
+/// If DARTDOC_PARAMS is set, add given parameters to the list.
+List<String> get extraDartdocParameters {
+  if (_extraDartdocParams == null) {
+    final RegExp whitespace = new RegExp(r'\s+');
+    _extraDartdocParams = [];
+    if (Platform.environment.containsKey('DARTDOC_PARAMS')) {
+      _extraDartdocParams
+          .addAll(Platform.environment['DARTDOC_PARAMS'].split(whitespace));
+    }
+  }
+  return _extraDartdocParams;
+}
+
 final Directory flutterDirDevTools =
     new Directory(pathLib.join(flutterDir.path, 'dev', 'tools'));
 
@@ -243,7 +258,7 @@ Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
         '--sdk-docs',
         '--json',
         '--show-progress',
-      ],
+      ]..addAll(extraDartdocParameters),
       workingDirectory: cwd);
 }
 
@@ -264,17 +279,12 @@ Future<List<Map>> _buildTestPackageDocs(
         pathLib.join(cwd, 'bin', 'dartdoc.dart'),
         '--output',
         outputDir,
-        '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',
         '--include-source',
         '--json',
         '--pretty-index-json',
-        '--exclude',
-        'package:meta/meta.dart',
-        '--exclude-packages',
-        'Dart',
-      ],
+      ]..addAll(extraDartdocParameters),
       workingDirectory: testPackage.absolute.path);
 }
 
@@ -462,7 +472,7 @@ Future<String> _buildPubPackageDocs(String pubPackageName,
         pathLib.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
         '--json',
         '--show-progress',
-      ],
+      ]..addAll(extraDartdocParameters),
       workingDirectory: pubPackageDir.absolute.path);
   return pathLib.join(pubPackageDir.absolute.path, 'doc', 'api');
 }
@@ -655,15 +665,15 @@ updateTestPackageDocs() async {
         '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',
-        '--no-include-source',
-        '--pretty-index-json',
-        '--hide-sdk-text',
         '--exclude',
         'package:meta/meta.dart',
         '--exclude-packages',
-        'Dart',
+        'Dart,tuple,quiver_hashcode',
+        '--hide-sdk-text',
+        '--no-include-source',
         '--output',
         '../test_package_docs',
+        '--pretty-index-json',
       ],
       workingDirectory: testPackage.path);
 }

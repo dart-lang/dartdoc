@@ -80,6 +80,7 @@ int byFeatureOrdering(String a, String b) {
 }
 
 final RegExp locationSplitter = new RegExp(r"(package:|[\\/;.])");
+final RegExp substituteName = new RegExp(r"%([nv])%");
 
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
@@ -667,7 +668,7 @@ class Class extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${library.dirName}/$fileName';
+    return '${package.baseHref}${library.dirName}/$fileName';
   }
 
   /// Returns all the implementors of this class.
@@ -1096,7 +1097,7 @@ class Constructor extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$name.html';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$name.html';
   }
 
   @override
@@ -1341,7 +1342,7 @@ class EnumField extends Field {
     assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingElement == enclosingElement);
-    return '${enclosingElement.library.dirName}/${(enclosingElement as Class).fileName}';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${(enclosingElement as Class).fileName}';
   }
 
   @override
@@ -1428,7 +1429,7 @@ class Field extends ModelElement
     assert(canonicalLibrary != null);
     assert(canonicalEnclosingElement == enclosingElement);
     assert(canonicalLibrary == library);
-    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
   }
 
   @override
@@ -2000,7 +2001,7 @@ class Library extends ModelElement with Categorization {
   String get href {
     if (!identical(canonicalModelElement, this))
       return canonicalModelElement?.href;
-    return '${library.dirName}/$fileName';
+    return '${package.baseHref}${library.dirName}/$fileName';
   }
 
   InheritanceManager _inheritanceManager;
@@ -2038,8 +2039,7 @@ class Library extends ModelElement with Categorization {
   /// for anonymous libraries in subdirectories or other packages.
   String get nameFromPath {
     if (_nameFromPath == null) {
-      _nameFromPath = getNameFromPath(
-          element, packageGraph.driver, packageGraph.packageMeta);
+      _nameFromPath = getNameFromPath(element, packageGraph.driver, package);
     }
     return _nameFromPath;
   }
@@ -2174,23 +2174,30 @@ class Library extends ModelElement with Categorization {
   /// Reverses URIs if needed to get a package URI.
   /// Not the same as [PackageGraph.name] because there we always strip all
   /// path components; this function only strips the package prefix if the
-  /// library is part of the default package.
-  static String getNameFromPath(LibraryElement element, AnalysisDriver driver,
-      PackageMeta defaultPackage) {
+  /// library is part of the default package or if it is being documented
+  /// remotely.
+  static String getNameFromPath(
+      LibraryElement element, AnalysisDriver driver, Package package) {
     String name;
     if (element.source.uri.toString().startsWith('dart:')) {
       name = element.source.uri.toString();
     } else {
       name = driver.sourceFactory.restoreUri(element.source).toString();
     }
+    PackageMeta hidePackage;
+    if (package.documentedWhere == DocumentLocation.remote) {
+      hidePackage = package.packageMeta;
+    } else {
+      hidePackage = package.packageGraph.packageMeta;
+    }
     if (name.startsWith('file:')) {
       // restoreUri doesn't do anything for the package we're documenting.
       String canonicalPackagePath =
-          '${pathLib.canonicalize(defaultPackage.dir.path)}${pathLib.separator}lib${pathLib.separator}';
+          '${pathLib.canonicalize(hidePackage.dir.path)}${pathLib.separator}lib${pathLib.separator}';
       String canonicalElementPath =
           pathLib.canonicalize(element.source.uri.toFilePath());
       assert(canonicalElementPath.startsWith(canonicalPackagePath));
-      List<String> pathSegments = [defaultPackage.name]..addAll(pathLib
+      List<String> pathSegments = [hidePackage.name]..addAll(pathLib
           .split(canonicalElementPath.replaceFirst(canonicalPackagePath, '')));
       Uri libraryUri = new Uri(
         scheme: 'package',
@@ -2199,7 +2206,7 @@ class Library extends ModelElement with Categorization {
       name = libraryUri.toString();
     }
 
-    String defaultPackagePrefix = 'package:$defaultPackage/';
+    String defaultPackagePrefix = 'package:$hidePackage/';
     if (name.startsWith(defaultPackagePrefix)) {
       name = name.substring(defaultPackagePrefix.length, name.length);
     }
@@ -2367,7 +2374,7 @@ class Method extends ModelElement
     assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingElement == enclosingElement);
-    return '${enclosingElement.library.dirName}/${enclosingElement.name}/${fileName}';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/${fileName}';
   }
 
   @override
@@ -3682,7 +3689,7 @@ class ModelFunctionTyped extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${library.dirName}/$fileName';
+    return '${package.baseHref}${library.dirName}/$fileName';
   }
 
   @override
@@ -4765,8 +4772,13 @@ class Package extends LibraryContainer
   bool get isLocal => _isLocal;
 
   DocumentLocation get documentedWhere {
-    if (!isLocal) return DocumentLocation.missing;
-    // TODO(jcollins-g): Implement DocumentLocation.remote.
+    if (!isLocal) {
+      if (config.linkToExternal && config.linkToExternalUrl.isNotEmpty) {
+        return DocumentLocation.remote;
+      } else {
+        return DocumentLocation.missing;
+      }
+    }
     return DocumentLocation.local;
   }
 
@@ -4776,8 +4788,30 @@ class Package extends LibraryContainer
   @override
   String get fullyQualifiedName => 'package:$name';
 
+  String _baseHref;
+  String get baseHref {
+    if (_baseHref == null) {
+      if (documentedWhere == DocumentLocation.remote) {
+        _baseHref =
+            config.linkToExternalUrl.replaceAllMapped(substituteName, (m) {
+          switch (m.group(1)) {
+            case 'n':
+              return name;
+            case 'v':
+              return packageMeta.version;
+          }
+          ;
+        });
+        if (!_baseHref.endsWith('/')) _baseHref = '${_baseHref}/';
+      } else {
+        _baseHref = '';
+      }
+    }
+    return _baseHref;
+  }
+
   @override
-  String get href => 'index.html';
+  String get href => '${baseHref}index.html';
 
   @override
   String get location => pathLib.toUri(packageMeta.resolvedDir).toString();
@@ -4837,22 +4871,7 @@ class Package extends LibraryContainer
   String _packagePath;
   String get packagePath {
     if (_packagePath == null) {
-      if (isSdk) {
-        _packagePath = packageGraph.config.sdkDir;
-      } else {
-        assert(libraries.isNotEmpty);
-        File file = new File(
-            pathLib.canonicalize(libraries.first.element.source.fullName));
-        Directory dir = file.parent;
-        while (dir.parent.path != dir.path && dir.existsSync()) {
-          File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
-          if (pubspec.existsSync()) {
-            _packagePath = dir.absolute.path;
-            break;
-          }
-          dir = dir.parent;
-        }
-      }
+      _packagePath = pathLib.canonicalize(packageMeta.dir.path);
     }
     return _packagePath;
   }
@@ -5096,7 +5115,7 @@ class TopLevelVariable extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${library.dirName}/$fileName';
+    return '${package.baseHref}${library.dirName}/$fileName';
   }
 
   @override
@@ -5163,7 +5182,7 @@ class Typedef extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${library.dirName}/$fileName';
+    return '${package.baseHref}${library.dirName}/$fileName';
   }
 
   // Food for mustache.
@@ -5198,7 +5217,7 @@ class TypeParameter extends ModelElement {
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
   }
 
   @override
@@ -5251,12 +5270,12 @@ class PackageBuilder {
   void logAnalysisErrors(Set<Source> sources) {}
 
   Future<PackageGraph> buildPackageGraph() async {
-    PackageMeta packageMeta = config.packageMeta;
+    PackageMeta packageMeta = config.topLevelPackageMeta;
     if (packageMeta.needsPubGet) {
       packageMeta.runPubGet();
     }
     Set<LibraryElement> libraries = await getLibraries(getFiles);
-    return new PackageGraph(libraries, config, config.packageMeta,
+    return new PackageGraph(libraries, config, config.topLevelPackageMeta,
         getWarningOptions(), driver, sdk);
   }
 
@@ -5271,7 +5290,7 @@ class PackageBuilder {
 
   EmbedderSdk _embedderSdk;
   EmbedderSdk get embedderSdk {
-    if (_embedderSdk == null && !config.packageMeta.isSdk) {
+    if (_embedderSdk == null && !config.topLevelPackageMeta.isSdk) {
       _embedderSdk = new EmbedderSdk(PhysicalResourceProvider.INSTANCE,
           new EmbedderYamlLocator(packageMap).embedderYamls);
     }
@@ -5539,14 +5558,14 @@ class PackageBuilder {
 
   Set<String> get getFiles {
     Set<String> files = new Set();
-    files.addAll(config.packageMeta.isSdk
+    files.addAll(config.topLevelPackageMeta.isSdk
         ? new Set()
         : findFilesToDocumentInPackage(
             config.inputDir, config.autoIncludeDependencies));
-    if (config.packageMeta.isSdk) {
+    if (config.topLevelPackageMeta.isSdk) {
       files.addAll(getSdkFilesToDocument());
     } else if (embedderSdk.urlMappings.isNotEmpty &&
-        !config.packageMeta.isSdk) {
+        !config.topLevelPackageMeta.isSdk) {
       embedderSdk.urlMappings.keys.forEach((String dartUri) {
         Source source = embedderSdk.mapDartUri(dartUri);
         files.add(source.fullName);

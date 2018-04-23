@@ -126,7 +126,7 @@ class SubprocessLauncher {
   /// output of the executable continuously and fail on non-zero exit codes.
   /// It will also parse any valid JSON objects (one per line) it encounters
   /// on stdout/stderr, and return them.  Returns null if no JSON objects
-  /// were encountered.
+  /// were encountered, or if DRY_RUN is set to 1 in the execution environment.
   ///
   /// Makes running programs in grinder similar to set -ex for bash, even on
   /// Windows (though some of the bashisms will no longer make sense).
@@ -157,8 +157,6 @@ class SubprocessLauncher {
       return line.split('\n');
     }
 
-    Process process = await Process.start(executable, arguments,
-        workingDirectory: workingDirectory, environment: environment);
     stderr.write('$prefix+ ');
     if (workingDirectory != null) stderr.write('(cd "$workingDirectory" && ');
     if (environment != null) {
@@ -183,6 +181,11 @@ class SubprocessLauncher {
     }
     if (workingDirectory != null) stderr.write(')');
     stderr.write('\n');
+
+    if (Platform.environment.containsKey('DRY_RUN')) return null;
+
+    Process process = await Process.start(executable, arguments,
+        workingDirectory: workingDirectory, environment: environment);
     _printStream(process.stdout, stdout, prefix: prefix, filter: jsonCallback);
     _printStream(process.stderr, stderr, prefix: prefix, filter: jsonCallback);
     await process.exitCode;

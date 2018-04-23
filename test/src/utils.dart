@@ -10,7 +10,6 @@ import 'dart:io';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as pathLib;
 
 Directory sdkDir;
 PackageMeta sdkPackageMeta;

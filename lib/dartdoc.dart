@@ -85,8 +85,8 @@ class Dartdoc extends PackageBuilder {
           new AnalysisErrorInfoImpl(errorsResult.errors, errorsResult.lineInfo);
       List<_Error> errors = [info]
           .expand((AnalysisErrorInfo info) {
-            return info.errors.map((error) =>
-                new _Error(error, info.lineInfo, config.packageMeta.dir.path));
+            return info.errors.map((error) => new _Error(
+                error, info.lineInfo, config.topLevelPackageMeta.dir.path));
           })
           .where((_Error error) => error.isError)
           .toList()
@@ -103,8 +103,8 @@ class Dartdoc extends PackageBuilder {
 
     List<_Error> errors = errorInfos
         .expand((AnalysisErrorInfo info) {
-          return info.errors.map((error) =>
-              new _Error(error, info.lineInfo, config.packageMeta.dir.path));
+          return info.errors.map((error) => new _Error(
+              error, info.lineInfo, config.topLevelPackageMeta.dir.path));
         })
         .where((_Error error) => error.isError)
         // TODO(jcollins-g): remove after conversion to analysis driver
@@ -172,7 +172,8 @@ class Dartdoc extends PackageBuilder {
       throw new DartdocFailure("dartdoc encountered errors while processing");
     }
 
-    return new DartdocResults(config.packageMeta, packageGraph, outputDir);
+    return new DartdocResults(
+        config.topLevelPackageMeta, packageGraph, outputDir);
   }
 
   /// Warn on file paths.

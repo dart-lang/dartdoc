@@ -49,6 +49,8 @@ library fake;
 import 'dart:async';
 import 'dart:collection';
 
+import 'package:tuple/tuple.dart';
+
 import 'css.dart' as css;
 import 'example.dart';
 import 'two_exports.dart' show BaseClass;
@@ -124,6 +126,8 @@ class DocumentWithATable {
 }
 
 Map<dynamic, String> mapWithDynamicKeys = {};
+
+Tuple2<String, String> useSomethingInAnotherPackage;
 
 /// Useful for annotations.
 class Annotation {
