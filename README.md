@@ -114,8 +114,14 @@ Unrecognized options will be ignored.  Supported options:
   * **linkTo**:  For other packages depending on this one, if this map is defined those packages
     will use the settings here to control how hyperlinks to the package are generated.
     This will override the default for packages hosted on pub.dartlang.org.
-    * url:  A string indicating the base URL for documentation of this package.  The following
-      strings will be substituted in to complete the URL:
+    * **url**:  A string indicating the base URL for documentation of this package.  Ordinarily
+      you do not need to set this in the package: consider --link-to-hosted and
+      --link-to-sdks instead of this option if you need to build your own website with
+      dartdoc.
+
+      The following strings will be substituted in to complete the URL:
+      * `%b%`: The branch as indicated by text in the version.  2.0.0-dev.3 is branch "dev".
+        No branch is considered to be "stable".
       * `%n%`: The name of this package, as defined in pubspec.yaml.
       * `%v%`: The version of this package as defined in pubspec.yaml.
 

@@ -15,26 +15,12 @@ if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
   # silence stdout but echo stderr
   echo ""
   echo "Building and validating SDK docs..."
-
   pub run grinder validate-sdk-docs
-
   echo "SDK docs process finished"
 elif [ "$DARTDOC_BOT" = "flutter" ]; then
   echo "Running flutter dartdoc bot"
-
-  pub run grinder build-flutter-docs
+  pub run grinder validate-flutter-docs
 else
   echo "Running main dartdoc bot"
-
-  # Verify that the libraries are error free.
-  pub run grinder analyze
-
-  # Run dartdoc on test_package.
-  (cd testing/test_package; dart -c ../../bin/dartdoc.dart)
-
-  # And on test_package_small.
-  (cd testing/test_package_small; dart -c ../../bin/dartdoc.dart)
-
-  # Run the tests.
-  pub run test
+  pub run grinder buildbot
 fi

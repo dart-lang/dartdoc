@@ -5,13 +5,33 @@
 import 'dart:async';
 import 'dart:io' hide ProcessException;
 
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:grinder/grinder.dart';
+import 'package:io/io.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart' as yaml;
 
 main([List<String> args]) => grind(args);
+
+/// Thrown on failure to find something in a file.
+class GrindTestFailure {
+  final String message;
+  GrindTestFailure(this.message);
+}
+
+/// Kind of an inefficient grepper for now.
+expectFileContains(String path, List<Pattern> items) {
+  File source = new File(path);
+  if (!source.existsSync())
+    throw new GrindTestFailure('file not found: ${path}');
+  for (Pattern item in items) {
+    if (!new File(path).readAsStringSync().contains(item)) {
+      throw new GrindTestFailure('Can not find ${item} in ${path}');
+    }
+  }
+}
 
 /// Run no more than 6 futures in parallel with this.
 final MultiFutureTracker testFutures = new MultiFutureTracker(6);
@@ -22,14 +42,72 @@ Directory createTempSync(String prefix) =>
 
 final Memoizer tempdirsCache = new Memoizer();
 
+RandomAccessFile _updateLock;
+Future<Null> _lockFuture;
+
+/// Returns true if we need to replace the existing flutter.  We never release
+/// this lock until the program exits.
+Future<bool> acquireUpdateLock() async {
+  if (_updateLock != null) {
+    await _lockFuture;
+    return false;
+  }
+  cleanFlutterDir.parent.createSync(recursive: true);
+  // no await allowed between assignment of _updateLock and _lockFuture.
+  _updateLock =
+      await new File(pathLib.join(cleanFlutterDir.parent.path, 'lock'))
+          .open(mode: FileMode.WRITE);
+  _lockFuture = _updateLock.lock();
+  await _lockFuture;
+  File lastSynced =
+      new File(pathLib.join(cleanFlutterDir.parent.path, 'lastSynced'));
+  if (lastSynced.existsSync()) {
+    DateTime lastSyncedTime = new DateTime.fromMillisecondsSinceEpoch(
+        int.parse(await lastSynced.readAsString()));
+    if (lastSyncedTime.difference(new DateTime.now()) < new Duration(hours: 4))
+      return false;
+  }
+  return true;
+}
+
+Future<FlutterRepo> _cleanFlutterRepo;
+
+/// Get a Future returning a reference to a completely clean, recent checkout of the Flutter
+/// repository, fully initialized.
+Future<FlutterRepo> get cleanFlutterRepo async {
+  if (_cleanFlutterRepo == null) {
+    _cleanFlutterRepo = FlutterRepo.fromPath(cleanFlutterDir.path, {}, 'clean');
+    if (await acquireUpdateLock()) {
+      await cleanFlutterDir.delete(recursive: true);
+      await cleanFlutterDir.create(recursive: true);
+      FlutterRepo repo = await _cleanFlutterRepo;
+      await repo._init();
+      File lastSynced =
+          new File(pathLib.join(cleanFlutterDir.parent.path, 'lastSynced'));
+      await lastSynced.writeAsString(
+          (new DateTime.now()).millisecondsSinceEpoch.toString());
+    }
+  }
+  return _cleanFlutterRepo;
+}
+
 Directory get dartdocDocsDir =>
     tempdirsCache.memoized1(createTempSync, 'dartdoc');
+Directory get dartdocDocsDirRemote =>
+    tempdirsCache.memoized1(createTempSync, 'dartdoc_remote');
 Directory get sdkDocsDir => tempdirsCache.memoized1(createTempSync, 'sdkdocs');
+Directory cleanFlutterDir = new Directory(
+    pathLib.join(resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
 Directory get flutterDir => tempdirsCache.memoized1(createTempSync, 'flutter');
 Directory get testPackage =>
     new Directory(pathLib.joinAll(['testing', 'test_package']));
+Directory get pluginPackage =>
+    new Directory(pathLib.joinAll(['testing', 'test_package_flutter_plugin']));
+
 Directory get testPackageDocsDir =>
     tempdirsCache.memoized1(createTempSync, 'test_package');
+Directory get pluginPackageDocsDir =>
+    tempdirsCache.memoized1(createTempSync, 'test_package_flutter_plugin');
 
 /// Version of dartdoc we should use when making comparisons.
 String get dartdocOriginalBranch {
@@ -194,6 +272,7 @@ WarningsCollection jsonMessageIterableToWarnings(Iterable<Map> messageIterable,
     String tempPath, String pubDir, String branch) {
   WarningsCollection warningTexts =
       new WarningsCollection(tempPath, pubDir, branch);
+  if (messageIterable == null) return warningTexts;
   for (Map<String, dynamic> message in messageIterable) {
     if (message.containsKey('level') &&
         message['level'] == 'WARNING' &&
@@ -341,9 +420,12 @@ Future compareFlutterWarnings() async {
   Map<String, String> envCurrent = _createThrowawayPubCache();
   Map<String, String> envOriginal = _createThrowawayPubCache();
   Future currentDartdocFlutterBuild = _buildFlutterDocs(flutterDir.path,
-      new Future.value(Directory.current.path), envCurrent, 'current');
+      new Future.value(Directory.current.path), envCurrent, 'docs-current');
   Future originalDartdocFlutterBuild = _buildFlutterDocs(
-      originalDartdocFlutter.path, originalDartdoc, envOriginal, 'original');
+      originalDartdocFlutter.path,
+      originalDartdoc,
+      envOriginal,
+      'docs-original');
   WarningsCollection currentDartdocWarnings = jsonMessageIterableToWarnings(
       await currentDartdocFlutterBuild,
       flutterDir.absolute.path,
@@ -397,52 +479,101 @@ Future serveFlutterDocs() async {
   ]);
 }
 
+@Task('Validate flutter docs')
+@Depends(testDartdocFlutterPlugin, buildFlutterDocs)
+validateFlutterDocs() {}
+
 @Task('Build flutter docs')
 Future buildFlutterDocs() async {
   log('building flutter docs into: $flutterDir');
   Map<String, String> env = _createThrowawayPubCache();
   await _buildFlutterDocs(
-      flutterDir.path, new Future.value(Directory.current.path), env);
+      flutterDir.path, new Future.value(Directory.current.path), env, 'docs');
   String index = new File(
           pathLib.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
       .readAsStringSync();
   stdout.write(index);
 }
 
+/// A class wrapping a flutter SDK.
+class FlutterRepo {
+  final String flutterPath;
+  final Map<String, String> env;
+  final String bin = pathLib.join('bin', 'flutter');
+
+  FlutterRepo._(this.flutterPath, this.env, String label) {
+    cacheDart =
+        pathLib.join(flutterPath, 'bin', 'cache', 'dart-sdk', 'bin', 'dart');
+    cachePub =
+        pathLib.join(flutterPath, 'bin', 'cache', 'dart-sdk', 'bin', 'pub');
+    env['PATH'] =
+        '${pathLib.join(pathLib.canonicalize(flutterPath), "bin")}:${env['PATH'] ?? Platform.environment['PATH']}';
+    env['FLUTTER_ROOT'] = flutterPath;
+    launcher =
+        new SubprocessLauncher('flutter${label == null ? "" : "-$label"}', env);
+  }
+
+  Future<Null> _init() async {
+    new Directory(flutterPath).createSync(recursive: true);
+    await launcher.runStreamed(
+        'git', ['clone', 'https://github.com/flutter/flutter.git', '.'],
+        workingDirectory: flutterPath);
+    await launcher.runStreamed(
+      bin,
+      ['--version'],
+      workingDirectory: flutterPath,
+    );
+    await launcher.runStreamed(
+      bin,
+      ['precache'],
+      workingDirectory: flutterPath,
+    );
+  }
+
+  static Future<FlutterRepo> fromPath(
+      String flutterPath, Map<String, String> env,
+      [String label]) async {
+    FlutterRepo flutterRepo = new FlutterRepo._(flutterPath, env, label);
+    return flutterRepo;
+  }
+
+  /// Copy an existing, initialized flutter repo.
+  static Future<FlutterRepo> copyFromExistingFlutterRepo(
+      FlutterRepo origRepo, String flutterPath, Map<String, String> env,
+      [String label]) async {
+    await copyPath(origRepo.flutterPath, flutterPath);
+    FlutterRepo flutterRepo = new FlutterRepo._(flutterPath, env, label);
+    return flutterRepo;
+  }
+
+  /// Doesn't actually copy the existing repo; use for read-only operations only.
+  static Future<FlutterRepo> fromExistingFlutterRepo(FlutterRepo origRepo,
+      [String label]) async {
+    FlutterRepo flutterRepo =
+        new FlutterRepo._(origRepo.flutterPath, {}, label);
+    return flutterRepo;
+  }
+
+  String cacheDart;
+  String cachePub;
+  SubprocessLauncher launcher;
+}
+
 Future<List<Map>> _buildFlutterDocs(
     String flutterPath, Future<String> futureCwd, Map<String, String> env,
     [String label]) async {
-  env['PATH'] = '${pathLib.join(flutterPath, "bin")}:${env['PATH']}';
-  var launcher = new SubprocessLauncher(
-      'build-flutter-docs${label == null ? "" : "-$label"}', env);
-  await launcher.runStreamed(
-      'git', ['clone', 'https://github.com/flutter/flutter.git', '.'],
-      workingDirectory: flutterPath);
-  String flutterBin = pathLib.join('bin', 'flutter');
-  String flutterCacheDart =
-      pathLib.join(flutterPath, 'bin', 'cache', 'dart-sdk', 'bin', 'dart');
-  String flutterCachePub =
-      pathLib.join(flutterPath, 'bin', 'cache', 'dart-sdk', 'bin', 'pub');
-  await launcher.runStreamed(
-    flutterBin,
-    ['--version'],
-    workingDirectory: flutterPath,
-  );
-  await launcher.runStreamed(
-    flutterBin,
-    ['precache'],
-    workingDirectory: flutterPath,
-  );
-  await launcher.runStreamed(
-    flutterCachePub,
+  FlutterRepo flutterRepo = await FlutterRepo.copyFromExistingFlutterRepo(
+      await cleanFlutterRepo, flutterPath, env, label);
+  await flutterRepo.launcher.runStreamed(
+    flutterRepo.cachePub,
     ['get'],
     workingDirectory: pathLib.join(flutterPath, 'dev', 'tools'),
   );
-  await launcher.runStreamed(
-      flutterCachePub, ['global', 'activate', '-spath', '.'],
+  await flutterRepo.launcher.runStreamed(
+      flutterRepo.cachePub, ['global', 'activate', '-spath', '.'],
       workingDirectory: await futureCwd);
-  return await launcher.runStreamed(
-    flutterCacheDart,
+  return await flutterRepo.launcher.runStreamed(
+    flutterRepo.cacheDart,
     [pathLib.join('dev', 'tools', 'dartdoc.dart'), '-c', '--json'],
     workingDirectory: flutterPath,
   );
@@ -624,7 +755,6 @@ testPreviewDart2() async {
 
 testDart1() async {
   List<String> parameters = ['--checked'];
-
   for (File dartFile in testFiles) {
     // absolute path to work around dart-lang/sdk#32901
     await testFutures.addFuture(new SubprocessLauncher(
@@ -642,8 +772,69 @@ testDartdoc() async {
   var launcher = new SubprocessLauncher('test-dartdoc');
   await launcher.runStreamed(Platform.resolvedExecutable,
       ['--checked', 'bin/dartdoc.dart', '--output', dartdocDocsDir.path]);
-  File indexHtml = joinFile(dartdocDocsDir, ['index.html']);
-  if (!indexHtml.existsSync()) fail('docs not generated');
+  expectFileContains(pathLib.join(dartdocDocsDir.path, 'index.html'),
+      ['<title>dartdoc - Dart API docs</title>']);
+  final RegExp object = new RegExp('<li>Object</li>', multiLine: true);
+  expectFileContains(
+      pathLib.join(dartdocDocsDir.path, 'dartdoc', 'ModelElement-class.html'),
+      [object]);
+}
+
+@Task('Generate docs for dartdoc with remote linking')
+testDartdocRemote() async {
+  var launcher = new SubprocessLauncher('test-dartdoc-remote');
+  final RegExp object = new RegExp(
+      '<a href="https://api.dartlang.org/(dev|stable)/[^/]*/dart-core/Object-class.html">Object</a>',
+      multiLine: true);
+  await launcher.runStreamed(Platform.resolvedExecutable, [
+    '--checked',
+    'bin/dartdoc.dart',
+    '--link-to-remote',
+    '--output',
+    dartdocDocsDir.path
+  ]);
+  expectFileContains(pathLib.join(dartdocDocsDir.path, 'index.html'),
+      ['<title>dartdoc - Dart API docs</title>']);
+  expectFileContains(
+      pathLib.join(dartdocDocsDir.path, 'dartdoc', 'ModelElement-class.html'),
+      [object]);
+}
+
+@Task('serve docs for a package that requires flutter with remote linking')
+@Depends(buildDartdocFlutterPluginDocs)
+Future serveDartdocFlutterPluginDocs() async {
+  await _serveDocsFrom(
+      pluginPackageDocsDir.path, 8005, 'serve-dartdoc-flutter-plugin-docs');
+}
+
+@Task('Build docs for a package that requires flutter with remote linking')
+buildDartdocFlutterPluginDocs() async {
+  FlutterRepo flutterRepo = await FlutterRepo.fromExistingFlutterRepo(
+      await cleanFlutterRepo, 'docs-flutter-plugin');
+
+  await flutterRepo.launcher.runStreamed(
+      Platform.resolvedExecutable,
+      [
+        '--checked',
+        pathLib.join(Directory.current.path, 'bin', 'dartdoc.dart'),
+        '--link-to-remote',
+        '--output',
+        pluginPackageDocsDir.path
+      ],
+      workingDirectory: pluginPackage.path);
+}
+
+@Task('Verify docs for a package that requires flutter with remote linking')
+@Depends(buildDartdocFlutterPluginDocs)
+testDartdocFlutterPlugin() async {
+  // Verify that links to Dart SDK and Flutter SDK go to the flutter site.
+  expectFileContains(
+      pathLib.join(
+          pluginPackageDocsDir.path, 'testlib', 'MyAwesomeWidget-class.html'),
+      [
+        '<a href="https://docs.flutter.io/flutter/widgets/Widget-class.html">Widget</a>',
+        '<a href="https://docs.flutter.io/flutter/dart-core/Object-class.html">Object</a>'
+      ]);
 }
 
 @Task('update test_package_docs')
