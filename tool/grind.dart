@@ -740,8 +740,12 @@ testPreviewDart2() async {
   List<String> parameters = ['--preview-dart-2', '--enable-asserts'];
 
   // sdk#32901 is really bad on Windows.
-  for (File dartFile in testFiles.where((f) =>
-      !f.path.endsWith('html_generator_test.dart') && !Platform.isWindows)) {
+  for (File dartFile in testFiles
+      .where((f) =>
+          !f.path.endsWith('html_generator_test.dart') && !Platform.isWindows)
+      .where((f) =>
+          // grinder stopped working with preview-dart-2.
+          !f.path.endsWith('grind_test.dart'))) {
     // absolute path to work around dart-lang/sdk#32901
     await testFutures.addFuture(new SubprocessLauncher(
             'dart2-${pathLib.basename(dartFile.absolute.path)}')

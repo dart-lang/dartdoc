@@ -140,16 +140,18 @@ abstract class PackageMeta {
   /// Returns 'Dart' or 'Flutter' (preferentially, 'Flutter' when the answer is
   /// "both"), or null if this package is not part of a SDK.
   String sdkType(String flutterRootPath) {
-    String flutterPackages = pathLib.join(flutterRootPath, 'packages');
-    String flutterBinCache = pathLib.join(flutterRootPath, 'bin', 'cache');
+    if (flutterRootPath != null) {
+      String flutterPackages = pathLib.join(flutterRootPath, 'packages');
+      String flutterBinCache = pathLib.join(flutterRootPath, 'bin', 'cache');
 
-    /// Don't include examples or other non-SDK components as being the
-    /// "Flutter SDK".
-    if (pathLib.isWithin(
-            flutterPackages, pathLib.canonicalize(dir.absolute.path)) ||
-        pathLib.isWithin(
-            flutterBinCache, pathLib.canonicalize(dir.absolute.path))) {
-      return 'Flutter';
+      /// Don't include examples or other non-SDK components as being the
+      /// "Flutter SDK".
+      if (pathLib.isWithin(
+              flutterPackages, pathLib.canonicalize(dir.absolute.path)) ||
+          pathLib.isWithin(
+              flutterBinCache, pathLib.canonicalize(dir.absolute.path))) {
+        return 'Flutter';
+      }
     }
     return isSdk ? 'Dart' : null;
   }

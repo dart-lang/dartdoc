@@ -941,9 +941,6 @@ class DartdocOptionContext {
   // ignore: unused_element
   String get _linkToHosted => optionSet['linkTo']['hosted'].valueAt(context);
 
-  /// _linkToUrl is only used to construct synthetic options.
-  // ignore: unused_element
-  String get _linkToUrl => optionSet['linkTo']['url'].valueAt(context);
   String get output => optionSet['output'].valueAt(context);
   PackageMeta get packageMeta => optionSet['packageMeta'].valueAt(context);
   List<String> get packageOrder => optionSet['packageOrder'].valueAt(context);

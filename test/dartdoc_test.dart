@@ -44,6 +44,13 @@ void main() {
           .firstWhere((p) => p.name == 'useSomethingInAnotherPackage');
       expect(tuple.documentedWhere, equals(DocumentLocation.remote));
       expect(
+          (useSomethingInAnotherPackage.modelType.typeArguments.first
+                  as ParameterizedElementType)
+              .element
+              .package
+              .documentedWhere,
+          equals(DocumentLocation.remote));
+      expect(
           useSomethingInAnotherPackage.modelType.linkedName,
           startsWith(
               '<a href="https://pub.dartlang.org/documentation/tuple/1.0.1/tuple/Tuple2-class.html">Tuple2</a>'));
