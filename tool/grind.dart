@@ -78,7 +78,9 @@ Future<FlutterRepo> get cleanFlutterRepo async {
   if (_cleanFlutterRepo == null) {
     _cleanFlutterRepo = FlutterRepo.fromPath(cleanFlutterDir.path, {}, 'clean');
     if (await acquireUpdateLock()) {
-      await cleanFlutterDir.delete(recursive: true);
+      if (cleanFlutterDir.existsSync()) {
+        await cleanFlutterDir.delete(recursive: true);
+      }
       await cleanFlutterDir.create(recursive: true);
       FlutterRepo repo = await _cleanFlutterRepo;
       await repo._init();
