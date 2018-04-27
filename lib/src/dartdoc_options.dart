@@ -1108,8 +1108,9 @@ Future<List<DartdocOption>> createDartdocOptions() async {
         help: 'Generate ONLY the docs for the Dart SDK.', negatable: false),
     new DartdocOptionArgSynth<String>('sdkDir',
         (DartdocSyntheticOption<String> option, Directory dir) {
-      if ((option.root['topLevelPackageMeta'].valueAt(dir) as PackageMeta)
-          .requiresFlutter) {
+      if (!option.parent['sdkDocs'].valueAt(dir) &&
+          (option.root['topLevelPackageMeta'].valueAt(dir) as PackageMeta)
+              .requiresFlutter) {
         return pathLib.join(option.root['flutterRoot'].valueAt(dir), 'bin',
             'cache', 'dart-sdk');
       }
