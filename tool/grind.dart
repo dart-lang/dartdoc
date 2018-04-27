@@ -728,6 +728,7 @@ publish() async {
 
 @Task('Run all the tests.')
 test() async {
+  print ('processors: ${Platform.numberOfProcessors}');
   await testPreviewDart2();
   await testDart1();
   await testFutures.wait();
