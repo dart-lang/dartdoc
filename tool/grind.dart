@@ -46,7 +46,8 @@ RandomAccessFile _updateLock;
 Future<Null> _lockFuture;
 
 /// Returns true if we need to replace the existing flutter.  We never release
-/// this lock until the program exits.
+/// this lock until the program exits to prevent edge cases from spontaneously
+/// deciding to download a new Flutter SDK in the middle of a run.
 Future<bool> acquireUpdateLock() async {
   if (_updateLock != null) {
     await _lockFuture;
@@ -64,7 +65,7 @@ Future<bool> acquireUpdateLock() async {
   if (lastSynced.existsSync()) {
     DateTime lastSyncedTime = new DateTime.fromMillisecondsSinceEpoch(
         int.parse(await lastSynced.readAsString()));
-    if (lastSyncedTime.difference(new DateTime.now()) < new Duration(hours: 4))
+    if (new DateTime.now().difference(lastSyncedTime) < new Duration(hours: 4))
       return false;
   }
   return true;

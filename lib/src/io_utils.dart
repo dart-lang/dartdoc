@@ -103,11 +103,11 @@ class SubprocessLauncher {
   String get prefix => context.isNotEmpty ? '$context: ' : '';
 
   // from flutter:dev/tools/dartdoc.dart, modified
-  static void _printStream(Stream<List<int>> stream, Stdout output,
+  static Future<Null> _printStream(Stream<List<int>> stream, Stdout output,
       {String prefix: '', Iterable<String> Function(String line) filter}) {
     assert(prefix != null);
     if (filter == null) filter = (line) => [line];
-    stream
+    return stream
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .expand(filter)
@@ -116,7 +116,7 @@ class SubprocessLauncher {
         output.write('$prefix$line'.trim());
         output.write('\n');
       }
-    });
+    }).asFuture();
   }
 
   SubprocessLauncher(this.context, [Map<String, String> environment])
@@ -186,9 +186,11 @@ class SubprocessLauncher {
 
     Process process = await Process.start(executable, arguments,
         workingDirectory: workingDirectory, environment: environment);
-    _printStream(process.stdout, stdout, prefix: prefix, filter: jsonCallback);
-    _printStream(process.stderr, stderr, prefix: prefix, filter: jsonCallback);
-    await process.exitCode;
+    Future<Null> stdoutFuture = _printStream(process.stdout, stdout,
+        prefix: prefix, filter: jsonCallback);
+    Future<Null> stderrFuture = _printStream(process.stderr, stderr,
+        prefix: prefix, filter: jsonCallback);
+    await Future.wait([stderrFuture, stdoutFuture, process.exitCode]);
 
     int exitCode = await process.exitCode;
     if (exitCode != 0) {
