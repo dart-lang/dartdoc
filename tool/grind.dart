@@ -34,7 +34,7 @@ expectFileContains(String path, List<Pattern> items) {
 }
 
 /// Run no more than 4 futures in parallel with this.
-final MultiFutureTracker testFutures = new MultiFutureTracker(Platform.numberOfProcessors);
+final MultiFutureTracker testFutures = new MultiFutureTracker(Platform.environment.containsKey('TRAVIS') ? 2 : Platform.numberOfProcessors);
 
 // Directory.systemTemp is not a constant.  So wrap it.
 Directory createTempSync(String prefix) =>
