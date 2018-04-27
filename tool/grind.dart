@@ -36,7 +36,7 @@ expectFileContains(String path, List<Pattern> items) {
 /// Run no more than the number of processors available in parallel.
 final MultiFutureTracker testFutures = new MultiFutureTracker(
     Platform.environment.containsKey('TRAVIS')
-        ? 1
+        ? 2
         : Platform.numberOfProcessors);
 
 // Directory.systemTemp is not a constant.  So wrap it.
