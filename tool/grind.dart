@@ -33,8 +33,11 @@ expectFileContains(String path, List<Pattern> items) {
   }
 }
 
-/// Run no more than 4 futures in parallel with this.
-final MultiFutureTracker testFutures = new MultiFutureTracker(Platform.environment.containsKey('TRAVIS') ? 2 : Platform.numberOfProcessors);
+/// Run no more than the number of processors available in parallel.
+final MultiFutureTracker testFutures = new MultiFutureTracker(
+    Platform.environment.containsKey('TRAVIS')
+        ? 1
+        : Platform.numberOfProcessors);
 
 // Directory.systemTemp is not a constant.  So wrap it.
 Directory createTempSync(String prefix) =>
@@ -728,7 +731,6 @@ publish() async {
 
 @Task('Run all the tests.')
 test() async {
-  print ('processors: ${Platform.numberOfProcessors}');
   await testPreviewDart2();
   await testDart1();
   await testFutures.wait();
