@@ -21,10 +21,6 @@ elif [ "$DARTDOC_BOT" = "flutter" ]; then
   echo "Running flutter dartdoc bot"
   pub run grinder validate-flutter-docs
 else
-  echo "running model_test"
-  pub get
-  /home/travis/dart-sdk/bin/dart --preview-dart-2 --enable-asserts /home/travis/build/dart-lang/dartdoc/test/model_test.dart
-
   echo "Running main dartdoc bot"
   pub run grinder buildbot
 fi

@@ -33,8 +33,8 @@ expectFileContains(String path, List<Pattern> items) {
   }
 }
 
-/// Run no more than 6 futures in parallel with this.
-final MultiFutureTracker testFutures = new MultiFutureTracker(6);
+/// Run no more than 4 futures in parallel with this.
+final MultiFutureTracker testFutures = new MultiFutureTracker(4);
 
 // Directory.systemTemp is not a constant.  So wrap it.
 Directory createTempSync(String prefix) =>
