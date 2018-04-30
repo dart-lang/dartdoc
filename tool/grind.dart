@@ -45,55 +45,48 @@ Directory createTempSync(String prefix) =>
 
 final Memoizer tempdirsCache = new Memoizer();
 
-RandomAccessFile _updateLock;
+/// Global so that the lock is retained for the life of the process.
 Future<Null> _lockFuture;
+Future<FlutterRepo> _cleanFlutterRepo;
 
 /// Returns true if we need to replace the existing flutter.  We never release
 /// this lock until the program exits to prevent edge cases from spontaneously
 /// deciding to download a new Flutter SDK in the middle of a run.
-Future<bool> acquireUpdateLock() async {
-  if (_updateLock != null) {
-    await _lockFuture;
-    return false;
-  }
-  cleanFlutterDir.parent.createSync(recursive: true);
-  // no await allowed between assignment of _updateLock and _lockFuture.
-  _updateLock =
-      await new File(pathLib.join(cleanFlutterDir.parent.path, 'lock'))
-          .open(mode: FileMode.WRITE);
-  _lockFuture = _updateLock.lock();
-  await _lockFuture;
-  File lastSynced =
-      new File(pathLib.join(cleanFlutterDir.parent.path, 'lastSynced'));
-  if (lastSynced.existsSync()) {
-    DateTime lastSyncedTime = new DateTime.fromMillisecondsSinceEpoch(
-        int.parse(await lastSynced.readAsString()));
-    if (new DateTime.now().difference(lastSyncedTime) < new Duration(hours: 4))
-      return false;
-  }
-  return true;
-}
-
-Future<FlutterRepo> _cleanFlutterRepo;
-
-/// Get a Future returning a reference to a completely clean, recent checkout of the Flutter
-/// repository, fully initialized.
 Future<FlutterRepo> get cleanFlutterRepo async {
-  if (_cleanFlutterRepo == null) {
-    _cleanFlutterRepo = FlutterRepo.fromPath(cleanFlutterDir.path, {}, 'clean');
-    if (await acquireUpdateLock()) {
-      if (cleanFlutterDir.existsSync()) {
-        await cleanFlutterDir.delete(recursive: true);
-      }
-      await cleanFlutterDir.create(recursive: true);
-      FlutterRepo repo = await _cleanFlutterRepo;
-      await repo._init();
-      File lastSynced =
-          new File(pathLib.join(cleanFlutterDir.parent.path, 'lastSynced'));
-      await lastSynced.writeAsString(
-          (new DateTime.now()).millisecondsSinceEpoch.toString());
-    }
+  if (_cleanFlutterRepo != null) {
+    return await _cleanFlutterRepo;
   }
+  // No await is allowed between check of _cleanFlutterRepo and its assignment,
+  // to prevent reentering this function.
+  cleanFlutterDir.parent.createSync(recursive: true);
+  RandomAccessFile _updateLock =
+      new File(pathLib.join(cleanFlutterDir.parent.path, 'lock'))
+          .openSync(mode: FileMode.WRITE);
+  _lockFuture = _updateLock.lock();
+
+  Future<FlutterRepo> _doUpdate() async {
+    await _lockFuture;
+    File lastSynced =
+        new File(pathLib.join(cleanFlutterDir.parent.path, 'lastSynced'));
+    FlutterRepo newRepo =
+        new FlutterRepo.fromPath(cleanFlutterDir.path, {}, 'clean');
+    if (lastSynced.existsSync()) {
+      DateTime lastSyncedTime = new DateTime.fromMillisecondsSinceEpoch(
+          int.parse(lastSynced.readAsStringSync()));
+      if (new DateTime.now().difference(lastSyncedTime) <
+          new Duration(hours: 4)) return newRepo;
+    }
+    if (cleanFlutterDir.existsSync()) {
+      cleanFlutterDir.deleteSync(recursive: true);
+    }
+    cleanFlutterDir.createSync(recursive: true);
+    await newRepo._init();
+    await lastSynced
+        .writeAsString((new DateTime.now()).millisecondsSinceEpoch.toString());
+    return newRepo;
+  }
+
+  _cleanFlutterRepo = _doUpdate();
   return _cleanFlutterRepo;
 }
 
@@ -536,9 +529,8 @@ class FlutterRepo {
     );
   }
 
-  static Future<FlutterRepo> fromPath(
-      String flutterPath, Map<String, String> env,
-      [String label]) async {
+  factory FlutterRepo.fromPath(String flutterPath, Map<String, String> env,
+      [String label]) {
     FlutterRepo flutterRepo = new FlutterRepo._(flutterPath, env, label);
     return flutterRepo;
   }
