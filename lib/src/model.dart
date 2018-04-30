@@ -80,8 +80,8 @@ int byFeatureOrdering(String a, String b) {
   return compareAsciiLowerCaseNatural(a, b);
 }
 
-final RegExp locationSplitter = new RegExp(r"(package:|[\\/;.])");
-final RegExp substituteNameVersion = new RegExp(r"%([bnv])%");
+final RegExp locationSplitter = new RegExp(r'(package:|[\\/;.])');
+final RegExp substituteNameVersion = new RegExp(r'%([bnv])%');
 
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.

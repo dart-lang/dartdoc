@@ -198,11 +198,11 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
     new DartdocOptionSyntheticOnly<List<String>>(
       'footerTextPaths',
       (DartdocSyntheticOption<List<String>> option, Directory dir) {
-        List<String> footerTextPaths = <String>[];
+        final List<String> footerTextPaths = <String>[];
+        final PackageMeta topLevelPackageMeta =
+            option.root['topLevelPackageMeta'].valueAt(dir);
         // TODO(jcollins-g): Eliminate special casing for SDK and use config file.
-        if ((option.root['topLevelPackageMeta'].valueAt(dir) as PackageMeta)
-                .isSdk ==
-            true) {
+        if (topLevelPackageMeta.isSdk == true) {
           footerTextPaths
               .add(pathLib.canonicalize(_sdkFooterCopyrightUri.toFilePath()));
         }
