@@ -1,3 +1,11 @@
+## 0.19.0
+* Build documentation through the Package object (#1659)
+* New flag, --link-to-external, which will cause Dartdoc to link symbols to their originating
+  pub packages and/or the Flutter or Dart SDKs. (#739)
+* New configuration refactor and addition of several experimental options in dartdoc_options.yaml
+  (see README).
+* Update analyzer version to 0.31.2-alpha.2 (#1682).
+
 ## 0.18.1
 * Fix problems with the embedded SDK detection that cropped up in
   the package refactor (#1648, #1651)
