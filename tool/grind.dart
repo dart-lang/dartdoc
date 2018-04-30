@@ -63,10 +63,13 @@ Future<FlutterRepo> get cleanFlutterRepo async {
     await cleanFlutterDir.parent.create(recursive: true);
     assert(_lockFuture == null);
     _lockFuture = new File(pathLib.join(cleanFlutterDir.parent.path, 'lock'))
-        .openSync(mode: FileMode.WRITE).lock();
+        .openSync(mode: FileMode.WRITE)
+        .lock();
     await _lockFuture;
-    File lastSynced = new File(pathLib.join(cleanFlutterDir.parent.path, 'lastSynced'));
-    FlutterRepo newRepo = new FlutterRepo.fromPath(cleanFlutterDir.path, {}, 'clean');
+    File lastSynced =
+        new File(pathLib.join(cleanFlutterDir.parent.path, 'lastSynced'));
+    FlutterRepo newRepo =
+        new FlutterRepo.fromPath(cleanFlutterDir.path, {}, 'clean');
 
     // We have a repository, but is it up to date?
     DateTime lastSyncedTime;
@@ -75,15 +78,16 @@ Future<FlutterRepo> get cleanFlutterRepo async {
           int.parse(lastSynced.readAsStringSync()));
     }
     if (lastSyncedTime == null ||
-        new DateTime.now().difference(lastSyncedTime) > new Duration(hours: 4)) {
+        new DateTime.now().difference(lastSyncedTime) >
+            new Duration(hours: 4)) {
       // Rebuild the repository.
       if (cleanFlutterDir.existsSync()) {
         cleanFlutterDir.deleteSync(recursive: true);
       }
       cleanFlutterDir.createSync(recursive: true);
       await newRepo._init();
-      await lastSynced
-          .writeAsString((new DateTime.now()).millisecondsSinceEpoch.toString());
+      await lastSynced.writeAsString(
+          (new DateTime.now()).millisecondsSinceEpoch.toString());
     }
     _cleanFlutterRepo.complete(newRepo);
   }
