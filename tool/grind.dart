@@ -47,47 +47,47 @@ final Memoizer tempdirsCache = new Memoizer();
 
 /// Global so that the lock is retained for the life of the process.
 Future<Null> _lockFuture;
-Future<FlutterRepo> _cleanFlutterRepo;
+Completer<FlutterRepo> _cleanFlutterRepo;
 
 /// Returns true if we need to replace the existing flutter.  We never release
-/// this lock until the program exits to prevent edge cases from spontaneously
-/// deciding to download a new Flutter SDK in the middle of a run.
+/// this lock until the program exits to prevent edge case runs from
+/// spontaneously deciding to download a new Flutter SDK in the middle of a run.
 Future<FlutterRepo> get cleanFlutterRepo async {
-  if (_cleanFlutterRepo != null) {
-    return await _cleanFlutterRepo;
-  }
-  // No await is allowed between check of _cleanFlutterRepo and its assignment,
-  // to prevent reentering this function.
-  cleanFlutterDir.parent.createSync(recursive: true);
-  RandomAccessFile _updateLock =
-      new File(pathLib.join(cleanFlutterDir.parent.path, 'lock'))
-          .openSync(mode: FileMode.WRITE);
-  _lockFuture = _updateLock.lock();
+  if (_cleanFlutterRepo == null) {
+    // No await is allowed between check of _cleanFlutterRepo and its assignment,
+    // to prevent reentering this function.
+    _cleanFlutterRepo = new Completer();
 
-  Future<FlutterRepo> _doUpdate() async {
+    // Figure out where the repository is supposed to be and lock updates for
+    // it.
+    await cleanFlutterDir.parent.create(recursive: true);
+    assert(_lockFuture == null);
+    _lockFuture = new File(pathLib.join(cleanFlutterDir.parent.path, 'lock'))
+        .openSync(mode: FileMode.WRITE).lock();
     await _lockFuture;
-    File lastSynced =
-        new File(pathLib.join(cleanFlutterDir.parent.path, 'lastSynced'));
-    FlutterRepo newRepo =
-        new FlutterRepo.fromPath(cleanFlutterDir.path, {}, 'clean');
-    if (lastSynced.existsSync()) {
-      DateTime lastSyncedTime = new DateTime.fromMillisecondsSinceEpoch(
-          int.parse(lastSynced.readAsStringSync()));
-      if (new DateTime.now().difference(lastSyncedTime) <
-          new Duration(hours: 4)) return newRepo;
-    }
-    if (cleanFlutterDir.existsSync()) {
-      cleanFlutterDir.deleteSync(recursive: true);
-    }
-    cleanFlutterDir.createSync(recursive: true);
-    await newRepo._init();
-    await lastSynced
-        .writeAsString((new DateTime.now()).millisecondsSinceEpoch.toString());
-    return newRepo;
-  }
+    File lastSynced = new File(pathLib.join(cleanFlutterDir.parent.path, 'lastSynced'));
+    FlutterRepo newRepo = new FlutterRepo.fromPath(cleanFlutterDir.path, {}, 'clean');
 
-  _cleanFlutterRepo = _doUpdate();
-  return _cleanFlutterRepo;
+    // We have a repository, but is it up to date?
+    DateTime lastSyncedTime;
+    if (lastSynced.existsSync()) {
+      lastSyncedTime = new DateTime.fromMillisecondsSinceEpoch(
+          int.parse(lastSynced.readAsStringSync()));
+    }
+    if (lastSyncedTime == null ||
+        new DateTime.now().difference(lastSyncedTime) > new Duration(hours: 4)) {
+      // Rebuild the repository.
+      if (cleanFlutterDir.existsSync()) {
+        cleanFlutterDir.deleteSync(recursive: true);
+      }
+      cleanFlutterDir.createSync(recursive: true);
+      await newRepo._init();
+      await lastSynced
+          .writeAsString((new DateTime.now()).millisecondsSinceEpoch.toString());
+    }
+    _cleanFlutterRepo.complete(newRepo);
+  }
+  return _cleanFlutterRepo.future;
 }
 
 Directory get dartdocDocsDir =>
