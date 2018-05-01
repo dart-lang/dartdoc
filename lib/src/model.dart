@@ -2941,6 +2941,21 @@ abstract class ModelElement extends Canonicalization
             if (topLevelElement == lookup) return true;
             return false;
           }).toList();
+
+          // Avoid claiming canonicalization for elements outside of this element's
+          // defining package.
+          // TODO(jcollins-g): Make the else block unconditional.
+          if (!candidateLibraries.isEmpty &&
+              !candidateLibraries
+                  .any((l) => l.package == definingLibrary.package)) {
+            warn(PackageWarning.reexportedPrivateApiAcrossPackages,
+                message: definingLibrary.package.fullyQualifiedName,
+                referredFrom: candidateLibraries);
+          } else {
+            candidateLibraries
+                .removeWhere((l) => l.package != definingLibrary.package);
+          }
+
           // Start with our top-level element.
           ModelElement warnable =
               new ModelElement.fromElement(topLevelElement, packageGraph);
@@ -2972,7 +2987,8 @@ abstract class ModelElement extends Canonicalization
       } else {
         _canonicalLibrary = definingLibrary;
       }
-      if (this is Inheritable) {
+      // Only pretend when not linking to remote packages.
+      if (this is Inheritable && !config.linkToRemote) {
         if ((this as Inheritable).isInherited &&
             _canonicalLibrary == null &&
             packageGraph.publicLibraries.contains(library)) {
@@ -4054,8 +4070,9 @@ class PackageGraph extends Canonicalization
       case PackageWarning.noCanonicalFound:
         // Fix these warnings by adding libraries with --include, or by using
         // --auto-include-dependencies.
-        // TODO(jcollins-g): add a dartdoc flag to enable external website linking for non-canonical elements, using .packages for versioning
-        // TODO(jcollins-g): support documenting multiple packages at once and linking between them
+        // TODO(jcollins-g): pipeline references through linkedName for error
+        //                   messages and warn for non-public canonicalization
+        //                   errors.
         warningMessage =
             "no canonical library found for ${warnableName}, not linking";
         break;
@@ -4080,6 +4097,10 @@ class PackageGraph extends Canonicalization
       case PackageWarning.packageOrderGivesMissingPackageName:
         warningMessage =
             "--package-order gives invalid package name: '${message}'";
+        break;
+      case PackageWarning.reexportedPrivateApiAcrossPackages:
+        warningMessage =
+            "private API of ${message} is reexported by libraries in other packages: ";
         break;
       case PackageWarning.unresolvedDocReference:
         warningMessage = "unresolved doc reference [${message}]";

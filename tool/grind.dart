@@ -33,6 +33,10 @@ expectFileContains(String path, List<Pattern> items) {
   }
 }
 
+/// The pub cache inherited by grinder.
+final String defaultPubCache =
+    Platform.environment['PUB_CACHE'] ?? resolveTildePath('~/.pub-cache');
+
 /// Run no more than the number of processors available in parallel.
 final MultiFutureTracker testFutures = new MultiFutureTracker(
     Platform.environment.containsKey('TRAVIS')
@@ -183,11 +187,11 @@ Future buildSdkDocs() async {
 
 class WarningsCollection {
   final String tempDir;
-  final Map<String, int> _warningKeyCounts;
+  final Map<String, int> warningKeyCounts;
   final String branch;
   final String pubCachePath;
   WarningsCollection(this.tempDir, this.pubCachePath, this.branch)
-      : this._warningKeyCounts = new Map() {}
+      : this.warningKeyCounts = new Map() {}
 
   static const String kPubCachePathReplacement = '_xxxPubDirectoryxxx_';
   static const String kTempDirReplacement = '_xxxTempDirectoryxxx_';
@@ -208,8 +212,8 @@ class WarningsCollection {
 
   void add(String text) {
     String key = _toKey(text);
-    _warningKeyCounts.putIfAbsent(key, () => 0);
-    _warningKeyCounts[key]++;
+    warningKeyCounts.putIfAbsent(key, () => 0);
+    warningKeyCounts[key]++;
   }
 
   /// Output formatter for comparing warnings.  [this] is the original.
@@ -220,19 +224,19 @@ class WarningsCollection {
     Set<String> onlyCurrent = new Set();
     Set<String> identical = new Set();
     Set<String> allKeys = new Set.from([]
-      ..addAll(_warningKeyCounts.keys)
-      ..addAll(current._warningKeyCounts.keys));
+      ..addAll(warningKeyCounts.keys)
+      ..addAll(current.warningKeyCounts.keys));
 
     for (String key in allKeys) {
-      if (_warningKeyCounts.containsKey(key) &&
-          !current._warningKeyCounts.containsKey(key)) {
+      if (warningKeyCounts.containsKey(key) &&
+          !current.warningKeyCounts.containsKey(key)) {
         onlyOriginal.add(key);
-      } else if (!_warningKeyCounts.containsKey(key) &&
-          current._warningKeyCounts.containsKey(key)) {
+      } else if (!warningKeyCounts.containsKey(key) &&
+          current.warningKeyCounts.containsKey(key)) {
         onlyCurrent.add(key);
-      } else if (_warningKeyCounts.containsKey(key) &&
-          current._warningKeyCounts.containsKey(key) &&
-          _warningKeyCounts[key] != current._warningKeyCounts[key]) {
+      } else if (warningKeyCounts.containsKey(key) &&
+          current.warningKeyCounts.containsKey(key) &&
+          warningKeyCounts[key] != current.warningKeyCounts[key]) {
         quantityChangedOuts.add(key);
       } else {
         identical.add(key);
@@ -253,7 +257,7 @@ class WarningsCollection {
       printBuffer.writeln('*** $title : Identical warning quantity changed');
       for (String key in quantityChangedOuts) {
         printBuffer.writeln(
-            "* Appeared ${_warningKeyCounts[key]} times in $branch, ${current._warningKeyCounts[key]} in ${current.branch}:");
+            "* Appeared ${warningKeyCounts[key]} times in $branch, ${current.warningKeyCounts[key]} in ${current.branch}:");
         printBuffer.writeln(current._fromKey(key));
       }
     }
@@ -813,26 +817,38 @@ Future serveDartdocFlutterPluginDocs() async {
       pluginPackageDocsDir.path, 8005, 'serve-dartdoc-flutter-plugin-docs');
 }
 
-@Task('Build docs for a package that requires flutter with remote linking')
-buildDartdocFlutterPluginDocs() async {
+Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
   FlutterRepo flutterRepo = await FlutterRepo.fromExistingFlutterRepo(
       await cleanFlutterRepo, 'docs-flutter-plugin');
 
-  await flutterRepo.launcher.runStreamed(
-      Platform.resolvedExecutable,
-      [
-        '--checked',
-        pathLib.join(Directory.current.path, 'bin', 'dartdoc.dart'),
-        '--link-to-remote',
-        '--output',
-        pluginPackageDocsDir.path
-      ],
-      workingDirectory: pluginPackage.path);
+  return jsonMessageIterableToWarnings(
+      await flutterRepo.launcher.runStreamed(
+          Platform.resolvedExecutable,
+          [
+            '--checked',
+            pathLib.join(Directory.current.path, 'bin', 'dartdoc.dart'),
+            '--json',
+            '--link-to-remote',
+            '--output',
+            pluginPackageDocsDir.path
+          ],
+          workingDirectory: pluginPackage.path),
+      pluginPackageDocsDir.path,
+      defaultPubCache,
+      'HEAD');
+}
+
+@Task('Build docs for a package that requires flutter with remote linking')
+buildDartdocFlutterPluginDocs() async {
+  await _buildDartdocFlutterPluginDocs();
 }
 
 @Task('Verify docs for a package that requires flutter with remote linking')
-@Depends(buildDartdocFlutterPluginDocs)
 testDartdocFlutterPlugin() async {
+  WarningsCollection warnings = await _buildDartdocFlutterPluginDocs();
+  if (!warnings.warningKeyCounts.isEmpty) {
+    fail('No warnings should exist in : ${warnings.warningKeyCounts}');
+  }
   // Verify that links to Dart SDK and Flutter SDK go to the flutter site.
   expectFileContains(
       pathLib.join(
