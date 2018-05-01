@@ -69,7 +69,7 @@ main(List<String> arguments) async {
   logInfo("Generating documentation for '${config.topLevelPackageMeta}' into "
       "${outputDir.absolute.path}${Platform.pathSeparator}");
 
-  Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(config, outputDir);
+  Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(config);
 
   dartdoc.onCheckProgress.listen(logProgress);
   await Chain.capture(() async {

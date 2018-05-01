@@ -132,8 +132,33 @@ abstract class PackageMeta {
     return _packageMetaCache[dir.absolute.path];
   }
 
+  /// Returns true if this represents a 'Dart' SDK.  A package can be part of
+  /// Dart and Flutter at the same time, but if we are part of a Dart SDK
+  /// sdkType should never return null.
   bool get isSdk;
+
+  /// Returns 'Dart' or 'Flutter' (preferentially, 'Flutter' when the answer is
+  /// "both"), or null if this package is not part of a SDK.
+  String sdkType(String flutterRootPath) {
+    if (flutterRootPath != null) {
+      String flutterPackages = pathLib.join(flutterRootPath, 'packages');
+      String flutterBinCache = pathLib.join(flutterRootPath, 'bin', 'cache');
+
+      /// Don't include examples or other non-SDK components as being the
+      /// "Flutter SDK".
+      if (pathLib.isWithin(
+              flutterPackages, pathLib.canonicalize(dir.absolute.path)) ||
+          pathLib.isWithin(
+              flutterBinCache, pathLib.canonicalize(dir.absolute.path))) {
+        return 'Flutter';
+      }
+    }
+    return isSdk ? 'Dart' : null;
+  }
+
   bool get needsPubGet => false;
+
+  bool get requiresFlutter;
 
   void runPubGet();
 
@@ -255,7 +280,7 @@ class _FilePackageMeta extends PackageMeta {
       StringBuffer buf = new StringBuffer();
       buf.writeln('${result.stdout}');
       buf.writeln('${result.stderr}');
-      throw DartdocFailure('pub get failed: ${buf.toString().trim()}');
+      throw new DartdocFailure('pub get failed: ${buf.toString().trim()}');
     }
   }
 
@@ -267,6 +292,10 @@ class _FilePackageMeta extends PackageMeta {
   String get description => _pubspec['description'];
   @override
   String get homepage => _pubspec['homepage'];
+
+  @override
+  bool get requiresFlutter =>
+      _pubspec['environment']?.containsKey('flutter') == true;
 
   @override
   FileContents getReadmeContents() {
@@ -354,6 +383,9 @@ class _SdkMeta extends PackageMeta {
       'Dart programming language.';
   @override
   String get homepage => 'https://github.com/dart-lang/sdk';
+
+  @override
+  bool get requiresFlutter => false;
 
   @override
   FileContents getReadmeContents() {

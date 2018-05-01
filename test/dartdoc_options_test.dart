@@ -13,7 +13,8 @@ import 'package:test/test.dart';
 void main() {
   DartdocOptionSet dartdocOptionSetFiles;
   DartdocOptionSet dartdocOptionSetArgs;
-  DartdocOptionSet dartdocOptionSetBoth;
+  DartdocOptionSet dartdocOptionSetAll;
+  DartdocOptionSet dartdocOptionSetSynthetic;
   Directory tempDir;
   Directory firstDir;
   Directory secondDir;
@@ -26,6 +27,33 @@ void main() {
   File firstExisting;
 
   setUpAll(() {
+    dartdocOptionSetSynthetic = new DartdocOptionSet('dartdoc');
+    dartdocOptionSetSynthetic
+        .add(new DartdocOptionArgFile<int>('mySpecialInteger', 91));
+    dartdocOptionSetSynthetic.add(
+        new DartdocOptionSyntheticOnly<List<String>>('vegetableLoader',
+            (DartdocSyntheticOption<List<String>> option, Directory dir) {
+      if (option.root['mySpecialInteger'].valueAt(dir) > 20) {
+        return <String>['existing.dart'];
+      } else {
+        return <String>['not_existing.dart'];
+      }
+    }));
+    dartdocOptionSetSynthetic.add(
+        new DartdocOptionSyntheticOnly<List<String>>('vegetableLoaderChecked',
+            (DartdocSyntheticOption<List<String>> option, Directory dir) {
+      return option.root['vegetableLoader'].valueAt(dir);
+    }, isFile: true, mustExist: true));
+    dartdocOptionSetSynthetic.add(new DartdocOptionFileSynth<double>('double',
+        (DartdocSyntheticOption<double> option, Directory dir) {
+      return 3.7 + 4.1;
+    }));
+    dartdocOptionSetSynthetic.add(
+        new DartdocOptionArgSynth<String>('nonCriticalFileOption',
+            (DartdocSyntheticOption<String> option, Directory dir) {
+      return option.root['vegetableLoader'].valueAt(dir).first;
+    }, isFile: true));
+
     dartdocOptionSetFiles = new DartdocOptionSet('dartdoc');
     dartdocOptionSetFiles
         .add(new DartdocOptionFileOnly<List<String>>('categoryOrder', []));
@@ -82,33 +110,20 @@ void main() {
         'unimportantFile', 'whatever',
         isFile: true));
 
-    dartdocOptionSetBoth = new DartdocOptionSet('dartdoc');
-    dartdocOptionSetBoth
-        .add(new DartdocOptionBoth<List<String>>('categoryOrder', []));
-    dartdocOptionSetBoth
-        .add(new DartdocOptionBoth<int>('mySpecialInteger', 91));
-    dartdocOptionSetBoth.add(new DartdocOptionSet('warn')
-      ..addAll([new DartdocOptionBoth<bool>('unrecognizedVegetable', false)]));
-    dartdocOptionSetBoth.add(new DartdocOptionBoth<Map<String, String>>(
+    dartdocOptionSetAll = new DartdocOptionSet('dartdoc');
+    dartdocOptionSetAll
+        .add(new DartdocOptionArgFile<List<String>>('categoryOrder', []));
+    dartdocOptionSetAll
+        .add(new DartdocOptionArgFile<int>('mySpecialInteger', 91));
+    dartdocOptionSetAll.add(new DartdocOptionSet('warn')
+      ..addAll(
+          [new DartdocOptionArgFile<bool>('unrecognizedVegetable', false)]));
+    dartdocOptionSetAll.add(new DartdocOptionArgFile<Map<String, String>>(
         'mapOption', {'hi': 'there'}));
-    dartdocOptionSetBoth
-        .add(new DartdocOptionBoth<String>('notInAnyFile', 'so there'));
-    dartdocOptionSetBoth.add(new DartdocOptionBoth<String>('fileOption', null,
+    dartdocOptionSetAll
+        .add(new DartdocOptionArgFile<String>('notInAnyFile', 'so there'));
+    dartdocOptionSetAll.add(new DartdocOptionArgFile<String>('fileOption', null,
         isFile: true, mustExist: true));
-    dartdocOptionSetBoth.add(new DartdocOptionSynthetic<List<String>>(
-        'vegetableLoader', (DartdocOptionSynthetic option, Directory dir) {
-      if (option.root['mySpecialInteger'].valueAt(dir) > 20) {
-        return <String>['existing.dart'];
-      } else {
-        return <String>['not_existing.dart'];
-      }
-    }));
-    dartdocOptionSetBoth.add(new DartdocOptionSynthetic<List<String>>(
-        'vegetableLoaderChecked',
-        (DartdocOptionSynthetic option, Directory dir) =>
-            option.root['vegetableLoader'].valueAt(dir),
-        isFile: true,
-        mustExist: true));
 
     tempDir = Directory.systemTemp.createTempSync('options_test');
     firstDir = new Directory(pathLib.join(tempDir.path, 'firstDir'))
@@ -168,25 +183,26 @@ dartdoc:
 
   group('new style synthetic option', () {
     test('validate argument override changes value', () {
-      dartdocOptionSetBoth.parseArguments(['--my-special-integer', '12']);
-      expect(dartdocOptionSetBoth['vegetableLoader'].valueAt(tempDir),
+      dartdocOptionSetSynthetic.parseArguments(['--my-special-integer', '12']);
+      expect(dartdocOptionSetSynthetic['vegetableLoader'].valueAt(tempDir),
           orderedEquals(['not_existing.dart']));
     });
 
     test('validate default value of synthetic', () {
-      dartdocOptionSetBoth.parseArguments([]);
-      expect(dartdocOptionSetBoth['vegetableLoader'].valueAt(tempDir),
+      dartdocOptionSetSynthetic.parseArguments([]);
+      expect(dartdocOptionSetSynthetic['vegetableLoader'].valueAt(tempDir),
           orderedEquals(['existing.dart']));
     });
 
     test('file validation of synthetic', () {
-      dartdocOptionSetBoth.parseArguments([]);
-      expect(dartdocOptionSetBoth['vegetableLoaderChecked'].valueAt(firstDir),
+      dartdocOptionSetSynthetic.parseArguments([]);
+      expect(
+          dartdocOptionSetSynthetic['vegetableLoaderChecked'].valueAt(firstDir),
           orderedEquals([pathLib.canonicalize(firstExisting.path)]));
 
       String errorMessage;
       try {
-        dartdocOptionSetBoth['vegetableLoaderChecked'].valueAt(tempDir);
+        dartdocOptionSetSynthetic['vegetableLoaderChecked'].valueAt(tempDir);
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
@@ -195,17 +211,43 @@ dartdoc:
           equals(
               'Synthetic configuration option dartdoc from <internal>, computed as [existing.dart], resolves to missing path: "${pathLib.canonicalize(pathLib.join(tempDir.absolute.path, 'existing.dart'))}"'));
     });
+
+    test('file can override synthetic in FileSynth', () {
+      dartdocOptionSetSynthetic.parseArguments([]);
+      expect(
+          dartdocOptionSetSynthetic['double'].valueAt(firstDir), equals(3.3));
+      expect(dartdocOptionSetSynthetic['double'].valueAt(tempDir), equals(7.8));
+    });
+
+    test('arg can override synthetic in ArgSynth', () {
+      dartdocOptionSetSynthetic
+          .parseArguments(['--non-critical-file-option', 'stuff.zip']);
+      // Since this is an ArgSynth, it ignores the yaml option and resolves to the CWD
+      expect(
+          dartdocOptionSetSynthetic['nonCriticalFileOption'].valueAt(firstDir),
+          equals(pathLib.canonicalize(
+              pathLib.join(Directory.current.path, 'stuff.zip'))));
+    });
+
+    test('ArgSynth defaults to synthetic', () {
+      dartdocOptionSetSynthetic.parseArguments([]);
+      // This option is composed of FileOptions which make use of firstDir.
+      expect(
+          dartdocOptionSetSynthetic['nonCriticalFileOption'].valueAt(firstDir),
+          equals(pathLib
+              .canonicalize(pathLib.join(firstDir.path, 'existing.dart'))));
+    });
   });
 
   group('new style dartdoc both file and argument options', () {
     test(
         'validate argument with wrong file throws error even if dartdoc_options is right',
         () {
-      dartdocOptionSetBoth
+      dartdocOptionSetAll
           .parseArguments(['--file-option', 'override-not-existing.dart']);
       String errorMessage;
       try {
-        dartdocOptionSetBoth['fileOption'].valueAt(firstDir);
+        dartdocOptionSetAll['fileOption'].valueAt(firstDir);
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
@@ -216,17 +258,17 @@ dartdoc:
     });
 
     test('validate argument can override missing file', () {
-      dartdocOptionSetBoth.parseArguments(
+      dartdocOptionSetAll.parseArguments(
           ['--file-option', pathLib.canonicalize(firstExisting.path)]);
-      expect(dartdocOptionSetBoth['fileOption'].valueAt(secondDir),
+      expect(dartdocOptionSetAll['fileOption'].valueAt(secondDir),
           equals(pathLib.canonicalize(firstExisting.path)));
     });
 
     test('File errors still get passed through', () {
-      dartdocOptionSetBoth.parseArguments([]);
+      dartdocOptionSetAll.parseArguments([]);
       String errorMessage;
       try {
-        dartdocOptionSetBoth['fileOption'].valueAt(secondDir);
+        dartdocOptionSetAll['fileOption'].valueAt(secondDir);
       } on DartdocFileMissing catch (e) {
         errorMessage = e.message;
       }
@@ -238,36 +280,35 @@ dartdoc:
     });
 
     test('validate override behavior basic', () {
-      dartdocOptionSetBoth.parseArguments(
+      dartdocOptionSetAll.parseArguments(
           ['--not-in-any-file', 'aha', '--map-option', 'over::theSea']);
-      expect(dartdocOptionSetBoth['mapOption'].valueAt(tempDir),
+      expect(dartdocOptionSetAll['mapOption'].valueAt(tempDir),
           equals({'over': 'theSea'}));
-      expect(dartdocOptionSetBoth['mapOption'].valueAt(firstDir),
+      expect(dartdocOptionSetAll['mapOption'].valueAt(firstDir),
           equals({'over': 'theSea'}));
-      expect(dartdocOptionSetBoth['notInAnyFile'].valueAt(firstDir),
-          equals('aha'));
-      expect(dartdocOptionSetBoth['mySpecialInteger'].valueAt(firstDir),
+      expect(
+          dartdocOptionSetAll['notInAnyFile'].valueAt(firstDir), equals('aha'));
+      expect(dartdocOptionSetAll['mySpecialInteger'].valueAt(firstDir),
           equals(30));
     });
 
     test('validate override behavior for parent directories', () {
-      dartdocOptionSetBoth.parseArguments(['--my-special-integer', '14']);
-      expect(
-          dartdocOptionSetBoth['mySpecialInteger'].valueAt(secondDirFirstSub),
+      dartdocOptionSetAll.parseArguments(['--my-special-integer', '14']);
+      expect(dartdocOptionSetAll['mySpecialInteger'].valueAt(secondDirFirstSub),
           equals(14));
     });
 
     test('validate arg defaults do not override file', () {
-      dartdocOptionSetBoth.parseArguments([]);
-      expect(dartdocOptionSetBoth['mySpecialInteger'].valueAt(secondDir),
+      dartdocOptionSetAll.parseArguments([]);
+      expect(dartdocOptionSetAll['mySpecialInteger'].valueAt(secondDir),
           equals(11));
     });
 
     test(
         'validate setting the default manually in an argument overrides the file',
         () {
-      dartdocOptionSetBoth.parseArguments(['--my-special-integer', '91']);
-      expect(dartdocOptionSetBoth['mySpecialInteger'].valueAt(secondDir),
+      dartdocOptionSetAll.parseArguments(['--my-special-integer', '91']);
+      expect(dartdocOptionSetAll['mySpecialInteger'].valueAt(secondDir),
           equals(91));
     });
   });

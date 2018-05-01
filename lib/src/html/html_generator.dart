@@ -179,33 +179,41 @@ abstract class GeneratorContext implements DartdocOptionContext {
 Future<List<DartdocOption>> createGeneratorOptions() async {
   await _setSdkFooterCopyrightUri();
   return <DartdocOption>[
-    new DartdocOptionBoth<String>('favicon', null,
+    new DartdocOptionArgFile<String>('favicon', null,
         isFile: true,
         help: 'A path to a favicon for the generated docs.',
         mustExist: true),
-    new DartdocOptionBoth<List<String>>('footer', [],
+    new DartdocOptionArgFile<List<String>>('footer', [],
         isFile: true,
         help: 'paths to footer files containing HTML text.',
         mustExist: true,
         splitCommas: true),
-    new DartdocOptionBoth<List<String>>('footerText', [],
+    new DartdocOptionArgFile<List<String>>('footerText', [],
         isFile: true,
         help:
             'paths to footer-text files (optional text next to the package name '
             'and version).',
         mustExist: true,
         splitCommas: true),
-    new DartdocOptionSynthetic<List<String>>('footerTextPaths',
-        (DartdocOptionSynthetic option, Directory dir) {
-      List<String> footerTextPaths = <String>[];
-      // TODO(jcollins-g): Eliminate special casing for SDK and use config file.
-      if (new PackageMeta.fromDir(dir).isSdk) {
-        footerTextPaths.add(_sdkFooterCopyrightUri.toFilePath());
-      }
-      footerTextPaths.addAll(option.parent['footerText'].valueAt(dir));
-      return footerTextPaths;
-    }),
-    new DartdocOptionBoth<List<String>>('header', [],
+    new DartdocOptionSyntheticOnly<List<String>>(
+      'footerTextPaths',
+      (DartdocSyntheticOption<List<String>> option, Directory dir) {
+        final List<String> footerTextPaths = <String>[];
+        final PackageMeta topLevelPackageMeta =
+            option.root['topLevelPackageMeta'].valueAt(dir);
+        // TODO(jcollins-g): Eliminate special casing for SDK and use config file.
+        if (topLevelPackageMeta.isSdk == true) {
+          footerTextPaths
+              .add(pathLib.canonicalize(_sdkFooterCopyrightUri.toFilePath()));
+        }
+        footerTextPaths.addAll(option.parent['footerText'].valueAt(dir));
+        return footerTextPaths;
+      },
+      isFile: true,
+      help: 'paths to footer-text-files (adding special case for SDK)',
+      mustExist: true,
+    ),
+    new DartdocOptionArgFile<List<String>>('header', [],
         isFile: true,
         help: 'paths to header files containing HTML text.',
         splitCommas: true),

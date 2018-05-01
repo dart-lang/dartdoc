@@ -15,3 +15,4 @@ branches:
 cache:
   directories:
   - $HOME/.pub-cache
+  - $HOME/.dartdoc_grinder
