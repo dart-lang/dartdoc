@@ -37,7 +37,7 @@ export 'package:dartdoc/src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String dartdocVersion = '0.18.1';
+const String dartdocVersion = '0.19.0';
 
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
