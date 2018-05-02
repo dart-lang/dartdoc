@@ -173,6 +173,11 @@ and then you can insert it via `{@macro template_name}`, like
 /// More comments
 ```
 
+Template definitions are currently unscoped -- if dartdoc reads a file containing a template, it can be used in anything
+dartdoc is currently documenting.  This can lead to inconsistent behavior between runs on different
+packages, especially if different command lines are used for dartdoc.  It is recommended to use collision-resistant
+naming for any macros by including the package name and/or library it is defined in within the name.
+
 ### Auto including dependencies
 
 If `--auto-include-dependencies` flag is provided, dartdoc tries to automatically add
