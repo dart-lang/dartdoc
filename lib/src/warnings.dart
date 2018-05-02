@@ -54,6 +54,10 @@ final Map<PackageWarning, PackageWarningHelpText> packageWarningText = const {
       PackageWarning.packageOrderGivesMissingPackageName,
       "category-order-gives-missing-package-name",
       "The category-order flag on the command line was given the name of a nonexistent package"),
+  PackageWarning.reexportedPrivateApiAcrossPackages: const PackageWarningHelpText(
+      PackageWarning.reexportedPrivateApiAcrossPackages,
+      "reexported-private-api-across-packages",
+      "One or more libraries reexports private API members from outside its own package"),
   PackageWarning.unresolvedDocReference: const PackageWarningHelpText(
       PackageWarning.unresolvedDocReference,
       "unresolved-doc-reference",
@@ -113,6 +117,7 @@ enum PackageWarning {
   noCanonicalFound,
   noLibraryLevelDocs,
   packageOrderGivesMissingPackageName,
+  reexportedPrivateApiAcrossPackages,
   unresolvedDocReference,
   unknownMacro,
   brokenLink,
