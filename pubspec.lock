@@ -247,12 +247,12 @@ packages:
     source: hosted
     version: "1.3.4"
   pub_semver:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: pub_semver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.2"
+    version: "1.3.7"
   quiver:
     dependency: "direct main"
     description:

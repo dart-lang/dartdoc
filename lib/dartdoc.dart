@@ -43,32 +43,30 @@ const String dartdocVersion = '0.19.0';
 /// directory.
 class Dartdoc extends PackageBuilder {
   final List<Generator> generators;
-  final Directory outputDir;
   final Set<String> writtenFiles = new Set();
+  Directory outputDir;
 
   // Fires when the self checks make progress.
   final StreamController<String> _onCheckProgress =
       new StreamController(sync: true);
 
-  Dartdoc._(DartdocOptionContext config, this.generators, this.outputDir)
-      : super(config) {
+  Dartdoc._(DartdocOptionContext config, this.generators) : super(config) {
+    outputDir = new Directory(config.output)..createSync(recursive: true);
     generators.forEach((g) => g.onFileCreated.listen(logProgress));
   }
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a Dartdoc object with them.
-  static withDefaultGenerators(
-      DartdocOptionContext config, Directory outputDir) async {
+  static withDefaultGenerators(DartdocOptionContext config) async {
     List<Generator> generators =
         await initGenerators(config as GeneratorContext);
-    return new Dartdoc._(config, generators, outputDir);
+    return new Dartdoc._(config, generators);
   }
 
   /// Basic synchronous factory that gives a stripped down Dartdoc that won't
   /// use generators.  Useful for testing.
-  factory Dartdoc.withoutGenerators(
-      DartdocOptionContext config, Directory outputDir) {
-    return new Dartdoc._(config, [], outputDir);
+  factory Dartdoc.withoutGenerators(DartdocOptionContext config) {
+    return new Dartdoc._(config, []);
   }
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
@@ -345,25 +343,28 @@ class Dartdoc extends PackageBuilder {
     // (newPathToCheck, newFullPath)
     Set<Tuple2<String, String>> toVisit = new Set();
 
+    final RegExp ignoreHyperlinks = new RegExp(r'^(https:|http:|mailto:|ftp:)');
     for (String href in stringLinks) {
-      Uri uri;
-      try {
-        uri = Uri.parse(href);
-      } catch (FormatError) {}
+      if (!href.startsWith(ignoreHyperlinks)) {
+        Uri uri;
+        try {
+          uri = Uri.parse(href);
+        } catch (FormatError) {}
 
-      if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
-        var full;
-        if (baseHref != null) {
-          full = '${pathLib.dirname(pathToCheck)}/$baseHref/$href';
-        } else {
-          full = '${pathLib.dirname(pathToCheck)}/$href';
-        }
-        var newPathToCheck = pathLib.normalize(full);
-        String newFullPath = pathLib.joinAll([origin, newPathToCheck]);
-        newFullPath = pathLib.normalize(newFullPath);
-        if (!visited.contains(newFullPath)) {
-          toVisit.add(new Tuple2(newPathToCheck, newFullPath));
-          visited.add(newFullPath);
+        if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
+          var full;
+          if (baseHref != null) {
+            full = '${pathLib.dirname(pathToCheck)}/$baseHref/$href';
+          } else {
+            full = '${pathLib.dirname(pathToCheck)}/$href';
+          }
+          var newPathToCheck = pathLib.normalize(full);
+          String newFullPath = pathLib.joinAll([origin, newPathToCheck]);
+          newFullPath = pathLib.normalize(newFullPath);
+          if (!visited.contains(newFullPath)) {
+            toVisit.add(new Tuple2(newPathToCheck, newFullPath));
+            visited.add(newFullPath);
+          }
         }
       }
     }

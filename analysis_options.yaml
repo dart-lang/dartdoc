@@ -9,6 +9,7 @@ analyzer:
     - 'lib/templates/*.html'
     - 'pub.dartlang.org/**'
     - 'testing/**'
+    - 'testing/test_package_flutter_plugin/**'
 linter:
   rules:
     - annotate_overrides

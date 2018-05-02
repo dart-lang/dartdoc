@@ -48,6 +48,7 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:front_end/src/byte_store/byte_store.dart';
 import 'package:front_end/src/base/performance_logger.dart';
 import 'package:path/path.dart' as pathLib;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:tuple/tuple.dart';
 import 'package:package_config/discovery.dart' as package_config;
 
@@ -79,8 +80,8 @@ int byFeatureOrdering(String a, String b) {
   return compareAsciiLowerCaseNatural(a, b);
 }
 
-final RegExp locationSplitter = new RegExp(r"(package:|[\\/;.])");
-final RegExp substituteName = new RegExp(r"%([nv])%");
+final RegExp locationSplitter = new RegExp(r'(package:|[\\/;.])');
+final RegExp substituteNameVersion = new RegExp(r'%([bnv])%');
 
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
@@ -544,7 +545,7 @@ class Class extends ModelElement
   }
 
   /// This class might be canonical for elements it does not contain.
-  /// See [canonicalEnclosingElement].
+  /// See [Inheritable.canonicalEnclosingElement].
   bool contains(Element element) => allElements.containsKey(element);
 
   ModelElement findModelElement(Element element) => allElements[element];
@@ -1755,7 +1756,7 @@ class Library extends ModelElement with Categorization {
 
   /// [allModelElements] resolved to their original names.
   ///
-  /// A collection of [ModelElement.fullyQualifiedNames] for [ModelElement]s
+  /// A collection of [ModelElement.fullyQualifiedName]s for [ModelElement]s
   /// documented with this library, but these ModelElements and names correspond
   /// to the defining library where each originally came from with respect
   /// to inheritance and reexporting.  Most useful for error reporting.
@@ -2940,6 +2941,21 @@ abstract class ModelElement extends Canonicalization
             if (topLevelElement == lookup) return true;
             return false;
           }).toList();
+
+          // Avoid claiming canonicalization for elements outside of this element's
+          // defining package.
+          // TODO(jcollins-g): Make the else block unconditional.
+          if (!candidateLibraries.isEmpty &&
+              !candidateLibraries
+                  .any((l) => l.package == definingLibrary.package)) {
+            warn(PackageWarning.reexportedPrivateApiAcrossPackages,
+                message: definingLibrary.package.fullyQualifiedName,
+                referredFrom: candidateLibraries);
+          } else {
+            candidateLibraries
+                .removeWhere((l) => l.package != definingLibrary.package);
+          }
+
           // Start with our top-level element.
           ModelElement warnable =
               new ModelElement.fromElement(topLevelElement, packageGraph);
@@ -2971,7 +2987,8 @@ abstract class ModelElement extends Canonicalization
       } else {
         _canonicalLibrary = definingLibrary;
       }
-      if (this is Inheritable) {
+      // Only pretend when not linking to remote packages.
+      if (this is Inheritable && !config.linkToRemote) {
         if ((this as Inheritable).isInherited &&
             _canonicalLibrary == null &&
             packageGraph.publicLibraries.contains(library)) {
@@ -3463,11 +3480,11 @@ abstract class ModelElement extends Canonicalization
     return lib;
   }
 
-  /// Replace {@example ...} in API comments with the content of named file.
+  /// Replace &#123;@example ...&#125; in API comments with the content of named file.
   ///
   /// Syntax:
   ///
-  ///     {@example PATH [region=NAME] [lang=NAME]}
+  ///     &#123;@example PATH [region=NAME] [lang=NAME]&#125;
   ///
   /// where PATH and NAME are tokens _without_ whitespace; NAME can optionally be
   /// quoted (use of quotes is for backwards compatibility and discouraged).
@@ -3476,10 +3493,11 @@ abstract class ModelElement extends Canonicalization
   /// named `dir/file-r.ext.md`, relative to the project root directory (of the
   /// project for which the docs are being generated).
   ///
-  /// Examples:
+  /// Examples: (escaped in this comment to show literal values in dartdoc's
+  ///            dartdoc)
   ///
-  ///     {@example examples/angular/quickstart/web/main.dart}
-  ///     {@example abc/def/xyz_component.dart region=template lang=html}
+  ///     &#123;@example examples/angular/quickstart/web/main.dart&#125;
+  ///     &#123;@example abc/def/xyz_component.dart region=template lang=html&#125;
   ///
   String _injectExamples(String rawdocs) {
     final dirPath = package.packageMeta.dir.path;
@@ -3621,7 +3639,7 @@ class ModelFunction extends ModelFunctionTyped {
   FunctionElement get _func => (element as FunctionElement);
 }
 
-/// A [ModelElement] for a [GenericModelFunctionElement] that is an
+/// A [ModelElement] for a [FunctionTypedElement] that is an
 /// explicit typedef.
 ///
 /// Distinct from ModelFunctionTypedef in that it doesn't
@@ -3642,7 +3660,7 @@ class ModelFunctionAnonymous extends ModelFunctionTyped {
   bool get isPublic => false;
 }
 
-/// A [ModelElement] for a [GenericModelFunctionElement] that is part of an
+/// A [ModelElement] for a [FunctionTypedElement] that is part of an
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
   ModelFunctionTypedef(
@@ -3948,7 +3966,7 @@ class PackageGraph extends Canonicalization
   String get location => '(top level package)';
 
   /// Flush out any warnings we might have collected while
-  /// [_packageWarningOptions.autoFlush] was false.
+  /// [PackageWarningOptions.autoFlush] was false.
   void flushWarnings() {
     _packageWarningCounter.maybeFlush();
   }
@@ -4052,8 +4070,9 @@ class PackageGraph extends Canonicalization
       case PackageWarning.noCanonicalFound:
         // Fix these warnings by adding libraries with --include, or by using
         // --auto-include-dependencies.
-        // TODO(jcollins-g): add a dartdoc flag to enable external website linking for non-canonical elements, using .packages for versioning
-        // TODO(jcollins-g): support documenting multiple packages at once and linking between them
+        // TODO(jcollins-g): pipeline references through linkedName for error
+        //                   messages and warn for non-public canonicalization
+        //                   errors.
         warningMessage =
             "no canonical library found for ${warnableName}, not linking";
         break;
@@ -4078,6 +4097,10 @@ class PackageGraph extends Canonicalization
       case PackageWarning.packageOrderGivesMissingPackageName:
         warningMessage =
             "--package-order gives invalid package name: '${message}'";
+        break;
+      case PackageWarning.reexportedPrivateApiAcrossPackages:
+        warningMessage =
+            "private API of ${message} is reexported by libraries in other packages: ";
         break;
       case PackageWarning.unresolvedDocReference:
         warningMessage = "unresolved doc reference [${message}]";
@@ -4669,7 +4692,7 @@ abstract class LibraryContainer extends Nameable
 
 /// A category is a subcategory of a package, containing libraries tagged
 /// with a @category identifier.  Comparable so it can be sorted according to
-/// [config.categoryOrder].
+/// [DartdocOptionContext.categoryOrder].
 class Category extends LibraryContainer {
   final String _name;
 
@@ -4773,7 +4796,7 @@ class Package extends LibraryContainer
 
   DocumentLocation get documentedWhere {
     if (!isLocal) {
-      if (config.linkToExternal && config.linkToExternalUrl.isNotEmpty) {
+      if (config.linkToRemote && config.linkToUrl.isNotEmpty) {
         return DocumentLocation.remote;
       } else {
         return DocumentLocation.missing;
@@ -4793,10 +4816,22 @@ class Package extends LibraryContainer
     if (_baseHref == null) {
       if (documentedWhere == DocumentLocation.remote) {
         _baseHref =
-            config.linkToExternalUrl.replaceAllMapped(substituteName, (m) {
+            config.linkToUrl.replaceAllMapped(substituteNameVersion, (m) {
           switch (m.group(1)) {
+            // Return the prerelease tag of the release if a prerelease,
+            // or 'stable' otherwise. Mostly coded around
+            // the Dart SDK's use of dev/stable, but theoretically applicable
+            // elsewhere.
+            case 'b':
+              {
+                Version version = new Version.parse(packageMeta.version);
+                return version.isPreRelease
+                    ? version.preRelease.first
+                    : 'stable';
+              }
             case 'n':
               return name;
+            // The full version string of the package.
             case 'v':
               return packageMeta.version;
           }
