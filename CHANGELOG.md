@@ -1,6 +1,6 @@
 ## 0.19.0
 * Build documentation through the Package object (#1659)
-* New flag, --link-to-external, which will cause Dartdoc to link symbols to their originating
+* New flag, --link-to-remote, which will cause Dartdoc to link symbols to their originating
   pub packages and/or the Flutter or Dart SDKs. (#739)
 * New configuration refactor and addition of several experimental options in dartdoc_options.yaml
   (see README).
