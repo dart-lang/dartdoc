@@ -1,4 +1,5 @@
 /// a library. testing string escaping: `var s = 'a string'` <cool>
+/// {@category Real Libraries}
 library ex;
 
 import 'dart:async';
@@ -67,6 +68,44 @@ typedef String processMessage<T>(String msg);
 
 typedef String ParameterizedTypedef<T>(T msg, int foo);
 
+/// Support class to test inheritance + type expansion from implements clause.
+abstract class ParameterizedClass<T> {
+  AnotherParameterizedClass<T> aInheritedMethod(int foo);
+  ParameterizedTypedef<T> aInheritedTypedefReturningMethod();
+  AnotherParameterizedClass<T> aInheritedField;
+  AnotherParameterizedClass<T> get aInheritedGetter;
+  ParameterizedClass<T> operator +(ParameterizedClass<T> other);
+  set aInheritedSetter(AnotherParameterizedClass<T> thingToSet);
+}
+
+class AnotherParameterizedClass<B> {}
+
+/// Class for testing expansion of type from implements clause.
+abstract class TemplatedInterface<A> implements ParameterizedClass<List<int>> {
+  AnotherParameterizedClass<List<int>> aMethodInterface(A value);
+  ParameterizedTypedef<List<String>> aTypedefReturningMethodInterface();
+  AnotherParameterizedClass<Stream<List<int>>> aField;
+  AnotherParameterizedClass<Map<A, List<String>>> get aGetter;
+  set aSetter(AnotherParameterizedClass<List<bool>> thingToSet);
+}
+
+class TemplatedClass<X> {
+  int aMethod(X input) {
+    return 5;
+  }
+}
+
+class ShortName {
+  final String aParameter;
+  const ShortName(this.aParameter);
+}
+
+class ExtendedShortName extends ShortName {
+  const ExtendedShortName(String aParameter) : super(aParameter);
+}
+
+/// Referencing [processMessage] (or other things) here should not break
+/// enum constants ala #1445
 enum Animal {
   /// Single line docs.
   CAT,
@@ -244,6 +283,9 @@ class Dog implements Cat, E {
   final int aFinalField;
   static const String aStaticConstField = "A Constant Dog";
 
+  /// Verify link substitution in constants (#1535)
+  static const ShortName aName = const ExtendedShortName("hello there");
+
   @protected
   final int aProtectedFinalField;
 
@@ -301,6 +343,17 @@ class Dog implements Cat, E {
 
   /// {@macro foo}
   void withMacro2() {}
+
+  /// {@template private}
+  /// Private macro content
+  /// {@endtemplate}
+  void _macroDefinedPrivately() {}
+
+  /// Use a privately defined macro: {@macro private}
+  void withPrivateMacro() {}
+
+  /// Don't define this:  {@macro ThatDoesNotExist}
+  void withUndefinedMacro() {}
 
   void testGeneric(Map<String, dynamic> args) {}
 
@@ -421,4 +474,22 @@ class _RetainedEnum {
   const _RetainedEnum(this.name);
   @override
   String toString() => name;
+}
+
+/// Someone might do this some day.
+typedef aComplexTypedef<A1, A2, A3> = void Function(A1, A2, A3) Function(
+    A3, String);
+
+/// This class has a complicated type situation.
+abstract class TypedFunctionsWithoutTypedefs {
+  /// Returns a function that returns a void with some generic types sprinkled in.
+  void Function(T1, T2) getAFunctionReturningVoid<T1, T2>(
+      void callback(T1 argument1, T2 argument2));
+
+  /// This helps us make sure we get both the empty and the non-empty
+  /// case right for anonymous functions.
+  bool Function<T4>(String, T1, T4) getAFunctionReturningBool<T1, T2, T3>();
+
+  /// Returns a complex typedef that includes some anonymous typed functions.
+  aComplexTypedef getAComplexTypedef<A4, A5, A6>();
 }

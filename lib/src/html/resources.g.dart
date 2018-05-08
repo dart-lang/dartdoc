@@ -8,9 +8,11 @@ const List<String> resource_names = const [
   'package:dartdoc/resources/css/bootstrap.css.map',
   'package:dartdoc/resources/css/bootstrap.min.css',
   'package:dartdoc/resources/favicon.png',
-  'package:dartdoc/resources/prettify.css',
-  'package:dartdoc/resources/prettify.js',
+  'package:dartdoc/resources/github.css',
+  'package:dartdoc/resources/highlight.pack.js',
+  'package:dartdoc/resources/readme.md',
   'package:dartdoc/resources/script.js',
+  'package:dartdoc/resources/sdk_footer_text.html',
   'package:dartdoc/resources/styles.css',
   'package:dartdoc/resources/typeahead.bundle.min.js'
 ];

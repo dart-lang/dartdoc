@@ -10,7 +10,7 @@
   <base href="..">
 
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
-  <link rel="stylesheet" href="static-assets/prettify.css">
+  <link rel="stylesheet" href="static-assets/github.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
@@ -24,7 +24,7 @@
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="index.html">test_package</a></li>
-    <li class="self-crumb">library fake</li>
+    <li class="self-crumb">fake library</li>
   </ol>
   <div class="self-name">fake</div>
   <form class="search navbar-right" role="search">
@@ -35,25 +35,30 @@
 <main>
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5>package test_package</h5>
-
+    <h5><span class="package-name">test_package</span> <span class="package-kind">package</span></h5>
     <ol>
-      <li class="section-title"><a href="index.html#libraries">Libraries</a></li>
-      <li><a href="anonymous_library/anonymous_library-library.html">anonymous_library</a></li>
-      <li><a href="another_anonymous_lib/another_anonymous_lib-library.html">another_anonymous_lib</a></li>
-      <li><a href="code_in_comments/code_in_comments-library.html">code_in_comments</a></li>
-      <li><a href="css/css-library.html">css</a></li>
-      <li><a href="ex/ex-library.html">ex</a></li>
-      <li><a href="fake/fake-library.html">fake</a></li>
-      <li><a class="deprecated" href="is_deprecated/is_deprecated-library.html">is_deprecated</a></li>
-      <li><a href="reexport_one/reexport_one-library.html">reexport_one</a></li>
-      <li><a href="reexport_two/reexport_two-library.html">reexport_two</a></li>
-      <li><a href="test_package_imported.main/test_package_imported.main-library.html">test_package_imported.main</a></li>
-      <li><a href="two_exports/two_exports-library.html">two_exports</a></li>
+          <li class="section-title">Libraries</li>
+          <li><a href="anonymous_library/anonymous_library-library.html">anonymous_library</a></li>
+          <li><a href="another_anonymous_lib/another_anonymous_lib-library.html">another_anonymous_lib</a></li>
+          <li><a href="code_in_comments/code_in_comments-library.html">code_in_comments</a></li>
+          <li><a class="deprecated" href="is_deprecated/is_deprecated-library.html">is_deprecated</a></li>
+          <li class="section-subtitle">Real Libraries</li>
+            <li class="section-subitem"><a href="ex/ex-library.html">ex</a></li>
+            <li class="section-subitem"><a href="fake/fake-library.html">fake</a></li>
+          <li class="section-subtitle">Unreal</li>
+            <li class="section-subitem"><a href="reexport_one/reexport_one-library.html">reexport_one</a></li>
+            <li class="section-subitem"><a href="reexport_two/reexport_two-library.html">reexport_two</a></li>
+          <li class="section-subtitle">Misc</li>
+            <li class="section-subitem"><a href="two_exports/two_exports-library.html">two_exports</a></li>
+          <li class="section-subtitle">Other</li>
+            <li class="section-subitem"><a href="css/css-library.html">css</a></li>
+          <li class="section-title">test_package_imported</li>
+          <li><a href="test_package_imported.main/test_package_imported.main-library.html">test_package_imported.main</a></li>
     </ol>
   </div>
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+    <h1>fake library</h1>
 
     <section class="desc markdown">
       <h1>WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a></h1>
@@ -71,7 +76,7 @@ Don't ask questions.</p>
 <h5>I am an h5</h5>
 <p>hello</p>
 <p><em>Why should you get this package?</em></p><ul><li>We told you so.</li><li>Everyone is doing it.</li><li>It smells nice.</li></ul>
-<pre class="prettyprint language-dart"><code>class Foo {
+<pre class="language-dart"><code>class Foo {
   long line is very long long line is very long long line is very long line long line long line
 }
 </code></pre>
@@ -82,6 +87,30 @@ Don't ask questions.</p>
       <h2>Classes</h2>
 
       <dl>
+        <dt id="ABaseClass">
+          <span class="name "><a href="fake/ABaseClass-class.html">ABaseClass</a></span>
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="AClassUsingASuperMixin">
+          <span class="name "><a href="fake/AClassUsingASuperMixin-class.html">AClassUsingASuperMixin</a></span>
+        </dt>
+        <dd>
+          Verify super-mixins don't break Dartdoc.
+        </dd>
+        <dt id="AClassWithFancyProperties">
+          <span class="name "><a href="fake/AClassWithFancyProperties-class.html">AClassWithFancyProperties</a></span>
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="AMixinCallingSuper">
+          <span class="name "><a href="fake/AMixinCallingSuper-class.html">AMixinCallingSuper</a></span>
+        </dt>
+        <dd>
+          
+        </dd>
         <dt id="Annotation">
           <span class="name "><a href="fake/Annotation-class.html">Annotation</a></span>
         </dt>
@@ -94,11 +123,35 @@ Don't ask questions.</p>
         <dd>
           Yet another interface that can be implemented.
         </dd>
+        <dt id="ATypeTakingClass">
+          <span class="name "><a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>
+        </dt>
+        <dd>
+          This class takes a type, and it might be void.
+        </dd>
+        <dt id="ATypeTakingClassMixedIn">
+          <span class="name "><a href="fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a></span>
+        </dt>
+        <dd>
+          
+        </dd>
         <dt id="BaseForDocComments">
           <span class="name "><a href="fake/BaseForDocComments-class.html">BaseForDocComments</a></span>
         </dt>
         <dd>
           
+        </dd>
+        <dt id="BaseThingy">
+          <span class="name "><a href="fake/BaseThingy-class.html">BaseThingy</a></span>
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="BaseThingy2">
+          <span class="name "><a href="fake/BaseThingy2-class.html">BaseThingy2</a></span>
+        </dt>
+        <dd>
+          Test for MultiplyInheritedExecutableElement handling.
         </dd>
         <dt id="ClassWithUnusualProperties">
           <span class="name "><a href="fake/ClassWithUnusualProperties-class.html">ClassWithUnusualProperties</a></span>
@@ -112,14 +165,32 @@ Don't ask questions.</p>
         <dd>
           For make-better testing of constants. <a href="fake/ConstantClass-class.html">[...]</a>
         </dd>
+        <dt id="ConstructorTester">
+          <span class="name "><a href="fake/ConstructorTester-class.html">ConstructorTester</a><span class="signature">&lt;<wbr><span class="type-parameter">A</span>, <span class="type-parameter">B</span>&gt;</span></span>
+        </dt>
+        <dd>
+          
+        </dd>
         <dt id="Cool">
           <span class="name "><a href="fake/Cool-class.html">Cool</a></span>
         </dt>
         <dd>
           This class is cool!
         </dd>
+        <dt id="DocumentWithATable">
+          <span class="name "><a href="fake/DocumentWithATable-class.html">DocumentWithATable</a></span>
+        </dt>
+        <dd>
+          This is a class with a table. <a href="fake/DocumentWithATable-class.html">[...]</a>
+        </dd>
+        <dt id="ExtendsFutureVoid">
+          <span class="name "><a href="fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a></span>
+        </dt>
+        <dd>
+          This class extends Future<void></void>
+        </dd>
         <dt id="ExtraSpecialList">
-          <span class="name "><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></span>
+          <span class="name "><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a><span class="signature">&lt;<wbr><span class="type-parameter">E</span>&gt;</span></span>
         </dt>
         <dd>
           This inherits operators.
@@ -131,16 +202,34 @@ Don't ask questions.</p>
           link to method from class <a href="ex/Apple/m.html">Apple.m</a>
         </dd>
         <dt id="HasGenerics">
-          <span class="name "><a href="fake/HasGenerics-class.html">HasGenerics</a></span>
+          <span class="name "><a href="fake/HasGenerics-class.html">HasGenerics</a><span class="signature">&lt;<wbr><span class="type-parameter">X</span>, <span class="type-parameter">Y</span>, <span class="type-parameter">Z</span>&gt;</span></span>
         </dt>
         <dd>
           
         </dd>
         <dt id="HasGenericWithExtends">
-          <span class="name "><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></span>
+          <span class="name "><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="fake/Foo2-class.html">Foo2</a></span>&gt;</span></span>
         </dt>
         <dd>
           I have a generic and it extends <a href="fake/Foo2-class.html">Foo2</a>
+        </dd>
+        <dt id="ImplementingThingy">
+          <span class="name "><a href="fake/ImplementingThingy-class.html">ImplementingThingy</a></span>
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="ImplementingThingy2">
+          <span class="name "><a href="fake/ImplementingThingy2-class.html">ImplementingThingy2</a></span>
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="ImplementsFutureVoid">
+          <span class="name "><a href="fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a></span>
+        </dt>
+        <dd>
+          This class implements Future<void></void>
         </dd>
         <dt id="ImplicitProperties">
           <span class="name "><a href="fake/ImplicitProperties-class.html">ImplicitProperties</a></span>
@@ -148,6 +237,18 @@ Don't ask questions.</p>
         <dd>
           Names are actually wrong in this class, but when we extend it,
 they are correct.
+        </dd>
+        <dt id="InheritingClassOne">
+          <span class="name "><a href="fake/InheritingClassOne-class.html">InheritingClassOne</a></span>
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="InheritingClassTwo">
+          <span class="name "><a href="fake/InheritingClassTwo-class.html">InheritingClassTwo</a></span>
+        </dt>
+        <dd>
+          
         </dd>
         <dt id="Interface">
           <span class="name "><a href="fake/Interface-class.html">Interface</a></span>
@@ -162,11 +263,43 @@ they are correct.
           This is a very long line spread
 across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.html">[...]</a>
         </dd>
+        <dt id="MIEEBase">
+          <span class="name "><a href="fake/MIEEBase-class.html">MIEEBase</a><span class="signature">&lt;<wbr><span class="type-parameter">K</span>, <span class="type-parameter">V</span>&gt;</span></span>
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="MIEEMixin">
+          <span class="name "><a href="fake/MIEEMixin-class.html">MIEEMixin</a><span class="signature">&lt;<wbr><span class="type-parameter">K</span>, <span class="type-parameter">V</span>&gt;</span></span>
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="MIEEMixinWithOverride">
+          <span class="name "><a href="fake/MIEEMixinWithOverride-class.html">MIEEMixinWithOverride</a><span class="signature">&lt;<wbr><span class="type-parameter">K</span>, <span class="type-parameter">V</span>&gt;</span></span>
+        </dt>
+        <dd>
+          Test an edge case for cases where inherited ExecutableElements can come
+both from private classes and public interfaces.  The test makes sure the
+class still takes precedence (#1561).
+        </dd>
+        <dt id="MIEEThing">
+          <span class="name "><a href="fake/MIEEThing-class.html">MIEEThing</a><span class="signature">&lt;<wbr><span class="type-parameter">K</span>, <span class="type-parameter">V</span>&gt;</span></span>
+        </dt>
+        <dd>
+          
+        </dd>
         <dt id="MixMeIn">
           <span class="name "><a href="fake/MixMeIn-class.html">MixMeIn</a></span>
         </dt>
         <dd>
           Perfect for mix-ins.
+        </dd>
+        <dt id="NotAMixin">
+          <span class="name "><a href="fake/NotAMixin-class.html">NotAMixin</a></span>
+        </dt>
+        <dd>
+          
         </dd>
         <dt id="OperatorReferenceClass">
           <span class="name "><a href="fake/OperatorReferenceClass-class.html">OperatorReferenceClass</a></span>
@@ -175,13 +308,19 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
           Test operator references: <a href="fake/OperatorReferenceClass/operator_equals.html">OperatorReferenceClass.==</a>.
         </dd>
         <dt id="OtherGenericsThing">
-          <span class="name "><a href="fake/OtherGenericsThing-class.html">OtherGenericsThing</a></span>
+          <span class="name "><a href="fake/OtherGenericsThing-class.html">OtherGenericsThing</a><span class="signature">&lt;<wbr><span class="type-parameter">A</span>&gt;</span></span>
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="ReferringClass">
+          <span class="name "><a href="fake/ReferringClass-class.html">ReferringClass</a></span>
         </dt>
         <dd>
           
         </dd>
         <dt id="SpecialList">
-          <span class="name "><a href="fake/SpecialList-class.html">SpecialList</a></span>
+          <span class="name "><a href="fake/SpecialList-class.html">SpecialList</a><span class="signature">&lt;<wbr><span class="type-parameter">E</span>&gt;</span></span>
         </dt>
         <dd>
           Extends <code>ListBase</code>
@@ -198,6 +337,12 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
         <dd>
           A super class, with many powers. Link to <a href="ex/Apple-class.html">Apple</a> from another library.
         </dd>
+        <dt id="TypedefUsingClass">
+          <span class="name "><a href="fake/TypedefUsingClass-class.html">TypedefUsingClass</a></span>
+        </dt>
+        <dd>
+          
+        </dd>
         <dt id="WithGetterAndSetter">
           <span class="name "><a href="fake/WithGetterAndSetter-class.html">WithGetterAndSetter</a></span>
         </dt>
@@ -213,18 +358,29 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
       <dl class="properties">
         <dt id="CUSTOM_CLASS" class="constant">
           <span class="name "><a href="fake/CUSTOM_CLASS-constant.html">CUSTOM_CLASS</a></span>
-          <span class="signature">&#8594; <a href="fake/ConstantClass-class.html">ConstantClass</a></span>
+          <span class="signature">&#8594; const <a href="fake/ConstantClass-class.html">ConstantClass</a></span>
         </dt>
         <dd>
           
           
   <div>
-            <span class="signature"><code>const <a href="fake/ConstantClass-class.html">ConstantClass</a>(&#39;custom&#39;)</code></span>
+            <span class="signature"><code>const <a href="fake/ConstantClass/ConstantClass.html">ConstantClass</a>(&#39;custom&#39;)</code></span>
+          </div>
+        </dd>
+        <dt id="CUSTOM_CLASS_PRIVATE" class="constant">
+          <span class="name "><a href="fake/CUSTOM_CLASS_PRIVATE-constant.html">CUSTOM_CLASS_PRIVATE</a></span>
+          <span class="signature">&#8594; const _APrivateConstClass</span>
+        </dt>
+        <dd>
+          
+          
+  <div>
+            <span class="signature"><code>const _APrivateConstClass()</code></span>
           </div>
         </dd>
         <dt id="DOWN" class="constant">
           <span class="name deprecated"><a class="deprecated" href="fake/DOWN-constant.html">DOWN</a></span>
-          <span class="signature">&#8594; dynamic</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           Dynamic-typed down.
@@ -235,7 +391,7 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
         </dd>
         <dt id="greatAnnotation" class="constant">
           <span class="name "><a href="fake/greatAnnotation-constant.html">greatAnnotation</a></span>
-          <span class="signature">&#8594; dynamic</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           This is a great thing.
@@ -246,7 +402,7 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
         </dd>
         <dt id="greatestAnnotation" class="constant">
           <span class="name "><a href="fake/greatestAnnotation-constant.html">greatestAnnotation</a></span>
-          <span class="signature">&#8594; dynamic</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           This is the greatest thing.
@@ -257,7 +413,7 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
         </dd>
         <dt id="incorrectDocReference" class="constant">
           <span class="name "><a href="fake/incorrectDocReference-constant.html">incorrectDocReference</a></span>
-          <span class="signature">&#8594; dynamic</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           Referencing something that <code>doesn't exist</code>.
@@ -266,9 +422,20 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
             <span class="signature"><code>&#39;doh&#39;</code></span>
           </div>
         </dd>
+        <dt id="myMap" class="constant">
+          <span class="name "><a href="fake/myMap-constant.html">myMap</a></span>
+          <span class="signature">&#8594; const Map<span class="signature">&lt;<wbr><span class="type-parameter">int</span>, <span class="type-parameter">String</span>&gt;</span></span>
+        </dt>
+        <dd>
+          A map initialization making use of optional const.
+          
+  <div>
+            <span class="signature"><code>const {1 : &quot;hello&quot;}</code></span>
+          </div>
+        </dd>
         <dt id="NAME_SINGLEUNDERSCORE" class="constant">
           <span class="name "><a href="fake/NAME_SINGLEUNDERSCORE-constant.html">NAME_SINGLEUNDERSCORE</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           
@@ -279,7 +446,7 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
         </dd>
         <dt id="NAME_WITH_TWO_UNDERSCORES" class="constant">
           <span class="name "><a href="fake/NAME_WITH_TWO_UNDERSCORES-constant.html">NAME_WITH_TWO_UNDERSCORES</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           
@@ -290,7 +457,7 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
         </dd>
         <dt id="PI" class="constant">
           <span class="name "><a href="fake/PI-constant.html">PI</a></span>
-          <span class="signature">&#8594; double</span>
+          <span class="signature">&#8594; const double</span>
         </dt>
         <dd>
           Constant property.
@@ -301,7 +468,7 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
         </dd>
         <dt id="required" class="constant">
           <span class="name "><a href="fake/required-constant.html">required</a></span>
-          <span class="signature">&#8594; dynamic</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           
@@ -312,7 +479,7 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
         </dd>
         <dt id="testingCodeSyntaxInOneLiners" class="constant">
           <span class="name "><a href="fake/testingCodeSyntaxInOneLiners-constant.html">testingCodeSyntaxInOneLiners</a></span>
-          <span class="signature">&#8594; dynamic</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           These are code syntaxes: <code>true</code> and <code>false</code>
@@ -323,7 +490,7 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
         </dd>
         <dt id="UP" class="constant">
           <span class="name "><a href="fake/UP-constant.html">UP</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           Up is a direction. <a href="fake/UP-constant.html">[...]</a>
@@ -334,7 +501,7 @@ across... wait for it... two physical lines. <a href="fake/LongFirstLine-class.h
         </dd>
         <dt id="ZERO" class="constant">
           <span class="name "><a href="fake/ZERO-constant.html">ZERO</a></span>
-          <span class="signature">&#8594; int</span>
+          <span class="signature">&#8594; const int</span>
         </dt>
         <dd>
           A constant integer value,
@@ -351,6 +518,22 @@ which is a bit redundant.
       <h2>Properties</h2>
 
       <dl class="properties">
+        <dt id="aCoolVariable" class="property">
+          <span class="name"><a href="fake/aCoolVariable.html">aCoolVariable</a></span>
+          <span class="signature">&#8596; <a href="fake/Cool-class.html">Cool</a></span>
+        </dt>
+        <dd>
+          A variable initalization making use of optional new.
+          <div class="features">read / write</div>
+</dd>
+        <dt id="complicatedReturn" class="property">
+          <span class="name"><a href="fake/complicatedReturn.html">complicatedReturn</a></span>
+          <span class="signature">&#8594; <a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">String Function<span class="signature">(<span class="parameter" id="-param-"><span class="type-annotation">int</span></span>)</span></span>&gt;</span></span>
+        </dt>
+        <dd>
+          A complicated type parameter to ATypeTakingClass.
+          <div class="features">read-only</div>
+</dd>
         <dt id="dynamicGetter" class="property">
           <span class="name"><a href="fake/dynamicGetter.html">dynamicGetter</a></span>
           <span class="signature">&#8594; dynamic</span>
@@ -358,6 +541,30 @@ which is a bit redundant.
         <dd>
           A dynamic getter.
           <div class="features">read-only</div>
+</dd>
+        <dt id="getterSetterNodocGetter" class="property">
+          <span class="name"><a href="fake/getterSetterNodocGetter.html">getterSetterNodocGetter</a></span>
+          <span class="signature">&#8592; int</span>
+        </dt>
+        <dd>
+          Setter docs should be shown.
+          <div class="features">write-only</div>
+</dd>
+        <dt id="getterSetterNodocSetter" class="property">
+          <span class="name"><a href="fake/getterSetterNodocSetter.html">getterSetterNodocSetter</a></span>
+          <span class="signature">&#8594; int</span>
+        </dt>
+        <dd>
+          Getter docs should be shown.
+          <div class="features">read-only</div>
+</dd>
+        <dt id="importantComputations" class="property">
+          <span class="name"><a href="fake/importantComputations.html">importantComputations</a></span>
+          <span class="signature">&#8594; Map<span class="signature">&lt;<wbr><span class="type-parameter">int</span>, <span class="type-parameter">(<span class="parameter" id="null-param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span></span>) → dynamic</span>&gt;</span></span>
+        </dt>
+        <dd>
+          Type inference mixing with anonymous functions.
+          <div class="features">final</div>
 </dd>
         <dt id="justGetter" class="property">
           <span class="name"><a href="fake/justGetter.html">justGetter</a></span>
@@ -368,18 +575,16 @@ which is a bit redundant.
           <div class="features">read-only</div>
 </dd>
         <dt id="justSetter" class="property">
-          <span class="name"><a href="fake/justSetter.html">justSetter</a></span><span class="signature">
-            <span class="returntype parameter">&#8592;  <span class="parameter" id="justSetter=-param-value"><span class="type-annotation">int</span> <span class="parameter-name">value</span></span>  </span>
-          </span>
+          <span class="name"><a href="fake/justSetter.html">justSetter</a></span>
+          <span class="signature">&#8592; <span class="parameter" id="justSetter=-param-value"><span class="type-annotation">int</span></span></span>
         </dt>
         <dd>
           Just a setter. No partner getter.
           <div class="features">write-only</div>
 </dd>
         <dt id="mapWithDynamicKeys" class="property">
-          <span class="name"><a href="fake/mapWithDynamicKeys.html">mapWithDynamicKeys</a></span><span class="signature">
-            <span class="returntype parameter">&#8596;   <span class="parameter" id="mapWithDynamicKeys=-param-_mapWithDynamicKeys"><span class="type-annotation">Map&lt;dynamic, String&gt;</span></span> </span>
-          </span>
+          <span class="name"><a href="fake/mapWithDynamicKeys.html">mapWithDynamicKeys</a></span>
+          <span class="signature">&#8596; Map<span class="signature">&lt;<wbr><span class="type-parameter">dynamic</span>, <span class="type-parameter">String</span>&gt;</span></span>
         </dt>
         <dd>
           
@@ -394,21 +599,27 @@ which is a bit redundant.
           <div class="features">final</div>
 </dd>
         <dt id="setAndGet" class="property">
-          <span class="name"><a href="fake/setAndGet.html">setAndGet</a></span><span class="signature">
-            <span class="returntype parameter">&#8596;  <span class="parameter" id="setAndGet=-param-thing"><span class="type-annotation">String</span> <span class="parameter-name">thing</span></span>  </span>
-          </span>
+          <span class="name"><a href="fake/setAndGet.html">setAndGet</a></span>
+          <span class="signature">&#8596; String</span>
         </dt>
         <dd>
           The getter for setAndGet.
           <div class="features">read / write</div>
 </dd>
         <dt id="simpleProperty" class="property">
-          <span class="name"><a href="fake/simpleProperty.html">simpleProperty</a></span><span class="signature">
-            <span class="returntype parameter">&#8596;   <span class="parameter" id="simpleProperty=-param-_simpleProperty"><span class="type-annotation">String</span></span> </span>
-          </span>
+          <span class="name"><a href="fake/simpleProperty.html">simpleProperty</a></span>
+          <span class="signature">&#8596; String</span>
         </dt>
         <dd>
           Simple property
+          <div class="features">read / write</div>
+</dd>
+        <dt id="useSomethingInAnotherPackage" class="property">
+          <span class="name"><a href="fake/useSomethingInAnotherPackage.html">useSomethingInAnotherPackage</a></span>
+          <span class="signature">&#8596; Tuple2<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">String</span>&gt;</span></span>
+        </dt>
+        <dd>
+          
           <div class="features">read / write</div>
 </dd>
       </dl>
@@ -436,8 +647,17 @@ which is a bit redundant.
           Adds another callback.
           
 </dd>
+        <dt id="aVoidParameter" class="callable">
+          <span class="name"><a href="fake/aVoidParameter.html">aVoidParameter</a></span><span class="signature">(<wbr><span class="parameter" id="aVoidParameter-param-p1"><span class="type-annotation">Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span> <span class="parameter-name">p1</span></span>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          This function requires a Future<void> as a parameter</void>
+          
+</dd>
         <dt id="functionWithFunctionParameters" class="callable">
-          <span class="name"><a href="fake/functionWithFunctionParameters.html">functionWithFunctionParameters</a></span><span class="signature">(<wbr><span class="parameter" id="functionWithFunctionParameters-param-number"><span class="type-annotation">int</span> <span class="parameter-name">number</span>, </span> <span class="parameter" id="functionWithFunctionParameters-param-thing"><span class="type-annotation">void</span> <span class="parameter-name">thing</span>(<span class="parameter" id="thing-param-one"><span class="parameter-name">one</span>, </span> <span class="parameter" id="thing-param-two"><span class="parameter-name">two</span></span>), </span> <span class="parameter" id="functionWithFunctionParameters-param-string"><span class="type-annotation">String</span> <span class="parameter-name">string</span>, </span> <span class="parameter" id="functionWithFunctionParameters-param-asyncThing"><span class="type-annotation">Future</span> <span class="parameter-name">asyncThing</span>(<span class="parameter" id="asyncThing-param-three"><span class="parameter-name">three</span>, </span> <span class="parameter" id="asyncThing-param-four"><span class="parameter-name">four</span>, </span> <span class="parameter" id="asyncThing-param-five"><span class="parameter-name">five</span>, </span> <span class="parameter" id="asyncThing-param-six"><span class="parameter-name">six</span>, </span> <span class="parameter" id="asyncThing-param-seven"><span class="parameter-name">seven</span></span>)</span>)
+          <span class="name"><a href="fake/functionWithFunctionParameters.html">functionWithFunctionParameters</a></span><span class="signature">(<wbr><span class="parameter" id="functionWithFunctionParameters-param-number"><span class="type-annotation">int</span> <span class="parameter-name">number</span>, </span> <span class="parameter" id="functionWithFunctionParameters-param-thing"><span class="type-annotation">void</span> <span class="parameter-name">thing</span>(<span class="parameter" id="thing-param-one"><span class="type-annotation">dynamic</span> <span class="parameter-name">one</span>, </span> <span class="parameter" id="thing-param-two"><span class="type-annotation">dynamic</span> <span class="parameter-name">two</span></span>), </span> <span class="parameter" id="functionWithFunctionParameters-param-string"><span class="type-annotation">String</span> <span class="parameter-name">string</span>, </span> <span class="parameter" id="functionWithFunctionParameters-param-asyncThing"><span class="type-annotation">Future</span> <span class="parameter-name">asyncThing</span>(<span class="parameter" id="asyncThing-param-three"><span class="type-annotation">dynamic</span> <span class="parameter-name">three</span>, </span> <span class="parameter" id="asyncThing-param-four"><span class="type-annotation">dynamic</span> <span class="parameter-name">four</span>, </span> <span class="parameter" id="asyncThing-param-five"><span class="type-annotation">dynamic</span> <span class="parameter-name">five</span>, </span> <span class="parameter" id="asyncThing-param-six"><span class="type-annotation">dynamic</span> <span class="parameter-name">six</span>, </span> <span class="parameter" id="asyncThing-param-seven"><span class="type-annotation">dynamic</span> <span class="parameter-name">seven</span></span>)</span>)
             <span class="returntype parameter">&#8594; String</span>
           </span>
         </dt>
@@ -446,7 +666,7 @@ which is a bit redundant.
           
 </dd>
         <dt id="myGenericFunction" class="callable">
-          <span class="name"><a href="fake/myGenericFunction.html">myGenericFunction</a></span><span class="signature">&lt;S&gt;(<wbr><span class="parameter" id="myGenericFunction-param-a"><span class="type-annotation">int</span> <span class="parameter-name">a</span>, </span> <span class="parameter" id="myGenericFunction-param-b"><span class="type-annotation">bool</span> <span class="parameter-name">b</span>, </span> <span class="parameter" id="myGenericFunction-param-c"><span class="type-annotation">S</span> <span class="parameter-name">c</span></span>)
+          <span class="name"><a href="fake/myGenericFunction.html">myGenericFunction</a></span><span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="myGenericFunction-param-a"><span class="type-annotation">int</span> <span class="parameter-name">a</span>, </span> <span class="parameter" id="myGenericFunction-param-b"><span class="type-annotation">bool</span> <span class="parameter-name">b</span>, </span> <span class="parameter" id="myGenericFunction-param-c"><span class="type-annotation">S</span> <span class="parameter-name">c</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -455,7 +675,7 @@ which is a bit redundant.
           
 </dd>
         <dt id="onlyPositionalWithNoDefaultNoType" class="callable">
-          <span class="name"><a href="fake/onlyPositionalWithNoDefaultNoType.html">onlyPositionalWithNoDefaultNoType</a></span><span class="signature">(<wbr>[<span class="parameter" id="onlyPositionalWithNoDefaultNoType-param-anything"><span class="parameter-name">anything</span></span> ])
+          <span class="name"><a href="fake/onlyPositionalWithNoDefaultNoType.html">onlyPositionalWithNoDefaultNoType</a></span><span class="signature">(<wbr>[<span class="parameter" id="onlyPositionalWithNoDefaultNoType-param-anything"><span class="type-annotation">dynamic</span> <span class="parameter-name">anything</span></span> ])
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -490,6 +710,24 @@ which is a bit redundant.
           <code>FooBar</code> comes from another library.
           
 </dd>
+        <dt id="paramOfFutureOrNull" class="callable">
+          <span class="name"><a href="fake/paramOfFutureOrNull.html">paramOfFutureOrNull</a></span><span class="signature">(<wbr><span class="parameter" id="paramOfFutureOrNull-param-future"><span class="type-annotation">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">Null</span>&gt;</span></span> <span class="parameter-name">future</span></span>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          Has a parameter explicitly typed <code>FutureOr&lt;Null&gt;</code>.
+          
+</dd>
+        <dt id="returningFutureVoid" class="callable">
+          <span class="name"><a href="fake/returningFutureVoid.html">returningFutureVoid</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+          </span>
+        </dt>
+        <dd>
+          This function returns Future<void></void>
+          
+</dd>
         <dt id="short" class="callable">
           <span class="name"><a href="fake/short.html">short</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; void</span>
@@ -500,7 +738,7 @@ which is a bit redundant.
           
 </dd>
         <dt id="soIntense" class="callable">
-          <span class="name"><a href="fake/soIntense.html">soIntense</a></span><span class="signature">(<wbr><span class="parameter" id="soIntense-param-anything"><span class="parameter-name">anything</span>, {</span> <span class="parameter" id="soIntense-param-flag"><span class="type-annotation">bool</span> <span class="parameter-name">flag</span>: <span class="default-value">true</span>, </span> <span class="parameter" id="soIntense-param-value"><span class="type-annotation">int</span> <span class="parameter-name">value</span></span> })
+          <span class="name"><a href="fake/soIntense.html">soIntense</a></span><span class="signature">(<wbr><span class="parameter" id="soIntense-param-anything"><span class="type-annotation">dynamic</span> <span class="parameter-name">anything</span>, {</span> <span class="parameter" id="soIntense-param-flag"><span class="type-annotation">bool</span> <span class="parameter-name">flag</span>: <span class="default-value">true</span>, </span> <span class="parameter" id="soIntense-param-value"><span class="type-annotation">int</span> <span class="parameter-name">value</span></span> })
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -527,6 +765,33 @@ default value.
           An async function. It should look like I return a <code>Future</code>.
           
 </dd>
+        <dt id="thisIsFutureOr" class="callable">
+          <span class="name"><a href="fake/thisIsFutureOr.html">thisIsFutureOr</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; FutureOr</span>
+          </span>
+        </dt>
+        <dd>
+          Explicitly return a <code>FutureOr</code>.
+          
+</dd>
+        <dt id="thisIsFutureOrNull" class="callable">
+          <span class="name"><a href="fake/thisIsFutureOrNull.html">thisIsFutureOrNull</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">Null</span>&gt;</span></span>
+          </span>
+        </dt>
+        <dd>
+          Explicitly return a <code>FutureOr&lt;Null&gt;</code>.
+          
+</dd>
+        <dt id="thisIsFutureOrT" class="callable">
+          <span class="name"><a href="fake/thisIsFutureOrT.html">thisIsFutureOrT</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>
+          </span>
+        </dt>
+        <dd>
+          Explicitly return a <code>FutureOr&lt;T&gt;</code>.
+          
+</dd>
         <dt id="topLevelFunction" class="callable">
           <span class="name deprecated"><a class="deprecated" href="fake/topLevelFunction.html">topLevelFunction</a></span><span class="signature">(<wbr><span class="parameter" id="topLevelFunction-param-param1"><span class="type-annotation">int</span> <span class="parameter-name">param1</span>, </span> <span class="parameter" id="topLevelFunction-param-param2"><span class="type-annotation">bool</span> <span class="parameter-name">param2</span>, </span> <span class="parameter" id="topLevelFunction-param-coolBeans"><span class="type-annotation"><a href="fake/Cool-class.html">Cool</a></span> <span class="parameter-name">coolBeans</span>, [</span> <span class="parameter" id="topLevelFunction-param-optionalPositional"><span class="type-annotation">double</span> <span class="parameter-name">optionalPositional</span> = <span class="default-value">0.0</span></span> ])
             <span class="returntype parameter">&#8594; String</span>
@@ -534,6 +799,15 @@ default value.
         </dt>
         <dd>
           Top-level function 3 params and 1 optional positional param. <a href="fake/topLevelFunction.html">[...]</a>
+          
+</dd>
+        <dt id="typeParamOfFutureOr" class="callable">
+          <span class="name"><a href="fake/typeParamOfFutureOr.html">typeParamOfFutureOr</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T extends FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">List</span>&gt;</span></span>&gt;</span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          Has a type parameter bound to <code>FutureOr&lt;List&gt;</code>.
           
 </dd>
       </dl>
@@ -557,7 +831,7 @@ default value.
 
       <dl class="callables">
         <dt id="Callback2" class="callable">
-          <span class="name"><a href="fake/Callback2.html">Callback2</a></span><span class="signature">(<wbr><span class="parameter" id="Callback2-param-String"><span class="parameter-name">String</span></span>)
+          <span class="name"><a href="fake/Callback2.html">Callback2</a></span><span class="signature">(<wbr><span class="parameter" id="Callback2-param-String"><span class="type-annotation">dynamic</span> <span class="parameter-name">String</span></span>)
             <span class="returntype parameter">&#8594; int</span>
           </span>
         </dt>
@@ -575,7 +849,7 @@ default value.
           
 </dd>
         <dt id="GenericTypedef" class="callable">
-          <span class="name"><a href="fake/GenericTypedef.html">GenericTypedef</a></span><span class="signature">(<wbr><span class="parameter" id="GenericTypedef-param-input"><span class="type-annotation">T</span> <span class="parameter-name">input</span></span>)
+          <span class="name"><a href="fake/GenericTypedef.html">GenericTypedef</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="GenericTypedef-param-input"><span class="type-annotation">T</span> <span class="parameter-name">input</span></span>)
             <span class="returntype parameter">&#8594; T</span>
           </span>
         </dt>
@@ -584,7 +858,7 @@ default value.
           
 </dd>
         <dt id="LotsAndLotsOfParameters" class="callable">
-          <span class="name"><a href="fake/LotsAndLotsOfParameters.html">LotsAndLotsOfParameters</a></span><span class="signature">(<wbr><span class="parameter" id="LotsAndLotsOfParameters-param-so"><span class="parameter-name">so</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-many"><span class="parameter-name">many</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-parameters"><span class="parameter-name">parameters</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-it"><span class="parameter-name">it</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-should"><span class="parameter-name">should</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-wrap"><span class="parameter-name">wrap</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-when"><span class="parameter-name">when</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-converted"><span class="parameter-name">converted</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-to"><span class="parameter-name">to</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-html"><span class="parameter-name">html</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-documentation"><span class="parameter-name">documentation</span></span>)
+          <span class="name"><a href="fake/LotsAndLotsOfParameters.html">LotsAndLotsOfParameters</a></span><span class="signature">(<wbr><span class="parameter" id="LotsAndLotsOfParameters-param-so"><span class="type-annotation">dynamic</span> <span class="parameter-name">so</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-many"><span class="type-annotation">dynamic</span> <span class="parameter-name">many</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-parameters"><span class="type-annotation">dynamic</span> <span class="parameter-name">parameters</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-it"><span class="type-annotation">dynamic</span> <span class="parameter-name">it</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-should"><span class="type-annotation">dynamic</span> <span class="parameter-name">should</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-wrap"><span class="type-annotation">dynamic</span> <span class="parameter-name">wrap</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-when"><span class="type-annotation">dynamic</span> <span class="parameter-name">when</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-converted"><span class="type-annotation">dynamic</span> <span class="parameter-name">converted</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-to"><span class="type-annotation">dynamic</span> <span class="parameter-name">to</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-html"><span class="type-annotation">dynamic</span> <span class="parameter-name">html</span>, </span> <span class="parameter" id="LotsAndLotsOfParameters-param-documentation"><span class="type-annotation">dynamic</span> <span class="parameter-name">documentation</span></span>)
             <span class="returntype parameter">&#8594; int</span>
           </span>
         </dt>
@@ -602,8 +876,8 @@ default value.
           
 </dd>
         <dt id="NewGenericTypedef" class="callable">
-          <span class="name"><a href="fake/NewGenericTypedef.html">NewGenericTypedef</a></span><span class="signature">&lt;S&gt;(<wbr><span class="parameter" id="-param-"><span class="type-annotation">T</span></span> <span class="parameter" id="-param-"><span class="type-annotation">T</span></span> <span class="parameter" id="-param-"><span class="type-annotation">T</span></span>)
-            <span class="returntype parameter">&#8594; List&lt;S&gt;</span>
+          <span class="name"><a href="fake/NewGenericTypedef.html">NewGenericTypedef</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="NewGenericTypedef-param-"><span class="type-annotation">T</span>, </span> <span class="parameter" id="NewGenericTypedef-param-"><span class="type-annotation">int</span>, </span> <span class="parameter" id="NewGenericTypedef-param-"><span class="type-annotation">bool</span></span>)
+            <span class="returntype parameter">&#8594; List<span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span></span>
           </span>
         </dt>
         <dd>
@@ -644,36 +918,61 @@ default value.
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>library fake</h5>
+    <h5>fake library</h5>
     <ol>
       <li class="section-title"><a href="fake/fake-library.html#classes">Classes</a></li>
+      <li><a href="fake/ABaseClass-class.html">ABaseClass</a></li>
+      <li><a href="fake/AClassUsingASuperMixin-class.html">AClassUsingASuperMixin</a></li>
+      <li><a href="fake/AClassWithFancyProperties-class.html">AClassWithFancyProperties</a></li>
+      <li><a href="fake/AMixinCallingSuper-class.html">AMixinCallingSuper</a></li>
       <li><a href="fake/Annotation-class.html">Annotation</a></li>
       <li><a href="fake/AnotherInterface-class.html">AnotherInterface</a></li>
+      <li><a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a></li>
+      <li><a href="fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a></li>
       <li><a href="fake/BaseForDocComments-class.html">BaseForDocComments</a></li>
+      <li><a href="fake/BaseThingy-class.html">BaseThingy</a></li>
+      <li><a href="fake/BaseThingy2-class.html">BaseThingy2</a></li>
       <li><a href="fake/ClassWithUnusualProperties-class.html">ClassWithUnusualProperties</a></li>
       <li><a href="fake/ConstantClass-class.html">ConstantClass</a></li>
+      <li><a href="fake/ConstructorTester-class.html">ConstructorTester</a></li>
       <li><a href="fake/Cool-class.html">Cool</a></li>
+      <li><a href="fake/DocumentWithATable-class.html">DocumentWithATable</a></li>
+      <li><a href="fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a></li>
       <li><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></li>
       <li><a href="fake/Foo2-class.html">Foo2</a></li>
       <li><a href="fake/HasGenerics-class.html">HasGenerics</a></li>
       <li><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></li>
+      <li><a href="fake/ImplementingThingy-class.html">ImplementingThingy</a></li>
+      <li><a href="fake/ImplementingThingy2-class.html">ImplementingThingy2</a></li>
+      <li><a href="fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a></li>
       <li><a href="fake/ImplicitProperties-class.html">ImplicitProperties</a></li>
+      <li><a href="fake/InheritingClassOne-class.html">InheritingClassOne</a></li>
+      <li><a href="fake/InheritingClassTwo-class.html">InheritingClassTwo</a></li>
       <li><a href="fake/Interface-class.html">Interface</a></li>
       <li><a href="fake/LongFirstLine-class.html">LongFirstLine</a></li>
+      <li><a href="fake/MIEEBase-class.html">MIEEBase</a></li>
+      <li><a href="fake/MIEEMixin-class.html">MIEEMixin</a></li>
+      <li><a href="fake/MIEEMixinWithOverride-class.html">MIEEMixinWithOverride</a></li>
+      <li><a href="fake/MIEEThing-class.html">MIEEThing</a></li>
       <li><a href="fake/MixMeIn-class.html">MixMeIn</a></li>
+      <li><a href="fake/NotAMixin-class.html">NotAMixin</a></li>
       <li><a href="fake/OperatorReferenceClass-class.html">OperatorReferenceClass</a></li>
       <li><a href="fake/OtherGenericsThing-class.html">OtherGenericsThing</a></li>
+      <li><a href="fake/ReferringClass-class.html">ReferringClass</a></li>
       <li><a href="fake/SpecialList-class.html">SpecialList</a></li>
       <li><a href="fake/SubForDocComments-class.html">SubForDocComments</a></li>
       <li><a class="deprecated" href="fake/SuperAwesomeClass-class.html">SuperAwesomeClass</a></li>
+      <li><a href="fake/TypedefUsingClass-class.html">TypedefUsingClass</a></li>
       <li><a href="fake/WithGetterAndSetter-class.html">WithGetterAndSetter</a></li>
     
       <li class="section-title"><a href="fake/fake-library.html#constants">Constants</a></li>
       <li><a href="fake/CUSTOM_CLASS-constant.html">CUSTOM_CLASS</a></li>
+      <li><a href="fake/CUSTOM_CLASS_PRIVATE-constant.html">CUSTOM_CLASS_PRIVATE</a></li>
       <li><a class="deprecated" href="fake/DOWN-constant.html">DOWN</a></li>
       <li><a href="fake/greatAnnotation-constant.html">greatAnnotation</a></li>
       <li><a href="fake/greatestAnnotation-constant.html">greatestAnnotation</a></li>
       <li><a href="fake/incorrectDocReference-constant.html">incorrectDocReference</a></li>
+      <li><a href="fake/myMap-constant.html">myMap</a></li>
       <li><a href="fake/NAME_SINGLEUNDERSCORE-constant.html">NAME_SINGLEUNDERSCORE</a></li>
       <li><a href="fake/NAME_WITH_TWO_UNDERSCORES-constant.html">NAME_WITH_TWO_UNDERSCORES</a></li>
       <li><a href="fake/PI-constant.html">PI</a></li>
@@ -683,28 +982,41 @@ default value.
       <li><a href="fake/ZERO-constant.html">ZERO</a></li>
     
       <li class="section-title"><a href="fake/fake-library.html#properties">Properties</a></li>
+      <li><a href="fake/aCoolVariable.html">aCoolVariable</a></li>
+      <li><a href="fake/complicatedReturn.html">complicatedReturn</a></li>
       <li><a href="fake/dynamicGetter.html">dynamicGetter</a></li>
+      <li><a href="fake/getterSetterNodocGetter.html">getterSetterNodocGetter</a></li>
+      <li><a href="fake/getterSetterNodocSetter.html">getterSetterNodocSetter</a></li>
+      <li><a href="fake/importantComputations.html">importantComputations</a></li>
       <li><a href="fake/justGetter.html">justGetter</a></li>
       <li><a href="fake/justSetter.html">justSetter</a></li>
       <li><a href="fake/mapWithDynamicKeys.html">mapWithDynamicKeys</a></li>
       <li><a class="deprecated" href="fake/meaningOfLife.html">meaningOfLife</a></li>
       <li><a href="fake/setAndGet.html">setAndGet</a></li>
       <li><a href="fake/simpleProperty.html">simpleProperty</a></li>
+      <li><a href="fake/useSomethingInAnotherPackage.html">useSomethingInAnotherPackage</a></li>
     
       <li class="section-title"><a href="fake/fake-library.html#functions">Functions</a></li>
       <li><a href="fake/addCallback.html">addCallback</a></li>
       <li><a href="fake/addCallback2.html">addCallback2</a></li>
+      <li><a href="fake/aVoidParameter.html">aVoidParameter</a></li>
       <li><a href="fake/functionWithFunctionParameters.html">functionWithFunctionParameters</a></li>
       <li><a href="fake/myGenericFunction.html">myGenericFunction</a></li>
       <li><a href="fake/onlyPositionalWithNoDefaultNoType.html">onlyPositionalWithNoDefaultNoType</a></li>
       <li><a href="fake/paintImage1.html">paintImage1</a></li>
       <li><a href="fake/paintImage2.html">paintImage2</a></li>
       <li><a href="fake/paramFromAnotherLib.html">paramFromAnotherLib</a></li>
+      <li><a href="fake/paramOfFutureOrNull.html">paramOfFutureOrNull</a></li>
+      <li><a href="fake/returningFutureVoid.html">returningFutureVoid</a></li>
       <li><a href="fake/short.html">short</a></li>
       <li><a href="fake/soIntense.html">soIntense</a></li>
       <li><a href="fake/thisIsAlsoAsync.html">thisIsAlsoAsync</a></li>
       <li><a href="fake/thisIsAsync.html">thisIsAsync</a></li>
+      <li><a href="fake/thisIsFutureOr.html">thisIsFutureOr</a></li>
+      <li><a href="fake/thisIsFutureOrNull.html">thisIsFutureOrNull</a></li>
+      <li><a href="fake/thisIsFutureOrT.html">thisIsFutureOrT</a></li>
       <li><a class="deprecated" href="fake/topLevelFunction.html">topLevelFunction</a></li>
+      <li><a href="fake/typeParamOfFutureOr.html">typeParamOfFutureOr</a></li>
     
       <li class="section-title"><a href="fake/fake-library.html#enums">Enums</a></li>
       <li><a href="fake/Color-class.html">Color</a></li>
@@ -730,16 +1042,12 @@ default value.
   <span class="no-break">
     test_package 0.0.1
   </span>
-  &bull;
-  <span class="copyright no-break">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
-  </span>
 
 </footer>
 
-<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="static-assets/typeahead.bundle.min.js"></script>
-<script src="static-assets/prettify.js"></script>
+<script src="static-assets/highlight.pack.js"></script>
 <script src="static-assets/URI.js"></script>
 <script src="static-assets/script.js"></script>
 

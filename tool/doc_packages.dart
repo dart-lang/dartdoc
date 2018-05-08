@@ -6,7 +6,7 @@
 library dartdoc.doc_packages;
 
 import 'dart:async';
-import 'dart:convert' show JSON, UTF8;
+import 'dart:convert' show json, utf8;
 import 'dart:io';
 
 import 'package:args/args.dart';
@@ -106,7 +106,8 @@ void generateForPackages(List<String> packages) {
   });
 }
 
-Future _printGenerationResult(PackageInfo package, Future generationResult) {
+Future _printGenerationResult(
+    PackageInfo package, Future<bool> generationResult) {
   String name = package.name.padRight(20);
 
   return generationResult.then((bool result) {
@@ -124,17 +125,17 @@ Future<List<String>> _packageUrls(int page) {
   return http
       .get('https://pub.dartlang.org/packages.json?page=${page}')
       .then((response) {
-    return new List<String>.from(JSON.decode(response.body)['packages']);
+    return new List<String>.from(json.decode(response.body)['packages']);
   });
 }
 
 Future<List<PackageInfo>> _getPackageInfos(List<String> packageUrls) {
   var futures = packageUrls.map((String p) {
     return http.get(p).then((response) {
-      var json = JSON.decode(response.body);
-      String name = json['name'];
+      var decodedJson = json.decode(response.body);
+      String name = decodedJson['name'];
       List<Version> versions = new List<Version>.from(
-          json['versions'].map((v) => new Version.parse(v)));
+          decodedJson['versions'].map((v) => new Version.parse(v)));
       return new PackageInfo(name, Version.primary(versions));
     });
   }).toList();
@@ -199,8 +200,8 @@ Future _exec(String command, List<String> args,
       .start(command, args, workingDirectory: cwd)
       .then((Process process) {
     if (!quiet) {
-      process.stdout.listen((bytes) => _log(UTF8.decode(bytes)));
-      process.stderr.listen((bytes) => _log(UTF8.decode(bytes)));
+      process.stdout.listen((bytes) => _log(utf8.decode(bytes)));
+      process.stderr.listen((bytes) => _log(utf8.decode(bytes)));
     }
 
     Future f = process.exitCode.then((code) {

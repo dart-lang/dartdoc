@@ -15,47 +15,12 @@ if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
   # silence stdout but echo stderr
   echo ""
   echo "Building and validating SDK docs..."
-
   pub run grinder validate-sdk-docs
-
   echo "SDK docs process finished"
 elif [ "$DARTDOC_BOT" = "flutter" ]; then
   echo "Running flutter dartdoc bot"
-
-  # Verify that the libraries are error free.
-  pub run grinder analyze
-
-  # Set up dartdoc so the flutter doc script can locate it.
-  pub global activate -spath .
-
-  # Clone flutter.
-  rm -rf doc/flutter
-  git clone --depth 1 https://github.com/flutter/flutter.git doc/flutter
-
-  # Build the flutter docs.
-  cd doc/flutter
-  ./bin/flutter --version
-  ./bin/flutter precache
-  ( cd  dev/tools; pub get )
-  ./bin/cache/dart-sdk/bin/dart dev/tools/dartdoc.dart
-
-  # The above script validates the generation; we echo the main file here.
-  cat dev/docs/doc/index.html
+  pub run grinder validate-flutter-docs
 else
   echo "Running main dartdoc bot"
-
-  # Verify that the libraries are error free.
-  pub run grinder analyze
-
-  # Run dartdoc on test_package.
-  (cd testing/test_package; dart -c ../../bin/dartdoc.dart)
-
-  # Checks the test_package results.
-  pub run grinder check-links
-
-  # And on test_package_small.
-  (cd testing/test_package_small; dart -c ../../bin/dartdoc.dart)
-
-  # Run the tests.
-  pub run grinder test
+  pub run grinder buildbot
 fi

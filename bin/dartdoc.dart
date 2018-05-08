@@ -4,203 +4,84 @@
 
 library dartdoc.bin;
 
+import 'dart:async';
 import 'dart:io';
 
-import 'package:analyzer/file_system/physical_file_system.dart';
-import 'package:analyzer/src/dart/sdk/sdk.dart';
-import 'package:analyzer/src/generated/sdk.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:path/path.dart' as path;
+import 'package:dartdoc/src/html/html_generator.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:stack_trace/stack_trace.dart';
+
+class DartdocProgramOptionContext extends DartdocOptionContext
+    with LoggingContext, GeneratorContext {
+  DartdocProgramOptionContext(DartdocOptionSet optionSet, Directory dir)
+      : super(optionSet, dir);
+
+  bool get help => optionSet['help'].valueAt(context);
+  bool get version => optionSet['version'].valueAt(context);
+}
+
+Future<List<DartdocOption>> createDartdocProgramOptions() async {
+  return <DartdocOption>[
+    new DartdocOptionArgOnly<bool>('help', false,
+        abbr: 'h', help: 'Show command help.', negatable: false),
+    new DartdocOptionArgOnly<bool>('version', false,
+        help: 'Display the version for $name.', negatable: false),
+  ];
+}
 
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
 main(List<String> arguments) async {
-  var parser = _createArgsParser();
-  ArgResults args;
+  DartdocOptionSet optionSet =
+      await DartdocOptionSet.fromOptionGenerators('dartdoc', [
+    createDartdocOptions,
+    createDartdocProgramOptions,
+    createLoggingOptions,
+    createGeneratorOptions,
+  ]);
+
+  DartdocProgramOptionContext config =
+      new DartdocProgramOptionContext(optionSet, Directory.current);
+
   try {
-    args = parser.parse(arguments);
+    optionSet.parseArguments(arguments);
   } on FormatException catch (e) {
-    print(e.message);
-    print('');
-    // http://linux.die.net/include/sysexits.h
-    // #define EX_USAGE	64	/* command line usage error */
-    _printUsageAndExit(parser, exitCode: 64);
+    stderr.writeln(' fatal error: ${e.message}');
+    stderr.writeln('');
+    _printUsageAndExit(optionSet.argParser, exitCode: 64);
+  } on DartdocOptionError catch (e) {
+    stderr.writeln(' fatal error: ${e.message}');
+    stderr.writeln('');
+    _printUsageAndExit(optionSet.argParser, exitCode: 64);
+  }
+  if (optionSet['help'].valueAt(Directory.current)) {
+    _printHelpAndExit(optionSet.argParser);
+  }
+  if (optionSet['version'].valueAt(Directory.current)) {
+    _printHelpAndExit(optionSet.argParser);
   }
 
-  if (args['help']) {
-    _printHelp(parser);
-  }
+  startLogging(config);
 
-  if (args['version']) {
-    print('$name version: $version');
-    exit(0);
-  }
-
-  Directory sdkDir = getSdkDir();
-  if (sdkDir == null) {
-    stderr.writeln(" Error: unable to locate the Dart SDK.");
-    exit(1);
-  }
-
-  bool sdkDocs = false;
-  if (args['sdk-docs']) {
-    sdkDocs = true;
-  }
-
-  if (args['show-progress']) {
-    _showProgress = true;
-  }
-
-  var readme = args['sdk-readme'];
-  if (readme != null && !(new File(readme).existsSync())) {
-    stderr.writeln(
-        " fatal error: unable to locate the SDK description file at $readme.");
-    exit(1);
-  }
-
-  Directory inputDir = new Directory(args['input']);
-  if (!inputDir.existsSync()) {
-    stderr.writeln(
-        " fatal error: unable to locate the input directory at ${inputDir.path}.");
-    exit(1);
-  }
-
-  List<String> excludeLibraries = args['exclude'] as List<String>;
-  List<String> includeLibraries = args['include'] as List<String>;
-  List<String> includeExternals = args['include-external'] as List<String>;
-
-  String url = args['hosted-url'];
-
-  List<String> headerFilePaths =
-      args['header'].map(_resolveTildePath).toList() as List<String>;
-  for (String headerFilePath in headerFilePaths) {
-    if (!new File(headerFilePath).existsSync()) {
-      stderr.writeln(
-          " fatal error: unable to locate header file: ${headerFilePath}.");
-      exit(1);
-    }
-  }
-
-  List<String> footerFilePaths =
-      args['footer'].map(_resolveTildePath).toList() as List<String>;
-  for (String footerFilePath in footerFilePaths) {
-    if (!new File(footerFilePath).existsSync()) {
-      stderr.writeln(
-          " fatal error: unable to locate footer file: ${footerFilePath}.");
-      exit(1);
-    }
-  }
-
-  List<String> footerTextFilePaths =
-      args['footer-text'].map(_resolveTildePath).toList() as List<String>;
-  for (String footerFilePath in footerTextFilePaths) {
-    if (!new File(footerFilePath).existsSync()) {
-      stderr.writeln(
-          " fatal error: unable to locate footer-text file: ${footerFilePath}.");
-      exit(1);
-    }
-  }
-
-  Directory outputDir =
-      new Directory(path.join(Directory.current.path, defaultOutDir));
-  if (args['output'] != null) {
-    outputDir = new Directory(_resolveTildePath(args['output']));
-  }
-
-  if (args.rest.isNotEmpty) {
-    var unknownArgs = args.rest.join(' ');
-    stderr.writeln(
-        ' fatal error: detected unknown command-line argument(s): $unknownArgs');
-    _printUsageAndExit(parser, exitCode: 1);
-  }
-
-  PackageMeta packageMeta = sdkDocs
-      ? new PackageMeta.fromSdk(sdkDir,
-          sdkReadmePath: readme, useCategories: args['use-categories'])
-      : new PackageMeta.fromDir(inputDir);
-
-  if (!packageMeta.isValid) {
-    stderr.writeln(
-        ' fatal error: Unable to generate documentation: ${packageMeta.getInvalidReasons().first}.');
-    exit(1);
-  }
-
-  if (!packageMeta.isSdk && packageMeta.needsPubGet) {
-    try {
-      packageMeta.runPubGet();
-    } catch (e) {
-      stderr.writeln('$e');
-      exit(1);
-    }
-  }
-
-  print("Generating documentation for '${packageMeta}' into "
+  Directory outputDir = new Directory(config.output);
+  logInfo("Generating documentation for '${config.topLevelPackageMeta}' into "
       "${outputDir.absolute.path}${Platform.pathSeparator}");
-  print('');
 
-  var generators = await initGenerators(url, args['rel-canonical-prefix'],
-      headerFilePaths: headerFilePaths,
-      footerFilePaths: footerFilePaths,
-      footerTextFilePaths: footerTextFilePaths,
-      faviconPath: args['favicon'],
-      useCategories: args['use-categories'],
-      prettyIndexJson: args['pretty-index-json']);
+  Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(config);
 
-  for (var generator in generators) {
-    generator.onFileCreated.listen(_onProgress);
-  }
-
-  DartSdk sdk = new FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
-      PhysicalResourceProvider.INSTANCE.getFolder(sdkDir.path));
-
-  List<String> dropTextFrom = [];
-  if (args['hide-sdk-text']) {
-    dropTextFrom.addAll([
-      'dart.async',
-      'dart.collection',
-      'dart.convert',
-      'dart.core',
-      'dart.developer',
-      'dart.html',
-      'dart.indexed_db',
-      'dart.io',
-      'dart.lisolate',
-      'dart.js',
-      'dart.js_util',
-      'dart.math',
-      'dart.mirrors',
-      'dart.svg',
-      'dart.typed_data',
-      'dart.web_audio'
-    ]);
-  }
-
-  setConfig(
-      addCrossdart: args['add-crossdart'],
-      examplePathPrefix: args['example-path-prefix'],
-      showWarnings: args['show-warnings'],
-      includeSource: args['include-source'],
-      inputDir: inputDir,
-      sdkVersion: sdk.sdkVersion,
-      autoIncludeDependencies: args['auto-include-dependencies'],
-      categoryOrder: args['category-order'],
-      reexportMinConfidence:
-          double.parse(args['ambiguous-reexport-scorer-min-confidence']),
-      verboseWarnings: args['verbose-warnings'],
-      dropTextFrom: dropTextFrom);
-
-  DartDoc dartdoc = new DartDoc(inputDir, excludeLibraries, sdkDir, generators,
-      outputDir, packageMeta, includeLibraries,
-      includeExternals: includeExternals);
-
-  dartdoc.onCheckProgress.listen(_onProgress);
-  Chain.capture(() async {
-    DartDocResults results = await dartdoc.generateDocs();
-    print('\nSuccess! Docs generated into ${results.outDir.absolute.path}');
+  dartdoc.onCheckProgress.listen(logProgress);
+  await Chain.capture(() async {
+    await runZoned(() async {
+      DartdocResults results = await dartdoc.generateDocs();
+      logInfo('Success! Docs generated into ${results.outDir.absolute.path}');
+    },
+        zoneSpecification: new ZoneSpecification(
+            print: (Zone self, ZoneDelegate parent, Zone zone, String line) =>
+                logPrint(line)));
   }, onError: (e, Chain chain) {
-    if (e is DartDocFailure) {
+    if (e is DartdocFailure) {
       stderr.writeln('\nGeneration failed: ${e}.');
       exit(1);
     } else {
@@ -210,116 +91,8 @@ main(List<String> arguments) async {
   });
 }
 
-bool _showProgress = false;
-
-ArgParser _createArgsParser() {
-  var parser = new ArgParser();
-  parser.addFlag('help',
-      abbr: 'h', negatable: false, help: 'Show command help.');
-  parser.addFlag('version',
-      help: 'Display the version for $name.', negatable: false);
-  parser.addFlag('add-crossdart',
-      help: 'Add Crossdart links to the source code pieces.',
-      negatable: false,
-      defaultsTo: false);
-  parser.addFlag('sdk-docs',
-      help: 'Generate ONLY the docs for the Dart SDK.', negatable: false);
-  parser.addFlag('show-warnings', help: 'Display warnings.', negatable: false);
-  parser.addFlag('show-progress',
-      help: 'Display progress indications to console stdout', negatable: false);
-  parser.addOption('sdk-readme',
-      help:
-          'Path to the SDK description file; use if generating Dart SDK docs.');
-  parser.addOption('input',
-      help: 'Path to source directory.', defaultsTo: Directory.current.path);
-  parser.addOption('output',
-      help: 'Path to output directory.', defaultsTo: defaultOutDir);
-  parser.addOption('header',
-      allowMultiple: true,
-      splitCommas: true,
-      help: 'paths to header files containing HTML text.');
-  parser.addOption('footer',
-      allowMultiple: true,
-      splitCommas: true,
-      help: 'paths to footer files containing HTML text.');
-  parser.addOption('footer-text',
-      allowMultiple: true,
-      splitCommas: true,
-      help:
-          'paths to footer-text files (optional text next to the copyright).');
-  parser.addOption('exclude',
-      allowMultiple: true, splitCommas: true, help: 'Library names to ignore.');
-  parser.addOption('include',
-      allowMultiple: true,
-      splitCommas: true,
-      help: 'Library names to generate docs for.');
-  parser.addOption('include-external',
-      allowMultiple: true,
-      help: 'Additional (external) dart files to include; use "dir/fileName", '
-          'as in lib/material.dart.');
-  parser.addOption('hosted-url',
-      help:
-          'URL where the docs will be hosted (used to generate the sitemap).');
-  parser.addOption('example-path-prefix',
-      help: 'Prefix for @example paths.\n(defaults to the project root)');
-  parser.addOption('rel-canonical-prefix',
-      help: 'If provided, add a rel="canonical" prefixed with provided value. '
-          'Consider using if\nbuilding many versions of the docs for public '
-          'SEO; learn more at https://goo.gl/gktN6F.');
-  parser.addFlag('include-source',
-      help: 'Show source code blocks.', negatable: true, defaultsTo: true);
-  parser.addOption('favicon',
-      help: 'A path to a favicon for the generated docs.');
-  parser.addFlag('use-categories',
-      help: 'Group libraries from the same package into categories.',
-      negatable: false,
-      defaultsTo: false);
-  parser.addOption('category-order',
-      help: 'A list of category names to place first when --use-categories is '
-          'set.  Unmentioned categories are sorted after these.',
-      allowMultiple: true,
-      splitCommas: true);
-  parser.addFlag('auto-include-dependencies',
-      help:
-          'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
-      negatable: false,
-      defaultsTo: false);
-  parser.addFlag('pretty-index-json',
-      help:
-          "Generates `index.json` with indentation and newlines. The file is larger, but it's also easier to diff.",
-      negatable: false,
-      defaultsTo: false);
-  parser.addOption('ambiguous-reexport-scorer-min-confidence',
-      help:
-          'Minimum scorer confidence to suppress warning on ambiguous reexport.',
-      defaultsTo: "0.1",
-      hide: true);
-  parser.addFlag('verbose-warnings',
-      help: 'Display extra debugging information and help with warnings.',
-      negatable: true,
-      defaultsTo: true);
-  parser.addFlag(
-    'hide-sdk-text',
-    help:
-        "Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.",
-    negatable: true,
-    defaultsTo: false,
-    hide: true,
-  );
-
-  return parser;
-}
-
-int _progressCounter = 0;
-void _onProgress(var file) {
-  if (_showProgress && _progressCounter % 5 == 0) {
-    stdout.write('.');
-  }
-  _progressCounter += 1;
-}
-
 /// Print help if we are passed the help option.
-void _printHelp(ArgParser parser, {int exitCode: 0}) {
+void _printHelpAndExit(ArgParser parser, {int exitCode: 0}) {
   print('Generate HTML documentation for Dart libraries.\n');
   _printUsageAndExit(parser, exitCode: exitCode);
 }
@@ -328,20 +101,4 @@ void _printUsageAndExit(ArgParser parser, {int exitCode: 0}) {
   print('Usage: dartdoc [OPTIONS]\n');
   print(parser.usage);
   exit(exitCode);
-}
-
-String _resolveTildePath(String originalPath) {
-  if (originalPath == null || !originalPath.startsWith('~/')) {
-    return originalPath;
-  }
-
-  String homeDir;
-
-  if (Platform.isWindows) {
-    homeDir = path.absolute(Platform.environment['USERPROFILE']);
-  } else {
-    homeDir = path.absolute(Platform.environment['HOME']);
-  }
-
-  return path.join(homeDir, originalPath.substring(2));
 }

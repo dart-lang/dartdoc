@@ -6,9 +6,9 @@
 library dartdoc.generator;
 
 import 'dart:async' show Stream, Future;
-import 'dart:io' show Directory, File;
+import 'dart:io' show File;
 
-import 'model.dart' show Package;
+import 'package:dartdoc/src/model.dart' show PackageGraph;
 
 /// An abstract class that defines a generator that generates documentation for
 /// a given package.
@@ -17,7 +17,7 @@ import 'model.dart' show Package;
 abstract class Generator {
   /// Generate the documentation for the given package in the specified
   /// directory. Completes the returned future when done.
-  Future generate(Package package, Directory out);
+  Future generate(PackageGraph packageGraph, String outputDirectoryPath);
 
   /// Fires when a file is created.
   Stream<File> get onFileCreated;

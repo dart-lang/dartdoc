@@ -8,14 +8,15 @@ library dartdoc.markdown_processor;
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/ast.dart' hide TypeParameter;
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/src/dart/element/member.dart' show Member;
+import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/model_utils.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 import 'package:tuple/tuple.dart';
-
-import 'model.dart';
 
 const validHtmlTags = const [
   "a",
@@ -136,12 +137,17 @@ final RegExp isConstructor = new RegExp(r'^new[\s]+', multiLine: true);
 // Covers anything with leading digits/symbols, empty string, weird punctuation, spaces.
 final RegExp notARealDocReference = new RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
 
-final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.ELEMENT);
+final RegExp operatorPrefix = new RegExp(r'^operator[ ]*');
+
+final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.element);
 
 final List<md.InlineSyntax> _markdown_syntaxes = [
   new _InlineCodeSyntax(),
   new _AutolinkWithoutScheme()
-];
+]..addAll(md.ExtensionSet.gitHubFlavored.inlineSyntaxes);
+
+final List<md.BlockSyntax> _markdown_block_syntaxes = []
+  ..addAll(md.ExtensionSet.gitHubFlavored.blockSyntaxes);
 
 // Remove these schemas from the display text for hyperlinks.
 final RegExp _hide_schemes = new RegExp('^(http|https)://');
@@ -234,7 +240,7 @@ NodeList<CommentReference> _getCommentRefs(Documentable documentable) {
 
 /// Returns null if element is a parameter.
 MatchingLinkResult _getMatchingLinkElement(
-    String codeRef, Documentable element, List<CommentReference> commentRefs) {
+    String codeRef, Warnable element, List<CommentReference> commentRefs) {
   // By debugging inspection, it seems correct to not warn when we don't have
   // CommentReferences; there's actually nothing that needs resolving in
   // that case.
@@ -247,25 +253,33 @@ MatchingLinkResult _getMatchingLinkElement(
     return new MatchingLinkResult(null, null, warn: false);
   }
 
-  Element refElement;
+  ModelElement refModelElement;
 
   // Try expensive not-scoped lookup.
-  if (refElement == null) {
-    refElement = _findRefElementInLibrary(codeRef, element, commentRefs);
+  if (refModelElement == null) {
+    Class preferredClass = _getPreferredClass(element);
+    refModelElement =
+        _findRefElementInLibrary(codeRef, element, commentRefs, preferredClass);
   }
 
-  // This is faster but does not take canonicalization into account; try
-  // only as a last resort. TODO(jcollins-g): make analyzer comment references
-  // dartdoc-canonicalization-aware?
-  if (refElement == null) {
-    refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
+  // This is faster but does not know about libraries without imports in the
+  // current context; try only as a last resort.
+  // TODO(jcollins-g): make analyzer comment references dartdoc-canonicalization-aware?
+  if (refModelElement == null) {
+    Element refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
+    if (refElement != null) {
+      refModelElement = new ModelElement.fromElement(
+          _getRefElementFromCommentRefs(commentRefs, codeRef),
+          element.packageGraph);
+      refModelElement =
+          refModelElement.canonicalModelElement ?? refModelElement;
+    }
   } else {
-    assert(refElement is! PropertyAccessorElement);
-    assert(refElement is! PrefixElement);
+    assert(refModelElement is! Accessor);
   }
 
   // Did not find it anywhere.
-  if (refElement == null) {
+  if (refModelElement == null) {
     // TODO(jcollins-g): remove squelching of non-canonical warnings here
     //                   once we no longer process full markdown for
     //                   oneLineDocs (#1417)
@@ -273,44 +287,23 @@ MatchingLinkResult _getMatchingLinkElement(
   }
 
   // Ignore all parameters.
-  if (refElement is ParameterElement || refElement is TypeParameterElement)
+  if (refModelElement is Parameter || refModelElement is TypeParameter)
     return new MatchingLinkResult(null, null, warn: false);
 
-  Library refLibrary = element.package.findOrCreateLibraryFor(refElement);
-  Element searchElement = refElement;
-  if (searchElement is Member)
-    searchElement = Package.getBasestElement(refElement);
-
-  Class preferredClass = _getPreferredClass(element);
-  ModelElement refModelElement = element.package.findCanonicalModelElementFor(
-      searchElement,
-      preferredClass: preferredClass);
   // There have been places in the code which helpfully cache entities
   // regardless of what package they are associated with.  This assert
   // will protect us from reintroducing that.
-  assert(refModelElement == null || refModelElement.package == element.package);
+  assert(refModelElement == null ||
+      refModelElement.packageGraph == element.packageGraph);
   if (refModelElement != null) {
     return new MatchingLinkResult(refModelElement, null);
   }
   // From this point on, we haven't been able to find a canonical ModelElement.
-  // So in this case, just find any ModelElement we can.
-  Accessor getter;
-  Accessor setter;
-  if (searchElement is FieldElement) {
-    // TODO(jcollins-g): consolidate field element construction with inheritance
-    // checking.
-    if (searchElement.getter != null) {
-      getter = new ModelElement.from(searchElement.getter, refLibrary);
-    }
-    if (searchElement.setter != null) {
-      setter = new ModelElement.from(searchElement.setter, refLibrary);
-    }
-  }
-  refModelElement = new ModelElement.from(searchElement, refLibrary,
-      getter: getter, setter: setter);
   if (!refModelElement.isCanonical) {
-    refModelElement
-        .warn(PackageWarning.noCanonicalFound, referredFrom: [element]);
+    if (refModelElement.library.isPublicAndPackageDocumented) {
+      refModelElement
+          .warn(PackageWarning.noCanonicalFound, referredFrom: [element]);
+    }
     // Don't warn about doc references because that's covered by the no
     // canonical library found message.
     return new MatchingLinkResult(null, null, warn: false);
@@ -357,6 +350,8 @@ bool _ConsiderIfConstructor(String codeRef, ModelElement modelElement) {
   Constructor aConstructor = modelElement;
   List<String> codeRefParts = codeRef.split('.');
   if (codeRefParts.length > 1) {
+    // Pick the last two parts, in case a specific library was part of the
+    // codeRef.
     if (codeRefParts[codeRefParts.length - 1] ==
         codeRefParts[codeRefParts.length - 2]) {
       // Foobar.Foobar -- assume they really do mean the constructor for this class.
@@ -380,49 +375,63 @@ Map<String, Set<ModelElement>> _findRefElementCache;
 // TODO(jcollins-g): Subcomponents of this function shouldn't be adding nulls to results, strip the
 //                   removes out that are gratuitous and debug the individual pieces.
 // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
-Element _findRefElementInLibrary(
-    String codeRef, ModelElement element, List<CommentReference> commentRefs) {
+ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
+    List<CommentReference> commentRefs, Class preferredClass) {
   assert(element != null);
-  assert(element.package.allLibrariesAdded);
+  assert(element.packageGraph.allLibrariesAdded);
 
   String codeRefChomped = codeRef.replaceFirst(isConstructor, '');
 
-  final Library library = element.library;
-  final Package package = library.package;
+  final Library library = element is ModelElement ? element.library : null;
+  final PackageGraph packageGraph = library.packageGraph;
   final Set<ModelElement> results = new Set();
 
   // This might be an operator.  Strip the operator prefix and try again.
-  if (results.isEmpty && codeRef.startsWith('operator')) {
-    String newCodeRef = codeRef.replaceFirst('operator', '');
-    return _findRefElementInLibrary(newCodeRef, element, commentRefs);
+  if (results.isEmpty && codeRef.startsWith(operatorPrefix)) {
+    String newCodeRef = codeRef.replaceFirst(operatorPrefix, '');
+    return _findRefElementInLibrary(
+        newCodeRef, element, commentRefs, preferredClass);
   }
 
   results.remove(null);
   // Oh, and someone might have some type parameters or other garbage.
   if (results.isEmpty && codeRef.contains(trailingIgnoreStuff)) {
     String newCodeRef = codeRef.replaceFirst(trailingIgnoreStuff, '');
-    return _findRefElementInLibrary(newCodeRef, element, commentRefs);
+    return _findRefElementInLibrary(
+        newCodeRef, element, commentRefs, preferredClass);
   }
 
   results.remove(null);
   // Oh, and someone might have thrown on a 'const' or 'final' in front.
   if (results.isEmpty && codeRef.contains(leadingIgnoreStuff)) {
     String newCodeRef = codeRef.replaceFirst(leadingIgnoreStuff, '');
-    return _findRefElementInLibrary(newCodeRef, element, commentRefs);
+    return _findRefElementInLibrary(
+        newCodeRef, element, commentRefs, preferredClass);
   }
 
   // Maybe this ModelElement has parameters, and this is one of them.
   // We don't link these, but this keeps us from emitting warnings.  Be sure to
   // get members of parameters too.
   // TODO(jcollins-g): link to classes that are the types of parameters, where known
-  results.addAll(element.allParameters.where((p) =>
-      p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
+  if (element is ModelElement) {
+    results.addAll(element.allParameters.where((p) =>
+        p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
+  }
+
+  results.remove(null);
+  // Maybe this ModelElement has type parameters, and this is one of them.
+  if (results.isEmpty) {
+    if (element is TypeParameters) {
+      results.addAll(element.typeParameters.where((p) =>
+          p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
+    }
+  }
 
   results.remove(null);
   if (results.isEmpty) {
     // Maybe this is local to a class.
     // TODO(jcollins-g): tryClasses is a strict subset of the superclass chain.  Optimize.
-    List<Class> tryClasses = [_getPreferredClass(element)];
+    List<Class> tryClasses = [preferredClass];
     Class realClass = tryClasses.first;
     if (element is Inheritable) {
       ModelElement overriddenElement = element.overriddenElement;
@@ -436,7 +445,7 @@ Element _findRefElementInLibrary(
     for (Class tryClass in tryClasses) {
       if (tryClass != null) {
         _getResultsForClass(
-            tryClass, codeRefChomped, results, codeRef, package);
+            tryClass, codeRefChomped, results, codeRef, packageGraph);
       }
       results.remove(null);
       if (results.isNotEmpty) break;
@@ -444,10 +453,10 @@ Element _findRefElementInLibrary(
 
     if (results.isEmpty && realClass != null) {
       for (Class superClass
-          in realClass.superChain.map((et) => et.element as Class)) {
+          in realClass.publicSuperChain.map((et) => et.element as Class)) {
         if (!tryClasses.contains(superClass)) {
           _getResultsForClass(
-              superClass, codeRefChomped, results, codeRef, package);
+              superClass, codeRefChomped, results, codeRef, packageGraph);
         }
         results.remove(null);
         if (results.isNotEmpty) break;
@@ -462,9 +471,10 @@ Element _findRefElementInLibrary(
   //                   when referring to objects in libraries outside the
   //                   documented set.
   if (results.isEmpty && _findRefElementCache == null) {
-    assert(package.allLibrariesAdded);
+    assert(packageGraph.allLibrariesAdded);
     _findRefElementCache = new Map();
-    for (final modelElement in package.allModelElements) {
+    for (final modelElement
+        in filterNonDocumented(packageGraph.allLocalModelElements)) {
       _findRefElementCache.putIfAbsent(
           modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
       _findRefElementCache.putIfAbsent(
@@ -480,9 +490,18 @@ Element _findRefElementInLibrary(
   if (results.isEmpty &&
       codeRefChomped.contains('.') &&
       _findRefElementCache.containsKey(codeRefChomped)) {
-    for (final modelElement in _findRefElementCache[codeRefChomped]) {
+    for (final ModelElement modelElement
+        in _findRefElementCache[codeRefChomped]) {
       if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
-      results.add(package.findCanonicalModelElementFor(modelElement.element));
+      // For fully qualified matches, the original preferredClass passed
+      // might make no sense.  Instead, use the enclosing class from the
+      // element in [_findRefElementCache], because that element's enclosing
+      // class will be preferred from [codeRefChomped]'s perspective.
+      results.add(packageGraph.findCanonicalModelElementFor(
+          modelElement.element,
+          preferredClass: modelElement.enclosingElement is Class
+              ? modelElement.enclosingElement
+              : null));
     }
   }
   results.remove(null);
@@ -492,7 +511,9 @@ Element _findRefElementInLibrary(
     for (final modelElement in library.allModelElements) {
       if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
       if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary) {
-        results.add(package.findCanonicalModelElementFor(modelElement.element));
+        results.add(packageGraph.findCanonicalModelElementFor(
+            modelElement.element,
+            preferredClass: preferredClass));
       }
     }
   }
@@ -504,10 +525,12 @@ Element _findRefElementInLibrary(
       if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary ||
           (modelElement is Library &&
               codeRefChomped == modelElement.fullyQualifiedName)) {
-        results.add(package.findCanonicalModelElementFor(modelElement.element));
+        results.add(
+            packageGraph.findCanonicalModelElementFor(modelElement.element));
       }
     }
   }
+  results.remove(null);
 
   // This could conceivably be a reference to an enum member.  They don't show up in allModelElements.
   // TODO(jcollins-g): Put enum members in allModelElements with useful hrefs without blowing up other assumptions about what that means.
@@ -531,10 +554,8 @@ Element _findRefElementInLibrary(
       }
     }
   }
-
-  Element result;
-
   results.remove(null);
+
   if (results.length > 1) {
     // If this name could refer to a class or a constructor, prefer the class.
     if (results.any((r) => r is Class)) {
@@ -543,12 +564,30 @@ Element _findRefElementInLibrary(
   }
 
   if (results.length > 1) {
+    if (results.any((r) => r.library?.packageName == library.packageName)) {
+      results.removeWhere((r) => r.library?.packageName != library.packageName);
+    }
+  }
+
+  if (results.length > 1 && element is ModelElement) {
     // Attempt to disambiguate using the library.
     // TODO(jcollins-g): we could have saved ourselves some work by using the analyzer
     //                   to search the namespace, somehow.  Do that instead.
     if (results.any((r) => r.element.isAccessibleIn(element.library.element))) {
       results.removeWhere(
           (r) => !r.element.isAccessibleIn(element.library.element));
+    }
+  }
+
+  if (results.length > 1) {
+    // This may refer to an element with the same name in multiple libraries
+    // in an external package, e.g. Matrix4 in vector_math and vector_math_64.
+    // Disambiguate by attempting to figure out which of them our package
+    // is actually using by checking the import/export graph.
+    if (results.any(
+        (r) => library.packageImportedExportedLibraries.contains(r.library))) {
+      results.removeWhere(
+          (r) => !library.packageImportedExportedLibraries.contains(r.library));
     }
   }
 
@@ -578,16 +617,21 @@ Element _findRefElementInLibrary(
     }
   }
 
+  ModelElement result;
   // TODO(jcollins-g): further disambiguations based on package information?
   if (results.isEmpty) {
     result = null;
   } else if (results.length == 1) {
-    result = results.first.element;
+    result = results.first;
   } else {
-    element.warn(PackageWarning.ambiguousDocReference,
-        message:
-            "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
-    result = results.first.element;
+    // Squelch ambiguous doc reference warnings for parameters, because we
+    // don't link those anyway.
+    if (!results.every((r) => r is Parameter)) {
+      element.warn(PackageWarning.ambiguousDocReference,
+          message:
+              "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
+    }
+    result = results.first;
   }
   return result;
 }
@@ -595,39 +639,43 @@ Element _findRefElementInLibrary(
 // _getResultsForClass assumes codeRefChomped might be a member of tryClass (inherited or not)
 // and will add to [results]
 void _getResultsForClass(Class tryClass, String codeRefChomped,
-    Set<ModelElement> results, String codeRef, Package package) {
+    Set<ModelElement> results, String codeRef, PackageGraph packageGraph) {
   // This might be part of the type arguments for the class, if so, add them.
   // Otherwise, search the class.
   if ((tryClass.modelType.typeArguments.map((e) => e.name))
       .contains(codeRefChomped)) {
-    results.add(tryClass.modelType.typeArguments
-        .firstWhere((e) => e.name == codeRefChomped)
+    results.add((tryClass.modelType.typeArguments.firstWhere(
+                (e) => e.name == codeRefChomped && e is DefinedElementType)
+            as DefinedElementType)
         .element);
   } else {
     // People like to use 'this' in docrefs too.
     if (codeRef == 'this') {
-      results.add(package.findCanonicalModelElementFor(tryClass.element));
+      results.add(packageGraph.findCanonicalModelElementFor(tryClass.element));
     } else {
       // TODO(jcollins-g): get rid of reimplementation of identifier resolution
       //                   or integrate into ModelElement in a simpler way.
       List<Class> superChain = [tryClass];
-      superChain
-          .addAll(tryClass.interfaces.map((t) => t.returnElement as Class));
+      superChain.addAll(tryClass.interfaces.map((t) => t.element as Class));
       // This seems duplicitous with our caller, but the preferredClass
       // hint matters with findCanonicalModelElementFor.
       // TODO(jcollins-g): This makes our caller ~O(n^2) vs length of superChain.
       //                   Fortunately superChains are short, but optimize this if it matters.
-      superChain
-          .addAll(tryClass.superChainRaw.map((t) => t.returnElement as Class));
+      superChain.addAll(tryClass.superChain.map((t) => t.element as Class));
       List<String> codeRefParts = codeRefChomped.split('.');
       for (final c in superChain) {
         // TODO(jcollins-g): add a hash-map-enabled lookup function to Class?
         for (final modelElement in c.allModelElements) {
           if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
           String namePart = modelElement.fullyQualifiedName.split('.').last;
+          if (modelElement is Accessor) {
+            // TODO(jcollins-g): Individual classes should be responsible for
+            // this name comparison munging.
+            namePart = namePart.split('=').first;
+          }
           // TODO(jcollins-g): fix operators so we can use 'name' here or similar.
           if (codeRefChomped == namePart) {
-            results.add(package.findCanonicalModelElementFor(
+            results.add(packageGraph.findCanonicalModelElementFor(
                 modelElement.element,
                 preferredClass: tryClass));
             continue;
@@ -639,7 +687,7 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
           // when it is referenced from a non-documented element?
           // TODO(jcollins-g): We could probably check this early.
           if (codeRefParts.first == c.name && codeRefParts.last == namePart) {
-            results.add(package.findCanonicalModelElementFor(
+            results.add(packageGraph.findCanonicalModelElementFor(
                 modelElement.element,
                 preferredClass: tryClass));
             continue;
@@ -653,7 +701,7 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
               if (codeRefClass == c.name &&
                   codeRefConstructor ==
                       modelElement.fullyQualifiedName.split('.').last) {
-                results.add(package.findCanonicalModelElementFor(
+                results.add(packageGraph.findCanonicalModelElementFor(
                     modelElement.element,
                     preferredClass: tryClass));
                 continue;
@@ -672,10 +720,10 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
   }
 }
 
-String _linkDocReference(String codeRef, Documentable documentable,
-    NodeList<CommentReference> commentRefs) {
+String _linkDocReference(
+    String codeRef, Warnable warnable, NodeList<CommentReference> commentRefs) {
   MatchingLinkResult result;
-  result = _getMatchingLinkElement(codeRef, documentable, commentRefs);
+  result = _getMatchingLinkElement(codeRef, warnable, commentRefs);
   final ModelElement linkedElement = result.element;
   final String label = result.label ?? codeRef;
   if (linkedElement != null) {
@@ -686,16 +734,16 @@ String _linkDocReference(String codeRef, Documentable documentable,
     // This would be linkedElement.linkedName, but link bodies are slightly
     // different for doc references.
     if (linkedElement.href == null) {
-      return '<code>${HTML_ESCAPE.convert(label)}</code>';
+      return '<code>${htmlEscape.convert(label)}</code>';
     } else {
       return '<a ${classContent}href="${linkedElement.href}">$label</a>';
     }
   } else {
     if (result.warn) {
-      documentable.warn(PackageWarning.unresolvedDocReference,
-          message: codeRef, referredFrom: documentable.documentationFrom);
+      warnable.warn(PackageWarning.unresolvedDocReference,
+          message: codeRef, referredFrom: warnable.documentationFrom);
     }
-    return '<code>${HTML_ESCAPE.convert(label)}</code>';
+    return '<code>${htmlEscape.convert(label)}</code>';
   }
 }
 
@@ -797,7 +845,6 @@ class MarkdownDocument extends md.Document {
       }
 
       bool specifiesLanguage = pre.classes.isNotEmpty;
-      pre.classes.add('prettyprint');
       // Assume the user intended Dart if there are no other classes present.
       if (!specifiesLanguage) pre.classes.add('language-dart');
     }
@@ -869,7 +916,7 @@ class MarkdownDocument extends md.Document {
 }
 
 class Documentation {
-  final Documentable _element;
+  final Canonicalization _element;
   Documentation.forElement(this._element) {}
 
   bool _hasExtendedDocs;
@@ -931,7 +978,9 @@ class Documentation {
     String text = _element.documentation;
     _showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
     MarkdownDocument document = new MarkdownDocument(
-        inlineSyntaxes: _markdown_syntaxes, linkResolver: _linkResolver);
+        inlineSyntaxes: _markdown_syntaxes,
+        blockSyntaxes: _markdown_block_syntaxes,
+        linkResolver: _linkResolver);
     List<String> lines = text.replaceAll('\r\n', '\n').split('\n');
     return document.renderLinesToHtml(lines, processFullDocs);
   }
@@ -942,7 +991,7 @@ class _InlineCodeSyntax extends md.InlineSyntax {
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
-    var element = new md.Element.text('code', HTML_ESCAPE.convert(match[1]));
+    var element = new md.Element.text('code', htmlEscape.convert(match[1]));
     parser.addNode(element);
     return true;
   }

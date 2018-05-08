@@ -10,7 +10,7 @@
   <base href="..">
 
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
-  <link rel="stylesheet" href="static-assets/prettify.css">
+  <link rel="stylesheet" href="static-assets/github.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
@@ -25,7 +25,7 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="index.html">test_package</a></li>
     <li><a href="ex/ex-library.html">ex</a></li>
-    <li class="self-crumb">class Dog</li>
+    <li class="self-crumb">Dog class</li>
   </ol>
   <div class="self-name">Dog</div>
   <form class="search navbar-right" role="search">
@@ -36,9 +36,10 @@
 <main>
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5>library ex</h5>
+    <h5>ex library</h5>
     <ol>
       <li class="section-title"><a href="ex/ex-library.html#classes">Classes</a></li>
+      <li><a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a></li>
       <li><a href="ex/Apple-class.html">Apple</a></li>
       <li><a href="ex/aThingToDo-class.html">aThingToDo</a></li>
       <li><a href="ex/B-class.html">B</a></li>
@@ -49,15 +50,21 @@
       <li><a href="ex/Deprecated-class.html">Deprecated</a></li>
       <li><a href="ex/Dog-class.html">Dog</a></li>
       <li><a href="ex/E-class.html">E</a></li>
+      <li><a href="ex/ExtendedShortName-class.html">ExtendedShortName</a></li>
       <li><a href="ex/F-class.html">F</a></li>
       <li><a href="ex/ForAnnotation-class.html">ForAnnotation</a></li>
       <li><a href="ex/HasAnnotation-class.html">HasAnnotation</a></li>
       <li><a href="ex/Helper-class.html">Helper</a></li>
       <li><a href="ex/Klass-class.html">Klass</a></li>
+      <li><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a></li>
       <li><a href="ex/PublicClassExtendsPrivateClass-class.html">PublicClassExtendsPrivateClass</a></li>
       <li><a href="ex/PublicClassImplementsPrivateInterface-class.html">PublicClassImplementsPrivateInterface</a></li>
       <li><a href="ex/ShapeType-class.html">ShapeType</a></li>
+      <li><a href="ex/ShortName-class.html">ShortName</a></li>
       <li><a href="ex/SpecializedDuration-class.html">SpecializedDuration</a></li>
+      <li><a href="ex/TemplatedClass-class.html">TemplatedClass</a></li>
+      <li><a href="ex/TemplatedInterface-class.html">TemplatedInterface</a></li>
+      <li><a href="ex/TypedFunctionsWithoutTypedefs-class.html">TypedFunctionsWithoutTypedefs</a></li>
       <li><a href="ex/WithGeneric-class.html">WithGeneric</a></li>
       <li><a href="ex/WithGenericSub-class.html">WithGenericSub</a></li>
     
@@ -87,6 +94,7 @@
       <li><a href="ex/Animal-class.html">Animal</a></li>
     
       <li class="section-title"><a href="ex/ex-library.html#typedefs">Typedefs</a></li>
+      <li><a href="ex/aComplexTypedef.html">aComplexTypedef</a></li>
       <li><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a></li>
       <li><a href="ex/processMessage.html">processMessage</a></li>
     
@@ -99,16 +107,17 @@
   </div>
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+    <h1>Dog class</h1>
 
     <section class="desc markdown">
       <p>implements <a href="ex/Cat-class.html">Cat</a>, <a href="ex/E-class.html">E</a></p>
 <p>Some text with <strong>bold</strong> remarks.
 A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
-<pre class="language-html prettyprint"><code class="language-html">&lt;h1&gt;Hello &lt;b&gt;World&lt;/b&gt;!&lt;/h1&gt;
+<pre class="language-html"><code class="language-html">&lt;h1&gt;Hello &lt;b&gt;World&lt;/b&gt;!&lt;/h1&gt;
 </code></pre>
-<pre class="language-dart prettyprint"><code class="language-dart">var test = 1;
+<pre class="language-dart"><code class="language-dart">var test = 1;
 </code></pre>
-<pre class="prettyprint language-dart"><code>var test = 1;
+<pre class="language-dart"><code>var test = 1;
 </code></pre>
     </section>
     
@@ -180,13 +189,12 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
           <div class="features">@protected, final</div>
 </dd>
         <dt id="deprecatedField" class="property">
-          <span class="name deprecated"><a class="deprecated" href="ex/Dog/deprecatedField.html">deprecatedField</a></span><span class="signature">
-            <span class="returntype parameter">&#8596;   <span class="parameter" id="deprecatedField=-param-_deprecatedField"><span class="type-annotation">int</span></span> </span>
-          </span>
+          <span class="name"><a class="deprecated" href="ex/Dog/deprecatedField.html">deprecatedField</a></span>
+          <span class="signature">&#8596; int</span>
         </dt>
         <dd>
           
-          <div class="features">@deprecated, read / write</div>
+          <div class="features">read / write</div>
 </dd>
         <dt id="deprecatedGetter" class="property">
           <span class="name"><a class="deprecated" href="ex/Dog/deprecatedGetter.html">deprecatedGetter</a></span>
@@ -194,16 +202,15 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
         </dt>
         <dd>
           
-          <div class="features">@deprecated, read-only</div>
+          <div class="features">read-only</div>
 </dd>
         <dt id="deprecatedSetter" class="property">
-          <span class="name deprecated"><a class="deprecated" href="ex/Dog/deprecatedSetter.html">deprecatedSetter</a></span><span class="signature">
-            <span class="returntype parameter">&#8592;  <span class="parameter" id="deprecatedSetter=-param-value"><span class="type-annotation">int</span> <span class="parameter-name">value</span></span>  </span>
-          </span>
+          <span class="name"><a class="deprecated" href="ex/Dog/deprecatedSetter.html">deprecatedSetter</a></span>
+          <span class="signature">&#8592; <span class="parameter" id="deprecatedSetter=-param-value"><span class="type-annotation">int</span></span></span>
         </dt>
         <dd>
           
-          <div class="features">@deprecated, write-only</div>
+          <div class="features">write-only</div>
 </dd>
         <dt id="isImplemented" class="property">
           <span class="name"><a href="ex/Dog/isImplemented.html">isImplemented</a></span>
@@ -211,19 +218,18 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
         </dt>
         <dd>
           
-          <div class="features">@override, read-only</div>
+          <div class="features">read-only</div>
 </dd>
         <dt id="name" class="property">
-          <span class="name"><a href="ex/Dog/name.html">name</a></span><span class="signature">
-            <span class="returntype parameter">&#8596;   <span class="parameter" id="name=-param-_name"><span class="type-annotation">String</span></span> </span>
-          </span>
+          <span class="name"><a href="ex/Dog/name.html">name</a></span>
+          <span class="signature">&#8596; String</span>
         </dt>
         <dd>
           
           <div class="features">read / write</div>
 </dd>
         <dt id="hashCode" class="property inherited">
-          <span class="name"><a href="ex/Dog/hashCode.html">hashCode</a></span>
+          <span class="name"><a href="ex/E/hashCode.html">hashCode</a></span>
           <span class="signature">&#8594; int</span>
         </dt>
         <dd class="inherited">
@@ -231,7 +237,7 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
           <div class="features">read-only, inherited</div>
 </dd>
         <dt id="runtimeType" class="property inherited">
-          <span class="name"><a href="ex/Dog/runtimeType.html">runtimeType</a></span>
+          <span class="name"><a href="ex/E/runtimeType.html">runtimeType</a></span>
           <span class="signature">&#8594; Type</span>
         </dt>
         <dd class="inherited">
@@ -264,7 +270,7 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
 </dd>
         <dt id="getAnotherClassD" class="callable">
           <span class="name deprecated"><a class="deprecated" href="ex/Dog/getAnotherClassD.html">getAnotherClassD</a></span><span class="signature">(<wbr>)
-            <span class="returntype parameter">&#8594; List&lt;<a href="ex/Dog-class.html">Dog</a>&gt;</span>
+            <span class="returntype parameter">&#8594; List<span class="signature">&lt;<wbr><span class="type-parameter"><a href="ex/Dog-class.html">Dog</a></span>&gt;</span></span>
           </span>
         </dt>
         <dd>
@@ -273,7 +279,7 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
 </dd>
         <dt id="getClassA" class="callable">
           <span class="name deprecated"><a class="deprecated" href="ex/Dog/getClassA.html">getClassA</a></span><span class="signature">(<wbr>)
-            <span class="returntype parameter">&#8594; List&lt;<a href="ex/Apple-class.html">Apple</a>&gt;</span>
+            <span class="returntype parameter">&#8594; List<span class="signature">&lt;<wbr><span class="type-parameter"><a href="ex/Apple-class.html">Apple</a></span>&gt;</span></span>
           </span>
         </dt>
         <dd>
@@ -281,7 +287,7 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
           
 </dd>
         <dt id="testGeneric" class="callable">
-          <span class="name"><a href="ex/Dog/testGeneric.html">testGeneric</a></span><span class="signature">(<wbr><span class="parameter" id="testGeneric-param-args"><span class="type-annotation">Map&lt;String, dynamic&gt;</span> <span class="parameter-name">args</span></span>)
+          <span class="name"><a href="ex/Dog/testGeneric.html">testGeneric</a></span><span class="signature">(<wbr><span class="parameter" id="testGeneric-param-args"><span class="type-annotation">Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">dynamic</span>&gt;</span></span> <span class="parameter-name">args</span></span>)
             <span class="returntype parameter">&#8594; void</span>
           </span>
         </dt>
@@ -290,7 +296,7 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
           
 </dd>
         <dt id="testGenericMethod" class="callable">
-          <span class="name"><a href="ex/Dog/testGenericMethod.html">testGenericMethod</a></span><span class="signature">&lt;T&gt;(<wbr><span class="parameter" id="testGenericMethod-param-arg"><span class="type-annotation">T</span> <span class="parameter-name">arg</span></span>)
+          <span class="name"><a href="ex/Dog/testGenericMethod.html">testGenericMethod</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="testGenericMethod-param-arg"><span class="type-annotation">T</span> <span class="parameter-name">arg</span></span>)
             <span class="returntype parameter">&#8594; T</span>
           </span>
         </dt>
@@ -325,8 +331,26 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
           Foo macro content
           
 </dd>
+        <dt id="withPrivateMacro" class="callable">
+          <span class="name"><a href="ex/Dog/withPrivateMacro.html">withPrivateMacro</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          Use a privately defined macro: Private macro content
+          
+</dd>
+        <dt id="withUndefinedMacro" class="callable">
+          <span class="name"><a href="ex/Dog/withUndefinedMacro.html">withUndefinedMacro</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+        </dt>
+        <dd>
+          Don't define this:  null
+          
+</dd>
         <dt id="noSuchMethod" class="callable inherited">
-          <span class="name"><a href="ex/Dog/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
+          <span class="name"><a href="ex/E/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
             <span class="returntype parameter">&#8594; dynamic</span>
           </span>
         </dt>
@@ -335,7 +359,7 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
           <div class="features">inherited</div>
 </dd>
         <dt id="toString" class="callable inherited">
-          <span class="name"><a href="ex/Dog/toString.html">toString</a></span><span class="signature">(<wbr>)
+          <span class="name"><a href="ex/E/toString.html">toString</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; String</span>
           </span>
         </dt>
@@ -350,8 +374,8 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
       <h2>Operators</h2>
       <dl class="callables">
         <dt id="operator ==" class="callable">
-          <span class="name"><a href="ex/Dog/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="parameter-name">other</span></span>)
-            <span class="returntype parameter">&#8594; dynamic</span>
+          <span class="name"><a href="ex/Dog/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">dynamic</span> <span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; bool</span>
           </span>
         </dt>
         <dd>
@@ -374,9 +398,8 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
           <div class="features">final</div>
 </dd>
         <dt id="staticGetterSetter" class="property">
-          <span class="name"><a href="ex/Dog/staticGetterSetter.html">staticGetterSetter</a></span><span class="signature">
-            <span class="returntype parameter">&#8596;  <span class="parameter" id="staticGetterSetter=-param-x"><span class="parameter-name">x</span></span>  </span>
-          </span>
+          <span class="name"><a href="ex/Dog/staticGetterSetter.html">staticGetterSetter</a></span>
+          <span class="signature">&#8596; int</span>
         </dt>
         <dd>
           
@@ -404,15 +427,26 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
       <h2>Constants</h2>
 
       <dl class="properties">
+        <dt id="aName" class="constant">
+          <span class="name "><a href="ex/Dog/aName-constant.html">aName</a></span>
+          <span class="signature">&#8594; const <a href="ex/ShortName-class.html">ShortName</a></span>
+        </dt>
+        <dd>
+          Verify link substitution in constants (#1535)
+          
+  <div>
+            <span class="signature"><code>const <a href="ex/ExtendedShortName/ExtendedShortName.html">ExtendedShortName</a>(&quot;hello there&quot;)</code></span>
+          </div>
+        </dd>
         <dt id="aStaticConstField" class="constant">
           <span class="name "><a href="ex/Dog/aStaticConstField-constant.html">aStaticConstField</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           
           
   <div>
-            <span class="signature"><code>"A Constant Dog"</code></span>
+            <span class="signature"><code>&quot;A Constant Dog&quot;</code></span>
           </div>
         </dd>
       </dl>
@@ -421,7 +455,6 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>class Dog</h5>
     <ol>
       <li class="section-title"><a href="ex/Dog-class.html#constructors">Constructors</a></li>
       <li><a href="ex/Dog/Dog.html">Dog</a></li>
@@ -438,8 +471,8 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
       <li><a class="deprecated" href="ex/Dog/deprecatedSetter.html">deprecatedSetter</a></li>
       <li><a href="ex/Dog/isImplemented.html">isImplemented</a></li>
       <li><a href="ex/Dog/name.html">name</a></li>
-      <li class="inherited"><a href="ex/Dog/hashCode.html">hashCode</a></li>
-      <li class="inherited"><a href="ex/Dog/runtimeType.html">runtimeType</a></li>
+      <li class="inherited"><a href="ex/E/hashCode.html">hashCode</a></li>
+      <li class="inherited"><a href="ex/E/runtimeType.html">runtimeType</a></li>
     
       <li class="section-title"><a href="ex/Dog-class.html#instance-methods">Methods</a></li>
       <li><a href="ex/Dog/abstractMethod.html">abstractMethod</a></li>
@@ -451,8 +484,10 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
       <li><a href="ex/Dog/testMethod.html">testMethod</a></li>
       <li><a href="ex/Dog/withMacro.html">withMacro</a></li>
       <li><a href="ex/Dog/withMacro2.html">withMacro2</a></li>
-      <li class="inherited"><a href="ex/Dog/noSuchMethod.html">noSuchMethod</a></li>
-      <li class="inherited"><a href="ex/Dog/toString.html">toString</a></li>
+      <li><a href="ex/Dog/withPrivateMacro.html">withPrivateMacro</a></li>
+      <li><a href="ex/Dog/withUndefinedMacro.html">withUndefinedMacro</a></li>
+      <li class="inherited"><a href="ex/E/noSuchMethod.html">noSuchMethod</a></li>
+      <li class="inherited"><a href="ex/E/toString.html">toString</a></li>
     
       <li class="section-title"><a href="ex/Dog-class.html#operators">Operators</a></li>
       <li><a href="ex/Dog/operator_equals.html">operator ==</a></li>
@@ -465,6 +500,7 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
       <li><a class="deprecated" href="ex/Dog/createDog.html">createDog</a></li>
     
       <li class="section-title"><a href="ex/Dog-class.html#constants">Constants</a></li>
+      <li><a href="ex/Dog/aName-constant.html">aName</a></li>
       <li><a href="ex/Dog/aStaticConstField-constant.html">aStaticConstField</a></li>
     </ol>
   </div><!--/.sidebar-offcanvas-->
@@ -475,16 +511,12 @@ A selection of dog flavors:</p><ul><li>beef</li><li>poultry</li></ul>
   <span class="no-break">
     test_package 0.0.1
   </span>
-  &bull;
-  <span class="copyright no-break">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
-  </span>
 
 </footer>
 
-<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="static-assets/typeahead.bundle.min.js"></script>
-<script src="static-assets/prettify.js"></script>
+<script src="static-assets/highlight.pack.js"></script>
 <script src="static-assets/URI.js"></script>
 <script src="static-assets/script.js"></script>
 

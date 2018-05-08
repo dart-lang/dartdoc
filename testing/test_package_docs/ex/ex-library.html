@@ -10,7 +10,7 @@
   <base href="..">
 
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
-  <link rel="stylesheet" href="static-assets/prettify.css">
+  <link rel="stylesheet" href="static-assets/github.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
 
@@ -24,7 +24,7 @@
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="index.html">test_package</a></li>
-    <li class="self-crumb">library ex</li>
+    <li class="self-crumb">ex library</li>
   </ol>
   <div class="self-name">ex</div>
   <form class="search navbar-right" role="search">
@@ -35,25 +35,30 @@
 <main>
 
   <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
-    <h5>package test_package</h5>
-
+    <h5><span class="package-name">test_package</span> <span class="package-kind">package</span></h5>
     <ol>
-      <li class="section-title"><a href="index.html#libraries">Libraries</a></li>
-      <li><a href="anonymous_library/anonymous_library-library.html">anonymous_library</a></li>
-      <li><a href="another_anonymous_lib/another_anonymous_lib-library.html">another_anonymous_lib</a></li>
-      <li><a href="code_in_comments/code_in_comments-library.html">code_in_comments</a></li>
-      <li><a href="css/css-library.html">css</a></li>
-      <li><a href="ex/ex-library.html">ex</a></li>
-      <li><a href="fake/fake-library.html">fake</a></li>
-      <li><a class="deprecated" href="is_deprecated/is_deprecated-library.html">is_deprecated</a></li>
-      <li><a href="reexport_one/reexport_one-library.html">reexport_one</a></li>
-      <li><a href="reexport_two/reexport_two-library.html">reexport_two</a></li>
-      <li><a href="test_package_imported.main/test_package_imported.main-library.html">test_package_imported.main</a></li>
-      <li><a href="two_exports/two_exports-library.html">two_exports</a></li>
+          <li class="section-title">Libraries</li>
+          <li><a href="anonymous_library/anonymous_library-library.html">anonymous_library</a></li>
+          <li><a href="another_anonymous_lib/another_anonymous_lib-library.html">another_anonymous_lib</a></li>
+          <li><a href="code_in_comments/code_in_comments-library.html">code_in_comments</a></li>
+          <li><a class="deprecated" href="is_deprecated/is_deprecated-library.html">is_deprecated</a></li>
+          <li class="section-subtitle">Real Libraries</li>
+            <li class="section-subitem"><a href="ex/ex-library.html">ex</a></li>
+            <li class="section-subitem"><a href="fake/fake-library.html">fake</a></li>
+          <li class="section-subtitle">Unreal</li>
+            <li class="section-subitem"><a href="reexport_one/reexport_one-library.html">reexport_one</a></li>
+            <li class="section-subitem"><a href="reexport_two/reexport_two-library.html">reexport_two</a></li>
+          <li class="section-subtitle">Misc</li>
+            <li class="section-subitem"><a href="two_exports/two_exports-library.html">two_exports</a></li>
+          <li class="section-subtitle">Other</li>
+            <li class="section-subitem"><a href="css/css-library.html">css</a></li>
+          <li class="section-title">test_package_imported</li>
+          <li><a href="test_package_imported.main/test_package_imported.main-library.html">test_package_imported.main</a></li>
     </ol>
   </div>
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+    <h1>ex library</h1>
 
     <section class="desc markdown">
       <p>a library. testing string escaping: <code>var s = 'a string'</code> <cool></cool></p>
@@ -63,6 +68,12 @@
       <h2>Classes</h2>
 
       <dl>
+        <dt id="AnotherParameterizedClass">
+          <span class="name "><a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">B</span>&gt;</span></span>
+        </dt>
+        <dd>
+          
+        </dd>
         <dt id="Apple">
           <span class="name "><a href="ex/Apple-class.html">Apple</a></span>
         </dt>
@@ -123,8 +134,14 @@
         <dd>
           
         </dd>
+        <dt id="ExtendedShortName">
+          <span class="name "><a href="ex/ExtendedShortName-class.html">ExtendedShortName</a></span>
+        </dt>
+        <dd>
+          
+        </dd>
         <dt id="F">
-          <span class="name "><a href="ex/F-class.html">F</a></span>
+          <span class="name "><a href="ex/F-class.html">F</a><span class="signature">&lt;<wbr><span class="type-parameter">T extends String</span>&gt;</span></span>
         </dt>
         <dd>
           
@@ -155,6 +172,12 @@
         <dd>
           A class
         </dd>
+        <dt id="ParameterizedClass">
+          <span class="name "><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>
+        </dt>
+        <dd>
+          Support class to test inheritance + type expansion from implements clause.
+        </dd>
         <dt id="PublicClassExtendsPrivateClass">
           <span class="name "><a href="ex/PublicClassExtendsPrivateClass-class.html">PublicClassExtendsPrivateClass</a></span>
         </dt>
@@ -173,6 +196,12 @@
         <dd>
           Foo bar. <a href="ex/ShapeType-class.html">[...]</a>
         </dd>
+        <dt id="ShortName">
+          <span class="name "><a href="ex/ShortName-class.html">ShortName</a></span>
+        </dt>
+        <dd>
+          
+        </dd>
         <dt id="SpecializedDuration">
           <span class="name "><a href="ex/SpecializedDuration-class.html">SpecializedDuration</a></span>
         </dt>
@@ -180,8 +209,26 @@
           For testing a class that extends a class
 that has some operators
         </dd>
+        <dt id="TemplatedClass">
+          <span class="name "><a href="ex/TemplatedClass-class.html">TemplatedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">X</span>&gt;</span></span>
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="TemplatedInterface">
+          <span class="name "><a href="ex/TemplatedInterface-class.html">TemplatedInterface</a><span class="signature">&lt;<wbr><span class="type-parameter">A</span>&gt;</span></span>
+        </dt>
+        <dd>
+          Class for testing expansion of type from implements clause.
+        </dd>
+        <dt id="TypedFunctionsWithoutTypedefs">
+          <span class="name "><a href="ex/TypedFunctionsWithoutTypedefs-class.html">TypedFunctionsWithoutTypedefs</a></span>
+        </dt>
+        <dd>
+          This class has a complicated type situation.
+        </dd>
         <dt id="WithGeneric">
-          <span class="name "><a href="ex/WithGeneric-class.html">WithGeneric</a></span>
+          <span class="name "><a href="ex/WithGeneric-class.html">WithGeneric</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>
         </dt>
         <dd>
           
@@ -201,7 +248,7 @@ that has some operators
       <dl class="properties">
         <dt id="COLOR" class="constant">
           <span class="name "><a href="ex/COLOR-constant.html">COLOR</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           
@@ -212,7 +259,7 @@ that has some operators
         </dd>
         <dt id="COLOR_GREEN" class="constant">
           <span class="name "><a href="ex/COLOR_GREEN-constant.html">COLOR_GREEN</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           
@@ -223,7 +270,7 @@ that has some operators
         </dd>
         <dt id="COLOR_ORANGE" class="constant">
           <span class="name "><a href="ex/COLOR_ORANGE-constant.html">COLOR_ORANGE</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           
@@ -234,7 +281,7 @@ that has some operators
         </dd>
         <dt id="COMPLEX_COLOR" class="constant">
           <span class="name "><a href="ex/COMPLEX_COLOR-constant.html">COMPLEX_COLOR</a></span>
-          <span class="signature">&#8594; String</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           
@@ -245,18 +292,18 @@ that has some operators
         </dd>
         <dt id="deprecated" class="constant">
           <span class="name "><a href="ex/deprecated-constant.html">deprecated</a></span>
-          <span class="signature">&#8594; <a href="ex/Deprecated-class.html">Deprecated</a></span>
+          <span class="signature">&#8594; const <a href="ex/Deprecated-class.html">Deprecated</a></span>
         </dt>
         <dd>
           
           
   <div>
-            <span class="signature"><code>const <a href="ex/Deprecated-class.html">Deprecated</a>(&quot;next release&quot;)</code></span>
+            <span class="signature"><code>const <a href="ex/Deprecated/Deprecated.html">Deprecated</a>(&#39;next release&#39;)</code></span>
           </div>
         </dd>
         <dt id="incorrectDocReference" class="constant">
           <span class="name "><a href="ex/incorrectDocReference-constant.html">incorrectDocReference</a></span>
-          <span class="signature">&#8594; dynamic</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           This is the same name as a top-level const from the fake lib.
@@ -267,7 +314,7 @@ that has some operators
         </dd>
         <dt id="incorrectDocReferenceFromEx" class="constant">
           <span class="name "><a href="ex/incorrectDocReferenceFromEx-constant.html">incorrectDocReferenceFromEx</a></span>
-          <span class="signature">&#8594; dynamic</span>
+          <span class="signature">&#8594; const String</span>
         </dt>
         <dd>
           This should <code>not work</code>.
@@ -278,18 +325,18 @@ that has some operators
         </dd>
         <dt id="MY_CAT" class="constant">
           <span class="name "><a href="ex/MY_CAT-constant.html">MY_CAT</a></span>
-          <span class="signature">&#8594; <a href="ex/ConstantCat-class.html">ConstantCat</a></span>
+          <span class="signature">&#8594; const <a href="ex/ConstantCat-class.html">ConstantCat</a></span>
         </dt>
         <dd>
           
           
   <div>
-            <span class="signature"><code>const <a href="ex/ConstantCat-class.html">ConstantCat</a>(&#39;tabby&#39;)</code></span>
+            <span class="signature"><code>const <a href="ex/ConstantCat/ConstantCat.html">ConstantCat</a>(&#39;tabby&#39;)</code></span>
           </div>
         </dd>
         <dt id="PRETTY_COLORS" class="constant">
           <span class="name "><a href="ex/PRETTY_COLORS-constant.html">PRETTY_COLORS</a></span>
-          <span class="signature">&#8594; List&lt;String&gt;</span>
+          <span class="signature">&#8594; const List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>
         </dt>
         <dd>
           
@@ -306,9 +353,8 @@ that has some operators
 
       <dl class="properties">
         <dt id="deprecatedField" class="property">
-          <span class="name deprecated"><a class="deprecated" href="ex/deprecatedField.html">deprecatedField</a></span><span class="signature">
-            <span class="returntype parameter">&#8596;   <span class="parameter" id="deprecatedField=-param-_deprecatedField"><span class="type-annotation">int</span></span> </span>
-          </span>
+          <span class="name"><a class="deprecated" href="ex/deprecatedField.html">deprecatedField</a></span>
+          <span class="signature">&#8596; int</span>
         </dt>
         <dd>
           
@@ -323,18 +369,16 @@ that has some operators
           <div class="features">read-only</div>
 </dd>
         <dt id="deprecatedSetter" class="property">
-          <span class="name deprecated"><a class="deprecated" href="ex/deprecatedSetter.html">deprecatedSetter</a></span><span class="signature">
-            <span class="returntype parameter">&#8592;  <span class="parameter" id="deprecatedSetter=-param-value"><span class="type-annotation">int</span> <span class="parameter-name">value</span></span>  </span>
-          </span>
+          <span class="name"><a class="deprecated" href="ex/deprecatedSetter.html">deprecatedSetter</a></span>
+          <span class="signature">&#8592; <span class="parameter" id="deprecatedSetter=-param-value"><span class="type-annotation">int</span></span></span>
         </dt>
         <dd>
           
           <div class="features">write-only</div>
 </dd>
         <dt id="number" class="property">
-          <span class="name"><a href="ex/number.html">number</a></span><span class="signature">
-            <span class="returntype parameter">&#8596;   <span class="parameter" id="number=-param-_number"><span class="type-annotation">double</span></span> </span>
-          </span>
+          <span class="name"><a href="ex/number.html">number</a></span>
+          <span class="signature">&#8596; double</span>
         </dt>
         <dd>
           
@@ -356,7 +400,7 @@ that has some operators
 
       <dl class="callables">
         <dt id="function1" class="callable">
-          <span class="name"><a href="ex/function1.html">function1</a></span><span class="signature">(<wbr><span class="parameter" id="function1-param-s"><span class="type-annotation">String</span> <span class="parameter-name">s</span>, </span> <span class="parameter" id="function1-param-b"><span class="type-annotation">bool</span> <span class="parameter-name">b</span>, </span> <span class="parameter" id="function1-param-lastParam"><span class="parameter-name">lastParam</span></span>)
+          <span class="name"><a href="ex/function1.html">function1</a></span><span class="signature">(<wbr><span class="parameter" id="function1-param-s"><span class="type-annotation">String</span> <span class="parameter-name">s</span>, </span> <span class="parameter" id="function1-param-b"><span class="type-annotation">bool</span> <span class="parameter-name">b</span>, </span> <span class="parameter" id="function1-param-lastParam"><span class="type-annotation">dynamic</span> <span class="parameter-name">lastParam</span></span>)
             <span class="returntype parameter">&#8594; int</span>
           </span>
         </dt>
@@ -365,7 +409,7 @@ that has some operators
           
 </dd>
         <dt id="genericFunction" class="callable">
-          <span class="name"><a href="ex/genericFunction.html">genericFunction</a></span><span class="signature">&lt;T&gt;(<wbr><span class="parameter" id="genericFunction-param-arg"><span class="type-annotation">T</span> <span class="parameter-name">arg</span></span>)
+          <span class="name"><a href="ex/genericFunction.html">genericFunction</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="genericFunction-param-arg"><span class="type-annotation">T</span> <span class="parameter-name">arg</span></span>)
             <span class="returntype parameter">&#8594; T</span>
           </span>
         </dt>
@@ -384,7 +428,8 @@ that has some operators
           <a href="ex/Animal-class.html">Animal</a>
         </dt>
         <dd>
-          
+          Referencing <a href="ex/processMessage.html">processMessage</a> (or other things) here should not break
+enum constants ala #1445
         </dd>
       </dl>
     </section>
@@ -393,8 +438,17 @@ that has some operators
       <h2>Typedefs</h2>
 
       <dl class="callables">
+        <dt id="aComplexTypedef" class="callable">
+          <span class="name"><a href="ex/aComplexTypedef.html">aComplexTypedef</a></span><span class="signature">&lt;<wbr><span class="type-parameter">A1</span>, <span class="type-parameter">A2</span>, <span class="type-parameter">A3</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">String</span></span>)
+            <span class="returntype parameter">&#8594; void Function<span class="signature">(<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span>)</span></span>
+          </span>
+        </dt>
+        <dd>
+          Someone might do this some day.
+          
+</dd>
         <dt id="ParameterizedTypedef" class="callable">
-          <span class="name"><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a></span><span class="signature">(<wbr><span class="parameter" id="ParameterizedTypedef-param-msg"><span class="type-annotation">T</span> <span class="parameter-name">msg</span>, </span> <span class="parameter" id="ParameterizedTypedef-param-foo"><span class="type-annotation">int</span> <span class="parameter-name">foo</span></span>)
+          <span class="name"><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="ParameterizedTypedef-param-msg"><span class="type-annotation">T</span> <span class="parameter-name">msg</span>, </span> <span class="parameter" id="ParameterizedTypedef-param-foo"><span class="type-annotation">int</span> <span class="parameter-name">foo</span></span>)
             <span class="returntype parameter">&#8594; String</span>
           </span>
         </dt>
@@ -403,7 +457,7 @@ that has some operators
           
 </dd>
         <dt id="processMessage" class="callable">
-          <span class="name"><a href="ex/processMessage.html">processMessage</a></span><span class="signature">(<wbr><span class="parameter" id="processMessage-param-msg"><span class="type-annotation">String</span> <span class="parameter-name">msg</span></span>)
+          <span class="name"><a href="ex/processMessage.html">processMessage</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="processMessage-param-msg"><span class="type-annotation">String</span> <span class="parameter-name">msg</span></span>)
             <span class="returntype parameter">&#8594; String</span>
           </span>
         </dt>
@@ -448,9 +502,10 @@ that has some operators
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
-    <h5>library ex</h5>
+    <h5>ex library</h5>
     <ol>
       <li class="section-title"><a href="ex/ex-library.html#classes">Classes</a></li>
+      <li><a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a></li>
       <li><a href="ex/Apple-class.html">Apple</a></li>
       <li><a href="ex/aThingToDo-class.html">aThingToDo</a></li>
       <li><a href="ex/B-class.html">B</a></li>
@@ -461,15 +516,21 @@ that has some operators
       <li><a href="ex/Deprecated-class.html">Deprecated</a></li>
       <li><a href="ex/Dog-class.html">Dog</a></li>
       <li><a href="ex/E-class.html">E</a></li>
+      <li><a href="ex/ExtendedShortName-class.html">ExtendedShortName</a></li>
       <li><a href="ex/F-class.html">F</a></li>
       <li><a href="ex/ForAnnotation-class.html">ForAnnotation</a></li>
       <li><a href="ex/HasAnnotation-class.html">HasAnnotation</a></li>
       <li><a href="ex/Helper-class.html">Helper</a></li>
       <li><a href="ex/Klass-class.html">Klass</a></li>
+      <li><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a></li>
       <li><a href="ex/PublicClassExtendsPrivateClass-class.html">PublicClassExtendsPrivateClass</a></li>
       <li><a href="ex/PublicClassImplementsPrivateInterface-class.html">PublicClassImplementsPrivateInterface</a></li>
       <li><a href="ex/ShapeType-class.html">ShapeType</a></li>
+      <li><a href="ex/ShortName-class.html">ShortName</a></li>
       <li><a href="ex/SpecializedDuration-class.html">SpecializedDuration</a></li>
+      <li><a href="ex/TemplatedClass-class.html">TemplatedClass</a></li>
+      <li><a href="ex/TemplatedInterface-class.html">TemplatedInterface</a></li>
+      <li><a href="ex/TypedFunctionsWithoutTypedefs-class.html">TypedFunctionsWithoutTypedefs</a></li>
       <li><a href="ex/WithGeneric-class.html">WithGeneric</a></li>
       <li><a href="ex/WithGenericSub-class.html">WithGenericSub</a></li>
     
@@ -499,6 +560,7 @@ that has some operators
       <li><a href="ex/Animal-class.html">Animal</a></li>
     
       <li class="section-title"><a href="ex/ex-library.html#typedefs">Typedefs</a></li>
+      <li><a href="ex/aComplexTypedef.html">aComplexTypedef</a></li>
       <li><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a></li>
       <li><a href="ex/processMessage.html">processMessage</a></li>
     
@@ -516,16 +578,12 @@ that has some operators
   <span class="no-break">
     test_package 0.0.1
   </span>
-  &bull;
-  <span class="copyright no-break">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">cc license</a>
-  </span>
 
 </footer>
 
-<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="static-assets/typeahead.bundle.min.js"></script>
-<script src="static-assets/prettify.js"></script>
+<script src="static-assets/highlight.pack.js"></script>
 <script src="static-assets/URI.js"></script>
 <script src="static-assets/script.js"></script>
 

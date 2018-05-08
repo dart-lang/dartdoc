@@ -7,12 +7,8 @@ library dartdoc.templates;
 import 'dart:async' show Future;
 import 'dart:io' show File;
 
+import 'package:dartdoc/src/html/resource_loader.dart' as loader;
 import 'package:mustache4dart/mustache4dart.dart';
-
-import 'resource_loader.dart' as loader;
-
-typedef String TemplateRenderer(context,
-    {bool assumeNullNonExistingProperty, bool errorOnMissingProperty});
 
 const _partials = const <String>[
   'callable',
@@ -20,6 +16,8 @@ const _partials = const <String>[
   'constant',
   'footer',
   'head',
+  'library',
+  'packages',
   'property',
   'features',
   'documentation',
@@ -29,7 +27,7 @@ const _partials = const <String>[
   'source_code',
   'sidebar_for_library',
   'accessor_getter',
-  'accessor_setter'
+  'accessor_setter',
 ];
 
 Future<Map<String, String>> _loadPartials(List<String> headerPaths,
@@ -110,7 +108,7 @@ class Templates {
 
     Future<TemplateRenderer> _loadTemplate(String templatePath) async {
       String templateContents = await _getTemplateFile(templatePath);
-      return compile(templateContents, partial: _partial) as TemplateRenderer;
+      return compile(templateContents, partial: _partial);
     }
 
     var indexTemplate = await _loadTemplate('index.html');

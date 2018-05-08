@@ -8,7 +8,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:mirrors';
 
-import 'package:path/path.dart' as path;
+import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
 const List<String> _filesToIgnore = const <String>['.DS_Store'];
@@ -21,17 +21,17 @@ Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location.sourceUri;
 
 String get _testPackageDocsPath =>
-    path.fromUri(_currentFileUri.resolve('../testing/test_package_docs'));
+    pathLib.fromUri(_currentFileUri.resolve('../testing/test_package_docs'));
 
 String get _testPackagePath =>
-    path.fromUri(_currentFileUri.resolve('../testing/test_package'));
+    pathLib.fromUri(_currentFileUri.resolve('../testing/test_package'));
 
 void main() {
   group('compare outputs', () {
     Directory tempDir;
 
     var dartdocBin =
-        path.fromUri(_currentFileUri.resolve('../bin/dartdoc.dart'));
+        pathLib.fromUri(_currentFileUri.resolve('../bin/dartdoc.dart'));
 
     setUp(() {
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
@@ -54,13 +54,13 @@ void main() {
         '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',
+        '--exclude-packages',
+        'Dart,meta,tuple,quiver_hashcode',
         '--hide-sdk-text',
-        '--exclude',
-        'dart.async,dart.collection,dart.convert,dart.core,dart.math,dart.typed_data,meta',
         '--no-include-source',
-        '--pretty-index-json',
         '--output',
-        tempDir.path
+        tempDir.path,
+        '--pretty-index-json',
       ];
 
       var result = Process.runSync(Platform.resolvedExecutable, args,
@@ -101,8 +101,8 @@ void main() {
             'diff',
             '--no-index',
             '--no-color',
-            path.join(_testPackageDocsPath, k),
-            path.join(tempDir.path, k)
+            pathLib.join(_testPackageDocsPath, k),
+            pathLib.join(tempDir.path, k)
           ];
           result = Process.runSync(gitBinName, args);
           assert(result.exitCode != 0);
@@ -151,9 +151,42 @@ void main() {
       }
     });
 
+    test('Validate JSON output', () {
+      var args = <String>[
+        dartdocBin,
+        '--include',
+        'ex',
+        '--no-include-source',
+        '--output',
+        tempDir.path,
+        '--json'
+      ];
+
+      var result = Process.runSync(Platform.resolvedExecutable, args,
+          workingDirectory: _testPackagePath);
+
+      if (result.exitCode != 0) {
+        print(result.exitCode);
+        print(result.stdout);
+        print(result.stderr);
+        fail('dartdoc failed');
+      }
+
+      var jsonValues = LineSplitter
+          .split(result.stdout)
+          .map((j) => json.decode(j) as Map<String, dynamic>)
+          .toList();
+
+      expect(jsonValues, isNotEmpty,
+          reason: 'All STDOUT lines should be JSON-encoded maps.');
+
+      expect(result.stderr as String, isEmpty,
+          reason: 'STDERR should be empty.');
+    });
+
     test('--footer-text includes text', () {
       String footerTextPath =
-          path.join(Directory.systemTemp.path, 'footer.txt');
+          pathLib.join(Directory.systemTemp.path, 'footer.txt');
       new File(footerTextPath).writeAsStringSync(' footer text include ');
 
       var args = <String>[
@@ -175,7 +208,7 @@ void main() {
         fail('dartdoc failed');
       }
 
-      File outFile = new File(path.join(tempDir.path, 'index.html'));
+      File outFile = new File(pathLib.join(tempDir.path, 'index.html'));
       expect(outFile.readAsStringSync(), contains('footer text include'));
     });
 
@@ -209,18 +242,18 @@ Map<String, String> _parseOutput(
     var type = match[1];
     var p = match[2];
 
-    if (_filesToIgnore.any((i) => path.basename(p) == i)) {
+    if (_filesToIgnore.any((i) => pathLib.basename(p) == i)) {
       continue;
     }
 
     if (type == 'A') {
-      expect(path.isWithin(tempPath, p), isTrue,
+      expect(pathLib.isWithin(tempPath, p), isTrue,
           reason: '`$p` should be within $tempPath');
-      p = path.relative(p, from: tempPath);
+      p = pathLib.relative(p, from: tempPath);
     } else {
-      expect(path.isWithin(sourcePath, p), isTrue,
+      expect(pathLib.isWithin(sourcePath, p), isTrue,
           reason: '`$p` should be within $sourcePath');
-      p = path.relative(p, from: sourcePath);
+      p = pathLib.relative(p, from: sourcePath);
     }
 
     values[p] = type;

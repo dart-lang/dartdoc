@@ -7,8 +7,6 @@ library dartdoc.package_utils_test;
 import 'dart:io';
 
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/sdk.dart';
-import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 void main() {
@@ -16,18 +14,12 @@ void main() {
     PackageMeta p;
 
     setUp(() {
-      var d = new Directory(
-          path.join(Directory.current.path, 'testing/test_package_not_valid'));
-      if (!d.existsSync()) {
-        throw "$d cannot be found";
-      }
+      var d = Directory.systemTemp.createTempSync('test_package_not_valid');
       p = new PackageMeta.fromDir(d);
     });
 
     test('is not valid', () {
-      expect(p.isValid, isFalse);
-      expect(p.getInvalidReasons(), isNotEmpty);
-      expect(p.getInvalidReasons(), contains('no pubspec.yaml found'));
+      expect(p, isNull);
     });
   });
 
@@ -76,15 +68,16 @@ void main() {
   });
 
   group('PackageMeta.fromSdk', () {
-    PackageMeta p = new PackageMeta.fromSdk(getSdkDir());
+    PackageMeta p = new PackageMeta.fromDir(defaultSdkDir);
 
     test('has a name', () {
-      expect(p.name, 'Dart SDK');
+      expect(p.name, 'Dart');
     });
 
     test('is valid', () {
       expect(p.isValid, isTrue);
       expect(p.getInvalidReasons(), isEmpty);
+      expect(p.isSdk, isTrue);
     });
 
     test('has a version', () {

@@ -1,3 +1,124 @@
+## 0.19.0
+* Build documentation through the Package object (#1659)
+* New flag, --link-to-remote, which will cause Dartdoc to link symbols to their originating
+  pub packages and/or the Flutter or Dart SDKs. (#739)
+* New configuration refactor and addition of several experimental options in dartdoc_options.yaml
+  (see README).
+* Update analyzer version to 0.31.2-alpha.2 (#1682).
+
+## 0.18.1
+* Fix problems with the embedded SDK detection that cropped up in
+  the package refactor (#1648, #1651)
+* Fix issues with anonymous functions and type parameters (#1651)
+* Add Menlo to the monospace font list to improve table
+  formatting (#1647)
+
+## 0.18.0
+* Rename category_order flag to package_order. (#1634, #1636)
+* Use Google's CDN for jquery. (#1637)
+* Add the beginning of support for a dartdoc_options.yaml file. (#1638)
+* Code cleanups and refactoring related to packages (#1639, #1636)
+* Enable --preview-dart-2 in analyzer (#1630)
+* Add basic categorization for libraries (#1641)
+
+## 0.17.1+1
+* Fix pub warning regarding unnecessary meta import.
+
+## 0.17.1
+* Fix rendering of bold markdown (#1618)
+* Internal cleanups and refactors (#1626, #1624, #1622)
+* Support void as a type parameter (#1625)
+
+## 0.17.0
+* More correctly deal with indentation inside documentation comments,
+  fixing a set of minor markdown problems relating to indentation (like list
+  handling) (#1608, #1507)
+* Strong mode enabled in dartdoc -- dartdoc will no longer read code
+  that isn't strong-mode clean beginning with this version. (#1561)
+* Add a negatable flag (default on), --validate-links, to control whether
+  Dartdoc's built-in link checker runs. (#1607)
+* dartdoc now works in checked mode for Flutter, fixing some edge-case
+  navigation/canonicalization problems.  (#1606)
+* Dartdoc now uses AnalysisDriver to build the element tree.  (#1601, #1586)
+* Grinder now has arbitrary serving of pub packages and can compare
+  warnings from different versions (#1600, #1599)
+
+## 0.16.0
+* Cherrypick test changes from 0.15.1 and a fix for (#1603), updating
+  dartdoc to the latest analyzer.
+
+## 0.15.1
+* Add SDK warning comparison to grind script (#1572)
+* Improve rendering of inline `<code>` (#1573)
+* Rename "Source Code" to "Implementation" (#1580)
+* Make page titles more prominent (#1581)
+* Detect macros declared in non-public symbols (#1584)
+* Const value cosmetic improvements with some restored linking (#1585)
+* Update to latest versions of args, resource, grinder (#1566, #1579)
+* Update to grinder scripts to serve flutter, SDK, and the test
+  package locally for testing (#1570, #1578)
+
+## 0.15.0+1
+* Move sdk_footer_text to resources directory for compatibility
+  with SDK build system (#1563)
+
+## 0.15.0
+* Breaking change: Major internal refactoring of public/private,
+  type definitions, templates, and warnings.   (#1524, #1539)
+* Breaking change: Allow mixins that call their super-classes. (#1555)
+* Breaking change: Anonymous libraries are now laid out on disk
+  differently to avoid conflicts (#1526)
+* Breaking change: The meaning of --auto-include-dependencies has changed to
+  include all libraries in any package depended on by this package (determined
+  by the .packages file) (#1524)
+* Breaking change: The meaning of --include and --exclude has changed to
+  require import paths for anonymous libraries, and accept them for other
+  libraries. (#1524)
+* The Interceptor class from the SDK is now cloaked (#1524)
+* Type parameters for classes now appear next to them on the library page
+  (#1558)
+* GFM-style tables are now supported in Dartdoc markdown (#1557, #1453)
+* Navigation and constructor docs now show generic types in more places
+  (#1556, #1453)
+* A new parameter, --exclude-packages, now enables dartdoc to hide entire
+  packages from --auto-include-dependencies or other --include options.
+* Document correct parameters for new-style generic function types
+  (#1472)
+* Allow super in mixins (#1541)
+* Source code included with docs highlights again (#1525)
+* Remove constant value linking via string substitution (#1535)
+* Update version of mustache4dart and fix minor template errors (#1540)
+* Eliminate remaining places where dartdoc exposed private interfaces
+  (#1173)
+* Fix private super classes appearing with dead links (#1476)
+* Fix resolution of generic types (#1514)
+* Limit width of code blocks (#1522)
+* Add a `--json` flag to providing logging in a machine-readable format.
+  (#1531)
+* Use the logging package for dartdoc output. (#1518)
+* Remove cc commons license text from default footer (#1262)
+
+## 0.14.1
+* Add better support for GenericFunctionTypeElementImpl (#1506, #1509)
+* Fix up dartdoc so it can be used with the head analyzer again (#1509)
+* SDK constraint fixed (#1503)
+
+## 0.14.0
+* Fix multiple issues with properties and top level variables in cases
+of split inheritance (#1394, #1116)
+* Fix issue with generation of 'null' value enum fields (#1445)
+* Fix multiple issues with nodoc handling (#1352, #1337)
+* Use highlight js for code blocks and fix colors (#1487)
+* Eliminate excessive stack depth in link checker
+* Use preferredClass in more cases to disambiguate doc links
+* Add basic support and tests for MultiplyInheritedExecutableElements (#1478)
+
+## 0.13.0+3
+* Add support for GenericFunctionTypeElementImpl (#1495)
+
+## 0.13.0+2
+* Allow null annotation elements (#1491)
+
 ## 0.13.0+1
 * Remove unnecessary dependency on meta.
 * Drop --force from pub publish arguments to avoid publishing more broken

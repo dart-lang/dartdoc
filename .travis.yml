@@ -1,7 +1,7 @@
 language: dart
 sudo: false
 dart:
-  - dev
+  - "dev/raw/latest"
 env:
   - DARTDOC_BOT=main
   # TODO(devoncarew): add angulardart support
@@ -15,3 +15,4 @@ branches:
 cache:
   directories:
   - $HOME/.pub-cache
+  - $HOME/.dartdoc_grinder

@@ -95,6 +95,65 @@ authoring doc comments for Dart with `dartdoc`.
 
 ## Advanced features
 
+### dartdoc_options.yaml
+
+Creating a file named dartdoc_options.yaml at the top of your package can change how Dartdoc
+generates docs.  
+
+```yaml
+dartdoc:
+  categoryOrder: ["First Category", "Second Category"]
+  linkTo:
+    url: "https://my.dartdocumentationsite.org/dev/%v%"
+```
+
+Unrecognized options will be ignored.  Supported options:
+
+  * **categoryOrder**:  Specify the order of categories, below, for display in the sidebar and
+    the package page.
+  * **linkTo**:  For other packages depending on this one, if this map is defined those packages
+    will use the settings here to control how hyperlinks to the package are generated.
+    This will override the default for packages hosted on pub.dartlang.org.
+    * **url**:  A string indicating the base URL for documentation of this package.  Ordinarily
+      you do not need to set this in the package: consider --link-to-hosted and
+      --link-to-sdks instead of this option if you need to build your own website with
+      dartdoc.
+
+      The following strings will be substituted in to complete the URL:
+      * `%b%`: The branch as indicated by text in the version.  2.0.0-dev.3 is branch "dev".
+        No branch is considered to be "stable".
+      * `%n%`: The name of this package, as defined in pubspec.yaml.
+      * `%v%`: The version of this package as defined in pubspec.yaml.
+
+The following are experimental options whose semantics are in flux and may be buggy.  If you
+use one, please keep a close eye on the changing semantics.  In general, paths are relative
+to the directory the dartdoc_options.yaml the option is defined in and should be specified
+as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
+
+  * **ambiguousReexportScorerMinConfidence**:  The ambiguous reexport scorer will emit a warning if
+  it is not at least this confident.  Default: 0.1
+  * **examplePathPrefix**:  Specify the prefix for the example paths, defaulting to the project root.
+  * **exclude**:  Specify a list of library names to avoid generating docs for, ignoring all others.
+  * **favicon**:  A path to a favicon for the generated docs.
+  * **footer**: A list of paths to footer files containing HTML text.
+  * **footerText**: A list of paths to text files for optional text next to the package name and version
+  * **header**:  A list of paths to header files containing HTML text.
+  * **include**:  Specify a list of library names to generate docs for, ignoring all others.
+  * **includeExternal**:  Specify a list of library filenames to add to the list of documented libraries.
+ 
+### Categories
+
+You can tag libraries in their documentation with the string `{@category YourCategory}`, and
+that will cause the library to appear in a category when showing the sidebar on the Package
+and Library pages.
+
+```dart
+/// Here is my library.
+/// 
+/// {@category Amazing}
+library my_library;
+```
+
 ### Macros
 
 You can specify "macros", i.e. reusable pieces of documentation. For that, first specify a template
@@ -113,6 +172,11 @@ and then you can insert it via `{@macro template_name}`, like
 /// {@macro template_name}
 /// More comments
 ```
+
+Template definitions are currently unscoped -- if dartdoc reads a file containing a template, it can be used in anything
+dartdoc is currently documenting.  This can lead to inconsistent behavior between runs on different
+packages, especially if different command lines are used for dartdoc.  It is recommended to use collision-resistant
+naming for any macros by including the package name and/or library it is defined in within the name.
 
 ### Auto including dependencies
 
@@ -166,6 +230,12 @@ Some examples of likely triage priorities:
 ## License
 
 Please see the [dartdoc license][].
+
+Generated docs include:
+
+ * Highlight.js -
+   [LICENSE](https://github.com/isagalaev/highlight.js/blob/master/LICENSE)
+   * With `github.css` (c) Vasily Polovnyov <vast@whiteants.net>
 
 [GitHub Issue Tracker]: https://github.com/dart-lang/dartdoc/issues
 [contributor docs]: https://github.com/dart-lang/dartdoc/blob/master/CONTRIBUTING.md

@@ -1,5 +1,5 @@
 /// # WOW FAKE PACKAGE IS __BEST__ [PACKAGE][pkg]
-///
+/// {@category Real Libraries}
 /// If you don't have this package yet, get it.
 /// Don't ask questions.
 ///
@@ -47,14 +47,36 @@
 library fake;
 
 import 'dart:async';
-
 import 'dart:collection';
 
-import 'example.dart';
+import 'package:tuple/tuple.dart';
 
 import 'css.dart' as css;
-
+import 'example.dart';
 import 'two_exports.dart' show BaseClass;
+
+abstract class ImplementingThingy implements BaseThingy {}
+
+abstract class BaseThingy {
+  // ignore: public_member_api_docs
+  ImplementingThingy get aImplementingThingy;
+  ImplementingThingy aImplementingThingyField;
+  void aImplementingThingyMethod(ImplementingThingy parameter);
+}
+
+abstract class ImplementingThingy2 implements BaseThingy2, ImplementingThingy {}
+
+/// Test for MultiplyInheritedExecutableElement handling.
+abstract class BaseThingy2 implements BaseThingy {
+  /// BaseThingy2's doc for aImplementingThingy.
+  @override
+  ImplementingThingy2 get aImplementingThingy;
+}
+
+class ConstructorTester<A, B> {
+  ConstructorTester(String param1) {}
+  ConstructorTester.fromSomething(A foo) {}
+}
 
 class HasGenerics<X, Y, Z> {
   HasGenerics(X x, Y y, Z z) {}
@@ -69,7 +91,43 @@ class HasGenerics<X, Y, Z> {
   Map<X, Y> convertToMap() => null;
 }
 
+/// This is a class with a table.
+///
+/// It has multiple sentences before the table.  Because testing is a good
+/// idea.
+///
+/// | Component | Symbol | Short Form   | Long Form         | Numeric   | 2-digit   |
+/// |-----------|:------:|--------------|-------------------|-----------|-----------|
+/// | era       |   G    | G (AD)       | GGGG (Anno Domini)| -         | -         |
+/// | year      |   y    | -            | -                 | y (2015)  | yy (15)   |
+/// | month     |   M    | MMM (Sep)    | MMMM (September)  | M (9)     | MM (09)   |
+/// | day       |   d    | -            | -                 | d (3)     | dd (03)   |
+/// | weekday   |   E    | EEE (Sun)    | EEEE (Sunday)     | -         | -         |
+/// | hour      |   j    | -            | -                 | j (13)    | jj (13)   |
+/// | hour12    |   h    | -            | -                 | h (1 PM)  | hh (01 PM)|
+/// | hour24    |   H    | -            | -                 | H (13)    | HH (13)   |
+/// | minute    |   m    | -            | -                 | m (5)     | mm (05)   |
+/// | second    |   s    | -            | -                 | s (9)     | ss (09)   |
+/// | timezone  |   z    | -            | z (Pacific Standard Time)| -  | -         |
+/// | timezone  |   Z    | Z (GMT-8:00) | -                 | -         | -         |
+///
+/// It also has a short table with embedded links.
+///
+/// | [DocumentWithATable] | [Annotation] | [aMethod] |
+/// |----------------------|--------------|-----------|
+/// | [foo]                | Not really   | "blah"    |
+/// | [bar]                | Maybe        | "stuff"   |
+class DocumentWithATable {
+  static const DocumentWithATable foo = const DocumentWithATable();
+  static const DocumentWithATable bar = const DocumentWithATable();
+
+  const DocumentWithATable();
+  void aMethod(String parameter) {}
+}
+
 Map<dynamic, String> mapWithDynamicKeys = {};
+
+Tuple2<String, String> useSomethingInAnotherPackage;
 
 /// Useful for annotations.
 class Annotation {
@@ -100,6 +158,36 @@ class ConstantClass {
   /// Not actually constant.
   ConstantClass.notConstant(this.value);
 }
+
+class _APrivateConstClass {
+  const _APrivateConstClass();
+}
+
+class AClassWithFancyProperties {
+  /// This property is quite fancy, and requires sample code to understand.
+  ///
+  /// ```dart
+  /// AClassWithFancyProperties x = new AClassWithFancyProperties();
+  ///
+  /// if (x.aProperty.contains('Hello')) {
+  ///   print("I am indented!");
+  ///   if (x.aProperty.contains('World')) {
+  ///     print ("I am indented even more!!!");
+  ///   }
+  /// }
+  /// ```
+  String aProperty;
+}
+
+const _APrivateConstClass CUSTOM_CLASS_PRIVATE = const _APrivateConstClass();
+
+/// Type inference mixing with anonymous functions.
+final importantComputations = {
+  1: (List<num> a) => a[0] + a[1],
+  2: (List<num> a) => a[0] - a[1],
+  3: (List<num> a) => a[0] * a[1],
+  4: (List<num> a) => -a[0]
+};
 
 // No dart docs on purpose. Also, a non-primitive const class.
 const ConstantClass CUSTOM_CLASS = const ConstantClass('custom');
@@ -137,14 +225,24 @@ typedef T GenericTypedef<T>(T input);
 /// A typedef with the new style generic function syntax.
 typedef NewGenericTypedef<T> = List<S> Function<S>(T, int, bool);
 
+/// A complicated type parameter to ATypeTakingClass.
+ATypeTakingClass<String Function(int)> get complicatedReturn => null;
+
 /// Lots and lots of parameters.
 typedef int LotsAndLotsOfParameters(so, many, parameters, it, should, wrap,
     when, converted, to, html, documentation);
 
 /// This class is cool!
 class Cool {
+  // ignore: missing_return
   Cool returnCool() {}
 }
+
+/// A map initialization making use of optional const.
+const Map<int, String> myMap = {1: "hello"};
+
+/// A variable initalization making use of optional new.
+Cool aCoolVariable = Cool();
 
 /// Perfect for mix-ins.
 abstract class MixMeIn {}
@@ -154,6 +252,18 @@ abstract class Interface {}
 
 /// Yet another interface that can be implemented.
 abstract class AnotherInterface {}
+
+class NotAMixin {
+  String get superString => "A string that's clearly important";
+}
+
+class AMixinCallingSuper extends NotAMixin {
+  @override
+  String get superString => "${super.superString} but not as important as this";
+}
+
+/// Verify super-mixins don't break Dartdoc.
+class AClassUsingASuperMixin extends AnotherInterface with AMixinCallingSuper {}
 
 /// A super class, with many powers. Link to [Apple] from another library.
 @deprecated
@@ -165,7 +275,9 @@ class SuperAwesomeClass {
   ///
   /// Another comment line.
   void fly(int height, Cool superCool, {String msg}) {
+    // ignore: unused_local_variable, avoid_init_to_null
     var x = null;
+    // ignore: unused_local_variable
     int i, y;
     for (int z = 0; z < 100; z++) {
       print('hi');
@@ -177,7 +289,37 @@ class SuperAwesomeClass {
   }
 }
 
+class TypedefUsingClass {
+  ParameterizedTypedef<double> x;
+  TypedefUsingClass(this.x);
+}
+
 typedef void myCoolTypedef(Cool x, bool y);
+
+/// This function returns Future<void>
+Future<void> returningFutureVoid() async {}
+
+/// This function requires a Future<void> as a parameter
+void aVoidParameter(Future<void> p1) {}
+
+/// This class extends Future<void>
+abstract class ExtendsFutureVoid extends Future<void> {
+  // ignore: missing_return
+  factory ExtendsFutureVoid(FutureOr<void> computation()) {}
+}
+
+/// This class implements Future<void>
+abstract class ImplementsFutureVoid implements Future<void> {}
+
+/// This class takes a type, and it might be void.
+class ATypeTakingClass<T> {
+  // ignore: missing_return
+  T aMethodMaybeReturningVoid() {}
+}
+
+class ABaseClass {}
+
+class ATypeTakingClassMixedIn extends ABaseClass with ATypeTakingClass<void> {}
 
 /// Names are actually wrong in this class, but when we extend it,
 /// they are correct.
@@ -191,6 +333,21 @@ class ImplicitProperties {
   /// A simple property to inherit.
   int forInheriting;
 
+  /// @nodoc for you
+  String get explicitNonDocumentedGetter => "something";
+
+  /// @nodoc for you but check downstream
+  String get explicitNonDocumentedInBaseClassGetter => "something else";
+
+  /// but documented here.
+  double get explicitPartiallyDocumentedField => 1.3;
+
+  /// @nodoc here, you should never see this
+  set explicitPartiallyDocumentedField(double foo) {}
+
+  /// @nodoc here, you should never see this
+  String documentedPartialFieldInSubclassOnly;
+
   /// Explicit getter for inheriting.
   int get explicitGetterSetterForInheriting => 12;
 
@@ -203,7 +360,13 @@ class ImplicitProperties {
 /// Or rather, dartdoc used to think they didn't exist.  Check the variations
 /// on inheritance and overrides here.
 class ClassWithUnusualProperties extends ImplicitProperties {
+  /// This getter is documented, so we should see a read-only property here.
   @override
+  String get documentedPartialFieldInSubclassOnly => "overridden getter";
+
+  @override
+
+  /// Docs for setter of implicitGetterExplicitSetter.
   set implicitGetterExplicitSetter(String x) {}
 
   @override
@@ -213,12 +376,27 @@ class ClassWithUnusualProperties extends ImplicitProperties {
 
   myCoolTypedef _aFunction;
 
+  /// Since I have a different doc, I should be documented.
+  @override
+  String get explicitNonDocumentedInBaseClassGetter => "something else";
+
   /// Getter doc for explicitGetterSetter.
+  @Annotation('a Getter Annotation')
   myCoolTypedef get explicitGetterSetter {
     return _aFunction;
   }
 
+  /// @nodoc for a simple hidden property.
+  String simpleHidden;
+
+  /// @nodoc on setter
+  set explicitNodocGetterSetter(String s) {}
+
+  /// @nodoc on getter
+  String get explicitNodocGetterSetter => "something";
+
   /// This property is not synthetic, so it might reference [f] -- display it.
+  @Annotation('a Setter Annotation')
   set explicitGetterSetter(myCoolTypedef f) => _aFunction = f;
 
   /// This property only has a getter and no setter; no parameters to print.
@@ -245,6 +423,7 @@ class ClassWithUnusualProperties extends ImplicitProperties {
 ///
 /// The rest of this is not in the first paragraph.
 @Annotation('value')
+// ignore: deprecated_member_use
 class LongFirstLine extends SuperAwesomeClass
     with MixMeIn
     implements Interface, AnotherInterface {
@@ -362,6 +541,27 @@ final int meaningOfLife = 42;
 /// Simple property
 String simpleProperty;
 
+/// Simple @nodoc property.
+String simplePropertyHidden;
+
+/// Setter docs should be shown.
+set getterSetterNodocGetter(int value) {}
+
+/// @nodoc on getter.
+int get getterSetterNodocGetter => 3;
+
+/// @nodoc on setter
+set getterSetterNodocSetter(int value) {}
+
+/// Getter docs should be shown.
+int get getterSetterNodocSetter => 4;
+
+/// @nodoc on the setter
+set getterSetterNodocBoth(String value) {}
+
+/// And @nodoc on the getter, so entire TopLevelVariable should be invisible.
+String get getterSetterNodocBoth => "I do not exist";
+
 /// Just a setter. No partner getter.
 void set justSetter(int value) {}
 
@@ -416,6 +616,21 @@ thisIsAsync() async => 42;
 /// Explicitly returns a Future and is marked async.
 Future thisIsAlsoAsync() async => 43;
 
+/// Explicitly return a `FutureOr`.
+FutureOr thisIsFutureOr() => null;
+
+/// Explicitly return a `FutureOr<Null>`.
+FutureOr<Null> thisIsFutureOrNull() => null;
+
+/// Explicitly return a `FutureOr<T>`.
+FutureOr<T> thisIsFutureOrT<T>() => null;
+
+/// Has a parameter explicitly typed `FutureOr<Null>`.
+void paramOfFutureOrNull(FutureOr<Null> future) {}
+
+/// Has a type parameter bound to `FutureOr<List>`.
+void typeParamOfFutureOr<T extends FutureOr<List>>() {}
+
 /// A generic function with a type parameter.
 void myGenericFunction<S>(int a, bool b, S c) {
   return;
@@ -458,14 +673,18 @@ class HasGenericWithExtends<T extends Foo2> {}
 
 /// Extends [ListBase]
 class SpecialList<E> extends ListBase<E> {
+  // ignore: annotate_overrides
   E operator [](int index) {
     return null;
   }
 
+  // ignore: annotate_overrides
   int get length => 0;
 
+  // ignore: annotate_overrides
   void set length(int length) {}
 
+  // ignore: annotate_overrides
   void operator []=(int index, E value) {}
 }
 
@@ -485,6 +704,7 @@ class BaseForDocComments {
   ///
   /// Reference to another method in this class [anotherMethod] xx
   ///
+  // ignore: deprecated_member_use
   /// Reference to a top-level function in this library [topLevelFunction] xx
   ///
   /// Reference to a top-level function in another library that is imported into this library (example lib) [function1] xx
@@ -503,9 +723,15 @@ class BaseForDocComments {
   ///
   /// Reference to a name of a class from an import of a library that exported
   /// the name [BaseClass] xx
+  ///
+  /// Reference to a bracket operator within this class [operator []] xxx
+  ///
+  /// Reference to a bracket operator in another class [SpecialList.operator []] xxx
   String doAwesomeStuff(int value) => null;
 
   void anotherMethod() {}
+
+  String operator [](String key) => "${key}'s value";
 }
 
 /// Testing if docs for inherited method are correct.
@@ -554,4 +780,47 @@ class OperatorReferenceClass {
   bool operator ==(dynamic other) {
     return false;
   }
+}
+
+class _PrivateClassDefiningSomething {
+  bool aMethod() {
+    return false;
+  }
+}
+
+class InheritingClassOne extends _PrivateClassDefiningSomething {}
+
+class InheritingClassTwo extends _PrivateClassDefiningSomething {}
+
+class ReferringClass {
+  /// Here I am referring by full names, to [fake.InheritingClassOne.aMethod],
+  /// and to [fake.InheritingClassTwo.aMethod].  With luck, both of these
+  /// two resolve correctly.
+  bool notAMethodFromPrivateClass() {
+    return false;
+  }
+}
+
+/// Test an edge case for cases where inherited ExecutableElements can come
+/// both from private classes and public interfaces.  The test makes sure the
+/// class still takes precedence (#1561).
+abstract class MIEEMixinWithOverride<K, V> = MIEEBase<K, V>
+    with _MIEEPrivateOverride<K, V>;
+
+abstract class _MIEEPrivateOverride<K, V> implements MIEEThing<K, V> {
+  // ignore: annotate_overrides
+  void operator []=(K key, V value) {
+    throw new UnsupportedError("Never use this");
+  }
+}
+
+abstract class MIEEBase<K, V> extends MIEEMixin<K, V> {}
+
+abstract class MIEEMixin<K, V> implements MIEEThing<K, V> {
+  // ignore: annotate_overrides
+  operator []=(K key, V value);
+}
+
+abstract class MIEEThing<K, V> {
+  void operator []=(K key, V value);
 }
