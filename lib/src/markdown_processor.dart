@@ -981,7 +981,7 @@ class Documentation {
         inlineSyntaxes: _markdown_syntaxes,
         blockSyntaxes: _markdown_block_syntaxes,
         linkResolver: _linkResolver);
-    List<String> lines = text.replaceAll('\r\n', '\n').split('\n');
+    List<String> lines = LineSplitter.split(text).toList();
     return document.renderLinesToHtml(lines, processFullDocs);
   }
 }
