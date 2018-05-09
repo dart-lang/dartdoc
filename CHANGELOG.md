@@ -1,3 +1,7 @@
+## 0.19.1
+* Update `package:markdown` to `2.0.0`, which includes many improvements –
+  especially to the parsing of links.
+
 ## 0.19.0
 * Build documentation through the Package object (#1659)
 * New flag, --link-to-remote, which will cause Dartdoc to link symbols to their originating
