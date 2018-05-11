@@ -814,7 +814,7 @@ class MarkdownDocument extends md.Document {
       {Iterable<md.BlockSyntax> blockSyntaxes,
       Iterable<md.InlineSyntax> inlineSyntaxes,
       md.ExtensionSet extensionSet,
-      linkResolver,
+      md.Resolver linkResolver,
       imageLinkResolver})
       : super(
             blockSyntaxes: blockSyntaxes,
@@ -971,7 +971,10 @@ class Documentation {
   /// Returns a tuple of longHtml, shortHtml, hasExtendedDocs
   /// (longHtml is NULL if !processFullDocs)
   Tuple3<String, String, bool> _renderMarkdownToHtml(bool processFullDocs) {
-    md.Node _linkResolver(String name) {
+    md.Node _linkResolver(String name, [String _]) {
+      if (name.isEmpty) {
+        return null;
+      }
       return new md.Text(_linkDocReference(name, _element, commentRefs));
     }
 
@@ -981,7 +984,7 @@ class Documentation {
         inlineSyntaxes: _markdown_syntaxes,
         blockSyntaxes: _markdown_block_syntaxes,
         linkResolver: _linkResolver);
-    List<String> lines = text.replaceAll('\r\n', '\n').split('\n');
+    List<String> lines = LineSplitter.split(text).toList();
     return document.renderLinesToHtml(lines, processFullDocs);
   }
 }
