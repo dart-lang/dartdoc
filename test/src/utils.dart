@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 
@@ -24,6 +25,17 @@ final Directory testPackageWithEmbedderYaml =
     new Directory('testing/test_package_embedder_yaml');
 final Directory testPackageWithNoReadme =
     new Directory('testing/test_package_small');
+
+
+/// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
+/// it with a [DartdocOptionSet] based on the current working directory.
+Future<DartdocGeneratorOptionContext> generatorContextFromArgv(List<String> argv) async {
+  DartdocOptionSet optionSet = await DartdocOptionSet
+      .fromOptionGenerators('dartdoc', [createDartdocOptions, createGeneratorOptions]);
+  optionSet.parseArguments(argv);
+  return new DartdocGeneratorOptionContext(optionSet, Directory.current);
+}
+
 
 /// Convenience factory to build a [DartdocOptionContext] and associate it with a
 /// [DartdocOptionSet] based on the current working directory.
