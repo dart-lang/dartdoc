@@ -60,7 +60,7 @@ main(List<String> arguments) async {
     _printHelpAndExit(optionSet.argParser);
   }
   if (optionSet['version'].valueAt(Directory.current)) {
-    _printHelpAndExit(optionSet.argParser);
+    _printVersionAndExit(optionSet.argParser);
   }
 
   startLogging(config);
@@ -97,8 +97,15 @@ void _printHelpAndExit(ArgParser parser, {int exitCode: 0}) {
   _printUsageAndExit(parser, exitCode: exitCode);
 }
 
+/// Print usage information on invalid command lines.
 void _printUsageAndExit(ArgParser parser, {int exitCode: 0}) {
   print('Usage: dartdoc [OPTIONS]\n');
   print(parser.usage);
+  exit(exitCode);
+}
+
+/// Print version information.
+void _printVersionAndExit(ArgParser parser, {int exitCode: 0}) {
+  print('dartdoc version: ${dartdocVersion}');
   exit(exitCode);
 }

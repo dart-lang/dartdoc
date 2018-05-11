@@ -67,7 +67,7 @@ Future<FlutterRepo> get cleanFlutterRepo async {
     await cleanFlutterDir.parent.create(recursive: true);
     assert(_lockFuture == null);
     _lockFuture = new File(pathLib.join(cleanFlutterDir.parent.path, 'lock'))
-        .openSync(mode: FileMode.WRITE)
+        .openSync(mode: FileMode.write)
         .lock();
     await _lockFuture;
     File lastSynced =
@@ -651,20 +651,6 @@ _getPackageVersion() {
   return version;
 }
 
-@Task('Checks that version is matched in relevant places')
-checkVersionMatches() async {
-  var version = _getPackageVersion();
-  var libCode = new File('lib/dartdoc.dart');
-  if (!libCode.existsSync()) {
-    fail('Cannot find lib/dartdoc.dart in ${Directory.current}');
-  }
-  String libCodeContents = libCode.readAsStringSync();
-
-  if (!libCodeContents.contains("const String version = '${version}';")) {
-    fail('Version string for ${version} not found in lib/dartdoc.dart');
-  }
-}
-
 @Task('Find transformers used by this project')
 findTransformers() async {
   var dotPackages = new File('.packages');
@@ -724,7 +710,7 @@ indexResources() {
 }
 
 @Task('Publish to pub.dartlang')
-@Depends(checkChangelogHasVersion, checkVersionMatches)
+@Depends(checkChangelogHasVersion)
 publish() async {
   log('run : pub publish');
 }

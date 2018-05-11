@@ -11,6 +11,7 @@ library dartdoc;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:mirrors';
 
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/dart/analysis/results.dart';
