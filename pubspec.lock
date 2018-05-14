@@ -105,7 +105,7 @@ packages:
       name: grinder
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.1"
+    version: "0.8.2"
   html:
     dependency: "direct main"
     description:
@@ -203,7 +203,7 @@ packages:
       name: mustache4dart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.2"
   node_preamble:
     dependency: transitive
     description:
@@ -401,4 +401,4 @@ packages:
     source: hosted
     version: "2.1.13"
 sdks:
-  dart: ">=2.0.0-dev.23.0 <=2.0.0-dev.54.0"
+  dart: ">=2.0.0-dev.23.0 <=2.0.0-dev.55.0"
