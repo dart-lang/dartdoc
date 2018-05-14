@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:mirrors';
 
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
@@ -41,6 +42,14 @@ void main() {
       if (tempDir != null) {
         tempDir.deleteSync(recursive: true);
       }
+    });
+
+    test("Validate --version works", () async {
+      var args = <String>[dartdocBin, '--version'];
+      var result = Process.runSync(Platform.resolvedExecutable, args,
+          workingDirectory: _testPackagePath);
+      PackageMeta dartdocMeta = new PackageMeta.fromFilename(dartdocBin);
+      expect(result.stdout, equals('dartdoc version: ${dartdocMeta.version}\n'));
     });
 
     test("Validate html output of test_package", () async {
