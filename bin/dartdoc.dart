@@ -105,7 +105,7 @@ void _printUsageAndExit(ArgParser parser, {int exitCode: 0}) {
 }
 
 /// Print version information.
-void _printVersionAndExit(ArgParser parser, {int exitCode: 0}) {
+void _printVersionAndExit(ArgParser parser) {
   print('dartdoc version: ${dartdocVersion}');
   exit(exitCode);
 }
