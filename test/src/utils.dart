@@ -21,6 +21,7 @@ PackageGraph testPackageGraphSdk;
 
 final Directory testPackageBadDir = new Directory('testing/test_package_bad');
 final Directory testPackageDir = new Directory('testing/test_package');
+final Directory testPackageMinimumDir = new Directory('testing/test_package_minimum');
 final Directory testPackageWithEmbedderYaml =
     new Directory('testing/test_package_embedder_yaml');
 final Directory testPackageWithNoReadme =
