@@ -21,22 +21,22 @@ PackageGraph testPackageGraphSdk;
 
 final Directory testPackageBadDir = new Directory('testing/test_package_bad');
 final Directory testPackageDir = new Directory('testing/test_package');
-final Directory testPackageMinimumDir = new Directory('testing/test_package_minimum');
+final Directory testPackageMinimumDir =
+    new Directory('testing/test_package_minimum');
 final Directory testPackageWithEmbedderYaml =
     new Directory('testing/test_package_embedder_yaml');
 final Directory testPackageWithNoReadme =
     new Directory('testing/test_package_small');
 
-
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
 /// it with a [DartdocOptionSet] based on the current working directory.
-Future<DartdocGeneratorOptionContext> generatorContextFromArgv(List<String> argv) async {
-  DartdocOptionSet optionSet = await DartdocOptionSet
-      .fromOptionGenerators('dartdoc', [createDartdocOptions, createGeneratorOptions]);
+Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
+    List<String> argv) async {
+  DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
+      'dartdoc', [createDartdocOptions, createGeneratorOptions]);
   optionSet.parseArguments(argv);
   return new DartdocGeneratorOptionContext(optionSet, Directory.current);
 }
-
 
 /// Convenience factory to build a [DartdocOptionContext] and associate it with a
 /// [DartdocOptionSet] based on the current working directory.
