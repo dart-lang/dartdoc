@@ -49,7 +49,8 @@ void main() {
       var result = Process.runSync(Platform.resolvedExecutable, args,
           workingDirectory: _testPackagePath);
       PackageMeta dartdocMeta = new PackageMeta.fromFilename(dartdocBin);
-      expect(result.stdout, equals('dartdoc version: ${dartdocMeta.version}\n'));
+      expect(
+          result.stdout, equals('dartdoc version: ${dartdocMeta.version}\n'));
     });
 
     test("Validate html output of test_package", () async {
