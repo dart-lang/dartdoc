@@ -39,6 +39,14 @@ const String name = 'dartdoc';
 // Update when pubspec version changes.
 const String dartdocVersion = '0.19.1-dev';
 
+/// Helper class to initialize the default generators since they require
+/// GeneratorContext.
+class DartdocGeneratorOptionContext extends DartdocOptionContext
+    with GeneratorContext {
+  DartdocGeneratorOptionContext(DartdocOptionSet optionSet, Directory dir)
+      : super(optionSet, dir);
+}
+
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
 class Dartdoc extends PackageBuilder {
@@ -57,9 +65,9 @@ class Dartdoc extends PackageBuilder {
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a Dartdoc object with them.
-  static withDefaultGenerators(DartdocOptionContext config) async {
+  static withDefaultGenerators(DartdocGeneratorOptionContext config) async {
     List<Generator> generators =
-        await initGenerators(config as GeneratorContext);
+        await initGenerators(config);
     return new Dartdoc._(config, generators);
   }
 
@@ -294,7 +302,7 @@ class Dartdoc extends PackageBuilder {
     // The package index isn't supposed to be in the search, so suppress the
     // warning.
     found.add(indexPath);
-    for (Map<String, String> entry in jsonData) {
+    for (Map<String, dynamic> entry in jsonData) {
       if (entry.containsKey('href')) {
         String entryPath = pathLib.joinAll([origin, entry['href']]);
         if (!visited.contains(entryPath)) {

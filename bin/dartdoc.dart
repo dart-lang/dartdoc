@@ -13,8 +13,8 @@ import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:stack_trace/stack_trace.dart';
 
-class DartdocProgramOptionContext extends DartdocOptionContext
-    with LoggingContext, GeneratorContext {
+class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
+    with LoggingContext {
   DartdocProgramOptionContext(DartdocOptionSet optionSet, Directory dir)
       : super(optionSet, dir);
 

@@ -1320,7 +1320,7 @@ class EnumField extends Field {
   }
 
   @override
-  List<EnumField> get documentationFrom {
+  List<ModelElement> get documentationFrom {
     if (name == 'values' && name == 'index') return [this];
     return super.documentationFrom;
   }
