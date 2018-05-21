@@ -33,10 +33,6 @@ void main() {
       return await generatorContextFromArgv(argv..addAll(outputParam));
     }
 
-    Future<DartdocOptionContext> contextFromArgvTemp(List<String> argv) async {
-      return await contextFromArgv(argv..addAll(outputParam));
-    }
-
     test('package without version produces valid semver in docs', () async {
       Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(
           await generatorContextFromArgvTemp(
