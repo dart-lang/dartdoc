@@ -60,7 +60,6 @@ void main() {
           contains(stringLink));
     });
 
-
     test('generate docs for ${pathLib.basename(testPackageDir.path)} works',
         () async {
       Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(

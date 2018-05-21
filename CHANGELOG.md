@@ -1,6 +1,10 @@
 ## 0.19.1
 * Update `package:markdown` to `2.0.0`, which includes many improvements –
   especially to the parsing of links.
+* Update analyzer to 0.32.0.
+* Fix bug where --version didn't do anything (#1692)
+* Switch dartdoc_test to an integration test and add basic Dart 2.0
+  integration tests
 
 ## 0.19.0
 * Build documentation through the Package object (#1659)
