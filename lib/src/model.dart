@@ -4396,7 +4396,7 @@ class PackageGraph extends Canonicalization
     return _inheritThrough;
   }
 
-  String get version => packageMeta.version;
+  String get version => packageMeta.version ?? '0.0.0-unknown';
 
   /// Looks up some [Library] that is reexporting this [Element]; not
   /// necessarily the canonical [Library].
