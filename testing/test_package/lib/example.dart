@@ -355,6 +355,37 @@ class Dog implements Cat, E {
   /// Don't define this:  {@macro ThatDoesNotExist}
   void withUndefinedMacro() {}
 
+  /// Animation method
+  ///
+  /// {@animation methodAnimation 100 100 http://host/path/to/video.mp4}
+  /// More docs
+  void withAnimation() {}
+
+  /// Non-Unique Animation method (between methods)
+  ///
+  /// {@animation fooHerderAnimation 100 100 http://host/path/to/video.mp4}
+  /// {@animation fooHerderAnimation 100 100 http://host/path/to/video.mp4}
+  /// More docs
+  void withAnimationNonUnique() {}
+
+  /// Malformed Animation method with wrong parameters
+  ///
+  /// {@animation http://host/path/to/video.mp4}
+  /// More docs
+  void withAnimationWrongParams() {}
+
+  /// Malformed Animation method with non-integer width
+  ///
+  /// {@animation badWidthAnimation 100px 100 http://host/path/to/video.mp4}
+  /// More docs
+  void withAnimationBadWidth() {}
+
+  /// Malformed Animation method with non-integer height
+  ///
+  /// {@animation badHeightAnimation 100 100px http://host/path/to/video.mp4}
+  /// More docs
+  void withAnimationBadHeight() {}
+
   void testGeneric(Map<String, dynamic> args) {}
 
   void testMethod(Iterable it) {}

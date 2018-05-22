@@ -86,6 +86,10 @@ final Map<PackageWarning, PackageWarningHelpText> packageWarningText = const {
       PackageWarning.typeAsHtml,
       "typeAsHtml",
       "Use of <> in a comment for type parameters is being treated as HTML by markdown"),
+  PackageWarning.invalidParameter: const PackageWarningHelpText(
+      PackageWarning.invalidParameter,
+      "invalidParameter",
+      "A parameter given to a dartdoc directive was invalid."),
 };
 
 /// Something that package warnings can be called on.  Optionally associated
@@ -125,6 +129,7 @@ enum PackageWarning {
   unknownFile,
   missingFromSearchIndex,
   typeAsHtml,
+  invalidParameter,
 }
 
 /// Warnings it is OK to skip if we can determine the warnable isn't documented.
