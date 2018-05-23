@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="API docs for the deprecatedField property from the Dog class, for the Dart programming language.">
-  <title>deprecatedField property - Dog class - ex library - Dart API</title>
+  <meta name="description" content="API docs for the withAnimationNonUnique method from the Dog class, for the Dart programming language.">
+  <title>withAnimationNonUnique method - Dog class - ex library - Dart API</title>
   <!-- required because all the links are pseudo-absolute -->
   <base href="../..">
 
@@ -26,9 +26,9 @@
     <li><a href="index.html">test_package</a></li>
     <li><a href="ex/ex-library.html">ex</a></li>
     <li><a href="ex/Dog-class.html">Dog</a></li>
-    <li class="self-crumb"><span class="deprecated">deprecatedField</span> property</li>
+    <li class="self-crumb">withAnimationNonUnique method</li>
   </ol>
-  <div class="self-name">deprecatedField</div>
+  <div class="self-name">withAnimationNonUnique</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -94,14 +94,43 @@
   </div><!--/.sidebar-offcanvas-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
-    <h1>deprecatedField property</h1>
+    <h1>withAnimationNonUnique method</h1>
 
-        <section class="multi-line-signature">
-          <span class="returntype">int</span>
-          <span class="name deprecated">deprecatedField</span>
-          <div class="features">read / write</div>
-        </section>
-                
+    <section class="multi-line-signature">
+      <span class="returntype">void</span>
+      <span class="name ">withAnimationNonUnique</span>
+(<wbr>)
+    </section>
+    <section class="desc markdown">
+      <p>Non-Unique Animation method (between methods)</p><div style="position: relative;">
+  <div id="fooHerderAnimation_play_button_" onclick="if (fooHerderAnimation.paused) {
+                  fooHerderAnimation.play();
+                  this.style.display = 'none';
+                } else {
+                  fooHerderAnimation.pause();
+                  this.style.display = 'block';
+                }" style="position:absolute;
+              width:100px;
+              height:100px;
+              z-index:100000;
+              background-position: center;
+              background-repeat: no-repeat;
+              background-image: url(static-assets/play_button.svg);">
+  </div>
+  <video id="fooHerderAnimation" style="width:100px; height:100px;" onclick="if (this.paused) {
+                    this.play();
+                    fooHerderAnimation_play_button_.style.display = 'none';
+                  } else {
+                    this.pause();
+                    fooHerderAnimation_play_button_.style.display = 'block';
+                  }" loop="">
+    <source src="http://host/path/to/video.mp4" type="video/mp4">
+  </video>
+</div>
+<p>More docs</p>
+    </section>
+    
+    
 
   </div> <!-- /.main-content -->
 

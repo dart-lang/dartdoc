@@ -1256,6 +1256,61 @@
   }
  },
  {
+  "name": "withAnimation",
+  "qualifiedName": "ex.Dog.withAnimation",
+  "href": "ex/Dog/withAnimation.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
+  "name": "withAnimationBadHeight",
+  "qualifiedName": "ex.Dog.withAnimationBadHeight",
+  "href": "ex/Dog/withAnimationBadHeight.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
+  "name": "withAnimationBadWidth",
+  "qualifiedName": "ex.Dog.withAnimationBadWidth",
+  "href": "ex/Dog/withAnimationBadWidth.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
+  "name": "withAnimationNonUnique",
+  "qualifiedName": "ex.Dog.withAnimationNonUnique",
+  "href": "ex/Dog/withAnimationNonUnique.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
+  "name": "withAnimationWrongParams",
+  "qualifiedName": "ex.Dog.withAnimationWrongParams",
+  "href": "ex/Dog/withAnimationWrongParams.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
   "name": "withMacro",
   "qualifiedName": "ex.Dog.withMacro",
   "href": "ex/Dog/withMacro.html",
