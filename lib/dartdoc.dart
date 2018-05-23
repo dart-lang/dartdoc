@@ -37,7 +37,7 @@ export 'package:dartdoc/src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String dartdocVersion = '0.19.1-dev';
+const String dartdocVersion = '0.19.1';
 
 /// Helper class to initialize the default generators since they require
 /// GeneratorContext.

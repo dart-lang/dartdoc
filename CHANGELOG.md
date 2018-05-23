@@ -1,6 +1,11 @@
 ## 0.19.1
 * Update `package:markdown` to `2.0.0`, which includes many improvements –
   especially to the parsing of links.
+* Update analyzer to 0.32.0, mustache4dart to 2.1.2, and grinder for 0.8.2 for Dart 2 fixes.
+* Fix bug where --version printed help instead of the version number. (#1692)
+* Switch dartdoc_test to an integration test and add basic Dart 2.0
+  integration tests.
+* Do not crash on unversioned packages (#1688).
 
 ## 0.19.0
 * Build documentation through the Package object (#1659)
