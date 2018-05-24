@@ -503,6 +503,8 @@ void main() {
     Method withAnimationWrongParams;
     Method withAnimationBadWidth;
     Method withAnimationBadHeight;
+    Method withAnimationInOneLineDoc;
+    Method withAnimationInline;
 
     setUp(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
@@ -516,6 +518,10 @@ void main() {
           .firstWhere((m) => m.name == 'withAnimationBadWidth');
       withAnimationBadHeight = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withAnimationBadHeight');
+      withAnimationInOneLineDoc = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationInOneLineDoc');
+      withAnimationInline = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationInline');
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
 
@@ -557,6 +563,16 @@ void main() {
               PackageWarning.invalidParameter,
               'An animation has an invalid height (badHeightAnimation): 100px. The height must be an integer.'),
           isTrue);
+    });
+    test("Doesn't place animations in one line doc", () {
+      expect(
+          withAnimationInline.oneLineDoc, isNot(contains('<video')));
+      expect(
+          withAnimationInline.documentation, contains('<video'));
+    });
+    test("Handles animations inline properly", () {
+      expect(
+          withAnimationInline.documentation, isNot(contains('  works')));
     });
   });
 
@@ -1083,7 +1099,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.publicInstanceMethods, hasLength(17));
+      expect(Dog.publicInstanceMethods, hasLength(19));
     });
 
     test('get operators', () {
@@ -1151,6 +1167,8 @@ void main() {
             'withAnimation',
             'withAnimationBadHeight',
             'withAnimationBadWidth',
+            'withAnimationInline',
+            'withAnimationInOneLineDoc',
             'withAnimationNonUnique',
             'withAnimationWrongParams',
             'withMacro',

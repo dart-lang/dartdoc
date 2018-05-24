@@ -3528,16 +3528,16 @@ abstract class ModelElement extends Canonicalization
     });
   }
 
-  /// Replace {@animation ...} in API comments with some HTML to manage an
+  /// Replace &#123;@animation ...&#125; in API comments with some HTML to manage an
   /// MPEG 4 video as an animation.
   ///
   /// Syntax:
   ///
-  ///     {@animation NAME WIDTH HEIGHT URL}
+  ///     &#123;@animation NAME WIDTH HEIGHT URL&#125;
   ///
   /// Example:
   ///
-  ///     {@animation my_video 300 300 https://foo.com/path/to/video.mp4}
+  ///     &#123;@animation my_video 300 300 https://example.com/path/to/video.mp4&#125;
   ///
   /// Which will render the HTML necessary for embedding a simple click-to-play
   /// HTML5 video player with no controls.
@@ -3655,28 +3655,29 @@ abstract class ModelElement extends Canonicalization
   </video>
 </div>
 
-      ''';
+''';  // String must end at beginning of line, or following inline text will be
+      // indented.
     });
   }
 
-  /// Replace {@macro ...} in API comments with the contents of the macro
+  /// Replace &#123;@macro ...&#125; in API comments with the contents of the macro
   ///
   /// Syntax:
   ///
-  ///     {@macro NAME}
+  ///     &#123;@macro NAME&#125;
   ///
   /// Example:
   ///
   /// You define the template in any comment for a documentable entity like:
   ///
-  ///     {@template foo}
+  ///     &#123;@template foo&#125;
   ///     Foo contents!
-  ///     {@endtemplate}
+  ///     &#123;@endtemplate&#125;
   ///
   /// and them somewhere use it like this:
   ///
   ///     Some comments
-  ///     {@macro foo}
+  ///     &#123;@macro foo&#125;
   ///     More comments
   ///
   /// Which will render
@@ -3696,13 +3697,13 @@ abstract class ModelElement extends Canonicalization
     });
   }
 
-  /// Parse {@template ...} in API comments and store them in the index on the package.
+  /// Parse &#123;@template ...&#125; in API comments and store them in the index on the package.
   ///
   /// Syntax:
   ///
-  ///     {@template NAME}
+  ///     &#123;@template NAME&#125;
   ///     The contents of the macro
-  ///     {@endtemplate}
+  ///     &#123;@endtemplate&#125;
   ///
   String _stripMacroTemplatesAndAddToIndex(String rawDocs) {
     final templateRegExp = new RegExp(

@@ -386,6 +386,17 @@ class Dog implements Cat, E {
   /// More docs
   void withAnimationBadHeight() {}
 
+  /// Animation in one line doc {@animation oneLine 100 100 http://host/path/to/video.mp4}
+  ///
+  /// This tests to see that we do the right thing if the animation is in
+  /// the one line doc above.
+  void withAnimationInOneLineDoc() {}
+
+  /// Animation inline in text.
+  ///
+  /// Tests to see that an inline {@animation inline 100 100 http://host/path/to/video.mp4} works as expected.
+  void withAnimationInline() {}
+
   void testGeneric(Map<String, dynamic> args) {}
 
   void testMethod(Iterable it) {}
