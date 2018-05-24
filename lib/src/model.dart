@@ -2878,6 +2878,7 @@ abstract class ModelElement extends Canonicalization
       _rawDocs = computeDocumentationComment ?? '';
       _rawDocs = stripComments(_rawDocs) ?? '';
       _rawDocs = _injectExamples(_rawDocs);
+      _rawDocs = _injectAnimations(_rawDocs);
       _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
     }
     return _rawDocs;
@@ -3527,24 +3528,156 @@ abstract class ModelElement extends Canonicalization
     });
   }
 
-  /// Replace {@macro ...} in API comments with the contents of the macro
+  /// Replace &#123;@animation ...&#125; in API comments with some HTML to manage an
+  /// MPEG 4 video as an animation.
   ///
   /// Syntax:
   ///
-  ///     {@macro NAME}
+  ///     &#123;@animation NAME WIDTH HEIGHT URL&#125;
+  ///
+  /// Example:
+  ///
+  ///     &#123;@animation my_video 300 300 https://example.com/path/to/video.mp4&#125;
+  ///
+  /// Which will render the HTML necessary for embedding a simple click-to-play
+  /// HTML5 video player with no controls.
+  ///
+  /// The NAME should be a unique name that is a valid javascript identifier,
+  /// and will be used as the id for the video tag.
+  ///
+  /// The width and height must be integers specifying the dimensions of the
+  /// video file in pixels.
+  String _injectAnimations(String rawDocs) {
+    // Matches all animation directives (even some invalid ones). This is so
+    // we can give good error messages if the directive is malformed, instead of
+    // just silently emitting it as-is.
+    final RegExp basicAnimationRegExp =
+        new RegExp(r'''{@animation\s+([^}]+)}''');
+
+    // Animations have four parameters, and the last one can be surrounded by
+    // quotes (which are ignored). This RegExp is used to validate the directive
+    // for the correct number of parameters.
+    final RegExp animationRegExp =
+        new RegExp(r'''{@animation\s+([^}\s]+)\s+([^}\s]+)\s+([^}\s]+)'''
+            r'''\s+['"]?([^}]+)['"]?}''');
+
+    // Matches valid javascript identifiers.
+    final RegExp validNameRegExp = new RegExp(r'^[a-zA-Z_][a-zA-Z0-9_]*$');
+
+    // Keeps names unique.
+    final Set<String> uniqueNames = new Set<String>();
+
+    return rawDocs.replaceAllMapped(basicAnimationRegExp, (basicMatch) {
+      final Match match = animationRegExp.firstMatch(basicMatch[0]);
+      if (match == null) {
+        warn(PackageWarning.invalidParameter,
+            message: 'Invalid @animation directive: ${basicMatch[0]}\n'
+                'Animation directives must be of the form: {@animation NAME '
+                'WIDTH HEIGHT URL}');
+        return '';
+      }
+      String name = match[1];
+      if (!validNameRegExp.hasMatch(name)) {
+        warn(PackageWarning.invalidParameter,
+            message: 'An animation has an invalid name: $name. The name can '
+                'only contain letters, numbers and underscores.');
+        return '';
+      } else {
+        if (uniqueNames.contains(name)) {
+          warn(PackageWarning.invalidParameter,
+              message:
+                  'An animation has a non-unique name: $name. Animation names '
+                  'must be unique.');
+          return '';
+        }
+        uniqueNames.add(name);
+      }
+      int width;
+      try {
+        width = int.parse(match[2]);
+      } on FormatException {
+        warn(PackageWarning.invalidParameter,
+            message: 'An animation has an invalid width ($name): ${match[2]}. The '
+                'width must be an integer.');
+        return '';
+      }
+      int height;
+      try {
+        height = int.parse(match[3]);
+      } on FormatException {
+        warn(PackageWarning.invalidParameter,
+            message: 'An animation has an invalid height ($name): ${match[3]}. The '
+                'height must be an integer.');
+        return '';
+      }
+      Uri movieUrl;
+      try {
+        movieUrl = Uri.parse(match[4]);
+      } on FormatException catch (e) {
+        warn(PackageWarning.invalidParameter,
+            message: 'An animation URL could not be parsed ($name): ${match[4]}\n$e');
+        return '';
+      }
+      final String overlayName = '${name}_play_button_';
+
+      // Blank lines before and after, and no indenting at the beginning and end
+      // is needed so that Markdown doesn't confuse this with code, so be
+      // careful of whitespace here.
+      return '''
+
+<div style="position: relative;">
+  <div id="${overlayName}"
+       onclick="if ($name.paused) {
+                  $name.play();
+                  this.style.display = 'none';
+                } else {
+                  $name.pause();
+                  this.style.display = 'block';
+                }"
+       style="position:absolute;
+              width:${width}px;
+              height:${height}px;
+              z-index:100000;
+              background-position: center;
+              background-repeat: no-repeat;
+              background-image: url(static-assets/play_button.svg);">
+  </div>
+  <video id="$name"
+         style="width:${width}px; height:${height}px;"
+         onclick="if (this.paused) {
+                    this.play();
+                    $overlayName.style.display = 'none';
+                  } else {
+                    this.pause();
+                    $overlayName.style.display = 'block';
+                  }" loop>
+    <source src="$movieUrl" type="video/mp4"/>
+  </video>
+</div>
+
+''';  // String must end at beginning of line, or following inline text will be
+      // indented.
+    });
+  }
+
+  /// Replace &#123;@macro ...&#125; in API comments with the contents of the macro
+  ///
+  /// Syntax:
+  ///
+  ///     &#123;@macro NAME&#125;
   ///
   /// Example:
   ///
   /// You define the template in any comment for a documentable entity like:
   ///
-  ///     {@template foo}
+  ///     &#123;@template foo&#125;
   ///     Foo contents!
-  ///     {@endtemplate}
+  ///     &#123;@endtemplate&#125;
   ///
   /// and them somewhere use it like this:
   ///
   ///     Some comments
-  ///     {@macro foo}
+  ///     &#123;@macro foo&#125;
   ///     More comments
   ///
   /// Which will render
@@ -3564,13 +3697,13 @@ abstract class ModelElement extends Canonicalization
     });
   }
 
-  /// Parse {@template ...} in API comments and store them in the index on the package.
+  /// Parse &#123;@template ...&#125; in API comments and store them in the index on the package.
   ///
   /// Syntax:
   ///
-  ///     {@template NAME}
+  ///     &#123;@template NAME&#125;
   ///     The contents of the macro
-  ///     {@endtemplate}
+  ///     &#123;@endtemplate&#125;
   ///
   String _stripMacroTemplatesAndAddToIndex(String rawDocs) {
     final templateRegExp = new RegExp(
@@ -4132,6 +4265,9 @@ class PackageGraph extends Canonicalization
         // The message for this warning can contain many punctuation and other symbols,
         // so bracket with a triple quote for defense.
         warningMessage = 'generic type handled as HTML: """${message}"""';
+        break;
+      case PackageWarning.invalidParameter:
+        warningMessage = 'invalid parameter to dartdoc directive: ${message}';
         break;
     }
 
@@ -5434,7 +5570,14 @@ class PackageBuilder {
     // TODO(jcollins-g): explode this into detailed command line options.
     if (config.showWarnings) {
       for (PackageWarning kind in PackageWarning.values) {
-        warningOptions.warn(kind);
+        switch (kind) {
+          case PackageWarning.invalidParameter:
+            warningOptions.error(kind);
+            break;
+          default:
+            warningOptions.warn(kind);
+            break;
+        }
       }
     }
     return warningOptions;
