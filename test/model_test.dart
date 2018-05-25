@@ -507,6 +507,86 @@ void main() {
     });
   });
 
+  group('Animation', () {
+    Class dog;
+    Method withAnimation;
+    Method withAnimationNonUnique;
+    Method withAnimationWrongParams;
+    Method withAnimationBadWidth;
+    Method withAnimationBadHeight;
+    Method withAnimationInOneLineDoc;
+    Method withAnimationInline;
+
+    setUp(() {
+      dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
+      withAnimation =
+          dog.allInstanceMethods.firstWhere((m) => m.name == 'withAnimation');
+      withAnimationNonUnique = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationNonUnique');
+      withAnimationWrongParams = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationWrongParams');
+      withAnimationBadWidth = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationBadWidth');
+      withAnimationBadHeight = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationBadHeight');
+      withAnimationInOneLineDoc = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationInOneLineDoc');
+      withAnimationInline = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationInline');
+      packageGraph.allLocalModelElements.forEach((m) => m.documentation);
+    });
+
+    test("renders an animation within the method documentation", () {
+      expect(
+          withAnimation.documentation, contains('<video id="methodAnimation"'));
+    });
+    test("warns on a non-unique animation within a method", () {
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              withAnimationNonUnique,
+              PackageWarning.invalidParameter,
+              'An animation has a non-unique name: fooHerderAnimation. Animation names '
+              'must be unique.'),
+          isTrue);
+    });
+    test("warns on animation with missing parameters", () {
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              withAnimationWrongParams,
+              PackageWarning.invalidParameter,
+              'Invalid @animation directive: {@animation http://host/path/to/video.mp4}\n'
+              'Animation directives must be of the form: {@animation NAME '
+              'WIDTH HEIGHT URL}'),
+          isTrue);
+    });
+    test("warns on animation with non-integer width", () {
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              withAnimationBadWidth,
+              PackageWarning.invalidParameter,
+              'An animation has an invalid width (badWidthAnimation): 100px. The width must be an integer.'),
+          isTrue);
+    });
+    test("warns on animation with non-integer height", () {
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              withAnimationBadHeight,
+              PackageWarning.invalidParameter,
+              'An animation has an invalid height (badHeightAnimation): 100px. The height must be an integer.'),
+          isTrue);
+    });
+    test("Doesn't place animations in one line doc", () {
+      expect(
+          withAnimationInline.oneLineDoc, isNot(contains('<video')));
+      expect(
+          withAnimationInline.documentation, contains('<video'));
+    });
+    test("Handles animations inline properly", () {
+      expect(
+          withAnimationInline.documentation, isNot(contains('  works')));
+    });
+  });
+
   group('MultiplyInheritedExecutableElement handling', () {
     Class BaseThingy, BaseThingy2, ImplementingThingy2;
     Method aImplementingThingyMethod;
@@ -1030,7 +1110,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.publicInstanceMethods, hasLength(12));
+      expect(Dog.publicInstanceMethods, hasLength(19));
     });
 
     test('get operators', () {
@@ -1095,6 +1175,13 @@ void main() {
             'testGenericMethod',
             'testMethod',
             'toString',
+            'withAnimation',
+            'withAnimationBadHeight',
+            'withAnimationBadWidth',
+            'withAnimationInline',
+            'withAnimationInOneLineDoc',
+            'withAnimationNonUnique',
+            'withAnimationWrongParams',
             'withMacro',
             'withMacro2',
             'withPrivateMacro',
