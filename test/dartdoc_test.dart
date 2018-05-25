@@ -9,7 +9,6 @@ import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
@@ -28,15 +27,10 @@ void main() {
       delete(tempDir);
     });
 
-    Future<DartdocGeneratorOptionContext> generatorContextFromArgvTemp(
-        List<String> argv) async {
-      return await generatorContextFromArgv(argv..addAll(outputParam));
-    }
-
     Future<Dartdoc> buildDartdoc(
         List<String> argv, Directory packageRoot) async {
       return await Dartdoc.withDefaultGenerators(await generatorContextFromArgv(
-          argv..addAll(['--input', packageRoot.path])));
+          argv..addAll(['--input', packageRoot.path])..addAll(outputParam)));
     }
 
     group('include/exclude parameters', () {
@@ -69,18 +63,15 @@ void main() {
     });
 
     test('package without version produces valid semver in docs', () async {
-      Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(
-          await generatorContextFromArgvTemp(
-              ['--input', testPackageMinimumDir.path]));
+      Dartdoc dartdoc = await buildDartdoc([], testPackageMinimumDir);
       DartdocResults results = await dartdoc.generateDocs();
       PackageGraph p = results.packageGraph;
       expect(p.version, equals('0.0.0-unknown'));
     });
 
     test('basic interlinking test', () async {
-      Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(
-          await generatorContextFromArgvTemp(
-              ['--input', testPackageDir.path, '--link-to-remote']));
+      Dartdoc dartdoc =
+          await buildDartdoc(['--link-to-remote'], testPackageDir);
       DartdocResults results = await dartdoc.generateDocs();
       PackageGraph p = results.packageGraph;
       Package tuple = p.publicPackages.firstWhere((p) => p.name == 'tuple');
@@ -108,8 +99,7 @@ void main() {
 
     test('generate docs for ${pathLib.basename(testPackageDir.path)} works',
         () async {
-      Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(
-          await generatorContextFromArgvTemp(['--input', testPackageDir.path]));
+      Dartdoc dartdoc = await buildDartdoc([], testPackageDir);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -123,9 +113,7 @@ void main() {
 
     test('generate docs for ${pathLib.basename(testPackageBadDir.path)} fails',
         () async {
-      Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(
-          await generatorContextFromArgvTemp(
-              ['--input', testPackageBadDir.path]));
+      Dartdoc dartdoc = await buildDartdoc([], testPackageBadDir);
 
       try {
         await dartdoc.generateDocs();
@@ -136,9 +124,7 @@ void main() {
     });
 
     test('generate docs for a package that does not have a readme', () async {
-      Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(
-          await generatorContextFromArgvTemp(
-              ['--input', testPackageWithNoReadme.path]));
+      Dartdoc dartdoc = await buildDartdoc([], testPackageWithNoReadme);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -151,9 +137,8 @@ void main() {
     });
 
     test('generate docs including a single library', () async {
-      Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(
-          await generatorContextFromArgvTemp(
-              ['--input', testPackageDir.path, '--include', 'fake']));
+      Dartdoc dartdoc =
+          await buildDartdoc(['--include', 'fake'], testPackageDir);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -166,9 +151,8 @@ void main() {
     });
 
     test('generate docs excluding a single library', () async {
-      Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(
-          await generatorContextFromArgvTemp(
-              ['--input', testPackageDir.path, '--exclude', 'fake']));
+      Dartdoc dartdoc =
+          await buildDartdoc(['--exclude', 'fake'], testPackageDir);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -182,11 +166,7 @@ void main() {
     });
 
     test('generate docs for package with embedder yaml', () async {
-      PackageMeta meta = new PackageMeta.fromDir(testPackageWithEmbedderYaml);
-      if (meta.needsPubGet) meta.runPubGet();
-      Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(
-          await generatorContextFromArgvTemp(
-              ['--input', testPackageWithEmbedderYaml.path]));
+      Dartdoc dartdoc = await buildDartdoc([], testPackageWithEmbedderYaml);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
