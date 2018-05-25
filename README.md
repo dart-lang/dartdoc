@@ -111,6 +111,9 @@ Unrecognized options will be ignored.  Supported options:
 
   * **categoryOrder**:  Specify the order of categories, below, for display in the sidebar and
     the package page.
+  * **include**:  Specify a list of library names to generate docs for, ignoring all others.
+  * **exclude**:  Specify a list of library names to avoid generating docs for,
+    overriding any specified in include.
   * **linkTo**:  For other packages depending on this one, if this map is defined those packages
     will use the settings here to control how hyperlinks to the package are generated.
     This will override the default for packages hosted on pub.dartlang.org.
@@ -133,12 +136,10 @@ as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
   * **ambiguousReexportScorerMinConfidence**:  The ambiguous reexport scorer will emit a warning if
   it is not at least this confident.  Default: 0.1
   * **examplePathPrefix**:  Specify the prefix for the example paths, defaulting to the project root.
-  * **exclude**:  Specify a list of library names to avoid generating docs for, ignoring all others.
   * **favicon**:  A path to a favicon for the generated docs.
   * **footer**: A list of paths to footer files containing HTML text.
   * **footerText**: A list of paths to text files for optional text next to the package name and version
   * **header**:  A list of paths to header files containing HTML text.
-  * **include**:  Specify a list of library names to generate docs for, ignoring all others.
   * **includeExternal**:  Specify a list of library filenames to add to the list of documented libraries.
  
 ### Categories

@@ -33,13 +33,48 @@ void main() {
       return await generatorContextFromArgv(argv..addAll(outputParam));
     }
 
+    Future<Dartdoc> buildDartdoc(
+        List<String> argv, Directory packageRoot) async {
+      return await Dartdoc.withDefaultGenerators(await generatorContextFromArgv(
+          argv..addAll(['--input', packageRoot.path])));
+    }
+
+    group('include/exclude parameters', () {
+      test('with config file', () async {
+        Dartdoc dartdoc = await buildDartdoc([], testPackageImportExport);
+        DartdocResults results = await dartdoc.generateDocs();
+        PackageGraph p = results.packageGraph;
+        expect(p.localPublicLibraries.map((l) => l.name),
+            orderedEquals(['explicitly_included', 'more_included']));
+      });
+
+      test('with include command line argument', () async {
+        Dartdoc dartdoc = await buildDartdoc(
+            ['--include', 'another_included'], testPackageImportExport);
+        DartdocResults results = await dartdoc.generateDocs();
+        PackageGraph p = results.packageGraph;
+        expect(p.localPublicLibraries.length, equals(1));
+        expect(p.localPublicLibraries.first.name, equals('another_included'));
+      });
+
+      test('with exclude command line argument', () async {
+        Dartdoc dartdoc = await buildDartdoc(
+            ['--exclude', 'more_included'], testPackageImportExport);
+        DartdocResults results = await dartdoc.generateDocs();
+        PackageGraph p = results.packageGraph;
+        expect(p.localPublicLibraries.length, equals(1));
+        expect(
+            p.localPublicLibraries.first.name, equals('explicitly_included'));
+      });
+    });
+
     test('package without version produces valid semver in docs', () async {
       Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(
           await generatorContextFromArgvTemp(
               ['--input', testPackageMinimumDir.path]));
       DartdocResults results = await dartdoc.generateDocs();
       PackageGraph p = results.packageGraph;
-      assert(p.version == '0.0.0-unknown');
+      expect(p.version, equals('0.0.0-unknown'));
     });
 
     test('basic interlinking test', () async {

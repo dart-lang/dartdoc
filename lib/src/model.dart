@@ -5620,7 +5620,8 @@ class PackageBuilder {
     if (config.include.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
       Set notFound = new Set.from(config.include)
-          .difference(new Set.from(knownLibraryNames));
+          .difference(new Set.from(knownLibraryNames))
+          .difference(new Set.from(config.exclude));
       if (notFound.isNotEmpty) {
         throw 'Did not find: [${notFound.join(', ')}] in '
             'known libraries: [${knownLibraryNames.join(', ')}]';
