@@ -111,9 +111,9 @@ Unrecognized options will be ignored.  Supported options:
 
   * **categoryOrder**:  Specify the order of categories, below, for display in the sidebar and
     the package page.
-  * **include**:  Specify a list of library names to generate docs for, ignoring all others.
   * **exclude**:  Specify a list of library names to avoid generating docs for,
     overriding any specified in include.
+  * **include**:  Specify a list of library names to generate docs for, ignoring all others.
   * **linkTo**:  For other packages depending on this one, if this map is defined those packages
     will use the settings here to control how hyperlinks to the package are generated.
     This will override the default for packages hosted on pub.dartlang.org.
