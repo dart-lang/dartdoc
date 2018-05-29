@@ -87,7 +87,7 @@ class HtmlGeneratorInstance {
   void _generateDocs() {
     if (_packageGraph == null) return;
 
-    generatePackage();
+    generatePackage(_packageGraph, _packageGraph.defaultPackage);
 
     for (var package in _packageGraph.localPackages) {
       for (var lib in filterNonDocumented(package.libraries)) {
@@ -164,9 +164,10 @@ class HtmlGeneratorInstance {
     }
   }
 
-  void generatePackage() {
-    TemplateData data = new PackageTemplateData(_options, _packageGraph);
-    logInfo('documenting ${_packageGraph.name}');
+  void generatePackage(PackageGraph packageGraph, Package package) {
+    TemplateData data =
+        new PackageTemplateData(_options, packageGraph, package);
+    logInfo('documenting ${package.name}');
 
     _build('index.html', _templates.indexTemplate, data);
   }

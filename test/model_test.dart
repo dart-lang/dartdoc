@@ -19,13 +19,16 @@ class TestLibraryContainer extends LibraryContainer {
   @override
   final List<String> containerOrder;
   @override
-  final LibraryContainer enclosingContainer;
+  String enclosingName;
   @override
   final String name;
   @override
   bool get isSdk => false;
 
-  TestLibraryContainer(this.name, this.containerOrder, this.enclosingContainer);
+  TestLibraryContainer(
+      this.name, this.containerOrder, LibraryContainer enclosingContainer) {
+    enclosingName = enclosingContainer?.name;
+  }
 }
 
 class TestLibraryContainerSdk extends TestLibraryContainer {
@@ -200,7 +203,7 @@ void main() {
   group('Package', () {
     group('test package', () {
       test('name', () {
-        expect(packageGraph.name, 'test_package');
+        expect(packageGraph.defaultPackage.name, 'test_package');
       });
 
       test('libraries', () {
@@ -209,8 +212,9 @@ void main() {
       });
 
       test('homepage', () {
-        expect(packageGraph.hasHomepage, true);
-        expect(packageGraph.homepage, equals('http://github.com/dart-lang'));
+        expect(packageGraph.defaultPackage.hasHomepage, true);
+        expect(packageGraph.defaultPackage.homepage,
+            equals('http://github.com/dart-lang'));
       });
 
       test('packages', () {
@@ -232,36 +236,39 @@ void main() {
       });
 
       test('has documentation', () {
-        expect(packageGraph.hasDocumentationFile, isTrue);
-        expect(packageGraph.hasDocumentation, isTrue);
+        expect(packageGraph.defaultPackage.hasDocumentationFile, isTrue);
+        expect(packageGraph.defaultPackage.hasDocumentation, isTrue);
       });
 
       test('documentation exists', () {
-        expect(packageGraph.documentation.startsWith('# Best Package'), isTrue);
+        expect(
+            packageGraph.defaultPackage.documentation
+                .startsWith('# Best Package'),
+            isTrue);
       });
 
       test('documentation can be rendered as HTML', () {
-        expect(packageGraph.documentationAsHtml,
+        expect(packageGraph.defaultPackage.documentationAsHtml,
             contains('<h1>Best Package</h1>'));
       });
 
       test('sdk name', () {
-        expect(sdkAsPackageGraph.name, equals('Dart'));
-        expect(sdkAsPackageGraph.kind, equals('SDK'));
+        expect(sdkAsPackageGraph.defaultPackage.name, equals('Dart'));
+        expect(sdkAsPackageGraph.defaultPackage.kind, equals('SDK'));
       });
 
       test('sdk homepage', () {
-        expect(sdkAsPackageGraph.hasHomepage, isTrue);
-        expect(sdkAsPackageGraph.homepage,
+        expect(sdkAsPackageGraph.defaultPackage.hasHomepage, isTrue);
+        expect(sdkAsPackageGraph.defaultPackage.homepage,
             equals('https://github.com/dart-lang/sdk'));
       });
 
       test('sdk version', () {
-        expect(sdkAsPackageGraph.version, isNotNull);
+        expect(sdkAsPackageGraph.defaultPackage.version, isNotNull);
       });
 
       test('sdk description', () {
-        expect(sdkAsPackageGraph.documentation,
+        expect(sdkAsPackageGraph.defaultPackage.documentation,
             startsWith('Welcome to the Dart API reference doc'));
       });
 
@@ -279,10 +286,14 @@ void main() {
 
     group('test small package', () {
       test('does not have documentation', () {
-        expect(utils.testPackageGraphSmall.hasDocumentation, isFalse);
-        expect(utils.testPackageGraphSmall.hasDocumentationFile, isFalse);
-        expect(utils.testPackageGraphSmall.documentationFile, isNull);
-        expect(utils.testPackageGraphSmall.documentation, isNull);
+        expect(utils.testPackageGraphSmall.defaultPackage.hasDocumentation,
+            isFalse);
+        expect(utils.testPackageGraphSmall.defaultPackage.hasDocumentationFile,
+            isFalse);
+        expect(utils.testPackageGraphSmall.defaultPackage.documentationFile,
+            isNull);
+        expect(
+            utils.testPackageGraphSmall.defaultPackage.documentation, isNull);
       });
     });
 

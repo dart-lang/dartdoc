@@ -18,12 +18,7 @@
 
       <dl>
         {{#library.publicClasses}}
-        <dt id="{{htmlId}}">
-          <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{linkedName}}}{{{linkedGenericParameters}}}</span>
-        </dt>
-        <dd>
-          {{{ oneLineDoc }}}
-        </dd>
+        {{>class}}
         {{/library.publicClasses}}
       </dl>
     </section>
@@ -71,12 +66,7 @@
 
       <dl>
         {{#library.publicEnums}}
-        <dt id="{{htmlId}}">
-          {{{linkedName}}}
-        </dt>
-        <dd>
-          {{{ oneLineDoc }}}
-        </dd>
+        {{>class}}
         {{/library.publicEnums}}
       </dl>
     </section>
@@ -100,12 +90,7 @@
 
       <dl>
         {{#library.publicExceptions}}
-        <dt id="{{htmlId}}">
-          <span class="name {{#isDeprecated}}deprecated{{/isDeprecated}}">{{{linkedName}}}</span>
-        </dt>
-        <dd>
-          {{{ oneLineDoc }}}
-        </dd>
+        {{>class}}
         {{/library.publicExceptions}}
       </dl>
     </section>
