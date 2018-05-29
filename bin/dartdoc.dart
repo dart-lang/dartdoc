@@ -42,9 +42,6 @@ main(List<String> arguments) async {
     createGeneratorOptions,
   ]);
 
-  DartdocProgramOptionContext config =
-      new DartdocProgramOptionContext(optionSet, Directory.current);
-
   try {
     optionSet.parseArguments(arguments);
   } on FormatException catch (e) {
@@ -63,6 +60,8 @@ main(List<String> arguments) async {
     _printVersionAndExit(optionSet.argParser);
   }
 
+  DartdocProgramOptionContext config =
+      new DartdocProgramOptionContext(optionSet, null);
   startLogging(config);
 
   Directory outputDir = new Directory(config.output);
