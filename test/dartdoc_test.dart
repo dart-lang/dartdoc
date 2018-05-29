@@ -66,7 +66,7 @@ void main() {
       Dartdoc dartdoc = await buildDartdoc([], testPackageMinimumDir);
       DartdocResults results = await dartdoc.generateDocs();
       PackageGraph p = results.packageGraph;
-      expect(p.version, equals('0.0.0-unknown'));
+      expect(p.defaultPackage.version, equals('0.0.0-unknown'));
     });
 
     test('basic interlinking test', () async {
@@ -104,11 +104,12 @@ void main() {
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
-      PackageGraph p = results.packageGraph;
+      PackageGraph packageGraph = results.packageGraph;
+      Package p = packageGraph.defaultPackage;
       expect(p.name, 'test_package');
       expect(p.hasDocumentationFile, isTrue);
-      expect(p.defaultPackage.publicLibraries, hasLength(10));
-      expect(p.localPackages.length, equals(1));
+      expect(packageGraph.defaultPackage.publicLibraries, hasLength(10));
+      expect(packageGraph.localPackages.length, equals(1));
     });
 
     test('generate docs for ${pathLib.basename(testPackageBadDir.path)} fails',
@@ -130,9 +131,9 @@ void main() {
       expect(results.packageGraph, isNotNull);
 
       PackageGraph p = results.packageGraph;
-      expect(p.name, 'test_package_small');
-      expect(p.hasHomepage, isFalse);
-      expect(p.hasDocumentationFile, isFalse);
+      expect(p.defaultPackage.name, 'test_package_small');
+      expect(p.defaultPackage.hasHomepage, isFalse);
+      expect(p.defaultPackage.hasDocumentationFile, isFalse);
       expect(p.localPublicLibraries, hasLength(1));
     });
 
@@ -144,8 +145,8 @@ void main() {
       expect(results.packageGraph, isNotNull);
 
       PackageGraph p = results.packageGraph;
-      expect(p.name, 'test_package');
-      expect(p.hasDocumentationFile, isTrue);
+      expect(p.defaultPackage.name, 'test_package');
+      expect(p.defaultPackage.hasDocumentationFile, isTrue);
       expect(p.libraries, hasLength(1));
       expect(p.libraries.map((lib) => lib.name), contains('fake'));
     });
@@ -158,8 +159,8 @@ void main() {
       expect(results.packageGraph, isNotNull);
 
       PackageGraph p = results.packageGraph;
-      expect(p.name, 'test_package');
-      expect(p.hasDocumentationFile, isTrue);
+      expect(p.defaultPackage.name, 'test_package');
+      expect(p.defaultPackage.hasDocumentationFile, isTrue);
       expect(p.localPublicLibraries, hasLength(9));
       expect(p.localPublicLibraries.map((lib) => lib.name).contains('fake'),
           isFalse);
@@ -172,16 +173,16 @@ void main() {
       expect(results.packageGraph, isNotNull);
 
       PackageGraph p = results.packageGraph;
-      expect(p.name, 'test_package_embedder_yaml');
-      expect(p.hasDocumentationFile, isFalse);
+      expect(p.defaultPackage.name, 'test_package_embedder_yaml');
+      expect(p.defaultPackage.hasDocumentationFile, isFalse);
       expect(p.libraries, hasLength(3));
       expect(p.libraries.map((lib) => lib.name).contains('dart:core'), isTrue);
       expect(p.libraries.map((lib) => lib.name).contains('dart:async'), isTrue);
       expect(p.libraries.map((lib) => lib.name).contains('dart:bear'), isTrue);
-      expect(p.packageMap.length, equals(1));
-      // Things that do not override the core SDK do not belong in their own package.
+      expect(p.packageMap.length, equals(2));
+      // Things that do not override the core SDK belong in their own package.
       expect(p.packageMap["Dart"].isSdk, isTrue);
-      expect(p.packageMap["test_package_embedder_yaml"], isNull);
+      expect(p.packageMap["test_package_embedder_yaml"].isSdk, isFalse);
       // Should be true once dart-lang/sdk#32707 is fixed.
       //expect(
       //    p.publicLibraries,
@@ -189,9 +190,8 @@ void main() {
       //        (l.element as LibraryElement).isInSdk == l.packageMeta.isSdk));
       // Ensure that we actually parsed some source by checking for
       // the 'Bear' class.
-      Library dart_bear =
-          p.libraries.firstWhere((lib) => lib.name == 'dart:bear');
-      expect(dart_bear, isNotNull);
+      Library dart_bear = p.packageMap["Dart"].libraries
+          .firstWhere((lib) => lib.name == 'dart:bear');
       expect(
           dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
       expect(p.packageMap["Dart"].publicLibraries, hasLength(3));
