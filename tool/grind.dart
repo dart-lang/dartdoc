@@ -722,6 +722,12 @@ test() async {
   await testFutures.wait();
 }
 
+List<File> get binFiles => new Directory('bin')
+    .listSync(recursive: true)
+    .where((e) => e is File && e.path.endsWith('.dart'))
+    .cast<File>()
+      ..toList();
+
 List<File> get testFiles => new Directory('test')
     .listSync(recursive: true)
     .where((e) => e is File && e.path.endsWith('test.dart'))
@@ -732,27 +738,48 @@ testPreviewDart2() async {
   List<String> parameters = ['--preview-dart-2', '--enable-asserts'];
 
   for (File dartFile in testFiles) {
-    await testFutures.addFuture(new SubprocessLauncher(
-            'dart2-${pathLib.basename(dartFile.path)}')
-        .runStreamed(
-            Platform.resolvedExecutable,
-            <String>[]
-              ..addAll(parameters)
-              ..add(dartFile.path)));
+    await testFutures.addFuture(
+        new SubprocessLauncher('dart2-${pathLib.basename(dartFile.path)}')
+            .runStreamed(
+                Platform.resolvedExecutable,
+                <String>[]
+                  ..addAll(parameters)
+                  ..add(dartFile.path)));
+  }
+
+  for (File dartFile in binFiles) {
+    await testFutures.addFuture(
+        new SubprocessLauncher('dart2-${pathLib.basename(dartFile.path)}')
+            .runStreamed(
+                Platform.resolvedExecutable,
+                <String>[]
+                  ..addAll(parameters)
+                  ..add(dartFile.path)
+                  ..add('--help')));
   }
 }
 
 testDart1() async {
   List<String> parameters = ['--checked'];
   for (File dartFile in testFiles) {
-    // absolute path to work around dart-lang/sdk#32901
-    await testFutures.addFuture(new SubprocessLauncher(
-            'dart1-${pathLib.basename(dartFile.absolute.path)}')
-        .runStreamed(
-            Platform.resolvedExecutable,
-            <String>[]
-              ..addAll(parameters)
-              ..add(dartFile.absolute.path)));
+    await testFutures.addFuture(
+        new SubprocessLauncher('dart1-${pathLib.basename(dartFile.path)}')
+            .runStreamed(
+                Platform.resolvedExecutable,
+                <String>[]
+                  ..addAll(parameters)
+                  ..add(dartFile.path)));
+  }
+
+  for (File dartFile in binFiles) {
+    await testFutures.addFuture(
+        new SubprocessLauncher('dart1-${pathLib.basename(dartFile.path)}')
+            .runStreamed(
+                Platform.resolvedExecutable,
+                <String>[]
+                  ..addAll(parameters)
+                  ..add(dartFile.path)
+                  ..add('--help')));
   }
 }
 
