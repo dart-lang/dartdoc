@@ -883,9 +883,17 @@ class DartdocOptionContext {
   // TODO(jcollins-g): Allow passing in structured data to initialize a
   // [DartdocOptionContext]'s arguments instead of having to parse strings
   // via optionSet.
+  /// If [entity] is null, assume this is the initialization case and use
+  /// the inputDir flag to determine the context.
   DartdocOptionContext(this.optionSet, FileSystemEntity entity) {
-    context = new Directory(pathLib
-        .canonicalize(entity is File ? entity.parent.path : entity.path));
+    if (entity == null) {
+      String inputDir = optionSet['inputDir'].valueAt(Directory.current) ??
+          Directory.current.path;
+      context = new Directory(inputDir);
+    } else {
+      context = new Directory(pathLib
+          .canonicalize(entity is File ? entity.parent.path : entity.path));
+    }
   }
 
   /// Build a DartdocOptionContext from an analyzer element (using its source

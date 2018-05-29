@@ -3597,7 +3597,8 @@ abstract class ModelElement extends Canonicalization
         width = int.parse(match[2]);
       } on FormatException {
         warn(PackageWarning.invalidParameter,
-            message: 'An animation has an invalid width ($name): ${match[2]}. The '
+            message:
+                'An animation has an invalid width ($name): ${match[2]}. The '
                 'width must be an integer.');
         return '';
       }
@@ -3606,7 +3607,8 @@ abstract class ModelElement extends Canonicalization
         height = int.parse(match[3]);
       } on FormatException {
         warn(PackageWarning.invalidParameter,
-            message: 'An animation has an invalid height ($name): ${match[3]}. The '
+            message:
+                'An animation has an invalid height ($name): ${match[3]}. The '
                 'height must be an integer.');
         return '';
       }
@@ -3615,7 +3617,8 @@ abstract class ModelElement extends Canonicalization
         movieUrl = Uri.parse(match[4]);
       } on FormatException catch (e) {
         warn(PackageWarning.invalidParameter,
-            message: 'An animation URL could not be parsed ($name): ${match[4]}\n$e');
+            message:
+                'An animation URL could not be parsed ($name): ${match[4]}\n$e');
         return '';
       }
       final String overlayName = '${name}_play_button_';
@@ -3655,7 +3658,7 @@ abstract class ModelElement extends Canonicalization
   </video>
 </div>
 
-''';  // String must end at beginning of line, or following inline text will be
+'''; // String must end at beginning of line, or following inline text will be
       // indented.
     });
   }
@@ -5742,7 +5745,8 @@ class PackageBuilder {
     if (config.include.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
       Set notFound = new Set.from(config.include)
-          .difference(new Set.from(knownLibraryNames));
+          .difference(new Set.from(knownLibraryNames))
+          .difference(new Set.from(config.exclude));
       if (notFound.isNotEmpty) {
         throw 'Did not find: [${notFound.join(', ')}] in '
             'known libraries: [${knownLibraryNames.join(', ')}]';
