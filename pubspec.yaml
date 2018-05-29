@@ -8,7 +8,7 @@ environment:
   sdk: '>=2.0.0-dev.54.0 <3.0.0'
 dependencies:
   analyzer: 0.32.0
-  args: '>=0.13.0 <2.0.0'
+  args: '>=1.4.3 <2.0.0'
   collection: ^1.2.0
   front_end: ^0.1.0
   html: '>=0.12.1 <0.14.0'
