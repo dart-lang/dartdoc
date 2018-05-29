@@ -1064,7 +1064,7 @@ class Class extends ModelElement
       o is Class &&
       name == o.name &&
       o.library.name == library.name &&
-      o.library.packageGraph.name == library.packageGraph.name;
+      o.library.package.name == library.package.name;
 }
 
 class Constructor extends ModelElement
@@ -1222,7 +1222,7 @@ abstract class Canonicalization extends Object
     // Penalty for deprecated libraries.
     if (lib.isDeprecated) scoredCandidate.alterScore(-1.0, 'is deprecated');
     // Give a big boost if the library has the package name embedded in it.
-    if (packageGraph.namePieces.intersection(lib.namePieces).length > 0) {
+    if (lib.package.namePieces.intersection(lib.namePieces).length > 0) {
       scoredCandidate.alterScore(1.0, 'embeds package name');
     }
     // Give a tiny boost for libraries with long names, assuming they're
@@ -3931,8 +3931,7 @@ class Operator extends Method {
   String get typeName => 'operator';
 }
 
-class PackageGraph extends Canonicalization
-    with Nameable, Warnable, LibraryContainer {
+class PackageGraph {
   // TODO(jcollins-g): This constructor is convoluted.  Clean this up by
   // building Libraries and adding them to Packages, then adding Packages
   // to this graph.
@@ -3955,6 +3954,10 @@ class PackageGraph extends Canonicalization
       assert(!_elementToLibrary.containsKey(lib.element));
       _elementToLibrary[element] = lib;
     });
+
+    // Make sure the default package exists, even if it has no libraries.
+    // This can happen for packages that only contain embedder SDKs.
+    new Package.fromPackageMeta(packageMeta, this);
     allLibrariesAdded = true;
 
     // Go through docs of every ModelElement in package to pre-build the macros
@@ -3977,12 +3980,6 @@ class PackageGraph extends Canonicalization
   /// It is safe to cache values derived from the _implementors table if this
   /// is true.
   bool allImplementorsAdded = false;
-
-  @override
-  List<String> get containerOrder => [];
-
-  @override
-  LibraryContainer get enclosingContainer => null;
 
   Map<String, List<Class>> get implementors {
     assert(allImplementorsAdded);
@@ -4010,8 +4007,10 @@ class PackageGraph extends Canonicalization
   /// PackageMeta for the default package.
   final PackageMeta packageMeta;
 
+  /// Name of the default package.
+  String get defaultPackageName => packageMeta.name;
+
   /// Dartdoc's configuration flags.
-  @override
   final DartdocOptionContext config;
 
   Map<String, Map<String, dynamic>> __crossdartJson;
@@ -4035,16 +4034,14 @@ class PackageGraph extends Canonicalization
     return __crossdartJson;
   }
 
-  @override
-  Set<String> get locationPieces => new Set();
+  Package _defaultPackage;
+  Package get defaultPackage {
+    if (_defaultPackage == null) {
+      _defaultPackage = new Package.fromPackageMeta(packageMeta, this);
+    }
+    return _defaultPackage;
+  }
 
-  @override
-  Library get canonicalLibrary => null;
-
-  Package get defaultPackage =>
-      localPackages.firstWhere((p) => p.packageMeta == packageMeta);
-
-  @override
   PackageGraph get packageGraph => this;
 
   /// Map of package name to Package.
@@ -4064,20 +4061,7 @@ class PackageGraph extends Canonicalization
     return _sdkLibrarySources;
   }
 
-  @override
-  bool get isDocumented => true;
-
-  @override
-  List<Locatable> get documentationFrom => [defaultPackage];
-
-  @override
-  Warnable get enclosingElement => null;
-
-  @override
-  bool get hasExtendedDocumentation => documentation.isNotEmpty;
-
   final Map<Element, Library> _elementToLibrary = {};
-  String _docsAsHtml;
   final Map<String, String> _macros = {};
   bool allLibrariesAdded = false;
   bool _macrosAdded = false;
@@ -4095,12 +4079,6 @@ class PackageGraph extends Canonicalization
     return (_allRootDirs.contains(element.library.packageMeta?.resolvedDir));
   }
 
-  @override
-  Element get element => null;
-
-  @override
-  String get location => '(top level package)';
-
   /// Flush out any warnings we might have collected while
   /// [PackageWarningOptions.autoFlush] was false.
   void flushWarnings() {
@@ -4109,24 +4087,7 @@ class PackageGraph extends Canonicalization
 
   Tuple2<int, int> get lineAndColumn => null;
 
-  @override
-  String get fullyQualifiedName => name;
-
-  @override
-  bool get isCanonical => true;
-
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
-
-  @override
-  void warn(PackageWarning kind,
-      {String message,
-      Iterable<Locatable> referredFrom,
-      Iterable<String> extendedDebug}) {
-    warnOnElement(this, kind,
-        message: message,
-        referredFrom: referredFrom,
-        extendedDebug: extendedDebug);
-  }
 
   /// Returns colon-stripped name and location of the given locatable.
   static Tuple2<String, String> nameAndLocation(Locatable locatable) {
@@ -4361,11 +4322,6 @@ class PackageGraph extends Canonicalization
     return _libraryElementReexportedBy;
   }
 
-  @override
-  String get documentation {
-    return hasDocumentationFile ? documentationFile.contents : null;
-  }
-
   /// A lookup index for hrefs to allow warnings to indicate where a broken
   /// link or orphaned file may have come from.  Not cached because
   /// [ModelElement]s can be created at any time and we're basing this
@@ -4398,32 +4354,6 @@ class PackageGraph extends Canonicalization
     return hrefMap;
   }
 
-  @override
-  String get documentationAsHtml {
-    if (_docsAsHtml != null) return _docsAsHtml;
-    _docsAsHtml = new Documentation.forElement(this).asHtml;
-
-    return _docsAsHtml;
-  }
-
-  FileContents get documentationFile => packageMeta.getReadmeContents();
-
-  // TODO: make this work
-  @override
-  bool get hasDocumentation =>
-      documentationFile != null && documentationFile.contents.isNotEmpty;
-
-  // TODO: Clients should use [documentationFile] so they can act differently on
-  // plain text or markdown.
-  bool get hasDocumentationFile => documentationFile != null;
-
-  // TODO: make this work
-  @override
-  String get href => 'index.html';
-
-  @override
-  bool get isSdk => packageMeta.isSdk;
-
   void _addToImplementors(Class c) {
     assert(!allImplementorsAdded);
     _implementors.putIfAbsent(c.href, () => []);
@@ -4451,12 +4381,10 @@ class PackageGraph extends Canonicalization
     }
   }
 
-  @override
   List<Library> get libraries =>
       packages.expand((p) => p.libraries).toList()..sort();
 
   List<Library> _publicLibraries;
-  @override
   Iterable<Library> get publicLibraries {
     if (_publicLibraries == null) {
       assert(allLibrariesAdded);
@@ -4483,18 +4411,6 @@ class PackageGraph extends Canonicalization
     }
     return _localPublicLibraries;
   }
-
-  bool get hasHomepage =>
-      packageMeta.homepage != null && packageMeta.homepage.isNotEmpty;
-  String get homepage => packageMeta.homepage;
-
-  @override
-  String get name => packageMeta.name;
-
-  String get kind => (packageGraph.isSdk) ? 'SDK' : 'package';
-
-  @override
-  String get oneLineDoc => '';
 
   // Written from ModelElement.from.
   ModelElement _objectElement;
@@ -4535,8 +4451,6 @@ class PackageGraph extends Canonicalization
     return _inheritThrough;
   }
 
-  String get version => packageMeta.version ?? '0.0.0-unknown';
-
   /// Looks up some [Library] that is reexporting this [Element]; not
   /// necessarily the canonical [Library].
   Library findLibraryFor(Element element) {
@@ -4559,7 +4473,7 @@ class PackageGraph extends Canonicalization
   }
 
   @override
-  String toString() => isSdk ? 'SDK' : 'Package $name';
+  String toString() => 'PackageGraph built from ${defaultPackage.name}';
 
   final Map<Element, Library> _canonicalLibraryFor = new Map();
 
@@ -4783,9 +4697,9 @@ abstract class LibraryContainer extends Nameable
     implements Comparable<LibraryContainer> {
   final List<Library> _libraries = [];
 
-  /// An enclosing container's [libraries] must be a superset of this object's
-  /// [libraries].
-  LibraryContainer get enclosingContainer;
+  /// The name of the container or object that this LibraryContainer is a part
+  /// of.  Used for sorting in [containerOrder].
+  String get enclosingName;
 
   List<Library> get libraries => _libraries;
   Iterable<Library> get publicLibraries => filterNonPublic(libraries);
@@ -4802,16 +4716,15 @@ abstract class LibraryContainer extends Nameable
 
   /// Returns:
   /// -1 if this container is listed in [containerOrder].
-  /// 0 if this container is named the same as the [enclosingContainer].
+  /// 0 if this container is named the same as the [enclosingName].
   /// 1 if this container represents the SDK.
-  /// 2 if this group has a name that contains the name of the [enclosingContainer].
+  /// 2 if this group has a name that contains the name [enclosingName].
   /// 3 otherwise.
   int get _group {
     if (containerOrder.contains(name)) return -1;
-    if (equalsIgnoreAsciiCase(name, enclosingContainer.name)) return 0;
+    if (equalsIgnoreAsciiCase(name, enclosingName)) return 0;
     if (isSdk) return 1;
-    if (name.toLowerCase().contains(enclosingContainer.name.toLowerCase()))
-      return 2;
+    if (name.toLowerCase().contains(enclosingName.toLowerCase())) return 2;
     return 3;
   }
 
@@ -4848,7 +4761,7 @@ class Category extends LibraryContainer {
   List<String> get containerOrder => config.categoryOrder;
 
   @override
-  Package get enclosingContainer => package;
+  String get enclosingName => package.name;
 
   PackageGraph get packageGraph => package.packageGraph;
 }
@@ -4866,11 +4779,8 @@ enum DocumentLocation {
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 class Package extends LibraryContainer
-    with
-        Locatable
-    // TODO(jcollins-g): implements Documentable
-    implements
-        Privacy {
+    with Locatable, Canonicalization, Warnable
+    implements Privacy, Documentable {
   String _name;
   PackageGraph _packageGraph;
   final _isLocal;
@@ -4901,8 +4811,25 @@ class Package extends LibraryContainer
   }
 
   Package._(this._name, this._packageGraph, this._packageMeta, this._isLocal);
+  @override
+  bool get isCanonical => true;
+  @override
+  Library get canonicalLibrary => null;
+
+  /// Pieces of the location split by [locationSplitter] (removing package: and
+  /// slashes).
+  @override
+  Set<String> get locationPieces => new Set();
 
   final Set<Library> _allLibraries = new Set();
+
+  bool get hasHomepage =>
+      packageMeta.homepage != null && packageMeta.homepage.isNotEmpty;
+  String get homepage => packageMeta.homepage;
+  String get kind => (isSdk) ? 'SDK' : 'package';
+
+  @override
+  List<Locatable> get documentationFrom => [this];
 
   /// Returns all libraries added to this package.  May include non-documented
   /// libraries, but is not guaranteed to include a complete list of
@@ -4919,8 +4846,42 @@ class Package extends LibraryContainer
 
   LibraryContainer get defaultCategory => nameToCategory[null];
 
+  String _documentationAsHtml;
   @override
-  List<Locatable> get documentationFrom => [this];
+  String get documentationAsHtml {
+    if (_documentationAsHtml != null) return _documentationAsHtml;
+    _documentationAsHtml = new Documentation.forElement(this).asHtml;
+
+    return _documentationAsHtml;
+  }
+
+  @override
+  String get documentation {
+    return hasDocumentationFile ? documentationFile.contents : null;
+  }
+
+  @override
+  bool get hasDocumentation =>
+      documentationFile != null && documentationFile.contents.isNotEmpty;
+
+  @override
+  bool get hasExtendedDocumentation => documentation.isNotEmpty;
+
+  // TODO: Clients should use [documentationFile] so they can act differently on
+  // plain text or markdown.
+  bool get hasDocumentationFile => documentationFile != null;
+
+  FileContents get documentationFile => packageMeta.getReadmeContents();
+
+  @override
+  String get oneLineDoc => '';
+
+  @override
+  bool get isDocumented =>
+      isFirstPackage || documentedWhere != DocumentLocation.missing;
+
+  @override
+  Warnable get enclosingElement => null;
 
   bool _isPublic;
   @override
@@ -4945,7 +4906,7 @@ class Package extends LibraryContainer
   }
 
   @override
-  PackageGraph get enclosingContainer => packageGraph;
+  String get enclosingName => packageGraph.defaultPackageName;
 
   @override
   String get fullyQualifiedName => 'package:$name';
@@ -4993,6 +4954,7 @@ class Package extends LibraryContainer
   @override
   String get name => _name;
 
+  @override
   PackageGraph get packageGraph => _packageGraph;
 
   // Workaround for mustache4dart issue where templates do not recognize
@@ -5027,6 +4989,7 @@ class Package extends LibraryContainer
   }
 
   DartdocOptionContext _config;
+  @override
   DartdocOptionContext get config {
     if (_config == null) {
       _config = new DartdocOptionContext.fromContext(
@@ -5050,11 +5013,27 @@ class Package extends LibraryContainer
     return _packagePath;
   }
 
+  String get version => packageMeta.version ?? '0.0.0-unknown';
+
+  @override
+  void warn(PackageWarning kind,
+      {String message,
+      Iterable<Locatable> referredFrom,
+      Iterable<String> extendedDebug}) {
+    packageGraph.warnOnElement(this, kind,
+        message: message,
+        referredFrom: referredFrom,
+        extendedDebug: extendedDebug);
+  }
+
   final PackageMeta _packageMeta;
   PackageMeta get packageMeta => _packageMeta;
 
   @override
   String toString() => name;
+
+  @override
+  Element get element => null;
 }
 
 class Parameter extends ModelElement implements EnclosedElement {

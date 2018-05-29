@@ -13,6 +13,7 @@ import 'package:mustache4dart/mustache4dart.dart';
 const _partials = const <String>[
   'callable',
   'callable_multiline',
+  'class',
   'constant',
   'footer',
   'head',

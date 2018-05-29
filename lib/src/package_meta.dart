@@ -85,8 +85,7 @@ abstract class PackageMeta {
     // [config] is only here for sdkDir, and it's OK that it is the wrong
     // context since sdkDir is argOnly and this is supposed to be a temporary
     // workaround.
-    // Workaround for dart-lang/sdk#32707.  Replace with isInSdk once that works.
-    if (libraryElement.source.uri.scheme == 'dart')
+    if (libraryElement.isInSdk)
       return new PackageMeta.fromDir(new Directory(config.sdkDir));
     return new PackageMeta.fromDir(
         new File(pathLib.canonicalize(libraryElement.source.fullName)).parent);
