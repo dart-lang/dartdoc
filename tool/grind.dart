@@ -748,14 +748,14 @@ testPreviewDart2() async {
   }
 
   for (File dartFile in binFiles) {
-    await testFutures.addFuture(
-        new SubprocessLauncher('dart2-bin-${pathLib.basename(dartFile.path)}-help')
-            .runStreamed(
-                Platform.resolvedExecutable,
-                <String>[]
-                  ..addAll(parameters)
-                  ..add(dartFile.path)
-                  ..add('--help')));
+    await testFutures.addFuture(new SubprocessLauncher(
+            'dart2-bin-${pathLib.basename(dartFile.path)}-help')
+        .runStreamed(
+            Platform.resolvedExecutable,
+            <String>[]
+              ..addAll(parameters)
+              ..add(dartFile.path)
+              ..add('--help')));
   }
 }
 
@@ -772,14 +772,14 @@ testDart1() async {
   }
 
   for (File dartFile in binFiles) {
-    await testFutures.addFuture(
-        new SubprocessLauncher('dart1-bin-${pathLib.basename(dartFile.path)}-help')
-            .runStreamed(
-                Platform.resolvedExecutable,
-                <String>[]
-                  ..addAll(parameters)
-                  ..add(dartFile.path)
-                  ..add('--help')));
+    await testFutures.addFuture(new SubprocessLauncher(
+            'dart1-bin-${pathLib.basename(dartFile.path)}-help')
+        .runStreamed(
+            Platform.resolvedExecutable,
+            <String>[]
+              ..addAll(parameters)
+              ..add(dartFile.path)
+              ..add('--help')));
   }
 }
 
