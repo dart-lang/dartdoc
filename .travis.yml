@@ -1,7 +1,7 @@
 language: dart
 sudo: false
 dart:
-  - "be/raw/hash/6bc7288e708f6efd48cae83ac7413188dd741de2"
+  - "dev/raw/latest"
 env:
   - DARTDOC_BOT=main
   # TODO(devoncarew): add angulardart support

@@ -155,6 +155,18 @@ and Library pages.
 library my_library;
 ```
 
+### Animations
+
+You can specify links to videos inline that will be handled with a simple HTML5 player:
+
+```dart
+/// This widget is a dancing Linux penguin.
+///
+/// {@animation name 100 200 http://host.com/path/to/video.mp4}
+```
+
+'name' is user defined, and the numbers are the width and height of the animation in pixels.
+
 ### Macros
 
 You can specify "macros", i.e. reusable pieces of documentation. For that, first specify a template
