@@ -1,3 +1,10 @@
+## 0.20.0
+* include and exclude are now available in dartdoc_options.yaml as supported options
+  (#1700, #1674)
+* Support a new `{@animation}` directive in documentation comments to display
+  videos in a simple player.
+* Fix Dart 2.0 support (#1668) and expand test coverage to include --help.
+
 ## 0.19.1
 * Update `package:markdown` to `2.0.0`, which includes many improvements –
   especially to the parsing of links.
