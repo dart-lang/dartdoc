@@ -576,8 +576,8 @@ void main() {
           isTrue);
     });
     test("Doesn't place animations in one line doc", () {
-      expect(withAnimationInline.oneLineDoc, isNot(contains('<video')));
-      expect(withAnimationInline.documentation, contains('<video'));
+      expect(withAnimationInOneLineDoc.oneLineDoc, isNot(contains('<video')));
+      expect(withAnimationInOneLineDoc.documentation, contains('<video'));
     });
     test("Handles animations inline properly", () {
       expect(withAnimationInline.documentation, isNot(contains('  works')));
