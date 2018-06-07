@@ -510,19 +510,36 @@ void main() {
   group('Animation', () {
     Class dog;
     Method withAnimation;
+    Method withNamedAnimation;
+    Method withQuoteNamedAnimation;
+    Method withInvalidNamedAnimation;
+    Method withDeprecatedAnimation;
     Method withAnimationNonUnique;
+    Method withAnimationNonUniqueDeprecated;
     Method withAnimationWrongParams;
     Method withAnimationBadWidth;
     Method withAnimationBadHeight;
     Method withAnimationInOneLineDoc;
     Method withAnimationInline;
+    Method withAnimationOutOfOrder;
+    Method withAnimationUnknownArg;
 
     setUp(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
       withAnimation =
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withAnimation');
+      withNamedAnimation = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withNamedAnimation');
+      withQuoteNamedAnimation = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withQuotedNamedAnimation');
+      withInvalidNamedAnimation = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withInvalidNamedAnimation');
+      withDeprecatedAnimation = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withDeprecatedAnimation');
       withAnimationNonUnique = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withAnimationNonUnique');
+      withAnimationNonUniqueDeprecated = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationNonUniqueDeprecated');
       withAnimationWrongParams = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withAnimationWrongParams');
       withAnimationBadWidth = dog.allInstanceMethods
@@ -533,20 +550,70 @@ void main() {
           .firstWhere((m) => m.name == 'withAnimationInOneLineDoc');
       withAnimationInline = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withAnimationInline');
+      withAnimationOutOfOrder = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationOutOfOrder');
+      withAnimationUnknownArg = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationUnknownArg');
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
 
-    test("renders an animation within the method documentation", () {
-      expect(
-          withAnimation.documentation, contains('<video id="methodAnimation"'));
+    test("renders an unnamed animation within the method documentation", () {
+      expect(withAnimation.documentation, contains('<video id="animation_1"'));
     });
-    test("warns on a non-unique animation within a method", () {
+    test("renders a named animation within the method documentation", () {
+      expect(withNamedAnimation.documentation,
+          contains('<video id="namedAnimation"'));
+    });
+    test("renders a quoted, named animation within the method documentation",
+        () {
+      expect(withQuoteNamedAnimation.documentation,
+          contains('<video id="quotedNamedAnimation"'));
+      expect(withQuoteNamedAnimation.documentation,
+          contains('<video id="quotedNamedAnimation2"'));
+    });
+    test("warns with invalidly-named animation within the method documentation",
+        () {
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              withInvalidNamedAnimation,
+              PackageWarning.invalidParameter,
+              'An animation has an invalid identifier, "2isNot-A-ValidName". '
+              'The identifier can only contain letters, numbers and '
+              'underscores, and must not begin with a number.'),
+          isTrue);
+    });
+    test("renders a deprecated-form animation within the method documentation",
+        () {
+      expect(withDeprecatedAnimation.documentation,
+          contains('<video id="deprecatedAnimation"'));
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              withDeprecatedAnimation,
+              PackageWarning.deprecated,
+              'Deprecated form of @animation directive, '
+              '"{@animation deprecatedAnimation 100 100 http://host/path/to/video.mp4}"\n'
+              'Animation directives are now of the form "{@animation '
+              'WIDTH HEIGHT URL [id=ID]}" (id is an optional '
+              'parameter)'),
+          isTrue);
+    });
+    test("warns on a non-unique animation name within a method", () {
       expect(
           packageGraph.packageWarningCounter.hasWarning(
               withAnimationNonUnique,
               PackageWarning.invalidParameter,
-              'An animation has a non-unique name: fooHerderAnimation. Animation names '
-              'must be unique.'),
+              'An animation has a non-unique identifier, "barHerderAnimation". '
+              'Animation identifiers must be unique.'),
+          isTrue);
+    });
+    test("warns on a non-unique animation name within a deprecated-form method",
+        () {
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              withAnimationNonUniqueDeprecated,
+              PackageWarning.invalidParameter,
+              'An animation has a non-unique identifier, "fooHerderAnimation". '
+              'Animation identifiers must be unique.'),
           isTrue);
     });
     test("warns on animation with missing parameters", () {
@@ -554,9 +621,9 @@ void main() {
           packageGraph.packageWarningCounter.hasWarning(
               withAnimationWrongParams,
               PackageWarning.invalidParameter,
-              'Invalid @animation directive: {@animation http://host/path/to/video.mp4}\n'
-              'Animation directives must be of the form: {@animation NAME '
-              'WIDTH HEIGHT URL}'),
+              'Invalid @animation directive, "{@animation http://host/path/to/video.mp4}"\n'
+              'Animation directives must be of the form "{@animation WIDTH '
+              'HEIGHT URL [id=ID]}"'),
           isTrue);
     });
     test("warns on animation with non-integer width", () {
@@ -564,7 +631,8 @@ void main() {
           packageGraph.packageWarningCounter.hasWarning(
               withAnimationBadWidth,
               PackageWarning.invalidParameter,
-              'An animation has an invalid width (badWidthAnimation): 100px. The width must be an integer.'),
+              'An animation has an invalid width (badWidthAnimation), "100px". '
+              'The width must be an integer.'),
           isTrue);
     });
     test("warns on animation with non-integer height", () {
@@ -572,7 +640,8 @@ void main() {
           packageGraph.packageWarningCounter.hasWarning(
               withAnimationBadHeight,
               PackageWarning.invalidParameter,
-              'An animation has an invalid height (badHeightAnimation): 100px. The height must be an integer.'),
+              'An animation has an invalid height (badHeightAnimation), '
+              '"100px". The height must be an integer.'),
           isTrue);
     });
     test("Doesn't place animations in one line doc", () {
@@ -580,7 +649,22 @@ void main() {
       expect(withAnimationInOneLineDoc.documentation, contains('<video'));
     });
     test("Handles animations inline properly", () {
+      // Make sure it doesn't have a double-space before the continued line,
+      // which would indicate to Markdown to indent the line.
       expect(withAnimationInline.documentation, isNot(contains('  works')));
+    });
+    test("Out of order arguments work.", () {
+      expect(withAnimationOutOfOrder.documentation,
+          contains('<video id="outOfOrder"'));
+    });
+    test("Unknown arguments generate an error.", () {
+      expect(
+          packageGraph.packageWarningCounter.hasWarning(
+              withAnimationUnknownArg,
+              PackageWarning.invalidParameter,
+              'The {@animation ...} directive was called with invalid '
+              'parameters. FormatException: Could not find an option named "name".'),
+          isTrue);
     });
   });
 
@@ -1107,7 +1191,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.publicInstanceMethods, hasLength(19));
+      expect(Dog.publicInstanceMethods, hasLength(26));
     });
 
     test('get operators', () {
@@ -1161,7 +1245,7 @@ void main() {
     test('F has many inherited methods', () {
       expect(
           F.publicInheritedMethods.map((im) => im.name),
-          equals([
+          containsAll([
             'abstractMethod',
             'foo',
             'getAnotherClassD',
@@ -1178,11 +1262,18 @@ void main() {
             'withAnimationInline',
             'withAnimationInOneLineDoc',
             'withAnimationNonUnique',
+            'withAnimationNonUniqueDeprecated',
             'withAnimationWrongParams',
+            'withDeprecatedAnimation',
+            'withInvalidNamedAnimation',
             'withMacro',
             'withMacro2',
+            'withNamedAnimation',
             'withPrivateMacro',
+            'withQuotedNamedAnimation',
             'withUndefinedMacro',
+            'withAnimationOutOfOrder',
+            'withAnimationUnknownArg',
           ]));
     });
 
@@ -1194,7 +1285,7 @@ void main() {
       expect(F.publicInheritedProperties, hasLength(10));
       expect(
           F.publicInheritedProperties.map((ip) => ip.name),
-          equals([
+          containsAll([
             'aFinalField',
             'aGetterReturningRandomThings',
             'aProtectedFinalField',

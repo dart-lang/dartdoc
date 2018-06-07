@@ -357,16 +357,48 @@ class Dog implements Cat, E {
 
   /// Animation method
   ///
-  /// {@animation methodAnimation 100 100 http://host/path/to/video.mp4}
+  /// {@animation 100 100 http://host/path/to/video.mp4}
   /// More docs
   void withAnimation() {}
 
+  /// Animation method with name
+  ///
+  /// {@animation 100 100 http://host/path/to/video.mp4 id=namedAnimation}
+  /// More docs
+  void withNamedAnimation() {}
+
+  /// Animation method with quoted name
+  ///
+  /// {@animation 100 100 http://host/path/to/video.mp4 id="quotedNamedAnimation"}
+  /// {@animation 100 100 http://host/path/to/video.mp4 id='quotedNamedAnimation2'}
+  /// More docs
+  void withQuotedNamedAnimation() {}
+
+  /// Animation method with invalid name
+  ///
+  /// {@animation 100 100 http://host/path/to/video.mp4 id=2isNot-A-ValidName}
+  /// More docs
+  void withInvalidNamedAnimation() {}
+
+  /// Deprecated animation method format.
+  ///
+  /// {@animation deprecatedAnimation 100 100 http://host/path/to/video.mp4}
+  /// More docs
+  void withDeprecatedAnimation() {}
+
   /// Non-Unique Animation method (between methods)
+  ///
+  /// {@animation 100 100 http://host/path/to/video.mp4 id=barHerderAnimation}
+  /// {@animation 100 100 http://host/path/to/video.mp4n id=barHerderAnimation}
+  /// More docs
+  void withAnimationNonUnique() {}
+
+  /// Non-Unique deprecated Animation method (between methods)
   ///
   /// {@animation fooHerderAnimation 100 100 http://host/path/to/video.mp4}
   /// {@animation fooHerderAnimation 100 100 http://host/path/to/video.mp4}
   /// More docs
-  void withAnimationNonUnique() {}
+  void withAnimationNonUniqueDeprecated() {}
 
   /// Malformed Animation method with wrong parameters
   ///
@@ -376,17 +408,17 @@ class Dog implements Cat, E {
 
   /// Malformed Animation method with non-integer width
   ///
-  /// {@animation badWidthAnimation 100px 100 http://host/path/to/video.mp4}
+  /// {@animation 100px 100 http://host/path/to/video.mp4 id=badWidthAnimation}
   /// More docs
   void withAnimationBadWidth() {}
 
   /// Malformed Animation method with non-integer height
   ///
-  /// {@animation badHeightAnimation 100 100px http://host/path/to/video.mp4}
+  /// {@animation 100 100px http://host/path/to/video.mp4 id=badHeightAnimation}
   /// More docs
   void withAnimationBadHeight() {}
 
-  /// Animation in one line doc {@animation oneLine 100 100 http://host/path/to/video.mp4}
+  /// Animation in one line doc {@animation 100 100 http://host/path/to/video.mp4}
   ///
   /// This tests to see that we do the right thing if the animation is in
   /// the one line doc above.
@@ -394,8 +426,22 @@ class Dog implements Cat, E {
 
   /// Animation inline in text.
   ///
-  /// Tests to see that an inline {@animation inline 100 100 http://host/path/to/video.mp4} works as expected.
+  /// Tests to see that an inline {@animation 100 100 http://host/path/to/video.mp4} works as expected.
   void withAnimationInline() {}
+
+  /// Animation with out-of-order id argument.
+  ///
+  /// Tests to see that out of order arguments work.
+  /// {@animation 100 100 id=outOfOrder http://host/path/to/video.mp4}
+  /// works as expected.
+  void withAnimationOutOfOrder() {}
+
+  /// Animation with an argument that is not the id.
+  ///
+  /// Tests to see that it gives an error when arguments that are not
+  /// recognized are added.
+  /// {@animation 100 100 http://host/path/to/video.mp4 name=theName}
+  void withAnimationUnknownArg() {}
 
   void testGeneric(Map<String, dynamic> args) {}
 

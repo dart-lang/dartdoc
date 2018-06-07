@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="API docs for the withMacro method from the Dog class, for the Dart programming language.">
-  <title>withMacro method - Dog class - ex library - Dart API</title>
+  <meta name="description" content="API docs for the withDeprecatedAnimation method from the Dog class, for the Dart programming language.">
+  <title>withDeprecatedAnimation method - Dog class - ex library - Dart API</title>
   <!-- required because all the links are pseudo-absolute -->
   <base href="../..">
 
@@ -26,9 +26,9 @@
     <li><a href="index.html">test_package</a></li>
     <li><a href="ex/ex-library.html">ex</a></li>
     <li><a href="ex/Dog-class.html">Dog</a></li>
-    <li class="self-crumb">withMacro method</li>
+    <li class="self-crumb">withDeprecatedAnimation method</li>
   </ol>
-  <div class="self-name">withMacro</div>
+  <div class="self-name">withDeprecatedAnimation</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -103,17 +103,40 @@
   </div><!--/.sidebar-offcanvas-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
-    <h1>withMacro method</h1>
+    <h1>withDeprecatedAnimation method</h1>
 
     <section class="multi-line-signature">
       <span class="returntype">void</span>
-      <span class="name ">withMacro</span>
+      <span class="name ">withDeprecatedAnimation</span>
 (<wbr>)
     </section>
     <section class="desc markdown">
-      <p>Macro method</p>
-<p>Foo macro content
-More docs</p>
+      <p>Deprecated animation method format.</p><div style="position: relative;">
+  <div id="deprecatedAnimation_play_button_" onclick="if (deprecatedAnimation.paused) {
+                  deprecatedAnimation.play();
+                  this.style.display = 'none';
+                } else {
+                  deprecatedAnimation.pause();
+                  this.style.display = 'block';
+                }" style="position:absolute;
+              width:100px;
+              height:100px;
+              z-index:100000;
+              background-position: center;
+              background-repeat: no-repeat;
+              background-image: url(static-assets/play_button.svg);">
+  </div>
+  <video id="deprecatedAnimation" style="width:100px; height:100px;" onclick="if (this.paused) {
+                    this.play();
+                    deprecatedAnimation_play_button_.style.display = 'none';
+                  } else {
+                    this.pause();
+                    deprecatedAnimation_play_button_.style.display = 'block';
+                  }" loop="">
+    <source src="http://host/path/to/video.mp4" type="video/mp4">
+  </video>
+</div>
+<p>More docs</p>
     </section>
     
     
