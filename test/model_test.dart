@@ -1213,7 +1213,7 @@ void main() {
     });
 
     test('SpecialList has many inherited methods', () {
-      expect(SpecialList.publicInheritedMethods, hasLength(50));
+      expect(SpecialList.publicInheritedMethods, hasLength(49));
       expect(SpecialList.publicInheritedMethods.first.name, equals('add'));
       expect(SpecialList.publicInheritedMethods.toList()[1].name,
           equals('addAll'));

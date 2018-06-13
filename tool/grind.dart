@@ -898,8 +898,8 @@ updateTestPackageDocs() async {
 @Task('Validate the SDK doc build.')
 @Depends(buildSdkDocs)
 validateSdkDocs() {
-  const expectedLibCount = 7;
-  const expectedSubLibCount = 12;
+  const expectedLibCount = 0;
+  const expectedSubLibCount = 19;
   File indexHtml = joinFile(sdkDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
     fail('no index.html found for SDK docs');
