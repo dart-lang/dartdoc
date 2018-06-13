@@ -71,7 +71,7 @@ main {
 ::-webkit-scrollbar-button:hover{ background-color: #AAA; }
 ::-webkit-scrollbar-thumb{ background-color: #CCC; }
 ::-webkit-scrollbar-thumb:hover{ background-color: #CCC; }
-::-webkit-scrollbar{ width: 4px; }
+::-webkit-scrollbar{ width: 8px; }
 
 .main-content {
   flex: 1;
