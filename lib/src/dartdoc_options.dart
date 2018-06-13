@@ -1120,8 +1120,12 @@ Future<List<DartdocOption>> createDartdocOptions() async {
       if (!option.parent['sdkDocs'].valueAt(dir) &&
           (option.root['topLevelPackageMeta'].valueAt(dir) as PackageMeta)
               .requiresFlutter) {
-        return pathLib.join(option.root['flutterRoot'].valueAt(dir), 'bin',
-            'cache', 'dart-sdk');
+        String flutterRoot = option.root['flutterRoot'].valueAt(dir);
+        if (flutterRoot == null) {
+          throw new DartdocOptionError(
+              'Top level package requires Flutter but FLUTTER_ROOT environment variable not set');
+        }
+        return pathLib.join(flutterRoot, 'bin', 'cache', 'dart-sdk');
       }
       return defaultSdkDir.absolute.path;
     }, help: 'Path to the SDK directory.', isDir: true, mustExist: true),
