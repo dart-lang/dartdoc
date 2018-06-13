@@ -7665,17 +7665,6 @@
   }
  },
  {
-  "name": "retype",
-  "qualifiedName": "fake.SpecialList.retype",
-  "href": "fake/SpecialList/retype.html",
-  "type": "method",
-  "overriddenDepth": 2,
-  "enclosedBy": {
-   "name": "SpecialList",
-   "type": "class"
-  }
- },
- {
   "name": "reversed",
   "qualifiedName": "fake.SpecialList.reversed",
   "href": "fake/SpecialList/reversed.html",
