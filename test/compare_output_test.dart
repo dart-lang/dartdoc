@@ -50,6 +50,9 @@ void main() {
     test('Validate missing FLUTTER_ROOT exception is clean', () async {
       var args = <String>[dartdocBin];
       var result = Process.runSync(Platform.resolvedExecutable, args,
+          environment: new Map.from(Platform.environment)
+            ..remove('FLUTTER_ROOT'),
+          includeParentEnvironment: false,
           workingDirectory: _testPackageFlutterPluginPath);
       expect(
           result.stderr,
