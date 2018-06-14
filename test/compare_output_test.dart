@@ -56,8 +56,8 @@ void main() {
           workingDirectory: _testPackageFlutterPluginPath);
       expect(
           result.stderr,
-          contains(
-              'Top level package requires Flutter but FLUTTER_ROOT environment variable not set'));
+          contains(new RegExp(
+              'Top level package requires Flutter but FLUTTER_ROOT environment variable not set|test_package_flutter_plugin requires the Flutter SDK, version solving failed')));
       expect(result.stderr, isNot(contains('asynchronous gap')));
       expect(result.exitCode, isNot(0));
     });
