@@ -1322,9 +1322,64 @@
   }
  },
  {
+  "name": "withAnimationNonUniqueDeprecated",
+  "qualifiedName": "ex.Dog.withAnimationNonUniqueDeprecated",
+  "href": "ex/Dog/withAnimationNonUniqueDeprecated.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
+  "name": "withAnimationOutOfOrder",
+  "qualifiedName": "ex.Dog.withAnimationOutOfOrder",
+  "href": "ex/Dog/withAnimationOutOfOrder.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
+  "name": "withAnimationUnknownArg",
+  "qualifiedName": "ex.Dog.withAnimationUnknownArg",
+  "href": "ex/Dog/withAnimationUnknownArg.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
   "name": "withAnimationWrongParams",
   "qualifiedName": "ex.Dog.withAnimationWrongParams",
   "href": "ex/Dog/withAnimationWrongParams.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
+  "name": "withDeprecatedAnimation",
+  "qualifiedName": "ex.Dog.withDeprecatedAnimation",
+  "href": "ex/Dog/withDeprecatedAnimation.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
+  "name": "withInvalidNamedAnimation",
+  "qualifiedName": "ex.Dog.withInvalidNamedAnimation",
+  "href": "ex/Dog/withInvalidNamedAnimation.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -1355,9 +1410,31 @@
   }
  },
  {
+  "name": "withNamedAnimation",
+  "qualifiedName": "ex.Dog.withNamedAnimation",
+  "href": "ex/Dog/withNamedAnimation.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
   "name": "withPrivateMacro",
   "qualifiedName": "ex.Dog.withPrivateMacro",
   "href": "ex/Dog/withPrivateMacro.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Dog",
+   "type": "class"
+  }
+ },
+ {
+  "name": "withQuotedNamedAnimation",
+  "qualifiedName": "ex.Dog.withQuotedNamedAnimation",
+  "href": "ex/Dog/withQuotedNamedAnimation.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {

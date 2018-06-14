@@ -90,6 +90,10 @@ final Map<PackageWarning, PackageWarningHelpText> packageWarningText = const {
       PackageWarning.invalidParameter,
       "invalidParameter",
       "A parameter given to a dartdoc directive was invalid."),
+  PackageWarning.deprecated: const PackageWarningHelpText(
+      PackageWarning.deprecated,
+      "deprecated",
+      "A dartdoc directive has a deprecated format."),
 };
 
 /// Something that package warnings can be called on.  Optionally associated
@@ -130,6 +134,7 @@ enum PackageWarning {
   missingFromSearchIndex,
   typeAsHtml,
   invalidParameter,
+  deprecated,
 }
 
 /// Warnings it is OK to skip if we can determine the warnable isn't documented.
