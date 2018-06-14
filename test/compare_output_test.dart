@@ -27,6 +27,9 @@ String get _testPackageDocsPath =>
 String get _testPackagePath =>
     pathLib.fromUri(_currentFileUri.resolve('../testing/test_package'));
 
+String get _testPackageFlutterPluginPath => pathLib
+    .fromUri(_currentFileUri.resolve('../testing/test_package_flutter_plugin'));
+
 void main() {
   group('compare outputs', () {
     Directory tempDir;
@@ -42,6 +45,21 @@ void main() {
       if (tempDir != null) {
         tempDir.deleteSync(recursive: true);
       }
+    });
+
+    test('Validate missing FLUTTER_ROOT exception is clean', () async {
+      var args = <String>[dartdocBin];
+      var result = Process.runSync(Platform.resolvedExecutable, args,
+          environment: new Map.from(Platform.environment)
+            ..remove('FLUTTER_ROOT'),
+          includeParentEnvironment: false,
+          workingDirectory: _testPackageFlutterPluginPath);
+      expect(
+          result.stderr,
+          contains(new RegExp(
+              'Top level package requires Flutter but FLUTTER_ROOT environment variable not set|test_package_flutter_plugin requires the Flutter SDK, version solving failed')));
+      expect(result.stderr, isNot(contains('asynchronous gap')));
+      expect(result.exitCode, isNot(0));
     });
 
     test("Validate --version works", () async {
