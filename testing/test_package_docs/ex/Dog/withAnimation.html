@@ -71,10 +71,17 @@
       <li><a href="ex/Dog/withAnimationInline.html">withAnimationInline</a></li>
       <li><a href="ex/Dog/withAnimationInOneLineDoc.html">withAnimationInOneLineDoc</a></li>
       <li><a href="ex/Dog/withAnimationNonUnique.html">withAnimationNonUnique</a></li>
+      <li><a href="ex/Dog/withAnimationNonUniqueDeprecated.html">withAnimationNonUniqueDeprecated</a></li>
+      <li><a href="ex/Dog/withAnimationOutOfOrder.html">withAnimationOutOfOrder</a></li>
+      <li><a href="ex/Dog/withAnimationUnknownArg.html">withAnimationUnknownArg</a></li>
       <li><a href="ex/Dog/withAnimationWrongParams.html">withAnimationWrongParams</a></li>
+      <li><a href="ex/Dog/withDeprecatedAnimation.html">withDeprecatedAnimation</a></li>
+      <li><a href="ex/Dog/withInvalidNamedAnimation.html">withInvalidNamedAnimation</a></li>
       <li><a href="ex/Dog/withMacro.html">withMacro</a></li>
       <li><a href="ex/Dog/withMacro2.html">withMacro2</a></li>
+      <li><a href="ex/Dog/withNamedAnimation.html">withNamedAnimation</a></li>
       <li><a href="ex/Dog/withPrivateMacro.html">withPrivateMacro</a></li>
+      <li><a href="ex/Dog/withQuotedNamedAnimation.html">withQuotedNamedAnimation</a></li>
       <li><a href="ex/Dog/withUndefinedMacro.html">withUndefinedMacro</a></li>
       <li class="inherited"><a href="ex/E/noSuchMethod.html">noSuchMethod</a></li>
       <li class="inherited"><a href="ex/E/toString.html">toString</a></li>
@@ -105,11 +112,11 @@
     </section>
     <section class="desc markdown">
       <p>Animation method</p><div style="position: relative;">
-  <div id="methodAnimation_play_button_" onclick="if (methodAnimation.paused) {
-                  methodAnimation.play();
+  <div id="animation_1_play_button_" onclick="if (animation_1.paused) {
+                  animation_1.play();
                   this.style.display = 'none';
                 } else {
-                  methodAnimation.pause();
+                  animation_1.pause();
                   this.style.display = 'block';
                 }" style="position:absolute;
               width:100px;
@@ -119,12 +126,12 @@
               background-repeat: no-repeat;
               background-image: url(static-assets/play_button.svg);">
   </div>
-  <video id="methodAnimation" style="width:100px; height:100px;" onclick="if (this.paused) {
+  <video id="animation_1" style="width:100px; height:100px;" onclick="if (this.paused) {
                     this.play();
-                    methodAnimation_play_button_.style.display = 'none';
+                    animation_1_play_button_.style.display = 'none';
                   } else {
                     this.pause();
-                    methodAnimation_play_button_.style.display = 'block';
+                    animation_1_play_button_.style.display = 'block';
                   }" loop="">
     <source src="http://host/path/to/video.mp4" type="video/mp4">
   </video>
