@@ -1,0 +1,26 @@
+builders:
+  resourceBuilder:
+    import: "package:dartdoc/src/builder.dart"
+    builder_factories: ["resourceBuilder"]
+    build_extensions: {'$lib$': ['src/html/resources.g.dart']}
+    build_to: "source"
+    auto_apply: none
+
+targets:
+  dartdoc:
+    sources: []
+    dependencies: [dartdoc:resources, dartdoc:builder]
+
+  builder:
+    sources: ["lib/src/builder.dart"]
+    builders: {"build_modules|modules": {enabled: false},
+               "build_web_compilers|ddc": {enabled: false},
+               "dartdoc|resourceBuilder": {enabled: false}}
+
+  resources:
+    # Why doesn't "lib/resources/**" work?
+    sources: {include:["lib/**"], exclude:[]}
+    builders: {"dartdoc|resourceBuilder": {enabled: true},
+               "build_modules|modules": {enabled: false},
+               "build_web_compilers|ddc": {enabled: false},
+               "build_web_compilers|entrypoint": {enabled: false}}

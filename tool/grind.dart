@@ -699,7 +699,7 @@ indexResources() {
   var packagePaths = [];
   for (var fileName in listDir(sourcePath, recursive: true)) {
     if (!FileSystemEntity.isDirectorySync(fileName)) {
-      var packageified = fileName.replaceFirst('lib/', 'package:dartdoc/');
+      var packageified = fileName.replaceFirst(pathLib.join('lib', ''), 'package:dartdoc/');
       packagePaths.add(packageified);
     }
   }
