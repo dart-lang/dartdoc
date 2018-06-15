@@ -8,6 +8,7 @@ const List<String> resource_names = const [
   'package:dartdoc/resources/css/bootstrap.css.map',
   'package:dartdoc/resources/css/bootstrap.min.css',
   'package:dartdoc/resources/favicon.png',
+  'package:dartdoc/resources/foobar.png',
   'package:dartdoc/resources/github.css',
   'package:dartdoc/resources/highlight.pack.js',
   'package:dartdoc/resources/play_button.svg',

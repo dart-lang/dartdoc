@@ -651,63 +651,45 @@ _getPackageVersion() {
   return version;
 }
 
-@Task('Find transformers used by this project')
-findTransformers() async {
-  var dotPackages = new File('.packages');
-  if (!dotPackages.existsSync()) {
-    fail('No .packages file found in ${Directory.current}');
-  }
+@Task('Rebuild generated files')
+build() async {
+  var launcher = new SubprocessLauncher('index-resources');
+  await launcher.runStreamed('pub', ['run', 'build_runner', 'build']);
+}
 
-  var foundAnyTransformers = false;
+/// Paths in this list are relative to lib/.
+final _generated_files_list = <String>['src/html/resources.g.dart'].map(
+        (s) => pathLib.joinAll(pathLib.posix.split(s)));
 
-  dotPackages
-      .readAsLinesSync()
-      .where((line) => !line.startsWith('#'))
-      .map((line) => line.split(':file://'))
-      .forEach((List<String> mapping) {
-    var pubspec = new File(mapping.last.replaceFirst('lib/', 'pubspec.yaml'));
-    if (pubspec.existsSync()) {
-      var yamlDoc = yaml.loadYaml(pubspec.readAsStringSync());
-      if (yamlDoc['transformers'] != null) {
-        log('${mapping.first} has transformers!');
-        foundAnyTransformers = true;
+@Task('Verify generated files are up to date')
+checkBuild() async {
+  Directory cache = createTempSync('build-test');
+  try {
+    var differentFiles = <String>[];
+    var launcher = new SubprocessLauncher('index-resources');
+    await launcher.runStreamed('pub', ['run', 'build_runner', 'build', '--output=${cache.path}']);
+    for (String relPath in _generated_files_list) {
+      String newPath = pathLib.joinAll([cache.path, 'packages', 'dartdoc', relPath]);
+      String origPath = pathLib.joinAll(['lib', relPath]);
+      File newVersion = new File(newPath);
+      File oldVersion = new File(origPath);
+      if (!await oldVersion.exists() || !await newVersion.exists()) {
+        differentFiles.add(relPath);
       }
-    } else {
-      log('No pubspec found for ${mapping.first}, tried ${pubspec}');
+      if (await oldVersion.readAsString() != await oldVersion.readAsString()) {
+        differentFiles.add(relPath);
+      }
     }
-  });
-
-  if (!foundAnyTransformers) {
-    log('No transformers found');
+    if (differentFiles.isNotEmpty) {
+      fail('The following generated files need to be rebuilt:${differentFiles.join('\n  ')}'
+           '\n'
+           'Rebuild them with "grind build".');
+    }
+  } finally {
+    //await cache.delete(recursive: true);
   }
 }
 
-@Task('Make sure all the resource files are present')
-indexResources() {
-  var sourcePath = pathLib.join('lib', 'resources');
-  if (!new Directory(sourcePath).existsSync()) {
-    throw new StateError('lib/resources directory not found');
-  }
-  var outDir = new Directory(pathLib.join('lib'));
-  var out =
-      new File(pathLib.join(outDir.path, 'src', 'html', 'resources.g.dart'));
-  out.createSync(recursive: true);
-  var buffer = new StringBuffer()
-    ..write('// WARNING: This file is auto-generated. Do not taunt.\n\n')
-    ..write('library dartdoc.html.resources;\n\n')
-    ..write('const List<String> resource_names = const [\n');
-  var packagePaths = [];
-  for (var fileName in listDir(sourcePath, recursive: true)) {
-    if (!FileSystemEntity.isDirectorySync(fileName)) {
-      var packageified = fileName.replaceFirst(pathLib.join('lib', ''), 'package:dartdoc/');
-      packagePaths.add(packageified);
-    }
-  }
-  packagePaths.sort();
-  buffer.write(packagePaths.map((p) => "  '$p'").join(',\n'));
-  buffer.write('\n];\n');
-  out.writeAsString(buffer.toString());
-}
 
 @Task('Publish to pub.dartlang')
 @Depends(checkChangelogHasVersion)
