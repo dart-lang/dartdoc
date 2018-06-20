@@ -1,3 +1,13 @@
+## 0.20.1
+* Remove name parameter from `@animation` parameter handling, with backwards compatibility
+  (#1715)
+* Scrollbar width increased for main body text (#1711)
+* Make a missing FLUTTER_ROOT environment variable have a better error message
+  (#1714)
+* Add a missing static resource (#1708)
+* Add test to make sure that static resource file is automatically rebuilt
+  (#1708)
+
 ## 0.20.0
 * include and exclude are now available in dartdoc_options.yaml as supported options
   (#1700, #1674)
