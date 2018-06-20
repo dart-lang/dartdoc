@@ -665,28 +665,37 @@ final _generated_files_list = <String>['src/html/resources.g.dart']
 checkBuild() async {
   Directory cache = createTempSync('build-test');
   try {
+    var originalFileContents = new Map<String, String>();
     var differentFiles = <String>[];
     var launcher = new SubprocessLauncher('index-resources');
-    await launcher.runStreamed(
-        'pub', ['run', 'build_runner', 'build', '--output=${cache.path}']);
+
+    // Load original file contents into memory before running the builder;
+    // it modifies them in place.
+    for (String relPath in _generated_files_list) {
+      String origPath = pathLib.joinAll(['lib', relPath]);
+      File oldVersion = new File(origPath);
+      if (oldVersion.existsSync()) {
+        originalFileContents[relPath] = oldVersion.readAsStringSync();
+      }
+    }
+
+    await launcher.runStreamed('pub', ['run', 'build_runner', 'build']);
     for (String relPath in _generated_files_list) {
       String newPath =
           pathLib.joinAll([cache.path, 'packages', 'dartdoc', relPath]);
-      String origPath = pathLib.joinAll(['lib', relPath]);
       File newVersion = new File(newPath);
-      File oldVersion = new File(origPath);
-      if (!await oldVersion.exists() || !await newVersion.exists()) {
+      if (!await newVersion.exists()) {
         differentFiles.add(relPath);
-      }
-      if (await oldVersion.readAsString() != await oldVersion.readAsString()) {
+      } else if (originalFileContents[relPath] !=
+          await newVersion.readAsString()) {
         differentFiles.add(relPath);
       }
     }
+
     if (differentFiles.isNotEmpty) {
-      fail(
-          'The following generated files need to be rebuilt:${differentFiles.join('\n  ')}'
-          '\n'
-          'Rebuild them with "grind build".');
+      fail('The following generated files needed to be rebuilt:\n'
+          '  ${differentFiles.map((f) => pathLib.join('lib', f)).join("\n  ")}\n'
+          'Rebuild them with "grind build" and check the results in.');
     }
   } finally {
     await cache.delete(recursive: true);
