@@ -22,8 +22,9 @@ class ResourceBuilder implements Builder {
   @override
   Future build(BuildStep buildStep) async {
     var packagePaths = <String>[];
-    await for (String fileName
-        in buildStep.findAssets(_allResources).map((a) => a.path)) {
+    await for (String fileName in buildStep
+        .findAssets(_allResources)
+        .map((a) => pathLib.posix.joinAll(pathLib.split(a.path)))) {
       String packageified =
           fileName.replaceFirst(pathLib.join('lib', ''), 'package:dartdoc');
       packagePaths.add(packageified);
