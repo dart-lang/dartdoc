@@ -681,11 +681,11 @@ checkBuild() async {
   for (String relPath in _generated_files_list) {
     File newVersion = new File(pathLib.join('lib', relPath));
     if (!await newVersion.exists()) {
-      log('$relPath does not exist\n');
+      log('${newVersion.path} does not exist\n');
       differentFiles.add(relPath);
     } else if (originalFileContents[relPath] !=
         await newVersion.readAsString()) {
-      log('$relPath has changed to: \n${newVersion.readAsStringSync()})');
+      log('${newVersion.path} has changed to: \n${newVersion.readAsStringSync()})');
       differentFiles.add(relPath);
     }
   }
