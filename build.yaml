@@ -1,5 +1,6 @@
 builders:
-  resourceBuilder:
+  resource_builder:
+    # TODO(jcollins-g): switch to "tool/builder.dart" for next build release
     import: "../../../tool/builder.dart"
     builder_factories: ["resourceBuilder"]
     build_extensions: {'$lib$': ['src/html/resources.g.dart']}
@@ -7,16 +8,10 @@ builders:
     auto_apply: none
 
 targets:
-  dartdoc:
-    sources: []
-    dependencies: [dartdoc:resources]
-
   builder:
     sources: ["tool/builder.dart"]
 
-  resources:
-    # Switch to just "lib/resources/**" after https://github.com/dart-lang/build/issues/1575
-    # is fixed.
-    sources: {include:["lib/resources/**", "lib/$lib$"]}
-    dependencies: [dartdoc:builder]
-    builders: {"dartdoc|resourceBuilder": {enabled: true}}
+  $default:
+    sources:
+      exclude: ["tool/builder.dart"]
+    builders: {"dartdoc|resource_builder": {enabled: true}}

@@ -24,24 +24,20 @@ class ResourceBuilder implements Builder {
   @override
   Future build(BuildStep buildStep) async {
     var packagePaths = <String>[];
-    await for (String fileName in buildStep
-        .findAssets(_allResources)
-        .map((a) => pathLib.posix.joinAll(pathLib.split(a.path)))) {
-      String packageified =
-          fileName.replaceFirst(pathLib.join('lib', ''), 'package:dartdoc');
-      packagePaths.add(packageified);
+    await for (AssetId asset in buildStep.findAssets(_allResources)) {
+      packagePaths.add(asset.uri.toString());
     }
     packagePaths.sort();
     await buildStep.writeAsString(
         new AssetId(buildStep.inputId.package,
-            pathLib.join('lib', 'src', 'html', 'resources.g.dart')),
+            pathLib.url.join('lib', 'src', 'html', 'resources.g.dart')),
         _resourcesFile(packagePaths));
   }
 
   @override
-  Map<String, List<String>> get buildExtensions => {
-        r'$lib$': ['src/html/resources.g.dart']
-      };
+  final Map<String, List<String>> buildExtensions = const {
+    r'$lib$': const ['src/html/resources.g.dart']
+  };
 }
 
 Builder resourceBuilder(BuilderOptions options) => new ResourceBuilder(options);
