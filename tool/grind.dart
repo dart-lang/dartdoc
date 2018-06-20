@@ -697,9 +697,8 @@ checkBuild() async {
 @Depends(checkChangelogHasVersion, buildbot)
 publish() async {
   var launcher = new SubprocessLauncher('publish-dryrun');
-  // Allow warnings for now from pub publish.
-  await launcher.runStreamed('pub', ['publish', '-n'], allowNonZero: true);
-  log('run : pub publish');
+  await launcher.runStreamed('pub', ['publish', '-n']);
+  log('\nTo publish, run:\n  pub publish');
 }
 
 @Task('Run all the tests.')

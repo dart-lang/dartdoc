@@ -1,6 +1,6 @@
 builders:
   resourceBuilder:
-    import: "package:dartdoc/src/builder.dart"
+    import: "../../../tool/builder.dart"
     builder_factories: ["resourceBuilder"]
     build_extensions: {'$lib$': ['src/html/resources.g.dart']}
     build_to: "source"
@@ -9,19 +9,14 @@ builders:
 targets:
   dartdoc:
     sources: []
-    dependencies: [dartdoc:resources, dartdoc:builder]
+    dependencies: [dartdoc:resources]
 
   builder:
-    sources: ["lib/src/builder.dart"]
-    builders: {"build_modules|modules": {enabled: false},
-               "build_web_compilers|ddc": {enabled: false},
-               "dartdoc|resourceBuilder": {enabled: false}}
+    sources: ["tool/builder.dart"]
 
   resources:
     # Switch to just "lib/resources/**" after https://github.com/dart-lang/build/issues/1575
     # is fixed.
-    sources: {include:["lib/resources/**", "lib/$lib$"], exclude:["lib/src/builder.dart"]}
-    builders: {"dartdoc|resourceBuilder": {enabled: true},
-               "build_modules|modules": {enabled: false},
-               "build_web_compilers|ddc": {enabled: false},
-               "build_web_compilers|entrypoint": {enabled: false}}
+    sources: {include:["lib/resources/**", "lib/$lib$"]}
+    dependencies: [dartdoc:builder]
+    builders: {"dartdoc|resourceBuilder": {enabled: true}}

@@ -7,7 +7,7 @@ homepage: https://github.com/dart-lang/dartdoc
 environment:
   sdk: '>=2.0.0-dev.59.0 <3.0.0'
 dependencies:
-  analyzer: 0.32.1
+  analyzer: ^0.32.1
   args: '>=1.4.1 <2.0.0'
   collection: ^1.2.0
   front_end: ^0.1.1
@@ -27,9 +27,10 @@ dependencies:
   tuple: ^1.0.1
   yaml: ^2.1.0
 dev_dependencies:
+  build: ^0.12.6
   build_runner: ^0.8.10
-  build_web_compilers: ^0.4.0+4
   dhttpd: ^2.0.0
+  glob: ^1.1.5
   grinder: ^0.8.2
   io: ^0.3.0
   http: ^0.11.0
