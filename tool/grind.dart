@@ -653,8 +653,8 @@ _getPackageVersion() {
 
 @Task('Rebuild generated files')
 build() async {
-  var launcher = new SubprocessLauncher('index-resources');
-  await launcher.runStreamed('pub', ['run', 'build_runner', 'build']);
+  var launcher = new SubprocessLauncher('build');
+  await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build']);
 }
 
 /// Paths in this list are relative to lib/.
@@ -667,7 +667,7 @@ checkBuild() async {
   try {
     var originalFileContents = new Map<String, String>();
     var differentFiles = <String>[];
-    var launcher = new SubprocessLauncher('index-resources');
+    var launcher = new SubprocessLauncher('check-build');
 
     // Load original file contents into memory before running the builder;
     // it modifies them in place.
@@ -679,7 +679,7 @@ checkBuild() async {
       }
     }
 
-    await launcher.runStreamed('pub', ['run', 'build_runner', 'build']);
+    await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build']);
     for (String relPath in _generated_files_list) {
       String newPath =
           pathLib.joinAll([cache.path, 'packages', 'dartdoc', relPath]);
