@@ -654,7 +654,7 @@ _getPackageVersion() {
 @Task('Rebuild generated files')
 build() async {
   var launcher = new SubprocessLauncher('build');
-  await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build']);
+  await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
 }
 
 /// Paths in this list are relative to lib/.
@@ -677,7 +677,7 @@ checkBuild() async {
     }
   }
 
-  await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build']);
+  await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
   for (String relPath in _generated_files_list) {
     File newVersion = new File(pathLib.join('lib', relPath));
     if (!await newVersion.exists()) {
