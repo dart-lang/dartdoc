@@ -681,10 +681,9 @@ checkBuild() async {
 
     await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build']);
     for (String relPath in _generated_files_list) {
-      String newPath =
-          pathLib.joinAll([cache.path, 'packages', 'dartdoc', relPath]);
-      File newVersion = new File(newPath);
+      File newVersion = new File(relPath);
       if (!await newVersion.exists()) {
+        log('$relPath does not exist\n');
         differentFiles.add(relPath);
       } else if (originalFileContents[relPath] !=
           await newVersion.readAsString()) {
