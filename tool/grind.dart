@@ -688,6 +688,7 @@ checkBuild() async {
         differentFiles.add(relPath);
       } else if (originalFileContents[relPath] !=
           await newVersion.readAsString()) {
+        log('$relPath has changed to: \n${newVersion.readAsStringSync()})');
         differentFiles.add(relPath);
       }
     }
