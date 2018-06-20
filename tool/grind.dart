@@ -663,42 +663,37 @@ final _generated_files_list = <String>['src/html/resources.g.dart']
 
 @Task('Verify generated files are up to date')
 checkBuild() async {
-  Directory cache = createTempSync('build-test');
-  try {
-    var originalFileContents = new Map<String, String>();
-    var differentFiles = <String>[];
-    var launcher = new SubprocessLauncher('check-build');
+  var originalFileContents = new Map<String, String>();
+  var differentFiles = <String>[];
+  var launcher = new SubprocessLauncher('check-build');
 
-    // Load original file contents into memory before running the builder;
-    // it modifies them in place.
-    for (String relPath in _generated_files_list) {
-      String origPath = pathLib.joinAll(['lib', relPath]);
-      File oldVersion = new File(origPath);
-      if (oldVersion.existsSync()) {
-        originalFileContents[relPath] = oldVersion.readAsStringSync();
-      }
+  // Load original file contents into memory before running the builder;
+  // it modifies them in place.
+  for (String relPath in _generated_files_list) {
+    String origPath = pathLib.joinAll(['lib', relPath]);
+    File oldVersion = new File(origPath);
+    if (oldVersion.existsSync()) {
+      originalFileContents[relPath] = oldVersion.readAsStringSync();
     }
+  }
 
-    await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build']);
-    for (String relPath in _generated_files_list) {
-      File newVersion = new File(relPath);
-      if (!await newVersion.exists()) {
-        log('$relPath does not exist\n');
-        differentFiles.add(relPath);
-      } else if (originalFileContents[relPath] !=
-          await newVersion.readAsString()) {
-        log('$relPath has changed to: \n${newVersion.readAsStringSync()})');
-        differentFiles.add(relPath);
-      }
+  await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build']);
+  for (String relPath in _generated_files_list) {
+    File newVersion = new File(pathLib.join('lib', relPath));
+    if (!await newVersion.exists()) {
+      log('$relPath does not exist\n');
+      differentFiles.add(relPath);
+    } else if (originalFileContents[relPath] !=
+        await newVersion.readAsString()) {
+      log('$relPath has changed to: \n${newVersion.readAsStringSync()})');
+      differentFiles.add(relPath);
     }
+  }
 
-    if (differentFiles.isNotEmpty) {
-      fail('The following generated files needed to be rebuilt:\n'
-          '  ${differentFiles.map((f) => pathLib.join('lib', f)).join("\n  ")}\n'
-          'Rebuild them with "grind build" and check the results in.');
-    }
-  } finally {
-    await cache.delete(recursive: true);
+  if (differentFiles.isNotEmpty) {
+    fail('The following generated files needed to be rebuilt:\n'
+        '  ${differentFiles.map((f) => pathLib.join('lib', f)).join("\n  ")}\n'
+        'Rebuild them with "grind build" and check the results in.');
   }
 }
 
