@@ -689,7 +689,7 @@ checkBuild() async {
           'Rebuild them with "grind build".');
     }
   } finally {
-    //await cache.delete(recursive: true);
+    await cache.delete(recursive: true);
   }
 }
 
