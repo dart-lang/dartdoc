@@ -18,8 +18,9 @@ targets:
                "dartdoc|resourceBuilder": {enabled: false}}
 
   resources:
-    # Why doesn't "lib/resources/**" work?
-    sources: {include:["lib/**"], exclude:[]}
+    # Switch to just "lib/resources/**" after https://github.com/dart-lang/build/issues/1575
+    # is fixed.
+    sources: {include:["lib/resources/**", "lib/$lib$"], exclude:["lib/src/builder.dart"]}
     builders: {"dartdoc|resourceBuilder": {enabled: true},
                "build_modules|modules": {enabled: false},
                "build_web_compilers|ddc": {enabled: false},

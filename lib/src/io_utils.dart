@@ -134,7 +134,7 @@ class SubprocessLauncher {
   /// Windows (though some of the bashisms will no longer make sense).
   /// TODO(jcollins-g): move this to grinder?
   Future<Iterable<Map>> runStreamed(String executable, List<String> arguments,
-      {String workingDirectory}) async {
+      {String workingDirectory, bool allowNonZero: false}) async {
     List<Map> jsonObjects;
 
     /// Allow us to pretend we didn't pass the JSON flag in to dartdoc by
@@ -195,7 +195,7 @@ class SubprocessLauncher {
     await Future.wait([stderrFuture, stdoutFuture, process.exitCode]);
 
     int exitCode = await process.exitCode;
-    if (exitCode != 0) {
+    if (!allowNonZero && exitCode != 0) {
       throw new ProcessException(executable, arguments,
           "SubprocessLauncher got non-zero exitCode", exitCode);
     }

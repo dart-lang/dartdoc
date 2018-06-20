@@ -175,7 +175,7 @@ analyze() async {
 }
 
 @Task('analyze, test, and self-test dartdoc')
-@Depends(analyze, test, testDartdoc)
+@Depends(analyze, checkBuild, test, testDartdoc)
 buildbot() => null;
 
 @Task('Generate docs for the Dart SDK')
@@ -658,8 +658,8 @@ build() async {
 }
 
 /// Paths in this list are relative to lib/.
-final _generated_files_list = <String>['src/html/resources.g.dart'].map(
-        (s) => pathLib.joinAll(pathLib.posix.split(s)));
+final _generated_files_list = <String>['src/html/resources.g.dart']
+    .map((s) => pathLib.joinAll(pathLib.posix.split(s)));
 
 @Task('Verify generated files are up to date')
 checkBuild() async {
@@ -667,9 +667,11 @@ checkBuild() async {
   try {
     var differentFiles = <String>[];
     var launcher = new SubprocessLauncher('index-resources');
-    await launcher.runStreamed('pub', ['run', 'build_runner', 'build', '--output=${cache.path}']);
+    await launcher.runStreamed(
+        'pub', ['run', 'build_runner', 'build', '--output=${cache.path}']);
     for (String relPath in _generated_files_list) {
-      String newPath = pathLib.joinAll([cache.path, 'packages', 'dartdoc', relPath]);
+      String newPath =
+          pathLib.joinAll([cache.path, 'packages', 'dartdoc', relPath]);
       String origPath = pathLib.joinAll(['lib', relPath]);
       File newVersion = new File(newPath);
       File oldVersion = new File(origPath);
@@ -681,19 +683,22 @@ checkBuild() async {
       }
     }
     if (differentFiles.isNotEmpty) {
-      fail('The following generated files need to be rebuilt:${differentFiles.join('\n  ')}'
-           '\n'
-           'Rebuild them with "grind build".');
+      fail(
+          'The following generated files need to be rebuilt:${differentFiles.join('\n  ')}'
+          '\n'
+          'Rebuild them with "grind build".');
     }
   } finally {
     //await cache.delete(recursive: true);
   }
 }
 
-
 @Task('Publish to pub.dartlang')
-@Depends(checkChangelogHasVersion)
+@Depends(checkChangelogHasVersion, buildbot)
 publish() async {
+  var launcher = new SubprocessLauncher('publish-dryrun');
+  // Allow warnings for now from pub publish.
+  await launcher.runStreamed('pub', ['publish', '-n'], allowNonZero: true);
   log('run : pub publish');
 }
 
