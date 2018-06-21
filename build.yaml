@@ -1,0 +1,17 @@
+builders:
+  resource_builder:
+    # TODO(jcollins-g): switch to "tool/builder.dart" for next build release
+    import: "../../../tool/builder.dart"
+    builder_factories: ["resourceBuilder"]
+    build_extensions: {'$lib$': ['src/html/resources.g.dart']}
+    build_to: "source"
+    auto_apply: none
+
+targets:
+  builder:
+    sources: ["tool/builder.dart"]
+
+  $default:
+    sources:
+      exclude: ["tool/builder.dart"]
+    builders: {"dartdoc|resource_builder": {enabled: true}}

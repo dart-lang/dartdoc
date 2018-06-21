@@ -1,7 +1,5 @@
 // WARNING: This file is auto-generated. Do not taunt.
 
-library dartdoc.html.resources;
-
 const List<String> resource_names = const [
   'package:dartdoc/resources/URI.js',
   'package:dartdoc/resources/css/bootstrap.css',
