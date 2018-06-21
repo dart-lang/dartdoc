@@ -337,7 +337,7 @@ Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
   return await launcher.runStreamed(
       Platform.resolvedExecutable,
       [
-        '--checked',
+        '--enable-asserts',
         pathLib.join('bin', 'dartdoc.dart'),
         '--output',
         '${sdkDocsPath}',
@@ -361,7 +361,7 @@ Future<List<Map>> _buildTestPackageDocs(
   return await launcher.runStreamed(
       Platform.resolvedExecutable,
       [
-        '--checked',
+        '--enable-asserts',
         pathLib.join(cwd, 'bin', 'dartdoc.dart'),
         '--output',
         outputDir,
@@ -605,7 +605,7 @@ Future<String> _buildPubPackageDocs(String pubPackageName,
   await launcher.runStreamed(
       Platform.resolvedExecutable,
       [
-        '--checked',
+        '--enable-asserts',
         pathLib.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
         '--json',
         '--show-progress',
@@ -752,7 +752,7 @@ testDart2() async {
 testDartdoc() async {
   var launcher = new SubprocessLauncher('test-dartdoc');
   await launcher.runStreamed(Platform.resolvedExecutable,
-      ['--checked', 'bin/dartdoc.dart', '--output', dartdocDocsDir.path]);
+      ['--enable-asserts', 'bin/dartdoc.dart', '--output', dartdocDocsDir.path]);
   expectFileContains(pathLib.join(dartdocDocsDir.path, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
   final RegExp object = new RegExp('<li>Object</li>', multiLine: true);
@@ -768,7 +768,7 @@ testDartdocRemote() async {
       '<a href="https://api.dartlang.org/(dev|stable)/[^/]*/dart-core/Object-class.html">Object</a>',
       multiLine: true);
   await launcher.runStreamed(Platform.resolvedExecutable, [
-    '--checked',
+    '--enable-asserts',
     'bin/dartdoc.dart',
     '--link-to-remote',
     '--output',
@@ -796,7 +796,7 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
       await flutterRepo.launcher.runStreamed(
           Platform.resolvedExecutable,
           [
-            '--checked',
+            '--enable-asserts',
             pathLib.join(Directory.current.path, 'bin', 'dartdoc.dart'),
             '--json',
             '--link-to-remote',
@@ -844,7 +844,7 @@ updateTestPackageDocs() async {
   await launcher.runStreamed(
       Platform.resolvedExecutable,
       [
-        '--checked',
+        '--enable-asserts',
         pathLib.join('..', '..', 'bin', 'dartdoc.dart'),
         '--auto-include-dependencies',
         '--example-path-prefix',
