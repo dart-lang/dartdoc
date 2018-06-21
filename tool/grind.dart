@@ -175,7 +175,7 @@ analyze() async {
 }
 
 @Task('analyze, test, and self-test dartdoc')
-@Depends(analyze, test, testDartdoc)
+@Depends(analyze, checkBuild, test, testDartdoc)
 buildbot() => null;
 
 @Task('Generate docs for the Dart SDK')
@@ -651,68 +651,58 @@ _getPackageVersion() {
   return version;
 }
 
-@Task('Find transformers used by this project')
-findTransformers() async {
-  var dotPackages = new File('.packages');
-  if (!dotPackages.existsSync()) {
-    fail('No .packages file found in ${Directory.current}');
-  }
-
-  var foundAnyTransformers = false;
-
-  dotPackages
-      .readAsLinesSync()
-      .where((line) => !line.startsWith('#'))
-      .map((line) => line.split(':file://'))
-      .forEach((List<String> mapping) {
-    var pubspec = new File(mapping.last.replaceFirst('lib/', 'pubspec.yaml'));
-    if (pubspec.existsSync()) {
-      var yamlDoc = yaml.loadYaml(pubspec.readAsStringSync());
-      if (yamlDoc['transformers'] != null) {
-        log('${mapping.first} has transformers!');
-        foundAnyTransformers = true;
-      }
-    } else {
-      log('No pubspec found for ${mapping.first}, tried ${pubspec}');
-    }
-  });
-
-  if (!foundAnyTransformers) {
-    log('No transformers found');
-  }
+@Task('Rebuild generated files')
+build() async {
+  var launcher = new SubprocessLauncher('build');
+  await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
 }
 
-@Task('Make sure all the resource files are present')
-indexResources() {
-  var sourcePath = pathLib.join('lib', 'resources');
-  if (!new Directory(sourcePath).existsSync()) {
-    throw new StateError('lib/resources directory not found');
-  }
-  var outDir = new Directory(pathLib.join('lib'));
-  var out =
-      new File(pathLib.join(outDir.path, 'src', 'html', 'resources.g.dart'));
-  out.createSync(recursive: true);
-  var buffer = new StringBuffer()
-    ..write('// WARNING: This file is auto-generated. Do not taunt.\n\n')
-    ..write('library dartdoc.html.resources;\n\n')
-    ..write('const List<String> resource_names = const [\n');
-  var packagePaths = [];
-  for (var fileName in listDir(sourcePath, recursive: true)) {
-    if (!FileSystemEntity.isDirectorySync(fileName)) {
-      var packageified = fileName.replaceFirst('lib/', 'package:dartdoc/');
-      packagePaths.add(packageified);
+/// Paths in this list are relative to lib/.
+final _generated_files_list = <String>['src/html/resources.g.dart']
+    .map((s) => pathLib.joinAll(pathLib.posix.split(s)));
+
+@Task('Verify generated files are up to date')
+checkBuild() async {
+  var originalFileContents = new Map<String, String>();
+  var differentFiles = <String>[];
+  var launcher = new SubprocessLauncher('check-build');
+
+  // Load original file contents into memory before running the builder;
+  // it modifies them in place.
+  for (String relPath in _generated_files_list) {
+    String origPath = pathLib.joinAll(['lib', relPath]);
+    File oldVersion = new File(origPath);
+    if (oldVersion.existsSync()) {
+      originalFileContents[relPath] = oldVersion.readAsStringSync();
     }
   }
-  packagePaths.sort();
-  buffer.write(packagePaths.map((p) => "  '$p'").join(',\n'));
-  buffer.write('\n];\n');
-  out.writeAsString(buffer.toString());
+
+  await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
+  for (String relPath in _generated_files_list) {
+    File newVersion = new File(pathLib.join('lib', relPath));
+    if (!await newVersion.exists()) {
+      log('${newVersion.path} does not exist\n');
+      differentFiles.add(relPath);
+    } else if (originalFileContents[relPath] !=
+        await newVersion.readAsString()) {
+      log('${newVersion.path} has changed to: \n${newVersion.readAsStringSync()})');
+      differentFiles.add(relPath);
+    }
+  }
+
+  if (differentFiles.isNotEmpty) {
+    fail('The following generated files needed to be rebuilt:\n'
+        '  ${differentFiles.map((f) => pathLib.join('lib', f)).join("\n  ")}\n'
+        'Rebuild them with "grind build" and check the results in.');
+  }
 }
 
 @Task('Publish to pub.dartlang')
-@Depends(checkChangelogHasVersion)
+@Depends(checkChangelogHasVersion, buildbot)
 publish() async {
-  log('run : pub publish');
+  var launcher = new SubprocessLauncher('publish-dryrun');
+  await launcher.runStreamed('pub', ['publish', '-n']);
+  log('\nTo publish, run:\n  pub publish');
 }
 
 @Task('Run all the tests.')
