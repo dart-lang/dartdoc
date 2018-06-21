@@ -707,8 +707,7 @@ publish() async {
 
 @Task('Run all the tests.')
 test() async {
-  await testPreviewDart2();
-  await testDart1();
+  await testDart2();
   await testFutures.wait();
 }
 
@@ -724,8 +723,8 @@ List<File> get testFiles => new Directory('test')
     .cast<File>()
       ..toList();
 
-testPreviewDart2() async {
-  List<String> parameters = ['--preview-dart-2', '--enable-asserts'];
+testDart2() async {
+  List<String> parameters = ['--enable-asserts'];
 
   for (File dartFile in testFiles) {
     await testFutures.addFuture(
@@ -740,30 +739,6 @@ testPreviewDart2() async {
   for (File dartFile in binFiles) {
     await testFutures.addFuture(new SubprocessLauncher(
             'dart2-bin-${pathLib.basename(dartFile.path)}-help')
-        .runStreamed(
-            Platform.resolvedExecutable,
-            <String>[]
-              ..addAll(parameters)
-              ..add(dartFile.path)
-              ..add('--help')));
-  }
-}
-
-testDart1() async {
-  List<String> parameters = ['--checked'];
-  for (File dartFile in testFiles) {
-    await testFutures.addFuture(
-        new SubprocessLauncher('dart1-${pathLib.basename(dartFile.path)}')
-            .runStreamed(
-                Platform.resolvedExecutable,
-                <String>[]
-                  ..addAll(parameters)
-                  ..add(dartFile.path)));
-  }
-
-  for (File dartFile in binFiles) {
-    await testFutures.addFuture(new SubprocessLauncher(
-            'dart1-bin-${pathLib.basename(dartFile.path)}-help')
         .runStreamed(
             Platform.resolvedExecutable,
             <String>[]
