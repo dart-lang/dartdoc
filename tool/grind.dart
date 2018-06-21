@@ -715,13 +715,13 @@ List<File> get binFiles => new Directory('bin')
     .listSync(recursive: true)
     .where((e) => e is File && e.path.endsWith('.dart'))
     .cast<File>()
-      ..toList();
+    .toList();
 
 List<File> get testFiles => new Directory('test')
     .listSync(recursive: true)
     .where((e) => e is File && e.path.endsWith('test.dart'))
     .cast<File>()
-      ..toList();
+    .toList();
 
 testDart2() async {
   List<String> parameters = ['--enable-asserts'];
