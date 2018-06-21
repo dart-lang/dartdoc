@@ -50,7 +50,7 @@ Directory createTempSync(String prefix) =>
 final Memoizer tempdirsCache = new Memoizer();
 
 /// Global so that the lock is retained for the life of the process.
-Future<Null> _lockFuture;
+Future<void> _lockFuture;
 Completer<FlutterRepo> _cleanFlutterRepo;
 
 /// Returns true if we need to replace the existing flutter.  We never release
@@ -520,7 +520,7 @@ class FlutterRepo {
         new SubprocessLauncher('flutter${label == null ? "" : "-$label"}', env);
   }
 
-  Future<Null> _init() async {
+  Future<void> _init() async {
     new Directory(flutterPath).createSync(recursive: true);
     await launcher.runStreamed(
         'git', ['clone', 'https://github.com/flutter/flutter.git', '.'],
@@ -654,7 +654,8 @@ _getPackageVersion() {
 @Task('Rebuild generated files')
 build() async {
   var launcher = new SubprocessLauncher('build');
-  await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
+  await launcher.runStreamed(sdkBin('pub'),
+      ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
 }
 
 /// Paths in this list are relative to lib/.
@@ -677,7 +678,8 @@ checkBuild() async {
     }
   }
 
-  await launcher.runStreamed(sdkBin('pub'), ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
+  await launcher.runStreamed(sdkBin('pub'),
+      ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
   for (String relPath in _generated_files_list) {
     File newVersion = new File(pathLib.join('lib', relPath));
     if (!await newVersion.exists()) {
@@ -751,8 +753,12 @@ testDart2() async {
 @Task('Generate docs for dartdoc')
 testDartdoc() async {
   var launcher = new SubprocessLauncher('test-dartdoc');
-  await launcher.runStreamed(Platform.resolvedExecutable,
-      ['--enable-asserts', 'bin/dartdoc.dart', '--output', dartdocDocsDir.path]);
+  await launcher.runStreamed(Platform.resolvedExecutable, [
+    '--enable-asserts',
+    'bin/dartdoc.dart',
+    '--output',
+    dartdocDocsDir.path
+  ]);
   expectFileContains(pathLib.join(dartdocDocsDir.path, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
   final RegExp object = new RegExp('<li>Object</li>', multiLine: true);

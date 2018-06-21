@@ -66,7 +66,7 @@ final newLinePartOfRegexp = new RegExp('\npart of ');
 
 final RegExp quotables = new RegExp(r'[ "\r\n\$]');
 
-/// Best used with Future<Null>.
+/// Best used with Future<void>.
 class MultiFutureTracker<T> {
   /// Approximate maximum number of simultaneous active Futures.
   final int parallel;
@@ -105,7 +105,7 @@ class SubprocessLauncher {
   String get prefix => context.isNotEmpty ? '$context: ' : '';
 
   // from flutter:dev/tools/dartdoc.dart, modified
-  static Future<Null> _printStream(Stream<List<int>> stream, Stdout output,
+  static Future<void> _printStream(Stream<List<int>> stream, Stdout output,
       {String prefix: '', Iterable<String> Function(String line) filter}) {
     assert(prefix != null);
     if (filter == null) filter = (line) => [line];
@@ -188,9 +188,9 @@ class SubprocessLauncher {
 
     Process process = await Process.start(executable, arguments,
         workingDirectory: workingDirectory, environment: environment);
-    Future<Null> stdoutFuture = _printStream(process.stdout, stdout,
+    Future<void> stdoutFuture = _printStream(process.stdout, stdout,
         prefix: prefix, filter: jsonCallback);
-    Future<Null> stderrFuture = _printStream(process.stderr, stderr,
+    Future<void> stderrFuture = _printStream(process.stderr, stderr,
         prefix: prefix, filter: jsonCallback);
     await Future.wait([stderrFuture, stdoutFuture, process.exitCode]);
 
