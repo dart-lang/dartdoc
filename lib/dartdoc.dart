@@ -80,7 +80,7 @@ class Dartdoc extends PackageBuilder {
 
   @override
   Future<void> logAnalysisErrors(Set<Source> sources) async {
-    List<AnalysisErrorInfo> errorInfos = [];
+    List<AnalysisErrorInfo> errorInfos = <AnalysisErrorInfo>[];
     // TODO(jcollins-g): figure out why sources can't contain includeExternals
     // or embedded SDK components without having spurious(?) analysis errors.
     // That seems wrong. dart-lang/dartdoc#1547
