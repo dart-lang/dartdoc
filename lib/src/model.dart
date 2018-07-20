@@ -1629,7 +1629,7 @@ abstract class GetterSetterCombo implements ModelElement {
           buffer.write('${getter.oneLineDoc}');
         }
         if (hasPublicSetter && setter.oneLineDoc.isNotEmpty) {
-          buffer.write('${getterSetterBothAvailable ? "": setter.oneLineDoc}');
+          buffer.write('${getterSetterBothAvailable ? "" : setter.oneLineDoc}');
         }
         _oneLineDoc = buffer.toString();
       }
@@ -5724,8 +5724,8 @@ class PackageBuilder {
         driver.addFile(filename);
         addedFiles.add(filename);
       });
-      await Future
-          .wait(files.map((f) => processLibrary(f, libraries, sources)));
+      await Future.wait(
+          files.map((f) => processLibrary(f, libraries, sources)));
 
       /// We don't care about upstream analysis errors, so save the first
       /// source list.

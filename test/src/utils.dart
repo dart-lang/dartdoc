@@ -44,8 +44,8 @@ Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
 /// Convenience factory to build a [DartdocOptionContext] and associate it with a
 /// [DartdocOptionSet] based on the current working directory.
 Future<DartdocOptionContext> contextFromArgv(List<String> argv) async {
-  DartdocOptionSet optionSet = await DartdocOptionSet
-      .fromOptionGenerators('dartdoc', [createDartdocOptions]);
+  DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
+      'dartdoc', [createDartdocOptions]);
   optionSet.parseArguments(argv);
   return new DartdocOptionContext(optionSet, Directory.current);
 }
