@@ -1693,7 +1693,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           new File(pathLib.join(utils.testPackageDir.path, "crossdart.json"));
       crossDartFile.writeAsStringSync("""
               {"$fakePath":
-                {"references":[{"offset":${offset},"end":${offset+3},"remotePath":"http://www.example.com/fake.dart"}]}}
+                {"references":[{"offset":${offset},"end":${offset + 3},"remotePath":"http://www.example.com/fake.dart"}]}}
       """);
       // Indirectly load the file.
       crossdartPackageGraph.crossdartJson;

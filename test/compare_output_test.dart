@@ -200,8 +200,7 @@ void main() {
         fail('dartdoc failed');
       }
 
-      var jsonValues = LineSplitter
-          .split(result.stdout)
+      var jsonValues = LineSplitter.split(result.stdout)
           .map((j) => json.decode(j) as Map<String, dynamic>)
           .toList();
 
