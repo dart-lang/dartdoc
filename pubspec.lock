@@ -7,7 +7,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.32.1"
+    version: "0.32.4"
   args:
     dependency: "direct main"
     description:
@@ -154,7 +154,7 @@ packages:
       name: front_end
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.1"
+    version: "0.1.4"
   glob:
     dependency: "direct dev"
     description:
@@ -231,7 +231,7 @@ packages:
       name: kernel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.1"
+    version: "0.3.4"
   logging:
     dependency: "direct main"
     description:
@@ -492,4 +492,4 @@ packages:
     source: hosted
     version: "2.1.13"
 sdks:
-  dart: ">=2.0.0-dev.59.0 <=2.0.0-dev.63.0.flutter-4c9689c1d2"
+  dart: ">=2.0.0-dev.59.0 <=2.0.0-dev.69.1"

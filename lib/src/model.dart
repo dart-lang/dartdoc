@@ -5505,7 +5505,7 @@ class PackageBuilder {
 
   PackageBuilder(this.config);
 
-  void logAnalysisErrors(Set<Source> sources) {}
+  Future<void> logAnalysisErrors(Set<Source> sources) async {}
 
   Future<PackageGraph> buildPackageGraph() async {
     PackageMeta packageMeta = config.topLevelPackageMeta;
@@ -5608,7 +5608,6 @@ class PackageBuilder {
       PerformanceLog log = new PerformanceLog(null);
       AnalysisDriverScheduler scheduler = new AnalysisDriverScheduler(log);
       AnalysisOptionsImpl options = new AnalysisOptionsImpl();
-      options.strongMode = true;
       options.enableSuperMixins = true;
       options.previewDart2 = true;
 

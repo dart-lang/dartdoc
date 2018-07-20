@@ -1,3 +1,6 @@
+## 0.20.2
+* Fix void problems (#1724)
+
 ## 0.20.1
 * Remove name parameter from `@animation` parameter handling, with backwards compatibility
   (#1715)

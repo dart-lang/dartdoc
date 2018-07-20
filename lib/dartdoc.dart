@@ -79,7 +79,7 @@ class Dartdoc extends PackageBuilder {
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
 
   @override
-  void logAnalysisErrors(Set<Source> sources) async {
+  Future<void> logAnalysisErrors(Set<Source> sources) async {
     List<AnalysisErrorInfo> errorInfos = [];
     // TODO(jcollins-g): figure out why sources can't contain includeExternals
     // or embedded SDK components without having spurious(?) analysis errors.
