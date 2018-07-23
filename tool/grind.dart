@@ -586,7 +586,7 @@ Future<List<Map>> _buildFlutterDocs(
 }
 
 /// Returns the directory in which we generated documentation.
-Future<String> _buildPubPackageDocs(String pubPackageName,
+Future<String> _buildPubPackageDocs(String pubPackageName, List<String> dartdocParameters,
     [String version, String label]) async {
   Map<String, String> env = _createThrowawayPubCache();
   var launcher = new SubprocessLauncher(
@@ -609,19 +609,24 @@ Future<String> _buildPubPackageDocs(String pubPackageName,
         pathLib.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
         '--json',
         '--show-progress',
-      ]..addAll(extraDartdocParameters),
+      ]..addAll(dartdocParameters),
       workingDirectory: pubPackageDir.absolute.path);
   return pathLib.join(pubPackageDir.absolute.path, 'doc', 'api');
 }
 
 @Task(
-    'Serve an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION environment variables')
-servePubPackage() async {
+    'Build an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION environment variables')
+Future<String> buildPubPackage() async {
   assert(Platform.environment.containsKey('PACKAGE_NAME'));
   String packageName = Platform.environment['PACKAGE_NAME'];
   String version = Platform.environment['PACKAGE_VERSION'];
-  _serveDocsFrom(await _buildPubPackageDocs(packageName, version), 9000,
-      'serve-pub-package');
+  return _buildPubPackageDocs(packageName, extraDartdocParameters, version);
+}
+
+@Task(
+    'Serve an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION environment variables')
+servePubPackage() async {
+  _serveDocsFrom(await buildPubPackage(), 9000, 'serve-pub-package');
 }
 
 @Task('Checks that CHANGELOG mentions current version')

@@ -44,6 +44,7 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta, FileContents;
+import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:front_end/src/byte_store/byte_store.dart';
@@ -180,18 +181,17 @@ abstract class Inheritable implements ModelElement {
   List<Class> get inheritance {
     List<Class> inheritance = [];
     inheritance.addAll((enclosingElement as Class).inheritanceChain);
+    Class object = packageGraph.specialClasses[SpecialClass.object];
     if (!inheritance.contains(definingEnclosingElement) &&
         definingEnclosingElement != null) {
-      assert(definingEnclosingElement == packageGraph.objectElement);
+      assert(definingEnclosingElement == object);
     }
     // Unless the code explicitly extends dart-core's Object, we won't get
     // an entry here.  So add it.
-    if (inheritance.last != packageGraph.objectElement &&
-        packageGraph.objectElement != null) {
-      inheritance.add(packageGraph.objectElement);
+    if (inheritance.last != object && object != null) {
+      inheritance.add(object);
     }
-    assert(
-        inheritance.where((e) => e == packageGraph.objectElement).length == 1);
+    assert(inheritance.where((e) => e == object).length == 1);
     return inheritance;
   }
 }
@@ -2587,21 +2587,7 @@ abstract class ModelElement extends Canonicalization
         if (e is ClassElement) {
           if (!e.isEnum) {
             newModelElement = new Class(e, library, packageGraph);
-            if (newModelElement.name == 'Object' &&
-                newModelElement.library.name == 'dart:core') {
-              // We've found Object.  This is an important object, so save it in the package.
-              assert(
-                  newModelElement.library.packageGraph._objectElement == null);
-              newModelElement.library.packageGraph._objectElement =
-                  newModelElement;
-            }
-            if (newModelElement.name == 'Interceptor' &&
-                newModelElement.library.name == 'dart:_interceptors') {
-              // We've found Interceptor.  Another important object.
-              assert(!newModelElement.library.packageGraph._interceptorUsed);
-              newModelElement.library.packageGraph.interceptor =
-                  newModelElement;
-            }
+
           } else {
             newModelElement = new Enum(e, library, packageGraph);
           }
@@ -4017,7 +4003,12 @@ class PackageGraph {
   // TODO(jcollins-g): This constructor is convoluted.  Clean this up by
   // building Libraries and adding them to Packages, then adding Packages
   // to this graph.
-  PackageGraph(Iterable<LibraryElement> libraryElements, this.config,
+
+  /// Construct a package graph.
+  /// [libraryElements] - Libraries to be documented.
+  /// [specialLibraryElements] - Any libraries that may not be documented, but
+  /// contain required [SpecialClass]es.
+  PackageGraph(Iterable<LibraryElement> libraryElements, Iterable<LibraryElement> specialLibraryElements, this.config,
       this.packageMeta, this._packageWarningOptions, this.driver, this.sdk) {
     assert(_allConstructedModelElements.isEmpty);
     assert(allLibraries.isEmpty);
@@ -4042,11 +4033,19 @@ class PackageGraph {
     new Package.fromPackageMeta(packageMeta, this);
     allLibrariesAdded = true;
 
+    // [findOrCreateLibraryFor] already adds to the proper structures.
+    specialLibraryElements.forEach((element) {
+      findOrCreateLibraryFor(element);
+    });
+
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
     allLocalModelElements.forEach((m) => m.documentationLocal);
     _macrosAdded = true;
 
+    // Scan all model elements to insure that interceptor and other special
+    // objects are found.
+    specialClasses = new SpecialClasses(this);
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
     documentedPackages.toList().forEach((package) {
@@ -4058,6 +4057,8 @@ class PackageGraph {
     _implementors.values.forEach((l) => l.sort());
     allImplementorsAdded = true;
   }
+
+  SpecialClasses specialClasses;
 
   /// It is safe to cache values derived from the _implementors table if this
   /// is true.
@@ -4497,31 +4498,6 @@ class PackageGraph {
     return _localPublicLibraries;
   }
 
-  // Written from ModelElement.from.
-  ModelElement _objectElement;
-
-  // Return the element for "Object".
-  ModelElement get objectElement {
-    assert(_objectElement != null);
-    return _objectElement;
-  }
-
-  // Don't let this be used for canonicalization before we find it.
-  bool _interceptorUsed = false;
-  Class _interceptor;
-
-  /// Return the element for "Interceptor", a Dart implementation class intended
-  /// to function the same as Object.
-  Class get interceptor {
-    _interceptorUsed = true;
-    return _interceptor;
-  }
-
-  set interceptor(Class newInterceptor) {
-    assert(_interceptorUsed == false);
-    _interceptor = newInterceptor;
-  }
-
   // Return the set of [Class]es objects should inherit through if they
   // show up in the inheritance chain.  Do not call before interceptorElement is
   // found.  Add classes here if they are similar to Interceptor in that they
@@ -4531,7 +4507,7 @@ class PackageGraph {
   Set<Class> get inheritThrough {
     if (_inheritThrough == null) {
       _inheritThrough = new Set();
-      _inheritThrough.add(interceptor);
+      _inheritThrough.add(specialClasses[SpecialClass.interceptor]);
     }
     return _inheritThrough;
   }
@@ -4746,16 +4722,16 @@ class PackageGraph {
     return foundLibrary;
   }
 
-  List<ModelElement> _allModelElements;
+  List<ModelElement> _allLocalModelElements;
   Iterable<ModelElement> get allLocalModelElements {
     assert(allLibrariesAdded);
-    if (_allModelElements == null) {
-      _allModelElements = [];
+    if (_allLocalModelElements == null) {
+      _allLocalModelElements = [];
       this.localLibraries.forEach((library) {
-        _allModelElements.addAll(library.allModelElements);
+        _allLocalModelElements.addAll(library.allModelElements);
       });
     }
-    return _allModelElements;
+    return _allLocalModelElements;
   }
 
   List<ModelElement> _allCanonicalModelElements;
@@ -5512,8 +5488,10 @@ class PackageBuilder {
     if (packageMeta.needsPubGet) {
       packageMeta.runPubGet();
     }
-    Set<LibraryElement> libraries = await getLibraries(getFiles);
-    return new PackageGraph(libraries, config, config.topLevelPackageMeta,
+    Set<LibraryElement> libraries = new Set();
+    Set<LibraryElement> specialLibraries = new Set();
+    await getLibraries(libraries, specialLibraries, getFiles, specialLibraryFiles(sdk).toSet());
+    return new PackageGraph(libraries, specialLibraries, config, config.topLevelPackageMeta,
         getWarningOptions(), driver, sdk);
   }
 
@@ -5824,9 +5802,9 @@ class PackageBuilder {
     return new Set.from(files.map((s) => new File(s).absolute.path));
   }
 
-  Future<Set<LibraryElement>> getLibraries(Set<String> files) async {
-    Set<LibraryElement> libraries = new Set();
+  Future<void> getLibraries(Set<LibraryElement> libraries, Set<LibraryElement> specialLibraries, Set<String> files, Set<String> specialFiles) async {
     libraries.addAll(await _parseLibraries(files));
+    specialLibraries.addAll(await _parseLibraries(specialFiles.difference(files)));
     if (config.include.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
       Set notFound = new Set.from(config.include)
@@ -5838,7 +5816,6 @@ class PackageBuilder {
       }
       libraries.removeWhere((lib) => !config.include.contains(lib.name));
     }
-    return libraries;
   }
 
   /// If [dir] contains both a `lib` directory and a `pubspec.yaml` file treat
