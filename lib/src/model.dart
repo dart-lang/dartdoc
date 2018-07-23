@@ -5699,7 +5699,8 @@ class PackageBuilder {
     return metas;
   }
 
-  Future<List<LibraryElement>> _parseLibraries(Set<String> files) async {
+  Future<List<LibraryElement>> _parseLibraries(Set<String> files,
+      {bool throwErrors = true}) async {
     Set<LibraryElement> libraries = new Set();
     Set<Source> originalSources;
     Set<Source> sources = new Set<Source>();
@@ -5735,7 +5736,7 @@ class PackageBuilder {
       }
     } while (!lastPass.containsAll(current));
 
-    await logAnalysisErrors(originalSources);
+    if (throwErrors) await logAnalysisErrors(originalSources);
     return libraries.toList();
   }
 
@@ -5818,8 +5819,12 @@ class PackageBuilder {
       Set<String> files,
       Set<String> specialFiles) async {
     libraries.addAll(await _parseLibraries(files));
-    specialLibraries
-        .addAll(await _parseLibraries(specialFiles.difference(files)));
+
+    /// Flutter doesn't seem to like being given the Interceptor library.
+    /// But it doesn't need it, either.  So just skip reporting errors here.
+    specialLibraries.addAll(await _parseLibraries(
+        specialFiles.difference(files),
+        throwErrors: false));
     if (config.include.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
       Set notFound = new Set.from(config.include)
