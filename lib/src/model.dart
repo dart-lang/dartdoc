@@ -5496,7 +5496,7 @@ class PackageBuilder {
     Set<LibraryElement> libraries = new Set();
     Set<LibraryElement> specialLibraries = new Set();
     DartSdk findSpecialsSdk = sdk;
-    if (embedderSdk.urlMappings.isNotEmpty) {
+    if (embedderSdk != null && embedderSdk.urlMappings.isNotEmpty) {
       findSpecialsSdk = embedderSdk;
     }
     await getLibraries(libraries, specialLibraries, getFiles,
