@@ -45,15 +45,12 @@ class _SpecialClassDefinition {
   final bool required;
   _SpecialClassDefinition(
       this.specialClass, this.name, this.libraryName, this.specialFileUri,
-      {this.required = true, this.packageName = 'Dart'}) {
-    assert(packageName == 'Dart',
-        'Packages other than SDK not yet supported in special element detection');
-  }
+      {this.required = true, this.packageName = 'Dart'});
 
   /// Get the filename for the Dart Library where this [specialClass] is
   /// declared.
   String getSpecialFilename(DartSdk sdk) =>
-      sdk.mapDartUri(specialFileUri).fullName;
+      sdk.mapDartUri(specialFileUri)?.fullName;
 
   bool matchesClass(Class modelClass) {
     return modelClass.name == name &&
@@ -67,13 +64,15 @@ final List<_SpecialClassDefinition> _specialClassDefinitions = [
   new _SpecialClassDefinition(
       SpecialClass.object, 'Object', 'dart.core', 'dart:core'),
   new _SpecialClassDefinition(SpecialClass.interceptor, 'Interceptor',
-      '_interceptors', 'dart:_interceptors'),
+      '_interceptors', 'dart:_interceptors',
+      required: false),
 ];
 
 /// Given a SDK, resolve URIs for the libraries containing our special
 /// clases.
 Set<String> specialLibraryFiles(DartSdk sdk) => _specialClassDefinitions
     .map((_SpecialClassDefinition d) => d.getSpecialFilename(sdk))
+    .where((String s) => s != null)
     .toSet();
 
 Set<String> __specialLibraryNames;

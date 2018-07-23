@@ -5495,8 +5495,12 @@ class PackageBuilder {
     }
     Set<LibraryElement> libraries = new Set();
     Set<LibraryElement> specialLibraries = new Set();
+    DartSdk findSpecialsSdk = sdk;
+    if (embedderSdk.urlMappings.isNotEmpty) {
+      findSpecialsSdk = embedderSdk;
+    }
     await getLibraries(libraries, specialLibraries, getFiles,
-        specialLibraryFiles(sdk).toSet());
+        specialLibraryFiles(findSpecialsSdk).toSet());
     return new PackageGraph(libraries, specialLibraries, config,
         config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
   }
