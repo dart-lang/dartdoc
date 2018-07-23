@@ -306,7 +306,8 @@ void main() {
             htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
         Field hashCode = EventTarget.allPublicInstanceProperties
             .singleWhere((f) => f.name == 'hashCode');
-        Class objectModelElement = sdkAsPackageGraph.specialClasses[SpecialClass.object];
+        Class objectModelElement =
+            sdkAsPackageGraph.specialClasses[SpecialClass.object];
         // If this fails, EventTarget might have been changed to no longer
         // inherit from Interceptor.  If that's true, adjust test case to
         // another class that does.

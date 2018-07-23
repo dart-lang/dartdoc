@@ -2587,7 +2587,6 @@ abstract class ModelElement extends Canonicalization
         if (e is ClassElement) {
           if (!e.isEnum) {
             newModelElement = new Class(e, library, packageGraph);
-
           } else {
             newModelElement = new Enum(e, library, packageGraph);
           }
@@ -4008,8 +4007,14 @@ class PackageGraph {
   /// [libraryElements] - Libraries to be documented.
   /// [specialLibraryElements] - Any libraries that may not be documented, but
   /// contain required [SpecialClass]es.
-  PackageGraph(Iterable<LibraryElement> libraryElements, Iterable<LibraryElement> specialLibraryElements, this.config,
-      this.packageMeta, this._packageWarningOptions, this.driver, this.sdk) {
+  PackageGraph(
+      Iterable<LibraryElement> libraryElements,
+      Iterable<LibraryElement> specialLibraryElements,
+      this.config,
+      this.packageMeta,
+      this._packageWarningOptions,
+      this.driver,
+      this.sdk) {
     assert(_allConstructedModelElements.isEmpty);
     assert(allLibraries.isEmpty);
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
@@ -5490,9 +5495,10 @@ class PackageBuilder {
     }
     Set<LibraryElement> libraries = new Set();
     Set<LibraryElement> specialLibraries = new Set();
-    await getLibraries(libraries, specialLibraries, getFiles, specialLibraryFiles(sdk).toSet());
-    return new PackageGraph(libraries, specialLibraries, config, config.topLevelPackageMeta,
-        getWarningOptions(), driver, sdk);
+    await getLibraries(libraries, specialLibraries, getFiles,
+        specialLibraryFiles(sdk).toSet());
+    return new PackageGraph(libraries, specialLibraries, config,
+        config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
   }
 
   DartSdk _sdk;
@@ -5802,9 +5808,14 @@ class PackageBuilder {
     return new Set.from(files.map((s) => new File(s).absolute.path));
   }
 
-  Future<void> getLibraries(Set<LibraryElement> libraries, Set<LibraryElement> specialLibraries, Set<String> files, Set<String> specialFiles) async {
+  Future<void> getLibraries(
+      Set<LibraryElement> libraries,
+      Set<LibraryElement> specialLibraries,
+      Set<String> files,
+      Set<String> specialFiles) async {
     libraries.addAll(await _parseLibraries(files));
-    specialLibraries.addAll(await _parseLibraries(specialFiles.difference(files)));
+    specialLibraries
+        .addAll(await _parseLibraries(specialFiles.difference(files)));
     if (config.include.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
       Set notFound = new Set.from(config.include)

@@ -586,7 +586,8 @@ Future<List<Map>> _buildFlutterDocs(
 }
 
 /// Returns the directory in which we generated documentation.
-Future<String> _buildPubPackageDocs(String pubPackageName, List<String> dartdocParameters,
+Future<String> _buildPubPackageDocs(
+    String pubPackageName, List<String> dartdocParameters,
     [String version, String label]) async {
   Map<String, String> env = _createThrowawayPubCache();
   var launcher = new SubprocessLauncher(

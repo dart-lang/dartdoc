@@ -17,6 +17,7 @@ import 'package:dartdoc/src/model.dart';
 enum SpecialClass {
   /// From dart:core, Object
   object,
+
   /// From dart:_interceptors, Interceptor
   interceptor,
 }
@@ -25,49 +26,65 @@ enum SpecialClass {
 class _SpecialClassDefinition {
   /// Which specialElement this is.
   final SpecialClass specialClass;
+
   /// Name of the ModelElement.
   final String name;
+
   /// The library name for the [LibraryElement] in which this [ModelElement]
   /// can be found.
   final String libraryName;
+
   /// The package name in which this [ModelElement] can be found.
   final String packageName;
+
   /// The URI for the library in which this [ModelElement] is defined.
   final String specialFileUri;
+
   /// If true, require this element to exist in the packageGraph when
   /// calling the [SpecialClasses] constructor.
   final bool required;
-  _SpecialClassDefinition(this.specialClass, this.name, this.libraryName, this.specialFileUri, {this.required = true, this.packageName = 'Dart'}) {
-    assert(packageName == 'Dart', 'Packages other than SDK not yet supported in special element detection');
+  _SpecialClassDefinition(
+      this.specialClass, this.name, this.libraryName, this.specialFileUri,
+      {this.required = true, this.packageName = 'Dart'}) {
+    assert(packageName == 'Dart',
+        'Packages other than SDK not yet supported in special element detection');
   }
 
   /// Get the filename for the Dart Library where this [specialClass] is
   /// declared.
-  String getSpecialFilename(DartSdk sdk) => sdk.mapDartUri(specialFileUri).fullName;
+  String getSpecialFilename(DartSdk sdk) =>
+      sdk.mapDartUri(specialFileUri).fullName;
 
   bool matchesClass(Class modelClass) {
     return modelClass.name == name &&
-           modelClass.library.element.name == libraryName &&
-           modelClass.package.name == packageName;
+        modelClass.library.element.name == libraryName &&
+        modelClass.package.name == packageName;
   }
 }
 
 /// List all special classes we need to find here.
 final List<_SpecialClassDefinition> _specialClassDefinitions = [
-  new _SpecialClassDefinition(SpecialClass.object, 'Object', 'dart.core', 'dart:core'),
-  new _SpecialClassDefinition(SpecialClass.interceptor, 'Interceptor', '_interceptors', 'dart:_interceptors'),
+  new _SpecialClassDefinition(
+      SpecialClass.object, 'Object', 'dart.core', 'dart:core'),
+  new _SpecialClassDefinition(SpecialClass.interceptor, 'Interceptor',
+      '_interceptors', 'dart:_interceptors'),
 ];
 
 /// Given a SDK, resolve URIs for the libraries containing our special
 /// clases.
-Set<String> specialLibraryFiles(DartSdk sdk) => _specialClassDefinitions.map((_SpecialClassDefinition d) => d.getSpecialFilename(sdk)).toSet();
+Set<String> specialLibraryFiles(DartSdk sdk) => _specialClassDefinitions
+    .map((_SpecialClassDefinition d) => d.getSpecialFilename(sdk))
+    .toSet();
 
 Set<String> __specialLibraryNames;
+
 /// These library names can be checked against the [LibraryElement] names
 /// to avoid traversing libraries we don't need to.
 Set<String> get _specialLibraryNames {
   if (__specialLibraryNames == null) {
-    __specialLibraryNames = _specialClassDefinitions.map((_SpecialClassDefinition d) => d.libraryName).toSet();
+    __specialLibraryNames = _specialClassDefinitions
+        .map((_SpecialClassDefinition d) => d.libraryName)
+        .toSet();
   }
   return __specialLibraryNames;
 }
@@ -89,7 +106,8 @@ class SpecialClasses {
           packageGraph.allLibraries[e].allClasses.forEach((Class aClass) {
             _specialClassDefinitions.forEach((_SpecialClassDefinition d) {
               if (d.matchesClass(aClass)) {
-                assert (!_specialClass.containsKey(d.specialClass) || _specialClass[d.specialClass] == aClass);
+                assert(!_specialClass.containsKey(d.specialClass) ||
+                    _specialClass[d.specialClass] == aClass);
                 _specialClass[d.specialClass] = aClass;
               }
             });
@@ -97,12 +115,13 @@ class SpecialClasses {
         }
         doneKeys.add(e);
       });
-      keysToDo = new Set.from(packageGraph.allLibraries.keys.where((LibraryElement e) => !doneKeys.contains(e)));
+      keysToDo = new Set.from(packageGraph.allLibraries.keys
+          .where((LibraryElement e) => !doneKeys.contains(e)));
     }
     _specialClassDefinitions.forEach((_SpecialClassDefinition d) {
       if (d.required) assert(_specialClass.containsKey(d.specialClass));
     });
   }
 
-  Class operator[](SpecialClass specialClass) => _specialClass[specialClass];
+  Class operator [](SpecialClass specialClass) => _specialClass[specialClass];
 }
