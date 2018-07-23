@@ -1,7 +1,7 @@
 language: dart
 sudo: false
 dart:
-  - "dev/raw/latest"
+  - "dev/raw/2.0.0-dev.69.0"
 env:
   - DARTDOC_BOT=main
   - DARTDOC_BOT=packages
