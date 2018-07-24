@@ -125,6 +125,9 @@ class DocumentWithATable {
   void aMethod(String parameter) {}
 }
 
+/// A doc reference mentioning [dynamic].
+dynamic get mustGetThis => null;
+
 Map<dynamic, String> mapWithDynamicKeys = {};
 
 Tuple2<String, String> useSomethingInAnotherPackage;

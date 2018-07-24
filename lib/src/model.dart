@@ -1257,11 +1257,18 @@ class Dynamic extends ModelElement {
   Dynamic(Element element, PackageGraph packageGraph)
       : super(element, null, packageGraph, null);
 
+  /// [dynamic] is not a real object, and so we can't document it, so there
+  /// can be nothing canonical for it.
+  @override
+  ModelElement get canonicalModelElement => null;
+
   @override
   ModelElement get enclosingElement => throw new UnsupportedError('');
 
+  /// And similiarly, even if someone references it directly it can have
+  /// no hyperlink.
   @override
-  String get href => throw new StateError('dynamic should not have an href');
+  String get href => null;
 
   @override
   String get kind => 'dynamic';
