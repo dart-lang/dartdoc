@@ -1,5 +1,6 @@
 analyzer:
   language:
+    enablePreviewDart2: true
     enableSuperMixins: true
   exclude:
     - 'doc/**'

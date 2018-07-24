@@ -20,6 +20,9 @@ if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
 elif [ "$DARTDOC_BOT" = "flutter" ]; then
   echo "Running flutter dartdoc bot"
   pub run grinder validate-flutter-docs
+elif [ "$DARTDOC_BOT" = "packages" ]; then
+  echo "Running packages dartdoc bot"
+  PACKAGE_NAME=angular PACKAGE_VERSION=">=5.0.0-beta" DARTDOC_PARAMS="--include=angular,angular.security" pub run grinder build-pub-package
 else
   echo "Running main dartdoc bot"
   pub run grinder buildbot

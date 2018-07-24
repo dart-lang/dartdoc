@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
@@ -305,7 +306,8 @@ void main() {
             htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
         Field hashCode = EventTarget.allPublicInstanceProperties
             .singleWhere((f) => f.name == 'hashCode');
-        Class objectModelElement = sdkAsPackageGraph.objectElement;
+        Class objectModelElement =
+            sdkAsPackageGraph.specialClasses[SpecialClass.object];
         // If this fails, EventTarget might have been changed to no longer
         // inherit from Interceptor.  If that's true, adjust test case to
         // another class that does.
