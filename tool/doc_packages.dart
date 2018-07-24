@@ -196,8 +196,7 @@ Future _exec(String command, List<String> args,
     {String cwd,
     bool quiet: false,
     Duration timeout: const Duration(seconds: 60)}) {
-  return Process
-      .start(command, args, workingDirectory: cwd)
+  return Process.start(command, args, workingDirectory: cwd)
       .then((Process process) {
     if (!quiet) {
       process.stdout.listen((bytes) => _log(utf8.decode(bytes)));

@@ -1,11 +1,10 @@
 language: dart
 sudo: false
 dart:
-  - "dev/raw/latest"
+  - "dev/raw/2.0.0-dev.69.0"
 env:
   - DARTDOC_BOT=main
-  # TODO(devoncarew): add angulardart support
-  #- DARTDOC_BOT=angular
+  - DARTDOC_BOT=packages
   - DARTDOC_BOT=flutter
   - DARTDOC_BOT=sdk-docs
 script: ./tool/travis.sh

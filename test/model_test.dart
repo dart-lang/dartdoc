@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
@@ -305,7 +306,8 @@ void main() {
             htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
         Field hashCode = EventTarget.allPublicInstanceProperties
             .singleWhere((f) => f.name == 'hashCode');
-        Class objectModelElement = sdkAsPackageGraph.objectElement;
+        Class objectModelElement =
+            sdkAsPackageGraph.specialClasses[SpecialClass.object];
         // If this fails, EventTarget might have been changed to no longer
         // inherit from Interceptor.  If that's true, adjust test case to
         // another class that does.
@@ -1693,7 +1695,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           new File(pathLib.join(utils.testPackageDir.path, "crossdart.json"));
       crossDartFile.writeAsStringSync("""
               {"$fakePath":
-                {"references":[{"offset":${offset},"end":${offset+3},"remotePath":"http://www.example.com/fake.dart"}]}}
+                {"references":[{"offset":${offset},"end":${offset + 3},"remotePath":"http://www.example.com/fake.dart"}]}}
       """);
       // Indirectly load the file.
       crossdartPackageGraph.crossdartJson;
