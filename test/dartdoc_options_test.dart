@@ -457,7 +457,7 @@ dartdoc:
     test('DartdocOptionArgOnly throws on integer type mismatch', () {
       dartdocOptionSetArgs.parseArguments(['--number-of-heads', '3.6']);
       expect(() => dartdocOptionSetArgs['number_of_heads'].valueAt(tempDir),
-          throwsA(const isInstanceOf<DartdocOptionError>()));
+          throwsA(const TypeMatcher<DartdocOptionError>()));
       String errorMessage;
       try {
         dartdocOptionSetArgs['number_of_heads'].valueAt(tempDir);

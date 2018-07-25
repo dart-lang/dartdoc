@@ -145,7 +145,7 @@ void main() {
     test('assert on changing underlying function', () {
       var m = new ValidatingMemoizerUser();
       expect(m.toMemoize.first, equals(0));
-      expect(() => m.toMemoize, throwsA(new isInstanceOf<AssertionError>()));
+      expect(() => m.toMemoize, throwsA(new TypeMatcher<AssertionError>()));
     });
   });
 

@@ -81,21 +81,21 @@ class MultiFutureTracker<T> {
   ///
   /// That can be extremely brief and there's no longer a guarantee after that
   /// point that another async task has not added a Future to the list.
-  void addFuture(Future<T> future) async {
+  Future<void> addFuture(Future<T> future) async {
     _queue.add(future);
     future.then((f) => _queue.remove(future));
     await _waitUntil(parallel - 1);
   }
 
   /// Wait until fewer or equal to this many Futures are outstanding.
-  void _waitUntil(int max) async {
+  Future<void> _waitUntil(int max) async {
     while (_queue.length > max) {
       await Future.any(_queue);
     }
   }
 
   /// Wait until all futures added so far have completed.
-  void wait() async => await _waitUntil(0);
+  Future<void> wait() async => await _waitUntil(0);
 }
 
 class SubprocessLauncher {

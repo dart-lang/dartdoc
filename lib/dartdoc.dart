@@ -37,7 +37,7 @@ export 'package:dartdoc/src/package_meta.dart';
 
 const String name = 'dartdoc';
 // Update when pubspec version changes.
-const String dartdocVersion = '0.20.1';
+const String dartdocVersion = '0.20.2';
 
 /// Helper class to initialize the default generators since they require
 /// GeneratorContext.
@@ -79,7 +79,7 @@ class Dartdoc extends PackageBuilder {
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
 
   @override
-  void logAnalysisErrors(Set<Source> sources) async {
+  Future<void> logAnalysisErrors(Set<Source> sources) async {
     List<AnalysisErrorInfo> errorInfos = [];
     // TODO(jcollins-g): figure out why sources can't contain includeExternals
     // or embedded SDK components without having spurious(?) analysis errors.

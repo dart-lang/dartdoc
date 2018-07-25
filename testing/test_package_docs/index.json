@@ -8479,6 +8479,17 @@
   }
  },
  {
+  "name": "mustGetThis",
+  "qualifiedName": "fake.mustGetThis",
+  "href": "fake/mustGetThis.html",
+  "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "myCoolTypedef",
   "qualifiedName": "fake.myCoolTypedef",
   "href": "fake/myCoolTypedef.html",
