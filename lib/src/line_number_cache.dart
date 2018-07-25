@@ -7,7 +7,7 @@ library dartdoc.cache;
 import 'dart:collection';
 import 'dart:io';
 
-import 'package:tuple/tuple.dart';
+import 'package:dartdoc/src/tuple.dart';
 
 String _getNewlineChar(String contents) {
   if (contents.contains("\r\n")) {

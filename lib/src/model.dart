@@ -45,13 +45,13 @@ import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta, FileContents;
 import 'package:dartdoc/src/special_elements.dart';
+import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:front_end/src/byte_store/byte_store.dart';
 import 'package:front_end/src/base/performance_logger.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:pub_semver/pub_semver.dart';
-import 'package:tuple/tuple.dart';
 import 'package:package_config/discovery.dart' as package_config;
 
 int byName(Nameable a, Nameable b) =>

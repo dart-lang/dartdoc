@@ -25,7 +25,6 @@ dependencies:
   quiver: ^2.0.0
   resource: ^2.1.2
   stack_trace: ^1.4.2
-  tuple: ^1.0.1
   yaml: ^2.1.0
 
 dev_dependencies:

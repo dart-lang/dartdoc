@@ -13,10 +13,10 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
+import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
-import 'package:tuple/tuple.dart';
 
 const validHtmlTags = const [
   "a",

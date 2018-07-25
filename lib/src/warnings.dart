@@ -5,7 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
-import 'package:tuple/tuple.dart';
+import 'package:dartdoc/src/tuple.dart';
 
 class PackageWarningHelpText {
   final String warningName;
