@@ -1,3 +1,5 @@
 name: test_package_imported
 description: Doomed to be imported from other packages
 version: 0.0.1
+environment:
+  sdk: '>=2.0.0-dev.68 <3.0.0'
