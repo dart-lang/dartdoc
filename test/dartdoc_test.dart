@@ -90,7 +90,7 @@ void main() {
       expect(
           useSomethingInAnotherPackage.modelType.linkedName,
           startsWith(
-              '<a href="https://pub.dartlang.org/documentation/tuple/1.0.1/tuple/Tuple2-class.html">Tuple2</a>'));
+              '<a href="https://pub.dartlang.org/documentation/tuple/1.0.2/tuple/Tuple2-class.html">Tuple2</a>'));
       RegExp stringLink = new RegExp(
           'https://api.dartlang.org/(dev|stable|edge|be)/${Platform.version.split(' ').first}/dart-core/String-class.html">String</a>');
       expect(useSomethingInAnotherPackage.modelType.linkedName,
