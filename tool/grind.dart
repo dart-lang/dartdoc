@@ -744,7 +744,7 @@ checkBuild() async {
 @Depends(checkChangelogHasVersion)
 tryPublish() async {
   var launcher = new SubprocessLauncher('try-publish');
-  await launcher.runStreamed('pub', ['publish', '-n']);
+  await launcher.runStreamed(sdkBin('pub'), ['publish', '-n']);
 }
 
 @Task('Run all the tests.')
