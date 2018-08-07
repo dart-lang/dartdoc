@@ -161,9 +161,9 @@ Map<String, String> _createThrowawayPubCache() {
 }
 
 // TODO(jcollins-g): make a library out of this
-final FilePath _pkgDir = new FilePath('third_party/pkg');
+final FilePath _pkgDir = new FilePath('lib/src/third_party/pkg');
 final FilePath _mustache4dartDir =
-    new FilePath('third_party/pkg/mustache4dart');
+    new FilePath('lib/src/third_party/pkg/mustache4dart');
 final RegExp _mustache4dartPatches =
     new RegExp(r'^\d\d\d-mustache4dart-.*[.]patch$');
 @Task('Update third_party forks')
@@ -210,7 +210,7 @@ analyze() async {
 }
 
 @Task('analyze, test, and self-test dartdoc')
-@Depends(analyze, checkBuild, test, testDartdoc)
+@Depends(analyze, checkBuild, test, testDartdoc, tryPublish)
 buildbot() => null;
 
 @Task('Generate docs for the Dart SDK')
@@ -740,12 +740,11 @@ checkBuild() async {
   }
 }
 
-@Task('Publish to pub.dartlang')
-@Depends(checkChangelogHasVersion, buildbot)
-publish() async {
-  var launcher = new SubprocessLauncher('publish-dryrun');
-  await launcher.runStreamed('pub', ['publish', '-n']);
-  log('\nTo publish, run:\n  pub publish');
+@Task('Dry run of publish to pub.dartlang')
+@Depends(checkChangelogHasVersion)
+tryPublish() async {
+  var launcher = new SubprocessLauncher('try-publish');
+  await launcher.runStreamed(sdkBin('pub'), ['publish', '-n']);
 }
 
 @Task('Run all the tests.')

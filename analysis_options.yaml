@@ -4,9 +4,9 @@ analyzer:
     enableSuperMixins: true
   exclude:
     - 'doc/**'
+    - 'lib/src/third_party/pkg/**'
     - 'lib/templates/*.html'
     - 'pub.dartlang.org/**'
-    - 'third_party/**'
     - 'testing/**'
     - 'testing/test_package_flutter_plugin/**'
 linter:
