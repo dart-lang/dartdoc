@@ -1,0 +1,12 @@
+diff -urN mustache4dart.orig/lib/mustache_context.dart mustache4dart/lib/mustache_context.dart
+--- mustache4dart.orig/lib/mustache_context.dart	2018-08-07 11:23:30.400716669 -0700
++++ mustache4dart/lib/mustache_context.dart	2018-08-07 11:41:38.060977463 -0700
+@@ -2,7 +2,7 @@
+ 
+ import 'dart:collection';
+ 
+-import 'package:mustache4dart/src/mirrors.dart';
++import 'src/mirrors.dart';
+ 
+ const String DOT = '\.';
+ 
