@@ -3,7 +3,7 @@
 import 'dart:io';
 import 'dart:convert';
 import 'package:test/test.dart';
-import 'package:mustache4dart/mustache4dart.dart';
+import '../lib/mustache4dart.dart';
 
 main() {
   var specs_dir = new Directory('spec/specs');

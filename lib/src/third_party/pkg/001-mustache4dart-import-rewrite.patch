@@ -1,12 +1,68 @@
-diff -urN mustache4dart.orig/lib/mustache_context.dart mustache4dart/lib/mustache_context.dart
---- mustache4dart.orig/lib/mustache_context.dart	2018-08-07 11:23:30.400716669 -0700
-+++ mustache4dart/lib/mustache_context.dart	2018-08-07 11:41:38.060977463 -0700
-@@ -2,7 +2,7 @@
- 
- import 'dart:collection';
- 
+diff -urN mustache4dart.orig/test/mustache_context_reflect_test.dart mustache4dart/test/mustache_context_reflect_test.dart
+--- mustache4dart.orig/test/mustache_context_reflect_test.dart	2018-08-07 12:11:27.844018370 -0700
++++ mustache4dart/test/mustache_context_reflect_test.dart	2018-08-07 12:33:43.842260033 -0700
+@@ -1,6 +1,6 @@
+ import 'dart:mirrors' as mirrors;
+ import 'package:test/test.dart';
 -import 'package:mustache4dart/src/mirrors.dart';
-+import 'src/mirrors.dart';
++import '../lib/src/mirrors.dart';
  
- const String DOT = '\.';
+ @mirrors.MirrorsUsed()
+ class Person {
+diff -urN mustache4dart.orig/test/mustache_context_test.dart mustache4dart/test/mustache_context_test.dart
+--- mustache4dart.orig/test/mustache_context_test.dart	2018-08-07 12:11:27.844018370 -0700
++++ mustache4dart/test/mustache_context_test.dart	2018-08-07 12:33:43.842260033 -0700
+@@ -1,6 +1,6 @@
+ import 'dart:mirrors';
+ import 'package:test/test.dart';
+-import 'package:mustache4dart/mustache_context.dart';
++import '../lib/mustache_context.dart';
  
+ void main() {
+   group('mustache_context lib', () {
+diff -urN mustache4dart.orig/test/mustache_issues_test.dart mustache4dart/test/mustache_issues_test.dart
+--- mustache4dart.orig/test/mustache_issues_test.dart	2018-08-07 12:11:27.844018370 -0700
++++ mustache4dart/test/mustache_issues_test.dart	2018-08-07 12:33:43.846260004 -0700
+@@ -1,8 +1,8 @@
+ import 'dart:io';
+ import 'dart:convert';
+ import 'package:test/test.dart';
+-import 'package:mustache4dart/mustache4dart.dart';
+-import 'package:mustache4dart/mustache_context.dart';
++import '../lib/mustache4dart.dart';
++import '../lib/mustache_context.dart';
+ 
+ class A {
+   final bar = 'bar';
+diff -urN mustache4dart.orig/test/mustache_line_test.dart mustache4dart/test/mustache_line_test.dart
+--- mustache4dart.orig/test/mustache_line_test.dart	2018-08-07 12:11:27.844018370 -0700
++++ mustache4dart/test/mustache_line_test.dart	2018-08-07 12:33:43.846260004 -0700
+@@ -1,5 +1,5 @@
+ import 'package:test/test.dart';
+-import 'package:mustache4dart/mustache4dart.dart';
++import '../lib/mustache4dart.dart';
+ 
+ void main() {
+   group('mustache4dart Line', () {
+diff -urN mustache4dart.orig/test/mustache_specs_test.dart mustache4dart/test/mustache_specs_test.dart
+--- mustache4dart.orig/test/mustache_specs_test.dart	2018-08-07 12:11:27.844018370 -0700
++++ mustache4dart/test/mustache_specs_test.dart	2018-08-07 12:33:43.846260004 -0700
+@@ -3,7 +3,7 @@
+ import 'dart:io';
+ import 'dart:convert';
+ import 'package:test/test.dart';
+-import 'package:mustache4dart/mustache4dart.dart';
++import '../lib/mustache4dart.dart';
+ 
+ main() {
+   var specs_dir = new Directory('spec/specs');
+diff -urN mustache4dart.orig/test/mustache_test.dart mustache4dart/test/mustache_test.dart
+--- mustache4dart.orig/test/mustache_test.dart	2018-08-07 12:11:27.844018370 -0700
++++ mustache4dart/test/mustache_test.dart	2018-08-07 12:33:43.846260004 -0700
+@@ -1,5 +1,5 @@
+ import 'package:test/test.dart';
+-import 'package:mustache4dart/mustache4dart.dart';
++import '../lib/mustache4dart.dart';
+ 
+ class A {
+   String name;

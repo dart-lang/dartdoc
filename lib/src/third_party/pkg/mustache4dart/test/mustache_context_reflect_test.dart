@@ -1,6 +1,6 @@
 import 'dart:mirrors' as mirrors;
 import 'package:test/test.dart';
-import 'package:mustache4dart/src/mirrors.dart';
+import '../lib/src/mirrors.dart';
 
 @mirrors.MirrorsUsed()
 class Person {

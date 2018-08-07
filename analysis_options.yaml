@@ -4,7 +4,6 @@ analyzer:
     enableSuperMixins: true
   exclude:
     - 'doc/**'
-    - 'lib/src/third_party/**'
     - 'lib/templates/*.html'
     - 'pub.dartlang.org/**'
     - 'testing/**'

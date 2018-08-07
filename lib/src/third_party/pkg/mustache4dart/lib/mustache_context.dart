@@ -2,7 +2,7 @@ library mustache_context;
 
 import 'dart:collection';
 
-import 'src/mirrors.dart';
+import 'package:mustache4dart/src/mirrors.dart';
 
 const String DOT = '\.';
 

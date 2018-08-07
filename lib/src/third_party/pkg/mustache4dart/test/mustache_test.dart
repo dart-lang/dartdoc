@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:mustache4dart/mustache4dart.dart';
+import '../lib/mustache4dart.dart';
 
 class A {
   String name;
