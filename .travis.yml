@@ -2,15 +2,16 @@ language: dart
 sudo: false
 dart:
   - "dev/raw/latest"
+  - stable
 env:
   - DARTDOC_BOT=main
   - DARTDOC_BOT=packages
   - DARTDOC_BOT=flutter
   - DARTDOC_BOT=sdk-docs
 script: ./tool/travis.sh
+
 branches:
-  only:
-    - master
+  only: [master]
 cache:
   directories:
   - $HOME/.pub-cache

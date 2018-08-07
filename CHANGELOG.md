@@ -1,7 +1,11 @@
+## 0.20.3
+* Update dependencies and fork mustache4dart into dartdoc so dartdoc can resolve
+  dependencies on Dart 2.0 stable.
+
 ## 0.20.2
 * Fix void problems (#1724)
-* Fix crash building Angular docs and problems involving special objects (#1728,
-  #1554)
+* Fix crash building Angular docs and problems involving special objects
+  (#1728, #1554)
 * Run pub upgrade to get packages ready for 69.2.
 
 ## 0.20.1

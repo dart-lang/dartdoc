@@ -1,0 +1,11 @@
+--- mustache4dart/pubspec.yaml.old	2018-08-06 10:02:45.152305202 -0700
++++ mustache4dart/pubspec.yaml	2018-08-06 10:02:53.036245297 -0700
+@@ -4,7 +4,7 @@
+ description: A mustache implementation for the Dart language
+ homepage: https://github.com/valotas/mustache4dart
+ environment:
+-  sdk: '>=0.8.10+6 <2.0.0'
++  sdk: '>=0.8.10+6 <3.0.0'
+ dev_dependencies:
+   test: '>=0.12.0 <0.12.23'
+   isolate: '>=1.0.0 <1.1.0'

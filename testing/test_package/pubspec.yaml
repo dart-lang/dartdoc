@@ -4,6 +4,6 @@ description: Best package ever.
 version: 0.0.1
 dependencies:
   meta: ^1.0.0
-  tuple: 1.0.1
+  tuple: 1.0.2
   test_package_imported:
     path: "../test_package_imported"

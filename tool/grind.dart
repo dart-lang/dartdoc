@@ -160,6 +160,41 @@ Map<String, String> _createThrowawayPubCache() {
   ]);
 }
 
+// TODO(jcollins-g): make a library out of this
+final FilePath _pkgDir = new FilePath('third_party/pkg');
+final FilePath _mustache4dartDir =
+    new FilePath('third_party/pkg/mustache4dart');
+final RegExp _mustache4dartPatches =
+    new RegExp(r'^\d\d\d-mustache4dart-.*[.]patch$');
+@Task('Update third_party forks')
+updateThirdParty() async {
+  run('rm', arguments: ['-rf', _mustache4dartDir.path]);
+  new Directory(_pkgDir.path).createSync(recursive: true);
+  run('git', arguments: [
+    'clone',
+    '--branch',
+    'v2.1.2',
+    '--depth=1',
+    'git@github.com:valotas/mustache4dart',
+    _mustache4dartDir.path,
+  ]);
+  run('rm', arguments: ['-rf', pathLib.join(_mustache4dartDir.path, '.git')]);
+  for (String patchFileName in new Directory(_pkgDir.path)
+      .listSync()
+      .map((e) => pathLib.basename(e.path))
+      .where((String filename) => _mustache4dartPatches.hasMatch(filename))
+      .toList()
+        ..sort()) {
+    run('patch',
+        arguments: [
+          '-p0',
+          '-i',
+          patchFileName,
+        ],
+        workingDirectory: _pkgDir.path);
+  }
+}
+
 @Task('Analyze dartdoc to ensure there are no errors and warnings')
 analyze() async {
   await new SubprocessLauncher('analyze').runStreamed(
@@ -806,7 +841,7 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
 
   return jsonMessageIterableToWarnings(
       await flutterRepo.launcher.runStreamed(
-          Platform.resolvedExecutable,
+          flutterRepo.cacheDart,
           [
             '--enable-asserts',
             pathLib.join(Directory.current.path, 'bin', 'dartdoc.dart'),
@@ -862,7 +897,7 @@ updateTestPackageDocs() async {
         '--example-path-prefix',
         'examples',
         '--exclude-packages',
-        'Dart,meta,tuple,quiver_hashcode',
+        'Dart,matcher,meta,path,stack_trace,tuple,quiver',
         '--hide-sdk-text',
         '--no-include-source',
         '--output',
