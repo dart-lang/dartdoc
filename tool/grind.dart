@@ -841,7 +841,7 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
 
   return jsonMessageIterableToWarnings(
       await flutterRepo.launcher.runStreamed(
-          Platform.resolvedExecutable,
+          flutterRepo.cacheDart,
           [
             '--enable-asserts',
             pathLib.join(Directory.current.path, 'bin', 'dartdoc.dart'),
