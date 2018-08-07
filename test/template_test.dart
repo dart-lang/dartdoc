@@ -6,7 +6,7 @@ library dartdoc.template_test;
 
 import 'dart:io';
 
-import 'package:mustache4dart/mustache4dart.dart';
+import 'package:dartdoc/src/third_party/pkg/mustache4dart/lib/mustache4dart.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 

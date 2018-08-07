@@ -15,8 +15,8 @@ import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
+import 'package:dartdoc/src/third_party/pkg/mustache4dart/lib/mustache4dart.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:mustache4dart/mustache4dart.dart';
 import 'package:path/path.dart' as pathLib;
 
 typedef void FileWriter(String path, Object content, {bool allowOverwrite});
