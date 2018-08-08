@@ -1,6 +1,6 @@
 library mustache_usage;
 
-import 'package:mustache4dart/mustache4dart.dart';
+import '../lib/mustache4dart.dart';
 
 void main() {
   //Basic use of the library as you can find it at http://mustache.github.io/mustache.5.html

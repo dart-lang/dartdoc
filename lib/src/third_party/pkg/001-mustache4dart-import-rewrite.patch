@@ -1,0 +1,1023 @@
+diff -urN mustache4dart.orig/example/simpleusage.dart mustache4dart/example/simpleusage.dart
+--- mustache4dart.orig/example/simpleusage.dart	2018-08-07 12:35:31.521479520 -0700
++++ mustache4dart/example/simpleusage.dart	2018-08-07 12:38:54.608005680 -0700
+@@ -1,6 +1,6 @@
+ library mustache_usage;
+ 
+-import 'package:mustache4dart/mustache4dart.dart';
++import '../lib/mustache4dart.dart';
+ 
+ void main() {
+   //Basic use of the library as you can find it at http://mustache.github.io/mustache.5.html
+diff -urN mustache4dart.orig/lib/mustache_context.dart mustache4dart/lib/mustache_context.dart
+--- mustache4dart.orig/lib/mustache_context.dart	2018-08-07 12:31:09.343380762 -0700
++++ mustache4dart/lib/mustache_context.dart	2018-08-07 12:38:19.776258618 -0700
+@@ -2,7 +2,7 @@
+ 
+ import 'dart:collection';
+ 
+-import 'package:mustache4dart/src/mirrors.dart';
++import '../lib/src/mirrors.dart';
+ 
+ const String DOT = '\.';
+ 
+diff -urN mustache4dart.orig/test/lorem-ipsum.txt mustache4dart/test/lorem-ipsum.txt
+--- mustache4dart.orig/test/lorem-ipsum.txt	2018-08-07 12:11:27.844018370 -0700
++++ mustache4dart/test/lorem-ipsum.txt	1969-12-31 16:00:00.000000000 -0800
+@@ -1,11 +0,0 @@
+-Lorem ipsum dolor sit amet, est vel euismod et dictum fermentum integer, tortor ipsam est. Sollicitudin imperdiet fringilla placerat eros luctus facilisi, pede nunc, congue nullam dolor. Nibh neque urna neque, praesent volutpat tincidunt maecenas, scelerisque est, vitae in scelerisque placerat lacus, eu vitae lectus malesuada. Vehicula suspendisse tincidunt, aenean ac eros varius lectus quis. Orci lacus luctus nullam arcu id risus, odio feugiat turpis nullam suspendisse metus suspendisse, ligula vehicula nec fermentum ligula, convallis ultrices cras nibh eu. Leo pede iaculis mus risus, proin aliquam phasellus dui pretium arcu, pede fringilla risus, tempus odio sem lobortis lectus sem enim, laoreet donec posuere. Tempus elit vel arcu. A iaculis. A amet felis, sed sit metus. Quis etiam vitae at ipsum, et nam a. In auctor molestie suscipit enim ultrices tincidunt, nullam mi, hendrerit integer quisque elementum nonummy, enim pede magna, dui at dignissim vestibulum molestie et. Vel mattis aliquet, nulla nostra laoreet et ultrices, luctus luctus tortor libero augue orci id.
+-
+-Ante proin aenean sit elit, vel at donec lobortis eget, erat curabitur sed tempus enim, et et mollis sed in ultricies ultricies, rutrum alias porttitor erat. Convallis in voluptatum a a. Nunc odio cras ut consequat neque, in dolor nec, suspendisse et a cras consectetuer ut, in sagittis in dis blandit sit nisl, eros consequat. Arcu enim pede mattis adipiscing wisi facilisi, adipiscing morbi integer ante auctor. Porttitor lectus scelerisque pellentesque torquent, viverra donec enim. Quam vehicula sed eu, viverra dolor et sed mollis in, vulputate integer tristique elit tellus laoreet aut, sed dis adipiscing fames integer turpis, curabitur tellus velit nonummy et nam.
+-
+-Elit dolor maecenas vestibulum sodales ut, molestie luctus proin sit dolor mauris. In a lectus arcu, ut dui, nec molestie wisi tempus urna. Mollis imperdiet in lectus justo, pede justo nec vulputate commodo eget tincidunt, sapien tellus volutpat lacinia lectus. Ut dis tellus neque ac at sapien, ultrices vivamus bibendum mattis. Dui quisque, sed vivamus accumsan pellentesque, est donec sem. Tincidunt dignissim, vivamus aliquam lacinia neque, est integer. Turpis habitant id tempus vestibulum. Purus massa feugiat at ut massa varius, vivamus diam hendrerit tincidunt.
+-Vitae mi fermentum a nec vehicula imperdiet, ipsum potenti suspendisse ipsum porta turpis, nam maecenas. Velit nulla a consectetuer arcu accumsan vitae, sodales cras in vitae leo eu, aliquet pellentesque in tempus facilisis rutrum leo, lacus nunc pretium quisque egestas habitasse. Dolor porttitor ipsum, ullamcorper metus, amet etiam euismod vitae nulla orci. Id velit quam vel lectus, molestie commodo, turpis tellus odio rhoncus vehicula ut. Et nunc vestibulum tellus et vestibulum, nunc orci ut diam nunc quam, aliquam dignissim nunc donec, aliquam class, ipsum tempus. Vestibulum proin est, vel felis, lectus nec pharetra arcu, fringilla et et nisl magna leo, lorem facilisis erat.Lorem ipsum dolor sit amet, est vel euismod et dictum fermentum integer, tortor ipsam est. Sollicitudin imperdiet fringilla placerat eros luctus facilisi, pede nunc, congue nullam dolor. Nibh neque urna neque, praesent volutpat tincidunt maecenas, scelerisque est, vitae in scelerisque placerat lacus, eu vitae lectus malesuada. Vehicula suspendisse tincidunt, aenean ac eros varius lectus quis. Orci lacus luctus nullam arcu id risus, odio feugiat turpis nullam suspendisse metus suspendisse, ligula vehicula nec fermentum ligula, convallis ultrices cras nibh eu. Leo pede iaculis mus risus, proin aliquam phasellus dui pretium arcu, pede fringilla risus, tempus odio sem lobortis lectus sem enim, laoreet donec posuere. Tempus elit vel arcu. A iaculis. A amet felis, sed sit metus. Quis etiam vitae at ipsum, et nam a. In auctor molestie suscipit enim ultrices tincidunt, nullam mi, hendrerit integer quisque elementum nonummy, enim pede magna, dui at dignissim vestibulum molestie et. Vel mattis aliquet, nulla nostra laoreet et ultrices, luctus luctus tortor libero augue orci id.
+-Ante proin aenean sit elit, vel at donec lobortis eget, erat curabitur sed tempus enim, et et mollis sed in ultricies ultricies, rutrum alias porttitor erat. Convallis in voluptatum a a. Nunc odio cras ut consequat neque, in dolor nec, suspendisse et a cras consectetuer ut, in sagittis in dis blandit sit nisl, eros consequat. Arcu enim pede mattis adipiscing wisi facilisi, adipiscing morbi integer ante auctor. Porttitor lectus scelerisque pellentesque torquent, viverra donec enim. Quam vehicula sed eu, viverra dolor et sed mollis in, vulputate integer tristique elit tellus laoreet aut, sed dis adipiscing fames integer turpis, curabitur tellus velit nonummy et nam.
+-
+-Elit dolor maecenas vestibulum sodales ut, molestie luctus proin sit dolor mauris. In a lectus arcu, ut dui, nec molestie wisi tempus urna. Mollis imperdiet in lectus justo, pede justo nec vulputate commodo eget tincidunt, sapien tellus volutpat lacinia lectus. Ut dis tellus neque ac at sapien, ultrices vivamus bibendum mattis. Dui quisque, sed vivamus accumsan pellentesque, est donec sem. Tincidunt dignissim, vivamus aliquam lacinia neque, est integer. Turpis habitant id tempus vestibulum. Purus massa feugiat at ut massa varius, vivamus diam hendrerit tincidunt.
+-
+-Vitae mi fermentum a nec vehicula imperdiet, ipsum potenti suspendisse ipsum porta turpis, nam maecenas. Velit nulla a consectetuer arcu accumsan vitae, sodales cras in vitae leo eu, aliquet pellentesque in tempus facilisis rutrum leo, lacus nunc pretium quisque egestas habitasse. Dolor porttitor ipsum, ullamcorper metus, amet etiam euismod vitae nulla orci. Id velit quam vel lectus, molestie commodo, turpis tellus odio rhoncus vehicula ut. Et nunc vestibulum tellus et vestibulum, nunc orci ut diam nunc quam, aliquam dignissim nunc donec, aliquam class, ipsum tempus. Vestibulum proin est, vel felis, lectus nec pharetra arcu, fringilla et et nisl magna leo, lorem facilisis erat.
+diff -urN mustache4dart.orig/test/mustache_all.dart mustache4dart/test/mustache_all.dart
+--- mustache4dart.orig/test/mustache_all.dart	2018-08-07 12:33:43.842260033 -0700
++++ mustache4dart/test/mustache_all.dart	1969-12-31 16:00:00.000000000 -0800
+@@ -1,15 +0,0 @@
+-import "mustache_context_test.dart" as context_test;
+-import "mustache_issues_test.dart" as issues_test;
+-import "mustache_line_test.dart" as line_test;
+-import "mustache_specs_test.dart" as specs_test;
+-import "mustache_test.dart" as general_test;
+-import "mustache_context_reflect_test.dart" as reflect_test;
+-
+-void main() {
+-  context_test.main();
+-  issues_test.main();
+-  line_test.main();
+-  specs_test.main();
+-  general_test.main();
+-  reflect_test.main();
+-}
+diff -urN mustache4dart.orig/test/mustache_context_reflect_test.dart mustache4dart/test/mustache_context_reflect_test.dart
+--- mustache4dart.orig/test/mustache_context_reflect_test.dart	2018-08-07 12:36:38.952990405 -0700
++++ mustache4dart/test/mustache_context_reflect_test.dart	1969-12-31 16:00:00.000000000 -0800
+@@ -1,170 +0,0 @@
+-import 'dart:mirrors' as mirrors;
+-import 'package:test/test.dart';
+-import 'package:mustache4dart/src/mirrors.dart';
+-
+-@mirrors.MirrorsUsed()
+-class Person {
+-  final String name;
+-  final String lastname;
+-  final Person parent;
+-
+-  Person(this.name, {this.lastname: null, this.parent: null});
+-
+-  get fullname {
+-    return "$name $lastname";
+-  }
+-
+-  getFullnameWithInitial() {
+-    final initial = this.parent.name[0].toUpperCase();
+-    return "$name $initial. $lastname";
+-  }
+-}
+-
+-class ClassWithLambda {
+-  final int num;
+-
+-  ClassWithLambda(this.num);
+-
+-  lambdaWithArity1(str) => "[[$str $num]]";
+-}
+-
+-@mirrors.MirrorsUsed()
+-class ClassWithBrackets {
+-  operator [](String input) {
+-    if (input == 'nullval') {
+-      return null;
+-    }
+-    return new Person(input);
+-  }
+-}
+-
+-void main() {
+-  group('reflect', () {
+-    test('returns a mirror object', () {
+-      final cat = new Person("cat");
+-      expect(reflect(cat), isNotNull);
+-    });
+-
+-    group('field([name])', () {
+-      test('should return an object', () {
+-        final cat = new Person("cat");
+-
+-        final actual = reflect(cat).field('name');
+-
+-        expect(actual, isNotNull);
+-        expect(actual, new isInstanceOf<Field>());
+-      });
+-
+-      group(".exists", () {
+-        final cat = new Person("cat");
+-
+-        test('returns true if the field exists', () {
+-          expect(reflect(cat).field('name').exists, isTrue);
+-        });
+-
+-        test('returns true if the getter exists', () {
+-          expect(reflect(cat).field('fullname').exists, isTrue);
+-        });
+-
+-        test('returns false if the method does not exist', () {
+-          expect(reflect(cat).field('fullnameWithInitial').exists, isFalse);
+-        });
+-
+-        test('returns false if no field exists', () {
+-          expect(reflect(cat).field('xyz').exists, isFalse);
+-        });
+-
+-        test('returns false if [] operator returns a null value', () {
+-          expect(reflect(new ClassWithBrackets()).field('nullval').exists,
+-              isFalse);
+-        });
+-
+-        test('returns true for map containing a field with a null value', () {
+-          expect(reflect({'a': null}).field('a').exists, isTrue);
+-        });
+-      });
+-
+-      group(".val()", () {
+-        test('returns the value of a field', () {
+-          final cat = new Person("cat");
+-
+-          final actual = reflect(cat);
+-
+-          expect(actual.field('name').val(), "cat");
+-        });
+-
+-        test('returns the value of a getter', () {
+-          final george = new Person("George", lastname: "Valotasios");
+-
+-          final actual = reflect(george);
+-
+-          expect(actual.field('fullname').val(), "George Valotasios");
+-        });
+-
+-        test('does not returns the value of a get methods', () {
+-          final george = new Person("George",
+-              lastname: "Valotasios", parent: new Person("Thomas"));
+-
+-          final actual = reflect(george);
+-
+-          expect(actual.field('fullnameWithInitial').exists, isFalse);
+-        });
+-
+-        test('returns the value from a [] operator', () {
+-          final object = new ClassWithBrackets();
+-
+-          final actual = reflect(object).field('xyz');
+-
+-          expect(actual.val(), isNotNull);
+-          expect(actual.val(), new isInstanceOf<Person>());
+-          expect(actual.val().name, 'xyz');
+-        }, onPlatform: {
+-          "js": new Skip("[] operator can not be reflected in javascript")
+-        });
+-
+-        test('returns always a reference to the value', () {
+-          final thomas = new Person("Thomas");
+-          final george =
+-              new Person("George", lastname: "Valotasios", parent: thomas);
+-
+-          final actual = reflect(george);
+-
+-          expect(actual.field('parent').val(), thomas);
+-        });
+-
+-        test('returns a ref to the function if it has an arity of 1', () {
+-          final labmbda = new ClassWithLambda(1);
+-
+-          final actual = reflect(labmbda).field('lambdaWithArity1');
+-
+-          expect(actual.val(), new isInstanceOf<Function>());
+-          expect(actual.val()("-"), "[[- 1]]");
+-        });
+-      });
+-    });
+-
+-    test('does not use reflection with Maps', () {
+-      final reflection = reflect({'name': "g"});
+-      expect(reflection, isNot(new isInstanceOf<Mirror>()));
+-    });
+-
+-    group('with useMirrors = false', () {
+-      test('should be disabled by default', () {
+-        expect(USE_MIRRORS, true);
+-      });
+-
+-      test('should return the result of the [] operator', () {
+-        final reflection = reflect(new ClassWithBrackets(), useMirrors: false);
+-        final value = reflection.field('George').val();
+-        expect(value, new isInstanceOf<Person>());
+-        expect(value.name, 'George');
+-      });
+-
+-      test('should not be able to analyze classes with reflectioon', () {
+-        final george = new Person('George');
+-        final reflection = reflect(george, useMirrors: false);
+-        expect(reflection.field('name').exists, isFalse);
+-      });
+-    });
+-  });
+-}
+diff -urN mustache4dart.orig/test/mustache_context_test.dart mustache4dart/test/mustache_context_test.dart
+--- mustache4dart.orig/test/mustache_context_test.dart	2018-08-07 12:36:38.952990405 -0700
++++ mustache4dart/test/mustache_context_test.dart	1969-12-31 16:00:00.000000000 -0800
+@@ -1,218 +0,0 @@
+-import 'dart:mirrors';
+-import 'package:test/test.dart';
+-import 'package:mustache4dart/mustache_context.dart';
+-
+-void main() {
+-  group('mustache_context lib', () {
+-    test('Recursion of iterable contextes', () {
+-      var contextY = {'content': 'Y', 'nodes': []};
+-      var contextX = {
+-        'content': 'X',
+-        'nodes': [contextY]
+-      };
+-      var ctx = new MustacheContext(contextX);
+-      expect(ctx.field('nodes'), isNotNull);
+-      expect(ctx.field('nodes') is Iterable, isTrue);
+-      expect((ctx.field('nodes') as Iterable).length, 1);
+-      (ctx.field('nodes') as Iterable).forEach((n) {
+-        expect(n.field('content').value(), 'Y');
+-        expect(n.field('nodes').length, 0);
+-      });
+-    });
+-
+-    test('Direct interpolation', () {
+-      var ctx = new MustacheContext({'n1': 1, 'n2': 2.0, 's': 'some string'});
+-      expect(ctx.field('n1').field('.').value(), '1');
+-      expect(ctx.field('n2').field('.').value(), '2.0');
+-      expect(ctx.field('s').field('.').value(), 'some string');
+-    }, testOn: "vm");
+-
+-    test('Direct list interpolation', () {
+-      var list = [1, 'two', 'three', '4'];
+-      var ctx = new MustacheContext(list);
+-      expect(ctx.field('.') is Iterable, isTrue);
+-    });
+-  });
+-
+-  test('Simple context with map', () {
+-    var ctx = new MustacheContext({'k1': 'value1', 'k2': 'value2'});
+-    expect(ctx.field('k1').value(), 'value1');
+-    expect(ctx.field('k2').value(), 'value2');
+-    expect(ctx.field('k3'), null);
+-  });
+-
+-  test('Simple context with object', () {
+-    var ctx = new MustacheContext(new _Person('Γιώργος', 'Βαλοτάσιος'));
+-    expect(ctx.field('name').value(), 'Γιώργος');
+-    expect(ctx.field('lastname').value(), 'Βαλοτάσιος');
+-    expect(ctx.field('last'), null);
+-    expect(ctx.field('fullname').value(), 'Γιώργος Βαλοτάσιος');
+-    expect(ctx.field('reversedName'), null);
+-    expect(ctx.field('reversedLastName').value(), 'ςοισάτολαΒ');
+-  });
+-
+-  test('Simple map with list of maps', () {
+-    dynamic ctx = new MustacheContext({
+-      'k': [
+-        {'k1': 'item1'},
+-        {'k2': 'item2'},
+-        {
+-          'k3': {'kk1': 'subitem1', 'kk2': 'subitem2'}
+-        }
+-      ]
+-    });
+-    expect(ctx.field('k').length, 3);
+-  });
+-
+-  test('Map with list of lists', () {
+-    var ctx = new MustacheContext({
+-      'k': [
+-        {'k1': 'item1'},
+-        {
+-          'k3': [
+-            {'kk1': 'subitem1'},
+-            {'kk2': 'subitem2'}
+-          ]
+-        }
+-      ]
+-    });
+-    expect(ctx.field('k') is Iterable, isTrue);
+-    expect((ctx.field('k') as Iterable).length, 2);
+-    expect((ctx.field('k') as Iterable).last.field('k3').length, 2);
+-  });
+-
+-  test('Object with iterables', () {
+-    var p = new _Person('Νικόλας', 'Νικολάου');
+-    p.contactInfos.add(new _ContactInfo('Address', {
+-      'Street': 'Κολοκωτρόνη',
+-      'Num': '31',
+-      'Zip': '42100',
+-      'Country': 'GR'
+-    }));
+-    p.contactInfos.add(new _ContactInfo('skype', 'some1'));
+-    var ctx = new MustacheContext(p);
+-    var contactInfos = ctx.field('contactInfos');
+-    expect(contactInfos is Iterable, isTrue);
+-    var iterableContactInfos = contactInfos as Iterable;
+-    expect(iterableContactInfos.length, 2);
+-    expect(
+-        iterableContactInfos.first.field('value').field('Num').value(), '31');
+-  });
+-
+-  test('Deep search with object', () {
+-    //create our model:
+-    _Person p = null;
+-    for (int i = 10; i > 0; i--) {
+-      p = new _Person("name$i", "lastname$i", p);
+-    }
+-
+-    MustacheContext ctx = new MustacheContext(p);
+-    expect(ctx.field('name').value(), 'name1');
+-    expect(ctx.field('parent').field('lastname').value(), 'lastname2');
+-    expect(ctx.field('parent').field('parent').field('fullname').value(),
+-        'name3 lastname3');
+-  });
+-
+-  test('simple MustacheFunction value', () {
+-    var t = new _Transformer();
+-    var ctx = new MustacheContext(t);
+-    var f = ctx.field('transform');
+-
+-    expect(f.isLambda, true);
+-    expect(f.value('123 456 777'), t.transform('123 456 777'));
+-  });
+-
+-  test('MustacheFunction from anonymus function', () {
+-    var map = {'transform': (String val) => "$val!"};
+-    var ctx = new MustacheContext(map);
+-    var f = ctx.field('transform');
+-
+-    expect(f.isLambda, true);
+-    expect(f.value('woh'), 'woh!');
+-  });
+-
+-  test('Dotted names', () {
+-    var ctx =
+-        new MustacheContext({'person': new _Person('George', 'Valotasios')});
+-    expect(ctx.field('person.name').value(), 'George');
+-  });
+-
+-  test('Context with another context', () {
+-    var ctx = new MustacheContext(new _Person('George', 'Valotasios'),
+-        parent: new MustacheContext({
+-          'a': {'one': 1},
+-          'b': {'two': 2}
+-        }));
+-    expect(ctx.field('name').value(), 'George');
+-    expect(ctx.field('a').field('one').value(), '1');
+-    expect(ctx.field('b.two').value(), '2');
+-  });
+-
+-  test('Deep subcontext test', () {
+-    var map = {
+-      'a': {'one': 1},
+-      'b': {'two': 2},
+-      'c': {'three': 3}
+-    };
+-    var ctx = new MustacheContext({
+-      'a': {'one': 1},
+-      'b': {'two': 2},
+-      'c': {'three': 3}
+-    });
+-    expect(ctx.field('a'), isNotNull,
+-        reason: "a should exists when using $map");
+-    expect(ctx.field('a').field('one').value(), '1');
+-    expect(ctx.field('a').field('two'), isNull);
+-    expect(ctx.field('a').field('b'), isNotNull,
+-        reason: "a.b should exists when using $map");
+-    expect(ctx.field('a').field('b').field('one').value(), '1',
+-        reason: "a.b.one == a.own when using $map");
+-    expect(ctx.field('a').field('b').field('two').value(), '2',
+-        reason: "a.b.two == b.two when using $map");
+-    expect(ctx.field('a').field('b').field('three'), isNull);
+-    expect(ctx.field('a').field('b').field('c'), isNotNull,
+-        reason: "a.b.c should not be null when using $map");
+-
+-    var abc = ctx.field('a').field('b').field('c');
+-    expect(abc.field('one').value(), '1',
+-        reason: "a.b.c.one == a.one when using $map");
+-    expect(abc.field('two').value(), '2',
+-        reason: "a.b.c.two == b.two when using $map");
+-    expect(abc.field('three').value(), '3');
+-  });
+-}
+-
+-@MirrorsUsed()
+-class _Person {
+-  final name;
+-  final lastname;
+-  final _Person parent;
+-  List<_ContactInfo> contactInfos = [];
+-
+-  _Person(this.name, this.lastname, [this.parent = null]);
+-
+-  get fullname => "$name $lastname";
+-
+-  static _reverse(String str) {
+-    StringBuffer out = new StringBuffer();
+-    for (int i = str.length; i > 0; i--) {
+-      out.write(str[i - 1]);
+-    }
+-    return out.toString();
+-  }
+-
+-  reversedLastName() => _reverse(lastname);
+-}
+-
+-@MirrorsUsed()
+-class _ContactInfo {
+-  final String type;
+-  final value;
+-
+-  _ContactInfo(this.type, this.value);
+-}
+-
+-@MirrorsUsed()
+-class _Transformer {
+-  String transform(String val) => "<b>$val</b>";
+-}
+diff -urN mustache4dart.orig/test/mustache_issues_test.dart mustache4dart/test/mustache_issues_test.dart
+--- mustache4dart.orig/test/mustache_issues_test.dart	2018-08-07 12:36:38.952990405 -0700
++++ mustache4dart/test/mustache_issues_test.dart	1969-12-31 16:00:00.000000000 -0800
+@@ -1,173 +0,0 @@
+-import 'dart:io';
+-import 'dart:convert';
+-import 'package:test/test.dart';
+-import 'package:mustache4dart/mustache4dart.dart';
+-import 'package:mustache4dart/mustache_context.dart';
+-
+-class A {
+-  final bar = 'bar';
+-
+-  String get foo => 'foo';
+-}
+-
+-class B extends A {}
+-
+-class Parent {
+-  String foo;
+-}
+-
+-class Child extends Parent {
+-  List<OtherChild> children = [];
+-}
+-
+-class OtherChild extends Parent {}
+-
+-void main() {
+-  group('mustache4dart issues', () {
+-    test(
+-        '#9: use empty strings for non existing variable',
+-        () => expect(
+-            render("{{#sec}}[{{variable}}]{{/sec}}", {'sec': 42}), '[]'));
+-
+-    test('#10',
+-        () => expect(render('|\n{{#bob}}\n{{/bob}}\n|', {'bob': []}), '|\n|'));
+-
+-    test(
+-        '#11',
+-        () => expect(
+-            () => render("{{#sec}}[{{var}}]{{/somethingelse}}", {'sec': 42}),
+-            throwsFormatException));
+-
+-    test('#12: Write to a StringSink', () {
+-      StringSink out = new StringBuffer();
+-      StringSink outcome = render("{{name}}!", {'name': "George"}, out: out);
+-      expect(out, outcome);
+-      expect(out.toString(), "George!");
+-    });
+-
+-    group('#16', () {
+-      test('side effect',
+-          () => expect(render('{{^x}}x{{/x}}!!!', null), 'x!!!'));
+-
+-      test(
+-          'root cause: For null objects the value of any property should be null',
+-          () {
+-        var ctx = new MustacheContext(null);
+-        expect(ctx.field('xxx'), null);
+-        expect(ctx.field('123'), null);
+-        expect(ctx.field(''), null);
+-        expect(ctx.field(null), null);
+-      });
+-    });
+-
+-    group('#17', () {
+-      test(
+-          'side effect',
+-          () => expect(
+-              render('{{#a}}[{{{a}}}|{{b}}]{{/a}}', {'a': 'aa', 'b': 'bb'}),
+-              '[aa|bb]'));
+-
+-      test('root cause: setting the same context as a subcontext', () {
+-        final ctx = new MustacheContext({'a': 'aa', 'b': 'bb'});
+-        expect(ctx, isNotNull);
+-        expect(ctx.field('a').toString(), isNotNull);
+-
+-        //Here lies a problem if the subaa.other == suba
+-        expect(ctx.field('a').field('a').toString(), isNotNull);
+-      });
+-    });
+-
+-    test('#20', () {
+-      var currentPath = Directory.current.path;
+-      if (!currentPath.endsWith('/test')) {
+-        currentPath = "$currentPath/test";
+-      }
+-      final template = new File("$currentPath/lorem-ipsum.txt")
+-          .readAsStringSync(encoding: UTF8);
+-
+-      final String out = render(template, {'ma': 'ma'});
+-      expect(out, template);
+-    }, onPlatform: {"js": new Skip("io is not available on a browser")});
+-
+-    test('#25', () {
+-      var ctx = {
+-        "parent_name": "John",
+-        "children": [
+-          {"name": "child"}
+-        ]
+-      };
+-      expect(render('{{#children}}Parent: {{parent_name}}{{/children}}', ctx),
+-          'Parent: John');
+-    });
+-
+-    test('#28', () {
+-      var model = {
+-        "name": "God",
+-        "hasChildren": true,
+-        "children": [
+-          {"name": "granpa", "hasChildren": true},
+-          {"name": "granma", "hasChildren": false}
+-        ]
+-      };
+-
+-      expect(
+-          render(
+-              '{{#children}}{{name}}{{#hasChildren}} has children{{/hasChildren}},{{/children}}',
+-              model),
+-          'granpa has children,granma,');
+-    });
+-
+-    test('#29', () {
+-      var list = [1, 'two', 'three', '4'];
+-      expect(render('{{#.}}{{.}},{{/.}}', list), '1,two,three,4,');
+-    });
+-
+-    test('#30', () {
+-      final txt = '''
+-
+-<div>
+-  <h1>Hello World!</h1>
+-</div>
+-
+-''';
+-      expect(render(txt, null), txt);
+-    });
+-
+-    test('#33', () {
+-      final b = new B();
+-      expect(render('{{b.foo}}', {'b': b}), 'foo');
+-      expect(render('{{b.bar}}', {'b': b}), 'bar');
+-    });
+-
+-    test(
+-        '#41 do not look into parent context if current context has field but its value is null',
+-        () {
+-      var c = new Child()
+-        ..foo = 'child'
+-        ..children = [
+-          new OtherChild()..foo = 'otherchild',
+-          new OtherChild()..foo = null
+-        ];
+-
+-      var template = '''
+-{{foo}}
+-{{#children}}{{foo}}!{{/children}}''';
+-
+-      var output = render(template, c, assumeNullNonExistingProperty: false);
+-      var expected = "child\notherchild!!";
+-
+-      expect(output, expected);
+-    });
+-
+-    test('#44 should provide a way to check for non empty lists', () {
+-      final map = {
+-        'list': [1, 2]
+-      };
+-      expect(
+-          render(
+-              '{{^list.empty}}<ul>{{#list}}<li>{{.}}</li>{{/list}}</ul>{{/list.empty}}',
+-              map),
+-          '<ul><li>1</li><li>2</li></ul>');
+-    });
+-  });
+-}
+diff -urN mustache4dart.orig/test/mustache_line_test.dart mustache4dart/test/mustache_line_test.dart
+--- mustache4dart.orig/test/mustache_line_test.dart	2018-08-07 12:36:38.952990405 -0700
++++ mustache4dart/test/mustache_line_test.dart	1969-12-31 16:00:00.000000000 -0800
+@@ -1,94 +0,0 @@
+-import 'package:test/test.dart';
+-import 'package:mustache4dart/mustache4dart.dart';
+-
+-void main() {
+-  group('mustache4dart Line', () {
+-    var del = new Delimiter('{{', '}}');
+-
+-    newToken(String s) => new Token(s, null, del, null);
+-
+-    test('Should not accept more tokens when it is full', () {
+-      var l = new Line(newToken('Random text'));
+-      l.add(newToken('Random text2'));
+-      l.add(newToken(NL));
+-      expect(() => l.add(newToken('Some more random text')), throwsStateError);
+-    });
+-
+-    test('add method should return the right line to add more stuff', () {
+-      var l = new Line(newToken('some text'));
+-      var l2 = l.add(newToken('some more text'));
+-      expect(l2, same(l));
+-      var nl = l.add(newToken(NL));
+-      expect(nl, isNot(same(l)));
+-    });
+-
+-    test('Should not be standalone if it contains a string token', () {
+-      var l = new Line(newToken('Some text!'));
+-      expect(l.standAlone, isFalse);
+-    });
+-
+-    test("Expression tokens should be considered stand alone capable", () {
+-      var l = new Line(newToken(' '));
+-      l.add(newToken(' '));
+-      l.add(newToken('{{/xxx}}'));
+-      expect(l.standAlone, isTrue);
+-    });
+-
+-    test("Last line with an expression only should be considered standalone",
+-        () {
+-      var l = new Line(newToken(' '));
+-      l = l
+-          .add(newToken(NL))
+-          .add(newToken(' '))
+-          .add(newToken(' '))
+-          .add(newToken('{{/ending}}'));
+-
+-      expect(l.standAlone, isTrue);
+-    });
+-
+-    test("Last line should not end with a new line", () {
+-      var l = new Line(newToken('#')).add(newToken('{{#a}}'));
+-      var l2 = l.add(newToken(NL)).add(newToken('/'));
+-      var l3 = l2.add(newToken(NL)).add(newToken(' ')).add(newToken(' '));
+-
+-      expect(l2, isNot(same(l)));
+-      expect(l3, isNot(same(l2)));
+-      expect(l.standAlone, isFalse);
+-      expect(l2.standAlone, isFalse);
+-      expect(l3.standAlone, isTrue);
+-    });
+-
+-    test("Stand empty line should not be considered standAlone", () {
+-      //{{#a}}\n{{one}}\n{{/a}}\n\n{{b.two}}\n
+-      var l_a = new Line(newToken('{{#a}}'));
+-      var l_one = l_a.add(newToken(NL)).add(newToken('{{one}}'));
+-      var l_a_end = l_one.add(newToken(NL)).add(newToken('{{/a}}'));
+-      var l_empty = l_a_end.add(newToken(NL));
+-      var l_b = l_empty.add(newToken(NL)).add(newToken('{{b.two}}'));
+-      l_b.add(newToken(NL));
+-
+-      expect(l_a.standAlone, isTrue);
+-      expect(l_one.standAlone, isFalse);
+-      expect(l_a_end.standAlone, isTrue);
+-
+-      //Make sure that the empty line is actual an empty line. It only contains a NL char
+-      expect(l_empty.tokens.length, 1);
+-      expect(l_empty.tokens[0], newToken(NL));
+-      expect(l_empty.standAlone, isFalse,
+-          reason:
+-              'empty line is part of the template and should not be considered as a standAlone one');
+-
+-      expect(l_b.standAlone, isFalse);
+-    });
+-
+-    test(
+-        "Should cosider partial tag followed by a newline as an standAlone line",
+-        () {
+-      var l = new Line(newToken('|'));
+-      l = l.add(newToken(CRNL));
+-      l = l.add(newToken('{{> p}}'));
+-      l.add(newToken(CRNL)).add(newToken('|'));
+-      expect(l.standAlone, isTrue);
+-    });
+-  });
+-}
+diff -urN mustache4dart.orig/test/mustache_specs_test.dart mustache4dart/test/mustache_specs_test.dart
+--- mustache4dart.orig/test/mustache_specs_test.dart	2018-08-07 12:36:38.952990405 -0700
++++ mustache4dart/test/mustache_specs_test.dart	1969-12-31 16:00:00.000000000 -0800
+@@ -1,98 +0,0 @@
+-@TestOn('vm')
+-
+-import 'dart:io';
+-import 'dart:convert';
+-import 'package:test/test.dart';
+-import 'package:mustache4dart/mustache4dart.dart';
+-
+-main() {
+-  var specs_dir = new Directory('spec/specs');
+-  specs_dir.listSync().forEach((FileSystemEntity entity) {
+-    var filename = entity.path;
+-    if (entity is File && shouldRun(filename)) {
+-      var text = entity.readAsStringSync(encoding: UTF8);
+-      _defineGroupFromFile(filename, text);
+-    }
+-  });
+-}
+-
+-_defineGroupFromFile(filename, text) {
+-  var json = JSON.decode(text);
+-  var tests = json['tests'];
+-  filename = filename.substring(filename.lastIndexOf('/') + 1);
+-  group("Specs of $filename", () {
+-    //Make sure that we reset the state of the Interpolation - Multiple Calls test
+-    //as for some reason dart can run the group more than once causing the test
+-    //to fail the second time it runs
+-    tearDown(() {
+-      _DummyCallableWithState callable =
+-          lambdas['Interpolation - Multiple Calls'];
+-      callable.reset();
+-    });
+-
+-    tests.forEach((t) {
+-      var testDescription = new StringBuffer(t['name']);
+-      testDescription.write(': ');
+-      testDescription.write(t['desc']);
+-      var template = t['template'];
+-      var data = t['data'];
+-      var templateOneline =
+-          template.replaceAll('\n', '\\n').replaceAll('\r', '\\r');
+-      var reason =
+-          new StringBuffer("Could not render right '''$templateOneline'''");
+-      var expected = t['expected'];
+-      var partials = t['partials'];
+-      var partial = (String name) {
+-        if (partials == null) {
+-          return null;
+-        }
+-        return partials[name];
+-      };
+-
+-      //swap the data.lambda with a dart real function
+-      if (data['lambda'] != null) {
+-        data['lambda'] = lambdas[t['name']];
+-      }
+-      reason.write(" with '$data'");
+-      if (partials != null) {
+-        reason.write(" and partial: $partials");
+-      }
+-      test(
+-          testDescription.toString(),
+-          () => expect(render(template, data, partial: partial), expected,
+-              reason: reason.toString()));
+-    });
+-  });
+-}
+-
+-bool shouldRun(String filename) {
+-  // filter out only .json files
+-  if (!filename.endsWith('.json')) {
+-    return false;
+-  }
+-  return true;
+-}
+-
+-//Until we'll find a way to load a piece of code dynamically,
+-//we provide the lambdas at the test here
+-class _DummyCallableWithState {
+-  var _callCounter = 0;
+-
+-  call(arg) => "${++_callCounter}";
+-
+-  reset() => _callCounter = 0;
+-}
+-
+-dynamic lambdas = {
+-  'Interpolation': (t) => 'world',
+-  'Interpolation - Expansion': (t) => '{{planet}}',
+-  'Interpolation - Alternate Delimiters': (t) => "|planet| => {{planet}}",
+-  'Interpolation - Multiple Calls': new _DummyCallableWithState(),
+-  //function() { return (g=(function(){return this})()).calls=(g.calls||0)+1 }
+-  'Escaping': (t) => '>',
+-  'Section': (txt) => txt == "{{x}}" ? "yes" : "no",
+-  'Section - Expansion': (txt) => "$txt{{planet}}$txt",
+-  'Section - Alternate Delimiters': (txt) => "$txt{{planet}} => |planet|$txt",
+-  'Section - Multiple Calls': (t) => "__${t}__",
+-  'Inverted Section': (txt) => false
+-};
+diff -urN mustache4dart.orig/test/mustache_test.dart mustache4dart/test/mustache_test.dart
+--- mustache4dart.orig/test/mustache_test.dart	2018-08-07 12:36:38.952990405 -0700
++++ mustache4dart/test/mustache_test.dart	1969-12-31 16:00:00.000000000 -0800
+@@ -1,189 +0,0 @@
+-import 'package:test/test.dart';
+-import 'package:mustache4dart/mustache4dart.dart';
+-
+-class A {
+-  String name;
+-  A(this.name);
+-}
+-
+-class B {
+-  final map = {};
+-
+-  B(List<A> list) {
+-    map['things'] = list;
+-  }
+-
+-  lambda1(String s) => "1" + s + "1";
+-
+-  lambda2(String s, {nestedContext}) => "2" + render(s, nestedContext) + "2";
+-
+-  lambda3() => "[3]";
+-
+-  lambda4({nestedContext}) => "4${nestedContext != null}4";
+-}
+-
+-void main() {
+-  group('mustache4dart tests', () {
+-    var salutTemplate = 'Hi {{name}}{{^name}}customer{{/name}}';
+-    var salut = compile(salutTemplate);
+-    test('Compiled function with existing context',
+-        () => expect(salut({'name': 'George'}), 'Hi George'));
+-    test('Compiled function with non existing context',
+-        () => expect(salut({}), 'Hi customer'));
+-    test(
+-        'Compiled function with existing context same with render',
+-        () => expect(salut({'name': 'George'}),
+-            render(salutTemplate, {'name': 'George'})));
+-    test('Compiled function with non existing context same with render',
+-        () => expect(salut({}), render(salutTemplate, {})));
+-
+-    test('Contextless one letter template',
+-        () => expect(render('!', null), '!'));
+-    test('Template with string context after closing one',
+-        () => expect(render('{{^x}}No x{{/x}}!!!', null), 'No x!!!'));
+-
+-    var map = {
+-      'a': {'one': 1},
+-      'b': {'two': 2},
+-      'c': {'three': 3}
+-    };
+-    test('Simple context test',
+-        () => expect(render('{{#a}}{{one}}{{/a}}', map), '1'));
+-    test(
+-        'Deeper context test',
+-        () => expect(
+-            render(
+-                '{{#a}}{{one}}{{#b}}-{{one}}{{two}}{{#c}}-{{one}}{{two}}{{three}}{{/c}}{{/b}}{{/a}}',
+-                map),
+-            '1-12-123'));
+-    test(
+-        'Idented rendering',
+-        () => expect(
+-            render('Yeah!\nbaby!', null, ident: '--'), '--Yeah!\n--baby!'));
+-    test('Standalone without new line',
+-        () => expect(render('#{{#a}}\n/\n  {{/a}}', map), '#\n/\n'));
+-    test(
+-        'Should render emtpy lines',
+-        () => expect(
+-            render('{{#a}}\n{{one}}\n{{/a}}\n\n{{b.two}}\n', map), '1\n\n2\n'));
+-  });
+-
+-  group('Performance tests', () {
+-    test('Compiled templates should be at least 2 times faster', () {
+-      var tmpl =
+-          '{{#a}}{{one}}{{#b}}-{{one}}{{two}}{{#c}}-{{one}}{{two}}{{three}}{{#d}}-{{one}}{{two}}{{three}}{{four}}{{#e}}{{one}}{{two}}{{three}}{{four}}{{/e}}{{/d}}{{/c}}{{/b}}{{/a}}';
+-      StringBuffer buf = new StringBuffer(tmpl);
+-      for (int i = 0; i < 10; i++) {
+-        buf.write(
+-            'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd');
+-        buf.write(tmpl);
+-      }
+-      tmpl = buf.toString();
+-
+-      var map = {
+-        'a': {'one': 1},
+-        'b': {'two': 2},
+-        'c': {'three': 3},
+-        'd': {'four': 4},
+-        'e': false
+-      };
+-      var ctmpl = compile(tmpl);
+-
+-      var warmup = duration(100, () => "${ctmpl(map)}--${render(tmpl, map)}");
+-      print(
+-          "Warmup rendering of template with length ${tmpl.length} took ${warmup}millis");
+-
+-      var d = duration(100, () => render(tmpl, map));
+-      print("100 iterations of uncompiled rendering took ${d}millis");
+-
+-      var d2 = duration(100, () => ctmpl(map));
+-      print("100 iterations of compiled rendering tool ${d2}millis");
+-      expect(d2 < (d / 2), isTrue);
+-    });
+-  }, skip: "Performance should not be part of unittest");
+-
+-  group('mustache4dart enhancements', () {
+-    test('Throw exception on unknown tag', () {
+-      try {
+-        render('Hi {{name}}', {'namee': 'George'});
+-      } catch (e) {
+-        expect(e, "Could not find 'name' property in {namee: George}}");
+-      }
+-    });
+-
+-    test('Throw exception on unknown start tag', () {
+-      try {
+-        render('Hi {{#name}}man!{{/name}}', {'namee': 'George'});
+-      } catch (e) {
+-        expect(e, "Could not find 'name' property in {namee: George}}");
+-      }
+-    });
+-
+-    group('Lambdas with nested context (#39)', () {
+-      test(
+-          'Provide lambdas as a dynamic (String s, {nestedContext}) function within a map',
+-          () {
+-        var context = {
+-          'map': {
+-            'things': [new A('a'), new A('b')]
+-          },
+-          'lambda': (String s, {nestedContext}) =>
+-              "[" + render(s, nestedContext) + "]"
+-        };
+-        var template = '''
+-{{#map.things}}
+-{{#lambda}}{{name}}{{/lambda}}|
+-{{/map.things}}
+-''';
+-        expect(render(template, context), "[a]|\n[b]|\n");
+-      });
+-
+-      test('Provide lambdas as a method(String s) within a class', () {
+-        var context = new B([new A('a'), new A('b')]);
+-
+-        var template =
+-            '''{{#map.things}}{{#lambda1}}{{name}}{{/lambda1}}|{{/map.things}}''';
+-
+-        expect(render(template, context), "1a1|1b1|");
+-      });
+-
+-      test(
+-          'Provide lambdas as a method(String s, {nestedContext}) within a class',
+-          () {
+-        var context = new B([new A('a'), new A('b')]);
+-
+-        var template =
+-            '''{{#map.things}}{{#lambda2}}{{name}}{{/lambda2}}|{{/map.things}}''';
+-
+-        expect(render(template, context), "2a2|2b2|");
+-      });
+-
+-      test('Provide lambdas as a method() within a class', () {
+-        final context = new B([new A('a'), new A('b')]);
+-
+-        final template =
+-            '''{{#map.things}}{{#lambda3}}{{name}}{{/lambda3}}|{{/map.things}}''';
+-
+-        expect(render(template, context), "[3]|[3]|");
+-      });
+-
+-      test('Provide lambdas as a method({nestedContext}) within a class', () {
+-        var context = new B([new A('a'), new A('b')]);
+-
+-        var template =
+-            '''{{#map.things}}{{#lambda4}}{{name}}{{/lambda4}}|{{/map.things}}''';
+-
+-        expect(render(template, context), "4true4|4true4|");
+-      });
+-    }, onPlatform: {'js': new Skip("Broken mirrors, should be investigated")});
+-  });
+-}
+-
+-num duration(int reps, f()) {
+-  var start = new DateTime.now();
+-  for (int i = 0; i < reps; i++) {
+-    f();
+-  }
+-  var end = new DateTime.now();
+-  return end.millisecondsSinceEpoch - start.millisecondsSinceEpoch;
+-}
