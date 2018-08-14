@@ -324,8 +324,10 @@ void main() {
       });
 
       test('Verify pragma is hidden in docs', () {
-        Class pragmaModelElement = sdkAsPackageGraph.specialClasses[SpecialClass.pragma];
-        Class HasPragma = fakeLibrary.allClasses.firstWhere((Class c) => c.name == 'HasPragma');
+        Class pragmaModelElement =
+            sdkAsPackageGraph.specialClasses[SpecialClass.pragma];
+        Class HasPragma = fakeLibrary.allClasses
+            .firstWhere((Class c) => c.name == 'HasPragma');
         expect(pragmaModelElement.name, equals('pragma'));
         expect(HasPragma.annotations, isEmpty);
       });

@@ -69,8 +69,9 @@ final List<_SpecialClassDefinition> _specialClassDefinitions = [
   new _SpecialClassDefinition(SpecialClass.interceptor, 'Interceptor',
       '_interceptors', 'dart:_interceptors',
       required: false),
-  new _SpecialClassDefinition(SpecialClass.pragma, 'pragma', 'dart.core',
-      'dart:core', required: false),
+  new _SpecialClassDefinition(
+      SpecialClass.pragma, 'pragma', 'dart.core', 'dart:core',
+      required: false),
 ];
 
 /// Given a SDK, resolve URIs for the libraries containing our special

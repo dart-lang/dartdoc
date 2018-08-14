@@ -2737,22 +2737,29 @@ abstract class ModelElement extends Canonicalization
 
       ClassElement annotationClassElement;
       if (annotationElement is ExecutableElement) {
-        annotationElement = (annotationElement as ExecutableElement).returnType.element as ClassElement;
+        annotationElement = (annotationElement as ExecutableElement)
+            .returnType
+            .element as ClassElement;
       }
       if (annotationElement is ClassElement) {
         annotationClassElement = annotationElement;
       }
-      ModelElement annotationModelElement = packageGraph.findCanonicalModelElementFor(annotationElement);
+      ModelElement annotationModelElement =
+          packageGraph.findCanonicalModelElementFor(annotationElement);
       // annotationElement can be null if the element can't be resolved.
-      Class annotationClass = packageGraph.findCanonicalModelElementFor(annotationClassElement) as Class;
+      Class annotationClass = packageGraph
+          .findCanonicalModelElementFor(annotationClassElement) as Class;
       if (annotationClass == null && annotationElement != null) {
-        annotationClass = new ModelElement.fromElement(annotationClassElement, packageGraph) as Class;
+        annotationClass =
+            new ModelElement.fromElement(annotationClassElement, packageGraph)
+                as Class;
       }
       // Some annotations are intended to be invisible (@pragma)
-      if (annotationClass == null || !packageGraph.invisibleAnnotations.contains(annotationClass)) {
+      if (annotationClass == null ||
+          !packageGraph.invisibleAnnotations.contains(annotationClass)) {
         if (annotationModelElement != null) {
-          annotation = annotation.replaceFirst(annotationModelElement.name,
-              annotationModelElement.linkedName);
+          annotation = annotation.replaceFirst(
+              annotationModelElement.name, annotationModelElement.linkedName);
         }
         annotationStrings.add(annotation);
       }
@@ -4530,6 +4537,7 @@ class PackageGraph {
   }
 
   Set<Class> _inheritThrough;
+
   /// Return the set of [Class]es objects should inherit through if they
   /// show up in the inheritance chain.  Do not call before interceptorElement is
   /// found.  Add classes here if they are similar to Interceptor in that they
@@ -4544,6 +4552,7 @@ class PackageGraph {
   }
 
   Set<Class> _invisibleAnnotations;
+
   /// Returns the set of [Class] objects that are similar to pragma
   /// in that we should never count them as documentable annotations.
   Set<Class> get invisibleAnnotations {

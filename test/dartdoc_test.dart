@@ -86,11 +86,11 @@ void main() {
       expect(meta.documentedWhere, equals(DocumentLocation.remote));
       expect(
           useSomethingInAnotherPackage.modelType.linkedName,
-          startsWith('<a href=\"https://pub.dartlang.org/documentation/meta/1.1.6/meta/Required-class.html\">Required</a>'));
+          startsWith(
+              '<a href=\"https://pub.dartlang.org/documentation/meta/1.1.6/meta/Required-class.html\">Required</a>'));
       RegExp stringLink = new RegExp(
           'https://api.dartlang.org/(dev|stable|edge|be)/${Platform.version.split(' ').first}/dart-core/String-class.html">String</a>');
-      expect(useSomethingInTheSdk.modelType.linkedName,
-          contains(stringLink));
+      expect(useSomethingInTheSdk.modelType.linkedName, contains(stringLink));
     });
 
     test('generate docs for ${pathLib.basename(testPackageDir.path)} works',
