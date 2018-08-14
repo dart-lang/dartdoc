@@ -2729,16 +2729,25 @@ abstract class ModelElement extends Canonicalization
 
   /// Returns linked annotations from a given metadata set, with escaping.
   List<String> annotationsFromMetadata(List<ElementAnnotation> md) {
-    if (md == null) return <String>[];
-    return md.map((ElementAnnotation a) {
+    List<String> annotationStrings = [];
+    if (md == null) return annotationStrings;
+    for (ElementAnnotation a in md) {
       String annotation = (const HtmlEscape()).convert(a.toSource());
       // a.element can be null if the element can't be resolved.
-      var me = packageGraph
-          .findCanonicalModelElementFor(a.element?.enclosingElement);
-      if (me != null)
-        annotation = annotation.replaceFirst(me.name, me.linkedName);
-      return annotation;
-    }).toList(growable: false);
+      Class annotationClass = packageGraph.findCanonicalModelElementFor(a.element?.enclosingElement) as Class;
+      if (annotationClass == null) {
+        annotationClass = new ModelElement.fromElement(a.element?.enclosingElement, packageGraph) as Class;
+      }
+      // Some annotations are intended to be invisible (@pragma)
+      if (annotationClass == null || !packageGraph.invisibleAnnotations.contains(annotationClass)) {
+        if (annotationClass != null) {
+          annotation = annotation.replaceFirst(annotationClass.name,
+              annotationClass.linkedName);
+        }
+        annotationStrings.add(annotation);
+      }
+    }
+    return annotationStrings;
   }
 
   bool _isPublic;
@@ -4510,18 +4519,29 @@ class PackageGraph {
     return _localPublicLibraries;
   }
 
-  // Return the set of [Class]es objects should inherit through if they
-  // show up in the inheritance chain.  Do not call before interceptorElement is
-  // found.  Add classes here if they are similar to Interceptor in that they
-  // are to be ignored even when they are the implementors of [Inheritable]s,
-  // and the class these inherit from should instead claim implementation.
   Set<Class> _inheritThrough;
+  /// Return the set of [Class]es objects should inherit through if they
+  /// show up in the inheritance chain.  Do not call before interceptorElement is
+  /// found.  Add classes here if they are similar to Interceptor in that they
+  /// are to be ignored even when they are the implementors of [Inheritable]s,
+  /// and the class these inherit from should instead claim implementation.
   Set<Class> get inheritThrough {
     if (_inheritThrough == null) {
       _inheritThrough = new Set();
       _inheritThrough.add(specialClasses[SpecialClass.interceptor]);
     }
     return _inheritThrough;
+  }
+
+  Set<Class> _invisibleAnnotations;
+  /// Returns the set of [Class] objects that are similar to pragma
+  /// in that we should never count them as documentable annotations.
+  Set<Class> get invisibleAnnotations {
+    if (_invisibleAnnotations == null) {
+      _invisibleAnnotations = new Set();
+      _invisibleAnnotations.add(specialClasses[SpecialClass.pragma]);
+    }
+    return _invisibleAnnotations;
   }
 
   /// Looks up some [Library] that is reexporting this [Element]; not
@@ -5007,8 +5027,10 @@ class Package extends LibraryContainer
             // The full version string of the package.
             case 'v':
               return packageMeta.version;
+            default:
+              assert(false, 'Unsupported case: ${m.group(1)}');
+              return null;
           }
-          ;
         });
         if (!_baseHref.endsWith('/')) _baseHref = '${_baseHref}/';
       } else {

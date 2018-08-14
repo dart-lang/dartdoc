@@ -49,7 +49,7 @@ library fake;
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:tuple/tuple.dart';
+import 'package:dartdoc/src/tuple.dart';
 
 import 'css.dart' as css;
 import 'example.dart';
@@ -90,6 +90,10 @@ class HasGenerics<X, Y, Z> {
   /// Converts itself to a map.
   Map<X, Y> convertToMap() => null;
 }
+
+/// This class uses a pragma annotation.
+@pragma('Hello world')
+class HasPragma {}
 
 /// This is a class with a table.
 ///
