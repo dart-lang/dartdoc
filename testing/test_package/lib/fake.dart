@@ -48,9 +48,7 @@ library fake;
 
 import 'dart:async';
 import 'dart:collection';
-
-import 'package:dartdoc/src/tuple.dart';
-
+import 'package:meta/meta.dart' show Required;
 import 'css.dart' as css;
 import 'example.dart';
 import 'two_exports.dart' show BaseClass;
@@ -134,7 +132,8 @@ dynamic get mustGetThis => null;
 
 Map<dynamic, String> mapWithDynamicKeys = {};
 
-Tuple2<String, String> useSomethingInAnotherPackage;
+Required useSomethingInAnotherPackage;
+String useSomethingInTheSdk;
 
 /// Useful for annotations.
 class Annotation {

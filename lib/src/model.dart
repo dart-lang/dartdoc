@@ -2733,16 +2733,26 @@ abstract class ModelElement extends Canonicalization
     if (md == null) return annotationStrings;
     for (ElementAnnotation a in md) {
       String annotation = (const HtmlEscape()).convert(a.toSource());
-      // a.element can be null if the element can't be resolved.
-      Class annotationClass = packageGraph.findCanonicalModelElementFor(a.element?.enclosingElement) as Class;
-      if (annotationClass == null) {
-        annotationClass = new ModelElement.fromElement(a.element?.enclosingElement, packageGraph) as Class;
+      Element annotationElement = a.element;
+
+      ClassElement annotationClassElement;
+      if (annotationElement is ExecutableElement) {
+        annotationElement = (annotationElement as ExecutableElement).returnType.element as ClassElement;
+      }
+      if (annotationElement is ClassElement) {
+        annotationClassElement = annotationElement;
+      }
+      ModelElement annotationModelElement = packageGraph.findCanonicalModelElementFor(annotationElement);
+      // annotationElement can be null if the element can't be resolved.
+      Class annotationClass = packageGraph.findCanonicalModelElementFor(annotationClassElement) as Class;
+      if (annotationClass == null && annotationElement != null) {
+        annotationClass = new ModelElement.fromElement(annotationClassElement, packageGraph) as Class;
       }
       // Some annotations are intended to be invisible (@pragma)
       if (annotationClass == null || !packageGraph.invisibleAnnotations.contains(annotationClass)) {
-        if (annotationClass != null) {
-          annotation = annotation.replaceFirst(annotationClass.name,
-              annotationClass.linkedName);
+        if (annotationModelElement != null) {
+          annotation = annotation.replaceFirst(annotationModelElement.name,
+              annotationModelElement.linkedName);
         }
         annotationStrings.add(annotation);
       }
