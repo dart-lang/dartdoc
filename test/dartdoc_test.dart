@@ -74,27 +74,23 @@ void main() {
           await buildDartdoc(['--link-to-remote'], testPackageDir);
       DartdocResults results = await dartdoc.generateDocs();
       PackageGraph p = results.packageGraph;
-      Package tuple = p.publicPackages.firstWhere((p) => p.name == 'tuple');
+      Package meta = p.publicPackages.firstWhere((p) => p.name == 'meta');
       TopLevelVariable useSomethingInAnotherPackage = p.publicLibraries
           .firstWhere((l) => l.name == 'fake')
           .properties
           .firstWhere((p) => p.name == 'useSomethingInAnotherPackage');
-      expect(tuple.documentedWhere, equals(DocumentLocation.remote));
-      expect(
-          (useSomethingInAnotherPackage.modelType.typeArguments.first
-                  as ParameterizedElementType)
-              .element
-              .package
-              .documentedWhere,
-          equals(DocumentLocation.remote));
+      TopLevelVariable useSomethingInTheSdk = p.publicLibraries
+          .firstWhere((l) => l.name == 'fake')
+          .properties
+          .firstWhere((p) => p.name == 'useSomethingInTheSdk');
+      expect(meta.documentedWhere, equals(DocumentLocation.remote));
       expect(
           useSomethingInAnotherPackage.modelType.linkedName,
           startsWith(
-              '<a href="https://pub.dartlang.org/documentation/tuple/1.0.2/tuple/Tuple2-class.html">Tuple2</a>'));
+              '<a href=\"https://pub.dartlang.org/documentation/meta/1.1.6/meta/Required-class.html\">Required</a>'));
       RegExp stringLink = new RegExp(
           'https://api.dartlang.org/(dev|stable|edge|be)/${Platform.version.split(' ').first}/dart-core/String-class.html">String</a>');
-      expect(useSomethingInAnotherPackage.modelType.linkedName,
-          contains(stringLink));
+      expect(useSomethingInTheSdk.modelType.linkedName, contains(stringLink));
     });
 
     test('generate docs for ${pathLib.basename(testPackageDir.path)} works',

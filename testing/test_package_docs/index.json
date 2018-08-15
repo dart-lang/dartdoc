@@ -5707,6 +5707,83 @@
   }
  },
  {
+  "name": "HasPragma",
+  "qualifiedName": "fake.HasPragma",
+  "href": "fake/HasPragma-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "HasPragma",
+  "qualifiedName": "fake.HasPragma",
+  "href": "fake/HasPragma/HasPragma.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasPragma",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.HasPragma.==",
+  "href": "fake/HasPragma/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasPragma",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.HasPragma.hashCode",
+  "href": "fake/HasPragma/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasPragma",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.HasPragma.noSuchMethod",
+  "href": "fake/HasPragma/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasPragma",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.HasPragma.runtimeType",
+  "href": "fake/HasPragma/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasPragma",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.HasPragma.toString",
+  "href": "fake/HasPragma/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasPragma",
+   "type": "class"
+  }
+ },
+ {
   "name": "ImplementingThingy",
   "qualifiedName": "fake.ImplementingThingy",
   "href": "fake/ImplementingThingy-class.html",
@@ -8735,6 +8812,17 @@
   "name": "useSomethingInAnotherPackage",
   "qualifiedName": "fake.useSomethingInAnotherPackage",
   "href": "fake/useSomethingInAnotherPackage.html",
+  "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "useSomethingInTheSdk",
+  "qualifiedName": "fake.useSomethingInTheSdk",
+  "href": "fake/useSomethingInTheSdk.html",
   "type": "top-level property",
   "overriddenDepth": 0,
   "enclosedBy": {
