@@ -10,6 +10,10 @@ env:
   - DARTDOC_BOT=sdk-docs
 script: ./tool/travis.sh
 
+os:
+  - osx
+  - linux
+
 branches:
   only: [master]
 cache:
