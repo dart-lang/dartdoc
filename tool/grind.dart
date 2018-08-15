@@ -896,7 +896,7 @@ updateTestPackageDocs() async {
         '--example-path-prefix',
         'examples',
         '--exclude-packages',
-        'Dart,matcher,meta,path,stack_trace,tuple,quiver',
+        'Dart,matcher,meta,path,stack_trace,quiver',
         '--hide-sdk-text',
         '--no-include-source',
         '--output',

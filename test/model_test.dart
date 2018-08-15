@@ -227,7 +227,7 @@ void main() {
       });
 
       test('multiple packages, sorted default', () {
-        expect(ginormousPackageGraph.localPackages, hasLength(9));
+        expect(ginormousPackageGraph.localPackages, hasLength(4));
         expect(ginormousPackageGraph.localPackages.first.name,
             equals('test_package'));
       });
@@ -321,6 +321,15 @@ void main() {
             EventTarget.publicSuperChainReversed
                 .any((et) => et.name == 'Interceptor'),
             isFalse);
+      });
+
+      test('Verify pragma is hidden in docs', () {
+        Class pragmaModelElement =
+            sdkAsPackageGraph.specialClasses[SpecialClass.pragma];
+        Class HasPragma = fakeLibrary.allClasses
+            .firstWhere((Class c) => c.name == 'HasPragma');
+        expect(pragmaModelElement.name, equals('pragma'));
+        expect(HasPragma.annotations, isEmpty);
       });
     });
   });

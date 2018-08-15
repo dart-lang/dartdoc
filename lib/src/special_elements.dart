@@ -20,6 +20,9 @@ enum SpecialClass {
 
   /// From dart:_interceptors, Interceptor
   interceptor,
+
+  /// From dart:core, pragma
+  pragma,
 }
 
 /// A declaration of a special [Class] and how to find it.
@@ -65,6 +68,9 @@ final List<_SpecialClassDefinition> _specialClassDefinitions = [
       SpecialClass.object, 'Object', 'dart.core', 'dart:core'),
   new _SpecialClassDefinition(SpecialClass.interceptor, 'Interceptor',
       '_interceptors', 'dart:_interceptors',
+      required: false),
+  new _SpecialClassDefinition(
+      SpecialClass.pragma, 'pragma', 'dart.core', 'dart:core',
       required: false),
 ];
 
