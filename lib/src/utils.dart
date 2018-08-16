@@ -36,6 +36,7 @@ String stripCommonWhitespace(String str) {
 }
 
 String stripComments(String str) {
+  bool cStyle = false;
   if (str == null) return null;
   StringBuffer buf = new StringBuffer();
 
@@ -53,15 +54,16 @@ String stripComments(String str) {
   } else {
     if (str.startsWith('/**')) {
       str = str.substring(3);
+      cStyle = true;
     }
     if (str.endsWith('*/')) {
       str = str.substring(0, str.length - 2);
     }
     str = stripCommonWhitespace(str);
     for (String line in str.split('\n')) {
-      if (line.startsWith('* ')) {
+      if (cStyle && line.startsWith('* ')) {
         buf.write('${line.substring(2)}\n');
-      } else if (line.startsWith('*')) {
+      } else if (cStyle && line.startsWith('*')) {
         buf.write('${line.substring(1)}\n');
       } else {
         buf.write('$line\n');
