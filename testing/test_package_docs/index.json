@@ -8413,6 +8413,17 @@
   }
  },
  {
+  "name": "bulletDoced",
+  "qualifiedName": "fake.bulletDoced",
+  "href": "fake/bulletDoced-constant.html",
+  "type": "top-level constant",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "complicatedReturn",
   "qualifiedName": "fake.complicatedReturn",
   "href": "fake/complicatedReturn.html",
