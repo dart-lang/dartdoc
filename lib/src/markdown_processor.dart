@@ -142,9 +142,9 @@ final RegExp operatorPrefix = new RegExp(r'^operator[ ]*');
 final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.element);
 
 final List<md.InlineSyntax> _markdown_syntaxes = [
-  new _AllowIsolatedBackslashSyntax(),
   new _InlineCodeSyntax(),
-  new _AutolinkWithoutScheme()
+  new _AutolinkWithoutScheme(),
+  new _AllowIsolatedBackslashSyntax(),
 ]..addAll(md.ExtensionSet.gitHubFlavored.inlineSyntaxes);
 
 final List<md.BlockSyntax> _markdown_block_syntaxes = []
