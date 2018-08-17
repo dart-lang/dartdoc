@@ -718,6 +718,7 @@ void main() {
   group('Docs as HTML', () {
     Class Apple, B, superAwesomeClass, foo2;
     TopLevelVariable incorrectDocReferenceFromEx;
+    TopLevelVariable bulletDoced;
     ModelFunction thisIsAsync;
     ModelFunction topLevelFunction;
 
@@ -738,7 +739,8 @@ void main() {
       Apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       specialList =
           fakeLibrary.classes.firstWhere((c) => c.name == 'SpecialList');
-
+      bulletDoced =
+          fakeLibrary.constants.firstWhere((c) => c.name == 'bulletDoced');
       topLevelFunction =
           fakeLibrary.functions.firstWhere((f) => f.name == 'topLevelFunction');
       thisIsAsync =
@@ -1083,6 +1085,10 @@ void main() {
       Iterable<Match> matches = new RegExp('In the super class')
           .allMatches(powers.documentationAsHtml);
       expect(matches, hasLength(1));
+    });
+
+    test('bullet points work in top level variables', () {
+      expect(bulletDoced.documentationAsHtml, contains('<li>'));
     });
   });
 
