@@ -733,6 +733,10 @@ class BaseForDocComments {
   /// Reference to a bracket operator within this class [operator []] xxx
   ///
   /// Reference to a bracket operator in another class [SpecialList.operator []] xxx
+  ///
+  /// Reference containing a type parameter [ExtraSpecialList<Object>]
+  ///
+  /// Reference to something that doesn't exist containing a type parameter [ThisIsNotHereNoWay<MyType>]
   String doAwesomeStuff(int value) => null;
 
   void anotherMethod() {}

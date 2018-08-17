@@ -925,6 +925,18 @@ void main() {
             contains(
                 '<a href="fake/NAME_SINGLEUNDERSCORE-constant.html">NAME_SINGLEUNDERSCORE</a>'));
       });
+
+      test('correctly escapes type parameters in links', () {
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="fake/ExtraSpecialList-class.html">ExtraSpecialList&lt;Object&gt;</a>'));
+      });
+
+      test('correctly escapes type parameters in broken links', () {
+        expect(docsAsHtml,
+            contains('<code>ThisIsNotHereNoWay&lt;MyType&gt;</code>'));
+      });
     });
 
     test('multi-underscore names in brackets do not become italicized', () {

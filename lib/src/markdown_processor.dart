@@ -154,9 +154,8 @@ final RegExp _hide_schemes = new RegExp('^(http|https)://');
 
 class MatchingLinkResult {
   final ModelElement element;
-  final String label;
   final bool warn;
-  MatchingLinkResult(this.element, this.label, {this.warn: true});
+  MatchingLinkResult(this.element, {this.warn: true});
 }
 
 class IterableBlockParser extends md.BlockParser {
@@ -244,13 +243,12 @@ MatchingLinkResult _getMatchingLinkElement(
   // By debugging inspection, it seems correct to not warn when we don't have
   // CommentReferences; there's actually nothing that needs resolving in
   // that case.
-  if (commentRefs == null)
-    return new MatchingLinkResult(null, null, warn: false);
+  if (commentRefs == null) return new MatchingLinkResult(null, warn: false);
 
   if (!codeRef.contains(isConstructor) &&
       codeRef.contains(notARealDocReference)) {
     // Don't waste our time on things we won't ever find.
-    return new MatchingLinkResult(null, null, warn: false);
+    return new MatchingLinkResult(null, warn: false);
   }
 
   ModelElement refModelElement;
@@ -283,12 +281,12 @@ MatchingLinkResult _getMatchingLinkElement(
     // TODO(jcollins-g): remove squelching of non-canonical warnings here
     //                   once we no longer process full markdown for
     //                   oneLineDocs (#1417)
-    return new MatchingLinkResult(null, null, warn: element.isCanonical);
+    return new MatchingLinkResult(null, warn: element.isCanonical);
   }
 
   // Ignore all parameters.
   if (refModelElement is Parameter || refModelElement is TypeParameter)
-    return new MatchingLinkResult(null, null, warn: false);
+    return new MatchingLinkResult(null, warn: false);
 
   // There have been places in the code which helpfully cache entities
   // regardless of what package they are associated with.  This assert
@@ -296,7 +294,7 @@ MatchingLinkResult _getMatchingLinkElement(
   assert(refModelElement == null ||
       refModelElement.packageGraph == element.packageGraph);
   if (refModelElement != null) {
-    return new MatchingLinkResult(refModelElement, null);
+    return new MatchingLinkResult(refModelElement);
   }
   // From this point on, we haven't been able to find a canonical ModelElement.
   if (!refModelElement.isCanonical) {
@@ -306,7 +304,7 @@ MatchingLinkResult _getMatchingLinkElement(
     }
     // Don't warn about doc references because that's covered by the no
     // canonical library found message.
-    return new MatchingLinkResult(null, null, warn: false);
+    return new MatchingLinkResult(null, warn: false);
   }
   // We should never get here unless there's a bug in findCanonicalModelElementFor.
   // findCanonicalModelElementFor(searchElement, preferredClass: preferredClass)
@@ -314,7 +312,7 @@ MatchingLinkResult _getMatchingLinkElement(
   // would return a non-canonical element.  However, outside of checked mode,
   // at least we have a canonical element, so proceed.
   assert(false);
-  return new MatchingLinkResult(refModelElement, null);
+  return new MatchingLinkResult(refModelElement);
 }
 
 /// Given a set of commentRefs, return the one whose name matches the codeRef.
@@ -725,7 +723,6 @@ String _linkDocReference(
   MatchingLinkResult result;
   result = _getMatchingLinkElement(codeRef, warnable, commentRefs);
   final ModelElement linkedElement = result.element;
-  final String label = result.label ?? codeRef;
   if (linkedElement != null) {
     var classContent = '';
     if (linkedElement.isDeprecated) {
@@ -734,16 +731,16 @@ String _linkDocReference(
     // This would be linkedElement.linkedName, but link bodies are slightly
     // different for doc references.
     if (linkedElement.href == null) {
-      return '<code>${htmlEscape.convert(label)}</code>';
+      return '<code>${htmlEscape.convert(codeRef)}</code>';
     } else {
-      return '<a ${classContent}href="${linkedElement.href}">$label</a>';
+      return '<a ${classContent}href="${linkedElement.href}">${htmlEscape.convert(codeRef)}</a>';
     }
   } else {
     if (result.warn) {
       warnable.warn(PackageWarning.unresolvedDocReference,
           message: codeRef, referredFrom: warnable.documentationFrom);
     }
-    return '<code>${htmlEscape.convert(label)}</code>';
+    return '<code>${htmlEscape.convert(codeRef)}</code>';
   }
 }
 
