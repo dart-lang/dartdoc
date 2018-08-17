@@ -951,8 +951,6 @@ class Documentation {
     return _commentRefs;
   }
 
-  String get raw => _element.documentation;
-
   void _renderHtmlForDartdoc(bool processAllDocs) {
     Tuple3<String, String, bool> renderResults =
         _renderMarkdownToHtml(processAllDocs);

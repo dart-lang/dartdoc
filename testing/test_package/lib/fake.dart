@@ -89,6 +89,17 @@ class HasGenerics<X, Y, Z> {
   Map<X, Y> convertToMap() => null;
 }
 
+/// Bullet point documentation.
+///
+/// This top level constant has bullet points.
+///
+/// * A bullet point.
+/// * Another even better bullet point.
+/// * A bullet point that wraps onto a second line, without creating a new
+///   bullet point or paragraph.
+/// * A fourth bullet point.
+const String bulletDoced = 'Foo bar baz';
+
 /// This class uses a pragma annotation.
 @pragma('Hello world')
 class HasPragma {}

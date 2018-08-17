@@ -35,6 +35,13 @@ void main() {
       expect(stripComments('///One line.'), equals('One line.'));
     });
 
+    test('multiple runs with multiline comments', () {
+      expect(stripComments(stripComments('''
+          /// A line.
+          /// * An asterisk
+      ''')), equals('A line.\n* An asterisk'));
+    });
+
     test('multi-line comment', () {
       comment = '''
         /// First line.
@@ -93,6 +100,15 @@ void main() {
   });
 
   group('/**-style', () {
+    test('multiple runs with cstyle comments', () {
+      expect(stripComments(stripComments('''
+          /**
+           * A line.
+           * * An asterisk
+           */
+      ''')), equals('A line.\n* An asterisk'));
+    });
+
     test('one-line comment', () {
       expect(stripComments('/** One line. */'), equals('One line.'));
     });
