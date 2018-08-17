@@ -142,6 +142,7 @@ final RegExp operatorPrefix = new RegExp(r'^operator[ ]*');
 final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.element);
 
 final List<md.InlineSyntax> _markdown_syntaxes = [
+  new _AllowIsolatedBackslashSyntax(),
   new _InlineCodeSyntax(),
   new _AutolinkWithoutScheme()
 ]..addAll(md.ExtensionSet.gitHubFlavored.inlineSyntaxes);
@@ -981,6 +982,20 @@ class Documentation {
         linkResolver: _linkResolver);
     List<String> lines = LineSplitter.split(text).toList();
     return document.renderLinesToHtml(lines, processFullDocs);
+  }
+}
+
+/// Allow backslashes not part of Markdown syntax to pass through.
+class _AllowIsolatedBackslashSyntax extends md.InlineSyntax {
+  // Modified from [md.EscapeSyntax] for a negative match, or a match at
+  // the end of line or string.
+  _AllowIsolatedBackslashSyntax()
+      : super(r'''\\([^!"#$%&'()*+,\-./:;<=>?@\[\\\]^_`{|}~]|\n|$)''');
+
+  bool onMatch(md.InlineParser parser, Match match) {
+    // Insert the text unmodified.
+    parser.addNode(new md.Text(match[0]));
+    return true;
   }
 }
 
