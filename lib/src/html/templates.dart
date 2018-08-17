@@ -83,6 +83,7 @@ class Templates {
   final TemplateRenderer enumTemplate;
   final TemplateRenderer constantTemplate;
   final TemplateRenderer constructorTemplate;
+  final TemplateRenderer errorTemplate;
   final TemplateRenderer functionTemplate;
   final TemplateRenderer indexTemplate;
   final TemplateRenderer libraryTemplate;
@@ -119,6 +120,7 @@ class Templates {
     var functionTemplate = await _loadTemplate('function.html');
     var methodTemplate = await _loadTemplate('method.html');
     var constructorTemplate = await _loadTemplate('constructor.html');
+    var errorTemplate = await _loadTemplate('404error.html');
     var propertyTemplate = await _loadTemplate('property.html');
     var constantTemplate = await _loadTemplate('constant.html');
     var topLevelConstantTemplate =
@@ -135,6 +137,7 @@ class Templates {
         functionTemplate,
         methodTemplate,
         constructorTemplate,
+        errorTemplate,
         propertyTemplate,
         constantTemplate,
         topLevelConstantTemplate,
@@ -150,6 +153,7 @@ class Templates {
       this.functionTemplate,
       this.methodTemplate,
       this.constructorTemplate,
+      this.errorTemplate,
       this.propertyTemplate,
       this.constantTemplate,
       this.topLevelConstantTemplate,
