@@ -4357,6 +4357,9 @@ class PackageGraph {
       case PackageWarning.deprecated:
         warningMessage = 'deprecated dartdoc usage: ${message}';
         break;
+      case PackageWarning.unresolvedExport:
+        warningMessage = 'unresolved export uri: ${message}';
+        break;
     }
 
     List<String> messageParts = [warningMessage];
@@ -4425,11 +4428,29 @@ class PackageGraph {
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
   void _tagReexportsFor(
-      final Library tll, final LibraryElement libraryElement) {
+      final Library topLevelLibrary,
+      final LibraryElement libraryElement,
+      List<ExportElement> exportedElements) {
+    if (libraryElement == null) {
+      // The first call to _tagReexportFor should not have a null libraryElement.
+      assert(exportedElements.isNotEmpty);
+      warnOnElement(
+          findOrCreateLibraryFor(exportedElements.last.enclosingElement),
+          PackageWarning.unresolvedExport,
+          //message: exportedElements.map<String>((ExportElement e) => '"${e.uri}"').join('  '),
+          message: '"${exportedElements.last.uri}"',
+          referredFrom: <Locatable>[topLevelLibrary]);
+      return;
+    }
     _libraryElementReexportedBy.putIfAbsent(libraryElement, () => new Set());
-    _libraryElementReexportedBy[libraryElement].add(tll);
+    _libraryElementReexportedBy[libraryElement].add(topLevelLibrary);
     for (ExportElement exportedElement in libraryElement.exports) {
-      _tagReexportsFor(tll, exportedElement.exportedLibrary);
+      _tagReexportsFor(
+          topLevelLibrary,
+          exportedElement.exportedLibrary,
+          <ExportElement>[]
+            ..addAll(exportedElements)
+            ..add(exportedElement));
     }
   }
 
@@ -4440,7 +4461,7 @@ class PackageGraph {
       _lastSizeOfAllLibraries = allLibraries.keys.length;
       _libraryElementReexportedBy = new Map<LibraryElement, Set<Library>>();
       for (Library library in publicLibraries) {
-        _tagReexportsFor(library, library.element);
+        _tagReexportsFor(library, library.element, <ExportElement>[]);
       }
     }
     return _libraryElementReexportedBy;
@@ -5674,6 +5695,7 @@ class PackageBuilder {
       for (PackageWarning kind in PackageWarning.values) {
         switch (kind) {
           case PackageWarning.invalidParameter:
+          case PackageWarning.unresolvedExport:
             warningOptions.error(kind);
             break;
           default:
