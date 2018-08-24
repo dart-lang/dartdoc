@@ -21,8 +21,13 @@ final _nameStatusLineRegexp = new RegExp(r'(\w)\t(.+)');
 Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location.sourceUri;
 
-String get _testPackageDocsPath =>
-    pathLib.fromUri(_currentFileUri.resolve('../testing/test_package_docs'));
+String get _testPackageDocsPath {
+  if (Platform.version.split(' ').first.contains('-')) {
+    return pathLib.fromUri(_currentFileUri.resolve('../testing/test_package_docs_dev'));
+  } else {
+    return pathLib.fromUri(_currentFileUri.resolve('../testing/test_package_docs'));
+  }
+}
 
 String get _testPackagePath =>
     pathLib.fromUri(_currentFileUri.resolve('../testing/test_package'));
