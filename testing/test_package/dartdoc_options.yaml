@@ -7,3 +7,5 @@ dartdoc:
     Unreal:
       markdown: "Unreal.md"
     Real Libraries:
+  tools:
+    drill: "bin/drill.dart"

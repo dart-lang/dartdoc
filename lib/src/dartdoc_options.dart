@@ -158,9 +158,10 @@ class _OptionValueWithContext<T> {
       return pathContext.canonicalize(resolveTildePath(value as String)) as T;
     } else if (value is Map<String, String>) {
       return (value as Map<String, String>)
-          .map((String mapKey, String mapValue) => new MapEntry<String, String>(
-              mapKey, pathContext.canonicalize(resolveTildePath(mapValue))))
-          .cast<String, String>() as T;
+          .map<String, String>((String key, String value) {
+        return new MapEntry(
+            key, pathContext.canonicalize(resolveTildePath(value)));
+      }) as T;
     } else {
       throw new UnsupportedError('Type $T is not supported for resolvedValue');
     }
@@ -189,10 +190,16 @@ abstract class DartdocOption<T> {
   final String name;
 
   /// Set to true if this option represents the name of a directory.
+  /// Only one of [isDir], [isFile], or [isExecutable] must be set.
   final bool isDir;
 
   /// Set to true if this option represents the name of a file.
+  /// Only one of [isDir], [isFile], or [isExecutable] must be set.
   final bool isFile;
+
+  /// Set to true if this option represents the name of an executable file.
+  /// Only one of [isDir], [isFile], or [isExecutable] must be set.
+  final bool isExecutable;
 
   /// Set to true if DartdocOption subclasses should validate that the
   /// directory or file exists.  Does not imply validation of [defaultsTo],
@@ -200,12 +207,13 @@ abstract class DartdocOption<T> {
   final bool mustExist;
 
   DartdocOption._(this.name, this.defaultsTo, this.help, this.isDir,
-      this.isFile, this.mustExist, this._convertYamlToType) {
+      this.isFile, this.isExecutable, this.mustExist, this._convertYamlToType) {
     assert(!(isDir && isFile));
-    if (isDir || isFile) assert(_isString || _isListString || _isMapString);
-    if (mustExist) {
-      assert(isDir || isFile);
-    }
+    assert(!(isDir && isExecutable));
+    assert(!(isFile && isExecutable));
+    if (isDir || isFile || isExecutable)
+      assert(_isString || _isListString || _isMapString);
+    if (mustExist) assert(isDir || isFile || isExecutable);
   }
 
   /// Closure to convert yaml data into some other structure.
@@ -252,11 +260,10 @@ abstract class DartdocOption<T> {
   void _onMissing(
       _OptionValueWithContext valueWithContext, String missingFilename);
 
-  /// Call [_onMissing] for every path that does not exist.  Returns true if
-  /// all paths exist or [mustExist] == false.
+  /// Call [_onMissing] for every path that does not exist.
   void _validatePaths(_OptionValueWithContext valueWithContext) {
     if (!mustExist) return;
-    assert(isDir || isFile);
+    assert(isDir || isFile || isExecutable);
     List<String> resolvedPaths;
     if (valueWithContext.value is String) {
       resolvedPaths = [valueWithContext.resolvedValue];
@@ -273,10 +280,10 @@ abstract class DartdocOption<T> {
     }
   }
 
-  /// For a [List<String>] or [String] value, if [isDir] or [isFile] is set,
-  /// resolve paths in value relative to canonicalPath.
+  /// For a [List<String>] or [String] value, if [isDir], [isFile] or
+  /// [isExecutable] is set, resolve paths in value relative to canonicalPath.
   T _handlePathsInContext(_OptionValueWithContext valueWithContext) {
-    if (valueWithContext?.value == null || !(isDir || isFile))
+    if (valueWithContext?.value == null || !(isDir || isFile || isExecutable))
       return valueWithContext?.value;
     _validatePaths(valueWithContext);
     return valueWithContext.resolvedValue;
@@ -320,8 +327,8 @@ abstract class DartdocOption<T> {
 
   /// Return the calculated value of this option, given the directory as context.
   ///
-  /// If [isFile] or [isDir] is set, the returned value will be transformed
-  /// into a canonical path relative to the current working directory
+  /// If [isFile], [isExecutable] or [isDir] is set, the returned value will be
+  /// transformed into a canonical path relative to the current working directory
   /// (for arguments) or the config file from which the value was derived.
   ///
   /// May throw [DartdocOptionError] if a command line argument is of the wrong
@@ -378,9 +385,19 @@ class DartdocOptionFileSynth<T> extends DartdocOption<T>
       String help = '',
       bool isDir = false,
       bool isFile = false,
+      bool isExecutable = false,
       bool parentDirOverridesChild,
       T Function(YamlMap, pathLib.Context) convertYamlToType})
-      : super._(name, null, help, isDir, isFile, mustExist, convertYamlToType) {
+      : super._(
+          name,
+          null,
+          help,
+          isDir,
+          isFile,
+          isExecutable,
+          mustExist,
+          convertYamlToType,
+        ) {
     _parentDirOverridesChild = parentDirOverridesChild;
   }
 
@@ -425,9 +442,11 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
       bool hide = false,
       bool isDir = false,
       bool isFile = false,
+      bool isExecutable = false,
       bool negatable,
       bool splitCommas})
-      : super._(name, null, help, isDir, isFile, mustExist, null) {
+      : super._(
+            name, null, help, isDir, isFile, isExecutable, mustExist, null) {
     _hide = hide;
     _negatable = negatable;
     _splitCommas = splitCommas;
@@ -462,8 +481,8 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
 /// A synthetic option takes a closure at construction time that computes
 /// the value of the configuration option based on other configuration options.
 /// Does not protect against closures that self-reference.  If [mustExist] and
-/// [isDir] or [isFile] is set, computed values will be resolved to canonical
-/// paths.
+/// [isDir], [isExecutable] or [isFile] is set, computed values will be resolved
+/// to canonical paths.
 class DartdocOptionSyntheticOnly<T> extends DartdocOption<T>
     with DartdocSyntheticOption<T> {
   @override
@@ -472,8 +491,9 @@ class DartdocOptionSyntheticOnly<T> extends DartdocOption<T>
       {bool mustExist = false,
       String help = '',
       bool isDir = false,
-      bool isFile = false})
-      : super._(name, null, help, isDir, isFile, mustExist, null);
+      bool isFile = false,
+      bool isExecutable = false})
+      : super._(name, null, help, isDir, isFile, isExecutable, mustExist, null);
 }
 
 abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
@@ -507,7 +527,7 @@ typedef Future<List<DartdocOption>> OptionGenerator();
 /// A [DartdocOption] that only contains other [DartdocOption]s and is not an option itself.
 class DartdocOptionSet extends DartdocOption<Null> {
   DartdocOptionSet(String name)
-      : super._(name, null, null, false, false, false, null);
+      : super._(name, null, null, false, false, false, false, null);
 
   /// Asynchronous factory that is the main entry point to initialize Dartdoc
   /// options for use.
@@ -556,9 +576,19 @@ class DartdocOptionArgOnly<T> extends DartdocOption<T>
       bool hide = false,
       bool isDir = false,
       bool isFile = false,
+      bool isExecutable = false,
       bool negatable,
       bool splitCommas})
-      : super._(name, defaultsTo, help, isDir, isFile, mustExist, null) {
+      : super._(
+          name,
+          defaultsTo,
+          help,
+          isDir,
+          isFile,
+          isExecutable,
+          mustExist,
+          null,
+        ) {
     _hide = hide;
     _negatable = negatable;
     _splitCommas = splitCommas;
@@ -591,10 +621,20 @@ class DartdocOptionArgFile<T> extends DartdocOption<T>
       bool hide = false,
       bool isDir = false,
       bool isFile = false,
+      bool isExecutable = false,
       bool negatable,
       bool parentDirOverridesChild: false,
       bool splitCommas})
-      : super._(name, defaultsTo, help, isDir, isFile, mustExist, null) {
+      : super._(
+          name,
+          defaultsTo,
+          help,
+          isDir,
+          isFile,
+          isExecutable,
+          mustExist,
+          null,
+        ) {
     _abbr = abbr;
     _hide = hide;
     _negatable = negatable;
@@ -642,10 +682,19 @@ class DartdocOptionFileOnly<T> extends DartdocOption<T>
       String help: '',
       bool isDir = false,
       bool isFile = false,
+      bool isExecutable = false,
       bool parentDirOverridesChild: false,
       T Function(YamlMap, pathLib.Context) convertYamlToType})
-      : super._(name, defaultsTo, help, isDir, isFile, mustExist,
-            convertYamlToType) {
+      : super._(
+          name,
+          defaultsTo,
+          help,
+          isDir,
+          isFile,
+          isExecutable,
+          mustExist,
+          convertYamlToType,
+        ) {
     _parentDirOverridesChild = parentDirOverridesChild;
   }
 
@@ -1024,6 +1073,7 @@ class DartdocOptionContext {
   List<String> get includeExternal =>
       optionSet['includeExternal'].valueAt(context);
   bool get includeSource => optionSet['includeSource'].valueAt(context);
+  Map<String, String> get tools => optionSet['tools'].valueAt(context);
 
   /// _input is only used to construct synthetic options.
   // ignore: unused_element
@@ -1065,11 +1115,11 @@ Future<List<DartdocOption>> createDartdocOptions() async {
         negatable: true),
     new DartdocOptionArgFile<double>(
         'ambiguousReexportScorerMinConfidence', 0.1,
-        help:
-            'Minimum scorer confidence to suppress warning on ambiguous reexport.'),
+        help: 'Minimum scorer confidence to suppress warning on ambiguous '
+            'reexport.'),
     new DartdocOptionArgOnly<bool>('autoIncludeDependencies', false,
-        help:
-            'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
+        help: 'Include all the used libraries into the docs, even the ones not '
+            'in the current package or "include-external"',
         negatable: true),
     new DartdocOptionArgFile<List<String>>('categoryOrder', [],
         help:
@@ -1078,8 +1128,8 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     new DartdocOptionFileOnly<CategoryConfiguration>(
         'categories', CategoryConfiguration.empty,
         convertYamlToType: CategoryConfiguration.fromYamlMap,
-        help:
-            "A list of all categories, their display names, and markdown documentation in the order they are to be displayed."),
+        help: 'A list of all categories, their display names, and markdown '
+            'documentation in the order they are to be displayed.'),
     new DartdocOptionSyntheticOnly<List<String>>('dropTextFrom',
         (DartdocSyntheticOption<List<String>> option, Directory dir) {
       if (option.parent['hideSdkText'].valueAt(dir)) {
@@ -1249,5 +1299,10 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     new DartdocOptionArgOnly<bool>('verboseWarnings', true,
         help: 'Display extra debugging information and help with warnings.',
         negatable: true),
+    new DartdocOptionArgFile<Map<String, String>>('tools', <String, String>{},
+        isExecutable: true,
+        mustExist: true,
+        help: 'A map of tool names to executable paths. Each executable must '
+            'exist.'),
   ];
 }

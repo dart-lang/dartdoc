@@ -46,6 +46,7 @@ import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta, FileContents;
 import 'package:dartdoc/src/special_elements.dart';
+import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -2987,6 +2988,8 @@ abstract class ModelElement extends Canonicalization
     } else {
       _rawDocs = computeDocumentationComment ?? '';
       _rawDocs = stripComments(_rawDocs) ?? '';
+      // Must evaluate tools first, in case they insert any other directives.
+      _rawDocs = _evaluateTools(_rawDocs);
       _rawDocs = _injectExamples(_rawDocs);
       _rawDocs = _injectAnimations(_rawDocs);
       _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
@@ -3641,6 +3644,85 @@ abstract class ModelElement extends Canonicalization
     });
   }
 
+  /// Replace &#123;@tool ...&#125&#123;@end-tool&#125; in API comments with the
+  /// output of an external tool.
+  ///
+  /// Looks for tools invocations, looks up their bound executables in the
+  /// options, and executes them with the source comment material as input,
+  /// returning the output of the tool. If a named tool isn't configured in the
+  /// options file, then it will not be executed, and dartdoc will quit with an
+  /// error.
+  ///
+  /// Tool command line arguments are passed to the tool, with the token
+  /// `$INPUT` replaced with the absolute path to a temporary file containing
+  /// the content for the tool to read and produce output from. If the tool
+  /// doesn't need any input, then no `$INPUT` is needed.
+  ///
+  /// Nested tool directives will not be evaluated, but tools may generate other
+  /// directives in their output and those will be evaluated.
+  ///
+  /// Syntax:
+  ///
+  ///     &#123;@tool TOOL [Tool arguments]&#125;
+  ///     Content to send to tool.
+  ///     &#123;@end-tool&#125;
+  ///
+  /// Examples:
+  ///
+  /// In `dart_options.yaml`:
+  ///
+  /// ```yaml
+  /// dartdoc:
+  ///   tools:
+  ///     # Prefixes the given input with "## "
+  ///     # Path is relative to project root.
+  ///     prefix: "bin/prefix.dart"
+  ///     # Prints the date
+  ///     date: "/bin/date"
+  /// ```
+  ///
+  /// In code:
+  ///
+  /// _This:_
+  ///
+  ///     &#123;@tool prefix $INPUT&#125;
+  ///     Content to send to tool.
+  ///     &#123;@end-tool&#125;
+  ///     &#123;@tool date --iso-8601=minutes --utc&#125;
+  ///     &#123;@end-tool&#125;
+  ///
+  /// _Produces:_
+  ///
+  /// ## Content to send to tool.
+  /// 2018-09-18T21:15+00:00
+  String _evaluateTools(String rawDocs) {
+    // Matches all tool directives (even some invalid ones). This is so
+    // we can give good error messages if the directive is malformed, instead of
+    // just silently emitting it as-is.
+    final RegExp basicToolRegExp = new RegExp(
+        r'[ ]*{@tool\s+([^}]+)}\n?([\s\S]+?)\n?{@end-tool}[ ]*\n?',
+        multiLine: true);
+
+    ToolRunner runner = new ToolRunner(config.tools, (String message) {
+      warn(PackageWarning.toolError, message: message);
+    });
+    try {
+      return rawDocs.replaceAllMapped(basicToolRegExp, (basicMatch) {
+        List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
+        // Tool name must come first.
+        if (args.isEmpty) {
+          warn(PackageWarning.toolError,
+              message:
+                  'Must specify a tool to execute for the @tool directive.');
+          return '';
+        }
+        return runner.run(args, basicMatch[2]);
+      });
+    } finally {
+      runner.dispose();
+    }
+  }
+
   /// Replace &#123;@animation ...&#125; in API comments with some HTML to manage an
   /// MPEG 4 video as an animation.
   ///
@@ -3871,15 +3953,12 @@ abstract class ModelElement extends Canonicalization
   /// "foo=bar" argument as "--foo=bar". It does handle quoted args like
   /// "foo='bar baz'" too, returning just bar (without quotes) for the foo
   /// value.
-  ///
-  /// It then parses the resulting argument list normally with [argParser] and
-  /// returns the result.
-  ArgResults _parseArgs(
-      String argsAsString, ArgParser argParser, String directiveName) {
+  Iterable<String> _splitUpQuotedArgs(String argsAsString,
+      {bool convertToArgs = false}) {
     // Regexp to take care of splitting arguments, and handling the quotes
     // around arguments, if any.
     //
-    // Match group 1 is the "foo=" part of the option, if any.
+    // Match group 1 is the "foo=" (or "--foo=") part of the option, if any.
     // Match group 2 contains the quote character used (which is discarded).
     // Match group 3 is a quoted arg, if any, without the quotes.
     // Match group 4 is the unquoted arg, if any.
@@ -3889,17 +3968,30 @@ abstract class ModelElement extends Canonicalization
         r'([^ ]+))'); // without quotes.
     final Iterable<Match> matches = argMatcher.allMatches(argsAsString);
 
-    // Remove quotes around args, and for any args that look like assignments
-    // (start with valid option names followed by an equals sign), add a "--" in front
-    // so that they parse as options.
-    final Iterable<String> args = matches.map<String>((Match match) {
+    // Remove quotes around args, and if convertToArgs is true, then for any
+    // args that look like assignments (start with valid option names followed
+    // by an equals sign), add a "--" in front so that they parse as options.
+    return matches.map<String>((Match match) {
       String option = '';
-      if (match[1] != null) {
-        option = '--${match[1]}';
+      if (convertToArgs && match[1] != null && !match[1].startsWith('-'))
+        option = '--';
+      if (match[2] != null) {
+        // This arg has quotes, so strip them.
+        return '$option${match[1] ?? ''}${match[3] ?? ''}${match[4] ?? ''}';
       }
-      return option + (match[3] ?? '') + (match[4] ?? '');
+      return '$option${match[0]}';
     });
+  }
 
+  /// Helper to process arguments given as a (possibly quoted) string.
+  ///
+  /// First, this will split the given [argsAsString] into separate arguments
+  /// with [_splitUpQuotedArgs] it then parses the resulting argument list
+  /// normally with [argParser] and returns the result.
+  ArgResults _parseArgs(
+      String argsAsString, ArgParser argParser, String directiveName) {
+    Iterable<String> args =
+        _splitUpQuotedArgs(argsAsString, convertToArgs: true);
     try {
       return argParser.parse(args);
     } on ArgParserException catch (e) {
@@ -4457,6 +4549,9 @@ class PackageGraph {
         break;
       case PackageWarning.invalidParameter:
         warningMessage = 'invalid parameter to dartdoc directive: ${message}';
+        break;
+      case PackageWarning.toolError:
+        warningMessage = 'tool execution failed: ${message}';
         break;
       case PackageWarning.deprecated:
         warningMessage = 'deprecated dartdoc usage: ${message}';
@@ -6035,6 +6130,7 @@ class PackageBuilder {
     if (config.showWarnings) {
       for (PackageWarning kind in PackageWarning.values) {
         switch (kind) {
+          case PackageWarning.toolError:
           case PackageWarning.invalidParameter:
           case PackageWarning.unresolvedExport:
             warningOptions.error(kind);

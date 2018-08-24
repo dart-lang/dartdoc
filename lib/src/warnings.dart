@@ -90,6 +90,10 @@ final Map<PackageWarning, PackageWarningHelpText> packageWarningText = const {
       PackageWarning.invalidParameter,
       "invalidParameter",
       "A parameter given to a dartdoc directive was invalid."),
+  PackageWarning.toolError: const PackageWarningHelpText(
+      PackageWarning.toolError,
+      "toolError",
+      "Unable to execute external tool."),
   PackageWarning.deprecated: const PackageWarningHelpText(
       PackageWarning.deprecated,
       "deprecated",
@@ -138,6 +142,7 @@ enum PackageWarning {
   missingFromSearchIndex,
   typeAsHtml,
   invalidParameter,
+  toolError,
   deprecated,
   unresolvedExport,
 }

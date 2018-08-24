@@ -581,3 +581,20 @@ abstract class TypedFunctionsWithoutTypedefs {
   /// Returns a complex typedef that includes some anonymous typed functions.
   aComplexTypedef getAComplexTypedef<A4, A5, A6>();
 }
+
+abstract class ToolUser {
+  /// Invokes a tool.
+  ///
+  /// {@tool drill --file="$INPUT" --special=" |\[]!@#\"'$%^&*()_+"}
+  /// Yes it is!
+  /// Ok, fine it isn't.
+  /// {@end-tool}
+  void invokeTool();
+
+  /// Invokes a tool without the $INPUT token or args.
+  ///
+  /// {@tool drill}
+  /// This text should not appear in the output.
+  /// {@end-tool}
+  void invokeToolNoInput();
+}
