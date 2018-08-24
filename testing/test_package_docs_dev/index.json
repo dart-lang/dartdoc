@@ -959,6 +959,17 @@
   }
  },
  {
+  "name": "message",
+  "qualifiedName": "ex.Deprecated.message",
+  "href": "ex/Deprecated/message.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Deprecated",
+   "type": "class"
+  }
+ },
+ {
   "name": "noSuchMethod",
   "qualifiedName": "ex.Deprecated.noSuchMethod",
   "href": "ex/Deprecated/noSuchMethod.html",

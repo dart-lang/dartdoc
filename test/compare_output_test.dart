@@ -22,7 +22,7 @@ Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location.sourceUri;
 
 String get _testPackageDocsPath {
-  if (Platform.version.contains('-')) {
+  if (Platform.version.split(' ').first.contains('-')) {
     return pathLib.fromUri(_currentFileUri.resolve('../testing/test_package_docs_dev'));
   } else {
     return pathLib.fromUri(_currentFileUri.resolve('../testing/test_package_docs'));
