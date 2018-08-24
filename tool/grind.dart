@@ -880,7 +880,8 @@ testDartdocFlutterPlugin() async {
 updateTestPackageDocs() async {
   var launcher = new SubprocessLauncher('update-test-package-docs');
   var testPackageDocs =
-      new Directory(pathLib.join('testing', 'test_package_docs'));
+      new Directory(pathLib.join('testing',
+          Platform.version.split(' ').first.contains('-') ? 'test_package_docs_dev' :'test_package_docs'));
   var testPackage = new Directory(pathLib.join('testing', 'test_package'));
   await launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: testPackage.path);
@@ -900,7 +901,7 @@ updateTestPackageDocs() async {
         '--hide-sdk-text',
         '--no-include-source',
         '--output',
-        '../test_package_docs',
+        pathLib.canonicalize(testPackageDocs.path),
         '--pretty-index-json',
       ],
       workingDirectory: testPackage.path);
