@@ -4430,15 +4430,14 @@ class PackageGraph {
   void _tagReexportsFor(
       final Library topLevelLibrary,
       final LibraryElement libraryElement,
-      List<ExportElement> exportedElements) {
+      [ExportElement lastExportedElement]) {
     if (libraryElement == null) {
       // The first call to _tagReexportFor should not have a null libraryElement.
-      assert(exportedElements.isNotEmpty);
+      assert(lastExportedElement != null);
       warnOnElement(
-          findOrCreateLibraryFor(exportedElements.last.enclosingElement),
+          findOrCreateLibraryFor(lastExportedElement.enclosingElement),
           PackageWarning.unresolvedExport,
-          //message: exportedElements.map<String>((ExportElement e) => '"${e.uri}"').join('  '),
-          message: '"${exportedElements.last.uri}"',
+          message: '"${lastExportedElement.uri}"',
           referredFrom: <Locatable>[topLevelLibrary]);
       return;
     }
@@ -4448,9 +4447,7 @@ class PackageGraph {
       _tagReexportsFor(
           topLevelLibrary,
           exportedElement.exportedLibrary,
-          <ExportElement>[]
-            ..addAll(exportedElements)
-            ..add(exportedElement));
+          exportedElement);
     }
   }
 
@@ -4461,7 +4458,7 @@ class PackageGraph {
       _lastSizeOfAllLibraries = allLibraries.keys.length;
       _libraryElementReexportedBy = new Map<LibraryElement, Set<Library>>();
       for (Library library in publicLibraries) {
-        _tagReexportsFor(library, library.element, <ExportElement>[]);
+        _tagReexportsFor(library, library.element);
       }
     }
     return _libraryElementReexportedBy;
