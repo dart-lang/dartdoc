@@ -776,12 +776,15 @@ button {
   color: #999
 }
 
-.tt-menu {
+.navbar-right .tt-menu {
   right:0;
   left: inherit !important;
   width: 422px;
   max-height: 250px;
   overflow-y: auto;
+}
+
+.tt-menu {
   font-size: 14px;
   margin: 0;
   padding: 8px 0;
@@ -828,6 +831,12 @@ button {
 
 #search-box {
   background-color: #ffffff;
+}
+
+.search-body {
+  border: 1px solid #7f7f7f;
+  max-width: 400px;
+  box-shadow: 3px 3px 5px rgba(0,0,0,0.1);
 }
 
 section#setter {
