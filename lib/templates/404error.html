@@ -9,11 +9,14 @@
     <h1>404: Something's gone wrong :-(</h1>
 
     <section class="desc">
-      <p>You've stumbled onto a page that doesn't exist.  Luckily this site
+      <p>You've tried to visit a page that doesn't exist.  Luckily this site
          has other <a href="index.html">pages</a>.</p>
-      <p>If you were looking for something specific, maybe try the search
-         field located in the upper right corner, or the index located on
-         the left.</p>
+      <p>If you were looking for something specific, try searching:
+      <form class="search" role="search">
+        <input type="text" id="search-main" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+      </form>
+      </p>
+
     </section>
   </div> <!-- /.main-content -->
 
