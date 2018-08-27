@@ -251,12 +251,17 @@ class Dartdoc extends PackageBuilder {
         continue;
       }
       if (visited.contains(fullPath)) continue;
-      if (!writtenFiles.contains(fullPath)) {
+      String relativeFullPath = pathLib.relative(fullPath, from: normalOrigin);
+      if (!writtenFiles.contains(relativeFullPath)) {
         // This isn't a file we wrote (this time); don't claim we did.
         _warn(packageGraph, PackageWarning.unknownFile, fullPath, normalOrigin);
       } else {
-        _warn(
-            packageGraph, PackageWarning.orphanedFile, fullPath, normalOrigin);
+        // Error messages are orphaned by design and do not appear in the search
+        // index.
+        if (relativeFullPath != '__404error.html') {
+          _warn(packageGraph, PackageWarning.orphanedFile, fullPath,
+              normalOrigin);
+        }
       }
       _onCheckProgress.add(fullPath);
     }

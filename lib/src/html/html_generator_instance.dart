@@ -170,6 +170,7 @@ class HtmlGeneratorInstance {
     logInfo('documenting ${package.name}');
 
     _build('index.html', _templates.indexTemplate, data);
+    _build('__404error.html', _templates.errorTemplate, data);
   }
 
   void generateLibrary(PackageGraph packageGraph, Library lib) {
