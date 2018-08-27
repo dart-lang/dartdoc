@@ -27,8 +27,10 @@ final Directory testPackageWithEmbedderYaml =
     new Directory('testing/test_package_embedder_yaml');
 final Directory testPackageWithNoReadme =
     new Directory('testing/test_package_small');
-final Directory testPackageImportExport =
+final Directory testPackageIncludeExclude =
     new Directory('testing/test_package_include_exclude');
+final Directory testPackageImportExportError =
+    new Directory('testing/test_package_import_export_error');
 
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
 /// it with a [DartdocOptionSet] based on the current working directory and/or
