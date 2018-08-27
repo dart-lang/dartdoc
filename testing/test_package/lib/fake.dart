@@ -748,6 +748,8 @@ class BaseForDocComments {
   /// Reference containing a type parameter [ExtraSpecialList<Object>]
   ///
   /// Reference to something that doesn't exist containing a type parameter [ThisIsNotHereNoWay<MyType>]
+  ///
+  /// Here's a string with backslashes:  "C:\foo\bar\baz.txt".
   String doAwesomeStuff(int value) => null;
 
   void anotherMethod() {}

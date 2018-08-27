@@ -939,6 +939,10 @@ void main() {
         expect(docsAsHtml,
             contains('<code>ThisIsNotHereNoWay&lt;MyType&gt;</code>'));
       });
+
+      test('backslashes not part of markdown code are left in place', () {
+        expect(docsAsHtml, contains(r'C:\foo\bar\baz.txt'));
+      });
     });
 
     test('multi-underscore names in brackets do not become italicized', () {
