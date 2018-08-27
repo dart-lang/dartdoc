@@ -1,0 +1,9 @@
+name: test_package_import_export_error
+version: 0.0.1
+description: A simple console application.
+environment:
+  sdk: <=3.0.0
+
+dependencies:
+  test_package_export_error:
+    path: ../test_package_export_error

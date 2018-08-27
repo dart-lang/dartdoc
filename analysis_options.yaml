@@ -8,6 +8,7 @@ analyzer:
     - 'pub.dartlang.org/**'
     - 'testing/**'
     - 'testing/test_package_flutter_plugin/**'
+    - 'testing/test_package_export_error/**'
 linter:
   rules:
     - annotate_overrides

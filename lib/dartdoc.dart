@@ -133,7 +133,7 @@ class Dartdoc extends PackageBuilder {
   /// [DartdocResults] is returned if dartdoc succeeds. [DartdocFailure] is
   /// thrown if dartdoc fails in an expected way, for example if there is an
   /// analysis error in the code.
-  Future<DartdocResults> generateDocs() async {
+  Future<DartdocResults> generateDocsBase() async {
     Stopwatch _stopwatch = new Stopwatch()..start();
     double seconds;
     packageGraph = await buildPackageGraph();
@@ -167,18 +167,22 @@ class Dartdoc extends PackageBuilder {
     logInfo(
         "Documented ${packageGraph.publicLibraries.length} public librar${packageGraph.publicLibraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds");
+    return new DartdocResults(
+        config.topLevelPackageMeta, packageGraph, outputDir);
+  }
 
-    if (packageGraph.publicLibraries.isEmpty) {
+  Future<DartdocResults> generateDocs() async {
+    DartdocResults dartdocResults = await generateDocsBase();
+    if (dartdocResults.packageGraph.publicLibraries.isEmpty) {
       throw new DartdocFailure(
           "dartdoc could not find any libraries to document. Run `pub get` and try again.");
     }
 
-    if (packageGraph.packageWarningCounter.errorCount > 0) {
+    if (dartdocResults.packageGraph.packageWarningCounter.errorCount > 0) {
       throw new DartdocFailure("dartdoc encountered errors while processing");
     }
 
-    return new DartdocResults(
-        config.topLevelPackageMeta, packageGraph, outputDir);
+    return dartdocResults;
   }
 
   /// Warn on file paths.

@@ -9,6 +9,8 @@ import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/tuple.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
@@ -33,9 +35,25 @@ void main() {
           argv..addAll(['--input', packageRoot.path])..addAll(outputParam)));
     }
 
+    test('with broken reexport chain', () async {
+      Dartdoc dartdoc = await buildDartdoc([], testPackageImportExportError);
+      DartdocResults results = await dartdoc.generateDocsBase();
+      PackageGraph p = results.packageGraph;
+      Iterable<String> unresolvedExportWarnings = p
+          .packageWarningCounter.countedWarnings.values
+          .expand<String>((Set<Tuple2<PackageWarning, String>> s) => s
+              .where((Tuple2<PackageWarning, String> t) =>
+                  t.item1 == PackageWarning.unresolvedExport)
+              .map<String>((Tuple2<PackageWarning, String> t) => t.item2));
+
+      expect(unresolvedExportWarnings.length, equals(1));
+      expect(unresolvedExportWarnings.first,
+          equals('"package:not_referenced_in_pubspec/library3.dart"'));
+    });
+
     group('include/exclude parameters', () {
       test('with config file', () async {
-        Dartdoc dartdoc = await buildDartdoc([], testPackageImportExport);
+        Dartdoc dartdoc = await buildDartdoc([], testPackageIncludeExclude);
         DartdocResults results = await dartdoc.generateDocs();
         PackageGraph p = results.packageGraph;
         expect(p.localPublicLibraries.map((l) => l.name),
@@ -44,7 +62,7 @@ void main() {
 
       test('with include command line argument', () async {
         Dartdoc dartdoc = await buildDartdoc(
-            ['--include', 'another_included'], testPackageImportExport);
+            ['--include', 'another_included'], testPackageIncludeExclude);
         DartdocResults results = await dartdoc.generateDocs();
         PackageGraph p = results.packageGraph;
         expect(p.localPublicLibraries.length, equals(1));
@@ -53,7 +71,7 @@ void main() {
 
       test('with exclude command line argument', () async {
         Dartdoc dartdoc = await buildDartdoc(
-            ['--exclude', 'more_included'], testPackageImportExport);
+            ['--exclude', 'more_included'], testPackageIncludeExclude);
         DartdocResults results = await dartdoc.generateDocs();
         PackageGraph p = results.packageGraph;
         expect(p.localPublicLibraries.length, equals(1));

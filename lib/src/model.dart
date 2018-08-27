@@ -4357,6 +4357,9 @@ class PackageGraph {
       case PackageWarning.deprecated:
         warningMessage = 'deprecated dartdoc usage: ${message}';
         break;
+      case PackageWarning.unresolvedExport:
+        warningMessage = 'unresolved export uri: ${message}';
+        break;
     }
 
     List<String> messageParts = [warningMessage];
@@ -4425,11 +4428,26 @@ class PackageGraph {
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
   void _tagReexportsFor(
-      final Library tll, final LibraryElement libraryElement) {
+      final Library topLevelLibrary,
+      final LibraryElement libraryElement,
+      [ExportElement lastExportedElement]) {
+    if (libraryElement == null) {
+      // The first call to _tagReexportFor should not have a null libraryElement.
+      assert(lastExportedElement != null);
+      warnOnElement(
+          findOrCreateLibraryFor(lastExportedElement.enclosingElement),
+          PackageWarning.unresolvedExport,
+          message: '"${lastExportedElement.uri}"',
+          referredFrom: <Locatable>[topLevelLibrary]);
+      return;
+    }
     _libraryElementReexportedBy.putIfAbsent(libraryElement, () => new Set());
-    _libraryElementReexportedBy[libraryElement].add(tll);
+    _libraryElementReexportedBy[libraryElement].add(topLevelLibrary);
     for (ExportElement exportedElement in libraryElement.exports) {
-      _tagReexportsFor(tll, exportedElement.exportedLibrary);
+      _tagReexportsFor(
+          topLevelLibrary,
+          exportedElement.exportedLibrary,
+          exportedElement);
     }
   }
 
@@ -5674,6 +5692,7 @@ class PackageBuilder {
       for (PackageWarning kind in PackageWarning.values) {
         switch (kind) {
           case PackageWarning.invalidParameter:
+          case PackageWarning.unresolvedExport:
             warningOptions.error(kind);
             break;
           default:
