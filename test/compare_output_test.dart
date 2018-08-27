@@ -23,9 +23,11 @@ Uri get _currentFileUri =>
 
 String get _testPackageDocsPath {
   if (Platform.version.split(' ').first.contains('-')) {
-    return pathLib.fromUri(_currentFileUri.resolve('../testing/test_package_docs_dev'));
+    return pathLib
+        .fromUri(_currentFileUri.resolve('../testing/test_package_docs_dev'));
   } else {
-    return pathLib.fromUri(_currentFileUri.resolve('../testing/test_package_docs'));
+    return pathLib
+        .fromUri(_currentFileUri.resolve('../testing/test_package_docs'));
   }
 }
 
