@@ -1,6 +1,12 @@
 # Best Package
 
+* [Examples](#examples)
+* [Another Section](#another-section)
+
 This is an amazing package.
+
+
+## Examples
 
 For example, it:
 
@@ -55,6 +61,8 @@ var f = function(a, b) {
   return a + b;  
 };
 ```
+
+## Another Section
 
 It sometimes generates warnings in commentRefs like this: [unknownThingy.FromSomewhere]
 

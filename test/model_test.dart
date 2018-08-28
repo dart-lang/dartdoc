@@ -250,7 +250,7 @@ void main() {
 
       test('documentation can be rendered as HTML', () {
         expect(packageGraph.defaultPackage.documentationAsHtml,
-            contains('<h1>Best Package</h1>'));
+            contains('<h1 id="best-package">Best Package</h1>'));
       });
 
       test('sdk name', () {

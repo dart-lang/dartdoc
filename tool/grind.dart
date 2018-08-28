@@ -879,9 +879,11 @@ testDartdocFlutterPlugin() async {
 @Task('update test_package_docs')
 updateTestPackageDocs() async {
   var launcher = new SubprocessLauncher('update-test-package-docs');
-  var testPackageDocs =
-      new Directory(pathLib.join('testing',
-          Platform.version.split(' ').first.contains('-') ? 'test_package_docs_dev' :'test_package_docs'));
+  var testPackageDocs = new Directory(pathLib.join(
+      'testing',
+      Platform.version.split(' ').first.contains('-')
+          ? 'test_package_docs_dev'
+          : 'test_package_docs'));
   var testPackage = new Directory(pathLib.join('testing', 'test_package'));
   await launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: testPackage.path);
