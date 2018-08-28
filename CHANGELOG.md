@@ -1,3 +1,11 @@
+## 0.20.4
+* Hide pragma declarations from generated docs (#1726)
+* Fix problems with lists in markdown not being handled correctly (#172)
+* Properly escape types inside comment references (#1740)
+* Generate a custom page, `__404error.html`, for use as an error page (#1704)
+* Generate an error on unresolved exports instead of crashing (#1745)
+* Generate anchors for headers in markdown (#1749)
+
 ## 0.20.3
 * Update dependencies and fork mustache4dart into dartdoc so dartdoc can resolve
   dependencies on Dart 2.0 stable.
