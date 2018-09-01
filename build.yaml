@@ -13,4 +13,8 @@ targets:
   $default:
     sources:
       exclude: ["tool/builder.dart"]
-    builders: {"dartdoc|resource_builder": {enabled: true}}
+    builders:
+      build_version:
+        enabled: true
+      dartdoc|resource_builder:
+        enabled: true

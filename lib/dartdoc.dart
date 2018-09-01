@@ -24,6 +24,7 @@ import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
+import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/dom.dart' show Element, Document;
 import 'package:html/parser.dart' show parse;
@@ -36,8 +37,8 @@ export 'package:dartdoc/src/model.dart';
 export 'package:dartdoc/src/package_meta.dart';
 
 const String name = 'dartdoc';
-// Update when pubspec version changes.
-const String dartdocVersion = '0.20.4';
+// Update when pubspec version changes by running `pub run build_runner build`
+const String dartdocVersion = packageVersion;
 
 /// Helper class to initialize the default generators since they require
 /// GeneratorContext.

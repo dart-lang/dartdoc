@@ -71,6 +71,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.2+2"
+  build_version:
+    dependency: "direct dev"
+    description:
+      name: build_version
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   built_collection:
     dependency: transitive
     description:
