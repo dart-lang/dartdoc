@@ -32,6 +32,7 @@ dependencies:
 dev_dependencies:
   build: ^0.12.6
   build_runner: ^0.9.0
+  build_version: ^1.0.0
   dhttpd: ^3.0.0
   glob: ^1.1.5
   grinder: ^0.8.2
