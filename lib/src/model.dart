@@ -817,6 +817,9 @@ class Class extends ModelElement
 
   Iterable<DefinedElementType> get publicMixins => filterNonPublic(mixins);
 
+  @override
+  DefinedElementType get modelType => super.modelType;
+
   List<Operator> get operators {
     if (_operators != null) return _operators;
     _operators = _methods
@@ -1109,6 +1112,9 @@ class Constructor extends ModelElement
 
   @override
   String get kind => 'constructor';
+
+  @override
+  DefinedElementType get modelType => super.modelType;
 
   String _name;
   @override
@@ -2405,6 +2411,9 @@ class Method extends ModelElement
   String get kind => 'method';
 
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
+
+  @override
+  DefinedElementType get modelType => super.modelType;
 
   @override
   Method get overriddenElement {
@@ -3954,6 +3963,9 @@ class ModelFunctionTyped extends ModelElement
   // Food for mustache. TODO(jcollins-g): what about enclosing elements?
   bool get isInherited => false;
 
+  @override
+  DefinedElementType get modelType => super.modelType;
+
   FunctionTypedElement get _func => (element as FunctionTypedElement);
 }
 
@@ -5477,6 +5489,9 @@ class Typedef extends ModelElement
   String get kind => 'typedef';
 
   String get linkedReturnType => modelType.createLinkedReturnTypeName();
+
+  @override
+  DefinedElementType get modelType => super.modelType;
 
   FunctionTypeAliasElement get _typedef =>
       (element as FunctionTypeAliasElement);
