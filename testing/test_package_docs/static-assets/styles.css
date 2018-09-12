@@ -394,6 +394,55 @@ dl dt.callable .name {
   text-decoration: line-through;
 }
 
+.category.linked {
+  font-weight: bold;
+  opacity: 1;
+}
+
+/* Colors for category based on categoryOrder in dartdoc_options.config. */
+.category.cp-0 {
+  background-color: #54b7c4
+}
+
+.category.cp-1 {
+  background-color: #54c47f
+}
+
+.category.cp-2 {
+  background-color: #c4c254
+}
+
+.category.cp-3 {
+  background-color: #c49f54
+}
+
+.category.cp-4 {
+  background-color: #c45465
+}
+
+.category.cp-5 {
+  background-color: #c454c4
+}
+
+.category a {
+  color: white;
+}
+
+.category {
+  vertical-align: text-top;
+  padding: 4px;
+  font-size: 12px;
+  border-radius: 4px;
+  background-color: #B6B6B6;
+  text-transform: uppercase;
+  color: white;
+  opacity: .5;
+}
+
+h1 .category {
+  vertical-align: middle;
+}
+
 p.firstline {
   font-weight: bold;
 }
