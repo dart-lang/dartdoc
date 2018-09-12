@@ -1,6 +1,12 @@
 <ol>
   {{#packageGraph.localPackages}}
     {{#isFirstPackage}}
+      {{#hasDocumentedCategories}}
+      <li class="section-title">APIs</li>
+        {{#documentedCategories}}
+        <li>{{{linkedName}}}</li>
+        {{/documentedCategories}}
+      {{/hasDocumentedCategories}}
       <li class="section-title">Libraries</li>
     {{/isFirstPackage}}
     {{^isFirstPackage}}
@@ -9,11 +15,11 @@
     {{#defaultCategory.publicLibraries}}
       <li>{{{linkedName}}}</li>
     {{/defaultCategory.publicLibraries}}
-    {{#categories}}
+    {{#categoriesWithPublicLibraries}}
       <li class="section-subtitle">{{name}}</li>
       {{#publicLibraries}}
         <li class="section-subitem">{{{linkedName}}}</li>
       {{/publicLibraries}}
-    {{/categories}}
+    {{/categoriesWithPublicLibraries}}
   {{/packageGraph.localPackages}}
 </ol>

@@ -9,6 +9,33 @@ import 'dart:io';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
+import 'package:yaml/yaml.dart';
+
+class ConvertedOption {
+  final String param1;
+  final String param2;
+  final String myContextPath;
+
+  ConvertedOption._(this.param1, this.param2, this.myContextPath);
+
+  static ConvertedOption fromYamlMap(YamlMap yamlMap, pathLib.Context context) {
+    String p1;
+    String p2;
+    String contextPath = context.current;
+
+    for (MapEntry entry in yamlMap.entries) {
+      switch (entry.key.toString()) {
+        case 'param1':
+          p1 = entry.value.toString();
+          break;
+        case 'param2':
+          p2 = entry.value.toString();
+          break;
+      }
+    }
+    return new ConvertedOption._(p1, p2, contextPath);
+  }
+}
 
 void main() {
   DartdocOptionSet dartdocOptionSetFiles;
@@ -82,6 +109,11 @@ void main() {
     dartdocOptionSetFiles.add(new DartdocOptionFileOnly<String>(
         'nonCriticalDirOption', null,
         isDir: true));
+    dartdocOptionSetFiles.add(new DartdocOptionFileOnly<ConvertedOption>(
+      'convertThisMap',
+      null,
+      convertYamlToType: ConvertedOption.fromYamlMap,
+    ));
 
     dartdocOptionSetArgs = new DartdocOptionSet('dartdoc');
     dartdocOptionSetArgs
@@ -159,6 +191,9 @@ dartdoc:
   dirOption: "notHere"
   nonCriticalFileOption: "whatever"
   double: 3.3
+  convertThisMap:
+    param1: value1
+    param2: value2
         ''');
     dartdocOptionsTwo.writeAsStringSync('''
 dartdoc:
@@ -487,6 +522,18 @@ dartdoc:
   });
 
   group('new style dartdoc file-only options', () {
+    test('DartdocOptionSetFile can convert YamlMaps to structured data', () {
+      ConvertedOption converted =
+          dartdocOptionSetFiles['convertThisMap'].valueAt(firstDir);
+
+      expect(converted.param1, equals('value1'));
+      expect(converted.param2, equals('value2'));
+      expect(
+          converted.myContextPath, equals(pathLib.canonicalize(firstDir.path)));
+      expect(
+          dartdocOptionSetFiles['convertThisMap'].valueAt(secondDir), isNull);
+    });
+
     test('DartdocOptionSetFile checks file existence when appropriate', () {
       String errorMessage;
       try {

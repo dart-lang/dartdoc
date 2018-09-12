@@ -259,7 +259,7 @@ class Dartdoc extends PackageBuilder {
       } else {
         // Error messages are orphaned by design and do not appear in the search
         // index.
-        if (relativeFullPath != '__404error.html') {
+        if (<String>['__404error.html', 'categories.json'].contains(fullPath)) {
           _warn(packageGraph, PackageWarning.orphanedFile, fullPath,
               normalOrigin);
         }

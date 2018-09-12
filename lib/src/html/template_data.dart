@@ -27,6 +27,7 @@ abstract class TemplateData<T extends Documentable> {
 
   TemplateData(this.htmlOptions, this.packageGraph);
 
+  List<Category> get displayedCategories => <Category>[];
   String get documentation => self.documentation;
   String get oneLineDoc => self.oneLineDoc;
   String get title;
@@ -116,6 +117,52 @@ class PackageTemplateData extends TemplateData<Package> {
   /// `null` for packages because they are at the root – not needed
   @override
   String get htmlBase => null;
+}
+
+class CategoryTemplateData extends TemplateData<Category> {
+  final Category category;
+
+  CategoryTemplateData(
+      HtmlOptions htmlOptions, PackageGraph packageGraph, this.category)
+      : super(htmlOptions, packageGraph);
+
+  @override
+  String get title => '${category.name} ${category.kind} - Dart API';
+
+  @override
+  String get htmlBase => '..';
+
+  @override
+  String get layoutTitle => _layoutTitle(category.name, category.kind, false);
+
+  @override
+  String get metaDescription =>
+      '${category.name} ${category.kind} docs, for the Dart programming language.';
+
+  @override
+  List get navLinks => [category.package];
+  @override
+  Iterable<Subnav> getSubNavItems() sync* {
+    if (category.hasPublicClasses)
+      yield new Subnav('Libraries', '${category.href}#libraries');
+    if (category.hasPublicClasses)
+      yield new Subnav('Classes', '${category.href}#classes');
+    if (category.hasPublicConstants)
+      yield new Subnav('Constants', '${category.href}#constants');
+    if (category.hasPublicProperties)
+      yield new Subnav('Properties', '${category.href}#properties');
+    if (category.hasPublicFunctions)
+      yield new Subnav('Functions', '${category.href}#functions');
+    if (category.hasPublicEnums)
+      yield new Subnav('Enums', '${category.href}#enums');
+    if (category.hasPublicTypedefs)
+      yield new Subnav('Typedefs', '${category.href}#typedefs');
+    if (category.hasPublicExceptions)
+      yield new Subnav('Exceptions', '${category.href}#exceptions');
+  }
+
+  @override
+  Category get self => category;
 }
 
 class LibraryTemplateData extends TemplateData<Library> {

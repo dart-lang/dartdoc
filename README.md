@@ -102,15 +102,22 @@ generates docs.
 
 ```yaml
 dartdoc:
-  categoryOrder: ["First Category", "Second Category"]
+  categories: 
+    "First Category":
+      markdown: doc/First.md
+      name: Awesome
+    "Second Category":
+      markdown: doc/Second.md
+      name: Great
   linkTo:
     url: "https://my.dartdocumentationsite.org/dev/%v%"
 ```
 
 Unrecognized options will be ignored.  Supported options:
 
-  * **categoryOrder**:  Specify the order of categories, below, for display in the sidebar and
-    the package page.
+  * **categories**:  Specify the order of categories.  For APIs you'd like to document, specify
+    the markdown file with `markdown:` to use for the category page.  Optionally, rename the
+    category from the source code into a display name with 'name:'.
   * **exclude**:  Specify a list of library names to avoid generating docs for,
     overriding any specified in include.
   * **include**:  Specify a list of library names to generate docs for, ignoring all others.
@@ -144,15 +151,53 @@ as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
  
 ### Categories
 
-You can tag libraries in their documentation with the string `{@category YourCategory}`, and
-that will cause the library to appear in a category when showing the sidebar on the Package
-and Library pages.
+You can tag libraries or top level classes, functions, and variables in their documentation with
+the string `{@category YourCategory}`.  For libraries, that will cause the library to appear in a
+category when showing the sidebar on the Package and Library pages.  For other types of objects,
+the `{@category}` will be shown with a link to the category page if specified in
+dartdoc_options.yaml, as above.
 
 ```dart
 /// Here is my library.
 /// 
 /// {@category Amazing}
 library my_library;
+```
+
+#### Other category tags and categories.json
+
+A file `categories.json` will be generated at the top level of the documentation tree with
+information about categories collected from objects in the source tree.  The directives
+`@category`, `@subCategory`, `@image`, and `@samples` are understood and saved into this json.
+Future versions of dartdoc may make direct use of the image and samples tags.
+
+As an example, if we document the class Icon in flutter using the following:
+
+```dart
+/// {@category Basics}
+/// {@category Assets, Images, and Icons}
+/// {@subCategory Information displays}
+/// {@image <image alt='' src='/images/catalog-widget-placeholder.png'>}
+class Icon extends StatelessWidget {}
+```
+
+that will result in the following json:
+
+```json
+  {
+    "name": "Icon",
+    "qualifiedName": "widgets.Icon",
+    "href": "widgets/Icon-class.html",
+    "type": "class",
+    "categories": [
+      "Assets, Images, and Icons",
+      "Basics"
+    ],
+    "subcategories": [
+      "Information displays"
+    ],
+    "image": "<image alt='' src='/images/catalog-widget-placeholder.png'>"
+  }
 ```
 
 ### Animations
