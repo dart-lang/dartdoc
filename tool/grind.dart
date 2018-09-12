@@ -700,8 +700,10 @@ build() async {
 }
 
 /// Paths in this list are relative to lib/.
-final _generated_files_list = <String>['src/html/resources.g.dart']
-    .map((s) => pathLib.joinAll(pathLib.posix.split(s)));
+final _generated_files_list = <String>[
+  'src/html/resources.g.dart',
+  'src/version.dart',
+].map((s) => pathLib.joinAll(pathLib.posix.split(s)));
 
 @Task('Verify generated files are up to date')
 checkBuild() async {
