@@ -679,7 +679,7 @@ Future<void> checkChangelogHasVersion() async {
   }
 }
 
-Future<void> _getPackageVersion() {
+String _getPackageVersion() {
   var pubspec = new File('pubspec.yaml');
   var yamlDoc;
   if (pubspec.existsSync()) {

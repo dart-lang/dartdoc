@@ -5151,7 +5151,7 @@ class Category extends Nameable
 
   @override
   String get href =>
-      isCanonical ? '${package.baseHref}apis/${name}-api.html' : null;
+      isCanonical ? '${package.baseHref}topics/${name}-topic.html' : null;
 
   String get linkedName {
     String unbrokenCategoryName = name.replaceAll(' ', '&nbsp;');
@@ -5183,7 +5183,7 @@ class Category extends Nameable
 
   @override
   // TODO(jcollins-g): Category?  Topic?  Group?  Stuff?  Find a better name.
-  String get kind => 'API';
+  String get kind => 'Topic';
 
   FileContents _documentationFile;
   @override
