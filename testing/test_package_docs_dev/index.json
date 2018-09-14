@@ -2,15 +2,15 @@
  {
   "name": "Superb",
   "qualifiedName": "Superb",
-  "href": "apis/Superb-api.html",
-  "type": "API",
+  "href": "topics/Superb-topic.html",
+  "type": "Topic",
   "overriddenDepth": 0
  },
  {
   "name": "Unreal",
   "qualifiedName": "Unreal",
-  "href": "apis/Unreal-api.html",
-  "type": "API",
+  "href": "topics/Unreal-topic.html",
+  "type": "Topic",
   "overriddenDepth": 0
  },
  {
