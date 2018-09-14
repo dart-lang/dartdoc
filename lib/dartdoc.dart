@@ -66,7 +66,8 @@ class Dartdoc extends PackageBuilder {
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a Dartdoc object with them.
-  static withDefaultGenerators(DartdocGeneratorOptionContext config) async {
+  static Future<Dartdoc> withDefaultGenerators(
+      DartdocGeneratorOptionContext config) async {
     List<Generator> generators = await initGenerators(config);
     return new Dartdoc._(config, generators);
   }

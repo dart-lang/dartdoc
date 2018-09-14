@@ -11,6 +11,7 @@ analyzer:
     - 'testing/test_package_export_error/**'
 linter:
   rules:
+    - always_declare_return_types
     - annotate_overrides
     - avoid_init_to_null
     - directives_ordering

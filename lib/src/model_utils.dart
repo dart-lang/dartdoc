@@ -201,7 +201,7 @@ class _HashableList {
   }
 
   @override
-  get hashCode => _hashCache ??= hashObjects(_source);
+  int get hashCode => _hashCache ??= hashObjects(_source);
 }
 
 /// Like [Memoizer], except in checked mode will validate that the value of the

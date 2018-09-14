@@ -66,9 +66,10 @@ class CategoryDefinition {
   /// Canonical path of the markdown file used to document this category
   /// (or null if undocumented).
   final String documentationMarkdown;
+
   CategoryDefinition(this.name, this._displayName, this.documentationMarkdown);
 
-  /// Returns the [_displayName], if available.
+  /// Returns the [_displayName], if available, or else simply [name].
   String get displayName => _displayName ?? name;
 }
 
@@ -838,7 +839,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
   T valueAt(Directory dir) => _valueAtFromArgs() ?? defaultsTo;
 
   /// For passing in to [int.parse] and [double.parse] `onError'.
-  _throwErrorForTypes(String value) {
+  void _throwErrorForTypes(String value) {
     String example;
     if (defaultsTo is Map) {
       example = 'key::value';

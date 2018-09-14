@@ -256,7 +256,7 @@ class Accessor extends ModelElement implements EnclosedElement {
       PackageGraph packageGraph, Member originalMember)
       : super(element, library, packageGraph, originalMember);
 
-  get linkedReturnType {
+  String get linkedReturnType {
     assert(isGetter);
     return modelType.createLinkedReturnTypeName();
   }
@@ -1213,12 +1213,8 @@ abstract class Categorization implements ModelElement {
     }
     _categoryNames = _categorySet.toList()..sort();
     _subCategoryNames = _subCategorySet.toList()..sort();
-    if (_image == null) {
-      _image = '';
-    }
-    if (_samples == null) {
-      _samples = '';
-    }
+    _image ??= '';
+    _samples ??= '';
     return rawDocs;
   }
 
@@ -5046,13 +5042,11 @@ abstract class MarkdownFileDocumentation
 
   FileContents get documentationFile;
 
-  // TODO: implement location
   @override
   String get location => pathLib.toUri(documentationFile.file.path).toString();
 
-  // TODO: implement locationPieces
   @override
-  Set<String> get locationPieces => new Set();
+  Set<String> get locationPieces => new Set.from(<String>[location]);
 }
 
 /// A category is a subcategory of a package, containing libraries tagged
@@ -5188,6 +5182,7 @@ class Category extends Nameable
   bool get isCanonical => categoryDefinition != null;
 
   @override
+  // TODO(jcollins-g): Category?  Topic?  Group?  Stuff?  Find a better name.
   String get kind => 'API';
 
   FileContents _documentationFile;
@@ -5497,7 +5492,6 @@ class Package extends LibraryContainer
   @override
   Element get element => null;
 
-  // TODO: implement containerOrder
   @override
   List<String> get containerOrder => config.packageOrder;
 }

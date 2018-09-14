@@ -13,7 +13,7 @@ import 'package:io/io.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart' as yaml;
 
-main([List<String> args]) => grind(args);
+void main([List<String> args]) => grind(args);
 
 /// Thrown on failure to find something in a file.
 class GrindTestFailure {
@@ -22,7 +22,7 @@ class GrindTestFailure {
 }
 
 /// Kind of an inefficient grepper for now.
-expectFileContains(String path, List<Pattern> items) {
+void expectFileContains(String path, List<Pattern> items) {
   File source = new File(path);
   if (!source.existsSync())
     throw new GrindTestFailure('file not found: ${path}');
@@ -167,7 +167,7 @@ final FilePath _mustache4dartDir =
 final RegExp _mustache4dartPatches =
     new RegExp(r'^\d\d\d-mustache4dart-.*[.]patch$');
 @Task('Update third_party forks')
-updateThirdParty() async {
+void updateThirdParty() async {
   run('rm', arguments: ['-rf', _mustache4dartDir.path]);
   new Directory(_pkgDir.path).createSync(recursive: true);
   run('git', arguments: [
@@ -196,7 +196,7 @@ updateThirdParty() async {
 }
 
 @Task('Analyze dartdoc to ensure there are no errors and warnings')
-analyze() async {
+void analyze() async {
   await new SubprocessLauncher('analyze').runStreamed(
     sdkBin('dartanalyzer'),
     [
@@ -211,7 +211,7 @@ analyze() async {
 
 @Task('analyze, test, and self-test dartdoc')
 @Depends(analyze, checkBuild, test, testDartdoc, tryPublish)
-buildbot() => null;
+void buildbot() => null;
 
 @Task('Generate docs for the Dart SDK')
 Future buildSdkDocs() async {
@@ -410,14 +410,14 @@ Future<List<Map>> _buildTestPackageDocs(
 }
 
 @Task('Build generated test package docs (with inherited docs and source code)')
-Future buildTestPackageDocs() async {
+Future<void> buildTestPackageDocs() async {
   await _buildTestPackageDocs(testPackageDocsDir.absolute.path,
       new Future.value(Directory.current.path));
 }
 
 @Task('Serve test package docs locally with dhttpd on port 8002')
 @Depends(buildTestPackageDocs)
-Future serveTestPackageDocs() async {
+Future<void> serveTestPackageDocs() async {
   log('launching dhttpd on port 8002 for SDK');
   var launcher = new SubprocessLauncher('serve-test-package-docs');
   await launcher.runStreamed(sdkBin('pub'), [
@@ -430,7 +430,7 @@ Future serveTestPackageDocs() async {
   ]);
 }
 
-_serveDocsFrom(String servePath, int port, String context) async {
+Future<void> _serveDocsFrom(String servePath, int port, String context) async {
   log('launching dhttpd on port $port for $context');
   var launcher = new SubprocessLauncher(context);
   await launcher.runStreamed(sdkBin('pub'), ['get']);
@@ -441,7 +441,7 @@ _serveDocsFrom(String servePath, int port, String context) async {
 
 @Task('Serve generated SDK docs locally with dhttpd on port 8000')
 @Depends(buildSdkDocs)
-Future serveSdkDocs() async {
+Future<void> serveSdkDocs() async {
   log('launching dhttpd on port 8000 for SDK');
   var launcher = new SubprocessLauncher('serve-sdk-docs');
   await launcher.runStreamed(sdkBin('pub'), [
@@ -455,7 +455,7 @@ Future serveSdkDocs() async {
 }
 
 @Task('Compare warnings in Dartdoc for Flutter')
-Future compareFlutterWarnings() async {
+Future<void> compareFlutterWarnings() async {
   Directory originalDartdocFlutter =
       Directory.systemTemp.createTempSync('dartdoc-comparison-flutter');
   Future originalDartdoc = createComparisonDartdoc();
@@ -507,7 +507,7 @@ Future compareFlutterWarnings() async {
 
 @Task('Serve generated Flutter docs locally with dhttpd on port 8001')
 @Depends(buildFlutterDocs)
-Future serveFlutterDocs() async {
+Future<void> serveFlutterDocs() async {
   log('launching dhttpd on port 8001 for Flutter');
   var launcher = new SubprocessLauncher('serve-flutter-docs');
   await launcher.runStreamed(sdkBin('pub'), ['get']);
@@ -523,10 +523,10 @@ Future serveFlutterDocs() async {
 
 @Task('Validate flutter docs')
 @Depends(testDartdocFlutterPlugin, buildFlutterDocs)
-validateFlutterDocs() {}
+void validateFlutterDocs() {}
 
 @Task('Build flutter docs')
-Future buildFlutterDocs() async {
+Future<void> buildFlutterDocs() async {
   log('building flutter docs into: $flutterDir');
   Map<String, String> env = _createThrowawayPubCache();
   await _buildFlutterDocs(
@@ -661,12 +661,12 @@ Future<String> buildPubPackage() async {
 
 @Task(
     'Serve an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION environment variables')
-servePubPackage() async {
+Future<void> servePubPackage() async {
   _serveDocsFrom(await buildPubPackage(), 9000, 'serve-pub-package');
 }
 
 @Task('Checks that CHANGELOG mentions current version')
-checkChangelogHasVersion() async {
+Future<void> checkChangelogHasVersion() async {
   var changelog = new File('CHANGELOG.md');
   if (!changelog.existsSync()) {
     fail('ERROR: No CHANGELOG.md found in ${Directory.current}');
@@ -679,7 +679,7 @@ checkChangelogHasVersion() async {
   }
 }
 
-_getPackageVersion() {
+Future<void> _getPackageVersion() {
   var pubspec = new File('pubspec.yaml');
   var yamlDoc;
   if (pubspec.existsSync()) {
@@ -693,7 +693,7 @@ _getPackageVersion() {
 }
 
 @Task('Rebuild generated files')
-build() async {
+Future<void> build() async {
   var launcher = new SubprocessLauncher('build');
   await launcher.runStreamed(sdkBin('pub'),
       ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
@@ -706,7 +706,7 @@ final _generated_files_list = <String>[
 ].map((s) => pathLib.joinAll(pathLib.posix.split(s)));
 
 @Task('Verify generated files are up to date')
-checkBuild() async {
+Future<void> checkBuild() async {
   var originalFileContents = new Map<String, String>();
   var differentFiles = <String>[];
   var launcher = new SubprocessLauncher('check-build');
@@ -744,13 +744,13 @@ checkBuild() async {
 
 @Task('Dry run of publish to pub.dartlang')
 @Depends(checkChangelogHasVersion)
-tryPublish() async {
+Future<void> tryPublish() async {
   var launcher = new SubprocessLauncher('try-publish');
   await launcher.runStreamed(sdkBin('pub'), ['publish', '-n']);
 }
 
 @Task('Run all the tests.')
-test() async {
+Future<void> test() async {
   await testDart2();
   await testFutures.wait();
 }
@@ -767,7 +767,7 @@ List<File> get testFiles => new Directory('test')
     .cast<File>()
     .toList();
 
-testDart2() async {
+Future<void> testDart2() async {
   List<String> parameters = ['--enable-asserts'];
 
   for (File dartFile in testFiles) {
@@ -793,7 +793,7 @@ testDart2() async {
 }
 
 @Task('Generate docs for dartdoc')
-testDartdoc() async {
+Future<void> testDartdoc() async {
   var launcher = new SubprocessLauncher('test-dartdoc');
   await launcher.runStreamed(Platform.resolvedExecutable, [
     '--enable-asserts',
@@ -810,7 +810,7 @@ testDartdoc() async {
 }
 
 @Task('Generate docs for dartdoc with remote linking')
-testDartdocRemote() async {
+Future<void> testDartdocRemote() async {
   var launcher = new SubprocessLauncher('test-dartdoc-remote');
   final RegExp object = new RegExp(
       '<a href="https://api.dartlang.org/(dev|stable)/[^/]*/dart-core/Object-class.html">Object</a>',
@@ -831,7 +831,7 @@ testDartdocRemote() async {
 
 @Task('serve docs for a package that requires flutter with remote linking')
 @Depends(buildDartdocFlutterPluginDocs)
-Future serveDartdocFlutterPluginDocs() async {
+Future<void> serveDartdocFlutterPluginDocs() async {
   await _serveDocsFrom(
       pluginPackageDocsDir.path, 8005, 'serve-dartdoc-flutter-plugin-docs');
 }
@@ -858,12 +858,12 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
 }
 
 @Task('Build docs for a package that requires flutter with remote linking')
-buildDartdocFlutterPluginDocs() async {
+Future<void> buildDartdocFlutterPluginDocs() async {
   await _buildDartdocFlutterPluginDocs();
 }
 
 @Task('Verify docs for a package that requires flutter with remote linking')
-testDartdocFlutterPlugin() async {
+Future<void> testDartdocFlutterPlugin() async {
   WarningsCollection warnings = await _buildDartdocFlutterPluginDocs();
   if (!warnings.warningKeyCounts.isEmpty) {
     fail('No warnings should exist in : ${warnings.warningKeyCounts}');
@@ -879,7 +879,7 @@ testDartdocFlutterPlugin() async {
 }
 
 @Task('update test_package_docs')
-updateTestPackageDocs() async {
+Future<void> updateTestPackageDocs() async {
   var launcher = new SubprocessLauncher('update-test-package-docs');
   var testPackageDocs = new Directory(pathLib.join(
       'testing',
@@ -913,7 +913,7 @@ updateTestPackageDocs() async {
 
 @Task('Validate the SDK doc build.')
 @Depends(buildSdkDocs)
-validateSdkDocs() {
+void validateSdkDocs() {
   const expectedLibCount = 0;
   const expectedSubLibCount = 19;
   File indexHtml = joinFile(sdkDocsDir, ['index.html']);

@@ -47,7 +47,7 @@ class HtmlGeneratorInstance {
     }
   }
 
-  _generateCategoryJson() {
+  void _generateCategoryJson() {
     var encoder = new JsonEncoder.withIndent('  ');
     final List<Map> indexItems = _categorizationItems.map((Categorization e) {
       Map data = {
@@ -77,7 +77,7 @@ class HtmlGeneratorInstance {
   }
 
   List<Categorization> _categorizationItems;
-  _generateSearchIndex() {
+  void _generateSearchIndex() {
     var encoder = _options.prettyIndexJson
         ? new JsonEncoder.withIndent(' ')
         : new JsonEncoder();

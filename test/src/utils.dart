@@ -56,7 +56,7 @@ void delete(Directory dir) {
   if (dir.existsSync()) dir.deleteSync(recursive: true);
 }
 
-init() async {
+void init() async {
   sdkDir = defaultSdkDir;
   sdkPackageMeta = new PackageMeta.fromDir(sdkDir);
 
