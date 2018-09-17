@@ -1,2 +1,8 @@
 dartdoc:
-  categoryOrder: ["Real Libraries", "Unreal"]
+  categories:
+    Excellent:
+      markdown: "Excellent.md"
+      displayName: "Superb"
+    Real Libraries:
+    Unreal:
+      markdown: "Unreal.md"

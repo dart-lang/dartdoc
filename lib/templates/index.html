@@ -23,12 +23,12 @@
           {{#defaultCategory.publicLibraries}}
             {{>library}}
           {{/defaultCategory.publicLibraries}}
-          {{#categories}}
+          {{#categoriesWithPublicLibraries}}
             <h3>{{name}}</h3>
             {{#publicLibraries}}
               {{>library}}
             {{/publicLibraries}}
-          {{/categories}}
+          {{/categoriesWithPublicLibraries}}
           </dl>
         </section>
       {{/localPackages}}

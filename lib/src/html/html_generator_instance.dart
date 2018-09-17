@@ -25,7 +25,7 @@ class HtmlGeneratorInstance {
   final HtmlGeneratorOptions _options;
   final Templates _templates;
   final PackageGraph _packageGraph;
-  final List<ModelElement> _documentedElements = <ModelElement>[];
+  final List<Indexable> _indexedElements = <Indexable>[];
   final FileWriter _writer;
 
   HtmlGeneratorInstance(
@@ -35,6 +35,7 @@ class HtmlGeneratorInstance {
     if (_packageGraph != null) {
       _generateDocs();
       _generateSearchIndex();
+      _generateCategoryJson();
     }
 
     await _copyResources();
@@ -46,16 +47,48 @@ class HtmlGeneratorInstance {
     }
   }
 
+  void _generateCategoryJson() {
+    var encoder = new JsonEncoder.withIndent('  ');
+    final List<Map> indexItems = _categorizationItems.map((Categorization e) {
+      Map data = {
+        'name': e.name,
+        'qualifiedName': e.fullyQualifiedName,
+        'href': e.href,
+        'type': e.kind,
+      };
+
+      if (e.hasCategoryNames) data['categories'] = e.categoryNames;
+      if (e.hasSubCategoryNames) data['subcategories'] = e.subCategoryNames;
+      if (e.hasImage) data['image'] = e.image;
+      if (e.hasSamples) data['samples'] = e.samples;
+      return data;
+    }).toList();
+
+    indexItems.sort((a, b) {
+      var value = compareNatural(a['qualifiedName'], b['qualifiedName']);
+      if (value == 0) {
+        value = compareNatural(a['type'], b['type']);
+      }
+      return value;
+    });
+
+    String json = encoder.convert(indexItems);
+    _writer(pathLib.join('categories.json'), '${json}\n');
+  }
+
+  List<Categorization> _categorizationItems;
   void _generateSearchIndex() {
     var encoder = _options.prettyIndexJson
         ? new JsonEncoder.withIndent(' ')
         : new JsonEncoder();
+    _categorizationItems = [];
 
-    final List<Map> indexItems =
-        _documentedElements.where((e) => e.isCanonical).map((ModelElement e) {
+    final List<Map> indexItems = _indexedElements.map((Indexable e) {
+      if (e is Categorization && e.hasCategorization)
+        _categorizationItems.add(e);
       Map data = {
         'name': e.name,
-        'qualifiedName': e.name,
+        'qualifiedName': e.fullyQualifiedName,
         'href': e.href,
         'type': e.kind,
         'overriddenDepth': e.overriddenDepth,
@@ -90,6 +123,10 @@ class HtmlGeneratorInstance {
     generatePackage(_packageGraph, _packageGraph.defaultPackage);
 
     for (var package in _packageGraph.localPackages) {
+      for (var category in filterNonDocumented(package.categories)) {
+        generateCategory(_packageGraph, category);
+      }
+
       for (var lib in filterNonDocumented(package.libraries)) {
         generateLibrary(_packageGraph, lib);
 
@@ -171,6 +208,16 @@ class HtmlGeneratorInstance {
 
     _build('index.html', _templates.indexTemplate, data);
     _build('__404error.html', _templates.errorTemplate, data);
+  }
+
+  void generateCategory(PackageGraph packageGraph, Category category) {
+    logInfo(
+        'Generating docs for category ${category.name} from ${category.package.fullyQualifiedName}...');
+    TemplateData data =
+        new CategoryTemplateData(_options, packageGraph, category);
+
+    _build(pathLib.joinAll(category.href.split('/')),
+        _templates.categoryTemplate, data);
   }
 
   void generateLibrary(PackageGraph packageGraph, Library lib) {
@@ -290,6 +337,6 @@ class HtmlGeneratorInstance {
         assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
 
     _writer(filename, content);
-    if (data.self is ModelElement) _documentedElements.add(data.self);
+    if (data.self is Indexable) _indexedElements.add(data.self as Indexable);
   }
 }

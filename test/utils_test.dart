@@ -15,7 +15,7 @@ void main() {
   // is the length of that left margin.
   var multilineStringMargin = ' ' * 6;
 
-  trimMargin(s) => s
+  String trimMargin(s) => s
       // Trim the left margin of the first line.
       .replaceFirst('$multilineStringMargin  ', '')
       // Trim the left margin of every following line.
@@ -23,7 +23,7 @@ void main() {
       // Trim the last line.
       .replaceFirst(new RegExp('\n$multilineStringMargin\$'), '');
 
-  expectCorrectDocumentation() =>
+  void expectCorrectDocumentation() =>
       expect(stripComments(trimMargin(comment)), trimMargin(documentation));
 
   group('///-style', () {

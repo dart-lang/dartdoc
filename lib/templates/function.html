@@ -6,7 +6,9 @@
   </div><!--/.sidebar-offcanvas-left-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
-    <h1>{{{self.nameWithGenerics}}} {{self.kind}}</h1>
+    {{#self}}
+    <h1>{{{nameWithGenerics}}} {{kind}} {{>categorization}}</h1>
+    {{/self}}
 
     {{#function}}
     <section class="multi-line-signature">
