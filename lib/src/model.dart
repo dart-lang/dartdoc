@@ -12,6 +12,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart'
     show Declaration, Expression, InstanceCreationExpression;
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/file_system.dart' as fileSystem;
@@ -255,7 +256,7 @@ class Accessor extends ModelElement implements EnclosedElement {
       PackageGraph packageGraph, Member originalMember)
       : super(element, library, packageGraph, originalMember);
 
-  get linkedReturnType {
+  String get linkedReturnType {
     assert(isGetter);
     return modelType.createLinkedReturnTypeName();
   }
@@ -417,7 +418,7 @@ class Accessor extends ModelElement implements EnclosedElement {
 }
 
 class Class extends ModelElement
-    with TypeParameters
+    with TypeParameters, Categorization
     implements EnclosedElement {
   List<DefinedElementType> _mixins;
   DefinedElementType _supertype;
@@ -1168,26 +1169,126 @@ abstract class Categorization implements ModelElement {
   @override
   String _buildDocumentationLocal() {
     _rawDocs = _buildDocumentationBase();
-    _rawDocs = _stripAndSetDartdocCategory(_rawDocs);
+    _rawDocs = _stripAndSetDartdocCategories(_rawDocs);
     return _rawDocs;
   }
 
-  /// Parse {@category ...} in API comments and store the category in
-  /// the [_categoryName] variable.
-  String _stripAndSetDartdocCategory(String rawDocs) {
-    final categoryRegexp =
-        new RegExp(r'[ ]*{@category (.+?)}[ ]*\n?', multiLine: true);
-    return rawDocs.replaceAllMapped(categoryRegexp, (match) {
-      _categoryName = match[1].trim();
+  /// Parse {@category ...} and related information in API comments, stripping
+  /// out that information from the given comments and returning the stripped
+  /// version.
+  String _stripAndSetDartdocCategories(String rawDocs) {
+    Set<String> _categorySet = new Set();
+    Set<String> _subCategorySet = new Set();
+    _hasCategorization = false;
+    final categoryRegexp = new RegExp(
+        r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
+        multiLine: true);
+    rawDocs = rawDocs.replaceAllMapped(categoryRegexp, (match) {
+      _hasCategorization = true;
+      switch (match[1]) {
+        case 'category':
+        case 'api':
+          _categorySet.add(match[2].trim());
+          break;
+        case 'subCategory':
+          _subCategorySet.add(match[2].trim());
+          break;
+        case 'image':
+          _image = match[2].trim();
+          break;
+        case 'samples':
+          _samples = match[2].trim();
+          break;
+      }
       return '';
     });
+
+    if (_categorySet.isEmpty) {
+      // All objects are in the default category if not specified.
+      _categorySet.add(null);
+    }
+    if (_subCategorySet.isEmpty) {
+      // All objects are in the default subcategory if not specified.
+      _subCategorySet.add(null);
+    }
+    _categoryNames = _categorySet.toList()..sort();
+    _subCategoryNames = _subCategorySet.toList()..sort();
+    _image ??= '';
+    _samples ??= '';
+    return rawDocs;
   }
 
-  String _categoryName;
-  String get categoryName {
+  bool get hasSubCategoryNames =>
+      subCategoryNames.length > 1 || subCategoryNames.first != null;
+  List<String> _subCategoryNames;
+
+  /// Either a set of strings containing all declared subcategories for this symbol,
+  /// or a set containing Null if none were declared.
+  List<String> get subCategoryNames {
     // TODO(jcollins-g): avoid side-effect dependency
-    if (_categoryName == null) documentationLocal;
-    return _categoryName;
+    if (_subCategoryNames == null) documentationLocal;
+    return _subCategoryNames;
+  }
+
+  @override
+  bool get hasCategoryNames =>
+      categoryNames.length > 1 || categoryNames.first != null;
+  List<String> _categoryNames;
+
+  /// Either a set of strings containing all declared categories for this symbol,
+  /// or a set containing Null if none were declared.
+  List<String> get categoryNames {
+    // TODO(jcollins-g): avoid side-effect dependency
+    if (_categoryNames == null) documentationLocal;
+    return _categoryNames;
+  }
+
+  bool get hasImage => image.isNotEmpty;
+  String _image;
+
+  /// Either a URI to a defined image, or the empty string if none
+  /// was declared.
+  String get image {
+    // TODO(jcollins-g): avoid side-effect dependency
+    if (_image == null) documentationLocal;
+    return _image;
+  }
+
+  bool get hasSamples => samples.isNotEmpty;
+  String _samples;
+
+  /// Either a URI to documentation with samples, or the empty string if none
+  /// was declared.
+  String get samples {
+    // TODO(jcollins-g): avoid side-effect dependency
+    if (_samples == null) documentationLocal;
+    return _samples;
+  }
+
+  bool _hasCategorization;
+
+  Iterable<Category> _categories;
+  Iterable<Category> get categories {
+    if (_categories == null) {
+      _categories = categoryNames
+          .map((n) => package.nameToCategory[n])
+          .where((c) => c != null)
+          .toList()
+            ..sort();
+    }
+    return _categories;
+  }
+
+  Iterable<Category> get displayedCategories {
+    if (config.showUndocumentedCategories) return categories;
+    return categories.where((c) => c.isDocumented);
+  }
+
+  /// True if categories, subcategories, a documentation icon, or samples were
+  /// declared.
+  bool get hasCategorization {
+    if (_hasCategorization == null) documentationLocal;
+    return _hasCategorization;
   }
 }
 
@@ -1730,11 +1831,7 @@ abstract class GetterSetterCombo implements ModelElement {
   Accessor get setter;
 }
 
-class Library extends ModelElement with Categorization {
-  List<Class> _classes;
-  List<Enum> _enums;
-  List<ModelFunction> _functions;
-  List<Typedef> _typeDefs;
+class Library extends ModelElement with Categorization, TopLevelContainer {
   List<TopLevelVariable> _variables;
   Namespace _exportedNamespace;
   String _name;
@@ -1794,6 +1891,7 @@ class Library extends ModelElement with Categorization {
 
   List<Class> get allClasses => _allClasses;
 
+  @override
   Iterable<Class> get classes {
     return _allClasses
         .where((c) => !c.isErrorOrException)
@@ -1825,9 +1923,7 @@ class Library extends ModelElement with Categorization {
   /// we don't count it as a candidate for canonicalization.
   bool get isSdkUndocumented => (sdkLib != null && !sdkLib.isDocumented);
 
-  Iterable<Class> get publicClasses => filterNonPublic(classes);
-
-  List<TopLevelVariable> _constants;
+  @override
   Iterable<TopLevelVariable> get constants {
     if (_constants == null) {
       // _getVariables() is already sorted.
@@ -1878,8 +1974,6 @@ class Library extends ModelElement with Categorization {
     }
     return _importedExportedLibraries;
   }
-
-  Iterable<TopLevelVariable> get publicConstants => filterNonPublic(constants);
 
   String _dirName;
   String get dirName {
@@ -1941,7 +2035,8 @@ class Library extends ModelElement with Categorization {
   @override
   ModelElement get enclosingElement => null;
 
-  List<Class> get enums {
+  @override
+  List<Enum> get enums {
     if (_enums != null) return _enums;
     List<ClassElement> enumClasses = [];
     enumClasses.addAll(_exportedNamespace.definedNames.values
@@ -1956,8 +2051,7 @@ class Library extends ModelElement with Categorization {
     return _enums;
   }
 
-  Iterable<Class> get publicEnums => filterNonPublic(enums);
-
+  @override
   List<Class> get exceptions {
     return _allClasses
         .where((c) => c.isErrorOrException)
@@ -1965,11 +2059,10 @@ class Library extends ModelElement with Categorization {
           ..sort(byName);
   }
 
-  Iterable<Class> get publicExceptions => filterNonPublic(exceptions);
-
   @override
   String get fileName => '$dirName-library.html';
 
+  @override
   List<ModelFunction> get functions {
     if (_functions != null) return _functions;
 
@@ -1989,22 +2082,6 @@ class Library extends ModelElement with Categorization {
 
     return _functions;
   }
-
-  Iterable<ModelFunction> get publicFunctions => filterNonPublic(functions);
-
-  bool get hasPublicClasses => publicClasses.isNotEmpty;
-
-  bool get hasPublicConstants => publicConstants.isNotEmpty;
-
-  bool get hasPublicEnums => publicEnums.isNotEmpty;
-
-  bool get hasPublicExceptions => publicExceptions.isNotEmpty;
-
-  bool get hasPublicFunctions => publicFunctions.isNotEmpty;
-
-  bool get hasPublicProperties => publicProperties.isNotEmpty;
-
-  bool get hasPublicTypedefs => publicTypedefs.isNotEmpty;
 
   @override
   String get href {
@@ -2068,9 +2145,8 @@ class Library extends ModelElement with Categorization {
 
   String get path => _libraryElement.definingCompilationUnit.name;
 
-  List<TopLevelVariable> _properties;
-
   /// All variables ("properties") except constants.
+  @override
   Iterable<TopLevelVariable> get properties {
     if (_properties == null) {
       _properties =
@@ -2079,11 +2155,9 @@ class Library extends ModelElement with Categorization {
     return _properties;
   }
 
-  Iterable<TopLevelVariable> get publicProperties =>
-      filterNonPublic(properties);
-
+  @override
   List<Typedef> get typedefs {
-    if (_typeDefs != null) return _typeDefs;
+    if (_typedefs != null) return _typedefs;
 
     Set<FunctionTypeAliasElement> elements = new Set();
     elements
@@ -2095,15 +2169,13 @@ class Library extends ModelElement with Categorization {
     elements.addAll(_exportedNamespace.definedNames.values
         .where((e) => e is FunctionTypeAliasElement)
         .cast<FunctionTypeAliasElement>());
-    _typeDefs = elements
+    _typedefs = elements
         .map((e) => new ModelElement.from(e, this, packageGraph) as Typedef)
         .toList(growable: false)
           ..sort(byName);
 
-    return _typeDefs;
+    return _typedefs;
   }
-
-  Iterable<Typedef> get publicTypedefs => filterNonPublic(typedefs);
 
   List<Class> get _allClasses {
     if (_classes != null) return _classes;
@@ -2224,6 +2296,12 @@ class Library extends ModelElement with Categorization {
     }
     assert(!name.startsWith('file:'));
     return name;
+  }
+
+  static PackageMeta getPackageMeta(Element element) {
+    String sourcePath = element.source.fullName;
+    return new PackageMeta.fromDir(
+        new File(pathLib.canonicalize(sourcePath)).parent);
   }
 
   static String getLibraryName(LibraryElement element) {
@@ -2515,7 +2593,7 @@ abstract class Privacy {
 /// from the public interface perspective.
 abstract class ModelElement extends Canonicalization
     with Privacy, Warnable, Nameable, SourceCodeMixin
-    implements Comparable, Documentable {
+    implements Comparable, Documentable, Indexable {
   final Element _element;
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Member _originalMember;
@@ -2717,6 +2795,10 @@ abstract class ModelElement extends Canonicalization
     assert(newModelElement.element is! MultiplyInheritedExecutableElement);
     return newModelElement;
   }
+
+  /// Stub for mustache4dart, or it will search enclosing elements to find
+  /// names for members.
+  bool get hasCategoryNames => false;
 
   Set<Library> get exportedInLibraries {
     return library
@@ -3170,6 +3252,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   /// A human-friendly name for the kind of element this is.
+  @override
   String get kind;
 
   @override
@@ -3234,6 +3317,7 @@ abstract class ModelElement extends Canonicalization
   ModelElement get overriddenElement => null;
 
   int _overriddenDepth;
+  @override
   int get overriddenDepth {
     if (_overriddenDepth == null) {
       _overriddenDepth = 0;
@@ -3858,7 +3942,7 @@ abstract class ModelElement extends Canonicalization
 }
 
 /// A [ModelElement] for a [FunctionElement] that isn't part of a type definition.
-class ModelFunction extends ModelFunctionTyped {
+class ModelFunction extends ModelFunctionTyped with Categorization {
   ModelFunction(
       FunctionElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
@@ -3969,6 +4053,14 @@ abstract class Nameable {
     }
     return _namePieces;
   }
+}
+
+/// Something able to be indexed.
+abstract class Indexable implements Nameable {
+  String get fullyQualifiedName => name;
+  String get href;
+  String get kind;
+  int get overriddenDepth => 0;
 }
 
 class Operator extends Method {
@@ -4407,13 +4499,13 @@ class PackageGraph {
       assert(allLibrariesAdded);
       // Help the user if they pass us a package that doesn't exist.
       for (String packageName in config.packageOrder) {
-        if (!packageMap.containsKey(packageName))
+        if (!packages.map((p) => p.name).contains(packageName))
           warnOnElement(
               null, PackageWarning.packageOrderGivesMissingPackageName,
               message:
-                  "${packageName}, packages: ${packageMap.keys.join(',')}");
+                  "${packageName}, packages: ${packages.map((p) => p.name).join(',')}");
       }
-      _publicPackages = filterNonPublic(packages).toList()..sort();
+      _publicPackages = packages.where((p) => p.isPublic).toList()..sort();
     }
     return _publicPackages;
   }
@@ -4428,8 +4520,7 @@ class PackageGraph {
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
   void _tagReexportsFor(
-      final Library topLevelLibrary,
-      final LibraryElement libraryElement,
+      final Library topLevelLibrary, final LibraryElement libraryElement,
       [ExportElement lastExportedElement]) {
     if (libraryElement == null) {
       // The first call to _tagReexportFor should not have a null libraryElement.
@@ -4445,9 +4536,7 @@ class PackageGraph {
     _libraryElementReexportedBy[libraryElement].add(topLevelLibrary);
     for (ExportElement exportedElement in libraryElement.exports) {
       _tagReexportsFor(
-          topLevelLibrary,
-          exportedElement.exportedLibrary,
-          exportedElement);
+          topLevelLibrary, exportedElement.exportedLibrary, exportedElement);
     }
   }
 
@@ -4820,19 +4909,70 @@ class PackageGraph {
   }
 }
 
+/// A set of [Class]es, [Enum]s, [TopLevelVariable]s, [ModelFunction]s,
+/// [Property]s, and [Typedef]s, possibly initialized after construction by
+/// accessing private member variables.  Do not call any methods or members
+/// excepting [name] and the private Lists below before finishing initialization
+/// of a [TopLevelContainer].
+abstract class TopLevelContainer extends Nameable {
+  List<Class> _classes;
+  List<Enum> _enums;
+  List<Class> _exceptions;
+  List<TopLevelVariable> _constants;
+  List<TopLevelVariable> _properties;
+  List<ModelFunction> _functions;
+  List<Typedef> _typedefs;
+
+  Iterable<Class> get classes => _classes;
+  Iterable<Enum> get enums => _enums;
+  Iterable<Class> get exceptions => _exceptions;
+  Iterable<TopLevelVariable> get constants => _constants;
+  Iterable<TopLevelVariable> get properties => _properties;
+  Iterable<ModelFunction> get functions => _functions;
+  Iterable<Typedef> get typedefs => _typedefs;
+
+  bool get hasPublicClasses => publicClasses.isNotEmpty;
+  bool get hasPublicConstants => publicConstants.isNotEmpty;
+  bool get hasPublicEnums => publicEnums.isNotEmpty;
+  bool get hasPublicExceptions => publicExceptions.isNotEmpty;
+  bool get hasPublicFunctions => publicFunctions.isNotEmpty;
+  bool get hasPublicProperties => publicProperties.isNotEmpty;
+  bool get hasPublicTypedefs => publicTypedefs.isNotEmpty;
+
+  Iterable<Class> get publicClasses => filterNonPublic(classes);
+  Iterable<TopLevelVariable> get publicConstants => filterNonPublic(constants);
+  Iterable<Class> get publicEnums => filterNonPublic(enums);
+  Iterable<Class> get publicExceptions => filterNonPublic(exceptions);
+  Iterable<ModelFunction> get publicFunctions => filterNonPublic(functions);
+  Iterable<TopLevelVariable> get publicProperties =>
+      filterNonPublic(properties);
+  Iterable<Typedef> get publicTypedefs => filterNonPublic(typedefs);
+
+  @override
+  String toString() => name;
+}
+
 /// A set of libraries, initialized after construction by accessing [_libraries].
 /// Do not cache return values of any methods or members excepting [_libraries]
 /// and [name] before finishing initialization of a [LibraryContainer].
 abstract class LibraryContainer extends Nameable
     implements Comparable<LibraryContainer> {
   final List<Library> _libraries = [];
+  List<Library> get libraries => _libraries;
+
+  PackageGraph get packageGraph;
+  Iterable<Library> get publicLibraries => filterNonPublic(libraries);
+  bool get hasPublicLibraries => publicLibraries.isNotEmpty;
 
   /// The name of the container or object that this LibraryContainer is a part
   /// of.  Used for sorting in [containerOrder].
   String get enclosingName;
 
-  List<Library> get libraries => _libraries;
-  Iterable<Library> get publicLibraries => filterNonPublic(libraries);
+  /// Order by which this container should be sorted.
+  List<String> get containerOrder;
+
+  /// Sorting key.  [containerOrder] should contain these.
+  String get sortKey => name;
 
   @override
   String toString() => name;
@@ -4841,9 +4981,6 @@ abstract class LibraryContainer extends Nameable
   /// that only represent a part of the SDK.
   bool get isSdk => false;
 
-  /// Order by which this container should be sorted.
-  List<String> get containerOrder;
-
   /// Returns:
   /// -1 if this container is listed in [containerOrder].
   /// 0 if this container is named the same as the [enclosingName].
@@ -4851,10 +4988,10 @@ abstract class LibraryContainer extends Nameable
   /// 2 if this group has a name that contains the name [enclosingName].
   /// 3 otherwise.
   int get _group {
-    if (containerOrder.contains(name)) return -1;
-    if (equalsIgnoreAsciiCase(name, enclosingName)) return 0;
+    if (containerOrder.contains(sortKey)) return -1;
+    if (equalsIgnoreAsciiCase(sortKey, enclosingName)) return 0;
     if (isSdk) return 1;
-    if (name.toLowerCase().contains(enclosingName.toLowerCase())) return 2;
+    if (sortKey.toLowerCase().contains(enclosingName.toLowerCase())) return 2;
     return 3;
   }
 
@@ -4862,38 +4999,214 @@ abstract class LibraryContainer extends Nameable
   int compareTo(LibraryContainer other) {
     if (_group == other._group) {
       if (_group == -1) {
-        return Comparable.compare(
-            containerOrder.indexOf(name), containerOrder.indexOf(other.name));
+        return Comparable.compare(containerOrder.indexOf(sortKey),
+            containerOrder.indexOf(other.sortKey));
       } else {
-        return name.toLowerCase().compareTo(other.name.toLowerCase());
+        return sortKey.toLowerCase().compareTo(other.sortKey.toLowerCase());
       }
     }
     return Comparable.compare(_group, other._group);
   }
 }
 
+abstract class MarkdownFileDocumentation
+    implements Documentable, Canonicalization {
+  DocumentLocation get documentedWhere;
+
+  @override
+  String get documentation => documentationFile?.contents;
+
+  Documentation __documentation;
+  Documentation get _documentation {
+    if (__documentation != null) return __documentation;
+    __documentation = new Documentation.forElement(this);
+    return __documentation;
+  }
+
+  @override
+  String get documentationAsHtml => _documentation.asHtml;
+
+  @override
+  bool get hasDocumentation =>
+      documentationFile != null && documentationFile.contents.isNotEmpty;
+
+  @override
+  bool get hasExtendedDocumentation =>
+      documentation != null && documentation.isNotEmpty;
+
+  @override
+  bool get isDocumented;
+
+  @override
+  String get oneLineDoc => __documentation.asOneLiner;
+
+  FileContents get documentationFile;
+
+  @override
+  String get location => pathLib.toUri(documentationFile.file.path).toString();
+
+  @override
+  Set<String> get locationPieces => new Set.from(<String>[location]);
+}
+
 /// A category is a subcategory of a package, containing libraries tagged
-/// with a @category identifier.  Comparable so it can be sorted according to
-/// [DartdocOptionContext.categoryOrder].
-class Category extends LibraryContainer {
-  final String _name;
-
+/// with a @category identifier.
+class Category extends Nameable
+    with
+        Warnable,
+        Canonicalization,
+        MarkdownFileDocumentation,
+        LibraryContainer,
+        TopLevelContainer,
+        Indexable
+    implements Documentable {
   /// All libraries in [libraries] must come from [package].
-  final Package package;
-  final DartdocOptionContext config;
+  Package package;
+  String _name;
+  @override
+  DartdocOptionContext config;
+  final Set<Categorization> _allItems = new Set();
 
-  Category(this._name, this.package, this.config);
+  Category(this._name, this.package, this.config) {
+    _enums = [];
+    _exceptions = [];
+    _classes = [];
+    _constants = [];
+    _properties = [];
+    _functions = [];
+    _typedefs = [];
+  }
+
+  void addItem(Categorization c) {
+    if (_allItems.contains(c)) return;
+    _allItems.add(c);
+    if (c is Library) {
+      _libraries.add(c);
+    } else if (c is Enum) {
+      _enums.add(c);
+    } else if (c is Class) {
+      if (c.isErrorOrException) {
+        _exceptions.add(c);
+      } else {
+        _classes.add(c);
+      }
+    } else if (c is TopLevelVariable) {
+      if (c.isConst) {
+        _constants.add(c);
+      } else {
+        _properties.add(c);
+      }
+    } else if (c is ModelFunction) {
+      _functions.add(c);
+    } else if (c is Typedef) {
+      _typedefs.add(c);
+    } else {
+      throw UnimplementedError("Unrecognized element");
+    }
+  }
 
   @override
-  String get name => _name;
+  // TODO(jcollins-g): make [Category] a [Warnable]?
+  Warnable get enclosingElement => null;
 
   @override
-  List<String> get containerOrder => config.categoryOrder;
+  Element get element => null;
+
+  @override
+  String get name => categoryDefinition?.displayName ?? _name;
+
+  @override
+  String get sortKey => _name;
+
+  @override
+  List<String> get containerOrder => config.categories.categoryOrder;
 
   @override
   String get enclosingName => package.name;
 
+  @override
   PackageGraph get packageGraph => package.packageGraph;
+
+  @override
+  Library get canonicalLibrary => null;
+
+  @override
+  List<Locatable> get documentationFrom => [this];
+
+  @override
+  DocumentLocation get documentedWhere => package.documentedWhere;
+
+  bool _isDocumented;
+  @override
+  bool get isDocumented {
+    if (_isDocumented == null) {
+      _isDocumented = documentedWhere != DocumentLocation.missing &&
+          documentationFile != null;
+    }
+    return _isDocumented;
+  }
+
+  @override
+  String get fullyQualifiedName => name;
+
+  @override
+  String get href =>
+      isCanonical ? '${package.baseHref}topics/${name}-topic.html' : null;
+
+  String get linkedName {
+    String unbrokenCategoryName = name.replaceAll(' ', '&nbsp;');
+    if (isDocumented) {
+      return '<a href="$href">$unbrokenCategoryName</a>';
+    } else {
+      return unbrokenCategoryName;
+    }
+  }
+
+  String _categoryNumberClass;
+
+  /// The position in the container order for this category.
+  String get categoryNumberClass {
+    if (_categoryNumberClass == null) {
+      _categoryNumberClass = "cp-${package.categories.indexOf(this)}";
+    }
+    return _categoryNumberClass;
+  }
+
+  /// Category name used in template as part of the class.
+  String get spanClass => name.split(' ').join('-').toLowerCase();
+
+  CategoryDefinition get categoryDefinition =>
+      config.categories.categoryDefinitions[sortKey];
+
+  @override
+  bool get isCanonical => categoryDefinition != null;
+
+  @override
+  // TODO(jcollins-g): Category?  Topic?  Group?  Stuff?  Find a better name.
+  String get kind => 'Topic';
+
+  FileContents _documentationFile;
+  @override
+  FileContents get documentationFile {
+    if (_documentationFile == null) {
+      if (categoryDefinition?.documentationMarkdown != null) {
+        _documentationFile = new FileContents(
+            new File(categoryDefinition.documentationMarkdown));
+      }
+    }
+    return _documentationFile;
+  }
+
+  @override
+  void warn(PackageWarning kind,
+      {String message,
+      Iterable<Locatable> referredFrom,
+      Iterable<String> extendedDebug}) {
+    packageGraph.warnOnElement(this, kind,
+        message: message,
+        referredFrom: referredFrom,
+        extendedDebug: extendedDebug);
+  }
 }
 
 /// For a given package, indicate with this enum whether it should be documented
@@ -4970,9 +5283,6 @@ class Package extends LibraryContainer
   /// Return true if the code has defined non-default categories for libraries
   /// in this package.
   bool get hasCategories => categories.isNotEmpty;
-
-  @override
-  List<String> get containerOrder => packageGraph.config.packageOrder;
 
   LibraryContainer get defaultCategory => nameToCategory[null];
 
@@ -5100,25 +5410,40 @@ class Package extends LibraryContainer
   /// A map of category name to the category itself.
   Map<String, Category> get nameToCategory {
     if (_nameToCategory.isEmpty) {
-      _nameToCategory[null] = new Category(null, this, config);
-      for (Library lib in libraries) {
-        String category = lib.categoryName;
+      Category categoryFor(String category) {
         _nameToCategory.putIfAbsent(
             category, () => new Category(category, this, config));
-        _nameToCategory[category]._libraries.add(lib);
+        return _nameToCategory[category];
+      }
+
+      _nameToCategory[null] = new Category(null, this, config);
+      for (Categorization c in libraries.expand((l) => l
+          .allCanonicalModelElements
+          .where((e) => e is Categorization)
+          .cast<Categorization>())) {
+        for (String category in c.categoryNames) {
+          categoryFor(category).addItem(c);
+        }
       }
     }
     return _nameToCategory;
   }
 
-  List<LibraryContainer> _categories;
-  List<LibraryContainer> get categories {
+  List<Category> _categories;
+  List<Category> get categories {
     if (_categories == null) {
       _categories = nameToCategory.values.where((c) => c.name != null).toList()
         ..sort();
     }
     return _categories;
   }
+
+  Iterable<LibraryContainer> get categoriesWithPublicLibraries =>
+      categories.where((c) => c.publicLibraries.isNotEmpty);
+
+  Iterable<Category> get documentedCategories =>
+      categories.where((c) => c.isDocumented);
+  bool get hasDocumentedCategories => documentedCategories.isNotEmpty;
 
   DartdocOptionContext _config;
   @override
@@ -5166,6 +5491,9 @@ class Package extends LibraryContainer
 
   @override
   Element get element => null;
+
+  @override
+  List<String> get containerOrder => config.packageOrder;
 }
 
 class Parameter extends ModelElement implements EnclosedElement {
@@ -5356,7 +5684,7 @@ abstract class TypeParameters implements ModelElement {
 
 /// Top-level variables. But also picks up getters and setters?
 class TopLevelVariable extends ModelElement
-    with GetterSetterCombo
+    with GetterSetterCombo, SourceCodeMixin, Categorization
     implements EnclosedElement {
   @override
   final Accessor getter;
@@ -5437,7 +5765,7 @@ class TopLevelVariable extends ModelElement
 }
 
 class Typedef extends ModelElement
-    with TypeParameters
+    with SourceCodeMixin, TypeParameters, Categorization
     implements EnclosedElement {
   Typedef(FunctionTypeAliasElement element, Library library,
       PackageGraph packageGraph)

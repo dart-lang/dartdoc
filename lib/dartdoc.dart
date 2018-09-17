@@ -66,7 +66,8 @@ class Dartdoc extends PackageBuilder {
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a Dartdoc object with them.
-  static withDefaultGenerators(DartdocGeneratorOptionContext config) async {
+  static Future<Dartdoc> withDefaultGenerators(
+      DartdocGeneratorOptionContext config) async {
     List<Generator> generators = await initGenerators(config);
     return new Dartdoc._(config, generators);
   }
@@ -259,7 +260,7 @@ class Dartdoc extends PackageBuilder {
       } else {
         // Error messages are orphaned by design and do not appear in the search
         // index.
-        if (relativeFullPath != '__404error.html') {
+        if (<String>['__404error.html', 'categories.json'].contains(fullPath)) {
           _warn(packageGraph, PackageWarning.orphanedFile, fullPath,
               normalOrigin);
         }

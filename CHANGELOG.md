@@ -1,3 +1,8 @@
+## 0.21.0-dev.0
+* Expand categories to all top level items as well as libraries.  (#1681, #1353)
+* The categoryOrder option in dartdoc_options.yaml and the command line
+  is replaced with a more generic "categories" option.  See README.md.
+
 ## 0.20.4
 * Hide pragma declarations from generated docs (#1726)
 * Fix problems with lists in markdown not being handled correctly (#172)

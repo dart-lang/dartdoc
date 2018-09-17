@@ -25,6 +25,8 @@ class TestLibraryContainer extends LibraryContainer {
   final String name;
   @override
   bool get isSdk => false;
+  @override
+  final PackageGraph packageGraph = null;
 
   TestLibraryContainer(
       this.name, this.containerOrder, LibraryContainer enclosingContainer) {
@@ -113,20 +115,104 @@ void main() {
   });
 
   group('Category', () {
+    test(
+        'Verify auto-included dependencies do not use default package category definitions',
+        () {
+      Class IAmAClassWithCategories = ginormousPackageGraph.localPackages
+          .firstWhere((Package p) => p.name == 'test_package_imported')
+          .publicLibraries
+          .firstWhere((Library l) => l.name == 'categoriesExported')
+          .publicClasses
+          .firstWhere((Class c) => c.name == 'IAmAClassWithCategories');
+      expect(IAmAClassWithCategories.hasCategoryNames, isTrue);
+      expect(IAmAClassWithCategories.categories.length, equals(1));
+      expect(
+          IAmAClassWithCategories.categories.first.name, equals('Excellent'));
+      expect(IAmAClassWithCategories.displayedCategories, isEmpty);
+    });
+
+    // For flutter, we allow reexports to pick up categories from the package
+    // they are exposed in.
+    test('Verify that reexported classes pick up categories', () {
+      Class IAmAClassWithCategoriesReexport = ginormousPackageGraph
+          .localPackages
+          .firstWhere((Package p) => p.name == 'test_package')
+          .publicLibraries
+          .firstWhere((Library l) => l.name == 'fake')
+          .publicClasses
+          .firstWhere((Class c) => c.name == 'IAmAClassWithCategories');
+      expect(IAmAClassWithCategoriesReexport.hasCategoryNames, isTrue);
+      expect(IAmAClassWithCategoriesReexport.categories.length, equals(1));
+      expect(IAmAClassWithCategoriesReexport.categories.first.name,
+          equals('Superb'));
+      expect(IAmAClassWithCategoriesReexport.displayedCategories, isNotEmpty);
+      Category category =
+          IAmAClassWithCategoriesReexport.displayedCategories.first;
+      expect(category.spanClass, equals('superb'));
+      expect(category.categoryNumberClass, equals('cp-0'));
+      expect(category.isDocumented, isTrue);
+    });
+
+    test('Verify that multiple categories work correctly', () {
+      Library fakeLibrary = ginormousPackageGraph.localPackages
+          .firstWhere((Package p) => p.name == 'test_package')
+          .publicLibraries
+          .firstWhere((Library l) => l.name == 'fake');
+      Class BaseForDocComments = fakeLibrary.publicClasses
+          .firstWhere((Class c) => c.name == 'BaseForDocComments');
+      Class SubForDocComments = fakeLibrary.publicClasses
+          .firstWhere((Class c) => c.name == 'SubForDocComments');
+      expect(BaseForDocComments.hasCategoryNames, isTrue);
+      // Display both, with the correct order and display name.
+      expect(BaseForDocComments.displayedCategories.length, equals(2));
+      expect(
+          BaseForDocComments.displayedCategories.first.name, equals('Superb'));
+      expect(
+          BaseForDocComments.displayedCategories.last.name, equals('Unreal'));
+      // Subclasses do not inherit category information.
+      expect(SubForDocComments.hasCategoryNames, isTrue);
+      expect(SubForDocComments.categories, hasLength(1));
+      expect(SubForDocComments.categories.first.isDocumented, isFalse);
+      expect(SubForDocComments.displayedCategories, isEmpty);
+    });
+
     test('Verify categories for test_package', () {
       expect(packageGraph.localPackages.length, equals(1));
       expect(packageGraph.localPackages.first.hasCategories, isTrue);
       List<Category> packageCategories =
           packageGraph.localPackages.first.categories;
-      expect(packageCategories.length, equals(3));
-      expect(packageCategories.map((c) => c.name).toList(),
-          orderedEquals(['Real Libraries', 'Unreal', 'Misc']));
+      expect(packageCategories.length, equals(6));
+      expect(
+          packageGraph.localPackages.first.categoriesWithPublicLibraries.length,
+          equals(3));
+      expect(
+          packageCategories.map((c) => c.name).toList(),
+          orderedEquals([
+            'Superb',
+            'Real Libraries',
+            'Unreal',
+            'Misc',
+            'More Excellence',
+            'NotSoExcellent'
+          ]));
       expect(packageCategories.map((c) => c.libraries.length).toList(),
-          orderedEquals([2, 2, 1]));
+          orderedEquals([0, 3, 2, 1, 0, 0]));
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
           equals(3));
+    });
+
+    test('Verify libraries with multiple categories show up in multiple places',
+        () {
+      List<Category> packageCategories =
+          packageGraph.publicPackages.first.categories;
+      Category realLibraries =
+          packageCategories.firstWhere((c) => c.name == 'Real Libraries');
+      Category misc = packageCategories.firstWhere((c) => c.name == 'Misc');
+      expect(
+          realLibraries.libraries.map((l) => l.name), contains('two_exports'));
+      expect(misc.libraries.map((l) => l.name), contains('two_exports'));
     });
 
     test('Verify that packages without categories get handled', () {

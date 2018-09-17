@@ -53,6 +53,10 @@ import 'css.dart' as css;
 import 'example.dart';
 import 'two_exports.dart' show BaseClass;
 
+// ignore: uri_does_not_exist
+export 'package:test_package_imported/categoryExporting.dart'
+    show IAmAClassWithCategories;
+
 abstract class ImplementingThingy implements BaseThingy {}
 
 abstract class BaseThingy {
@@ -708,6 +712,14 @@ class SpecialList<E> extends ListBase<E> {
 /// This inherits operators.
 class ExtraSpecialList<E> extends SpecialList {}
 
+/// Category information should not follow inheritance.
+///
+/// {@category Excellent}
+/// {@category Unreal}
+/// {@category More Excellence}
+/// {@subCategory Things and Such}
+/// {@image https://flutter.io/images/catalog-widget-placeholder.png}
+/// {@samples https://flutter.io}
 class BaseForDocComments {
   /// Takes a [value] and returns a String.
   ///
@@ -756,6 +768,7 @@ class BaseForDocComments {
 }
 
 /// Testing if docs for inherited method are correct.
+/// {@category NotSoExcellent}
 class SubForDocComments extends BaseForDocComments {
   /// Reference to [foo] and [bar]
   void localMethod(String foo, bar) {}
