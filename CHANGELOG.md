@@ -1,3 +1,7 @@
+## 0.21.1
+* Fix a problem where category ordering specified in categories option
+  was not obeyed.  Reintroduce categoryOrder option to solve this problem.
+
 ## 0.21.0
 * Expand categories to all top level items as well as libraries.  (#1681, #1353)
 * The categoryOrder option in dartdoc_options.yaml and the command line
