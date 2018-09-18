@@ -109,15 +109,18 @@ dartdoc:
     "Second Category":
       markdown: doc/Second.md
       name: Great
+  categoryOrder: ["First Category", "Second Category"]
   linkTo:
     url: "https://my.dartdocumentationsite.org/dev/%v%"
 ```
 
 Unrecognized options will be ignored.  Supported options:
 
-  * **categories**:  Specify the order of categories.  For APIs you'd like to document, specify
+  * **categories**:  More details for each category/topic.  For topics you'd like to document, specify
     the markdown file with `markdown:` to use for the category page.  Optionally, rename the
     category from the source code into a display name with 'name:'.
+  * **categoryOrder**:  Specify the order of topics for display in the sidebar and
+    the package page.
   * **exclude**:  Specify a list of library names to avoid generating docs for,
     overriding any specified in include.
   * **include**:  Specify a list of library names to generate docs for, ignoring all others.

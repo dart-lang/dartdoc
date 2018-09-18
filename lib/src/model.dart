@@ -149,7 +149,6 @@ abstract class Inheritable implements ModelElement {
             // starting from the ModelElement.
             if (canonicalC != null) {
               assert(canonicalC.isCanonical);
-              //assert(this.inheritance.contains(canonicalC));
               assert(canonicalC.contains(searchElement));
               _canonicalEnclosingClass = canonicalC;
               break;
@@ -5131,7 +5130,7 @@ class Category extends Nameable
   String get sortKey => _name;
 
   @override
-  List<String> get containerOrder => config.categories.categoryOrder;
+  List<String> get containerOrder => config.categoryOrder;
 
   @override
   String get enclosingName => package.name;
