@@ -1,4 +1,4 @@
-## 0.21.0-dev.0
+## 0.21.0
 * Expand categories to all top level items as well as libraries.  (#1681, #1353)
 * The categoryOrder option in dartdoc_options.yaml and the command line
   is replaced with a more generic "categories" option.  See README.md.
