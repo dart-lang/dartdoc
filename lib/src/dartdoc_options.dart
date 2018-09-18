@@ -77,24 +77,19 @@ class CategoryConfiguration {
   /// A map of [CategoryDefinition.name] to [CategoryDefinition] objects.
   final Map<String, CategoryDefinition> categoryDefinitions;
 
-  /// The defined order for categories.
-  List<String> categoryOrder;
-
-  CategoryConfiguration._(this.categoryDefinitions, this.categoryOrder);
+  CategoryConfiguration._(this.categoryDefinitions);
 
   static CategoryConfiguration get empty {
-    return new CategoryConfiguration._({}, []);
+    return new CategoryConfiguration._({});
   }
 
   static CategoryConfiguration fromYamlMap(
       YamlMap yamlMap, pathLib.Context pathContext) {
-    List<String> categoriesInOrder = [];
     Map<String, CategoryDefinition> newCategoryDefinitions = {};
     for (MapEntry entry in yamlMap.entries) {
       String name = entry.key.toString();
       String displayName;
       String documentationMarkdown;
-      categoriesInOrder.add(name);
       var categoryMap = entry.value;
       if (categoryMap is Map) {
         displayName = categoryMap['displayName']?.toString();
@@ -111,8 +106,7 @@ class CategoryConfiguration {
             new CategoryDefinition(name, displayName, documentationMarkdown);
       }
     }
-    return new CategoryConfiguration._(
-        newCategoryDefinitions, categoriesInOrder);
+    return new CategoryConfiguration._(newCategoryDefinitions);
   }
 }
 
@@ -1014,6 +1008,7 @@ class DartdocOptionContext {
       optionSet['ambiguousReexportScorerMinConfidence'].valueAt(context);
   bool get autoIncludeDependencies =>
       optionSet['autoIncludeDependencies'].valueAt(context);
+  List<String> get categoryOrder => optionSet['categoryOrder'].valueAt(context);
   CategoryConfiguration get categories =>
       optionSet['categories'].valueAt(context);
   List<String> get dropTextFrom => optionSet['dropTextFrom'].valueAt(context);
@@ -1068,7 +1063,6 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     new DartdocOptionArgOnly<bool>('addCrossdart', false,
         help: 'Add Crossdart links to the source code pieces.',
         negatable: true),
-
     new DartdocOptionArgFile<double>(
         'ambiguousReexportScorerMinConfidence', 0.1,
         help:
@@ -1077,6 +1071,10 @@ Future<List<DartdocOption>> createDartdocOptions() async {
         help:
             'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
         negatable: true),
+    new DartdocOptionArgFile<List<String>>('categoryOrder', [],
+        help:
+            "A list of categories (not package names) to place first when grouping symbols on dartdoc's sidebar. "
+            'Unmentioned categories are sorted after these.'),
     new DartdocOptionFileOnly<CategoryConfiguration>(
         'categories', CategoryConfiguration.empty,
         convertYamlToType: CategoryConfiguration.fromYamlMap,
@@ -1206,7 +1204,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     new DartdocOptionArgOnly<List<String>>('packageOrder', [],
         help:
             'A list of package names to place first when grouping libraries in packages. '
-            'Unmentioned categories are sorted after these.'),
+            'Unmentioned packages are sorted after these.'),
     new DartdocOptionArgOnly<bool>('sdkDocs', false,
         help: 'Generate ONLY the docs for the Dart SDK.', negatable: false),
     new DartdocOptionArgSynth<String>('sdkDir',
