@@ -6,6 +6,7 @@ library dartdoc.model_test;
 
 import 'dart:io';
 
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
@@ -13,15 +14,19 @@ import 'package:test/test.dart';
 import 'src/utils.dart' as utils;
 
 void main() {
-  Map<String, String> toolMap = {
-    'missing': '/a/missing/executable',
-    'drill':
-        pathLib.join(utils.testPackageDir.absolute.path, 'bin', 'drill.dart'),
+  ToolConfiguration toolMap = ToolConfiguration.empty;
+
+  toolMap.tools.addAll({
+    'missing': new ToolDefinition(['/a/missing/executable'], "missing"),
+    'drill': new ToolDefinition(
+        [pathLib.join(utils.testPackageDir.absolute.path, 'bin', 'drill.dart')],
+        'Makes holes'),
     // We use the Dart executable for our "non-dart" tool
     // test, because it's the only executable that we know the
     // exact location of that works on all platforms.
-    'non_dart': Platform.resolvedExecutable,
-  };
+    'non_dart':
+        new ToolDefinition([Platform.resolvedExecutable], 'non-dart tool'),
+  });
   ToolRunner runner;
   final List<String> errors = <String>[];
 
@@ -42,10 +47,7 @@ void main() {
         'TEST INPUT',
       );
       expect(errors, isEmpty);
-      expect(
-          result,
-          contains(new RegExp(
-              r'Args: \[--file=<INPUT_FILE>]')));
+      expect(result, contains(new RegExp(r'Args: \[--file=<INPUT_FILE>]')));
       expect(result, contains('## `TEST INPUT`'));
     });
     test('can invoke a non-Dart tool', () {
