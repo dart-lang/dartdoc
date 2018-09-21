@@ -1131,7 +1131,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     new DartdocOptionArgFile<List<String>>('includeExternal', null,
         isFile: true,
         help:
-            'Additional (external) dart files to include; use "dir/fileName", '
+            'Additional (external) dart files to include; use "dir/filename", '
             'as in lib/material.dart.',
         mustExist: true,
         splitCommas: true),

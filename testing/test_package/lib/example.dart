@@ -581,3 +581,41 @@ abstract class TypedFunctionsWithoutTypedefs {
   /// Returns a complex typedef that includes some anonymous typed functions.
   aComplexTypedef getAComplexTypedef<A4, A5, A6>();
 }
+
+/// Camel Case name collision
+enum NameCollision {
+  /// name collision enum 1
+  NameCollision,
+  /// name collision enum 2
+  nameCollision,
+  /// name collision enum 3
+  namecollision,
+  /// name collision enum 4
+  NAMECOLLISION,
+  /// name collision enum 5
+  NameCOllision,
+  /// name collision enum 6
+  nameCOllision,
+}
+
+/// Mixed case name collision starting with uppercase
+class NameCOllision {}
+
+/// lowerCamelCase name collision
+String nameCollision;
+
+/// lowercase name collision
+String namecollision;
+
+/// UPPPERCASE name collision
+String NAMECOLLISION;
+
+
+/// Mixed case name collision starting with lowercase
+String nameCOllision;
+
+/// Mixed case name collision starting with underscore
+String _NameCOllision;
+
+/// Mixed case name collision starting with underscore
+String _nameCOllision;

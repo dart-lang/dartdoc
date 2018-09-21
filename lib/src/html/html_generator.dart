@@ -79,9 +79,20 @@ class HtmlGenerator extends Generator {
       if (!enabled) {
         throw new StateError('`write` was called after `generate` completed.');
       }
-      // If you see this assert, we're probably being called to build non-canonical
-      // docs somehow.  Check data.self.isCanonical and callers for bugs.
-      assert(allowOverwrite || !writtenFiles.contains(filePath));
+
+      assert(
+          !writtenFiles
+              .map((String file) => file.toLowerCase())
+              .contains(filePath.toLowerCase()),
+          'Filename case metamer found. Output would not be correct on a '
+          'case-insensitive filesystem (like macOS). Metamer found was '
+          '"$filePath", which collides with '
+          '"${writtenFiles.where((String name) => name.toLowerCase() == filePath.toLowerCase()).join('" and "')}"');
+
+      assert(
+          allowOverwrite || !writtenFiles.contains(filePath),
+          'Being called to build non-canonical docs somehow.  Check '
+          'data.self.isCanonical and callers for bugs.');
 
       var file = new File(pathLib.join(outputDirectoryPath, filePath));
       var parent = file.parent;

@@ -228,7 +228,7 @@ class HtmlGeneratorInstance {
     }
     TemplateData data = new LibraryTemplateData(_options, packageGraph, lib);
 
-    _build(pathLib.join(lib.dirName, '${lib.fileName}'),
+    _build(pathLib.join(lib.dirName, '${lib.filename}'),
         _templates.libraryTemplate, data);
   }
 
