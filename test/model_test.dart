@@ -1568,7 +1568,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(30));
+      expect(classes, hasLength(31));
     });
 
     test('abstract', () {
@@ -2832,7 +2832,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('found five properties', () {
-      expect(exLibrary.publicProperties, hasLength(5));
+      expect(exLibrary.publicProperties, hasLength(9));
     });
 
     test('linked return type is a double', () {
@@ -3410,9 +3410,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 }
 
 class StringName extends Nameable {
+  static final NameRegistry _nameRegistry = new NameRegistry(debugName: 'Test Root');
+
   @override
   final String name;
   StringName(this.name);
   @override
   String toString() => name;
+
+  @override
+  NameRegistry get nameRegistry => _nameRegistry;
 }

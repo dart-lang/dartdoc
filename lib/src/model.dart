@@ -6,7 +6,7 @@
 library dartdoc.models;
 
 import 'dart:async';
-import 'dart:collection' show UnmodifiableListView;
+import 'dart:collection' show UnmodifiableListView, SplayTreeSet;
 import 'dart:convert';
 import 'dart:io';
 
@@ -480,9 +480,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   bool get isInherited => false;
 
   @override
-  String get href {
-    return enclosingCombo.href;
-  }
+  String get href => enclosingCombo.href;
 
   bool get isGetter => _accessor.isGetter;
   bool get isSetter => _accessor.isSetter;
@@ -758,7 +756,7 @@ class Class extends ModelElement
   ModelElement get enclosingElement => library;
 
   @override
-  String get fileName => "${name}-class.html";
+  String get filename => '$safeName-class.html';
 
   String get fullkind {
     if (isAbstract) return 'abstract $kind';
@@ -808,7 +806,7 @@ class Class extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${library.dirName}/$fileName';
+    return '${package.baseHref}${library.safeDirName}/$filename';
   }
 
   /// Returns all the implementors of this class.
@@ -1233,6 +1231,9 @@ class Constructor extends ModelElement
       (enclosingElement as Class).typeParameters;
 
   @override
+  CaseType get caseDefault => CaseType.camel;
+
+  @override
   ModelElement get enclosingElement => new ModelElement.from(
       _constructor.enclosingElement, library, packageGraph);
 
@@ -1251,7 +1252,7 @@ class Constructor extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$name.html';
+    return '${package.baseHref}${enclosingElement.library.safeDirName}/${enclosingElement.safeName}/$filename';
   }
 
   @override
@@ -1607,8 +1608,11 @@ class EnumField extends Field {
     assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingElement == enclosingElement);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${(enclosingElement as Class).fileName}';
+    return '${package.baseHref}${enclosingElement.library.safeDirName}/${(enclosingElement as Class).filename}';
   }
+
+  @override
+  CaseType get caseDefault => CaseType.lowerCamel;
 
   @override
   String get linkedName => name;
@@ -1698,7 +1702,7 @@ class Field extends ModelElement
     assert(canonicalLibrary != null);
     assert(canonicalEnclosingElement == enclosingElement);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
+    return '${package.baseHref}${enclosingElement.library.safeDirName}/${enclosingElement.safeName}/$filename';
   }
 
   @override
@@ -1777,7 +1781,7 @@ class Field extends ModelElement
   FieldElement get _field => (element as FieldElement);
 
   @override
-  String get fileName => isConst ? '$name-constant.html' : '$name.html';
+  String get filename => '$safeName${isConst ? '-constant' : ''}.html';
 
   @override
   String get sourceCode {
@@ -2023,6 +2027,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   List<TopLevelVariable> _variables;
   Namespace _exportedNamespace;
   String _name;
+  NameRegistry _nameRegistry;
 
   factory Library(LibraryElement element, PackageGraph packageGraph) {
     return packageGraph.findOrCreateLibraryFor(element);
@@ -2030,6 +2035,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   Library._(LibraryElement element, PackageGraph packageGraph, this._package)
       : super(element, null, packageGraph, null) {
+    _nameRegistry = new NameRegistry(debugName: 'Library ${element.name}');
     if (element == null) throw new ArgumentError.notNull('element');
     _exportedNamespace =
         new NamespaceBuilder().createExportNamespaceForLibrary(element);
@@ -2037,6 +2043,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   List<String> _allOriginalModelElementNames;
+
+  @override
+  CaseType get caseDefault => CaseType.lower;
 
   final Package _package;
   @override
@@ -2163,6 +2172,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _importedExportedLibraries;
   }
 
+  @override
+  NameRegistry get nameRegistry => _nameRegistry;
+
   String _dirName;
   String get dirName {
     if (_dirName == null) {
@@ -2174,6 +2186,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     }
     return _dirName;
   }
+
+  // Directory names need to be safe (i.e. case-insensitive unique) within the
+  // package namespace.
+  String get safeDirName => package.nameRegistry.getUniqueName(dirName);
 
   Set<String> _canonicalFor;
 
@@ -2265,7 +2281,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   @override
-  String get fileName => '$dirName-library.html';
+  String get filename => '$safeDirName-library.html';
 
   @override
   List<ModelFunction> get functions {
@@ -2292,7 +2308,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   String get href {
     if (!identical(canonicalModelElement, this))
       return canonicalModelElement?.href;
-    return '${package.baseHref}${library.dirName}/$fileName';
+    return '${package.baseHref}${library.safeDirName}/$filename';
   }
 
   InheritanceManager _inheritanceManager;
@@ -2690,7 +2706,7 @@ class Method extends ModelElement
     assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingElement == enclosingElement);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/${fileName}';
+    return '${package.baseHref}${enclosingElement.library.safeDirName}/${enclosingElement.safeName}/${filename}';
   }
 
   @override
@@ -2728,6 +2744,9 @@ class Method extends ModelElement
     }
     return null;
   }
+
+  @override
+  CaseType get caseDefault => CaseType.lowerCamel;
 
   String get typeName => 'method';
 
@@ -3042,6 +3061,10 @@ abstract class ModelElement extends Canonicalization
     assert(newModelElement.element is! MultiplyInheritedExecutableElement);
     return newModelElement;
   }
+
+  /// Get the [NameRegistry] that is in scope for this [ModelElement].
+  @override
+  NameRegistry get nameRegistry => _library.nameRegistry;
 
   /// Stub for mustache4dart, or it will search enclosing elements to find
   /// names for members.
@@ -3433,8 +3456,6 @@ abstract class ModelElement extends Canonicalization
     }
     return '';
   }
-
-  String get fileName => "${name}.html";
 
   /// Returns the fully qualified name.
   ///
@@ -4435,6 +4456,9 @@ class ModelFunctionAnonymous extends ModelFunctionTyped {
   String get linkedName => 'Function';
 
   @override
+  CaseType get caseDefault => CaseType.camel;
+
+  @override
   bool get isPublic => false;
 }
 
@@ -4444,6 +4468,9 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
   ModelFunctionTypedef(
       FunctionTypedElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
+
+  @override
+  CaseType get caseDefault => CaseType.camel;
 
   @override
   String get name {
@@ -4485,7 +4512,7 @@ class ModelFunctionTyped extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${library.dirName}/$fileName';
+    return '${package.baseHref}${library.safeDirName}/$filename';
   }
 
   @override
@@ -4497,14 +4524,258 @@ class ModelFunctionTyped extends ModelElement
   bool get isInherited => false;
 
   @override
+  CaseType get caseDefault => CaseType.lowerCamel;
+
+  @override
   DefinedElementType get modelType => super.modelType;
 
   FunctionTypedElement get _func => (element as FunctionTypedElement);
 }
 
+// Returns the name of an enum value (e.g. supplying CaseType.camel
+// returns "camel").
+String enumToString<T>(T value) {
+  return value.toString().substring(value.runtimeType.toString().length + 1);
+}
+
+/// An enum representing the type of case that a string contains.
+enum CaseType {
+  upper, // UPPERCASE
+  camel, // CamelCase
+  lowerCamel, // lowerCamelCase
+  lower // lowercase
+}
+
+class _NameRegistryEntry {
+  _NameRegistryEntry(this.name, this.suffix);
+
+  String get fullName =>
+      '$name$suffix${differentiator == null ? '' : '-$differentiator'}';
+  final String name;
+  final String suffix;
+  String differentiator;
+}
+
+/// A name registry that can disambiguate filename metamers that have the same
+/// name, but different case.
+///
+/// This is to prevent filename metamers on filesystems that preserve case, but
+/// ignore it (like macOS and Windows do).
+///
+/// For instance, if the names "NAME", "Name", "NAme" and "name" are all
+/// registered with the registry using [add], and [getUniqueName] is called with
+/// "name", then it responds with "name-lower", "Name" returns "Name", "NAme"
+/// returns "NAme-22", and if called with "NAME", responds with "NAME-upper". It
+/// will only return something other than the given name if a metamer exists, so
+/// it only disambiguates when necessary.
+///
+/// It will disambiguate with only the type of case used (e.g. "-upper", etc.)
+/// if it can, but if two mixed-case names collide (e.g. "NAme" and "Name"),
+/// then it makes a fingerprint of the case information that will make it
+/// unique.  For instance, it might generate "NAme-camel-22" for "NAme", and
+/// "Name-camel-13" for "Name". The numbers represent the case runs for those
+/// strings: for example, "Name" has one uppercase letter followed by three
+/// lowercase letters, so "-13" is added.  The numbers are encoded in hex for
+/// compactness.
+class NameRegistry {
+  /// The name printed for this [NameRegistry] in [toString]. Mainly used for
+  /// debugging.
+  String debugName;
+
+  final Map<String, SplayTreeSet<_NameRegistryEntry>> _registry = {};
+  final Map<String, String> _uniqueNameCache = {};
+
+  NameRegistry({this.debugName});
+
+  /// Adds a name to the registry.  All names should be added before trying to
+  /// access a unique version of the name using [getUniqueName], since
+  /// generating a unique name without having all the names is nonsensical.
+  void add(Nameable nameable) {
+    assert(nameable.name != null);
+    assert(nameable.name.isNotEmpty);
+    assert(_uniqueNameCache.isEmpty,
+        "Can't add names to the registry after cache is built");
+    void addName(String name) {
+      _NameRegistryEntry nameEntry = new _NameRegistryEntry(
+          name, _getCaseSuffix(name, nameable.caseDefault));
+      String lowercaseName = name.toLowerCase();
+      if (_registry.containsKey(lowercaseName)) {
+        if (!_registry[lowercaseName].contains(nameEntry)) {
+          _registry[lowercaseName].add(nameEntry);
+        }
+      } else {
+        _registry[lowercaseName] = new SplayTreeSet.from(
+            [nameEntry], (a, b) => a.name.compareTo(b.name));
+      }
+    }
+
+    addName(nameable.name);
+    // Libraries have an additional name that is used for making
+    // file paths.
+    if (nameable is Library) {
+      Library lib = nameable;
+      addName(lib.dirName);
+    }
+  }
+
+  /// Gets an identifier that corresponds to the [CaseType] of the given
+  /// [input]. If the case type matches that of [caseDefault], then it
+  /// returns an empty string, so as not to add identifiers to strings that
+  /// already match the expected case type.
+  static String _getCaseSuffix(String input, CaseType caseDefault) {
+    CaseType caseType = _getCaseType(input);
+    if (caseDefault == caseType) return '';
+    return '-${enumToString(caseType)}';
+  }
+
+  /// Returns true if all characters in the given [value] are uppercase.
+  static bool _isAllUpper(String value) => value.toUpperCase() == value;
+
+  /// Returns true if all characters in the given [value] are lowercase.
+  static bool _isAllLower(String value) => value.toLowerCase() == value;
+
+  /// Returns the [CaseType] of the given [input]. The [input] cannot be
+  /// the empty string, or null.
+  static CaseType _getCaseType(String input) {
+    assert(input.isNotEmpty);
+    assert(input != null);
+    if (_isAllLower(input)) return CaseType.lower;
+    if (_isAllUpper(input)) return CaseType.upper;
+    int firstLetter = input.indexOf(new RegExp(r'[A-Za-z]'));
+    // firstLetter can't be -1: it would have returned true for isAllLower
+    // in that case.
+    if (_isAllUpper(input[firstLetter])) return CaseType.camel;
+    return CaseType.lowerCamel;
+  }
+
+  /// Returns a string that encodes the case "runs" of a string, which is
+  /// basically a run-length encoding of a bitfield containing the "case" of a
+  /// letter at that position in the string. This gives us a unique fingerprint
+  /// for the case information of a string.
+  static String _getCaseRuns(String input) {
+    assert(input.length <= 0xffff,
+        'Identifier strings longer than 65K not supported.');
+    if (input.isEmpty) return '';
+    if (input.length == 1) return '-1';
+    final int firstLetter = input.indexOf(new RegExp(r'[A-Za-z]'));
+    if (firstLetter == -1) return '';
+    List<int> runs = [];
+    int lastChange = 0;
+    CaseType lastCase = _getCaseType(input.substring(0, 1));
+    for (int i = firstLetter; i < input.length; ++i) {
+      CaseType thisCase = _getCaseType(input[i]);
+      if (thisCase != lastCase) {
+        lastCase = thisCase;
+        runs.add(lastChange);
+        lastChange = 0;
+      }
+      lastChange++;
+    }
+    runs.add(lastChange);
+    while (runs.length % 2 != 0) {
+      runs.insert(0, 0);
+    }
+    List<String> wordRuns = [];
+    for (var run in runs) {
+      if (input.length <= 0xf) {
+        wordRuns.add(run.toRadixString(16));
+      } else if (input.length <= 0xff) {
+        wordRuns.add(run.toRadixString(16).padLeft(2, '0'));
+      } else if (input.length > 0xff) {
+        wordRuns.add(run.toRadixString(16).padLeft(4, '0'));
+      }
+    }
+    return wordRuns.join('');
+  }
+
+  /// Builds a cache of unique names to speed up access to them once all the
+  /// names are collected. Only runs once, on the first access to a unique name
+  /// for this [NameRegistry].
+  void _buildCache() {
+    assert(_uniqueNameCache.isEmpty, 'Can only build the cache once.');
+
+    /// Cache the unique names.
+    String generateUnique(_NameRegistryEntry entry) {
+      String lowercaseName = entry.name.toLowerCase();
+      SplayTreeSet<_NameRegistryEntry> metamers = _registry[lowercaseName];
+      if (metamers.length == 1) {
+        return entry.name;
+      }
+      // See if adding the case suffix makes the names unique.
+      Set<String> namesWithSuffixes = new Set<String>();
+      for (var metamer in metamers) {
+        namesWithSuffixes.add(metamer.fullName.toLowerCase());
+      }
+      // If adding the suffixes made everything unique, then just return the
+      // name with a suffix.
+      if (namesWithSuffixes.length == metamers.length) {
+        return entry.fullName;
+      }
+
+      // Now we must have two or more names that clash. Find them.
+      List<_NameRegistryEntry> candidates = [];
+      Set<String> members = new Set<String>();
+      for (var metamer in metamers) {
+        String name = metamer.fullName.toLowerCase();
+        if (members.contains(name))
+          candidates.add(metamer);
+        else
+          members.add(name);
+      }
+      // Set the differentiator in the ones that are duplicates, so that
+      // the next time they are encountered, they won't be duplicates anymore.
+      for (var candidate in candidates) {
+        candidate.differentiator = _getCaseRuns(candidate.name);
+      }
+      return entry.fullName;
+    }
+
+    if (_registry.isNotEmpty) {
+      _registry.forEach(
+          (String lowercaseName, SplayTreeSet<_NameRegistryEntry> names) {
+        for (var name in names) {
+          _uniqueNameCache[name.name] = generateUnique(name);
+        }
+      });
+    }
+  }
+
+  /// Gets a unique name for the given [name] string. The [name] must have
+  /// already been added to the registry with [add]. On the first time this
+  /// is called, will build a cache of all unique names for faster access.
+  String getUniqueName(String name) {
+    if (_uniqueNameCache.isEmpty) _buildCache();
+    assert(name != null);
+    assert(_uniqueNameCache.containsKey(name),
+        'No unique name found for $name. Did you add it to the NameRegistry ${this.debugName}?');
+    return _uniqueNameCache[name];
+  }
+
+  @override
+  String toString() {
+    List<String> message = [];
+    message.add('Registry for ${debugName == null ? '' : '$debugName '}'
+        '$runtimeType${this.hashCode}:');
+    for (var key in _registry.keys) {
+      message.add(
+          '  $key: ${_registry[key].map<String>((entry) => entry.name).toList()}');
+    }
+    return message.join('\n');
+  }
+}
+
 /// Something that has a name.
 abstract class Nameable {
   String get name;
+
+  /// Should return the [NameRegistry] that applies to the [Nameable], not a
+  /// unique one for each [Nameable].
+  NameRegistry get nameRegistry;
+
+  /// Returns a name for this object that is safe for use in hrefs and
+  /// filenames. Specifically, the name is safe in the sense that it is
+  /// case-insensitive unique for all names registered with the [nameRegistry].
+  String get safeName => nameRegistry.getUniqueName(name);
 
   Set<String> _namePieces;
   Set<String> get namePieces {
@@ -4514,6 +4785,14 @@ abstract class Nameable {
     }
     return _namePieces;
   }
+
+  /// The default case of names of this type. Override in subclasses to use
+  /// a different default.
+  CaseType get caseDefault => CaseType.camel;
+
+  /// The filename to use for this [Nameable]. It is case-insensitive unique
+  /// for all names of in the context of this [Nameable].
+  String get filename => '$safeName.html';
 }
 
 /// Something able to be indexed.
@@ -4559,12 +4838,12 @@ class Operator extends Method {
   }
 
   @override
-  String get fileName {
+  String get filename {
     var actualName = super.name;
     if (friendlyNames.containsKey(actualName)) {
-      return "operator_${friendlyNames[actualName]}.html";
+      return 'operator_${friendlyNames[actualName]}.html';
     } else {
-      return '$actualName.html';
+      return '${super.safeName}.html';
     }
   }
 
@@ -4637,12 +4916,18 @@ class PackageGraph {
     allModelElements.forEach((m) => m.documentationLocal);
     _localDocumentationBuilt = true;
 
-    // Scan all model elements to insure that interceptor and other special
-    // objects are found.
+    // Collect all names so that they can be added to the name registry.
+    packages.toList().forEach((package) {
+      nameRegistry.add(package);
+      package.categories.forEach((Category c) => nameRegistry.add(c));
+      package._libraries.forEach(_collectLibraryNames);
+    });
+
+    nameRegistry._buildCache();
+
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
     documentedPackages.toList().forEach((package) {
-      package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
         library._allClasses.forEach(_addToImplementors);
       });
@@ -4710,6 +4995,10 @@ class PackageGraph {
 
   /// Dartdoc's configuration flags.
   final DartdocOptionContext config;
+
+  /// The name registry to prevent filesystem metamers from being created.
+  final NameRegistry nameRegistry =
+      new NameRegistry(debugName: 'PackageGraph Root');
 
   Map<String, Map<String, dynamic>> __crossdartJson;
   // TODO(jcollins-g): move to [Package]
@@ -5075,6 +5364,32 @@ class PackageGraph {
       }
     }
     return hrefMap;
+  }
+
+  void _collectLibraryNames(library) {
+    void collectClassNames(Class c) {
+      nameRegistry.add(c.package);
+      if (!c._mixins.isEmpty) {
+        c._mixins.forEach((t) {
+          c.nameRegistry.add(t.element);
+        });
+      }
+      if (c._supertype != null) {
+        c.nameRegistry.add(c._supertype.element);
+      }
+      if (!c.interfaces.isEmpty) {
+        c.interfaces.forEach((t) {
+          c.nameRegistry.add(t.element);
+        });
+      }
+    }
+
+    nameRegistry.add(library);
+    library._allModelElements
+        .forEach((ModelElement e) => nameRegistry.add(e.library));
+    library._allModelElements
+        .forEach((ModelElement e) => library.nameRegistry.add(e));
+    library._allClasses?.forEach(collectClassNames);
   }
 
   void _addToImplementors(Class c) {
@@ -5498,6 +5813,10 @@ abstract class LibraryContainer
   Iterable<Library> get publicLibraries => filterNonPublic(libraries);
   bool get hasPublicLibraries => publicLibraries.isNotEmpty;
 
+  /// Get the [NameRegistry] that is in scope for this [LibraryContainer].
+  @override
+  NameRegistry get nameRegistry => packageGraph?.nameRegistry;
+
   /// The name of the container or object that this LibraryContainer is a part
   /// of.  Used for sorting in [containerOrder].
   String get enclosingName;
@@ -5522,10 +5841,12 @@ abstract class LibraryContainer
   /// 2 if this group has a name that contains the name [enclosingName].
   /// 3 otherwise.
   int get _group {
-    if (containerOrder.contains(sortKey)) return -1;
-    if (equalsIgnoreAsciiCase(sortKey, enclosingName)) return 0;
+    if (containerOrder.contains(sortKey ?? '')) return -1;
+    if (equalsIgnoreAsciiCase(sortKey ?? '', enclosingName ?? '')) return 0;
     if (isSdk) return 1;
-    if (sortKey.toLowerCase().contains(enclosingName.toLowerCase())) return 2;
+    if (sortKey != null &&
+        sortKey.toLowerCase().contains(enclosingName?.toLowerCase() ?? ''))
+      return 2;
     return 3;
   }
 
@@ -5534,9 +5855,12 @@ abstract class LibraryContainer
     if (_group == other._group) {
       if (_group == -1) {
         return Comparable.compare(containerOrder.indexOf(sortKey),
-            containerOrder.indexOf(other.sortKey));
+            containerOrder.indexOf(other.sortKey ?? ''));
       } else {
-        return sortKey.toLowerCase().compareTo(other.sortKey.toLowerCase());
+        return sortKey
+                ?.toLowerCase()
+                ?.compareTo(other.sortKey?.toLowerCase() ?? '') ??
+            0;
       }
     }
     return Comparable.compare(_group, other._group);
@@ -5688,7 +6012,7 @@ class Category extends Nameable
 
   @override
   String get href =>
-      isCanonical ? '${package.baseHref}topics/${name}-topic.html' : null;
+      isCanonical ? '${package.baseHref}topics/$safeName-topic.html' : null;
 
   String get linkedName {
     String unbrokenCategoryName = name.replaceAll(' ', '&nbsp;');
@@ -5940,6 +6264,9 @@ class Package extends LibraryContainer
   String get location => pathLib.toUri(packageMeta.resolvedDir).toString();
 
   @override
+  CaseType get caseDefault => CaseType.lower;
+
+  @override
   String get name => _name;
 
   @override
@@ -6095,6 +6422,9 @@ class Parameter extends ModelElement implements EnclosedElement {
   String get kind => 'parameter';
 
   ParameterElement get _parameter => element as ParameterElement;
+
+  @override
+  CaseType get caseDefault => CaseType.lowerCamel;
 
   @override
   String toString() => element.name;
@@ -6276,7 +6606,7 @@ class TopLevelVariable extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${library.dirName}/$fileName';
+    return '${package.baseHref}${library.safeDirName}/$filename';
   }
 
   @override
@@ -6304,7 +6634,12 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  String get fileName => isConst ? '$name-constant.html' : '$name.html';
+  CaseType get caseDefault {
+    return CaseType.lowerCamel;
+  }
+
+  @override
+  String get filename => '$safeName${isConst ? '-constant.html' : '.html'}';
 
   @override
   DefinedElementType get modelType => super.modelType;
@@ -6343,7 +6678,7 @@ class Typedef extends ModelElement
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${library.dirName}/$fileName';
+    return '${package.baseHref}${library.safeDirName}/$filename';
   }
 
   // Food for mustache.
@@ -6381,7 +6716,7 @@ class TypeParameter extends ModelElement {
       return canonicalModelElement?.href;
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
+    return '${package.baseHref}${enclosingElement.library.safeDirName}/${enclosingElement.safeName}/$filename';
   }
 
   @override

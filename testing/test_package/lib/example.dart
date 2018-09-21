@@ -580,3 +580,48 @@ abstract class HtmlInjection {
   /// {@end-tool}
   void injectHtmlFromTool();
 }
+
+/// Name collision enum
+enum NameCollision {
+  /// name collision enum 1
+  NameCollision,
+  /// name collision enum 2
+  nameCollision,
+  /// name collision enum 3
+  namecollision,
+  /// name collision enum 4
+  NAMECOLLISION,
+  /// name collision enum 5
+  NameCOllision,
+  /// name collision enum 6
+  nameCOllision,
+}
+
+/// Mixed case class name collision starting with uppercase
+class NameCOllision {
+  /// Constructor
+  NameCOllision();
+  /// lowerCamelCase name collision
+  final nameCOllision = null;
+  /// lowerCamelCase name collision
+  final nameCollision = null;
+}
+
+/// lowerCamelCase name collision
+String nameCollision;
+
+/// lowercase name collision
+String namecollision;
+
+/// UPPPERCASE name collision
+String NAMECOLLISION;
+
+
+/// Mixed case name collision starting with lowercase
+String nameCOllision;
+
+/// Mixed case name collision starting with underscore
+String _NameCOllision;
+
+/// Mixed case name collision starting with underscore
+String _nameCOllision;

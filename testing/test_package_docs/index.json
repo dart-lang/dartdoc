@@ -2443,6 +2443,182 @@
   }
  },
  {
+  "name": "NAMECOLLISION",
+  "qualifiedName": "ex.NAMECOLLISION",
+  "href": "ex/NAMECOLLISION-upper.html",
+  "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "NameCOllision",
+  "qualifiedName": "ex.NameCOllision",
+  "href": "ex/NameCOllision-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "NameCOllision",
+  "qualifiedName": "ex.NameCOllision",
+  "href": "ex/NameCOllision/NameCOllision.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCOllision",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "ex.NameCOllision.==",
+  "href": "ex/NameCOllision/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCOllision",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "ex.NameCOllision.hashCode",
+  "href": "ex/NameCOllision/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCOllision",
+   "type": "class"
+  }
+ },
+ {
+  "name": "nameCOllision",
+  "qualifiedName": "ex.NameCOllision.nameCOllision",
+  "href": "ex/NameCOllision/nameCOllision-0427.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCOllision",
+   "type": "class"
+  }
+ },
+ {
+  "name": "nameCollision",
+  "qualifiedName": "ex.NameCOllision.nameCollision",
+  "href": "ex/NameCOllision/nameCollision-0418.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCOllision",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "ex.NameCOllision.noSuchMethod",
+  "href": "ex/NameCOllision/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCOllision",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "ex.NameCOllision.runtimeType",
+  "href": "ex/NameCOllision/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCOllision",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "ex.NameCOllision.toString",
+  "href": "ex/NameCOllision/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCOllision",
+   "type": "class"
+  }
+ },
+ {
+  "name": "NameCollision",
+  "qualifiedName": "ex.NameCollision",
+  "href": "ex/NameCollision-1318-class.html",
+  "type": "enum",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "ex.NameCollision.==",
+  "href": "ex/NameCollision-1318/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCollision",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "ex.NameCollision.hashCode",
+  "href": "ex/NameCollision-1318/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCollision",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "ex.NameCollision.noSuchMethod",
+  "href": "ex/NameCollision-1318/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCollision",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "ex.NameCollision.runtimeType",
+  "href": "ex/NameCollision-1318/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NameCollision",
+   "type": "enum"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "ex.NameCollision.toString",
+  "href": "ex/NameCollision-1318/toString.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "NameCollision",
+   "type": "enum"
+  }
+ },
+ {
   "name": "PRETTY_COLORS",
   "qualifiedName": "ex.PRETTY_COLORS",
   "href": "ex/PRETTY_COLORS-constant.html",
@@ -3853,7 +4029,7 @@
  {
   "name": "deprecated",
   "qualifiedName": "ex.deprecated",
-  "href": "ex/deprecated-constant.html",
+  "href": "ex/deprecated-lower-constant.html",
   "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -3932,6 +4108,39 @@
   "qualifiedName": "ex.incorrectDocReferenceFromEx",
   "href": "ex/incorrectDocReferenceFromEx-constant.html",
   "type": "top-level constant",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "nameCOllision",
+  "qualifiedName": "ex.nameCOllision",
+  "href": "ex/nameCOllision-0427.html",
+  "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "nameCollision",
+  "qualifiedName": "ex.nameCollision",
+  "href": "ex/nameCollision-0418.html",
+  "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "namecollision",
+  "qualifiedName": "ex.namecollision",
+  "href": "ex/namecollision-lower.html",
+  "type": "top-level property",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "ex",
@@ -5444,7 +5653,7 @@
  {
   "name": "bar",
   "qualifiedName": "fake.DocumentWithATable.bar",
-  "href": "fake/DocumentWithATable/bar-constant.html",
+  "href": "fake/DocumentWithATable/bar-lower-constant.html",
   "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -5796,7 +6005,7 @@
  {
   "name": "BAR",
   "qualifiedName": "fake.Foo2.BAR",
-  "href": "fake/Foo2/BAR-constant.html",
+  "href": "fake/Foo2/BAR-upper-constant.html",
   "type": "constant",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -9019,7 +9228,7 @@
  {
   "name": "x",
   "qualifiedName": "fake.TypedefUsingClass.x",
-  "href": "fake/TypedefUsingClass/x.html",
+  "href": "fake/TypedefUsingClass/x-lower.html",
   "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
