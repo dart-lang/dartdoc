@@ -4923,6 +4923,13 @@ class PackageGraph {
       package._libraries.forEach(_collectLibraryNames);
     });
 
+    // Collect all names so that they can be added to the name registry.
+    packages.toList().forEach((package) {
+      nameRegistry.add(package);
+      package.categories.forEach((Category c) => nameRegistry.add(c));
+      package._libraries.forEach(_collectLibraryNames);
+    });
+
     nameRegistry._buildCache();
 
     // After the allModelElements traversal to be sure that all packages
