@@ -429,8 +429,7 @@ dl dt.callable .name {
 }
 
 .category {
-  vertical-align: text-top;
-  padding: 4px;
+  padding: 2px 4px;
   font-size: 12px;
   border-radius: 4px;
   background-color: #B6B6B6;
