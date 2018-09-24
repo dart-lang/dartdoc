@@ -118,7 +118,8 @@ Unrecognized options will be ignored.  Supported options:
 
   * **categories**:  More details for each category/topic.  For topics you'd like to document, specify
     the markdown file with `markdown:` to use for the category page.  Optionally, rename the
-    category from the source code into a display name with 'name:'.
+    category from the source code into a display name with 'name:'.  If there is no matching category
+    defined in dartdoc_options.yaml, those declared categories in the source code will be invisible.
   * **categoryOrder**:  Specify the order of topics for display in the sidebar and
     the package page.
   * **exclude**:  Specify a list of library names to avoid generating docs for,
@@ -157,8 +158,8 @@ as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
 You can tag libraries or top level classes, functions, and variables in their documentation with
 the string `{@category YourCategory}`.  For libraries, that will cause the library to appear in a
 category when showing the sidebar on the Package and Library pages.  For other types of objects,
-the `{@category}` will be shown with a link to the category page if specified in
-dartdoc_options.yaml, as above.
+the `{@category}` will be shown with a link to the category page **but only if specified in
+dartdoc_options.yaml**, as above.
 
 ```dart
 /// Here is my library.
