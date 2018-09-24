@@ -432,7 +432,7 @@ dl dt.callable .name {
   padding: 2px 4px;
   font-size: 12px;
   border-radius: 4px;
-  background-color: #B6B6B6;
+  background-color: #999;
   text-transform: uppercase;
   color: white;
   opacity: .5;
