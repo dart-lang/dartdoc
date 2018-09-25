@@ -3037,9 +3037,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 }
 
 class StringName extends Nameable {
+  static final NameRegistry _nameRegistry = new NameRegistry();
+
   @override
   final String name;
   StringName(this.name);
   @override
   String toString() => name;
+
+  @override
+  NameRegistry get nameRegistry => _nameRegistry;
 }

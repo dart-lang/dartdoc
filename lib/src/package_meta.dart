@@ -334,11 +334,11 @@ class _FilePackageMeta extends PackageMeta {
   }
 }
 
-File _locate(Directory dir, List<String> fileNames) {
+File _locate(Directory dir, List<String> filenames) {
   List<File> files =
       new List<File>.from(dir.listSync().where((f) => f is File));
 
-  for (String name in fileNames) {
+  for (String name in filenames) {
     for (File f in files) {
       String baseName = pathLib.basename(f.path).toLowerCase();
       if (baseName == name) return f;
