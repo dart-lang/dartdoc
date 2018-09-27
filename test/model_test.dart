@@ -1174,6 +1174,8 @@ void main() {
     });
 
     test('bullet points work in top level variables', () {
+      expect(bulletDoced.oneLineDoc,
+          contains('<a href="fake/bulletDoced-constant.html">[...]</a>'));
       expect(bulletDoced.documentationAsHtml, contains('<li>'));
     });
   });
@@ -1190,6 +1192,134 @@ void main() {
           equals('_MIEEPrivateOverride'));
       expect(problematicOperator.canonicalModelElement.enclosingElement.name,
           equals('MIEEMixinWithOverride'));
+    });
+  });
+
+  group('Mixin', () {
+    Mixin GenericMixin;
+    Class GenericClass, ModifierClass, TypeInferenceMixedIn;
+    Field overrideByEverything,
+        overrideByGenericMixin,
+        overrideByBoth,
+        overrideByModifierClass;
+
+    setUp(() {
+      Iterable<Class> classes = fakeLibrary.publicClasses;
+      GenericClass = classes.firstWhere((c) => c.name == 'GenericClass');
+      ModifierClass = classes.firstWhere((c) => c.name == 'ModifierClass');
+      GenericMixin =
+          fakeLibrary.publicMixins.firstWhere((m) => m.name == 'GenericMixin');
+      TypeInferenceMixedIn =
+          classes.firstWhere((c) => c.name == 'TypeInferenceMixedIn');
+      overrideByEverything = TypeInferenceMixedIn.allFields
+          .firstWhere((f) => f.name == 'overrideByEverything');
+      overrideByGenericMixin = TypeInferenceMixedIn.allFields
+          .firstWhere((f) => f.name == 'overrideByGenericMixin');
+      overrideByBoth = TypeInferenceMixedIn.allFields
+          .firstWhere((f) => f.name == 'overrideByBoth');
+      overrideByModifierClass = TypeInferenceMixedIn.allFields
+          .firstWhere((f) => f.name == 'overrideByModifierClass');
+    });
+
+    test(('Verify inheritance/mixin structure and type inference'), () {
+      expect(
+          TypeInferenceMixedIn.mixins
+              .map<String>((DefinedElementType t) => t.element.name),
+          orderedEquals(['GenericMixin']));
+      expect(
+          TypeInferenceMixedIn.mixins.first.typeArguments
+              .map<String>((ElementType t) => t.name),
+          orderedEquals(['int']));
+
+      expect(TypeInferenceMixedIn.superChain.length, equals(2));
+      final ParameterizedElementType firstType =
+          TypeInferenceMixedIn.superChain.first;
+      final ParameterizedElementType lastType =
+          TypeInferenceMixedIn.superChain.last;
+      expect(firstType.name, equals('ModifierClass'));
+      expect(firstType.typeArguments.map<String>((ElementType t) => t.name),
+          orderedEquals(['int']));
+      expect(lastType.name, equals('GenericClass'));
+      expect(lastType.typeArguments.map<String>((ElementType t) => t.name),
+          orderedEquals(['int']));
+    });
+
+    test(('Verify non-overridden members have right canonical classes'), () {
+      final Field member =
+          TypeInferenceMixedIn.allFields.firstWhere((f) => f.name == 'member');
+      final Field modifierMember = TypeInferenceMixedIn.allFields
+          .firstWhere((f) => f.name == 'modifierMember');
+      final Field mixinMember = TypeInferenceMixedIn.allFields
+          .firstWhere((f) => f.name == 'mixinMember');
+      expect(member.canonicalEnclosingElement, equals(GenericClass));
+      expect(modifierMember.canonicalEnclosingElement, equals(ModifierClass));
+      expect(mixinMember.canonicalEnclosingElement, equals(GenericMixin));
+    });
+
+    test(('Verify overrides & documentation inheritance work as intended'), () {
+      expect(overrideByEverything.canonicalEnclosingElement,
+          equals(TypeInferenceMixedIn));
+      expect(overrideByGenericMixin.canonicalEnclosingElement,
+          equals(GenericMixin));
+      expect(overrideByBoth.canonicalEnclosingElement, equals(GenericMixin));
+      expect(overrideByModifierClass.canonicalEnclosingElement,
+          equals(ModifierClass));
+      expect(
+          overrideByEverything.documentationFrom.first,
+          equals(GenericClass.allFields
+              .firstWhere((f) => f.name == 'overrideByEverything')
+              .getter));
+      expect(
+          overrideByGenericMixin.documentationFrom.first,
+          equals(GenericClass.allFields
+              .firstWhere((f) => f.name == 'overrideByGenericMixin')
+              .getter));
+      expect(
+          overrideByBoth.documentationFrom.first,
+          equals(GenericClass.allFields
+              .firstWhere((f) => f.name == 'overrideByBoth')
+              .getter));
+      expect(
+          overrideByModifierClass.documentationFrom.first,
+          equals(GenericClass.allFields
+              .firstWhere((f) => f.name == 'overrideByModifierClass')
+              .getter));
+    });
+
+    test(('Verify that documentation for mixin applications contains links'),
+        () {
+      expect(
+          overrideByModifierClass.oneLineDoc,
+          contains(
+              '<a href=\"fake/ModifierClass-class.html\">ModifierClass</a>'));
+      expect(
+          overrideByModifierClass.canonicalModelElement.documentationAsHtml,
+          contains(
+              '<a href=\"fake/ModifierClass-class.html\">ModifierClass</a>'));
+      expect(
+          overrideByGenericMixin.oneLineDoc,
+          contains(
+              '<a href=\"fake/GenericMixin-mixin.html\">GenericMixin</a>'));
+      expect(
+          overrideByGenericMixin.canonicalModelElement.documentationAsHtml,
+          contains(
+              '<a href=\"fake/GenericMixin-mixin.html\">GenericMixin</a>'));
+      expect(
+          overrideByBoth.oneLineDoc,
+          contains(
+              '<a href=\"fake/ModifierClass-class.html\">ModifierClass</a>'));
+      expect(
+          overrideByBoth.oneLineDoc,
+          contains(
+              '<a href=\"fake/GenericMixin-mixin.html\">GenericMixin</a>'));
+      expect(
+          overrideByBoth.canonicalModelElement.documentationAsHtml,
+          contains(
+              '<a href=\"fake/ModifierClass-class.html\">ModifierClass</a>'));
+      expect(
+          overrideByBoth.canonicalModelElement.documentationAsHtml,
+          contains(
+              '<a href=\"fake/GenericMixin-mixin.html\">GenericMixin</a>'));
     });
   });
 

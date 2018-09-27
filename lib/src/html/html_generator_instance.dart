@@ -169,6 +169,44 @@ class HtmlGeneratorInstance {
           }
         }
 
+        for (var mixin in filterNonDocumented(lib.mixins)) {
+          generateMixins(_packageGraph, lib, mixin);
+          for (var constructor in filterNonDocumented(mixin.constructors)) {
+            if (!constructor.isCanonical) continue;
+            generateConstructor(_packageGraph, lib, mixin, constructor);
+          }
+
+          for (var constant in filterNonDocumented(mixin.constants)) {
+            if (!constant.isCanonical) continue;
+            generateConstant(_packageGraph, lib, mixin, constant);
+          }
+
+          for (var property in filterNonDocumented(mixin.staticProperties)) {
+            if (!property.isCanonical) continue;
+            generateProperty(_packageGraph, lib, mixin, property);
+          }
+
+          for (var property in filterNonDocumented(mixin.propertiesForPages)) {
+            if (!property.isCanonical) continue;
+            generateProperty(_packageGraph, lib, mixin, property);
+          }
+
+          for (var method in filterNonDocumented(mixin.methodsForPages)) {
+            if (!method.isCanonical) continue;
+            generateMethod(_packageGraph, lib, mixin, method);
+          }
+
+          for (var operator in filterNonDocumented(mixin.operatorsForPages)) {
+            if (!operator.isCanonical) continue;
+            generateMethod(_packageGraph, lib, mixin, operator);
+          }
+
+          for (var method in filterNonDocumented(mixin.staticMethods)) {
+            if (!method.isCanonical) continue;
+            generateMethod(_packageGraph, lib, mixin, method);
+          }
+        }
+
         for (var eNum in filterNonDocumented(lib.enums)) {
           generateEnum(_packageGraph, lib, eNum);
           for (var property in filterNonDocumented(eNum.propertiesForPages)) {
@@ -237,6 +275,13 @@ class HtmlGeneratorInstance {
         new ClassTemplateData(_options, packageGraph, lib, clazz);
     _build(
         pathLib.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
+  }
+
+  void generateMixins(PackageGraph packageGraph, Library lib, Mixin mixin) {
+    TemplateData data =
+        new MixinTemplateData(_options, packageGraph, lib, mixin);
+    _build(
+        pathLib.joinAll(mixin.href.split('/')), _templates.mixinTemplate, data);
   }
 
   void generateConstructor(PackageGraph packageGraph, Library lib, Class clazz,

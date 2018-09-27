@@ -285,20 +285,19 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   @override
   String get sourceCode {
-    if (_sourceCodeCache == null) {
+    if (_sourceCode == null) {
       if (isSynthetic) {
-        _sourceCodeCache =
+        _sourceCode =
             sourceCodeFor((element as PropertyAccessorElement).variable);
       } else {
-        _sourceCodeCache = super.sourceCode;
+        _sourceCode = super.sourceCode;
       }
     }
-    return _sourceCodeCache;
+    return _sourceCode;
   }
 
   @override
   List<ModelElement> get computeDocumentationFrom {
-    if (isSynthetic) return [this];
     return super.computeDocumentationFrom;
   }
 
@@ -414,6 +413,62 @@ class Accessor extends ModelElement implements EnclosedElement {
   String get kind => 'accessor';
 
   PropertyAccessorElement get _accessor => (element as PropertyAccessorElement);
+}
+
+/// Implements the Dart 2.1 "mixin" style of mixin declarations.
+class Mixin extends Class {
+  Mixin(MixinElementImpl element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph) {}
+
+  @override
+  bool get isAbstract => false;
+
+  @override
+  List<Class> get inheritanceChain {
+    if (_inheritanceChain == null) {
+      _inheritanceChain = [];
+      _inheritanceChain.add(this);
+
+      // Mix-in interfaces come before other interfaces.
+      _inheritanceChain.addAll(superclassConstraints.expand(
+          (ParameterizedElementType i) =>
+              (i.element as Class).inheritanceChain));
+
+      // Interfaces need to come last, because classes in the superChain might
+      // implement them even when they aren't mentioned.
+      _inheritanceChain.addAll(
+          interfaces.expand((e) => (e.element as Class).inheritanceChain));
+    }
+    return _inheritanceChain.toList(growable: false);
+  }
+
+  List<ParameterizedElementType> _superclassConstraints;
+
+  /// Returns a list of superclass constraints for this mixin.
+  Iterable<ParameterizedElementType> get superclassConstraints {
+    if (_superclassConstraints == null) {
+      _superclassConstraints = (element as MixinElementImpl)
+          .superclassConstraints
+          .map<ParameterizedElementType>(
+              (InterfaceType i) => new ElementType.from(i, packageGraph))
+          .toList();
+    }
+    return _superclassConstraints;
+  }
+
+  bool get hasPublicSuperclassConstraints =>
+      publicSuperclassConstraints.isNotEmpty;
+  Iterable<ParameterizedElementType> get publicSuperclassConstraints =>
+      filterNonPublic(superclassConstraints);
+
+  @override
+  bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;
+
+  @override
+  String get fileName => "${name}-mixin.html";
+
+  @override
+  String get kind => 'mixin';
 }
 
 class Class extends ModelElement
@@ -906,10 +961,21 @@ class Class extends ModelElement
 
   List<DefinedElementType> get superChain {
     List<DefinedElementType> typeChain = [];
-    var parent = _supertype;
+    DefinedElementType parent = _supertype;
     while (parent != null) {
       typeChain.add(parent);
-      parent = (parent.element as Class)._supertype;
+      if (parent.type is InterfaceType) {
+        // Avoid adding [Object] to the superChain (_supertype already has this
+        // check)
+        if ((parent.type as InterfaceType)?.superclass?.superclass == null) {
+          parent = null;
+        } else {
+          parent = new ElementType.from(
+              (parent.type as InterfaceType).superclass, packageGraph);
+        }
+      } else {
+        parent = (parent.element as Class)._supertype;
+      }
     }
     return typeChain;
   }
@@ -1304,6 +1370,9 @@ abstract class Canonicalization extends Object
   bool get isCanonical;
   Library get canonicalLibrary;
 
+  List<CommentReference> _commentRefs;
+  List<CommentReference> get commentRefs => _commentRefs;
+
   /// Pieces of the location split by [locationSplitter] (removing package: and
   /// slashes).
   Set<String> get locationPieces;
@@ -1609,7 +1678,7 @@ class Field extends ModelElement
 
   @override
   String get sourceCode {
-    if (_sourceCodeCache == null) {
+    if (_sourceCode == null) {
       // We could use a set to figure the dupes out, but that would lose ordering.
       String fieldSourceCode = sourceCodeFor(element) ?? '';
       String getterSourceCode = getter?.sourceCode ?? '';
@@ -1628,9 +1697,9 @@ class Field extends ModelElement
       if (fieldSourceCode != setterSourceCode) {
         buffer.write(setterSourceCode);
       }
-      _sourceCodeCache = buffer.toString();
+      _sourceCode = buffer.toString();
     }
-    return _sourceCodeCache;
+    return _sourceCode;
   }
 
   void _setModelType() {
@@ -1723,9 +1792,12 @@ abstract class GetterSetterCombo implements ModelElement {
     return _documentationFrom;
   }
 
-  bool get hasAccessorsWithDocs =>
-      (hasPublicGetter && getter.documentation.isNotEmpty ||
-          hasPublicSetter && setter.documentation.isNotEmpty);
+  bool get hasAccessorsWithDocs => (hasPublicGetter &&
+          !getter.isSynthetic &&
+          getter.documentation.isNotEmpty ||
+      hasPublicSetter &&
+          !setter.isSynthetic &&
+          setter.documentation.isNotEmpty);
   bool get getterSetterBothAvailable => (hasPublicGetter &&
       getter.documentation.isNotEmpty &&
       hasPublicSetter &&
@@ -1735,7 +1807,7 @@ abstract class GetterSetterCombo implements ModelElement {
   String get oneLineDoc {
     if (_oneLineDoc == null) {
       if (!hasAccessorsWithDocs) {
-        _oneLineDoc = _documentation.asOneLiner;
+        _oneLineDoc = computeOneLineDoc();
       } else {
         StringBuffer buffer = new StringBuffer();
         if (hasPublicGetter && getter.oneLineDoc.isNotEmpty) {
@@ -2057,6 +2129,19 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   @override
+  List<Mixin> get mixins {
+    if (_mixins != null) return _mixins;
+    List<MixinElementImpl> mixinClasses = [];
+    mixinClasses.addAll(
+        _exportedNamespace.definedNames.values.whereType<MixinElementImpl>());
+    _mixins = mixinClasses
+        .map((e) => new ModelElement.from(e, this, packageGraph) as Mixin)
+        .toList(growable: false)
+          ..sort(byName);
+    return _mixins;
+  }
+
+  @override
   List<Class> get exceptions {
     return _allClasses
         .where((c) => c.isErrorOrException)
@@ -2197,7 +2282,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     }
 
     types.addAll(_exportedNamespace.definedNames.values
-        .where((e) => e is ClassElement)
+        .where((e) => e is ClassElement && e is! MixinElementImpl)
         .cast<ClassElement>()
         .where((element) => !element.isEnum));
 
@@ -2340,6 +2425,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         ..addAll(library.constants)
         ..addAll(library.enums)
         ..addAll(library.functions)
+        ..addAll(library.mixins)
         ..addAll(library.properties)
         ..addAll(library.typedefs);
 
@@ -2679,7 +2765,11 @@ abstract class ModelElement extends Canonicalization
         // Also handles enums
         if (e is ClassElement) {
           if (!e.isEnum) {
-            newModelElement = new Class(e, library, packageGraph);
+            if (e is MixinElementImpl) {
+              newModelElement = new Mixin(e, library, packageGraph);
+            } else {
+              newModelElement = new Class(e, library, packageGraph);
+            }
           } else {
             newModelElement = new Enum(e, library, packageGraph);
           }
@@ -2813,8 +2903,14 @@ abstract class ModelElement extends Canonicalization
         .packageGraph.libraryElementReexportedBy[this.element.library];
   }
 
-  // TODO(jcollins-g): annotations should now be able to use the utility
-  // functions in package for finding elements and avoid using computeNode().
+  AstNode _astNode;
+  AstNode get astNode {
+    if (_astNode == null) {
+      _astNode = element?.computeNode();
+    }
+    return _astNode;
+  }
+
   List<String> get annotations => annotationsFromMetadata(element.metadata);
 
   /// Returns linked annotations from a given metadata set, with escaping.
@@ -2880,6 +2976,27 @@ abstract class ModelElement extends Canonicalization
       }
     }
     return _isPublic;
+  }
+
+  @override
+  List<CommentReference> get commentRefs {
+    if (_commentRefs == null) {
+      _commentRefs = [];
+      for (ModelElement from in documentationFrom) {
+        List<ModelElement> checkReferences = [from];
+        if (from is Accessor) {
+          checkReferences.add(from.enclosingCombo);
+        }
+        for (ModelElement e in checkReferences) {
+          AstNode node = e.astNode;
+          if (node is AnnotatedNode &&
+              node?.documentationComment?.references != null) {
+            _commentRefs.addAll(node.documentationComment.references);
+          }
+        }
+      }
+    }
+    return _commentRefs;
   }
 
   DartdocOptionContext _config;
@@ -2959,10 +3076,11 @@ abstract class ModelElement extends Canonicalization
   /// for this element.
   List<ModelElement> get computeDocumentationFrom {
     List<ModelElement> docFrom;
+
     if (computeDocumentationComment == null &&
         canOverride() &&
         overriddenElement != null) {
-      docFrom = [overriddenElement];
+      docFrom = overriddenElement.documentationFrom;
     } else if (this is Inheritable && (this as Inheritable).isInherited) {
       Inheritable thisInheritable = (this as Inheritable);
       Class definingEnclosingClass =
@@ -3310,12 +3428,14 @@ abstract class ModelElement extends Canonicalization
   @override
   String get name => element.name;
 
+  // TODO(jcollins-g): refactor once mixins can call super
+  String computeOneLineDoc() =>
+      '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
   String _oneLineDoc;
   @override
   String get oneLineDoc {
     if (_oneLineDoc == null) {
-      _oneLineDoc =
-          '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
+      _oneLineDoc = computeOneLineDoc();
     }
     return _oneLineDoc;
   }
@@ -3448,7 +3568,12 @@ abstract class ModelElement extends Canonicalization
       });
     }
     if (paramModelType is CallableElementTypeMixin) {
-      var returnTypeName = paramModelType.createLinkedReturnTypeName();
+      String returnTypeName;
+      if (paramModelType.isTypedef) {
+        returnTypeName = paramModelType.linkedName;
+      } else {
+        returnTypeName = paramModelType.createLinkedReturnTypeName();
+      }
       buf.write('<span class="type-annotation">${returnTypeName}</span>');
       if (showNames) {
         buf.write(' <span class="parameter-name">${param.name}</span>');
@@ -4928,6 +5053,7 @@ class PackageGraph {
 abstract class TopLevelContainer extends Nameable {
   List<Class> _classes;
   List<Enum> _enums;
+  List<Mixin> _mixins;
   List<Class> _exceptions;
   List<TopLevelVariable> _constants;
   List<TopLevelVariable> _properties;
@@ -4936,6 +5062,7 @@ abstract class TopLevelContainer extends Nameable {
 
   Iterable<Class> get classes => _classes;
   Iterable<Enum> get enums => _enums;
+  Iterable<Mixin> get mixins => _mixins;
   Iterable<Class> get exceptions => _exceptions;
   Iterable<TopLevelVariable> get constants => _constants;
   Iterable<TopLevelVariable> get properties => _properties;
@@ -4947,14 +5074,16 @@ abstract class TopLevelContainer extends Nameable {
   bool get hasPublicEnums => publicEnums.isNotEmpty;
   bool get hasPublicExceptions => publicExceptions.isNotEmpty;
   bool get hasPublicFunctions => publicFunctions.isNotEmpty;
+  bool get hasPublicMixins => publicMixins.isNotEmpty;
   bool get hasPublicProperties => publicProperties.isNotEmpty;
   bool get hasPublicTypedefs => publicTypedefs.isNotEmpty;
 
   Iterable<Class> get publicClasses => filterNonPublic(classes);
   Iterable<TopLevelVariable> get publicConstants => filterNonPublic(constants);
-  Iterable<Class> get publicEnums => filterNonPublic(enums);
+  Iterable<Enum> get publicEnums => filterNonPublic(enums);
   Iterable<Class> get publicExceptions => filterNonPublic(exceptions);
   Iterable<ModelFunction> get publicFunctions => filterNonPublic(functions);
+  Iterable<Mixin> get publicMixins => filterNonPublic(mixins);
   Iterable<TopLevelVariable> get publicProperties =>
       filterNonPublic(properties);
   Iterable<Typedef> get publicTypedefs => filterNonPublic(typedefs);
@@ -5085,6 +5214,7 @@ class Category extends Nameable
     _constants = [];
     _properties = [];
     _functions = [];
+    _mixins = [];
     _typedefs = [];
   }
 
@@ -5093,6 +5223,8 @@ class Category extends Nameable
     _allItems.add(c);
     if (c is Library) {
       _libraries.add(c);
+    } else if (c is Mixin) {
+      _mixins.add(c);
     } else if (c is Enum) {
       _enums.add(c);
     } else if (c is Class) {
@@ -5564,7 +5696,6 @@ class Parameter extends ModelElement implements EnclosedElement {
 }
 
 abstract class SourceCodeMixin implements Documentable {
-  String _sourceCodeCache;
   String get crossdartHtmlTag {
     if (config.addCrossdart && _crossdartUrl != null) {
       return "<a class='crossdart' href='${_crossdartUrl}'>Link to Crossdart</a>";
@@ -5614,11 +5745,12 @@ abstract class SourceCodeMixin implements Documentable {
     }
   }
 
+  String _sourceCode;
   String get sourceCode {
-    if (_sourceCodeCache == null) {
-      _sourceCodeCache = sourceCodeFor(element);
+    if (_sourceCode == null) {
+      _sourceCode = sourceCodeFor(element);
     }
-    return _sourceCodeCache;
+    return _sourceCode;
   }
 
   String get _crossdartPath {

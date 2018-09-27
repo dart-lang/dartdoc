@@ -185,66 +185,9 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
   return null;
 }
 
-// TODO: this is in the wrong place
-NodeList<CommentReference> _getCommentRefs(Documentable documentable) {
-  // Documentable items that aren't related to analyzer elements have no
-  // CommentReference list.
-  if (documentable is! ModelElement) return null;
-  ModelElement modelElement = documentable;
-
-  if (modelElement.element.documentationComment == null &&
-      modelElement.canOverride()) {
-    var node = modelElement.overriddenElement?.element?.computeNode();
-    if (node is AnnotatedNode) {
-      if (node.documentationComment != null) {
-        return node.documentationComment.references;
-      }
-    }
-  }
-
-  if (modelElement.element.computeNode() is AnnotatedNode) {
-    final AnnotatedNode annotatedNode = modelElement.element.computeNode();
-    if (annotatedNode.documentationComment != null) {
-      return annotatedNode.documentationComment.references;
-    }
-  } else if (modelElement.element is LibraryElement) {
-    // handle anonymous libraries
-    if (modelElement.element.computeNode() == null ||
-        modelElement.element.computeNode().parent == null) {
-      return null;
-    }
-    var node = modelElement.element.computeNode().parent.parent;
-    if (node is AnnotatedNode) {
-      if (node.documentationComment != null) {
-        return node.documentationComment.references;
-      }
-    }
-  }
-
-  // Our references might come from somewhere up in the inheritance chain.
-  // TODO(jcollins-g): rationalize this and all other places where docs are
-  //                   inherited to be consistent.
-  if (modelElement.element is ClassMemberElement) {
-    var node = modelElement.element
-        .getAncestor((e) => e is ClassElement)
-        .computeNode();
-    if (node is AnnotatedNode) {
-      if (node.documentationComment != null) {
-        return node.documentationComment.references;
-      }
-    }
-  }
-  return null;
-}
-
 /// Returns null if element is a parameter.
 MatchingLinkResult _getMatchingLinkElement(
     String codeRef, Warnable element, List<CommentReference> commentRefs) {
-  // By debugging inspection, it seems correct to not warn when we don't have
-  // CommentReferences; there's actually nothing that needs resolving in
-  // that case.
-  if (commentRefs == null) return new MatchingLinkResult(null, warn: false);
-
   if (!codeRef.contains(isConstructor) &&
       codeRef.contains(notARealDocReference)) {
     // Don't waste our time on things we won't ever find.
@@ -254,7 +197,7 @@ MatchingLinkResult _getMatchingLinkElement(
   ModelElement refModelElement;
 
   // Try expensive not-scoped lookup.
-  if (refModelElement == null) {
+  if (refModelElement == null && element is ModelElement) {
     Class preferredClass = _getPreferredClass(element);
     refModelElement =
         _findRefElementInLibrary(codeRef, element, commentRefs, preferredClass);
@@ -318,22 +261,25 @@ MatchingLinkResult _getMatchingLinkElement(
 /// Given a set of commentRefs, return the one whose name matches the codeRef.
 Element _getRefElementFromCommentRefs(
     List<CommentReference> commentRefs, String codeRef) {
-  for (CommentReference ref in commentRefs) {
-    if (ref.identifier.name == codeRef) {
-      bool isConstrElement = ref.identifier.staticElement is ConstructorElement;
-      // Constructors are now handled by library search.
-      if (!isConstrElement) {
-        Element refElement = ref.identifier.staticElement;
-        if (refElement is PropertyAccessorElement) {
-          // yay we found an accessor that wraps a const, but we really
-          // want the top-level field itself
-          refElement = (refElement as PropertyAccessorElement).variable;
+  if (commentRefs != null) {
+    for (CommentReference ref in commentRefs) {
+      if (ref.identifier.name == codeRef) {
+        bool isConstrElement =
+            ref.identifier.staticElement is ConstructorElement;
+        // Constructors are now handled by library search.
+        if (!isConstrElement) {
+          Element refElement = ref.identifier.staticElement;
+          if (refElement is PropertyAccessorElement) {
+            // yay we found an accessor that wraps a const, but we really
+            // want the top-level field itself
+            refElement = (refElement as PropertyAccessorElement).variable;
+          }
+          if (refElement is PrefixElement) {
+            // We found a prefix element, but what we really want is the library element.
+            refElement = (refElement as PrefixElement).enclosingElement;
+          }
+          return refElement;
         }
-        if (refElement is PrefixElement) {
-          // We found a prefix element, but what we really want is the library element.
-          refElement = (refElement as PrefixElement).enclosingElement;
-        }
-        return refElement;
       }
     }
   }
@@ -719,7 +665,7 @@ void _getResultsForClass(Class tryClass, String codeRefChomped,
 }
 
 String _linkDocReference(
-    String codeRef, Warnable warnable, NodeList<CommentReference> commentRefs) {
+    String codeRef, Warnable warnable, List<CommentReference> commentRefs) {
   MatchingLinkResult result;
   result = _getMatchingLinkElement(codeRef, warnable, commentRefs);
   final ModelElement linkedElement = result.element;
@@ -942,11 +888,7 @@ class Documentation {
     return _asOneLiner;
   }
 
-  NodeList<CommentReference> _commentRefs;
-  NodeList<CommentReference> get commentRefs {
-    if (_commentRefs == null) _commentRefs = _getCommentRefs(_element);
-    return _commentRefs;
-  }
+  List<CommentReference> get commentRefs => _element.commentRefs;
 
   void _renderHtmlForDartdoc(bool processAllDocs) {
     Tuple3<String, String, bool> renderResults =
