@@ -221,7 +221,7 @@ You can specify links to videos inline that will be handled with a simple HTML5 
 You can specify "macros", i.e. reusable pieces of documentation. For that, first specify a template
 anywhere in the comments, like:
 
-```
+```dart
 /// {@template template_name}
 /// Some shared docs
 /// {@endtemplate}
@@ -229,7 +229,7 @@ anywhere in the comments, like:
 
 and then you can insert it via `{@macro template_name}`, like
 
-```
+```dart
 /// Some comment
 /// {@macro template_name}
 /// More comments
@@ -239,6 +239,60 @@ Template definitions are currently unscoped -- if dartdoc reads a file containin
 dartdoc is currently documenting.  This can lead to inconsistent behavior between runs on different
 packages, especially if different command lines are used for dartdoc.  It is recommended to use collision-resistant
 naming for any macros by including the package name and/or library it is defined in within the name.
+
+### Tools
+
+Dartdoc allows you to filter parts of the documentation through an external tool
+and then include the output of that tool in place of the given input.
+
+First, you have to configure the tools that will be used in the `dartdoc_options.yaml` file:
+
+```yaml
+dartdoc:
+  tools:
+    drill:
+      command: ["bin/drill.dart"]
+      description: "Puts holes in things."
+    echo:
+      macos: ['/bin/sh', '-c', 'echo']
+      linux: ['/bin/sh', '-c', 'echo']
+      windows: ['C:\\Windows\\System32\\cmd.exe', '/c', 'echo']
+      description: 'Works on everything'
+```
+
+The `command` tag is used to describe the command executable, and any options
+that are common among all executions. If the first element of this list is a
+filename that ends in `.dart`, then the dart executable will automatically be
+used to invoke that script. The `command` defined will be run on all platforms.
+
+The `macos`, `linux`, and `windows` tags are used to describe the commands to
+be run on each of those platforms.
+
+The `description` is just a short description of the tool for use as help text. 
+
+Only tools which are configured in the `dartdoc_options.yaml` file are able to
+be invoked.
+
+To use the tools in comment documentation, use the `{@tool <name> [<options> ...] [$INPUT]}`
+directive to invoke the tool:
+
+```dart
+/// {@tool drill --flag --option="value" $INPUT}
+/// This is the text that will be sent to the tool as input.
+/// {@end-tool}
+```
+
+The `$INPUT` argument is a special token that will be replaced with the name of
+a temporary file that the tool needs to read from. It can appear anywhere in the
+options, and can appear multiple times.
+
+If the example `drill` tool with those options is a tool that turns the content
+of its input file into a code-font heading, then the directive above would be
+the equivalent of having the following comment in the code:
+
+```dart
+/// # `This is the text that will be sent to the tool as input.`
+```
 
 ### Auto including dependencies
 
