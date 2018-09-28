@@ -3699,11 +3699,11 @@ abstract class ModelElement extends Canonicalization
     // Matches all tool directives (even some invalid ones). This is so
     // we can give good error messages if the directive is malformed, instead of
     // just silently emitting it as-is.
-    final RegExp basicToolRegExp = new RegExp(
+    final basicToolRegExp = new RegExp(
         r'[ ]*{@tool\s+([^}]+)}\n?([\s\S]+?)\n?{@end-tool}[ ]*\n?',
         multiLine: true);
 
-    ToolRunner runner = new ToolRunner(config.tools, (String message) {
+    var runner = new ToolRunner(config.tools, (String message) {
       warn(PackageWarning.toolError, message: message);
     });
     try {
@@ -3972,7 +3972,7 @@ abstract class ModelElement extends Canonicalization
     // args that look like assignments (start with valid option names followed
     // by an equals sign), add a "--" in front so that they parse as options.
     return matches.map<String>((Match match) {
-      String option = '';
+      var option = '';
       if (convertToArgs && match[1] != null && !match[1].startsWith('-'))
         option = '--';
       if (match[2] != null) {
@@ -3990,7 +3990,7 @@ abstract class ModelElement extends Canonicalization
   /// normally with [argParser] and returns the result.
   ArgResults _parseArgs(
       String argsAsString, ArgParser argParser, String directiveName) {
-    Iterable<String> args =
+    var args =
         _splitUpQuotedArgs(argsAsString, convertToArgs: true);
     try {
       return argParser.parse(args);

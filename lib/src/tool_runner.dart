@@ -61,14 +61,14 @@ class ToolRunner {
     assert(args != null);
     assert(args.isNotEmpty);
     content ??= '';
-    String tool = args.removeAt(0);
+    var tool = args.removeAt(0);
     if (!toolConfiguration.tools.containsKey(tool)) {
       _error('Unable to find definition for tool "$tool" in tool map. '
           'Did you add it to dartdoc_options.yaml?');
       return '';
     }
-    ToolDefinition toolDefinition = toolConfiguration.tools[tool];
-    List<String> toolArgs = toolDefinition.command;
+    var toolDefinition = toolConfiguration.tools[tool];
+    var toolArgs = toolDefinition.command;
     if (pathLib.extension(toolDefinition.command.first) == '.dart') {
       // For dart tools, we want to invoke them with Dart.
       toolArgs.insert(0, Platform.resolvedExecutable);
@@ -83,21 +83,21 @@ class ToolRunner {
     // the input to a temporary file before running the tool synchronously.
 
     // Write the content to a temp file.
-    File tmpFile = _createTemporaryFile();
+    var tmpFile = _createTemporaryFile();
     tmpFile.writeAsStringSync(content);
 
     // Substitute the temp filename for the "$INPUT" token.
-    RegExp fileToken = new RegExp(r'\$INPUT\b');
-    List<String> argsWithInput = <String>[];
-    for (String arg in args) {
+    var fileToken = new RegExp(r'\$INPUT\b');
+    var argsWithInput = <String>[];
+    for (var arg in args) {
       argsWithInput.add(arg.replaceAll(fileToken, tmpFile.absolute.path));
     }
 
     argsWithInput = toolArgs + argsWithInput;
-    final String commandPath = argsWithInput.removeAt(0);
+    final commandPath = argsWithInput.removeAt(0);
     String commandString() => ([commandPath] + argsWithInput).join(' ');
     try {
-      ProcessResult result = Process.runSync(commandPath, argsWithInput);
+      var result = Process.runSync(commandPath, argsWithInput);
       if (result.exitCode != 0) {
         _error('Tool "$tool" returned non-zero exit code '
             '(${result.exitCode}) when run as '

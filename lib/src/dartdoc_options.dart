@@ -148,16 +148,16 @@ class ToolConfiguration {
 
   static ToolConfiguration fromYamlMap(
       YamlMap yamlMap, pathLib.Context pathContext) {
-    Map<String, ToolDefinition> newToolDefinitions = {};
-    for (MapEntry entry in yamlMap.entries) {
-      String name = entry.key.toString();
+    var newToolDefinitions = <String, ToolDefinition>{};
+    for (var entry in yamlMap.entries) {
+      var name = entry.key.toString();
       var toolMap = entry.value;
-      String description;
+      var description;
       List<String> command;
       if (toolMap is Map) {
         description = toolMap['description']?.toString();
         // If the command key is given, then it applies to all platforms.
-        String commandFrom = toolMap.containsKey('command')
+        var commandFrom = toolMap.containsKey('command')
             ? 'command'
             : Platform.operatingSystem;
         if (toolMap.containsKey(commandFrom)) {
@@ -195,10 +195,10 @@ class ToolConfiguration {
             'At least one of "command" or "${Platform.operatingSystem}" must '
             'be defined for the tool $name.');
       }
-      String executable = command.removeAt(0);
+      var executable = command.removeAt(0);
       executable = pathContext.canonicalize(executable);
-      File executableFile = new File(executable);
-      FileStat exeStat = executableFile.statSync();
+      var executableFile = new File(executable);
+      var exeStat = executableFile.statSync();
       if (exeStat.type == FileSystemEntityType.notFound) {
         throw new DartdocOptionError('Command executables must exist. '
             'The file "$executable" does not exist for tool $name.');

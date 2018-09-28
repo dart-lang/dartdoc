@@ -14,7 +14,7 @@ import 'package:test/test.dart';
 import 'src/utils.dart' as utils;
 
 void main() {
-  ToolConfiguration toolMap = ToolConfiguration.empty;
+  var toolMap = ToolConfiguration.empty;
 
   toolMap.tools.addAll({
     'missing': new ToolDefinition(['/a/missing/executable'], "missing"),
@@ -28,7 +28,7 @@ void main() {
         new ToolDefinition([Platform.resolvedExecutable], 'non-dart tool'),
   });
   ToolRunner runner;
-  final List<String> errors = <String>[];
+  final errors = <String>[];
 
   setUpAll(() async {
     runner = new ToolRunner(toolMap, (String message) => errors.add(message));
@@ -42,7 +42,7 @@ void main() {
       errors.clear();
     });
     test('can invoke a Dart tool', () {
-      String result = runner.run(
+      var result = runner.run(
         ['drill', r'--file=$INPUT'],
         'TEST INPUT',
       );
