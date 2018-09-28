@@ -92,12 +92,21 @@ void main() {
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
     test("can invoke a tool", () {
-      expect(invokeTool.documentation, contains('## `Yes it is!`'));
+      expect(
+          invokeTool.documentation,
+          contains(
+              '''Args: [--file=<INPUT_FILE>, --special= |\\[]!@#\\"\'\$%^&*()_+]'''));
+      expect(invokeTool.documentation, contains('## `Yes it is a [Dog]!`'));
+    });
+    test("can invoke a tool and add a reference link", () {
+      expect(invokeTool.documentation,
+          contains('Yes it is a [Dog]! Is not a [ToolUser].'));
     });
     test(r"can invoke a tool with no $INPUT or args", () {
       expect(invokeToolNoInput.documentation, contains('Args: []'));
       expect(invokeToolNoInput.documentation,
           isNot(contains('This text should not appear in the output')));
+      expect(invokeToolNoInput.documentation, isNot(contains('[Dog]')));
     });
   });
 

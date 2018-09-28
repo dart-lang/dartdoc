@@ -56,6 +56,9 @@ class DartdocFileMissing extends DartdocOptionError {
   DartdocFileMissing(String details) : super(details);
 }
 
+/// Defines the attributes of a category in the options file, corresponding to
+/// the 'categories' keyword in the options file, and populated by the
+/// [CategoryConfiguration] class.
 class CategoryDefinition {
   /// Internal name of the category.
   final String name;
@@ -73,6 +76,8 @@ class CategoryDefinition {
   String get displayName => _displayName ?? name;
 }
 
+/// A configuration class that can interpret category definitions from a YAML
+/// map.
 class CategoryConfiguration {
   /// A map of [CategoryDefinition.name] to [CategoryDefinition] objects.
   final Map<String, CategoryDefinition> categoryDefinitions;
@@ -110,8 +115,16 @@ class CategoryConfiguration {
   }
 }
 
+/// Defines the attributes of a tool in the options file, corresponding to
+/// the 'tools' keyword in the options file, and populated by the
+/// [ToolConfiguration] class.
 class ToolDefinition {
+  /// A list containing the command and options to be run for this tool. The
+  /// first argument in the command is the tool executable. Must not be an empty
+  /// list, or be null.
   final List<String> command;
+
+  /// A description of the defined tool. Must not be null.
   final String description;
 
   ToolDefinition(this.command, this.description)
@@ -123,6 +136,7 @@ class ToolDefinition {
   String toString() => '$runtimeType: "${command.join(' ')}" ($description)';
 }
 
+/// A configuration class that can interpret [ToolDefinition]s from a YAML map.
 class ToolConfiguration {
   final Map<String, ToolDefinition> tools;
 

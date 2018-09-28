@@ -586,7 +586,7 @@ abstract class ToolUser {
   /// Invokes a tool.
   ///
   /// {@tool drill --file="$INPUT" --special=" |\[]!@#\"'$%^&*()_+"}
-  /// Yes it is!
+  /// Yes it is a [Dog]!
   /// Ok, fine it isn't.
   /// {@end-tool}
   void invokeTool();
@@ -594,7 +594,7 @@ abstract class ToolUser {
   /// Invokes a tool without the $INPUT token or args.
   ///
   /// {@tool drill}
-  /// This text should not appear in the output.
+  /// This text should not appear in the output, even if it references [Dog].
   /// {@end-tool}
   void invokeToolNoInput();
 }

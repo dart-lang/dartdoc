@@ -4,6 +4,9 @@
 
 // Used by tests as an "external tool". Has no other useful purpose.
 
+// This is a sample "tool" used to test external tool integration into dartdoc.
+// It has no practical purpose other than that.
+
 import 'dart:io';
 import 'package:args/args.dart';
 
@@ -32,6 +35,7 @@ void main(List<String> argList) {
       List<String> lines = file.readAsLinesSync();
       for (String line in lines) {
         print('## `${line}`');
+        print('\n$line Is not a [ToolUser].\n');
       }
     } else {
       exit(1);
