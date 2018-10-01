@@ -20,6 +20,7 @@ install:
 
 before_script:
 - ulimit -c unlimited -S
+- pub get
 
 after_failure:
 - COREFILE=$(find . -maxdepth 1 -name "core*" | head -n 1) # find core file
