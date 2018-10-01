@@ -192,6 +192,9 @@ class SubprocessLauncher {
       // Use GNU coreutils to force line buffering.  This makes sure that
       // subprocesses that die due to fatal signals do not chop off the
       // last few lines of their output.
+      //
+      // Dart does not actually do this (seems to flush manually) unless
+      // the VM crashes.
       realExecutable = 'stdbuf';
       realArguments.addAll(['-o', 'L', '-e', 'L']);
       realArguments.add(executable);
@@ -213,8 +216,4 @@ class SubprocessLauncher {
     }
     return jsonObjects;
   }
-
-  /// Do not use in production code.  Stores the last Process object
-  /// created by [runStreamed], or none if it has not been called.
-  Process debugLastProcess;
 }
