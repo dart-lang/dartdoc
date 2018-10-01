@@ -16,7 +16,7 @@ os:
 
 
 install:
-- if [[ "$TRAVIS_OS_NAME == linux" ]]; then sudo apt-get install -y gdb; fi
+- sudo apt-get install -y gdb
 
 before_script:
 - ulimit -c unlimited -S
