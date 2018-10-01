@@ -849,6 +849,7 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
             '--json',
             '--link-to-remote',
             '--output',
+            '--show-progress',
             pluginPackageDocsDir.path
           ],
           workingDirectory: pluginPackage.path),

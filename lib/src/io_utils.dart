@@ -186,7 +186,19 @@ class SubprocessLauncher {
 
     if (Platform.environment.containsKey('DRY_RUN')) return null;
 
-    Process process = await Process.start(executable, arguments,
+    String realExecutable = executable;
+    final List<String> realArguments = [];
+    if (Platform.isLinux) {
+      // Use GNU coreutils to force line buffering.  This makes sure that
+      // subprocesses that die due to fatal signals do not chop off the
+      // last few lines of their output.
+      realExecutable = 'stdbuf';
+      realArguments.addAll(['-o', 'L', '-e', 'L']);
+      realArguments.add(executable);
+    }
+    realArguments.addAll(arguments);
+
+    Process process = await Process.start(realExecutable, realArguments,
         workingDirectory: workingDirectory, environment: environment);
     Future<void> stdoutFuture = _printStream(process.stdout, stdout,
         prefix: prefix, filter: jsonCallback);
@@ -201,4 +213,8 @@ class SubprocessLauncher {
     }
     return jsonObjects;
   }
+
+  /// Do not use in production code.  Stores the last Process object
+  /// created by [runStreamed], or none if it has not been called.
+  Process debugLastProcess;
 }
