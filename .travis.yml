@@ -17,6 +17,7 @@ os:
 before_install:
   # Disable non-blocking I/O for stdout, stderr https://github.com/travis-ci/travis-ci/issues/4704#issuecomment-348435959
   - python -c 'import os,sys,fcntl; flags = fcntl.fcntl(sys.stdout, fcntl.F_GETFL); fcntl.fcntl(sys.stdout, fcntl.F_SETFL, flags&~os.O_NONBLOCK);'
+  - python -c 'import os,sys,fcntl; flags = fcntl.fcntl(sys.stderr, fcntl.F_GETFL); fcntl.fcntl(sys.stderr, fcntl.F_SETFL, flags&~os.O_NONBLOCK);'
 
 branches:
   only: [master]
