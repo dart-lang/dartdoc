@@ -7,3 +7,12 @@ dartdoc:
     Unreal:
       markdown: "Unreal.md"
     Real Libraries:
+  tools:
+    drill:
+      command: ["bin/drill.dart"]
+      description: "Puts holes in things."
+    echo:
+      macos: ['/bin/sh', '-c', 'echo']
+      linux: ['/bin/sh', '-c', 'echo']
+      windows: ['C:\\Windows\\System32\\cmd.exe', '/c', 'echo']
+      description: 'Works on everything'

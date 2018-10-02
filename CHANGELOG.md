@@ -1,6 +1,8 @@
-## 0.21.2
-* Fix incompatibility with head analyzer (endsWith exception). (#1768)
+## 0.22.0
 * Documentation updates. (#1760)
+* Fix incompatibility with head analyzer (endsWith exception). (#1768)
+* Added the ability to run external tools on a section of documentation and 
+  replace it with the output of the tool.
 
 ## 0.21.1
 * Fix a problem where category ordering specified in categories option

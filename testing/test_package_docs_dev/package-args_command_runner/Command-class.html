@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="API docs for the Command class from the command_runner library, for the Dart programming language.">
+  <title>Command class - command_runner library - Dart API</title>
+  <!-- required because all the links are pseudo-absolute -->
+  <base href="..">
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
+  <link rel="stylesheet" href="static-assets/github.css">
+  <link rel="stylesheet" href="static-assets/styles.css">
+  <link rel="icon" href="static-assets/favicon.png">
+
+</head>
+
+<body>
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="index.html">test_package</a></li>
+    <li><a href="package-args_command_runner/package-args_command_runner-library.html">command_runner</a></li>
+    <li class="self-crumb">Command<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span> abstract class</li>
+  </ol>
+  <div class="self-name">Command</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+  <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    <h5>command_runner library</h5>
+    <ol>
+      <li class="section-title"><a href="package-args_command_runner/package-args_command_runner-library.html#classes">Classes</a></li>
+      <li><a href="package-args_command_runner/Command-class.html">Command</a></li>
+      <li><a href="package-args_command_runner/CommandRunner-class.html">CommandRunner</a></li>
+    
+    
+    
+    
+    
+    
+      <li class="section-title"><a href="package-args_command_runner/package-args_command_runner-library.html#exceptions">Exceptions</a></li>
+      <li><a href="package-args_command_runner/UsageException-class.html">UsageException</a></li>
+    </ol>
+  </div>
+
+  <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+      <h1>Command&lt;<wbr><span class="type-parameter">T</span>&gt; class </h1>
+
+    <section class="desc markdown">
+      <p>A single command.</p>
+<p>A command is known as a "leaf command" if it has no subcommands and is meant
+to be run. Leaf commands must override <a href="package-args_command_runner/Command/run.html">run</a>.</p>
+<p>A command with subcommands is known as a "branch command" and cannot be run
+itself. It should call <a href="package-args_command_runner/Command/addSubcommand.html">addSubcommand</a> (often from the constructor) to
+register subcommands.</p>
+    </section>
+    
+
+    <section class="summary offset-anchor" id="constructors">
+      <h2>Constructors</h2>
+
+      <dl class="constructor-summary-list">
+        <dt id="Command" class="callable">
+          <span class="name"><a href="package-args_command_runner/Command/Command.html">Command</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          
+        </dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="instance-properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        <dt id="aliases" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/aliases.html">aliases</a></span>
+          <span class="signature">&#8594; List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          Alternate names for this command. <a href="package-args_command_runner/Command/aliases.html">[...]</a>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="argParser" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/argParser.html">argParser</a></span>
+          <span class="signature">&#8594; <a href="package-args_args/ArgParser-class.html">ArgParser</a></span> 
+        </dt>
+        <dd>
+          The argument parser for this command. <a href="package-args_command_runner/Command/argParser.html">[...]</a>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="argResults" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/argResults.html">argResults</a></span>
+          <span class="signature">&#8594; <a href="package-args_args/ArgResults-class.html">ArgResults</a></span> 
+        </dt>
+        <dd>
+          The parsed argument results for this command. <a href="package-args_command_runner/Command/argResults.html">[...]</a>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="description" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/description.html">description</a></span>
+          <span class="signature">&#8594; String</span> 
+        </dt>
+        <dd>
+          A description of this command, included in <a href="package-args_command_runner/Command/usage.html">usage</a>.
+          <div class="features">read-only</div>
+</dd>
+        <dt id="globalResults" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/globalResults.html">globalResults</a></span>
+          <span class="signature">&#8594; <a href="package-args_args/ArgResults-class.html">ArgResults</a></span> 
+        </dt>
+        <dd>
+          The parsed global argument results. <a href="package-args_command_runner/Command/globalResults.html">[...]</a>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="hidden" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/hidden.html">hidden</a></span>
+          <span class="signature">&#8594; bool</span> 
+        </dt>
+        <dd>
+          Whether or not this command should be hidden from help listings. <a href="package-args_command_runner/Command/hidden.html">[...]</a>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="invocation" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/invocation.html">invocation</a></span>
+          <span class="signature">&#8594; String</span> 
+        </dt>
+        <dd>
+          A single-line template for how to invoke this command (e.g. <code>"pub get</code>package<code>"</code>).
+          <div class="features">read-only</div>
+</dd>
+        <dt id="name" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/name.html">name</a></span>
+          <span class="signature">&#8594; String</span> 
+        </dt>
+        <dd>
+          The name of this command.
+          <div class="features">read-only</div>
+</dd>
+        <dt id="parent" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/parent.html">parent</a></span>
+          <span class="signature">&#8594; <a href="package-args_command_runner/Command-class.html">Command</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          The command's parent command, if this is a subcommand. <a href="package-args_command_runner/Command/parent.html">[...]</a>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="runner" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/runner.html">runner</a></span>
+          <span class="signature">&#8594; <a href="package-args_command_runner/CommandRunner-class.html">CommandRunner</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          The command runner for this command. <a href="package-args_command_runner/Command/runner.html">[...]</a>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="subcommands" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/subcommands.html">subcommands</a></span>
+          <span class="signature">&#8594; Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter"><a href="package-args_command_runner/Command-class.html">Command</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>&gt;</span></span> 
+        </dt>
+        <dd>
+          An unmodifiable view of all sublevel commands of this command.
+          <div class="features">read-only</div>
+</dd>
+        <dt id="summary" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/summary.html">summary</a></span>
+          <span class="signature">&#8594; String</span> 
+        </dt>
+        <dd>
+          A short description of this command, included in <a href="package-args_command_runner/Command/parent.html">parent</a>'s
+<a href="package-args_command_runner/CommandRunner/usage.html">CommandRunner.usage</a>. <a href="package-args_command_runner/Command/summary.html">[...]</a>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="takesArguments" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/takesArguments.html">takesArguments</a></span>
+          <span class="signature">&#8594; bool</span> 
+        </dt>
+        <dd>
+          Whether or not this command takes positional arguments in addition to
+options. <a href="package-args_command_runner/Command/takesArguments.html">[...]</a>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="usage" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/usage.html">usage</a></span>
+          <span class="signature">&#8594; String</span> 
+        </dt>
+        <dd>
+          Generates a string displaying usage information for this command. <a href="package-args_command_runner/Command/usage.html">[...]</a>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="usageFooter" class="property">
+          <span class="name"><a href="package-args_command_runner/Command/usageFooter.html">usageFooter</a></span>
+          <span class="signature">&#8594; String</span> 
+        </dt>
+        <dd>
+          An optional footer for <a href="package-args_command_runner/Command/usage.html">usage</a>. <a href="package-args_command_runner/Command/usageFooter.html">[...]</a>
+          <div class="features">read-only</div>
+</dd>
+        <dt id="hashCode" class="property inherited">
+          <span class="name"><a href="package-args_command_runner/Command/hashCode.html">hashCode</a></span>
+          <span class="signature">&#8594; int</span> 
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">read-only, inherited</div>
+</dd>
+        <dt id="runtimeType" class="property inherited">
+          <span class="name"><a href="package-args_command_runner/Command/runtimeType.html">runtimeType</a></span>
+          <span class="signature">&#8594; Type</span> 
+        </dt>
+        <dd class="inherited">
+          
+          <div class="features">read-only, inherited</div>
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="instance-methods">
+      <h2>Methods</h2>
+      <dl class="callables">
+        <dt id="addSubcommand" class="callable">
+          <span class="name"><a href="package-args_command_runner/Command/addSubcommand.html">addSubcommand</a></span><span class="signature">(<wbr><span class="parameter" id="addSubcommand-param-command"><span class="type-annotation"><a href="package-args_command_runner/Command-class.html">Command</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">command</span></span>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+          </dt>
+        <dd>
+          Adds <a href="package-args_command_runner/Command-class.html">Command</a> as a subcommand of this.
+          
+</dd>
+        <dt id="printUsage" class="callable">
+          <span class="name"><a href="package-args_command_runner/Command/printUsage.html">printUsage</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+          </dt>
+        <dd>
+          Prints the usage information for this command. <a href="package-args_command_runner/Command/printUsage.html">[...]</a>
+          
+</dd>
+        <dt id="run" class="callable">
+          <span class="name"><a href="package-args_command_runner/Command/run.html">run</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span>
+          </span>
+          </dt>
+        <dd>
+          Runs this command. <a href="package-args_command_runner/Command/run.html">[...]</a>
+          
+</dd>
+        <dt id="usageException" class="callable">
+          <span class="name"><a href="package-args_command_runner/Command/usageException.html">usageException</a></span><span class="signature">(<wbr><span class="parameter" id="usageException-param-message"><span class="type-annotation">String</span> <span class="parameter-name">message</span></span>)
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+          </dt>
+        <dd>
+          Throws a <a href="package-args_command_runner/UsageException-class.html">UsageException</a> with <code>message</code>.
+          
+</dd>
+        <dt id="noSuchMethod" class="callable inherited">
+          <span class="name"><a href="package-args_command_runner/Command/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation">Invocation</span> <span class="parameter-name">invocation</span></span>)
+            <span class="returntype parameter">&#8594; dynamic</span>
+          </span>
+          </dt>
+        <dd class="inherited">
+          
+          <div class="features">inherited</div>
+</dd>
+        <dt id="toString" class="callable inherited">
+          <span class="name"><a href="package-args_command_runner/Command/toString.html">toString</a></span><span class="signature">(<wbr>)
+            <span class="returntype parameter">&#8594; String</span>
+          </span>
+          </dt>
+        <dd class="inherited">
+          
+          <div class="features">inherited</div>
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor inherited" id="operators">
+      <h2>Operators</h2>
+      <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+          <span class="name"><a href="package-args_command_runner/Command/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation">dynamic</span> <span class="parameter-name">other</span></span>)
+            <span class="returntype parameter">&#8594; bool</span>
+          </span>
+          </dt>
+        <dd class="inherited">
+          
+          <div class="features">inherited</div>
+</dd>
+      </dl>
+    </section>
+
+
+
+
+  </div> <!-- /.main-content -->
+
+  <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+    <ol>
+      <li class="section-title"><a href="package-args_command_runner/Command-class.html#constructors">Constructors</a></li>
+      <li><a href="package-args_command_runner/Command/Command.html">Command</a></li>
+    
+      <li class="section-title">
+        <a href="package-args_command_runner/Command-class.html#instance-properties">Properties</a>
+      </li>
+      <li><a href="package-args_command_runner/Command/aliases.html">aliases</a></li>
+      <li><a href="package-args_command_runner/Command/argParser.html">argParser</a></li>
+      <li><a href="package-args_command_runner/Command/argResults.html">argResults</a></li>
+      <li><a href="package-args_command_runner/Command/description.html">description</a></li>
+      <li><a href="package-args_command_runner/Command/globalResults.html">globalResults</a></li>
+      <li><a href="package-args_command_runner/Command/hidden.html">hidden</a></li>
+      <li><a href="package-args_command_runner/Command/invocation.html">invocation</a></li>
+      <li><a href="package-args_command_runner/Command/name.html">name</a></li>
+      <li><a href="package-args_command_runner/Command/parent.html">parent</a></li>
+      <li><a href="package-args_command_runner/Command/runner.html">runner</a></li>
+      <li><a href="package-args_command_runner/Command/subcommands.html">subcommands</a></li>
+      <li><a href="package-args_command_runner/Command/summary.html">summary</a></li>
+      <li><a href="package-args_command_runner/Command/takesArguments.html">takesArguments</a></li>
+      <li><a href="package-args_command_runner/Command/usage.html">usage</a></li>
+      <li><a href="package-args_command_runner/Command/usageFooter.html">usageFooter</a></li>
+      <li class="inherited"><a href="package-args_command_runner/Command/hashCode.html">hashCode</a></li>
+      <li class="inherited"><a href="package-args_command_runner/Command/runtimeType.html">runtimeType</a></li>
+    
+      <li class="section-title"><a href="package-args_command_runner/Command-class.html#instance-methods">Methods</a></li>
+      <li><a href="package-args_command_runner/Command/addSubcommand.html">addSubcommand</a></li>
+      <li><a href="package-args_command_runner/Command/printUsage.html">printUsage</a></li>
+      <li><a href="package-args_command_runner/Command/run.html">run</a></li>
+      <li><a href="package-args_command_runner/Command/usageException.html">usageException</a></li>
+      <li class="inherited"><a href="package-args_command_runner/Command/noSuchMethod.html">noSuchMethod</a></li>
+      <li class="inherited"><a href="package-args_command_runner/Command/toString.html">toString</a></li>
+    
+      <li class="section-title inherited"><a href="package-args_command_runner/Command-class.html#operators">Operators</a></li>
+      <li class="inherited"><a href="package-args_command_runner/Command/operator_equals.html">operator ==</a></li>
+    
+    
+    
+    </ol>
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    test_package 0.0.1
+  </span>
+
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="static-assets/typeahead.bundle.min.js"></script>
+<script src="static-assets/highlight.pack.js"></script>
+<script src="static-assets/URI.js"></script>
+<script src="static-assets/script.js"></script>
+
+
+</body>
+
+</html>

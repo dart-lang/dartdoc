@@ -1,6 +1,6 @@
 name: dartdoc
 # Also update the `version` field in lib/dartdoc.dart.
-version: 0.21.2
+version: 0.22.0
 author: Dart Team <misc@dartlang.org>
 description: A documentation generator for Dart.
 homepage: https://github.com/dart-lang/dartdoc
@@ -17,6 +17,7 @@ dependencies:
   # least version 3.0.3 to work around an issue with 3.0.2.
   http_parser: '>=3.0.3 <4.0.0'
   logging: ^0.11.3+1
+  process: ^3.0.5
   markdown: ^2.0.0
   # TODO(jcollins-g): use dependency when mustache4dart is
   # supported on 2.0.
