@@ -2395,10 +2395,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   static String getLibraryName(LibraryElement element) {
+    var source = element.source;
+
     String name = element.name;
     if (name == null || name.isEmpty) {
       // handle the case of an anonymous library
-      name = element.definingCompilationUnit.name;
+      name = pathLib.basename(source.fullName);
 
       if (name.endsWith('.dart')) {
         name = name.substring(0, name.length - '.dart'.length);
@@ -2410,7 +2412,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     // name is to get source.encoding.
     // This may be wrong or misleading, but developers expect the name
     // of dart:____
-    var source = element.definingCompilationUnit.source;
     name = source.isInSystemLibrary ? source.encoding : name;
 
     return name;
@@ -6070,8 +6071,9 @@ class PackageBuilder {
 
     for (String name in info.packages) {
       Uri uri = info.asMap()[name];
+      String path = pathLib.normalize(pathLib.fromUri(uri));
       fileSystem.Resource resource =
-          PhysicalResourceProvider.INSTANCE.getResource(uri.toFilePath());
+          PhysicalResourceProvider.INSTANCE.getResource(path);
       if (resource is fileSystem.Folder) {
         map[name] = [resource];
       }
