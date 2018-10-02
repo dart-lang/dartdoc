@@ -50,6 +50,937 @@
   }
  },
  {
+  "name": "args",
+  "qualifiedName": "args",
+  "href": "package-args_args/package-args_args-library.html",
+  "type": "library",
+  "overriddenDepth": 0
+ },
+ {
+  "name": "ArgParser",
+  "qualifiedName": "args.ArgParser",
+  "href": "package-args_args/ArgParser-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "args",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ArgParser",
+  "qualifiedName": "args.ArgParser",
+  "href": "package-args_args/ArgParser/ArgParser.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "args.ArgParser.==",
+  "href": "package-args_args/ArgParser/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "addCommand",
+  "qualifiedName": "args.ArgParser.addCommand",
+  "href": "package-args_args/ArgParser/addCommand.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "addFlag",
+  "qualifiedName": "args.ArgParser.addFlag",
+  "href": "package-args_args/ArgParser/addFlag.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "addMultiOption",
+  "qualifiedName": "args.ArgParser.addMultiOption",
+  "href": "package-args_args/ArgParser/addMultiOption.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "addOption",
+  "qualifiedName": "args.ArgParser.addOption",
+  "href": "package-args_args/ArgParser/addOption.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "addSeparator",
+  "qualifiedName": "args.ArgParser.addSeparator",
+  "href": "package-args_args/ArgParser/addSeparator.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ArgParser.allowAnything",
+  "qualifiedName": "args.ArgParser.allowAnything",
+  "href": "package-args_args/ArgParser/ArgParser.allowAnything.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "allowTrailingOptions",
+  "qualifiedName": "args.ArgParser.allowTrailingOptions",
+  "href": "package-args_args/ArgParser/allowTrailingOptions.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "allowsAnything",
+  "qualifiedName": "args.ArgParser.allowsAnything",
+  "href": "package-args_args/ArgParser/allowsAnything.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "commands",
+  "qualifiedName": "args.ArgParser.commands",
+  "href": "package-args_args/ArgParser/commands.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "findByAbbreviation",
+  "qualifiedName": "args.ArgParser.findByAbbreviation",
+  "href": "package-args_args/ArgParser/findByAbbreviation.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "getDefault",
+  "qualifiedName": "args.ArgParser.getDefault",
+  "href": "package-args_args/ArgParser/getDefault.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "getUsage",
+  "qualifiedName": "args.ArgParser.getUsage",
+  "href": "package-args_args/ArgParser/getUsage.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "args.ArgParser.hashCode",
+  "href": "package-args_args/ArgParser/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "args.ArgParser.noSuchMethod",
+  "href": "package-args_args/ArgParser/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "options",
+  "qualifiedName": "args.ArgParser.options",
+  "href": "package-args_args/ArgParser/options.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "parse",
+  "qualifiedName": "args.ArgParser.parse",
+  "href": "package-args_args/ArgParser/parse.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "args.ArgParser.runtimeType",
+  "href": "package-args_args/ArgParser/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "args.ArgParser.toString",
+  "href": "package-args_args/ArgParser/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "usage",
+  "qualifiedName": "args.ArgParser.usage",
+  "href": "package-args_args/ArgParser/usage.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "usageLineLength",
+  "qualifiedName": "args.ArgParser.usageLineLength",
+  "href": "package-args_args/ArgParser/usageLineLength.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ArgParserException",
+  "qualifiedName": "args.ArgParserException",
+  "href": "package-args_args/ArgParserException-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "args",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ArgParserException",
+  "qualifiedName": "args.ArgParserException",
+  "href": "package-args_args/ArgParserException/ArgParserException.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParserException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "args.ArgParserException.==",
+  "href": "package-args_args/ArgParserException/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParserException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "commands",
+  "qualifiedName": "args.ArgParserException.commands",
+  "href": "package-args_args/ArgParserException/commands.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParserException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "args.ArgParserException.hashCode",
+  "href": "package-args_args/ArgParserException/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParserException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "message",
+  "qualifiedName": "args.ArgParserException.message",
+  "href": "package-args_args/ArgParserException/message.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParserException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "args.ArgParserException.noSuchMethod",
+  "href": "package-args_args/ArgParserException/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParserException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "offset",
+  "qualifiedName": "args.ArgParserException.offset",
+  "href": "package-args_args/ArgParserException/offset.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParserException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "args.ArgParserException.runtimeType",
+  "href": "package-args_args/ArgParserException/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParserException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "source",
+  "qualifiedName": "args.ArgParserException.source",
+  "href": "package-args_args/ArgParserException/source.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgParserException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "args.ArgParserException.toString",
+  "href": "package-args_args/ArgParserException/toString.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "ArgParserException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ArgResults",
+  "qualifiedName": "args.ArgResults",
+  "href": "package-args_args/ArgResults-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "args",
+   "type": "library"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "args.ArgResults.==",
+  "href": "package-args_args/ArgResults/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator []",
+  "qualifiedName": "args.ArgResults.[]",
+  "href": "package-args_args/ArgResults/operator_get.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "arguments",
+  "qualifiedName": "args.ArgResults.arguments",
+  "href": "package-args_args/ArgResults/arguments.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "command",
+  "qualifiedName": "args.ArgResults.command",
+  "href": "package-args_args/ArgResults/command.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "args.ArgResults.hashCode",
+  "href": "package-args_args/ArgResults/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "name",
+  "qualifiedName": "args.ArgResults.name",
+  "href": "package-args_args/ArgResults/name.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "args.ArgResults.noSuchMethod",
+  "href": "package-args_args/ArgResults/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "options",
+  "qualifiedName": "args.ArgResults.options",
+  "href": "package-args_args/ArgResults/options.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "rest",
+  "qualifiedName": "args.ArgResults.rest",
+  "href": "package-args_args/ArgResults/rest.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "args.ArgResults.runtimeType",
+  "href": "package-args_args/ArgResults/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "args.ArgResults.toString",
+  "href": "package-args_args/ArgResults/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "wasParsed",
+  "qualifiedName": "args.ArgResults.wasParsed",
+  "href": "package-args_args/ArgResults/wasParsed.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ArgResults",
+   "type": "class"
+  }
+ },
+ {
+  "name": "Option",
+  "qualifiedName": "args.Option",
+  "href": "package-args_args/Option-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "args",
+   "type": "library"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "args.Option.==",
+  "href": "package-args_args/Option/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "abbr",
+  "qualifiedName": "args.Option.abbr",
+  "href": "package-args_args/Option/abbr.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "abbreviation",
+  "qualifiedName": "args.Option.abbreviation",
+  "href": "package-args_args/Option/abbreviation.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "allowed",
+  "qualifiedName": "args.Option.allowed",
+  "href": "package-args_args/Option/allowed.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "allowedHelp",
+  "qualifiedName": "args.Option.allowedHelp",
+  "href": "package-args_args/Option/allowedHelp.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "callback",
+  "qualifiedName": "args.Option.callback",
+  "href": "package-args_args/Option/callback.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "defaultValue",
+  "qualifiedName": "args.Option.defaultValue",
+  "href": "package-args_args/Option/defaultValue.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "defaultsTo",
+  "qualifiedName": "args.Option.defaultsTo",
+  "href": "package-args_args/Option/defaultsTo.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "getOrDefault",
+  "qualifiedName": "args.Option.getOrDefault",
+  "href": "package-args_args/Option/getOrDefault.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "args.Option.hashCode",
+  "href": "package-args_args/Option/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "help",
+  "qualifiedName": "args.Option.help",
+  "href": "package-args_args/Option/help.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hide",
+  "qualifiedName": "args.Option.hide",
+  "href": "package-args_args/Option/hide.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "isFlag",
+  "qualifiedName": "args.Option.isFlag",
+  "href": "package-args_args/Option/isFlag.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "isMultiple",
+  "qualifiedName": "args.Option.isMultiple",
+  "href": "package-args_args/Option/isMultiple.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "isSingle",
+  "qualifiedName": "args.Option.isSingle",
+  "href": "package-args_args/Option/isSingle.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "name",
+  "qualifiedName": "args.Option.name",
+  "href": "package-args_args/Option/name.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "negatable",
+  "qualifiedName": "args.Option.negatable",
+  "href": "package-args_args/Option/negatable.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "args.Option.noSuchMethod",
+  "href": "package-args_args/Option/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "args.Option.runtimeType",
+  "href": "package-args_args/Option/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "splitCommas",
+  "qualifiedName": "args.Option.splitCommas",
+  "href": "package-args_args/Option/splitCommas.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "args.Option.toString",
+  "href": "package-args_args/Option/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "type",
+  "qualifiedName": "args.Option.type",
+  "href": "package-args_args/Option/type.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "valueHelp",
+  "qualifiedName": "args.Option.valueHelp",
+  "href": "package-args_args/Option/valueHelp.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Option",
+   "type": "class"
+  }
+ },
+ {
+  "name": "OptionType",
+  "qualifiedName": "args.OptionType",
+  "href": "package-args_args/OptionType-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "args",
+   "type": "library"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "args.OptionType.==",
+  "href": "package-args_args/OptionType/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "FLAG",
+  "qualifiedName": "args.OptionType.FLAG",
+  "href": "package-args_args/OptionType/FLAG-constant.html",
+  "type": "constant",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "MULTIPLE",
+  "qualifiedName": "args.OptionType.MULTIPLE",
+  "href": "package-args_args/OptionType/MULTIPLE-constant.html",
+  "type": "constant",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "SINGLE",
+  "qualifiedName": "args.OptionType.SINGLE",
+  "href": "package-args_args/OptionType/SINGLE-constant.html",
+  "type": "constant",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "flag",
+  "qualifiedName": "args.OptionType.flag",
+  "href": "package-args_args/OptionType/flag-constant.html",
+  "type": "constant",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "args.OptionType.hashCode",
+  "href": "package-args_args/OptionType/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "multiple",
+  "qualifiedName": "args.OptionType.multiple",
+  "href": "package-args_args/OptionType/multiple-constant.html",
+  "type": "constant",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "name",
+  "qualifiedName": "args.OptionType.name",
+  "href": "package-args_args/OptionType/name.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "args.OptionType.noSuchMethod",
+  "href": "package-args_args/OptionType/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "args.OptionType.runtimeType",
+  "href": "package-args_args/OptionType/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "single",
+  "qualifiedName": "args.OptionType.single",
+  "href": "package-args_args/OptionType/single-constant.html",
+  "type": "constant",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "args.OptionType.toString",
+  "href": "package-args_args/OptionType/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "OptionType",
+   "type": "class"
+  }
+ },
+ {
   "name": "categoriesExported",
   "qualifiedName": "categoriesExported",
   "href": "categoriesExported/categoriesExported-library.html",
@@ -139,6 +1070,618 @@
   "href": "code_in_comments/code_in_comments-library.html",
   "type": "library",
   "overriddenDepth": 0
+ },
+ {
+  "name": "command_runner",
+  "qualifiedName": "command_runner",
+  "href": "package-args_command_runner/package-args_command_runner-library.html",
+  "type": "library",
+  "overriddenDepth": 0
+ },
+ {
+  "name": "Command",
+  "qualifiedName": "command_runner.Command",
+  "href": "package-args_command_runner/Command-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "command_runner",
+   "type": "library"
+  }
+ },
+ {
+  "name": "Command",
+  "qualifiedName": "command_runner.Command",
+  "href": "package-args_command_runner/Command/Command.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "command_runner.Command.==",
+  "href": "package-args_command_runner/Command/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "addSubcommand",
+  "qualifiedName": "command_runner.Command.addSubcommand",
+  "href": "package-args_command_runner/Command/addSubcommand.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "aliases",
+  "qualifiedName": "command_runner.Command.aliases",
+  "href": "package-args_command_runner/Command/aliases.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "argParser",
+  "qualifiedName": "command_runner.Command.argParser",
+  "href": "package-args_command_runner/Command/argParser.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "argResults",
+  "qualifiedName": "command_runner.Command.argResults",
+  "href": "package-args_command_runner/Command/argResults.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "description",
+  "qualifiedName": "command_runner.Command.description",
+  "href": "package-args_command_runner/Command/description.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "globalResults",
+  "qualifiedName": "command_runner.Command.globalResults",
+  "href": "package-args_command_runner/Command/globalResults.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "command_runner.Command.hashCode",
+  "href": "package-args_command_runner/Command/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hidden",
+  "qualifiedName": "command_runner.Command.hidden",
+  "href": "package-args_command_runner/Command/hidden.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "invocation",
+  "qualifiedName": "command_runner.Command.invocation",
+  "href": "package-args_command_runner/Command/invocation.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "name",
+  "qualifiedName": "command_runner.Command.name",
+  "href": "package-args_command_runner/Command/name.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "command_runner.Command.noSuchMethod",
+  "href": "package-args_command_runner/Command/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "parent",
+  "qualifiedName": "command_runner.Command.parent",
+  "href": "package-args_command_runner/Command/parent.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "printUsage",
+  "qualifiedName": "command_runner.Command.printUsage",
+  "href": "package-args_command_runner/Command/printUsage.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "run",
+  "qualifiedName": "command_runner.Command.run",
+  "href": "package-args_command_runner/Command/run.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runner",
+  "qualifiedName": "command_runner.Command.runner",
+  "href": "package-args_command_runner/Command/runner.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "command_runner.Command.runtimeType",
+  "href": "package-args_command_runner/Command/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "subcommands",
+  "qualifiedName": "command_runner.Command.subcommands",
+  "href": "package-args_command_runner/Command/subcommands.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "summary",
+  "qualifiedName": "command_runner.Command.summary",
+  "href": "package-args_command_runner/Command/summary.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "takesArguments",
+  "qualifiedName": "command_runner.Command.takesArguments",
+  "href": "package-args_command_runner/Command/takesArguments.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "command_runner.Command.toString",
+  "href": "package-args_command_runner/Command/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "usage",
+  "qualifiedName": "command_runner.Command.usage",
+  "href": "package-args_command_runner/Command/usage.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "usageException",
+  "qualifiedName": "command_runner.Command.usageException",
+  "href": "package-args_command_runner/Command/usageException.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "usageFooter",
+  "qualifiedName": "command_runner.Command.usageFooter",
+  "href": "package-args_command_runner/Command/usageFooter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "Command",
+   "type": "class"
+  }
+ },
+ {
+  "name": "CommandRunner",
+  "qualifiedName": "command_runner.CommandRunner",
+  "href": "package-args_command_runner/CommandRunner-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "command_runner",
+   "type": "library"
+  }
+ },
+ {
+  "name": "CommandRunner",
+  "qualifiedName": "command_runner.CommandRunner",
+  "href": "package-args_command_runner/CommandRunner/CommandRunner.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "command_runner.CommandRunner.==",
+  "href": "package-args_command_runner/CommandRunner/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "addCommand",
+  "qualifiedName": "command_runner.CommandRunner.addCommand",
+  "href": "package-args_command_runner/CommandRunner/addCommand.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "argParser",
+  "qualifiedName": "command_runner.CommandRunner.argParser",
+  "href": "package-args_command_runner/CommandRunner/argParser.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "commands",
+  "qualifiedName": "command_runner.CommandRunner.commands",
+  "href": "package-args_command_runner/CommandRunner/commands.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "description",
+  "qualifiedName": "command_runner.CommandRunner.description",
+  "href": "package-args_command_runner/CommandRunner/description.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "executableName",
+  "qualifiedName": "command_runner.CommandRunner.executableName",
+  "href": "package-args_command_runner/CommandRunner/executableName.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "command_runner.CommandRunner.hashCode",
+  "href": "package-args_command_runner/CommandRunner/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "invocation",
+  "qualifiedName": "command_runner.CommandRunner.invocation",
+  "href": "package-args_command_runner/CommandRunner/invocation.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "command_runner.CommandRunner.noSuchMethod",
+  "href": "package-args_command_runner/CommandRunner/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "parse",
+  "qualifiedName": "command_runner.CommandRunner.parse",
+  "href": "package-args_command_runner/CommandRunner/parse.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "printUsage",
+  "qualifiedName": "command_runner.CommandRunner.printUsage",
+  "href": "package-args_command_runner/CommandRunner/printUsage.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "run",
+  "qualifiedName": "command_runner.CommandRunner.run",
+  "href": "package-args_command_runner/CommandRunner/run.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runCommand",
+  "qualifiedName": "command_runner.CommandRunner.runCommand",
+  "href": "package-args_command_runner/CommandRunner/runCommand.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "command_runner.CommandRunner.runtimeType",
+  "href": "package-args_command_runner/CommandRunner/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "command_runner.CommandRunner.toString",
+  "href": "package-args_command_runner/CommandRunner/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "usage",
+  "qualifiedName": "command_runner.CommandRunner.usage",
+  "href": "package-args_command_runner/CommandRunner/usage.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "usageException",
+  "qualifiedName": "command_runner.CommandRunner.usageException",
+  "href": "package-args_command_runner/CommandRunner/usageException.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "usageFooter",
+  "qualifiedName": "command_runner.CommandRunner.usageFooter",
+  "href": "package-args_command_runner/CommandRunner/usageFooter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CommandRunner",
+   "type": "class"
+  }
+ },
+ {
+  "name": "UsageException",
+  "qualifiedName": "command_runner.UsageException",
+  "href": "package-args_command_runner/UsageException-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "command_runner",
+   "type": "library"
+  }
+ },
+ {
+  "name": "UsageException",
+  "qualifiedName": "command_runner.UsageException",
+  "href": "package-args_command_runner/UsageException/UsageException.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "UsageException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "command_runner.UsageException.==",
+  "href": "package-args_command_runner/UsageException/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "UsageException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "command_runner.UsageException.hashCode",
+  "href": "package-args_command_runner/UsageException/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "UsageException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "message",
+  "qualifiedName": "command_runner.UsageException.message",
+  "href": "package-args_command_runner/UsageException/message.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "UsageException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "command_runner.UsageException.noSuchMethod",
+  "href": "package-args_command_runner/UsageException/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "UsageException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "command_runner.UsageException.runtimeType",
+  "href": "package-args_command_runner/UsageException/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "UsageException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "command_runner.UsageException.toString",
+  "href": "package-args_command_runner/UsageException/toString.html",
+  "type": "method",
+  "overriddenDepth": 1,
+  "enclosedBy": {
+   "name": "UsageException",
+   "type": "class"
+  }
+ },
+ {
+  "name": "usage",
+  "qualifiedName": "command_runner.UsageException.usage",
+  "href": "package-args_command_runner/UsageException/usage.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "UsageException",
+   "type": "class"
+  }
  },
  {
   "name": "css",
@@ -3385,6 +4928,105 @@
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "TemplatedInterface",
+   "type": "class"
+  }
+ },
+ {
+  "name": "ToolUser",
+  "qualifiedName": "ex.ToolUser",
+  "href": "ex/ToolUser-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ToolUser",
+  "qualifiedName": "ex.ToolUser",
+  "href": "ex/ToolUser/ToolUser.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "ex.ToolUser.==",
+  "href": "ex/ToolUser/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "ex.ToolUser.hashCode",
+  "href": "ex/ToolUser/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "invokeTool",
+  "qualifiedName": "ex.ToolUser.invokeTool",
+  "href": "ex/ToolUser/invokeTool.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "invokeToolNoInput",
+  "qualifiedName": "ex.ToolUser.invokeToolNoInput",
+  "href": "ex/ToolUser/invokeToolNoInput.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "ex.ToolUser.noSuchMethod",
+  "href": "ex/ToolUser/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "ex.ToolUser.runtimeType",
+  "href": "ex/ToolUser/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "ex.ToolUser.toString",
+  "href": "ex/ToolUser/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
    "type": "class"
   }
  },
