@@ -4688,63 +4688,60 @@ class NameRegistry {
     return wordRuns.join('');
   }
 
-  /// Builds a cache of unique names to speed up access to them once all the
-  /// names are collected. Only runs once, on the first access to a unique name
-  /// for this [NameRegistry].
-  void _buildCache() {
-    assert(_uniqueNameCache.isEmpty, 'Can only build the cache once.');
-
-    /// Cache the unique names.
-    String generateUnique(_NameRegistryEntry entry) {
-      String lowercaseName = entry.name.toLowerCase();
-      SplayTreeSet<_NameRegistryEntry> metamers = _registry[lowercaseName];
-      if (metamers.length == 1) {
-        return entry.name;
-      }
-      // See if adding the case suffix makes the names unique.
-      Set<String> namesWithSuffixes = new Set<String>();
-      for (var metamer in metamers) {
-        namesWithSuffixes.add(metamer.fullName.toLowerCase());
-      }
-      // If adding the suffixes made everything unique, then just return the
-      // name with a suffix.
-      if (namesWithSuffixes.length == metamers.length) {
-        return entry.fullName;
-      }
-
-      // Now we must have two or more names that clash. Find them.
-      List<_NameRegistryEntry> candidates = [];
-      Set<String> members = new Set<String>();
-      for (var metamer in metamers) {
-        String name = metamer.fullName.toLowerCase();
-        if (members.contains(name))
-          candidates.add(metamer);
-        else
-          members.add(name);
-      }
-      // Set the differentiator in the ones that are duplicates, so that
-      // the next time they are encountered, they won't be duplicates anymore.
-      for (var candidate in candidates) {
-        candidate.differentiator = _getCaseRuns(candidate.name);
-      }
-      return entry.fullName;
-    }
-
-    if (_registry.isNotEmpty) {
-      _registry.forEach(
-          (String lowercaseName, SplayTreeSet<_NameRegistryEntry> names) {
-        for (var name in names) {
-          _uniqueNameCache[name.name] = generateUnique(name);
-        }
-      });
-    }
-  }
-
   /// Gets a unique name for the given [name] string. The [name] must have
   /// already been added to the registry with [add]. On the first time this
   /// is called, will build a cache of all unique names for faster access.
   String getUniqueName(String name) {
-    if (_uniqueNameCache.isEmpty) _buildCache();
+    /// Builds a cache of unique names to speed up access to them once all the
+    /// names are collected. Only runs once, on the first access to a unique name
+    /// for this [NameRegistry].
+    if (_uniqueNameCache.isEmpty) {
+      /// Cache the unique names.
+      String generateUnique(_NameRegistryEntry entry) {
+        String lowercaseName = entry.name.toLowerCase();
+        SplayTreeSet<_NameRegistryEntry> metamers = _registry[lowercaseName];
+        if (metamers.length == 1) {
+          return entry.name;
+        }
+        // See if adding the case suffix makes the names unique.
+        Set<String> namesWithSuffixes = new Set<String>();
+        for (var metamer in metamers) {
+          namesWithSuffixes.add(metamer.fullName.toLowerCase());
+        }
+        // If adding the suffixes made everything unique, then just return the
+        // name with a suffix.
+        if (namesWithSuffixes.length == metamers.length) {
+          return entry.fullName;
+        }
+
+        // Now we must have two or more names that clash. Find them.
+        List<_NameRegistryEntry> candidates = [];
+        Set<String> members = new Set<String>();
+        for (var metamer in metamers) {
+          String name = metamer.fullName.toLowerCase();
+          if (members.contains(name)) {
+            candidates.add(metamer);
+          } else {
+            members.add(name);
+          }
+        }
+        // Set the differentiator in the ones that are duplicates, so that
+        // the next time they are encountered, they won't be duplicates anymore.
+        for (var candidate in candidates) {
+          candidate.differentiator = _getCaseRuns(candidate.name);
+        }
+        return entry.fullName;
+      }
+
+      if (_registry.isNotEmpty) {
+        _registry.forEach(
+            (String lowercaseName, SplayTreeSet<_NameRegistryEntry> names) {
+          for (var name in names) {
+            _uniqueNameCache[name.name] = generateUnique(name);
+          }
+        });
+      }
+    }
     assert(name != null);
     assert(_uniqueNameCache.containsKey(name),
         'No unique name found for $name. Did you add it to the NameRegistry ${this.debugName}?');
@@ -4929,8 +4926,6 @@ class PackageGraph {
       package.categories.forEach((Category c) => nameRegistry.add(c));
       package._libraries.forEach(_collectLibraryNames);
     });
-
-    nameRegistry._buildCache();
 
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
