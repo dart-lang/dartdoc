@@ -3400,6 +3400,105 @@
   }
  },
  {
+  "name": "ToolUser",
+  "qualifiedName": "ex.ToolUser",
+  "href": "ex/ToolUser-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ToolUser",
+  "qualifiedName": "ex.ToolUser",
+  "href": "ex/ToolUser/ToolUser.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "ex.ToolUser.==",
+  "href": "ex/ToolUser/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "ex.ToolUser.hashCode",
+  "href": "ex/ToolUser/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "invokeTool",
+  "qualifiedName": "ex.ToolUser.invokeTool",
+  "href": "ex/ToolUser/invokeTool.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "invokeToolNoInput",
+  "qualifiedName": "ex.ToolUser.invokeToolNoInput",
+  "href": "ex/ToolUser/invokeToolNoInput.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "ex.ToolUser.noSuchMethod",
+  "href": "ex/ToolUser/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "ex.ToolUser.runtimeType",
+  "href": "ex/ToolUser/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "ex.ToolUser.toString",
+  "href": "ex/ToolUser/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
   "name": "TypedFunctionsWithoutTypedefs",
   "qualifiedName": "ex.TypedFunctionsWithoutTypedefs",
   "href": "ex/TypedFunctionsWithoutTypedefs-class.html",

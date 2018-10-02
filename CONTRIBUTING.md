@@ -25,8 +25,16 @@ yet in the issue tracker, start by opening an issue. Thanks!
 2. When a change is user-facing, please add a new entry to the [changelog](https://github.com/dart-lang/dartdoc/blob/master/CHANGELOG.md)
 3. Please include a test for your change.  `dartdoc` has both `package:test`-style unittests as well as integration tests.  To run the unittests, use `dart test/all.dart`.  Most changes can be tested via a unittest, but some require modifying the [test_package](https://github.com/dart-lang/dartdoc/tree/master/testing/test_package) and regenerating its docs via `grind update-test-package-docs`.
 4. For major changes, run `grind compare-sdk-warnings` and `grind compare-flutter-warnings`, and include the summary results in your pull request.
-5.  Be sure to format your Dart code using `dartfmt -w`, otherwise travis will complain.
-6.  Post your change via a pull request for review and integration!
+5. Be sure to format your Dart code using `dartfmt -w`, otherwise travis will complain.
+6. Because there are generated versions of the dartdoc docs for stable and development versions of Dart,
+   you need to update the docs twice:
+   - Download and install the latest STABLE version of dart from [the Dart website](https://www.dartlang.org/tools/sdk).
+     (It's probably easiest to download a zip file and change your PATH to the extracted location's `bin` directory)
+   - Run `pub run grinder update-test-package-docs` to update the stable docs.
+   - Download and install the latest DEV version of dart from [the Dart website](https://www.dartlang.org/tools/sdk)
+     (It's probably easiest to download a zip file and change your PATH to the extracted location's `bin` directory)
+   - Run `pub run grinder update-test-package-docs` to update the dev docs.
+7. Post your change via a pull request for review and integration!
 
 ## Testing
 

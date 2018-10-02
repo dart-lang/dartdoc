@@ -90,7 +90,7 @@ void main() {
         '--example-path-prefix',
         'examples',
         '--exclude-packages',
-        'Dart,matcher,meta,path,stack_trace,quiver',
+        'Dart,args,matcher,meta,path,stack_trace,quiver',
         '--hide-sdk-text',
         '--no-include-source',
         '--output',

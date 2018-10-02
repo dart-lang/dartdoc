@@ -78,6 +78,44 @@ void main() {
     sdkAsPackageGraph = utils.testPackageGraphSdk;
   });
 
+  group('Tools', () {
+    Class toolUser;
+    Method invokeTool;
+    Method invokeToolNoInput;
+
+    setUp(() {
+      toolUser = exLibrary.classes.firstWhere((c) => c.name == 'ToolUser');
+      invokeTool =
+          toolUser.allInstanceMethods.firstWhere((m) => m.name == 'invokeTool');
+      invokeToolNoInput = toolUser.allInstanceMethods
+          .firstWhere((m) => m.name == 'invokeToolNoInput');
+      packageGraph.allLocalModelElements.forEach((m) => m.documentation);
+    });
+    test("can invoke a tool", () {
+      expect(
+          invokeTool.documentation,
+          contains(
+              '''Args: [--file=<INPUT_FILE>, --special= |\\[]!@#\\"\'\$%^&*()_+]'''));
+      expect(invokeTool.documentation, contains('## `Yes it is a [Dog]!`'));
+    });
+    test("can invoke a tool and add a reference link", () {
+      expect(invokeTool.documentation,
+          contains('Yes it is a [Dog]! Is not a [ToolUser].'));
+      expect(invokeTool.documentationAsHtml,
+          contains(r'<a href="ex/ToolUser-class.html">ToolUser</a>'));
+      expect(invokeTool.documentationAsHtml,
+          contains('<a href="ex/Dog-class.html">Dog</a>'));
+    });
+    test(r"can invoke a tool with no $INPUT or args", () {
+      expect(invokeToolNoInput.documentation, contains('Args: []'));
+      expect(invokeToolNoInput.documentation,
+          isNot(contains('This text should not appear in the output')));
+      expect(invokeToolNoInput.documentation, isNot(contains('[Dog]')));
+      expect(invokeToolNoInput.documentationAsHtml,
+          isNot(contains('<a href="ex/Dog-class.html">Dog</a>')));
+    });
+  });
+
   group('Missing and Remote', () {
     test('Verify that SDK libraries are not canonical when missing', () {
       expect(
@@ -313,7 +351,7 @@ void main() {
       });
 
       test('multiple packages, sorted default', () {
-        expect(ginormousPackageGraph.localPackages, hasLength(4));
+        expect(ginormousPackageGraph.localPackages, hasLength(5));
         expect(ginormousPackageGraph.localPackages.first.name,
             equals('test_package'));
       });
@@ -1374,7 +1412,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(28));
+      expect(classes, hasLength(29));
     });
 
     test('abstract', () {
