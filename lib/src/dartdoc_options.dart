@@ -56,6 +56,9 @@ class DartdocFileMissing extends DartdocOptionError {
   DartdocFileMissing(String details) : super(details);
 }
 
+/// Defines the attributes of a category in the options file, corresponding to
+/// the 'categories' keyword in the options file, and populated by the
+/// [CategoryConfiguration] class.
 class CategoryDefinition {
   /// Internal name of the category.
   final String name;
@@ -73,6 +76,8 @@ class CategoryDefinition {
   String get displayName => _displayName ?? name;
 }
 
+/// A configuration class that can interpret category definitions from a YAML
+/// map.
 class CategoryConfiguration {
   /// A map of [CategoryDefinition.name] to [CategoryDefinition] objects.
   final Map<String, CategoryDefinition> categoryDefinitions;
@@ -107,6 +112,112 @@ class CategoryConfiguration {
       }
     }
     return new CategoryConfiguration._(newCategoryDefinitions);
+  }
+}
+
+/// Defines the attributes of a tool in the options file, corresponding to
+/// the 'tools' keyword in the options file, and populated by the
+/// [ToolConfiguration] class.
+class ToolDefinition {
+  /// A list containing the command and options to be run for this tool. The
+  /// first argument in the command is the tool executable. Must not be an empty
+  /// list, or be null.
+  final List<String> command;
+
+  /// A description of the defined tool. Must not be null.
+  final String description;
+
+  ToolDefinition(this.command, this.description)
+      : assert(command != null),
+        assert(command.isNotEmpty),
+        assert(description != null);
+
+  @override
+  String toString() => '$runtimeType: "${command.join(' ')}" ($description)';
+}
+
+/// A configuration class that can interpret [ToolDefinition]s from a YAML map.
+class ToolConfiguration {
+  final Map<String, ToolDefinition> tools;
+
+  ToolConfiguration._(this.tools);
+
+  static ToolConfiguration get empty {
+    return new ToolConfiguration._({});
+  }
+
+  static ToolConfiguration fromYamlMap(
+      YamlMap yamlMap, pathLib.Context pathContext) {
+    var newToolDefinitions = <String, ToolDefinition>{};
+    for (var entry in yamlMap.entries) {
+      var name = entry.key.toString();
+      var toolMap = entry.value;
+      var description;
+      List<String> command;
+      if (toolMap is Map) {
+        description = toolMap['description']?.toString();
+        // If the command key is given, then it applies to all platforms.
+        var commandFrom = toolMap.containsKey('command')
+            ? 'command'
+            : Platform.operatingSystem;
+        if (toolMap.containsKey(commandFrom)) {
+          if (toolMap[commandFrom].value is String) {
+            command = [toolMap[commandFrom].toString()];
+            if (command[0].isEmpty) {
+              throw new DartdocOptionError(
+                  'Tool commands must not be empty. Tool $name command entry '
+                  '"$commandFrom" must contain at least one path.');
+            }
+          } else if (toolMap[commandFrom] is YamlList) {
+            command = (toolMap[commandFrom] as YamlList)
+                .map<String>((node) => node.toString())
+                .toList();
+            if (command.isEmpty) {
+              throw new DartdocOptionError(
+                  'Tool commands must not be empty. Tool $name command entry '
+                  '"$commandFrom" must contain at least one path.');
+            }
+          } else {
+            throw new DartdocOptionError(
+                'Tool commands must be a path to an executable, or a list of '
+                'strings that starts with a path to an executable. '
+                'The tool $name has a $commandFrom entry that is a '
+                '${toolMap[commandFrom].runtimeType}');
+          }
+        }
+      } else {
+        throw new DartdocOptionError(
+            'Tools must be defined as a map of tool names to definitions. Tool '
+            '$name is not a map.');
+      }
+      if (command == null) {
+        throw new DartdocOptionError(
+            'At least one of "command" or "${Platform.operatingSystem}" must '
+            'be defined for the tool $name.');
+      }
+      var executable = command.removeAt(0);
+      executable = pathContext.canonicalize(executable);
+      var executableFile = new File(executable);
+      var exeStat = executableFile.statSync();
+      if (exeStat.type == FileSystemEntityType.notFound) {
+        throw new DartdocOptionError('Command executables must exist. '
+            'The file "$executable" does not exist for tool $name.');
+      }
+      // Dart scripts don't need to be executable, because they'll be
+      // executed with the Dart binary.
+      bool isExecutable(int mode) {
+        return (0x1 & ((mode >> 6) | (mode >> 3) | mode)) != 0;
+      }
+
+      if (!executable.endsWith('.dart') && !isExecutable(exeStat.mode)) {
+        throw new DartdocOptionError('Non-Dart commands must be '
+            'executable. The file "$executable" for tool $name does not have '
+            'executable permission.');
+      }
+      newToolDefinitions[name] =
+          new ToolDefinition([executable] + command, description);
+    }
+    return new ToolConfiguration._(newToolDefinitions);
   }
 }
 
@@ -158,9 +269,10 @@ class _OptionValueWithContext<T> {
       return pathContext.canonicalize(resolveTildePath(value as String)) as T;
     } else if (value is Map<String, String>) {
       return (value as Map<String, String>)
-          .map((String mapKey, String mapValue) => new MapEntry<String, String>(
-              mapKey, pathContext.canonicalize(resolveTildePath(mapValue))))
-          .cast<String, String>() as T;
+          .map<String, String>((String key, String value) {
+        return new MapEntry(
+            key, pathContext.canonicalize(resolveTildePath(value)));
+      }) as T;
     } else {
       throw new UnsupportedError('Type $T is not supported for resolvedValue');
     }
@@ -252,8 +364,7 @@ abstract class DartdocOption<T> {
   void _onMissing(
       _OptionValueWithContext valueWithContext, String missingFilename);
 
-  /// Call [_onMissing] for every path that does not exist.  Returns true if
-  /// all paths exist or [mustExist] == false.
+  /// Call [_onMissing] for every path that does not exist.
   void _validatePaths(_OptionValueWithContext valueWithContext) {
     if (!mustExist) return;
     assert(isDir || isFile);
@@ -264,6 +375,9 @@ abstract class DartdocOption<T> {
       resolvedPaths = valueWithContext.resolvedValue.toList();
     } else if (valueWithContext.value is Map<String, String>) {
       resolvedPaths = valueWithContext.resolvedValue.values.toList();
+    } else {
+      assert(false, "Trying to ensure existence of unsupported type "
+          "${valueWithContext.value.runtimeType}");
     }
     for (String path in resolvedPaths) {
       FileSystemEntity f = isDir ? new Directory(path) : new File(path);
@@ -1024,6 +1138,7 @@ class DartdocOptionContext {
   List<String> get includeExternal =>
       optionSet['includeExternal'].valueAt(context);
   bool get includeSource => optionSet['includeSource'].valueAt(context);
+  ToolConfiguration get tools => optionSet['tools'].valueAt(context);
 
   /// _input is only used to construct synthetic options.
   // ignore: unused_element
@@ -1065,11 +1180,11 @@ Future<List<DartdocOption>> createDartdocOptions() async {
         negatable: true),
     new DartdocOptionArgFile<double>(
         'ambiguousReexportScorerMinConfidence', 0.1,
-        help:
-            'Minimum scorer confidence to suppress warning on ambiguous reexport.'),
+        help: 'Minimum scorer confidence to suppress warning on ambiguous '
+            'reexport.'),
     new DartdocOptionArgOnly<bool>('autoIncludeDependencies', false,
-        help:
-            'Include all the used libraries into the docs, even the ones not in the current package or "include-external"',
+        help: 'Include all the used libraries into the docs, even the ones not '
+            'in the current package or "include-external"',
         negatable: true),
     new DartdocOptionArgFile<List<String>>('categoryOrder', [],
         help:
@@ -1078,8 +1193,8 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     new DartdocOptionFileOnly<CategoryConfiguration>(
         'categories', CategoryConfiguration.empty,
         convertYamlToType: CategoryConfiguration.fromYamlMap,
-        help:
-            "A list of all categories, their display names, and markdown documentation in the order they are to be displayed."),
+        help: 'A list of all categories, their display names, and markdown '
+            'documentation in the order they are to be displayed.'),
     new DartdocOptionSyntheticOnly<List<String>>('dropTextFrom',
         (DartdocSyntheticOption<List<String>> option, Directory dir) {
       if (option.parent['hideSdkText'].valueAt(dir)) {
@@ -1249,5 +1364,12 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     new DartdocOptionArgOnly<bool>('verboseWarnings', true,
         help: 'Display extra debugging information and help with warnings.',
         negatable: true),
+    new DartdocOptionFileOnly<ToolConfiguration>(
+        'tools', ToolConfiguration.empty,
+        convertYamlToType: ToolConfiguration.fromYamlMap,
+        help: 'A map of tool names to executable paths. Each executable must '
+            'exist. Executables for different platforms are specified by '
+            'giving the platform name as a key, and a list of strings as the '
+            'command.'),
   ];
 }
