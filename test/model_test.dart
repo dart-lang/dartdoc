@@ -101,12 +101,18 @@ void main() {
     test("can invoke a tool and add a reference link", () {
       expect(invokeTool.documentation,
           contains('Yes it is a [Dog]! Is not a [ToolUser].'));
+      expect(invokeTool.documentationAsHtml,
+          contains(r'<a href="ex/ToolUser-class.html">ToolUser</a>'));
+      expect(invokeTool.documentationAsHtml,
+          contains('<a href="ex/Dog-class.html">Dog</a>'));
     });
     test(r"can invoke a tool with no $INPUT or args", () {
       expect(invokeToolNoInput.documentation, contains('Args: []'));
       expect(invokeToolNoInput.documentation,
           isNot(contains('This text should not appear in the output')));
       expect(invokeToolNoInput.documentation, isNot(contains('[Dog]')));
+      expect(invokeToolNoInput.documentationAsHtml,
+          isNot(contains('<a href="ex/Dog-class.html">Dog</a>')));
     });
   });
 
