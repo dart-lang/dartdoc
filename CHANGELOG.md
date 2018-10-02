@@ -1,3 +1,7 @@
+## 0.21.2
+* Fix incompatibility with head analyzer (endsWith exception). (#1768)
+* Documentation updates. (#1760)
+
 ## 0.21.1
 * Fix a problem where category ordering specified in categories option
   was not obeyed.  Reintroduce categoryOrder option to solve this problem.
