@@ -5369,29 +5369,11 @@ class PackageGraph {
   }
 
   void _collectLibraryNames(library) {
-    void collectClassNames(Class c) {
-      nameRegistry.add(c.package);
-      if (!c._mixins.isEmpty) {
-        c._mixins.forEach((t) {
-          c.nameRegistry.add(t.element);
-        });
-      }
-      if (c._supertype != null) {
-        c.nameRegistry.add(c._supertype.element);
-      }
-      if (!c.interfaces.isEmpty) {
-        c.interfaces.forEach((t) {
-          c.nameRegistry.add(t.element);
-        });
-      }
-    }
-
     nameRegistry.add(library);
     library._allModelElements
         .forEach((ModelElement e) => nameRegistry.add(e.library));
     library._allModelElements
         .forEach((ModelElement e) => library.nameRegistry.add(e));
-    library._allClasses?.forEach(collectClassNames);
   }
 
   void _addToImplementors(Class c) {
