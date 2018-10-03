@@ -186,7 +186,22 @@ class SubprocessLauncher {
 
     if (Platform.environment.containsKey('DRY_RUN')) return null;
 
-    Process process = await Process.start(executable, arguments,
+    String realExecutable = executable;
+    final List<String> realArguments = [];
+    if (Platform.isLinux) {
+      // Use GNU coreutils to force line buffering.  This makes sure that
+      // subprocesses that die due to fatal signals do not chop off the
+      // last few lines of their output.
+      //
+      // Dart does not actually do this (seems to flush manually) unless
+      // the VM crashes.
+      realExecutable = 'stdbuf';
+      realArguments.addAll(['-o', 'L', '-e', 'L']);
+      realArguments.add(executable);
+    }
+    realArguments.addAll(arguments);
+
+    Process process = await Process.start(realExecutable, realArguments,
         workingDirectory: workingDirectory, environment: environment);
     Future<void> stdoutFuture = _printStream(process.stdout, stdout,
         prefix: prefix, filter: jsonCallback);
