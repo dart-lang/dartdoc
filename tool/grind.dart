@@ -210,6 +210,10 @@ void analyze() async {
 }
 
 @Task('analyze, test, and self-test dartdoc')
+@Depends(analyze, checkBuild, test, testDartdoc)
+void buildbotNoPublish() => null;
+
+@Task('analyze, test, and self-test dartdoc')
 @Depends(analyze, checkBuild, test, testDartdoc, tryPublish)
 void buildbot() => null;
 

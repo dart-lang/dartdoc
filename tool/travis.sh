@@ -25,7 +25,7 @@ elif [ "$DARTDOC_BOT" = "packages" ]; then
   PACKAGE_NAME=angular PACKAGE_VERSION=">=5.0.0-beta" DARTDOC_PARAMS="--include=angular,angular.security" pub run grinder build-pub-package
 elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
   echo "Running main dartdoc bot against the SDK analyzer"
-  DARTDOC_GRIND_STEP=buildbot pub run grinder test-with-analyzer-sdk
+  DARTDOC_GRIND_STEP=buildbot-no-publish pub run grinder test-with-analyzer-sdk
 else
   echo "Running main dartdoc bot"
   pub run grinder buildbot
