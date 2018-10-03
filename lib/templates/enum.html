@@ -29,7 +29,7 @@
         {{/eNum.hasPublicSuperChainReversed}}
 
         {{#eNum.hasPublicInterfaces}}
-        <dt>Implements</dt>
+        <dt>Implemented types</dt>
         <dd>
           <ul class="comma-separated eNum-relationships">
             {{#eNum.publicInterfaces}}
@@ -40,7 +40,7 @@
         {{/eNum.hasPublicInterfaces}}
 
         {{#eNum.hasPublicMixins}}
-        <dt>Mixes-in</dt>
+        <dt>Mixed in types</dt>
         <dd><ul class="comma-separated eNum-relationships">
           {{#eNum.publicMixins}}
           <li>{{{linkedName}}}</li>
@@ -49,7 +49,7 @@
         {{/eNum.hasPublicMixins}}
 
         {{#eNum.hasPublicImplementors}}
-        <dt>Implemented by</dt>
+        <dt>Implementers</dt>
         <dd><ul class="comma-separated eNum-relationships">
           {{#eNum.publicImplementors}}
           <li>{{{linkedName}}}</li>
