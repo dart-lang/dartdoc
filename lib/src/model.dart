@@ -1564,6 +1564,7 @@ class Field extends ModelElement
   Field(FieldElement element, Library library, PackageGraph packageGraph,
       this.getter, this.setter)
       : super(element, library, packageGraph, null) {
+    assert(getter != null || setter != null);
     if (getter != null) getter.enclosingCombo = this;
     if (setter != null) setter.enclosingCombo = this;
     _setModelType();
@@ -2711,7 +2712,15 @@ abstract class ModelElement extends Canonicalization
 
   factory ModelElement.fromElement(Element e, PackageGraph p) {
     Library lib = _findOrCreateEnclosingLibraryForStatic(e, p);
-    return new ModelElement.from(e, lib, p);
+    Accessor getter;
+    Accessor setter;
+    if (e is PropertyInducingElement) {
+      getter =
+          e.getter != null ? new ModelElement.from(e.getter, lib, p) : null;
+      setter =
+          e.setter != null ? new ModelElement.from(e.setter, lib, p) : null;
+    }
+    return new ModelElement.from(e, lib, p, getter: getter, setter: setter);
   }
 
   // TODO(jcollins-g): this way of using the optional parameter is messy,
@@ -4115,8 +4124,7 @@ abstract class ModelElement extends Canonicalization
   /// normally with [argParser] and returns the result.
   ArgResults _parseArgs(
       String argsAsString, ArgParser argParser, String directiveName) {
-    var args =
-        _splitUpQuotedArgs(argsAsString, convertToArgs: true);
+    var args = _splitUpQuotedArgs(argsAsString, convertToArgs: true);
     try {
       return argParser.parse(args);
     } on ArgParserException catch (e) {

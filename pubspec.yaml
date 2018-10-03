@@ -47,6 +47,8 @@ dependency_overrides:
     path: '../sdk/sdk/pkg/analyzer'
   front_end:
     path: '../sdk/sdk/pkg/front_end'
+  kernel:
+    path: '../sdk/sdk/pkg/kernel'
 
 executables:
   dartdoc: null

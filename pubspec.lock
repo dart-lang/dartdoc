@@ -261,7 +261,7 @@ packages:
     source: hosted
     version: "2.0.9"
   kernel:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../sdk/sdk/pkg/kernel"
       relative: true
