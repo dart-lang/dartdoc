@@ -13,6 +13,17 @@ os:
   - osx
   - linux
 
+
+install:
+- ./tool/install_travis.sh
+
+before_script:
+- ulimit -c unlimited -S
+- pub get
+
+after_failure:
+- ./tool/after_failure_travis.sh
+
 before_install:
   # Disable non-blocking I/O for stdout, stderr https://github.com/travis-ci/travis-ci/issues/4704#issuecomment-348435959
   - python -c 'import os,sys,fcntl; flags = fcntl.fcntl(sys.stdout, fcntl.F_GETFL); fcntl.fcntl(sys.stdout, fcntl.F_SETFL, flags&~os.O_NONBLOCK);'

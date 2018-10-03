@@ -30,10 +30,10 @@ yet in the issue tracker, start by opening an issue. Thanks!
    you need to update the docs twice:
    - Download and install the latest STABLE version of dart from [the Dart website](https://www.dartlang.org/tools/sdk).
      (It's probably easiest to download a zip file and change your PATH to the extracted location's `bin` directory)
-   - Run `pub run grinder update-test-package-docs` to update the stable docs.
+   - Run `pub run grinder update-test-package-docs` to update the stable docs (in `testing/test_package_docs`).
    - Download and install the latest DEV version of dart from [the Dart website](https://www.dartlang.org/tools/sdk)
      (It's probably easiest to download a zip file and change your PATH to the extracted location's `bin` directory)
-   - Run `pub run grinder update-test-package-docs` to update the dev docs.
+   - Run `pub run grinder update-test-package-docs` to update the dev docs (in `testing/test_package_docs_dev`).
 7. Post your change via a pull request for review and integration!
 
 ## Testing

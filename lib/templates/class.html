@@ -29,7 +29,7 @@
         {{/clazz.hasPublicSuperChainReversed}}
 
         {{#clazz.hasPublicInterfaces}}
-        <dt>Implements</dt>
+        <dt>Implemented types</dt>
         <dd>
           <ul class="comma-separated clazz-relationships">
             {{#clazz.publicInterfaces}}
@@ -40,7 +40,7 @@
         {{/clazz.hasPublicInterfaces}}
 
         {{#clazz.hasPublicMixins}}
-        <dt>Mixes-in</dt>
+        <dt>Mixed in types</dt>
         <dd><ul class="comma-separated clazz-relationships">
           {{#clazz.publicMixins}}
           <li>{{{linkedName}}}</li>
@@ -49,7 +49,7 @@
         {{/clazz.hasPublicMixins}}
 
         {{#clazz.hasPublicImplementors}}
-        <dt>Implemented by</dt>
+        <dt>Implementers</dt>
         <dd><ul class="comma-separated clazz-relationships">
           {{#clazz.publicImplementors}}
           <li>{{{linkedName}}}</li>
