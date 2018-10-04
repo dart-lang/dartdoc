@@ -21,7 +21,9 @@ import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:analyzer/src/source/sdk_ext.dart';
 // TODO(jcollins-g): Stop using internal analyzer structures somehow.
 import 'package:analyzer/src/context/builder.dart';
+import 'package:analyzer/src/dart/analysis/byte_store.dart';
 import 'package:analyzer/src/dart/analysis/file_state.dart';
+import 'package:analyzer/src/dart/analysis/performance_logger.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/handle.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
@@ -50,8 +52,6 @@ import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:front_end/src/byte_store/byte_store.dart';
-import 'package:front_end/src/base/performance_logger.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:package_config/discovery.dart' as package_config;
@@ -2775,14 +2775,12 @@ abstract class ModelElement extends Canonicalization
         }
         // Also handles enums
         if (e is ClassElement) {
-          if (!e.isEnum) {
-            if (e is MixinElementImpl) {
-              newModelElement = new Mixin(e, library, packageGraph);
-            } else {
-              newModelElement = new Class(e, library, packageGraph);
-            }
-          } else {
+          if (e.isMixin) {
+            newModelElement = new Mixin(e, library, packageGraph);
+          } else if (e.isEnum) {
             newModelElement = new Enum(e, library, packageGraph);
+          } else {
+            newModelElement = new Class(e, library, packageGraph);
           }
         }
         if (e is FunctionElement) {
@@ -2916,9 +2914,7 @@ abstract class ModelElement extends Canonicalization
 
   AstNode _astNode;
   AstNode get astNode {
-    if (_astNode == null) {
-      _astNode = element?.computeNode();
-    }
+    _astNode ??= element?.computeNode();
     return _astNode;
   }
 
@@ -3441,7 +3437,8 @@ abstract class ModelElement extends Canonicalization
   @override
   String get name => element.name;
 
-  // TODO(jcollins-g): refactor once mixins can call super
+  // TODO(jcollins-g): refactor once dartdoc will only run in a VM where mixins
+  // calling super is allowed (SDK constraint >= 2.1.0).
   String computeOneLineDoc() =>
       '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
   String _oneLineDoc;
@@ -6237,7 +6234,6 @@ class PackageBuilder {
   AnalysisDriver _driver;
   AnalysisDriver get driver {
     if (_driver == null) {
-      // The performance log is why we have a direct dependency on front_end.
       PerformanceLog log = new PerformanceLog(null);
       AnalysisDriverScheduler scheduler = new AnalysisDriverScheduler(log);
       AnalysisOptionsImpl options = new AnalysisOptionsImpl();
