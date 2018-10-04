@@ -376,7 +376,9 @@ abstract class DartdocOption<T> {
     } else if (valueWithContext.value is Map<String, String>) {
       resolvedPaths = valueWithContext.resolvedValue.values.toList();
     } else {
-      assert(false, "Trying to ensure existence of unsupported type "
+      assert(
+          false,
+          "Trying to ensure existence of unsupported type "
           "${valueWithContext.value.runtimeType}");
     }
     for (String path in resolvedPaths) {

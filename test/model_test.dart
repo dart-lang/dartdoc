@@ -2885,8 +2885,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
-      CovariantMemberParams = fakeLibrary.classes.firstWhere((c) => c.name == 'CovariantMemberParams');
-      applyCovariantParams = CovariantMemberParams.allInstanceMethods.firstWhere((m) => m.name == 'applyCovariantParams');
+      CovariantMemberParams = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'CovariantMemberParams');
+      applyCovariantParams = CovariantMemberParams.allInstanceMethods
+          .firstWhere((m) => m.name == 'applyCovariantParams');
       paramFromExportLib =
           c.instanceMethods.singleWhere((m) => m.name == 'paramFromExportLib');
       isGreaterThan =

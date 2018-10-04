@@ -407,7 +407,8 @@ Future<void> testWithAnalyzerSdk() async {
   var sdkDartdoc = await createSdkDartdoc();
   final String defaultGrindParameter =
       Platform.environment['DARTDOC_GRIND_STEP'] ?? 'test';
-  await launcher.runStreamed(sdkBin('pub'), ['run', 'grinder', defaultGrindParameter],
+  await launcher.runStreamed(
+      sdkBin('pub'), ['run', 'grinder', defaultGrindParameter],
       workingDirectory: sdkDartdoc);
 }
 

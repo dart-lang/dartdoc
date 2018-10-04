@@ -689,6 +689,16 @@ class WithGetterAndSetter {
   void set lengthX(int _length) {}
 }
 
+/// Test that we can properly handle covariant member parameters.
+class CovariantMemberParams {
+  covariant int covariantField;
+
+  set covariantSetter(covariant int x) {}
+
+  void applyCovariantParams(
+      covariant num aNumber, covariant dynamic aDynamic) {}
+}
+
 /// I have a generic and it extends [Foo2]
 class HasGenericWithExtends<T extends Foo2> {}
 
