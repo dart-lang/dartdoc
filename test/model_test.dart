@@ -2080,6 +2080,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Field documentedPartialFieldInSubclassOnly;
     Field ExtraSpecialListLength;
     Field aProperty;
+    Field covariantField, covariantSetter;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
@@ -2140,6 +2141,22 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'AClassWithFancyProperties')
           .allInstanceProperties
           .firstWhere((f) => f.name == 'aProperty');
+      covariantField = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'CovariantMemberParams')
+          .allInstanceProperties
+          .firstWhere((f) => f.name == 'covariantField');
+      covariantSetter = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'CovariantMemberParams')
+          .allInstanceProperties
+          .firstWhere((f) => f.name == 'covariantSetter');
+    });
+
+    test('covariant fields are recognized', () {
+      expect(covariantField.isCovariant, isTrue);
+      expect(covariantField.featuresAsString, contains('covariant'));
+      expect(covariantSetter.isCovariant, isTrue);
+      expect(covariantSetter.setter.isCovariant, isTrue);
+      expect(covariantSetter.featuresAsString, contains('covariant'));
     });
 
     test('indentation is not lost inside indented code samples', () {
@@ -2857,16 +2874,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Parameter', () {
-    Class c, fClass;
+    Class c, fClass, CovariantMemberParams;
     Method isGreaterThan,
         asyncM,
         methodWithGenericParam,
         paramFromExportLib,
-        methodWithTypedefParam;
+        methodWithTypedefParam,
+        applyCovariantParams;
     Parameter intNumber, intCheckOptional;
 
     setUp(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
+      CovariantMemberParams = fakeLibrary.classes.firstWhere((c) => c.name == 'CovariantMemberParams');
+      applyCovariantParams = CovariantMemberParams.allInstanceMethods.firstWhere((m) => m.name == 'applyCovariantParams');
       paramFromExportLib =
           c.instanceMethods.singleWhere((m) => m.name == 'paramFromExportLib');
       isGreaterThan =
@@ -2882,6 +2902,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'methodWithGenericParam');
       methodWithTypedefParam = c.instanceMethods
           .singleWhere((m) => m.name == 'methodWithTypedefParam');
+    });
+
+    test('covariant parameters render correctly', () {
+      expect(applyCovariantParams.parameters, hasLength(2));
+      expect(applyCovariantParams.linkedParamsLines, equals('foo'));
     });
 
     test('has parameters', () {
