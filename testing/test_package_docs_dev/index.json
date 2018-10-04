@@ -4056,6 +4056,28 @@
   }
  },
  {
+  "name": "AClassUsingNewStyleMixin",
+  "qualifiedName": "fake.AClassUsingNewStyleMixin",
+  "href": "fake/AClassUsingNewStyleMixin-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "AClassUsingNewStyleMixin",
+  "qualifiedName": "fake.AClassUsingNewStyleMixin",
+  "href": "fake/AClassUsingNewStyleMixin/AClassUsingNewStyleMixin.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AClassUsingNewStyleMixin",
+   "type": "class"
+  }
+ },
+ {
   "name": "AClassWithFancyProperties",
   "qualifiedName": "fake.AClassWithFancyProperties",
   "href": "fake/AClassWithFancyProperties-class.html",
@@ -5706,6 +5728,204 @@
   }
  },
  {
+  "name": "GenericClass",
+  "qualifiedName": "fake.GenericClass",
+  "href": "fake/GenericClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "GenericClass",
+  "qualifiedName": "fake.GenericClass",
+  "href": "fake/GenericClass/GenericClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.GenericClass.==",
+  "href": "fake/GenericClass/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.GenericClass.hashCode",
+  "href": "fake/GenericClass/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "member",
+  "qualifiedName": "fake.GenericClass.member",
+  "href": "fake/GenericClass/member.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.GenericClass.noSuchMethod",
+  "href": "fake/GenericClass/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "overrideByBoth",
+  "qualifiedName": "fake.GenericClass.overrideByBoth",
+  "href": "fake/GenericClass/overrideByBoth.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "overrideByEverything",
+  "qualifiedName": "fake.GenericClass.overrideByEverything",
+  "href": "fake/GenericClass/overrideByEverything.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "overrideByGenericMixin",
+  "qualifiedName": "fake.GenericClass.overrideByGenericMixin",
+  "href": "fake/GenericClass/overrideByGenericMixin.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "overrideByModifierClass",
+  "qualifiedName": "fake.GenericClass.overrideByModifierClass",
+  "href": "fake/GenericClass/overrideByModifierClass.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.GenericClass.runtimeType",
+  "href": "fake/GenericClass/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.GenericClass.toString",
+  "href": "fake/GenericClass/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "GenericMixin",
+  "qualifiedName": "fake.GenericMixin",
+  "href": "fake/GenericMixin/GenericMixin.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericMixin",
+   "type": "mixin"
+  }
+ },
+ {
+  "name": "GenericMixin",
+  "qualifiedName": "fake.GenericMixin",
+  "href": "fake/GenericMixin-mixin.html",
+  "type": "mixin",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "mixinMember",
+  "qualifiedName": "fake.GenericMixin.mixinMember",
+  "href": "fake/GenericMixin/mixinMember.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericMixin",
+   "type": "mixin"
+  }
+ },
+ {
+  "name": "overrideByBoth",
+  "qualifiedName": "fake.GenericMixin.overrideByBoth",
+  "href": "fake/GenericMixin/overrideByBoth.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericMixin",
+   "type": "mixin"
+  }
+ },
+ {
+  "name": "overrideByEverything",
+  "qualifiedName": "fake.GenericMixin.overrideByEverything",
+  "href": "fake/GenericMixin/overrideByEverything.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericMixin",
+   "type": "mixin"
+  }
+ },
+ {
+  "name": "overrideByGenericMixin",
+  "qualifiedName": "fake.GenericMixin.overrideByGenericMixin",
+  "href": "fake/GenericMixin/overrideByGenericMixin.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "GenericMixin",
+   "type": "mixin"
+  }
+ },
+ {
   "name": "GenericTypedef",
   "qualifiedName": "fake.GenericTypedef",
   "href": "fake/GenericTypedef.html",
@@ -7037,6 +7257,72 @@
   }
  },
  {
+  "name": "ModifierClass",
+  "qualifiedName": "fake.ModifierClass",
+  "href": "fake/ModifierClass-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ModifierClass",
+  "qualifiedName": "fake.ModifierClass",
+  "href": "fake/ModifierClass/ModifierClass.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ModifierClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "modifierMember",
+  "qualifiedName": "fake.ModifierClass.modifierMember",
+  "href": "fake/ModifierClass/modifierMember.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ModifierClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "overrideByBoth",
+  "qualifiedName": "fake.ModifierClass.overrideByBoth",
+  "href": "fake/ModifierClass/overrideByBoth.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ModifierClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "overrideByEverything",
+  "qualifiedName": "fake.ModifierClass.overrideByEverything",
+  "href": "fake/ModifierClass/overrideByEverything.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ModifierClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "overrideByModifierClass",
+  "qualifiedName": "fake.ModifierClass.overrideByModifierClass",
+  "href": "fake/ModifierClass/overrideByModifierClass.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ModifierClass",
+   "type": "class"
+  }
+ },
+ {
   "name": "NAME_SINGLEUNDERSCORE",
   "qualifiedName": "fake.NAME_SINGLEUNDERSCORE",
   "href": "fake/NAME_SINGLEUNDERSCORE-constant.html",
@@ -7067,6 +7353,39 @@
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "NewStyleMixinCallingSuper",
+  "qualifiedName": "fake.NewStyleMixinCallingSuper",
+  "href": "fake/NewStyleMixinCallingSuper/NewStyleMixinCallingSuper.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NewStyleMixinCallingSuper",
+   "type": "mixin"
+  }
+ },
+ {
+  "name": "NewStyleMixinCallingSuper",
+  "qualifiedName": "fake.NewStyleMixinCallingSuper",
+  "href": "fake/NewStyleMixinCallingSuper-mixin.html",
+  "type": "mixin",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "superString",
+  "qualifiedName": "fake.NewStyleMixinCallingSuper.superString",
+  "href": "fake/NewStyleMixinCallingSuper/superString.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "NewStyleMixinCallingSuper",
+   "type": "mixin"
   }
  },
  {
@@ -8364,6 +8683,39 @@
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "SuperAwesomeClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "TypeInferenceMixedIn",
+  "qualifiedName": "fake.TypeInferenceMixedIn",
+  "href": "fake/TypeInferenceMixedIn-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "TypeInferenceMixedIn",
+  "qualifiedName": "fake.TypeInferenceMixedIn",
+  "href": "fake/TypeInferenceMixedIn/TypeInferenceMixedIn.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypeInferenceMixedIn",
+   "type": "class"
+  }
+ },
+ {
+  "name": "overrideByEverything",
+  "qualifiedName": "fake.TypeInferenceMixedIn.overrideByEverything",
+  "href": "fake/TypeInferenceMixedIn/overrideByEverything.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "TypeInferenceMixedIn",
    "type": "class"
   }
  },

@@ -283,8 +283,73 @@ class AMixinCallingSuper extends NotAMixin {
   String get superString => "${super.superString} but not as important as this";
 }
 
+/// I am a new style mixin using the new mixin syntax.
+mixin NewStyleMixinCallingSuper on NotAMixin {
+  @override
+
+  /// I have documentation for an overridden method named [superString],
+  /// different from [NotAMixin.superString].
+  String get superString =>
+      "${super.superString} but moderately less important than this";
+}
+
 /// Verify super-mixins don't break Dartdoc.
 class AClassUsingASuperMixin extends AnotherInterface with AMixinCallingSuper {}
+
+/// A class mixing in a single new-style mixin.
+class AClassUsingNewStyleMixin extends NotAMixin
+    with NewStyleMixinCallingSuper {}
+
+/// A generic class for testing type inference.
+class GenericClass<T> {
+  T member;
+
+  /// Destined to be overridden by [ModifierClass].
+  T overrideByModifierClass;
+
+  /// Destined to be overridden by [GenericMixin].
+  T overrideByGenericMixin;
+
+  /// Destined to be overridden by [ModifierClass] and [GenericMixin], both.
+  T overrideByBoth;
+
+  /// Destined to be overridden by everything.
+  T overrideByEverything;
+}
+
+/// A class extending a generic class.
+class ModifierClass<T> extends GenericClass<T> {
+  T modifierMember;
+
+  @override
+  T overrideByModifierClass;
+
+  @override
+  T overrideByBoth;
+
+  @override
+  T overrideByEverything;
+}
+
+/// A generic mixin that requires GenericClass as a superclass.
+mixin GenericMixin<T> on GenericClass<T> {
+  T mixinMember;
+
+  @override
+  T overrideByGenericMixin;
+
+  @override
+  T overrideByBoth;
+
+  @override
+  T overrideByEverything;
+}
+
+/// A class verifying type inference across new-style mixins.
+class TypeInferenceMixedIn extends ModifierClass<int> with GenericMixin {
+  @override
+  int overrideByEverything;
+}
 
 /// A super class, with many powers. Link to [Apple] from another library.
 @deprecated

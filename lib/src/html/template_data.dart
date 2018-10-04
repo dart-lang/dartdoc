@@ -209,7 +209,20 @@ class LibraryTemplateData extends TemplateData<Library> {
   Library get self => library;
 }
 
-class ClassTemplateData extends TemplateData<Class> {
+/// Template data for Dart 2.1-style mixin declarations.
+class MixinTemplateData extends ClassTemplateData<Mixin> {
+  final Mixin mixin;
+
+  MixinTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+      Library library, this.mixin)
+      : super(htmlOptions, packageGraph, library, mixin);
+
+  @override
+  Mixin get self => mixin;
+}
+
+/// Base template data class for [Class], [Enum], and [Mixin].
+class ClassTemplateData<T extends Class> extends TemplateData<T> {
   final Class clazz;
   final Library library;
   Class _objectType;
@@ -219,7 +232,7 @@ class ClassTemplateData extends TemplateData<Class> {
       : super(htmlOptions, packageGraph);
 
   @override
-  Class get self => clazz;
+  T get self => clazz;
   String get linkedObjectType =>
       objectType == null ? 'Object' : objectType.linkedName;
   @override
@@ -303,27 +316,14 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
       'for the Dart programming language.';
 }
 
-class EnumTemplateData extends TemplateData<Enum> {
+class EnumTemplateData extends ClassTemplateData<Enum> {
   EnumTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.eNum)
-      : super(htmlOptions, packageGraph);
+      Library library, Enum eNum)
+      : super(htmlOptions, packageGraph, library, eNum);
 
-  final Library library;
-  final Enum eNum;
+  Enum get eNum => clazz;
   @override
   Enum get self => eNum;
-  @override
-  String get layoutTitle => _layoutTitle(eNum.name, 'enum', eNum.isDeprecated);
-  @override
-  String get title => '${self.name} enum - ${library.name} library - Dart API';
-  @override
-  String get metaDescription =>
-      'API docs for the ${eNum.name} enum from the ${library.name} library, '
-      'for the Dart programming language.';
-  @override
-  List get navLinks => [packageGraph.defaultPackage, library];
-  @override
-  String get htmlBase => '..';
   @override
   Iterable<Subnav> getSubNavItems() => [
         new Subnav('Constants', '${eNum.href}#constants'),

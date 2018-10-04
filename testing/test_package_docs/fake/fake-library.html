@@ -104,6 +104,12 @@ Don't ask questions.</p>
         <dd>
           Verify super-mixins don't break Dartdoc.
         </dd>
+        <dt id="AClassUsingNewStyleMixin">
+          <span class="name "><a href="fake/AClassUsingNewStyleMixin-class.html">AClassUsingNewStyleMixin</a></span> 
+        </dt>
+        <dd>
+          A class mixing in a single new-style mixin.
+        </dd>
         <dt id="AClassWithFancyProperties">
           <span class="name "><a href="fake/AClassWithFancyProperties-class.html">AClassWithFancyProperties</a></span> 
         </dt>
@@ -207,6 +213,12 @@ Don't ask questions.</p>
         </dt>
         <dd>
           link to method from class <a href="ex/Apple/m.html">Apple.m</a>
+        </dd>
+        <dt id="GenericClass">
+          <span class="name "><a href="fake/GenericClass-class.html">GenericClass</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          A generic class for testing type inference.
         </dd>
         <dt id="HasGenerics">
           <span class="name "><a href="fake/HasGenerics-class.html">HasGenerics</a><span class="signature">&lt;<wbr><span class="type-parameter">X</span>, <span class="type-parameter">Y</span>, <span class="type-parameter">Z</span>&gt;</span></span> 
@@ -315,6 +327,12 @@ class still takes precedence (#1561).
         <dd>
           Perfect for mix-ins.
         </dd>
+        <dt id="ModifierClass">
+          <span class="name "><a href="fake/ModifierClass-class.html">ModifierClass</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          A class extending a generic class.
+        </dd>
         <dt id="NotAMixin">
           <span class="name "><a href="fake/NotAMixin-class.html">NotAMixin</a></span> 
         </dt>
@@ -363,11 +381,36 @@ class still takes precedence (#1561).
         <dd>
           
         </dd>
+        <dt id="TypeInferenceMixedIn">
+          <span class="name "><a href="fake/TypeInferenceMixedIn-class.html">TypeInferenceMixedIn</a></span> 
+        </dt>
+        <dd>
+          A class verifying type inference across new-style mixins.
+        </dd>
         <dt id="WithGetterAndSetter">
           <span class="name "><a href="fake/WithGetterAndSetter-class.html">WithGetterAndSetter</a></span> 
         </dt>
         <dd>
           Tests a single field with explict getter and setter.
+        </dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="mixins">
+      <h2>Mixins</h2>
+
+      <dl>
+        <dt id="GenericMixin">
+          <span class="name "><a href="fake/GenericMixin-mixin.html">GenericMixin</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          A generic mixin that requires GenericClass as a superclass.
+        </dd>
+        <dt id="NewStyleMixinCallingSuper">
+          <span class="name "><a href="fake/NewStyleMixinCallingSuper-mixin.html">NewStyleMixinCallingSuper</a></span> 
+        </dt>
+        <dd>
+          I am a new style mixin using the new mixin syntax.
         </dd>
       </dl>
     </section>
@@ -970,6 +1013,7 @@ default value.
       <li class="section-title"><a href="fake/fake-library.html#classes">Classes</a></li>
       <li><a href="fake/ABaseClass-class.html">ABaseClass</a></li>
       <li><a href="fake/AClassUsingASuperMixin-class.html">AClassUsingASuperMixin</a></li>
+      <li><a href="fake/AClassUsingNewStyleMixin-class.html">AClassUsingNewStyleMixin</a></li>
       <li><a href="fake/AClassWithFancyProperties-class.html">AClassWithFancyProperties</a></li>
       <li><a href="fake/AMixinCallingSuper-class.html">AMixinCallingSuper</a></li>
       <li><a href="fake/Annotation-class.html">Annotation</a></li>
@@ -987,6 +1031,7 @@ default value.
       <li><a href="fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a></li>
       <li><a href="fake/ExtraSpecialList-class.html">ExtraSpecialList</a></li>
       <li><a href="fake/Foo2-class.html">Foo2</a></li>
+      <li><a href="fake/GenericClass-class.html">GenericClass</a></li>
       <li><a href="fake/HasGenerics-class.html">HasGenerics</a></li>
       <li><a href="fake/HasGenericWithExtends-class.html">HasGenericWithExtends</a></li>
       <li><a href="fake/HasPragma-class.html">HasPragma</a></li>
@@ -1004,6 +1049,7 @@ default value.
       <li><a href="fake/MIEEMixinWithOverride-class.html">MIEEMixinWithOverride</a></li>
       <li><a href="fake/MIEEThing-class.html">MIEEThing</a></li>
       <li><a href="fake/MixMeIn-class.html">MixMeIn</a></li>
+      <li><a href="fake/ModifierClass-class.html">ModifierClass</a></li>
       <li><a href="fake/NotAMixin-class.html">NotAMixin</a></li>
       <li><a href="fake/OperatorReferenceClass-class.html">OperatorReferenceClass</a></li>
       <li><a href="fake/OtherGenericsThing-class.html">OtherGenericsThing</a></li>
@@ -1012,7 +1058,12 @@ default value.
       <li><a href="fake/SubForDocComments-class.html">SubForDocComments</a></li>
       <li><a class="deprecated" href="fake/SuperAwesomeClass-class.html">SuperAwesomeClass</a></li>
       <li><a href="fake/TypedefUsingClass-class.html">TypedefUsingClass</a></li>
+      <li><a href="fake/TypeInferenceMixedIn-class.html">TypeInferenceMixedIn</a></li>
       <li><a href="fake/WithGetterAndSetter-class.html">WithGetterAndSetter</a></li>
+    
+      <li class="section-title"><a href="fake/fake-library.html#mixins">Mixins</a></li>
+      <li><a href="fake/GenericMixin-mixin.html">GenericMixin</a></li>
+      <li><a href="fake/NewStyleMixinCallingSuper-mixin.html">NewStyleMixinCallingSuper</a></li>
     
       <li class="section-title"><a href="fake/fake-library.html#constants">Constants</a></li>
       <li><a href="fake/bulletDoced-constant.html">bulletDoced</a></li>

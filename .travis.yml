@@ -15,7 +15,6 @@ os:
   - osx
   - linux
 
-
 install:
 - ./tool/install_travis.sh
 
