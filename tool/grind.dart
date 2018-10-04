@@ -210,6 +210,10 @@ void analyze() async {
 }
 
 @Task('analyze, test, and self-test dartdoc')
+@Depends(analyze, checkBuild, test, testDartdoc)
+void buildbotNoPublish() => null;
+
+@Task('analyze, test, and self-test dartdoc')
 @Depends(analyze, checkBuild, test, testDartdoc, tryPublish)
 void buildbot() => null;
 
@@ -360,6 +364,51 @@ Future<String> createComparisonDartdoc() async {
   await launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: dartdocClean.path);
   return dartdocClean.path;
+}
+
+/// Helper function to create a clean version of dartdoc (based on the current
+/// directory, assumed to be a git repository), configured to use the head
+/// version of the Dart SDK for analyzer, front-end, and kernel.
+Future<String> createSdkDartdoc() async {
+  var launcher = new SubprocessLauncher('create-sdk-dartdoc');
+  Directory dartdocSdk = Directory.systemTemp.createTempSync('dartdoc-sdk');
+  await launcher
+      .runStreamed('git', ['clone', Directory.current.path, dartdocSdk.path]);
+  await launcher.runStreamed('git', ['checkout'],
+      workingDirectory: dartdocSdk.path);
+
+  Directory sdkClone = Directory.systemTemp.createTempSync('sdk-checkout');
+  await launcher.runStreamed('git', [
+    'clone',
+    '--depth',
+    '1',
+    'https://github.com/dart-lang/sdk.git',
+    sdkClone.path
+  ]);
+  File dartdocPubspec = new File(pathLib.join(dartdocSdk.path, 'pubspec.yaml'));
+  dartdocPubspec.writeAsStringSync('''
+dependency_overrides:
+  analyzer:
+    path: '${sdkClone.path}/pkg/analyzer'
+  front_end:
+    path: '${sdkClone.path}/pkg/front_end'
+  kernel:
+    path: '${sdkClone.path}/pkg/kernel'
+''', mode: FileMode.append);
+
+  await launcher.runStreamed(sdkBin('pub'), ['get'],
+      workingDirectory: dartdocSdk.path);
+  return dartdocSdk.path;
+}
+
+@Task('Run grind tasks with the analyzer SDK.')
+Future<void> testWithAnalyzerSdk() async {
+  var launcher = new SubprocessLauncher('test-with-analyzer-sdk');
+  var sdkDartdoc = await createSdkDartdoc();
+  final String defaultGrindParameter =
+      Platform.environment['DARTDOC_GRIND_STEP'] ?? 'test';
+  await launcher.runStreamed(sdkBin('pub'), ['run', 'grinder', defaultGrindParameter],
+      workingDirectory: sdkDartdoc);
 }
 
 Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
