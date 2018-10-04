@@ -6,6 +6,13 @@
   {{/library.publicClasses}}
   {{/library.hasPublicClasses}}
 
+  {{#library.hasPublicMixins}}
+  <li class="section-title"><a href="{{library.href}}#mixins">Mixins</a></li>
+  {{#library.publicMixins}}
+  <li>{{{ linkedName }}}</li>
+  {{/library.publicMixins}}
+  {{/library.hasPublicMixins}}
+
   {{#library.hasPublicConstants}}
   <li class="section-title"><a href="{{library.href}}#constants">Constants</a></li>
   {{#library.publicConstants}}

@@ -19,6 +19,7 @@ const _partials = const <String>[
   'footer',
   'head',
   'library',
+  'mixin',
   'packages',
   'property',
   'features',
@@ -91,6 +92,7 @@ class Templates {
   final TemplateRenderer indexTemplate;
   final TemplateRenderer libraryTemplate;
   final TemplateRenderer methodTemplate;
+  final TemplateRenderer mixinTemplate;
   final TemplateRenderer propertyTemplate;
   final TemplateRenderer topLevelConstantTemplate;
   final TemplateRenderer topLevelPropertyTemplate;
@@ -132,6 +134,7 @@ class Templates {
     var topLevelPropertyTemplate =
         await _loadTemplate('top_level_property.html');
     var typeDefTemplate = await _loadTemplate('typedef.html');
+    var mixinTemplate = await _loadTemplate('mixin.html');
 
     return new Templates._(
         indexTemplate,
@@ -147,7 +150,8 @@ class Templates {
         constantTemplate,
         topLevelConstantTemplate,
         topLevelPropertyTemplate,
-        typeDefTemplate);
+        typeDefTemplate,
+        mixinTemplate);
   }
 
   Templates._(
@@ -164,5 +168,6 @@ class Templates {
       this.constantTemplate,
       this.topLevelConstantTemplate,
       this.topLevelPropertyTemplate,
-      this.typeDefTemplate);
+      this.typeDefTemplate,
+      this.mixinTemplate);
 }

@@ -6,6 +6,13 @@
   {{/self.publicLibraries}}
   {{/self.hasPublicLibraries}}
 
+  {{#self.hasPublicMixins}}
+  <li class="section-title"><a href="{{library.href}}#mixins">Mixins</a></li>
+  {{#self.publicMixins}}
+  <li>{{{ linkedName }}}</li>
+  {{/self.publicMixins}}
+  {{/self.hasPublicMixins}}
+
   {{#self.hasPublicClasses}}
   <li class="section-title"><a href="{{self.href}}#classes">Classes</a></li>
   {{#self.publicClasses}}

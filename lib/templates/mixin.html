@@ -1,0 +1,179 @@
+{{>head}}
+
+  <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    <h5>{{parent.name}} {{parent.kind}}</h5>
+    {{>sidebar_for_library}}
+  </div>
+
+  <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+    {{#self}}
+      <h1>{{{nameWithGenerics}}} {{kind}} {{>categorization}}</h1>
+    {{/self}}
+
+    {{#mixin}}
+    {{>documentation}}
+    {{/mixin}}
+
+    {{#mixin.hasModifiers}}
+    <section>
+      <dl class="dl-horizontal">
+        {{#mixin.hasPublicSuperclassConstraints}}
+        <dt>Superclass Constraints</dt>
+        <dd><ul class="comma-separated dark mixin-relationships">
+          {{#mixin.publicSuperclassConstraints}}
+          <li>{{{linkedName}}}</li>
+          {{/mixin.publicSuperclassConstraints}}
+        </ul></dd>
+        {{/mixin.hasPublicSuperclassConstraints}}
+
+        {{#mixin.hasPublicSuperChainReversed}}
+        <dt>Inheritance</dt>
+        <dd><ul class="gt-separated dark mixin-relationships">
+          <li>{{{linkedObjectType}}}</li>
+          {{#mixin.publicSuperChainReversed}}
+          <li>{{{linkedName}}}</li>
+          {{/mixin.publicSuperChainReversed}}
+          <li>{{{name}}}</li>
+        </ul></dd>
+        {{/mixin.hasPublicSuperChainReversed}}
+
+        {{#mixin.hasPublicInterfaces}}
+        <dt>Implements</dt>
+        <dd>
+          <ul class="comma-separated mixin-relationships">
+            {{#mixin.publicInterfaces}}
+            <li>{{{linkedName}}}</li>
+            {{/mixin.publicInterfaces}}
+          </ul>
+        </dd>
+        {{/mixin.hasPublicInterfaces}}
+
+        {{#mixin.hasPublicMixins}}
+        <dt>Mixes-in</dt>
+        <dd><ul class="comma-separated mixin-relationships">
+          {{#mixin.publicMixins}}
+          <li>{{{linkedName}}}</li>
+          {{/mixin.publicMixins}}
+        </ul></dd>
+        {{/mixin.hasPublicMixins}}
+
+        {{#mixin.hasPublicImplementors}}
+        <dt>Implemented by</dt>
+        <dd><ul class="comma-separated mixin-relationships">
+          {{#mixin.publicImplementors}}
+          <li>{{{linkedName}}}</li>
+          {{/mixin.publicImplementors}}
+        </ul></dd>
+        {{/mixin.hasPublicImplementors}}
+
+        {{#mixin.hasAnnotations}}
+        <dt>Annotations</dt>
+        <dd><ul class="annotation-list mixin-relationships">
+          {{#mixin.annotations}}
+          <li>{{{.}}}</li>
+          {{/mixin.annotations}}
+        </ul></dd>
+        {{/mixin.hasAnnotations}}
+      </dl>
+    </section>
+    {{/mixin.hasModifiers}}
+
+    {{#mixin.hasPublicConstructors}}
+    <section class="summary offset-anchor" id="constructors">
+      <h2>Constructors</h2>
+
+      <dl class="constructor-summary-list">
+        {{#mixin.publicConstructors}}
+        <dt id="{{htmlId}}" class="callable">
+          <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
+        </dt>
+        <dd>
+          {{{ oneLineDoc }}}
+          {{#isConst}}
+          <div class="constructor-modifier features">const</div>
+          {{/isConst}}
+          {{#isFactory}}
+          <div class="constructor-modifier features">factory</div>
+          {{/isFactory}}
+        </dd>
+        {{/mixin.publicConstructors}}
+      </dl>
+    </section>
+    {{/mixin.hasPublicConstructors}}
+
+    {{#mixin.hasPublicProperties}}
+    <section class="summary offset-anchor{{ #allPublicInstancePropertiesInherited }} inherited{{ /allPublicInstancePropertiesInherited }}" id="instance-properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        {{#mixin.allPublicInstanceProperties}}
+        {{>property}}
+        {{/mixin.allPublicInstanceProperties}}
+      </dl>
+    </section>
+    {{/mixin.hasPublicProperties}}
+
+    {{#mixin.hasPublicMethods}}
+    <section class="summary offset-anchor{{ #allPublicInstanceMethodsInherited }} inherited{{ /allPublicInstanceMethodsInherited }}" id="instance-methods">
+      <h2>Methods</h2>
+      <dl class="callables">
+        {{#mixin.allPublicInstanceMethods}}
+        {{>callable}}
+        {{/mixin.allPublicInstanceMethods}}
+      </dl>
+    </section>
+    {{/mixin.hasPublicMethods}}
+
+    {{#mixin.hasPublicOperators}}
+    <section class="summary offset-anchor{{ #allPublicOperatorsInherited }} inherited{{ /allPublicOperatorsInherited}}" id="operators">
+      <h2>Operators</h2>
+      <dl class="callables">
+        {{#mixin.allPublicOperators}}
+        {{>callable}}
+        {{/mixin.allPublicOperators}}
+      </dl>
+    </section>
+    {{/mixin.hasPublicOperators}}
+
+    {{#mixin.hasPublicStaticProperties}}
+    <section class="summary offset-anchor" id="static-properties">
+      <h2>Static Properties</h2>
+
+      <dl class="properties">
+        {{#mixin.publicStaticProperties}}
+        {{>property}}
+        {{/mixin.publicStaticProperties}}
+      </dl>
+    </section>
+    {{/mixin.hasPublicStaticProperties}}
+
+    {{#mixin.hasPublicStaticMethods}}
+    <section class="summary offset-anchor" id="static-methods">
+      <h2>Static Methods</h2>
+      <dl class="callables">
+        {{#mixin.publicStaticMethods}}
+        {{>callable}}
+        {{/mixin.publicStaticMethods}}
+      </dl>
+    </section>
+    {{/mixin.hasPublicStaticMethods}}
+
+    {{#mixin.hasPublicConstants}}
+    <section class="summary offset-anchor" id="constants">
+      <h2>Constants</h2>
+
+      <dl class="properties">
+        {{#mixin.publicConstants}}
+        {{>constant}}
+        {{/mixin.publicConstants}}
+      </dl>
+    </section>
+    {{/mixin.hasPublicConstants}}
+
+  </div> <!-- /.main-content -->
+
+  <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+    {{>sidebar_for_class}}
+  </div><!--/.sidebar-offcanvas-->
+
+{{>footer}}

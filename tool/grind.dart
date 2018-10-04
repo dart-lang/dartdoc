@@ -386,7 +386,19 @@ Future<String> createSdkDartdoc() async {
     sdkClone.path
   ]);
   File dartdocPubspec = new File(pathLib.join(dartdocSdk.path, 'pubspec.yaml'));
+  List<String> pubspecLines = await dartdocPubspec.readAsLines();
+  List<String> pubspecLinesFiltered = [];
+  for (String line in pubspecLines) {
+    if (line.startsWith('dependency_overrides:')) {
+      pubspecLinesFiltered.add('#dependency_overrides:');
+    } else {
+      pubspecLinesFiltered.add(line);
+    }
+  }
+
+  await dartdocPubspec.writeAsString(pubspecLinesFiltered.join('\n'));
   dartdocPubspec.writeAsStringSync('''
+
 dependency_overrides:
   analyzer:
     path: '${sdkClone.path}/pkg/analyzer'
@@ -395,7 +407,6 @@ dependency_overrides:
   kernel:
     path: '${sdkClone.path}/pkg/kernel'
 ''', mode: FileMode.append);
-
   await launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: dartdocSdk.path);
   return dartdocSdk.path;
@@ -795,8 +806,10 @@ Future<void> checkBuild() async {
 @Task('Dry run of publish to pub.dartlang')
 @Depends(checkChangelogHasVersion)
 Future<void> tryPublish() async {
-  var launcher = new SubprocessLauncher('try-publish');
-  await launcher.runStreamed(sdkBin('pub'), ['publish', '-n']);
+  log('FIXME:  tryPublish() disabled until dependency_override is removed'
+      ' (#1765)');
+  //var launcher = new SubprocessLauncher('try-publish');
+  //await launcher.runStreamed(sdkBin('pub'), ['publish', '-n']);
 }
 
 @Task('Run all the tests.')
