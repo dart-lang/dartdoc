@@ -1201,6 +1201,12 @@ void main() {
       expect(localMethod.documentationAsHtml, contains('<code>bar</code>'));
     });
 
+    test('doc comment inherited from getter', () {
+      Field getterWithDocs = subForDocComments.instanceProperties
+          .firstWhere((m) => m.name == 'getterWithDocs');
+      expect(getterWithDocs.documentationAsHtml, contains('Some really great topics.'));
+    });
+
     test(
         'a property with no explicit getters and setters does not duplicate docs',
         () {
