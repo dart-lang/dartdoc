@@ -2775,14 +2775,12 @@ abstract class ModelElement extends Canonicalization
         }
         // Also handles enums
         if (e is ClassElement) {
-          if (!e.isEnum) {
-            if (e is MixinElementImpl) {
-              newModelElement = new Mixin(e, library, packageGraph);
-            } else {
-              newModelElement = new Class(e, library, packageGraph);
-            }
-          } else {
+          if (e.isMixin) {
+            newModelElement = new Mixin(e, library, packageGraph);
+          } else if (e.isEnum) {
             newModelElement = new Enum(e, library, packageGraph);
+          } else {
+            newModelElement = new Class(e, library, packageGraph);
           }
         }
         if (e is FunctionElement) {
@@ -2916,9 +2914,7 @@ abstract class ModelElement extends Canonicalization
 
   AstNode _astNode;
   AstNode get astNode {
-    if (_astNode == null) {
-      _astNode = element?.computeNode();
-    }
+    _astNode ??= element?.computeNode();
     return _astNode;
   }
 
@@ -3441,7 +3437,8 @@ abstract class ModelElement extends Canonicalization
   @override
   String get name => element.name;
 
-  // TODO(jcollins-g): refactor once mixins can call super
+  // TODO(jcollins-g): refactor once dartdoc will only run in a VM where mixins
+  // calling super is allowed (SDK constraint >= 2.1.0).
   String computeOneLineDoc() =>
       '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
   String _oneLineDoc;
