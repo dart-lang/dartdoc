@@ -2908,7 +2908,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('covariant parameters render correctly', () {
       expect(applyCovariantParams.parameters, hasLength(2));
-      expect(applyCovariantParams.linkedParamsLines, equals('foo'));
+      expect(applyCovariantParams.linkedParamsLines,
+          contains('<span>covariant</span>'));
     });
 
     test('has parameters', () {
