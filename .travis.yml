@@ -2,6 +2,7 @@ language: dart
 sudo: false
 dart:
   - "dev/raw/latest"
+  - stable
 env:
   - DARTDOC_BOT=main
   - DARTDOC_BOT=packages
@@ -13,7 +14,6 @@ script: ./tool/travis.sh
 os:
   - osx
   - linux
-
 
 install:
 - ./tool/install_travis.sh
