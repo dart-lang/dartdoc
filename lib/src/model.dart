@@ -21,7 +21,9 @@ import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:analyzer/src/source/sdk_ext.dart';
 // TODO(jcollins-g): Stop using internal analyzer structures somehow.
 import 'package:analyzer/src/context/builder.dart';
+import 'package:analyzer/src/dart/analysis/byte_store.dart';
 import 'package:analyzer/src/dart/analysis/file_state.dart';
+import 'package:analyzer/src/dart/analysis/performance_logger.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/handle.dart';
 import 'package:analyzer/src/dart/sdk/sdk.dart';
@@ -50,8 +52,6 @@ import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:front_end/src/byte_store/byte_store.dart';
-import 'package:front_end/src/base/performance_logger.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:package_config/discovery.dart' as package_config;
@@ -6097,7 +6097,6 @@ class PackageBuilder {
   AnalysisDriver _driver;
   AnalysisDriver get driver {
     if (_driver == null) {
-      // The performance log is why we have a direct dependency on front_end.
       PerformanceLog log = new PerformanceLog(null);
       AnalysisDriverScheduler scheduler = new AnalysisDriverScheduler(log);
       AnalysisOptionsImpl options = new AnalysisOptionsImpl();
