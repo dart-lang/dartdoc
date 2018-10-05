@@ -5255,6 +5255,116 @@
   }
  },
  {
+  "name": "CovariantMemberParams",
+  "qualifiedName": "fake.CovariantMemberParams",
+  "href": "fake/CovariantMemberParams-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "CovariantMemberParams",
+  "qualifiedName": "fake.CovariantMemberParams",
+  "href": "fake/CovariantMemberParams/CovariantMemberParams.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CovariantMemberParams",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.CovariantMemberParams.==",
+  "href": "fake/CovariantMemberParams/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CovariantMemberParams",
+   "type": "class"
+  }
+ },
+ {
+  "name": "applyCovariantParams",
+  "qualifiedName": "fake.CovariantMemberParams.applyCovariantParams",
+  "href": "fake/CovariantMemberParams/applyCovariantParams.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CovariantMemberParams",
+   "type": "class"
+  }
+ },
+ {
+  "name": "covariantField",
+  "qualifiedName": "fake.CovariantMemberParams.covariantField",
+  "href": "fake/CovariantMemberParams/covariantField.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CovariantMemberParams",
+   "type": "class"
+  }
+ },
+ {
+  "name": "covariantSetter",
+  "qualifiedName": "fake.CovariantMemberParams.covariantSetter",
+  "href": "fake/CovariantMemberParams/covariantSetter.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CovariantMemberParams",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.CovariantMemberParams.hashCode",
+  "href": "fake/CovariantMemberParams/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CovariantMemberParams",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.CovariantMemberParams.noSuchMethod",
+  "href": "fake/CovariantMemberParams/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CovariantMemberParams",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.CovariantMemberParams.runtimeType",
+  "href": "fake/CovariantMemberParams/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CovariantMemberParams",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.CovariantMemberParams.toString",
+  "href": "fake/CovariantMemberParams/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "CovariantMemberParams",
+   "type": "class"
+  }
+ },
+ {
   "name": "DOWN",
   "qualifiedName": "fake.DOWN",
   "href": "fake/DOWN-constant.html",
