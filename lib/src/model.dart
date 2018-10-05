@@ -68,6 +68,7 @@ const Map<String, int> featureOrder = const {
   'read-only': 1,
   'write-only': 1,
   'read / write': 1,
+  'covariant': 2,
   'final': 2,
   'inherited': 3,
 };
@@ -356,7 +357,15 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
+  Set<String> get features {
+    if (!isCovariant) return super.features;
+    return super.features..add('covariant');
+  }
+
+  @override
   bool get isCanonical => enclosingCombo.isCanonical;
+
+  bool get isCovariant => isSetter && parameters.first.isCovariant;
 
   bool get isInherited => false;
 
@@ -1621,6 +1630,12 @@ class Field extends ModelElement
   @override
   bool get isConst => _field.isConst;
 
+  /// Returns true if the FieldElement is covariant, or if the first parameter
+  /// for the setter is covariant.
+  @override
+  bool get isCovariant =>
+      setter?.isCovariant == true || (_field as FieldElementImpl).isCovariant;
+
   @override
   bool get isFinal {
     /// isFinal returns true for the field even if it has an explicit getter
@@ -1722,8 +1737,11 @@ abstract class GetterSetterCombo implements ModelElement {
     if (readOnly && !isFinal && !isConst) allFeatures.add('read-only');
     if (writeOnly) allFeatures.add('write-only');
     if (readWrite) allFeatures.add('read / write');
+    if (isCovariant) allFeatures.add('covariant');
     return allFeatures;
   }
+
+  bool get isCovariant => false;
 
   @override
   ModelElement enclosingElement;
@@ -3576,6 +3594,9 @@ abstract class ModelElement extends Canonicalization
       param.annotations.forEach((String annotation) {
         buf.write('<span>$annotation</span> ');
       });
+    }
+    if (param.isCovariant) {
+      buf.write('<span>covariant</span> ');
     }
     if (paramModelType is CallableElementTypeMixin) {
       String returnTypeName;
@@ -5780,6 +5801,8 @@ class Parameter extends ModelElement implements EnclosedElement {
     }
     return '${enclosingName}-param-${name}';
   }
+
+  bool get isCovariant => _parameter.isCovariant;
 
   bool get isOptional => _parameter.isOptional;
 
