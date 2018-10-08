@@ -9632,6 +9632,83 @@
   "overriddenDepth": 0
  },
  {
+  "name": "AMixin",
+  "qualifiedName": "reexport_two.AMixin",
+  "href": "reexport_two/AMixin/AMixin.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AMixin",
+   "type": "mixin"
+  }
+ },
+ {
+  "name": "AMixin",
+  "qualifiedName": "reexport_two.AMixin",
+  "href": "reexport_two/AMixin-mixin.html",
+  "type": "mixin",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "reexport_two",
+   "type": "library"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "reexport_two.AMixin.==",
+  "href": "reexport_two/AMixin/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AMixin",
+   "type": "mixin"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "reexport_two.AMixin.hashCode",
+  "href": "reexport_two/AMixin/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AMixin",
+   "type": "mixin"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "reexport_two.AMixin.noSuchMethod",
+  "href": "reexport_two/AMixin/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AMixin",
+   "type": "mixin"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "reexport_two.AMixin.runtimeType",
+  "href": "reexport_two/AMixin/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AMixin",
+   "type": "mixin"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "reexport_two.AMixin.toString",
+  "href": "reexport_two/AMixin/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AMixin",
+   "type": "mixin"
+  }
+ },
+ {
   "name": "AUnicornClass",
   "qualifiedName": "reexport_two.AUnicornClass",
   "href": "reexport_two/AUnicornClass-class.html",
@@ -9705,6 +9782,39 @@
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "AUnicornClass",
+   "type": "class"
+  }
+ },
+ {
+  "name": "MixedIn",
+  "qualifiedName": "reexport_two.MixedIn",
+  "href": "reexport_two/MixedIn-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "reexport_two",
+   "type": "library"
+  }
+ },
+ {
+  "name": "MixedIn",
+  "qualifiedName": "reexport_two.MixedIn",
+  "href": "reexport_two/MixedIn/MixedIn.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MixedIn",
+   "type": "class"
+  }
+ },
+ {
+  "name": "property",
+  "qualifiedName": "reexport_two.MixedIn.property",
+  "href": "reexport_two/MixedIn/property.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "MixedIn",
    "type": "class"
   }
  },
