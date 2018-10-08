@@ -1,3 +1,11 @@
+## 0.23.0
+* Document covariant parameters and fields (#1782)
+* Implement new-style mixin support for Dart 2.1 (#1765)
+* Remove direct dependency on front_end package (#1780)
+* Travis/testing and grinder script changes (#1777, #1771)
+* Captions on class pages now use nouns consistently (#1767)
+* Minor changes to categories style (#1761)
+
 ## 0.22.0
 * Documentation updates. (#1760)
 * Fix incompatibility with head analyzer (endsWith exception). (#1768)
