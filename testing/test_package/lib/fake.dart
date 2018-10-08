@@ -839,6 +839,9 @@ class BaseForDocComments {
 
   void anotherMethod() {}
 
+  /// Some really great topics.
+  bool get getterWithDocs => true;
+
   String operator [](String key) => "${key}'s value";
 }
 
@@ -847,6 +850,9 @@ class BaseForDocComments {
 class SubForDocComments extends BaseForDocComments {
   /// Reference to [foo] and [bar]
   void localMethod(String foo, bar) {}
+
+  @override
+  final bool getterWithDocs = false;
 }
 
 typedef void VoidCallback();

@@ -4540,6 +4540,17 @@
   }
  },
  {
+  "name": "getterWithDocs",
+  "qualifiedName": "fake.BaseForDocComments.getterWithDocs",
+  "href": "fake/BaseForDocComments/getterWithDocs.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "BaseForDocComments",
+   "type": "class"
+  }
+ },
+ {
   "name": "hashCode",
   "qualifiedName": "fake.BaseForDocComments.hashCode",
   "href": "fake/BaseForDocComments/hashCode.html",
@@ -8669,6 +8680,17 @@
   "qualifiedName": "fake.SubForDocComments",
   "href": "fake/SubForDocComments/SubForDocComments.html",
   "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "SubForDocComments",
+   "type": "class"
+  }
+ },
+ {
+  "name": "getterWithDocs",
+  "qualifiedName": "fake.SubForDocComments.getterWithDocs",
+  "href": "fake/SubForDocComments/getterWithDocs.html",
+  "type": "property",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "SubForDocComments",
