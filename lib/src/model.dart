@@ -440,9 +440,11 @@ class Mixin extends Class {
       _inheritanceChain.add(this);
 
       // Mix-in interfaces come before other interfaces.
-      _inheritanceChain.addAll(superclassConstraints.expand(
-          (ParameterizedElementType i) =>
-              (i.element as Class).inheritanceChain));
+      _inheritanceChain.addAll(superclassConstraints
+          .expand((ParameterizedElementType i) =>
+              (i.element as Class).inheritanceChain)
+          .where((Class c) =>
+              c != packageGraph.specialClasses[SpecialClass.object]));
 
       // Interfaces need to come last, because classes in the superChain might
       // implement them even when they aren't mentioned.
@@ -2151,9 +2153,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   List<Mixin> get mixins {
     if (_mixins != null) return _mixins;
-    List<MixinElementImpl> mixinClasses = [];
-    mixinClasses.addAll(
-        _exportedNamespace.definedNames.values.whereType<MixinElementImpl>());
+
+    /// Can not be [MixinElementImpl] because [ClassHandle]s are sometimes
+    /// returned from _exportedNamespace.
+    List<ClassElement> mixinClasses = [];
+    mixinClasses.addAll(_exportedNamespace.definedNames.values
+        .whereType<ClassElement>()
+        .where((ClassElement c) => c.isMixin));
     _mixins = mixinClasses
         .map((e) => new ModelElement.from(e, this, packageGraph) as Mixin)
         .toList(growable: false)
@@ -2302,7 +2308,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     }
 
     types.addAll(_exportedNamespace.definedNames.values
-        .where((e) => e is ClassElement && e is! MixinElementImpl)
+        .where((e) => e is ClassElement && !e.isMixin)
         .cast<ClassElement>()
         .where((element) => !element.isEnum));
 
@@ -2311,6 +2317,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         .toList(growable: false)
           ..sort(byName);
 
+    assert(!_classes.any((Class c) => c is Mixin));
     return _classes;
   }
 
