@@ -212,7 +212,7 @@ class SubprocessLauncher {
     int exitCode = await process.exitCode;
     if (exitCode != 0) {
       throw new ProcessException(executable, arguments,
-          "SubprocessLauncher got non-zero exitCode", exitCode);
+          "SubprocessLauncher got non-zero exitCode: $exitCode", exitCode);
     }
     return jsonObjects;
   }
