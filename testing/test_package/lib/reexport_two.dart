@@ -5,3 +5,5 @@
 library reexport_two;
 
 export 'src/somelib.dart';
+
+export 'src/mixins.dart' show MixedIn, AMixin;

@@ -543,6 +543,11 @@ void main() {
       expect(exLibrary.hasPublicExceptions, isTrue);
     });
 
+    test('has mixins', () {
+      expect(fakeLibrary.hasPublicMixins, isTrue);
+      expect(reexportTwoLib.hasPublicMixins, isTrue);
+    });
+
     test('has enums', () {
       expect(exLibrary.hasPublicEnums, isTrue);
     });
@@ -1204,7 +1209,8 @@ void main() {
     test('doc comment inherited from getter', () {
       Field getterWithDocs = subForDocComments.instanceProperties
           .firstWhere((m) => m.name == 'getterWithDocs');
-      expect(getterWithDocs.documentationAsHtml, contains('Some really great topics.'));
+      expect(getterWithDocs.documentationAsHtml,
+          contains('Some really great topics.'));
     });
 
     test(
