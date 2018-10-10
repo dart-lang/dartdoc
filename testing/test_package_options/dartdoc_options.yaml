@@ -1,0 +1,8 @@
+dartdoc:
+  examplePathPrefix: 'package_examples'
+  includeExternal: ['bin/foobar.dart']
+  linkTo:
+    url: 'https://nonexistingsuperpackage.topdomain/%n%/%v%'
+  showUndocumentedCategories: true
+
+
