@@ -35,6 +35,61 @@ void main() {
           argv..addAll(['--input', packageRoot.path])..addAll(outputParam)));
     }
 
+    group('Option handling', () {
+      Dartdoc dartdoc;
+      DartdocResults results;
+      PackageGraph p;
+
+      setUp(() async {
+        dartdoc = await buildDartdoc([], testPackageOptions);
+        results = await dartdoc.generateDocsBase();
+        p = results.packageGraph;
+      });
+
+      test('generator parameters', () async {
+        File favicon = new File(pathLib.joinAll([tempDir.path, 'static-assets', 'favicon.png']));
+        File index = new File(pathLib.joinAll([tempDir.path, 'index.html']));
+        expect(favicon.readAsStringSync(), contains('Not really a png, but a test file'));
+        String indexString = index.readAsStringSync();
+        expect(indexString, contains('Footer things'));
+        expect(indexString, contains('footer.txt data'));
+        expect(indexString, contains('HTML header file'));
+      });
+
+      test('examplePathPrefix', () async {
+        Class UseAnExampleHere = p.allCanonicalModelElements.firstWhere((ModelElement c) => c.name == 'UseAnExampleHere');
+        expect(UseAnExampleHere.documentationAsHtml, contains('An example of an example in an unusual example location.'));
+      });
+
+      test('includeExternal and showUndocumentedCategories', () async {
+        Class Something = p.allCanonicalModelElements.firstWhere((ModelElement c) => c.name == 'Something');
+        expect(Something.isPublic, isTrue);
+        expect(Something.displayedCategories, isNotEmpty);
+      });
+    });
+
+    group('Option handling with cross-linking', () {
+      DartdocResults results;
+      Package testPackageOptions;
+
+      setUp(() async {
+        results = await (await buildDartdoc(['--link-to-remote'], testPackageOptionsImporter)).generateDocsBase();
+        testPackageOptions = results.packageGraph.packages.firstWhere((Package p) => p.name == 'test_package_options');
+      });
+
+      test('linkToUrl', () async {
+        Library main = testPackageOptions.allLibraries.firstWhere((Library l) => l.name == 'main');
+        Class UseAnExampleHere = main.allClasses.firstWhere((Class c) => c.name == 'UseAnExampleHere');
+        expect(testPackageOptions.documentedWhere, equals(DocumentLocation.remote));
+        expect(UseAnExampleHere.href, equals('https://nonexistingsuperpackage.topdomain/test_package_options/0.0.1/main/UseAnExampleHere-class.html'));
+      });
+
+      test('includeExternal works via remote', () async {
+        Library unusualLibrary = testPackageOptions.allLibraries.firstWhere((Library l) => l.name == 'unusualLibrary');
+        expect(unusualLibrary.allClasses.firstWhere((Class c) => c.name == 'Something'), isNotNull);
+      });
+    });
+
     test('with broken reexport chain', () async {
       Dartdoc dartdoc = await buildDartdoc([], testPackageImportExportError);
       DartdocResults results = await dartdoc.generateDocsBase();

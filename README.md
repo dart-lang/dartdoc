@@ -100,6 +100,8 @@ authoring doc comments for Dart with `dartdoc`.
 Creating a file named dartdoc_options.yaml at the top of your package can change how Dartdoc
 generates docs.  
 
+An example:
+
 ```yaml
 dartdoc:
   categories: 
@@ -110,21 +112,34 @@ dartdoc:
       markdown: doc/Second.md
       name: Great
   categoryOrder: ["First Category", "Second Category"]
+  examplePathPrefix: 'subdir/with/examples'
+  includeExternal: ['bin/unusually_located_library.dart']
   linkTo:
     url: "https://my.dartdocumentationsite.org/dev/%v%"
+  showUndocumentedCategories: true
 ```
 
 Unrecognized options will be ignored.  Supported options:
 
+  * **ambiguousReexportScorerMinConfidence**:  The ambiguous reexport scorer will emit a warning if
+    it is not at least this confident.  Adjusting this may be necessary for some complex
+    packages but most of the time, the default is OK.  Default: 0.1
   * **categories**:  More details for each category/topic.  For topics you'd like to document, specify
     the markdown file with `markdown:` to use for the category page.  Optionally, rename the
     category from the source code into a display name with 'name:'.  If there is no matching category
     defined in dartdoc_options.yaml, those declared categories in the source code will be invisible.
   * **categoryOrder**:  Specify the order of topics for display in the sidebar and
     the package page.
+  * **examplePathPrefix**: Specify the location of the example directory for resolving `@example`
+    directives.
   * **exclude**:  Specify a list of library names to avoid generating docs for,
     overriding any specified in include.
+  * **favicon**:  A path to a favicon for the generated docs.
+  * **footer**: A list of paths to footer files containing HTML text.
+  * **footerText**: A list of paths to text files for optional text next to the package name and version
+  * **header**:  A list of paths to header files containing HTML text.
   * **include**:  Specify a list of library names to generate docs for, ignoring all others.
+  * **includeExternal**:  Specify a list of library filenames to add to the list of documented libraries.
   * **linkTo**:  For other packages depending on this one, if this map is defined those packages
     will use the settings here to control how hyperlinks to the package are generated.
     This will override the default for packages hosted on pub.dartlang.org.
@@ -139,19 +154,8 @@ Unrecognized options will be ignored.  Supported options:
       * `%n%`: The name of this package, as defined in pubspec.yaml.
       * `%v%`: The version of this package as defined in pubspec.yaml.
 
-The following are experimental options whose semantics are in flux and may be buggy.  If you
-use one, please keep a close eye on the changing semantics.  In general, paths are relative
-to the directory the dartdoc_options.yaml the option is defined in and should be specified
-as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
-
-  * **ambiguousReexportScorerMinConfidence**:  The ambiguous reexport scorer will emit a warning if
-  it is not at least this confident.  Default: 0.1
-  * **examplePathPrefix**:  Specify the prefix for the example paths, defaulting to the project root.
-  * **favicon**:  A path to a favicon for the generated docs.
-  * **footer**: A list of paths to footer files containing HTML text.
-  * **footerText**: A list of paths to text files for optional text next to the package name and version
-  * **header**:  A list of paths to header files containing HTML text.
-  * **includeExternal**:  Specify a list of library filenames to add to the list of documented libraries.
+In general, paths are relative to the directory the dartdoc_options.yaml the option is defined in
+and should be specified as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
  
 ### Categories
 
