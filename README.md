@@ -121,9 +121,7 @@ dartdoc:
 
 Unrecognized options will be ignored.  Supported options:
 
-  * **ambiguousReexportScorerMinConfidence**:  The ambiguous reexport scorer will emit a warning if
-    it is not at least this confident.  Adjusting this may be necessary for some complex
-    packages but most of the time, the default is OK.  Default: 0.1
+
   * **categories**:  More details for each category/topic.  For topics you'd like to document, specify
     the markdown file with `markdown:` to use for the category page.  Optionally, rename the
     category from the source code into a display name with 'name:'.  If there is no matching category
@@ -156,7 +154,13 @@ Unrecognized options will be ignored.  Supported options:
 
 In general, paths are relative to the directory the dartdoc_options.yaml the option is defined in
 and should be specified as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
- 
+
+Unsupported and experimental options:
+
+   * **ambiguousReexportScorerMinConfidence**:  The ambiguous reexport scorer will emit a warning if
+     it is not at least this confident.  Adjusting this may be necessary for some complex
+     packages but most of the time, the default is OK.  Default: 0.1
+
 ### Categories
 
 You can tag libraries or top level classes, functions, and variables in their documentation with
