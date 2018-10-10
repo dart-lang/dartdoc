@@ -2765,7 +2765,8 @@ abstract class ModelElement extends Canonicalization
     assert(library != null ||
         e is ParameterElement ||
         e is TypeParameterElement ||
-        e is GenericFunctionTypeElementImpl);
+        e is GenericFunctionTypeElementImpl ||
+        e.kind == ElementKind.DYNAMIC);
     // With AnalysisDriver, we sometimes get ElementHandles when building
     // docs for the SDK, seen via [Library.importedExportedLibraries].  Why?
     if (e is ElementHandle) {
