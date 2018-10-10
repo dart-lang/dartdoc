@@ -121,7 +121,6 @@ dartdoc:
 
 Unrecognized options will be ignored.  Supported options:
 
-
   * **categories**:  More details for each category/topic.  For topics you'd like to document, specify
     the markdown file with `markdown:` to use for the category page.  Optionally, rename the
     category from the source code into a display name with 'name:'.  If there is no matching category
