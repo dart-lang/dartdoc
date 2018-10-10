@@ -6471,7 +6471,8 @@ class PackageBuilder {
   Iterable<String> _includeExternalsFrom(Iterable<String> files) {
     Set<String> includeExternalsFound = new Set();
     for (String file in files) {
-      DartdocOptionContext fileContext = new DartdocOptionContext.fromContext(config, new File(file));
+      DartdocOptionContext fileContext =
+          new DartdocOptionContext.fromContext(config, new File(file));
       if (fileContext.includeExternal != null) {
         includeExternalsFound.addAll(fileContext.includeExternal);
       }
