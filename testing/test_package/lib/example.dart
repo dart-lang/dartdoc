@@ -598,3 +598,11 @@ abstract class ToolUser {
   /// {@end-tool}
   void invokeToolNoInput();
 }
+
+abstract class HtmlInjection {
+  /// Injects some HTML.
+  /// {@inject-html}
+  ///    <div style="opacity: 0.5;">[HtmlInjection]</div>
+  /// {@end-inject-html}
+  void injectSimpleHtml();
+}
