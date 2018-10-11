@@ -6393,6 +6393,7 @@ class PackageBuilder {
       /// source list.
       if (originalSources == null) originalSources = new Set()..addAll(sources);
       files.addAll(driver.knownFiles);
+      files.addAll(_includeExternalsFrom(driver.knownFiles));
       current = _packageMetasForFiles(files);
       // To get canonicalization correct for non-locally documented packages
       // (so we can generate the right hyperlinks), it's vital that we
@@ -6463,6 +6464,22 @@ class PackageBuilder {
     }
   }
 
+  /// Calculate includeExternals based on a list of files.  Assumes each
+  /// file might be part of a [DartdocOptionContext], and loads those
+  /// objects to find any [DartdocOptionContext.includeExternal] configurations
+  /// therein.
+  Iterable<String> _includeExternalsFrom(Iterable<String> files) {
+    Set<String> includeExternalsFound = new Set();
+    for (String file in files) {
+      DartdocOptionContext fileContext =
+          new DartdocOptionContext.fromContext(config, new File(file));
+      if (fileContext.includeExternal != null) {
+        includeExternalsFound.addAll(fileContext.includeExternal);
+      }
+    }
+    return includeExternalsFound;
+  }
+
   Set<String> get getFiles {
     Set<String> files = new Set();
     files.addAll(config.topLevelPackageMeta.isSdk
@@ -6478,11 +6495,8 @@ class PackageBuilder {
         files.add(source.fullName);
       });
     }
-    // Use the includeExternals.
-    for (String fullName in driver.knownFiles) {
-      if (config.includeExternal.any((string) => fullName.endsWith(string)))
-        files.add(fullName);
-    }
+
+    files.addAll(_includeExternalsFrom(files));
     return new Set.from(files.map((s) => new File(s).absolute.path));
   }
 

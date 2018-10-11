@@ -1,0 +1,8 @@
+name: test_package_options_importer
+version: 0.0.1
+description: A simple console application.
+environment:
+  sdk: '>=2.0.0 <3.0.0'
+dependencies:
+  test_package_options:
+    path: '../test_package_options'
