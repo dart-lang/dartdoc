@@ -1,3 +1,8 @@
+## 0.24.0
+* Support many options via dartdoc_options.yaml (#1674)
+* Allow insertion of raw HTML into dartdoc, via flag (#1793)
+* Stop using old supermixin syntax in dartdoc (#1772)
+
 ## 0.23.1
 * Make mixins appear under their own category, even if they are reexported (#1785)
 
