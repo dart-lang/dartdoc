@@ -1,6 +1,4 @@
 analyzer:
-  language:
-    enableSuperMixins: true
   exclude:
     - 'doc/**'
     - 'lib/src/third_party/pkg/**'
