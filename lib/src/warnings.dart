@@ -136,6 +136,7 @@ enum PackageWarning {
   reexportedPrivateApiAcrossPackages,
   unresolvedDocReference,
   unknownMacro,
+  unknownHtmlFragment,
   brokenLink,
   orphanedFile,
   unknownFile,

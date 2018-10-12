@@ -39,6 +39,7 @@ import 'package:analyzer/src/dart/element/member.dart'
 import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:args/args.dart';
 import 'package:collection/collection.dart';
+import 'package:crypto/crypto.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/io_utils.dart';
@@ -3141,6 +3142,7 @@ abstract class ModelElement extends Canonicalization
       _rawDocs = _injectExamples(_rawDocs);
       _rawDocs = _injectAnimations(_rawDocs);
       _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
+      _rawDocs = _stripHtmlAndAddToIndex(_rawDocs);
     }
     return _rawDocs;
   }
@@ -3286,8 +3288,13 @@ abstract class ModelElement extends Canonicalization
     return false;
   }
 
+  String _htmlDocumentation;
   @override
-  String get documentationAsHtml => _documentation.asHtml;
+  String get documentationAsHtml {
+    if (_htmlDocumentation != null) return _htmlDocumentation;
+    _htmlDocumentation = _injectHtmlFragments(_documentation.asHtml);
+    return _htmlDocumentation;
+  }
 
   @override
   Element get element => _element;
@@ -4046,6 +4053,51 @@ abstract class ModelElement extends Canonicalization
     });
   }
 
+  /// Replace &lt;<dartdoc-html>[digest]</dartdoc-html>&gt; in API comments with
+  /// the contents of the HTML fragment earlier defined by the
+  /// &#123;@inject-html&#125; directive. The [digest] is a SHA1 of the contents
+  /// of the HTML fragment, automatically generated upon parsing the
+  /// &#123;@inject-html&#125; directive.
+  ///
+  /// This markup is generated and inserted by [_stripHtmlAndAddToIndex] when it
+  /// removes the HTML fragment in preparation for markdown processing. It isn't
+  /// meant to be used at a user level.
+  ///
+  /// Example:
+  ///
+  /// You place the fragment in a dartdoc comment:
+  ///
+  ///     Some comments
+  ///     &#123;@inject-html&#125;
+  ///     &lt;p&gt;[HTML contents!]&lt;/p&gt;
+  ///     &#123;@endtemplate&#125;
+  ///     More comments
+  ///
+  /// and [_stripHtmlAndAddToIndex] will replace your HTML fragment with this:
+  ///
+  ///     Some comments
+  ///     &lt;dartdoc-html&gt;4cc02f877240bf69855b4c7291aba8a16e5acce0&lt;/dartdoc-html&gt;
+  ///     More comments
+  ///
+  /// Which will render in the final HTML output as:
+  ///
+  ///     Some comments
+  ///     &lt;p&gt;[HTML contents!]&lt;/p&gt;
+  ///     More comments
+  ///
+  /// And the HTML fragment will not have been processed or changed by Markdown,
+  /// but just injected verbatim.
+  String _injectHtmlFragments(String rawDocs) {
+    final macroRegExp = new RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
+    return rawDocs.replaceAllMapped(macroRegExp, (match) {
+      String fragment = packageGraph.getHtmlFragment(match[1]);
+      if (fragment == null) {
+        warn(PackageWarning.unknownHtmlFragment, message: match[1]);
+      }
+      return fragment;
+    });
+  }
+
   /// Replace &#123;@macro ...&#125; in API comments with the contents of the macro
   ///
   /// Syntax:
@@ -4083,7 +4135,8 @@ abstract class ModelElement extends Canonicalization
     });
   }
 
-  /// Parse &#123;@template ...&#125; in API comments and store them in the index on the package.
+  /// Parse and remove &#123;@template ...&#125; in API comments and store them
+  /// in the index on the package.
   ///
   /// Syntax:
   ///
@@ -4098,6 +4151,31 @@ abstract class ModelElement extends Canonicalization
     return rawDocs.replaceAllMapped(templateRegExp, (match) {
       packageGraph._addMacro(match[1].trim(), match[2].trim());
       return "";
+    });
+  }
+
+  /// Parse and remove &#123;@inject-html ...&#125; in API comments and store
+  /// them in the index on the package, replacing them with a SHA1 hash of the
+  /// contents, where the HTML will be re-injected after Markdown processing of
+  /// the rest of the text is complete.
+  ///
+  /// Syntax:
+  ///
+  ///     &#123;@inject-html&#125;
+  ///     <p>The HTML to inject.</p>
+  ///     &#123;@end-inject-html&#125;
+  ///
+  String _stripHtmlAndAddToIndex(String rawDocs) {
+    final templateRegExp = new RegExp(
+        r'[ ]*{@inject-html\s*}([\s\S]+?){@end-inject-html}[ ]*\n?',
+        multiLine: true);
+    return rawDocs.replaceAllMapped(templateRegExp, (match) {
+      String fragment = match[1];
+      String digest = sha1.convert(fragment.codeUnits).toString();
+      packageGraph._addHtmlFragment(digest, fragment);
+      // The newlines are so that Markdown will pass this through without
+      // touching it.
+      return '\n<dartdoc-html>$digest</dartdoc-html>\n';
     });
   }
 
@@ -4433,7 +4511,7 @@ class PackageGraph {
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
     allLocalModelElements.forEach((m) => m.documentationLocal);
-    _macrosAdded = true;
+    _localDocumentationBuilt = true;
 
     // Scan all model elements to insure that interceptor and other special
     // objects are found.
@@ -4538,8 +4616,9 @@ class PackageGraph {
 
   final Map<Element, Library> _elementToLibrary = {};
   final Map<String, String> _macros = {};
+  final Map<String, String> _htmlFragments = {};
   bool allLibrariesAdded = false;
-  bool _macrosAdded = false;
+  bool _localDocumentationBuilt = false;
 
   /// Returns true if there's at least one library documented in the package
   /// that has the same package path as the library for the given element.
@@ -4683,6 +4762,9 @@ class PackageGraph {
         break;
       case PackageWarning.unknownMacro:
         warningMessage = "undefined macro [${message}]";
+        break;
+      case PackageWarning.unknownHtmlFragment:
+        warningMessage = "undefined HTML fragment identifier [${message}]";
         break;
       case PackageWarning.brokenLink:
         warningMessage = 'dartdoc generated a broken link to: ${message}';
@@ -5164,13 +5246,23 @@ class PackageGraph {
   }
 
   String getMacro(String name) {
-    assert(_macrosAdded);
+    assert(_localDocumentationBuilt);
     return _macros[name];
   }
 
   void _addMacro(String name, String content) {
-    assert(!_macrosAdded);
+    assert(!_localDocumentationBuilt);
     _macros[name] = content;
+  }
+
+  String getHtmlFragment(String name) {
+    assert(_localDocumentationBuilt);
+    return _htmlFragments[name];
+  }
+
+  void _addHtmlFragment(String name, String content) {
+    assert(!_localDocumentationBuilt);
+    _htmlFragments[name] = content;
   }
 }
 
@@ -5886,8 +5978,8 @@ abstract class SourceCodeMixin implements Documentable {
 
   String get _crossdartPath {
     var node = element.computeNode();
-    if (node is Declaration && node.element != null) {
-      var source = node.element.source;
+    if (node is Declaration && node.declaredElement != null) {
+      var source = node.declaredElement.source;
       var filePath = source.fullName;
       var uri = source.uri.toString();
       var packageMeta = library.packageGraph.packageMeta;
