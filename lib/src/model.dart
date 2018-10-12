@@ -1376,9 +1376,8 @@ abstract class Categorization implements ModelElement {
 }
 
 /// Classes extending this class have canonicalization support in Dartdoc.
-abstract class Canonicalization extends Object
-    with Locatable
-    implements Documentable {
+abstract class Canonicalization
+    implements Locatable, Documentable {
   bool get isCanonical;
   Library get canonicalLibrary;
 
@@ -5180,7 +5179,7 @@ class PackageGraph {
 /// accessing private member variables.  Do not call any methods or members
 /// excepting [name] and the private Lists below before finishing initialization
 /// of a [TopLevelContainer].
-abstract class TopLevelContainer extends Nameable {
+abstract class TopLevelContainer implements Nameable {
   List<Class> _classes;
   List<Enum> _enums;
   List<Mixin> _mixins;
@@ -5225,8 +5224,8 @@ abstract class TopLevelContainer extends Nameable {
 /// A set of libraries, initialized after construction by accessing [_libraries].
 /// Do not cache return values of any methods or members excepting [_libraries]
 /// and [name] before finishing initialization of a [LibraryContainer].
-abstract class LibraryContainer extends Nameable
-    implements Comparable<LibraryContainer> {
+abstract class LibraryContainer
+    implements Nameable, Comparable<LibraryContainer> {
   final List<Library> _libraries = [];
   List<Library> get libraries => _libraries;
 
@@ -5495,7 +5494,7 @@ enum DocumentLocation {
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 class Package extends LibraryContainer
-    with Locatable, Canonicalization, Warnable
+    with Nameable, Locatable, Canonicalization, Warnable
     implements Privacy, Documentable {
   String _name;
   PackageGraph _packageGraph;
@@ -5959,7 +5958,7 @@ abstract class TypeParameters implements ModelElement {
 
 /// Top-level variables. But also picks up getters and setters?
 class TopLevelVariable extends ModelElement
-    with GetterSetterCombo, SourceCodeMixin, Categorization
+    with Canonicalization, GetterSetterCombo, SourceCodeMixin, Categorization
     implements EnclosedElement {
   @override
   final Accessor getter;

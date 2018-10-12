@@ -16,7 +16,7 @@ import 'package:test/test.dart';
 import 'src/utils.dart' as utils;
 
 /// For testing sort behavior.
-class TestLibraryContainer extends LibraryContainer {
+class TestLibraryContainer extends LibraryContainer with Nameable{
   @override
   final List<String> containerOrder;
   @override
