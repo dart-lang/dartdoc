@@ -116,6 +116,25 @@ void main() {
     });
   });
 
+  group('HTML Injection', () {
+    Class htmlInjection;
+    Method injectSimpleHtml;
+
+    setUp(() {
+      htmlInjection = exLibrary.classes.firstWhere((c) => c.name == 'HtmlInjection');
+      injectSimpleHtml =
+          htmlInjection.allInstanceMethods.firstWhere((m) => m.name == 'injectSimpleHtml');
+      packageGraph.allLocalModelElements.forEach((m) => m.documentation);
+    });
+    test("can inject HTML", () {
+      expect(
+          injectSimpleHtml.documentation,
+          contains('\n<dartdoc-html>bad2bbdd4a5cf9efb3212afff4449904756851aa</dartdoc-html>\n'));
+      expect(injectSimpleHtml.documentationAsHtml,
+          contains('   <div style="opacity: 0.5;">[HtmlInjection]</div>'));
+    });
+  });
+
   group('Missing and Remote', () {
     test('Verify that SDK libraries are not canonical when missing', () {
       expect(
@@ -1424,7 +1443,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(29));
+      expect(classes, hasLength(30));
     });
 
     test('abstract', () {

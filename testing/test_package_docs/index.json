@@ -1948,6 +1948,94 @@
   }
  },
  {
+  "name": "HtmlInjection",
+  "qualifiedName": "ex.HtmlInjection",
+  "href": "ex/HtmlInjection-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ex",
+   "type": "library"
+  }
+ },
+ {
+  "name": "HtmlInjection",
+  "qualifiedName": "ex.HtmlInjection",
+  "href": "ex/HtmlInjection/HtmlInjection.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HtmlInjection",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "ex.HtmlInjection.==",
+  "href": "ex/HtmlInjection/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HtmlInjection",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "ex.HtmlInjection.hashCode",
+  "href": "ex/HtmlInjection/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HtmlInjection",
+   "type": "class"
+  }
+ },
+ {
+  "name": "injectSimpleHtml",
+  "qualifiedName": "ex.HtmlInjection.injectSimpleHtml",
+  "href": "ex/HtmlInjection/injectSimpleHtml.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HtmlInjection",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "ex.HtmlInjection.noSuchMethod",
+  "href": "ex/HtmlInjection/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HtmlInjection",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "ex.HtmlInjection.runtimeType",
+  "href": "ex/HtmlInjection/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HtmlInjection",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "ex.HtmlInjection.toString",
+  "href": "ex/HtmlInjection/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HtmlInjection",
+   "type": "class"
+  }
+ },
+ {
   "name": "Klass",
   "qualifiedName": "ex.Klass",
   "href": "ex/Klass-class.html",
