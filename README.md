@@ -308,6 +308,9 @@ into the dartdoc output, without it being subject to Markdown processing
 beforehand. This can be useful when the output of an external tool is HTML, for
 instance. This is where the `{@inject-html}...{@end-inject-html}` tags come in.
 
+For security reasons, the `{@inject-html}` directive will be ignored unless the
+`--inject-html` flag is given on the dartdoc command line.
+
 Since this HTML fragment doesn't undergo Markdown processing, reference links
 and other normal processing won't happen on the contained fragment.
 

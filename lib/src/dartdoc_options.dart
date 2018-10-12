@@ -1140,6 +1140,7 @@ class DartdocOptionContext {
   List<String> get includeExternal =>
       optionSet['includeExternal'].valueAt(context);
   bool get includeSource => optionSet['includeSource'].valueAt(context);
+  bool get injectHtml => optionSet['injectHtml'].valueAt(context);
   ToolConfiguration get tools => optionSet['tools'].valueAt(context);
 
   /// _input is only used to construct synthetic options.
@@ -1254,6 +1255,8 @@ Future<List<DartdocOption>> createDartdocOptions() async {
         splitCommas: true),
     new DartdocOptionArgOnly<bool>('includeSource', true,
         help: 'Show source code blocks.', negatable: true),
+    new DartdocOptionArgOnly<bool>('injectHtml', false,
+        help: 'Allow the use of {@inject-html} directive to inject raw HTML.'),
     new DartdocOptionArgOnly<String>('input', Directory.current.path,
         isDir: true, help: 'Path to source directory', mustExist: true),
     new DartdocOptionSyntheticOnly<String>('inputDir',
