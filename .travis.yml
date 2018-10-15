@@ -1,5 +1,6 @@
 language: dart
 sudo: false
+dist: trusty
 dart:
   - "dev/raw/latest"
   - stable
