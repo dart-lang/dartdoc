@@ -441,8 +441,10 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
   results.remove(null);
 
   // And if we still haven't found anything, just search the whole ball-of-wax.
-  if (results.isEmpty && packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
-    for (final modelElement in packageGraph.findRefElementCache[codeRefChomped]) {
+  if (results.isEmpty &&
+      packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
+    for (final modelElement
+        in packageGraph.findRefElementCache[codeRefChomped]) {
       if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary ||
           (modelElement is Library &&
               codeRefChomped == modelElement.fullyQualifiedName)) {
@@ -464,7 +466,8 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
           .join('.');
       String maybeEnumMember = codeRefChompedParts.last;
       if (packageGraph.findRefElementCache.containsKey(maybeEnumName)) {
-        for (final modelElement in packageGraph.findRefElementCache[maybeEnumName]) {
+        for (final modelElement
+            in packageGraph.findRefElementCache[maybeEnumName]) {
           if (modelElement is Enum) {
             if (modelElement.constants.any((e) => e.name == maybeEnumMember)) {
               results.add(modelElement);

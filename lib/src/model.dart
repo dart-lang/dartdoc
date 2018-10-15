@@ -1377,8 +1377,7 @@ abstract class Categorization implements ModelElement {
 }
 
 /// Classes extending this class have canonicalization support in Dartdoc.
-abstract class Canonicalization
-    implements Locatable, Documentable {
+abstract class Canonicalization implements Locatable, Documentable {
   bool get isCanonical;
   Library get canonicalLibrary;
 
@@ -4547,7 +4546,7 @@ class PackageGraph {
       assert(packageGraph.allLibrariesAdded);
       _findRefElementCache = new Map();
       for (final modelElement
-      in filterNonDocumented(packageGraph.allLocalModelElements)) {
+          in filterNonDocumented(packageGraph.allLocalModelElements)) {
         _findRefElementCache.putIfAbsent(
             modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
         _findRefElementCache.putIfAbsent(
