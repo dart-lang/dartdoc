@@ -541,7 +541,7 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
       bool hide = false,
       bool isDir = false,
       bool isFile = false,
-      bool negatable,
+      bool negatable = false,
       bool splitCommas})
       : super._(name, null, help, isDir, isFile, mustExist, null) {
     _hide = hide;
@@ -672,7 +672,7 @@ class DartdocOptionArgOnly<T> extends DartdocOption<T>
       bool hide = false,
       bool isDir = false,
       bool isFile = false,
-      bool negatable,
+      bool negatable = false,
       bool splitCommas})
       : super._(name, defaultsTo, help, isDir, isFile, mustExist, null) {
     _hide = hide;
@@ -707,7 +707,7 @@ class DartdocOptionArgFile<T> extends DartdocOption<T>
       bool hide = false,
       bool isDir = false,
       bool isFile = false,
-      bool negatable,
+      bool negatable = false,
       bool parentDirOverridesChild: false,
       bool splitCommas})
       : super._(name, defaultsTo, help, isDir, isFile, mustExist, null) {
@@ -1045,7 +1045,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
           defaultsTo: defaultsTo as bool,
           help: help,
           hide: hide,
-          negatable: negatable);
+          negatable: negatable ?? false);
     } else if (_isInt || _isDouble || _isString) {
       argParser.addOption(argName,
           abbr: abbr,
@@ -1241,8 +1241,8 @@ Future<List<DartdocOption>> createDartdocOptions() async {
         mustExist: true),
     new DartdocOptionArgOnly<bool>('hideSdkText', false,
         hide: true,
-        help:
-            'Drop all text for SDK components.  Helpful for integration tests for dartdoc, probably not useful for anything else.',
+        help: 'Drop all text for SDK components.  Helpful for integration '
+            'tests for dartdoc, probably not useful for anything else.',
         negatable: true),
     new DartdocOptionArgFile<List<String>>('include', [],
         help: 'Library names to generate docs for.', splitCommas: true),
@@ -1256,7 +1256,8 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     new DartdocOptionArgOnly<bool>('includeSource', true,
         help: 'Show source code blocks.', negatable: true),
     new DartdocOptionArgOnly<bool>('injectHtml', false,
-        help: 'Allow the use of {@inject-html} directive to inject raw HTML.'),
+        help: 'Allow the use of the {@inject-html} directive to inject raw '
+            'HTML into dartdoc output.'),
     new DartdocOptionArgOnly<String>('input', Directory.current.path,
         isDir: true, help: 'Path to source directory', mustExist: true),
     new DartdocOptionSyntheticOnly<String>('inputDir',
@@ -1326,7 +1327,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
             'A list of package names to place first when grouping libraries in packages. '
             'Unmentioned packages are sorted after these.'),
     new DartdocOptionArgOnly<bool>('sdkDocs', false,
-        help: 'Generate ONLY the docs for the Dart SDK.', negatable: false),
+        help: 'Generate ONLY the docs for the Dart SDK.'),
     new DartdocOptionArgSynth<String>('sdkDir',
         (DartdocSyntheticOption<String> option, Directory dir) {
       if (!option.parent['sdkDocs'].valueAt(dir) &&
@@ -1344,7 +1345,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     new DartdocOptionArgFile<bool>('showUndocumentedCategories', false,
         help: "Label categories that aren't documented", negatable: true),
     new DartdocOptionArgOnly<bool>('showWarnings', false,
-        help: 'Display all warnings.', negatable: false),
+        help: 'Display all warnings.'),
     new DartdocOptionSyntheticOnly<PackageMeta>('topLevelPackageMeta',
         (DartdocSyntheticOption<PackageMeta> option, Directory dir) {
       PackageMeta packageMeta = new PackageMeta.fromDir(
@@ -1360,8 +1361,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
       return packageMeta;
     }, help: 'PackageMeta object for the default package.'),
     new DartdocOptionArgOnly<bool>('useCategories', true,
-        help: 'Display categories in the sidebar of packages',
-        negatable: false),
+        help: 'Display categories in the sidebar of packages'),
     new DartdocOptionArgOnly<bool>('validateLinks', true,
         help:
             'Runs the built-in link checker to display Dart context aware warnings for broken links (slow)',
