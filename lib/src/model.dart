@@ -4539,6 +4539,25 @@ class PackageGraph {
     return _implementors;
   }
 
+  Map<String, Set<ModelElement>> _findRefElementCache;
+  Map<String, Set<ModelElement>> get findRefElementCache {
+    if (_findRefElementCache == null) {
+      assert(packageGraph.allLibrariesAdded);
+      _findRefElementCache = new Map();
+      for (final modelElement
+      in filterNonDocumented(packageGraph.allLocalModelElements)) {
+        _findRefElementCache.putIfAbsent(
+            modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
+        _findRefElementCache.putIfAbsent(
+            modelElement.fullyQualifiedName, () => new Set());
+        _findRefElementCache[modelElement.fullyQualifiedName].add(modelElement);
+        _findRefElementCache[modelElement.fullyQualifiedNameWithoutLibrary]
+            .add(modelElement);
+      }
+    }
+    return _findRefElementCache;
+  }
+
   // All library objects related to this package; a superset of _libraries.
   final Map<LibraryElement, Library> allLibraries = new Map();
 
