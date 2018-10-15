@@ -4088,6 +4088,7 @@ abstract class ModelElement extends Canonicalization
   /// And the HTML fragment will not have been processed or changed by Markdown,
   /// but just injected verbatim.
   String _injectHtmlFragments(String rawDocs) {
+    if (!config.injectHtml) return rawDocs;
     final macroRegExp = new RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
     return rawDocs.replaceAllMapped(macroRegExp, (match) {
       String fragment = packageGraph.getHtmlFragment(match[1]);
@@ -4166,6 +4167,7 @@ abstract class ModelElement extends Canonicalization
   ///     &#123;@end-inject-html&#125;
   ///
   String _stripHtmlAndAddToIndex(String rawDocs) {
+    if (!config.injectHtml) return rawDocs;
     final templateRegExp = new RegExp(
         r'[ ]*{@inject-html\s*}([\s\S]+?){@end-inject-html}[ ]*\n?',
         multiLine: true);
