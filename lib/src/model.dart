@@ -72,6 +72,11 @@ const Map<String, int> featureOrder = const {
   'covariant': 2,
   'final': 2,
   'inherited': 3,
+  'inherited-getter': 3,
+  'inherited-setter': 3,
+  'override': 3,
+  'override-getter': 3,
+  'override-setter': 3,
 };
 
 int byFeatureOrdering(String a, String b) {
@@ -181,6 +186,17 @@ abstract class Inheritable implements ModelElement {
     return _canonicalEnclosingClass;
   }
 
+  @override
+  Set<String> get features {
+    Set<String> _features = _baseFeatures();
+    if (isOverride) _features.add('override');
+    if (isInherited) _features.add('inherited');
+    if (isCovariant) _features.add('covariant');
+    return _features;
+  }
+
+  bool get isCovariant;
+
   List<Class> get inheritance {
     List<Class> inheritance = [];
     inheritance.addAll((enclosingElement as Class).inheritanceChain);
@@ -196,6 +212,54 @@ abstract class Inheritable implements ModelElement {
     }
     assert(inheritance.where((e) => e == object).length == 1);
     return inheritance;
+  }
+
+  Inheritable get overriddenElement;
+
+  bool _isOverride;
+  bool get isOverride {
+    if (_isOverride == null) {
+      // The canonical version of the enclosing element (not canonicalEnclosingElement,
+      // as that is the element enclosing the canonical version of this element,
+      // two different things.  Defaults to the enclosing element.
+      //
+      // We use canonical elements here where possible to deal with reexports
+      // as seen in Flutter.
+      Class enclosingCanonical = enclosingElement;
+      if (enclosingElement is ModelElement) {
+        enclosingCanonical = (enclosingElement as ModelElement).canonicalModelElement;
+      }
+      // The class in which this element was defined, canonical if available.
+      Class definingCanonical = definingEnclosingElement.canonicalModelElement ?? definingEnclosingElement;
+      // The canonical version of the element we're overriding, if available.
+      ModelElement overriddenCanonical = overriddenElement?.canonicalModelElement ?? overriddenElement;
+
+      // We have to have an overridden element for it to be possible for this
+      // element to be an override.
+      _isOverride = overriddenElement != null &&
+          // The defining class and the enclosing class for this element
+          // must be the same (element is defined here).
+          enclosingCanonical == definingCanonical &&
+          // If the overridden element isn't public, we shouldn't be an
+          // override in most cases.  Approximation until #1623 is fixed.
+          overriddenCanonical.isPublic;
+      assert(!(_isOverride && isInherited));
+    }
+    return _isOverride;
+  }
+
+  int _overriddenDepth;
+  @override
+  int get overriddenDepth {
+    if (_overriddenDepth == null) {
+      _overriddenDepth = 0;
+      Inheritable e = this;
+      while (e.overriddenElement != null) {
+        _overriddenDepth += 1;
+        e = e.overriddenElement;
+      }
+    }
+    return _overriddenDepth;
   }
 }
 
@@ -242,11 +306,46 @@ class InheritableAccessor extends Accessor with Inheritable {
     return _enclosingElement;
   }
 
+  bool _overriddenElementIsSet = false;
+  ModelElement _overriddenElement;
   @override
-  Set<String> get features {
-    Set<String> allFeatures = super.features;
-    if (isInherited) allFeatures.add('inherited');
-    return allFeatures;
+  InheritableAccessor get overriddenElement {
+    assert(packageGraph.allLibrariesAdded);
+    if (!_overriddenElementIsSet) {
+      _overriddenElementIsSet = true;
+      Element parent = element.enclosingElement;
+      if (parent is ClassElement) {
+        for (InterfaceType t in parent.allSupertypes) {
+          Element accessor = this.isGetter
+              ? t.getGetter(element.name)
+              : t.getSetter(element.name);
+          if (accessor != null) {
+            if (accessor is Member) {
+              accessor = PackageGraph.getBasestElement(accessor);
+            }
+            Class parentClass =
+                new ModelElement.fromElement(t.element, packageGraph);
+            List<Field> possibleFields = [];
+            possibleFields.addAll(parentClass.allInstanceProperties);
+            possibleFields.addAll(parentClass.staticProperties);
+            String fieldName = accessor.name.replaceFirst('=', '');
+            Field foundField = possibleFields.firstWhere(
+                (f) => f.element.name == fieldName,
+                orElse: () => null);
+            if (foundField != null) {
+              if (this.isGetter) {
+                _overriddenElement = foundField.getter;
+              } else {
+                _overriddenElement = foundField.setter;
+              }
+              assert(!(_overriddenElement as Accessor).isInherited);
+              break;
+            }
+          }
+        }
+      }
+    }
+    return _overriddenElement;
   }
 }
 
@@ -377,48 +476,6 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   bool get isGetter => _accessor.isGetter;
   bool get isSetter => _accessor.isSetter;
-
-  bool _overriddenElementIsSet = false;
-  ModelElement _overriddenElement;
-  @override
-  Accessor get overriddenElement {
-    assert(packageGraph.allLibrariesAdded);
-    if (!_overriddenElementIsSet) {
-      _overriddenElementIsSet = true;
-      Element parent = element.enclosingElement;
-      if (parent is ClassElement) {
-        for (InterfaceType t in parent.allSupertypes) {
-          Element accessor = this.isGetter
-              ? t.getGetter(element.name)
-              : t.getSetter(element.name);
-          if (accessor != null) {
-            if (accessor is Member) {
-              accessor = PackageGraph.getBasestElement(accessor);
-            }
-            Class parentClass =
-                new ModelElement.fromElement(t.element, packageGraph);
-            List<Field> possibleFields = [];
-            possibleFields.addAll(parentClass.allInstanceProperties);
-            possibleFields.addAll(parentClass.staticProperties);
-            String fieldName = accessor.name.replaceFirst('=', '');
-            Field foundField = possibleFields.firstWhere(
-                (f) => f.element.name == fieldName,
-                orElse: () => null);
-            if (foundField != null) {
-              if (this.isGetter) {
-                _overriddenElement = foundField.getter;
-              } else {
-                _overriddenElement = foundField.setter;
-              }
-              assert(!(_overriddenElement as Accessor).isInherited);
-              break;
-            }
-          }
-        }
-      }
-    }
-    return _overriddenElement;
-  }
 
   @override
   String get kind => 'accessor';
@@ -1377,8 +1434,7 @@ abstract class Categorization implements ModelElement {
 }
 
 /// Classes extending this class have canonicalization support in Dartdoc.
-abstract class Canonicalization
-    implements Locatable, Documentable {
+abstract class Canonicalization implements Locatable, Documentable {
   bool get isCanonical;
   Library get canonicalLibrary;
 
@@ -1560,6 +1616,9 @@ class EnumField extends Field {
 
   @override
   String get oneLineDoc => documentationAsHtml;
+
+  @override
+  Inheritable get overriddenElement => null;
 }
 
 class Field extends ModelElement
@@ -1669,16 +1728,28 @@ class Field extends ModelElement
 
   @override
   Set<String> get features {
-    Set<String> allFeatures = super.features..addAll(comboFeatures);
+    Set<String> allFeatures = _baseFeatures()..addAll(comboFeatures);
+    // Combo features can indicate 'inherited' and 'override' if
+    // either the getter or setter has one of those properties, but that's not
+    // really specific enough for [Field]s that have public getter/setters.
     if (hasPublicGetter && hasPublicSetter) {
       if (getter.isInherited && setter.isInherited) {
         allFeatures.add('inherited');
       } else {
+        allFeatures.remove('inherited');
         if (getter.isInherited) allFeatures.add('inherited-getter');
         if (setter.isInherited) allFeatures.add('inherited-setter');
       }
+      if (getter.isOverride && setter.isOverride) {
+        allFeatures.add('override');
+      } else {
+        allFeatures.remove('override');
+        if (getter.isOverride) allFeatures.add('override-getter');
+        if (setter.isOverride) allFeatures.add('override-setter');
+      }
     } else {
       if (isInherited) allFeatures.add('inherited');
+      if (isOverride) allFeatures.add('override');
     }
     return allFeatures;
   }
@@ -1726,6 +1797,9 @@ class Field extends ModelElement
       _modelType = getter.modelType;
     }
   }
+
+  @override
+  Inheritable get overriddenElement => null;
 }
 
 /// Mixin for top-level variables and fields (aka properties)
@@ -1734,8 +1808,10 @@ abstract class GetterSetterCombo implements ModelElement {
 
   Set<String> get comboFeatures {
     Set<String> allFeatures = new Set();
-    if (hasExplicitGetter) allFeatures.addAll(getter.features);
-    if (hasExplicitSetter) allFeatures.addAll(setter.features);
+    if (hasExplicitGetter && hasPublicGetter)
+      allFeatures.addAll(getter.features);
+    if (hasExplicitSetter && hasPublicSetter)
+      allFeatures.addAll(setter.features);
     if (readOnly && !isFinal && !isConst) allFeatures.add('read-only');
     if (writeOnly) allFeatures.add('write-only');
     if (readWrite) allFeatures.add('read / write');
@@ -1743,7 +1819,7 @@ abstract class GetterSetterCombo implements ModelElement {
     return allFeatures;
   }
 
-  bool get isCovariant => false;
+  bool get isCovariant => (hasSetter && setter.isCovariant);
 
   @override
   ModelElement enclosingElement;
@@ -2622,6 +2698,10 @@ class Method extends ModelElement
   String get typeName => 'method';
 
   MethodElement get _method => (element as MethodElement);
+
+  /// Methods can not be covariant; always returns false.
+  @override
+  bool get isCovariant => false;
 }
 
 /// This class represents the score for a particular element; how likely
@@ -2714,8 +2794,8 @@ abstract class Privacy {
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
 abstract class ModelElement extends Canonicalization
-    with Privacy, Warnable, Nameable, SourceCodeMixin
-    implements Comparable, Documentable, Indexable {
+    with Privacy, Warnable, Nameable, SourceCodeMixin, Indexable
+    implements Comparable, Documentable {
   final Element _element;
   // TODO(jcollins-g): This really wants a "member that has a type" class.
   final Member _originalMember;
@@ -3050,12 +3130,12 @@ abstract class ModelElement extends Canonicalization
         .where((s) => s.isNotEmpty));
   }
 
-  Set<String> get features {
+  Set<String> _baseFeatures() {
     Set<String> allFeatures = new Set<String>();
     allFeatures.addAll(annotations);
 
-    // override as an annotation should be replaced with direct information
-    // from the analyzer if we decide to display it at this level.
+    // Replace the @override annotation with a feature that explicitly
+    // indicates whether an override has occurred.
     allFeatures.remove('@override');
 
     // Drop the plain "deprecated" annotation, that's indicated via
@@ -3066,6 +3146,8 @@ abstract class ModelElement extends Canonicalization
     if (isFinal) allFeatures.add('final');
     return allFeatures;
   }
+
+  Set<String> get features => _baseFeatures();
 
   String get featuresAsString {
     List<String> allFeatures = features.toList()..sort(byFeatureOrdering);
@@ -3112,8 +3194,9 @@ abstract class ModelElement extends Canonicalization
 
     if (computeDocumentationComment == null &&
         canOverride() &&
-        overriddenElement != null) {
-      docFrom = overriddenElement.documentationFrom;
+        this is Inheritable &&
+        (this as Inheritable).overriddenElement != null) {
+      docFrom = (this as Inheritable).overriddenElement.documentationFrom;
     } else if (this is Inheritable && (this as Inheritable).isInherited) {
       Inheritable thisInheritable = (this as Inheritable);
       Class definingEnclosingClass =
@@ -3483,22 +3566,6 @@ abstract class ModelElement extends Canonicalization
   }
 
   Member get originalMember => _originalMember;
-
-  ModelElement get overriddenElement => null;
-
-  int _overriddenDepth;
-  @override
-  int get overriddenDepth {
-    if (_overriddenDepth == null) {
-      _overriddenDepth = 0;
-      ModelElement e = this;
-      while (e.overriddenElement != null) {
-        _overriddenDepth += 1;
-        e = e.overriddenElement;
-      }
-    }
-    return _overriddenDepth;
-  }
 
   final PackageGraph _packageGraph;
   @override

@@ -378,7 +378,7 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
     List<Class> tryClasses = [preferredClass];
     Class realClass = tryClasses.first;
     if (element is Inheritable) {
-      ModelElement overriddenElement = element.overriddenElement;
+      Inheritable overriddenElement = element.overriddenElement;
       while (overriddenElement != null) {
         tryClasses.add(
             (element.overriddenElement as EnclosedElement).enclosingElement);
