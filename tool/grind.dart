@@ -40,7 +40,7 @@ final String defaultPubCache =
 /// Run no more than the number of processors available in parallel.
 final MultiFutureTracker testFutures = new MultiFutureTracker(
     Platform.environment.containsKey('TRAVIS')
-        ? 2
+        ? 1
         : Platform.numberOfProcessors);
 
 // Directory.systemTemp is not a constant.  So wrap it.
