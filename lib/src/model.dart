@@ -227,12 +227,16 @@ abstract class Inheritable implements ModelElement {
       // as seen in Flutter.
       Class enclosingCanonical = enclosingElement;
       if (enclosingElement is ModelElement) {
-        enclosingCanonical = (enclosingElement as ModelElement).canonicalModelElement;
+        enclosingCanonical =
+            (enclosingElement as ModelElement).canonicalModelElement;
       }
       // The class in which this element was defined, canonical if available.
-      Class definingCanonical = definingEnclosingElement.canonicalModelElement ?? definingEnclosingElement;
+      Class definingCanonical =
+          definingEnclosingElement.canonicalModelElement ??
+              definingEnclosingElement;
       // The canonical version of the element we're overriding, if available.
-      ModelElement overriddenCanonical = overriddenElement?.canonicalModelElement ?? overriddenElement;
+      ModelElement overriddenCanonical =
+          overriddenElement?.canonicalModelElement ?? overriddenElement;
 
       // We have to have an overridden element for it to be possible for this
       // element to be an override.
