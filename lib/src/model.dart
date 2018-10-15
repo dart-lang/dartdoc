@@ -219,7 +219,7 @@ abstract class Inheritable implements ModelElement {
   bool _isOverride;
   bool get isOverride {
     if (_isOverride == null) {
-      // The canonical version of the enclosing element (not canonicalEnclosingElement,
+      // The canonical version of the enclosing element -- not canonicalEnclosingElement,
       // as that is the element enclosing the canonical version of this element,
       // two different things.  Defaults to the enclosing element.
       //
