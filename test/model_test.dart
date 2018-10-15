@@ -116,22 +116,59 @@ void main() {
     });
   });
 
-  group('HTML Injection', () {
+  group('HTML Injection when allowed', () {
+    Class htmlInjection;
+    Method injectSimpleHtml;
+
+    PackageGraph injectionPackageGraph;
+    Library injectionExLibrary;
+
+    setUpAll(() async {
+      injectionPackageGraph = await utils.bootBasicPackage(
+          'testing/test_package', ['css', 'code_in_comments', 'excluded'],
+          additionalArguments: ['--inject-html']);
+
+      injectionExLibrary =
+          injectionPackageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
+
+      htmlInjection = injectionExLibrary.classes
+          .firstWhere((c) => c.name == 'HtmlInjection');
+      injectSimpleHtml = htmlInjection.allInstanceMethods
+          .firstWhere((m) => m.name == 'injectSimpleHtml');
+      injectionPackageGraph.allLocalModelElements
+          .forEach((m) => m.documentation);
+    });
+
+    test("can inject HTML", () {
+      expect(
+          injectSimpleHtml.documentation,
+          contains(
+              '\n<dartdoc-html>bad2bbdd4a5cf9efb3212afff4449904756851aa</dartdoc-html>\n'));
+      expect(injectSimpleHtml.documentation,
+          isNot(contains('\n{@inject-html}\n')));
+      expect(injectSimpleHtml.documentationAsHtml,
+          contains('   <div style="opacity: 0.5;">[HtmlInjection]</div>'));
+    });
+  });
+
+  group('HTML Injection when not allowed', () {
     Class htmlInjection;
     Method injectSimpleHtml;
 
     setUp(() {
-      htmlInjection = exLibrary.classes.firstWhere((c) => c.name == 'HtmlInjection');
-      injectSimpleHtml =
-          htmlInjection.allInstanceMethods.firstWhere((m) => m.name == 'injectSimpleHtml');
+      htmlInjection =
+          exLibrary.classes.firstWhere((c) => c.name == 'HtmlInjection');
+      injectSimpleHtml = htmlInjection.allInstanceMethods
+          .firstWhere((m) => m.name == 'injectSimpleHtml');
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
-    test("can inject HTML", () {
+    test("doesn't inject HTML if --inject-html option is not present", () {
       expect(
           injectSimpleHtml.documentation,
-          contains('\n<dartdoc-html>bad2bbdd4a5cf9efb3212afff4449904756851aa</dartdoc-html>\n'));
-      expect(injectSimpleHtml.documentationAsHtml,
-          contains('   <div style="opacity: 0.5;">[HtmlInjection]</div>'));
+          isNot(contains(
+              '\n<dartdoc-html>bad2bbdd4a5cf9efb3212afff4449904756851aa</dartdoc-html>\n')));
+      expect(injectSimpleHtml.documentation, isNot(contains('<dartdoc-html>')));
+      expect(injectSimpleHtml.documentationAsHtml, contains('{@inject-html}'));
     });
   });
 
@@ -1995,8 +2032,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           reason: "Can't find convertToMap function in ${fakePath}");
       if (Platform.isWindows) fakePath = fakePath.replaceAll('/', r'\\');
 
-      crossdartPackageGraph = await utils
-          .bootBasicPackage(utils.testPackageDir.path, [], withCrossdart: true);
+      crossdartPackageGraph = await utils.bootBasicPackage(
+          utils.testPackageDir.path, [],
+          additionalArguments: ['--add-crossdart']);
       crossdartFakeLibrary =
           crossdartPackageGraph.libraries.firstWhere((l) => l.name == 'fake');
       HasGenerics = crossdartFakeLibrary.classes

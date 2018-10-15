@@ -60,18 +60,22 @@ void delete(Directory dir) {
   if (dir.existsSync()) dir.deleteSync(recursive: true);
 }
 
-void init() async {
+void init({List<String> additionalArguments}) async {
   sdkDir = defaultSdkDir;
   sdkPackageMeta = new PackageMeta.fromDir(sdkDir);
+  additionalArguments ??= <String>[];
 
   testPackageGraph = await bootBasicPackage(
-      'testing/test_package', ['css', 'code_in_comments', 'excluded']);
+      'testing/test_package', ['css', 'code_in_comments', 'excluded'],
+      additionalArguments: additionalArguments);
   testPackageGraphGinormous = await bootBasicPackage(
       'testing/test_package', ['css', 'code_in_commnets', 'excluded'],
-      withAutoIncludedDependencies: true);
+      additionalArguments:
+          additionalArguments + ['--auto-include-dependencies']);
 
-  testPackageGraphSmall =
-      await bootBasicPackage('testing/test_package_small', []);
+  testPackageGraphSmall = await bootBasicPackage(
+      'testing/test_package_small', [],
+      additionalArguments: additionalArguments);
   testPackageGraphSdk = await bootSdkPackage();
 }
 
@@ -82,18 +86,17 @@ Future<PackageGraph> bootSdkPackage() async {
 
 Future<PackageGraph> bootBasicPackage(
     String dirPath, List<String> excludeLibraries,
-    {bool withAutoIncludedDependencies = false,
-    bool withCrossdart = false}) async {
+    {List<String> additionalArguments}) async {
   Directory dir = new Directory(dirPath);
+  additionalArguments ??= <String>[];
   return new PackageBuilder(await contextFromArgv([
-    '--input',
-    dir.path,
-    '--sdk-dir',
-    sdkDir.path,
-    '--exclude',
-    excludeLibraries.join(','),
-    '--${withCrossdart ? "" : "no-"}add-crossdart',
-    '--${withAutoIncludedDependencies ? "" : "no-"}auto-include-dependencies'
-  ]))
+            '--input',
+            dir.path,
+            '--sdk-dir',
+            sdkDir.path,
+            '--exclude',
+            excludeLibraries.join(','),
+          ] +
+          additionalArguments))
       .buildPackageGraph();
 }
