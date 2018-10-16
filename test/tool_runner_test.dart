@@ -74,8 +74,7 @@ void main() {
         'TEST INPUT',
       );
       expect(errors, isNotEmpty);
-      expect(
-          errors[0], contains('Tool "drill" returned non-zero exit code'));
+      expect(errors[0], contains('Tool "drill" returned non-zero exit code'));
       expect(result, isEmpty);
     });
     test("fails if tool in tool map doesn't exist", () {
