@@ -301,6 +301,35 @@ the equivalent of having the following comment in the code:
 /// # `This is the text that will be sent to the tool as input.`
 ```
 
+### Injecting HTML
+
+It happens rarely, but sometimes what you really need is to inject some raw HTML
+into the dartdoc output, without it being subject to Markdown processing
+beforehand. This can be useful when the output of an external tool is HTML, for
+instance. This is where the `{@inject-html}...{@end-inject-html}` tags come in.
+
+For security reasons, the `{@inject-html}` directive will be ignored unless the
+`--inject-html` flag is given on the dartdoc command line.
+
+Since this HTML fragment doesn't undergo Markdown processing, reference links
+and other normal processing won't happen on the contained fragment.
+
+So, this:
+```dart
+  ///     {@inject-html}
+  ///     <p>[The HTML to inject.]()</p>
+  ///     {@end-inject-html}
+```
+
+Will result in this be emitted in its place in the HTML output (notice that the
+markdown link isn't linked).
+```
+<p>[The HTML to inject.]()</p>
+```
+
+It's best to only inject HTML that is self-contained and doesn't depend upon
+other elements on the page, since those may change in future versions of Dartdoc.
+
 ### Auto including dependencies
 
 If `--auto-include-dependencies` flag is provided, dartdoc tries to automatically add
