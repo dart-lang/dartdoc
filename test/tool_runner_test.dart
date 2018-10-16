@@ -44,16 +44,16 @@ void main() {
     test('can invoke a Dart tool', () {
       var result = runner.run(
         ['drill', r'--file=$INPUT'],
-        'TEST INPUT',
+        content: 'TEST INPUT',
       );
       expect(errors, isEmpty);
-      expect(result, contains(new RegExp(r'Args: \[--file=<INPUT_FILE>]')));
+      expect(result, contains('--file=<INPUT_FILE>'));
       expect(result, contains('## `TEST INPUT`'));
     });
     test('can invoke a non-Dart tool', () {
       String result = runner.run(
         ['non_dart', '--version'],
-        'TEST INPUT',
+        content: 'TEST INPUT',
       );
       expect(errors, isEmpty);
       expect(result, isEmpty); // Output is on stderr.
@@ -61,7 +61,7 @@ void main() {
     test('fails if tool not in tool map', () {
       String result = runner.run(
         ['hammer', r'--file=$INPUT'],
-        'TEST INPUT',
+        content: 'TEST INPUT',
       );
       expect(errors, isNotEmpty);
       expect(
@@ -71,7 +71,7 @@ void main() {
     test('fails if tool returns non-zero status', () {
       String result = runner.run(
         ['drill', r'--file=/a/missing/file'],
-        'TEST INPUT',
+        content: 'TEST INPUT',
       );
       expect(errors, isNotEmpty);
       expect(errors[0], contains('Tool "drill" returned non-zero exit code'));
@@ -80,7 +80,7 @@ void main() {
     test("fails if tool in tool map doesn't exist", () {
       String result = runner.run(
         ['missing'],
-        'TEST INPUT',
+        content: 'TEST INPUT',
       );
       expect(errors, isNotEmpty);
       expect(errors[0],

@@ -1,3 +1,6 @@
+## 0.24.1-dev
+* Added more metadata (element name, project name, etc.) to external tool invocations.
+
 ## 0.24.0
 * Add 'override' to feature list for members which override a superclass (#981)
 * Support many options via dartdoc_options.yaml (#1674)

@@ -83,7 +83,7 @@ void main() {
     Method invokeTool;
     Method invokeToolNoInput;
 
-    setUp(() {
+    setUpAll(() {
       toolUser = exLibrary.classes.firstWhere((c) => c.name == 'ToolUser');
       invokeTool =
           toolUser.allInstanceMethods.firstWhere((m) => m.name == 'invokeTool');
@@ -91,22 +91,50 @@ void main() {
           .firstWhere((m) => m.name == 'invokeToolNoInput');
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
-    test("can invoke a tool", () {
+    test('can invoke a tool and pass args and environment', () {
+      expect(invokeTool.documentation, contains('--file=<INPUT_FILE>'));
       expect(
           invokeTool.documentation,
           contains(
-              '''Args: [--file=<INPUT_FILE>, --special= |\\[]!@#\\"\'\$%^&*()_+]'''));
+              new RegExp(r'--source=lib[/\\]example\.dart_[0-9]+_[0-9]+, ')));
+      expect(
+          invokeTool.documentation,
+          contains(new RegExp(
+              r'--package-path=<PACKAGE_PATH>, ')));
+      expect(
+          invokeTool.documentation, contains('--package-name=test_package, '));
+      expect(invokeTool.documentation, contains('--library-name=ex, '));
+      expect(invokeTool.documentation,
+          contains('--element-name=ToolUser.invokeTool, '));
+      expect(invokeTool.documentation,
+          contains(r'''--special= |\[]!@#\"'$%^&*()_+]'''));
+      expect(invokeTool.documentation, contains('INPUT: <INPUT_FILE>'));
+      expect(invokeTool.documentation,
+          contains(new RegExp('SOURCE_LINE: [0-9]+, ')));
+      expect(invokeTool.documentation,
+          contains(new RegExp('SOURCE_COLUMN: [0-9]+, ')));
+      expect(invokeTool.documentation,
+          contains(new RegExp(r'SOURCE_PATH: lib[/\\]example\.dart, ')));
+      expect(
+          invokeTool.documentation,
+          contains(new RegExp(
+              r'PACKAGE_PATH: <PACKAGE_PATH>, ')));
+      expect(
+          invokeTool.documentation, contains('PACKAGE_NAME: test_package, '));
+      expect(invokeTool.documentation, contains('LIBRARY_NAME: ex, '));
+      expect(invokeTool.documentation,
+          contains('ELEMENT_NAME: ToolUser.invokeTool}'));
       expect(invokeTool.documentation, contains('## `Yes it is a [Dog]!`'));
     });
-    test("can invoke a tool and add a reference link", () {
+    test('can invoke a tool and add a reference link', () {
       expect(invokeTool.documentation,
           contains('Yes it is a [Dog]! Is not a [ToolUser].'));
       expect(invokeTool.documentationAsHtml,
-          contains(r'<a href="ex/ToolUser-class.html">ToolUser</a>'));
+          contains('<a href="ex/ToolUser-class.html">ToolUser</a>'));
       expect(invokeTool.documentationAsHtml,
           contains('<a href="ex/Dog-class.html">Dog</a>'));
     });
-    test(r"can invoke a tool with no $INPUT or args", () {
+    test(r'can invoke a tool with no $INPUT or args', () {
       expect(invokeToolNoInput.documentation, contains('Args: []'));
       expect(invokeToolNoInput.documentation,
           isNot(contains('This text should not appear in the output')));
