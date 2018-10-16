@@ -1,4 +1,5 @@
 ## 0.24.0
+* Add 'override' to feature list for members which override a superclass (#981)
 * Support many options via dartdoc_options.yaml (#1674)
 * Allow insertion of raw HTML into dartdoc, via flag (#1793)
 * Stop using old supermixin syntax in dartdoc (#1772)
