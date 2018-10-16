@@ -12,7 +12,6 @@ import 'package:analyzer/dart/ast/ast.dart' hide TypeParameter;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model.dart';
-import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
@@ -311,9 +310,6 @@ bool _ConsiderIfConstructor(String codeRef, ModelElement modelElement) {
 
 // Basic map of reference to ModelElement, for cases where we're searching
 // outside of scope.
-// TODO(jcollins-g): function caches with maps are very common in dartdoc.
-//                   Extract into library.
-Map<String, Set<ModelElement>> _findRefElementCache;
 // TODO(jcollins-g): Rewrite this to handle constructors in a less hacky way
 // TODO(jcollins-g): This function breaks down naturally into many helpers, extract them
 // TODO(jcollins-g): Subcomponents of this function shouldn't be adding nulls to results, strip the
@@ -378,7 +374,7 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
     List<Class> tryClasses = [preferredClass];
     Class realClass = tryClasses.first;
     if (element is Inheritable) {
-      ModelElement overriddenElement = element.overriddenElement;
+      Inheritable overriddenElement = element.overriddenElement;
       while (overriddenElement != null) {
         tryClasses.add(
             (element.overriddenElement as EnclosedElement).enclosingElement);
@@ -410,32 +406,13 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
   results.remove(null);
 
   // We now need the ref element cache to keep from repeatedly searching [Package.allModelElements].
-  // TODO(jcollins-g): Find somewhere to cache elements outside package.libraries
-  //                   so we can give the right warning (no canonical found)
-  //                   when referring to objects in libraries outside the
-  //                   documented set.
-  if (results.isEmpty && _findRefElementCache == null) {
-    assert(packageGraph.allLibrariesAdded);
-    _findRefElementCache = new Map();
-    for (final modelElement
-        in filterNonDocumented(packageGraph.allLocalModelElements)) {
-      _findRefElementCache.putIfAbsent(
-          modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
-      _findRefElementCache.putIfAbsent(
-          modelElement.fullyQualifiedName, () => new Set());
-      _findRefElementCache[modelElement.fullyQualifiedName].add(modelElement);
-      _findRefElementCache[modelElement.fullyQualifiedNameWithoutLibrary]
-          .add(modelElement);
-    }
-  }
-
   // But if not, look for a fully qualified match.  (That only makes sense
   // if the codeRef might be qualified, and contains periods.)
   if (results.isEmpty &&
       codeRefChomped.contains('.') &&
-      _findRefElementCache.containsKey(codeRefChomped)) {
+      packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
     for (final ModelElement modelElement
-        in _findRefElementCache[codeRefChomped]) {
+        in packageGraph.findRefElementCache[codeRefChomped]) {
       if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
       // For fully qualified matches, the original preferredClass passed
       // might make no sense.  Instead, use the enclosing class from the
@@ -464,8 +441,10 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
   results.remove(null);
 
   // And if we still haven't found anything, just search the whole ball-of-wax.
-  if (results.isEmpty && _findRefElementCache.containsKey(codeRefChomped)) {
-    for (final modelElement in _findRefElementCache[codeRefChomped]) {
+  if (results.isEmpty &&
+      packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
+    for (final modelElement
+        in packageGraph.findRefElementCache[codeRefChomped]) {
       if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary ||
           (modelElement is Library &&
               codeRefChomped == modelElement.fullyQualifiedName)) {
@@ -486,8 +465,9 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
           .sublist(0, codeRefChompedParts.length - 1)
           .join('.');
       String maybeEnumMember = codeRefChompedParts.last;
-      if (_findRefElementCache.containsKey(maybeEnumName)) {
-        for (final modelElement in _findRefElementCache[maybeEnumName]) {
+      if (packageGraph.findRefElementCache.containsKey(maybeEnumName)) {
+        for (final modelElement
+            in packageGraph.findRefElementCache[maybeEnumName]) {
           if (modelElement is Enum) {
             if (modelElement.constants.any((e) => e.name == maybeEnumMember)) {
               results.add(modelElement);
