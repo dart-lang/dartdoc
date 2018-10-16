@@ -1,14 +1,14 @@
 language: dart
 sudo: false
 dart:
-  - "dev/raw/latest"
   - stable
+  - "dev/raw/latest"
 env:
-  - DARTDOC_BOT=main
-  - DARTDOC_BOT=packages
   - DARTDOC_BOT=flutter
-  - DARTDOC_BOT=sdk-docs
   - DARTDOC_BOT=sdk-analyzer
+  - DARTDOC_BOT=main
+  - DARTDOC_BOT=sdk-docs
+  - DARTDOC_BOT=packages
 script: ./tool/travis.sh
 
 os:
