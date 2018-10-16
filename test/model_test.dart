@@ -2203,6 +2203,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(functionArgParam.modelType.createLinkedReturnTypeName(), 'String');
     });
 
+    test('method overrides another', () {
+      expect(m1.isOverride, isTrue);
+      expect(m1.features, contains('override'));
+    });
+
     test('generic method type args are rendered', () {
       expect(testGenericMethod.nameWithGenerics,
           'testGenericMethod&lt;<wbr><span class="type-parameter">T</span>&gt;');
@@ -2229,13 +2234,22 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
   group('Operators', () {
     Class specializedDuration;
-    Operator plus;
+    Operator plus, equalsOverride;
 
     setUp(() {
       specializedDuration =
           exLibrary.classes.firstWhere((c) => c.name == 'SpecializedDuration');
       plus = specializedDuration.allOperators
           .firstWhere((o) => o.name == 'operator +');
+      equalsOverride = exLibrary.classes
+          .firstWhere((c) => c.name == 'Dog')
+          .allOperators
+          .firstWhere((o) => o.name == 'operator ==');
+    });
+
+    test('can be an override', () {
+      expect(equalsOverride.isInherited, isFalse);
+      expect(equalsOverride.isOverride, isTrue);
     });
 
     test('has a fully qualified name', () {
@@ -2244,6 +2258,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('can be inherited', () {
       expect(plus.isInherited, isTrue);
+      expect(plus.isOverride, isFalse);
     });
 
     test('if inherited, and superclass not in package', () {
@@ -2439,7 +2454,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(implicitGetterExplicitSetter.getter.isInherited, isTrue);
       expect(implicitGetterExplicitSetter.setter.isInherited, isFalse);
       expect(implicitGetterExplicitSetter.isInherited, isFalse);
+      expect(
+          implicitGetterExplicitSetter.features.contains('inherited'), isFalse);
       expect(implicitGetterExplicitSetter.features.contains('inherited-getter'),
+          isTrue);
+      expect(
+          implicitGetterExplicitSetter.features.contains('override'), isFalse);
+      expect(implicitGetterExplicitSetter.features.contains('override-setter'),
           isTrue);
       expect(implicitGetterExplicitSetter.features.contains('read / write'),
           isTrue);
@@ -2457,7 +2478,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(explicitGetterImplicitSetter.getter.isInherited, isFalse);
       expect(explicitGetterImplicitSetter.setter.isInherited, isTrue);
       expect(explicitGetterImplicitSetter.isInherited, isFalse);
+      expect(
+          explicitGetterImplicitSetter.features.contains('inherited'), isFalse);
       expect(explicitGetterImplicitSetter.features.contains('inherited-setter'),
+          isTrue);
+      expect(
+          explicitGetterImplicitSetter.features.contains('override'), isFalse);
+      expect(explicitGetterImplicitSetter.features.contains('override-getter'),
           isTrue);
       expect(explicitGetterImplicitSetter.features.contains('read / write'),
           isTrue);
