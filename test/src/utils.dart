@@ -35,6 +35,8 @@ final Directory testPackageOptions =
     new Directory('testing/test_package_options');
 final Directory testPackageOptionsImporter =
     new Directory('testing/test_package_options_importer');
+final Directory testPackageToolError =
+    new Directory('testing/test_package_tool_error');
 
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
 /// it with a [DartdocOptionSet] based on the current working directory and/or

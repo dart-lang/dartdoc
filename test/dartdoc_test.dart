@@ -73,6 +73,45 @@ void main() {
         expect(Something.isPublic, isTrue);
         expect(Something.displayedCategories, isNotEmpty);
       });
+
+      test('errors generate errors even when warnings are off', () async {
+        Dartdoc dartdoc = await buildDartdoc([], testPackageToolError);
+        DartdocResults results = await dartdoc.generateDocsBase();
+        PackageGraph p = results.packageGraph;
+        Iterable<String> unresolvedToolErrors = p
+            .packageWarningCounter.countedWarnings.values
+            .expand<String>((Set<Tuple2<PackageWarning, String>> s) => s
+                .where((Tuple2<PackageWarning, String> t) =>
+                    t.item1 == PackageWarning.toolError)
+                .map<String>((Tuple2<PackageWarning, String> t) => t.item2));
+
+        expect(p.packageWarningCounter.errorCount, equals(1));
+        expect(unresolvedToolErrors.length, equals(1));
+        expect(unresolvedToolErrors.first,
+            contains('Tool "drill" returned non-zero exit code'));
+      });
+    });
+
+    group('Invoking command-line dartdoc', () {
+      String dartdocPath = pathLib.join('bin', 'dartdoc.dart');
+
+      test('errors cause non-zero exit when warnings are off', () async {
+        ProcessResult result = Process.runSync(Platform.resolvedExecutable, [
+          dartdocPath,
+          '--input=$testPackageToolError',
+          '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}',
+        ]);
+        expect(result.exitCode, isNonZero);
+      });
+      test('errors cause non-zero exit when warnings are on', () async {
+        ProcessResult result = Process.runSync(Platform.resolvedExecutable, [
+          dartdocPath,
+          '--input=$testPackageToolError',
+          '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}',
+          '--show-warnings',
+        ]);
+        expect(result.exitCode, isNonZero);
+      });
     });
 
     group('Option handling with cross-linking', () {

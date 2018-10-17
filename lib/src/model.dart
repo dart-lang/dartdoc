@@ -6491,18 +6491,16 @@ class PackageBuilder {
     PackageWarningOptions warningOptions =
         new PackageWarningOptions(config.verboseWarnings);
     // TODO(jcollins-g): explode this into detailed command line options.
-    if (config.showWarnings) {
-      for (PackageWarning kind in PackageWarning.values) {
-        switch (kind) {
-          case PackageWarning.toolError:
-          case PackageWarning.invalidParameter:
-          case PackageWarning.unresolvedExport:
-            warningOptions.error(kind);
-            break;
-          default:
-            warningOptions.warn(kind);
-            break;
-        }
+    for (PackageWarning kind in PackageWarning.values) {
+      switch (kind) {
+        case PackageWarning.toolError:
+        case PackageWarning.invalidParameter:
+        case PackageWarning.unresolvedExport:
+          warningOptions.error(kind);
+          break;
+        default:
+          if (config.showWarnings) warningOptions.warn(kind);
+          break;
       }
     }
     return warningOptions;
