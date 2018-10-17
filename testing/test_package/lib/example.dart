@@ -585,7 +585,7 @@ abstract class TypedFunctionsWithoutTypedefs {
 abstract class ToolUser {
   /// Invokes a tool.
   ///
-  /// {@tool drill --file="$INPUT" --special=" |\[]!@#\"'$%^&*()_+"}
+  /// {@tool drill --file="$INPUT" --source="$(SOURCE_PATH)_$(SOURCE_LINE)_$SOURCE_COLUMN" --package-path=$PACKAGE_PATH --package-name=$PACKAGE_NAME --library-name=$LIBRARY_NAME --element-name=$(ELEMENT_NAME) --special=" |\[]!@#\"'$%^&*()_+"}
   /// Yes it is a [Dog]!
   /// Ok, fine it isn't.
   /// {@end-tool}

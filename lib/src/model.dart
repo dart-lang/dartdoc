@@ -3953,7 +3953,21 @@ abstract class ModelElement extends Canonicalization
                   'Must specify a tool to execute for the @tool directive.');
           return '';
         }
-        return runner.run(args, basicMatch[2]);
+
+        return runner.run(args,
+            content: basicMatch[2],
+            environment: {
+              'SOURCE_LINE': lineAndColumn?.item1?.toString(),
+              'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
+              'SOURCE_PATH': (sourceFileName == null ||
+                      package?.packagePath == null)
+                  ? null
+                  : pathLib.relative(sourceFileName, from: package.packagePath),
+              'PACKAGE_PATH': package?.packagePath,
+              'PACKAGE_NAME': package?.name,
+              'LIBRARY_NAME': library?.fullyQualifiedName,
+              'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
+            }..removeWhere((key, value) => value == null));
       });
     } finally {
       runner.dispose();

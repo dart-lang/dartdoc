@@ -57,10 +57,12 @@ class ToolRunner {
   ///
   /// The [args] must not be null, and it must have at least one member (the name
   /// of the tool).
-  String run(List<String> args, [String content]) {
+  String run(List<String> args,
+      {String content, Map<String, String> environment}) {
     assert(args != null);
     assert(args.isNotEmpty);
     content ??= '';
+    environment ??= <String, String>{};
     var tool = args.removeAt(0);
     if (!toolConfiguration.tools.containsKey(tool)) {
       _error('Unable to find definition for tool "$tool" in tool map. '
@@ -86,18 +88,28 @@ class ToolRunner {
     var tmpFile = _createTemporaryFile();
     tmpFile.writeAsStringSync(content);
 
-    // Substitute the temp filename for the "$INPUT" token.
-    var fileToken = new RegExp(r'\$INPUT\b');
+    // Substitute the temp filename for the "$INPUT" token, and all of the
+    // other environment variables.
+    // Variables are allowed to either be in $(VAR) form, or $VAR form.
+    var envWithInput = {'INPUT': tmpFile.absolute.path}..addAll(environment);
+    var substitutions = envWithInput.map<RegExp, String>((key, value) {
+      String escapedKey = RegExp.escape(key);
+      return MapEntry(RegExp('\\\$(\\($escapedKey\\)|$escapedKey\\b)'), value);
+    });
     var argsWithInput = <String>[];
     for (var arg in args) {
-      argsWithInput.add(arg.replaceAll(fileToken, tmpFile.absolute.path));
+      var newArg = arg;
+      substitutions
+          .forEach((regex, value) => newArg = newArg.replaceAll(regex, value));
+      argsWithInput.add(newArg);
     }
 
     argsWithInput = toolArgs + argsWithInput;
     final commandPath = argsWithInput.removeAt(0);
     String commandString() => ([commandPath] + argsWithInput).join(' ');
     try {
-      var result = Process.runSync(commandPath, argsWithInput);
+      var result = Process.runSync(commandPath, argsWithInput,
+          environment: envWithInput);
       if (result.exitCode != 0) {
         _error('Tool "$tool" returned non-zero exit code '
             '(${result.exitCode}) when run as '
