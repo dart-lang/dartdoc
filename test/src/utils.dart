@@ -17,6 +17,7 @@ PackageMeta sdkPackageMeta;
 PackageGraph testPackageGraph;
 PackageGraph testPackageGraphGinormous;
 PackageGraph testPackageGraphSmall;
+PackageGraph testPackageGraphErrors;
 PackageGraph testPackageGraphSdk;
 
 final Directory testPackageBadDir = new Directory('testing/test_package_bad');
@@ -77,6 +78,10 @@ void init({List<String> additionalArguments}) async {
 
   testPackageGraphSmall = await bootBasicPackage(
       'testing/test_package_small', [],
+      additionalArguments: additionalArguments);
+
+  testPackageGraphErrors = await bootBasicPackage(
+      'testing/test_package_doc_errors', ['css', 'code_in_comments', 'excluded'],
       additionalArguments: additionalArguments);
   testPackageGraphSdk = await bootSdkPackage();
 }
