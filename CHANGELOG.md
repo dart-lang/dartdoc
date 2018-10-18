@@ -1,5 +1,7 @@
 ## 0.24.1-dev
 * Added more metadata (element name, project name, etc.) to external tool invocations.
+* Fixed a bug where not specifying --show-warnings caused dartdoc to report success
+  even when errors were present.
 
 ## 0.24.0
 * Add 'override' to feature list for members which override a superclass (#981)

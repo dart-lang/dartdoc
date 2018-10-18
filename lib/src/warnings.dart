@@ -101,7 +101,7 @@ final Map<PackageWarning, PackageWarningHelpText> packageWarningText = const {
   PackageWarning.unresolvedExport: const PackageWarningHelpText(
       PackageWarning.unresolvedExport,
       "unresolvedExport",
-      "An export refers to a URI that can not be resolved."),
+      "An export refers to a URI that cannot be resolved."),
 };
 
 /// Something that package warnings can be called on.  Optionally associated

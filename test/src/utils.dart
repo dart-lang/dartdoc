@@ -17,6 +17,7 @@ PackageMeta sdkPackageMeta;
 PackageGraph testPackageGraph;
 PackageGraph testPackageGraphGinormous;
 PackageGraph testPackageGraphSmall;
+PackageGraph testPackageGraphErrors;
 PackageGraph testPackageGraphSdk;
 
 final Directory testPackageBadDir = new Directory('testing/test_package_bad');
@@ -35,6 +36,8 @@ final Directory testPackageOptions =
     new Directory('testing/test_package_options');
 final Directory testPackageOptionsImporter =
     new Directory('testing/test_package_options_importer');
+final Directory testPackageToolError =
+    new Directory('testing/test_package_tool_error');
 
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
 /// it with a [DartdocOptionSet] based on the current working directory and/or
@@ -75,6 +78,10 @@ void init({List<String> additionalArguments}) async {
 
   testPackageGraphSmall = await bootBasicPackage(
       'testing/test_package_small', [],
+      additionalArguments: additionalArguments);
+
+  testPackageGraphErrors = await bootBasicPackage(
+      'testing/test_package_doc_errors', ['css', 'code_in_comments', 'excluded'],
       additionalArguments: additionalArguments);
   testPackageGraphSdk = await bootSdkPackage();
 }
