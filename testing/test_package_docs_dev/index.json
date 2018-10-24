@@ -4045,28 +4045,6 @@
   }
  },
  {
-  "name": "AClassUsingASuperMixin",
-  "qualifiedName": "fake.AClassUsingASuperMixin",
-  "href": "fake/AClassUsingASuperMixin-class.html",
-  "type": "class",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "fake",
-   "type": "library"
-  }
- },
- {
-  "name": "AClassUsingASuperMixin",
-  "qualifiedName": "fake.AClassUsingASuperMixin",
-  "href": "fake/AClassUsingASuperMixin/AClassUsingASuperMixin.html",
-  "type": "constructor",
-  "overriddenDepth": 0,
-  "enclosedBy": {
-   "name": "AClassUsingASuperMixin",
-   "type": "class"
-  }
- },
- {
   "name": "AClassUsingNewStyleMixin",
   "qualifiedName": "fake.AClassUsingNewStyleMixin",
   "href": "fake/AClassUsingNewStyleMixin-class.html",

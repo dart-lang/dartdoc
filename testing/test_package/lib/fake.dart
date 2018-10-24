@@ -293,9 +293,6 @@ mixin NewStyleMixinCallingSuper on NotAMixin {
       "${super.superString} but moderately less important than this";
 }
 
-/// Verify super-mixins don't break Dartdoc.
-class AClassUsingASuperMixin extends AnotherInterface with AMixinCallingSuper {}
-
 /// A class mixing in a single new-style mixin.
 class AClassUsingNewStyleMixin extends NotAMixin
     with NewStyleMixinCallingSuper {}
