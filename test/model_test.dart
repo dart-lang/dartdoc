@@ -695,7 +695,9 @@ void main() {
 
   group('Macros', () {
     Class dog;
+    Enum MacrosFromAccessors;
     Method withMacro, withMacro2, withPrivateMacro, withUndefinedMacro;
+    EnumField macroReferencedHere;
 
     setUp(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
@@ -707,7 +709,12 @@ void main() {
           .firstWhere((m) => m.name == 'withPrivateMacro');
       withUndefinedMacro = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withUndefinedMacro');
-      packageGraph.allLocalModelElements.forEach((m) => m.documentation);
+      MacrosFromAccessors = fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
+      macroReferencedHere = MacrosFromAccessors.publicConstants.firstWhere((e) => e.name == 'macroReferencedHere');
+    });
+
+    test("renders a macro defined within a enum", () {
+      expect(macroReferencedHere.documentationAsHtml, contains('This is a macro defined in an Enum accessor.'));
     });
 
     test("renders a macro within the same comment where it's defined", () {
@@ -725,6 +732,8 @@ void main() {
     });
 
     test("a warning is generated for unknown macros", () {
+      // Retrieve documentation first to generate the warning.
+      withUndefinedMacro.documentation;
       expect(
           packageGraph.packageWarningCounter.hasWarning(withUndefinedMacro,
               PackageWarning.unknownMacro, 'ThatDoesNotExist'),
