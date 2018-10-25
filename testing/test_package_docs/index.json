@@ -9072,6 +9072,17 @@
   }
  },
  {
+  "name": "aMixinReturningFunction",
+  "qualifiedName": "fake.aMixinReturningFunction",
+  "href": "fake/aMixinReturningFunction.html",
+  "type": "function",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "aVoidParameter",
   "qualifiedName": "fake.aVoidParameter",
   "href": "fake/aVoidParameter.html",
@@ -9131,6 +9142,17 @@
   "qualifiedName": "fake.dynamicGetter",
   "href": "fake/dynamicGetter.html",
   "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "functionUsingMixinReturningFunction",
+  "qualifiedName": "fake.functionUsingMixinReturningFunction",
+  "href": "fake/functionUsingMixinReturningFunction.html",
+  "type": "function",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
