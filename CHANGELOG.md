@@ -1,6 +1,3 @@
-## 0.25.0-dev
-* Remove the support for old-style supermixins.
-
 ## 0.24.1
 * Added more metadata (element name, project name, etc.) to external tool invocations.
   (#1801)

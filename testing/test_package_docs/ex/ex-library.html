@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ex library API docs, for the Dart programming language.">
+  <title>ex library - Dart API</title>
+  <!-- required because all the links are pseudo-absolute -->
+  <base href="..">
+
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
+  <link rel="stylesheet" href="static-assets/github.css">
+  <link rel="stylesheet" href="static-assets/styles.css">
+  <link rel="icon" href="static-assets/favicon.png">
+
+</head>
+
+<body>
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="index.html">test_package</a></li>
+    <li class="self-crumb">ex library</li>
+  </ol>
+  <div class="self-name">ex</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+  <div class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    <h5><span class="package-name">test_package</span> <span class="package-kind">package</span></h5>
+    <ol>
+          <li class="section-title">Topics</li>
+            <li><a href="topics/Superb-topic.html">Superb</a></li>
+            <li><a href="topics/Unreal-topic.html">Unreal</a></li>
+          <li class="section-title">Libraries</li>
+          <li><a href="anonymous_library/anonymous_library-library.html">anonymous_library</a></li>
+          <li><a href="another_anonymous_lib/another_anonymous_lib-library.html">another_anonymous_lib</a></li>
+          <li><a href="code_in_comments/code_in_comments-library.html">code_in_comments</a></li>
+          <li><a class="deprecated" href="is_deprecated/is_deprecated-library.html">is_deprecated</a></li>
+          <li class="section-subtitle">Unreal</li>
+            <li class="section-subitem"><a href="reexport_one/reexport_one-library.html">reexport_one</a></li>
+            <li class="section-subitem"><a href="reexport_two/reexport_two-library.html">reexport_two</a></li>
+          <li class="section-subtitle">Real Libraries</li>
+            <li class="section-subitem"><a href="ex/ex-library.html">ex</a></li>
+            <li class="section-subitem"><a href="fake/fake-library.html">fake</a></li>
+            <li class="section-subitem"><a href="two_exports/two_exports-library.html">two_exports</a></li>
+          <li class="section-subtitle">Misc</li>
+            <li class="section-subitem"><a href="two_exports/two_exports-library.html">two_exports</a></li>
+          <li class="section-subtitle">Other</li>
+            <li class="section-subitem"><a href="css/css-library.html">css</a></li>
+          <li class="section-title">test_package_imported</li>
+          <li><a href="categoriesExported/categoriesExported-library.html">categoriesExported</a></li>
+          <li><a href="test_package_imported.main/test_package_imported.main-library.html">test_package_imported.main</a></li>
+    </ol>
+  </div>
+
+  <div class="col-xs-12 col-sm-9 col-md-8 main-content">
+    <h1>ex library </h1>
+
+    <section class="desc markdown">
+      <p>a library. testing string escaping: <code>var s = 'a string'</code> <cool></cool></p>
+    </section>
+    
+    <section class="summary offset-anchor" id="classes">
+      <h2>Classes</h2>
+
+      <dl>
+        <dt id="AnotherParameterizedClass">
+          <span class="name "><a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">B</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="Apple">
+          <span class="name "><a href="ex/Apple-class.html">Apple</a></span> 
+        </dt>
+        <dd>
+          Sample class <code>String</code> <a href="ex/Apple-class.html">[...]</a>
+        </dd>
+        <dt id="aThingToDo">
+          <span class="name "><a href="ex/aThingToDo-class.html">aThingToDo</a></span> 
+        </dt>
+        <dd>
+          A custom annotation.
+        </dd>
+        <dt id="B">
+          <span class="name "><a href="ex/B-class.html">B</a></span> 
+        </dt>
+        <dd>
+          Extends class <a href="ex/Apple-class.html">Apple</a>, use <a href="ex/Apple/Apple.html">new Apple</a> or <a href="ex/Apple/Apple.fromString.html">new Apple.fromString</a> <a href="ex/B-class.html">[...]</a>
+        </dd>
+        <dt id="Cat">
+          <span class="name "><a href="ex/Cat-class.html">Cat</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="CatString">
+          <span class="name "><a href="ex/CatString-class.html">CatString</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="ConstantCat">
+          <span class="name "><a href="ex/ConstantCat-class.html">ConstantCat</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="Cool">
+          <span class="name "><a href="fake/Cool-class.html">Cool</a></span> 
+        </dt>
+        <dd>
+          This class is cool!
+        </dd>
+        <dt id="Deprecated">
+          <span class="name "><a href="ex/Deprecated-class.html">Deprecated</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="Dog">
+          <span class="name "><a href="ex/Dog-class.html">Dog</a></span> 
+        </dt>
+        <dd>
+          implements <a href="ex/Cat-class.html">Cat</a>, <a href="ex/E-class.html">E</a> <a href="ex/Dog-class.html">[...]</a>
+        </dd>
+        <dt id="E">
+          <span class="name "><a href="ex/E-class.html">E</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="ExtendedShortName">
+          <span class="name "><a href="ex/ExtendedShortName-class.html">ExtendedShortName</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="F">
+          <span class="name "><a href="ex/F-class.html">F</a><span class="signature">&lt;<wbr><span class="type-parameter">T extends String</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="ForAnnotation">
+          <span class="name "><a href="ex/ForAnnotation-class.html">ForAnnotation</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="HasAnnotation">
+          <span class="name "><a href="ex/HasAnnotation-class.html">HasAnnotation</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="Helper">
+          <span class="name "><a href="ex/Helper-class.html">Helper</a></span> 
+        </dt>
+        <dd>
+          Even unresolved references in the same library should be resolved
+<a href="ex/Apple-class.html">Apple</a>
+<a href="ex/B-class.html">ex.B</a>
+        </dd>
+        <dt id="HtmlInjection">
+          <span class="name "><a href="ex/HtmlInjection-class.html">HtmlInjection</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="Klass">
+          <span class="name "><a href="ex/Klass-class.html">Klass</a></span> 
+        </dt>
+        <dd>
+          A class
+        </dd>
+        <dt id="ParameterizedClass">
+          <span class="name "><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          Support class to test inheritance + type expansion from implements clause.
+        </dd>
+        <dt id="PublicClassExtendsPrivateClass">
+          <span class="name "><a href="ex/PublicClassExtendsPrivateClass-class.html">PublicClassExtendsPrivateClass</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="PublicClassImplementsPrivateInterface">
+          <span class="name "><a href="ex/PublicClassImplementsPrivateInterface-class.html">PublicClassImplementsPrivateInterface</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="ShapeType">
+          <span class="name "><a href="ex/ShapeType-class.html">ShapeType</a></span> 
+        </dt>
+        <dd>
+          Foo bar. <a href="ex/ShapeType-class.html">[...]</a>
+        </dd>
+        <dt id="ShortName">
+          <span class="name "><a href="ex/ShortName-class.html">ShortName</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="SpecializedDuration">
+          <span class="name "><a href="ex/SpecializedDuration-class.html">SpecializedDuration</a></span> 
+        </dt>
+        <dd>
+          For testing a class that extends a class
+that has some operators
+        </dd>
+        <dt id="TemplatedClass">
+          <span class="name "><a href="ex/TemplatedClass-class.html">TemplatedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">X</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="TemplatedInterface">
+          <span class="name "><a href="ex/TemplatedInterface-class.html">TemplatedInterface</a><span class="signature">&lt;<wbr><span class="type-parameter">A</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          Class for testing expansion of type from implements clause.
+        </dd>
+        <dt id="ToolUser">
+          <span class="name "><a href="ex/ToolUser-class.html">ToolUser</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="TypedFunctionsWithoutTypedefs">
+          <span class="name "><a href="ex/TypedFunctionsWithoutTypedefs-class.html">TypedFunctionsWithoutTypedefs</a></span> 
+        </dt>
+        <dd>
+          This class has a complicated type situation.
+        </dd>
+        <dt id="WithGeneric">
+          <span class="name "><a href="ex/WithGeneric-class.html">WithGeneric</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="WithGenericSub">
+          <span class="name "><a href="ex/WithGenericSub-class.html">WithGenericSub</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+      </dl>
+    </section>
+
+
+    <section class="summary offset-anchor" id="constants">
+      <h2>Constants</h2>
+
+      <dl class="properties">
+        <dt id="COLOR" class="constant">
+          <span class="name "><a href="ex/COLOR-constant.html">COLOR</a></span>
+          <span class="signature">&#8594; const String</span>
+          </dt>
+        <dd>
+          
+          
+  <div>
+            <span class="signature"><code>&#39;red&#39;</code></span>
+          </div>
+        </dd>
+        <dt id="COLOR_GREEN" class="constant">
+          <span class="name "><a href="ex/COLOR_GREEN-constant.html">COLOR_GREEN</a></span>
+          <span class="signature">&#8594; const String</span>
+          </dt>
+        <dd>
+          
+          
+  <div>
+            <span class="signature"><code>&#39;green&#39;</code></span>
+          </div>
+        </dd>
+        <dt id="COLOR_ORANGE" class="constant">
+          <span class="name "><a href="ex/COLOR_ORANGE-constant.html">COLOR_ORANGE</a></span>
+          <span class="signature">&#8594; const String</span>
+          </dt>
+        <dd>
+          
+          
+  <div>
+            <span class="signature"><code>&#39;orange&#39;</code></span>
+          </div>
+        </dd>
+        <dt id="COMPLEX_COLOR" class="constant">
+          <span class="name "><a href="ex/COMPLEX_COLOR-constant.html">COMPLEX_COLOR</a></span>
+          <span class="signature">&#8594; const String</span>
+          </dt>
+        <dd>
+          
+          
+  <div>
+            <span class="signature"><code>&#39;red&#39; + &#39;-&#39; + &#39;green&#39; + &#39;-&#39; + &#39;blue&#39;</code></span>
+          </div>
+        </dd>
+        <dt id="deprecated" class="constant">
+          <span class="name "><a href="ex/deprecated-constant.html">deprecated</a></span>
+          <span class="signature">&#8594; const <a href="ex/Deprecated-class.html">Deprecated</a></span>
+          </dt>
+        <dd>
+          
+          
+  <div>
+            <span class="signature"><code>const <a href="ex/Deprecated/Deprecated.html">Deprecated</a>(&#39;next release&#39;)</code></span>
+          </div>
+        </dd>
+        <dt id="incorrectDocReference" class="constant">
+          <span class="name "><a href="ex/incorrectDocReference-constant.html">incorrectDocReference</a></span>
+          <span class="signature">&#8594; const String</span>
+          </dt>
+        <dd>
+          This is the same name as a top-level const from the fake lib.
+          
+  <div>
+            <span class="signature"><code>&#39;same name as const from fake&#39;</code></span>
+          </div>
+        </dd>
+        <dt id="incorrectDocReferenceFromEx" class="constant">
+          <span class="name "><a href="ex/incorrectDocReferenceFromEx-constant.html">incorrectDocReferenceFromEx</a></span>
+          <span class="signature">&#8594; const String</span>
+          </dt>
+        <dd>
+          This should <code>not work</code>.
+          
+  <div>
+            <span class="signature"><code>&#39;doh&#39;</code></span>
+          </div>
+        </dd>
+        <dt id="MY_CAT" class="constant">
+          <span class="name "><a href="ex/MY_CAT-constant.html">MY_CAT</a></span>
+          <span class="signature">&#8594; const <a href="ex/ConstantCat-class.html">ConstantCat</a></span>
+          </dt>
+        <dd>
+          
+          
+  <div>
+            <span class="signature"><code>const <a href="ex/ConstantCat/ConstantCat.html">ConstantCat</a>(&#39;tabby&#39;)</code></span>
+          </div>
+        </dd>
+        <dt id="PRETTY_COLORS" class="constant">
+          <span class="name "><a href="ex/PRETTY_COLORS-constant.html">PRETTY_COLORS</a></span>
+          <span class="signature">&#8594; const List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>
+          </dt>
+        <dd>
+          
+          
+  <div>
+            <span class="signature"><code>const &lt;String&gt; [COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;]</code></span>
+          </div>
+        </dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        <dt id="deprecatedField" class="property">
+          <span class="name"><a class="deprecated" href="ex/deprecatedField.html">deprecatedField</a></span>
+          <span class="signature">&#8596; int</span> 
+        </dt>
+        <dd>
+          
+          <div class="features">read / write</div>
+</dd>
+        <dt id="deprecatedGetter" class="property">
+          <span class="name"><a class="deprecated" href="ex/deprecatedGetter.html">deprecatedGetter</a></span>
+          <span class="signature">&#8594; int</span> 
+        </dt>
+        <dd>
+          
+          <div class="features">read-only</div>
+</dd>
+        <dt id="deprecatedSetter" class="property">
+          <span class="name"><a class="deprecated" href="ex/deprecatedSetter.html">deprecatedSetter</a></span>
+          <span class="signature">&#8592; <span class="parameter" id="deprecatedSetter=-param-value"><span class="type-annotation">int</span></span></span> 
+        </dt>
+        <dd>
+          
+          <div class="features">write-only</div>
+</dd>
+        <dt id="number" class="property">
+          <span class="name"><a href="ex/number.html">number</a></span>
+          <span class="signature">&#8596; double</span> 
+        </dt>
+        <dd>
+          
+          <div class="features">read / write</div>
+</dd>
+        <dt id="y" class="property">
+          <span class="name"><a href="ex/y.html">y</a></span>
+          <span class="signature">&#8594; dynamic</span> 
+        </dt>
+        <dd>
+          
+          <div class="features">read-only</div>
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="functions">
+      <h2>Functions</h2>
+
+      <dl class="callables">
+        <dt id="function1" class="callable">
+          <span class="name"><a href="ex/function1.html">function1</a></span><span class="signature">(<wbr><span class="parameter" id="function1-param-s"><span class="type-annotation">String</span> <span class="parameter-name">s</span>, </span> <span class="parameter" id="function1-param-b"><span class="type-annotation">bool</span> <span class="parameter-name">b</span>, </span> <span class="parameter" id="function1-param-lastParam"><span class="type-annotation">dynamic</span> <span class="parameter-name">lastParam</span></span>)
+            <span class="returntype parameter">&#8594; int</span>
+          </span>
+          </dt>
+        <dd>
+          
+          
+</dd>
+        <dt id="genericFunction" class="callable">
+          <span class="name"><a href="ex/genericFunction.html">genericFunction</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="genericFunction-param-arg"><span class="type-annotation">T</span> <span class="parameter-name">arg</span></span>)
+            <span class="returntype parameter">&#8594; T</span>
+          </span>
+          </dt>
+        <dd>
+          
+          
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="enums">
+      <h2>Enums</h2>
+
+      <dl>
+        <dt id="Animal">
+          <span class="name "><a href="ex/Animal-class.html">Animal</a></span> 
+        </dt>
+        <dd>
+          Referencing <a href="ex/processMessage.html">processMessage</a> (or other things) here should not break
+enum constants ala #1445
+        </dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="typedefs">
+      <h2>Typedefs</h2>
+
+      <dl class="callables">
+        <dt id="aComplexTypedef" class="callable">
+          <span class="name"><a href="ex/aComplexTypedef.html">aComplexTypedef</a></span><span class="signature">&lt;<wbr><span class="type-parameter">A1</span>, <span class="type-parameter">A2</span>, <span class="type-parameter">A3</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">String</span></span>)
+            <span class="returntype parameter">&#8594; void Function<span class="signature">(<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span></span>)</span></span>
+          </span>
+          </dt>
+        <dd>
+          Someone might do this some day.
+          
+</dd>
+        <dt id="ParameterizedTypedef" class="callable">
+          <span class="name"><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="ParameterizedTypedef-param-msg"><span class="type-annotation">T</span> <span class="parameter-name">msg</span>, </span> <span class="parameter" id="ParameterizedTypedef-param-foo"><span class="type-annotation">int</span> <span class="parameter-name">foo</span></span>)
+            <span class="returntype parameter">&#8594; String</span>
+          </span>
+          </dt>
+        <dd>
+          
+          
+</dd>
+        <dt id="processMessage" class="callable">
+          <span class="name"><a href="ex/processMessage.html">processMessage</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="processMessage-param-msg"><span class="type-annotation">String</span> <span class="parameter-name">msg</span></span>)
+            <span class="returntype parameter">&#8594; String</span>
+          </span>
+          </dt>
+        <dd>
+          
+          
+</dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="exceptions">
+      <h2>Exceptions / Errors</h2>
+
+      <dl>
+        <dt id="MyError">
+          <span class="name "><a href="ex/MyError-class.html">MyError</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="MyErrorImplements">
+          <span class="name "><a href="ex/MyErrorImplements-class.html">MyErrorImplements</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="MyException">
+          <span class="name "><a href="ex/MyException-class.html">MyException</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+        <dt id="MyExceptionImplements">
+          <span class="name "><a href="ex/MyExceptionImplements-class.html">MyExceptionImplements</a></span> 
+        </dt>
+        <dd>
+          
+        </dd>
+      </dl>
+    </section>
+
+  </div> <!-- /.main-content -->
+
+  <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+    <h5>ex library</h5>
+    <ol>
+      <li class="section-title"><a href="ex/ex-library.html#classes">Classes</a></li>
+      <li><a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a></li>
+      <li><a href="ex/Apple-class.html">Apple</a></li>
+      <li><a href="ex/aThingToDo-class.html">aThingToDo</a></li>
+      <li><a href="ex/B-class.html">B</a></li>
+      <li><a href="ex/Cat-class.html">Cat</a></li>
+      <li><a href="ex/CatString-class.html">CatString</a></li>
+      <li><a href="ex/ConstantCat-class.html">ConstantCat</a></li>
+      <li><a href="fake/Cool-class.html">Cool</a></li>
+      <li><a href="ex/Deprecated-class.html">Deprecated</a></li>
+      <li><a href="ex/Dog-class.html">Dog</a></li>
+      <li><a href="ex/E-class.html">E</a></li>
+      <li><a href="ex/ExtendedShortName-class.html">ExtendedShortName</a></li>
+      <li><a href="ex/F-class.html">F</a></li>
+      <li><a href="ex/ForAnnotation-class.html">ForAnnotation</a></li>
+      <li><a href="ex/HasAnnotation-class.html">HasAnnotation</a></li>
+      <li><a href="ex/Helper-class.html">Helper</a></li>
+      <li><a href="ex/HtmlInjection-class.html">HtmlInjection</a></li>
+      <li><a href="ex/Klass-class.html">Klass</a></li>
+      <li><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a></li>
+      <li><a href="ex/PublicClassExtendsPrivateClass-class.html">PublicClassExtendsPrivateClass</a></li>
+      <li><a href="ex/PublicClassImplementsPrivateInterface-class.html">PublicClassImplementsPrivateInterface</a></li>
+      <li><a href="ex/ShapeType-class.html">ShapeType</a></li>
+      <li><a href="ex/ShortName-class.html">ShortName</a></li>
+      <li><a href="ex/SpecializedDuration-class.html">SpecializedDuration</a></li>
+      <li><a href="ex/TemplatedClass-class.html">TemplatedClass</a></li>
+      <li><a href="ex/TemplatedInterface-class.html">TemplatedInterface</a></li>
+      <li><a href="ex/ToolUser-class.html">ToolUser</a></li>
+      <li><a href="ex/TypedFunctionsWithoutTypedefs-class.html">TypedFunctionsWithoutTypedefs</a></li>
+      <li><a href="ex/WithGeneric-class.html">WithGeneric</a></li>
+      <li><a href="ex/WithGenericSub-class.html">WithGenericSub</a></li>
+    
+    
+      <li class="section-title"><a href="ex/ex-library.html#constants">Constants</a></li>
+      <li><a href="ex/COLOR-constant.html">COLOR</a></li>
+      <li><a href="ex/COLOR_GREEN-constant.html">COLOR_GREEN</a></li>
+      <li><a href="ex/COLOR_ORANGE-constant.html">COLOR_ORANGE</a></li>
+      <li><a href="ex/COMPLEX_COLOR-constant.html">COMPLEX_COLOR</a></li>
+      <li><a href="ex/deprecated-constant.html">deprecated</a></li>
+      <li><a href="ex/incorrectDocReference-constant.html">incorrectDocReference</a></li>
+      <li><a href="ex/incorrectDocReferenceFromEx-constant.html">incorrectDocReferenceFromEx</a></li>
+      <li><a href="ex/MY_CAT-constant.html">MY_CAT</a></li>
+      <li><a href="ex/PRETTY_COLORS-constant.html">PRETTY_COLORS</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#properties">Properties</a></li>
+      <li><a class="deprecated" href="ex/deprecatedField.html">deprecatedField</a></li>
+      <li><a class="deprecated" href="ex/deprecatedGetter.html">deprecatedGetter</a></li>
+      <li><a class="deprecated" href="ex/deprecatedSetter.html">deprecatedSetter</a></li>
+      <li><a href="ex/number.html">number</a></li>
+      <li><a href="ex/y.html">y</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#functions">Functions</a></li>
+      <li><a href="ex/function1.html">function1</a></li>
+      <li><a href="ex/genericFunction.html">genericFunction</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#enums">Enums</a></li>
+      <li><a href="ex/Animal-class.html">Animal</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#typedefs">Typedefs</a></li>
+      <li><a href="ex/aComplexTypedef.html">aComplexTypedef</a></li>
+      <li><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a></li>
+      <li><a href="ex/processMessage.html">processMessage</a></li>
+    
+      <li class="section-title"><a href="ex/ex-library.html#exceptions">Exceptions</a></li>
+      <li><a href="ex/MyError-class.html">MyError</a></li>
+      <li><a href="ex/MyErrorImplements-class.html">MyErrorImplements</a></li>
+      <li><a href="ex/MyException-class.html">MyException</a></li>
+      <li><a href="ex/MyExceptionImplements-class.html">MyExceptionImplements</a></li>
+    </ol>
+  </div><!--/sidebar-offcanvas-right-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    test_package 0.0.1
+  </span>
+
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="static-assets/typeahead.bundle.min.js"></script>
+<script src="static-assets/highlight.pack.js"></script>
+<script src="static-assets/URI.js"></script>
+<script src="static-assets/script.js"></script>
+
+
+</body>
+
+</html>

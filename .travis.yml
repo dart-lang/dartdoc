@@ -1,6 +1,7 @@
 language: dart
 sudo: false
 dart:
+  - stable
   - "dev/raw/latest"
 env:
   - DARTDOC_BOT=flutter
