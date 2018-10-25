@@ -8,7 +8,7 @@ environment:
   sdk: '>=2.0.0 <3.0.0'
 
 dependencies:
-  analyzer: ^0.33.0
+  analyzer: ^0.33.1
   args: '>=1.4.1 <2.0.0'
   collection: ^1.2.0
   crypto: ^2.0.6

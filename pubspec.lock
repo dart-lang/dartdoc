@@ -7,7 +7,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.33.0"
+    version: "0.33.1"
   args:
     dependency: "direct main"
     description:
@@ -175,7 +175,7 @@ packages:
       name: front_end
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.6"
+    version: "0.1.6+1"
   glob:
     dependency: "direct dev"
     description:
@@ -266,7 +266,7 @@ packages:
       name: kernel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.6"
+    version: "0.3.6+1"
   logging:
     dependency: "direct main"
     description:
