@@ -12,6 +12,7 @@ packages
 pub.dartlang.org/
 testing/test_package/doc
 testing/test_package_small/doc
+pubspec.lock
 
 *.dart.js
 *.iml
