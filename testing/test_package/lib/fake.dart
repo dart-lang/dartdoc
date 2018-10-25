@@ -852,6 +852,19 @@ class BaseForDocComments {
   String operator [](String key) => "${key}'s value";
 }
 
+/// Verify that we can define and use macros inside accessors.
+enum MacrosFromAccessors {
+  /// Define a macro.
+  /// {@template test_package_docs:accessorMacro}
+  /// This is a macro defined in an Enum accessor.
+  /// {@endtemplate}
+  macroDefinedHere,
+
+  /// Reference a macro.
+  /// {@macro test_package_docs:accessorMacro}
+  macroReferencedHere,
+}
+
 /// Testing if docs for inherited method are correct.
 /// {@category NotSoExcellent}
 class SubForDocComments extends BaseForDocComments {
