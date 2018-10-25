@@ -380,9 +380,11 @@ Future<String> createSdkDartdoc() async {
   Directory sdkClone = Directory.systemTemp.createTempSync('sdk-checkout');
   await launcher.runStreamed('git', [
     'clone',
+    '--branch',
+    'analyzer-0.33',
     '--depth',
     '1',
-    'https://github.com/dart-lang/sdk.git',
+    'https://dart.googlesource.com/sdk.git',
     sdkClone.path
   ]);
   File dartdocPubspec = new File(pathLib.join(dartdocSdk.path, 'pubspec.yaml'));
