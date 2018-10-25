@@ -4045,6 +4045,28 @@
   }
  },
  {
+  "name": "AClassUsingASuperMixin",
+  "qualifiedName": "fake.AClassUsingASuperMixin",
+  "href": "fake/AClassUsingASuperMixin-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "AClassUsingASuperMixin",
+  "qualifiedName": "fake.AClassUsingASuperMixin",
+  "href": "fake/AClassUsingASuperMixin/AClassUsingASuperMixin.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "AClassUsingASuperMixin",
+   "type": "class"
+  }
+ },
+ {
   "name": "AClassUsingNewStyleMixin",
   "qualifiedName": "fake.AClassUsingNewStyleMixin",
   "href": "fake/AClassUsingNewStyleMixin-class.html",
@@ -9061,6 +9083,17 @@
   }
  },
  {
+  "name": "aMixinReturningFunction",
+  "qualifiedName": "fake.aMixinReturningFunction",
+  "href": "fake/aMixinReturningFunction.html",
+  "type": "function",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "aVoidParameter",
   "qualifiedName": "fake.aVoidParameter",
   "href": "fake/aVoidParameter.html",
@@ -9120,6 +9153,17 @@
   "qualifiedName": "fake.dynamicGetter",
   "href": "fake/dynamicGetter.html",
   "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "functionUsingMixinReturningFunction",
+  "qualifiedName": "fake.functionUsingMixinReturningFunction",
+  "href": "fake/functionUsingMixinReturningFunction.html",
+  "type": "function",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",
