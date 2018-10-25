@@ -294,6 +294,7 @@ mixin NewStyleMixinCallingSuper on NotAMixin {
 }
 
 /// Verify super-mixins don't break Dartdoc.
+// ignore: mixin_inherits_from_not_object, mixin_references_super
 class AClassUsingASuperMixin extends AnotherInterface with AMixinCallingSuper {}
 
 /// A class mixing in a single new-style mixin.
@@ -349,6 +350,12 @@ mixin GenericMixin<T> on GenericClass<T> {
 class TypeInferenceMixedIn extends ModifierClass<int> with GenericMixin {
   @override
   int overrideByEverything;
+}
+
+GenericMixin<T> aMixinReturningFunction<T>() => null;
+
+functionUsingMixinReturningFunction() {
+  GenericClass<int> using = aMixinReturningFunction();
 }
 
 /// A super class, with many powers. Link to [Apple] from another library.
