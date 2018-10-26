@@ -127,7 +127,7 @@ abstract class Inheritable implements ModelElement {
   @override
   ModelElement _buildCanonicalModelElement() {
     return canonicalEnclosingElement?.allCanonicalModelElements
-        ?.firstWhere((m) => m.name == name, orElse: () => null);
+        ?.firstWhere((m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor, orElse: () => null);
   }
 
   Class get canonicalEnclosingElement {
@@ -621,12 +621,14 @@ class Class extends ModelElement
   }
 
   Iterable<Accessor> get allAccessors {
-    return allInstanceProperties.expand((f) {
-      List<Accessor> getterSetters = [];
-      if (f.hasGetter) getterSetters.add(f.getter);
-      if (f.hasSetter) getterSetters.add(f.setter);
-      return getterSetters;
-    });
+    return []
+      ..addAll(allInstanceProperties.expand((f) {
+        List<Accessor> getterSetters = [];
+        if (f.hasGetter) getterSetters.add(f.getter);
+        if (f.hasSetter) getterSetters.add(f.setter);
+        return getterSetters;
+      }))
+      ..addAll(constants.map<Accessor>((c) => c.getter));
   }
 
   Iterable<Field> get allPublicInstanceProperties =>
@@ -2540,6 +2542,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       library.allClasses.forEach((c) {
         results.addAll(c.allModelElements);
         results.add(c);
+      });
+
+      library.enums.forEach((e) {
+        results.addAll(e.allModelElements);
+        results.add(e);
       });
 
       _modelElementsMap = new Map<Element, Set<ModelElement>>();
@@ -4652,7 +4659,7 @@ class PackageGraph {
   final PackageWarningOptions _packageWarningOptions;
   PackageWarningCounter _packageWarningCounter;
 
-  /// All ModelElements constructed for this package; a superset of allModelElements.
+  /// All ModelElements constructed for this package; a superset of [allModelElements].
   final Map<Tuple3<Element, Library, Class>, ModelElement>
       _allConstructedModelElements = new Map();
 

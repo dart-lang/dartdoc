@@ -674,6 +674,11 @@ Future<List<Map>> _buildFlutterDocs(
     workingDirectory: pathLib.join(flutterPath, 'dev', 'tools'),
   );
   await flutterRepo.launcher.runStreamed(
+    flutterRepo.cachePub,
+    ['get'],
+    workingDirectory: pathLib.join(flutterPath, 'dev', 'snippets'),
+  );
+  await flutterRepo.launcher.runStreamed(
       flutterRepo.cachePub, ['global', 'activate', '-spath', '.'],
       workingDirectory: await futureCwd);
   return await flutterRepo.launcher.runStreamed(

@@ -85,6 +85,7 @@ void main() {
       }
       // This must be synced with ../tool/grind.dart's updateTestPackageDocs().
       var args = <String>[
+        '--enable-asserts',
         dartdocBin,
         '--auto-include-dependencies',
         '--example-path-prefix',
