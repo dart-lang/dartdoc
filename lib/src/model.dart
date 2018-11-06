@@ -11,8 +11,13 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart'
-    show Declaration, Expression, InstanceCreationExpression;
-import 'package:analyzer/dart/ast/ast.dart';
+    show
+        AnnotatedNode,
+        AstNode,
+        CommentReference,
+        Declaration,
+        Expression,
+        InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/file_system/file_system.dart' as fileSystem;
@@ -489,7 +494,7 @@ class Accessor extends ModelElement implements EnclosedElement {
 
 /// Implements the Dart 2.1 "mixin" style of mixin declarations.
 class Mixin extends Class {
-  Mixin(MixinElementImpl element, Library library, PackageGraph packageGraph)
+  Mixin(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {}
 
   @override
@@ -521,7 +526,7 @@ class Mixin extends Class {
   /// Returns a list of superclass constraints for this mixin.
   Iterable<ParameterizedElementType> get superclassConstraints {
     if (_superclassConstraints == null) {
-      _superclassConstraints = (element as MixinElementImpl)
+      _superclassConstraints = (element as ClassElement)
           .superclassConstraints
           .map<ParameterizedElementType>(
               (InterfaceType i) => new ElementType.from(i, packageGraph))
