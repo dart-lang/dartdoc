@@ -75,7 +75,7 @@ final List<_SpecialClassDefinition> _specialClassDefinitions = [
 ];
 
 /// Given a SDK, resolve URIs for the libraries containing our special
-/// clases.
+/// classes.
 Set<String> specialLibraryFiles(DartSdk sdk) => _specialClassDefinitions
     .map((_SpecialClassDefinition d) => d.getSpecialFilename(sdk))
     .where((String s) => s != null)
