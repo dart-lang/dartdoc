@@ -1,3 +1,8 @@
+## 0.24.2
+* Fix some instances where macros were not being resolved correctly (#1811)
+* Macro templates now appear where they are defined in addition to where
+  they are referenced (#1810)
+
 ## 0.24.1
 * Added more metadata (element name, project name, etc.) to external tool invocations.
   (#1801)
