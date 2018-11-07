@@ -10,31 +10,74 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
+import 'package:yaml/yaml.dart';
 
 import 'src/utils.dart' as utils;
 
 void main() {
-  var toolMap = ToolConfiguration.empty;
+  var toolMap;
+  Directory tempDir;
 
-  toolMap.tools.addAll({
-    'missing': new ToolDefinition(['/a/missing/executable'], "missing"),
-    'drill': new ToolDefinition(
-        [pathLib.join(utils.testPackageDir.absolute.path, 'bin', 'drill.dart')],
-        'Makes holes'),
-    // We use the Dart executable for our "non-dart" tool
-    // test, because it's the only executable that we know the
-    // exact location of that works on all platforms.
-    'non_dart':
-        new ToolDefinition([Platform.resolvedExecutable], 'non-dart tool'),
-  });
   ToolRunner runner;
   final errors = <String>[];
 
   setUpAll(() async {
+    ProcessResult result;
+    tempDir = Directory.systemTemp.createTempSync('tool_runner_test_');
+    var snapshotFile = pathLib.join(tempDir.path, 'drill.snapshot');
+    try {
+      result = Process.runSync(
+          Platform.resolvedExecutable,
+          [
+            '--snapshot=${snapshotFile}',
+            '--snapshot-kind=app-jit',
+            'bin/drill.dart'
+          ],
+          workingDirectory: utils.testPackageDir.absolute.path);
+    } on ProcessException catch (exception) {
+      stderr.writeln('Unable to make snapshot of tool: $exception');
+      expect(result?.exitCode, equals(0));
+    }
+    if (result != null && result.exitCode != 0) {
+      stdout.writeln(result.stdout);
+      stderr.writeln(result.stderr);
+    }
+    expect(result?.exitCode, equals(0));
+    // We use the Dart executable for our "non-dart" tool
+    // test, because it's the only executable that we know the
+    // exact location of that works on all platforms.
+    var nonDartExecutable = Platform.resolvedExecutable;
+    var yamlMap = '''
+drill:
+  command: ["bin/drill.dart"]
+  description: "Puts holes in things."
+snapshot_drill:
+  command: ["${snapshotFile}"]
+  description: "Puts holes in things, but faster."
+non_dart:
+  command: ["$nonDartExecutable"]
+  description: "A non-dart tool"
+echo:
+  macos: ['/bin/sh', '-c', 'echo']
+  linux: ['/bin/sh', '-c', 'echo']
+  windows: ['C:\\Windows\\System32\\cmd.exe', '/c', 'echo']
+  description: 'Works on everything'
+''';
+    var pathContext =
+        pathLib.Context(current: utils.testPackageDir.absolute.path);
+    toolMap = ToolConfiguration.fromYamlMap(loadYaml(yamlMap), pathContext);
+    // This shouldn't really happen, but if you didn't load the config from a
+    // yaml map (which would fail on a missing executable), or a file is deleted
+    // during execution,it might, so we test it.
+    toolMap.tools.addAll({
+      'missing': new ToolDefinition(['/a/missing/executable'], "missing"),
+    });
+
     runner = new ToolRunner(toolMap, (String message) => errors.add(message));
   });
   tearDownAll(() {
-    runner.dispose();
+    tempDir?.deleteSync(recursive: true);
+    runner?.dispose();
   });
 
   group('ToolRunner', () {
@@ -57,6 +100,15 @@ void main() {
       );
       expect(errors, isEmpty);
       expect(result, isEmpty); // Output is on stderr.
+    });
+    test('can invoke a snapshotted tool', () {
+      var result = runner.run(
+        ['snapshot_drill', r'--file=$INPUT'],
+        content: 'TEST INPUT',
+      );
+      expect(errors, isEmpty);
+      expect(result, contains('--file=<INPUT_FILE>'));
+      expect(result, contains('## `TEST INPUT`'));
     });
     test('fails if tool not in tool map', () {
       String result = runner.run(

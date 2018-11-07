@@ -131,8 +131,9 @@ abstract class Inheritable implements ModelElement {
 
   @override
   ModelElement _buildCanonicalModelElement() {
-    return canonicalEnclosingElement?.allCanonicalModelElements
-        ?.firstWhere((m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor, orElse: () => null);
+    return canonicalEnclosingElement?.allCanonicalModelElements?.firstWhere(
+        (m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor,
+        orElse: () => null);
   }
 
   Class get canonicalEnclosingElement {
@@ -5777,9 +5778,11 @@ class Package extends LibraryContainer
     // up after all documented libraries are added, because that breaks the
     // assumption that we've picked up all documented libraries and packages
     // before allLibrariesAdded is true.
-    assert(!(expectNonLocal &&
-        packageGraph.packageMap[packageName].documentedWhere ==
-            DocumentLocation.local));
+    assert(
+        !(expectNonLocal &&
+            packageGraph.packageMap[packageName].documentedWhere ==
+                DocumentLocation.local),
+        'Found more libraries to document after allLibrariesAdded was set to true');
     return packageGraph.packageMap[packageName];
   }
 

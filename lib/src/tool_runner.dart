@@ -76,11 +76,6 @@ class ToolRunner {
     }
     var toolDefinition = toolConfiguration.tools[tool];
     var toolArgs = toolDefinition.command;
-    if (pathLib.extension(toolDefinition.command.first) == '.dart') {
-      // For dart tools, we want to invoke them with Dart.
-      toolArgs.insert(0, Platform.resolvedExecutable);
-    }
-
     // Ideally, we would just be able to send the input text into stdin,
     // but there's no way to do that synchronously, and converting dartdoc
     // to an async model of execution is a huge amount of work. Using
@@ -118,7 +113,7 @@ class ToolRunner {
       if (result.exitCode != 0) {
         _error('Tool "$tool" returned non-zero exit code '
             '(${result.exitCode}) when run as '
-            '"${commandString()}".\n'
+            '"${commandString()}" from ${Directory.current}\n'
             'Input to $tool was:\n'
             '$content\n'
             'Stderr output was:\n${result.stderr}\n');

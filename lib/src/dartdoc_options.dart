@@ -209,13 +209,19 @@ class ToolConfiguration {
         return (0x1 & ((mode >> 6) | (mode >> 3) | mode)) != 0;
       }
 
-      if (!executable.endsWith('.dart') && !isExecutable(exeStat.mode)) {
+      var extension = pathLib.extension(executable);
+      var isDartFile = extension == '.dart' || extension == '.snapshot';
+      if (!isDartFile && !isExecutable(exeStat.mode)) {
         throw new DartdocOptionError('Non-Dart commands must be '
             'executable. The file "$executable" for tool $name does not have '
-            'executable permission.');
+            'execute permission.');
       }
-      newToolDefinitions[name] =
-          new ToolDefinition([executable] + command, description);
+      newToolDefinitions[name] = new ToolDefinition(
+          (isDartFile
+                  ? [Platform.resolvedExecutable, executable]
+                  : [executable]) +
+              command,
+          description);
     }
     return new ToolConfiguration._(newToolDefinitions);
   }

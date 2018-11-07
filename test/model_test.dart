@@ -87,6 +87,7 @@ void main() {
     Class toolUser;
     Method invokeTool;
     Method invokeToolNoInput;
+    Method invokeToolMultipleSections;
 
     setUpAll(() {
       toolUser = exLibrary.classes.firstWhere((c) => c.name == 'ToolUser');
@@ -94,6 +95,8 @@ void main() {
           toolUser.allInstanceMethods.firstWhere((m) => m.name == 'invokeTool');
       invokeToolNoInput = toolUser.allInstanceMethods
           .firstWhere((m) => m.name == 'invokeToolNoInput');
+      invokeToolMultipleSections = toolUser.allInstanceMethods
+          .firstWhere((m) => m.name == 'invokeToolMultipleSections');
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
     test('can invoke a tool and pass args and environment', () {
@@ -143,11 +146,28 @@ void main() {
       expect(invokeToolNoInput.documentationAsHtml,
           isNot(contains('<a href="ex/Dog-class.html">Dog</a>')));
     });
+    test('can invoke a tool multiple times in one comment block', () {
+      RegExp envLine = RegExp(r'^Env: \{', multiLine: true);
+      expect(envLine.allMatches(invokeToolMultipleSections.documentation).length, equals(2));
+      RegExp argLine = RegExp(r'^Args: \[', multiLine: true);
+      expect(argLine.allMatches(invokeToolMultipleSections.documentation).length, equals(2));
+      expect(invokeToolMultipleSections.documentation,
+          contains('Invokes more than one tool in the same comment block.'));
+      expect(invokeToolMultipleSections.documentation,
+          contains('This text should appear in the output.'));
+      expect(invokeToolMultipleSections.documentation,
+          contains('## `This text should appear in the output.`'));
+      expect(invokeToolMultipleSections.documentation,
+          contains('This text should also appear in the output.'));
+      expect(invokeToolMultipleSections.documentation,
+          contains('## `This text should also appear in the output.`'));
+    });
   });
 
   group('HTML Injection when allowed', () {
     Class htmlInjection;
     Method injectSimpleHtml;
+    Method injectHtmlFromTool;
 
     PackageGraph injectionPackageGraph;
     Library injectionExLibrary;
@@ -164,6 +184,8 @@ void main() {
           .firstWhere((c) => c.name == 'HtmlInjection');
       injectSimpleHtml = htmlInjection.allInstanceMethods
           .firstWhere((m) => m.name == 'injectSimpleHtml');
+      injectHtmlFromTool = htmlInjection.allInstanceMethods
+          .firstWhere((m) => m.name == 'injectHtmlFromTool');
       injectionPackageGraph.allLocalModelElements
           .forEach((m) => m.documentation);
     });
@@ -175,8 +197,24 @@ void main() {
               '\n<dartdoc-html>bad2bbdd4a5cf9efb3212afff4449904756851aa</dartdoc-html>\n'));
       expect(injectSimpleHtml.documentation,
           isNot(contains('\n{@inject-html}\n')));
+      expect(injectSimpleHtml.documentation,
+          isNot(contains('\n{@end-inject-html}\n')));
       expect(injectSimpleHtml.documentationAsHtml,
           contains('   <div style="opacity: 0.5;">[HtmlInjection]</div>'));
+    });
+    test("can inject HTML from tool", () {
+      RegExp envLine = RegExp(r'^Env: \{', multiLine: true);
+      expect(envLine.allMatches(injectHtmlFromTool.documentation).length, equals(2));
+      RegExp argLine = RegExp(r'^Args: \[', multiLine: true);
+      expect(argLine.allMatches(injectHtmlFromTool.documentation).length, equals(2));
+      expect(injectHtmlFromTool.documentation,
+          contains('Invokes more than one tool in the same comment block, and injects HTML.'));
+      expect(injectHtmlFromTool.documentationAsHtml,
+          contains('<div class="title">Title</div>'));
+      expect(injectHtmlFromTool.documentationAsHtml,
+          isNot(contains('{@inject-html}')));
+      expect(injectHtmlFromTool.documentationAsHtml,
+          isNot(contains('{@end-inject-html}')));
     });
   });
 

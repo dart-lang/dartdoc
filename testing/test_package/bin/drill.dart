@@ -15,6 +15,7 @@ void main(List<String> argList) {
   argParser.addOption('file');
   argParser.addOption('special');
   argParser.addOption('source');
+  argParser.addFlag('html', defaultsTo: false);
   argParser.addOption('package-name');
   argParser.addOption('package-path');
   argParser.addOption('library-name');
@@ -62,6 +63,9 @@ void main(List<String> argList) {
       List<String> lines = file.readAsLinesSync();
       for (String line in lines) {
         print('## `${line}`');
+        if (args['html']) {
+          print('{@inject-html}<div class="title">Title</div>{@end-inject-html}');
+        }
         print('\n$line Is not a [ToolUser].\n');
       }
     } else {
