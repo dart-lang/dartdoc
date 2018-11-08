@@ -684,8 +684,8 @@ Future<List<Map>> _buildFlutterDocs(
       workingDirectory: await futureCwd);
   return await flutterRepo.launcher.runStreamed(
     flutterRepo.cacheDart,
-    [pathLib.join(flutterPath, 'dev', 'tools', 'dartdoc.dart'), '-c', '--json'],
-    workingDirectory: pathLib.join(flutterPath, 'dev', 'docs'),
+    [pathLib.join('dev', 'tools', 'dartdoc.dart'), '-c', '--json'],
+    workingDirectory: flutterPath,
   );
 }
 
