@@ -4609,7 +4609,7 @@ class PackageGraph {
 
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
-    allLocalModelElements.forEach((m) => m.documentationLocal);
+    allModelElements.forEach((m) => m.documentationLocal);
     _localDocumentationBuilt = true;
 
     // Scan all model elements to insure that interceptor and other special
@@ -5345,6 +5345,33 @@ class PackageGraph {
     return foundLibrary;
   }
 
+  List<ModelElement> _allModelElements;
+  Iterable<ModelElement> get allModelElements {
+    assert(allLibrariesAdded);
+    if (_allModelElements == null) {
+      _allModelElements = [];
+
+      Set<Package> packagesToDo = packages.toSet();
+      Set<Package> completedPackages = new Set();
+      while (packagesToDo.length > completedPackages.length) {
+        packagesToDo.difference(completedPackages).forEach((Package p) {
+          Set<Library> librariesToDo = p.allLibraries.toSet();
+          Set<Library> completedLibraries = new Set();
+          while (librariesToDo.length > completedLibraries.length) {
+            librariesToDo.difference(completedLibraries).forEach((Library library) {
+              _allModelElements.addAll(library.allModelElements);
+              completedLibraries.add(library);
+            });
+            librariesToDo.addAll(p.allLibraries);
+          }
+          completedPackages.add(p);
+        });
+        packagesToDo.addAll(packages);
+      }
+    }
+    return _allModelElements;
+  }
+
   List<ModelElement> _allLocalModelElements;
   Iterable<ModelElement> get allLocalModelElements {
     assert(allLibrariesAdded);
@@ -5817,14 +5844,21 @@ class Package extends LibraryContainer
   bool get isLocal => _isLocal;
 
   DocumentLocation get documentedWhere {
-    if (!isLocal) {
-      if (config.linkToRemote && config.linkToUrl.isNotEmpty) {
+    if (isLocal) {
+      if (isPublic) {
+        return DocumentLocation.local;
+      } else {
+        // Possible if excludes result in a "documented" package not having
+        // any actual documentation.
+        return DocumentLocation.missing;
+      }
+    } else {
+      if (config.linkToRemote && config.linkToUrl.isNotEmpty && isPublic) {
         return DocumentLocation.remote;
       } else {
         return DocumentLocation.missing;
       }
     }
-    return DocumentLocation.local;
   }
 
   @override
@@ -6380,8 +6414,9 @@ class PackageBuilder {
     if (embedderSdk != null && embedderSdk.urlMappings.isNotEmpty) {
       findSpecialsSdk = embedderSdk;
     }
+    var specialFiles = specialLibraryFiles(findSpecialsSdk).toSet();
     await getLibraries(libraries, specialLibraries, getFiles,
-        specialLibraryFiles(findSpecialsSdk).toSet());
+        specialFiles);
     return new PackageGraph(libraries, specialLibraries, config,
         config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
   }
@@ -6580,7 +6615,7 @@ class PackageBuilder {
   }
 
   Future<List<LibraryElement>> _parseLibraries(Set<String> files,
-      {bool throwErrors = true}) async {
+      {bool throwErrors = true, bool recurse = true}) async {
     Set<LibraryElement> libraries = new Set();
     Set<Source> originalSources;
     Set<Source> sources = new Set<Source>();
@@ -6593,12 +6628,18 @@ class PackageBuilder {
         driver.addFile(filename);
         addedFiles.add(filename);
       });
+      await driver.discoverAvailableFiles();
+      while (driver.hasFilesToAnalyze) {
+        await driver.performWork();
+      }
       await Future.wait(
           files.map((f) => processLibrary(f, libraries, sources)));
 
+      if (!recurse) break;
       /// We don't care about upstream analysis errors, so save the first
       /// source list.
       if (originalSources == null) originalSources = new Set()..addAll(sources);
+
       files.addAll(driver.knownFiles);
       files.addAll(_includeExternalsFrom(driver.knownFiles));
       current = _packageMetasForFiles(files);
@@ -6718,7 +6759,7 @@ class PackageBuilder {
     /// But it doesn't need it, either.  So just skip reporting errors here.
     specialLibraries.addAll(await _parseLibraries(
         specialFiles.difference(files),
-        throwErrors: false));
+        throwErrors: false, recurse: false));
     if (config.include.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
       Set notFound = new Set.from(config.include)
