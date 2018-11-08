@@ -120,20 +120,135 @@ class CategoryConfiguration {
 /// [ToolConfiguration] class.
 class ToolDefinition {
   /// A list containing the command and options to be run for this tool. The
-  /// first argument in the command is the tool executable. Must not be an empty
-  /// list, or be null.
+  /// first argument in the command is the tool executable, and will have its
+  /// path evaluated relative to the `dartdoc_options.yaml` location. Must not
+  /// be an empty list, or be null.
   final List<String> command;
+
+  /// A list containing the command and options to setup phase for this tool.
+  /// The first argument in the command is the tool executable, and will have
+  /// its path evaluated relative to the `dartdoc_options.yaml` location. May
+  /// be null or empty, in which case it will be ignored at setup time.
+  final List<String> setupCommand;
 
   /// A description of the defined tool. Must not be null.
   final String description;
 
-  ToolDefinition(this.command, this.description)
+  /// If set, then the setup command has been run once for this tool definition.
+  bool setupComplete = false;
+
+  /// Returns true if the given executable path has an extension recognized as a
+  /// Dart extension (e.g. '.dart' or '.snapshot').
+  static bool isDartExecutable(String executable) {
+    var extension = pathLib.extension(executable);
+    return extension == '.dart' || extension == '.snapshot';
+  }
+
+  /// Creates a ToolDefinition or subclass that is appropriate for the command
+  /// given.
+  factory ToolDefinition.fromCommand(
+      List<String> command, List<String> setupCommand, String description) {
+    assert(command != null);
+    assert(command.isNotEmpty);
+    assert(description != null);
+    if (isDartExecutable(command[0])) {
+      return DartToolDefinition(command, setupCommand, description);
+    } else {
+      return ToolDefinition(command, setupCommand, description);
+    }
+  }
+
+  ToolDefinition(this.command, this.setupCommand, this.description)
       : assert(command != null),
         assert(command.isNotEmpty),
         assert(description != null);
 
   @override
-  String toString() => '$runtimeType: "${command.join(' ')}" ($description)';
+  String toString() {
+    final String commandString =
+        '${this is DartToolDefinition ? '(Dart) ' : ''}"${command.join(' ')}"';
+    if (setupCommand == null) {
+      return '$runtimeType: $commandString ($description)';
+    } else {
+      return '$runtimeType: $commandString, with setup command '
+          '"${setupCommand.join(' ')}" ($description)';
+    }
+  }
+}
+
+/// A singleton that keeps track of cached snapshot files. The [dispose]
+/// function must be called before process exit to clean up snapshots in the
+/// cache.
+class SnapshotCache {
+  static SnapshotCache _instance;
+
+  Directory snapshotCache;
+  final Map<String, File> snapshots = {};
+  int _serial = 0;
+
+  SnapshotCache._()
+      : snapshotCache =
+            Directory.systemTemp.createTempSync('dartdoc_snapshot_cache_');
+
+  static SnapshotCache get instance {
+    _instance ??= SnapshotCache._();
+    return _instance;
+  }
+
+  File getSnapshot(String toolPath) {
+    if (snapshots.containsKey(toolPath)) {
+      return snapshots[toolPath];
+    }
+    File snapshot =
+        File(pathLib.join(snapshotCache.absolute.path, 'snapshot_$_serial'));
+    _serial++;
+    snapshots[toolPath] = snapshot;
+    return snapshot;
+  }
+
+  void dispose() {
+    if (snapshotCache != null && snapshotCache.existsSync()) {
+      snapshotCache.deleteSync(recursive: true);
+    }
+    _instance = null;
+  }
+}
+
+/// A special kind of tool definition for Dart commands.
+class DartToolDefinition extends ToolDefinition {
+  /// Takes a list of args to modify, and returns the name of the executable
+  /// to run. If no snapshot file existed, then create one and modify the args
+  /// so that if they are executed with dart, will result in the snapshot being
+  /// built.
+  String createSnapshotIfNeeded(List<String> args) {
+    assert(ToolDefinition.isDartExecutable(args[0]));
+    // Generate a new snapshot, if needed, and use the first run as the training
+    // run.
+    File snapshotPath = _snapshotPath;
+    snapshotPath ??= SnapshotCache.instance.getSnapshot(args[0]);
+    if (snapshotPath.existsSync()) {
+      // replace the first argument with the path to the snapshot.
+      args[0] = snapshotPath.absolute.path;
+    } else {
+      args.insertAll(0, [
+        '--snapshot=${snapshotPath.absolute.path}',
+        '--snapshot_kind=app-jit'
+      ]);
+    }
+    return Platform.resolvedExecutable;
+  }
+
+  DartToolDefinition(
+      List<String> command, List<String> setupCommand, String description)
+      : super(command, setupCommand, description) {
+    // If the dart tool is already a snapshot, then we just use that.
+    if (command[0].endsWith('.snapshot')) {
+      _snapshotPath = File(command[0]);
+    }
+  }
+
+  /// If the tool has a pre-built snapshot, it will be stored here.
+  File _snapshotPath;
 }
 
 /// A configuration class that can interpret [ToolDefinition]s from a YAML map.
@@ -154,37 +269,45 @@ class ToolConfiguration {
       var toolMap = entry.value;
       var description;
       List<String> command;
+      List<String> setupCommand;
       if (toolMap is Map) {
         description = toolMap['description']?.toString();
-        // If the command key is given, then it applies to all platforms.
-        var commandFrom = toolMap.containsKey('command')
-            ? 'command'
-            : Platform.operatingSystem;
-        if (toolMap.containsKey(commandFrom)) {
-          if (toolMap[commandFrom].value is String) {
-            command = [toolMap[commandFrom].toString()];
-            if (command[0].isEmpty) {
+        List<String> findCommand([String prefix = '']) {
+          List<String> command;
+          // If the command key is given, then it applies to all platforms.
+          var commandFrom = toolMap.containsKey('${prefix}command')
+              ? '${prefix}command'
+              : '$prefix${Platform.operatingSystem}';
+          if (toolMap.containsKey(commandFrom)) {
+            if (toolMap[commandFrom].value is String) {
+              command = [toolMap[commandFrom].toString()];
+              if (command[0].isEmpty) {
+                throw new DartdocOptionError(
+                    'Tool commands must not be empty. Tool $name command entry '
+                    '"$commandFrom" must contain at least one path.');
+              }
+            } else if (toolMap[commandFrom] is YamlList) {
+              command = (toolMap[commandFrom] as YamlList)
+                  .map<String>((node) => node.toString())
+                  .toList();
+              if (command.isEmpty) {
+                throw new DartdocOptionError(
+                    'Tool commands must not be empty. Tool $name command entry '
+                    '"$commandFrom" must contain at least one path.');
+              }
+            } else {
               throw new DartdocOptionError(
-                  'Tool commands must not be empty. Tool $name command entry '
-                  '"$commandFrom" must contain at least one path.');
+                  'Tool commands must be a path to an executable, or a list of '
+                  'strings that starts with a path to an executable. '
+                  'The tool $name has a $commandFrom entry that is a '
+                  '${toolMap[commandFrom].runtimeType}');
             }
-          } else if (toolMap[commandFrom] is YamlList) {
-            command = (toolMap[commandFrom] as YamlList)
-                .map<String>((node) => node.toString())
-                .toList();
-            if (command.isEmpty) {
-              throw new DartdocOptionError(
-                  'Tool commands must not be empty. Tool $name command entry '
-                  '"$commandFrom" must contain at least one path.');
-            }
-          } else {
-            throw new DartdocOptionError(
-                'Tool commands must be a path to an executable, or a list of '
-                'strings that starts with a path to an executable. '
-                'The tool $name has a $commandFrom entry that is a '
-                '${toolMap[commandFrom].runtimeType}');
           }
+          return command;
         }
+
+        command = findCommand();
+        setupCommand = findCommand('setup_');
       } else {
         throw new DartdocOptionError(
             'Tools must be defined as a map of tool names to definitions. Tool '
@@ -195,33 +318,43 @@ class ToolConfiguration {
             'At least one of "command" or "${Platform.operatingSystem}" must '
             'be defined for the tool $name.');
       }
-      var executable = command.removeAt(0);
-      executable = pathContext.canonicalize(executable);
-      var executableFile = new File(executable);
-      var exeStat = executableFile.statSync();
-      if (exeStat.type == FileSystemEntityType.notFound) {
-        throw new DartdocOptionError('Command executables must exist. '
-            'The file "$executable" does not exist for tool $name.');
-      }
-      // Dart scripts don't need to be executable, because they'll be
-      // executed with the Dart binary.
-      bool isExecutable(int mode) {
-        return (0x1 & ((mode >> 6) | (mode >> 3) | mode)) != 0;
+      bool validateExecutable(String executable) {
+        bool isExecutable(int mode) {
+          return (0x1 & ((mode >> 6) | (mode >> 3) | mode)) != 0;
+        }
+
+        var executableFile = new File(executable);
+        var exeStat = executableFile.statSync();
+        if (exeStat.type == FileSystemEntityType.notFound) {
+          throw new DartdocOptionError('Command executables must exist. '
+              'The file "$executable" does not exist for tool $name.');
+        }
+
+        var isDartCommand = ToolDefinition.isDartExecutable(executable);
+        // Dart scripts don't need to be executable, because they'll be
+        // executed with the Dart binary.
+        if (!isDartCommand && !isExecutable(exeStat.mode)) {
+          throw new DartdocOptionError('Non-Dart commands must be '
+              'executable. The file "$executable" for tool $name does not have '
+              'execute permission.');
+        }
+        return isDartCommand;
       }
 
-      var extension = pathLib.extension(executable);
-      var isDartFile = extension == '.dart' || extension == '.snapshot';
-      if (!isDartFile && !isExecutable(exeStat.mode)) {
-        throw new DartdocOptionError('Non-Dart commands must be '
-            'executable. The file "$executable" for tool $name does not have '
-            'execute permission.');
+      var executable = pathContext.canonicalize(command.removeAt(0));
+      validateExecutable(executable);
+      if (setupCommand != null) {
+        var setupExecutable =
+            pathContext.canonicalize(setupCommand.removeAt(0));
+        var isDartSetupCommand = validateExecutable(executable);
+        // Setup commands aren't snapshotted, since they're only run once.
+        setupCommand = (isDartSetupCommand
+                ? [Platform.resolvedExecutable, setupExecutable]
+                : [setupExecutable]) +
+            setupCommand;
       }
-      newToolDefinitions[name] = new ToolDefinition(
-          (isDartFile
-                  ? [Platform.resolvedExecutable, executable]
-                  : [executable]) +
-              command,
-          description);
+      newToolDefinitions[name] = new ToolDefinition.fromCommand(
+          [executable] + command, setupCommand, description);
     }
     return new ToolConfiguration._(newToolDefinitions);
   }

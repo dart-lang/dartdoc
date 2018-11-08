@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-// Used by tests as an "external tool". Has no other useful purpose.
-
 // This is a sample "tool" used to test external tool integration into dartdoc.
 // It has no practical purpose other than that.
 
@@ -26,18 +24,18 @@ void main(List<String> argList) {
   // match the patterns we expect.
   RegExp inputFileRegExp = new RegExp(
       r'(--file=)?(.*)([/\\]dartdoc_tools_)([^/\\]+)([/\\]input_)(\d+)');
-  RegExp packagePathRegExp =
-      new RegExp(r'(--package-path=)?(.+dartdoc.*[/\\]testing[/\\]test_package)');
+  RegExp packagePathRegExp = new RegExp(
+      r'(--package-path=)?(.+dartdoc.*[/\\]testing[/\\]test_package)');
 
   final Set<String> variableNames = new Set<String>.from([
     'INPUT',
-    'SOURCE_LINE',
     'SOURCE_COLUMN',
     'SOURCE_PATH',
     'PACKAGE_NAME',
     'PACKAGE_PATH',
     'LIBRARY_NAME',
-    'ELEMENT_NAME'
+    'ELEMENT_NAME',
+    'INVOCATION_INDEX',
   ]);
   Map<String, String> env = <String, String>{}..addAll(Platform.environment);
   env.removeWhere((String key, String value) => !variableNames.contains(key));
@@ -56,6 +54,17 @@ void main(List<String> argList) {
       return arg;
     }
   }).toList();
+  RegExp snapshotCacheRegExp =
+      new RegExp(r'.*[/\\]dartdoc_snapshot_cache_[^/\\]+[/\\]snapshot_0');
+  RegExp snapshotFirstRegExp =
+      new RegExp(r'.*[/\\]testing[/\\]test_package[/\\]bin[/\\]drill.dart$');
+  if (snapshotCacheRegExp.hasMatch(Platform.script.path)) {
+    print('Script location is in snapshot cache.');
+  } else if (snapshotFirstRegExp.hasMatch(Platform.script.path)) {
+    print('Script location is in dartdoc tree.');
+  } else {
+    print('Script location is not recognized: ${Platform.script.path}');
+  }
   print('Args: $normalized');
   if (args['file'] != null) {
     File file = new File(args['file']);
@@ -64,7 +73,8 @@ void main(List<String> argList) {
       for (String line in lines) {
         print('## `${line}`');
         if (args['html']) {
-          print('{@inject-html}<div class="title">Title</div>{@end-inject-html}');
+          print(
+              '{@inject-html}<div class="title">Title</div>{@end-inject-html}');
         }
         print('\n$line Is not a [ToolUser].\n');
       }

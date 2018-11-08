@@ -116,8 +116,6 @@ void main() {
           contains(r'''--special= |\[]!@#\"'$%^&*()_+]'''));
       expect(invokeTool.documentation, contains('INPUT: <INPUT_FILE>'));
       expect(invokeTool.documentation,
-          contains(new RegExp('SOURCE_LINE: [0-9]+, ')));
-      expect(invokeTool.documentation,
           contains(new RegExp('SOURCE_COLUMN: [0-9]+, ')));
       expect(invokeTool.documentation,
           contains(new RegExp(r'SOURCE_PATH: lib[/\\]example\.dart, ')));
@@ -127,7 +125,9 @@ void main() {
           invokeTool.documentation, contains('PACKAGE_NAME: test_package, '));
       expect(invokeTool.documentation, contains('LIBRARY_NAME: ex, '));
       expect(invokeTool.documentation,
-          contains('ELEMENT_NAME: ToolUser.invokeTool}'));
+          contains('ELEMENT_NAME: ToolUser.invokeTool, '));
+      expect(invokeTool.documentation,
+          contains(new RegExp('INVOCATION_INDEX: [0-9]+}')));
       expect(invokeTool.documentation, contains('## `Yes it is a [Dog]!`'));
     });
     test('can invoke a tool and add a reference link', () {
