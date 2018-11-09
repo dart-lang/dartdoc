@@ -4609,7 +4609,7 @@ class PackageGraph {
 
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
-    allLocalModelElements.forEach((m) => m.documentationLocal);
+    allModelElements.forEach((m) => m.documentationLocal);
     _localDocumentationBuilt = true;
 
     // Scan all model elements to insure that interceptor and other special
@@ -5345,6 +5345,32 @@ class PackageGraph {
     return foundLibrary;
   }
 
+  List<ModelElement> _allModelElements;
+  Iterable<ModelElement> get allModelElements {
+    assert(allLibrariesAdded);
+    if (_allModelElements == null) {
+      _allModelElements = [];
+      Set<Package> packagesToDo = packages.toSet();
+      Set<Package> completedPackages = new Set();
+      while (packagesToDo.length > completedPackages.length) {
+        packagesToDo.difference(completedPackages).forEach((Package p) {
+          Set<Library> librariesToDo = p.allLibraries.toSet();
+          Set<Library> completedLibraries = new Set();
+          while (librariesToDo.length > completedLibraries.length) {
+            librariesToDo.difference(completedLibraries).forEach((Library library) {
+              _allModelElements.addAll(library.allModelElements);
+              completedLibraries.add(library);
+            });
+            librariesToDo.addAll(p.allLibraries);
+          }
+          completedPackages.add(p);
+        });
+        packagesToDo.addAll(packages);
+      }
+    }
+    return _allModelElements;
+  }
+
   List<ModelElement> _allLocalModelElements;
   Iterable<ModelElement> get allLocalModelElements {
     assert(allLibrariesAdded);
@@ -5817,14 +5843,21 @@ class Package extends LibraryContainer
   bool get isLocal => _isLocal;
 
   DocumentLocation get documentedWhere {
-    if (!isLocal) {
-      if (config.linkToRemote && config.linkToUrl.isNotEmpty) {
+    if (isLocal) {
+      if (isPublic) {
+        return DocumentLocation.local;
+      } else {
+        // Possible if excludes result in a "documented" package not having
+        // any actual documentation.
+        return DocumentLocation.missing;
+      }
+    } else {
+      if (config.linkToRemote && config.linkToUrl.isNotEmpty && isPublic) {
         return DocumentLocation.remote;
       } else {
         return DocumentLocation.missing;
       }
     }
-    return DocumentLocation.local;
   }
 
   @override
