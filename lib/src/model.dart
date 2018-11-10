@@ -2543,18 +2543,18 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         ..addAll(library.typedefs);
 
       library.allClasses.forEach((c) {
-        results.addAll(c.allModelElements);
         results.add(c);
+        results.addAll(c.allModelElements);
       });
 
       library.enums.forEach((e) {
-        results.addAll(e.allModelElements);
         results.add(e);
+        results.addAll(e.allModelElements);
       });
 
       library.mixins.forEach((m) {
-        results.addAll(m.allModelElements);
         results.add(m);
+        results.addAll(m.allModelElements);
       });
 
       _modelElementsMap = new Map<Element, Set<ModelElement>>();
