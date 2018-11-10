@@ -81,48 +81,25 @@ Set<String> specialLibraryFiles(DartSdk sdk) => _specialClassDefinitions
     .where((String s) => s != null)
     .toSet();
 
-Set<String> __specialLibraryNames;
-
-/// These library names can be checked against the [LibraryElement] names
-/// to avoid traversing libraries we don't need to.
-Set<String> get _specialLibraryNames {
-  if (__specialLibraryNames == null) {
-    __specialLibraryNames = _specialClassDefinitions
-        .map((_SpecialClassDefinition d) => d.libraryName)
-        .toSet();
-  }
-  return __specialLibraryNames;
-}
-
 /// Class for managing special [Class] objects inside Dartdoc.
 class SpecialClasses {
-  final PackageGraph packageGraph;
   final Map<SpecialClass, Class> _specialClass = {};
 
-  SpecialClasses(this.packageGraph) {
-    Set<LibraryElement> doneKeys = new Set();
-    Set<LibraryElement> keysToDo = new Set.from(packageGraph.allLibraries.keys);
-    // Loops because traversing the libraries can instantiate additional
-    // libraries, and does so in this manner to avoid running into iterable
-    // modification exceptions.
-    while (keysToDo.isNotEmpty) {
-      keysToDo.forEach((LibraryElement e) {
-        if (_specialLibraryNames.contains(e.name)) {
-          packageGraph.allLibraries[e].allClasses.forEach((Class aClass) {
-            _specialClassDefinitions.forEach((_SpecialClassDefinition d) {
-              if (d.matchesClass(aClass)) {
-                assert(!_specialClass.containsKey(d.specialClass) ||
-                    _specialClass[d.specialClass] == aClass);
-                _specialClass[d.specialClass] = aClass;
-              }
-            });
-          });
-        }
-        doneKeys.add(e);
-      });
-      keysToDo = new Set.from(packageGraph.allLibraries.keys
-          .where((LibraryElement e) => !doneKeys.contains(e)));
-    }
+  SpecialClasses() {}
+
+  /// Add a class object that could be special.
+  void addSpecial(Class aClass) {
+    _specialClassDefinitions.forEach((_SpecialClassDefinition d) {
+      if (d.matchesClass(aClass)) {
+        assert(!_specialClass.containsKey(d.specialClass) ||
+            _specialClass[d.specialClass] == aClass);
+        _specialClass[d.specialClass] = aClass;
+      }
+    });
+  }
+
+  /// Throw an [AssertionError] if not all required specials are found.
+  void assertSpecials() {
     _specialClassDefinitions.forEach((_SpecialClassDefinition d) {
       if (d.required) assert(_specialClass.containsKey(d.specialClass));
     });

@@ -576,6 +576,7 @@ class Class extends ModelElement
 
   Class(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph, null) {
+    packageGraph.specialClasses.addSpecial(this);
     _mixins = _cls.mixins
         .map((f) {
           DefinedElementType t = new ElementType.from(f, packageGraph);
@@ -2536,11 +2537,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (_modelElementsMap == null) {
       final Set<ModelElement> results = new Set();
       results
-        ..addAll(library.allClasses)
         ..addAll(library.constants)
-        ..addAll(library.enums)
         ..addAll(library.functions)
-        ..addAll(library.mixins)
         ..addAll(library.properties)
         ..addAll(library.typedefs);
 
@@ -2552,6 +2550,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       library.enums.forEach((e) {
         results.addAll(e.allModelElements);
         results.add(e);
+      });
+
+      library.mixins.forEach((m) {
+        results.addAll(m.allModelElements);
+        results.add(m);
       });
 
       _modelElementsMap = new Map<Element, Set<ModelElement>>();
@@ -4607,6 +4610,9 @@ class PackageGraph {
       findOrCreateLibraryFor(element);
     });
 
+    // From here on in, we might find special objects.  Initialize the
+    // specialClasses handler so when we find them, they get added.
+    specialClasses = new SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
     allModelElements.forEach((m) => m.documentationLocal);
@@ -4614,7 +4620,6 @@ class PackageGraph {
 
     // Scan all model elements to insure that interceptor and other special
     // objects are found.
-    specialClasses = new SpecialClasses(this);
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
     documentedPackages.toList().forEach((package) {
@@ -4625,6 +4630,9 @@ class PackageGraph {
     });
     _implementors.values.forEach((l) => l.sort());
     allImplementorsAdded = true;
+
+    // We should have found all special classes by now.
+    specialClasses.assertSpecials();
   }
 
   SpecialClasses specialClasses;

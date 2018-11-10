@@ -59,7 +59,7 @@ void main() {
       });
 
       test('examplePathPrefix', () async {
-        Class UseAnExampleHere = p.allCanonicalModelElements
+        Class UseAnExampleHere = p.allCanonicalModelElements.whereType<Class>()
             .firstWhere((ModelElement c) => c.name == 'UseAnExampleHere');
         expect(
             UseAnExampleHere.documentationAsHtml,
@@ -68,7 +68,7 @@ void main() {
       });
 
       test('includeExternal and showUndocumentedCategories', () async {
-        Class Something = p.allCanonicalModelElements
+        Class Something = p.allCanonicalModelElements.whereType<Class>()
             .firstWhere((ModelElement c) => c.name == 'Something');
         expect(Something.isPublic, isTrue);
         expect(Something.displayedCategories, isNotEmpty);
