@@ -806,14 +806,21 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
     return _valueAtFromFiles(dir) ?? defaultsTo;
   }
 
+  Map<String, T> __valueAtFromFiles = new Map();
+  // The value of this option from files will not change unless files are
+  // modified during execution (not allowed in Dartdoc).
   T _valueAtFromFiles(Directory dir) {
-    _OptionValueWithContext valueWithContext;
-    if (parentDirOverridesChild) {
-      valueWithContext = _valueAtFromFilesLastFound(dir);
-    } else {
-      valueWithContext = _valueAtFromFilesFirstFound(dir);
+    String key = pathLib.canonicalize(dir.path);
+    if (!__valueAtFromFiles.containsKey(key)) {
+      _OptionValueWithContext valueWithContext;
+      if (parentDirOverridesChild) {
+        valueWithContext = _valueAtFromFilesLastFound(dir);
+      } else {
+        valueWithContext = _valueAtFromFilesFirstFound(dir);
+      }
+      __valueAtFromFiles[key] = _handlePathsInContext(valueWithContext);
     }
-    return _handlePathsInContext(valueWithContext);
+    return __valueAtFromFiles[key];
   }
 
   /// Searches all dartdoc_options files through parent directories,
