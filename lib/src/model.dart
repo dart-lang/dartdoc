@@ -2532,6 +2532,16 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return name;
   }
 
+  Map<String, Set<ModelElement>> _modelElementsNameMap;
+  Map<String, Set<ModelElement>> get modelElementsNameMap {
+    if (_modelElementsNameMap == null) {
+      // TODO(jcollins-g): avoid side effects?
+      modelElementsMap;
+    }
+    return _modelElementsNameMap;
+  }
+
+
   Map<Element, Set<ModelElement>> _modelElementsMap;
   Map<Element, Set<ModelElement>> get modelElementsMap {
     if (_modelElementsMap == null) {
@@ -2558,9 +2568,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       });
 
       _modelElementsMap = new Map<Element, Set<ModelElement>>();
+      _modelElementsNameMap = new Map<String, Set<ModelElement>>();
       results.forEach((modelElement) {
         _modelElementsMap.putIfAbsent(modelElement.element, () => new Set());
+        _modelElementsNameMap.putIfAbsent(modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
         _modelElementsMap[modelElement.element].add(modelElement);
+        _modelElementsNameMap[modelElement.fullyQualifiedNameWithoutLibrary].add(modelElement);
       });
       _modelElementsMap.putIfAbsent(element, () => new Set());
       _modelElementsMap[element].add(this);
