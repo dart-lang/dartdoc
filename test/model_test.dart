@@ -1376,6 +1376,10 @@ void main() {
           .firstWhere((f) => f.name == 'overrideByModifierClass');
     });
 
+    test(('Verify mixin member is available in findRefElementCache'), () {
+      expect(packageGraph.findRefElementCache['GenericMixin.mixinMember'], isNotEmpty);
+    });
+
     test(('Verify inheritance/mixin structure and type inference'), () {
       expect(
           TypeInferenceMixedIn.mixins
