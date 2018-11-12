@@ -4251,7 +4251,7 @@ abstract class ModelElement extends Canonicalization
         multiLine: true);
     return rawDocs.replaceAllMapped(templateRegExp, (match) {
       packageGraph._addMacro(match[1].trim(), match[2].trim());
-      return "";
+      return "{@macro ${match[1].trim()}}";
     });
   }
 

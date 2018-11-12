@@ -718,7 +718,7 @@ void main() {
 
     test("renders a macro within the same comment where it's defined", () {
       expect(withMacro.documentation,
-          equals("Macro method\n\n\nFoo macro content\nMore docs"));
+          equals("Macro method\n\nFoo macro content\nMore docs"));
     });
 
     test("renders a macro in another method, not the same where it's defined",
