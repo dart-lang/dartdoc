@@ -337,7 +337,6 @@ class Dog implements Cat, E {
   /// Foo macro content
   /// {@endtemplate}
   ///
-  /// {@macro foo}
   /// More docs
   void withMacro() {}
 
