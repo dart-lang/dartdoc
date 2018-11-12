@@ -368,6 +368,7 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
   }
 
   results.remove(null);
+  // This could be local to the class, look there first.
   _findWithinTryClasses(results, preferredClass, element, codeRefChomped, codeRef, packageGraph);
 
   // We now need the ref element cache to keep from repeatedly searching [Package.allModelElements].
