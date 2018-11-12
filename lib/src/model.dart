@@ -6631,7 +6631,6 @@ class PackageBuilder {
     do {
       lastPass = _packageMetasForFiles(files);
       files.difference(addedFiles).forEach((filename) {
-        driver.addFile(filename);
         addedFiles.add(filename);
       });
       await Future.wait(
