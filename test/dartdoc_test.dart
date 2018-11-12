@@ -20,12 +20,12 @@ void main() {
   group('dartdoc with generators', () {
     Directory tempDir;
     List<String> outputParam;
-    setUp(() {
+    setUpAll(() {
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
       outputParam = ['--output', tempDir.path];
     });
 
-    tearDown(() {
+    tearDownAll(() {
       delete(tempDir);
     });
 
@@ -40,7 +40,7 @@ void main() {
       DartdocResults results;
       PackageGraph p;
 
-      setUp(() async {
+      setUpAll(() async {
         dartdoc = await buildDartdoc([], testPackageOptions);
         results = await dartdoc.generateDocsBase();
         p = results.packageGraph;
@@ -73,23 +73,23 @@ void main() {
         expect(Something.isPublic, isTrue);
         expect(Something.displayedCategories, isNotEmpty);
       });
+    });
 
-      test('errors generate errors even when warnings are off', () async {
-        Dartdoc dartdoc = await buildDartdoc([], testPackageToolError);
-        DartdocResults results = await dartdoc.generateDocsBase();
-        PackageGraph p = results.packageGraph;
-        Iterable<String> unresolvedToolErrors = p
-            .packageWarningCounter.countedWarnings.values
-            .expand<String>((Set<Tuple2<PackageWarning, String>> s) => s
-                .where((Tuple2<PackageWarning, String> t) =>
-                    t.item1 == PackageWarning.toolError)
-                .map<String>((Tuple2<PackageWarning, String> t) => t.item2));
+    test('errors generate errors even when warnings are off', () async {
+      Dartdoc dartdoc = await buildDartdoc([], testPackageToolError);
+      DartdocResults results = await dartdoc.generateDocsBase();
+      PackageGraph p = results.packageGraph;
+      Iterable<String> unresolvedToolErrors = p
+          .packageWarningCounter.countedWarnings.values
+          .expand<String>((Set<Tuple2<PackageWarning, String>> s) => s
+          .where((Tuple2<PackageWarning, String> t) =>
+      t.item1 == PackageWarning.toolError)
+          .map<String>((Tuple2<PackageWarning, String> t) => t.item2));
 
-        expect(p.packageWarningCounter.errorCount, equals(1));
-        expect(unresolvedToolErrors.length, equals(1));
-        expect(unresolvedToolErrors.first,
-            contains('Tool "drill" returned non-zero exit code'));
-      });
+      expect(p.packageWarningCounter.errorCount, equals(1));
+      expect(unresolvedToolErrors.length, equals(1));
+      expect(unresolvedToolErrors.first,
+          contains('Tool "drill" returned non-zero exit code'));
     });
 
     group('Invoking command-line dartdoc', () {
@@ -118,7 +118,7 @@ void main() {
       DartdocResults results;
       Package testPackageOptions;
 
-      setUp(() async {
+      setUpAll(() async {
         results = await (await buildDartdoc(
                 ['--link-to-remote'], testPackageOptionsImporter))
             .generateDocsBase();

@@ -184,12 +184,11 @@ void main() {
     Class htmlInjection;
     Method injectSimpleHtml;
 
-    setUp(() {
+    setUpAll(() {
       htmlInjection =
           exLibrary.classes.firstWhere((c) => c.name == 'HtmlInjection');
       injectSimpleHtml = htmlInjection.allInstanceMethods
           .firstWhere((m) => m.name == 'injectSimpleHtml');
-      packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
     test("doesn't inject HTML if --inject-html option is not present", () {
       expect(
@@ -552,7 +551,7 @@ void main() {
         reexportTwoLib;
     Class SomeClass, SomeOtherClass, YetAnotherClass, AUnicornClass;
 
-    setUp(() {
+    setUpAll(() {
       dartAsyncLib = utils.testPackageGraphSdk.libraries
           .firstWhere((l) => l.name == 'dart:async');
 
@@ -699,7 +698,7 @@ void main() {
     Method withMacro, withMacro2, withPrivateMacro, withUndefinedMacro;
     EnumField macroReferencedHere;
 
-    setUp(() {
+    setUpAll(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
       withMacro =
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro');
@@ -751,7 +750,7 @@ void main() {
     Method withAnimationBadHeight;
     Method withAnimationUnknownArg;
 
-    setUp(() {
+    setUpAll(() {
       documentationErrors = errorLibrary.classes
           .firstWhere((c) => c.name == 'DocumentationErrors');
       withInvalidNamedAnimation = documentationErrors.allInstanceMethods
@@ -768,7 +767,6 @@ void main() {
           .firstWhere((m) => m.name == 'withAnimationBadHeight');
       withAnimationUnknownArg = documentationErrors.allInstanceMethods
           .firstWhere((m) => m.name == 'withAnimationUnknownArg');
-      packageGraphErrors.allLocalModelElements.forEach((m) => m.documentation);
     });
 
     test("warns with invalidly-named animation within the method documentation",
@@ -850,7 +848,7 @@ void main() {
     Method withAnimationInline;
     Method withAnimationOutOfOrder;
 
-    setUp(() {
+    setUpAll(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
       withAnimation =
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withAnimation');
@@ -866,7 +864,6 @@ void main() {
           .firstWhere((m) => m.name == 'withAnimationInline');
       withAnimationOutOfOrder = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withAnimationOutOfOrder');
-      packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
 
     test("renders an unnamed animation within the method documentation", () {
@@ -920,7 +917,7 @@ void main() {
     Field aImplementingThingy;
     Accessor aImplementingThingyAccessor;
 
-    setUp(() {
+    setUpAll(() {
       BaseThingy =
           fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy');
       BaseThingy2 =
@@ -966,7 +963,7 @@ void main() {
 
     ModelFunction short;
 
-    setUp(() {
+    setUpAll(() {
       incorrectDocReferenceFromEx = exLibrary.constants
           .firstWhere((c) => c.name == 'incorrectDocReferenceFromEx');
       B = exLibrary.classes.firstWhere((c) => c.name == 'B');
@@ -1003,7 +1000,7 @@ void main() {
       Class DocumentWithATable;
       String docsAsHtml;
 
-      setUp(() {
+      setUpAll(() {
         DocumentWithATable = fakeLibrary.classes
             .firstWhere((cls) => cls.name == 'DocumentWithATable');
         docsAsHtml = DocumentWithATable.documentationAsHtml;
@@ -1032,7 +1029,7 @@ void main() {
     group('doc references', () {
       String docsAsHtml;
 
-      setUp(() {
+      setUpAll(() {
         docsAsHtml = doAwesomeStuff.documentationAsHtml;
       });
 
@@ -1358,7 +1355,7 @@ void main() {
         overrideByBoth,
         overrideByModifierClass;
 
-    setUp(() {
+    setUpAll(() {
       Iterable<Class> classes = fakeLibrary.publicClasses;
       GenericClass = classes.firstWhere((c) => c.name == 'GenericClass');
       ModifierClass = classes.firstWhere((c) => c.name == 'ModifierClass');
@@ -1487,7 +1484,7 @@ void main() {
     Class Apple, B, Cat, Cool, Dog, F, Dep, SpecialList;
     Class ExtendingClass, CatString;
 
-    setUp(() {
+    setUpAll(() {
       classes = exLibrary.publicClasses.toList();
       Apple = classes.firstWhere((c) => c.name == 'Apple');
       B = classes.firstWhere((c) => c.name == 'B');
@@ -1741,7 +1738,7 @@ void main() {
   group('Enum', () {
     Enum animal;
 
-    setUp(() {
+    setUpAll(() {
       animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
 
       /// Trigger code reference resolution
@@ -1809,7 +1806,7 @@ void main() {
     ModelFunction topLevelFunction;
     ModelFunction typeParamOfFutureOr;
 
-    setUp(() {
+    setUpAll(() {
       f1 = exLibrary.functions.first;
       genericFunction =
           exLibrary.functions.firstWhere((f) => f.name == 'genericFunction');
@@ -1947,7 +1944,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Type expansion', () {
     Class TemplatedInterface, ClassWithUnusualProperties;
 
-    setUp(() {
+    setUpAll(() {
       TemplatedInterface =
           exLibrary.classes.singleWhere((c) => c.name == 'TemplatedInterface');
       ClassWithUnusualProperties = fakeLibrary.classes
@@ -2116,7 +2113,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Method inheritedClear, testGeneric, testGenericMethod;
     Method getAFunctionReturningVoid, getAFunctionReturningBool;
 
-    setUp(() {
+    setUpAll(() {
       klass = exLibrary.classes.singleWhere((c) => c.name == 'Klass');
       classB = exLibrary.classes.singleWhere((c) => c.name == 'B');
       HasGenerics =
@@ -2282,7 +2279,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class specializedDuration;
     Operator plus, equalsOverride;
 
-    setUp(() {
+    setUpAll(() {
       specializedDuration =
           exLibrary.classes.firstWhere((c) => c.name == 'SpecializedDuration');
       plus = specializedDuration.allOperators
@@ -2342,7 +2339,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Field aProperty;
     Field covariantField, covariantSetter;
 
-    setUp(() {
+    setUpAll(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       f1 = c.staticProperties[0]; // n
       f2 = c.instanceProperties[0];
@@ -2655,7 +2652,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     Class classB;
 
-    setUp(() {
+    setUpAll(() {
       TopLevelVariable justGetter =
           fakeLibrary.properties.firstWhere((p) => p.name == 'justGetter');
       onlyGetterGetter = justGetter.getter;
@@ -2704,7 +2701,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     TopLevelVariable complicatedReturn;
     TopLevelVariable importantComputations;
 
-    setUp(() {
+    setUpAll(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
       v3 = exLibrary.properties.firstWhere((p) => p.name == 'y');
       importantComputations = fakeLibrary.properties
@@ -2839,7 +2836,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     Field aStaticConstField, aName;
 
-    setUp(() {
+    setUpAll(() {
       greenConstant =
           exLibrary.constants.firstWhere((c) => c.name == 'COLOR_GREEN');
       orangeConstant =
@@ -2914,7 +2911,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Constructor appleConstructorFromString;
     Constructor constructorTesterDefault, constructorTesterFromSomething;
     Class apple, constCat, constructorTester;
-    setUp(() {
+    setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       constCat = exLibrary.classes.firstWhere((c) => c.name == 'ConstantCat');
       constructorTester =
@@ -2973,7 +2970,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     ModelFunction returningFutureVoid, aVoidParameter;
     Class ExtendsFutureVoid, ImplementsFutureVoid, ATypeTakingClassMixedIn;
 
-    setUp(() {
+    setUpAll(() {
       returningFutureVoid = fakeLibrary.functions
           .firstWhere((f) => f.name == 'returningFutureVoid');
       aVoidParameter =
@@ -3043,7 +3040,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('ModelType', () {
     Field fList;
 
-    setUp(() {
+    setUpAll(() {
       fList = exLibrary.classes
           .firstWhere((c) => c.name == 'B')
           .instanceProperties
@@ -3061,7 +3058,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Typedef aComplexTypedef;
     Class TypedefUsingClass;
 
-    setUp(() {
+    setUpAll(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
       generic =
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
@@ -3155,7 +3152,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         applyCovariantParams;
     Parameter intNumber, intCheckOptional;
 
-    setUp(() {
+    setUpAll(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       CovariantMemberParams = fakeLibrary.classes
           .firstWhere((c) => c.name == 'CovariantMemberParams');
@@ -3248,7 +3245,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class b;
     List<Class> implA, implC;
 
-    setUp(() {
+    setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       b = exLibrary.classes.firstWhere((c) => c.name == 'B');
       implA = apple.publicImplementors.toList();
@@ -3300,7 +3297,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Annotations', () {
     Class forAnnotation, dog;
     Method ctr;
-    setUp(() {
+    setUpAll(() {
       forAnnotation =
           exLibrary.classes.firstWhere((c) => c.name == 'HasAnnotation');
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
