@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -16,17 +17,25 @@ import 'package:test/test.dart';
 
 import 'src/utils.dart';
 
+class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext with LoggingContext {
+  DartdocLoggingOptionContext(DartdocOptionSet optionSet, Directory dir)
+    : super(optionSet, dir);
+}
+
 void main() {
   group('dartdoc with generators', () {
     Directory tempDir;
     List<String> outputParam;
-    setUpAll(() {
+    setUpAll(() async {
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
       outputParam = ['--output', tempDir.path];
+      DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators('dartdoc', [createLoggingOptions]);
+      optionSet.parseArguments([]);
+      startLogging(new DartdocLoggingOptionContext(optionSet, Directory.current));
     });
 
-    tearDownAll(() {
-      delete(tempDir);
+    tearDown(() async {
+      tempDir.listSync().forEach((FileSystemEntity f) {f.deleteSync(recursive: true);});
     });
 
     Future<Dartdoc> buildDartdoc(
