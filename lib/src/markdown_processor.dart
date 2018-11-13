@@ -333,6 +333,9 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
         newCodeRef, element, commentRefs, preferredClass);
   }
 
+  // Remove any "null" objects after each step of trying to add to results.
+  // TODO(jcollins-g): Eliminate all situations where nulls can be added
+  // to the results set.
   results.remove(null);
   // Oh, and someone might have some type parameters or other garbage.
   if (results.isEmpty && codeRef.contains(trailingIgnoreStuff)) {
@@ -366,26 +369,31 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
           p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
     }
   }
-
   results.remove(null);
+
   // This could be local to the class, look there first.
   _findWithinTryClasses(results, preferredClass, element, codeRefChomped, codeRef, packageGraph);
+  results.remove(null);
 
   // We now need the ref element cache to keep from repeatedly searching [Package.allModelElements].
   // But if not, look for a fully qualified match.  (That only makes sense
   // if the codeRef might be qualified, and contains periods.)
   _findWithinRefElementCache(results, codeRefChomped, packageGraph, codeRef);
+  results.remove(null);
 
   // Only look for partially qualified matches if we didn't find a fully qualified one.
   _findPartiallyQualifiedMatches(results, library, codeRef, codeRefChomped, packageGraph, preferredClass);
+  results.remove(null);
 
   // And if we still haven't found anything, just search the whole ball-of-wax.
   _findGlobalWithinRefElementCache(results, packageGraph, codeRefChomped);
+  results.remove(null);
 
   // This could conceivably be a reference to an enum member.  They don't show up in allModelElements.
   // TODO(jcollins-g): Put enum members in allModelElements with useful hrefs without blowing up other assumptions about what that means.
   // TODO(jcollins-g): This doesn't provide good warnings if an enum and class have the same name in different libraries in the same package.  Fix that.
   _findEnumReferences(results, codeRefChomped, packageGraph);
+  results.remove(null);
 
   if (results.length > 1) {
     // If this name could refer to a class or a constructor, prefer the class.
@@ -488,7 +496,6 @@ void _findEnumReferences(Set<ModelElement> results, String codeRefChomped, Packa
       }
     }
   }
-  results.remove(null);
 }
 
 void _findGlobalWithinRefElementCache(Set<ModelElement> results, PackageGraph packageGraph, String codeRefChomped) {
@@ -504,7 +511,6 @@ void _findGlobalWithinRefElementCache(Set<ModelElement> results, PackageGraph pa
       }
     }
   }
-  results.remove(null);
 }
 
 void _findPartiallyQualifiedMatches(Set<ModelElement> results, Library library, String codeRef, String codeRefChomped, PackageGraph packageGraph, Class preferredClass) {
@@ -517,7 +523,6 @@ void _findPartiallyQualifiedMatches(Set<ModelElement> results, Library library, 
           preferredClass: preferredClass));
     }
   }
-  results.remove(null);
 }
 
 void _findWithinRefElementCache(Set<ModelElement> results, String codeRefChomped, PackageGraph packageGraph, String codeRef) {
@@ -541,7 +546,6 @@ void _findWithinRefElementCache(Set<ModelElement> results, String codeRefChomped
               : null));
     }
   }
-  results.remove(null);
 }
 
 void _findWithinTryClasses(Set<ModelElement> results, Class preferredClass, Warnable element, String codeRefChomped, String codeRef, PackageGraph packageGraph) {
@@ -580,7 +584,6 @@ void _findWithinTryClasses(Set<ModelElement> results, Class preferredClass, Warn
       }
     }
   }
-  results.remove(null);
 }
 
 // _getResultsForClass assumes codeRefChomped might be a member of tryClass (inherited or not)
