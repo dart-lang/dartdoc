@@ -333,6 +333,9 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
         newCodeRef, element, commentRefs, preferredClass);
   }
 
+  // Remove any "null" objects after each step of trying to add to results.
+  // TODO(jcollins-g): Eliminate all situations where nulls can be added
+  // to the results set.
   results.remove(null);
   // Oh, and someone might have some type parameters or other garbage.
   if (results.isEmpty && codeRef.contains(trailingIgnoreStuff)) {
@@ -366,118 +369,30 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
           p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
     }
   }
-
   results.remove(null);
-  if (results.isEmpty) {
-    // Maybe this is local to a class.
-    // TODO(jcollins-g): tryClasses is a strict subset of the superclass chain.  Optimize.
-    List<Class> tryClasses = [preferredClass];
-    Class realClass = tryClasses.first;
-    if (element is Inheritable) {
-      Inheritable overriddenElement = element.overriddenElement;
-      while (overriddenElement != null) {
-        tryClasses.add(
-            (element.overriddenElement as EnclosedElement).enclosingElement);
-        overriddenElement = overriddenElement.overriddenElement;
-      }
-    }
 
-    for (Class tryClass in tryClasses) {
-      if (tryClass != null) {
-        _getResultsForClass(
-            tryClass, codeRefChomped, results, codeRef, packageGraph);
-      }
-      results.remove(null);
-      if (results.isNotEmpty) break;
-    }
-
-    if (results.isEmpty && realClass != null) {
-      for (Class superClass
-          in realClass.publicSuperChain.map((et) => et.element as Class)) {
-        if (!tryClasses.contains(superClass)) {
-          _getResultsForClass(
-              superClass, codeRefChomped, results, codeRef, packageGraph);
-        }
-        results.remove(null);
-        if (results.isNotEmpty) break;
-      }
-    }
-  }
+  // This could be local to the class, look there first.
+  _findWithinTryClasses(results, preferredClass, element, codeRefChomped, codeRef, packageGraph);
   results.remove(null);
 
   // We now need the ref element cache to keep from repeatedly searching [Package.allModelElements].
   // But if not, look for a fully qualified match.  (That only makes sense
   // if the codeRef might be qualified, and contains periods.)
-  if (results.isEmpty &&
-      codeRefChomped.contains('.') &&
-      packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
-    for (final ModelElement modelElement
-        in packageGraph.findRefElementCache[codeRefChomped]) {
-      if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
-      // For fully qualified matches, the original preferredClass passed
-      // might make no sense.  Instead, use the enclosing class from the
-      // element in [_findRefElementCache], because that element's enclosing
-      // class will be preferred from [codeRefChomped]'s perspective.
-      results.add(packageGraph.findCanonicalModelElementFor(
-          modelElement.element,
-          preferredClass: modelElement.enclosingElement is Class
-              ? modelElement.enclosingElement
-              : null));
-    }
-  }
+  _findWithinRefElementCache(results, codeRefChomped, packageGraph, codeRef);
   results.remove(null);
 
   // Only look for partially qualified matches if we didn't find a fully qualified one.
-  if (results.isEmpty) {
-    for (final modelElement in library.allModelElements) {
-      if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
-      if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary) {
-        results.add(packageGraph.findCanonicalModelElementFor(
-            modelElement.element,
-            preferredClass: preferredClass));
-      }
-    }
-  }
+  _findPartiallyQualifiedMatches(results, library, codeRef, codeRefChomped, packageGraph, preferredClass);
   results.remove(null);
 
   // And if we still haven't found anything, just search the whole ball-of-wax.
-  if (results.isEmpty &&
-      packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
-    for (final modelElement
-        in packageGraph.findRefElementCache[codeRefChomped]) {
-      if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary ||
-          (modelElement is Library &&
-              codeRefChomped == modelElement.fullyQualifiedName)) {
-        results.add(
-            packageGraph.findCanonicalModelElementFor(modelElement.element));
-      }
-    }
-  }
+  _findGlobalWithinRefElementCache(results, packageGraph, codeRefChomped);
   results.remove(null);
 
   // This could conceivably be a reference to an enum member.  They don't show up in allModelElements.
   // TODO(jcollins-g): Put enum members in allModelElements with useful hrefs without blowing up other assumptions about what that means.
   // TODO(jcollins-g): This doesn't provide good warnings if an enum and class have the same name in different libraries in the same package.  Fix that.
-  if (results.isEmpty) {
-    List<String> codeRefChompedParts = codeRefChomped.split('.');
-    if (codeRefChompedParts.length >= 2) {
-      String maybeEnumName = codeRefChompedParts
-          .sublist(0, codeRefChompedParts.length - 1)
-          .join('.');
-      String maybeEnumMember = codeRefChompedParts.last;
-      if (packageGraph.findRefElementCache.containsKey(maybeEnumName)) {
-        for (final modelElement
-            in packageGraph.findRefElementCache[maybeEnumName]) {
-          if (modelElement is Enum) {
-            if (modelElement.constants.any((e) => e.name == maybeEnumMember)) {
-              results.add(modelElement);
-              break;
-            }
-          }
-        }
-      }
-    }
-  }
+  _findEnumReferences(results, codeRefChomped, packageGraph);
   results.remove(null);
 
   if (results.length > 1) {
@@ -558,6 +473,117 @@ ModelElement _findRefElementInLibrary(String codeRef, Warnable element,
     result = results.first;
   }
   return result;
+}
+
+void _findEnumReferences(Set<ModelElement> results, String codeRefChomped, PackageGraph packageGraph) {
+  if (results.isEmpty) {
+    List<String> codeRefChompedParts = codeRefChomped.split('.');
+    if (codeRefChompedParts.length >= 2) {
+      String maybeEnumName = codeRefChompedParts
+          .sublist(0, codeRefChompedParts.length - 1)
+          .join('.');
+      String maybeEnumMember = codeRefChompedParts.last;
+      if (packageGraph.findRefElementCache.containsKey(maybeEnumName)) {
+        for (final modelElement
+            in packageGraph.findRefElementCache[maybeEnumName]) {
+          if (modelElement is Enum) {
+            if (modelElement.constants.any((e) => e.name == maybeEnumMember)) {
+              results.add(modelElement);
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void _findGlobalWithinRefElementCache(Set<ModelElement> results, PackageGraph packageGraph, String codeRefChomped) {
+  if (results.isEmpty &&
+      packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
+    for (final modelElement
+        in packageGraph.findRefElementCache[codeRefChomped]) {
+      if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary ||
+          (modelElement is Library &&
+              codeRefChomped == modelElement.fullyQualifiedName)) {
+        results.add(
+            packageGraph.findCanonicalModelElementFor(modelElement.element));
+      }
+    }
+  }
+}
+
+void _findPartiallyQualifiedMatches(Set<ModelElement> results, Library library, String codeRef, String codeRefChomped, PackageGraph packageGraph, Class preferredClass) {
+  // Only look for partially qualified matches if we didn't find a fully qualified one.
+  if (results.isEmpty && library.modelElementsNameMap.containsKey(codeRefChomped)) {
+    for (final modelElement in library.modelElementsNameMap[codeRefChomped]) {
+      if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
+      results.add(packageGraph.findCanonicalModelElementFor(
+          modelElement.element,
+          preferredClass: preferredClass));
+    }
+  }
+}
+
+void _findWithinRefElementCache(Set<ModelElement> results, String codeRefChomped, PackageGraph packageGraph, String codeRef) {
+  // We now need the ref element cache to keep from repeatedly searching [Package.allModelElements].
+  // But if not, look for a fully qualified match.  (That only makes sense
+  // if the codeRef might be qualified, and contains periods.)
+  if (results.isEmpty &&
+      codeRefChomped.contains('.') &&
+      packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
+    for (final ModelElement modelElement
+        in packageGraph.findRefElementCache[codeRefChomped]) {
+      if (!_ConsiderIfConstructor(codeRef, modelElement)) continue;
+      // For fully qualified matches, the original preferredClass passed
+      // might make no sense.  Instead, use the enclosing class from the
+      // element in [_findRefElementCache], because that element's enclosing
+      // class will be preferred from [codeRefChomped]'s perspective.
+      results.add(packageGraph.findCanonicalModelElementFor(
+          modelElement.element,
+          preferredClass: modelElement.enclosingElement is Class
+              ? modelElement.enclosingElement
+              : null));
+    }
+  }
+}
+
+void _findWithinTryClasses(Set<ModelElement> results, Class preferredClass, Warnable element, String codeRefChomped, String codeRef, PackageGraph packageGraph) {
+  if (results.isEmpty) {
+    // Maybe this is local to a class.
+    // TODO(jcollins-g): tryClasses is a strict subset of the superclass chain.  Optimize.
+    List<Class> tryClasses = [preferredClass];
+    Class realClass = tryClasses.first;
+    if (element is Inheritable) {
+      Inheritable overriddenElement = element.overriddenElement;
+      while (overriddenElement != null) {
+        tryClasses.add(
+            (element.overriddenElement as EnclosedElement).enclosingElement);
+        overriddenElement = overriddenElement.overriddenElement;
+      }
+    }
+
+    for (Class tryClass in tryClasses) {
+      if (tryClass != null) {
+        _getResultsForClass(
+            tryClass, codeRefChomped, results, codeRef, packageGraph);
+      }
+      results.remove(null);
+      if (results.isNotEmpty) break;
+    }
+
+    if (results.isEmpty && realClass != null) {
+      for (Class superClass
+          in realClass.publicSuperChain.map((et) => et.element as Class)) {
+        if (!tryClasses.contains(superClass)) {
+          _getResultsForClass(
+              superClass, codeRefChomped, results, codeRef, packageGraph);
+        }
+        results.remove(null);
+        if (results.isNotEmpty) break;
+      }
+    }
+  }
 }
 
 // _getResultsForClass assumes codeRefChomped might be a member of tryClass (inherited or not)

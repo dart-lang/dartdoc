@@ -2532,6 +2532,20 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return name;
   }
 
+  Map<String, Set<ModelElement>> _modelElementsNameMap;
+  /// Map of [fullyQualifiedNameWithoutLibrary] to all matching [ModelElement]s
+  /// in this library.  Used for code reference lookups.
+  Map<String, Set<ModelElement>> get modelElementsNameMap {
+    if (_modelElementsNameMap == null) {
+      _modelElementsNameMap = new Map<String, Set<ModelElement>>();
+      allModelElements.forEach((ModelElement modelElement) {
+        _modelElementsNameMap.putIfAbsent(modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
+        _modelElementsNameMap[modelElement.fullyQualifiedNameWithoutLibrary].add(modelElement);
+      });
+    }
+    return _modelElementsNameMap;
+  }
+
   Map<Element, Set<ModelElement>> _modelElementsMap;
   Map<Element, Set<ModelElement>> get modelElementsMap {
     if (_modelElementsMap == null) {
