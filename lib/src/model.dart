@@ -131,8 +131,9 @@ abstract class Inheritable implements ModelElement {
 
   @override
   ModelElement _buildCanonicalModelElement() {
-    return canonicalEnclosingElement?.allCanonicalModelElements
-        ?.firstWhere((m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor, orElse: () => null);
+    return canonicalEnclosingElement?.allCanonicalModelElements?.firstWhere(
+        (m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor,
+        orElse: () => null);
   }
 
   Class get canonicalEnclosingElement {
@@ -3972,6 +3973,7 @@ abstract class ModelElement extends Canonicalization
     var runner = new ToolRunner(config.tools, (String message) {
       warn(PackageWarning.toolError, message: message);
     });
+    int invocationIndex = 0;
     try {
       return rawDocs.replaceAllMapped(basicToolRegExp, (basicMatch) {
         List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
@@ -3982,7 +3984,9 @@ abstract class ModelElement extends Canonicalization
                   'Must specify a tool to execute for the @tool directive.');
           return '';
         }
-
+        // Count the number of invocations of tools in this dartdoc block,
+        // so that tools can differentiate different blocks from each other.
+        invocationIndex++;
         return runner.run(args,
             content: basicMatch[2],
             environment: {
@@ -3996,6 +4000,7 @@ abstract class ModelElement extends Canonicalization
               'PACKAGE_NAME': package?.name,
               'LIBRARY_NAME': library?.fullyQualifiedName,
               'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
+              'INVOCATION_INDEX': invocationIndex.toString(),
             }..removeWhere((key, value) => value == null));
       });
     } finally {
@@ -5379,7 +5384,9 @@ class PackageGraph {
           Set<Library> librariesToDo = p.allLibraries.toSet();
           Set<Library> completedLibraries = new Set();
           while (librariesToDo.length > completedLibraries.length) {
-            librariesToDo.difference(completedLibraries).forEach((Library library) {
+            librariesToDo
+                .difference(completedLibraries)
+                .forEach((Library library) {
               _allModelElements.addAll(library.allModelElements);
               completedLibraries.add(library);
             });
@@ -5777,9 +5784,11 @@ class Package extends LibraryContainer
     // up after all documented libraries are added, because that breaks the
     // assumption that we've picked up all documented libraries and packages
     // before allLibrariesAdded is true.
-    assert(!(expectNonLocal &&
-        packageGraph.packageMap[packageName].documentedWhere ==
-            DocumentLocation.local));
+    assert(
+        !(expectNonLocal &&
+            packageGraph.packageMap[packageName].documentedWhere ==
+                DocumentLocation.local),
+        'Found more libraries to document after allLibrariesAdded was set to true');
     return packageGraph.packageMap[packageName];
   }
 
