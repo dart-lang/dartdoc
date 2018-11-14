@@ -99,8 +99,9 @@ int byFeatureOrdering(String a, String b) {
 final RegExp locationSplitter = new RegExp(r'(package:|[\\/;.])');
 final RegExp substituteNameVersion = new RegExp(r'%([bnv])%');
 
-/// This doc may need to be processed in case it has a template.
-final needsPrecacheRegExp = new RegExp(r'{@(template|tool\s)');
+/// This doc may need to be processed in case it has a template or html
+/// fragment.
+final needsPrecacheRegExp = new RegExp(r'{@(template|tool|inject-html)');
 
 final templateRegExp = new RegExp(
     r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?',
@@ -3719,6 +3720,7 @@ abstract class ModelElement extends Canonicalization
   String get documentationComment {
     if (_documentationCommentComputed == false) {
       _documentationComment = _computeDocumentationComment();
+      _documentationCommentComputed = true;
     }
     return _documentationComment;
   }

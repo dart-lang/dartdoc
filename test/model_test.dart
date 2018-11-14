@@ -790,21 +790,21 @@ void main() {
 
     setUpAll(() {
       documentationErrors = errorLibrary.classes
-          .firstWhere((c) => c.name == 'DocumentationErrors');
+          .firstWhere((c) => c.name == 'DocumentationErrors')..documentation;
       withInvalidNamedAnimation = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withInvalidNamedAnimation');
+          .firstWhere((m) => m.name == 'withInvalidNamedAnimation')..documentation;
       withAnimationNonUnique = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationNonUnique');
+          .firstWhere((m) => m.name == 'withAnimationNonUnique')..documentation;
       withAnimationNonUniqueDeprecated = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationNonUniqueDeprecated');
+          .firstWhere((m) => m.name == 'withAnimationNonUniqueDeprecated')..documentation;
       withAnimationWrongParams = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationWrongParams');
+          .firstWhere((m) => m.name == 'withAnimationWrongParams')..documentation;
       withAnimationBadWidth = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationBadWidth');
+          .firstWhere((m) => m.name == 'withAnimationBadWidth')..documentation;
       withAnimationBadHeight = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationBadHeight');
+          .firstWhere((m) => m.name == 'withAnimationBadHeight')..documentation;
       withAnimationUnknownArg = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationUnknownArg');
+          .firstWhere((m) => m.name == 'withAnimationUnknownArg')..documentation;
     });
 
     test("warns with invalidly-named animation within the method documentation",

@@ -20,16 +20,12 @@ Iterable<String> stripCommonWhitespace(String str) sync*{
     }
   }
   minimumSeen ??= 0;
-  int lineno = 1;
   for (String line in lines) {
     if (line.length >= minimumSeen) {
       yield '${line.substring(minimumSeen)}';
     } else {
-      if (lineno < lines.length) {
-        yield '';
-      }
+      yield '';
     }
-    ++lineno;
   }
 }
 

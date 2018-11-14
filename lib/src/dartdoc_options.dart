@@ -951,7 +951,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
     return _valueAtFromFiles(dir) ?? defaultsTo;
   }
 
-  Map<String, T> __valueAtFromFiles = new Map();
+  final Map<String, T> __valueAtFromFiles = new Map();
   // The value of this option from files will not change unless files are
   // modified during execution (not allowed in Dartdoc).
   T _valueAtFromFiles(Directory dir) {
