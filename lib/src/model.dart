@@ -3714,12 +3714,19 @@ abstract class ModelElement extends Canonicalization
 
   String _computeDocumentationComment() => element.documentationComment;
 
+  bool _documentationCommentComputed = false;
   String _documentationComment;
   String get documentationComment {
-    if (_documentationComment == null) {
+    if (_documentationCommentComputed == false) {
       _documentationComment = _computeDocumentationComment();
     }
     return _documentationComment;
+  }
+
+  /// Call this method to precache docs for this object if it might possibly
+  /// have a macro template or a tool definition.
+  void precacheLocalDocsIfNeeded() {
+    if (documentationComment != null && needsPrecacheRegExp.hasMatch(documentationComment)) documentationLocal;
   }
 
   Documentation get _documentation {
@@ -4651,7 +4658,7 @@ class PackageGraph {
     specialClasses = new SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
-    allModelElements.forEach((m) => m.documentationLocal);
+    allModelElements.forEach((m) => m.precacheLocalDocsIfNeeded());
     _localDocumentationBuilt = true;
 
     // Scan all model elements to insure that interceptor and other special
