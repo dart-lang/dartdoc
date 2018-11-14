@@ -99,6 +99,41 @@ int byFeatureOrdering(String a, String b) {
 final RegExp locationSplitter = new RegExp(r'(package:|[\\/;.])');
 final RegExp substituteNameVersion = new RegExp(r'%([bnv])%');
 
+/// This doc may need to be processed in case it has a template.
+final needsPrecacheRegExp = new RegExp(r'{@(template|tool\s)');
+
+final templateRegExp = new RegExp(
+    r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?',
+    multiLine: true);
+final htmlRegExp = new RegExp(
+    r'[ ]*{@inject-html\s*}([\s\S]+?){@end-inject-html}[ ]*\n?',
+    multiLine: true);
+final htmlInjectRegExp = new RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
+
+// Matches all tool directives (even some invalid ones). This is so
+// we can give good error messages if the directive is malformed, instead of
+// just silently emitting it as-is.
+final basicToolRegExp = new RegExp(
+    r'[ ]*{@tool\s+([^}]+)}\n?([\s\S]+?)\n?{@end-tool}[ ]*\n?',
+    multiLine: true);
+
+/// Regexp to take care of splitting arguments, and handling the quotes
+/// around arguments, if any.
+///
+/// Match group 1 is the "foo=" (or "--foo=") part of the option, if any.
+/// Match group 2 contains the quote character used (which is discarded).
+/// Match group 3 is a quoted arg, if any, without the quotes.
+/// Match group 4 is the unquoted arg, if any.
+final RegExp argMatcher = new RegExp(r'([a-zA-Z\-_0-9]+=)?' // option name
+    r'(?:' // Start a new non-capture group for the two possibilities.
+    r'''(["'])((?:\\{2})*|(?:.*?[^\\](?:\\{2})*))\2|''' // with quotes.
+    r'([^ ]+))'); // without quotes.
+
+final categoryRegexp = new RegExp(
+    r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
+    multiLine: true);
+final macroRegExp = new RegExp(r'{@macro\s+([^}]+)}');
+
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
 ///
@@ -414,7 +449,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  String get computeDocumentationComment {
+  String _computeDocumentationComment() {
     if (isSynthetic) {
       String docComment =
           (element as PropertyAccessorElement).variable.documentationComment;
@@ -427,14 +462,14 @@ class Accessor extends ModelElement implements EnclosedElement {
                   docComment.contains('@nodoc'))) ||
           (isSetter &&
               enclosingCombo.hasGetter &&
-              enclosingCombo.getter.computeDocumentationComment !=
+              enclosingCombo.getter.documentationComment !=
                   docComment)) {
         return stripComments(docComment);
       } else {
         return '';
       }
     }
-    return stripComments(super.computeDocumentationComment);
+    return stripComments(super._computeDocumentationComment());
   }
 
   @override
@@ -1334,9 +1369,7 @@ abstract class Categorization implements ModelElement {
     Set<String> _categorySet = new Set();
     Set<String> _subCategorySet = new Set();
     _hasCategorization = false;
-    final categoryRegexp = new RegExp(
-        r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
-        multiLine: true);
+
     rawDocs = rawDocs.replaceAllMapped(categoryRegexp, (match) {
       _hasCategorization = true;
       switch (match[1]) {
@@ -1768,7 +1801,7 @@ class Field extends ModelElement
   }
 
   @override
-  String get computeDocumentationComment {
+  String _computeDocumentationComment() {
     String docs = getterSetterDocumentationComment;
     if (docs.isEmpty) return _field.documentationComment;
     return docs;
@@ -1943,7 +1976,7 @@ abstract class GetterSetterCombo implements ModelElement {
       if (!config.dropTextFrom
           .contains(getter.documentationFrom.first.element.library.name)) {
         String docs =
-            getter.documentationFrom.first.computeDocumentationComment;
+            getter.documentationFrom.first.documentationComment;
         if (docs != null) buffer.write(docs);
       }
     }
@@ -1953,7 +1986,7 @@ abstract class GetterSetterCombo implements ModelElement {
       if (!config.dropTextFrom
           .contains(setter.documentationFrom.first.element.library.name)) {
         String docs =
-            setter.documentationFrom.first.computeDocumentationComment;
+            setter.documentationFrom.first.documentationComment;
         if (docs != null) {
           if (buffer.isNotEmpty) buffer.write('\n\n');
           buffer.write(docs);
@@ -3112,7 +3145,7 @@ abstract class ModelElement extends Canonicalization
           !(enclosingElement as Class).isPublic) {
         _isPublic = false;
       } else {
-        String docComment = computeDocumentationComment;
+        String docComment = documentationComment;
         if (docComment == null) {
           _isPublic = hasPublicName(element);
         } else {
@@ -3226,7 +3259,7 @@ abstract class ModelElement extends Canonicalization
   List<ModelElement> get computeDocumentationFrom {
     List<ModelElement> docFrom;
 
-    if (computeDocumentationComment == null &&
+    if (documentationComment == null &&
         canOverride() &&
         this is Inheritable &&
         (this as Inheritable).overriddenElement != null) {
@@ -3252,7 +3285,7 @@ abstract class ModelElement extends Canonicalization
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
     } else {
-      _rawDocs = computeDocumentationComment ?? '';
+      _rawDocs = documentationComment ?? '';
       _rawDocs = stripComments(_rawDocs) ?? '';
       // Must evaluate tools first, in case they insert any other directives.
       _rawDocs = _evaluateTools(_rawDocs);
@@ -3679,7 +3712,15 @@ abstract class ModelElement extends Canonicalization
         extendedDebug: extendedDebug);
   }
 
-  String get computeDocumentationComment => element.documentationComment;
+  String _computeDocumentationComment() => element.documentationComment;
+
+  String _documentationComment;
+  String get documentationComment {
+    if (_documentationComment == null) {
+      _documentationComment = _computeDocumentationComment();
+    }
+    return _documentationComment;
+  }
 
   Documentation get _documentation {
     if (__documentation != null) return __documentation;
@@ -3963,12 +4004,7 @@ abstract class ModelElement extends Canonicalization
   /// ## Content to send to tool.
   /// 2018-09-18T21:15+00:00
   String _evaluateTools(String rawDocs) {
-    // Matches all tool directives (even some invalid ones). This is so
-    // we can give good error messages if the directive is malformed, instead of
-    // just silently emitting it as-is.
-    final basicToolRegExp = new RegExp(
-        r'[ ]*{@tool\s+([^}]+)}\n?([\s\S]+?)\n?{@end-tool}[ ]*\n?',
-        multiLine: true);
+
 
     var runner = new ToolRunner(config.tools, (String message) {
       warn(PackageWarning.toolError, message: message);
@@ -4208,8 +4244,8 @@ abstract class ModelElement extends Canonicalization
   /// but just injected verbatim.
   String _injectHtmlFragments(String rawDocs) {
     if (!config.injectHtml) return rawDocs;
-    final macroRegExp = new RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
-    return rawDocs.replaceAllMapped(macroRegExp, (match) {
+
+    return rawDocs.replaceAllMapped(htmlInjectRegExp, (match) {
       String fragment = packageGraph.getHtmlFragment(match[1]);
       if (fragment == null) {
         warn(PackageWarning.unknownHtmlFragment, message: match[1]);
@@ -4245,7 +4281,6 @@ abstract class ModelElement extends Canonicalization
   ///     More comments
   ///
   String _injectMacros(String rawDocs) {
-    final macroRegExp = new RegExp(r'{@macro\s+([^}]+)}');
     return rawDocs.replaceAllMapped(macroRegExp, (match) {
       String macro = packageGraph.getMacro(match[1]);
       if (macro == null) {
@@ -4265,9 +4300,6 @@ abstract class ModelElement extends Canonicalization
   ///     &#123;@endtemplate&#125;
   ///
   String _stripMacroTemplatesAndAddToIndex(String rawDocs) {
-    final templateRegExp = new RegExp(
-        r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?',
-        multiLine: true);
     return rawDocs.replaceAllMapped(templateRegExp, (match) {
       packageGraph._addMacro(match[1].trim(), match[2].trim());
       return "{@macro ${match[1].trim()}}";
@@ -4287,10 +4319,7 @@ abstract class ModelElement extends Canonicalization
   ///
   String _stripHtmlAndAddToIndex(String rawDocs) {
     if (!config.injectHtml) return rawDocs;
-    final templateRegExp = new RegExp(
-        r'[ ]*{@inject-html\s*}([\s\S]+?){@end-inject-html}[ ]*\n?',
-        multiLine: true);
-    return rawDocs.replaceAllMapped(templateRegExp, (match) {
+    return rawDocs.replaceAllMapped(htmlRegExp, (match) {
       String fragment = match[1];
       String digest = sha1.convert(fragment.codeUnits).toString();
       packageGraph._addHtmlFragment(digest, fragment);
@@ -4313,19 +4342,7 @@ abstract class ModelElement extends Canonicalization
   /// value.
   Iterable<String> _splitUpQuotedArgs(String argsAsString,
       {bool convertToArgs = false}) {
-    // Regexp to take care of splitting arguments, and handling the quotes
-    // around arguments, if any.
-    //
-    // Match group 1 is the "foo=" (or "--foo=") part of the option, if any.
-    // Match group 2 contains the quote character used (which is discarded).
-    // Match group 3 is a quoted arg, if any, without the quotes.
-    // Match group 4 is the unquoted arg, if any.
-    final RegExp argMatcher = new RegExp(r'([a-zA-Z\-_0-9]+=)?' // option name
-        r'(?:' // Start a new non-capture group for the two possibilities.
-        r'''(["'])((?:\\{2})*|(?:.*?[^\\](?:\\{2})*))\2|''' // with quotes.
-        r'([^ ]+))'); // without quotes.
     final Iterable<Match> matches = argMatcher.allMatches(argsAsString);
-
     // Remove quotes around args, and if convertToArgs is true, then for any
     // args that look like assignments (start with valid option names followed
     // by an equals sign), add a "--" in front so that they parse as options.
@@ -6297,7 +6314,7 @@ class TopLevelVariable extends ModelElement
   Set<String> get features => super.features..addAll(comboFeatures);
 
   @override
-  String get computeDocumentationComment {
+  String _computeDocumentationComment() {
     String docs = getterSetterDocumentationComment;
     if (docs.isEmpty) return _variable.documentationComment;
     return docs;

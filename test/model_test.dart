@@ -2482,7 +2482,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('Docs from inherited implicit accessors are preserved', () {
-      expect(explicitGetterImplicitSetter.setter.computeDocumentationComment,
+      expect(explicitGetterImplicitSetter.setter.documentationComment,
           isNot(''));
     });
 
@@ -2506,7 +2506,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       expect(documentedPartialFieldInSubclassOnly.isPublic, isTrue);
       expect(documentedPartialFieldInSubclassOnly.readOnly, isTrue);
-      expect(documentedPartialFieldInSubclassOnly.computeDocumentationComment,
+      expect(documentedPartialFieldInSubclassOnly.documentationComment,
           contains('This getter is documented'));
       expect(
           documentedPartialFieldInSubclassOnly.annotations
@@ -2517,7 +2517,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('@nodoc overridden in subclass for getter works', () {
       expect(explicitNonDocumentedInBaseClassGetter.isPublic, isTrue);
       expect(explicitNonDocumentedInBaseClassGetter.hasPublicGetter, isTrue);
-      expect(explicitNonDocumentedInBaseClassGetter.computeDocumentationComment,
+      expect(explicitNonDocumentedInBaseClassGetter.documentationComment,
           contains('I should be documented'));
       expect(explicitNonDocumentedInBaseClassGetter.readOnly, isTrue);
     });
@@ -2804,14 +2804,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('@nodoc on setter only works', () {
       expect(nodocSetter.isPublic, isTrue);
       expect(nodocSetter.readOnly, isTrue);
-      expect(nodocSetter.computeDocumentationComment,
+      expect(nodocSetter.documentationComment,
           equals('Getter docs should be shown.'));
     });
 
     test('@nodoc on getter only works', () {
       expect(nodocGetter.isPublic, isTrue);
       expect(nodocGetter.writeOnly, isTrue);
-      expect(nodocGetter.computeDocumentationComment,
+      expect(nodocGetter.documentationComment,
           equals('Setter docs should be shown.'));
     });
 
