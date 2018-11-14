@@ -259,11 +259,15 @@ dartdoc:
   tools:
     drill:
       command: ["bin/drill.dart"]
+      setup_command: ["bin/setup.dart"]
       description: "Puts holes in things."
     echo:
       macos: ['/bin/sh', '-c', 'echo']
+      setup_macos: ['/bin/sh', '-c', 'setup.sh']
       linux: ['/bin/sh', '-c', 'echo']
+      setup_linux: ['/bin/sh', '-c', 'setup.sh']
       windows: ['C:\\Windows\\System32\\cmd.exe', '/c', 'echo']
+      setup_windows: ['/bin/sh', '-c', 'setup.sh']
       description: 'Works on everything'
 ```
 
@@ -272,16 +276,32 @@ that are common among all executions. If the first element of this list is a
 filename that ends in `.dart`, then the dart executable will automatically be
 used to invoke that script. The `command` defined will be run on all platforms.
 
-The `macos`, `linux`, and `windows` tags are used to describe the commands to
-be run on each of those platforms.
+If the `command` is a Dart script, then the first time it is run, a snapshot
+will be created using the input and first-time arguments as training arguments,
+and will be run from the snapshot from then on. Note that the `Platform.script`
+property will point to the snapshot location during the snapshot runs. You can
+obtain the original `.dart` script location in a tool by looking at the
+`TOOL_COMMAND` environment variable.
+
+The `setup_command` tag is used to describe a command executable, and any
+options, for a command that is run once before running a tool for the first
+time. If the first element of this list is a filename that ends in `.dart`, then
+the dart executable will automatically be used to invoke that script. The
+`setup_command` defined will be run on all platforms. If the setup command is a
+Dart script, then it will be run with the Dart executable, but will not be
+snapshotted, as it will only be run once.
+
+The `macos`, `linux`, and `windows` tags are used to describe the commands to be
+run on each of those platforms, and the `setup_macos`, `setup_linux`, and
+`setup_windows` tags define setup commands for their respective platforms.
 
 The `description` is just a short description of the tool for use as help text. 
 
 Only tools which are configured in the `dartdoc_options.yaml` file are able to
 be invoked.
 
-To use the tools in comment documentation, use the `{@tool <name> [<options> ...] [$INPUT]}`
-directive to invoke the tool:
+To use the tools in comment documentation, use the `{@tool <name> [<options>
+...] [$INPUT]}` directive to invoke the tool:
 
 ```dart
 /// {@tool drill --flag --option="value" $INPUT}
@@ -300,6 +320,27 @@ the equivalent of having the following comment in the code:
 ```dart
 /// # `This is the text that will be sent to the tool as input.`
 ```
+
+#### Tool Environment Variables
+
+Tools have a number of environment variables available to them. They will be
+interpolated into any arguments given to the tool as `$ENV_VAR` or `$(ENV_VAR)`,
+as well as available in the process environment.
+
+- `SOURCE_LINE`: The source line number in the original source code.
+- `SOURCE_COLUMN`: The source column in the original source code.
+- `SOURCE_PATH`: The relative path from the package root to the original source file.
+- `PACKAGE_PATH`: The path to the package root.
+- `PACKAGE_NAME`: The name of the package.
+- `LIBRARY_NAME`: The name of the library, if any.
+- `ELEMENT_NAME`: The name of the element that this doc is attached to.
+- `TOOL_COMMAND`: The path to the original `.dart` script or command executable.
+- `DART_SNAPSHOT_CACHE`: The path to the directory containing the snapshot files
+   of the tools. This directory will be removed before Dartdoc exits.
+- `DART_SETUP_COMMAND`: The path to the setup command script, if any.
+- `INVOCATION_INDEX`: An index for how many times a tool directive has been
+  invoked on the current dartdoc block. Allows multiple tool invocations on the
+  same block to be differentiated.
 
 ### Injecting HTML
 

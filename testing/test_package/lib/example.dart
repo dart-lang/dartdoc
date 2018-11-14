@@ -551,6 +551,16 @@ abstract class ToolUser {
   /// This text should not appear in the output, even if it references [Dog].
   /// {@end-tool}
   void invokeToolNoInput();
+
+  /// Invokes more than one tool in the same comment block.
+  ///
+  /// {@tool drill --file=$INPUT}
+  /// This text should appear in the output.
+  /// {@end-tool}
+  /// {@tool drill --file=$INPUT}
+  /// This text should also appear in the output.
+  /// {@end-tool}
+  void invokeToolMultipleSections();
 }
 
 abstract class HtmlInjection {
@@ -559,4 +569,14 @@ abstract class HtmlInjection {
   ///    <div style="opacity: 0.5;">[HtmlInjection]</div>
   /// {@end-inject-html}
   void injectSimpleHtml();
+
+  /// Invokes more than one tool in the same comment block, and injects HTML.
+  ///
+  /// {@tool drill --file=$INPUT --html}
+  /// This text should appear in the output.
+  /// {@end-tool}
+  /// {@tool drill --file=$INPUT --html}
+  /// This text should also appear in the output.
+  /// {@end-tool}
+  void injectHtmlFromTool();
 }

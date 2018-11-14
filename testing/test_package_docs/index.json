@@ -1915,6 +1915,17 @@
   }
  },
  {
+  "name": "injectHtmlFromTool",
+  "qualifiedName": "ex.HtmlInjection.injectHtmlFromTool",
+  "href": "ex/HtmlInjection/injectHtmlFromTool.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HtmlInjection",
+   "type": "class"
+  }
+ },
+ {
   "name": "injectSimpleHtml",
   "qualifiedName": "ex.HtmlInjection.injectSimpleHtml",
   "href": "ex/HtmlInjection/injectSimpleHtml.html",
@@ -3447,6 +3458,17 @@
   "name": "invokeTool",
   "qualifiedName": "ex.ToolUser.invokeTool",
   "href": "ex/ToolUser/invokeTool.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "invokeToolMultipleSections",
+  "qualifiedName": "ex.ToolUser.invokeToolMultipleSections",
+  "href": "ex/ToolUser/invokeToolMultipleSections.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {

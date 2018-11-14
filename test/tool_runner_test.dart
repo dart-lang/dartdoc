@@ -10,38 +10,94 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
+import 'package:yaml/yaml.dart';
 
 import 'src/utils.dart' as utils;
 
 void main() {
-  var toolMap = ToolConfiguration.empty;
+  var toolMap;
+  Directory tempDir;
+  File setupFile;
 
-  toolMap.tools.addAll({
-    'missing': new ToolDefinition(['/a/missing/executable'], "missing"),
-    'drill': new ToolDefinition(
-        [pathLib.join(utils.testPackageDir.absolute.path, 'bin', 'drill.dart')],
-        'Makes holes'),
-    // We use the Dart executable for our "non-dart" tool
-    // test, because it's the only executable that we know the
-    // exact location of that works on all platforms.
-    'non_dart':
-        new ToolDefinition([Platform.resolvedExecutable], 'non-dart tool'),
-  });
   ToolRunner runner;
   final errors = <String>[];
 
   setUpAll(() async {
+    ProcessResult result;
+    tempDir = Directory.systemTemp.createTempSync('tool_runner_test_');
+    var snapshotFile = pathLib.join(tempDir.path, 'drill.snapshot');
+    try {
+      result = Process.runSync(
+          Platform.resolvedExecutable,
+          [
+            '--snapshot=${snapshotFile}',
+            '--snapshot-kind=app-jit',
+            'bin/drill.dart'
+          ],
+          workingDirectory: utils.testPackageDir.absolute.path);
+    } on ProcessException catch (exception) {
+      stderr.writeln('Unable to make snapshot of tool: $exception');
+      expect(result?.exitCode, equals(0));
+    }
+    if (result != null && result.exitCode != 0) {
+      stdout.writeln(result.stdout);
+      stderr.writeln(result.stderr);
+    }
+    expect(result?.exitCode, equals(0));
+    setupFile = File(pathLib.join(tempDir.path, 'setup.stamp'));
+    // We use the Dart executable for our "non-dart" tool
+    // test, because it's the only executable that we know the
+    // exact location of that works on all platforms.
+    var nonDartExecutable = Platform.resolvedExecutable;
+    // Have to replace backslashes on Windows with double-backslashes, to
+    // escape them for YAML parser.
+    var yamlMap = '''
+drill:
+  command: ["bin/drill.dart"]
+  description: "Puts holes in things."
+snapshot_drill:
+  command: ["${snapshotFile.replaceAll(r'\', r'\\')}"]
+  description: "Puts holes in things, but faster."
+setup_drill:
+  command: ["bin/drill.dart"]
+  setup_command: ["bin/setup.dart", "${setupFile.absolute.path.replaceAll(r'\', r'\\')}"]
+  description: "Puts holes in things, with setup."
+non_dart:
+  command: ["${nonDartExecutable.replaceAll(r'\', r'\\')}"]
+  description: "A non-dart tool"
+echo:
+  macos: ['/bin/sh', '-c', 'echo']
+  linux: ['/bin/sh', '-c', 'echo']
+  windows: ['C:\\Windows\\System32\\cmd.exe', '/c', 'echo']
+  description: 'Works on everything'
+''';
+    var pathContext =
+        pathLib.Context(current: utils.testPackageDir.absolute.path);
+    toolMap = ToolConfiguration.fromYamlMap(loadYaml(yamlMap), pathContext);
+    // This shouldn't really happen, but if you didn't load the config from a
+    // yaml map (which would fail on a missing executable), or a file is deleted
+    // during execution,it might, so we test it.
+    toolMap.tools.addAll({
+      'missing': new ToolDefinition(['/a/missing/executable'], null, "missing"),
+    });
+
     runner = new ToolRunner(toolMap, (String message) => errors.add(message));
   });
   tearDownAll(() {
-    runner.dispose();
+    tempDir?.deleteSync(recursive: true);
+    runner?.dispose();
+    SnapshotCache.instance.dispose();
+    setupFile = null;
+    tempDir = null;
   });
 
   group('ToolRunner', () {
     setUp(() {
       errors.clear();
     });
-    test('can invoke a Dart tool', () {
+    // This test must come first, to verify that the first run creates
+    // a snapshot.
+    test('can invoke a Dart tool, and second run is a snapshot.', () {
       var result = runner.run(
         ['drill', r'--file=$INPUT'],
         content: 'TEST INPUT',
@@ -49,6 +105,28 @@ void main() {
       expect(errors, isEmpty);
       expect(result, contains('--file=<INPUT_FILE>'));
       expect(result, contains('## `TEST INPUT`'));
+      expect(result, contains('Script location is in dartdoc tree.'));
+      expect(setupFile.existsSync(), isFalse);
+      result = runner.run(
+        ['drill', r'--file=$INPUT'],
+        content: 'TEST INPUT 2',
+      );
+      expect(errors, isEmpty);
+      expect(result, contains('--file=<INPUT_FILE>'));
+      expect(result, contains('## `TEST INPUT 2`'));
+      expect(result, contains('Script location is in snapshot cache.'));
+      expect(setupFile.existsSync(), isFalse);
+    });
+    test('can invoke a Dart tool', () {
+      var result = runner.run(
+        ['drill', r'--file=$INPUT'],
+        content: 'TEST INPUT',
+      );
+      expect(errors, isEmpty);
+      expect(result, contains('Script location is in snapshot cache.'));
+      expect(result, contains('--file=<INPUT_FILE>'));
+      expect(result, contains('## `TEST INPUT`'));
+      expect(setupFile.existsSync(), isFalse);
     });
     test('can invoke a non-Dart tool', () {
       String result = runner.run(
@@ -57,6 +135,25 @@ void main() {
       );
       expect(errors, isEmpty);
       expect(result, isEmpty); // Output is on stderr.
+    });
+    test('can invoke a pre-snapshotted tool', () {
+      var result = runner.run(
+        ['snapshot_drill', r'--file=$INPUT'],
+        content: 'TEST INPUT',
+      );
+      expect(errors, isEmpty);
+      expect(result, contains('--file=<INPUT_FILE>'));
+      expect(result, contains('## `TEST INPUT`'));
+    });
+    test('can invoke a tool with a setup action', () {
+      var result = runner.run(
+        ['setup_drill', r'--file=$INPUT'],
+        content: 'TEST INPUT',
+      );
+      expect(errors, isEmpty);
+      expect(result, contains('--file=<INPUT_FILE>'));
+      expect(result, contains('## `TEST INPUT`'));
+      expect(setupFile.existsSync(), isTrue);
     });
     test('fails if tool not in tool map', () {
       String result = runner.run(

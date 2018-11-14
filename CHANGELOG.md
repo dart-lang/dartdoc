@@ -1,3 +1,7 @@
+## 0.24.2-dev
+* Added support for automatic snapshotting of external tools (i.e. for {@tool}
+  directives) written in Dart. 
+
 ## 0.24.1
 * Added more metadata (element name, project name, etc.) to external tool invocations.
   (#1801)

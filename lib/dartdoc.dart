@@ -181,8 +181,12 @@ class Dartdoc extends PackageBuilder {
           "dartdoc could not find any libraries to document. Run `pub get` and try again.");
     }
 
-    if (dartdocResults.packageGraph.packageWarningCounter.errorCount > 0) {
-      throw new DartdocFailure("dartdoc encountered errors while processing");
+    final int errorCount =
+        dartdocResults.packageGraph.packageWarningCounter.errorCount;
+    if (errorCount > 0) {
+      dartdocResults.packageGraph.flushWarnings();
+      throw new DartdocFailure(
+          "dartdoc encountered $errorCount} errors while processing.");
     }
 
     return dartdocResults;

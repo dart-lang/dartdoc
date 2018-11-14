@@ -71,23 +71,28 @@ void main(List<String> arguments) async {
   Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(config);
 
   dartdoc.onCheckProgress.listen(logProgress);
-  await Chain.capture(() async {
-    await runZoned(() async {
-      DartdocResults results = await dartdoc.generateDocs();
-      logInfo('Success! Docs generated into ${results.outDir.absolute.path}');
-    },
-        zoneSpecification: new ZoneSpecification(
-            print: (Zone self, ZoneDelegate parent, Zone zone, String line) =>
-                logPrint(line)));
-  }, onError: (e, Chain chain) {
-    if (e is DartdocFailure) {
-      stderr.writeln('\nGeneration failed: ${e}.');
-      exit(1);
-    } else {
-      stderr.writeln('\nGeneration failed: ${e}\n${chain.terse}');
-      exit(255);
-    }
-  });
+  try {
+    await Chain.capture(() async {
+      await runZoned(() async {
+        DartdocResults results = await dartdoc.generateDocs();
+        logInfo('Success! Docs generated into ${results.outDir.absolute.path}');
+      },
+          zoneSpecification: new ZoneSpecification(
+              print: (Zone self, ZoneDelegate parent, Zone zone, String line) =>
+                  logPrint(line)));
+    }, onError: (e, Chain chain) {
+      if (e is DartdocFailure) {
+        stderr.writeln('\nGeneration failed: ${e}.');
+        exit(1);
+      } else {
+        stderr.writeln('\nGeneration failed: ${e}\n${chain.terse}');
+        exit(255);
+      }
+    });
+  } finally {
+    // Clear out any cached tool snapshots.
+    SnapshotCache.instance.dispose();
+  }
 }
 
 /// Print help if we are passed the help option.
