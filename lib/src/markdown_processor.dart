@@ -389,6 +389,12 @@ class _MarkdownCommentReference {
     return result;
   }
 
+  List<String> _codeRefParts;
+  List<String> get codeRefParts => _codeRefParts ??= codeRef.split('.');
+
+  List<String> _codeRefChompedParts;
+  List<String> get codeRefChompedParts => _codeRefChompedParts ??= codeRefChomped.split('.');
+
   /// Returns true if this is a constructor we should consider due to its
   /// name and the code reference, or if this isn't a constructor.  False
   /// otherwise.
@@ -397,7 +403,6 @@ class _MarkdownCommentReference {
     if (modelElement is! Constructor) return true;
     if (codeRef.contains(isConstructor)) return true;
     Constructor aConstructor = modelElement;
-    List<String> codeRefParts = codeRef.split('.');
     if (codeRefParts.length > 1) {
       // Pick the last two parts, in case a specific library was part of the
       // codeRef.
@@ -502,7 +507,6 @@ class _MarkdownCommentReference {
   void _findEnumReferences() {
     // TODO(jcollins-g): Put enum members in allModelElements with useful hrefs without blowing up other assumptions about what that means.
     // TODO(jcollins-g): This doesn't provide good warnings if an enum and class have the same name in different libraries in the same package.  Fix that.
-    List<String> codeRefChompedParts = codeRefChomped.split('.');
     if (codeRefChompedParts.length >= 2) {
       String maybeEnumName = codeRefChompedParts
           .sublist(0, codeRefChompedParts.length - 1)
@@ -643,7 +647,6 @@ class _MarkdownCommentReference {
         // TODO(jcollins-g): This makes our caller ~O(n^2) vs length of superChain.
         //                   Fortunately superChains are short, but optimize this if it matters.
         superChain.addAll(tryClass.superChain.map((t) => t.element as Class));
-        List<String> codeRefParts = codeRefChomped.split('.');
         for (final c in superChain) {
           // TODO(jcollins-g): add a hash-map-enabled lookup function to Class?
           for (final modelElement in c.allModelElements) {
@@ -667,7 +670,7 @@ class _MarkdownCommentReference {
             // TODO(jcollins-g): Fix partial qualifications in _findRefElementInLibrary so it can tell
             // when it is referenced from a non-documented element?
             // TODO(jcollins-g): We could probably check this early.
-            if (codeRefParts.first == c.name && codeRefParts.last == namePart) {
+            if (codeRefChompedParts.first == c.name && codeRefChompedParts.last == namePart) {
               results.add(packageGraph.findCanonicalModelElementFor(
                   modelElement.element,
                   preferredClass: tryClass));
@@ -675,9 +678,9 @@ class _MarkdownCommentReference {
             }
             if (modelElement is Constructor) {
               // Constructor names don't include the class, so we might miss them in the above search.
-              if (codeRefParts.length > 1) {
-                String codeRefClass = codeRefParts[codeRefParts.length - 2];
-                String codeRefConstructor = codeRefParts.last;
+              if (codeRefChompedParts.length > 1) {
+                String codeRefClass = codeRefChompedParts[codeRefChompedParts.length - 2];
+                String codeRefConstructor = codeRefChompedParts.last;
                 if (codeRefClass == c.name &&
                     codeRefConstructor ==
                         modelElement.fullyQualifiedName.split('.').last) {

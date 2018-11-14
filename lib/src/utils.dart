@@ -5,8 +5,7 @@ library dartdoc.utils;
 
 final RegExp leadingWhiteSpace = new RegExp(r'^([ \t]*)[^ ]');
 
-String stripCommonWhitespace(String str) {
-  StringBuffer buf = new StringBuffer();
+Iterable<String> stripCommonWhitespace(String str) sync*{
   List<String> lines = str.split('\n');
   int minimumSeen;
 
@@ -24,15 +23,14 @@ String stripCommonWhitespace(String str) {
   int lineno = 1;
   for (String line in lines) {
     if (line.length >= minimumSeen) {
-      buf.write('${line.substring(minimumSeen)}\n');
+      yield '${line.substring(minimumSeen)}';
     } else {
       if (lineno < lines.length) {
-        buf.write('\n');
+        yield '';
       }
     }
     ++lineno;
   }
-  return buf.toString();
 }
 
 String stripComments(String str) {
@@ -41,8 +39,7 @@ String stripComments(String str) {
   StringBuffer buf = new StringBuffer();
 
   if (str.startsWith('///')) {
-    str = stripCommonWhitespace(str);
-    for (String line in str.split('\n')) {
+    for (String line in stripCommonWhitespace(str)) {
       if (line.startsWith('/// ')) {
         buf.write('${line.substring(4)}\n');
       } else if (line.startsWith('///')) {
@@ -59,8 +56,7 @@ String stripComments(String str) {
     if (str.endsWith('*/')) {
       str = str.substring(0, str.length - 2);
     }
-    str = stripCommonWhitespace(str);
-    for (String line in str.split('\n')) {
+    for (String line in stripCommonWhitespace(str)) {
       if (cStyle && line.startsWith('* ')) {
         buf.write('${line.substring(2)}\n');
       } else if (cStyle && line.startsWith('*')) {

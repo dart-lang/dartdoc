@@ -53,8 +53,14 @@ class ToolRunner {
   ///
   /// This will remove any temporary files created by the tool runner.
   void dispose() {
-    if (_temporaryDirectory != null && temporaryDirectory.existsSync())
-      temporaryDirectory.deleteSync(recursive: true);
+    if (_temporaryDirectory != null) disposeAsync(_temporaryDirectory);
+  }
+
+  /// Avoid blocking on I/O for cleanups.
+  static Future<void> disposeAsync(Directory temporaryDirectory) async {
+    temporaryDirectory.exists().then((bool exists) {
+      if (exists) return temporaryDirectory.delete(recursive: true);
+    });
   }
 
   void _runSetup(

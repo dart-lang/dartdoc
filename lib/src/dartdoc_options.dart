@@ -32,6 +32,12 @@ const int _kIntVal = 0;
 const double _kDoubleVal = 0.0;
 const bool _kBoolVal = true;
 
+/// Args are computed relative to the current directory at the time the
+/// program starts.
+final Directory directoryCurrent = Directory.current;
+final String directoryCurrentPath = pathLib.canonicalize(Directory.current.path);
+
+
 String resolveTildePath(String originalPath) {
   if (originalPath == null || !originalPath.startsWith('~/')) {
     return originalPath;
@@ -585,8 +591,8 @@ abstract class DartdocOption<T> {
   /// corresponding files or directories.
   T valueAt(Directory dir);
 
-  /// Calls [valueAt] with the current working directory.
-  T valueAtCurrent() => valueAt(Directory.current);
+  /// Calls [valueAt] with the working directory at the start of the program.
+  T valueAtCurrent() => valueAt(directoryCurrent);
 
   /// Calls [valueAt] on the directory this element is defined in.
   T valueAtElement(Element element) => valueAt(new Directory(
@@ -1051,7 +1057,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
     List<String> canonicalPaths = [pathLib.canonicalize(dir.path)];
     if (!_yamlAtCanonicalPathCache.containsKey(canonicalPaths.first)) {
       _YamlFileData yamlData = new _YamlFileData(
-          new Map(), pathLib.canonicalize(Directory.current.path));
+          new Map(), directoryCurrentPath);
       if (dir.existsSync()) {
         File dartdocOptionsFile;
 
@@ -1126,7 +1132,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
   }
 
   /// Generates an _OptionValueWithContext using the value of the argument from
-  /// the [argParser] and the working directory from [Directory.current].
+  /// the [argParser] and the working directory from [directoryCurrent].
   ///
   /// Throws [UnsupportedError] if [T] is not a supported type.
   _OptionValueWithContext _valueAtFromArgsWithContext() {
@@ -1157,7 +1163,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
     } else {
       throw UnsupportedError('Type ${T} is not supported');
     }
-    return new _OptionValueWithContext(retval, Directory.current.path);
+    return new _OptionValueWithContext(retval, directoryCurrentPath);
   }
 
   /// The name of this option as a command line argument.
@@ -1234,8 +1240,8 @@ class DartdocOptionContext {
   /// the inputDir flag to determine the context.
   DartdocOptionContext(this.optionSet, FileSystemEntity entity) {
     if (entity == null) {
-      String inputDir = optionSet['inputDir'].valueAt(Directory.current) ??
-          Directory.current.path;
+      String inputDir = optionSet['inputDir'].valueAt(directoryCurrent) ??
+          directoryCurrentPath;
       context = new Directory(inputDir);
     } else {
       context = new Directory(pathLib
@@ -1404,7 +1410,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     new DartdocOptionArgOnly<bool>('injectHtml', false,
         help: 'Allow the use of the {@inject-html} directive to inject raw '
             'HTML into dartdoc output.'),
-    new DartdocOptionArgOnly<String>('input', Directory.current.path,
+    new DartdocOptionArgOnly<String>('input', directoryCurrentPath,
         isDir: true, help: 'Path to source directory', mustExist: true),
     new DartdocOptionSyntheticOnly<String>('inputDir',
         (DartdocSyntheticOption<String> option, Directory dir) {
