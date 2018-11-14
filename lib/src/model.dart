@@ -109,7 +109,8 @@ final templateRegExp = new RegExp(
 final htmlRegExp = new RegExp(
     r'[ ]*{@inject-html\s*}([\s\S]+?){@end-inject-html}[ ]*\n?',
     multiLine: true);
-final htmlInjectRegExp = new RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
+final htmlInjectRegExp =
+    new RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
 
 // Matches all tool directives (even some invalid ones). This is so
 // we can give good error messages if the directive is malformed, instead of
@@ -463,8 +464,7 @@ class Accessor extends ModelElement implements EnclosedElement {
                   docComment.contains('@nodoc'))) ||
           (isSetter &&
               enclosingCombo.hasGetter &&
-              enclosingCombo.getter.documentationComment !=
-                  docComment)) {
+              enclosingCombo.getter.documentationComment != docComment)) {
         return stripComments(docComment);
       } else {
         return '';
@@ -1976,8 +1976,7 @@ abstract class GetterSetterCombo implements ModelElement {
       // doesn't yield the real elements for GetterSetterCombos.
       if (!config.dropTextFrom
           .contains(getter.documentationFrom.first.element.library.name)) {
-        String docs =
-            getter.documentationFrom.first.documentationComment;
+        String docs = getter.documentationFrom.first.documentationComment;
         if (docs != null) buffer.write(docs);
       }
     }
@@ -1986,8 +1985,7 @@ abstract class GetterSetterCombo implements ModelElement {
       assert(setter.documentationFrom.length == 1);
       if (!config.dropTextFrom
           .contains(setter.documentationFrom.first.element.library.name)) {
-        String docs =
-            setter.documentationFrom.first.documentationComment;
+        String docs = setter.documentationFrom.first.documentationComment;
         if (docs != null) {
           if (buffer.isNotEmpty) buffer.write('\n\n');
           buffer.write(docs);
@@ -2568,14 +2566,17 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   Map<String, Set<ModelElement>> _modelElementsNameMap;
+
   /// Map of [fullyQualifiedNameWithoutLibrary] to all matching [ModelElement]s
   /// in this library.  Used for code reference lookups.
   Map<String, Set<ModelElement>> get modelElementsNameMap {
     if (_modelElementsNameMap == null) {
       _modelElementsNameMap = new Map<String, Set<ModelElement>>();
       allModelElements.forEach((ModelElement modelElement) {
-        _modelElementsNameMap.putIfAbsent(modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
-        _modelElementsNameMap[modelElement.fullyQualifiedNameWithoutLibrary].add(modelElement);
+        _modelElementsNameMap.putIfAbsent(
+            modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
+        _modelElementsNameMap[modelElement.fullyQualifiedNameWithoutLibrary]
+            .add(modelElement);
       });
     }
     return _modelElementsNameMap;
@@ -3728,7 +3729,8 @@ abstract class ModelElement extends Canonicalization
   /// Call this method to precache docs for this object if it might possibly
   /// have a macro template or a tool definition.
   void precacheLocalDocsIfNeeded() {
-    if (documentationComment != null && needsPrecacheRegExp.hasMatch(documentationComment)) documentationLocal;
+    if (documentationComment != null &&
+        needsPrecacheRegExp.hasMatch(documentationComment)) documentationLocal;
   }
 
   Documentation get _documentation {
@@ -4013,8 +4015,6 @@ abstract class ModelElement extends Canonicalization
   /// ## Content to send to tool.
   /// 2018-09-18T21:15+00:00
   String _evaluateTools(String rawDocs) {
-
-
     var runner = new ToolRunner(config.tools, (String message) {
       warn(PackageWarning.toolError, message: message);
     });

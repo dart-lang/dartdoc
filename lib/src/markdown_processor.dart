@@ -198,8 +198,9 @@ MatchingLinkResult _getMatchingLinkElement(
   // Try expensive not-scoped lookup.
   if (refModelElement == null && element is ModelElement) {
     Class preferredClass = _getPreferredClass(element);
-    refModelElement =
-        new _MarkdownCommentReference(codeRef, element, commentRefs, preferredClass).computeReferredElement();
+    refModelElement = new _MarkdownCommentReference(
+            codeRef, element, commentRefs, preferredClass)
+        .computeReferredElement();
   }
 
   // Did not find it anywhere.
@@ -269,32 +270,40 @@ Element _getRefElementFromCommentRefs(
   return null;
 }
 
-
 /// Represents a single comment reference.
 class _MarkdownCommentReference {
   /// The code reference text.
   final String codeRef;
+
   /// The element containing the code reference.
   final Warnable element;
+
   /// A list of [CommentReference]s from the analyzer.
   final List<CommentReference> commentRefs;
+
   /// Disambiguate inheritance with this class.
   final Class preferredClass;
+
   /// Current results.  Input/output of all _find and _reduce methods.
   Set<ModelElement> results;
+
   /// codeRef with any leading constructor string, stripped.
   String codeRefChomped;
+
   /// Library associated with this element.
   Library library;
+
   /// PackageGraph associated with this element.
   PackageGraph packageGraph;
 
-  _MarkdownCommentReference(this.codeRef, this.element, this.commentRefs, this.preferredClass) {
+  _MarkdownCommentReference(
+      this.codeRef, this.element, this.commentRefs, this.preferredClass) {
     assert(element != null);
     assert(element.packageGraph.allLibrariesAdded);
 
     codeRefChomped = codeRef.replaceFirst(isConstructor, '');
-    library = element is ModelElement ? (element as ModelElement).library : null;
+    library =
+        element is ModelElement ? (element as ModelElement).library : null;
     packageGraph = library.packageGraph;
   }
 
@@ -334,7 +343,8 @@ class _MarkdownCommentReference {
       // This could conceivably be a reference to an enum member.  They don't show up in allModelElements.
       _findEnumReferences,
       // Use the analyzer to resolve a comment reference.
-      _findAnalyzerReferences]) {
+      _findAnalyzerReferences
+    ]) {
       findMethod();
       // Remove any "null" objects after each step of trying to add to results.
       // TODO(jcollins-g): Eliminate all situations where nulls can be added
@@ -382,7 +392,7 @@ class _MarkdownCommentReference {
       if (!results.every((r) => r is Parameter)) {
         element.warn(PackageWarning.ambiguousDocReference,
             message:
-            "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
+                "[$codeRef] => ${results.map((r) => "'${r.fullyQualifiedName}'").join(", ")}");
       }
       result = results.first;
     }
@@ -393,7 +403,8 @@ class _MarkdownCommentReference {
   List<String> get codeRefParts => _codeRefParts ??= codeRef.split('.');
 
   List<String> _codeRefChompedParts;
-  List<String> get codeRefChompedParts => _codeRefChompedParts ??= codeRefChomped.split('.');
+  List<String> get codeRefChompedParts =>
+      _codeRefChompedParts ??= codeRefChomped.split('.');
 
   /// Returns true if this is a constructor we should consider due to its
   /// name and the code reference, or if this isn't a constructor.  False
@@ -439,18 +450,20 @@ class _MarkdownCommentReference {
 
   void _reducePreferLibrariesInLocalImportExportGraph() {
     if (results.any(
-            (r) => library.packageImportedExportedLibraries.contains(r.library))) {
+        (r) => library.packageImportedExportedLibraries.contains(r.library))) {
       results.removeWhere(
-              (r) => !library.packageImportedExportedLibraries.contains(r.library));
+          (r) => !library.packageImportedExportedLibraries.contains(r.library));
     }
   }
 
   void _reducePreferResultsAccessibleInSameLibrary() {
     // TODO(jcollins-g): we could have saved ourselves some work by using the analyzer
     //                   to search the namespace, somehow.  Do that instead.
-    if (element is ModelElement && results.any((r) => r.element.isAccessibleIn((element as ModelElement).library.element))) {
-      results.removeWhere(
-              (r) => !r.element.isAccessibleIn((element as ModelElement).library.element));
+    if (element is ModelElement &&
+        results.any((r) => r.element
+            .isAccessibleIn((element as ModelElement).library.element))) {
+      results.removeWhere((r) =>
+          !r.element.isAccessibleIn((element as ModelElement).library.element));
     }
   }
 
@@ -469,14 +482,14 @@ class _MarkdownCommentReference {
   void _findTypeParameters() {
     if (element is TypeParameters) {
       results.addAll((element as TypeParameters).typeParameters.where((p) =>
-      p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
+          p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
     }
   }
 
   void _findParameters() {
     if (element is ModelElement) {
       results.addAll((element as ModelElement).allParameters.where((p) =>
-      p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
+          p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
     }
   }
 
@@ -484,7 +497,8 @@ class _MarkdownCommentReference {
     if (codeRef.contains(leadingIgnoreStuff)) {
       String newCodeRef = codeRef.replaceFirst(leadingIgnoreStuff, '');
       results.add(new _MarkdownCommentReference(
-          newCodeRef, element, commentRefs, preferredClass).computeReferredElement());
+              newCodeRef, element, commentRefs, preferredClass)
+          .computeReferredElement());
     }
   }
 
@@ -492,7 +506,8 @@ class _MarkdownCommentReference {
     if (codeRef.contains(trailingIgnoreStuff)) {
       String newCodeRef = codeRef.replaceFirst(trailingIgnoreStuff, '');
       results.add(new _MarkdownCommentReference(
-          newCodeRef, element, commentRefs, preferredClass).computeReferredElement());
+              newCodeRef, element, commentRefs, preferredClass)
+          .computeReferredElement());
     }
   }
 
@@ -500,7 +515,8 @@ class _MarkdownCommentReference {
     if (codeRef.startsWith(operatorPrefix)) {
       String newCodeRef = codeRef.replaceFirst(operatorPrefix, '');
       results.add(new _MarkdownCommentReference(
-          newCodeRef, element, commentRefs, preferredClass).computeReferredElement());
+              newCodeRef, element, commentRefs, preferredClass)
+          .computeReferredElement());
     }
   }
 
@@ -514,7 +530,7 @@ class _MarkdownCommentReference {
       String maybeEnumMember = codeRefChompedParts.last;
       if (packageGraph.findRefElementCache.containsKey(maybeEnumName)) {
         for (final modelElement
-        in packageGraph.findRefElementCache[maybeEnumName]) {
+            in packageGraph.findRefElementCache[maybeEnumName]) {
           if (modelElement is Enum) {
             if (modelElement.constants.any((e) => e.name == maybeEnumMember)) {
               results.add(modelElement);
@@ -529,7 +545,7 @@ class _MarkdownCommentReference {
   void _findGlobalWithinRefElementCache() {
     if (packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
       for (final modelElement
-      in packageGraph.findRefElementCache[codeRefChomped]) {
+          in packageGraph.findRefElementCache[codeRefChomped]) {
         if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary ||
             (modelElement is Library &&
                 codeRefChomped == modelElement.fullyQualifiedName)) {
@@ -556,10 +572,10 @@ class _MarkdownCommentReference {
     // We now need the ref element cache to keep from repeatedly searching [Package.allModelElements].
     // But if not, look for a fully qualified match.  (That only makes sense
     // if the codeRef might be qualified, and contains periods.)
-    if (
-    codeRefChomped.contains('.') &&
+    if (codeRefChomped.contains('.') &&
         packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
-      for (final ModelElement modelElement in packageGraph.findRefElementCache[codeRefChomped]) {
+      for (final ModelElement modelElement
+          in packageGraph.findRefElementCache[codeRefChomped]) {
         if (!_ConsiderIfConstructor(modelElement)) continue;
         // For fully qualified matches, the original preferredClass passed
         // might make no sense.  Instead, use the enclosing class from the
@@ -580,10 +596,12 @@ class _MarkdownCommentReference {
     List<Class> tryClasses = [preferredClass];
     Class realClass = tryClasses.first;
     if (element is Inheritable) {
-      Inheritable overriddenElement = (element as Inheritable).overriddenElement;
+      Inheritable overriddenElement =
+          (element as Inheritable).overriddenElement;
       while (overriddenElement != null) {
         tryClasses.add(
-            ((element as Inheritable).overriddenElement as EnclosedElement).enclosingElement);
+            ((element as Inheritable).overriddenElement as EnclosedElement)
+                .enclosingElement);
         overriddenElement = overriddenElement.overriddenElement;
       }
     }
@@ -598,7 +616,7 @@ class _MarkdownCommentReference {
 
     if (results.isEmpty && realClass != null) {
       for (Class superClass
-      in realClass.publicSuperChain.map((et) => et.element as Class)) {
+          in realClass.publicSuperChain.map((et) => et.element as Class)) {
         if (!tryClasses.contains(superClass)) {
           _getResultsForClass(superClass);
         }
@@ -617,7 +635,8 @@ class _MarkdownCommentReference {
       if (refModelElement is Accessor) {
         refModelElement = (refModelElement as Accessor).enclosingCombo;
       }
-      refModelElement = refModelElement.canonicalModelElement ?? refModelElement;
+      refModelElement =
+          refModelElement.canonicalModelElement ?? refModelElement;
       results.add(refModelElement);
     }
   }
@@ -630,13 +649,14 @@ class _MarkdownCommentReference {
     if ((tryClass.modelType.typeArguments.map((e) => e.name))
         .contains(codeRefChomped)) {
       results.add((tryClass.modelType.typeArguments.firstWhere(
-              (e) => e.name == codeRefChomped && e is DefinedElementType)
-      as DefinedElementType)
+                  (e) => e.name == codeRefChomped && e is DefinedElementType)
+              as DefinedElementType)
           .element);
     } else {
       // People like to use 'this' in docrefs too.
       if (codeRef == 'this') {
-        results.add(packageGraph.findCanonicalModelElementFor(tryClass.element));
+        results
+            .add(packageGraph.findCanonicalModelElementFor(tryClass.element));
       } else {
         // TODO(jcollins-g): get rid of reimplementation of identifier resolution
         //                   or integrate into ModelElement in a simpler way.
@@ -670,7 +690,8 @@ class _MarkdownCommentReference {
             // TODO(jcollins-g): Fix partial qualifications in _findRefElementInLibrary so it can tell
             // when it is referenced from a non-documented element?
             // TODO(jcollins-g): We could probably check this early.
-            if (codeRefChompedParts.first == c.name && codeRefChompedParts.last == namePart) {
+            if (codeRefChompedParts.first == c.name &&
+                codeRefChompedParts.last == namePart) {
               results.add(packageGraph.findCanonicalModelElementFor(
                   modelElement.element,
                   preferredClass: tryClass));
@@ -679,7 +700,8 @@ class _MarkdownCommentReference {
             if (modelElement is Constructor) {
               // Constructor names don't include the class, so we might miss them in the above search.
               if (codeRefChompedParts.length > 1) {
-                String codeRefClass = codeRefChompedParts[codeRefChompedParts.length - 2];
+                String codeRefClass =
+                    codeRefChompedParts[codeRefChompedParts.length - 2];
                 String codeRefConstructor = codeRefChompedParts.last;
                 if (codeRefClass == c.name &&
                     codeRefConstructor ==

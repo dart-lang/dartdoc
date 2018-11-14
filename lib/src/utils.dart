@@ -5,7 +5,7 @@ library dartdoc.utils;
 
 final RegExp leadingWhiteSpace = new RegExp(r'^([ \t]*)[^ ]');
 
-Iterable<String> stripCommonWhitespace(String str) sync*{
+Iterable<String> stripCommonWhitespace(String str) sync* {
   List<String> lines = str.split('\n');
   int minimumSeen;
 

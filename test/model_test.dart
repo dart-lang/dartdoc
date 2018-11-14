@@ -148,9 +148,13 @@ void main() {
     });
     test('can invoke a tool multiple times in one comment block', () {
       RegExp envLine = RegExp(r'^Env: \{', multiLine: true);
-      expect(envLine.allMatches(invokeToolMultipleSections.documentation).length, equals(2));
+      expect(
+          envLine.allMatches(invokeToolMultipleSections.documentation).length,
+          equals(2));
       RegExp argLine = RegExp(r'^Args: \[', multiLine: true);
-      expect(argLine.allMatches(invokeToolMultipleSections.documentation).length, equals(2));
+      expect(
+          argLine.allMatches(invokeToolMultipleSections.documentation).length,
+          equals(2));
       expect(invokeToolMultipleSections.documentation,
           contains('Invokes more than one tool in the same comment block.'));
       expect(invokeToolMultipleSections.documentation,
@@ -204,11 +208,15 @@ void main() {
     });
     test("can inject HTML from tool", () {
       RegExp envLine = RegExp(r'^Env: \{', multiLine: true);
-      expect(envLine.allMatches(injectHtmlFromTool.documentation).length, equals(2));
+      expect(envLine.allMatches(injectHtmlFromTool.documentation).length,
+          equals(2));
       RegExp argLine = RegExp(r'^Args: \[', multiLine: true);
-      expect(argLine.allMatches(injectHtmlFromTool.documentation).length, equals(2));
-      expect(injectHtmlFromTool.documentation,
-          contains('Invokes more than one tool in the same comment block, and injects HTML.'));
+      expect(argLine.allMatches(injectHtmlFromTool.documentation).length,
+          equals(2));
+      expect(
+          injectHtmlFromTool.documentation,
+          contains(
+              'Invokes more than one tool in the same comment block, and injects HTML.'));
       expect(injectHtmlFromTool.documentationAsHtml,
           contains('<div class="title">Title</div>'));
       expect(injectHtmlFromTool.documentationAsHtml,
@@ -746,12 +754,15 @@ void main() {
           .firstWhere((m) => m.name == 'withPrivateMacro');
       withUndefinedMacro = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withUndefinedMacro');
-      MacrosFromAccessors = fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
-      macroReferencedHere = MacrosFromAccessors.publicConstants.firstWhere((e) => e.name == 'macroReferencedHere');
+      MacrosFromAccessors =
+          fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
+      macroReferencedHere = MacrosFromAccessors.publicConstants
+          .firstWhere((e) => e.name == 'macroReferencedHere');
     });
 
     test("renders a macro defined within a enum", () {
-      expect(macroReferencedHere.documentationAsHtml, contains('This is a macro defined in an Enum accessor.'));
+      expect(macroReferencedHere.documentationAsHtml,
+          contains('This is a macro defined in an Enum accessor.'));
     });
 
     test("renders a macro within the same comment where it's defined", () {
@@ -790,21 +801,29 @@ void main() {
 
     setUpAll(() {
       documentationErrors = errorLibrary.classes
-          .firstWhere((c) => c.name == 'DocumentationErrors')..documentation;
+          .firstWhere((c) => c.name == 'DocumentationErrors')
+            ..documentation;
       withInvalidNamedAnimation = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withInvalidNamedAnimation')..documentation;
+          .firstWhere((m) => m.name == 'withInvalidNamedAnimation')
+            ..documentation;
       withAnimationNonUnique = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationNonUnique')..documentation;
+          .firstWhere((m) => m.name == 'withAnimationNonUnique')
+            ..documentation;
       withAnimationNonUniqueDeprecated = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationNonUniqueDeprecated')..documentation;
+          .firstWhere((m) => m.name == 'withAnimationNonUniqueDeprecated')
+            ..documentation;
       withAnimationWrongParams = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationWrongParams')..documentation;
+          .firstWhere((m) => m.name == 'withAnimationWrongParams')
+            ..documentation;
       withAnimationBadWidth = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationBadWidth')..documentation;
+          .firstWhere((m) => m.name == 'withAnimationBadWidth')
+            ..documentation;
       withAnimationBadHeight = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationBadHeight')..documentation;
+          .firstWhere((m) => m.name == 'withAnimationBadHeight')
+            ..documentation;
       withAnimationUnknownArg = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationUnknownArg')..documentation;
+          .firstWhere((m) => m.name == 'withAnimationUnknownArg')
+            ..documentation;
     });
 
     test("warns with invalidly-named animation within the method documentation",
@@ -1412,7 +1431,8 @@ void main() {
     });
 
     test(('Verify mixin member is available in findRefElementCache'), () {
-      expect(packageGraph.findRefElementCache['GenericMixin.mixinMember'], isNotEmpty);
+      expect(packageGraph.findRefElementCache['GenericMixin.mixinMember'],
+          isNotEmpty);
     });
 
     test(('Verify inheritance/mixin structure and type inference'), () {
@@ -2482,8 +2502,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('Docs from inherited implicit accessors are preserved', () {
-      expect(explicitGetterImplicitSetter.setter.documentationComment,
-          isNot(''));
+      expect(
+          explicitGetterImplicitSetter.setter.documentationComment, isNot(''));
     });
 
     test('@nodoc on simple property works', () {

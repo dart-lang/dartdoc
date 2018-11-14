@@ -35,8 +35,8 @@ const bool _kBoolVal = true;
 /// Args are computed relative to the current directory at the time the
 /// program starts.
 final Directory directoryCurrent = Directory.current;
-final String directoryCurrentPath = pathLib.canonicalize(Directory.current.path);
-
+final String directoryCurrentPath =
+    pathLib.canonicalize(Directory.current.path);
 
 String resolveTildePath(String originalPath) {
   if (originalPath == null || !originalPath.startsWith('~/')) {
@@ -1056,8 +1056,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   _YamlFileData _yamlAtDirectory(Directory dir) {
     List<String> canonicalPaths = [pathLib.canonicalize(dir.path)];
     if (!_yamlAtCanonicalPathCache.containsKey(canonicalPaths.first)) {
-      _YamlFileData yamlData = new _YamlFileData(
-          new Map(), directoryCurrentPath);
+      _YamlFileData yamlData =
+          new _YamlFileData(new Map(), directoryCurrentPath);
       if (dir.existsSync()) {
         File dartdocOptionsFile;
 
