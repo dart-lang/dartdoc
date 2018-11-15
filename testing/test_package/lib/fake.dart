@@ -57,6 +57,10 @@ import 'two_exports.dart' show BaseClass;
 export 'package:test_package_imported/categoryExporting.dart'
     show IAmAClassWithCategories;
 
+// Explicitly export ourselves, because why not.
+// ignore: uri_does_not_exist
+export 'package:test_package/fake.dart';
+
 abstract class ImplementingThingy implements BaseThingy {}
 
 abstract class BaseThingy {
