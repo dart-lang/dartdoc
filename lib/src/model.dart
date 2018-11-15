@@ -3876,8 +3876,7 @@ abstract class ModelElement extends Canonicalization
       return fqName;
     }
 
-    ModelElement parent = (e as EnclosedElement).enclosingElement;
-    return _buildFullyQualifiedName(parent, '${parent.name}.$fqName');
+    return _buildFullyQualifiedName(e.enclosingElement, '${e.enclosingElement.name}.$fqName');
   }
 
   String _calculateLinkedName() {
@@ -4453,6 +4452,13 @@ class ModelFunctionAnonymous extends ModelFunctionTyped {
   ModelFunctionAnonymous(
       FunctionTypedElement element, PackageGraph packageGraph)
       : super(element, null, packageGraph) {}
+
+  @override
+  ModelElement get enclosingElement {
+    // These are not considered to be a part of libraries, so we can simply
+    // blindly instantiate a ModelElement for their enclosing element.
+    return new ModelElement.fromElement(element.enclosingElement, packageGraph);
+  }
 
   @override
   String get name => 'Function';
