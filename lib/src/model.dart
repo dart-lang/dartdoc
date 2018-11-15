@@ -3105,9 +3105,8 @@ abstract class ModelElement extends Canonicalization
 
       ClassElement annotationClassElement;
       if (annotationElement is ExecutableElement) {
-        annotationElement = (annotationElement as ExecutableElement)
-            .returnType
-            .element;
+        annotationElement =
+            (annotationElement as ExecutableElement).returnType.element;
       }
       if (annotationElement is ClassElement) {
         annotationClassElement = annotationElement;
@@ -3117,7 +3116,9 @@ abstract class ModelElement extends Canonicalization
       // annotationElement can be null if the element can't be resolved.
       Class annotationClass = packageGraph
           .findCanonicalModelElementFor(annotationClassElement) as Class;
-      if (annotationClass == null && annotationElement != null && annotationClassElement != null) {
+      if (annotationClass == null &&
+          annotationElement != null &&
+          annotationClassElement != null) {
         annotationClass =
             new ModelElement.fromElement(annotationClassElement, packageGraph)
                 as Class;
@@ -5037,12 +5038,14 @@ class PackageGraph {
       packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
+
   /// Prevent cycles from breaking our stack.
   Set<Tuple2<Library, LibraryElement>> _reexportsTagged = new Set();
   void _tagReexportsFor(
       final Library topLevelLibrary, final LibraryElement libraryElement,
       [ExportElement lastExportedElement]) {
-    Tuple2<Library, LibraryElement> key = new Tuple2(topLevelLibrary, libraryElement);
+    Tuple2<Library, LibraryElement> key =
+        new Tuple2(topLevelLibrary, libraryElement);
     if (_reexportsTagged.contains(key)) {
       return;
     }

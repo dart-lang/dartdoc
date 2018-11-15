@@ -112,10 +112,10 @@ const String bulletDoced = 'Foo bar baz';
 @pragma('Hello world')
 class HasPragma {}
 
-
 const dynamic aDynamicAnnotation = 4;
 
 @aDynamicAnnotation
+
 /// This class has a dynamic annotation.
 class HasDynamicAnnotation {}
 
