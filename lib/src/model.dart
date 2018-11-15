@@ -5011,9 +5011,16 @@ class PackageGraph {
       packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
+  /// Prevent cycles from breaking our stack.
+  Set<Tuple2<Library, LibraryElement>> _reexportsTagged = new Set();
   void _tagReexportsFor(
       final Library topLevelLibrary, final LibraryElement libraryElement,
       [ExportElement lastExportedElement]) {
+    Tuple2<Library, LibraryElement> key = new Tuple2(topLevelLibrary, libraryElement);
+    if (_reexportsTagged.contains(key)) {
+      return;
+    }
+    _reexportsTagged.add(key);
     if (libraryElement == null) {
       // The first call to _tagReexportFor should not have a null libraryElement.
       assert(lastExportedElement != null);
@@ -5038,6 +5045,7 @@ class PackageGraph {
     if (allLibraries.keys.length != _lastSizeOfAllLibraries) {
       _lastSizeOfAllLibraries = allLibraries.keys.length;
       _libraryElementReexportedBy = new Map<LibraryElement, Set<Library>>();
+      _reexportsTagged = new Set();
       for (Library library in publicLibraries) {
         _tagReexportsFor(library, library.element);
       }
