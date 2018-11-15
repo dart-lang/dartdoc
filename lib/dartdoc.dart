@@ -178,7 +178,7 @@ class Dartdoc extends PackageBuilder {
     DartdocResults dartdocResults = await generateDocsBase();
     if (dartdocResults.packageGraph.publicLibraries.isEmpty) {
       throw new DartdocFailure(
-          "dartdoc could not find any libraries to document. Run `pub get` and try again.");
+          "dartdoc could not find any libraries to document");
     }
 
     final int errorCount =
