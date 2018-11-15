@@ -68,8 +68,8 @@ class _SpecialClassDefinition {
 final Map<String, _SpecialClassDefinition> _specialClassDefinitions = {
   'Object': new _SpecialClassDefinition(
       SpecialClass.object, 'Object', 'dart.core', 'dart:core'),
-  'Interceptor': new _SpecialClassDefinition(SpecialClass.interceptor, 'Interceptor',
-      '_interceptors', 'dart:_interceptors',
+  'Interceptor': new _SpecialClassDefinition(SpecialClass.interceptor,
+      'Interceptor', '_interceptors', 'dart:_interceptors',
       required: false),
   'pragma': new _SpecialClassDefinition(
       SpecialClass.pragma, 'pragma', 'dart.core', 'dart:core',

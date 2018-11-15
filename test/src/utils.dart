@@ -81,7 +81,8 @@ void init({List<String> additionalArguments}) async {
       additionalArguments: additionalArguments);
 
   testPackageGraphErrors = await bootBasicPackage(
-      'testing/test_package_doc_errors', ['css', 'code_in_comments', 'excluded'],
+      'testing/test_package_doc_errors',
+      ['css', 'code_in_comments', 'excluded'],
       additionalArguments: additionalArguments);
   testPackageGraphSdk = await bootSdkPackage();
 }
