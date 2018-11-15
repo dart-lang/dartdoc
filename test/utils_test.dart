@@ -207,7 +207,7 @@ void main() {
           '2 spaces, one tab (same as 3 space)\n'
           ' \t4 spaces, one tab (preserve the tab)\n'
           '3 space indent again\n';
-      expect(stripCommonWhitespace(input), equals(output));
+      expect(stripCommonWhitespace(input).join('\n'), equals(output));
     });
   });
 }

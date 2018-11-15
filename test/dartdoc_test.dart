@@ -17,9 +17,10 @@ import 'package:test/test.dart';
 
 import 'src/utils.dart';
 
-class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext with LoggingContext {
+class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
+    with LoggingContext {
   DartdocLoggingOptionContext(DartdocOptionSet optionSet, Directory dir)
-    : super(optionSet, dir);
+      : super(optionSet, dir);
 }
 
 void main() {
@@ -29,13 +30,17 @@ void main() {
     setUpAll(() async {
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
       outputParam = ['--output', tempDir.path];
-      DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators('dartdoc', [createLoggingOptions]);
+      DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
+          'dartdoc', [createLoggingOptions]);
       optionSet.parseArguments([]);
-      startLogging(new DartdocLoggingOptionContext(optionSet, Directory.current));
+      startLogging(
+          new DartdocLoggingOptionContext(optionSet, Directory.current));
     });
 
     tearDown(() async {
-      tempDir.listSync().forEach((FileSystemEntity f) {f.deleteSync(recursive: true);});
+      tempDir.listSync().forEach((FileSystemEntity f) {
+        f.deleteSync(recursive: true);
+      });
     });
 
     Future<Dartdoc> buildDartdoc(
@@ -68,7 +73,8 @@ void main() {
       });
 
       test('examplePathPrefix', () async {
-        Class UseAnExampleHere = p.allCanonicalModelElements.whereType<Class>()
+        Class UseAnExampleHere = p.allCanonicalModelElements
+            .whereType<Class>()
             .firstWhere((ModelElement c) => c.name == 'UseAnExampleHere');
         expect(
             UseAnExampleHere.documentationAsHtml,
@@ -77,7 +83,8 @@ void main() {
       });
 
       test('includeExternal and showUndocumentedCategories', () async {
-        Class Something = p.allCanonicalModelElements.whereType<Class>()
+        Class Something = p.allCanonicalModelElements
+            .whereType<Class>()
             .firstWhere((ModelElement c) => c.name == 'Something');
         expect(Something.isPublic, isTrue);
         expect(Something.displayedCategories, isNotEmpty);
@@ -91,9 +98,9 @@ void main() {
       Iterable<String> unresolvedToolErrors = p
           .packageWarningCounter.countedWarnings.values
           .expand<String>((Set<Tuple2<PackageWarning, String>> s) => s
-          .where((Tuple2<PackageWarning, String> t) =>
-      t.item1 == PackageWarning.toolError)
-          .map<String>((Tuple2<PackageWarning, String> t) => t.item2));
+              .where((Tuple2<PackageWarning, String> t) =>
+                  t.item1 == PackageWarning.toolError)
+              .map<String>((Tuple2<PackageWarning, String> t) => t.item2));
 
       expect(p.packageWarningCounter.errorCount, equals(1));
       expect(unresolvedToolErrors.length, equals(1));
