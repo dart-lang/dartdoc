@@ -6236,7 +6236,7 @@
  {
   "name": "GenericMixin",
   "qualifiedName": "fake.GenericMixin",
-  "href": "fake/GenericMixin-mixin.html",
+  "href": "fake/GenericMixin-class.html",
   "type": "mixin",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -7798,7 +7798,7 @@
  {
   "name": "NewStyleMixinCallingSuper",
   "qualifiedName": "fake.NewStyleMixinCallingSuper",
-  "href": "fake/NewStyleMixinCallingSuper-mixin.html",
+  "href": "fake/NewStyleMixinCallingSuper-class.html",
   "type": "mixin",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -9975,7 +9975,7 @@
  {
   "name": "AMixin",
   "qualifiedName": "reexport_two.AMixin",
-  "href": "reexport_two/AMixin-mixin.html",
+  "href": "reexport_two/AMixin-class.html",
   "type": "mixin",
   "overriddenDepth": 0,
   "enclosedBy": {
