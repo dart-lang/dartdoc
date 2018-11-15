@@ -6040,7 +6040,7 @@ class Package extends LibraryContainer
 
   /// Is this the package at the top of the list?  We display the first
   /// package specially (with "Libraries" rather than the package name).
-  bool get isFirstPackage => identical(packageGraph.localPackages.first, this);
+  bool get isFirstPackage => packageGraph.localPackages.isNotEmpty && identical(packageGraph.localPackages.first, this);
 
   @override
   bool get isSdk => packageMeta.isSdk;
