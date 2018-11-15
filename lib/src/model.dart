@@ -3107,7 +3107,7 @@ abstract class ModelElement extends Canonicalization
       if (annotationElement is ExecutableElement) {
         annotationElement = (annotationElement as ExecutableElement)
             .returnType
-            .element as ClassElement;
+            .element;
       }
       if (annotationElement is ClassElement) {
         annotationClassElement = annotationElement;
@@ -3117,7 +3117,7 @@ abstract class ModelElement extends Canonicalization
       // annotationElement can be null if the element can't be resolved.
       Class annotationClass = packageGraph
           .findCanonicalModelElementFor(annotationClassElement) as Class;
-      if (annotationClass == null && annotationElement != null) {
+      if (annotationClass == null && annotationElement != null && annotationClassElement != null) {
         annotationClass =
             new ModelElement.fromElement(annotationClassElement, packageGraph)
                 as Class;
