@@ -778,6 +778,16 @@ which is a bit redundant.
           This function requires a Future<void> as a parameter</void>
           
 </dd>
+        <dt id="doAComplicatedThing" class="callable">
+          <span class="name"><a href="fake/doAComplicatedThing.html">doAComplicatedThing</a></span><span class="signature">(<wbr><span class="parameter" id="doAComplicatedThing-param-x"><span class="type-annotation">int</span> <span class="parameter-name">x</span>, {</span> <span class="parameter" id="doAComplicatedThing-param-doSomething"><span class="type-annotation">void</span> <span class="parameter-name">doSomething</span>(<span class="parameter" id="doSomething-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span> <span class="parameter" id="doSomething-param-anotherThing"><span class="type-annotation">String</span> <span class="parameter-name">anotherThing</span></span>), </span> <span class="parameter" id="doAComplicatedThing-param-doSomethingElse"><span class="type-annotation">void</span> <span class="parameter-name">doSomethingElse</span>(<span class="parameter" id="doSomethingElse-param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span> <span class="parameter" id="doSomethingElse-param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span>)</span> })
+            <span class="returntype parameter">&#8594; void</span>
+          </span>
+          </dt>
+        <dd>
+          Coderef to ambiguous parameter of function parameter should not crash us.
+(#1835) <a href="fake/doAComplicatedThing.html">[...]</a>
+          
+</dd>
         <dt id="functionUsingMixinReturningFunction" class="callable">
           <span class="name"><a href="fake/functionUsingMixinReturningFunction.html">functionUsingMixinReturningFunction</a></span><span class="signature">(<wbr>)
             <span class="returntype parameter">&#8594; dynamic</span>
@@ -1154,6 +1164,7 @@ default value.
       <li><a href="fake/addCallback2.html">addCallback2</a></li>
       <li><a href="fake/aMixinReturningFunction.html">aMixinReturningFunction</a></li>
       <li><a href="fake/aVoidParameter.html">aVoidParameter</a></li>
+      <li><a href="fake/doAComplicatedThing.html">doAComplicatedThing</a></li>
       <li><a href="fake/functionUsingMixinReturningFunction.html">functionUsingMixinReturningFunction</a></li>
       <li><a href="fake/functionWithFunctionParameters.html">functionWithFunctionParameters</a></li>
       <li><a href="fake/myGenericFunction.html">myGenericFunction</a></li>
