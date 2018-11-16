@@ -3877,7 +3877,8 @@ abstract class ModelElement extends Canonicalization
       return fqName;
     }
 
-    return _buildFullyQualifiedName(e.enclosingElement, '${e.enclosingElement.name}.$fqName');
+    return _buildFullyQualifiedName(
+        e.enclosingElement, '${e.enclosingElement.name}.$fqName');
   }
 
   String _calculateLinkedName() {
@@ -6046,7 +6047,9 @@ class Package extends LibraryContainer
 
   /// Is this the package at the top of the list?  We display the first
   /// package specially (with "Libraries" rather than the package name).
-  bool get isFirstPackage => packageGraph.localPackages.isNotEmpty && identical(packageGraph.localPackages.first, this);
+  bool get isFirstPackage =>
+      packageGraph.localPackages.isNotEmpty &&
+      identical(packageGraph.localPackages.first, this);
 
   @override
   bool get isSdk => packageMeta.isSdk;
