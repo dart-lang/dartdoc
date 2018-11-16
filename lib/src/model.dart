@@ -3088,8 +3088,13 @@ abstract class ModelElement extends Canonicalization
   }
 
   AstNode _astNode;
+  @override
   AstNode get astNode {
-    _astNode ??= element?.computeNode();
+    try {
+      _astNode ??= element?.computeNode();
+    } on NoSuchMethodError {
+      // some sort of warning?
+    }
     return _astNode;
   }
 
@@ -6165,10 +6170,9 @@ abstract class SourceCodeMixin implements Documentable {
 
   String sourceCodeFor(Element element) {
     String contents = getFileContentsFor(element);
-    var node = element.computeNode();
-    if (node != null) {
+    if (astNode != null) {
       // Find the start of the line, so that we can line up all the indents.
-      int i = node.offset;
+      int i = astNode.offset;
       while (i > 0) {
         i -= 1;
         if (contents[i] == '\n' || contents[i] == '\r') {
@@ -6178,8 +6182,8 @@ abstract class SourceCodeMixin implements Documentable {
       }
 
       // Trim the common indent from the source snippet.
-      var start = node.offset - (node.offset - i);
-      String source = contents.substring(start, node.end);
+      var start = astNode.offset - (astNode.offset - i);
+      String source = contents.substring(start, astNode.end);
 
       if (config.addCrossdart) {
         source = crossdartifySource(config.inputDir, packageGraph.crossdartJson,
@@ -6204,10 +6208,11 @@ abstract class SourceCodeMixin implements Documentable {
     return _sourceCode;
   }
 
+  AstNode get astNode;
+
   String get _crossdartPath {
-    var node = element.computeNode();
-    if (node is Declaration && node.declaredElement != null) {
-      var source = node.declaredElement.source;
+    if (astNode is Declaration && (astNode as Declaration).declaredElement != null) {
+      var source = (astNode as Declaration).declaredElement.source;
       var filePath = source.fullName;
       var uri = source.uri.toString();
       var packageMeta = library.packageGraph.packageMeta;
@@ -6668,8 +6673,14 @@ class PackageBuilder {
     }
     // TODO(jcollins-g): Excludes can match on uri or on name.  Fix that.
     if (!config.isLibraryExcluded(source.uri.toString())) {
-      LibraryElement library =
-          await driver.getLibraryByUri(source.uri.toString());
+      LibraryElement library;
+      try {
+        library = await driver.getLibraryByUri(source.uri.toString());
+      } on ArgumentError {
+        // Ignore ArgumentErrors to skip library parts.
+        library = (await driver.getResult(pathLib.canonicalize(filePath))).libraryElement;
+      }
+
       if (library != null) {
         if (!config.isLibraryExcluded(Library.getLibraryName(library)) &&
             !config.excludePackages
