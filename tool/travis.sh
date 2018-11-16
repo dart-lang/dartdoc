@@ -28,6 +28,7 @@ elif [ "$DARTDOC_BOT" = "packages" ]; then
   else
     PACKAGE_NAME=angular PACKAGE_VERSION=">=5.0.0-beta <5.1.0" DARTDOC_PARAMS="--include=angular,angular.security" pub run grinder build-pub-package
   fi
+  PACKAGE_NAME=access PACKAGE_VERSION=">=1.0.1+2" pub run grinder build-pub-package
   # Negative test for flutter_plugin_tools, make sure right error message is displayed.
   PACKAGE_NAME=flutter_plugin_tools PACKAGE_VERSION=">=0.0.14+1" pub run grinder build-pub-package 2>&1 | grep "Generation failed: dartdoc could not find any libraries to document.$"
   PACKAGE_NAME=shelf_exception_handler PACKAGE_VERSION=">=0.2.0" pub run grinder build-pub-package

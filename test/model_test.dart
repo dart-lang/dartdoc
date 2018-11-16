@@ -3208,6 +3208,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         paramFromExportLib,
         methodWithTypedefParam,
         applyCovariantParams;
+    ModelFunction doAComplicatedThing;
     Parameter intNumber, intCheckOptional;
 
     setUpAll(() {
@@ -3231,12 +3232,21 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'methodWithGenericParam');
       methodWithTypedefParam = c.instanceMethods
           .singleWhere((m) => m.name == 'methodWithTypedefParam');
+      doAComplicatedThing = fakeLibrary.publicFunctions
+          .firstWhere((m) => m.name == 'doAComplicatedThing');
     });
 
     test('covariant parameters render correctly', () {
       expect(applyCovariantParams.parameters, hasLength(2));
       expect(applyCovariantParams.linkedParamsLines,
           contains('<span>covariant</span>'));
+    });
+
+    test(
+        'ambiguous reference to function parameter parameters resolves to nothing',
+        () {
+      expect(doAComplicatedThing.documentationAsHtml,
+          contains('<code>aThingParameter</code>'));
     });
 
     test('has parameters', () {

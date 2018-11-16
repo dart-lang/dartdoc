@@ -9325,6 +9325,17 @@
   }
  },
  {
+  "name": "doAComplicatedThing",
+  "qualifiedName": "fake.doAComplicatedThing",
+  "href": "fake/doAComplicatedThing.html",
+  "type": "function",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
   "name": "dynamicGetter",
   "qualifiedName": "fake.dynamicGetter",
   "href": "fake/dynamicGetter.html",
