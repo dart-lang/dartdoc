@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -16,17 +17,30 @@ import 'package:test/test.dart';
 
 import 'src/utils.dart';
 
+class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
+    with LoggingContext {
+  DartdocLoggingOptionContext(DartdocOptionSet optionSet, Directory dir)
+      : super(optionSet, dir);
+}
+
 void main() {
   group('dartdoc with generators', () {
     Directory tempDir;
     List<String> outputParam;
-    setUp(() {
+    setUpAll(() async {
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
       outputParam = ['--output', tempDir.path];
+      DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
+          'dartdoc', [createLoggingOptions]);
+      optionSet.parseArguments([]);
+      startLogging(
+          new DartdocLoggingOptionContext(optionSet, Directory.current));
     });
 
-    tearDown(() {
-      delete(tempDir);
+    tearDown(() async {
+      tempDir.listSync().forEach((FileSystemEntity f) {
+        f.deleteSync(recursive: true);
+      });
     });
 
     Future<Dartdoc> buildDartdoc(
@@ -40,7 +54,7 @@ void main() {
       DartdocResults results;
       PackageGraph p;
 
-      setUp(() async {
+      setUpAll(() async {
         dartdoc = await buildDartdoc([], testPackageOptions);
         results = await dartdoc.generateDocsBase();
         p = results.packageGraph;
@@ -60,6 +74,7 @@ void main() {
 
       test('examplePathPrefix', () async {
         Class UseAnExampleHere = p.allCanonicalModelElements
+            .whereType<Class>()
             .firstWhere((ModelElement c) => c.name == 'UseAnExampleHere');
         expect(
             UseAnExampleHere.documentationAsHtml,
@@ -69,27 +84,28 @@ void main() {
 
       test('includeExternal and showUndocumentedCategories', () async {
         Class Something = p.allCanonicalModelElements
+            .whereType<Class>()
             .firstWhere((ModelElement c) => c.name == 'Something');
         expect(Something.isPublic, isTrue);
         expect(Something.displayedCategories, isNotEmpty);
       });
+    });
 
-      test('errors generate errors even when warnings are off', () async {
-        Dartdoc dartdoc = await buildDartdoc([], testPackageToolError);
-        DartdocResults results = await dartdoc.generateDocsBase();
-        PackageGraph p = results.packageGraph;
-        Iterable<String> unresolvedToolErrors = p
-            .packageWarningCounter.countedWarnings.values
-            .expand<String>((Set<Tuple2<PackageWarning, String>> s) => s
-                .where((Tuple2<PackageWarning, String> t) =>
-                    t.item1 == PackageWarning.toolError)
-                .map<String>((Tuple2<PackageWarning, String> t) => t.item2));
+    test('errors generate errors even when warnings are off', () async {
+      Dartdoc dartdoc = await buildDartdoc([], testPackageToolError);
+      DartdocResults results = await dartdoc.generateDocsBase();
+      PackageGraph p = results.packageGraph;
+      Iterable<String> unresolvedToolErrors = p
+          .packageWarningCounter.countedWarnings.values
+          .expand<String>((Set<Tuple2<PackageWarning, String>> s) => s
+              .where((Tuple2<PackageWarning, String> t) =>
+                  t.item1 == PackageWarning.toolError)
+              .map<String>((Tuple2<PackageWarning, String> t) => t.item2));
 
-        expect(p.packageWarningCounter.errorCount, equals(1));
-        expect(unresolvedToolErrors.length, equals(1));
-        expect(unresolvedToolErrors.first,
-            contains('Tool "drill" returned non-zero exit code'));
-      });
+      expect(p.packageWarningCounter.errorCount, equals(1));
+      expect(unresolvedToolErrors.length, equals(1));
+      expect(unresolvedToolErrors.first,
+          contains('Tool "drill" returned non-zero exit code'));
     });
 
     group('Invoking command-line dartdoc', () {
@@ -118,7 +134,7 @@ void main() {
       DartdocResults results;
       Package testPackageOptions;
 
-      setUp(() async {
+      setUpAll(() async {
         results = await (await buildDartdoc(
                 ['--link-to-remote'], testPackageOptionsImporter))
             .generateDocsBase();

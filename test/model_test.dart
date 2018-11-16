@@ -87,6 +87,7 @@ void main() {
     Class toolUser;
     Method invokeTool;
     Method invokeToolNoInput;
+    Method invokeToolMultipleSections;
 
     setUpAll(() {
       toolUser = exLibrary.classes.firstWhere((c) => c.name == 'ToolUser');
@@ -94,6 +95,8 @@ void main() {
           toolUser.allInstanceMethods.firstWhere((m) => m.name == 'invokeTool');
       invokeToolNoInput = toolUser.allInstanceMethods
           .firstWhere((m) => m.name == 'invokeToolNoInput');
+      invokeToolMultipleSections = toolUser.allInstanceMethods
+          .firstWhere((m) => m.name == 'invokeToolMultipleSections');
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
     test('can invoke a tool and pass args and environment', () {
@@ -113,8 +116,6 @@ void main() {
           contains(r'''--special= |\[]!@#\"'$%^&*()_+]'''));
       expect(invokeTool.documentation, contains('INPUT: <INPUT_FILE>'));
       expect(invokeTool.documentation,
-          contains(new RegExp('SOURCE_LINE: [0-9]+, ')));
-      expect(invokeTool.documentation,
           contains(new RegExp('SOURCE_COLUMN: [0-9]+, ')));
       expect(invokeTool.documentation,
           contains(new RegExp(r'SOURCE_PATH: lib[/\\]example\.dart, ')));
@@ -124,7 +125,9 @@ void main() {
           invokeTool.documentation, contains('PACKAGE_NAME: test_package, '));
       expect(invokeTool.documentation, contains('LIBRARY_NAME: ex, '));
       expect(invokeTool.documentation,
-          contains('ELEMENT_NAME: ToolUser.invokeTool}'));
+          contains('ELEMENT_NAME: ToolUser.invokeTool, '));
+      expect(invokeTool.documentation,
+          contains(new RegExp('INVOCATION_INDEX: [0-9]+}')));
       expect(invokeTool.documentation, contains('## `Yes it is a [Dog]!`'));
     });
     test('can invoke a tool and add a reference link', () {
@@ -143,11 +146,32 @@ void main() {
       expect(invokeToolNoInput.documentationAsHtml,
           isNot(contains('<a href="ex/Dog-class.html">Dog</a>')));
     });
+    test('can invoke a tool multiple times in one comment block', () {
+      RegExp envLine = RegExp(r'^Env: \{', multiLine: true);
+      expect(
+          envLine.allMatches(invokeToolMultipleSections.documentation).length,
+          equals(2));
+      RegExp argLine = RegExp(r'^Args: \[', multiLine: true);
+      expect(
+          argLine.allMatches(invokeToolMultipleSections.documentation).length,
+          equals(2));
+      expect(invokeToolMultipleSections.documentation,
+          contains('Invokes more than one tool in the same comment block.'));
+      expect(invokeToolMultipleSections.documentation,
+          contains('This text should appear in the output.'));
+      expect(invokeToolMultipleSections.documentation,
+          contains('## `This text should appear in the output.`'));
+      expect(invokeToolMultipleSections.documentation,
+          contains('This text should also appear in the output.'));
+      expect(invokeToolMultipleSections.documentation,
+          contains('## `This text should also appear in the output.`'));
+    });
   });
 
   group('HTML Injection when allowed', () {
     Class htmlInjection;
     Method injectSimpleHtml;
+    Method injectHtmlFromTool;
 
     PackageGraph injectionPackageGraph;
     Library injectionExLibrary;
@@ -164,6 +188,8 @@ void main() {
           .firstWhere((c) => c.name == 'HtmlInjection');
       injectSimpleHtml = htmlInjection.allInstanceMethods
           .firstWhere((m) => m.name == 'injectSimpleHtml');
+      injectHtmlFromTool = htmlInjection.allInstanceMethods
+          .firstWhere((m) => m.name == 'injectHtmlFromTool');
       injectionPackageGraph.allLocalModelElements
           .forEach((m) => m.documentation);
     });
@@ -175,8 +201,28 @@ void main() {
               '\n<dartdoc-html>bad2bbdd4a5cf9efb3212afff4449904756851aa</dartdoc-html>\n'));
       expect(injectSimpleHtml.documentation,
           isNot(contains('\n{@inject-html}\n')));
+      expect(injectSimpleHtml.documentation,
+          isNot(contains('\n{@end-inject-html}\n')));
       expect(injectSimpleHtml.documentationAsHtml,
           contains('   <div style="opacity: 0.5;">[HtmlInjection]</div>'));
+    });
+    test("can inject HTML from tool", () {
+      RegExp envLine = RegExp(r'^Env: \{', multiLine: true);
+      expect(envLine.allMatches(injectHtmlFromTool.documentation).length,
+          equals(2));
+      RegExp argLine = RegExp(r'^Args: \[', multiLine: true);
+      expect(argLine.allMatches(injectHtmlFromTool.documentation).length,
+          equals(2));
+      expect(
+          injectHtmlFromTool.documentation,
+          contains(
+              'Invokes more than one tool in the same comment block, and injects HTML.'));
+      expect(injectHtmlFromTool.documentationAsHtml,
+          contains('<div class="title">Title</div>'));
+      expect(injectHtmlFromTool.documentationAsHtml,
+          isNot(contains('{@inject-html}')));
+      expect(injectHtmlFromTool.documentationAsHtml,
+          isNot(contains('{@end-inject-html}')));
     });
   });
 
@@ -184,12 +230,11 @@ void main() {
     Class htmlInjection;
     Method injectSimpleHtml;
 
-    setUp(() {
+    setUpAll(() {
       htmlInjection =
           exLibrary.classes.firstWhere((c) => c.name == 'HtmlInjection');
       injectSimpleHtml = htmlInjection.allInstanceMethods
           .firstWhere((m) => m.name == 'injectSimpleHtml');
-      packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
     test("doesn't inject HTML if --inject-html option is not present", () {
       expect(
@@ -552,7 +597,7 @@ void main() {
         reexportTwoLib;
     Class SomeClass, SomeOtherClass, YetAnotherClass, AUnicornClass;
 
-    setUp(() {
+    setUpAll(() {
       dartAsyncLib = utils.testPackageGraphSdk.libraries
           .firstWhere((l) => l.name == 'dart:async');
 
@@ -699,7 +744,7 @@ void main() {
     Method withMacro, withMacro2, withPrivateMacro, withUndefinedMacro;
     EnumField macroReferencedHere;
 
-    setUp(() {
+    setUpAll(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
       withMacro =
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro');
@@ -709,17 +754,20 @@ void main() {
           .firstWhere((m) => m.name == 'withPrivateMacro');
       withUndefinedMacro = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withUndefinedMacro');
-      MacrosFromAccessors = fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
-      macroReferencedHere = MacrosFromAccessors.publicConstants.firstWhere((e) => e.name == 'macroReferencedHere');
+      MacrosFromAccessors =
+          fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
+      macroReferencedHere = MacrosFromAccessors.publicConstants
+          .firstWhere((e) => e.name == 'macroReferencedHere');
     });
 
     test("renders a macro defined within a enum", () {
-      expect(macroReferencedHere.documentationAsHtml, contains('This is a macro defined in an Enum accessor.'));
+      expect(macroReferencedHere.documentationAsHtml,
+          contains('This is a macro defined in an Enum accessor.'));
     });
 
     test("renders a macro within the same comment where it's defined", () {
       expect(withMacro.documentation,
-          equals("Macro method\n\n\nFoo macro content\nMore docs"));
+          equals("Macro method\n\nFoo macro content\nMore docs"));
     });
 
     test("renders a macro in another method, not the same where it's defined",
@@ -751,24 +799,31 @@ void main() {
     Method withAnimationBadHeight;
     Method withAnimationUnknownArg;
 
-    setUp(() {
+    setUpAll(() {
       documentationErrors = errorLibrary.classes
-          .firstWhere((c) => c.name == 'DocumentationErrors');
+          .firstWhere((c) => c.name == 'DocumentationErrors')
+            ..documentation;
       withInvalidNamedAnimation = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withInvalidNamedAnimation');
+          .firstWhere((m) => m.name == 'withInvalidNamedAnimation')
+            ..documentation;
       withAnimationNonUnique = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationNonUnique');
+          .firstWhere((m) => m.name == 'withAnimationNonUnique')
+            ..documentation;
       withAnimationNonUniqueDeprecated = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationNonUniqueDeprecated');
+          .firstWhere((m) => m.name == 'withAnimationNonUniqueDeprecated')
+            ..documentation;
       withAnimationWrongParams = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationWrongParams');
+          .firstWhere((m) => m.name == 'withAnimationWrongParams')
+            ..documentation;
       withAnimationBadWidth = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationBadWidth');
+          .firstWhere((m) => m.name == 'withAnimationBadWidth')
+            ..documentation;
       withAnimationBadHeight = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationBadHeight');
+          .firstWhere((m) => m.name == 'withAnimationBadHeight')
+            ..documentation;
       withAnimationUnknownArg = documentationErrors.allInstanceMethods
-          .firstWhere((m) => m.name == 'withAnimationUnknownArg');
-      packageGraphErrors.allLocalModelElements.forEach((m) => m.documentation);
+          .firstWhere((m) => m.name == 'withAnimationUnknownArg')
+            ..documentation;
     });
 
     test("warns with invalidly-named animation within the method documentation",
@@ -850,7 +905,7 @@ void main() {
     Method withAnimationInline;
     Method withAnimationOutOfOrder;
 
-    setUp(() {
+    setUpAll(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
       withAnimation =
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withAnimation');
@@ -866,7 +921,6 @@ void main() {
           .firstWhere((m) => m.name == 'withAnimationInline');
       withAnimationOutOfOrder = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withAnimationOutOfOrder');
-      packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
 
     test("renders an unnamed animation within the method documentation", () {
@@ -920,7 +974,7 @@ void main() {
     Field aImplementingThingy;
     Accessor aImplementingThingyAccessor;
 
-    setUp(() {
+    setUpAll(() {
       BaseThingy =
           fakeLibrary.classes.firstWhere((c) => c.name == 'BaseThingy');
       BaseThingy2 =
@@ -966,7 +1020,7 @@ void main() {
 
     ModelFunction short;
 
-    setUp(() {
+    setUpAll(() {
       incorrectDocReferenceFromEx = exLibrary.constants
           .firstWhere((c) => c.name == 'incorrectDocReferenceFromEx');
       B = exLibrary.classes.firstWhere((c) => c.name == 'B');
@@ -1003,7 +1057,7 @@ void main() {
       Class DocumentWithATable;
       String docsAsHtml;
 
-      setUp(() {
+      setUpAll(() {
         DocumentWithATable = fakeLibrary.classes
             .firstWhere((cls) => cls.name == 'DocumentWithATable');
         docsAsHtml = DocumentWithATable.documentationAsHtml;
@@ -1032,7 +1086,7 @@ void main() {
     group('doc references', () {
       String docsAsHtml;
 
-      setUp(() {
+      setUpAll(() {
         docsAsHtml = doAwesomeStuff.documentationAsHtml;
       });
 
@@ -1358,7 +1412,7 @@ void main() {
         overrideByBoth,
         overrideByModifierClass;
 
-    setUp(() {
+    setUpAll(() {
       Iterable<Class> classes = fakeLibrary.publicClasses;
       GenericClass = classes.firstWhere((c) => c.name == 'GenericClass');
       ModifierClass = classes.firstWhere((c) => c.name == 'ModifierClass');
@@ -1374,6 +1428,11 @@ void main() {
           .firstWhere((f) => f.name == 'overrideByBoth');
       overrideByModifierClass = TypeInferenceMixedIn.allFields
           .firstWhere((f) => f.name == 'overrideByModifierClass');
+    });
+
+    test(('Verify mixin member is available in findRefElementCache'), () {
+      expect(packageGraph.findRefElementCache['GenericMixin.mixinMember'],
+          isNotEmpty);
     });
 
     test(('Verify inheritance/mixin structure and type inference'), () {
@@ -1483,7 +1542,7 @@ void main() {
     Class Apple, B, Cat, Cool, Dog, F, Dep, SpecialList;
     Class ExtendingClass, CatString;
 
-    setUp(() {
+    setUpAll(() {
       classes = exLibrary.publicClasses.toList();
       Apple = classes.firstWhere((c) => c.name == 'Apple');
       B = classes.firstWhere((c) => c.name == 'B');
@@ -1737,7 +1796,7 @@ void main() {
   group('Enum', () {
     Enum animal;
 
-    setUp(() {
+    setUpAll(() {
       animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
 
       /// Trigger code reference resolution
@@ -1805,7 +1864,7 @@ void main() {
     ModelFunction topLevelFunction;
     ModelFunction typeParamOfFutureOr;
 
-    setUp(() {
+    setUpAll(() {
       f1 = exLibrary.functions.first;
       genericFunction =
           exLibrary.functions.firstWhere((f) => f.name == 'genericFunction');
@@ -1943,7 +2002,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Type expansion', () {
     Class TemplatedInterface, ClassWithUnusualProperties;
 
-    setUp(() {
+    setUpAll(() {
       TemplatedInterface =
           exLibrary.classes.singleWhere((c) => c.name == 'TemplatedInterface');
       ClassWithUnusualProperties = fakeLibrary.classes
@@ -2112,7 +2171,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Method inheritedClear, testGeneric, testGenericMethod;
     Method getAFunctionReturningVoid, getAFunctionReturningBool;
 
-    setUp(() {
+    setUpAll(() {
       klass = exLibrary.classes.singleWhere((c) => c.name == 'Klass');
       classB = exLibrary.classes.singleWhere((c) => c.name == 'B');
       HasGenerics =
@@ -2278,7 +2337,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class specializedDuration;
     Operator plus, equalsOverride;
 
-    setUp(() {
+    setUpAll(() {
       specializedDuration =
           exLibrary.classes.firstWhere((c) => c.name == 'SpecializedDuration');
       plus = specializedDuration.allOperators
@@ -2338,7 +2397,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Field aProperty;
     Field covariantField, covariantSetter;
 
-    setUp(() {
+    setUpAll(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       f1 = c.staticProperties[0]; // n
       f2 = c.instanceProperties[0];
@@ -2443,8 +2502,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('Docs from inherited implicit accessors are preserved', () {
-      expect(explicitGetterImplicitSetter.setter.computeDocumentationComment,
-          isNot(''));
+      expect(
+          explicitGetterImplicitSetter.setter.documentationComment, isNot(''));
     });
 
     test('@nodoc on simple property works', () {
@@ -2467,7 +2526,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       expect(documentedPartialFieldInSubclassOnly.isPublic, isTrue);
       expect(documentedPartialFieldInSubclassOnly.readOnly, isTrue);
-      expect(documentedPartialFieldInSubclassOnly.computeDocumentationComment,
+      expect(documentedPartialFieldInSubclassOnly.documentationComment,
           contains('This getter is documented'));
       expect(
           documentedPartialFieldInSubclassOnly.annotations
@@ -2478,7 +2537,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('@nodoc overridden in subclass for getter works', () {
       expect(explicitNonDocumentedInBaseClassGetter.isPublic, isTrue);
       expect(explicitNonDocumentedInBaseClassGetter.hasPublicGetter, isTrue);
-      expect(explicitNonDocumentedInBaseClassGetter.computeDocumentationComment,
+      expect(explicitNonDocumentedInBaseClassGetter.documentationComment,
           contains('I should be documented'));
       expect(explicitNonDocumentedInBaseClassGetter.readOnly, isTrue);
     });
@@ -2651,7 +2710,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     Class classB;
 
-    setUp(() {
+    setUpAll(() {
       TopLevelVariable justGetter =
           fakeLibrary.properties.firstWhere((p) => p.name == 'justGetter');
       onlyGetterGetter = justGetter.getter;
@@ -2700,7 +2759,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     TopLevelVariable complicatedReturn;
     TopLevelVariable importantComputations;
 
-    setUp(() {
+    setUpAll(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
       v3 = exLibrary.properties.firstWhere((p) => p.name == 'y');
       importantComputations = fakeLibrary.properties
@@ -2765,14 +2824,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('@nodoc on setter only works', () {
       expect(nodocSetter.isPublic, isTrue);
       expect(nodocSetter.readOnly, isTrue);
-      expect(nodocSetter.computeDocumentationComment,
+      expect(nodocSetter.documentationComment,
           equals('Getter docs should be shown.'));
     });
 
     test('@nodoc on getter only works', () {
       expect(nodocGetter.isPublic, isTrue);
       expect(nodocGetter.writeOnly, isTrue);
-      expect(nodocGetter.computeDocumentationComment,
+      expect(nodocGetter.documentationComment,
           equals('Setter docs should be shown.'));
     });
 
@@ -2835,7 +2894,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     Field aStaticConstField, aName;
 
-    setUp(() {
+    setUpAll(() {
       greenConstant =
           exLibrary.constants.firstWhere((c) => c.name == 'COLOR_GREEN');
       orangeConstant =
@@ -2910,7 +2969,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Constructor appleConstructorFromString;
     Constructor constructorTesterDefault, constructorTesterFromSomething;
     Class apple, constCat, constructorTester;
-    setUp(() {
+    setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       constCat = exLibrary.classes.firstWhere((c) => c.name == 'ConstantCat');
       constructorTester =
@@ -2969,7 +3028,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     ModelFunction returningFutureVoid, aVoidParameter;
     Class ExtendsFutureVoid, ImplementsFutureVoid, ATypeTakingClassMixedIn;
 
-    setUp(() {
+    setUpAll(() {
       returningFutureVoid = fakeLibrary.functions
           .firstWhere((f) => f.name == 'returningFutureVoid');
       aVoidParameter =
@@ -3039,7 +3098,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('ModelType', () {
     Field fList;
 
-    setUp(() {
+    setUpAll(() {
       fList = exLibrary.classes
           .firstWhere((c) => c.name == 'B')
           .instanceProperties
@@ -3057,7 +3116,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Typedef aComplexTypedef;
     Class TypedefUsingClass;
 
-    setUp(() {
+    setUpAll(() {
       t = exLibrary.typedefs.firstWhere((t) => t.name == 'processMessage');
       generic =
           fakeLibrary.typedefs.firstWhere((t) => t.name == 'NewGenericTypedef');
@@ -3151,7 +3210,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         applyCovariantParams;
     Parameter intNumber, intCheckOptional;
 
-    setUp(() {
+    setUpAll(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       CovariantMemberParams = fakeLibrary.classes
           .firstWhere((c) => c.name == 'CovariantMemberParams');
@@ -3244,7 +3303,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class b;
     List<Class> implA, implC;
 
-    setUp(() {
+    setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       b = exLibrary.classes.firstWhere((c) => c.name == 'B');
       implA = apple.publicImplementors.toList();
@@ -3296,7 +3355,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   group('Annotations', () {
     Class forAnnotation, dog;
     Method ctr;
-    setUp(() {
+    setUpAll(() {
       forAnnotation =
           exLibrary.classes.firstWhere((c) => c.name == 'HasAnnotation');
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');

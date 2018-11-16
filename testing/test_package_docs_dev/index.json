@@ -1926,6 +1926,17 @@
   }
  },
  {
+  "name": "injectHtmlFromTool",
+  "qualifiedName": "ex.HtmlInjection.injectHtmlFromTool",
+  "href": "ex/HtmlInjection/injectHtmlFromTool.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HtmlInjection",
+   "type": "class"
+  }
+ },
+ {
   "name": "injectSimpleHtml",
   "qualifiedName": "ex.HtmlInjection.injectSimpleHtml",
   "href": "ex/HtmlInjection/injectSimpleHtml.html",
@@ -3458,6 +3469,17 @@
   "name": "invokeTool",
   "qualifiedName": "ex.ToolUser.invokeTool",
   "href": "ex/ToolUser/invokeTool.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ToolUser",
+   "type": "class"
+  }
+ },
+ {
+  "name": "invokeToolMultipleSections",
+  "qualifiedName": "ex.ToolUser.invokeToolMultipleSections",
+  "href": "ex/ToolUser/invokeToolMultipleSections.html",
   "type": "method",
   "overriddenDepth": 0,
   "enclosedBy": {
@@ -6066,6 +6088,83 @@
   "enclosedBy": {
    "name": "fake",
    "type": "library"
+  }
+ },
+ {
+  "name": "HasDynamicAnnotation",
+  "qualifiedName": "fake.HasDynamicAnnotation",
+  "href": "fake/HasDynamicAnnotation-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "HasDynamicAnnotation",
+  "qualifiedName": "fake.HasDynamicAnnotation",
+  "href": "fake/HasDynamicAnnotation/HasDynamicAnnotation.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasDynamicAnnotation",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.HasDynamicAnnotation.==",
+  "href": "fake/HasDynamicAnnotation/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasDynamicAnnotation",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.HasDynamicAnnotation.hashCode",
+  "href": "fake/HasDynamicAnnotation/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasDynamicAnnotation",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.HasDynamicAnnotation.noSuchMethod",
+  "href": "fake/HasDynamicAnnotation/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasDynamicAnnotation",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.HasDynamicAnnotation.runtimeType",
+  "href": "fake/HasDynamicAnnotation/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasDynamicAnnotation",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.HasDynamicAnnotation.toString",
+  "href": "fake/HasDynamicAnnotation/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "HasDynamicAnnotation",
+   "type": "class"
   }
  },
  {
@@ -9142,6 +9241,17 @@
   "qualifiedName": "fake.aCoolVariable",
   "href": "fake/aCoolVariable.html",
   "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "aDynamicAnnotation",
+  "qualifiedName": "fake.aDynamicAnnotation",
+  "href": "fake/aDynamicAnnotation-constant.html",
+  "type": "top-level constant",
   "overriddenDepth": 0,
   "enclosedBy": {
    "name": "fake",

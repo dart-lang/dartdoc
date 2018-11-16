@@ -99,6 +99,43 @@ int byFeatureOrdering(String a, String b) {
 final RegExp locationSplitter = new RegExp(r'(package:|[\\/;.])');
 final RegExp substituteNameVersion = new RegExp(r'%([bnv])%');
 
+/// This doc may need to be processed in case it has a template or html
+/// fragment.
+final needsPrecacheRegExp = new RegExp(r'{@(template|tool|inject-html)');
+
+final templateRegExp = new RegExp(
+    r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?',
+    multiLine: true);
+final htmlRegExp = new RegExp(
+    r'[ ]*{@inject-html\s*}([\s\S]+?){@end-inject-html}[ ]*\n?',
+    multiLine: true);
+final htmlInjectRegExp =
+    new RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
+
+// Matches all tool directives (even some invalid ones). This is so
+// we can give good error messages if the directive is malformed, instead of
+// just silently emitting it as-is.
+final basicToolRegExp = new RegExp(
+    r'[ ]*{@tool\s+([^}]+)}\n?([\s\S]+?)\n?{@end-tool}[ ]*\n?',
+    multiLine: true);
+
+/// Regexp to take care of splitting arguments, and handling the quotes
+/// around arguments, if any.
+///
+/// Match group 1 is the "foo=" (or "--foo=") part of the option, if any.
+/// Match group 2 contains the quote character used (which is discarded).
+/// Match group 3 is a quoted arg, if any, without the quotes.
+/// Match group 4 is the unquoted arg, if any.
+final RegExp argMatcher = new RegExp(r'([a-zA-Z\-_0-9]+=)?' // option name
+    r'(?:' // Start a new non-capture group for the two possibilities.
+    r'''(["'])((?:\\{2})*|(?:.*?[^\\](?:\\{2})*))\2|''' // with quotes.
+    r'([^ ]+))'); // without quotes.
+
+final categoryRegexp = new RegExp(
+    r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
+    multiLine: true);
+final macroRegExp = new RegExp(r'{@macro\s+([^}]+)}');
+
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
 ///
@@ -131,8 +168,9 @@ abstract class Inheritable implements ModelElement {
 
   @override
   ModelElement _buildCanonicalModelElement() {
-    return canonicalEnclosingElement?.allCanonicalModelElements
-        ?.firstWhere((m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor, orElse: () => null);
+    return canonicalEnclosingElement?.allCanonicalModelElements?.firstWhere(
+        (m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor,
+        orElse: () => null);
   }
 
   Class get canonicalEnclosingElement {
@@ -413,7 +451,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  String get computeDocumentationComment {
+  String _computeDocumentationComment() {
     if (isSynthetic) {
       String docComment =
           (element as PropertyAccessorElement).variable.documentationComment;
@@ -426,14 +464,13 @@ class Accessor extends ModelElement implements EnclosedElement {
                   docComment.contains('@nodoc'))) ||
           (isSetter &&
               enclosingCombo.hasGetter &&
-              enclosingCombo.getter.computeDocumentationComment !=
-                  docComment)) {
+              enclosingCombo.getter.documentationComment != docComment)) {
         return stripComments(docComment);
       } else {
         return '';
       }
     }
-    return stripComments(super.computeDocumentationComment);
+    return stripComments(super._computeDocumentationComment());
   }
 
   @override
@@ -576,6 +613,7 @@ class Class extends ModelElement
 
   Class(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph, null) {
+    packageGraph.specialClasses.addSpecial(this);
     _mixins = _cls.mixins
         .map((f) {
           DefinedElementType t = new ElementType.from(f, packageGraph);
@@ -1332,9 +1370,7 @@ abstract class Categorization implements ModelElement {
     Set<String> _categorySet = new Set();
     Set<String> _subCategorySet = new Set();
     _hasCategorization = false;
-    final categoryRegexp = new RegExp(
-        r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
-        multiLine: true);
+
     rawDocs = rawDocs.replaceAllMapped(categoryRegexp, (match) {
       _hasCategorization = true;
       switch (match[1]) {
@@ -1766,7 +1802,7 @@ class Field extends ModelElement
   }
 
   @override
-  String get computeDocumentationComment {
+  String _computeDocumentationComment() {
     String docs = getterSetterDocumentationComment;
     if (docs.isEmpty) return _field.documentationComment;
     return docs;
@@ -1940,8 +1976,7 @@ abstract class GetterSetterCombo implements ModelElement {
       // doesn't yield the real elements for GetterSetterCombos.
       if (!config.dropTextFrom
           .contains(getter.documentationFrom.first.element.library.name)) {
-        String docs =
-            getter.documentationFrom.first.computeDocumentationComment;
+        String docs = getter.documentationFrom.first.documentationComment;
         if (docs != null) buffer.write(docs);
       }
     }
@@ -1950,8 +1985,7 @@ abstract class GetterSetterCombo implements ModelElement {
       assert(setter.documentationFrom.length == 1);
       if (!config.dropTextFrom
           .contains(setter.documentationFrom.first.element.library.name)) {
-        String docs =
-            setter.documentationFrom.first.computeDocumentationComment;
+        String docs = setter.documentationFrom.first.documentationComment;
         if (docs != null) {
           if (buffer.isNotEmpty) buffer.write('\n\n');
           buffer.write(docs);
@@ -2531,27 +2565,46 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return name;
   }
 
+  Map<String, Set<ModelElement>> _modelElementsNameMap;
+
+  /// Map of [fullyQualifiedNameWithoutLibrary] to all matching [ModelElement]s
+  /// in this library.  Used for code reference lookups.
+  Map<String, Set<ModelElement>> get modelElementsNameMap {
+    if (_modelElementsNameMap == null) {
+      _modelElementsNameMap = new Map<String, Set<ModelElement>>();
+      allModelElements.forEach((ModelElement modelElement) {
+        _modelElementsNameMap.putIfAbsent(
+            modelElement.fullyQualifiedNameWithoutLibrary, () => new Set());
+        _modelElementsNameMap[modelElement.fullyQualifiedNameWithoutLibrary]
+            .add(modelElement);
+      });
+    }
+    return _modelElementsNameMap;
+  }
+
   Map<Element, Set<ModelElement>> _modelElementsMap;
   Map<Element, Set<ModelElement>> get modelElementsMap {
     if (_modelElementsMap == null) {
       final Set<ModelElement> results = new Set();
       results
-        ..addAll(library.allClasses)
         ..addAll(library.constants)
-        ..addAll(library.enums)
         ..addAll(library.functions)
-        ..addAll(library.mixins)
         ..addAll(library.properties)
         ..addAll(library.typedefs);
 
       library.allClasses.forEach((c) {
-        results.addAll(c.allModelElements);
         results.add(c);
+        results.addAll(c.allModelElements);
       });
 
       library.enums.forEach((e) {
-        results.addAll(e.allModelElements);
         results.add(e);
+        results.addAll(e.allModelElements);
+      });
+
+      library.mixins.forEach((m) {
+        results.add(m);
+        results.addAll(m.allModelElements);
       });
 
       _modelElementsMap = new Map<Element, Set<ModelElement>>();
@@ -3052,9 +3105,8 @@ abstract class ModelElement extends Canonicalization
 
       ClassElement annotationClassElement;
       if (annotationElement is ExecutableElement) {
-        annotationElement = (annotationElement as ExecutableElement)
-            .returnType
-            .element as ClassElement;
+        annotationElement =
+            (annotationElement as ExecutableElement).returnType.element;
       }
       if (annotationElement is ClassElement) {
         annotationClassElement = annotationElement;
@@ -3064,7 +3116,9 @@ abstract class ModelElement extends Canonicalization
       // annotationElement can be null if the element can't be resolved.
       Class annotationClass = packageGraph
           .findCanonicalModelElementFor(annotationClassElement) as Class;
-      if (annotationClass == null && annotationElement != null) {
+      if (annotationClass == null &&
+          annotationElement != null &&
+          annotationClassElement != null) {
         annotationClass =
             new ModelElement.fromElement(annotationClassElement, packageGraph)
                 as Class;
@@ -3094,7 +3148,7 @@ abstract class ModelElement extends Canonicalization
           !(enclosingElement as Class).isPublic) {
         _isPublic = false;
       } else {
-        String docComment = computeDocumentationComment;
+        String docComment = documentationComment;
         if (docComment == null) {
           _isPublic = hasPublicName(element);
         } else {
@@ -3208,7 +3262,7 @@ abstract class ModelElement extends Canonicalization
   List<ModelElement> get computeDocumentationFrom {
     List<ModelElement> docFrom;
 
-    if (computeDocumentationComment == null &&
+    if (documentationComment == null &&
         canOverride() &&
         this is Inheritable &&
         (this as Inheritable).overriddenElement != null) {
@@ -3234,7 +3288,7 @@ abstract class ModelElement extends Canonicalization
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
     } else {
-      _rawDocs = computeDocumentationComment ?? '';
+      _rawDocs = documentationComment ?? '';
       _rawDocs = stripComments(_rawDocs) ?? '';
       // Must evaluate tools first, in case they insert any other directives.
       _rawDocs = _evaluateTools(_rawDocs);
@@ -3661,7 +3715,24 @@ abstract class ModelElement extends Canonicalization
         extendedDebug: extendedDebug);
   }
 
-  String get computeDocumentationComment => element.documentationComment;
+  String _computeDocumentationComment() => element.documentationComment;
+
+  bool _documentationCommentComputed = false;
+  String _documentationComment;
+  String get documentationComment {
+    if (_documentationCommentComputed == false) {
+      _documentationComment = _computeDocumentationComment();
+      _documentationCommentComputed = true;
+    }
+    return _documentationComment;
+  }
+
+  /// Call this method to precache docs for this object if it might possibly
+  /// have a macro template or a tool definition.
+  void precacheLocalDocsIfNeeded() {
+    if (documentationComment != null &&
+        needsPrecacheRegExp.hasMatch(documentationComment)) documentationLocal;
+  }
 
   Documentation get _documentation {
     if (__documentation != null) return __documentation;
@@ -3945,16 +4016,10 @@ abstract class ModelElement extends Canonicalization
   /// ## Content to send to tool.
   /// 2018-09-18T21:15+00:00
   String _evaluateTools(String rawDocs) {
-    // Matches all tool directives (even some invalid ones). This is so
-    // we can give good error messages if the directive is malformed, instead of
-    // just silently emitting it as-is.
-    final basicToolRegExp = new RegExp(
-        r'[ ]*{@tool\s+([^}]+)}\n?([\s\S]+?)\n?{@end-tool}[ ]*\n?',
-        multiLine: true);
-
     var runner = new ToolRunner(config.tools, (String message) {
       warn(PackageWarning.toolError, message: message);
     });
+    int invocationIndex = 0;
     try {
       return rawDocs.replaceAllMapped(basicToolRegExp, (basicMatch) {
         List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
@@ -3965,7 +4030,9 @@ abstract class ModelElement extends Canonicalization
                   'Must specify a tool to execute for the @tool directive.');
           return '';
         }
-
+        // Count the number of invocations of tools in this dartdoc block,
+        // so that tools can differentiate different blocks from each other.
+        invocationIndex++;
         return runner.run(args,
             content: basicMatch[2],
             environment: {
@@ -3979,6 +4046,7 @@ abstract class ModelElement extends Canonicalization
               'PACKAGE_NAME': package?.name,
               'LIBRARY_NAME': library?.fullyQualifiedName,
               'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
+              'INVOCATION_INDEX': invocationIndex.toString(),
             }..removeWhere((key, value) => value == null));
       });
     } finally {
@@ -4186,8 +4254,8 @@ abstract class ModelElement extends Canonicalization
   /// but just injected verbatim.
   String _injectHtmlFragments(String rawDocs) {
     if (!config.injectHtml) return rawDocs;
-    final macroRegExp = new RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
-    return rawDocs.replaceAllMapped(macroRegExp, (match) {
+
+    return rawDocs.replaceAllMapped(htmlInjectRegExp, (match) {
       String fragment = packageGraph.getHtmlFragment(match[1]);
       if (fragment == null) {
         warn(PackageWarning.unknownHtmlFragment, message: match[1]);
@@ -4223,7 +4291,6 @@ abstract class ModelElement extends Canonicalization
   ///     More comments
   ///
   String _injectMacros(String rawDocs) {
-    final macroRegExp = new RegExp(r'{@macro\s+([^}]+)}');
     return rawDocs.replaceAllMapped(macroRegExp, (match) {
       String macro = packageGraph.getMacro(match[1]);
       if (macro == null) {
@@ -4243,12 +4310,9 @@ abstract class ModelElement extends Canonicalization
   ///     &#123;@endtemplate&#125;
   ///
   String _stripMacroTemplatesAndAddToIndex(String rawDocs) {
-    final templateRegExp = new RegExp(
-        r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?',
-        multiLine: true);
     return rawDocs.replaceAllMapped(templateRegExp, (match) {
       packageGraph._addMacro(match[1].trim(), match[2].trim());
-      return "";
+      return "{@macro ${match[1].trim()}}";
     });
   }
 
@@ -4265,10 +4329,7 @@ abstract class ModelElement extends Canonicalization
   ///
   String _stripHtmlAndAddToIndex(String rawDocs) {
     if (!config.injectHtml) return rawDocs;
-    final templateRegExp = new RegExp(
-        r'[ ]*{@inject-html\s*}([\s\S]+?){@end-inject-html}[ ]*\n?',
-        multiLine: true);
-    return rawDocs.replaceAllMapped(templateRegExp, (match) {
+    return rawDocs.replaceAllMapped(htmlRegExp, (match) {
       String fragment = match[1];
       String digest = sha1.convert(fragment.codeUnits).toString();
       packageGraph._addHtmlFragment(digest, fragment);
@@ -4291,19 +4352,7 @@ abstract class ModelElement extends Canonicalization
   /// value.
   Iterable<String> _splitUpQuotedArgs(String argsAsString,
       {bool convertToArgs = false}) {
-    // Regexp to take care of splitting arguments, and handling the quotes
-    // around arguments, if any.
-    //
-    // Match group 1 is the "foo=" (or "--foo=") part of the option, if any.
-    // Match group 2 contains the quote character used (which is discarded).
-    // Match group 3 is a quoted arg, if any, without the quotes.
-    // Match group 4 is the unquoted arg, if any.
-    final RegExp argMatcher = new RegExp(r'([a-zA-Z\-_0-9]+=)?' // option name
-        r'(?:' // Start a new non-capture group for the two possibilities.
-        r'''(["'])((?:\\{2})*|(?:.*?[^\\](?:\\{2})*))\2|''' // with quotes.
-        r'([^ ]+))'); // without quotes.
     final Iterable<Match> matches = argMatcher.allMatches(argsAsString);
-
     // Remove quotes around args, and if convertToArgs is true, then for any
     // args that look like assignments (start with valid option names followed
     // by an equals sign), add a "--" in front so that they parse as options.
@@ -4607,14 +4656,16 @@ class PackageGraph {
       findOrCreateLibraryFor(element);
     });
 
+    // From here on in, we might find special objects.  Initialize the
+    // specialClasses handler so when we find them, they get added.
+    specialClasses = new SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
-    allLocalModelElements.forEach((m) => m.documentationLocal);
+    allModelElements.forEach((m) => m.precacheLocalDocsIfNeeded());
     _localDocumentationBuilt = true;
 
     // Scan all model elements to insure that interceptor and other special
     // objects are found.
-    specialClasses = new SpecialClasses(this);
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
     documentedPackages.toList().forEach((package) {
@@ -4625,6 +4676,9 @@ class PackageGraph {
     });
     _implementors.values.forEach((l) => l.sort());
     allImplementorsAdded = true;
+
+    // We should have found all special classes by now.
+    specialClasses.assertSpecials();
   }
 
   SpecialClasses specialClasses;
@@ -4984,9 +5038,18 @@ class PackageGraph {
       packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
   Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = new Map();
+
+  /// Prevent cycles from breaking our stack.
+  Set<Tuple2<Library, LibraryElement>> _reexportsTagged = new Set();
   void _tagReexportsFor(
       final Library topLevelLibrary, final LibraryElement libraryElement,
       [ExportElement lastExportedElement]) {
+    Tuple2<Library, LibraryElement> key =
+        new Tuple2(topLevelLibrary, libraryElement);
+    if (_reexportsTagged.contains(key)) {
+      return;
+    }
+    _reexportsTagged.add(key);
     if (libraryElement == null) {
       // The first call to _tagReexportFor should not have a null libraryElement.
       assert(lastExportedElement != null);
@@ -5011,6 +5074,7 @@ class PackageGraph {
     if (allLibraries.keys.length != _lastSizeOfAllLibraries) {
       _lastSizeOfAllLibraries = allLibraries.keys.length;
       _libraryElementReexportedBy = new Map<LibraryElement, Set<Library>>();
+      _reexportsTagged = new Set();
       for (Library library in publicLibraries) {
         _tagReexportsFor(library, library.element);
       }
@@ -5343,6 +5407,34 @@ class PackageGraph {
       allLibraries[e.library] = foundLibrary;
     }
     return foundLibrary;
+  }
+
+  List<ModelElement> _allModelElements;
+  Iterable<ModelElement> get allModelElements {
+    assert(allLibrariesAdded);
+    if (_allModelElements == null) {
+      _allModelElements = [];
+      Set<Package> packagesToDo = packages.toSet();
+      Set<Package> completedPackages = new Set();
+      while (packagesToDo.length > completedPackages.length) {
+        packagesToDo.difference(completedPackages).forEach((Package p) {
+          Set<Library> librariesToDo = p.allLibraries.toSet();
+          Set<Library> completedLibraries = new Set();
+          while (librariesToDo.length > completedLibraries.length) {
+            librariesToDo
+                .difference(completedLibraries)
+                .forEach((Library library) {
+              _allModelElements.addAll(library.allModelElements);
+              completedLibraries.add(library);
+            });
+            librariesToDo.addAll(p.allLibraries);
+          }
+          completedPackages.add(p);
+        });
+        packagesToDo.addAll(packages);
+      }
+    }
+    return _allModelElements;
   }
 
   List<ModelElement> _allLocalModelElements;
@@ -5729,9 +5821,11 @@ class Package extends LibraryContainer
     // up after all documented libraries are added, because that breaks the
     // assumption that we've picked up all documented libraries and packages
     // before allLibrariesAdded is true.
-    assert(!(expectNonLocal &&
-        packageGraph.packageMap[packageName].documentedWhere ==
-            DocumentLocation.local));
+    assert(
+        !(expectNonLocal &&
+            packageGraph.packageMap[packageName].documentedWhere ==
+                DocumentLocation.local),
+        'Found more libraries to document after allLibrariesAdded was set to true');
     return packageGraph.packageMap[packageName];
   }
 
@@ -5817,14 +5911,21 @@ class Package extends LibraryContainer
   bool get isLocal => _isLocal;
 
   DocumentLocation get documentedWhere {
-    if (!isLocal) {
-      if (config.linkToRemote && config.linkToUrl.isNotEmpty) {
+    if (isLocal) {
+      if (isPublic) {
+        return DocumentLocation.local;
+      } else {
+        // Possible if excludes result in a "documented" package not having
+        // any actual documentation.
+        return DocumentLocation.missing;
+      }
+    } else {
+      if (config.linkToRemote && config.linkToUrl.isNotEmpty && isPublic) {
         return DocumentLocation.remote;
       } else {
         return DocumentLocation.missing;
       }
     }
-    return DocumentLocation.local;
   }
 
   @override
@@ -5939,7 +6040,7 @@ class Package extends LibraryContainer
 
   /// Is this the package at the top of the list?  We display the first
   /// package specially (with "Libraries" rather than the package name).
-  bool get isFirstPackage => identical(packageGraph.localPackages.first, this);
+  bool get isFirstPackage => packageGraph.localPackages.isNotEmpty && identical(packageGraph.localPackages.first, this);
 
   @override
   bool get isSdk => packageMeta.isSdk;
@@ -6233,7 +6334,7 @@ class TopLevelVariable extends ModelElement
   Set<String> get features => super.features..addAll(comboFeatures);
 
   @override
-  String get computeDocumentationComment {
+  String _computeDocumentationComment() {
     String docs = getterSetterDocumentationComment;
     if (docs.isEmpty) return _variable.documentationComment;
     return docs;
@@ -6590,7 +6691,6 @@ class PackageBuilder {
     do {
       lastPass = _packageMetasForFiles(files);
       files.difference(addedFiles).forEach((filename) {
-        driver.addFile(filename);
         addedFiles.add(filename);
       });
       await Future.wait(

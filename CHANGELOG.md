@@ -2,6 +2,8 @@
 * Fix some instances where macros were not being resolved correctly (#1811)
 * Macro templates now appear where they are defined in addition to where
   they are referenced (#1810)
+* Added support for automatic snapshotting of external tools (i.e. for {@tool}
+  directives) written in Dart. 
 
 ## 0.24.1
 * Added more metadata (element name, project name, etc.) to external tool invocations.
