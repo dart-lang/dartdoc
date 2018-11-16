@@ -3877,8 +3877,8 @@ abstract class ModelElement extends Canonicalization
       return fqName;
     }
 
-    ModelElement parent = (e as EnclosedElement).enclosingElement;
-    return _buildFullyQualifiedName(parent, '${parent.name}.$fqName');
+    return _buildFullyQualifiedName(
+        e.enclosingElement, '${e.enclosingElement.name}.$fqName');
   }
 
   String _calculateLinkedName() {
@@ -4454,6 +4454,13 @@ class ModelFunctionAnonymous extends ModelFunctionTyped {
   ModelFunctionAnonymous(
       FunctionTypedElement element, PackageGraph packageGraph)
       : super(element, null, packageGraph) {}
+
+  @override
+  ModelElement get enclosingElement {
+    // These are not considered to be a part of libraries, so we can simply
+    // blindly instantiate a ModelElement for their enclosing element.
+    return new ModelElement.fromElement(element.enclosingElement, packageGraph);
+  }
 
   @override
   String get name => 'Function';
@@ -6040,7 +6047,9 @@ class Package extends LibraryContainer
 
   /// Is this the package at the top of the list?  We display the first
   /// package specially (with "Libraries" rather than the package name).
-  bool get isFirstPackage => packageGraph.localPackages.isNotEmpty && identical(packageGraph.localPackages.first, this);
+  bool get isFirstPackage =>
+      packageGraph.localPackages.isNotEmpty &&
+      identical(packageGraph.localPackages.first, this);
 
   @override
   bool get isSdk => packageMeta.isSdk;

@@ -97,6 +97,14 @@ class HasGenerics<X, Y, Z> {
   Map<X, Y> convertToMap() => null;
 }
 
+/// Coderef to ambiguous parameter of function parameter should not crash us.
+/// (#1835)
+///
+/// Here is a coderef: [aThingParameter]
+void doAComplicatedThing(int x,
+    {void doSomething(int aThingParameter, String anotherThing),
+    void doSomethingElse(int aThingParameter, double somethingElse)}) {}
+
 /// Bullet point documentation.
 ///
 /// This top level constant has bullet points.
