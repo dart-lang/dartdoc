@@ -1,6 +1,29 @@
-## 0.24.2-dev
+## 0.25.0
+* Fix crash if a code reference ambiguously referred to a parameter of
+  an optional function parameter (#1835, #1841)
+* Allow annotations that return the dynamic type (#1834, #1840)
+* Better error messages in the case of a package with no documentable
+  libraries (#1832)
+* Fix a problem where the reexport tagger could trigger stack overflow
+  if a library exported itself (#1832, #1838)
+* Performance-related refactorings to return some of the performance lost
+  with macro templates in private libraries (#1828, #1829, #1831, #1837)
+* Fix several Flutter problems (#1819)
+  * Fix assertion failure if macros are defined in packages with no public
+    libraries
+  * Allow declaring macro templates in private libraries
+  * Avoid circular dependency in finding special objects
+  * Populate reference cache with child elements of mixins (fixes ~45 links
+    inside Flutter)
 * Added support for automatic snapshotting of external tools (i.e. for {@tool}
-  directives) written in Dart. 
+  directives) written in Dart. (#1820)
+* Changes to reduce use of internal APIs in analyzer (#1817, #1825)
+* Template text now appears where it is defined in addition to where it is
+  referenced (#1812)
+* Change placeholder string in search box to 'Search API Docs'
+* Fix some instances where macros were not being resolved correctly (#1811)
+* Macro templates now appear where they are defined in addition to where
+  they are referenced (#1810)
 
 ## 0.24.1
 * Added more metadata (element name, project name, etc.) to external tool invocations.
