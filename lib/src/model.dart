@@ -4633,8 +4633,6 @@ class PackageGraph {
           element, this, new Package.fromPackageMeta(packageMeta, this));
       packageMap[packageMeta.name]._libraries.add(lib);
       allLibraries[element] = lib;
-      assert(!_elementToLibrary.containsKey(lib.element));
-      _elementToLibrary[element] = lib;
     });
 
     // Make sure the default package exists, even if it has no libraries.
@@ -4777,7 +4775,6 @@ class PackageGraph {
     return _sdkLibrarySources;
   }
 
-  final Map<Element, Library> _elementToLibrary = {};
   final Map<String, String> _macros = {};
   final Map<String, String> _htmlFragments = {};
   bool allLibrariesAdded = false;
@@ -5190,14 +5187,6 @@ class PackageGraph {
     return _invisibleAnnotations;
   }
 
-  /// Looks up some [Library] that is exporting this [Element]; not
-  /// necessarily the canonical [Library].
-  Library findLibraryFor(Element element) {
-    // Maybe we were given an element we already saw, or an element for the
-    // Library itself added by the constructor in [ModelElement.from].
-    return _elementToLibrary[element] ?? _elementToLibrary[element.library];
-  }
-
   @override
   String toString() => 'PackageGraph built from ${defaultPackage.name}';
 
@@ -5374,16 +5363,13 @@ class PackageGraph {
     if (e.library == null) {
       return null;
     }
-    Library foundLibrary = findLibraryFor(e);
 
-    if (foundLibrary == null) {
-      foundLibrary = new Library._(
-          e.library,
-          this,
-          new Package.fromPackageMeta(
-              new PackageMeta.fromElement(e.library, config), packageGraph));
-      allLibraries[e.library] = foundLibrary;
-    }
+    Library foundLibrary = new Library._(
+        e.library,
+        this,
+        new Package.fromPackageMeta(
+            new PackageMeta.fromElement(e.library, config), packageGraph));
+    allLibraries[e.library] = foundLibrary;
     return foundLibrary;
   }
 
