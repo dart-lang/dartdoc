@@ -2885,7 +2885,7 @@ abstract class ModelElement extends Canonicalization
       this._element, this._library, this._packageGraph, this._originalMember) {}
 
   factory ModelElement.fromElement(Element e, PackageGraph p) {
-    Library lib = _findOrCreateEnclosingLibraryForStatic(e, p);
+    Library lib = p.findOrCreateLibraryFor(e);
     Accessor getter;
     Accessor setter;
     if (e is PropertyInducingElement) {
@@ -3898,22 +3898,6 @@ abstract class ModelElement extends Canonicalization
 
     var classContent = isDeprecated ? ' class="deprecated"' : '';
     return '<a${classContent} href="${href}">$name</a>';
-  }
-
-  // This differs from package.findOrCreateLibraryFor in a small way,
-  // searching for the [Library] associated with this element's enclosing
-  // Library before trying to create one.
-  static Library _findOrCreateEnclosingLibraryForStatic(
-      Element e, PackageGraph packageGraph) {
-    var element = e.getAncestor((l) => l is LibraryElement);
-    var lib;
-    if (element != null) {
-      lib = packageGraph.findLibraryFor(element);
-    }
-    if (lib == null) {
-      lib = packageGraph.findOrCreateLibraryFor(e);
-    }
-    return lib;
   }
 
   /// Replace &#123;@example ...&#125; in API comments with the content of named file.
@@ -5206,7 +5190,7 @@ class PackageGraph {
     return _invisibleAnnotations;
   }
 
-  /// Looks up some [Library] that is reexporting this [Element]; not
+  /// Looks up some [Library] that is exporting this [Element]; not
   /// necessarily the canonical [Library].
   Library findLibraryFor(Element element) {
     // Maybe we were given an element we already saw, or an element for the
@@ -5214,17 +5198,9 @@ class PackageGraph {
     if (_elementToLibrary.containsKey(element)) {
       return _elementToLibrary[element];
     }
-    Library foundLibrary;
-    if (libraryElementReexportedBy.containsKey(element.library)) {
-      Set<Library> exportedIn = libraryElementReexportedBy[element.library];
-      foundLibrary = exportedIn.firstWhere(
-          (l) =>
-              l.element.location.components[0] ==
-              element.library.location.components[0],
-          orElse: () => null);
+    if (_elementToLibrary.containsKey(element.library)) {
+      return _elementToLibrary[element.library];
     }
-    if (foundLibrary != null) _elementToLibrary[element] = foundLibrary;
-    return foundLibrary;
   }
 
   @override
@@ -6646,6 +6622,7 @@ class PackageBuilder {
   Future processLibrary(String filePath, Set<LibraryElement> libraries,
       Set<Source> sources) async {
     String name = filePath;
+
     if (name.startsWith(Directory.current.path)) {
       name = name.substring(Directory.current.path.length);
       if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
@@ -6666,18 +6643,10 @@ class PackageBuilder {
         source = new FileBasedSource(javaFile, uri);
       }
     }
-    // TODO(jcollins-g): Excludes can match on uri or on name.  Fix that.
-    if (!config.isLibraryExcluded(source.uri.toString())) {
-      LibraryElement library =
-          await driver.getLibraryByUri(source.uri.toString());
-      if (library != null) {
-        if (!config.isLibraryExcluded(Library.getLibraryName(library)) &&
-            !config.excludePackages
-                .contains(new PackageMeta.fromElement(library, config)?.name)) {
-          libraries.add(library);
-          sources.add(source);
-        }
-      }
+    LibraryElement library = (await driver.getResult(filePath))?.libraryElement;
+    if (library != null) {
+      libraries.add(library);
+      sources.add(source);
     }
   }
 
