@@ -5195,12 +5195,7 @@ class PackageGraph {
   Library findLibraryFor(Element element) {
     // Maybe we were given an element we already saw, or an element for the
     // Library itself added by the constructor in [ModelElement.from].
-    if (_elementToLibrary.containsKey(element)) {
-      return _elementToLibrary[element];
-    }
-    if (_elementToLibrary.containsKey(element.library)) {
-      return _elementToLibrary[element.library];
-    }
+    return _elementToLibrary[element] ?? _elementToLibrary[element.library];
   }
 
   @override
