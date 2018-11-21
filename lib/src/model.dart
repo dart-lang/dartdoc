@@ -757,16 +757,19 @@ class Class extends ModelElement
   List<ModelElement> _allModelElements = null;
   List<ModelElement> get allModelElements {
     if (_allModelElements == null) {
-      _allModelElements = new List.from(quiverIterables.concat([
-        allInstanceMethods,
-        allInstanceProperties,
-        allAccessors,
-        allOperators,
-        constants,
-        constructors,
-        staticMethods,
-        staticProperties,
-        typeParameters,]), growable: false);
+      _allModelElements = new List.from(
+          quiverIterables.concat([
+            allInstanceMethods,
+            allInstanceProperties,
+            allAccessors,
+            allOperators,
+            constants,
+            constructors,
+            staticMethods,
+            staticProperties,
+            typeParameters,
+          ]),
+          growable: false);
     }
     return _allModelElements;
   }
@@ -1115,7 +1118,8 @@ class Class extends ModelElement
           .getMembersInheritedFromClasses(element);
       Map<String, ExecutableElement> imap = definingLibrary.inheritanceManager
           .getMembersInheritedFromInterfaces(element);
-      __inheritedElements = new List.from(cmap.values)..addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
+      __inheritedElements = new List.from(cmap.values)
+        ..addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
     }
     return __inheritedElements;
   }
@@ -1576,14 +1580,16 @@ class Enum extends Class {
   Enum(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
-
   List<EnumField> _instanceProperties;
   @override
   List<EnumField> get instanceProperties {
     if (_instanceProperties == null) {
-      _instanceProperties = super.instanceProperties.map((Field p) => new ModelElement.from(
-          p.element, p.library, p.packageGraph,
-          getter: p.getter, setter: p.setter) as EnumField).toList(growable: false);
+      _instanceProperties = super
+          .instanceProperties
+          .map((Field p) => new ModelElement.from(
+              p.element, p.library, p.packageGraph,
+              getter: p.getter, setter: p.setter) as EnumField)
+          .toList(growable: false);
     }
     return _instanceProperties;
   }
@@ -2591,13 +2597,22 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         library.properties,
         library.typedefs,
         library.allClasses.expand((c) {
-          return quiverIterables.concat([[c], c.allModelElements]);
+          return quiverIterables.concat([
+            [c],
+            c.allModelElements
+          ]);
         }),
         library.enums.expand((e) {
-          return quiverIterables.concat([[e], e.allModelElements]);
+          return quiverIterables.concat([
+            [e],
+            e.allModelElements
+          ]);
         }),
         library.mixins.expand((m) {
-          return quiverIterables.concat([[m], m.allModelElements]);
+          return quiverIterables.concat([
+            [m],
+            m.allModelElements
+          ]);
         }),
       ]);
       _modelElementsMap = new Map<Element, Set<ModelElement>>();
@@ -6592,6 +6607,7 @@ class PackageBuilder {
 
   int counter = 0;
   int counter2 = 0;
+
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
   Future<LibraryElement> processLibrary(String filePath) async {
@@ -6644,8 +6660,11 @@ class PackageBuilder {
       files.difference(addedFiles).forEach((filename) {
         addedFiles.add(filename);
       });
-      libraries = quiverIterables.concat([libraries, (await Future.wait(
-          files.map((f) => processLibrary(f)))).where((LibraryElement l) => l != null)]);
+      libraries = quiverIterables.concat([
+        libraries,
+        (await Future.wait(files.map((f) => processLibrary(f))))
+            .where((LibraryElement l) => l != null)
+      ]);
 
       /// We don't care about upstream analysis errors, so save the first
       /// source list.
@@ -6761,8 +6780,8 @@ class PackageBuilder {
       Set<String> files,
       Set<String> specialFiles) async {
     libraries.addAll(await _parseLibraries(files));
-    specialLibraries.addAll(await _parseLibraries(
-        specialFiles.difference(files)));
+    specialLibraries
+        .addAll(await _parseLibraries(specialFiles.difference(files)));
     if (config.include.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
       Set notFound = new Set.from(config.include)

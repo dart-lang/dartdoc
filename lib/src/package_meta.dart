@@ -38,7 +38,6 @@ abstract class PackageMeta {
 
   PackageMeta(this.dir);
 
-
   static List<List<String>> __sdkDirFilePaths;
   static List<List<String>> get _sdkDirFilePaths {
     if (__sdkDirFilePaths == null) {
