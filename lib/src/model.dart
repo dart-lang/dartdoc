@@ -61,6 +61,7 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:package_config/discovery.dart' as package_config;
+import 'package:quiver/iterables.dart' as quiverIterables;
 
 int byName(Nameable a, Nameable b) =>
     compareAsciiLowerCaseNatural(a.name, b.name);
@@ -753,21 +754,21 @@ class Class extends ModelElement
     return member;
   }
 
-  final Set<ModelElement> _allModelElements = new Set();
+  List<ModelElement> _allModelElements = null;
   List<ModelElement> get allModelElements {
-    if (_allModelElements.isEmpty) {
-      _allModelElements
-        ..addAll(allInstanceMethods)
-        ..addAll(allInstanceProperties)
-        ..addAll(allAccessors)
-        ..addAll(allOperators)
-        ..addAll(constants)
-        ..addAll(constructors)
-        ..addAll(staticMethods)
-        ..addAll(staticProperties)
-        ..addAll(typeParameters);
+    if (_allModelElements == null) {
+      _allModelElements = new List.from(quiverIterables.concat([
+        allInstanceMethods,
+        allInstanceProperties,
+        allAccessors,
+        allOperators,
+        constants,
+        constructors,
+        staticMethods,
+        staticProperties,
+        typeParameters,]), growable: false);
     }
-    return _allModelElements.toList();
+    return _allModelElements;
   }
 
   List<ModelElement> _allCanonicalModelElements;
@@ -1110,14 +1111,11 @@ class Class extends ModelElement
   List<ExecutableElement> __inheritedElements;
   List<ExecutableElement> get _inheritedElements {
     if (__inheritedElements == null) {
-      __inheritedElements = [];
       Map<String, ExecutableElement> cmap = definingLibrary.inheritanceManager
           .getMembersInheritedFromClasses(element);
       Map<String, ExecutableElement> imap = definingLibrary.inheritanceManager
           .getMembersInheritedFromInterfaces(element);
-      __inheritedElements.addAll(cmap.values);
-      __inheritedElements
-          .addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
+      __inheritedElements = new List.from(cmap.values)..addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
     }
     return __inheritedElements;
   }
@@ -1578,14 +1576,16 @@ class Enum extends Class {
   Enum(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
+
+  List<EnumField> _instanceProperties;
   @override
   List<EnumField> get instanceProperties {
-    return super
-        .instanceProperties
-        .map((Field p) => new ModelElement.from(
-            p.element, p.library, p.packageGraph,
-            getter: p.getter, setter: p.setter) as EnumField)
-        .toList(growable: false);
+    if (_instanceProperties == null) {
+      _instanceProperties = super.instanceProperties.map((Field p) => new ModelElement.from(
+          p.element, p.library, p.packageGraph,
+          getter: p.getter, setter: p.setter) as EnumField).toList(growable: false);
+    }
+    return _instanceProperties;
   }
 
   @override
@@ -2585,28 +2585,21 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Map<Element, Set<ModelElement>> _modelElementsMap;
   Map<Element, Set<ModelElement>> get modelElementsMap {
     if (_modelElementsMap == null) {
-      final Set<ModelElement> results = new Set();
-      results
-        ..addAll(library.constants)
-        ..addAll(library.functions)
-        ..addAll(library.properties)
-        ..addAll(library.typedefs);
-
-      library.allClasses.forEach((c) {
-        results.add(c);
-        results.addAll(c.allModelElements);
-      });
-
-      library.enums.forEach((e) {
-        results.add(e);
-        results.addAll(e.allModelElements);
-      });
-
-      library.mixins.forEach((m) {
-        results.add(m);
-        results.addAll(m.allModelElements);
-      });
-
+      Iterable<ModelElement> results = quiverIterables.concat([
+        library.constants,
+        library.functions,
+        library.properties,
+        library.typedefs,
+        library.allClasses.expand((c) {
+          return quiverIterables.concat([[c], c.allModelElements]);
+        }),
+        library.enums.expand((e) {
+          return quiverIterables.concat([[e], e.allModelElements]);
+        }),
+        library.mixins.expand((m) {
+          return quiverIterables.concat([[m], m.allModelElements]);
+        }),
+      ]);
       _modelElementsMap = new Map<Element, Set<ModelElement>>();
       results.forEach((modelElement) {
         _modelElementsMap.putIfAbsent(modelElement.element, () => new Set());
@@ -6597,15 +6590,15 @@ class PackageBuilder {
     }
   }
 
+  int counter = 0;
+  int counter2 = 0;
   /// Parse a single library at [filePath] using the current analysis driver.
-  /// Note: [libraries] and [sources] are output parameters.  Adds a libraryElement
-  /// only if it has a non-private name.
-  Future processLibrary(String filePath, Set<LibraryElement> libraries,
-      Set<Source> sources) async {
+  /// If [filePath] is not a library, returns null.
+  Future<LibraryElement> processLibrary(String filePath) async {
     String name = filePath;
 
-    if (name.startsWith(Directory.current.path)) {
-      name = name.substring(Directory.current.path.length);
+    if (name.startsWith(directoryCurrentPath)) {
+      name = name.substring(directoryCurrentPath.length);
       if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
     }
     logInfo('parsing ${name}...');
@@ -6624,11 +6617,13 @@ class PackageBuilder {
         source = new FileBasedSource(javaFile, uri);
       }
     }
-    LibraryElement library = (await driver.getResult(filePath))?.libraryElement;
-    if (library != null) {
-      libraries.add(library);
-      sources.add(source);
+    var sourceKind = await driver.getSourceKind(filePath);
+    if (sourceKind == SourceKind.LIBRARY) {
+      // Loading libraryElements from part files works, but is painfully slow
+      // and creates many duplicates.
+      return (await driver.getResult(filePath))?.libraryElement;
     }
+    return null;
   }
 
   Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) {
@@ -6640,9 +6635,7 @@ class PackageBuilder {
   }
 
   Future<List<LibraryElement>> _parseLibraries(Set<String> files) async {
-    Set<LibraryElement> libraries = new Set();
-    Set<Source> originalSources;
-    Set<Source> sources = new Set<Source>();
+    Iterable<LibraryElement> libraries = new Iterable.empty();
     Set<PackageMeta> lastPass = new Set();
     Set<PackageMeta> current;
     Set<String> addedFiles = new Set();
@@ -6651,12 +6644,11 @@ class PackageBuilder {
       files.difference(addedFiles).forEach((filename) {
         addedFiles.add(filename);
       });
-      await Future.wait(
-          files.map((f) => processLibrary(f, libraries, sources)));
+      libraries = quiverIterables.concat([libraries, (await Future.wait(
+          files.map((f) => processLibrary(f)))).where((LibraryElement l) => l != null)]);
 
       /// We don't care about upstream analysis errors, so save the first
       /// source list.
-      if (originalSources == null) originalSources = new Set()..addAll(sources);
       files.addAll(driver.knownFiles);
       files.addAll(_includeExternalsFrom(driver.knownFiles));
       current = _packageMetasForFiles(files);
