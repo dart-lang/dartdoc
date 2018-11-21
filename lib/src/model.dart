@@ -754,7 +754,7 @@ class Class extends ModelElement
     return member;
   }
 
-  List<ModelElement> _allModelElements = null;
+  List<ModelElement> _allModelElements;
   List<ModelElement> get allModelElements {
     if (_allModelElements == null) {
       _allModelElements = new List.from(
@@ -6604,9 +6604,6 @@ class PackageBuilder {
       }
     }
   }
-
-  int counter = 0;
-  int counter2 = 0;
 
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
