@@ -982,11 +982,11 @@ void main() {
       ImplementingThingy2 = fakeLibrary.classes
           .firstWhere((c) => c.name == 'ImplementingThingy2');
 
-      aImplementingThingy = ImplementingThingy2.allInstanceProperties
+      aImplementingThingy = ImplementingThingy2.allInstanceFields
           .firstWhere((m) => m.name == 'aImplementingThingy');
       aImplementingThingyMethod = ImplementingThingy2.allInstanceMethods
           .firstWhere((m) => m.name == 'aImplementingThingyMethod');
-      aImplementingThingyField = ImplementingThingy2.allInstanceProperties
+      aImplementingThingyField = ImplementingThingy2.allInstanceFields
           .firstWhere((m) => m.name == 'aImplementingThingyField');
       aImplementingThingyAccessor = aImplementingThingyField.getter;
     });
@@ -1420,13 +1420,13 @@ void main() {
           fakeLibrary.publicMixins.firstWhere((m) => m.name == 'GenericMixin');
       TypeInferenceMixedIn =
           classes.firstWhere((c) => c.name == 'TypeInferenceMixedIn');
-      overrideByEverything = TypeInferenceMixedIn.allFields
+      overrideByEverything = TypeInferenceMixedIn.allInstanceFields
           .firstWhere((f) => f.name == 'overrideByEverything');
-      overrideByGenericMixin = TypeInferenceMixedIn.allFields
+      overrideByGenericMixin = TypeInferenceMixedIn.allInstanceFields
           .firstWhere((f) => f.name == 'overrideByGenericMixin');
-      overrideByBoth = TypeInferenceMixedIn.allFields
+      overrideByBoth = TypeInferenceMixedIn.allInstanceFields
           .firstWhere((f) => f.name == 'overrideByBoth');
-      overrideByModifierClass = TypeInferenceMixedIn.allFields
+      overrideByModifierClass = TypeInferenceMixedIn.allInstanceFields
           .firstWhere((f) => f.name == 'overrideByModifierClass');
     });
 
@@ -1460,10 +1460,10 @@ void main() {
 
     test(('Verify non-overridden members have right canonical classes'), () {
       final Field member =
-          TypeInferenceMixedIn.allFields.firstWhere((f) => f.name == 'member');
-      final Field modifierMember = TypeInferenceMixedIn.allFields
+          TypeInferenceMixedIn.allInstanceFields.firstWhere((f) => f.name == 'member');
+      final Field modifierMember = TypeInferenceMixedIn.allInstanceFields
           .firstWhere((f) => f.name == 'modifierMember');
-      final Field mixinMember = TypeInferenceMixedIn.allFields
+      final Field mixinMember = TypeInferenceMixedIn.allInstanceFields
           .firstWhere((f) => f.name == 'mixinMember');
       expect(member.canonicalEnclosingElement, equals(GenericClass));
       expect(modifierMember.canonicalEnclosingElement, equals(ModifierClass));
@@ -1480,22 +1480,22 @@ void main() {
           equals(ModifierClass));
       expect(
           overrideByEverything.documentationFrom.first,
-          equals(GenericClass.allFields
+          equals(GenericClass.allInstanceFields
               .firstWhere((f) => f.name == 'overrideByEverything')
               .getter));
       expect(
           overrideByGenericMixin.documentationFrom.first,
-          equals(GenericClass.allFields
+          equals(GenericClass.allInstanceFields
               .firstWhere((f) => f.name == 'overrideByGenericMixin')
               .getter));
       expect(
           overrideByBoth.documentationFrom.first,
-          equals(GenericClass.allFields
+          equals(GenericClass.allInstanceFields
               .firstWhere((f) => f.name == 'overrideByBoth')
               .getter));
       expect(
           overrideByModifierClass.documentationFrom.first,
-          equals(GenericClass.allFields
+          equals(GenericClass.allInstanceFields
               .firstWhere((f) => f.name == 'overrideByModifierClass')
               .getter));
     });
@@ -1573,7 +1573,7 @@ void main() {
       expect(CatString.hasInstanceProperties, isFalse);
       expect(CatString.instanceProperties, isEmpty);
       expect(CatString.hasPublicProperties, isTrue);
-      expect(CatString.allInstanceProperties, isNotEmpty);
+      expect(CatString.allInstanceFields, isNotEmpty);
     });
 
     test('has enclosing element', () {
@@ -2420,7 +2420,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       documentedPartialFieldInSubclassOnly = UnusualProperties.allModelElements
           .firstWhere((e) => e.name == 'documentedPartialFieldInSubclassOnly');
 
-      isEmpty = CatString.allInstanceProperties
+      isEmpty = CatString.allInstanceFields
           .firstWhere((p) => p.name == 'isEmpty');
       dynamicGetter = LongFirstLine.instanceProperties
           .firstWhere((p) => p.name == 'dynamicGetter');
@@ -2429,40 +2429,40 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
       lengthX = fakeLibrary.classes
           .firstWhere((c) => c.name == 'WithGetterAndSetter')
-          .allInstanceProperties
+          .allInstanceFields
           .firstWhere((c) => c.name == 'lengthX');
 
       var appleClass =
           exLibrary.allClasses.firstWhere((c) => c.name == 'Apple');
 
       sFromApple =
-          appleClass.allInstanceProperties.firstWhere((p) => p.name == 's');
+          appleClass.allInstanceFields.firstWhere((p) => p.name == 's');
       mFromApple =
-          appleClass.allInstanceProperties.singleWhere((p) => p.name == 'm');
+          appleClass.allInstanceFields.singleWhere((p) => p.name == 'm');
 
       mInB = exLibrary.allClasses
           .firstWhere((c) => c.name == 'B')
-          .allInstanceProperties
+          .allInstanceFields
           .firstWhere((p) => p.name == 'm');
       autoCompress = exLibrary.allClasses
           .firstWhere((c) => c.name == 'B')
-          .allInstanceProperties
+          .allInstanceFields
           .firstWhere((p) => p.name == 'autoCompress');
       ExtraSpecialListLength = fakeLibrary.classes
           .firstWhere((c) => c.name == 'SpecialList')
-          .allInstanceProperties
+          .allInstanceFields
           .firstWhere((f) => f.name == 'length');
       aProperty = fakeLibrary.classes
           .firstWhere((c) => c.name == 'AClassWithFancyProperties')
-          .allInstanceProperties
+          .allInstanceFields
           .firstWhere((f) => f.name == 'aProperty');
       covariantField = fakeLibrary.classes
           .firstWhere((c) => c.name == 'CovariantMemberParams')
-          .allInstanceProperties
+          .allInstanceFields
           .firstWhere((f) => f.name == 'covariantField');
       covariantSetter = fakeLibrary.classes
           .firstWhere((c) => c.name == 'CovariantMemberParams')
-          .allInstanceProperties
+          .allInstanceFields
           .firstWhere((f) => f.name == 'covariantSetter');
     });
 
@@ -2731,7 +2731,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('if overridden, gets documentation from superclasses', () {
-      final doc = classB.allInstanceProperties
+      final doc = classB.allInstanceFields
           .firstWhere((p) => p.name == "s")
           .getter
           .documentation;
@@ -2742,7 +2742,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         "has correct linked return type if the return type is a parameterized typedef",
         () {
       Class apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
-      final fieldWithTypedef = apple.allInstanceProperties
+      final fieldWithTypedef = apple.allInstanceFields
           .firstWhere((m) => m.name == "fieldWithTypedef");
       expect(
           fieldWithTypedef.linkedReturnType,
@@ -2908,8 +2908,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       customClassPrivate = fakeLibrary.constants
           .firstWhere((c) => c.name == 'CUSTOM_CLASS_PRIVATE');
       aStaticConstField =
-          Dog.allFields.firstWhere((f) => f.name == 'aStaticConstField');
-      aName = Dog.allFields.firstWhere((f) => f.name == 'aName');
+          Dog.constants.firstWhere((f) => f.name == 'aStaticConstField');
+      aName = Dog.constants.firstWhere((f) => f.name == 'aName');
     });
 
     test('substrings of the constant values type are not linked (#1535)', () {
