@@ -38,36 +38,45 @@ abstract class PackageMeta {
 
   PackageMeta(this.dir);
 
+  static List<List<String>> __sdkDirFilePaths;
   static List<List<String>> get _sdkDirFilePaths {
-    List<List<String>> platformSdkDirFilePaths = [];
-    if (Platform.isWindows) {
-      for (List<String> paths in __sdkDirFilePathsPosix) {
-        List<String> windowsPaths = [];
-        for (String path in paths) {
-          windowsPaths.add(pathLib.joinAll(
-              new pathLib.Context(style: pathLib.Style.posix).split(path)));
+    if (__sdkDirFilePaths == null) {
+      __sdkDirFilePaths = [];
+      if (Platform.isWindows) {
+        for (List<String> paths in __sdkDirFilePathsPosix) {
+          List<String> windowsPaths = [];
+          for (String path in paths) {
+            windowsPaths.add(pathLib.joinAll(
+                new pathLib.Context(style: pathLib.Style.posix).split(path)));
+          }
+          __sdkDirFilePaths.add(windowsPaths);
         }
-        platformSdkDirFilePaths.add(windowsPaths);
+      } else {
+        __sdkDirFilePaths = __sdkDirFilePathsPosix;
       }
-    } else {
-      platformSdkDirFilePaths = __sdkDirFilePathsPosix;
     }
-    return platformSdkDirFilePaths;
+    return __sdkDirFilePaths;
   }
 
   /// Returns the directory of the SDK if the given directory is inside a Dart
   /// SDK.  Returns null if the directory isn't a subdirectory of the SDK.
+  static final Map<String, Directory> _sdkDirParent = {};
   static Directory sdkDirParent(Directory dir) {
-    while (dir.existsSync()) {
-      if (_sdkDirFilePaths.every((List<String> l) {
-        return l.any((f) => new File(pathLib.join(dir.path, f)).existsSync());
-      })) {
-        return dir;
+    String dirPathCanonical = pathLib.canonicalize(dir.path);
+    if (!_sdkDirParent.containsKey(dirPathCanonical)) {
+      _sdkDirParent[dirPathCanonical] = null;
+      while (dir.existsSync()) {
+        if (_sdkDirFilePaths.every((List<String> l) {
+          return l.any((f) => new File(pathLib.join(dir.path, f)).existsSync());
+        })) {
+          _sdkDirParent[dirPathCanonical] = dir;
+          break;
+        }
+        if (pathLib.equals(dir.path, dir.parent.path)) break;
+        dir = dir.parent;
       }
-      if (pathLib.equals(dir.path, dir.parent.path)) break;
-      dir = dir.parent;
     }
-    return null;
+    return _sdkDirParent[dirPathCanonical];
   }
 
   @override

@@ -61,6 +61,7 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:package_config/discovery.dart' as package_config;
+import 'package:quiver/iterables.dart' as quiverIterables;
 
 int byName(Nameable a, Nameable b) =>
     compareAsciiLowerCaseNatural(a.name, b.name);
@@ -753,21 +754,24 @@ class Class extends ModelElement
     return member;
   }
 
-  final Set<ModelElement> _allModelElements = new Set();
+  List<ModelElement> _allModelElements;
   List<ModelElement> get allModelElements {
-    if (_allModelElements.isEmpty) {
-      _allModelElements
-        ..addAll(allInstanceMethods)
-        ..addAll(allInstanceProperties)
-        ..addAll(allAccessors)
-        ..addAll(allOperators)
-        ..addAll(constants)
-        ..addAll(constructors)
-        ..addAll(staticMethods)
-        ..addAll(staticProperties)
-        ..addAll(typeParameters);
+    if (_allModelElements == null) {
+      _allModelElements = new List.from(
+          quiverIterables.concat([
+            allInstanceMethods,
+            allInstanceProperties,
+            allAccessors,
+            allOperators,
+            constants,
+            constructors,
+            staticMethods,
+            staticProperties,
+            typeParameters,
+          ]),
+          growable: false);
     }
-    return _allModelElements.toList();
+    return _allModelElements;
   }
 
   List<ModelElement> _allCanonicalModelElements;
@@ -1110,14 +1114,12 @@ class Class extends ModelElement
   List<ExecutableElement> __inheritedElements;
   List<ExecutableElement> get _inheritedElements {
     if (__inheritedElements == null) {
-      __inheritedElements = [];
       Map<String, ExecutableElement> cmap = definingLibrary.inheritanceManager
           .getMembersInheritedFromClasses(element);
       Map<String, ExecutableElement> imap = definingLibrary.inheritanceManager
           .getMembersInheritedFromInterfaces(element);
-      __inheritedElements.addAll(cmap.values);
-      __inheritedElements
-          .addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
+      __inheritedElements = new List.from(cmap.values)
+        ..addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
     }
     return __inheritedElements;
   }
@@ -1578,14 +1580,18 @@ class Enum extends Class {
   Enum(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
+  List<EnumField> _instanceProperties;
   @override
   List<EnumField> get instanceProperties {
-    return super
-        .instanceProperties
-        .map((Field p) => new ModelElement.from(
-            p.element, p.library, p.packageGraph,
-            getter: p.getter, setter: p.setter) as EnumField)
-        .toList(growable: false);
+    if (_instanceProperties == null) {
+      _instanceProperties = super
+          .instanceProperties
+          .map((Field p) => new ModelElement.from(
+              p.element, p.library, p.packageGraph,
+              getter: p.getter, setter: p.setter) as EnumField)
+          .toList(growable: false);
+    }
+    return _instanceProperties;
   }
 
   @override
@@ -2585,28 +2591,30 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Map<Element, Set<ModelElement>> _modelElementsMap;
   Map<Element, Set<ModelElement>> get modelElementsMap {
     if (_modelElementsMap == null) {
-      final Set<ModelElement> results = new Set();
-      results
-        ..addAll(library.constants)
-        ..addAll(library.functions)
-        ..addAll(library.properties)
-        ..addAll(library.typedefs);
-
-      library.allClasses.forEach((c) {
-        results.add(c);
-        results.addAll(c.allModelElements);
-      });
-
-      library.enums.forEach((e) {
-        results.add(e);
-        results.addAll(e.allModelElements);
-      });
-
-      library.mixins.forEach((m) {
-        results.add(m);
-        results.addAll(m.allModelElements);
-      });
-
+      Iterable<ModelElement> results = quiverIterables.concat([
+        library.constants,
+        library.functions,
+        library.properties,
+        library.typedefs,
+        library.allClasses.expand((c) {
+          return quiverIterables.concat([
+            [c],
+            c.allModelElements
+          ]);
+        }),
+        library.enums.expand((e) {
+          return quiverIterables.concat([
+            [e],
+            e.allModelElements
+          ]);
+        }),
+        library.mixins.expand((m) {
+          return quiverIterables.concat([
+            [m],
+            m.allModelElements
+          ]);
+        }),
+      ]);
       _modelElementsMap = new Map<Element, Set<ModelElement>>();
       results.forEach((modelElement) {
         _modelElementsMap.putIfAbsent(modelElement.element, () => new Set());
@@ -2885,7 +2893,7 @@ abstract class ModelElement extends Canonicalization
       this._element, this._library, this._packageGraph, this._originalMember) {}
 
   factory ModelElement.fromElement(Element e, PackageGraph p) {
-    Library lib = _findOrCreateEnclosingLibraryForStatic(e, p);
+    Library lib = p.findOrCreateLibraryFor(e);
     Accessor getter;
     Accessor setter;
     if (e is PropertyInducingElement) {
@@ -3900,22 +3908,6 @@ abstract class ModelElement extends Canonicalization
     return '<a${classContent} href="${href}">$name</a>';
   }
 
-  // This differs from package.findOrCreateLibraryFor in a small way,
-  // searching for the [Library] associated with this element's enclosing
-  // Library before trying to create one.
-  static Library _findOrCreateEnclosingLibraryForStatic(
-      Element e, PackageGraph packageGraph) {
-    var element = e.getAncestor((l) => l is LibraryElement);
-    var lib;
-    if (element != null) {
-      lib = packageGraph.findLibraryFor(element);
-    }
-    if (lib == null) {
-      lib = packageGraph.findOrCreateLibraryFor(e);
-    }
-    return lib;
-  }
-
   /// Replace &#123;@example ...&#125; in API comments with the content of named file.
   ///
   /// Syntax:
@@ -4649,8 +4641,6 @@ class PackageGraph {
           element, this, new Package.fromPackageMeta(packageMeta, this));
       packageMap[packageMeta.name]._libraries.add(lib);
       allLibraries[element] = lib;
-      assert(!_elementToLibrary.containsKey(lib.element));
-      _elementToLibrary[element] = lib;
     });
 
     // Make sure the default package exists, even if it has no libraries.
@@ -4793,7 +4783,6 @@ class PackageGraph {
     return _sdkLibrarySources;
   }
 
-  final Map<Element, Library> _elementToLibrary = {};
   final Map<String, String> _macros = {};
   final Map<String, String> _htmlFragments = {};
   bool allLibrariesAdded = false;
@@ -5206,27 +5195,6 @@ class PackageGraph {
     return _invisibleAnnotations;
   }
 
-  /// Looks up some [Library] that is reexporting this [Element]; not
-  /// necessarily the canonical [Library].
-  Library findLibraryFor(Element element) {
-    // Maybe we were given an element we already saw, or an element for the
-    // Library itself added by the constructor in [ModelElement.from].
-    if (_elementToLibrary.containsKey(element)) {
-      return _elementToLibrary[element];
-    }
-    Library foundLibrary;
-    if (libraryElementReexportedBy.containsKey(element.library)) {
-      Set<Library> exportedIn = libraryElementReexportedBy[element.library];
-      foundLibrary = exportedIn.firstWhere(
-          (l) =>
-              l.element.location.components[0] ==
-              element.library.location.components[0],
-          orElse: () => null);
-    }
-    if (foundLibrary != null) _elementToLibrary[element] = foundLibrary;
-    return foundLibrary;
-  }
-
   @override
   String toString() => 'PackageGraph built from ${defaultPackage.name}';
 
@@ -5403,16 +5371,13 @@ class PackageGraph {
     if (e.library == null) {
       return null;
     }
-    Library foundLibrary = findLibraryFor(e);
 
-    if (foundLibrary == null) {
-      foundLibrary = new Library._(
-          e.library,
-          this,
-          new Package.fromPackageMeta(
-              new PackageMeta.fromElement(e.library, config), packageGraph));
-      allLibraries[e.library] = foundLibrary;
-    }
+    Library foundLibrary = new Library._(
+        e.library,
+        this,
+        new Package.fromPackageMeta(
+            new PackageMeta.fromElement(e.library, config), packageGraph));
+    allLibraries[e.library] = foundLibrary;
     return foundLibrary;
   }
 
@@ -6641,13 +6606,12 @@ class PackageBuilder {
   }
 
   /// Parse a single library at [filePath] using the current analysis driver.
-  /// Note: [libraries] and [sources] are output parameters.  Adds a libraryElement
-  /// only if it has a non-private name.
-  Future processLibrary(String filePath, Set<LibraryElement> libraries,
-      Set<Source> sources) async {
+  /// If [filePath] is not a library, returns null.
+  Future<LibraryElement> processLibrary(String filePath) async {
     String name = filePath;
-    if (name.startsWith(Directory.current.path)) {
-      name = name.substring(Directory.current.path.length);
+
+    if (name.startsWith(directoryCurrentPath)) {
+      name = name.substring(directoryCurrentPath.length);
       if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
     }
     logInfo('parsing ${name}...');
@@ -6666,19 +6630,13 @@ class PackageBuilder {
         source = new FileBasedSource(javaFile, uri);
       }
     }
-    // TODO(jcollins-g): Excludes can match on uri or on name.  Fix that.
-    if (!config.isLibraryExcluded(source.uri.toString())) {
-      LibraryElement library =
-          await driver.getLibraryByUri(source.uri.toString());
-      if (library != null) {
-        if (!config.isLibraryExcluded(Library.getLibraryName(library)) &&
-            !config.excludePackages
-                .contains(new PackageMeta.fromElement(library, config)?.name)) {
-          libraries.add(library);
-          sources.add(source);
-        }
-      }
+    var sourceKind = await driver.getSourceKind(filePath);
+    if (sourceKind == SourceKind.LIBRARY) {
+      // Loading libraryElements from part files works, but is painfully slow
+      // and creates many duplicates.
+      return (await driver.getResult(filePath))?.libraryElement;
     }
+    return null;
   }
 
   Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) {
@@ -6689,11 +6647,8 @@ class PackageBuilder {
     return metas;
   }
 
-  Future<List<LibraryElement>> _parseLibraries(Set<String> files,
-      {bool throwErrors = true}) async {
-    Set<LibraryElement> libraries = new Set();
-    Set<Source> originalSources;
-    Set<Source> sources = new Set<Source>();
+  Future<List<LibraryElement>> _parseLibraries(Set<String> files) async {
+    Iterable<LibraryElement> libraries = new Iterable.empty();
     Set<PackageMeta> lastPass = new Set();
     Set<PackageMeta> current;
     Set<String> addedFiles = new Set();
@@ -6702,12 +6657,14 @@ class PackageBuilder {
       files.difference(addedFiles).forEach((filename) {
         addedFiles.add(filename);
       });
-      await Future.wait(
-          files.map((f) => processLibrary(f, libraries, sources)));
+      libraries = quiverIterables.concat([
+        libraries,
+        (await Future.wait(files.map((f) => processLibrary(f))))
+            .where((LibraryElement l) => l != null)
+      ]);
 
       /// We don't care about upstream analysis errors, so save the first
       /// source list.
-      if (originalSources == null) originalSources = new Set()..addAll(sources);
       files.addAll(driver.knownFiles);
       files.addAll(_includeExternalsFrom(driver.knownFiles));
       current = _packageMetasForFiles(files);
@@ -6725,8 +6682,6 @@ class PackageBuilder {
         }
       }
     } while (!lastPass.containsAll(current));
-
-    if (throwErrors) await logAnalysisErrors(originalSources);
     return libraries.toList();
   }
 
@@ -6822,12 +6777,8 @@ class PackageBuilder {
       Set<String> files,
       Set<String> specialFiles) async {
     libraries.addAll(await _parseLibraries(files));
-
-    /// Flutter doesn't seem to like being given the Interceptor library.
-    /// But it doesn't need it, either.  So just skip reporting errors here.
-    specialLibraries.addAll(await _parseLibraries(
-        specialFiles.difference(files),
-        throwErrors: false));
+    specialLibraries
+        .addAll(await _parseLibraries(specialFiles.difference(files)));
     if (config.include.isNotEmpty) {
       Iterable knownLibraryNames = libraries.map((l) => l.name);
       Set notFound = new Set.from(config.include)

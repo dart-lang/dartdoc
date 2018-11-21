@@ -12,11 +12,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/error/error.dart';
-import 'package:analyzer/src/error/codes.dart';
-import 'package:analyzer/src/generated/engine.dart';
-import 'package:analyzer/src/generated/source.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
@@ -80,54 +75,6 @@ class Dartdoc extends PackageBuilder {
   }
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
-
-  @override
-  Future<void> logAnalysisErrors(Set<Source> sources) async {
-    List<AnalysisErrorInfo> errorInfos = [];
-    // TODO(jcollins-g): figure out why sources can't contain includeExternals
-    // or embedded SDK components without having spurious(?) analysis errors.
-    // That seems wrong. dart-lang/dartdoc#1547
-    for (Source source in sources) {
-      ErrorsResult errorsResult = await driver.getErrors(source.fullName);
-      AnalysisErrorInfo info =
-          new AnalysisErrorInfoImpl(errorsResult.errors, errorsResult.lineInfo);
-      List<_Error> errors = [info]
-          .expand((AnalysisErrorInfo info) {
-            return info.errors.map((error) => new _Error(
-                error, info.lineInfo, config.topLevelPackageMeta.dir.path));
-          })
-          .where((_Error error) => error.isError)
-          .toList()
-            ..sort();
-      // TODO(jcollins-g): Why does the SDK have analysis errors?  Annotations
-      // seem correctly formed.  dart-lang/dartdoc#1547
-      if (errors.isNotEmpty && !source.uri.toString().startsWith('dart:')) {
-        errorInfos.add(info);
-        logWarning(
-            'analysis errors from source: ${source.uri.toString()} (${source.toString()}');
-        errors.forEach(logWarning);
-      }
-    }
-
-    List<_Error> errors = errorInfos
-        .expand((AnalysisErrorInfo info) {
-          return info.errors.map((error) => new _Error(
-              error, info.lineInfo, config.topLevelPackageMeta.dir.path));
-        })
-        .where((_Error error) => error.isError)
-        // TODO(jcollins-g): remove after conversion to analysis driver
-        .where((_Error error) =>
-            error.error.errorCode !=
-            CompileTimeErrorCode.URI_HAS_NOT_BEEN_GENERATED)
-        .toList()
-          ..sort();
-
-    if (errors.isNotEmpty) {
-      int len = errors.length;
-      throw new DartdocFailure(
-          "encountered ${len} analysis error${len == 1 ? '' : 's'}");
-    }
-  }
 
   PackageGraph packageGraph;
 
@@ -433,40 +380,4 @@ class DartdocResults {
   final Directory outDir;
 
   DartdocResults(this.packageMeta, this.packageGraph, this.outDir);
-}
-
-class _Error implements Comparable<_Error> {
-  final AnalysisError error;
-  final LineInfo lineInfo;
-  final String projectPath;
-
-  _Error(this.error, this.lineInfo, this.projectPath);
-
-  String get description => '${error.message} at ${location}, line ${line}.';
-  bool get isError => error.errorCode.errorSeverity == ErrorSeverity.ERROR;
-  int get line => lineInfo.getLocation(error.offset).lineNumber;
-  String get location {
-    String path = error.source.fullName;
-    if (path.startsWith(projectPath)) {
-      path = path.substring(projectPath.length + 1);
-    }
-    return path;
-  }
-
-  int get severity => error.errorCode.errorSeverity.ordinal;
-
-  String get severityName => error.errorCode.errorSeverity.displayName;
-
-  @override
-  int compareTo(_Error other) {
-    if (severity == other.severity) {
-      int cmp = error.source.fullName.compareTo(other.error.source.fullName);
-      return cmp == 0 ? line - other.line : cmp;
-    } else {
-      return other.severity - severity;
-    }
-  }
-
-  @override
-  String toString() => '[${severityName}] ${description}';
 }
