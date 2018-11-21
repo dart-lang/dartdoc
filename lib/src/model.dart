@@ -1359,11 +1359,7 @@ abstract class Documentable extends Nameable {
 /// Mixin implementing dartdoc categorization for ModelElements.
 abstract class Categorization implements ModelElement {
   @override
-  String _buildDocumentationLocal() {
-    _rawDocs = _buildDocumentationBase();
-    _rawDocs = _stripAndSetDartdocCategories(_rawDocs);
-    return _rawDocs;
-  }
+  String _buildDocumentationAddition(String rawDocs) => _stripAndSetDartdocCategories(rawDocs);
 
   /// Parse {@category ...} and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
@@ -3288,11 +3284,36 @@ abstract class ModelElement extends Canonicalization
     return docFrom;
   }
 
-  String _buildDocumentationLocal() => _buildDocumentationBase();
+  String _buildDocumentationLocal() => _buildDocumentationBaseSync();
+
+  /// Override this to add more features to the documentation builder in a
+  /// subclass.
+  String _buildDocumentationAddition(String docs) => docs;
 
   /// Separate from _buildDocumentationLocal for overriding.
-  String _buildDocumentationBase() {
+  String _buildDocumentationBaseSync() {
     assert(_rawDocs == null);
+    // Do not use the sync method if we need to evaluate tools or templates.
+    assert(packageGraph._localDocumentationBuilt);
+    if (config.dropTextFrom.contains(element.library.name)) {
+      _rawDocs = '';
+    } else {
+      _rawDocs = documentationComment ?? '';
+      _rawDocs = stripComments(_rawDocs) ?? '';
+      // Must evaluate tools first, in case they insert any other directives.
+      _rawDocs = _injectExamples(_rawDocs);
+      _rawDocs = _injectAnimations(_rawDocs);
+      _rawDocs = _stripHtmlAndAddToIndex(_rawDocs);
+    }
+    _rawDocs = _buildDocumentationAddition(_rawDocs);
+    return _rawDocs;
+  }
+
+  /// Separate from _buildDocumentationLocal for overriding.  Can only be
+  /// used as part of [PackageGraph.setUpPackageGraph].
+  Future<String> _buildDocumentationBase() async {
+    assert(_rawDocs == null);
+    // Do not use the sync method if we need to evaluate tools or templates.
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
     } else {
@@ -3305,6 +3326,7 @@ abstract class ModelElement extends Canonicalization
       _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
       _rawDocs = _stripHtmlAndAddToIndex(_rawDocs);
     }
+    _rawDocs = _buildDocumentationAddition(_rawDocs);
     return _rawDocs;
   }
 
@@ -3737,9 +3759,11 @@ abstract class ModelElement extends Canonicalization
 
   /// Call this method to precache docs for this object if it might possibly
   /// have a macro template or a tool definition.
-  void precacheLocalDocsIfNeeded() {
+  Future precacheLocalDocsIfNeeded() async {
     if (documentationComment != null &&
-        needsPrecacheRegExp.hasMatch(documentationComment)) documentationLocal;
+        needsPrecacheRegExp.hasMatch(documentationComment)) {
+      _documentationLocal = await _buildDocumentationBase();
+    }
   }
 
   Documentation get _documentation {
@@ -4615,6 +4639,70 @@ class PackageGraph {
   // building Libraries and adding them to Packages, then adding Packages
   // to this graph.
 
+  PackageGraph._(this.config, this.packageMeta, this._packageWarningOptions,
+       this.driver, this.sdk) {}
+
+  static Future<PackageGraph> setUpPackageGraph(Iterable<LibraryElement> libraryElements,
+      Iterable<LibraryElement> specialLibraryElements,
+      DartdocOptionContext config,
+      PackageMeta packageMeta,
+      packageWarningOptions,
+      driver,
+      sdk) async {
+    PackageGraph newGraph = PackageGraph._(config, packageMeta, packageWarningOptions, driver, sdk);
+    assert(newGraph._allConstructedModelElements.isEmpty);
+    assert(newGraph.allLibraries.isEmpty);
+    newGraph._packageWarningCounter = new PackageWarningCounter(newGraph._packageWarningOptions);
+
+    // Build [Package] objects.
+    libraryElements.forEach((element) {});
+
+    // Build [Library] objects, and link them to [Package]s.
+    libraryElements.forEach((element) {
+      var packageMeta = new PackageMeta.fromElement(element, config);
+      var lib = new Library._(
+          element, newGraph, new Package.fromPackageMeta(packageMeta, newGraph));
+      newGraph.packageMap[packageMeta.name]._libraries.add(lib);
+      newGraph.allLibraries[element] = lib;
+    });
+
+    // Make sure the default package exists, even if it has no libraries.
+    // This can happen for packages that only contain embedder SDKs.
+    new Package.fromPackageMeta(packageMeta, newGraph);
+    newGraph.allLibrariesAdded = true;
+
+    // [findOrCreateLibraryFor] already adds to the proper structures.
+    specialLibraryElements.forEach((element) {
+      newGraph.findOrCreateLibraryFor(element);
+    });
+
+    // From here on in, we might find special objects.  Initialize the
+    // specialClasses handler so when we find them, they get added.
+    newGraph.specialClasses = new SpecialClasses();
+    // Go through docs of every ModelElement in package to pre-build the macros
+    // index.
+    await Future.wait(newGraph.allModelElements.map((m) => m.precacheLocalDocsIfNeeded()));
+    newGraph._localDocumentationBuilt = true;
+
+    // Scan all model elements to insure that interceptor and other special
+    // objects are found.
+    // After the allModelElements traversal to be sure that all packages
+    // are picked up.
+    newGraph.documentedPackages.toList().forEach((package) {
+      package._libraries.sort((a, b) => compareNatural(a.name, b.name));
+      package._libraries.forEach((library) {
+        library._allClasses.forEach(newGraph._addToImplementors);
+      });
+    });
+    newGraph._implementors.values.forEach((l) => l.sort());
+    newGraph.allImplementorsAdded = true;
+
+    // We should have found all special classes by now.
+    newGraph.specialClasses.assertSpecials();
+    return newGraph;
+  }
+
+  /*
   /// Construct a package graph.
   /// [libraryElements] - Libraries to be documented.
   /// [specialLibraryElements] - Any libraries that may not be documented, but
@@ -4677,6 +4765,7 @@ class PackageGraph {
     // We should have found all special classes by now.
     specialClasses.assertSpecials();
   }
+  */
 
   SpecialClasses specialClasses;
 
@@ -6457,7 +6546,7 @@ class PackageBuilder {
     }
     await getLibraries(libraries, specialLibraries, getFiles,
         specialLibraryFiles(findSpecialsSdk).toSet());
-    return new PackageGraph(libraries, specialLibraries, config,
+    return await PackageGraph.setUpPackageGraph(libraries, specialLibraries, config,
         config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
   }
 
