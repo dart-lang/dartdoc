@@ -6716,12 +6716,8 @@ class PackageBuilder {
     Iterable<ResolvedLibraryResult> libraries = new Iterable.empty();
     Set<PackageMeta> lastPass = new Set();
     Set<PackageMeta> current;
-    Set<String> addedFiles = new Set();
     do {
       lastPass = _packageMetasForFiles(files);
-      files.difference(addedFiles).forEach((filename) {
-        addedFiles.add(filename);
-      });
       libraries = quiverIterables.concat([
         libraries,
         (await Future.wait(files.map((f) => processLibrary(f))))
