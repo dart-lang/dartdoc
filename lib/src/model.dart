@@ -1359,7 +1359,8 @@ abstract class Documentable extends Nameable {
 /// Mixin implementing dartdoc categorization for ModelElements.
 abstract class Categorization implements ModelElement {
   @override
-  String _buildDocumentationAddition(String rawDocs) => _stripAndSetDartdocCategories(rawDocs);
+  String _buildDocumentationAddition(String rawDocs) =>
+      _stripAndSetDartdocCategories(rawDocs);
 
   /// Parse {@category ...} and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
@@ -3977,15 +3978,14 @@ abstract class ModelElement extends Canonicalization
     });
   }
 
-  static Future<String> _replaceAllMappedAsync(String string, Pattern exp, Future<String> replace(Match match)) async {
+  static Future<String> _replaceAllMappedAsync(
+      String string, Pattern exp, Future<String> replace(Match match)) async {
     StringBuffer replaced = new StringBuffer();
     int currentIndex = 0;
-    for(Match match in exp.allMatches(string)) {
+    for (Match match in exp.allMatches(string)) {
       String prefix = match.input.substring(currentIndex, match.start);
       currentIndex = match.end;
-      replaced
-        ..write(prefix)
-        ..write(await replace(match));
+      replaced..write(prefix)..write(await replace(match));
     }
     replaced.write(string.substring(currentIndex));
     return replaced.toString();
@@ -4047,13 +4047,13 @@ abstract class ModelElement extends Canonicalization
       warn(PackageWarning.toolError, message: message);
     });
     int invocationIndex = 0;
-    return await _replaceAllMappedAsync(rawDocs, basicToolRegExp, (basicMatch) async {
+    return await _replaceAllMappedAsync(rawDocs, basicToolRegExp,
+        (basicMatch) async {
       List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
       // Tool name must come first.
       if (args.isEmpty) {
         warn(PackageWarning.toolError,
-            message:
-            'Must specify a tool to execute for the @tool directive.');
+            message: 'Must specify a tool to execute for the @tool directive.');
         return Future.value('');
       }
       // Count the number of invocations of tools in this dartdoc block,
@@ -4065,7 +4065,7 @@ abstract class ModelElement extends Canonicalization
             'SOURCE_LINE': lineAndColumn?.item1?.toString(),
             'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
             'SOURCE_PATH': (sourceFileName == null ||
-                package?.packagePath == null)
+                    package?.packagePath == null)
                 ? null
                 : pathLib.relative(sourceFileName, from: package.packagePath),
             'PACKAGE_PATH': package?.packagePath,
@@ -4647,19 +4647,22 @@ class PackageGraph {
   // to this graph.
 
   PackageGraph._(this.config, this.packageMeta, this._packageWarningOptions,
-       this.driver, this.sdk) {}
+      this.driver, this.sdk) {}
 
-  static Future<PackageGraph> setUpPackageGraph(Iterable<LibraryElement> libraryElements,
+  static Future<PackageGraph> setUpPackageGraph(
+      Iterable<LibraryElement> libraryElements,
       Iterable<LibraryElement> specialLibraryElements,
       DartdocOptionContext config,
       PackageMeta packageMeta,
       packageWarningOptions,
       driver,
       sdk) async {
-    PackageGraph newGraph = PackageGraph._(config, packageMeta, packageWarningOptions, driver, sdk);
+    PackageGraph newGraph =
+        PackageGraph._(config, packageMeta, packageWarningOptions, driver, sdk);
     assert(newGraph._allConstructedModelElements.isEmpty);
     assert(newGraph.allLibraries.isEmpty);
-    newGraph._packageWarningCounter = new PackageWarningCounter(newGraph._packageWarningOptions);
+    newGraph._packageWarningCounter =
+        new PackageWarningCounter(newGraph._packageWarningOptions);
 
     // Build [Package] objects.
     libraryElements.forEach((element) {});
@@ -4667,8 +4670,8 @@ class PackageGraph {
     // Build [Library] objects, and link them to [Package]s.
     libraryElements.forEach((element) {
       var packageMeta = new PackageMeta.fromElement(element, config);
-      var lib = new Library._(
-          element, newGraph, new Package.fromPackageMeta(packageMeta, newGraph));
+      var lib = new Library._(element, newGraph,
+          new Package.fromPackageMeta(packageMeta, newGraph));
       newGraph.packageMap[packageMeta.name]._libraries.add(lib);
       newGraph.allLibraries[element] = lib;
     });
@@ -6499,8 +6502,8 @@ class PackageBuilder {
     }
     await getLibraries(libraries, specialLibraries, getFiles,
         specialLibraryFiles(findSpecialsSdk).toSet());
-    return await PackageGraph.setUpPackageGraph(libraries, specialLibraries, config,
-        config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
+    return await PackageGraph.setUpPackageGraph(libraries, specialLibraries,
+        config, config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
   }
 
   DartSdk _sdk;

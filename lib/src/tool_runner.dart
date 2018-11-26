@@ -30,8 +30,7 @@ class ToolRunner {
   Future<Directory> _temporaryDirectory;
   Future<Directory> get temporaryDirectory {
     if (_temporaryDirectory == null) {
-      _temporaryDirectory =
-          Directory.systemTemp.createTemp('dartdoc_tools_');
+      _temporaryDirectory = Directory.systemTemp.createTemp('dartdoc_tools_');
     }
     return _temporaryDirectory;
   }
@@ -84,7 +83,8 @@ class ToolRunner {
       List<String> args, Map<String, String> environment) async {
     String commandString() => ([commandPath] + args).join(' ');
     try {
-      ProcessResult result = await Process.run(commandPath, args, environment: environment);
+      ProcessResult result =
+          await Process.run(commandPath, args, environment: environment);
       if (result.exitCode != 0) {
         _error('Tool "$name" returned non-zero exit code '
             '(${result.exitCode}) when run as '
@@ -176,16 +176,20 @@ class ToolRunner {
     var commandPath;
     void Function() callCompleter;
     if (toolDefinition is DartToolDefinition) {
-      var modified = await toolDefinition.modifyArgsToCreateSnapshotIfNeeded(argsWithInput);
+      var modified = await toolDefinition
+          .modifyArgsToCreateSnapshotIfNeeded(argsWithInput);
       commandPath = modified.item1;
       callCompleter = modified.item2;
     } else {
       commandPath = argsWithInput.removeAt(0);
     }
     if (callCompleter != null) {
-      return _runProcess(tool, content, commandPath, argsWithInput, envWithInput).whenComplete(callCompleter);
+      return _runProcess(
+              tool, content, commandPath, argsWithInput, envWithInput)
+          .whenComplete(callCompleter);
     } else {
-      return _runProcess(tool, content, commandPath, argsWithInput, envWithInput);
+      return _runProcess(
+          tool, content, commandPath, argsWithInput, envWithInput);
     }
   }
 }
