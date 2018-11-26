@@ -3922,19 +3922,6 @@ abstract class ModelElement extends Canonicalization
     return '<a${classContent} href="${href}">$name</a>';
   }
 
-  // This differs from package.findOrCreateLibraryFor in a small way,
-  // searching for the [Library] associated with this element's enclosing
-  // Library before trying to create one.
-  static Library _findOrCreateEnclosingLibraryForStatic(
-      Element e, PackageGraph packageGraph) {
-    var element = e.library;
-    if (element == null) {
-      return null;
-    }
-    return packageGraph.findButDoNotCreateLibraryFor(element) ??
-        packageGraph.findButDoNotCreateLibraryFor(e);
-  }
-
   /// Replace &#123;@example ...&#125; in API comments with the content of named file.
   ///
   /// Syntax:
@@ -6503,14 +6490,6 @@ class PackageBuilder {
     }
     await getLibraries(libraryResults, specialLibraryResults, getFiles,
         specialLibraryFiles(findSpecialsSdk).toSet());
-    print('libraryResults contains');
-    for (var result in libraryResults) {
-      print('  ${result.path}');
-    }
-    print('specialLibraryResults contains');
-    for (var result in specialLibraryResults) {
-      print('  ${result.path}');
-    }
     return new PackageGraph(libraryResults, specialLibraryResults, config,
         config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
   }
