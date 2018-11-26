@@ -7,12 +7,17 @@ library dartdoc.tool_runner;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:path/path.dart' as pathLib;
 import 'dartdoc_options.dart';
 
 typedef ToolErrorCallback = void Function(String message);
 typedef FakeResultCallback = String Function(String tool,
     {List<String> args, String content});
+
+/// Set a ceiling on how many tool instances can be in progress at once,
+/// limiting both parallelization and the number of open temporary files.
+final MultiFutureTracker _toolTracker = new MultiFutureTracker(4);
 
 /// A helper class for running external tools.
 class ToolRunner {
@@ -112,6 +117,17 @@ class ToolRunner {
   /// The [args] must not be null, and it must have at least one member (the name
   /// of the tool).
   Future<String> run(List<String> args,
+      {String content, Map<String, String> environment}) async {
+    Future runner;
+    // Prevent too many tools from running simultaneously.
+    await _toolTracker.addFutureFromClosure(() {
+      runner = _run(args, content: content, environment: environment);
+      return runner;
+    });
+    return runner;
+  }
+
+  Future<String> _run(List<String> args,
       {String content, Map<String, String> environment}) async {
     assert(args != null);
     assert(args.isNotEmpty);
