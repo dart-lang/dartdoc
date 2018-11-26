@@ -65,7 +65,7 @@ class ToolRunner {
   }
 
   void _runSetup(
-      String name, ToolDefinition tool, Map<String, String> environment) {
+      String name, ToolDefinition tool, Map<String, String> environment) async {
     bool isDartSetup = ToolDefinition.isDartExecutable(tool.setupCommand[0]);
     var args = tool.setupCommand.toList();
     String commandPath;
@@ -75,15 +75,15 @@ class ToolRunner {
     } else {
       commandPath = args.removeAt(0);
     }
-    _runProcess(name, '', commandPath, args, environment);
+    await _runProcess(name, '', commandPath, args, environment);
     tool.setupComplete = true;
   }
 
-  String _runProcess(String name, String content, String commandPath,
-      List<String> args, Map<String, String> environment) {
+  Future<String> _runProcess(String name, String content, String commandPath,
+      List<String> args, Map<String, String> environment) async {
     String commandString() => ([commandPath] + args).join(' ');
     try {
-      var result = Process.runSync(commandPath, args, environment: environment);
+      ProcessResult result = await Process.run(commandPath, args, environment: environment);
       if (result.exitCode != 0) {
         _error('Tool "$name" returned non-zero exit code '
             '(${result.exitCode}) when run as '
@@ -110,8 +110,8 @@ class ToolRunner {
   ///
   /// The [args] must not be null, and it must have at least one member (the name
   /// of the tool).
-  String run(List<String> args,
-      {String content, Map<String, String> environment}) {
+  Future<String> run(List<String> args,
+      {String content, Map<String, String> environment}) async {
     assert(args != null);
     assert(args.isNotEmpty);
     content ??= '';
@@ -134,7 +134,7 @@ class ToolRunner {
 
     // Write the content to a temp file.
     var tmpFile = _createTemporaryFile();
-    tmpFile.writeAsStringSync(content);
+    Future returnedFuture = tmpFile.writeAsString(content);
 
     // Substitute the temp filename for the "$INPUT" token, and all of the other
     // environment variables. Variables are allowed to either be in $(VAR) form,
@@ -169,15 +169,18 @@ class ToolRunner {
     }
 
     if (toolDefinition.setupCommand != null && !toolDefinition.setupComplete)
-      _runSetup(tool, toolDefinition, envWithInput);
+      returnedFuture = returnedFuture.then((_) => _runSetup(tool, toolDefinition, envWithInput));
 
     argsWithInput = toolArgs + argsWithInput;
     var commandPath;
+    Future<void> Function() callCompleter = () async {};
     if (toolDefinition is DartToolDefinition) {
-      commandPath = toolDefinition.createSnapshotIfNeeded(argsWithInput);
+      var modified = await toolDefinition.modifyArgsToCreateSnapshotIfNeeded(argsWithInput);
+      commandPath = modified.item1;
+      callCompleter = modified.item2;
     } else {
       commandPath = argsWithInput.removeAt(0);
     }
-    return _runProcess(tool, content, commandPath, argsWithInput, envWithInput);
+    return returnedFuture.then((_) => _runProcess(tool, content, commandPath, argsWithInput, envWithInput).whenComplete(callCompleter));
   }
 }

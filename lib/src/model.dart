@@ -3300,7 +3300,6 @@ abstract class ModelElement extends Canonicalization
     } else {
       _rawDocs = documentationComment ?? '';
       _rawDocs = stripComments(_rawDocs) ?? '';
-      // Must evaluate tools first, in case they insert any other directives.
       _rawDocs = _injectExamples(_rawDocs);
       _rawDocs = _injectAnimations(_rawDocs);
       _rawDocs = _stripHtmlAndAddToIndex(_rawDocs);
@@ -3320,7 +3319,7 @@ abstract class ModelElement extends Canonicalization
       _rawDocs = documentationComment ?? '';
       _rawDocs = stripComments(_rawDocs) ?? '';
       // Must evaluate tools first, in case they insert any other directives.
-      _rawDocs = _evaluateTools(_rawDocs);
+      _rawDocs = await _evaluateTools(_rawDocs);
       _rawDocs = _injectExamples(_rawDocs);
       _rawDocs = _injectAnimations(_rawDocs);
       _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
@@ -3980,6 +3979,20 @@ abstract class ModelElement extends Canonicalization
     });
   }
 
+  static Future<String> _replaceAllMappedAsync(String string, Pattern exp, Future<String> replace(Match match)) async {
+    StringBuffer replaced = new StringBuffer();
+    int currentIndex = 0;
+    for(Match match in exp.allMatches(string)) {
+      String prefix = match.input.substring(currentIndex, match.start);
+      currentIndex = match.end;
+      replaced
+        ..write(prefix)
+        ..write(await replace(match));
+    }
+    replaced.write(string.substring(currentIndex));
+    return replaced.toString();
+  }
+
   /// Replace &#123;@tool ...&#125&#123;@end-tool&#125; in API comments with the
   /// output of an external tool.
   ///
@@ -4031,43 +4044,39 @@ abstract class ModelElement extends Canonicalization
   ///
   /// ## Content to send to tool.
   /// 2018-09-18T21:15+00:00
-  String _evaluateTools(String rawDocs) {
-    var runner = new ToolRunner(config.tools, (String message) {
+  Future<String> _evaluateTools(String rawDocs) async {
+    var runner = new ToolRunner(config.tools, (String message) async {
       warn(PackageWarning.toolError, message: message);
     });
     int invocationIndex = 0;
-    try {
-      return rawDocs.replaceAllMapped(basicToolRegExp, (basicMatch) {
-        List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
-        // Tool name must come first.
-        if (args.isEmpty) {
-          warn(PackageWarning.toolError,
-              message:
-                  'Must specify a tool to execute for the @tool directive.');
-          return '';
-        }
-        // Count the number of invocations of tools in this dartdoc block,
-        // so that tools can differentiate different blocks from each other.
-        invocationIndex++;
-        return runner.run(args,
-            content: basicMatch[2],
-            environment: {
-              'SOURCE_LINE': lineAndColumn?.item1?.toString(),
-              'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
-              'SOURCE_PATH': (sourceFileName == null ||
-                      package?.packagePath == null)
-                  ? null
-                  : pathLib.relative(sourceFileName, from: package.packagePath),
-              'PACKAGE_PATH': package?.packagePath,
-              'PACKAGE_NAME': package?.name,
-              'LIBRARY_NAME': library?.fullyQualifiedName,
-              'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
-              'INVOCATION_INDEX': invocationIndex.toString(),
-            }..removeWhere((key, value) => value == null));
-      });
-    } finally {
-      runner.dispose();
-    }
+    return await _replaceAllMappedAsync(rawDocs, basicToolRegExp, (basicMatch) async {
+      List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
+      // Tool name must come first.
+      if (args.isEmpty) {
+        warn(PackageWarning.toolError,
+            message:
+            'Must specify a tool to execute for the @tool directive.');
+        return Future.value('');
+      }
+      // Count the number of invocations of tools in this dartdoc block,
+      // so that tools can differentiate different blocks from each other.
+      invocationIndex++;
+      return await runner.run(args,
+          content: basicMatch[2],
+          environment: {
+            'SOURCE_LINE': lineAndColumn?.item1?.toString(),
+            'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
+            'SOURCE_PATH': (sourceFileName == null ||
+                package?.packagePath == null)
+                ? null
+                : pathLib.relative(sourceFileName, from: package.packagePath),
+            'PACKAGE_PATH': package?.packagePath,
+            'PACKAGE_NAME': package?.name,
+            'LIBRARY_NAME': library?.fullyQualifiedName,
+            'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
+            'INVOCATION_INDEX': invocationIndex.toString(),
+          }..removeWhere((key, value) => value == null));
+    }).whenComplete(runner.dispose);
   }
 
   /// Replace &#123;@animation ...&#125; in API comments with some HTML to manage an
