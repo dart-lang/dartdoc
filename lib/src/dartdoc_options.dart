@@ -227,7 +227,7 @@ class DartToolDefinition extends ToolDefinition {
   /// to run. If no snapshot file existed, then create one and modify the args
   /// so that if they are executed with dart, will result in the snapshot being
   /// built.
-  Future<Tuple2<String, Future<void> Function()>> modifyArgsToCreateSnapshotIfNeeded(List<String> args) async {
+  Future<Tuple2<String, Function()>> modifyArgsToCreateSnapshotIfNeeded(List<String> args) async {
     assert(args[0] == command.first);
     // Set up flags to create a new snapshot, if needed, and use the first run as the training
     // run.
@@ -241,9 +241,7 @@ class DartToolDefinition extends ToolDefinition {
         '--snapshot_kind=app-jit'
       ]);
     }
-    return new Tuple2(Platform.resolvedExecutable, () async {
-      if(!_snapshotCompleter.isCompleted) _snapshotCompleter.complete();
-    });
+    return new Tuple2(Platform.resolvedExecutable, _snapshotCompleter.isCompleted ? null : _snapshotCompleter.complete);
   }
 
   DartToolDefinition(

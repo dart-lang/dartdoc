@@ -3756,13 +3756,11 @@ abstract class ModelElement extends Canonicalization
     return _documentationComment;
   }
 
-  /// Call this method to precache docs for this object if it might possibly
-  /// have a macro template or a tool definition.
-  Future precacheLocalDocsIfNeeded() async {
-    if (documentationComment != null &&
-        needsPrecacheRegExp.hasMatch(documentationComment)) {
-      _documentationLocal = await _buildDocumentationBase();
-    }
+  /// Unconditionally precache local documentation.
+  ///
+  /// Use only in factory for [PackageGraph].
+  Future _precacheLocalDocs() async {
+    _documentationLocal = await _buildDocumentationBase();
   }
 
   Documentation get _documentation {
@@ -4690,7 +4688,8 @@ class PackageGraph {
     newGraph.specialClasses = new SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
-    await Future.wait(newGraph.allModelElements.map((m) => m.precacheLocalDocsIfNeeded()));
+    List<Future> precacheFutures = newGraph.precacheLocalDocs().toList();
+    for (Future f in precacheFutures) await f;
     newGraph._localDocumentationBuilt = true;
 
     // Scan all model elements to insure that interceptor and other special
@@ -4711,70 +4710,15 @@ class PackageGraph {
     return newGraph;
   }
 
-  /*
-  /// Construct a package graph.
-  /// [libraryElements] - Libraries to be documented.
-  /// [specialLibraryElements] - Any libraries that may not be documented, but
-  /// contain required [SpecialClass]es.
-  PackageGraph(
-      Iterable<LibraryElement> libraryElements,
-      Iterable<LibraryElement> specialLibraryElements,
-      this.config,
-      this.packageMeta,
-      this._packageWarningOptions,
-      this.driver,
-      this.sdk) {
-    assert(_allConstructedModelElements.isEmpty);
-    assert(allLibraries.isEmpty);
-    _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
-
-    // Build [Package] objects.
-    libraryElements.forEach((element) {});
-
-    // Build [Library] objects, and link them to [Package]s.
-    libraryElements.forEach((element) {
-      var packageMeta = new PackageMeta.fromElement(element, config);
-      var lib = new Library._(
-          element, this, new Package.fromPackageMeta(packageMeta, this));
-      packageMap[packageMeta.name]._libraries.add(lib);
-      allLibraries[element] = lib;
-    });
-
-    // Make sure the default package exists, even if it has no libraries.
-    // This can happen for packages that only contain embedder SDKs.
-    new Package.fromPackageMeta(packageMeta, this);
-    allLibrariesAdded = true;
-
-    // [findOrCreateLibraryFor] already adds to the proper structures.
-    specialLibraryElements.forEach((element) {
-      findOrCreateLibraryFor(element);
-    });
-
-    // From here on in, we might find special objects.  Initialize the
-    // specialClasses handler so when we find them, they get added.
-    specialClasses = new SpecialClasses();
-    // Go through docs of every ModelElement in package to pre-build the macros
-    // index.
-    allModelElements.forEach((m) => m.precacheLocalDocsIfNeeded());
-    _localDocumentationBuilt = true;
-
-    // Scan all model elements to insure that interceptor and other special
-    // objects are found.
-    // After the allModelElements traversal to be sure that all packages
-    // are picked up.
-    documentedPackages.toList().forEach((package) {
-      package._libraries.sort((a, b) => compareNatural(a.name, b.name));
-      package._libraries.forEach((library) {
-        library._allClasses.forEach(_addToImplementors);
-      });
-    });
-    _implementors.values.forEach((l) => l.sort());
-    allImplementorsAdded = true;
-
-    // We should have found all special classes by now.
-    specialClasses.assertSpecials();
+  /// Generate a list of futures for any docs that actually require precaching.
+  Iterable<Future> precacheLocalDocs() sync* {
+    for (ModelElement m in allModelElements) {
+      if (m.documentationComment != null &&
+          needsPrecacheRegExp.hasMatch(m.documentationComment)) {
+        yield m._precacheLocalDocs();
+      }
+    }
   }
-  */
 
   SpecialClasses specialClasses;
 

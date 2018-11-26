@@ -27,11 +27,11 @@ class ToolRunner {
   final ToolErrorCallback _errorCallback;
   int _temporaryFileCount = 0;
 
-  Directory _temporaryDirectory;
-  Directory get temporaryDirectory {
+  Future<Directory> _temporaryDirectory;
+  Future<Directory> get temporaryDirectory {
     if (_temporaryDirectory == null) {
       _temporaryDirectory =
-          Directory.systemTemp.createTempSync('dartdoc_tools_');
+          Directory.systemTemp.createTemp('dartdoc_tools_');
     }
     return _temporaryDirectory;
   }
@@ -42,11 +42,11 @@ class ToolRunner {
     }
   }
 
-  File _createTemporaryFile() {
+  Future<File> _createTemporaryFile() async {
     _temporaryFileCount++;
     return new File(pathLib.join(
-        temporaryDirectory.absolute.path, 'input_$_temporaryFileCount'))
-      ..createSync(recursive: true);
+        (await temporaryDirectory).absolute.path, 'input_$_temporaryFileCount'))
+      ..create(recursive: true);
   }
 
   /// Must be called when the ToolRunner is no longer needed. Ideally, this is
@@ -58,10 +58,11 @@ class ToolRunner {
   }
 
   /// Avoid blocking on I/O for cleanups.
-  static Future<void> disposeAsync(Directory temporaryDirectory) async {
-    temporaryDirectory.exists().then((bool exists) {
-      if (exists) return temporaryDirectory.delete(recursive: true);
-    });
+  static Future<void> disposeAsync(Future<Directory> temporaryDirectory) async {
+    Directory tempDir = await temporaryDirectory;
+    if (await tempDir.exists()) {
+      return tempDir.delete(recursive: true);
+    }
   }
 
   void _runSetup(
@@ -133,8 +134,8 @@ class ToolRunner {
     // file before running the tool synchronously.
 
     // Write the content to a temp file.
-    var tmpFile = _createTemporaryFile();
-    Future returnedFuture = tmpFile.writeAsString(content);
+    var tmpFile = await _createTemporaryFile();
+    await tmpFile.writeAsString(content);
 
     // Substitute the temp filename for the "$INPUT" token, and all of the other
     // environment variables. Variables are allowed to either be in $(VAR) form,
@@ -169,11 +170,11 @@ class ToolRunner {
     }
 
     if (toolDefinition.setupCommand != null && !toolDefinition.setupComplete)
-      returnedFuture = returnedFuture.then((_) => _runSetup(tool, toolDefinition, envWithInput));
+      await _runSetup(tool, toolDefinition, envWithInput);
 
     argsWithInput = toolArgs + argsWithInput;
     var commandPath;
-    Future<void> Function() callCompleter = () async {};
+    void Function() callCompleter;
     if (toolDefinition is DartToolDefinition) {
       var modified = await toolDefinition.modifyArgsToCreateSnapshotIfNeeded(argsWithInput);
       commandPath = modified.item1;
@@ -181,6 +182,10 @@ class ToolRunner {
     } else {
       commandPath = argsWithInput.removeAt(0);
     }
-    return returnedFuture.then((_) => _runProcess(tool, content, commandPath, argsWithInput, envWithInput).whenComplete(callCompleter));
+    if (callCompleter != null) {
+      return _runProcess(tool, content, commandPath, argsWithInput, envWithInput).whenComplete(callCompleter);
+    } else {
+      return _runProcess(tool, content, commandPath, argsWithInput, envWithInput);
+    }
   }
 }
