@@ -4646,11 +4646,6 @@ class PackageGraph {
     assert(allLibraries.isEmpty);
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
 
-    // Build [Package] objects.
-    // TODO(brianwilkerson) Attempt to remove the following line; it appears to
-    // be doing nothing.
-    libraryResults.forEach((result) {});
-
     // Build [Library] objects, and link them to [Package]s.
     libraryResults.forEach((result) {
       LibraryElement element = result.element;
@@ -6492,9 +6487,27 @@ class PackageBuilder {
     }
     await getLibraries(libraryResults, specialLibraryResults, getFiles,
         specialLibraryFiles(findSpecialsSdk).toSet());
+    filterLibraryResults(libraryResults);
+    filterLibraryResults(specialLibraryResults);
     return new PackageGraph(libraryResults, specialLibraryResults, config,
         config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
   }
+
+  // TODO(jcollins-g): Make ResolvedLibraryResult objects key on their
+  // returned elements.
+  void filterLibraryResults(Set<ResolvedLibraryResult> results) {
+    List<ResolvedLibraryResult> toRemove = [];
+    Set<LibraryElement> foundElements = new Set();
+    results.forEach((r) {
+      if (foundElements.contains(r.element)) {
+        toRemove.add(r);
+      } else {
+        foundElements.add(r.element);
+      }
+    });
+    results.removeAll(toRemove);
+  }
+
 
   DartSdk _sdk;
   DartSdk get sdk {
