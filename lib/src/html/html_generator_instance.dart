@@ -148,17 +148,17 @@ class HtmlGeneratorInstance {
             generateProperty(_packageGraph, lib, clazz, property);
           }
 
-          for (var property in filterNonDocumented(clazz.propertiesForPages)) {
+          for (var property in filterNonDocumented(clazz.allInstanceFields)) {
             if (!property.isCanonical) continue;
             generateProperty(_packageGraph, lib, clazz, property);
           }
 
-          for (var method in filterNonDocumented(clazz.methodsForPages)) {
+          for (var method in filterNonDocumented(clazz.allInstanceMethods)) {
             if (!method.isCanonical) continue;
             generateMethod(_packageGraph, lib, clazz, method);
           }
 
-          for (var operator in filterNonDocumented(clazz.operatorsForPages)) {
+          for (var operator in filterNonDocumented(clazz.allOperators)) {
             if (!operator.isCanonical) continue;
             generateMethod(_packageGraph, lib, clazz, operator);
           }
@@ -186,17 +186,17 @@ class HtmlGeneratorInstance {
             generateProperty(_packageGraph, lib, mixin, property);
           }
 
-          for (var property in filterNonDocumented(mixin.propertiesForPages)) {
+          for (var property in filterNonDocumented(mixin.allInstanceFields)) {
             if (!property.isCanonical) continue;
             generateProperty(_packageGraph, lib, mixin, property);
           }
 
-          for (var method in filterNonDocumented(mixin.methodsForPages)) {
+          for (var method in filterNonDocumented(mixin.allInstanceMethods)) {
             if (!method.isCanonical) continue;
             generateMethod(_packageGraph, lib, mixin, method);
           }
 
-          for (var operator in filterNonDocumented(mixin.operatorsForPages)) {
+          for (var operator in filterNonDocumented(mixin.allOperators)) {
             if (!operator.isCanonical) continue;
             generateMethod(_packageGraph, lib, mixin, operator);
           }
@@ -209,13 +209,13 @@ class HtmlGeneratorInstance {
 
         for (var eNum in filterNonDocumented(lib.enums)) {
           generateEnum(_packageGraph, lib, eNum);
-          for (var property in filterNonDocumented(eNum.propertiesForPages)) {
+          for (var property in filterNonDocumented(eNum.allInstanceFields)) {
             generateProperty(_packageGraph, lib, eNum, property);
           }
-          for (var operator in filterNonDocumented(eNum.operatorsForPages)) {
+          for (var operator in filterNonDocumented(eNum.allOperators)) {
             generateMethod(_packageGraph, lib, eNum, operator);
           }
-          for (var method in filterNonDocumented(eNum.methodsForPages)) {
+          for (var method in filterNonDocumented(eNum.allInstanceMethods)) {
             generateMethod(_packageGraph, lib, eNum, method);
           }
         }
