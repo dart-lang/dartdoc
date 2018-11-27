@@ -8,6 +8,7 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
@@ -143,12 +144,12 @@ String crossdartifySource(
     Map<String, Map<String, dynamic>> json,
     String source,
     Element element,
+    AstNode node,
     int start) {
   inputPath = pathLib.canonicalize(inputPath);
   var sanitizer = const HtmlEscape();
   String newSource;
   if (json.isNotEmpty) {
-    var node = element.computeNode();
     var file = pathLib.canonicalize(element.source.fullName);
     var filesData = json[file];
     if (filesData != null) {

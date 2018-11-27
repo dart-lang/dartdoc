@@ -10,6 +10,8 @@ import 'dart:collection' show UnmodifiableListView;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/results.dart';
+import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart'
     show
         AnnotatedNode,
@@ -495,8 +497,8 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   ModelElement get enclosingElement {
     if (_accessor.enclosingElement is CompilationUnitElement) {
-      return packageGraph
-          .findOrCreateLibraryFor(_accessor.enclosingElement.enclosingElement);
+      return packageGraph.findButDoNotCreateLibraryFor(
+          _accessor.enclosingElement.enclosingElement);
     }
 
     return new ModelElement.from(
@@ -2055,16 +2057,17 @@ abstract class GetterSetterCombo implements ModelElement {
 }
 
 class Library extends ModelElement with Categorization, TopLevelContainer {
+  final ResolvedLibraryResult libraryResult;
   List<TopLevelVariable> _variables;
   Namespace _exportedNamespace;
   String _name;
 
   factory Library(LibraryElement element, PackageGraph packageGraph) {
-    return packageGraph.findOrCreateLibraryFor(element);
+    return packageGraph.findButDoNotCreateLibraryFor(element);
   }
 
-  Library._(LibraryElement element, PackageGraph packageGraph, this._package)
-      : super(element, null, packageGraph, null) {
+  Library._(this.libraryResult, PackageGraph packageGraph, this._package)
+      : super(libraryResult.element, null, packageGraph, null) {
     if (element == null) throw new ArgumentError.notNull('element');
     _exportedNamespace =
         new NamespaceBuilder().createExportNamespaceForLibrary(element);
@@ -2103,9 +2106,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
                 new ModelElement.fromElement(e.setter.element, packageGraph);
           }
         }
-        return new ModelElement.from(e.element,
-                packageGraph.findOrCreateLibraryFor(e.element), packageGraph,
-                getter: getter, setter: setter)
+        return new ModelElement.from(
+                e.element,
+                packageGraph.findButDoNotCreateLibraryFor(e.element),
+                packageGraph,
+                getter: getter,
+                setter: setter)
             .fullyQualifiedName;
       }).toList();
     }
@@ -2890,7 +2896,7 @@ abstract class ModelElement extends Canonicalization
       this._element, this._library, this._packageGraph, this._originalMember) {}
 
   factory ModelElement.fromElement(Element e, PackageGraph p) {
-    Library lib = p.findOrCreateLibraryFor(e);
+    Library lib = p.findButDoNotCreateLibraryFor(e);
     Accessor getter;
     Accessor setter;
     if (e is PropertyInducingElement) {
@@ -3093,8 +3099,15 @@ abstract class ModelElement extends Canonicalization
   }
 
   AstNode _astNode;
+  @override
   AstNode get astNode {
-    _astNode ??= element?.computeNode();
+    if (_astNode == null && element != null) {
+      Library definingLibrary = this.definingLibrary;
+      if (definingLibrary != null) {
+        _astNode =
+            definingLibrary.libraryResult.getElementDeclaration(element)?.node;
+      }
+    }
     return _astNode;
   }
 
@@ -3345,7 +3358,8 @@ abstract class ModelElement extends Canonicalization
         documentationFrom.map((e) => e.documentationLocal).join('<p>'));
   }
 
-  Library get definingLibrary => packageGraph.findOrCreateLibraryFor(element);
+  Library get definingLibrary =>
+      packageGraph.findButDoNotCreateLibraryFor(element);
 
   Library _canonicalLibrary;
   // _canonicalLibrary can be null so we can't check against null to see whether
@@ -4647,11 +4661,11 @@ class PackageGraph {
   // to this graph.
 
   PackageGraph._(this.config, this.packageMeta, this._packageWarningOptions,
-      this.driver, this.sdk) {}
+      this.driver, this.sdk) : session = driver.currentSession {}
 
   static Future<PackageGraph> setUpPackageGraph(
-      Iterable<LibraryElement> libraryElements,
-      Iterable<LibraryElement> specialLibraryElements,
+      Iterable<ResolvedLibraryResult> libraryElements,
+      Iterable<ResolvedLibraryResult> specialLibraryElements,
       DartdocOptionContext config,
       PackageMeta packageMeta,
       packageWarningOptions,
@@ -4664,13 +4678,11 @@ class PackageGraph {
     newGraph._packageWarningCounter =
         new PackageWarningCounter(newGraph._packageWarningOptions);
 
-    // Build [Package] objects.
-    libraryElements.forEach((element) {});
-
     // Build [Library] objects, and link them to [Package]s.
-    libraryElements.forEach((element) {
+    libraryResults.forEach((result) {
+      LibraryElement element = result.element;
       var packageMeta = new PackageMeta.fromElement(element, config);
-      var lib = new Library._(element, newGraph,
+      var lib = new Library._(result, newGraph,
           new Package.fromPackageMeta(packageMeta, newGraph));
       newGraph.packageMap[packageMeta.name]._libraries.add(lib);
       newGraph.allLibraries[element] = lib;
@@ -4682,8 +4694,8 @@ class PackageGraph {
     newGraph.allLibrariesAdded = true;
 
     // [findOrCreateLibraryFor] already adds to the proper structures.
-    specialLibraryElements.forEach((element) {
-      newGraph.findOrCreateLibraryFor(element);
+    specialLibraryElements.forEach((result) {
+      newGraph.findOrCreateLibraryFor(result.element);
     });
 
     // From here on in, we might find special objects.  Initialize the
@@ -4814,7 +4826,9 @@ class PackageGraph {
   /// Map of package name to Package.
   final Map<String, Package> packageMap = {};
 
+  /// TODO(brianwilkerson) Replace the driver with the session.
   final AnalysisDriver driver;
+  final AnalysisSession session;
   final DartSdk sdk;
 
   Map<Source, SdkLibrary> _sdkLibrarySources;
@@ -5095,7 +5109,7 @@ class PackageGraph {
       // The first call to _tagReexportFor should not have a null libraryElement.
       assert(lastExportedElement != null);
       warnOnElement(
-          findOrCreateLibraryFor(lastExportedElement.enclosingElement),
+          findButDoNotCreateLibraryFor(lastExportedElement.enclosingElement),
           PackageWarning.unresolvedExport,
           message: '"${lastExportedElement.uri}"',
           referredFrom: <Locatable>[topLevelLibrary]);
@@ -5407,7 +5421,18 @@ class PackageGraph {
   /// This is used when we might need a Library object that isn't actually
   /// a documentation entry point (for elements that have no Library within the
   /// set of canonical Libraries).
-  Library findOrCreateLibraryFor(Element e) {
+  Library findButDoNotCreateLibraryFor(Element e) {
+    // This is just a cache to avoid creating lots of libraries over and over.
+    if (allLibraries.containsKey(e.library)) {
+      return allLibraries[e.library];
+    }
+    return null;
+  }
+
+  /// This is used when we might need a Library object that isn't actually
+  /// a documentation entry point (for elements that have no Library within the
+  /// set of canonical Libraries).
+  Future<Library> findOrCreateLibraryFor(Element e) async {
     // This is just a cache to avoid creating lots of libraries over and over.
     if (allLibraries.containsKey(e.library)) {
       return allLibraries[e.library];
@@ -5417,8 +5442,10 @@ class PackageGraph {
       return null;
     }
 
+    ResolvedLibraryResult result =
+        await session.getResolvedLibraryByElement(e.library);
     Library foundLibrary = new Library._(
-        e.library,
+        result,
         this,
         new Package.fromPackageMeta(
             new PackageMeta.fromElement(e.library, config), packageGraph));
@@ -6157,6 +6184,8 @@ class Parameter extends ModelElement implements EnclosedElement {
 }
 
 abstract class SourceCodeMixin implements Documentable {
+  AstNode get astNode;
+
   String get crossdartHtmlTag {
     if (config.addCrossdart && _crossdartUrl != null) {
       return "<a class='crossdart' href='${_crossdartUrl}'>Link to Crossdart</a>";
@@ -6175,7 +6204,7 @@ abstract class SourceCodeMixin implements Documentable {
 
   String sourceCodeFor(Element element) {
     String contents = getFileContentsFor(element);
-    var node = element.computeNode();
+    var node = astNode;
     if (node != null) {
       // Find the start of the line, so that we can line up all the indents.
       int i = node.offset;
@@ -6193,7 +6222,7 @@ abstract class SourceCodeMixin implements Documentable {
 
       if (config.addCrossdart) {
         source = crossdartifySource(config.inputDir, packageGraph.crossdartJson,
-            source, element, start);
+            source, element, node, start);
       } else {
         source = const HtmlEscape().convert(source);
       }
@@ -6215,7 +6244,7 @@ abstract class SourceCodeMixin implements Documentable {
   }
 
   String get _crossdartPath {
-    var node = element.computeNode();
+    var node = astNode;
     if (node is Declaration && node.declaredElement != null) {
       var source = node.declaredElement.source;
       var filePath = source.fullName;
@@ -6494,17 +6523,39 @@ class PackageBuilder {
     if (packageMeta.needsPubGet) {
       packageMeta.runPubGet();
     }
-    Set<LibraryElement> libraries = new Set();
-    Set<LibraryElement> specialLibraries = new Set();
+    Set<ResolvedLibraryResult> libraryResults = new Set();
+    Set<ResolvedLibraryResult> specialLibraryResults = new Set();
     DartSdk findSpecialsSdk = sdk;
     if (embedderSdk != null && embedderSdk.urlMappings.isNotEmpty) {
       findSpecialsSdk = embedderSdk;
     }
-    await getLibraries(libraries, specialLibraries, getFiles,
+    await getLibraries(libraryResults, specialLibraryResults, getFiles,
         specialLibraryFiles(findSpecialsSdk).toSet());
     return await PackageGraph.setUpPackageGraph(libraries, specialLibraries,
         config, config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
+    filterLibraryResults(libraryResults);
+    filterLibraryResults(specialLibraryResults);
+    return new PackageGraph(libraries, specialLibraries, config,
+        config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
+    return new PackageGraph(libraryResults, specialLibraryResults, config,
+        config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
   }
+
+  // TODO(jcollins-g): Make ResolvedLibraryResult objects key on their
+  // returned elements.
+  void filterLibraryResults(Set<ResolvedLibraryResult> results) {
+    List<ResolvedLibraryResult> toRemove = [];
+    Set<LibraryElement> foundElements = new Set();
+    results.forEach((r) {
+      if (foundElements.contains(r.element)) {
+        toRemove.add(r);
+      } else {
+        foundElements.add(r.element);
+      }
+    });
+    results.removeAll(toRemove);
+  }
+
 
   DartSdk _sdk;
   DartSdk get sdk {
@@ -6614,9 +6665,20 @@ class PackageBuilder {
           options);
       driver.results.listen((_) {});
       driver.exceptions.listen((_) {});
+      _session = driver.currentSession;
       scheduler.start();
     }
     return _driver;
+  }
+
+  AnalysisSession _session;
+  AnalysisSession get session {
+    if (_session == null) {
+      // The current session is initialized as a side-effect of initializing the
+      // driver.
+      driver;
+    }
+    return _session;
   }
 
   PackageWarningOptions getWarningOptions() {
@@ -6652,7 +6714,7 @@ class PackageBuilder {
 
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
-  Future<LibraryElement> processLibrary(String filePath) async {
+  Future<ResolvedLibraryResult> processLibrary(String filePath) async {
     String name = filePath;
 
     if (name.startsWith(directoryCurrentPath)) {
@@ -6679,7 +6741,7 @@ class PackageBuilder {
     if (sourceKind == SourceKind.LIBRARY) {
       // Loading libraryElements from part files works, but is painfully slow
       // and creates many duplicates.
-      return (await driver.getResult(filePath))?.libraryElement;
+      return await session.getResolvedLibrary(source.fullName);
     }
     return null;
   }
@@ -6692,20 +6754,16 @@ class PackageBuilder {
     return metas;
   }
 
-  Future<List<LibraryElement>> _parseLibraries(Set<String> files) async {
-    Iterable<LibraryElement> libraries = new Iterable.empty();
+  Future<List<ResolvedLibraryResult>> _parseLibraries(Set<String> files) async {
+    Iterable<ResolvedLibraryResult> libraries = new Iterable.empty();
     Set<PackageMeta> lastPass = new Set();
     Set<PackageMeta> current;
-    Set<String> addedFiles = new Set();
     do {
       lastPass = _packageMetasForFiles(files);
-      files.difference(addedFiles).forEach((filename) {
-        addedFiles.add(filename);
-      });
       libraries = quiverIterables.concat([
         libraries,
         (await Future.wait(files.map((f) => processLibrary(f))))
-            .where((LibraryElement l) => l != null)
+            .where((ResolvedLibraryResult l) => l != null)
       ]);
 
       /// We don't care about upstream analysis errors, so save the first
@@ -6817,15 +6875,15 @@ class PackageBuilder {
   }
 
   Future<void> getLibraries(
-      Set<LibraryElement> libraries,
-      Set<LibraryElement> specialLibraries,
+      Set<ResolvedLibraryResult> libraryResults,
+      Set<ResolvedLibraryResult> specialLibraryResults,
       Set<String> files,
       Set<String> specialFiles) async {
-    libraries.addAll(await _parseLibraries(files));
-    specialLibraries
+    libraryResults.addAll(await _parseLibraries(files));
+    specialLibraryResults
         .addAll(await _parseLibraries(specialFiles.difference(files)));
     if (config.include.isNotEmpty) {
-      Iterable knownLibraryNames = libraries.map((l) => l.name);
+      Iterable knownLibraryNames = libraryResults.map((l) => l.element.name);
       Set notFound = new Set.from(config.include)
           .difference(new Set.from(knownLibraryNames))
           .difference(new Set.from(config.exclude));
@@ -6833,7 +6891,8 @@ class PackageBuilder {
         throw 'Did not find: [${notFound.join(', ')}] in '
             'known libraries: [${knownLibraryNames.join(', ')}]';
       }
-      libraries.removeWhere((lib) => !config.include.contains(lib.name));
+      libraryResults.removeWhere(
+          (result) => !config.include.contains(result.element.name));
     }
   }
 
