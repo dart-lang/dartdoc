@@ -374,7 +374,7 @@ class InheritableAccessor extends Accessor with Inheritable {
             Class parentClass =
                 new ModelElement.fromElement(t.element, packageGraph);
             List<Field> possibleFields = [];
-            possibleFields.addAll(parentClass.allInstanceProperties);
+            possibleFields.addAll(parentClass.allInstanceFields);
             possibleFields.addAll(parentClass.staticProperties);
             String fieldName = accessor.name.replaceFirst('=', '');
             Field foundField = possibleFields.firstWhere(
@@ -417,7 +417,7 @@ class Accessor extends ModelElement implements EnclosedElement {
         // enclosingCombo always gets set at accessor creation time, somehow, to
         // avoid this.
         // TODO(jcollins-g): This also doesn't work for private accessors sometimes.
-        (enclosingElement as Class).allFields;
+        (enclosingElement as Class).allInstanceFields;
       }
       assert(_enclosingCombo != null);
     }
@@ -598,19 +598,14 @@ class Class extends ModelElement
   List<Method> _allMethods;
   List<Operator> _operators;
   List<Operator> _inheritedOperators;
-  List<Operator> _allOperators;
-  final Set<Operator> _genPageOperators = new Set();
   List<Method> _inheritedMethods;
   List<Method> _staticMethods;
   List<Method> _instanceMethods;
-  List<Method> _allInstanceMethods;
-  final Set<Method> _genPageMethods = new Set();
   List<Field> _fields;
   List<Field> _staticFields;
   List<Field> _constants;
   List<Field> _instanceFields;
   List<Field> _inheritedProperties;
-  List<Field> _allInstanceProperties;
 
   Class(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph, null) {
@@ -632,17 +627,7 @@ class Class extends ModelElement
         .toList(growable: false);
   }
 
-  List<Method> get allInstanceMethods {
-    if (_allInstanceMethods != null) return _allInstanceMethods;
-    _allInstanceMethods = []
-      ..addAll([]
-        ..addAll(instanceMethods)
-        ..sort(byName))
-      ..addAll([]
-        ..addAll(inheritedMethods)
-        ..sort(byName));
-    return _allInstanceMethods;
-  }
+  Iterable<Method> get allInstanceMethods => quiverIterables.concat([instanceMethods, inheritedMethods]);
 
   Iterable<Method> get allPublicInstanceMethods =>
       filterNonPublic(allInstanceMethods);
@@ -650,48 +635,17 @@ class Class extends ModelElement
   bool get allPublicInstanceMethodsInherited =>
       instanceMethods.every((f) => f.isInherited);
 
-  List<Field> get allInstanceProperties {
-    if (_allInstanceProperties != null) return _allInstanceProperties;
+  Iterable<Field> get allInstanceFields => quiverIterables.concat([instanceProperties, inheritedProperties]);
 
-    // TODO best way to make this a fixed length list?
-    _allInstanceProperties = []
-      ..addAll([]
-        ..addAll(instanceProperties)
-        ..sort(byName))
-      ..addAll([]
-        ..addAll(inheritedProperties)
-        ..sort(byName));
-    return _allInstanceProperties;
-  }
-
-  Iterable<Accessor> get allAccessors {
-    return []
-      ..addAll(allInstanceProperties.expand((f) {
-        List<Accessor> getterSetters = [];
-        if (f.hasGetter) getterSetters.add(f.getter);
-        if (f.hasSetter) getterSetters.add(f.setter);
-        return getterSetters;
-      }))
-      ..addAll(constants.map<Accessor>((c) => c.getter));
-  }
+  Iterable<Accessor> get allAccessors => quiverIterables.concat([allInstanceFields.expand((f) => f.allAccessors), constants.map((c) => c.getter)]);
 
   Iterable<Field> get allPublicInstanceProperties =>
-      filterNonPublic(allInstanceProperties);
+      filterNonPublic(allInstanceFields);
 
   bool get allPublicInstancePropertiesInherited =>
       allPublicInstanceProperties.every((f) => f.isInherited);
 
-  List<Operator> get allOperators {
-    if (_allOperators != null) return _allOperators;
-    _allOperators = []
-      ..addAll([]
-        ..addAll(operators)
-        ..sort(byName))
-      ..addAll([]
-        ..addAll(inheritedOperators)
-        ..sort(byName));
-    return _allOperators;
-  }
+  Iterable<Operator> get allOperators => quiverIterables.concat([operators, inheritedOperators]);
 
   Iterable<Operator> get allPublicOperators => filterNonPublic(allOperators);
 
@@ -700,7 +654,7 @@ class Class extends ModelElement
 
   List<Field> get constants {
     if (_constants != null) return _constants;
-    _constants = allFields.where((f) => f.isConst).toList(growable: false)
+    _constants = _allFields.where((f) => f.isConst).toList(growable: false)
       ..sort(byName);
 
     return _constants;
@@ -760,7 +714,7 @@ class Class extends ModelElement
       _allModelElements = new List.from(
           quiverIterables.concat([
             allInstanceMethods,
-            allInstanceProperties,
+            allInstanceFields,
             allAccessors,
             allOperators,
             constants,
@@ -861,7 +815,7 @@ class Class extends ModelElement
 
   List<Method> get inheritedMethods {
     if (_inheritedMethods == null) {
-      _inheritedMethods = new List<Method>();
+      _inheritedMethods = <Method>[];
       Set<String> methodNames = _methods.map((m) => m.element.name).toSet();
 
       Set<ExecutableElement> inheritedMethodElements =
@@ -876,7 +830,6 @@ class Class extends ModelElement
         Method m = new ModelElement.from(e, library, packageGraph,
             enclosingClass: this);
         _inheritedMethods.add(m);
-        _genPageMethods.add(m);
       }
       _inheritedMethods.sort(byName);
     }
@@ -902,7 +855,6 @@ class Class extends ModelElement
         Operator o = new ModelElement.from(e, library, packageGraph,
             enclosingClass: this);
         _inheritedOperators.add(o);
-        _genPageOperators.add(o);
       }
       _inheritedOperators.sort(byName);
     }
@@ -914,7 +866,7 @@ class Class extends ModelElement
 
   List<Field> get inheritedProperties {
     if (_inheritedProperties == null) {
-      _inheritedProperties = allFields.where((f) => f.isInherited).toList()
+      _inheritedProperties = _allFields.where((f) => f.isInherited).toList()
         ..sort(byName);
     }
     return _inheritedProperties;
@@ -930,8 +882,6 @@ class Class extends ModelElement
         .where((m) => !m.isStatic && !m.isOperator)
         .toList(growable: false)
           ..sort(byName);
-
-    _genPageMethods.addAll(_instanceMethods);
     return _instanceMethods;
   }
 
@@ -939,7 +889,7 @@ class Class extends ModelElement
 
   List<Field> get instanceProperties {
     if (_instanceFields != null) return _instanceFields;
-    _instanceFields = allFields
+    _instanceFields = _allFields
         .where((f) => !f.isStatic && !f.isInherited && !f.isConst)
         .toList(growable: false)
           ..sort(byName);
@@ -989,8 +939,6 @@ class Class extends ModelElement
   @override
   String get kind => 'class';
 
-  List<Method> get methodsForPages => _genPageMethods.toList(growable: false);
-
   List<DefinedElementType> get mixins => _mixins;
 
   Iterable<DefinedElementType> get publicMixins => filterNonPublic(mixins);
@@ -1005,29 +953,10 @@ class Class extends ModelElement
         .cast<Operator>()
         .toList(growable: false)
           ..sort(byName);
-    _genPageOperators.addAll(_operators);
-
     return _operators;
   }
 
   Iterable<Operator> get publicOperators => filterNonPublic(operators);
-
-  List<Operator> get operatorsForPages =>
-      new UnmodifiableListView(_genPageOperators.toList());
-
-  // TODO: make this method smarter about hierarchies and overrides. Right
-  // now, we're creating a flat list. We're not paying attention to where
-  // these methods are actually coming from. This might turn out to be a
-  // problem if we want to show that info later.
-  List<Field> _propertiesForPages;
-  List<Field> get propertiesForPages {
-    if (_propertiesForPages == null) {
-      _propertiesForPages = []
-        ..addAll(allInstanceProperties)
-        ..sort(byName);
-    }
-    return _propertiesForPages;
-  }
 
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
@@ -1042,9 +971,8 @@ class Class extends ModelElement
 
   List<Field> get staticProperties {
     if (_staticFields != null) return _staticFields;
-    _staticFields = allFields
-        .where((f) => f.isStatic)
-        .where((f) => !f.isConst)
+    _staticFields = _allFields
+        .where((f) => f.isStatic && !f.isConst)
         .toList(growable: false)
           ..sort(byName);
 
@@ -1124,7 +1052,9 @@ class Class extends ModelElement
     return __inheritedElements;
   }
 
-  List<Field> get allFields {
+  /// Internal only because subclasses are allowed to override how
+  /// these are mapped to [allInheritedFields] and so forth.
+  List<Field> get _allFields {
     if (_fields != null) return _fields;
     _fields = [];
     Set<PropertyAccessorElement> inheritedAccessors = new Set()
@@ -1243,12 +1173,18 @@ class Class extends ModelElement
     return _allMethods;
   }
 
+  List<TypeParameter> _typeParameters;
   // a stronger hash?
   @override
-  List<TypeParameter> get typeParameters => _cls.typeParameters.map((f) {
+  List<TypeParameter> get typeParameters {
+    if (_typeParameters == null) {
+      _typeParameters = _cls.typeParameters.map((f) {
         var lib = new Library(f.enclosingElement.library, packageGraph);
         return new ModelElement.from(f, lib, packageGraph) as TypeParameter;
       }).toList();
+    }
+    return _typeParameters;
+  }
 
   @override
   bool operator ==(o) =>
@@ -1592,9 +1528,6 @@ class Enum extends Class {
   }
 
   @override
-  List<Field> get propertiesForPages => allInstanceProperties;
-
-  @override
   String get kind => 'enum';
 }
 
@@ -1855,6 +1788,12 @@ class Field extends ModelElement
 /// Mixin for top-level variables and fields (aka properties)
 abstract class GetterSetterCombo implements ModelElement {
   Accessor get getter;
+
+  Iterable<Accessor> get allAccessors sync* {
+    for (Accessor a in [getter, setter]) {
+      if (a != null) yield a;
+    }
+  }
 
   Set<String> get comboFeatures {
     Set<String> allFeatures = new Set();
