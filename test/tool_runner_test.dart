@@ -97,8 +97,8 @@ echo:
     });
     // This test must come first, to verify that the first run creates
     // a snapshot.
-    test('can invoke a Dart tool, and second run is a snapshot.', () {
-      var result = runner.run(
+    test('can invoke a Dart tool, and second run is a snapshot.', () async {
+      var result = await runner.run(
         ['drill', r'--file=$INPUT'],
         content: 'TEST INPUT',
       );
@@ -107,7 +107,7 @@ echo:
       expect(result, contains('## `TEST INPUT`'));
       expect(result, contains('Script location is in dartdoc tree.'));
       expect(setupFile.existsSync(), isFalse);
-      result = runner.run(
+      result = await runner.run(
         ['drill', r'--file=$INPUT'],
         content: 'TEST INPUT 2',
       );
@@ -117,8 +117,8 @@ echo:
       expect(result, contains('Script location is in snapshot cache.'));
       expect(setupFile.existsSync(), isFalse);
     });
-    test('can invoke a Dart tool', () {
-      var result = runner.run(
+    test('can invoke a Dart tool', () async {
+      var result = await runner.run(
         ['drill', r'--file=$INPUT'],
         content: 'TEST INPUT',
       );
@@ -128,16 +128,16 @@ echo:
       expect(result, contains('## `TEST INPUT`'));
       expect(setupFile.existsSync(), isFalse);
     });
-    test('can invoke a non-Dart tool', () {
-      String result = runner.run(
+    test('can invoke a non-Dart tool', () async {
+      String result = await runner.run(
         ['non_dart', '--version'],
         content: 'TEST INPUT',
       );
       expect(errors, isEmpty);
       expect(result, isEmpty); // Output is on stderr.
     });
-    test('can invoke a pre-snapshotted tool', () {
-      var result = runner.run(
+    test('can invoke a pre-snapshotted tool', () async {
+      var result = await runner.run(
         ['snapshot_drill', r'--file=$INPUT'],
         content: 'TEST INPUT',
       );
@@ -145,8 +145,8 @@ echo:
       expect(result, contains('--file=<INPUT_FILE>'));
       expect(result, contains('## `TEST INPUT`'));
     });
-    test('can invoke a tool with a setup action', () {
-      var result = runner.run(
+    test('can invoke a tool with a setup action', () async {
+      var result = await runner.run(
         ['setup_drill', r'--file=$INPUT'],
         content: 'TEST INPUT',
       );
@@ -155,8 +155,8 @@ echo:
       expect(result, contains('## `TEST INPUT`'));
       expect(setupFile.existsSync(), isTrue);
     });
-    test('fails if tool not in tool map', () {
-      String result = runner.run(
+    test('fails if tool not in tool map', () async {
+      String result = await runner.run(
         ['hammer', r'--file=$INPUT'],
         content: 'TEST INPUT',
       );
@@ -165,8 +165,8 @@ echo:
           errors[0], contains('Unable to find definition for tool "hammer"'));
       expect(result, isEmpty);
     });
-    test('fails if tool returns non-zero status', () {
-      String result = runner.run(
+    test('fails if tool returns non-zero status', () async {
+      String result = await runner.run(
         ['drill', r'--file=/a/missing/file'],
         content: 'TEST INPUT',
       );
@@ -174,8 +174,8 @@ echo:
       expect(errors[0], contains('Tool "drill" returned non-zero exit code'));
       expect(result, isEmpty);
     });
-    test("fails if tool in tool map doesn't exist", () {
-      String result = runner.run(
+    test("fails if tool in tool map doesn't exist", () async {
+      String result = await runner.run(
         ['missing'],
         content: 'TEST INPUT',
       );

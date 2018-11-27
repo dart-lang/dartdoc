@@ -627,7 +627,8 @@ class Class extends ModelElement
         .toList(growable: false);
   }
 
-  Iterable<Method> get allInstanceMethods => quiverIterables.concat([instanceMethods, inheritedMethods]);
+  Iterable<Method> get allInstanceMethods =>
+      quiverIterables.concat([instanceMethods, inheritedMethods]);
 
   Iterable<Method> get allPublicInstanceMethods =>
       filterNonPublic(allInstanceMethods);
@@ -635,9 +636,13 @@ class Class extends ModelElement
   bool get allPublicInstanceMethodsInherited =>
       instanceMethods.every((f) => f.isInherited);
 
-  Iterable<Field> get allInstanceFields => quiverIterables.concat([instanceProperties, inheritedProperties]);
+  Iterable<Field> get allInstanceFields =>
+      quiverIterables.concat([instanceProperties, inheritedProperties]);
 
-  Iterable<Accessor> get allAccessors => quiverIterables.concat([allInstanceFields.expand((f) => f.allAccessors), constants.map((c) => c.getter)]);
+  Iterable<Accessor> get allAccessors => quiverIterables.concat([
+        allInstanceFields.expand((f) => f.allAccessors),
+        constants.map((c) => c.getter)
+      ]);
 
   Iterable<Field> get allPublicInstanceProperties =>
       filterNonPublic(allInstanceFields);
@@ -645,7 +650,8 @@ class Class extends ModelElement
   bool get allPublicInstancePropertiesInherited =>
       allPublicInstanceProperties.every((f) => f.isInherited);
 
-  Iterable<Operator> get allOperators => quiverIterables.concat([operators, inheritedOperators]);
+  Iterable<Operator> get allOperators =>
+      quiverIterables.concat([operators, inheritedOperators]);
 
   Iterable<Operator> get allPublicOperators => filterNonPublic(allOperators);
 
@@ -1295,11 +1301,8 @@ abstract class Documentable extends Nameable {
 /// Mixin implementing dartdoc categorization for ModelElements.
 abstract class Categorization implements ModelElement {
   @override
-  String _buildDocumentationLocal() {
-    _rawDocs = _buildDocumentationBase();
-    _rawDocs = _stripAndSetDartdocCategories(_rawDocs);
-    return _rawDocs;
-  }
+  String _buildDocumentationAddition(String rawDocs) =>
+      _stripAndSetDartdocCategories(rawDocs);
 
   /// Parse {@category ...} and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
@@ -3227,23 +3230,48 @@ abstract class ModelElement extends Canonicalization
     return docFrom;
   }
 
-  String _buildDocumentationLocal() => _buildDocumentationBase();
+  String _buildDocumentationLocal() => _buildDocumentationBaseSync();
+
+  /// Override this to add more features to the documentation builder in a
+  /// subclass.
+  String _buildDocumentationAddition(String docs) => docs;
 
   /// Separate from _buildDocumentationLocal for overriding.
-  String _buildDocumentationBase() {
+  String _buildDocumentationBaseSync() {
     assert(_rawDocs == null);
+    // Do not use the sync method if we need to evaluate tools or templates.
+    assert(packageGraph._localDocumentationBuilt);
+    if (config.dropTextFrom.contains(element.library.name)) {
+      _rawDocs = '';
+    } else {
+      _rawDocs = documentationComment ?? '';
+      _rawDocs = stripComments(_rawDocs) ?? '';
+      _rawDocs = _injectExamples(_rawDocs);
+      _rawDocs = _injectAnimations(_rawDocs);
+      _rawDocs = _stripHtmlAndAddToIndex(_rawDocs);
+    }
+    _rawDocs = _buildDocumentationAddition(_rawDocs);
+    return _rawDocs;
+  }
+
+  /// Separate from _buildDocumentationLocal for overriding.  Can only be
+  /// used as part of [PackageGraph.setUpPackageGraph].
+  Future<String> _buildDocumentationBase() async {
+    assert(_rawDocs == null);
+    // Do not use the sync method if we need to evaluate tools or templates.
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
     } else {
       _rawDocs = documentationComment ?? '';
       _rawDocs = stripComments(_rawDocs) ?? '';
       // Must evaluate tools first, in case they insert any other directives.
-      _rawDocs = _evaluateTools(_rawDocs);
+      _rawDocs = await _evaluateTools(_rawDocs);
       _rawDocs = _injectExamples(_rawDocs);
       _rawDocs = _injectAnimations(_rawDocs);
       _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
       _rawDocs = _stripHtmlAndAddToIndex(_rawDocs);
     }
+    _rawDocs = _buildDocumentationAddition(_rawDocs);
     return _rawDocs;
   }
 
@@ -3674,11 +3702,11 @@ abstract class ModelElement extends Canonicalization
     return _documentationComment;
   }
 
-  /// Call this method to precache docs for this object if it might possibly
-  /// have a macro template or a tool definition.
-  void precacheLocalDocsIfNeeded() {
-    if (documentationComment != null &&
-        needsPrecacheRegExp.hasMatch(documentationComment)) documentationLocal;
+  /// Unconditionally precache local documentation.
+  ///
+  /// Use only in factory for [PackageGraph].
+  Future _precacheLocalDocs() async {
+    _documentationLocal = await _buildDocumentationBase();
   }
 
   Documentation get _documentation {
@@ -3895,6 +3923,19 @@ abstract class ModelElement extends Canonicalization
     });
   }
 
+  static Future<String> _replaceAllMappedAsync(
+      String string, Pattern exp, Future<String> replace(Match match)) async {
+    StringBuffer replaced = new StringBuffer();
+    int currentIndex = 0;
+    for (Match match in exp.allMatches(string)) {
+      String prefix = match.input.substring(currentIndex, match.start);
+      currentIndex = match.end;
+      replaced..write(prefix)..write(await replace(match));
+    }
+    replaced.write(string.substring(currentIndex));
+    return replaced.toString();
+  }
+
   /// Replace &#123;@tool ...&#125&#123;@end-tool&#125; in API comments with the
   /// output of an external tool.
   ///
@@ -3946,43 +3987,39 @@ abstract class ModelElement extends Canonicalization
   ///
   /// ## Content to send to tool.
   /// 2018-09-18T21:15+00:00
-  String _evaluateTools(String rawDocs) {
-    var runner = new ToolRunner(config.tools, (String message) {
+  Future<String> _evaluateTools(String rawDocs) async {
+    var runner = new ToolRunner(config.tools, (String message) async {
       warn(PackageWarning.toolError, message: message);
     });
     int invocationIndex = 0;
-    try {
-      return rawDocs.replaceAllMapped(basicToolRegExp, (basicMatch) {
-        List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
-        // Tool name must come first.
-        if (args.isEmpty) {
-          warn(PackageWarning.toolError,
-              message:
-                  'Must specify a tool to execute for the @tool directive.');
-          return '';
-        }
-        // Count the number of invocations of tools in this dartdoc block,
-        // so that tools can differentiate different blocks from each other.
-        invocationIndex++;
-        return runner.run(args,
-            content: basicMatch[2],
-            environment: {
-              'SOURCE_LINE': lineAndColumn?.item1?.toString(),
-              'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
-              'SOURCE_PATH': (sourceFileName == null ||
-                      package?.packagePath == null)
-                  ? null
-                  : pathLib.relative(sourceFileName, from: package.packagePath),
-              'PACKAGE_PATH': package?.packagePath,
-              'PACKAGE_NAME': package?.name,
-              'LIBRARY_NAME': library?.fullyQualifiedName,
-              'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
-              'INVOCATION_INDEX': invocationIndex.toString(),
-            }..removeWhere((key, value) => value == null));
-      });
-    } finally {
-      runner.dispose();
-    }
+    return await _replaceAllMappedAsync(rawDocs, basicToolRegExp,
+        (basicMatch) async {
+      List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
+      // Tool name must come first.
+      if (args.isEmpty) {
+        warn(PackageWarning.toolError,
+            message: 'Must specify a tool to execute for the @tool directive.');
+        return Future.value('');
+      }
+      // Count the number of invocations of tools in this dartdoc block,
+      // so that tools can differentiate different blocks from each other.
+      invocationIndex++;
+      return await runner.run(args,
+          content: basicMatch[2],
+          environment: {
+            'SOURCE_LINE': lineAndColumn?.item1?.toString(),
+            'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
+            'SOURCE_PATH': (sourceFileName == null ||
+                    package?.packagePath == null)
+                ? null
+                : pathLib.relative(sourceFileName, from: package.packagePath),
+            'PACKAGE_PATH': package?.packagePath,
+            'PACKAGE_NAME': package?.name,
+            'LIBRARY_NAME': library?.fullyQualifiedName,
+            'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
+            'INVOCATION_INDEX': invocationIndex.toString(),
+          }..removeWhere((key, value) => value == null));
+    }).whenComplete(runner.dispose);
   }
 
   /// Replace &#123;@animation ...&#125; in API comments with some HTML to manage an
@@ -4554,21 +4591,24 @@ class PackageGraph {
   // building Libraries and adding them to Packages, then adding Packages
   // to this graph.
 
-  /// Construct a package graph.
-  /// [libraryElements] - Libraries to be documented.
-  /// [specialLibraryElements] - Any libraries that may not be documented, but
-  /// contain required [SpecialClass]es.
-  PackageGraph(
-      Iterable<LibraryElement> libraryElements,
-      Iterable<LibraryElement> specialLibraryElements,
-      this.config,
-      this.packageMeta,
-      this._packageWarningOptions,
-      this.driver,
-      this.sdk) {
-    assert(_allConstructedModelElements.isEmpty);
-    assert(allLibraries.isEmpty);
-    _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
+  PackageGraph._(this.config, this.packageMeta, this._packageWarningOptions,
+      this.driver, this.sdk) {}
+
+  static Future<PackageGraph> setUpPackageGraph(
+    Iterable<LibraryElement> libraryElements,
+    Iterable<LibraryElement> specialLibraryElements,
+    DartdocOptionContext config,
+    PackageMeta packageMeta,
+    packageWarningOptions,
+    driver,
+    sdk,
+  ) async {
+    PackageGraph newGraph =
+        PackageGraph._(config, packageMeta, packageWarningOptions, driver, sdk);
+    assert(newGraph._allConstructedModelElements.isEmpty);
+    assert(newGraph.allLibraries.isEmpty);
+    newGraph._packageWarningCounter =
+        new PackageWarningCounter(newGraph._packageWarningOptions);
 
     // Build [Package] objects.
     libraryElements.forEach((element) {});
@@ -4576,45 +4616,57 @@ class PackageGraph {
     // Build [Library] objects, and link them to [Package]s.
     libraryElements.forEach((element) {
       var packageMeta = new PackageMeta.fromElement(element, config);
-      var lib = new Library._(
-          element, this, new Package.fromPackageMeta(packageMeta, this));
-      packageMap[packageMeta.name]._libraries.add(lib);
-      allLibraries[element] = lib;
+      var lib = new Library._(element, newGraph,
+          new Package.fromPackageMeta(packageMeta, newGraph));
+      newGraph.packageMap[packageMeta.name]._libraries.add(lib);
+      newGraph.allLibraries[element] = lib;
     });
 
     // Make sure the default package exists, even if it has no libraries.
     // This can happen for packages that only contain embedder SDKs.
-    new Package.fromPackageMeta(packageMeta, this);
-    allLibrariesAdded = true;
+    new Package.fromPackageMeta(packageMeta, newGraph);
+    newGraph.allLibrariesAdded = true;
 
     // [findOrCreateLibraryFor] already adds to the proper structures.
     specialLibraryElements.forEach((element) {
-      findOrCreateLibraryFor(element);
+      newGraph.findOrCreateLibraryFor(element);
     });
 
     // From here on in, we might find special objects.  Initialize the
     // specialClasses handler so when we find them, they get added.
-    specialClasses = new SpecialClasses();
+    newGraph.specialClasses = new SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.
-    allModelElements.forEach((m) => m.precacheLocalDocsIfNeeded());
-    _localDocumentationBuilt = true;
+    List<Future> precacheFutures = newGraph.precacheLocalDocs().toList();
+    for (Future f in precacheFutures) await f;
+    newGraph._localDocumentationBuilt = true;
 
     // Scan all model elements to insure that interceptor and other special
     // objects are found.
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
-    documentedPackages.toList().forEach((package) {
+    newGraph.documentedPackages.toList().forEach((package) {
       package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
-        library._allClasses.forEach(_addToImplementors);
+        library._allClasses.forEach(newGraph._addToImplementors);
       });
     });
-    _implementors.values.forEach((l) => l.sort());
-    allImplementorsAdded = true;
+    newGraph._implementors.values.forEach((l) => l.sort());
+    newGraph.allImplementorsAdded = true;
 
     // We should have found all special classes by now.
-    specialClasses.assertSpecials();
+    newGraph.specialClasses.assertSpecials();
+    return newGraph;
+  }
+
+  /// Generate a list of futures for any docs that actually require precaching.
+  Iterable<Future> precacheLocalDocs() sync* {
+    for (ModelElement m in allModelElements) {
+      if (m.documentationComment != null &&
+          needsPrecacheRegExp.hasMatch(m.documentationComment)) {
+        yield m._precacheLocalDocs();
+      }
+    }
   }
 
   SpecialClasses specialClasses;
@@ -6396,8 +6448,8 @@ class PackageBuilder {
     }
     await getLibraries(libraries, specialLibraries, getFiles,
         specialLibraryFiles(findSpecialsSdk).toSet());
-    return new PackageGraph(libraries, specialLibraries, config,
-        config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
+    return await PackageGraph.setUpPackageGraph(libraries, specialLibraries,
+        config, config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
   }
 
   DartSdk _sdk;

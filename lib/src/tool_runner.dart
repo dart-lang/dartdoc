@@ -7,12 +7,17 @@ library dartdoc.tool_runner;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:path/path.dart' as pathLib;
 import 'dartdoc_options.dart';
 
 typedef ToolErrorCallback = void Function(String message);
 typedef FakeResultCallback = String Function(String tool,
     {List<String> args, String content});
+
+/// Set a ceiling on how many tool instances can be in progress at once,
+/// limiting both parallelization and the number of open temporary files.
+final MultiFutureTracker _toolTracker = new MultiFutureTracker(4);
 
 /// A helper class for running external tools.
 class ToolRunner {
@@ -27,11 +32,10 @@ class ToolRunner {
   final ToolErrorCallback _errorCallback;
   int _temporaryFileCount = 0;
 
-  Directory _temporaryDirectory;
-  Directory get temporaryDirectory {
+  Future<Directory> _temporaryDirectory;
+  Future<Directory> get temporaryDirectory {
     if (_temporaryDirectory == null) {
-      _temporaryDirectory =
-          Directory.systemTemp.createTempSync('dartdoc_tools_');
+      _temporaryDirectory = Directory.systemTemp.createTemp('dartdoc_tools_');
     }
     return _temporaryDirectory;
   }
@@ -42,11 +46,13 @@ class ToolRunner {
     }
   }
 
-  File _createTemporaryFile() {
+  Future<File> _createTemporaryFile() async {
     _temporaryFileCount++;
-    return new File(pathLib.join(
-        temporaryDirectory.absolute.path, 'input_$_temporaryFileCount'))
-      ..createSync(recursive: true);
+    File tempFile = new File(pathLib.join(
+        (await temporaryDirectory).absolute.path,
+        'input_$_temporaryFileCount'));
+    await tempFile.create(recursive: true);
+    return tempFile;
   }
 
   /// Must be called when the ToolRunner is no longer needed. Ideally, this is
@@ -58,14 +64,15 @@ class ToolRunner {
   }
 
   /// Avoid blocking on I/O for cleanups.
-  static Future<void> disposeAsync(Directory temporaryDirectory) async {
-    temporaryDirectory.exists().then((bool exists) {
-      if (exists) return temporaryDirectory.delete(recursive: true);
-    });
+  static Future<void> disposeAsync(Future<Directory> temporaryDirectory) async {
+    Directory tempDir = await temporaryDirectory;
+    if (await tempDir.exists()) {
+      return tempDir.delete(recursive: true);
+    }
   }
 
   void _runSetup(
-      String name, ToolDefinition tool, Map<String, String> environment) {
+      String name, ToolDefinition tool, Map<String, String> environment) async {
     bool isDartSetup = ToolDefinition.isDartExecutable(tool.setupCommand[0]);
     var args = tool.setupCommand.toList();
     String commandPath;
@@ -75,15 +82,16 @@ class ToolRunner {
     } else {
       commandPath = args.removeAt(0);
     }
-    _runProcess(name, '', commandPath, args, environment);
+    await _runProcess(name, '', commandPath, args, environment);
     tool.setupComplete = true;
   }
 
-  String _runProcess(String name, String content, String commandPath,
-      List<String> args, Map<String, String> environment) {
+  Future<String> _runProcess(String name, String content, String commandPath,
+      List<String> args, Map<String, String> environment) async {
     String commandString() => ([commandPath] + args).join(' ');
     try {
-      var result = Process.runSync(commandPath, args, environment: environment);
+      ProcessResult result =
+          await Process.run(commandPath, args, environment: environment);
       if (result.exitCode != 0) {
         _error('Tool "$name" returned non-zero exit code '
             '(${result.exitCode}) when run as '
@@ -110,8 +118,19 @@ class ToolRunner {
   ///
   /// The [args] must not be null, and it must have at least one member (the name
   /// of the tool).
-  String run(List<String> args,
-      {String content, Map<String, String> environment}) {
+  Future<String> run(List<String> args,
+      {String content, Map<String, String> environment}) async {
+    Future runner;
+    // Prevent too many tools from running simultaneously.
+    await _toolTracker.addFutureFromClosure(() {
+      runner = _run(args, content: content, environment: environment);
+      return runner;
+    });
+    return runner;
+  }
+
+  Future<String> _run(List<String> args,
+      {String content, Map<String, String> environment}) async {
     assert(args != null);
     assert(args.isNotEmpty);
     content ??= '';
@@ -133,8 +152,8 @@ class ToolRunner {
     // file before running the tool synchronously.
 
     // Write the content to a temp file.
-    var tmpFile = _createTemporaryFile();
-    tmpFile.writeAsStringSync(content);
+    var tmpFile = await _createTemporaryFile();
+    await tmpFile.writeAsString(content);
 
     // Substitute the temp filename for the "$INPUT" token, and all of the other
     // environment variables. Variables are allowed to either be in $(VAR) form,
@@ -169,15 +188,26 @@ class ToolRunner {
     }
 
     if (toolDefinition.setupCommand != null && !toolDefinition.setupComplete)
-      _runSetup(tool, toolDefinition, envWithInput);
+      await _runSetup(tool, toolDefinition, envWithInput);
 
     argsWithInput = toolArgs + argsWithInput;
     var commandPath;
+    void Function() callCompleter;
     if (toolDefinition is DartToolDefinition) {
-      commandPath = toolDefinition.createSnapshotIfNeeded(argsWithInput);
+      var modified = await toolDefinition
+          .modifyArgsToCreateSnapshotIfNeeded(argsWithInput);
+      commandPath = modified.item1;
+      callCompleter = modified.item2;
     } else {
       commandPath = argsWithInput.removeAt(0);
     }
-    return _runProcess(tool, content, commandPath, argsWithInput, envWithInput);
+    if (callCompleter != null) {
+      return _runProcess(
+              tool, content, commandPath, argsWithInput, envWithInput)
+          .whenComplete(callCompleter);
+    } else {
+      return _runProcess(
+          tool, content, commandPath, argsWithInput, envWithInput);
+    }
   }
 }

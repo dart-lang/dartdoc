@@ -20,6 +20,7 @@ import 'dart:io';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/tuple.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
 
@@ -226,22 +227,23 @@ class DartToolDefinition extends ToolDefinition {
   /// to run. If no snapshot file existed, then create one and modify the args
   /// so that if they are executed with dart, will result in the snapshot being
   /// built.
-  String createSnapshotIfNeeded(List<String> args) {
-    assert(ToolDefinition.isDartExecutable(args[0]));
-    // Generate a new snapshot, if needed, and use the first run as the training
+  Future<Tuple2<String, Function()>> modifyArgsToCreateSnapshotIfNeeded(
+      List<String> args) async {
+    assert(args[0] == command.first);
+    // Set up flags to create a new snapshot, if needed, and use the first run as the training
     // run.
-    File snapshotPath = _snapshotPath;
-    snapshotPath ??= SnapshotCache.instance.getSnapshot(args[0]);
-    if (snapshotPath.existsSync()) {
+    File snapshotFile = await getSnapshotFile();
+    if (snapshotFile.existsSync()) {
       // replace the first argument with the path to the snapshot.
-      args[0] = snapshotPath.absolute.path;
+      args[0] = snapshotFile.absolute.path;
     } else {
       args.insertAll(0, [
-        '--snapshot=${snapshotPath.absolute.path}',
+        '--snapshot=${snapshotFile.absolute.path}',
         '--snapshot_kind=app-jit'
       ]);
     }
-    return Platform.resolvedExecutable;
+    return new Tuple2(Platform.resolvedExecutable,
+        _snapshotCompleter.isCompleted ? null : _snapshotCompleter.complete);
   }
 
   DartToolDefinition(
@@ -250,11 +252,23 @@ class DartToolDefinition extends ToolDefinition {
     // If the dart tool is already a snapshot, then we just use that.
     if (command[0].endsWith('.snapshot')) {
       _snapshotPath = File(command[0]);
+      _snapshotCompleter.complete();
     }
   }
 
+  final Completer _snapshotCompleter = new Completer();
+
   /// If the tool has a pre-built snapshot, it will be stored here.
   File _snapshotPath;
+
+  Future<File> getSnapshotFile() async {
+    if (_snapshotPath == null) {
+      _snapshotPath = SnapshotCache.instance.getSnapshot(command.first);
+    } else {
+      await _snapshotCompleter.future;
+    }
+    return _snapshotPath;
+  }
 }
 
 /// A configuration class that can interpret [ToolDefinition]s from a YAML map.
