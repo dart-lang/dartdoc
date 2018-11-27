@@ -90,6 +90,7 @@ class MultiFutureTracker<T> {
     }
     Future future = closure();
     _queue.add(future);
+    // ignore: unawaited_futures
     future.then((f) => _queue.remove(future));
   }
 

@@ -627,7 +627,8 @@ class Class extends ModelElement
         .toList(growable: false);
   }
 
-  Iterable<Method> get allInstanceMethods => quiverIterables.concat([instanceMethods, inheritedMethods]);
+  Iterable<Method> get allInstanceMethods =>
+      quiverIterables.concat([instanceMethods, inheritedMethods]);
 
   Iterable<Method> get allPublicInstanceMethods =>
       filterNonPublic(allInstanceMethods);
@@ -635,9 +636,13 @@ class Class extends ModelElement
   bool get allPublicInstanceMethodsInherited =>
       instanceMethods.every((f) => f.isInherited);
 
-  Iterable<Field> get allInstanceFields => quiverIterables.concat([instanceProperties, inheritedProperties]);
+  Iterable<Field> get allInstanceFields =>
+      quiverIterables.concat([instanceProperties, inheritedProperties]);
 
-  Iterable<Accessor> get allAccessors => quiverIterables.concat([allInstanceFields.expand((f) => f.allAccessors), constants.map((c) => c.getter)]);
+  Iterable<Accessor> get allAccessors => quiverIterables.concat([
+        allInstanceFields.expand((f) => f.allAccessors),
+        constants.map((c) => c.getter)
+      ]);
 
   Iterable<Field> get allPublicInstanceProperties =>
       filterNonPublic(allInstanceFields);
@@ -645,7 +650,8 @@ class Class extends ModelElement
   bool get allPublicInstancePropertiesInherited =>
       allPublicInstanceProperties.every((f) => f.isInherited);
 
-  Iterable<Operator> get allOperators => quiverIterables.concat([operators, inheritedOperators]);
+  Iterable<Operator> get allOperators =>
+      quiverIterables.concat([operators, inheritedOperators]);
 
   Iterable<Operator> get allPublicOperators => filterNonPublic(allOperators);
 
@@ -4589,13 +4595,14 @@ class PackageGraph {
       this.driver, this.sdk) {}
 
   static Future<PackageGraph> setUpPackageGraph(
-      Iterable<LibraryElement> libraryElements,
-      Iterable<LibraryElement> specialLibraryElements,
-      DartdocOptionContext config,
-      PackageMeta packageMeta,
-      packageWarningOptions,
-      driver,
-      sdk) async {
+    Iterable<LibraryElement> libraryElements,
+    Iterable<LibraryElement> specialLibraryElements,
+    DartdocOptionContext config,
+    PackageMeta packageMeta,
+    packageWarningOptions,
+    driver,
+    sdk,
+  ) async {
     PackageGraph newGraph =
         PackageGraph._(config, packageMeta, packageWarningOptions, driver, sdk);
     assert(newGraph._allConstructedModelElements.isEmpty);

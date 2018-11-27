@@ -1459,8 +1459,8 @@ void main() {
     });
 
     test(('Verify non-overridden members have right canonical classes'), () {
-      final Field member =
-          TypeInferenceMixedIn.allInstanceFields.firstWhere((f) => f.name == 'member');
+      final Field member = TypeInferenceMixedIn.allInstanceFields
+          .firstWhere((f) => f.name == 'member');
       final Field modifierMember = TypeInferenceMixedIn.allInstanceFields
           .firstWhere((f) => f.name == 'modifierMember');
       final Field mixinMember = TypeInferenceMixedIn.allInstanceFields
@@ -2420,8 +2420,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       documentedPartialFieldInSubclassOnly = UnusualProperties.allModelElements
           .firstWhere((e) => e.name == 'documentedPartialFieldInSubclassOnly');
 
-      isEmpty = CatString.allInstanceFields
-          .firstWhere((p) => p.name == 'isEmpty');
+      isEmpty =
+          CatString.allInstanceFields.firstWhere((p) => p.name == 'isEmpty');
       dynamicGetter = LongFirstLine.instanceProperties
           .firstWhere((p) => p.name == 'dynamicGetter');
       onlySetter = LongFirstLine.instanceProperties

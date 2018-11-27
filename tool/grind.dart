@@ -731,7 +731,7 @@ Future<String> buildPubPackage() async {
 @Task(
     'Serve an arbitrary pub package based on PACKAGE_NAME and PACKAGE_VERSION environment variables')
 Future<void> servePubPackage() async {
-  _serveDocsFrom(await buildPubPackage(), 9000, 'serve-pub-package');
+  await _serveDocsFrom(await buildPubPackage(), 9000, 'serve-pub-package');
 }
 
 @Task('Checks that CHANGELOG mentions current version')
