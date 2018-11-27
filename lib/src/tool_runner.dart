@@ -48,9 +48,11 @@ class ToolRunner {
 
   Future<File> _createTemporaryFile() async {
     _temporaryFileCount++;
-    return new File(pathLib.join(
-        (await temporaryDirectory).absolute.path, 'input_$_temporaryFileCount'))
-      ..create(recursive: true);
+    File tempFile = new File(pathLib.join(
+        (await temporaryDirectory).absolute.path,
+        'input_$_temporaryFileCount'));
+    await tempFile.create(recursive: true);
+    return tempFile;
   }
 
   /// Must be called when the ToolRunner is no longer needed. Ideally, this is
