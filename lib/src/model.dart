@@ -4647,7 +4647,9 @@ class PackageGraph {
     _packageWarningCounter = new PackageWarningCounter(_packageWarningOptions);
 
     // Build [Package] objects.
-    libraryResults.forEach((element) {});
+    // TODO(brianwilkerson) Attempt to remove the following line; it appears to
+    // be doing nothing.
+    libraryResults.forEach((result) {});
 
     // Build [Library] objects, and link them to [Package]s.
     libraryResults.forEach((result) {
@@ -6828,8 +6830,8 @@ class PackageBuilder {
         throw 'Did not find: [${notFound.join(', ')}] in '
             'known libraries: [${knownLibraryNames.join(', ')}]';
       }
-      libraryResults
-          .removeWhere((lib) => !config.include.contains(lib.element.name));
+      libraryResults.removeWhere(
+          (result) => !config.include.contains(result.element.name));
     }
   }
 
