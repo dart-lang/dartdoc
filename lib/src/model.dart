@@ -6523,35 +6523,17 @@ class PackageBuilder {
     if (packageMeta.needsPubGet) {
       packageMeta.runPubGet();
     }
-    Set<ResolvedLibraryResult> libraryResults = new Set();
-    Set<ResolvedLibraryResult> specialLibraryResults = new Set();
+    Map<LibraryElement, ResolvedLibraryResult> libraryResults = new Map();
+    Map<LibraryElement, ResolvedLibraryResult> specialLibraryResults = new Map();
     DartSdk findSpecialsSdk = sdk;
     if (embedderSdk != null && embedderSdk.urlMappings.isNotEmpty) {
       findSpecialsSdk = embedderSdk;
     }
     await getLibraries(libraryResults, specialLibraryResults, getFiles,
         specialLibraryFiles(findSpecialsSdk).toSet());
-    filterLibraryResults(libraryResults);
-    filterLibraryResults(specialLibraryResults);
-    return await PackageGraph.setUpPackageGraph(libraryResults, specialLibraryResults,
+    return await PackageGraph.setUpPackageGraph(libraryResults.values, specialLibraryResults.values,
         config, config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
   }
-
-  // TODO(jcollins-g): Make ResolvedLibraryResult objects key on their
-  // returned elements.
-  void filterLibraryResults(Set<ResolvedLibraryResult> results) {
-    List<ResolvedLibraryResult> toRemove = [];
-    Set<LibraryElement> foundElements = new Set();
-    results.forEach((r) {
-      if (foundElements.contains(r.element)) {
-        toRemove.add(r);
-      } else {
-        foundElements.add(r.element);
-      }
-    });
-    results.removeAll(toRemove);
-  }
-
 
   DartSdk _sdk;
   DartSdk get sdk {
@@ -6750,17 +6732,15 @@ class PackageBuilder {
     return metas;
   }
 
-  Future<List<ResolvedLibraryResult>> _parseLibraries(Set<String> files) async {
-    Iterable<ResolvedLibraryResult> libraries = new Iterable.empty();
+  Future<Map<LibraryElement, ResolvedLibraryResult>> _parseLibraries(Set<String> files) async {
+    Map<LibraryElement, ResolvedLibraryResult> libraries = new Map();
     Set<PackageMeta> lastPass = new Set();
     Set<PackageMeta> current;
     do {
       lastPass = _packageMetasForFiles(files);
-      libraries = quiverIterables.concat([
-        libraries,
-        (await Future.wait(files.map((f) => processLibrary(f))))
-            .where((ResolvedLibraryResult l) => l != null)
-      ]);
+      for (ResolvedLibraryResult r in (await Future.wait(files.map((f) => processLibrary(f)))).where((ResolvedLibraryResult l) => l != null)) {
+        libraries[r.element] = r;
+      }
 
       /// We don't care about upstream analysis errors, so save the first
       /// source list.
@@ -6781,7 +6761,7 @@ class PackageBuilder {
         }
       }
     } while (!lastPass.containsAll(current));
-    return libraries.toList();
+    return libraries;
   }
 
   /// Given a package name, explore the directory and pull out all top level
@@ -6871,15 +6851,15 @@ class PackageBuilder {
   }
 
   Future<void> getLibraries(
-      Set<ResolvedLibraryResult> libraryResults,
-      Set<ResolvedLibraryResult> specialLibraryResults,
+      Map<LibraryElement, ResolvedLibraryResult> libraryResults,
+      Map<LibraryElement, ResolvedLibraryResult> specialLibraryResults,
       Set<String> files,
       Set<String> specialFiles) async {
     libraryResults.addAll(await _parseLibraries(files));
     specialLibraryResults
         .addAll(await _parseLibraries(specialFiles.difference(files)));
     if (config.include.isNotEmpty) {
-      Iterable knownLibraryNames = libraryResults.map((l) => l.element.name);
+      Iterable knownLibraryNames = libraryResults.values.map((l) => l.element.name);
       Set notFound = new Set.from(config.include)
           .difference(new Set.from(knownLibraryNames))
           .difference(new Set.from(config.exclude));
@@ -6888,7 +6868,7 @@ class PackageBuilder {
             'known libraries: [${knownLibraryNames.join(', ')}]';
       }
       libraryResults.removeWhere(
-          (result) => !config.include.contains(result.element.name));
+          (element, result) => !config.include.contains(result.element.name));
     }
   }
 
