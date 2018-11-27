@@ -4664,8 +4664,8 @@ class PackageGraph {
       this.driver, this.sdk) : session = driver.currentSession {}
 
   static Future<PackageGraph> setUpPackageGraph(
-      Iterable<ResolvedLibraryResult> libraryElements,
-      Iterable<ResolvedLibraryResult> specialLibraryElements,
+      Iterable<ResolvedLibraryResult> libraryResults,
+      Iterable<ResolvedLibraryResult> specialLibraryResults,
       DartdocOptionContext config,
       PackageMeta packageMeta,
       packageWarningOptions,
@@ -4694,9 +4694,9 @@ class PackageGraph {
     newGraph.allLibrariesAdded = true;
 
     // [findOrCreateLibraryFor] already adds to the proper structures.
-    specialLibraryElements.forEach((result) {
-      newGraph.findOrCreateLibraryFor(result.element);
-    });
+    for (ResolvedLibraryResult result in specialLibraryResults) {
+      await newGraph.findOrCreateLibraryFor(result.element);
+    }
 
     // From here on in, we might find special objects.  Initialize the
     // specialClasses handler so when we find them, they get added.
@@ -6531,14 +6531,10 @@ class PackageBuilder {
     }
     await getLibraries(libraryResults, specialLibraryResults, getFiles,
         specialLibraryFiles(findSpecialsSdk).toSet());
-    return await PackageGraph.setUpPackageGraph(libraries, specialLibraries,
-        config, config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
     filterLibraryResults(libraryResults);
     filterLibraryResults(specialLibraryResults);
-    return new PackageGraph(libraries, specialLibraries, config,
-        config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
-    return new PackageGraph(libraryResults, specialLibraryResults, config,
-        config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
+    return await PackageGraph.setUpPackageGraph(libraryResults, specialLibraryResults,
+        config, config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
   }
 
   // TODO(jcollins-g): Make ResolvedLibraryResult objects key on their
