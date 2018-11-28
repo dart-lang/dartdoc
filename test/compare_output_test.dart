@@ -67,9 +67,7 @@ void main() {
               'Top level package requires Flutter but FLUTTER_ROOT environment variable not set|test_package_flutter_plugin requires the Flutter SDK, version solving failed')));
       expect(result.stderr, isNot(contains('asynchronous gap')));
       expect(result.exitCode, isNot(0));
-    },
-        skip:
-            true /* TODO(gspencer): Re-enable as soon as Flutter's config is sane again. */);
+    });
 
     test("Validate --version works", () async {
       var args = <String>[dartdocBin, '--version'];
