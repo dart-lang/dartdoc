@@ -6691,8 +6691,8 @@ class PackageBuilder {
         libraries[r.element] = r;
       }
 
-      /// We don't care about upstream analysis errors, so save the first
-      /// source list.
+      // Be sure to give the analyzer enough time to find all the files.
+      await driver.discoverAvailableFiles();
       files.addAll(driver.knownFiles);
       files.addAll(_includeExternalsFrom(driver.knownFiles));
       current = _packageMetasForFiles(files);
