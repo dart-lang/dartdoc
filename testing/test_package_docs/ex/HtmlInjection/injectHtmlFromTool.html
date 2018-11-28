@@ -73,18 +73,12 @@
     </section>
     <section class="desc markdown">
       <p>Invokes more than one tool in the same comment block, and injects HTML.</p>
-<p>Env: {INPUT: &lt;INPUT_FILE&gt;, SOURCE_COLUMN: 8, SOURCE_PATH: lib/example.dart, PACKAGE_PATH: &lt;PACKAGE_PATH&gt;, PACKAGE_NAME: test_package, LIBRARY_NAME: ex, ELEMENT_NAME: HtmlInjection.injectHtmlFromTool, INVOCATION_INDEX: 1}
-Script location is in dartdoc tree.
-Args: <code>--file=&lt;INPUT_FILE&gt;, --html</code></p>
-<h2 id="this-text-should-appear-in-the-output"><code>This text should appear in the output.</code></h2>
-<p>{@inject-html}</p><div class="title">Title</div>{@end-inject-html}<p></p>
-<p>This text should appear in the output. Is not a <a href="ex/ToolUser-class.html">ToolUser</a>.</p>
-<p>Env: {INPUT: &lt;INPUT_FILE&gt;, SOURCE_COLUMN: 8, SOURCE_PATH: lib/example.dart, PACKAGE_PATH: &lt;PACKAGE_PATH&gt;, PACKAGE_NAME: test_package, LIBRARY_NAME: ex, ELEMENT_NAME: HtmlInjection.injectHtmlFromTool, INVOCATION_INDEX: 2}
-Script location is in snapshot cache.
-Args: <code>--file=&lt;INPUT_FILE&gt;, --html</code></p>
-<h2 id="this-text-should-also-appear-in-the-output"><code>This text should also appear in the output.</code></h2>
-<p>{@inject-html}</p><div class="title">Title</div>{@end-inject-html}<p></p>
-<p>This text should also appear in the output. Is not a <a href="ex/ToolUser-class.html">ToolUser</a>.</p>
+<p>{@tool drill --file=$INPUT --html}
+This text should appear in the output.
+{@end-tool}
+{@tool drill --file=$INPUT --html}
+This text should also appear in the output.
+{@end-tool}</p>
     </section>
     
     

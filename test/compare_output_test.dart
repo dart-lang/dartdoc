@@ -87,6 +87,7 @@ void main() {
       var args = <String>[
         '--enable-asserts',
         dartdocBin,
+        '--no-allow-tools',
         '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',

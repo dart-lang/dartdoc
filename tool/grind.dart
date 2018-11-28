@@ -968,6 +968,7 @@ Future<void> updateTestPackageDocs() async {
       [
         '--enable-asserts',
         pathLib.join('..', '..', 'bin', 'dartdoc.dart'),
+        '--no-allow-tools',
         '--auto-include-dependencies',
         '--example-path-prefix',
         'examples',
