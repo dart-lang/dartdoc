@@ -3988,38 +3988,42 @@ abstract class ModelElement extends Canonicalization
   /// ## Content to send to tool.
   /// 2018-09-18T21:15+00:00
   Future<String> _evaluateTools(String rawDocs) async {
-    var runner = new ToolRunner(config.tools, (String message) async {
-      warn(PackageWarning.toolError, message: message);
-    });
-    int invocationIndex = 0;
-    return await _replaceAllMappedAsync(rawDocs, basicToolRegExp,
-        (basicMatch) async {
-      List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
-      // Tool name must come first.
-      if (args.isEmpty) {
-        warn(PackageWarning.toolError,
-            message: 'Must specify a tool to execute for the @tool directive.');
-        return Future.value('');
-      }
-      // Count the number of invocations of tools in this dartdoc block,
-      // so that tools can differentiate different blocks from each other.
-      invocationIndex++;
-      return await runner.run(args,
-          content: basicMatch[2],
-          environment: {
-            'SOURCE_LINE': lineAndColumn?.item1?.toString(),
-            'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
-            'SOURCE_PATH': (sourceFileName == null ||
-                    package?.packagePath == null)
-                ? null
-                : pathLib.relative(sourceFileName, from: package.packagePath),
-            'PACKAGE_PATH': package?.packagePath,
-            'PACKAGE_NAME': package?.name,
-            'LIBRARY_NAME': library?.fullyQualifiedName,
-            'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
-            'INVOCATION_INDEX': invocationIndex.toString(),
-          }..removeWhere((key, value) => value == null));
-    }).whenComplete(runner.dispose);
+    if (config.allowTools) {
+      var runner = new ToolRunner(config.tools, (String message) async {
+        warn(PackageWarning.toolError, message: message);
+      });
+      int invocationIndex = 0;
+      return await _replaceAllMappedAsync(rawDocs, basicToolRegExp,
+              (basicMatch) async {
+            List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
+            // Tool name must come first.
+            if (args.isEmpty) {
+              warn(PackageWarning.toolError,
+                  message: 'Must specify a tool to execute for the @tool directive.');
+              return Future.value('');
+            }
+            // Count the number of invocations of tools in this dartdoc block,
+            // so that tools can differentiate different blocks from each other.
+            invocationIndex++;
+            return await runner.run(args,
+                content: basicMatch[2],
+                environment: {
+                  'SOURCE_LINE': lineAndColumn?.item1?.toString(),
+                  'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
+                  'SOURCE_PATH': (sourceFileName == null ||
+                      package?.packagePath == null)
+                      ? null
+                      : pathLib.relative(sourceFileName, from: package.packagePath),
+                  'PACKAGE_PATH': package?.packagePath,
+                  'PACKAGE_NAME': package?.name,
+                  'LIBRARY_NAME': library?.fullyQualifiedName,
+                  'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
+                  'INVOCATION_INDEX': invocationIndex.toString(),
+                }..removeWhere((key, value) => value == null));
+          }).whenComplete(runner.dispose);
+    } else {
+      return rawDocs;
+    }
   }
 
   /// Replace &#123;@animation ...&#125; in API comments with some HTML to manage an
