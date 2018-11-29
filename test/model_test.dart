@@ -10,7 +10,6 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
@@ -2118,48 +2117,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('', () {});
   });
 
-  group('Crossdart', () {
-    PackageGraph crossdartPackageGraph;
-    Library crossdartFakeLibrary;
-    Class HasGenerics;
-    Method convertToMap;
-
-    setUpAll(() async {
-      var fakePath = "testing/test_package/lib/fake.dart";
-      var offset = new File(fakePath)
-          .readAsStringSync()
-          .indexOf('Map<X, Y> convertToMap');
-      expect(offset, isNonNegative,
-          reason: "Can't find convertToMap function in ${fakePath}");
-      if (Platform.isWindows) fakePath = fakePath.replaceAll('/', r'\\');
-
-      crossdartPackageGraph = await utils.bootBasicPackage(
-          utils.testPackageDir.path, [],
-          additionalArguments: ['--add-crossdart']);
-      crossdartFakeLibrary =
-          crossdartPackageGraph.libraries.firstWhere((l) => l.name == 'fake');
-      HasGenerics = crossdartFakeLibrary.classes
-          .singleWhere((c) => c.name == 'HasGenerics');
-      convertToMap = HasGenerics.instanceMethods
-          .singleWhere((m) => m.name == 'convertToMap');
-      var crossDartFile =
-          new File(pathLib.join(utils.testPackageDir.path, "crossdart.json"));
-      crossDartFile.writeAsStringSync("""
-              {"$fakePath":
-                {"references":[{"offset":${offset},"end":${offset + 3},"remotePath":"http://www.example.com/fake.dart"}]}}
-      """);
-      // Indirectly load the file.
-      crossdartPackageGraph.crossdartJson;
-      if (crossDartFile.existsSync()) crossDartFile.deleteSync();
-    });
-
-    test('Source code crossdartifies correctly end to end', () {
-      crossdartPackageGraph;
-      expect(convertToMap.sourceCode,
-          "<a class='crossdart-link' href='http://www.example.com/fake.dart'>Map</a>&lt;X, Y&gt; convertToMap() =&gt; null;");
-    });
-  });
-
   group('Method', () {
     Class classB,
         klass,
@@ -2324,12 +2281,6 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('method source code indents correctly', () {
       expect(convertToMap.sourceCode,
           'Map&lt;X, Y&gt; convertToMap() =&gt; null;');
-    });
-
-    test(
-        'crossdartHtmlTag returns an empty string when Crossdart support is disabled',
-        () {
-      expect(m1.crossdartHtmlTag, "");
     });
   });
 

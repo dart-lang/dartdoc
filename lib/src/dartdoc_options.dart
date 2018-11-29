@@ -1285,7 +1285,6 @@ class DartdocOptionContext {
   }
 
   // All values defined in createDartdocOptions should be exposed here.
-  bool get addCrossdart => optionSet['addCrossdart'].valueAt(context);
   bool get allowTools => optionSet['allowTools'].valueAt(context);
   double get ambiguousReexportScorerMinConfidence =>
       optionSet['ambiguousReexportScorerMinConfidence'].valueAt(context);
@@ -1345,9 +1344,6 @@ class DartdocOptionContext {
 /// given command line arguments.
 Future<List<DartdocOption>> createDartdocOptions() async {
   return <DartdocOption>[
-    new DartdocOptionArgOnly<bool>('addCrossdart', false,
-        help: 'Add Crossdart links to the source code pieces.',
-        negatable: true),
     new DartdocOptionArgOnly<bool>('allowTools', true,
         help: 'Execute user-defined tools to fill in @tool directives.',
         negatable: true),
