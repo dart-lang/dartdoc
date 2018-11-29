@@ -8,7 +8,6 @@ library dartdoc.markdown_processor;
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:analyzer/dart/ast/ast.dart' hide TypeParameter;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model.dart';
@@ -186,7 +185,7 @@ ModelElement _getPreferredClass(ModelElement modelElement) {
 
 /// Returns null if element is a parameter.
 MatchingLinkResult _getMatchingLinkElement(
-    String codeRef, Warnable element, List<CommentReference> commentRefs) {
+    String codeRef, Warnable element, List<ModelCommentReference> commentRefs) {
   if (!codeRef.contains(isConstructor) &&
       codeRef.contains(notARealDocReference)) {
     // Don't waste our time on things we won't ever find.
@@ -244,15 +243,14 @@ MatchingLinkResult _getMatchingLinkElement(
 
 /// Given a set of commentRefs, return the one whose name matches the codeRef.
 Element _getRefElementFromCommentRefs(
-    List<CommentReference> commentRefs, String codeRef) {
+    List<ModelCommentReference> commentRefs, String codeRef) {
   if (commentRefs != null) {
-    for (CommentReference ref in commentRefs) {
-      if (ref.identifier.name == codeRef) {
-        bool isConstrElement =
-            ref.identifier.staticElement is ConstructorElement;
+    for (ModelCommentReference ref in commentRefs) {
+      if (ref.name == codeRef) {
+        bool isConstrElement = ref.staticElement is ConstructorElement;
         // Constructors are now handled by library search.
         if (!isConstrElement) {
-          Element refElement = ref.identifier.staticElement;
+          Element refElement = ref.staticElement;
           if (refElement is PropertyAccessorElement) {
             // yay we found an accessor that wraps a const, but we really
             // want the top-level field itself
@@ -278,8 +276,8 @@ class _MarkdownCommentReference {
   /// The element containing the code reference.
   final Warnable element;
 
-  /// A list of [CommentReference]s from the analyzer.
-  final List<CommentReference> commentRefs;
+  /// A list of [ModelCommentReference]s for this element.
+  final List<ModelCommentReference> commentRefs;
 
   /// Disambiguate inheritance with this class.
   final Class preferredClass;
@@ -726,8 +724,8 @@ class _MarkdownCommentReference {
   }
 }
 
-String _linkDocReference(
-    String codeRef, Warnable warnable, List<CommentReference> commentRefs) {
+String _linkDocReference(String codeRef, Warnable warnable,
+    List<ModelCommentReference> commentRefs) {
   MatchingLinkResult result;
   result = _getMatchingLinkElement(codeRef, warnable, commentRefs);
   final ModelElement linkedElement = result.element;
@@ -950,7 +948,7 @@ class Documentation {
     return _asOneLiner;
   }
 
-  List<CommentReference> get commentRefs => _element.commentRefs;
+  List<ModelCommentReference> get commentRefs => _element.commentRefs;
 
   void _renderHtmlForDartdoc(bool processAllDocs) {
     Tuple3<String, String, bool> renderResults =
