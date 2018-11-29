@@ -10,6 +10,7 @@ import 'dart:collection' show UnmodifiableListView;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart'
@@ -2002,7 +2003,6 @@ abstract class GetterSetterCombo implements ModelElement {
 }
 
 class Library extends ModelElement with Categorization, TopLevelContainer {
-  final ResolvedLibraryResult libraryResult;
   List<TopLevelVariable> _variables;
   Namespace _exportedNamespace;
   String _name;
@@ -2011,9 +2011,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return packageGraph.findButDoNotCreateLibraryFor(element);
   }
 
-  Library._(this.libraryResult, PackageGraph packageGraph, this._package)
+  Library._(ResolvedLibraryResult libraryResult, PackageGraph packageGraph,
+      this._package)
       : super(libraryResult.element, null, packageGraph, null) {
     if (element == null) throw new ArgumentError.notNull('element');
+    packageGraph.resolvedUnitMap.addEntries(libraryResult.units
+        .map((ResolvedUnitResult u) => new MapEntry(u.path, u)));
     _exportedNamespace =
         new NamespaceBuilder().createExportNamespaceForLibrary(element);
     _package._allLibraries.add(this);
@@ -2838,7 +2841,8 @@ abstract class ModelElement extends Canonicalization
   // TODO(jcollins-g): make _originalMember optional after dart-lang/sdk#15101
   // is fixed.
   ModelElement(
-      this._element, this._library, this._packageGraph, this._originalMember) {}
+      this._element, this._library, this._packageGraph, this._originalMember)
+      : astNode = getAstNode(_element, _packageGraph) {}
 
   factory ModelElement.fromElement(Element e, PackageGraph p) {
     Library lib = p.findButDoNotCreateLibraryFor(e);
@@ -3043,6 +3047,25 @@ abstract class ModelElement extends Canonicalization
         .packageGraph.libraryElementReexportedBy[this.element.library];
   }
 
+  @override
+  final AstNode astNode;
+
+  static AstNode getAstNode(Element element, PackageGraph packageGraph) {
+    if (element?.source?.fullName != null &&
+        !element.isSynthetic &&
+        element.nameOffset != -1 &&
+        packageGraph.resolvedUnitMap != null) {
+      CompilationUnit unit =
+          packageGraph.resolvedUnitMap[element.source.fullName]?.unit;
+      if (unit != null) {
+        var locator = new NodeLocator2(element.nameOffset);
+        return (locator.searchWithin(unit)?.parent);
+      }
+    }
+    return null;
+  }
+
+  /*
   AstNode _astNode;
   @override
   AstNode get astNode {
@@ -3054,7 +3077,7 @@ abstract class ModelElement extends Canonicalization
       }
     }
     return _astNode;
-  }
+  }*/
 
   List<String> get annotations => annotationsFromMetadata(element.metadata);
 
@@ -4008,33 +4031,34 @@ abstract class ModelElement extends Canonicalization
       });
       int invocationIndex = 0;
       return await _replaceAllMappedAsync(rawDocs, basicToolRegExp,
-              (basicMatch) async {
-            List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
-            // Tool name must come first.
-            if (args.isEmpty) {
-              warn(PackageWarning.toolError,
-                  message: 'Must specify a tool to execute for the @tool directive.');
-              return Future.value('');
-            }
-            // Count the number of invocations of tools in this dartdoc block,
-            // so that tools can differentiate different blocks from each other.
-            invocationIndex++;
-            return await runner.run(args,
-                content: basicMatch[2],
-                environment: {
-                  'SOURCE_LINE': lineAndColumn?.item1?.toString(),
-                  'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
-                  'SOURCE_PATH': (sourceFileName == null ||
+          (basicMatch) async {
+        List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
+        // Tool name must come first.
+        if (args.isEmpty) {
+          warn(PackageWarning.toolError,
+              message:
+                  'Must specify a tool to execute for the @tool directive.');
+          return Future.value('');
+        }
+        // Count the number of invocations of tools in this dartdoc block,
+        // so that tools can differentiate different blocks from each other.
+        invocationIndex++;
+        return await runner.run(args,
+            content: basicMatch[2],
+            environment: {
+              'SOURCE_LINE': lineAndColumn?.item1?.toString(),
+              'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
+              'SOURCE_PATH': (sourceFileName == null ||
                       package?.packagePath == null)
-                      ? null
-                      : pathLib.relative(sourceFileName, from: package.packagePath),
-                  'PACKAGE_PATH': package?.packagePath,
-                  'PACKAGE_NAME': package?.name,
-                  'LIBRARY_NAME': library?.fullyQualifiedName,
-                  'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
-                  'INVOCATION_INDEX': invocationIndex.toString(),
-                }..removeWhere((key, value) => value == null));
-          }).whenComplete(runner.dispose);
+                  ? null
+                  : pathLib.relative(sourceFileName, from: package.packagePath),
+              'PACKAGE_PATH': package?.packagePath,
+              'PACKAGE_NAME': package?.name,
+              'LIBRARY_NAME': library?.fullyQualifiedName,
+              'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
+              'INVOCATION_INDEX': invocationIndex.toString(),
+            }..removeWhere((key, value) => value == null));
+      }).whenComplete(runner.dispose);
     } else {
       return rawDocs;
     }
@@ -4610,16 +4634,18 @@ class PackageGraph {
   // to this graph.
 
   PackageGraph._(this.config, this.packageMeta, this._packageWarningOptions,
-      this.driver, this.sdk) : session = driver.currentSession {}
+      this.driver, this.sdk)
+      : session = driver.currentSession {}
 
   static Future<PackageGraph> setUpPackageGraph(
-      Iterable<ResolvedLibraryResult> libraryResults,
-      Iterable<ResolvedLibraryResult> specialLibraryResults,
-      DartdocOptionContext config,
-      PackageMeta packageMeta,
-      packageWarningOptions,
-      driver,
-      sdk,) async {
+    Iterable<ResolvedLibraryResult> libraryResults,
+    Iterable<ResolvedLibraryResult> specialLibraryResults,
+    DartdocOptionContext config,
+    PackageMeta packageMeta,
+    packageWarningOptions,
+    driver,
+    sdk,
+  ) async {
     PackageGraph newGraph =
         PackageGraph._(config, packageMeta, packageWarningOptions, driver, sdk);
     assert(newGraph._allConstructedModelElements.isEmpty);
@@ -4631,8 +4657,8 @@ class PackageGraph {
     libraryResults.forEach((result) {
       LibraryElement element = result.element;
       var packageMeta = new PackageMeta.fromElement(element, config);
-      var lib = new Library._(result, newGraph,
-          new Package.fromPackageMeta(packageMeta, newGraph));
+      var lib = new Library._(
+          result, newGraph, new Package.fromPackageMeta(packageMeta, newGraph));
       newGraph.packageMap[packageMeta.name]._libraries.add(lib);
       newGraph.allLibraries[element] = lib;
     });
@@ -4655,6 +4681,7 @@ class PackageGraph {
     List<Future> precacheFutures = newGraph.precacheLocalDocs().toList();
     for (Future f in precacheFutures) await f;
     newGraph._localDocumentationBuilt = true;
+    newGraph._resolvedUnitMap = null;
 
     // Scan all model elements to insure that interceptor and other special
     // objects are found.
@@ -4673,6 +4700,11 @@ class PackageGraph {
     newGraph.specialClasses.assertSpecials();
     return newGraph;
   }
+
+  // Only valid during construction.
+  Map<String, ResolvedUnitResult> _resolvedUnitMap = new Map();
+  Map<String, ResolvedUnitResult> get resolvedUnitMap =>
+      _localDocumentationBuilt ? null : _resolvedUnitMap;
 
   /// Generate a list of futures for any docs that actually require precaching.
   Iterable<Future> precacheLocalDocs() sync* {
@@ -6473,15 +6505,22 @@ class PackageBuilder {
       packageMeta.runPubGet();
     }
     Map<LibraryElement, ResolvedLibraryResult> libraryResults = new Map();
-    Map<LibraryElement, ResolvedLibraryResult> specialLibraryResults = new Map();
+    Map<LibraryElement, ResolvedLibraryResult> specialLibraryResults =
+        new Map();
     DartSdk findSpecialsSdk = sdk;
     if (embedderSdk != null && embedderSdk.urlMappings.isNotEmpty) {
       findSpecialsSdk = embedderSdk;
     }
     await getLibraries(libraryResults, specialLibraryResults, getFiles,
         specialLibraryFiles(findSpecialsSdk).toSet());
-    return await PackageGraph.setUpPackageGraph(libraryResults.values, specialLibraryResults.values,
-        config, config.topLevelPackageMeta, getWarningOptions(), driver, sdk);
+    return await PackageGraph.setUpPackageGraph(
+        libraryResults.values,
+        specialLibraryResults.values,
+        config,
+        config.topLevelPackageMeta,
+        getWarningOptions(),
+        driver,
+        sdk);
   }
 
   DartSdk _sdk;
@@ -6681,13 +6720,16 @@ class PackageBuilder {
     return metas;
   }
 
-  Future<Map<LibraryElement, ResolvedLibraryResult>> _parseLibraries(Set<String> files) async {
+  Future<Map<LibraryElement, ResolvedLibraryResult>> _parseLibraries(
+      Set<String> files) async {
     Map<LibraryElement, ResolvedLibraryResult> libraries = new Map();
     Set<PackageMeta> lastPass = new Set();
     Set<PackageMeta> current;
     do {
       lastPass = _packageMetasForFiles(files);
-      for (ResolvedLibraryResult r in (await Future.wait(files.map((f) => processLibrary(f)))).where((ResolvedLibraryResult l) => l != null)) {
+      for (ResolvedLibraryResult r
+          in (await Future.wait(files.map((f) => processLibrary(f))))
+              .where((ResolvedLibraryResult l) => l != null)) {
         libraries[r.element] = r;
       }
 
@@ -6808,7 +6850,8 @@ class PackageBuilder {
     specialLibraryResults
         .addAll(await _parseLibraries(specialFiles.difference(files)));
     if (config.include.isNotEmpty) {
-      Iterable knownLibraryNames = libraryResults.values.map((l) => l.element.name);
+      Iterable knownLibraryNames =
+          libraryResults.values.map((l) => l.element.name);
       Set notFound = new Set.from(config.include)
           .difference(new Set.from(knownLibraryNames))
           .difference(new Set.from(config.exclude));
