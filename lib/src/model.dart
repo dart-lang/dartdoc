@@ -2015,8 +2015,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       this._package)
       : super(libraryResult.element, null, packageGraph, null) {
     if (element == null) throw new ArgumentError.notNull('element');
-    packageGraph.resolvedUnitMap.addEntries(libraryResult.units
-        .map((ResolvedUnitResult u) => new MapEntry(u.path, u)));
+    packageGraph.compilationUnitMap.addEntries(libraryResult.units
+        .map((ResolvedUnitResult u) => new MapEntry(u.path, u.unit)));
     _exportedNamespace =
         new NamespaceBuilder().createExportNamespaceForLibrary(element);
     _package._allLibraries.add(this);
@@ -2842,7 +2842,7 @@ abstract class ModelElement extends Canonicalization
   // is fixed.
   ModelElement(
       this._element, this._library, this._packageGraph, this._originalMember)
-      : astNode = getAstNode(_element, _packageGraph) {}
+      : astNode = _packageGraph.getAstNode(_element) {}
 
   factory ModelElement.fromElement(Element e, PackageGraph p) {
     Library lib = p.findButDoNotCreateLibraryFor(e);
@@ -3049,21 +3049,6 @@ abstract class ModelElement extends Canonicalization
 
   @override
   final AstNode astNode;
-
-  static AstNode getAstNode(Element element, PackageGraph packageGraph) {
-    if (element?.source?.fullName != null &&
-        !element.isSynthetic &&
-        element.nameOffset != -1 &&
-        packageGraph.resolvedUnitMap != null) {
-      CompilationUnit unit =
-          packageGraph.resolvedUnitMap[element.source.fullName]?.unit;
-      if (unit != null) {
-        var locator = new NodeLocator2(element.nameOffset);
-        return (locator.searchWithin(unit)?.parent);
-      }
-    }
-    return null;
-  }
 
   /*
   AstNode _astNode;
@@ -4681,7 +4666,7 @@ class PackageGraph {
     List<Future> precacheFutures = newGraph.precacheLocalDocs().toList();
     for (Future f in precacheFutures) await f;
     newGraph._localDocumentationBuilt = true;
-    newGraph._resolvedUnitMap = null;
+    newGraph._compilationUnitMap = null;
 
     // Scan all model elements to insure that interceptor and other special
     // objects are found.
@@ -4701,10 +4686,30 @@ class PackageGraph {
     return newGraph;
   }
 
-  // Only valid during construction.
-  Map<String, ResolvedUnitResult> _resolvedUnitMap = new Map();
-  Map<String, ResolvedUnitResult> get resolvedUnitMap =>
-      _localDocumentationBuilt ? null : _resolvedUnitMap;
+  Map<String, CompilationUnit> _compilationUnitMap = new Map();
+
+  /// Only valid during [setUpPackageGraph] before [_localDocumentationBuilt].
+  Map<String, CompilationUnit> get compilationUnitMap =>
+      _localDocumentationBuilt ? null : _compilationUnitMap;
+
+  /// Returns the [AstNode] for a given [Element].
+  ///
+  /// Only returns non-null during [setUpPackageGraph] before
+  /// [_localDocumentationBuilt].
+  AstNode getAstNode(Element element) {
+    if (element?.source?.fullName != null &&
+        !element.isSynthetic &&
+        element.nameOffset != -1 &&
+        compilationUnitMap != null) {
+      CompilationUnit unit =
+          compilationUnitMap[element.source.fullName];
+      if (unit != null) {
+        var locator = new NodeLocator2(element.nameOffset);
+        return (locator.searchWithin(unit)?.parent);
+      }
+    }
+    return null;
+  }
 
   /// Generate a list of futures for any docs that actually require precaching.
   Iterable<Future> precacheLocalDocs() sync* {
