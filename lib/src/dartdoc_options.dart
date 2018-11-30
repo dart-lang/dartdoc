@@ -20,6 +20,7 @@ import 'dart:io';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
@@ -39,21 +40,6 @@ final Directory directoryCurrent = Directory.current;
 final String directoryCurrentPath =
     pathLib.canonicalize(Directory.current.path);
 
-String resolveTildePath(String originalPath) {
-  if (originalPath == null || !originalPath.startsWith('~/')) {
-    return originalPath;
-  }
-
-  String homeDir;
-
-  if (Platform.isWindows) {
-    homeDir = pathLib.absolute(Platform.environment['USERPROFILE']);
-  } else {
-    homeDir = pathLib.absolute(Platform.environment['HOME']);
-  }
-
-  return pathLib.join(homeDir, originalPath.substring(2));
-}
 
 class DartdocOptionError extends DartdocFailure {
   DartdocOptionError(String details) : super(details);
