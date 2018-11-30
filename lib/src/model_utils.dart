@@ -132,4 +132,3 @@ String stripIndentFromSource(String source) {
     return line.startsWith(indent) ? line.substring(indent.length) : line;
   }).join('\n');
 }
-

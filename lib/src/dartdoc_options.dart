@@ -40,7 +40,6 @@ final Directory directoryCurrent = Directory.current;
 final String directoryCurrentPath =
     pathLib.canonicalize(Directory.current.path);
 
-
 class DartdocOptionError extends DartdocFailure {
   DartdocOptionError(String details) : super(details);
 }
