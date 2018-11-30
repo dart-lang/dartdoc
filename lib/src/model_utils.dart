@@ -7,13 +7,11 @@ library dartdoc.model_utils;
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/model.dart';
-import 'package:path/path.dart' as pathLib;
 
 final Map<String, String> _fileContents = <String, String>{};
 
@@ -133,47 +131,4 @@ String stripIndentFromSource(String source) {
     line = line.trimRight();
     return line.startsWith(indent) ? line.substring(indent.length) : line;
   }).join('\n');
-}
-
-/// Add links to crossdart.info to the given source fragment
-String crossdartifySource(
-    String inputPath,
-    Map<String, Map<String, dynamic>> json,
-    String source,
-    Element element,
-    AstNode node,
-    int start) {
-  inputPath = pathLib.canonicalize(inputPath);
-  var sanitizer = const HtmlEscape();
-  String newSource;
-  if (json.isNotEmpty) {
-    var file = pathLib.canonicalize(element.source.fullName);
-    var filesData = json[file];
-    if (filesData != null) {
-      var data = filesData["references"]
-          .where((r) => r["offset"] >= start && r["end"] <= node.end);
-      if (data.isNotEmpty) {
-        var previousStop = 0;
-        var stringBuffer = new StringBuffer();
-        for (var item in data) {
-          stringBuffer.write(sanitizer
-              .convert(source.substring(previousStop, item["offset"] - start)));
-          stringBuffer
-              .write("<a class='crossdart-link' href='${item["remotePath"]}'>");
-          stringBuffer.write(sanitizer.convert(
-              source.substring(item["offset"] - start, item["end"] - start)));
-          stringBuffer.write("</a>");
-          previousStop = item["end"] - start;
-        }
-        stringBuffer.write(
-            sanitizer.convert(source.substring(previousStop, source.length)));
-
-        newSource = stringBuffer.toString();
-      }
-    }
-  }
-  if (newSource == null) {
-    newSource = sanitizer.convert(source);
-  }
-  return newSource;
 }

@@ -17,7 +17,6 @@ import 'package:analyzer/dart/ast/ast.dart'
         AnnotatedNode,
         AstNode,
         CommentReference,
-        Declaration,
         Expression,
         InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
@@ -4008,33 +4007,34 @@ abstract class ModelElement extends Canonicalization
       });
       int invocationIndex = 0;
       return await _replaceAllMappedAsync(rawDocs, basicToolRegExp,
-              (basicMatch) async {
-            List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
-            // Tool name must come first.
-            if (args.isEmpty) {
-              warn(PackageWarning.toolError,
-                  message: 'Must specify a tool to execute for the @tool directive.');
-              return Future.value('');
-            }
-            // Count the number of invocations of tools in this dartdoc block,
-            // so that tools can differentiate different blocks from each other.
-            invocationIndex++;
-            return await runner.run(args,
-                content: basicMatch[2],
-                environment: {
-                  'SOURCE_LINE': lineAndColumn?.item1?.toString(),
-                  'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
-                  'SOURCE_PATH': (sourceFileName == null ||
+          (basicMatch) async {
+        List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
+        // Tool name must come first.
+        if (args.isEmpty) {
+          warn(PackageWarning.toolError,
+              message:
+                  'Must specify a tool to execute for the @tool directive.');
+          return Future.value('');
+        }
+        // Count the number of invocations of tools in this dartdoc block,
+        // so that tools can differentiate different blocks from each other.
+        invocationIndex++;
+        return await runner.run(args,
+            content: basicMatch[2],
+            environment: {
+              'SOURCE_LINE': lineAndColumn?.item1?.toString(),
+              'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
+              'SOURCE_PATH': (sourceFileName == null ||
                       package?.packagePath == null)
-                      ? null
-                      : pathLib.relative(sourceFileName, from: package.packagePath),
-                  'PACKAGE_PATH': package?.packagePath,
-                  'PACKAGE_NAME': package?.name,
-                  'LIBRARY_NAME': library?.fullyQualifiedName,
-                  'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
-                  'INVOCATION_INDEX': invocationIndex.toString(),
-                }..removeWhere((key, value) => value == null));
-          }).whenComplete(runner.dispose);
+                  ? null
+                  : pathLib.relative(sourceFileName, from: package.packagePath),
+              'PACKAGE_PATH': package?.packagePath,
+              'PACKAGE_NAME': package?.name,
+              'LIBRARY_NAME': library?.fullyQualifiedName,
+              'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
+              'INVOCATION_INDEX': invocationIndex.toString(),
+            }..removeWhere((key, value) => value == null));
+      }).whenComplete(runner.dispose);
     } else {
       return rawDocs;
     }
@@ -4740,27 +4740,6 @@ class PackageGraph {
 
   /// Dartdoc's configuration flags.
   final DartdocOptionContext config;
-
-  Map<String, Map<String, dynamic>> __crossdartJson;
-  // TODO(jcollins-g): move to [Package]
-  Map<String, Map<String, dynamic>> get crossdartJson {
-    if (__crossdartJson == null) {
-      // TODO(jcollins-g): allow crossdart.json location to be configurable
-      var crossdartFile =
-          new File(pathLib.join(config.inputDir, 'crossdart.json'));
-      if (crossdartFile.existsSync()) {
-        Map<String, dynamic> __crossdartJsonTmp =
-            json.decode(crossdartFile.readAsStringSync());
-        __crossdartJson = {};
-        for (String key in __crossdartJsonTmp.keys) {
-          __crossdartJson[pathLib.canonicalize(key)] = __crossdartJsonTmp[key];
-        }
-      } else {
-        __crossdartJson = {};
-      }
-    }
-    return __crossdartJson;
-  }
 
   Package _defaultPackage;
   Package get defaultPackage {
@@ -6135,14 +6114,6 @@ class Parameter extends ModelElement implements EnclosedElement {
 abstract class SourceCodeMixin implements Documentable {
   AstNode get astNode;
 
-  String get crossdartHtmlTag {
-    if (config.addCrossdart && _crossdartUrl != null) {
-      return "<a class='crossdart' href='${_crossdartUrl}'>Link to Crossdart</a>";
-    } else {
-      return "";
-    }
-  }
-
   Tuple2<int, int> get lineAndColumn;
 
   Element get element;
@@ -6169,12 +6140,7 @@ abstract class SourceCodeMixin implements Documentable {
       var start = node.offset - (node.offset - i);
       String source = contents.substring(start, node.end);
 
-      if (config.addCrossdart) {
-        source = crossdartifySource(config.inputDir, packageGraph.crossdartJson,
-            source, element, node, start);
-      } else {
-        source = const HtmlEscape().convert(source);
-      }
+      source = const HtmlEscape().convert(source);
       source = stripIndentFromSource(source);
       source = stripDartdocCommentsFromSource(source);
 
@@ -6190,54 +6156,6 @@ abstract class SourceCodeMixin implements Documentable {
       _sourceCode = sourceCodeFor(element);
     }
     return _sourceCode;
-  }
-
-  String get _crossdartPath {
-    var node = astNode;
-    if (node is Declaration && node.declaredElement != null) {
-      var source = node.declaredElement.source;
-      var filePath = source.fullName;
-      var uri = source.uri.toString();
-      var packageMeta = library.packageGraph.packageMeta;
-      if (uri.startsWith('package:')) {
-        var splittedUri =
-            uri.replaceAll(new RegExp(r'^package:'), '').split('/');
-        var packageName = splittedUri.first;
-        var packageVersion;
-        if (packageName == packageMeta.name) {
-          packageVersion = packageMeta.version;
-        } else {
-          var match = new RegExp(
-                  '.pub-cache/(hosted/pub.dartlang.org|git)/${packageName}-([^/]+)')
-              .firstMatch(filePath);
-          if (match != null) {
-            packageVersion = match[2];
-          }
-        }
-        if (packageVersion != null) {
-          return '${packageName}/${packageVersion}/${splittedUri.skip(1).join("/")}';
-        } else {
-          return null;
-        }
-      } else if (uri.startsWith('dart:')) {
-        var packageName = 'sdk';
-        var packageVersion = packageGraph.sdk.sdkVersion;
-        return '${packageName}/${packageVersion}/lib/${uri.replaceAll(new RegExp(r"^dart:"), "")}';
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
-
-  String get _crossdartUrl {
-    if (lineAndColumn != null && _crossdartPath != null) {
-      String url = '//www.crossdart.info/p/${_crossdartPath}.html';
-      return '${url}#line-${lineAndColumn.item1}';
-    } else {
-      return null;
-    }
   }
 }
 
