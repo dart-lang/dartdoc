@@ -12,6 +12,24 @@ import 'dart:io';
 
 import 'package:path/path.dart' as pathLib;
 
+/// Return a resolved path including the home directory in place of tilde
+/// references.
+String resolveTildePath(String originalPath) {
+  if (originalPath == null || !originalPath.startsWith('~/')) {
+    return originalPath;
+  }
+
+  String homeDir;
+
+  if (Platform.isWindows) {
+    homeDir = pathLib.absolute(Platform.environment['USERPROFILE']);
+  } else {
+    homeDir = pathLib.absolute(Platform.environment['HOME']);
+  }
+
+  return pathLib.join(homeDir, originalPath.substring(2));
+}
+
 /// Lists the contents of [dir].
 ///
 /// If [recursive] is `true`, lists subdirectory contents (defaults to `false`).
