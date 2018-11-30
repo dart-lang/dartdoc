@@ -98,7 +98,8 @@ Directory _dartdocDocsDir;
 Directory get dartdocDocsDir => _dartdocDocsDir ??= createTempSync('dartdoc');
 
 Directory _dartdocDocsDirRemote;
-Directory get dartdocDocsDirRemote => _dartdocDocsDirRemote ??= createTempSync('dartdoc_remote');
+Directory get dartdocDocsDirRemote =>
+    _dartdocDocsDirRemote ??= createTempSync('dartdoc_remote');
 
 Directory _sdkDocsDir;
 Directory get sdkDocsDir => _sdkDocsDir ??= createTempSync('sdkdocs');
@@ -119,7 +120,8 @@ Directory get testPackageDocsDir =>
     _testPackageDocsDir ??= createTempSync('test_package');
 
 Directory _pluginPackageDocsDir;
-Directory get pluginPackageDocsDir => _pluginPackageDocsDir ??= createTempSync('test_package_flutter_plugin');
+Directory get pluginPackageDocsDir =>
+    _pluginPackageDocsDir ??= createTempSync('test_package_flutter_plugin');
 
 /// Version of dartdoc we should use when making comparisons.
 String get dartdocOriginalBranch {

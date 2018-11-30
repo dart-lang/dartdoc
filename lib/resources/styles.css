@@ -257,22 +257,6 @@ code {
   border-radius: 3px;
 }
 
-h2 .crossdart {
-  float: right;
-  font-size: 0.5em;
-  margin-top: 1em;
-}
-
-.crossdart-link {
-  border-bottom: 1px solid #dfdfdf;
-  text-decoration: none;
-}
-
-.crossdart-link:hover {
-  border-bottom: 1px solid #aaa;
-  text-decoration: none;
-}
-
 @media(max-width: 768px) {
   nav .container {
     width: 100%
