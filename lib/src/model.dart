@@ -439,7 +439,7 @@ class Accessor extends ModelElement implements EnclosedElement {
     if (_sourceCode == null) {
       if (isSynthetic) {
         _sourceCode = packageGraph
-            ._getModelNodeFor((element as PropertyAccessorElement).variable)
+            ._getModelNodeFor((element as PropertyAccessorElement).variable, this.definingLibrary)
             .sourceCode;
       } else {
         _sourceCode = super.sourceCode;
@@ -3105,7 +3105,7 @@ abstract class ModelElement extends Canonicalization
   ModelNode _modelNode;
   @override
   ModelNode get modelNode =>
-      _modelNode ??= packageGraph._getModelNodeFor(element);
+      _modelNode ??= packageGraph._getModelNodeFor(element, definingLibrary);
 
   List<String> get annotations => annotationsFromMetadata(element.metadata);
 
@@ -4735,10 +4735,9 @@ class PackageGraph {
   // Many ModelElements have the same ModelNode; don't build/cache this data more
   // than once for them.
   final Map<Element, ModelNode> _modelNodes = Map();
-  ModelNode _getModelNodeFor(element) {
-    /// TODO(jcollins-g): merge with removal of computeNode.
+  ModelNode _getModelNodeFor(element, Library definingLibrary) {
     _modelNodes.putIfAbsent(
-        element, () => ModelNode(element?.computeNode(), element));
+        element, () => ModelNode(definingLibrary.libraryResult.getElementDeclaration(element)?.node , element));
     return _modelNodes[element];
   }
 
