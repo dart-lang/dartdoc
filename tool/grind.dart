@@ -5,9 +5,7 @@
 import 'dart:async';
 import 'dart:io' hide ProcessException;
 
-import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
-import 'package:dartdoc/src/model_utils.dart';
 import 'package:grinder/grinder.dart';
 import 'package:io/io.dart';
 import 'package:path/path.dart' as pathLib;
@@ -46,8 +44,6 @@ final MultiFutureTracker testFutures = new MultiFutureTracker(
 // Directory.systemTemp is not a constant.  So wrap it.
 Directory createTempSync(String prefix) =>
     Directory.systemTemp.createTempSync(prefix);
-
-final Memoizer tempdirsCache = new Memoizer();
 
 /// Global so that the lock is retained for the life of the process.
 Future<void> _lockFuture;
@@ -98,23 +94,32 @@ Future<FlutterRepo> get cleanFlutterRepo async {
   return _cleanFlutterRepo.future;
 }
 
-Directory get dartdocDocsDir =>
-    tempdirsCache.memoized1(createTempSync, 'dartdoc');
-Directory get dartdocDocsDirRemote =>
-    tempdirsCache.memoized1(createTempSync, 'dartdoc_remote');
-Directory get sdkDocsDir => tempdirsCache.memoized1(createTempSync, 'sdkdocs');
+Directory _dartdocDocsDir;
+Directory get dartdocDocsDir => _dartdocDocsDir ??= createTempSync('dartdoc');
+
+Directory _dartdocDocsDirRemote;
+Directory get dartdocDocsDirRemote => _dartdocDocsDirRemote ??= createTempSync('dartdoc_remote');
+
+Directory _sdkDocsDir;
+Directory get sdkDocsDir => _sdkDocsDir ??= createTempSync('sdkdocs');
+
 Directory cleanFlutterDir = new Directory(
     pathLib.join(resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
-Directory get flutterDir => tempdirsCache.memoized1(createTempSync, 'flutter');
+
+Directory _flutterDir;
+Directory get flutterDir => _flutterDir ??= createTempSync('flutter');
+
 Directory get testPackage =>
     new Directory(pathLib.joinAll(['testing', 'test_package']));
 Directory get pluginPackage =>
     new Directory(pathLib.joinAll(['testing', 'test_package_flutter_plugin']));
 
+Directory _testPackageDocsDir;
 Directory get testPackageDocsDir =>
-    tempdirsCache.memoized1(createTempSync, 'test_package');
-Directory get pluginPackageDocsDir =>
-    tempdirsCache.memoized1(createTempSync, 'test_package_flutter_plugin');
+    _testPackageDocsDir ??= createTempSync('test_package');
+
+Directory _pluginPackageDocsDir;
+Directory get pluginPackageDocsDir => _pluginPackageDocsDir ??= createTempSync('test_package_flutter_plugin');
 
 /// Version of dartdoc we should use when making comparisons.
 String get dartdocOriginalBranch {
