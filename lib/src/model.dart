@@ -436,8 +436,9 @@ class Accessor extends ModelElement implements EnclosedElement {
   String get sourceCode {
     if (_sourceCode == null) {
       if (isSynthetic) {
-        _sourceCode =
-            sourceCodeFor((element as PropertyAccessorElement).variable);
+        _sourceCode = packageGraph
+            ._getModelNodeFor((element as PropertyAccessorElement).variable)
+            .sourceCode;
       } else {
         _sourceCode = super.sourceCode;
       }
@@ -1420,13 +1421,72 @@ abstract class Categorization implements ModelElement {
   }
 }
 
+/// A stripped down [CommentReference] containing only that information needed
+/// for Dartdoc.  Drops link to the [CommentReference] after construction.
+class ModelCommentReference {
+  final String name;
+  final Element staticElement;
+  ModelCommentReference(CommentReference ref)
+      : name = ref.identifier.name,
+        staticElement = ref.identifier.staticElement {}
+}
+
+/// Stripped down information derived from [AstNode] containing only information
+/// needed for Dartdoc.  Drops link to the [AstNode] after construction.
+class ModelNode {
+  final List<ModelCommentReference> commentRefs;
+  final String sourceCode;
+  final Element element;
+
+  ModelNode(AstNode sourceNode, this.element)
+      : sourceCode = _sourceCodeFor(sourceNode, element),
+        commentRefs = _commentRefsFor(sourceNode) {}
+
+  static List<ModelCommentReference> _commentRefsFor(AstNode node) {
+    if (node is AnnotatedNode &&
+        node?.documentationComment?.references != null) {
+      return node.documentationComment.references
+          .map((c) => ModelCommentReference(c))
+          .toList(growable: false);
+    }
+    return null;
+  }
+
+  static String _sourceCodeFor(AstNode node, Element element) {
+    String contents = getFileContentsFor(element);
+    if (node != null) {
+      // Find the start of the line, so that we can line up all the indents.
+      int i = node.offset;
+      while (i > 0) {
+        i -= 1;
+        if (contents[i] == '\n' || contents[i] == '\r') {
+          i += 1;
+          break;
+        }
+      }
+
+      // Trim the common indent from the source snippet.
+      var start = node.offset - (node.offset - i);
+      String source = contents.substring(start, node.end);
+
+      source = const HtmlEscape().convert(source);
+      source = stripIndentFromSource(source);
+      source = stripDartdocCommentsFromSource(source);
+
+      return source.trim();
+    } else {
+      return '';
+    }
+  }
+}
+
 /// Classes extending this class have canonicalization support in Dartdoc.
 abstract class Canonicalization implements Locatable, Documentable {
   bool get isCanonical;
   Library get canonicalLibrary;
 
-  List<CommentReference> _commentRefs;
-  List<CommentReference> get commentRefs => _commentRefs;
+  List<ModelCommentReference> _commentRefs;
+  List<ModelCommentReference> get commentRefs => _commentRefs;
 
   /// Pieces of the location split by [locationSplitter] (removing package: and
   /// slashes).
@@ -1758,7 +1818,7 @@ class Field extends ModelElement
   String get sourceCode {
     if (_sourceCode == null) {
       // We could use a set to figure the dupes out, but that would lose ordering.
-      String fieldSourceCode = sourceCodeFor(element) ?? '';
+      String fieldSourceCode = modelNode.sourceCode ?? '';
       String getterSourceCode = getter?.sourceCode ?? '';
       String setterSourceCode = setter?.sourceCode ?? '';
       StringBuffer buffer = new StringBuffer();
@@ -3036,12 +3096,10 @@ abstract class ModelElement extends Canonicalization
         .packageGraph.libraryElementReexportedBy[this.element.library];
   }
 
-  AstNode _astNode;
+  ModelNode _modelNode;
   @override
-  AstNode get astNode {
-    _astNode ??= element?.computeNode();
-    return _astNode;
-  }
+  ModelNode get modelNode =>
+      _modelNode ??= packageGraph._getModelNodeFor(element);
 
   List<String> get annotations => annotationsFromMetadata(element.metadata);
 
@@ -3112,7 +3170,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   @override
-  List<CommentReference> get commentRefs {
+  List<ModelCommentReference> get commentRefs {
     if (_commentRefs == null) {
       _commentRefs = [];
       for (ModelElement from in documentationFrom) {
@@ -3121,11 +3179,7 @@ abstract class ModelElement extends Canonicalization
           checkReferences.add(from.enclosingCombo);
         }
         for (ModelElement e in checkReferences) {
-          AstNode node = e.astNode;
-          if (node is AnnotatedNode &&
-              node?.documentationComment?.references != null) {
-            _commentRefs.addAll(node.documentationComment.references);
-          }
+          _commentRefs.addAll(e.modelNode.commentRefs ?? []);
         }
       }
     }
@@ -4674,6 +4728,16 @@ class PackageGraph {
     }
   }
 
+  // Many ModelElements have the same ModelNode; don't build/cache this data more
+  // than once for them.
+  final Map<Element, ModelNode> _modelNodes = Map();
+  ModelNode _getModelNodeFor(element) {
+    /// TODO(jcollins-g): merge with removal of computeNode.
+    _modelNodes.putIfAbsent(
+        element, () => ModelNode(element?.computeNode(), element));
+    return _modelNodes[element];
+  }
+
   SpecialClasses specialClasses;
 
   /// It is safe to cache values derived from the _implementors table if this
@@ -6087,7 +6151,7 @@ class Parameter extends ModelElement implements EnclosedElement {
 }
 
 abstract class SourceCodeMixin implements Documentable {
-  AstNode get astNode;
+  ModelNode get modelNode;
 
   Tuple2<int, int> get lineAndColumn;
 
@@ -6097,41 +6161,8 @@ abstract class SourceCodeMixin implements Documentable {
 
   Library get library;
 
-  String sourceCodeFor(Element element) {
-    String contents = getFileContentsFor(element);
-    var node = element.computeNode();
-    if (node != null) {
-      // Find the start of the line, so that we can line up all the indents.
-      int i = node.offset;
-      while (i > 0) {
-        i -= 1;
-        if (contents[i] == '\n' || contents[i] == '\r') {
-          i += 1;
-          break;
-        }
-      }
-
-      // Trim the common indent from the source snippet.
-      var start = node.offset - (node.offset - i);
-      String source = contents.substring(start, node.end);
-
-      source = const HtmlEscape().convert(source);
-      source = stripIndentFromSource(source);
-      source = stripDartdocCommentsFromSource(source);
-
-      return source.trim();
-    } else {
-      return '';
-    }
-  }
-
   String _sourceCode;
-  String get sourceCode {
-    if (_sourceCode == null) {
-      _sourceCode = sourceCodeFor(element);
-    }
-    return _sourceCode;
-  }
+  String get sourceCode => _sourceCode ??= modelNode.sourceCode;
 }
 
 abstract class TypeParameters implements ModelElement {
