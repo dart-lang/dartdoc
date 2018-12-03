@@ -4701,8 +4701,12 @@ class Operator extends Method {
 }
 
 class PackageGraph {
-  PackageGraph.UninitializedPackageGraph(this.config,
-      PackageWarningOptions packageWarningOptions, this.driver, this.sdk)
+  PackageGraph.UninitializedPackageGraph(
+      this.config,
+      PackageWarningOptions packageWarningOptions,
+      this.driver,
+      this.sdk,
+      this.hasEmbedderSdk)
       : packageMeta = config.topLevelPackageMeta,
         session = driver.currentSession,
         _packageWarningCounter =
@@ -4713,6 +4717,10 @@ class PackageGraph {
   }
 
   /// Call during initialization to add a library to this [PackageGraph].
+  ///
+  /// Libraries added in this manner are assumed to be part of documented
+  /// packages, even if includes or embedder.yaml files cause these to
+  /// span packages.
   void addLibraryToGraph(ResolvedLibraryResult result) {
     assert(!allLibrariesAdded);
     LibraryElement element = result.element;
@@ -4846,6 +4854,8 @@ class PackageGraph {
     }
     return _defaultPackage;
   }
+
+  final bool hasEmbedderSdk;
 
   PackageGraph get packageGraph => this;
 
@@ -5868,7 +5878,6 @@ class Package extends LibraryContainer
     implements Privacy, Documentable {
   String _name;
   PackageGraph _packageGraph;
-  final _isLocal;
 
   final Map<String, Category> _nameToCategory = {};
 
@@ -5876,15 +5885,13 @@ class Package extends LibraryContainer
   factory Package.fromPackageMeta(
       PackageMeta packageMeta, PackageGraph packageGraph) {
     String packageName = packageMeta.name;
-    bool isLocal = packageMeta == packageGraph.packageMeta ||
-        packageGraph.config.autoIncludeDependencies;
-    isLocal = isLocal && !packageGraph.config.isPackageExcluded(packageName);
+
     bool expectNonLocal = false;
 
     if (!packageGraph.packageMap.containsKey(packageName) &&
         packageGraph.allLibrariesAdded) expectNonLocal = true;
     packageGraph.packageMap.putIfAbsent(packageName,
-        () => new Package._(packageName, packageGraph, packageMeta, isLocal));
+        () => new Package._(packageName, packageGraph, packageMeta));
     // Verify that we don't somehow decide to document locally a package picked
     // up after all documented libraries are added, because that breaks the
     // assumption that we've picked up all documented libraries and packages
@@ -5897,7 +5904,7 @@ class Package extends LibraryContainer
     return packageGraph.packageMap[packageName];
   }
 
-  Package._(this._name, this._packageGraph, this._packageMeta, this._isLocal);
+  Package._(this._name, this._packageGraph, this._packageMeta) {}
   @override
   bool get isCanonical => true;
   @override
@@ -5974,9 +5981,20 @@ class Package extends LibraryContainer
     return _isPublic;
   }
 
-  /// Returns true if this package is being documented locally.  If it isn't
-  /// documented locally, it still might be documented remotely; see documentedWhere.
-  bool get isLocal => _isLocal;
+  bool _isLocal;
+
+  /// Return true if this is the default package, this is part of an embedder SDK,
+  /// or if [config.autoIncludeDependencies] is true -- but only if the package
+  /// was not excluded on the command line.
+  bool get isLocal {
+    if (_isLocal == null) {
+      _isLocal = (packageMeta == packageGraph.packageMeta ||
+              packageGraph.hasEmbedderSdk && packageMeta.isSdk ||
+              packageGraph.config.autoIncludeDependencies) &&
+          !packageGraph.config.isPackageExcluded(name);
+    }
+    return _isLocal;
+  }
 
   DocumentLocation get documentedWhere {
     if (isLocal) {
@@ -6451,14 +6469,10 @@ class PackageBuilder {
     if (config.topLevelPackageMeta.needsPubGet) {
       config.topLevelPackageMeta.runPubGet();
     }
-    DartSdk findSpecialsSdk = sdk;
-    if (embedderSdk != null && embedderSdk.urlMappings.isNotEmpty) {
-      findSpecialsSdk = embedderSdk;
-    }
+
     PackageGraph newGraph = new PackageGraph.UninitializedPackageGraph(
-        config, getWarningOptions(), driver, sdk);
-    await getLibraries(
-        newGraph, getFiles, specialLibraryFiles(findSpecialsSdk).toSet());
+        config, getWarningOptions(), driver, sdk, hasEmbedderSdkFiles);
+    await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
     return newGraph;
   }
@@ -6676,7 +6690,7 @@ class PackageBuilder {
     do {
       lastPass = _packageMetasForFiles(files);
 
-      // Be careful here not to accidentally stack up too many
+      // Be careful here not to accidentally stack up multiple
       // ResolvedLibraryResults, as those eat our heap.
       for (String f in files) {
         ResolvedLibraryResult r = await processLibrary(f);
@@ -6765,40 +6779,50 @@ class PackageBuilder {
   /// file might be part of a [DartdocOptionContext], and loads those
   /// objects to find any [DartdocOptionContext.includeExternal] configurations
   /// therein.
-  Iterable<String> _includeExternalsFrom(Iterable<String> files) {
-    Set<String> includeExternalsFound = new Set();
+  Iterable<String> _includeExternalsFrom(Iterable<String> files) sync* {
     for (String file in files) {
       DartdocOptionContext fileContext =
           new DartdocOptionContext.fromContext(config, new File(file));
       if (fileContext.includeExternal != null) {
-        includeExternalsFound.addAll(fileContext.includeExternal);
+        yield* fileContext.includeExternal;
       }
     }
-    return includeExternalsFound;
   }
 
-  Set<String> get getFiles {
-    Set<String> files = new Set();
-    files.addAll(config.topLevelPackageMeta.isSdk
-        ? new Set()
-        : findFilesToDocumentInPackage(
-            config.inputDir, config.autoIncludeDependencies));
+  Set<String> getFiles() {
+    Iterable<String> files;
     if (config.topLevelPackageMeta.isSdk) {
-      files.addAll(getSdkFilesToDocument());
-    } else if (embedderSdk.urlMappings.isNotEmpty &&
-        !config.topLevelPackageMeta.isSdk) {
-      embedderSdk.urlMappings.keys.forEach((String dartUri) {
-        Source source = embedderSdk.mapDartUri(dartUri);
-        files.add(source.fullName);
-      });
+      files = getSdkFilesToDocument();
+    } else {
+      files = findFilesToDocumentInPackage(
+          config.inputDir, config.autoIncludeDependencies);
     }
-
-    files.addAll(_includeExternalsFrom(files));
+    files = quiverIterables.concat([files, _includeExternalsFrom(files)]);
     return new Set.from(files.map((s) => new File(s).absolute.path));
   }
 
-  Future<void> getLibraries(PackageGraph uninitializedPackageGraph,
-      Set<String> files, Set<String> specialFiles) async {
+  Iterable<String> getEmbedderSdkFiles() sync* {
+    if (embedderSdk != null &&
+        embedderSdk.urlMappings.isNotEmpty &&
+        !config.topLevelPackageMeta.isSdk) {
+      for (String dartUri in embedderSdk.urlMappings.keys) {
+        Source source = embedderSdk.mapDartUri(dartUri);
+        yield (new File(source.fullName)).absolute.path;
+      }
+    }
+  }
+
+  bool get hasEmbedderSdkFiles =>
+      embedderSdk != null && getEmbedderSdkFiles().isNotEmpty;
+
+  Future<void> getLibraries(PackageGraph uninitializedPackageGraph) async {
+    DartSdk findSpecialsSdk = sdk;
+    if (embedderSdk != null && embedderSdk.urlMappings.isNotEmpty) {
+      findSpecialsSdk = embedderSdk;
+    }
+    Set<String> files = getFiles()..addAll(getEmbedderSdkFiles());
+    Set<String> specialFiles = specialLibraryFiles(findSpecialsSdk).toSet();
+
     /// Returns true if this library element should be included according
     /// to the configuration.
     bool isLibraryIncluded(LibraryElement libraryElement) {
