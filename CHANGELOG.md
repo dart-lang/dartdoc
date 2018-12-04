@@ -1,3 +1,12 @@
+## 0.26.0
+* Remove crossdart support (#1856)
+* Launch helper tools and construct PackageGraphs asynchronously (#1849)
+* Refactor Dartdoc to avoid use of analyzer's computeNode, and prevent it from holding
+  on to fully resolved ASTs from analyzer (#1851, #1857, #1858)
+* Dartdoc no longer attempts to report analysis errors but assumes they will be non-fatal
+  and carries on (#1845)
+* Add command line flag to allow disabling tools (#1853)
+
 ## 0.25.0
 * Fix crash if a code reference ambiguously referred to a parameter of
   an optional function parameter (#1835, #1841)
