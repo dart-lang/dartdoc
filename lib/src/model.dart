@@ -10,7 +10,6 @@ import 'dart:collection' show UnmodifiableListView;
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart'
@@ -18,6 +17,7 @@ import 'package:analyzer/dart/ast/ast.dart'
         AnnotatedNode,
         AstNode,
         CommentReference,
+        CompilationUnit,
         Expression,
         InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
@@ -537,7 +537,7 @@ class Accessor extends ModelElement implements EnclosedElement {
 /// Implements the Dart 2.1 "mixin" style of mixin declarations.
 class Mixin extends Class {
   Mixin(ClassElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {}
+      : super(element, library, packageGraph);
 
   @override
   bool get isAbstract => false;
@@ -1432,7 +1432,7 @@ class ModelCommentReference {
   final Element staticElement;
   ModelCommentReference(CommentReference ref)
       : name = ref.identifier.name,
-        staticElement = ref.identifier.staticElement {}
+        staticElement = ref.identifier.staticElement;
 }
 
 /// Stripped down information derived from [AstNode] containing only information
@@ -1447,7 +1447,7 @@ class ModelNode {
   ModelNode(AstNode sourceNode, this.element)
       : _sourceOffset = sourceNode?.offset,
         _sourceEnd = sourceNode?.end,
-        commentRefs = _commentRefsFor(sourceNode) {}
+        commentRefs = _commentRefsFor(sourceNode);
 
   static List<ModelCommentReference> _commentRefsFor(AstNode node) {
     if (node is AnnotatedNode &&
@@ -2070,7 +2070,7 @@ abstract class GetterSetterCombo implements ModelElement {
 class _HashableChildLibraryElementVisitor
     extends GeneralizingElementVisitor<void> {
   final void Function(Element) libraryProcessor;
-  _HashableChildLibraryElementVisitor(this.libraryProcessor) {}
+  _HashableChildLibraryElementVisitor(this.libraryProcessor);
 
   @override
   void visitElement(Element element) {
@@ -2945,7 +2945,7 @@ abstract class ModelElement extends Canonicalization
   // TODO(jcollins-g): make _originalMember optional after dart-lang/sdk#15101
   // is fixed.
   ModelElement(
-      this._element, this._library, this._packageGraph, this._originalMember) {}
+      this._element, this._library, this._packageGraph, this._originalMember);
 
   factory ModelElement.fromElement(Element e, PackageGraph p) {
     Library lib = p.findButDoNotCreateLibraryFor(e);
@@ -4535,7 +4535,7 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
 class ModelFunctionAnonymous extends ModelFunctionTyped {
   ModelFunctionAnonymous(
       FunctionTypedElement element, PackageGraph packageGraph)
-      : super(element, null, packageGraph) {}
+      : super(element, null, packageGraph);
 
   @override
   ModelElement get enclosingElement {
@@ -5904,7 +5904,7 @@ class Package extends LibraryContainer
     return packageGraph.packageMap[packageName];
   }
 
-  Package._(this._name, this._packageGraph, this._packageMeta) {}
+  Package._(this._name, this._packageGraph, this._packageMeta);
   @override
   bool get isCanonical => true;
   @override
@@ -6722,7 +6722,6 @@ class PackageBuilder {
         }
       }
     } while (!lastPass.containsAll(current));
-    return;
   }
 
   /// Given a package name, explore the directory and pull out all top level
