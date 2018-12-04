@@ -115,7 +115,7 @@ class Dartdoc extends PackageBuilder {
 
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     logInfo(
-        "Documented ${packageGraph.publicLibraries.length} public librar${packageGraph.publicLibraries.length == 1 ? 'y' : 'ies'} "
+        "Documented ${packageGraph.localPublicLibraries.length} public librar${packageGraph.localPublicLibraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds");
     return new DartdocResults(
         config.topLevelPackageMeta, packageGraph, outputDir);
@@ -123,7 +123,7 @@ class Dartdoc extends PackageBuilder {
 
   Future<DartdocResults> generateDocs() async {
     DartdocResults dartdocResults = await generateDocsBase();
-    if (dartdocResults.packageGraph.publicLibraries.isEmpty) {
+    if (dartdocResults.packageGraph.localPublicLibraries.isEmpty) {
       throw new DartdocFailure(
           "dartdoc could not find any libraries to document");
     }

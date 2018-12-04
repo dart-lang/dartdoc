@@ -7,13 +7,33 @@ library dartdoc.model_utils;
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/src/dart/ast/utilities.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:dartdoc/src/model.dart';
 
 final Map<String, String> _fileContents = <String, String>{};
+
+/// Returns the [AstNode] for a given [Element].
+///
+/// Uses a precomputed map of [element.source.fullName] to [CompilationUnit]
+/// to avoid linear traversal in [ResolvedLibraryElementImpl.getElementDeclaration].
+AstNode getAstNode(
+    Element element, Map<String, CompilationUnit> compilationUnitMap) {
+  if (element?.source?.fullName != null &&
+      !element.isSynthetic &&
+      element.nameOffset != -1) {
+    CompilationUnit unit = compilationUnitMap[element.source.fullName];
+    if (unit != null) {
+      var locator = new NodeLocator2(element.nameOffset);
+      return (locator.searchWithin(unit)?.parent);
+    }
+  }
+  return null;
+}
 
 /// Remove elements that aren't documented.
 Iterable<T> filterNonDocumented<T extends Documentable>(
