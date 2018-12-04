@@ -388,7 +388,7 @@ Future<String> createSdkDartdoc() async {
   await launcher.runStreamed('git', [
     'clone',
     '--branch',
-    'analyzer-0.33',
+    'master',
     '--depth',
     '1',
     'https://dart.googlesource.com/sdk.git',
