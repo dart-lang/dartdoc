@@ -194,11 +194,13 @@ class Snapshot {
       _snapshotFile = File(toolPath);
       snapshotCompleted();
     } else {
-      _snapshotFile = File(pathLib.join(snapshotCache.absolute.path, 'snapshot_$serial'));
+      _snapshotFile =
+          File(pathLib.join(snapshotCache.absolute.path, 'snapshot_$serial'));
     }
   }
 
   bool _needsSnapshot = true;
+
   /// Will return true precisely once, unless [toolPath] was already a snapshot.
   /// In that case, will always return false.
   bool get needsSnapshot {
@@ -215,7 +217,6 @@ class Snapshot {
     _snapshotCompleter.complete();
   }
 }
-
 
 /// A singleton that keeps track of cached snapshot files. The [dispose]
 /// function must be called before process exit to clean up snapshots in the
@@ -268,7 +269,6 @@ class DartToolDefinition extends ToolDefinition {
     File snapshotFile = snapshot.snapshotFile;
     bool needsSnapshot = snapshot.needsSnapshot;
     if (needsSnapshot) {
-      print('creating snapshot');
       args.insertAll(0, [
         '--snapshot=${snapshotFile.absolute.path}',
         '--snapshot_kind=app-jit'
@@ -285,7 +285,6 @@ class DartToolDefinition extends ToolDefinition {
   DartToolDefinition(
       List<String> command, List<String> setupCommand, String description)
       : super(command, setupCommand, description);
-
 }
 
 /// A configuration class that can interpret [ToolDefinition]s from a YAML map.

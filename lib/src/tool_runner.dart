@@ -19,8 +19,6 @@ typedef FakeResultCallback = String Function(String tool,
 /// limiting both parallelization and the number of open temporary files.
 final MultiFutureTracker _toolTracker = new MultiFutureTracker(4);
 
-int toolCounter = 0;
-
 /// A helper class for running external tools.
 class ToolRunner {
   /// Creates a new ToolRunner.
@@ -90,15 +88,12 @@ class ToolRunner {
 
   Future<String> _runProcess(String name, String content, String commandPath,
       List<String> args, Map<String, String> environment) async {
-    int toolCounterValue = toolCounter++;
     String commandString() => ([commandPath] + args).join(' ');
     try {
-      print ('Tool "$name" starting (#$toolCounterValue), run as: ${commandString()}');
-      print ('from: ${Directory.current}');
       ProcessResult result =
           await Process.run(commandPath, args, environment: environment);
       if (result.exitCode != 0) {
-        _error('Tool "$name" (#$toolCounterValue) returned non-zero exit code '
+        _error('Tool "$name" returned non-zero exit code '
             '(${result.exitCode}) when run as '
             '"${commandString()}" from ${Directory.current}\n'
             'Input to $name was:\n'
@@ -109,13 +104,11 @@ class ToolRunner {
         return result.stdout;
       }
     } on ProcessException catch (exception) {
-      _error('Failed to run tool "$name" (#$toolCounterValue) '
+      _error('Failed to run tool "$name" '
           '"${commandString()}": $exception\n'
           'Input to $name was:\n'
           '$content');
       return '';
-    } finally {
-      print('Tool "$name" (#$toolCounterValue complete, run as ${commandString()}');
     }
   }
 
