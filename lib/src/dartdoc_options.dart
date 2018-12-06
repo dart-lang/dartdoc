@@ -168,6 +168,53 @@ class ToolDefinition {
   }
 }
 
+/// Manages the creation of a single snapshot file in a context where multiple
+/// async functions could be trying to use and/or create it.
+///
+/// To use:
+///
+/// var s = new Snapshot(...);
+///
+/// if (s.needsSnapshot) {
+///   // create s.snapshotFile, then call:
+///   s.snapshotCompleted();
+/// } else {
+///   await snapshotValid();
+///   // use existing s.snapshotFile;
+/// }
+///
+class Snapshot {
+  File _snapshotFile;
+  File get snapshotFile => _snapshotFile;
+  final Completer _snapshotCompleter = Completer();
+
+  Snapshot(Directory snapshotCache, String toolPath, int serial) {
+    if (toolPath.endsWith('.snapshot')) {
+      _needsSnapshot = false;
+      _snapshotFile = File(toolPath);
+      snapshotCompleted();
+    } else {
+      _snapshotFile =
+          File(pathLib.join(snapshotCache.absolute.path, 'snapshot_$serial'));
+    }
+  }
+
+  bool _needsSnapshot = true;
+
+  /// Will return true precisely once, unless [toolPath] was already a snapshot.
+  /// In that case, will always return false.
+  bool get needsSnapshot {
+    if (_needsSnapshot == true) {
+      _needsSnapshot = false;
+      return true;
+    }
+    return _needsSnapshot;
+  }
+
+  Future<void> snapshotValid() => _snapshotCompleter.future;
+  void snapshotCompleted() => _snapshotCompleter.complete();
+}
+
 /// A singleton that keeps track of cached snapshot files. The [dispose]
 /// function must be called before process exit to clean up snapshots in the
 /// cache.
@@ -175,7 +222,7 @@ class SnapshotCache {
   static SnapshotCache _instance;
 
   Directory snapshotCache;
-  final Map<String, File> snapshots = {};
+  final Map<String, Snapshot> snapshots = {};
   int _serial = 0;
 
   SnapshotCache._()
@@ -187,15 +234,13 @@ class SnapshotCache {
     return _instance;
   }
 
-  File getSnapshot(String toolPath) {
+  Snapshot getSnapshot(String toolPath) {
     if (snapshots.containsKey(toolPath)) {
       return snapshots[toolPath];
     }
-    File snapshot =
-        File(pathLib.join(snapshotCache.absolute.path, 'snapshot_$_serial'));
+    snapshots[toolPath] = new Snapshot(snapshotCache, toolPath, _serial);
     _serial++;
-    snapshots[toolPath] = snapshot;
-    return snapshot;
+    return snapshots[toolPath];
   }
 
   void dispose() {
@@ -217,43 +262,26 @@ class DartToolDefinition extends ToolDefinition {
     assert(args[0] == command.first);
     // Set up flags to create a new snapshot, if needed, and use the first run as the training
     // run.
-    File snapshotFile = await getSnapshotFile();
-    if (snapshotFile.existsSync()) {
-      // replace the first argument with the path to the snapshot.
-      args[0] = snapshotFile.absolute.path;
-    } else {
+    Snapshot snapshot = SnapshotCache.instance.getSnapshot(command.first);
+    File snapshotFile = snapshot.snapshotFile;
+    bool needsSnapshot = snapshot.needsSnapshot;
+    if (needsSnapshot) {
       args.insertAll(0, [
         '--snapshot=${snapshotFile.absolute.path}',
         '--snapshot_kind=app-jit'
       ]);
+    } else {
+      await snapshot.snapshotValid();
+      // replace the first argument with the path to the snapshot.
+      args[0] = snapshotFile.absolute.path;
     }
     return new Tuple2(Platform.resolvedExecutable,
-        _snapshotCompleter.isCompleted ? null : _snapshotCompleter.complete);
+        needsSnapshot ? snapshot.snapshotCompleted : null);
   }
 
   DartToolDefinition(
       List<String> command, List<String> setupCommand, String description)
-      : super(command, setupCommand, description) {
-    // If the dart tool is already a snapshot, then we just use that.
-    if (command[0].endsWith('.snapshot')) {
-      _snapshotPath = File(command[0]);
-      _snapshotCompleter.complete();
-    }
-  }
-
-  final Completer _snapshotCompleter = new Completer();
-
-  /// If the tool has a pre-built snapshot, it will be stored here.
-  File _snapshotPath;
-
-  Future<File> getSnapshotFile() async {
-    if (_snapshotPath == null) {
-      _snapshotPath = SnapshotCache.instance.getSnapshot(command.first);
-    } else {
-      await _snapshotCompleter.future;
-    }
-    return _snapshotPath;
-  }
+      : super(command, setupCommand, description);
 }
 
 /// A configuration class that can interpret [ToolDefinition]s from a YAML map.
