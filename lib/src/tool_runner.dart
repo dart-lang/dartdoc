@@ -104,7 +104,7 @@ class ToolRunner {
         return result.stdout;
       }
     } on ProcessException catch (exception) {
-      _error('Failed to run tool "$name" '
+      _error('Failed to run tool "$name" as '
           '"${commandString()}": $exception\n'
           'Input to $name was:\n'
           '$content');

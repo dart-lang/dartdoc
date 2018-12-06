@@ -212,10 +212,7 @@ class Snapshot {
   }
 
   Future<void> snapshotValid() => _snapshotCompleter.future;
-  void snapshotCompleted() {
-    assert(snapshotFile.existsSync());
-    _snapshotCompleter.complete();
-  }
+  void snapshotCompleted() => _snapshotCompleter.complete();
 }
 
 /// A singleton that keeps track of cached snapshot files. The [dispose]
