@@ -15,6 +15,7 @@ import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
+import 'package:quiver/iterables.dart' as quiverIterables;
 
 const validHtmlTags = const [
   "a",
@@ -639,6 +640,13 @@ class _MarkdownCommentReference {
     }
   }
 
+
+  void _addResult(ModelElement modelElement, Class tryClass) {
+    results.add(packageGraph.findCanonicalModelElementFor(
+        modelElement.element,
+        preferredClass: tryClass));
+  }
+
   /// _getResultsForClass assumes codeRefChomped might be a member of tryClass (inherited or not)
   /// and will add to [results]
   void _getResultsForClass(Class tryClass) {
@@ -667,51 +675,39 @@ class _MarkdownCommentReference {
         superChain.addAll(tryClass.superChain.map((t) => t.element as Class));
         for (final c in superChain) {
           // TODO(jcollins-g): add a hash-map-enabled lookup function to Class?
-          for (final modelElement in c.allModelElements) {
-            if (!_ConsiderIfConstructor(modelElement)) continue;
-            String namePart = modelElement.fullyQualifiedName.split('.').last;
-            if (modelElement is Accessor) {
-              // TODO(jcollins-g): Individual classes should be responsible for
-              // this name comparison munging.
-              namePart = namePart.split('=').first;
-            }
-            // TODO(jcollins-g): fix operators so we can use 'name' here or similar.
-            if (codeRefChomped == namePart) {
-              results.add(packageGraph.findCanonicalModelElementFor(
-                  modelElement.element,
-                  preferredClass: tryClass));
-              continue;
-            }
+          Iterable<ModelElement> membersToCheck;
+          membersToCheck = (c.allModelElementsByNamePart[codeRefChomped] ?? []).where((m) => _ConsiderIfConstructor(m));
+
+          for (final ModelElement modelElement in membersToCheck) {
+            _addResult(modelElement, tryClass);
+          }
+          membersToCheck = (c.allModelElementsByNamePart[codeRefChompedParts.last] ?? <ModelElement>[]).where((m) => _ConsiderIfConstructor(m));
+          if (codeRefChompedParts.first == c.name) {
+            membersToCheck.map((m) => _addResult(m, tryClass));
+          } else if (codeRefChompedParts.length > 1 && codeRefChompedParts[codeRefChompedParts.length - 2] == c.name) {
+            membersToCheck.whereType<Constructor>().map((m) => _addResult(m, tryClass));
+          }
+          /*
+          for (final ModelElement modelElement in membersToCheck) {
             // Handle non-documented class documentation being imported into a
             // documented class when it refers to itself (with help from caller's
             // iteration on tryClasses).
             // TODO(jcollins-g): Fix partial qualifications in _findRefElementInLibrary so it can tell
             // when it is referenced from a non-documented element?
             // TODO(jcollins-g): We could probably check this early.
-            if (codeRefChompedParts.first == c.name &&
-                codeRefChompedParts.last == namePart) {
-              results.add(packageGraph.findCanonicalModelElementFor(
-                  modelElement.element,
-                  preferredClass: tryClass));
-              continue;
-            }
-            if (modelElement is Constructor) {
+            if (codeRefChompedParts.first == c.name) {
+              _addResult(modelElement, tryClass);
+            } else if (modelElement is Constructor) {
               // Constructor names don't include the class, so we might miss them in the above search.
               if (codeRefChompedParts.length > 1) {
                 String codeRefClass =
-                    codeRefChompedParts[codeRefChompedParts.length - 2];
-                String codeRefConstructor = codeRefChompedParts.last;
-                if (codeRefClass == c.name &&
-                    codeRefConstructor ==
-                        modelElement.fullyQualifiedName.split('.').last) {
-                  results.add(packageGraph.findCanonicalModelElementFor(
-                      modelElement.element,
-                      preferredClass: tryClass));
-                  continue;
+                codeRefChompedParts[codeRefChompedParts.length - 2];
+                if (codeRefClass == c.name) {
+                  _addResult(modelElement, tryClass);
                 }
               }
             }
-          }
+          }*/
           results.remove(null);
           if (results.isNotEmpty) break;
           if (c.fullyQualifiedNameWithoutLibrary == codeRefChomped) {

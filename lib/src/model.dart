@@ -531,6 +531,14 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   String get kind => 'accessor';
 
+  @override
+  String get namePart {
+    if (_namePart == null) {
+      _namePart = super.namePart.split('=').first;
+    }
+    return _namePart;
+  }
+
   PropertyAccessorElement get _accessor => (element as PropertyAccessorElement);
 }
 
@@ -682,6 +690,19 @@ class Class extends ModelElement
       }
     }
     return _allElements;
+  }
+
+
+  Map<String, List<ModelElement>> _allModelElementsByNamePart;
+  /// Helper for [_MarkdownCommentReference._getResultsForClass].
+  Map<String, List<ModelElement>> get allModelElementsByNamePart {
+    if (_allModelElementsByNamePart == null) {
+      _allModelElementsByNamePart = {};
+      for (ModelElement me in allModelElements) {
+        _allModelElementsByNamePart.update(me.namePart, (List<ModelElement> v) => v..add(me), ifAbsent: () => <ModelElement>[me]);
+      }
+    }
+    return _allModelElementsByNamePart;
   }
 
   /// This class might be canonical for elements it does not contain.
@@ -4621,6 +4642,7 @@ class ModelFunctionTyped extends ModelElement
 /// Something that has a name.
 abstract class Nameable {
   String get name;
+  String get fullyQualifiedName => name;
 
   Set<String> _namePieces;
   Set<String> get namePieces {
@@ -4630,11 +4652,21 @@ abstract class Nameable {
     }
     return _namePieces;
   }
+
+  String _namePart;
+  /// Utility getter/cache for [_MarkdownCommentReference._getResultsForClass].
+  String get namePart {
+    // TODO(jcollins-g): This should really be the same as 'name', but isn't
+    // because of accessors and operators.
+    if (_namePart == null) {
+      _namePart = fullyQualifiedName.split('.').last;
+    }
+    return _namePart;
+  }
 }
 
 /// Something able to be indexed.
 abstract class Indexable implements Nameable {
-  String get fullyQualifiedName => name;
   String get href;
   String get kind;
   int get overriddenDepth => 0;
@@ -6568,8 +6600,6 @@ class PackageBuilder {
       PerformanceLog log = new PerformanceLog(null);
       AnalysisDriverScheduler scheduler = new AnalysisDriverScheduler(log);
       AnalysisOptionsImpl options = new AnalysisOptionsImpl();
-      options.enableSuperMixins = true;
-      options.previewDart2 = true;
 
       // TODO(jcollins-g): Make use of currently not existing API for managing
       //                   many AnalysisDrivers
