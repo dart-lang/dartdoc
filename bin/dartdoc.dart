@@ -18,12 +18,16 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
   DartdocProgramOptionContext(DartdocOptionSet optionSet, Directory dir)
       : super(optionSet, dir);
 
+  bool get asyncStackTraces => optionSet['asyncStackTraces'].valueAt(context);
   bool get help => optionSet['help'].valueAt(context);
   bool get version => optionSet['version'].valueAt(context);
 }
 
 Future<List<DartdocOption>> createDartdocProgramOptions() async {
   return <DartdocOption>[
+    new DartdocOptionArgOnly<bool>('asyncStackTraces', false,
+        help: 'Display coordinated asynchronous stack traces (slow)',
+        negatable: true),
     new DartdocOptionArgOnly<bool>('help', false,
         abbr: 'h', help: 'Show command help.', negatable: false),
     new DartdocOptionArgOnly<bool>('version', false,
@@ -88,7 +92,7 @@ void main(List<String> arguments) async {
         stderr.writeln('\nGeneration failed: ${e}\n${chain.terse}');
         exit(255);
       }
-    });
+    }, when: config.asyncStackTraces);
   } finally {
     // Clear out any cached tool snapshots.
     SnapshotCache.instance.dispose();

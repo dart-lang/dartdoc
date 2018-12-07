@@ -6,7 +6,6 @@
 library dartdoc.io_utils;
 
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -89,27 +88,28 @@ class MultiFutureTracker<T> {
   /// Approximate maximum number of simultaneous active Futures.
   final int parallel;
 
-  final Queue<Future<T>> _queue = new Queue();
+  final Set<Future<T>> _trackedFutures = new Set();
 
   MultiFutureTracker(this.parallel);
 
   /// Wait until fewer or equal to this many Futures are outstanding.
   Future<void> _waitUntil(int max) async {
-    while (_queue.length > max) {
-      await Future.any(_queue);
+    while (_trackedFutures.length > max) {
+      await Future.any(_trackedFutures);
     }
   }
 
   /// Generates a [Future] from the given closure and adds it to the queue,
-  /// once the queue is sufficiently empty.
+  /// once the queue is sufficiently empty.  The returned future completes
+  /// when the generated [Future] has been added to the queue.
   Future<void> addFutureFromClosure(Future<T> Function() closure) async {
-    while (_queue.length > parallel - 1) {
-      await Future.any(_queue);
+    while (_trackedFutures.length > parallel - 1) {
+      await Future.any(_trackedFutures);
     }
     Future future = closure();
-    _queue.add(future);
+    _trackedFutures.add(future);
     // ignore: unawaited_futures
-    future.then((f) => _queue.remove(future));
+    future.then((f) => _trackedFutures.remove(future));
   }
 
   /// Wait until all futures added so far have completed.
