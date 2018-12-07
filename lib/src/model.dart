@@ -692,14 +692,16 @@ class Class extends ModelElement
     return _allElements;
   }
 
-
   Map<String, List<ModelElement>> _allModelElementsByNamePart;
+
   /// Helper for [_MarkdownCommentReference._getResultsForClass].
   Map<String, List<ModelElement>> get allModelElementsByNamePart {
     if (_allModelElementsByNamePart == null) {
       _allModelElementsByNamePart = {};
       for (ModelElement me in allModelElements) {
-        _allModelElementsByNamePart.update(me.namePart, (List<ModelElement> v) => v..add(me), ifAbsent: () => <ModelElement>[me]);
+        _allModelElementsByNamePart.update(
+            me.namePart, (List<ModelElement> v) => v..add(me),
+            ifAbsent: () => <ModelElement>[me]);
       }
     }
     return _allModelElementsByNamePart;
@@ -4654,6 +4656,7 @@ abstract class Nameable {
   }
 
   String _namePart;
+
   /// Utility getter/cache for [_MarkdownCommentReference._getResultsForClass].
   String get namePart {
     // TODO(jcollins-g): This should really be the same as 'name', but isn't

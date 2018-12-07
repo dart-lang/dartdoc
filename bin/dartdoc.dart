@@ -26,7 +26,8 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
 Future<List<DartdocOption>> createDartdocProgramOptions() async {
   return <DartdocOption>[
     new DartdocOptionArgOnly<bool>('asyncStackTraces', false,
-        help: 'Display coordinated asynchronous stack traces (slow)', negatable: true),
+        help: 'Display coordinated asynchronous stack traces (slow)',
+        negatable: true),
     new DartdocOptionArgOnly<bool>('help', false,
         abbr: 'h', help: 'Show command help.', negatable: false),
     new DartdocOptionArgOnly<bool>('version', false,

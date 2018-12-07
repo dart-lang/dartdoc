@@ -577,7 +577,9 @@ class _MarkdownCommentReference {
         // might make no sense.  Instead, use the enclosing class from the
         // element in [packageGraph.findRefElementCache], because that element's
         // enclosing class will be preferred from [codeRefChomped]'s perspective.
-        _addCanonicalResult(modelElement, modelElement.enclosingElement is Class
+        _addCanonicalResult(
+            modelElement,
+            modelElement.enclosingElement is Class
                 ? modelElement.enclosingElement
                 : null);
       }
@@ -637,8 +639,7 @@ class _MarkdownCommentReference {
 
   // Add a result, but make it canonical.
   void _addCanonicalResult(ModelElement modelElement, Class tryClass) {
-    results.add(packageGraph.findCanonicalModelElementFor(
-        modelElement.element,
+    results.add(packageGraph.findCanonicalModelElementFor(modelElement.element,
         preferredClass: tryClass));
   }
 
@@ -679,18 +680,24 @@ class _MarkdownCommentReference {
   /// true if we found something.
   void _getResultsForSuperChainElement(Class c, Class tryClass) {
     Iterable<ModelElement> membersToCheck;
-    membersToCheck = (c.allModelElementsByNamePart[codeRefChomped] ?? []).where((m) => _ConsiderIfConstructor(m));
+    membersToCheck = (c.allModelElementsByNamePart[codeRefChomped] ?? [])
+        .where((m) => _ConsiderIfConstructor(m));
     for (final ModelElement modelElement in membersToCheck) {
       // [thing], a member of this class
       _addCanonicalResult(modelElement, tryClass);
     }
-    membersToCheck = (c.allModelElementsByNamePart[codeRefChompedParts.last] ?? <ModelElement>[]).where((m) => _ConsiderIfConstructor(m));
+    membersToCheck = (c.allModelElementsByNamePart[codeRefChompedParts.last] ??
+            <ModelElement>[])
+        .where((m) => _ConsiderIfConstructor(m));
     if (codeRefChompedParts.first == c.name) {
       // [Foo...thing], a member of this class (possibly a parameter).
       membersToCheck.map((m) => _addCanonicalResult(m, tryClass));
-    } else if (codeRefChompedParts.length > 1 && codeRefChompedParts[codeRefChompedParts.length - 2] == c.name) {
+    } else if (codeRefChompedParts.length > 1 &&
+        codeRefChompedParts[codeRefChompedParts.length - 2] == c.name) {
       // [....Foo.thing], a member of this class partially specified.
-      membersToCheck.whereType<Constructor>().map((m) => _addCanonicalResult(m, tryClass));
+      membersToCheck
+          .whereType<Constructor>()
+          .map((m) => _addCanonicalResult(m, tryClass));
     }
     results.remove(null);
     if (results.isNotEmpty) return;
