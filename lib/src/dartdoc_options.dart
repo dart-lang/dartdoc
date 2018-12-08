@@ -21,6 +21,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
@@ -243,11 +244,12 @@ class SnapshotCache {
     return snapshots[toolPath];
   }
 
-  void dispose() {
-    if (snapshotCache != null && snapshotCache.existsSync()) {
-      snapshotCache.deleteSync(recursive: true);
-    }
+  Future<void> dispose() {
     _instance = null;
+    if (snapshotCache != null && snapshotCache.existsSync()) {
+      return snapshotCache.delete(recursive: true);
+    }
+    return null;
   }
 }
 
@@ -288,12 +290,16 @@ class DartToolDefinition extends ToolDefinition {
 class ToolConfiguration {
   final Map<String, ToolDefinition> tools;
 
+  ToolRunner _runner;
+  ToolRunner get runner => _runner ??= ToolRunner(this);
+
   ToolConfiguration._(this.tools);
 
   static ToolConfiguration get empty {
     return new ToolConfiguration._({});
   }
 
+  // TODO(jcollins-g): consider caching these.
   static ToolConfiguration fromYamlMap(
       YamlMap yamlMap, pathLib.Context pathContext) {
     var newToolDefinitions = <String, ToolDefinition>{};

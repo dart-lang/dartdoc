@@ -20,6 +20,8 @@ void main() {
   File setupFile;
 
   ToolRunner runner;
+  ToolTempFileTracker tracker;
+  ToolErrorCallback errorCallback;
   final errors = <String>[];
 
   setUpAll(() async {
@@ -81,11 +83,12 @@ echo:
       'missing': new ToolDefinition(['/a/missing/executable'], null, "missing"),
     });
 
-    runner = new ToolRunner(toolMap, (String message) => errors.add(message));
+    runner = new ToolRunner(toolMap);
+    errorCallback = (String message) => errors.add(message);
   });
   tearDownAll(() {
     tempDir?.deleteSync(recursive: true);
-    runner?.dispose();
+    tracker?.dispose();
     SnapshotCache.instance.dispose();
     setupFile = null;
     tempDir = null;
@@ -100,6 +103,7 @@ echo:
     test('can invoke a Dart tool, and second run is a snapshot.', () async {
       var result = await runner.run(
         ['drill', r'--file=$INPUT'],
+        errorCallback,
         content: 'TEST INPUT',
       );
       expect(errors, isEmpty);
@@ -109,6 +113,7 @@ echo:
       expect(setupFile.existsSync(), isFalse);
       result = await runner.run(
         ['drill', r'--file=$INPUT'],
+        errorCallback,
         content: 'TEST INPUT 2',
       );
       expect(errors, isEmpty);
@@ -120,6 +125,7 @@ echo:
     test('can invoke a Dart tool', () async {
       var result = await runner.run(
         ['drill', r'--file=$INPUT'],
+        errorCallback,
         content: 'TEST INPUT',
       );
       expect(errors, isEmpty);
@@ -131,6 +137,7 @@ echo:
     test('can invoke a non-Dart tool', () async {
       String result = await runner.run(
         ['non_dart', '--version'],
+        errorCallback,
         content: 'TEST INPUT',
       );
       expect(errors, isEmpty);
@@ -139,6 +146,7 @@ echo:
     test('can invoke a pre-snapshotted tool', () async {
       var result = await runner.run(
         ['snapshot_drill', r'--file=$INPUT'],
+        errorCallback,
         content: 'TEST INPUT',
       );
       expect(errors, isEmpty);
@@ -148,6 +156,7 @@ echo:
     test('can invoke a tool with a setup action', () async {
       var result = await runner.run(
         ['setup_drill', r'--file=$INPUT'],
+        errorCallback,
         content: 'TEST INPUT',
       );
       expect(errors, isEmpty);
@@ -158,6 +167,7 @@ echo:
     test('fails if tool not in tool map', () async {
       String result = await runner.run(
         ['hammer', r'--file=$INPUT'],
+        errorCallback,
         content: 'TEST INPUT',
       );
       expect(errors, isNotEmpty);
@@ -168,6 +178,7 @@ echo:
     test('fails if tool returns non-zero status', () async {
       String result = await runner.run(
         ['drill', r'--file=/a/missing/file'],
+        errorCallback,
         content: 'TEST INPUT',
       );
       expect(errors, isNotEmpty);
@@ -177,6 +188,7 @@ echo:
     test("fails if tool in tool map doesn't exist", () async {
       String result = await runner.run(
         ['missing'],
+        errorCallback,
         content: 'TEST INPUT',
       );
       expect(errors, isNotEmpty);
