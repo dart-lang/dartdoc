@@ -57,7 +57,6 @@ import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta, FileContents;
 import 'package:dartdoc/src/special_elements.dart';
-import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -4121,9 +4120,6 @@ abstract class ModelElement extends Canonicalization
   /// 2018-09-18T21:15+00:00
   Future<String> _evaluateTools(String rawDocs) async {
     if (config.allowTools) {
-      var runner = new ToolRunner(config.tools, (String message) async {
-        warn(PackageWarning.toolError, message: message);
-      });
       int invocationIndex = 0;
       return await _replaceAllMappedAsync(rawDocs, basicToolRegExp,
           (basicMatch) async {
@@ -4138,7 +4134,8 @@ abstract class ModelElement extends Canonicalization
         // Count the number of invocations of tools in this dartdoc block,
         // so that tools can differentiate different blocks from each other.
         invocationIndex++;
-        return await runner.run(args,
+        return await config.tools.runner.run(args,
+            (String message) async => warn(PackageWarning.toolError, message: message),
             content: basicMatch[2],
             environment: {
               'SOURCE_LINE': lineAndColumn?.item1?.toString(),
@@ -4153,7 +4150,7 @@ abstract class ModelElement extends Canonicalization
               'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
               'INVOCATION_INDEX': invocationIndex.toString(),
             }..removeWhere((key, value) => value == null));
-      }).whenComplete(runner.dispose);
+      });
     } else {
       return rawDocs;
     }
@@ -4783,7 +4780,7 @@ class PackageGraph {
     // specialClasses handler so when we find them, they get added.
     specialClasses = new SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
-    // index.
+    // index.  Uses toList() in order to get all the precaching on the stack.
     List<Future> precacheFutures = precacheLocalDocs().toList();
     for (Future f in precacheFutures) await f;
     _localDocumentationBuilt = true;
