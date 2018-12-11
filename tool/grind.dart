@@ -592,8 +592,7 @@ Future<void> serveFlutterDocs() async {
 }
 
 @Task('Validate flutter docs')
-// TODO(jcollins-g): add buildDartdocFlutterPluginDocs once passing
-@Depends(buildFlutterDocs)
+@Depends(buildFlutterDocs, buildDartdocFlutterPluginDocs)
 void validateFlutterDocs() {}
 
 @Task('Build flutter docs')
