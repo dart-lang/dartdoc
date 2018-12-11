@@ -8038,6 +8038,83 @@
   }
  },
  {
+  "name": "ReferToADefaultConstructor",
+  "qualifiedName": "fake.ReferToADefaultConstructor",
+  "href": "fake/ReferToADefaultConstructor-class.html",
+  "type": "class",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "fake",
+   "type": "library"
+  }
+ },
+ {
+  "name": "ReferToADefaultConstructor",
+  "qualifiedName": "fake.ReferToADefaultConstructor",
+  "href": "fake/ReferToADefaultConstructor/ReferToADefaultConstructor.html",
+  "type": "constructor",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferToADefaultConstructor",
+   "type": "class"
+  }
+ },
+ {
+  "name": "operator ==",
+  "qualifiedName": "fake.ReferToADefaultConstructor.==",
+  "href": "fake/ReferToADefaultConstructor/operator_equals.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferToADefaultConstructor",
+   "type": "class"
+  }
+ },
+ {
+  "name": "hashCode",
+  "qualifiedName": "fake.ReferToADefaultConstructor.hashCode",
+  "href": "fake/ReferToADefaultConstructor/hashCode.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferToADefaultConstructor",
+   "type": "class"
+  }
+ },
+ {
+  "name": "noSuchMethod",
+  "qualifiedName": "fake.ReferToADefaultConstructor.noSuchMethod",
+  "href": "fake/ReferToADefaultConstructor/noSuchMethod.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferToADefaultConstructor",
+   "type": "class"
+  }
+ },
+ {
+  "name": "runtimeType",
+  "qualifiedName": "fake.ReferToADefaultConstructor.runtimeType",
+  "href": "fake/ReferToADefaultConstructor/runtimeType.html",
+  "type": "property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferToADefaultConstructor",
+   "type": "class"
+  }
+ },
+ {
+  "name": "toString",
+  "qualifiedName": "fake.ReferToADefaultConstructor.toString",
+  "href": "fake/ReferToADefaultConstructor/toString.html",
+  "type": "method",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "ReferToADefaultConstructor",
+   "type": "class"
+  }
+ },
+ {
   "name": "ReferringClass",
   "qualifiedName": "fake.ReferringClass",
   "href": "fake/ReferringClass-class.html",
