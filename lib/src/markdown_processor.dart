@@ -690,13 +690,13 @@ class _MarkdownCommentReference {
         .where((m) => _ConsiderIfConstructor(m));
     if (codeRefChompedParts.first == c.name) {
       // [Foo...thing], a member of this class (possibly a parameter).
-      membersToCheck.map((m) => _addCanonicalResult(m, tryClass));
+      membersToCheck.forEach((m) => _addCanonicalResult(m, tryClass));
     } else if (codeRefChompedParts.length > 1 &&
         codeRefChompedParts[codeRefChompedParts.length - 2] == c.name) {
       // [....Foo.thing], a member of this class partially specified.
       membersToCheck
           .whereType<Constructor>()
-          .map((m) => _addCanonicalResult(m, tryClass));
+          .forEach((m) => _addCanonicalResult(m, tryClass));
     }
     results.remove(null);
     if (results.isNotEmpty) return;

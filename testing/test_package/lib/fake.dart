@@ -926,6 +926,15 @@ void paintImage2(String fooParam,
   // nothing to do here -
 }
 
+/// This is to test referring to a constructor.
+///
+/// This should refer to a class: [ReferToADefaultConstructor].
+/// This should refer to the constructor: [ReferToADefaultConstructor.ReferToADefaultConstructor].
+class ReferToADefaultConstructor {
+  /// A default constructor.
+  ReferToADefaultConstructor();
+}
+
 /// Test operator references: [OperatorReferenceClass.==].
 class OperatorReferenceClass {
   OperatorReferenceClass();
