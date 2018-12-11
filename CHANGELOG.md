@@ -1,3 +1,12 @@
+## 0.26.1
+* Fix bug that accidentally caused dartdoc to create (and overwrite with)
+  multiple snapshots in parallel for a single tool (#1861, #1862)
+* Refactor comment reference handling for performance and readability (#1863)
+* Simplify temp file creation and reduce the amount of filesystem churn
+  for tools (#1865)
+* Reenable testing for flutter plugin doc generation (This requires
+  a Flutter SDK with flutter/flutter#25177 to work with tools enabled).
+
 ## 0.26.0
 * Remove crossdart support (#1856)
 * Launch helper tools and construct PackageGraphs asynchronously (#1849)
