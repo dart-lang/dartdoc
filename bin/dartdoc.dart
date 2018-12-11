@@ -11,6 +11,7 @@ import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/tool_runner.dart';
 import 'package:stack_trace/stack_trace.dart';
 
 class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
@@ -94,8 +95,9 @@ void main(List<String> arguments) async {
       }
     }, when: config.asyncStackTraces);
   } finally {
-    // Clear out any cached tool snapshots.
+    // Clear out any cached tool snapshots and temporary directories.
     SnapshotCache.instance.dispose();
+    ToolTempFileTracker.instance.dispose();
   }
 }
 

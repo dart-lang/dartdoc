@@ -15,7 +15,6 @@ import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
-import 'package:quiver/iterables.dart' as quiverIterables;
 
 const validHtmlTags = const [
   "a",
