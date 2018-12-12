@@ -34,6 +34,7 @@ elif [ "$DARTDOC_BOT" = "packages" ]; then
   PACKAGE_NAME=shelf_exception_handler PACKAGE_VERSION=">=0.2.0" pub run grinder build-pub-package
 elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
   echo "Running main dartdoc bot against the SDK analyzer"
+  unset COVERAGE_TOKEN
   DARTDOC_GRIND_STEP=buildbot-no-publish pub run grinder test-with-analyzer-sdk
 else
   echo "Running main dartdoc bot"
