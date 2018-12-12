@@ -640,6 +640,11 @@ class FlutterRepo {
       ['precache'],
       workingDirectory: flutterPath,
     );
+    await launcher.runStreamed(
+      bin,
+      ['update-packages'],
+      workingDirectory: flutterPath,
+    );
   }
 
   factory FlutterRepo.fromPath(String flutterPath, Map<String, String> env,
@@ -922,6 +927,7 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
           flutterRepo.cacheDart,
           [
             '--enable-asserts',
+            '--exclude-packages', 'Dart', // TODO(jcollins-g): dart-lang/dartdoc#1431
             pathLib.join(Directory.current.path, 'bin', 'dartdoc.dart'),
             '--json',
             '--link-to-remote',
