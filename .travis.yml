@@ -1,18 +1,18 @@
 language: dart
 sudo: false
 dart:
-  - stable
+  #- stable
   - "dev/raw/latest"
 env:
-  - DARTDOC_BOT=sdk-analyzer
+  #- DARTDOC_BOT=sdk-analyzer
   - DARTDOC_BOT=main
-  - DARTDOC_BOT=flutter
-  - DARTDOC_BOT=packages
-  - DARTDOC_BOT=sdk-docs
+  #- DARTDOC_BOT=flutter
+  #- DARTDOC_BOT=packages
+  #- DARTDOC_BOT=sdk-docs
 script: ./tool/travis.sh
 
 os:
-  - osx
+  #- osx
   - linux
 
 install:
