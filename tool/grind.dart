@@ -592,8 +592,7 @@ Future<void> serveFlutterDocs() async {
 }
 
 @Task('Validate flutter docs')
-// TODO(jcollins-g): add buildDartdocFlutterPluginDocs once passing
-@Depends(buildFlutterDocs)
+@Depends(buildFlutterDocs, buildDartdocFlutterPluginDocs)
 void validateFlutterDocs() {}
 
 @Task('Build flutter docs')
@@ -639,6 +638,11 @@ class FlutterRepo {
     await launcher.runStreamed(
       bin,
       ['precache'],
+      workingDirectory: flutterPath,
+    );
+    await launcher.runStreamed(
+      bin,
+      ['update-packages'],
       workingDirectory: flutterPath,
     );
   }
@@ -924,6 +928,8 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
           [
             '--enable-asserts',
             pathLib.join(Directory.current.path, 'bin', 'dartdoc.dart'),
+            '--exclude-packages',
+            'Dart', // TODO(jcollins-g): dart-lang/dartdoc#1431
             '--json',
             '--link-to-remote',
             '--output',
