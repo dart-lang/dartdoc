@@ -927,8 +927,8 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
           flutterRepo.cacheDart,
           [
             '--enable-asserts',
-            '--exclude-packages', 'Dart', // TODO(jcollins-g): dart-lang/dartdoc#1431
             pathLib.join(Directory.current.path, 'bin', 'dartdoc.dart'),
+            '--exclude-packages', 'Dart', // TODO(jcollins-g): dart-lang/dartdoc#1431
             '--json',
             '--link-to-remote',
             '--output',
