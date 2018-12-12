@@ -40,6 +40,6 @@ else
   pub run grinder buildbot
   if [ -n "$COVERAGE_TOKEN" ] && [ "${DART_VERSION}" != "2.1.0" ] && uname | grep -q Linux ; then
     # Only attempt to upload coverage data for dev builds.
-    coverage-lcov --repo-token="${COVERAGE_TOKEN}" lcov.info
+    coveralls-lcov --repo-token="${COVERAGE_TOKEN}" lcov.info
   fi
 fi
