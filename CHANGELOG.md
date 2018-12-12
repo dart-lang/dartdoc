@@ -6,6 +6,8 @@
   for tools (#1865)
 * Reenable testing for flutter plugin doc generation (This requires
   a Flutter SDK with flutter/flutter#25243 to work with tools enabled).
+  Flutter plugin doc generation now requires your flutter installation to have
+  'flutter update-packages' run on it before it will work.
 
 ## 0.26.0
 * Remove crossdart support (#1856)
