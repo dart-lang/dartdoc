@@ -38,7 +38,7 @@ elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
 else
   echo "Running main dartdoc bot"
   pub run grinder buildbot
-  if [ -n "$COVERAGE_TOKEN" ] && [${DART_VERSION} != "2.1.0"]; then
+  if [ -n "$COVERAGE_TOKEN" ] && [ ${DART_VERSION} != "2.1.0" ] && uname | grep -q Linux ; then
     # Only attempt to upload coverage data for dev builds.
     coverage-lcov lcov.info
   fi
