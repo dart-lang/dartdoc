@@ -155,10 +155,9 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
     await Future.wait(currentCoverageResults.map((t) => t.item2));
 
     return launcher.runStreamed(
-        'pub',
+        Platform.executable,
         [
-          'run',
-          'coverage:format_coverage',
+          'tool/format_coverage.dart',
           '--lcov',
           '-v',
           '-b', '.',
