@@ -9,6 +9,7 @@ set -ex
 
 # add globally activated packages to the path
 export PATH="$PATH":"~/.pub-cache/bin"
+DART_VERSION=`dart --version 2>&1 | awk '{print $4}'`
 
 if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
   # Build the SDK docs
@@ -22,7 +23,6 @@ elif [ "$DARTDOC_BOT" = "flutter" ]; then
   pub run grinder validate-flutter-docs
 elif [ "$DARTDOC_BOT" = "packages" ]; then
   echo "Running packages dartdoc bot"
-  DART_VERSION=`dart --version 2>&1 | awk '{print $4}'`
   if [ ${DART_VERSION} != 2.0.0 ] ; then
     PACKAGE_NAME=angular PACKAGE_VERSION=">=5.1.0" DARTDOC_PARAMS="--include=angular,angular.security" pub run grinder build-pub-package
   else
