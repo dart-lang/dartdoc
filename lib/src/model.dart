@@ -4134,8 +4134,10 @@ abstract class ModelElement extends Canonicalization
         // Count the number of invocations of tools in this dartdoc block,
         // so that tools can differentiate different blocks from each other.
         invocationIndex++;
-        return await config.tools.runner.run(args,
-            (String message) async => warn(PackageWarning.toolError, message: message),
+        return await config.tools.runner.run(
+            args,
+            (String message) async =>
+                warn(PackageWarning.toolError, message: message),
             content: basicMatch[2],
             environment: {
               'SOURCE_LINE': lineAndColumn?.item1?.toString(),

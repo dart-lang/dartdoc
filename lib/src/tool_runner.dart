@@ -25,17 +25,19 @@ final MultiFutureTracker _toolTracker = new MultiFutureTracker(4);
 class ToolTempFileTracker {
   final Directory temporaryDirectory;
 
-  ToolTempFileTracker._() : temporaryDirectory = Directory.systemTemp.createTempSync('dartdoc_tools_');
+  ToolTempFileTracker._()
+      : temporaryDirectory =
+            Directory.systemTemp.createTempSync('dartdoc_tools_');
 
   static ToolTempFileTracker _instance;
-  static ToolTempFileTracker get instance => _instance ??= ToolTempFileTracker._();
+  static ToolTempFileTracker get instance =>
+      _instance ??= ToolTempFileTracker._();
 
   int _temporaryFileCount = 0;
   Future<File> createTemporaryFile() async {
     _temporaryFileCount++;
     File tempFile = new File(pathLib.join(
-        temporaryDirectory.absolute.path,
-        'input_$_temporaryFileCount'));
+        temporaryDirectory.absolute.path, 'input_$_temporaryFileCount'));
     await tempFile.create(recursive: true);
     return tempFile;
   }
@@ -60,7 +62,9 @@ class ToolRunner {
   final ToolConfiguration toolConfiguration;
 
   void _runSetup(
-      String name, ToolDefinition tool, Map<String, String> environment,
+      String name,
+      ToolDefinition tool,
+      Map<String, String> environment,
       ToolErrorCallback toolErrorCallback) async {
     bool isDartSetup = ToolDefinition.isDartExecutable(tool.setupCommand[0]);
     var args = tool.setupCommand.toList();
@@ -71,12 +75,17 @@ class ToolRunner {
     } else {
       commandPath = args.removeAt(0);
     }
-    await _runProcess(name, '', commandPath, args, environment, toolErrorCallback);
+    await _runProcess(
+        name, '', commandPath, args, environment, toolErrorCallback);
     tool.setupComplete = true;
   }
 
-  Future<String> _runProcess(String name, String content, String commandPath,
-      List<String> args, Map<String, String> environment,
+  Future<String> _runProcess(
+      String name,
+      String content,
+      String commandPath,
+      List<String> args,
+      Map<String, String> environment,
       ToolErrorCallback toolErrorCallback) async {
     String commandString() => ([commandPath] + args).join(' ');
     try {
@@ -113,7 +122,8 @@ class ToolRunner {
     Future runner;
     // Prevent too many tools from running simultaneously.
     await _toolTracker.addFutureFromClosure(() {
-      runner = _run(args, toolErrorCallback, content: content, environment: environment);
+      runner = _run(args, toolErrorCallback,
+          content: content, environment: environment);
       return runner;
     });
     return runner;
@@ -127,7 +137,8 @@ class ToolRunner {
     environment ??= <String, String>{};
     var tool = args.removeAt(0);
     if (!toolConfiguration.tools.containsKey(tool)) {
-      toolErrorCallback('Unable to find definition for tool "$tool" in tool map. '
+      toolErrorCallback(
+          'Unable to find definition for tool "$tool" in tool map. '
           'Did you add it to dartdoc_options.yaml?');
       return '';
     }
@@ -193,12 +204,12 @@ class ToolRunner {
     }
 
     if (callCompleter != null) {
-      return _runProcess(
-              tool, content, commandPath, argsWithInput, envWithInput, toolErrorCallback)
+      return _runProcess(tool, content, commandPath, argsWithInput,
+              envWithInput, toolErrorCallback)
           .whenComplete(callCompleter);
     } else {
-      return _runProcess(
-          tool, content, commandPath, argsWithInput, envWithInput, toolErrorCallback);
+      return _runProcess(tool, content, commandPath, argsWithInput,
+          envWithInput, toolErrorCallback);
     }
   }
 }

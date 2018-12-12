@@ -2919,7 +2919,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Constructor appleDefaultConstructor, constCatConstructor;
     Constructor appleConstructorFromString;
     Constructor constructorTesterDefault, constructorTesterFromSomething;
-    Class apple, constCat, constructorTester;
+    Class apple, constCat, constructorTester, referToADefaultConstructor;
     setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       constCat = exLibrary.classes.firstWhere((c) => c.name == 'ConstantCat');
@@ -2934,6 +2934,20 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'ConstructorTester');
       constructorTesterFromSomething = constructorTester.constructors
           .firstWhere((c) => c.name == 'ConstructorTester.fromSomething');
+      referToADefaultConstructor = fakeLibrary.classes
+          .firstWhere((c) => c.name == 'ReferToADefaultConstructor');
+    });
+
+    test('calculates comment references to classes vs. constructors correctly',
+        () {
+      expect(
+          referToADefaultConstructor.documentationAsHtml,
+          contains(
+              '<a href="fake/ReferToADefaultConstructor-class.html">ReferToADefaultConstructor</a>'));
+      expect(
+          referToADefaultConstructor.documentationAsHtml,
+          contains(
+              '<a href="fake/ReferToADefaultConstructor/ReferToADefaultConstructor.html">ReferToADefaultConstructor.ReferToADefaultConstructor</a>'));
     });
 
     test('displays generic parameters correctly', () {
