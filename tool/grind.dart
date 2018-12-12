@@ -848,9 +848,10 @@ List<File> get testFiles => new Directory('test')
 Future<void> testDart2() async {
   List<String> parameters = ['--enable-asserts'];
 
+  CoverageSubprocessLauncher.coverageEnabled = Platform.environment.containsKey('COVERAGE_TOKEN');
   for (File dartFile in testFiles) {
     await testFutures.addFutureFromClosure(() =>
-        new SubprocessLauncher('dart2-${pathLib.basename(dartFile.path)}')
+        new CoverageSubprocessLauncher('dart2-${pathLib.basename(dartFile.path)}')
             .runStreamed(
                 Platform.resolvedExecutable,
                 <String>[]
@@ -859,7 +860,7 @@ Future<void> testDart2() async {
   }
 
   for (File dartFile in binFiles) {
-    await testFutures.addFutureFromClosure(() => new SubprocessLauncher(
+    await testFutures.addFutureFromClosure(() => new CoverageSubprocessLauncher(
             'dart2-bin-${pathLib.basename(dartFile.path)}-help')
         .runStreamed(
             Platform.resolvedExecutable,
@@ -868,6 +869,8 @@ Future<void> testDart2() async {
               ..add(dartFile.path)
               ..add('--help')));
   }
+
+  return await CoverageSubprocessLauncher.generateCoverageToFile(new File('lcov.info'));
 }
 
 @Task('Generate docs for dartdoc')

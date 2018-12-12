@@ -9,6 +9,7 @@ set -x
 
 if uname | grep -q Linux ; then
   sudo apt-get install -y gdb
+  gem install coveralls-lcov
 fi
 
 exit 0
