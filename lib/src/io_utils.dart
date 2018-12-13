@@ -154,19 +154,17 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
     /// Wait for all coverage runs to finish.
     await Future.wait(currentCoverageResults.map((t) => t.item2));
 
-    return launcher.runStreamed(
-        Platform.executable,
-        [
-          'tool/format_coverage.dart', // TODO(jcollins-g): use pub after dart-lang/coverage#240 is landed
-          '--lcov',
-          '-v',
-          '-b', '.',
-          '--packages=.packages',
-          '--sdk-root=${pathLib.canonicalize(pathLib.join(pathLib.dirname(Platform.executable), '..'))}',
-          '--out=${pathLib.canonicalize(outputFile.path)}',
-          '--report-on=bin,lib',
-          '-i', tempDir.path,
-        ]);
+    return launcher.runStreamed(Platform.executable, [
+      'tool/format_coverage.dart', // TODO(jcollins-g): use pub after dart-lang/coverage#240 is landed
+      '--lcov',
+      '-v',
+      '-b', '.',
+      '--packages=.packages',
+      '--sdk-root=${pathLib.canonicalize(pathLib.join(pathLib.dirname(Platform.executable), '..'))}',
+      '--out=${pathLib.canonicalize(outputFile.path)}',
+      '--report-on=bin,lib',
+      '-i', tempDir.path,
+    ]);
   }
 
   @override
