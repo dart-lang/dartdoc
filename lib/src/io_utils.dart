@@ -161,7 +161,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
           '--lcov',
           '-v',
           '-b', '.',
-          '--package-root=.',
+          '--packages=.packages',
           '--sdk-root=${pathLib.canonicalize(pathLib.join(pathLib.dirname(Platform.executable), '..'))}',
           '--out=${pathLib.canonicalize(outputFile.path)}',
           '--report-on=bin,lib',
