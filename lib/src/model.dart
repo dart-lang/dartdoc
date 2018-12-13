@@ -3025,7 +3025,8 @@ abstract class ModelElement extends Canonicalization
         }
         if (e is TopLevelVariableElement) {
           assert(getter != null || setter != null);
-          newModelElement = new TopLevelVariable(e, library, packageGraph, getter, setter);
+          newModelElement =
+              new TopLevelVariable(e, library, packageGraph, getter, setter);
         }
         if (e is PropertyAccessorElement) {
           // TODO(jcollins-g): why test for ClassElement in enclosingElement?
