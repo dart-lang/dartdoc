@@ -157,7 +157,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
     return launcher.runStreamed(
         Platform.executable,
         [
-          'tool/format_coverage.dart',
+          'tool/format_coverage.dart', // TODO(jcollins-g): use pub after dart-lang/coverage#240 is landed
           '--lcov',
           '-v',
           '-b', '.',
