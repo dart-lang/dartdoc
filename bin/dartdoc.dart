@@ -38,7 +38,7 @@ Future<List<DartdocOption>> createDartdocProgramOptions() async {
 
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
-void main(List<String> arguments) async {
+Future<void> main(List<String> arguments) async {
   DartdocOptionSet optionSet =
       await DartdocOptionSet.fromOptionGenerators('dartdoc', [
     createDartdocOptions,
@@ -52,17 +52,27 @@ void main(List<String> arguments) async {
   } on FormatException catch (e) {
     stderr.writeln(' fatal error: ${e.message}');
     stderr.writeln('');
-    _printUsageAndExit(optionSet.argParser, exitCode: 64);
+    _printUsage(optionSet.argParser);
+    // Do not use exit() as this bypasses --pause-isolates-on-exit
+    // TODO(jcollins-g): use exit once dart-lang/sdk#31747 is fixed.
+    exitCode = 64;
+    return;
   } on DartdocOptionError catch (e) {
     stderr.writeln(' fatal error: ${e.message}');
     stderr.writeln('');
-    _printUsageAndExit(optionSet.argParser, exitCode: 64);
+    _printUsage(optionSet.argParser);
+    exitCode = 64;
+    return;
   }
   if (optionSet['help'].valueAt(Directory.current)) {
-    _printHelpAndExit(optionSet.argParser);
+    _printHelp(optionSet.argParser);
+    exitCode = 0;
+    return;
   }
   if (optionSet['version'].valueAt(Directory.current)) {
-    _printVersionAndExit(optionSet.argParser);
+    _printVersion(optionSet.argParser);
+    exitCode = 0;
+    return;
   }
 
   DartdocProgramOptionContext config =
@@ -88,34 +98,37 @@ void main(List<String> arguments) async {
     }, onError: (e, Chain chain) {
       if (e is DartdocFailure) {
         stderr.writeln('\nGeneration failed: ${e}.');
-        exit(1);
+        exitCode = 1;
+        return;
       } else {
         stderr.writeln('\nGeneration failed: ${e}\n${chain.terse}');
-        exit(255);
+        exitCode = 255;
+        return;
       }
     }, when: config.asyncStackTraces);
   } finally {
     // Clear out any cached tool snapshots and temporary directories.
+    // ignore: unawaited_futures
     SnapshotCache.instance.dispose();
+    // ignore: unawaited_futures
     ToolTempFileTracker.instance.dispose();
   }
+  exitCode = 0;
+  return;
 }
 
 /// Print help if we are passed the help option.
-void _printHelpAndExit(ArgParser parser, {int exitCode: 0}) {
+void _printHelp(ArgParser parser) {
   print('Generate HTML documentation for Dart libraries.\n');
-  _printUsageAndExit(parser, exitCode: exitCode);
 }
 
 /// Print usage information on invalid command lines.
-void _printUsageAndExit(ArgParser parser, {int exitCode: 0}) {
+void _printUsage(ArgParser parser) {
   print('Usage: dartdoc [OPTIONS]\n');
   print(parser.usage);
-  exit(exitCode);
 }
 
 /// Print version information.
-void _printVersionAndExit(ArgParser parser) {
+void _printVersion(ArgParser parser) {
   print('dartdoc version: ${dartdocVersion}');
-  exit(exitCode);
 }
