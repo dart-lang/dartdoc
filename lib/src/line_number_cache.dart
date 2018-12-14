@@ -42,27 +42,12 @@ class LineNumberCache {
   final Map<String, SplayTreeMap<int, int>> _lineNumbers =
       <String, SplayTreeMap<int, int>>{};
 
-  int lineNumber(String file, int offset) {
-    if (offset == 0) {
-      return 0;
-    } else {
-      var lineMap = _lineNumbers.putIfAbsent(
-          file, () => _createLineNumbersMap(_fileContents(file)));
-      var lastKey = lineMap.lastKeyBefore(offset);
-      return lineMap[lastKey];
-    }
-  }
-
   Tuple2<int, int> lineAndColumn(String file, int offset) {
-    if (offset == 0) {
-      return new Tuple2(0, 0);
-    } else {
-      var lineMap = _lineNumbers.putIfAbsent(
-          file, () => _createLineNumbersMap(_fileContents(file)));
-      var lastKey = lineMap.lastKeyBefore(offset);
-      if (lastKey != null) {
-        return new Tuple2(lineMap[lastKey] + 1, offset - lastKey);
-      }
+    var lineMap = _lineNumbers.putIfAbsent(
+        file, () => _createLineNumbersMap(_fileContents(file)));
+    var lastKey = lineMap.lastKeyBefore(offset);
+    if (lastKey != null) {
+      return new Tuple2(lineMap[lastKey] + 1, offset - lastKey);
     }
     return null;
   }

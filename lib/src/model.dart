@@ -426,13 +426,6 @@ class Accessor extends ModelElement implements EnclosedElement {
     return _enclosingCombo;
   }
 
-  /// Call exactly once to set the enclosing combo for this Accessor.
-  set enclosingCombo(GetterSetterCombo combo) {
-    assert(_enclosingCombo == null || combo == _enclosingCombo);
-    assert(combo != null);
-    _enclosingCombo = combo;
-  }
-
   bool get isSynthetic => element.isSynthetic;
 
   @override
@@ -710,8 +703,6 @@ class Class extends ModelElement
   /// See [Inheritable.canonicalEnclosingElement].
   bool contains(Element element) => allElements.containsKey(element);
 
-  ModelElement findModelElement(Element element) => allElements[element];
-
   Map<String, List<ModelElement>> _membersByName;
 
   /// Given a ModelElement that is a member of some other class, return
@@ -935,18 +926,6 @@ class Class extends ModelElement
   Iterable<DefinedElementType> get publicInterfaces =>
       filterNonPublic(interfaces);
 
-  List<DefinedElementType> _interfaceChain;
-  List<DefinedElementType> get interfaceChain {
-    if (_interfaceChain == null) {
-      _interfaceChain = [];
-      for (DefinedElementType interface in interfaces) {
-        _interfaceChain.add(interface);
-        _interfaceChain.addAll((interface.element as Class).interfaceChain);
-      }
-    }
-    return _interfaceChain;
-  }
-
   bool get isAbstract => _cls.isAbstract;
 
   @override
@@ -1063,7 +1042,6 @@ class Class extends ModelElement
     return typeChain;
   }
 
-  Iterable<DefinedElementType> get superChainReversed => superChain.reversed;
   Iterable<DefinedElementType> get publicSuperChain =>
       filterNonPublic(superChain);
   Iterable<DefinedElementType> get publicSuperChainReversed =>
@@ -1712,8 +1690,8 @@ class Field extends ModelElement
       this.getter, this.setter)
       : super(element, library, packageGraph, null) {
     assert(getter != null || setter != null);
-    if (getter != null) getter.enclosingCombo = this;
-    if (setter != null) setter.enclosingCombo = this;
+    if (getter != null) getter._enclosingCombo = this;
+    if (setter != null) setter._enclosingCombo = this;
     _setModelType();
   }
 
@@ -1787,8 +1765,6 @@ class Field extends ModelElement
 
   @override
   String get kind => isConst ? 'constant' : 'property';
-
-  String get typeName => kind;
 
   @override
   List<String> get annotations {
@@ -1941,15 +1917,6 @@ abstract class GetterSetterCombo implements ModelElement {
   String _constantValueBase;
   String get constantValueBase =>
       _constantValueBase ??= _buildConstantValueBase();
-
-  /// Returns true if both accessors are synthetic.
-  bool get hasSyntheticAccessors {
-    if ((hasPublicGetter && getter.isSynthetic) ||
-        (hasPublicSetter && setter.isSynthetic)) {
-      return true;
-    }
-    return false;
-  }
 
   bool get hasPublicGetter => hasGetter && getter.isPublic;
   bool get hasPublicSetter => hasSetter && setter.isPublic;
@@ -2619,12 +2586,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return name;
   }
 
-  static PackageMeta getPackageMeta(Element element) {
-    String sourcePath = element.source.fullName;
-    return new PackageMeta.fromDir(
-        new File(pathLib.canonicalize(sourcePath)).parent);
-  }
-
   static String getLibraryName(LibraryElement element) {
     var source = element.source;
 
@@ -2719,47 +2680,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return (_allCanonicalModelElements ??=
         allModelElements.where((e) => e.isCanonical).toList());
   }
-
-  final Map<Library, bool> _isReexportedBy = {};
-
-  /// Heuristic that tries to guess if this library is actually largely
-  /// reexported by some other library.  We guess this by comparing the elements
-  /// inside each of allModelElements for both libraries.  Don't use this
-  /// except as a last-resort for canonicalization as it is a pretty fuzzy
-  /// definition.
-  ///
-  /// If most of the elements from this library appear in the other, but not
-  /// the reverse, then the other library is considered to be a reexporter of
-  /// this one.
-  ///
-  /// If not, then the situation is either ambiguous, or the reverse is true.
-  /// Computing this is expensive, so cache it.
-  bool isReexportedBy(Library library) {
-    assert(packageGraph.allLibrariesAdded);
-    if (_isReexportedBy.containsKey(library)) return _isReexportedBy[library];
-    Set<Element> otherElements = new Set()
-      ..addAll(library.allModelElements.map((l) => l.element));
-    Set<Element> ourElements = new Set()
-      ..addAll(allModelElements.map((l) => l.element));
-    if (ourElements.difference(otherElements).length <=
-        ourElements.length / 2) {
-      // Less than half of our elements are unique to us.
-      if (otherElements.difference(ourElements).length <=
-          otherElements.length / 2) {
-        // ... but the same is true for the other library.  Reexporting
-        // is ambiguous.
-        _isReexportedBy[library] = false;
-      } else {
-        _isReexportedBy[library] = true;
-      }
-    } else {
-      // We have a lot of unique elements, we're probably not reexported by
-      // the other libraries.
-      _isReexportedBy[library] = false;
-    }
-
-    return _isReexportedBy[library];
-  }
 }
 
 class Method extends ModelElement
@@ -2848,8 +2768,6 @@ class Method extends ModelElement
     }
     return null;
   }
-
-  String get typeName => 'method';
 
   MethodElement get _method => (element as MethodElement);
 
@@ -3106,15 +3024,9 @@ abstract class ModelElement extends Canonicalization
                 originalMember: originalMember);
         }
         if (e is TopLevelVariableElement) {
-          if (getter == null && setter == null) {
-            List<TopLevelVariable> allVariables = []
-              ..addAll(library.properties)
-              ..addAll(library.constants);
-            newModelElement = allVariables.firstWhere((v) => v.element == e);
-          } else {
-            newModelElement =
-                new TopLevelVariable(e, library, packageGraph, getter, setter);
-          }
+          assert(getter != null || setter != null);
+          newModelElement =
+              new TopLevelVariable(e, library, packageGraph, getter, setter);
         }
         if (e is PropertyAccessorElement) {
           // TODO(jcollins-g): why test for ClassElement in enclosingElement?
@@ -4729,9 +4641,6 @@ class Operator extends Method {
   String get name {
     return 'operator ${super.name}';
   }
-
-  @override
-  String get typeName => 'operator';
 }
 
 class PackageGraph {
@@ -6311,12 +6220,10 @@ class TopLevelVariable extends ModelElement
       PackageGraph packageGraph, this.getter, this.setter)
       : super(element, library, packageGraph, null) {
     if (getter != null) {
-      getter.enclosingCombo = this;
-      assert(getter.enclosingCombo != null);
+      getter._enclosingCombo = this;
     }
     if (setter != null) {
-      setter.enclosingCombo = this;
-      assert(setter.enclosingCombo != null);
+      setter._enclosingCombo = this;
     }
   }
 

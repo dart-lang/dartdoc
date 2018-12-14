@@ -14,5 +14,9 @@ void main() {
           await loader.loadAsString('package:dartdoc/templates/index.html');
       expect(contents, isNotNull);
     });
+
+    test('throws if non-package', () async {
+      expect(loader.loadAsString('wefoij:something'), throwsArgumentError);
+    });
   });
 }

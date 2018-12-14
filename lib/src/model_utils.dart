@@ -62,24 +62,6 @@ String getFileContentsFor(Element e) {
   return _fileContents[location];
 }
 
-Iterable<LibraryElement> getRequiredSdkLibraries(
-    DartSdk sdk, AnalysisContext context) {
-  var requiredLibs = sdk.sdkLibraries
-      .where((sdkLib) => sdkLib.shortName == 'dart:_interceptors');
-  final Set<LibraryElement> allLibraryElements = new Set();
-  for (var sdkLib in requiredLibs) {
-    Source source = sdk.mapDartUri(sdkLib.shortName);
-    allLibraryElements.add(context.computeLibraryElement(source));
-  }
-  return allLibraryElements;
-}
-
-bool isInExportedLibraries(
-    List<LibraryElement> libraries, LibraryElement library) {
-  return libraries
-      .any((lib) => lib == library || lib.exportedLibraries.contains(library));
-}
-
 final RegExp slashes = new RegExp('[\/]');
 bool hasPrivateName(Element e) {
   if (e.name == null) return false;

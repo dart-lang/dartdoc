@@ -9,32 +9,15 @@ abstract class HtmlOptions {
   String get toolVersion;
 }
 
-class Subnav {
-  final String name;
-  final String href;
-
-  Subnav(this.name, this.href);
-
-  @override
-  String toString() => name;
-}
-
 abstract class TemplateData<T extends Documentable> {
   final PackageGraph packageGraph;
   final HtmlOptions htmlOptions;
 
-  List<Subnav> _subNameItemCache;
-
   TemplateData(this.htmlOptions, this.packageGraph);
 
-  List<Category> get displayedCategories => <Category>[];
-  String get documentation => self.documentation;
-  String get oneLineDoc => self.oneLineDoc;
   String get title;
   String get layoutTitle;
   String get metaDescription;
-  String get name => self.name;
-  String get kind => self is ModelElement ? (self as ModelElement).kind : null;
 
   List get navLinks;
   List get navLinksWithGenerics => [];
@@ -48,37 +31,17 @@ abstract class TemplateData<T extends Documentable> {
   bool get includeVersion => false;
 
   bool get hasHomepage => false;
-  String get homepage => null;
-
-  bool get hasSubNav => subnavItems.isNotEmpty;
-
-  List<Subnav> get subnavItems {
-    if (_subNameItemCache == null) {
-      _subNameItemCache = getSubNavItems().toList();
-    }
-    return _subNameItemCache;
-  }
 
   String get htmlBase;
   T get self;
   String get version => htmlOptions.toolVersion;
   String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
 
-  Iterable<Subnav> getSubNavItems() => <Subnav>[];
-
   String _layoutTitle(String name, String kind, bool isDeprecated) {
     if (isDeprecated) {
       return '<span class="deprecated">${name}</span> ${kind}';
     } else {
       return '${name} ${kind}';
-    }
-  }
-
-  Iterable<Subnav> _gatherSubnavForInvokable(ModelElement element) {
-    if (element.hasSourceCode) {
-      return [new Subnav('Source', '${element.href}#source')];
-    } else {
-      return <Subnav>[];
     }
   }
 }
@@ -98,21 +61,14 @@ class PackageTemplateData extends TemplateData<Package> {
   @override
   Package get self => package;
   @override
-  String get layoutTitle => _layoutTitle(package.name, kind, false);
+  String get layoutTitle => _layoutTitle(package.name, package.kind, false);
   @override
   String get metaDescription =>
       '${package.name} API docs, for the Dart programming language.';
-  @override
-  Iterable<Subnav> getSubNavItems() {
-    return [new Subnav('Libraries', '${package.href}#libraries')];
-  }
 
   @override
   bool get hasHomepage => package.hasHomepage;
-  @override
   String get homepage => package.homepage;
-  @override
-  String get kind => package.kind;
 
   /// `null` for packages because they are at the root – not needed
   @override
@@ -141,25 +97,6 @@ class CategoryTemplateData extends TemplateData<Category> {
 
   @override
   List get navLinks => [category.package];
-  @override
-  Iterable<Subnav> getSubNavItems() sync* {
-    if (category.hasPublicClasses)
-      yield new Subnav('Libraries', '${category.href}#libraries');
-    if (category.hasPublicClasses)
-      yield new Subnav('Classes', '${category.href}#classes');
-    if (category.hasPublicConstants)
-      yield new Subnav('Constants', '${category.href}#constants');
-    if (category.hasPublicProperties)
-      yield new Subnav('Properties', '${category.href}#properties');
-    if (category.hasPublicFunctions)
-      yield new Subnav('Functions', '${category.href}#functions');
-    if (category.hasPublicEnums)
-      yield new Subnav('Enums', '${category.href}#enums');
-    if (category.hasPublicTypedefs)
-      yield new Subnav('Typedefs', '${category.href}#typedefs');
-    if (category.hasPublicExceptions)
-      yield new Subnav('Exceptions', '${category.href}#exceptions');
-  }
 
   @override
   Category get self => category;
@@ -175,31 +112,12 @@ class LibraryTemplateData extends TemplateData<Library> {
   @override
   String get title => '${library.name} library - Dart API';
   @override
-  String get documentation => library.documentation;
-  @override
   String get htmlBase => '..';
   @override
   String get metaDescription =>
       '${library.name} library API docs, for the Dart programming language.';
   @override
   List get navLinks => [packageGraph.defaultPackage];
-  @override
-  Iterable<Subnav> getSubNavItems() sync* {
-    if (library.hasPublicClasses)
-      yield new Subnav('Classes', '${library.href}#classes');
-    if (library.hasPublicConstants)
-      yield new Subnav('Constants', '${library.href}#constants');
-    if (library.hasPublicProperties)
-      yield new Subnav('Properties', '${library.href}#properties');
-    if (library.hasPublicFunctions)
-      yield new Subnav('Functions', '${library.href}#functions');
-    if (library.hasPublicEnums)
-      yield new Subnav('Enums', '${library.href}#enums');
-    if (library.hasPublicTypedefs)
-      yield new Subnav('Typedefs', '${library.href}#typedefs');
-    if (library.hasPublicExceptions)
-      yield new Subnav('Exceptions', '${library.href}#exceptions');
-  }
 
   @override
   String get layoutTitle =>
@@ -250,23 +168,6 @@ class ClassTemplateData<T extends Class> extends TemplateData<T> {
   List get navLinks => [packageGraph.defaultPackage, library];
   @override
   String get htmlBase => '..';
-  @override
-  Iterable<Subnav> getSubNavItems() sync* {
-    if (clazz.hasPublicConstructors)
-      yield new Subnav('Constructors', '${clazz.href}#constructors');
-    if (clazz.hasPublicProperties)
-      yield new Subnav('Properties', '${clazz.href}#instance-properties');
-    if (clazz.hasPublicMethods)
-      yield new Subnav('Methods', '${clazz.href}#instance-methods');
-    if (clazz.hasPublicOperators)
-      yield new Subnav('Operators', '${clazz.href}#operators');
-    if (clazz.hasPublicStaticProperties)
-      yield new Subnav('Static Properties', '${clazz.href}#static-properties');
-    if (clazz.hasPublicStaticMethods)
-      yield new Subnav('Static Methods', '${clazz.href}#static-methods');
-    if (clazz.hasPublicConstants)
-      yield new Subnav('Constants', '${clazz.href}#constants');
-  }
 
   Class get objectType {
     if (_objectType != null) {
@@ -303,7 +204,6 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
   @override
   List get navLinksWithGenerics => [clazz];
   @override
-  Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(constructor);
   @override
   String get htmlBase => '../..';
   @override
@@ -324,13 +224,6 @@ class EnumTemplateData extends ClassTemplateData<Enum> {
   Enum get eNum => clazz;
   @override
   Enum get self => eNum;
-  @override
-  Iterable<Subnav> getSubNavItems() => [
-        new Subnav('Constants', '${eNum.href}#constants'),
-        new Subnav('Properties', '${eNum.href}#instance-properties'),
-        new Subnav('Methods', '${eNum.href}#instance-methods'),
-        new Subnav('Operators', '${eNum.href}#operators')
-      ];
 }
 
 class FunctionTemplateData extends TemplateData<ModelFunction> {
@@ -355,8 +248,6 @@ class FunctionTemplateData extends TemplateData<ModelFunction> {
       '${library.name} library, for the Dart programming language.';
   @override
   List get navLinks => [packageGraph.defaultPackage, library];
-  @override
-  Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(function);
   @override
   String get htmlBase => '..';
 }
@@ -386,8 +277,6 @@ class MethodTemplateData extends TemplateData<Method> {
   List get navLinks => [packageGraph.defaultPackage, library];
   @override
   List get navLinksWithGenerics => [clazz];
-  @override
-  Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(method);
   @override
   String get htmlBase => '../..';
 }
@@ -458,8 +347,6 @@ class TypedefTemplateData extends TemplateData<Typedef> {
   List get navLinks => [packageGraph.defaultPackage, library];
   @override
   String get htmlBase => '..';
-  @override
-  Iterable<Subnav> getSubNavItems() => _gatherSubnavForInvokable(typeDef);
 }
 
 class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
