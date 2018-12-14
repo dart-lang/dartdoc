@@ -9,6 +9,7 @@ set -ex
 
 # add globally activated packages to the path
 export PATH="$PATH":"~/.pub-cache/bin"
+DART_VERSION=`dart --version 2>&1 | awk '{print $4}'`
 
 if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
   # Build the SDK docs
@@ -22,7 +23,6 @@ elif [ "$DARTDOC_BOT" = "flutter" ]; then
   pub run grinder validate-flutter-docs
 elif [ "$DARTDOC_BOT" = "packages" ]; then
   echo "Running packages dartdoc bot"
-  DART_VERSION=`dart --version 2>&1 | awk '{print $4}'`
   if [ ${DART_VERSION} != 2.0.0 ] ; then
     PACKAGE_NAME=angular PACKAGE_VERSION=">=5.1.0" DARTDOC_PARAMS="--include=angular,angular.security" pub run grinder build-pub-package
   else
@@ -34,8 +34,13 @@ elif [ "$DARTDOC_BOT" = "packages" ]; then
   PACKAGE_NAME=shelf_exception_handler PACKAGE_VERSION=">=0.2.0" pub run grinder build-pub-package
 elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
   echo "Running main dartdoc bot against the SDK analyzer"
+  unset COVERAGE_TOKEN
   DARTDOC_GRIND_STEP=buildbot-no-publish pub run grinder test-with-analyzer-sdk
 else
   echo "Running main dartdoc bot"
   pub run grinder buildbot
+  if [ -n "$COVERAGE_TOKEN" ] && [ "${DART_VERSION}" != "2.1.0" ] && uname | grep -q Linux ; then
+    # Only attempt to upload coverage data for dev builds.
+    coveralls-lcov --repo-token="${COVERAGE_TOKEN}" lcov.info
+  fi
 fi

@@ -1,6 +1,8 @@
 # dartdoc
 
 [![Build Status](https://travis-ci.org/dart-lang/dartdoc.svg?branch=master)](https://travis-ci.org/dart-lang/dartdoc)
+[![Coverage Status](https://coveralls.io/repos/github/dart-lang/dartdoc/badge.svg?branch=master)](https://coveralls.io/github/dart-lang/dartdoc?branch=master)
+
 
 Use `dartdoc` to generate HTML documentaton for your Dart package.
 

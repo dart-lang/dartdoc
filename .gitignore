@@ -8,6 +8,7 @@
 .settings/
 build/
 doc/
+lcov.info
 packages
 pub.dartlang.org/
 testing/test_package/doc
