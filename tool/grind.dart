@@ -459,10 +459,12 @@ Future<List<Map>> _buildTestPackageDocs(
   if (label == null) label = '';
   if (label != '') label = '-$label';
   var launcher = new SubprocessLauncher('build-test-package-docs$label');
-  await launcher.runStreamed(sdkBin('pub'), ['get'],
+  Future testPackagePubGet = launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: testPackage.absolute.path);
   String cwd = await futureCwd;
-  await launcher.runStreamed(sdkBin('pub'), ['get'], workingDirectory: cwd);
+  Future dartdocPubGet =
+      launcher.runStreamed(sdkBin('pub'), ['get'], workingDirectory: cwd);
+  await Future.wait([testPackagePubGet, dartdocPubGet]);
   return await launcher.runStreamed(
       Platform.resolvedExecutable,
       [
