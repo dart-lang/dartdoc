@@ -51,6 +51,7 @@ header form {
 
 header#header-search-sidebar {
   height: 50px;
+  margin-bottom: 25px;
 }
 
 footer {
@@ -751,11 +752,8 @@ button {
   }
 
   ol#sidebar-nav {
-    display: contents;
-  }
-
-  .sidebar h5 {
-    margin-top: 25px;
+    font-size: 18px;
+    white-space: pre-line;
   }
 
   .sidebar-offcanvas-left.active {
@@ -798,9 +796,6 @@ button {
 @media screen and (max-width: 768px) {
   form.search {
     display: none;
-  }
-  form.search.sidebar-offcanvas-left {
-    display: contents;
   }
 }
 
