@@ -117,13 +117,13 @@ nav.navbar {
 
 @media (max-width: 768px) {
   .hidden-xs {
-    display: none!important;
+    display: none !important;
   }
 }
 
 @media (min-width: 769px) {
   .hidden-l {
-    display: none!important;
+    display: none !important;
   }
 }
 
