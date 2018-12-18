@@ -634,7 +634,8 @@ class Class extends ModelElement
   Constructor _defaultConstructor;
   Constructor get defaultConstructor {
     if (_defaultConstructor == null) {
-      _defaultConstructor = constructors.firstWhere((c) => c.isDefaultConstructor, orElse: () => null);
+      _defaultConstructor = constructors
+          .firstWhere((c) => c.isDefaultConstructor, orElse: () => null);
     }
     return _defaultConstructor;
   }
@@ -2259,6 +2260,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   Map<String, Library> _prefixToLibrary;
+
   /// Map of import prefixes ('import "foo" as prefix;') to [Library].
   Map<String, Library> get prefixToLibrary {
     if (_prefixToLibrary == null) {
@@ -2266,7 +2268,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       for (ImportElement i in (element as LibraryElement).imports) {
         if (i.prefix?.name != null) {
           assert(!_prefixToLibrary.containsKey(i.prefix?.name));
-          _prefixToLibrary[i.prefix?.name] = new ModelElement.from(i.importedLibrary, library, packageGraph);
+          _prefixToLibrary[i.prefix?.name] =
+              new ModelElement.from(i.importedLibrary, library, packageGraph);
         }
       }
     }

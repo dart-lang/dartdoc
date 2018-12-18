@@ -328,7 +328,9 @@ class _MarkdownCommentReference {
     if (!__impliedDefaultConstructorIsSet) {
       __impliedDefaultConstructorIsSet = true;
       if (codeRef.contains(isConstructor) ||
-          (codeRefChompedParts.length >= 2 && codeRefChompedParts[codeRefChompedParts.length - 1] == codeRefChompedParts[codeRefChompedParts.length - 2])) {
+          (codeRefChompedParts.length >= 2 &&
+              codeRefChompedParts[codeRefChompedParts.length - 1] ==
+                  codeRefChompedParts[codeRefChompedParts.length - 2])) {
         // If the last two parts of the code reference are equal, this is probably a default constructor.
         __impliedDefaultConstructor = codeRefChompedParts.last;
       }
@@ -553,7 +555,9 @@ class _MarkdownCommentReference {
       }
       return toConvert;
     } else {
-      if (toConvert is Constructor && (toConvert.enclosingElement as Class).defaultConstructor == toConvert) {
+      if (toConvert is Constructor &&
+          (toConvert.enclosingElement as Class).defaultConstructor ==
+              toConvert) {
         return toConvert.enclosingElement;
       }
       return toConvert;
@@ -562,13 +566,16 @@ class _MarkdownCommentReference {
 
   void _findReferenceFromPrefixes() {
     if (element is! ModelElement) return;
-    Map<String, Library> prefixToLibrary = (element as ModelElement).definingLibrary.prefixToLibrary;
+    Map<String, Library> prefixToLibrary =
+        (element as ModelElement).definingLibrary.prefixToLibrary;
     if (prefixToLibrary.containsKey(codeRefChompedParts.first)) {
       if (codeRefChompedParts.length == 1) {
         results.add(prefixToLibrary[codeRefChompedParts.first]);
       } else {
         String lookup = codeRefChompedParts.sublist(1).join('.');
-        results.addAll(prefixToLibrary[codeRefChompedParts.first].modelElementsNameMap[lookup].map(_convertConstructors));
+        results.addAll(prefixToLibrary[codeRefChompedParts.first]
+            .modelElementsNameMap[lookup]
+            .map(_convertConstructors));
       }
     }
   }
@@ -580,7 +587,8 @@ class _MarkdownCommentReference {
         if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary ||
             (modelElement is Library &&
                 codeRefChomped == modelElement.fullyQualifiedName)) {
-          _addCanonicalResult(_convertConstructors(modelElement), preferredClass);
+          _addCanonicalResult(
+              _convertConstructors(modelElement), preferredClass);
         }
       }
     }
@@ -709,13 +717,16 @@ class _MarkdownCommentReference {
   /// Get any possible results for this class in the superChain.   Returns
   /// true if we found something.
   void _getResultsForSuperChainElement(Class c, Class tryClass) {
-    Iterable<ModelElement> membersToCheck = (c.allModelElementsByNamePart[codeRefChomped] ?? []).map(_convertConstructors);
+    Iterable<ModelElement> membersToCheck =
+        (c.allModelElementsByNamePart[codeRefChomped] ?? [])
+            .map(_convertConstructors);
     for (final ModelElement modelElement in membersToCheck) {
       // [thing], a member of this class
       _addCanonicalResult(modelElement, tryClass);
     }
     membersToCheck = (c.allModelElementsByNamePart[codeRefChompedParts.last] ??
-            <ModelElement>[]).map(_convertConstructors);
+            <ModelElement>[])
+        .map(_convertConstructors);
     membersToCheck.forEach((m) => _addCanonicalResult(m, tryClass));
     results.remove(null);
     if (results.isNotEmpty) return;

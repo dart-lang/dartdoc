@@ -617,11 +617,9 @@ void main() {
       isDeprecated = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'is_deprecated');
 
-
       // Make sure the first library is dart:async
       expect(dartAsyncLib.name, 'dart:async');
     });
-
 
     test('has a name', () {
       expect(exLibrary.name, 'ex');
@@ -1092,14 +1090,36 @@ void main() {
       });
 
       test('can handle renamed imports', () {
-        ModelFunction aFunctionUsingRenamedLib = fakeLibrary.functions.firstWhere((f) => f.name == 'aFunctionUsingRenamedLib');
-        expect(aFunctionUsingRenamedLib.documentationAsHtml, contains('Link to library: <a href="mylibpub/mylibpub-library.html">renamedLib</a>'));
-        expect(aFunctionUsingRenamedLib.documentationAsHtml, contains('Link to constructor (implied): <a href="mylibpub/YetAnotherHelper/YetAnotherHelper.html">new renamedLib.YetAnotherHelper()</a>'));
-        expect(aFunctionUsingRenamedLib.documentationAsHtml, contains('Link to constructor (implied, no new): <a href="mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper()</a>'));
-        expect(aFunctionUsingRenamedLib.documentationAsHtml, contains('Link to class: <a href="mylibpub/YetAnotherHelper-class.html">renamedLib.YetAnotherHelper</a>'));
-        expect(aFunctionUsingRenamedLib.documentationAsHtml, contains('Link to constructor (direct): <a href="mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper.YetAnotherHelper</a>'));
-        expect(aFunctionUsingRenamedLib.documentationAsHtml, contains('Link to class member: <a href="mylibpub/YetAnotherHelper/getMoreContents.html">renamedLib.YetAnotherHelper.getMoreContents</a>'));
-        expect(aFunctionUsingRenamedLib.documentationAsHtml, contains('Link to function: <a href="mylibpub/helperFunction.html">renamedLib.helperFunction</a>'));
+        ModelFunction aFunctionUsingRenamedLib = fakeLibrary.functions
+            .firstWhere((f) => f.name == 'aFunctionUsingRenamedLib');
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to library: <a href="mylibpub/mylibpub-library.html">renamedLib</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to constructor (implied): <a href="mylibpub/YetAnotherHelper/YetAnotherHelper.html">new renamedLib.YetAnotherHelper()</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to constructor (implied, no new): <a href="mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper()</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to class: <a href="mylibpub/YetAnotherHelper-class.html">renamedLib.YetAnotherHelper</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to constructor (direct): <a href="mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper.YetAnotherHelper</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to class member: <a href="mylibpub/YetAnotherHelper/getMoreContents.html">renamedLib.YetAnotherHelper.getMoreContents</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to function: <a href="mylibpub/helperFunction.html">renamedLib.helperFunction</a>'));
       });
 
       test('operator [] reference within a class works', () {
