@@ -631,6 +631,14 @@ class Class extends ModelElement
         .toList(growable: false);
   }
 
+  Constructor _defaultConstructor;
+  Constructor get defaultConstructor {
+    if (_defaultConstructor == null) {
+      _defaultConstructor = constructors.firstWhere((c) => c.isDefaultConstructor, orElse: () => null);
+    }
+    return _defaultConstructor;
+  }
+
   Iterable<Method> get allInstanceMethods =>
       quiverIterables.concat([instanceMethods, inheritedMethods]);
 
@@ -1227,7 +1235,10 @@ class Constructor extends ModelElement
   }
 
   @override
-  String get fullyQualifiedName => '${library.name}.$name';
+  String get fullyQualifiedName {
+    if (isDefaultConstructor) return super.fullyQualifiedName;
+    return '${library.name}.$name';
+  }
 
   @override
   String get href {
@@ -1240,6 +1251,8 @@ class Constructor extends ModelElement
 
   @override
   bool get isConst => _constructor.isConst;
+
+  bool get isDefaultConstructor => name == enclosingElement.name;
 
   bool get isFactory => _constructor.isFactory;
 
@@ -2243,6 +2256,21 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       }
     }
     return _importedExportedLibraries;
+  }
+
+  Map<String, Library> _prefixToLibrary;
+  /// Map of import prefixes ('import "foo" as prefix;') to [Library].
+  Map<String, Library> get prefixToLibrary {
+    if (_prefixToLibrary == null) {
+      _prefixToLibrary = {};
+      for (ImportElement i in (element as LibraryElement).imports) {
+        if (i.prefix?.name != null) {
+          assert(!_prefixToLibrary.containsKey(i.prefix?.name));
+          _prefixToLibrary[i.prefix?.name] = new ModelElement.from(i.importedLibrary, library, packageGraph);
+        }
+      }
+    }
+    return _prefixToLibrary;
   }
 
   String _dirName;
