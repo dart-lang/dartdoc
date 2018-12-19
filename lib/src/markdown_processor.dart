@@ -573,9 +573,10 @@ class _MarkdownCommentReference {
         results.add(prefixToLibrary[codeRefChompedParts.first]);
       } else {
         String lookup = codeRefChompedParts.sublist(1).join('.');
-        results.addAll(prefixToLibrary[codeRefChompedParts.first]
-            .modelElementsNameMap[lookup]
-            .map(_convertConstructors));
+        prefixToLibrary[codeRefChompedParts.first]
+            ?.modelElementsNameMap[lookup]
+            ?.map(_convertConstructors)
+            ?.forEach(results.add);
       }
     }
   }
