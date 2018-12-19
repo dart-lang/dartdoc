@@ -159,6 +159,24 @@
   }
  },
  {
+  "name": "csspub",
+  "qualifiedName": "csspub",
+  "href": "csspub/csspub-library.html",
+  "type": "library",
+  "overriddenDepth": 0
+ },
+ {
+  "name": "theOnlyThingInTheLibrary",
+  "qualifiedName": "csspub.theOnlyThingInTheLibrary",
+  "href": "csspub/theOnlyThingInTheLibrary.html",
+  "type": "top-level property",
+  "overriddenDepth": 0,
+  "enclosedBy": {
+   "name": "csspub",
+   "type": "library"
+  }
+ },
+ {
   "name": "ex",
   "qualifiedName": "ex",
   "href": "ex/ex-library.html",
