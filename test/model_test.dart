@@ -1234,8 +1234,10 @@ void main() {
 
       test('links to a top-level variable with a prefix from an imported lib',
           () {
-        expect(docsAsHtml,
-            contains('<a href="csspub/theOnlyThingInTheLibrary.html">css.theOnlyThingInTheLibrary</a>'));
+        expect(
+            docsAsHtml,
+            contains(
+                '<a href="csspub/theOnlyThingInTheLibrary.html">css.theOnlyThingInTheLibrary</a>'));
       });
 
       test('links to a name with a single underscore', () {
