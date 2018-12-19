@@ -2,10 +2,33 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/tuple.dart';
+
+
+
+abstract class PackageWarningOptionContext implements DartdocOptionContext {
+  bool get noShowPackageWarnings => optionSet['noShowPackageWarnings'].valueAt(context);
+  List<String> get showPackageWarnings => optionSet['showPackageWarnings'].valueAt(context);
+}
+
+Future<List<DartdocOption>> createPackageWarningOptions() async {
+  return <DartdocOption>[
+    new DartdocOptionArgOnly<bool>('noShowPackageWarnings', false, help: 'Disable the display of all warnings'),
+    new DartdocOptionArgOnly<List<String>>('showPackageWarnings', null, help: 'Package names to display warnings for'),
+    new DartdocOptionFileSynth<PackageWarningOptions>('errors',
+      (DartdocSyntheticOption<PackageWarningOptions> option, Directory dir) => new PackageWarningOptions(option.root['verboseWarnings'].valueAt(dir))
+      , convertYamlToType: PackageWarningOptions.fromYaml,
+      help: 'Configuration for package warnings'),
+  ];
+}
+
 
 class PackageWarningHelpText {
   final String warningName;
@@ -170,6 +193,9 @@ class PackageWarningOptions {
     asWarnings.addAll(PackageWarning.values);
     ignore(PackageWarning.typeAsHtml);
     error(PackageWarning.unresolvedExport);
+    error(PackageWarning.toolError);
+    error(PackageWarning.invalidParameter);
+    error(PackageWarning.)
   }
 
   void _assertInvariantsOk() {
