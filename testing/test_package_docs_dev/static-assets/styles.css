@@ -49,6 +49,11 @@ header form {
   padding-right: 30px;
 }
 
+header#header-search-sidebar {
+  height: 50px;
+  margin-bottom: 25px;
+}
+
 footer {
   flex: 0 0 16px;
   text-align: center;
@@ -110,9 +115,15 @@ nav.navbar {
   border: 0;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .hidden-xs {
-    display: none!important;
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .hidden-l {
+    display: none !important;
   }
 }
 
@@ -740,6 +751,11 @@ button {
     padding: 10px;
   }
 
+  ol#sidebar-nav {
+    font-size: 18px;
+    white-space: pre-line;
+  }
+
   .sidebar-offcanvas-left.active {
     left: 0; /* this animates our drawer into the page */
   }
@@ -777,7 +793,7 @@ button {
   border: 0;
 }
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 768px) {
   form.search {
     display: none;
   }
