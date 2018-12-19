@@ -197,4 +197,5 @@ document.addEventListener("DOMContentLoaded", function() {
   initSideNav();
   initSearch("search-box");
   initSearch("search-body");
+  initSearch("search-sidebar");
 });

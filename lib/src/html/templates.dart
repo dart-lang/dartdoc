@@ -25,6 +25,7 @@ const _partials = const <String>[
   'features',
   'documentation',
   'name_summary',
+  'search_sidebar',
   'sidebar_for_class',
   'sidebar_for_category',
   'sidebar_for_enum',
