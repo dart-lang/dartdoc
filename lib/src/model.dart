@@ -2259,17 +2259,18 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _importedExportedLibraries;
   }
 
-  Map<String, Library> _prefixToLibrary;
+  Map<String, Set<Library>> _prefixToLibrary;
 
   /// Map of import prefixes ('import "foo" as prefix;') to [Library].
-  Map<String, Library> get prefixToLibrary {
+  Map<String, Set<Library>> get prefixToLibrary {
     if (_prefixToLibrary == null) {
       _prefixToLibrary = {};
+      // It is possible to have overlapping prefixes.
       for (ImportElement i in (element as LibraryElement).imports) {
         if (i.prefix?.name != null) {
-          assert(!_prefixToLibrary.containsKey(i.prefix?.name));
-          _prefixToLibrary[i.prefix?.name] =
-              new ModelElement.from(i.importedLibrary, library, packageGraph);
+          _prefixToLibrary.putIfAbsent(i.prefix?.name, () => new Set());
+          _prefixToLibrary[i.prefix?.name].add(
+              new ModelElement.from(i.importedLibrary, library, packageGraph));
         }
       }
     }

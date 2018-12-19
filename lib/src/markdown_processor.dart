@@ -566,17 +566,18 @@ class _MarkdownCommentReference {
 
   void _findReferenceFromPrefixes() {
     if (element is! ModelElement) return;
-    Map<String, Library> prefixToLibrary =
+    Map<String, Set<Library>> prefixToLibrary =
         (element as ModelElement).definingLibrary.prefixToLibrary;
     if (prefixToLibrary.containsKey(codeRefChompedParts.first)) {
       if (codeRefChompedParts.length == 1) {
-        results.add(prefixToLibrary[codeRefChompedParts.first]);
+        results.addAll(prefixToLibrary[codeRefChompedParts.first]);
       } else {
         String lookup = codeRefChompedParts.sublist(1).join('.');
         prefixToLibrary[codeRefChompedParts.first]
-            ?.modelElementsNameMap[lookup]
-            ?.map(_convertConstructors)
-            ?.forEach(results.add);
+            ?.forEach(
+                (l) => l.modelElementsNameMap[lookup]
+                    ?.map(_convertConstructors)
+                    ?.forEach((m) => _addCanonicalResult(m, _getPreferredClass(m))));
       }
     }
   }
