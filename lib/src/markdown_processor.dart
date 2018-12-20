@@ -127,8 +127,8 @@ final RegExp trailingIgnoreStuff = new RegExp(r'(<.*>|\(.*\))$');
 final RegExp leadingIgnoreStuff =
     new RegExp(r'^(const|final|var)[\s]+', multiLine: true);
 
-// This is explicitly intended as a reference to a constructor.
-final RegExp isConstructor = new RegExp(r'^new[\s]+', multiLine: true);
+// If found, this may be intended as a reference to a constructor.
+final RegExp isConstructor = new RegExp(r'(^new[\s]+|\(\)$)', multiLine: true);
 
 // This is probably not really intended as a doc reference, so don't try or
 // warn about them.
@@ -299,10 +299,43 @@ class _MarkdownCommentReference {
     assert(element != null);
     assert(element.packageGraph.allLibrariesAdded);
 
-    codeRefChomped = codeRef.replaceFirst(isConstructor, '');
+    codeRefChomped = codeRef.replaceAll(isConstructor, '');
     library =
         element is ModelElement ? (element as ModelElement).library : null;
     packageGraph = library.packageGraph;
+  }
+
+  String __impliedDefaultConstructor;
+  bool __impliedDefaultConstructorIsSet = false;
+
+  /// Returns the name of the implied default constructor if there is one, or
+  /// null if not.
+  ///
+  /// Default constructors are a special case in dartdoc.  If we look up a name
+  /// within a class of that class itself, the first thing we find is the
+  /// default constructor.  But we determine whether that's what they actually
+  /// intended (vs. the enclosing class) by context -- whether they seem
+  /// to be calling it with () or have a 'new' in front of it, or
+  /// whether the name is repeated.
+  ///
+  /// Similarly, referencing a class by itself might actually refer to its
+  /// constructor based on these same heuristics.
+  ///
+  /// With the name of the implied default constructor, other methods can
+  /// determine whether or not the constructor and/or class we resolved to
+  /// is actually matching the user's intent.
+  String get _impliedDefaultConstructor {
+    if (!__impliedDefaultConstructorIsSet) {
+      __impliedDefaultConstructorIsSet = true;
+      if (codeRef.contains(isConstructor) ||
+          (codeRefChompedParts.length >= 2 &&
+              codeRefChompedParts[codeRefChompedParts.length - 1] ==
+                  codeRefChompedParts[codeRefChompedParts.length - 2])) {
+        // If the last two parts of the code reference are equal, this is probably a default constructor.
+        __impliedDefaultConstructor = codeRefChompedParts.last;
+      }
+    }
+    return __impliedDefaultConstructor;
   }
 
   /// Calculate reference to a ModelElement.
@@ -318,8 +351,6 @@ class _MarkdownCommentReference {
     for (void Function() findMethod in [
       // This might be an operator.  Strip the operator prefix and try again.
       _findWithoutOperatorPrefix,
-      // Oh, and someone might have some type parameters or other garbage.
-      _findWithoutTrailingIgnoreStuff,
       // Oh, and someone might have thrown on a 'const' or 'final' in front.
       _findWithoutLeadingIgnoreStuff,
       // Maybe this ModelElement has parameters, and this is one of them.
@@ -330,6 +361,8 @@ class _MarkdownCommentReference {
       _findTypeParameters,
       // This could be local to the class, look there first.
       _findWithinTryClasses,
+      // This could be a reference to a renamed library.
+      _findReferenceFromPrefixes,
       // We now need the ref element cache to keep from repeatedly searching [Package.allModelElements].
       // But if not, look for a fully qualified match.  (That only makes sense
       // if the codeRef might be qualified, and contains periods.)
@@ -340,8 +373,12 @@ class _MarkdownCommentReference {
       _findGlobalWithinRefElementCache,
       // This could conceivably be a reference to an enum member.  They don't show up in allModelElements.
       _findEnumReferences,
+      // Oh, and someone might have some type parameters or other garbage.
+      // After finding within classes because sometimes parentheses are used
+      // to imply constructors.
+      _findWithoutTrailingIgnoreStuff,
       // Use the analyzer to resolve a comment reference.
-      _findAnalyzerReferences
+      _findAnalyzerReferences,
     ]) {
       findMethod();
       // Remove any "null" objects after each step of trying to add to results.
@@ -355,8 +392,6 @@ class _MarkdownCommentReference {
       // This isn't C++.  References to class methods are slightly expensive
       // in Dart so don't build that list unless you need to.
       for (void Function() reduceMethod in [
-        // If this name could refer to a class or a constructor, prefer the class.
-        _reducePreferClass,
         // If a result is actually in this library, prefer that.
         _reducePreferResultsInSameLibrary,
         // If a result is accessible in this library, prefer that.
@@ -404,30 +439,6 @@ class _MarkdownCommentReference {
   List<String> get codeRefChompedParts =>
       _codeRefChompedParts ??= codeRefChomped.split('.');
 
-  /// Returns true if this is a constructor we should consider due to its
-  /// name and the code reference, or if this isn't a constructor.  False
-  /// otherwise.
-  bool _ConsiderIfConstructor(ModelElement modelElement) {
-    // TODO(jcollins-g): Rewrite this to handle constructors in a less hacky way
-    if (modelElement is! Constructor) return true;
-    if (codeRef.contains(isConstructor)) return true;
-    Constructor aConstructor = modelElement;
-    if (codeRefParts.length > 1) {
-      // Pick the last two parts, in case a specific library was part of the
-      // codeRef.
-      if (codeRefParts[codeRefParts.length - 1] ==
-          codeRefParts[codeRefParts.length - 2]) {
-        // Foobar.Foobar -- assume they really do mean the constructor for this class.
-        return true;
-      }
-    }
-    if (aConstructor.name != aConstructor.enclosingElement.name) {
-      // This isn't a default constructor so treat it like any other member.
-      return true;
-    }
-    return false;
-  }
-
   void _reducePreferAnalyzerResolution() {
     Element refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
     if (results.any((me) => me.element == refElement)) {
@@ -468,12 +479,6 @@ class _MarkdownCommentReference {
   void _reducePreferResultsInSameLibrary() {
     if (results.any((r) => r.library?.packageName == library.packageName)) {
       results.removeWhere((r) => r.library?.packageName != library.packageName);
-    }
-  }
-
-  void _reducePreferClass() {
-    if (results.any((r) => r is Class)) {
-      results.removeWhere((r) => r is Constructor);
     }
   }
 
@@ -540,6 +545,42 @@ class _MarkdownCommentReference {
     }
   }
 
+  /// Transform members of [toConvert] that are classes to their default constructor,
+  /// if a constructor is implied.  If not, do the reverse conversion for default
+  /// constructors.
+  ModelElement _convertConstructors(ModelElement toConvert) {
+    if (_impliedDefaultConstructor != null) {
+      if (toConvert is Class && toConvert.name == _impliedDefaultConstructor) {
+        return toConvert.defaultConstructor;
+      }
+      return toConvert;
+    } else {
+      if (toConvert is Constructor &&
+          (toConvert.enclosingElement as Class).defaultConstructor ==
+              toConvert) {
+        return toConvert.enclosingElement;
+      }
+      return toConvert;
+    }
+  }
+
+  void _findReferenceFromPrefixes() {
+    if (element is! ModelElement) return;
+    Map<String, Set<Library>> prefixToLibrary =
+        (element as ModelElement).definingLibrary.prefixToLibrary;
+    if (prefixToLibrary.containsKey(codeRefChompedParts.first)) {
+      if (codeRefChompedParts.length == 1) {
+        results.addAll(prefixToLibrary[codeRefChompedParts.first]);
+      } else {
+        String lookup = codeRefChompedParts.sublist(1).join('.');
+        prefixToLibrary[codeRefChompedParts.first]?.forEach((l) => l
+            .modelElementsNameMap[lookup]
+            ?.map(_convertConstructors)
+            ?.forEach((m) => _addCanonicalResult(m, _getPreferredClass(m))));
+      }
+    }
+  }
+
   void _findGlobalWithinRefElementCache() {
     if (packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
       for (final modelElement
@@ -547,7 +588,8 @@ class _MarkdownCommentReference {
         if (codeRefChomped == modelElement.fullyQualifiedNameWithoutLibrary ||
             (modelElement is Library &&
                 codeRefChomped == modelElement.fullyQualifiedName)) {
-          _addCanonicalResult(modelElement, null);
+          _addCanonicalResult(
+              _convertConstructors(modelElement), preferredClass);
         }
       }
     }
@@ -557,8 +599,7 @@ class _MarkdownCommentReference {
     // Only look for partially qualified matches if we didn't find a fully qualified one.
     if (library.modelElementsNameMap.containsKey(codeRefChomped)) {
       for (final modelElement in library.modelElementsNameMap[codeRefChomped]) {
-        if (!_ConsiderIfConstructor(modelElement)) continue;
-        _addCanonicalResult(modelElement, preferredClass);
+        _addCanonicalResult(_convertConstructors(modelElement), preferredClass);
       }
     }
   }
@@ -571,13 +612,12 @@ class _MarkdownCommentReference {
         packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
       for (final ModelElement modelElement
           in packageGraph.findRefElementCache[codeRefChomped]) {
-        if (!_ConsiderIfConstructor(modelElement)) continue;
         // For fully qualified matches, the original preferredClass passed
         // might make no sense.  Instead, use the enclosing class from the
         // element in [packageGraph.findRefElementCache], because that element's
         // enclosing class will be preferred from [codeRefChomped]'s perspective.
         _addCanonicalResult(
-            modelElement,
+            _convertConstructors(modelElement),
             modelElement.enclosingElement is Class
                 ? modelElement.enclosingElement
                 : null);
@@ -678,26 +718,17 @@ class _MarkdownCommentReference {
   /// Get any possible results for this class in the superChain.   Returns
   /// true if we found something.
   void _getResultsForSuperChainElement(Class c, Class tryClass) {
-    Iterable<ModelElement> membersToCheck;
-    membersToCheck = (c.allModelElementsByNamePart[codeRefChomped] ?? [])
-        .where((m) => _ConsiderIfConstructor(m));
+    Iterable<ModelElement> membersToCheck =
+        (c.allModelElementsByNamePart[codeRefChomped] ?? [])
+            .map(_convertConstructors);
     for (final ModelElement modelElement in membersToCheck) {
       // [thing], a member of this class
       _addCanonicalResult(modelElement, tryClass);
     }
     membersToCheck = (c.allModelElementsByNamePart[codeRefChompedParts.last] ??
             <ModelElement>[])
-        .where((m) => _ConsiderIfConstructor(m));
-    if (codeRefChompedParts.first == c.name) {
-      // [Foo...thing], a member of this class (possibly a parameter).
-      membersToCheck.forEach((m) => _addCanonicalResult(m, tryClass));
-    } else if (codeRefChompedParts.length > 1 &&
-        codeRefChompedParts[codeRefChompedParts.length - 2] == c.name) {
-      // [....Foo.thing], a member of this class partially specified.
-      membersToCheck
-          .whereType<Constructor>()
-          .forEach((m) => _addCanonicalResult(m, tryClass));
-    }
+        .map(_convertConstructors);
+    membersToCheck.forEach((m) => _addCanonicalResult(m, tryClass));
     results.remove(null);
     if (results.isNotEmpty) return;
     if (c.fullyQualifiedNameWithoutLibrary == codeRefChomped) {

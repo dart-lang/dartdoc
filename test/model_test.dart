@@ -367,7 +367,7 @@ void main() {
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(3));
+          equals(5));
     });
 
     test('Verify libraries with multiple categories show up in multiple places',
@@ -391,7 +391,7 @@ void main() {
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(3));
+          equals(5));
     });
   });
 
@@ -461,7 +461,7 @@ void main() {
       });
 
       test('libraries', () {
-        expect(packageGraph.localPublicLibraries, hasLength(8));
+        expect(packageGraph.localPublicLibraries, hasLength(10));
         expect(interceptorsLib.isPublic, isFalse);
       });
 
@@ -476,7 +476,7 @@ void main() {
 
         Package package = packageGraph.localPackages.first;
         expect(package.name, 'test_package');
-        expect(package.publicLibraries, hasLength(8));
+        expect(package.publicLibraries, hasLength(10));
       });
 
       test('multiple packages, sorted default', () {
@@ -1089,6 +1089,43 @@ void main() {
         docsAsHtml = doAwesomeStuff.documentationAsHtml;
       });
 
+      test('can handle renamed imports', () {
+        ModelFunction aFunctionUsingRenamedLib = fakeLibrary.functions
+            .firstWhere((f) => f.name == 'aFunctionUsingRenamedLib');
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to library: <a href="mylibpub/mylibpub-library.html">renamedLib</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to constructor (implied): <a href="mylibpub/YetAnotherHelper/YetAnotherHelper.html">new renamedLib.YetAnotherHelper()</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to constructor (implied, no new): <a href="mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper()</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to class: <a href="mylibpub/YetAnotherHelper-class.html">renamedLib.YetAnotherHelper</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to constructor (direct): <a href="mylibpub/YetAnotherHelper/YetAnotherHelper.html">renamedLib.YetAnotherHelper.YetAnotherHelper</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to class member: <a href="mylibpub/YetAnotherHelper/getMoreContents.html">renamedLib.YetAnotherHelper.getMoreContents</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to function: <a href="mylibpub/helperFunction.html">renamedLib.helperFunction</a>'));
+        expect(
+            aFunctionUsingRenamedLib.documentationAsHtml,
+            contains(
+                'Link to overlapping prefix: <a href="csspub/theOnlyThingInTheLibrary.html">renamedLib2.theOnlyThingInTheLibrary</a>'));
+      });
+
       test('operator [] reference within a class works', () {
         expect(
             docsAsHtml,
@@ -1197,15 +1234,10 @@ void main() {
 
       test('links to a top-level variable with a prefix from an imported lib',
           () {
-        expect(docsAsHtml,
-            contains('<a href="">css.theOnlyThingInTheLibrary</a>'));
-      }, skip: 'https://github.com/dart-lang/dartdoc/issues/1402');
-
-      // remove this test when the above test is fixed. just here to
-      // track when the behavior changes
-      test('codeifies a prefixed top-level variable an imported lib', () {
         expect(
-            docsAsHtml, contains('<code>css.theOnlyThingInTheLibrary</code>'));
+            docsAsHtml,
+            contains(
+                '<a href="csspub/theOnlyThingInTheLibrary.html">css.theOnlyThingInTheLibrary</a>'));
       });
 
       test('links to a name with a single underscore', () {

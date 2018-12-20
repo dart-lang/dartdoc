@@ -49,8 +49,11 @@ library fake;
 import 'dart:async';
 import 'dart:collection';
 import 'package:meta/meta.dart' show Required;
-import 'css.dart' as css;
+import 'csspub.dart' as css;
+import 'csspub.dart' as renamedLib2;
 import 'example.dart';
+import 'mylibpub.dart' as renamedLib;
+import 'mylibpub.dart' as renamedLib2;
 import 'two_exports.dart' show BaseClass;
 
 // ignore: uri_does_not_exist
@@ -77,6 +80,20 @@ abstract class BaseThingy2 implements BaseThingy {
   /// BaseThingy2's doc for aImplementingThingy.
   @override
   ImplementingThingy2 get aImplementingThingy;
+}
+
+/// This function has a link to a renamed library class member.
+///
+/// Link to library: [renamedLib]
+/// Link to constructor (implied): [new renamedLib.YetAnotherHelper()]
+/// Link to constructor (implied, no new): [renamedLib.YetAnotherHelper()]
+/// Link to class: [renamedLib.YetAnotherHelper]
+/// Link to constructor (direct): [renamedLib.YetAnotherHelper.YetAnotherHelper]
+/// Link to class member: [renamedLib.YetAnotherHelper.getMoreContents]
+/// Link to function: [renamedLib.helperFunction]
+/// Link to overlapping prefix: [renamedLib2.theOnlyThingInTheLibrary]
+void aFunctionUsingRenamedLib() {
+  renamedLib.helperFunction('hello', 3);
 }
 
 class ConstructorTester<A, B> {
