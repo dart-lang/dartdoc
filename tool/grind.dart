@@ -11,6 +11,8 @@ import 'package:io/io.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart' as yaml;
 
+import '../test/src/utils.dart';
+
 void main([List<String> args]) => grind(args);
 
 /// Thrown on failure to find something in a file.
