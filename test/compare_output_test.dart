@@ -48,7 +48,8 @@ void main() {
         pathLib.fromUri(_currentFileUri.resolve('../bin/dartdoc.dart'));
 
     setUpAll(() {
-      subprocessLauncher = new CoverageSubprocessLauncher('compare_output_test-subprocesses');
+      subprocessLauncher =
+          new CoverageSubprocessLauncher('compare_output_test-subprocesses');
     });
 
     tearDownAll(() async {
@@ -68,12 +69,12 @@ void main() {
     test('Validate missing FLUTTER_ROOT exception is clean', () async {
       StringBuffer output = new StringBuffer();
       var args = <String>[dartdocBin];
-      Future run = subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
+      Future run = subprocessLauncher.runStreamed(
+          Platform.resolvedExecutable, args,
           environment: new Map.from(Platform.environment)
             ..remove('FLUTTER_ROOT'),
           includeParentEnvironment: false,
-          workingDirectory: _testPackageFlutterPluginPath,
-          perLine: (s) {
+          workingDirectory: _testPackageFlutterPluginPath, perLine: (s) {
         output.writeln(s);
       });
       // Asynchronous exception, but we still need the output, too.
@@ -93,10 +94,11 @@ void main() {
       StringBuffer output = new StringBuffer();
       var args = <String>[dartdocBin, '--version'];
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
-          workingDirectory: _testPackagePath, perLine: (s) => output.writeln(s));
+          workingDirectory: _testPackagePath,
+          perLine: (s) => output.writeln(s));
       PackageMeta dartdocMeta = new PackageMeta.fromFilename(dartdocBin);
-      expect(
-          output.toString(), endsWith('dartdoc version: ${dartdocMeta.version}\n'));
+      expect(output.toString(),
+          endsWith('dartdoc version: ${dartdocMeta.version}\n'));
     });
 
     test("Validate html output of test_package", () async {
@@ -192,7 +194,8 @@ void main() {
       ];
 
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
-          workingDirectory: _testPackagePath, perLine: (s) => output.writeln(s));
+          workingDirectory: _testPackagePath,
+          perLine: (s) => output.writeln(s));
 
       // Examples are reported as unfound because we (purposefully)
       // did not use --example-path-prefix above.
@@ -215,10 +218,12 @@ void main() {
         '--json'
       ];
 
-      Iterable<Map> jsonValues = await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
+      Iterable<Map> jsonValues = await subprocessLauncher.runStreamed(
+          Platform.resolvedExecutable, args,
           workingDirectory: _testPackagePath);
 
-      expect(jsonValues, isNotEmpty, reason: 'All STDOUT lines should be JSON-encoded maps.');
+      expect(jsonValues, isNotEmpty,
+          reason: 'All STDOUT lines should be JSON-encoded maps.');
     }, timeout: new Timeout.factor(2));
 
     test('--footer-text includes text', () async {
@@ -241,8 +246,9 @@ void main() {
       File outFile = new File(pathLib.join(tempDir.path, 'index.html'));
       expect(outFile.readAsStringSync(), contains('footer text include'));
     });
-  }, onPlatform: {'windows': new Skip('Avoiding parsing git output')},
-     timeout: new Timeout.factor(2));
+  },
+      onPlatform: {'windows': new Skip('Avoiding parsing git output')},
+      timeout: new Timeout.factor(2));
 }
 
 Map<String, String> _parseOutput(

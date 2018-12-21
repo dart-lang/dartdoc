@@ -30,7 +30,8 @@ void main() {
     CoverageSubprocessLauncher subprocessLauncher;
 
     setUpAll(() async {
-      subprocessLauncher = new CoverageSubprocessLauncher('dartdoc_test-subprocesses');
+      subprocessLauncher =
+          new CoverageSubprocessLauncher('dartdoc_test-subprocesses');
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
       outputParam = ['--output', tempDir.path];
       DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
@@ -116,18 +117,24 @@ void main() {
       String dartdocPath = pathLib.join('bin', 'dartdoc.dart');
 
       test('errors cause non-zero exit when warnings are off', () async {
-        expect(() => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
-          dartdocPath, '--input=${testPackageToolError.path}', '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}']),
-        throwsA(const TypeMatcher<ProcessException>()));
+        expect(
+            () => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
+                  dartdocPath,
+                  '--input=${testPackageToolError.path}',
+                  '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}'
+                ]),
+            throwsA(const TypeMatcher<ProcessException>()));
       });
 
       test('errors cause non-zero exit when warnings are on', () async {
-        expect(() => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
-          dartdocPath,
-          '--input=${testPackageToolError.path}',
-          '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}',
-          '--show-warnings',
-        ]), throwsA(const TypeMatcher<ProcessException>()));
+        expect(
+            () => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
+                  dartdocPath,
+                  '--input=${testPackageToolError.path}',
+                  '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}',
+                  '--show-warnings',
+                ]),
+            throwsA(const TypeMatcher<ProcessException>()));
       });
     });
 
