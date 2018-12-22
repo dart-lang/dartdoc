@@ -248,7 +248,7 @@ void main() {
     });
   },
       onPlatform: {'windows': new Skip('Avoiding parsing git output')},
-      timeout: new Timeout.factor(2));
+      timeout: new Timeout.factor(3));
 }
 
 Map<String, String> _parseOutput(
