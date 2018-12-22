@@ -174,6 +174,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       Map<String, String> environment,
       bool includeParentEnvironment = true,
       void Function(String) perLine}) async {
+    environment ??= {};
     assert(
         executable == Platform.executable ||
             executable == Platform.resolvedExecutable,
@@ -196,11 +197,8 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       coverageResults.add(coverageResult.future);
       arguments = ['--enable-vm-service:0', '--pause-isolates-on-exit']
         ..addAll(arguments);
-      if (includeParentEnvironment == false) {
-        environment ??= {};
-        if (!environment.containsKey('DARTDOC_COVERAGE_DATA')) {
-          environment['DARTDOC_COVERAGE_DATA'] = tempDir.path;
-        }
+      if (!environment.containsKey('DARTDOC_COVERAGE_DATA')) {
+        environment['DARTDOC_COVERAGE_DATA'] = tempDir.path;
       }
     }
 
