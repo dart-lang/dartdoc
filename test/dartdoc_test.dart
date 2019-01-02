@@ -6,6 +6,7 @@ library dartdoc.dartdoc_test;
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:mirrors';
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -16,6 +17,13 @@ import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
 import 'src/utils.dart';
+
+Uri get _currentFileUri =>
+    (reflect(main) as ClosureMirror).function.location.sourceUri;
+String get _testPackagePath =>
+    pathLib.fromUri(_currentFileUri.resolve('../testing/test_package'));
+String get _testPackageFlutterPluginPath => pathLib
+    .fromUri(_currentFileUri.resolve('../testing/test_package_flutter_plugin'));
 
 class DartdocLoggingOptionContext extends DartdocGeneratorOptionContext
     with LoggingContext {
@@ -115,7 +123,6 @@ void main() {
 
     group('Invoking command-line dartdoc', () {
       String dartdocPath = pathLib.join('bin', 'dartdoc.dart');
-
       test('errors cause non-zero exit when warnings are off', () async {
         expect(
             () => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
@@ -136,7 +143,108 @@ void main() {
                 ]),
             throwsA(const TypeMatcher<ProcessException>()));
       });
-    });
+
+      test('Validate missing FLUTTER_ROOT exception is clean', () async {
+        StringBuffer output = new StringBuffer();
+        var args = <String>[dartdocPath];
+        Future run = subprocessLauncher.runStreamed(
+            Platform.resolvedExecutable, args,
+            environment: new Map.from(Platform.environment)
+              ..remove('FLUTTER_ROOT'),
+            includeParentEnvironment: false,
+            workingDirectory: _testPackageFlutterPluginPath, perLine: (s) {
+          output.writeln(s);
+        });
+        // Asynchronous exception, but we still need the output, too.
+        expect(run, throwsA(new TypeMatcher<ProcessException>()));
+        try {
+          await run;
+        } on ProcessException catch (_) {}
+
+        expect(
+            output.toString(),
+            contains(new RegExp(
+                'Top level package requires Flutter but FLUTTER_ROOT environment variable not set|test_package_flutter_plugin requires the Flutter SDK, version solving failed')));
+        expect(output.toString(), isNot(contains('asynchronous gap')));
+      });
+
+      test("Validate --version works", () async {
+        StringBuffer output = new StringBuffer();
+        var args = <String>[dartdocPath, '--version'];
+        await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
+            workingDirectory: _testPackagePath,
+            perLine: (s) => output.writeln(s));
+        PackageMeta dartdocMeta = new PackageMeta.fromFilename(dartdocPath);
+        expect(output.toString(),
+            endsWith('dartdoc version: ${dartdocMeta.version}\n'));
+      });
+
+      test('Check for sample code in examples', () async {
+        StringBuffer output = new StringBuffer();
+        var args = <String>[
+          dartdocPath,
+          '--include',
+          'ex',
+          '--no-include-source',
+          '--output',
+          tempDir.path
+        ];
+
+        await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
+            workingDirectory: _testPackagePath,
+            perLine: (s) => output.writeln(s));
+
+        // Examples are reported as unfound because we (purposefully)
+        // did not use --example-path-prefix above.
+        final sep = '.'; // We don't care what the path separator character is
+        final firstUnfoundExample =
+            new RegExp('warning: lib${sep}example.dart: '
+                '@example file not found.*test_package${sep}dog${sep}food.md');
+        if (!output.toString().contains(firstUnfoundExample)) {
+          fail('Should warn about unfound @example files');
+        }
+      });
+
+      test('Validate JSON output', () async {
+        var args = <String>[
+          dartdocPath,
+          '--include',
+          'ex',
+          '--no-include-source',
+          '--output',
+          tempDir.path,
+          '--json'
+        ];
+
+        Iterable<Map> jsonValues = await subprocessLauncher.runStreamed(
+            Platform.resolvedExecutable, args,
+            workingDirectory: _testPackagePath);
+
+        expect(jsonValues, isNotEmpty,
+            reason: 'All STDOUT lines should be JSON-encoded maps.');
+      }, timeout: new Timeout.factor(2));
+
+      test('--footer-text includes text', () async {
+        String footerTextPath =
+            pathLib.join(Directory.systemTemp.path, 'footer.txt');
+        new File(footerTextPath).writeAsStringSync(' footer text include ');
+
+        var args = <String>[
+          dartdocPath,
+          '--footer-text=${footerTextPath}',
+          '--include',
+          'ex',
+          '--output',
+          tempDir.path
+        ];
+
+        await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
+            workingDirectory: _testPackagePath);
+
+        File outFile = new File(pathLib.join(tempDir.path, 'index.html'));
+        expect(outFile.readAsStringSync(), contains('footer text include'));
+      });
+    }, timeout: new Timeout.factor(3));
 
     group('Option handling with cross-linking', () {
       DartdocResults results;
