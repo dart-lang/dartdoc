@@ -118,11 +118,13 @@ void main() {
     });
 
     group('Invoking command-line dartdoc', () {
-      String dartdocPath = pathLib.canonicalize(pathLib.join('bin', 'dartdoc.dart'));
+      String dartdocPath =
+          pathLib.canonicalize(pathLib.join('bin', 'dartdoc.dart'));
       CoverageSubprocessLauncher subprocessLauncher;
 
       setUpAll(() {
-        subprocessLauncher = new CoverageSubprocessLauncher('dartdoc_test-subprocesses');
+        subprocessLauncher =
+            new CoverageSubprocessLauncher('dartdoc_test-subprocesses');
       });
 
       tearDownAll(() async {
