@@ -252,6 +252,7 @@ void main() {
       Package p = packageGraph.defaultPackage;
       expect(p.name, 'test_package');
       expect(p.hasDocumentationFile, isTrue);
+      // Total number of public libraries in test_package.
       expect(packageGraph.defaultPackage.publicLibraries, hasLength(12));
       expect(packageGraph.localPackages.length, equals(1));
     });
