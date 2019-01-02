@@ -35,11 +35,8 @@ void main() {
   group('dartdoc with generators', () {
     Directory tempDir;
     List<String> outputParam;
-    CoverageSubprocessLauncher subprocessLauncher;
 
     setUpAll(() async {
-      subprocessLauncher =
-          new CoverageSubprocessLauncher('dartdoc_test-subprocesses');
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
       outputParam = ['--output', tempDir.path];
       DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
@@ -50,7 +47,6 @@ void main() {
     });
 
     tearDown(() async {
-      await Future.wait(CoverageSubprocessLauncher.coverageResults);
       tempDir.listSync().forEach((FileSystemEntity f) {
         f.deleteSync(recursive: true);
       });
@@ -122,7 +118,17 @@ void main() {
     });
 
     group('Invoking command-line dartdoc', () {
-      String dartdocPath = pathLib.join('bin', 'dartdoc.dart');
+      String dartdocPath = pathLib.canonicalize(pathLib.join('bin', 'dartdoc.dart'));
+      CoverageSubprocessLauncher subprocessLauncher;
+
+      setUpAll(() {
+        subprocessLauncher = new CoverageSubprocessLauncher('dartdoc_test-subprocesses');
+      });
+
+      tearDownAll(() async {
+        await Future.wait(CoverageSubprocessLauncher.coverageResults);
+      });
+
       test('errors cause non-zero exit when warnings are off', () async {
         expect(
             () => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
