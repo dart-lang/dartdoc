@@ -3,7 +3,3 @@
 # Don't collapse in github code reviews by default.
 lib/src/version.dart linguist-generated=false
 lib/src/html/resources.g.dart linguist-generated=false
-
-# Do collapse in github code reviews by default.
-testing/test_package_docs/** linguist-generated=true
-testing/test_package_docs_dev/** linguist-generated=true
