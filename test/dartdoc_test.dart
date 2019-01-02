@@ -27,7 +27,11 @@ void main() {
   group('dartdoc with generators', () {
     Directory tempDir;
     List<String> outputParam;
+    CoverageSubprocessLauncher subprocessLauncher;
+
     setUpAll(() async {
+      subprocessLauncher =
+          new CoverageSubprocessLauncher('dartdoc_test-subprocesses');
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
       outputParam = ['--output', tempDir.path];
       DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
@@ -38,6 +42,7 @@ void main() {
     });
 
     tearDown(() async {
+      await Future.wait(CoverageSubprocessLauncher.coverageResults);
       tempDir.listSync().forEach((FileSystemEntity f) {
         f.deleteSync(recursive: true);
       });
@@ -112,21 +117,24 @@ void main() {
       String dartdocPath = pathLib.join('bin', 'dartdoc.dart');
 
       test('errors cause non-zero exit when warnings are off', () async {
-        ProcessResult result = Process.runSync(Platform.resolvedExecutable, [
-          dartdocPath,
-          '--input=$testPackageToolError',
-          '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}',
-        ]);
-        expect(result.exitCode, isNonZero);
+        expect(
+            () => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
+                  dartdocPath,
+                  '--input=${testPackageToolError.path}',
+                  '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}'
+                ]),
+            throwsA(const TypeMatcher<ProcessException>()));
       });
+
       test('errors cause non-zero exit when warnings are on', () async {
-        ProcessResult result = Process.runSync(Platform.resolvedExecutable, [
-          dartdocPath,
-          '--input=$testPackageToolError',
-          '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}',
-          '--show-warnings',
-        ]);
-        expect(result.exitCode, isNonZero);
+        expect(
+            () => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
+                  dartdocPath,
+                  '--input=${testPackageToolError.path}',
+                  '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}',
+                  '--show-warnings',
+                ]),
+            throwsA(const TypeMatcher<ProcessException>()));
       });
     });
 

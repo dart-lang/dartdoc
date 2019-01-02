@@ -464,8 +464,8 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   void warn(PackageWarning kind,
       {String message,
-        Iterable<Locatable> referredFrom,
-        Iterable<String> extendedDebug}) {
+      Iterable<Locatable> referredFrom,
+      Iterable<String> extendedDebug}) {
     enclosingCombo.warn(kind,
         message: message,
         referredFrom: referredFrom,
@@ -2031,7 +2031,8 @@ abstract class GetterSetterCombo implements ModelElement {
     if (writeOnly) return r'&#8592;';
     // ↔
     if (readWrite) return r'&#8596;';
-    throw UnsupportedError('GetterSetterCombo must be one of readOnly, writeOnly, or readWrite');
+    throw UnsupportedError(
+        'GetterSetterCombo must be one of readOnly, writeOnly, or readWrite');
   }
 
   bool get readOnly => hasPublicGetter && !hasPublicSetter;

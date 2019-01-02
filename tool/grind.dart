@@ -856,8 +856,6 @@ List<File> get testFiles => new Directory('test')
 Future<void> testDart2() async {
   List<String> parameters = ['--enable-asserts'];
 
-  CoverageSubprocessLauncher.coverageEnabled =
-      Platform.environment.containsKey('COVERAGE_TOKEN');
   for (File dartFile in testFiles) {
     await testFutures.addFutureFromClosure(() => new CoverageSubprocessLauncher(
             'dart2-${pathLib.basename(dartFile.path)}')

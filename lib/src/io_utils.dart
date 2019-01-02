@@ -80,7 +80,6 @@ final libraryNameRegexp = new RegExp('[.:]');
 final partOfRegexp = new RegExp('part of ');
 final newLinePartOfRegexp = new RegExp('\npart of ');
 
-
 /// Best used with Future<void>.
 class MultiFutureTracker<T> {
   /// Approximate maximum number of simultaneous active Futures.
@@ -113,5 +112,3 @@ class MultiFutureTracker<T> {
   /// Wait until all futures added so far have completed.
   Future<void> wait() async => await _waitUntil(0);
 }
-
-
