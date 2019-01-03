@@ -111,7 +111,7 @@ void startLogging(LoggingContext config) {
   }
 }
 
-abstract class LoggingContext implements DartdocOptionContext {
+abstract class LoggingContext implements DartdocOptionContextBase {
   bool get json => optionSet['json'].valueAt(context);
   bool get showProgress => optionSet['showProgress'].valueAt(context);
 }

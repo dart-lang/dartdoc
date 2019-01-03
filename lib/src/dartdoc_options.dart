@@ -20,6 +20,7 @@ import 'dart:io';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/experiment_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
@@ -489,7 +490,7 @@ abstract class DartdocOption<T> {
   /// and requires that one of [isDir] or [isFile] is set.
   final bool mustExist;
 
-  DartdocOption._(this.name, this.defaultsTo, this.help, this.isDir,
+  DartdocOption(this.name, this.defaultsTo, this.help, this.isDir,
       this.isFile, this.mustExist, this._convertYamlToType) {
     assert(!(isDir && isFile));
     if (isDir || isFile) assert(_isString || _isListString || _isMapString);
@@ -674,7 +675,7 @@ class DartdocOptionFileSynth<T> extends DartdocOption<T>
       bool isFile = false,
       bool parentDirOverridesChild,
       T Function(YamlMap, pathLib.Context) convertYamlToType})
-      : super._(name, null, help, isDir, isFile, mustExist, convertYamlToType) {
+      : super(name, null, help, isDir, isFile, mustExist, convertYamlToType) {
     _parentDirOverridesChild = parentDirOverridesChild;
   }
 
@@ -721,7 +722,7 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
       bool isFile = false,
       bool negatable = false,
       bool splitCommas})
-      : super._(name, null, help, isDir, isFile, mustExist, null) {
+      : super(name, null, help, isDir, isFile, mustExist, null) {
     _hide = hide;
     _negatable = negatable;
     _splitCommas = splitCommas;
@@ -767,7 +768,7 @@ class DartdocOptionSyntheticOnly<T> extends DartdocOption<T>
       String help = '',
       bool isDir = false,
       bool isFile = false})
-      : super._(name, null, help, isDir, isFile, mustExist, null);
+      : super(name, null, help, isDir, isFile, mustExist, null);
 }
 
 abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
@@ -801,7 +802,7 @@ typedef Future<List<DartdocOption>> OptionGenerator();
 /// A [DartdocOption] that only contains other [DartdocOption]s and is not an option itself.
 class DartdocOptionSet extends DartdocOption<Null> {
   DartdocOptionSet(String name)
-      : super._(name, null, null, false, false, false, null);
+      : super(name, null, null, false, false, false, null);
 
   /// Asynchronous factory that is the main entry point to initialize Dartdoc
   /// options for use.
@@ -852,7 +853,7 @@ class DartdocOptionArgOnly<T> extends DartdocOption<T>
       bool isFile = false,
       bool negatable = false,
       bool splitCommas})
-      : super._(name, defaultsTo, help, isDir, isFile, mustExist, null) {
+      : super(name, defaultsTo, help, isDir, isFile, mustExist, null) {
     _hide = hide;
     _negatable = negatable;
     _splitCommas = splitCommas;
@@ -888,7 +889,7 @@ class DartdocOptionArgFile<T> extends DartdocOption<T>
       bool negatable = false,
       bool parentDirOverridesChild: false,
       bool splitCommas})
-      : super._(name, defaultsTo, help, isDir, isFile, mustExist, null) {
+      : super(name, defaultsTo, help, isDir, isFile, mustExist, null) {
     _abbr = abbr;
     _hide = hide;
     _negatable = negatable;
@@ -938,7 +939,7 @@ class DartdocOptionFileOnly<T> extends DartdocOption<T>
       bool isFile = false,
       bool parentDirOverridesChild: false,
       T Function(YamlMap, pathLib.Context) convertYamlToType})
-      : super._(name, defaultsTo, help, isDir, isFile, mustExist,
+      : super(name, defaultsTo, help, isDir, isFile, mustExist,
             convertYamlToType) {
     _parentDirOverridesChild = parentDirOverridesChild;
   }
@@ -1258,12 +1259,21 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
   }
 }
 
+/// All DartdocOptionContext mixins should implement this, as well as any other
+/// DartdocOptionContext mixins they use for calculating synthetic options.
+abstract class DartdocOptionContextBase {
+  DartdocOptionSet get optionSet;
+  Directory get context;
+}
+
 /// An [DartdocOptionSet] wrapped in nice accessors specific to Dartdoc, which
 /// automatically passes in the right directory for a given context.  Usually,
 /// a single [ModelElement], [Package], [Category] and so forth has a single context
 /// and so this can be made a member variable of those structures.
-class DartdocOptionContext {
+class DartdocOptionContext extends DartdocOptionContextBase with DartdocExperimentOptionContext {
+  @override
   final DartdocOptionSet optionSet;
+  @override
   Directory context;
 
   // TODO(jcollins-g): Allow passing in structured data to initialize a
@@ -1561,5 +1571,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
             'exist. Executables for different platforms are specified by '
             'giving the platform name as a key, and a list of strings as the '
             'command.'),
-  ];
+    // TODO(jcollins-g): refactor so there is a single static "create" for
+    // each DartdocOptionContext that traverses the inheritance tree itself.
+  ]..addAll(await createExperimentOptions());
 }
