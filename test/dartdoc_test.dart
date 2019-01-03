@@ -152,6 +152,13 @@ void main() {
             throwsA(const TypeMatcher<ProcessException>()));
       });
 
+      test('help prints command line args', () async {
+        List<String> outputLines = [];
+        await subprocessLauncher.runStreamed(Platform.resolvedExecutable, [dartdocPath, '--help'], perLine: outputLines.add);
+        expect(outputLines, contains('Generate HTML documentation for Dart libraries.'));
+        expect(outputLines.join('\n'), contains(new RegExp('^-h, --help[ ]+Show command help.', multiLine: true))) ;
+      });
+
       test('Validate missing FLUTTER_ROOT exception is clean', () async {
         StringBuffer output = new StringBuffer();
         var args = <String>[dartdocPath];

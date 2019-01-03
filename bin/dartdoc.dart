@@ -120,6 +120,7 @@ Future<void> main(List<String> arguments) async {
 /// Print help if we are passed the help option.
 void _printHelp(ArgParser parser) {
   print('Generate HTML documentation for Dart libraries.\n');
+  print(parser.usage);
 }
 
 /// Print usage information on invalid command lines.
