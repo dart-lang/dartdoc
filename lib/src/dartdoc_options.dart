@@ -490,8 +490,8 @@ abstract class DartdocOption<T> {
   /// and requires that one of [isDir] or [isFile] is set.
   final bool mustExist;
 
-  DartdocOption(this.name, this.defaultsTo, this.help, this.isDir,
-      this.isFile, this.mustExist, this._convertYamlToType) {
+  DartdocOption(this.name, this.defaultsTo, this.help, this.isDir, this.isFile,
+      this.mustExist, this._convertYamlToType) {
     assert(!(isDir && isFile));
     if (isDir || isFile) assert(_isString || _isListString || _isMapString);
     if (mustExist) {
@@ -1270,7 +1270,8 @@ abstract class DartdocOptionContextBase {
 /// automatically passes in the right directory for a given context.  Usually,
 /// a single [ModelElement], [Package], [Category] and so forth has a single context
 /// and so this can be made a member variable of those structures.
-class DartdocOptionContext extends DartdocOptionContextBase with DartdocExperimentOptionContext {
+class DartdocOptionContext extends DartdocOptionContextBase
+    with DartdocExperimentOptionContext {
   @override
   final DartdocOptionSet optionSet;
   @override

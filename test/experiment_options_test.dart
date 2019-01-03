@@ -13,10 +13,14 @@ import 'package:path/path.dart' as pathLib;
 import 'package:test/test.dart';
 
 class DartdocExperimentOptionContextTester extends DartdocOptionContext {
-  DartdocExperimentOptionContextTester(DartdocOptionSet optionSet, FileSystemEntity entity) : super(optionSet, entity);
+  DartdocExperimentOptionContextTester(
+      DartdocOptionSet optionSet, FileSystemEntity entity)
+      : super(optionSet, entity);
 
-  bool get experimentFakeExperiment => optionSet['enable-experiment']['fake-experiment'].valueAt(context);
-  bool get experimentFakeExperimentOn => optionSet['enable-experiment']['fake-experiment-on'].valueAt(context);
+  bool get experimentFakeExperiment =>
+      optionSet['enable-experiment']['fake-experiment'].valueAt(context);
+  bool get experimentFakeExperimentOn =>
+      optionSet['enable-experiment']['fake-experiment-on'].valueAt(context);
 }
 
 void main() {
@@ -25,7 +29,8 @@ void main() {
   File optionsFile;
 
   setUp(() async {
-    experimentOptions = await DartdocOptionSet.fromOptionGenerators('dartdoc', [createExperimentOptions]);
+    experimentOptions = await DartdocOptionSet.fromOptionGenerators(
+        'dartdoc', [createExperimentOptions]);
     List<DartdocExperimentOption> testOnlyOptions = [
       new DartdocExperimentOption('fake-experiment', false),
       new DartdocExperimentOption('fake-experiment-on', true),
@@ -35,7 +40,8 @@ void main() {
 
   setUpAll(() {
     tempDir = Directory.systemTemp.createTempSync('experiment_options_test');
-    optionsFile = new File(pathLib.join(tempDir.path, 'dartdoc_options.yaml'))..createSync();
+    optionsFile = new File(pathLib.join(tempDir.path, 'dartdoc_options.yaml'))
+      ..createSync();
     optionsFile.writeAsStringSync('''
 dartdoc:
   enable-experiment:
@@ -52,7 +58,9 @@ dartdoc:
   group('Experimental options test', () {
     test('Defaults work for all options', () {
       experimentOptions.parseArguments([]);
-      DartdocExperimentOptionContextTester tester = new DartdocExperimentOptionContextTester(experimentOptions, Directory.current);
+      DartdocExperimentOptionContextTester tester =
+          new DartdocExperimentOptionContextTester(
+              experimentOptions, Directory.current);
       expect(tester.experimentConstantUpdate2018, isFalse);
       expect(tester.experimentNonNullable, isFalse);
       expect(tester.experimentSetLiterals, isFalse);
@@ -61,8 +69,13 @@ dartdoc:
     });
 
     test('Overriding defaults works via args', () {
-      experimentOptions.parseArguments(['--enable-experiment', 'non-nullable,set-literals,no-fake-experiment-on']);
-      DartdocExperimentOptionContextTester tester = new DartdocExperimentOptionContextTester(experimentOptions, Directory.current);
+      experimentOptions.parseArguments([
+        '--enable-experiment',
+        'non-nullable,set-literals,no-fake-experiment-on'
+      ]);
+      DartdocExperimentOptionContextTester tester =
+          new DartdocExperimentOptionContextTester(
+              experimentOptions, Directory.current);
       expect(tester.experimentConstantUpdate2018, isFalse);
       expect(tester.experimentNonNullable, isTrue);
       expect(tester.experimentSetLiterals, isTrue);
@@ -72,7 +85,8 @@ dartdoc:
 
     test('Overriding defaults works via dartdoc_options.yaml', () {
       experimentOptions.parseArguments([]);
-      DartdocExperimentOptionContextTester tester = new DartdocExperimentOptionContextTester(experimentOptions, tempDir);
+      DartdocExperimentOptionContextTester tester =
+          new DartdocExperimentOptionContextTester(experimentOptions, tempDir);
       expect(tester.experimentConstantUpdate2018, isTrue);
       expect(tester.experimentNonNullable, isFalse);
       expect(tester.experimentSetLiterals, isFalse);
