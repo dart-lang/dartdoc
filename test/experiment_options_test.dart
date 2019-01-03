@@ -17,6 +17,8 @@ class DartdocExperimentOptionContextTester extends DartdocOptionContext {
       DartdocOptionSet optionSet, FileSystemEntity entity)
       : super(optionSet, entity);
 
+  bool get experimentExpired =>
+      optionSet['enable-experiment']['expired'].valueAt(context);
   bool get experimentFakeExperiment =>
       optionSet['enable-experiment']['fake-experiment'].valueAt(context);
   bool get experimentFakeExperimentOn =>
@@ -34,6 +36,7 @@ void main() {
     List<DartdocExperimentOption> testOnlyOptions = [
       new DartdocExperimentOption('fake-experiment', false),
       new DartdocExperimentOption('fake-experiment-on', true),
+      new DartdocExperimentOption('expired', true, expired: true),
     ];
     experimentOptions['enable-experiment']..addAll(testOnlyOptions);
   });
@@ -64,6 +67,7 @@ dartdoc:
       expect(tester.experimentConstantUpdate2018, isFalse);
       expect(tester.experimentNonNullable, isFalse);
       expect(tester.experimentSetLiterals, isFalse);
+      expect(tester.experimentExpired, isTrue);
       expect(tester.experimentFakeExperiment, isFalse);
       expect(tester.experimentFakeExperimentOn, isTrue);
     });
@@ -79,6 +83,7 @@ dartdoc:
       expect(tester.experimentConstantUpdate2018, isFalse);
       expect(tester.experimentNonNullable, isTrue);
       expect(tester.experimentSetLiterals, isTrue);
+      expect(tester.experimentExpired, isTrue);
       expect(tester.experimentFakeExperiment, isFalse);
       expect(tester.experimentFakeExperimentOn, isFalse);
     });
@@ -90,8 +95,21 @@ dartdoc:
       expect(tester.experimentConstantUpdate2018, isTrue);
       expect(tester.experimentNonNullable, isFalse);
       expect(tester.experimentSetLiterals, isFalse);
+      expect(tester.experimentExpired, isTrue);
       expect(tester.experimentFakeExperiment, isTrue);
       expect(tester.experimentFakeExperimentOn, isFalse);
+    });
+
+    test('Overriding default of an expired experiment throws', () {
+      experimentOptions.parseArguments([
+        '--enable-experiment',
+        'no-expired',
+      ]);
+      DartdocExperimentOptionContextTester tester =
+          new DartdocExperimentOptionContextTester(
+              experimentOptions, Directory.current);
+      expect(() => tester.experimentExpired,
+          throwsA(const TypeMatcher<DartdocOptionError>()));
     });
   });
 }
