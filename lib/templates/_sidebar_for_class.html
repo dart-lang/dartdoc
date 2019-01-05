@@ -1,52 +1,54 @@
 <ol>
-  {{#clazz.hasPublicConstructors}}
-  <li class="section-title"><a href="{{clazz.href}}#constructors">Constructors</a></li>
-  {{#clazz.publicConstructors}}
-  <li><a{{#isDeprecated}} class="deprecated"{{/isDeprecated}} href="{{href}}">{{shortName}}</a></li>
-  {{/clazz.publicConstructors}}
-  {{/clazz.hasPublicConstructors}}
+  {{#clazz}}
+  {{#hasPublicConstructors}}
+  <li class="section-title"><a href="{{{href}}}#constructors">Constructors</a></li>
+  {{#publicConstructors}}
+  <li><a{{#isDeprecated}} class="deprecated"{{/isDeprecated}} href="{{{href}}}">{{shortName}}</a></li>
+  {{/publicConstructors}}
+  {{/hasPublicConstructors}}
 
-  {{#clazz.hasPublicProperties}}
+  {{#hasPublicProperties}}
   <li class="section-title{{ #allPublicInstancePropertiesInherited }} inherited{{ /allPublicInstancePropertiesInherited }}">
-    <a href="{{clazz.href}}#instance-properties">Properties</a>
+    <a href="{{{href}}}#instance-properties">Properties</a>
   </li>
-  {{#clazz.allPublicInstanceProperties}}
+  {{#allPublicInstanceProperties}}
   <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
-  {{/clazz.allPublicInstanceProperties}}
-  {{/clazz.hasPublicProperties}}
+  {{/allPublicInstanceProperties}}
+  {{/hasPublicProperties}}
 
-  {{#clazz.hasPublicMethods}}
-  <li class="section-title{{ #allPublicInstanceMethodsInherited }} inherited{{ /allPublicInstanceMethodsInherited }}"><a href="{{clazz.href}}#instance-methods">Methods</a></li>
-  {{#clazz.allPublicInstanceMethods}}
+  {{#hasPublicMethods}}
+  <li class="section-title{{ #allPublicInstanceMethodsInherited }} inherited{{ /allPublicInstanceMethodsInherited }}"><a href="{{{href}}}#instance-methods">Methods</a></li>
+  {{#allPublicInstanceMethods}}
   <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
-  {{/clazz.allPublicInstanceMethods}}
-  {{/clazz.hasPublicMethods}}
+  {{/allPublicInstanceMethods}}
+  {{/hasPublicMethods}}
 
-  {{#clazz.hasPublicOperators}}
-  <li class="section-title{{ #allPublicOperatorsInherited }} inherited{{ /allPublicOperatorsInherited}}"><a href="{{clazz.href}}#operators">Operators</a></li>
-  {{#clazz.allPublicOperators}}
+  {{#hasPublicOperators}}
+  <li class="section-title{{ #allPublicOperatorsInherited }} inherited{{ /allPublicOperatorsInherited}}"><a href="{{{href}}}#operators">Operators</a></li>
+  {{#allPublicOperators}}
   <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
-  {{/clazz.allPublicOperators}}
-  {{/clazz.hasPublicOperators}}
+  {{/allPublicOperators}}
+  {{/hasPublicOperators}}
 
-  {{#clazz.hasPublicStaticProperties}}
-  <li class="section-title"><a href="{{clazz.href}}#static-properties">Static properties</a></li>
-  {{#clazz.publicStaticProperties}}
+  {{#hasPublicStaticProperties}}
+  <li class="section-title"><a href="{{{href}}}#static-properties">Static properties</a></li>
+  {{#publicStaticProperties}}
   <li>{{{ linkedName }}}</li>
-  {{/clazz.publicStaticProperties}}
-  {{/clazz.hasPublicStaticProperties}}
+  {{/publicStaticProperties}}
+  {{/hasPublicStaticProperties}}
 
-  {{#clazz.hasPublicStaticMethods}}
-  <li class="section-title"><a href="{{clazz.href}}#static-methods">Static methods</a></li>
-  {{#clazz.publicStaticMethods}}
+  {{#hasPublicStaticMethods}}
+  <li class="section-title"><a href="{{{href}}}#static-methods">Static methods</a></li>
+  {{#publicStaticMethods}}
   <li>{{{ linkedName }}}</li>
-  {{/clazz.publicStaticMethods}}
-  {{/clazz.hasPublicStaticMethods}}
+  {{/publicStaticMethods}}
+  {{/hasPublicStaticMethods}}
 
-  {{#clazz.hasPublicConstants}}
-  <li class="section-title"><a href="{{clazz.href}}#constants">Constants</a></li>
-  {{#clazz.publicConstants}}
+  {{#hasPublicConstants}}
+  <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
+  {{#publicConstants}}
   <li>{{{linkedName}}}</li>
-  {{/clazz.publicConstants}}
-  {{/clazz.hasPublicConstants}}
+  {{/publicConstants}}
+  {{/hasPublicConstants}}
+  {{/clazz}}
 </ol>

@@ -43,3 +43,7 @@ dev_dependencies:
 
 executables:
   dartdoc: null
+
+dependency_overrides:
+  mustache:
+    path: '../mustache'

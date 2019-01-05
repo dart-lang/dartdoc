@@ -6,45 +6,38 @@ library dartdoc.template_test;
 
 import 'dart:io';
 
-import 'package:dartdoc/src/third_party/pkg/mustache4dart/lib/mustache4dart.dart';
 import 'package:path/path.dart' as pathLib;
+import 'package:mustache/mustache.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('template', () {
     group('with sitemap', () {
-      var sitemap;
+      Template sitemap;
 
       setUp(() {
         if (sitemap == null) {
           var templatePath =
-              pathLib.join(pathLib.current, 'lib/templates/sitemap.xml');
+              pathLib.join(pathLib.current, 'test/templates/sitemap.xml');
           File tmplFile = new File(templatePath);
           var siteMapTmpl = tmplFile.readAsStringSync();
-          sitemap = compile(siteMapTmpl);
+          sitemap = Template(siteMapTmpl);
         }
       });
 
-      test('render', () {
-        expect(
-            _normalize(sitemap({
+      test('render with missing url', () {
+        expect(() =>
+            _normalize(sitemap.renderString({
               'links': [
                 {'name': 'somefile.html'}
               ]
-            })),
-            '''
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/somefile.html</loc>
-  </url>
-</urlset>
-''');
+            })), throwsException);
       });
 
       test('substitute multiple links', () {
         expect(
-            _normalize(sitemap({
+            _normalize(sitemap.renderString({
+              'url': 'http://mydoc.com',
               'links': [
                 {'name': 'somefile.html'},
                 {'name': 'asecondfile.html'}
@@ -54,10 +47,10 @@ void main() {
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>/somefile.html</loc>
+    <loc>http://mydoc.com/somefile.html</loc>
   </url>
   <url>
-    <loc>/asecondfile.html</loc>
+    <loc>http://mydoc.com/asecondfile.html</loc>
   </url>
 </urlset>
 ''');
@@ -65,7 +58,7 @@ void main() {
 
       test('url and file name', () {
         expect(
-            _normalize(sitemap({
+            _normalize(sitemap.renderString({
               'url': 'http://mydoc.com',
               'links': [
                 {'name': 'somefile.html'}

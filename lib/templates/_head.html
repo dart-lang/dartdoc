@@ -10,18 +10,17 @@
   <meta name="description" content="{{ metaDescription }}">
   <title>{{ title }}</title>
   {{ #relCanonicalPrefix }}
-  <link rel="canonical" href="{{relCanonicalPrefix}}/{{self.href}}">
+  <link rel="canonical" href="{{{relCanonicalPrefix}}}/{{{self.href}}}">
   {{ /relCanonicalPrefix}}
   {{#htmlBase}}
   <!-- required because all the links are pseudo-absolute -->
-  <base href="{{htmlBase}}">
+  <base href="{{{htmlBase}}}">
   {{/htmlBase}}
 
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link rel="stylesheet" href="static-assets/github.css">
   <link rel="stylesheet" href="static-assets/styles.css">
   <link rel="icon" href="static-assets/favicon.png">
-
   <!-- header placeholder -->
 </head>
 
@@ -33,16 +32,16 @@
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     {{#navLinks}}
-    <li><a href="{{href}}">{{name}}</a></li>
+    <li><a href="{{{href}}}">{{name}}</a></li>
     {{/navLinks}}
     {{#navLinksWithGenerics}}
-    <li><a href="{{href}}">{{name}}{{#hasGenericParameters}}<span class="signature">{{{genericParameters}}}</span>{{/hasGenericParameters}}</a></li>
+    <li><a href="{{{href}}}">{{name}}{{#hasGenericParameters}}<span class="signature">{{{genericParameters}}}</span>{{/hasGenericParameters}}</a></li>
     {{/navLinksWithGenerics}}
     {{^hasHomepage}}
     <li class="self-crumb">{{{ layoutTitle }}}</li>
     {{/hasHomepage}}
     {{#hasHomepage}}
-    <li><a href="{{homepage}}">{{{ layoutTitle }}}</a></li>
+    <li><a href="{{{homepage}}}">{{{ layoutTitle }}}</a></li>
     {{/hasHomepage}}
   </ol>
   <div class="self-name">{{self.name}}</div>
