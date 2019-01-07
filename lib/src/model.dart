@@ -388,7 +388,7 @@ class InheritableAccessor extends Accessor with Inheritable {
               } else {
                 _overriddenElement = foundField.setter;
               }
-              assert(!(_overriddenElement as Accessor).isInherited);
+              assert(!(_overriddenElement as InheritableAccessor).isInherited);
               break;
             }
           }
@@ -413,16 +413,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   GetterSetterCombo get enclosingCombo {
-    if (_enclosingCombo == null) {
-      if (enclosingElement is Class) {
-        // TODO(jcollins-g): this side effect is rather hacky.  Make sure
-        // enclosingCombo always gets set at accessor creation time, somehow, to
-        // avoid this.
-        // TODO(jcollins-g): This also doesn't work for private accessors sometimes.
-        (enclosingElement as Class).allInstanceFields;
-      }
-      assert(_enclosingCombo != null);
-    }
+    assert(_enclosingCombo != null);
     return _enclosingCombo;
   }
 
@@ -475,17 +466,10 @@ class Accessor extends ModelElement implements EnclosedElement {
       {String message,
       Iterable<Locatable> referredFrom,
       Iterable<String> extendedDebug}) {
-    if (enclosingCombo != null) {
-      enclosingCombo.warn(kind,
-          message: message,
-          referredFrom: referredFrom,
-          extendedDebug: extendedDebug);
-    } else {
-      super.warn(kind,
-          message: message,
-          referredFrom: referredFrom,
-          extendedDebug: extendedDebug);
-    }
+    enclosingCombo.warn(kind,
+        message: message,
+        referredFrom: referredFrom,
+        extendedDebug: extendedDebug);
   }
 
   @override
@@ -509,8 +493,6 @@ class Accessor extends ModelElement implements EnclosedElement {
   bool get isCanonical => enclosingCombo.isCanonical;
 
   bool get isCovariant => isSetter && parameters.first.isCovariant;
-
-  bool get isInherited => false;
 
   @override
   String get href {
@@ -596,7 +578,7 @@ class Class extends ModelElement
     with TypeParameters, Categorization
     implements EnclosedElement {
   List<DefinedElementType> _mixins;
-  DefinedElementType _supertype;
+  DefinedElementType supertype;
   List<DefinedElementType> _interfaces;
   List<Constructor> _constructors;
   List<Method> _allMethods;
@@ -623,7 +605,7 @@ class Class extends ModelElement
         .toList(growable: false);
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
-      _supertype = new ElementType.from(_cls.supertype, packageGraph);
+      supertype = new ElementType.from(_cls.supertype, packageGraph);
     }
 
     _interfaces = _cls.interfaces
@@ -1032,7 +1014,7 @@ class Class extends ModelElement
 
   List<DefinedElementType> get superChain {
     List<DefinedElementType> typeChain = [];
-    DefinedElementType parent = _supertype;
+    DefinedElementType parent = supertype;
     while (parent != null) {
       typeChain.add(parent);
       if (parent.type is InterfaceType) {
@@ -1045,7 +1027,7 @@ class Class extends ModelElement
               (parent.type as InterfaceType).superclass, packageGraph);
         }
       } else {
-        parent = (parent.element as Class)._supertype;
+        parent = (parent.element as Class).supertype;
       }
     }
     return typeChain;
@@ -1055,8 +1037,6 @@ class Class extends ModelElement
       filterNonPublic(superChain);
   Iterable<DefinedElementType> get publicSuperChainReversed =>
       publicSuperChain.toList().reversed;
-
-  DefinedElementType get supertype => _supertype;
 
   List<ExecutableElement> __inheritedElements;
   List<ExecutableElement> get _inheritedElements {
@@ -1133,9 +1113,9 @@ class Class extends ModelElement
       PropertyAccessorElement setterElement,
       Set<PropertyAccessorElement> inheritedAccessors,
       [FieldElement f]) {
-    Accessor getter =
+    InheritableAccessor getter =
         new InheritableAccessor.from(getterElement, inheritedAccessors, this);
-    Accessor setter =
+    InheritableAccessor setter =
         new InheritableAccessor.from(setterElement, inheritedAccessors, this);
     // Rebind getterElement/setterElement as ModelElement.from can resolve
     // MultiplyInheritedExecutableElements or resolve Members.
@@ -1154,7 +1134,7 @@ class Class extends ModelElement
         // different places in the inheritance chain, there are two FieldElements
         // for this single Field we're trying to compose.  Pick the one closest
         // to this class on the inheritance chain.
-        if ((setter.enclosingElement as Class)
+        if ((setter.enclosingElement)
             .isInheritingFrom(getter.enclosingElement)) {
           f = setterElement.variable;
         } else {
@@ -2033,10 +2013,7 @@ abstract class GetterSetterCombo implements ModelElement {
   }
 
   bool get hasExplicitGetter => hasPublicGetter && !getter.isSynthetic;
-
   bool get hasExplicitSetter => hasPublicSetter && !setter.isSynthetic;
-  bool get hasImplicitSetter => hasPublicSetter && setter.isSynthetic;
-  bool get hasImplicitGetter => hasPublicGetter && getter.isSynthetic;
 
   bool get hasGetter => getter != null;
 
@@ -2054,10 +2031,8 @@ abstract class GetterSetterCombo implements ModelElement {
     if (writeOnly) return r'&#8592;';
     // ↔
     if (readWrite) return r'&#8596;';
-    // A GetterSetterCombo should always be one of readOnly, writeOnly,
-    // or readWrite (if documented).
-    assert(!isPublic);
-    return null;
+    throw UnsupportedError(
+        'GetterSetterCombo must be one of readOnly, writeOnly, or readWrite');
   }
 
   bool get readOnly => hasPublicGetter && !hasPublicSetter;
@@ -2200,12 +2175,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       return false;
     return true;
   }
-
-  /// A special case where the SDK has defined that we should not document
-  /// this library.  This is implemented by tweaking canonicalization so
-  /// even though the library is public and part of the Package's list,
-  /// we don't count it as a candidate for canonicalization.
-  bool get isSdkUndocumented => (sdkLib != null && !sdkLib.isDocumented);
 
   @override
   Iterable<TopLevelVariable> get constants {
@@ -2462,8 +2431,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _packageMeta;
   }
 
-  String get path => _libraryElement.definingCompilationUnit.name;
-
   /// All variables ("properties") except constants.
   @override
   Iterable<TopLevelVariable> get properties {
@@ -2530,18 +2497,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _allClasses.firstWhere((it) => it.name == name, orElse: () => null);
   }
 
-  bool hasInExportedNamespace(Element element) {
-    Element found = _exportedNamespace.get(element.name);
-    if (found == null) return false;
-    if (found == element) return true; // this checks more than just the name
-
-    // Fix for #587, comparison between elements isn't reliable on windows.
-    // for some reason. sigh.
-
-    return found.runtimeType == element.runtimeType &&
-        found.nameOffset == element.nameOffset;
-  }
-
   List<TopLevelVariable> _getVariables() {
     if (_variables != null) return _variables;
 
@@ -2591,21 +2546,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     } else {
       hidePackage = package.packageGraph.packageMeta;
     }
-    if (name.startsWith('file:')) {
-      // restoreUri doesn't do anything for the package we're documenting.
-      String canonicalPackagePath =
-          '${pathLib.canonicalize(hidePackage.dir.path)}${pathLib.separator}lib${pathLib.separator}';
-      String canonicalElementPath =
-          pathLib.canonicalize(element.source.uri.toFilePath());
-      assert(canonicalElementPath.startsWith(canonicalPackagePath));
-      List<String> pathSegments = [hidePackage.name]..addAll(pathLib
-          .split(canonicalElementPath.replaceFirst(canonicalPackagePath, '')));
-      Uri libraryUri = new Uri(
-        scheme: 'package',
-        pathSegments: pathSegments,
-      );
-      name = libraryUri.toString();
-    }
+    // restoreUri must not result in another file URI.
+    assert(!name.startsWith('file:'));
 
     String defaultPackagePrefix = 'package:$hidePackage/';
     if (name.startsWith(defaultPackagePrefix)) {
@@ -3391,8 +3333,7 @@ abstract class ModelElement extends Canonicalization
       if (!hasPublicName(element)) {
         _canonicalLibrary = null;
       } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
-        List<Library> candidateLibraries = packageGraph
-            .libraryElementReexportedBy[definingLibrary.element]
+        List<Library> candidateLibraries = definingLibrary.exportedInLibraries
             ?.where((l) =>
                 l.isPublic &&
                 l.package.documentedWhere != DocumentLocation.missing)
@@ -4609,6 +4550,9 @@ abstract class Nameable {
     }
     return _namePart;
   }
+
+  @override
+  String toString() => name;
 }
 
 /// Something able to be indexed.
@@ -4881,17 +4825,6 @@ class PackageGraph {
 
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
-  /// Returns colon-stripped name and location of the given locatable.
-  static Tuple2<String, String> nameAndLocation(Locatable locatable) {
-    String locatableName = '<unknown>';
-    String locatableLocation = '';
-    if (locatable != null) {
-      locatableName = locatable.fullyQualifiedName.replaceFirst(':', '-');
-      locatableLocation = locatable.location;
-    }
-    return new Tuple2(locatableName, locatableLocation);
-  }
-
   final Set<Tuple3<Element, PackageWarning, String>> _warnAlreadySeen =
       new Set();
   void warnOnElement(Warnable warnable, PackageWarning kind,
@@ -5074,8 +5007,6 @@ class PackageGraph {
     return locatable.fullyQualifiedName.replaceFirst(':', '-');
   }
 
-  bool get hasMultiplePackages => localPackages.length > 1;
-
   List<Package> get packages => packageMap.values.toList();
 
   List<Package> _publicPackages;
@@ -5197,8 +5128,8 @@ class PackageGraph {
         _checkAndAddClass(t.element, c);
       });
     }
-    if (c._supertype != null) {
-      _checkAndAddClass(c._supertype.element, c);
+    if (c.supertype != null) {
+      _checkAndAddClass(c.supertype.element, c);
     }
     if (!c.interfaces.isEmpty) {
       c.interfaces.forEach((t) {
@@ -5571,9 +5502,6 @@ abstract class TopLevelContainer implements Nameable {
   Iterable<TopLevelVariable> get publicProperties =>
       filterNonPublic(properties);
   Iterable<Typedef> get publicTypedefs => filterNonPublic(typedefs);
-
-  @override
-  String toString() => name;
 }
 
 /// A set of libraries, initialized after construction by accessing [_libraries].
@@ -5597,9 +5525,6 @@ abstract class LibraryContainer
 
   /// Sorting key.  [containerOrder] should contain these.
   String get sortKey => name;
-
-  @override
-  String toString() => name;
 
   /// Does this container represent the SDK?  This can be false for containers
   /// that only represent a part of the SDK.
@@ -6133,9 +6058,6 @@ class Package extends LibraryContainer
   PackageMeta get packageMeta => _packageMeta;
 
   @override
-  String toString() => name;
-
-  @override
   Element get element => null;
 
   @override
@@ -6195,9 +6117,6 @@ class Parameter extends ModelElement implements EnclosedElement {
   String get kind => 'parameter';
 
   ParameterElement get _parameter => element as ParameterElement;
-
-  @override
-  String toString() => element.name;
 }
 
 abstract class SourceCodeMixin implements Documentable {
@@ -6427,9 +6346,6 @@ class TypeParameter extends ModelElement {
   }
 
   TypeParameterElement get _typeParameter => element as TypeParameterElement;
-
-  @override
-  String toString() => element.name;
 }
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
@@ -6556,20 +6472,9 @@ class PackageBuilder {
           options);
       driver.results.listen((_) {});
       driver.exceptions.listen((_) {});
-      _session = driver.currentSession;
       scheduler.start();
     }
     return _driver;
-  }
-
-  AnalysisSession _session;
-  AnalysisSession get session {
-    if (_session == null) {
-      // The current session is initialized as a side-effect of initializing the
-      // driver.
-      driver;
-    }
-    return _session;
   }
 
   PackageWarningOptions getWarningOptions() {
@@ -6594,12 +6499,10 @@ class PackageBuilder {
   /// Return an Iterable with the sdk files we should parse.
   /// Filter can be String or RegExp (technically, anything valid for
   /// [String.contains])
-  Iterable<String> getSdkFilesToDocument([dynamic filter]) sync* {
+  Iterable<String> getSdkFilesToDocument() sync* {
     for (var sdkLib in sdk.sdkLibraries) {
       Source source = sdk.mapDartUri(sdkLib.shortName);
-      if (filter == null || source.uri.toString().contains(filter)) {
-        yield source.fullName;
-      }
+      yield source.fullName;
     }
   }
 
@@ -6631,7 +6534,7 @@ class PackageBuilder {
     if (sourceKind == SourceKind.LIBRARY) {
       // Loading libraryElements from part files works, but is painfully slow
       // and creates many duplicates.
-      return await session.getResolvedLibrary(source.fullName);
+      return await driver.currentSession.getResolvedLibrary(source.fullName);
     }
     return null;
   }

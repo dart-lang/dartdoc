@@ -1,3 +1,11 @@
+## 0.27.0
+* Several dartdoc project infrastructure changes, including coverage
+  support. (#1869, #1878, #1879, #1881, #1882)
+* Fixed many issues that made mobile/small screen usage of dartdoc
+  impossible.  Mobile users should now be able to do basic browsing and
+  searching in API docs.   (#1873, #908, #1048, #1348, #1469)
+* Support import prefix resolution in dartdoc.  (#1875, #1402).
+
 ## 0.26.1
 * Fix bug that accidentally caused dartdoc to create (and overwrite with)
   multiple snapshots in parallel for a single tool (#1861, #1862)

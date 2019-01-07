@@ -11,6 +11,8 @@ import 'package:io/io.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart' as yaml;
 
+import '../test/src/utils.dart';
+
 void main([List<String> args]) => grind(args);
 
 /// Thrown on failure to find something in a file.
@@ -854,8 +856,6 @@ List<File> get testFiles => new Directory('test')
 Future<void> testDart2() async {
   List<String> parameters = ['--enable-asserts'];
 
-  CoverageSubprocessLauncher.coverageEnabled =
-      Platform.environment.containsKey('COVERAGE_TOKEN');
   for (File dartFile in testFiles) {
     await testFutures.addFutureFromClosure(() => new CoverageSubprocessLauncher(
             'dart2-${pathLib.basename(dartFile.path)}')
@@ -967,40 +967,6 @@ Future<void> testDartdocFlutterPlugin() async {
         '<a href="https://docs.flutter.io/flutter/widgets/Widget-class.html">Widget</a>',
         '<a href="https://docs.flutter.io/flutter/dart-core/Object-class.html">Object</a>'
       ]);
-}
-
-@Task('update test_package_docs')
-Future<void> updateTestPackageDocs() async {
-  var launcher = new SubprocessLauncher('update-test-package-docs');
-  var testPackageDocs = new Directory(pathLib.join(
-      'testing',
-      Platform.version.split(' ').first.contains('-')
-          ? 'test_package_docs_dev'
-          : 'test_package_docs'));
-  var testPackage = new Directory(pathLib.join('testing', 'test_package'));
-  await launcher.runStreamed(sdkBin('pub'), ['get'],
-      workingDirectory: testPackage.path);
-  delete(testPackageDocs);
-  // This must be synced with ../test/compare_output_test.dart's
-  // "Validate html output of test_package" test.
-  await launcher.runStreamed(
-      Platform.resolvedExecutable,
-      [
-        '--enable-asserts',
-        pathLib.join('..', '..', 'bin', 'dartdoc.dart'),
-        '--no-allow-tools',
-        '--auto-include-dependencies',
-        '--example-path-prefix',
-        'examples',
-        '--exclude-packages',
-        'Dart,args,matcher,meta,path,stack_trace,quiver',
-        '--hide-sdk-text',
-        '--no-include-source',
-        '--output',
-        pathLib.canonicalize(testPackageDocs.path),
-        '--pretty-index-json',
-      ],
-      workingDirectory: testPackage.path);
 }
 
 @Task('Validate the SDK doc build.')
