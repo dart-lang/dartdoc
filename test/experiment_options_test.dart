@@ -56,10 +56,8 @@ dartdoc:
     });
 
     test('Overriding defaults works via args', () {
-      experimentOptions.parseArguments([
-        '--enable-experiment',
-        'constant-update-2018,set-literals'
-      ]);
+      experimentOptions.parseArguments(
+          ['--enable-experiment', 'constant-update-2018,set-literals']);
       DartdocExperimentOptionContextTester tester =
           new DartdocExperimentOptionContextTester(
               experimentOptions, Directory.current);
