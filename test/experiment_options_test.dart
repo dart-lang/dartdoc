@@ -16,13 +16,6 @@ class DartdocExperimentOptionContextTester extends DartdocOptionContext {
   DartdocExperimentOptionContextTester(
       DartdocOptionSet optionSet, FileSystemEntity entity)
       : super(optionSet, entity);
-
-  bool get experimentExpired =>
-      optionSet['enable-experiment']['expired'].valueAt(context);
-  bool get experimentFakeExperiment =>
-      optionSet['enable-experiment']['fake-experiment'].valueAt(context);
-  bool get experimentFakeExperimentOn =>
-      optionSet['enable-experiment']['fake-experiment-on'].valueAt(context);
 }
 
 void main() {
@@ -33,12 +26,6 @@ void main() {
   setUp(() async {
     experimentOptions = await DartdocOptionSet.fromOptionGenerators(
         'dartdoc', [createExperimentOptions]);
-    List<DartdocExperimentOption> testOnlyOptions = [
-      new DartdocExperimentOption('fake-experiment', false),
-      new DartdocExperimentOption('fake-experiment-on', true),
-      new DartdocExperimentOption('expired', true, expired: true),
-    ];
-    experimentOptions['enable-experiment']..addAll(testOnlyOptions);
   });
 
   setUpAll(() {
@@ -64,52 +51,20 @@ dartdoc:
       DartdocExperimentOptionContextTester tester =
           new DartdocExperimentOptionContextTester(
               experimentOptions, Directory.current);
-      expect(tester.experimentConstantUpdate2018, isFalse);
-      expect(tester.experimentNonNullable, isFalse);
-      expect(tester.experimentSetLiterals, isFalse);
-      expect(tester.experimentExpired, isTrue);
-      expect(tester.experimentFakeExperiment, isFalse);
-      expect(tester.experimentFakeExperimentOn, isTrue);
+      expect(tester.experimentStatus.constant_update_2018, isFalse);
+      expect(tester.experimentStatus.set_literals, isFalse);
     });
 
     test('Overriding defaults works via args', () {
       experimentOptions.parseArguments([
         '--enable-experiment',
-        'non-nullable,set-literals,no-fake-experiment-on'
+        'constant-update-2018,set-literals'
       ]);
       DartdocExperimentOptionContextTester tester =
           new DartdocExperimentOptionContextTester(
               experimentOptions, Directory.current);
-      expect(tester.experimentConstantUpdate2018, isFalse);
-      expect(tester.experimentNonNullable, isTrue);
-      expect(tester.experimentSetLiterals, isTrue);
-      expect(tester.experimentExpired, isTrue);
-      expect(tester.experimentFakeExperiment, isFalse);
-      expect(tester.experimentFakeExperimentOn, isFalse);
-    });
-
-    test('Overriding defaults works via dartdoc_options.yaml', () {
-      experimentOptions.parseArguments([]);
-      DartdocExperimentOptionContextTester tester =
-          new DartdocExperimentOptionContextTester(experimentOptions, tempDir);
-      expect(tester.experimentConstantUpdate2018, isTrue);
-      expect(tester.experimentNonNullable, isFalse);
-      expect(tester.experimentSetLiterals, isFalse);
-      expect(tester.experimentExpired, isTrue);
-      expect(tester.experimentFakeExperiment, isTrue);
-      expect(tester.experimentFakeExperimentOn, isFalse);
-    });
-
-    test('Overriding default of an expired experiment throws', () {
-      experimentOptions.parseArguments([
-        '--enable-experiment',
-        'no-expired',
-      ]);
-      DartdocExperimentOptionContextTester tester =
-          new DartdocExperimentOptionContextTester(
-              experimentOptions, Directory.current);
-      expect(() => tester.experimentExpired,
-          throwsA(const TypeMatcher<DartdocOptionError>()));
+      expect(tester.experimentStatus.constant_update_2018, isTrue);
+      expect(tester.experimentStatus.set_literals, isTrue);
     });
   });
 }
