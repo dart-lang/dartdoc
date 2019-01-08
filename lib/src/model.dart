@@ -4622,14 +4622,13 @@ class Operator extends Method {
 class PackageGraph {
   PackageGraph.UninitializedPackageGraph(
       this.config,
-      PackageWarningOptions packageWarningOptions,
       this.driver,
       this.sdk,
       this.hasEmbedderSdk)
       : packageMeta = config.topLevelPackageMeta,
         session = driver.currentSession,
         _packageWarningCounter =
-            new PackageWarningCounter(packageWarningOptions) {
+            new PackageWarningCounter() {
     // Make sure the default package exists, even if it has no libraries.
     // This can happen for packages that only contain embedder SDKs.
     new Package.fromPackageMeta(packageMeta, this);
@@ -4813,12 +4812,6 @@ class PackageGraph {
         ..addAll(publicLibraries.map((l) => l.packageMeta?.resolvedDir));
     }
     return (_allRootDirs.contains(element.library.packageMeta?.resolvedDir));
-  }
-
-  /// Flush out any warnings we might have collected while
-  /// [PackageWarningOptions.autoFlush] was false.
-  void flushWarnings() {
-    _packageWarningCounter.maybeFlush();
   }
 
   Tuple2<int, int> get lineAndColumn => null;
@@ -6360,7 +6353,7 @@ class PackageBuilder {
     }
 
     PackageGraph newGraph = new PackageGraph.UninitializedPackageGraph(
-        config, getWarningOptions(), driver, sdk, hasEmbedderSdkFiles);
+        config, driver, sdk, hasEmbedderSdkFiles);
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
     return newGraph;
@@ -6478,25 +6471,6 @@ class PackageBuilder {
       scheduler.start();
     }
     return _driver;
-  }
-
-  PackageWarningOptions getWarningOptions() {
-    PackageWarningOptions warningOptions =
-        new PackageWarningOptions(config.verboseWarnings);
-    // TODO(jcollins-g): explode this into detailed command line options.
-    for (PackageWarning kind in PackageWarning.values) {
-      switch (kind) {
-        case PackageWarning.toolError:
-        case PackageWarning.invalidParameter:
-        case PackageWarning.unresolvedExport:
-          warningOptions.error(kind);
-          break;
-        default:
-          if (config.showWarnings) warningOptions.warn(kind);
-          break;
-      }
-    }
-    return warningOptions;
   }
 
   /// Return an Iterable with the sdk files we should parse.

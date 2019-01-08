@@ -131,7 +131,6 @@ class Dartdoc extends PackageBuilder {
     final int errorCount =
         dartdocResults.packageGraph.packageWarningCounter.errorCount;
     if (errorCount > 0) {
-      dartdocResults.packageGraph.flushWarnings();
       throw new DartdocFailure(
           "dartdoc encountered $errorCount} errors while processing.");
     }
