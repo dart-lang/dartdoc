@@ -304,6 +304,9 @@ class PackageWarningCounter {
       new Map<Element, Set<Tuple2<PackageWarning, String>>>();
   final _items = <Jsonable>[];
   final _displayedWarningCounts = <PackageWarning, int>{};
+  final PackageGraph packageGraph;
+
+  PackageWarningCounter(this.packageGraph);
 
   /// Actually write out the warning.  Assumes it is already counted with add.
   void _writeWarning(PackageWarning kind, PackageWarningMode mode, bool verboseWarnings, String name, String fullMessage) {
@@ -354,8 +357,10 @@ class PackageWarningCounter {
   void addWarning(Warnable element, PackageWarning kind, String message,
       String fullMessage) {
     assert(!hasWarning(element, kind, message));
-    PackageWarningMode warningMode = element.config.packageWarningOptions.getMode(kind);
-    if (!element.config.allowNonLocalWarnings && !element.package.isLocal) {
+    // TODO(jcollins-g): Make addWarning not accept nulls for element.
+    DartdocOptionContext config = element?.config ?? packageGraph.defaultPackage.config;
+    PackageWarningMode warningMode = config.packageWarningOptions.getMode(kind);
+    if (!config.allowNonLocalWarnings && element != null && !element.package.isLocal) {
       warningMode = PackageWarningMode.ignore;
     }
     if (warningMode == PackageWarningMode.warn) warningCount += 1;
@@ -363,7 +368,7 @@ class PackageWarningCounter {
     Tuple2<PackageWarning, String> warningData = new Tuple2(kind, message);
     countedWarnings.putIfAbsent(element?.element, () => new Set());
     countedWarnings[element?.element].add(warningData);
-    _writeWarning(kind, warningMode, element.config.verboseWarnings, element?.fullyQualifiedName, fullMessage);
+    _writeWarning(kind, warningMode, config.verboseWarnings, element?.fullyQualifiedName, fullMessage);
   }
 
   int errorCount = 0;

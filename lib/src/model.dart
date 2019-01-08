@@ -4627,9 +4627,8 @@ class PackageGraph {
       this.sdk,
       this.hasEmbedderSdk)
       : packageMeta = config.topLevelPackageMeta,
-        session = driver.currentSession,
-        _packageWarningCounter =
-            new PackageWarningCounter() {
+        session = driver.currentSession {
+    _packageWarningCounter = new PackageWarningCounter(this);
     // Make sure the default package exists, even if it has no libraries.
     // This can happen for packages that only contain embedder SDKs.
     new Package.fromPackageMeta(packageMeta, this);
