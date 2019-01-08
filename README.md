@@ -123,7 +123,7 @@ dartdoc:
     - ambiguous-doc-reference
   errors:
     - unresolved-doc-reference
-  warn:
+  warnings:
     - tool-error
 ```
 

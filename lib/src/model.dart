@@ -4811,8 +4811,6 @@ class PackageGraph {
     return (_allRootDirs.contains(element.library.packageMeta?.resolvedDir));
   }
 
-  Tuple2<int, int> get lineAndColumn => null;
-
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
   final Set<Tuple3<Element, PackageWarning, String>> _warnAlreadySeen =
