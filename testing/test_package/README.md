@@ -5,6 +5,8 @@
 
 This is an amazing package.
 
+## Here is some messed up UTF-8.
+ÃfÃÆ�z�â°
 
 ## Examples
 
