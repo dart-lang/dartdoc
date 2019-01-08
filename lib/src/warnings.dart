@@ -13,6 +13,7 @@ import 'package:dartdoc/src/tuple.dart';
 
 
 abstract class PackageWarningOptionContext implements DartdocOptionContextBase {
+  bool get allowNonLocalWarnings => optionSet['allowNonLocalWarnings'].valueAt(context);
   // allowWarningsInPackages, ignoreWarningsInPackages, errors, warnings, and ignore
   // are only used indirectly via the synthetic packageWarningOptions option.
   PackageWarningOptions get packageWarningOptions => optionSet['packageWarningOptions'].valueAt(context);
@@ -21,6 +22,8 @@ abstract class PackageWarningOptionContext implements DartdocOptionContextBase {
 
 Future<List<DartdocOption>> createPackageWarningOptions() async {
   return <DartdocOption>[
+    new DartdocOptionArgOnly<bool>('allowNonLocalWarnings', false, negatable: true, help: 'Show warnings from packages we are not documenting locally.'),
+
     // Options for globally enabling/disabling all warnings and errors
     // for individual packages are command-line only.  This will allow
     // meta-packages like Flutter to control whether warnings are displayed for
@@ -33,18 +36,21 @@ Future<List<DartdocOption>> createPackageWarningOptions() async {
     // packages.  Loaded from dartdoc_options.yaml, but command line arguments
     // will override.
     new DartdocOptionArgFile<List<String>>('errors', null, help: 'Additional warning names to force as errors.  Specify an empty list to force defaults (overriding dartdoc_options.yaml)\nDefaults:\n' +
-       packageWarningDefinitions.values
+        (packageWarningDefinitions.values
            .where((d) => d.defaultWarningMode == PackageWarningMode.error)
+           .toList()..sort())
            .map((d) => '   ${d.warningName}: ${d.shortHelp}')
            .join('\n')),
     new DartdocOptionArgFile<List<String>>('ignore', null, help: 'Additional warning names to ignore.  Specify an empty list to force defaults (overriding dartdoc_options.yaml).\nDefaults:\n' +
-        packageWarningDefinitions.values
+        (packageWarningDefinitions.values
             .where((d) => d.defaultWarningMode == PackageWarningMode.ignore)
+            .toList()..sort())
             .map((d) => '   ${d.warningName}: ${d.shortHelp}')
             .join('\n')),
     new DartdocOptionArgFile<List<String>>('warnings', null, help: 'Additional warning names to show as warnings (instead of error or ignore, if not warning by default).\nDefaults:\n' +
-        packageWarningDefinitions.values
+        (packageWarningDefinitions.values
             .where((d) => d.defaultWarningMode == PackageWarningMode.warn)
+            .toList()..sort())
             .map((d) => '   ${d.warningName}: ${d.shortHelp}')
             .join('\n')),
     // Synthetic option uses a factory to build a PackageWarningOptions from all the above flags.
@@ -52,7 +58,7 @@ Future<List<DartdocOption>> createPackageWarningOptions() async {
   ];
 }
 
-class PackageWarningDefinition {
+class PackageWarningDefinition implements Comparable<PackageWarningDefinition> {
   final String warningName;
   final String shortHelp;
   final List<String> longHelp;
@@ -62,6 +68,11 @@ class PackageWarningDefinition {
   const PackageWarningDefinition(this.kind, this.warningName, this.shortHelp,
       {List<String> longHelp, PackageWarningMode defaultWarningMode})
       : this.longHelp = longHelp ?? const [], this.defaultWarningMode = defaultWarningMode ?? PackageWarningMode.warn;
+
+  @override
+  int compareTo(PackageWarningDefinition other) {
+    return warningName.compareTo(other.warningName);
+  }
 }
 
 /// Same as [packageWarningDefinitions], except keyed by the warning name.
@@ -164,6 +175,7 @@ abstract class Warnable implements Canonicalization {
       {String message, Iterable<Locatable> referredFrom});
   Element get element;
   Warnable get enclosingElement;
+  Package get package;
 }
 
 /// Something that can be located for warning purposes.
@@ -343,6 +355,9 @@ class PackageWarningCounter {
       String fullMessage) {
     assert(!hasWarning(element, kind, message));
     PackageWarningMode warningMode = element.config.packageWarningOptions.getMode(kind);
+    if (!element.config.allowNonLocalWarnings && !element.package.isLocal) {
+      warningMode = PackageWarningMode.ignore;
+    }
     if (warningMode == PackageWarningMode.warn) warningCount += 1;
     else if (warningMode == PackageWarningMode.error) errorCount += 1;
     Tuple2<PackageWarning, String> warningData = new Tuple2(kind, message);

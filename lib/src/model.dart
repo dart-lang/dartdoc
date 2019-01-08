@@ -3632,6 +3632,7 @@ abstract class ModelElement extends Canonicalization
   @override
   PackageGraph get packageGraph => _packageGraph;
 
+  @override
   Package get package => library.package;
 
   bool get isPublicAndPackageDocumented =>
@@ -4864,6 +4865,7 @@ class PackageGraph {
       return;
     }
     // Some kinds of warnings it is OK to drop if we're not documenting them.
+    // TODO(jcollins-g): drop this and use new flag system instead.
     if (warnable != null &&
         skipWarningIfNotDocumentedFor.contains(kind) &&
         !warnable.isDocumented) {
@@ -5603,6 +5605,7 @@ class Category extends Nameable
         Indexable
     implements Documentable {
   /// All libraries in [libraries] must come from [package].
+  @override
   Package package;
   String _name;
   @override
@@ -5957,6 +5960,9 @@ class Package extends LibraryContainer
 
   @override
   String get name => _name;
+
+  @override
+  Package get package => this;
 
   @override
   PackageGraph get packageGraph => _packageGraph;
