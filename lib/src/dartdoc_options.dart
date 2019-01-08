@@ -1571,6 +1571,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
             'command.'),
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
-  ]..addAll(await createExperimentOptions())
-   ..addAll(await createPackageWarningOptions());
+  ]
+    ..addAll(await createExperimentOptions())
+    ..addAll(await createPackageWarningOptions());
 }

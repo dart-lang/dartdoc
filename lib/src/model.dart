@@ -4622,10 +4622,7 @@ class Operator extends Method {
 
 class PackageGraph {
   PackageGraph.UninitializedPackageGraph(
-      this.config,
-      this.driver,
-      this.sdk,
-      this.hasEmbedderSdk)
+      this.config, this.driver, this.sdk, this.hasEmbedderSdk)
       : packageMeta = config.topLevelPackageMeta,
         session = driver.currentSession {
     _packageWarningCounter = new PackageWarningCounter(this);
