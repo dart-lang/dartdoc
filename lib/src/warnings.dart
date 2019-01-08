@@ -228,7 +228,7 @@ final Set<PackageWarning> skipWarningIfNotDocumentedFor = new Set()
   ..addAll([PackageWarning.unresolvedDocReference, PackageWarning.typeAsHtml]);
 
 class PackageWarningOptions {
-  final Map<PackageWarning, PackageWarningMode> _warningModes = {};
+  final Map<PackageWarning, PackageWarningMode> warningModes = {};
 
   PackageWarningOptions() {
     for (PackageWarningDefinition definition in packageWarningDefinitions.values) {
@@ -249,9 +249,11 @@ class PackageWarningOptions {
     }
   }
 
+  /// [packageMeta] parameter is for testing.
   static PackageWarningOptions fromOptions(DartdocSyntheticOption<PackageWarningOptions> option, Directory dir) {
     // First, initialize defaults.
     PackageWarningOptions newOptions = PackageWarningOptions();
+    PackageMeta packageMeta = new PackageMeta.fromDir(dir);
 
     // Interpret errors/warnings/ignore options.  In the event of conflict, warning overrides error and
     // ignore overrides warning.
@@ -276,7 +278,6 @@ class PackageWarningOptions {
     List<String> allowErrorsInPackages = option.parent['allowErrorsInPackages'].valueAt(dir);
     List<String> ignoreWarningsInPackages = option.parent['ignoreWarningsInPackages'].valueAt(dir);
     List<String> ignoreErrorsInPackages = option.parent['ignoreErrorsInPackages'].valueAt(dir);
-    PackageMeta packageMeta = new PackageMeta.fromDir(dir);
     if (allowWarningsInPackages != null && !allowWarningsInPackages.contains(packageMeta.name)) {
       PackageWarning.values.forEach((PackageWarning kind) => newOptions.ignore(kind));
     }
@@ -292,11 +293,11 @@ class PackageWarningOptions {
     return newOptions;
   }
 
-  void ignore(PackageWarning kind) => _warningModes[kind] = PackageWarningMode.ignore;
-  void warn(PackageWarning kind) => _warningModes[kind] = PackageWarningMode.warn;
-  void error(PackageWarning kind) => _warningModes[kind] = PackageWarningMode.error;
+  void ignore(PackageWarning kind) => warningModes[kind] = PackageWarningMode.ignore;
+  void warn(PackageWarning kind) => warningModes[kind] = PackageWarningMode.warn;
+  void error(PackageWarning kind) => warningModes[kind] = PackageWarningMode.error;
 
-  PackageWarningMode getMode(PackageWarning kind) => _warningModes[kind];
+  PackageWarningMode getMode(PackageWarning kind) => warningModes[kind];
 }
 
 class PackageWarningCounter {
@@ -358,7 +359,7 @@ class PackageWarningCounter {
       String fullMessage) {
     assert(!hasWarning(element, kind, message));
     // TODO(jcollins-g): Make addWarning not accept nulls for element.
-    DartdocOptionContext config = element?.config ?? packageGraph.defaultPackage.config;
+    PackageWarningOptionContext config = element?.config ?? packageGraph.defaultPackage.config;
     PackageWarningMode warningMode = config.packageWarningOptions.getMode(kind);
     if (!config.allowNonLocalWarnings && element != null && !element.package.isLocal) {
       warningMode = PackageWarningMode.ignore;
