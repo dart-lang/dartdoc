@@ -6458,6 +6458,9 @@ class PackageBuilder {
       AnalysisDriverScheduler scheduler = new AnalysisDriverScheduler(log);
       AnalysisOptionsImpl options = new AnalysisOptionsImpl();
 
+      // TODO(jcollins-g): pass in an ExperimentStatus instead?
+      options.enabledExperiments = config.enableExperiment;
+
       // TODO(jcollins-g): Make use of currently not existing API for managing
       //                   many AnalysisDrivers
       // TODO(jcollins-g): make use of DartProject isApi()

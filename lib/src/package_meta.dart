@@ -4,6 +4,7 @@
 
 library dartdoc.package_meta;
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
@@ -14,6 +15,7 @@ import 'package:yaml/yaml.dart';
 import 'logging.dart';
 
 Map<String, PackageMeta> _packageMetaCache = {};
+Encoding utf8AllowMalformed = new Utf8Codec(allowMalformed: true);
 
 Directory get defaultSdkDir {
   Directory sdkDir = new File(Platform.resolvedExecutable).parent.parent;
@@ -212,7 +214,7 @@ class FileContents {
   factory FileContents(File file) =>
       file == null ? null : new FileContents._(file);
 
-  String get contents => file.readAsStringSync();
+  String get contents => file.readAsStringSync(encoding: utf8AllowMalformed);
 
   bool get isMarkdown => file.path.toLowerCase().endsWith('.md');
 
