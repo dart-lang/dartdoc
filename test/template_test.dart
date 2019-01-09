@@ -26,12 +26,13 @@ void main() {
       });
 
       test('render with missing url', () {
-        expect(() =>
-            _normalize(sitemap.renderString({
-              'links': [
-                {'name': 'somefile.html'}
-              ]
-            })), throwsException);
+        expect(
+            () => _normalize(sitemap.renderString({
+                  'links': [
+                    {'name': 'somefile.html'}
+                  ]
+                })),
+            throwsException);
       });
 
       test('substitute multiple links', () {
