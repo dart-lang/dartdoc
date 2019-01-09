@@ -59,12 +59,6 @@ void main() {
     test('top level property', () {
       expect(templates.topLevelPropertyTemplate, isNotNull);
     });
-
-    test('header and footer', () {
-      String content = templates.indexTemplate({},
-          assumeNullNonExistingProperty: true, errorOnMissingProperty: false);
-      expect(content.contains('<p>User inserted message</p>'), isFalse);
-    });
   });
 
   group('HtmlGenerator', () {

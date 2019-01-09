@@ -13,78 +13,77 @@
 
     {{#mixin}}
     {{>documentation}}
-    {{/mixin}}
 
-    {{#mixin.hasModifiers}}
+    {{#hasModifiers}}
     <section>
       <dl class="dl-horizontal">
-        {{#mixin.hasPublicSuperclassConstraints}}
+        {{#hasPublicSuperclassConstraints}}
         <dt>Superclass Constraints</dt>
         <dd><ul class="comma-separated dark mixin-relationships">
-          {{#mixin.publicSuperclassConstraints}}
+          {{#publicSuperclassConstraints}}
           <li>{{{linkedName}}}</li>
-          {{/mixin.publicSuperclassConstraints}}
+          {{/publicSuperclassConstraints}}
         </ul></dd>
-        {{/mixin.hasPublicSuperclassConstraints}}
+        {{/hasPublicSuperclassConstraints}}
 
-        {{#mixin.hasPublicSuperChainReversed}}
+        {{#hasPublicSuperChainReversed}}
         <dt>Inheritance</dt>
         <dd><ul class="gt-separated dark mixin-relationships">
           <li>{{{linkedObjectType}}}</li>
-          {{#mixin.publicSuperChainReversed}}
+          {{#publicSuperChainReversed}}
           <li>{{{linkedName}}}</li>
-          {{/mixin.publicSuperChainReversed}}
+          {{/publicSuperChainReversed}}
           <li>{{{name}}}</li>
         </ul></dd>
-        {{/mixin.hasPublicSuperChainReversed}}
+        {{/hasPublicSuperChainReversed}}
 
-        {{#mixin.hasPublicInterfaces}}
+        {{#hasPublicInterfaces}}
         <dt>Implements</dt>
         <dd>
           <ul class="comma-separated mixin-relationships">
-            {{#mixin.publicInterfaces}}
+            {{#publicInterfaces}}
             <li>{{{linkedName}}}</li>
-            {{/mixin.publicInterfaces}}
+            {{/publicInterfaces}}
           </ul>
         </dd>
-        {{/mixin.hasPublicInterfaces}}
+        {{/hasPublicInterfaces}}
 
-        {{#mixin.hasPublicMixins}}
+        {{#hasPublicMixins}}
         <dt>Mixes-in</dt>
         <dd><ul class="comma-separated mixin-relationships">
-          {{#mixin.publicMixins}}
+          {{#publicMixins}}
           <li>{{{linkedName}}}</li>
-          {{/mixin.publicMixins}}
+          {{/publicMixins}}
         </ul></dd>
-        {{/mixin.hasPublicMixins}}
+        {{/hasPublicMixins}}
 
-        {{#mixin.hasPublicImplementors}}
+        {{#hasPublicImplementors}}
         <dt>Implemented by</dt>
         <dd><ul class="comma-separated mixin-relationships">
-          {{#mixin.publicImplementors}}
+          {{#publicImplementors}}
           <li>{{{linkedName}}}</li>
-          {{/mixin.publicImplementors}}
+          {{/publicImplementors}}
         </ul></dd>
-        {{/mixin.hasPublicImplementors}}
+        {{/hasPublicImplementors}}
 
-        {{#mixin.hasAnnotations}}
+        {{#hasAnnotations}}
         <dt>Annotations</dt>
         <dd><ul class="annotation-list mixin-relationships">
-          {{#mixin.annotations}}
+          {{#annotations}}
           <li>{{{.}}}</li>
-          {{/mixin.annotations}}
+          {{/annotations}}
         </ul></dd>
-        {{/mixin.hasAnnotations}}
+        {{/hasAnnotations}}
       </dl>
     </section>
-    {{/mixin.hasModifiers}}
+    {{/hasModifiers}}
 
-    {{#mixin.hasPublicConstructors}}
+    {{#hasPublicConstructors}}
     <section class="summary offset-anchor" id="constructors">
       <h2>Constructors</h2>
 
       <dl class="constructor-summary-list">
-        {{#mixin.publicConstructors}}
+        {{#publicConstructors}}
         <dt id="{{htmlId}}" class="callable">
           <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
         </dt>
@@ -97,80 +96,80 @@
           <div class="constructor-modifier features">factory</div>
           {{/isFactory}}
         </dd>
-        {{/mixin.publicConstructors}}
+        {{/publicConstructors}}
       </dl>
     </section>
-    {{/mixin.hasPublicConstructors}}
+    {{/hasPublicConstructors}}
 
-    {{#mixin.hasPublicProperties}}
+    {{#hasPublicProperties}}
     <section class="summary offset-anchor{{ #allPublicInstancePropertiesInherited }} inherited{{ /allPublicInstancePropertiesInherited }}" id="instance-properties">
       <h2>Properties</h2>
 
       <dl class="properties">
-        {{#mixin.allPublicInstanceProperties}}
+        {{#allPublicInstanceProperties}}
         {{>property}}
-        {{/mixin.allPublicInstanceProperties}}
+        {{/allPublicInstanceProperties}}
       </dl>
     </section>
-    {{/mixin.hasPublicProperties}}
+    {{/hasPublicProperties}}
 
-    {{#mixin.hasPublicMethods}}
+    {{#hasPublicMethods}}
     <section class="summary offset-anchor{{ #allPublicInstanceMethodsInherited }} inherited{{ /allPublicInstanceMethodsInherited }}" id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">
-        {{#mixin.allPublicInstanceMethods}}
+        {{#allPublicInstanceMethods}}
         {{>callable}}
-        {{/mixin.allPublicInstanceMethods}}
+        {{/allPublicInstanceMethods}}
       </dl>
     </section>
-    {{/mixin.hasPublicMethods}}
+    {{/hasPublicMethods}}
 
-    {{#mixin.hasPublicOperators}}
+    {{#hasPublicOperators}}
     <section class="summary offset-anchor{{ #allPublicOperatorsInherited }} inherited{{ /allPublicOperatorsInherited}}" id="operators">
       <h2>Operators</h2>
       <dl class="callables">
-        {{#mixin.allPublicOperators}}
+        {{#allPublicOperators}}
         {{>callable}}
-        {{/mixin.allPublicOperators}}
+        {{/allPublicOperators}}
       </dl>
     </section>
-    {{/mixin.hasPublicOperators}}
+    {{/hasPublicOperators}}
 
-    {{#mixin.hasPublicStaticProperties}}
+    {{#hasPublicStaticProperties}}
     <section class="summary offset-anchor" id="static-properties">
       <h2>Static Properties</h2>
 
       <dl class="properties">
-        {{#mixin.publicStaticProperties}}
+        {{#publicStaticProperties}}
         {{>property}}
-        {{/mixin.publicStaticProperties}}
+        {{/publicStaticProperties}}
       </dl>
     </section>
-    {{/mixin.hasPublicStaticProperties}}
+    {{/hasPublicStaticProperties}}
 
-    {{#mixin.hasPublicStaticMethods}}
+    {{#hasPublicStaticMethods}}
     <section class="summary offset-anchor" id="static-methods">
       <h2>Static Methods</h2>
       <dl class="callables">
-        {{#mixin.publicStaticMethods}}
+        {{#publicStaticMethods}}
         {{>callable}}
-        {{/mixin.publicStaticMethods}}
+        {{/publicStaticMethods}}
       </dl>
     </section>
-    {{/mixin.hasPublicStaticMethods}}
+    {{/hasPublicStaticMethods}}
 
-    {{#mixin.hasPublicConstants}}
+    {{#hasPublicConstants}}
     <section class="summary offset-anchor" id="constants">
       <h2>Constants</h2>
 
       <dl class="properties">
-        {{#mixin.publicConstants}}
+        {{#publicConstants}}
         {{>constant}}
-        {{/mixin.publicConstants}}
+        {{/publicConstants}}
       </dl>
     </section>
-    {{/mixin.hasPublicConstants}}
-
+    {{/hasPublicConstants}}
+    {{/mixin}}
   </div> <!-- /.main-content -->
 
   <div class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">

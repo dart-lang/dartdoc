@@ -13,69 +13,68 @@
 
     {{#clazz}}
     {{>documentation}}
-    {{/clazz}}
 
-    {{#clazz.hasModifiers}}
+    {{#hasModifiers}}
     <section>
       <dl class="dl-horizontal">
-        {{#clazz.hasPublicSuperChainReversed}}
+        {{#hasPublicSuperChainReversed}}
         <dt>Inheritance</dt>
         <dd><ul class="gt-separated dark clazz-relationships">
           <li>{{{linkedObjectType}}}</li>
-          {{#clazz.publicSuperChainReversed}}
+          {{#publicSuperChainReversed}}
           <li>{{{linkedName}}}</li>
-          {{/clazz.publicSuperChainReversed}}
+          {{/publicSuperChainReversed}}
           <li>{{{name}}}</li>
         </ul></dd>
-        {{/clazz.hasPublicSuperChainReversed}}
+        {{/hasPublicSuperChainReversed}}
 
-        {{#clazz.hasPublicInterfaces}}
+        {{#hasPublicInterfaces}}
         <dt>Implemented types</dt>
         <dd>
           <ul class="comma-separated clazz-relationships">
-            {{#clazz.publicInterfaces}}
+            {{#publicInterfaces}}
             <li>{{{linkedName}}}</li>
-            {{/clazz.publicInterfaces}}
+            {{/publicInterfaces}}
           </ul>
         </dd>
-        {{/clazz.hasPublicInterfaces}}
+        {{/hasPublicInterfaces}}
 
-        {{#clazz.hasPublicMixins}}
+        {{#hasPublicMixins}}
         <dt>Mixed in types</dt>
         <dd><ul class="comma-separated clazz-relationships">
-          {{#clazz.publicMixins}}
+          {{#publicMixins}}
           <li>{{{linkedName}}}</li>
-          {{/clazz.publicMixins}}
+          {{/publicMixins}}
         </ul></dd>
-        {{/clazz.hasPublicMixins}}
+        {{/hasPublicMixins}}
 
-        {{#clazz.hasPublicImplementors}}
+        {{#hasPublicImplementors}}
         <dt>Implementers</dt>
         <dd><ul class="comma-separated clazz-relationships">
-          {{#clazz.publicImplementors}}
+          {{#publicImplementors}}
           <li>{{{linkedName}}}</li>
-          {{/clazz.publicImplementors}}
+          {{/publicImplementors}}
         </ul></dd>
-        {{/clazz.hasPublicImplementors}}
+        {{/hasPublicImplementors}}
 
-        {{#clazz.hasAnnotations}}
+        {{#hasAnnotations}}
         <dt>Annotations</dt>
         <dd><ul class="annotation-list clazz-relationships">
-          {{#clazz.annotations}}
+          {{#annotations}}
           <li>{{{.}}}</li>
-          {{/clazz.annotations}}
+          {{/annotations}}
         </ul></dd>
-        {{/clazz.hasAnnotations}}
+        {{/hasAnnotations}}
       </dl>
     </section>
-    {{/clazz.hasModifiers}}
+    {{/hasModifiers}}
 
-    {{#clazz.hasPublicConstructors}}
+    {{#hasPublicConstructors}}
     <section class="summary offset-anchor" id="constructors">
       <h2>Constructors</h2>
 
       <dl class="constructor-summary-list">
-        {{#clazz.publicConstructors}}
+        {{#publicConstructors}}
         <dt id="{{htmlId}}" class="callable">
           <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
         </dt>
@@ -88,79 +87,80 @@
           <div class="constructor-modifier features">factory</div>
           {{/isFactory}}
         </dd>
-        {{/clazz.publicConstructors}}
+        {{/publicConstructors}}
       </dl>
     </section>
-    {{/clazz.hasPublicConstructors}}
+    {{/hasPublicConstructors}}
 
-    {{#clazz.hasPublicProperties}}
+    {{#hasPublicProperties}}
     <section class="summary offset-anchor{{ #allPublicInstancePropertiesInherited }} inherited{{ /allPublicInstancePropertiesInherited }}" id="instance-properties">
       <h2>Properties</h2>
 
       <dl class="properties">
-        {{#clazz.allPublicInstanceProperties}}
+        {{#allPublicInstanceProperties}}
         {{>property}}
-        {{/clazz.allPublicInstanceProperties}}
+        {{/allPublicInstanceProperties}}
       </dl>
     </section>
-    {{/clazz.hasPublicProperties}}
+    {{/hasPublicProperties}}
 
-    {{#clazz.hasPublicMethods}}
+    {{#hasPublicMethods}}
     <section class="summary offset-anchor{{ #allPublicInstanceMethodsInherited }} inherited{{ /allPublicInstanceMethodsInherited }}" id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">
-        {{#clazz.allPublicInstanceMethods}}
+        {{#allPublicInstanceMethods}}
         {{>callable}}
-        {{/clazz.allPublicInstanceMethods}}
+        {{/allPublicInstanceMethods}}
       </dl>
     </section>
-    {{/clazz.hasPublicMethods}}
+    {{/hasPublicMethods}}
 
-    {{#clazz.hasPublicOperators}}
+    {{#hasPublicOperators}}
     <section class="summary offset-anchor{{ #allPublicOperatorsInherited }} inherited{{ /allPublicOperatorsInherited}}" id="operators">
       <h2>Operators</h2>
       <dl class="callables">
-        {{#clazz.allPublicOperators}}
+        {{#allPublicOperators}}
         {{>callable}}
-        {{/clazz.allPublicOperators}}
+        {{/allPublicOperators}}
       </dl>
     </section>
-    {{/clazz.hasPublicOperators}}
+    {{/hasPublicOperators}}
 
-    {{#clazz.hasPublicStaticProperties}}
+    {{#hasPublicStaticProperties}}
     <section class="summary offset-anchor" id="static-properties">
       <h2>Static Properties</h2>
 
       <dl class="properties">
-        {{#clazz.publicStaticProperties}}
+        {{#publicStaticProperties}}
         {{>property}}
-        {{/clazz.publicStaticProperties}}
+        {{/publicStaticProperties}}
       </dl>
     </section>
-    {{/clazz.hasPublicStaticProperties}}
+    {{/hasPublicStaticProperties}}
 
-    {{#clazz.hasPublicStaticMethods}}
+    {{#hasPublicStaticMethods}}
     <section class="summary offset-anchor" id="static-methods">
       <h2>Static Methods</h2>
       <dl class="callables">
-        {{#clazz.publicStaticMethods}}
+        {{#publicStaticMethods}}
         {{>callable}}
-        {{/clazz.publicStaticMethods}}
+        {{/publicStaticMethods}}
       </dl>
     </section>
-    {{/clazz.hasPublicStaticMethods}}
+    {{/hasPublicStaticMethods}}
 
-    {{#clazz.hasPublicConstants}}
+    {{#hasPublicConstants}}
     <section class="summary offset-anchor" id="constants">
       <h2>Constants</h2>
 
       <dl class="properties">
-        {{#clazz.publicConstants}}
+        {{#publicConstants}}
         {{>constant}}
-        {{/clazz.publicConstants}}
+        {{/publicConstants}}
       </dl>
     </section>
-    {{/clazz.hasPublicConstants}}
+    {{/hasPublicConstants}}
+    {{/clazz}}
 
   </div> <!-- /.main-content -->
 
