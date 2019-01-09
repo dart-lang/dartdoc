@@ -25,10 +25,12 @@ void main() {
   });
 
   group('PackageMeta for the test package', () {
-    PackageMeta p = new PackageMeta.fromDir(new Directory(pathLib.join(Directory.current.path, 'testing', 'test_package')));
+    PackageMeta p = new PackageMeta.fromDir(new Directory(
+        pathLib.join(Directory.current.path, 'testing', 'test_package')));
 
     test('readme with corrupt UTF-8 loads without throwing', () {
-      expect(p.getReadmeContents().contents, contains('Here is some messed up UTF-8.\nÃf'));
+      expect(p.getReadmeContents().contents,
+          contains('Here is some messed up UTF-8.\nÃf'));
     });
   });
 
