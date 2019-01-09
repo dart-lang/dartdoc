@@ -15,8 +15,8 @@ import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
-import 'package:dartdoc/src/third_party/pkg/mustache4dart/lib/mustache4dart.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:mustache/mustache.dart';
 import 'package:path/path.dart' as pathLib;
 
 typedef void FileWriter(String path, Object content, {bool allowOverwrite});
@@ -377,9 +377,8 @@ class HtmlGeneratorInstance {
     }
   }
 
-  void _build(String filename, TemplateRenderer template, TemplateData data) {
-    String content = template(data,
-        assumeNullNonExistingProperty: false, errorOnMissingProperty: true);
+  void _build(String filename, Template template, TemplateData data) {
+    String content = template.renderString(data);
 
     _writer(filename, content);
     if (data.self is Indexable) _indexedElements.add(data.self as Indexable);

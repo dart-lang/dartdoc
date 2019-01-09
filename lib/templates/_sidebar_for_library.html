@@ -1,57 +1,59 @@
 <ol>
-  {{#library.hasPublicClasses}}
-  <li class="section-title"><a href="{{library.href}}#classes">Classes</a></li>
-  {{#library.publicClasses}}
+  {{#library}}
+  {{#hasPublicClasses}}
+  <li class="section-title"><a href="{{{href}}}#classes">Classes</a></li>
+  {{#publicClasses}}
   <li>{{{ linkedName }}}</li>
-  {{/library.publicClasses}}
-  {{/library.hasPublicClasses}}
+  {{/publicClasses}}
+  {{/hasPublicClasses}}
 
-  {{#library.hasPublicMixins}}
-  <li class="section-title"><a href="{{library.href}}#mixins">Mixins</a></li>
-  {{#library.publicMixins}}
+  {{#hasPublicMixins}}
+  <li class="section-title"><a href="{{{href}}}#mixins">Mixins</a></li>
+  {{#publicMixins}}
   <li>{{{ linkedName }}}</li>
-  {{/library.publicMixins}}
-  {{/library.hasPublicMixins}}
+  {{/publicMixins}}
+  {{/hasPublicMixins}}
 
-  {{#library.hasPublicConstants}}
-  <li class="section-title"><a href="{{library.href}}#constants">Constants</a></li>
-  {{#library.publicConstants}}
+  {{#hasPublicConstants}}
+  <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
+  {{#publicConstants}}
   <li>{{{ linkedName }}}</li>
-  {{/library.publicConstants}}
-  {{/library.hasPublicConstants}}
+  {{/publicConstants}}
+  {{/hasPublicConstants}}
 
-  {{#library.hasPublicProperties}}
-  <li class="section-title"><a href="{{library.href}}#properties">Properties</a></li>
-  {{#library.publicProperties}}
+  {{#hasPublicProperties}}
+  <li class="section-title"><a href="{{{href}}}#properties">Properties</a></li>
+  {{#publicProperties}}
   <li>{{{ linkedName }}}</li>
-  {{/library.publicProperties}}
-  {{/library.hasPublicProperties}}
+  {{/publicProperties}}
+  {{/hasPublicProperties}}
 
-  {{#library.hasPublicFunctions}}
-  <li class="section-title"><a href="{{library.href}}#functions">Functions</a></li>
-  {{#library.publicFunctions}}
+  {{#hasPublicFunctions}}
+  <li class="section-title"><a href="{{{href}}}#functions">Functions</a></li>
+  {{#publicFunctions}}
   <li>{{{ linkedName }}}</li>
-  {{/library.publicFunctions}}
-  {{/library.hasPublicFunctions}}
+  {{/publicFunctions}}
+  {{/hasPublicFunctions}}
 
-  {{#library.hasPublicEnums}}
-  <li class="section-title"><a href="{{library.href}}#enums">Enums</a></li>
-  {{#library.publicEnums}}
+  {{#hasPublicEnums}}
+  <li class="section-title"><a href="{{{href}}}#enums">Enums</a></li>
+  {{#publicEnums}}
   <li>{{{ linkedName }}}</li>
-  {{/library.publicEnums}}
-  {{/library.hasPublicEnums}}
+  {{/publicEnums}}
+  {{/hasPublicEnums}}
 
-  {{#library.hasPublicTypedefs}}
-  <li class="section-title"><a href="{{library.href}}#typedefs">Typedefs</a></li>
-  {{#library.publicTypedefs}}
+  {{#hasPublicTypedefs}}
+  <li class="section-title"><a href="{{{href}}}#typedefs">Typedefs</a></li>
+  {{#publicTypedefs}}
   <li>{{{ linkedName }}}</li>
-  {{/library.publicTypedefs}}
-  {{/library.hasPublicTypedefs}}
+  {{/publicTypedefs}}
+  {{/hasPublicTypedefs}}
 
-  {{#library.hasPublicExceptions}}
-  <li class="section-title"><a href="{{library.href}}#exceptions">Exceptions</a></li>
-  {{#library.publicExceptions}}
+  {{#hasPublicExceptions}}
+  <li class="section-title"><a href="{{{href}}}#exceptions">Exceptions</a></li>
+  {{#publicExceptions}}
   <li>{{{ linkedName }}}</li>
-  {{/library.publicExceptions}}
-  {{/library.hasPublicExceptions}}
+  {{/publicExceptions}}
+  {{/hasPublicExceptions}}
+  {{/library}}
 </ol>
