@@ -8,7 +8,7 @@ import 'dart:async' show Future;
 import 'dart:io' show File;
 
 import 'package:dartdoc/src/html/resource_loader.dart' as loader;
-import 'package:dartdoc/src/third_party/pkg/mustache4dart/lib/mustache4dart.dart';
+import 'package:mustache/mustache.dart';
 
 const _partials = const <String>[
   'callable',
@@ -83,21 +83,21 @@ Future<String> _getTemplateFile(String templateFileName) =>
     loader.loadAsString('package:dartdoc/templates/$templateFileName');
 
 class Templates {
-  final TemplateRenderer categoryTemplate;
-  final TemplateRenderer classTemplate;
-  final TemplateRenderer enumTemplate;
-  final TemplateRenderer constantTemplate;
-  final TemplateRenderer constructorTemplate;
-  final TemplateRenderer errorTemplate;
-  final TemplateRenderer functionTemplate;
-  final TemplateRenderer indexTemplate;
-  final TemplateRenderer libraryTemplate;
-  final TemplateRenderer methodTemplate;
-  final TemplateRenderer mixinTemplate;
-  final TemplateRenderer propertyTemplate;
-  final TemplateRenderer topLevelConstantTemplate;
-  final TemplateRenderer topLevelPropertyTemplate;
-  final TemplateRenderer typeDefTemplate;
+  final Template categoryTemplate;
+  final Template classTemplate;
+  final Template enumTemplate;
+  final Template constantTemplate;
+  final Template constructorTemplate;
+  final Template errorTemplate;
+  final Template functionTemplate;
+  final Template indexTemplate;
+  final Template libraryTemplate;
+  final Template methodTemplate;
+  final Template mixinTemplate;
+  final Template propertyTemplate;
+  final Template topLevelConstantTemplate;
+  final Template topLevelPropertyTemplate;
+  final Template typeDefTemplate;
 
   static Future<Templates> create(
       {List<String> headerPaths,
@@ -106,17 +106,17 @@ class Templates {
     var partials =
         await _loadPartials(headerPaths, footerPaths, footerTextPaths);
 
-    String _partial(String name) {
+    Template _partial(String name) {
       String partial = partials[name];
       if (partial == null || partial.isEmpty) {
         throw new StateError('Did not find partial "$name"');
       }
-      return partial;
+      return Template(partial);
     }
 
-    Future<TemplateRenderer> _loadTemplate(String templatePath) async {
+    Future<Template> _loadTemplate(String templatePath) async {
       String templateContents = await _getTemplateFile(templatePath);
-      return compile(templateContents, partial: _partial);
+      return Template(templateContents, partialResolver: _partial);
     }
 
     var indexTemplate = await _loadTemplate('index.html');
