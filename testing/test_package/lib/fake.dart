@@ -1007,7 +1007,6 @@ abstract class MIEEThing<K, V> {
   void operator []=(K key, V value);
 }
 
-
 abstract class _NonCanonicalToolUser {
   /// Invokes a tool without the $INPUT token or args.
   ///

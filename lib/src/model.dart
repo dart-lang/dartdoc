@@ -3253,7 +3253,8 @@ abstract class ModelElement extends Canonicalization
     // Prevent reentrancy.
     assert(_rawDocs == null);
     // Do not use the sync method if we need to evaluate tools or templates.
-    assert(!isCanonical || !needsPrecacheRegExp.hasMatch(documentationComment ?? ''));
+    assert(!isCanonical ||
+        !needsPrecacheRegExp.hasMatch(documentationComment ?? ''));
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
     } else {
@@ -4034,7 +4035,8 @@ abstract class ModelElement extends Canonicalization
               'LIBRARY_NAME': library?.fullyQualifiedName,
               'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
               'INVOCATION_INDEX': invocationIndex.toString(),
-              'PACKAGE_INVOCATION_INDEX': (package.toolInvocationIndex++).toString(),
+              'PACKAGE_INVOCATION_INDEX':
+                  (package.toolInvocationIndex++).toString(),
             }..removeWhere((key, value) => value == null));
       });
     } else {

@@ -1,7 +1,5 @@
 library test_package.tool;
 
-
-
 abstract class PrivateLibraryToolUser {
   /// Invokes a tool from a private library.
   ///
