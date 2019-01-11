@@ -36,6 +36,7 @@ void main(List<String> argList) {
     'LIBRARY_NAME',
     'ELEMENT_NAME',
     'INVOCATION_INDEX',
+    'PACKAGE_INVOCATION_INDEX',
   ]);
   Map<String, String> env = <String, String>{}..addAll(Platform.environment);
   env.removeWhere((String key, String value) => !variableNames.contains(key));

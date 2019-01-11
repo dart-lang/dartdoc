@@ -1300,7 +1300,7 @@ abstract class Documentable extends Nameable {
 abstract class Categorization implements ModelElement {
   @override
   String _buildDocumentationAddition(String rawDocs) =>
-      _stripAndSetDartdocCategories(rawDocs);
+      _stripAndSetDartdocCategories(rawDocs ??= '');
 
   /// Parse {@category ...} and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
@@ -2263,7 +2263,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Set<String> get canonicalFor {
     if (_canonicalFor == null) {
       // TODO(jcollins-g): restructure to avoid using side effects.
-      documentation;
+      _buildDocumentationAddition(documentationComment);
     }
     return _canonicalFor;
   }
@@ -2273,14 +2273,14 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   ///
   /// Example:
   ///   {@canonicalFor libname.ClassName}
-  String _setCanonicalFor(String rawDocs) {
-    if (_canonicalFor == null) {
-      _canonicalFor = new Set();
-    }
+  @override
+  String _buildDocumentationAddition(String rawDocs) {
+    rawDocs = super._buildDocumentationAddition(rawDocs);
+    Set<String> newCanonicalFor = new Set();
     Set<String> notFoundInAllModelElements = new Set();
     final canonicalRegExp = new RegExp(r'{@canonicalFor\s([^}]+)}');
     rawDocs = rawDocs.replaceAllMapped(canonicalRegExp, (Match match) {
-      canonicalFor.add(match.group(1));
+      newCanonicalFor.add(match.group(1));
       notFoundInAllModelElements.add(match.group(1));
       return '';
     });
@@ -2290,16 +2290,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     for (String notFound in notFoundInAllModelElements) {
       warn(PackageWarning.ignoredCanonicalFor, message: notFound);
     }
-    return rawDocs;
-  }
-
-  String _libraryDocs;
-  @override
-  String get documentation {
-    if (_libraryDocs == null) {
-      _libraryDocs = _setCanonicalFor(super.documentation);
+    // TODO(jcollins-g): warn if a macro/tool _does_ generate an unexpected
+    // canonicalFor?
+    if (_canonicalFor == null) {
+      _canonicalFor = newCanonicalFor;
     }
-    return _libraryDocs;
+    return rawDocs;
   }
 
   /// Libraries are not enclosed by anything.
@@ -3250,13 +3246,14 @@ abstract class ModelElement extends Canonicalization
 
   /// Override this to add more features to the documentation builder in a
   /// subclass.
-  String _buildDocumentationAddition(String docs) => docs;
+  String _buildDocumentationAddition(String docs) => docs ??= '';
 
   /// Separate from _buildDocumentationLocal for overriding.
   String _buildDocumentationBaseSync() {
-    assert(_rawDocs == null);
+    assert(_rawDocs == null, 'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
-    assert(packageGraph._localDocumentationBuilt);
+    assert(!isCanonical ||
+        !needsPrecacheRegExp.hasMatch(documentationComment ?? ''));
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
     } else {
@@ -3273,7 +3270,7 @@ abstract class ModelElement extends Canonicalization
   /// Separate from _buildDocumentationLocal for overriding.  Can only be
   /// used as part of [PackageGraph.setUpPackageGraph].
   Future<String> _buildDocumentationBase() async {
-    assert(_rawDocs == null);
+    assert(_rawDocs == null, 'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
@@ -4037,6 +4034,8 @@ abstract class ModelElement extends Canonicalization
               'LIBRARY_NAME': library?.fullyQualifiedName,
               'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
               'INVOCATION_INDEX': invocationIndex.toString(),
+              'PACKAGE_INVOCATION_INDEX':
+                  (package.toolInvocationIndex++).toString(),
             }..removeWhere((key, value) => value == null));
       });
     } else {
@@ -4688,6 +4687,11 @@ class PackageGraph {
   /// Generate a list of futures for any docs that actually require precaching.
   Iterable<Future> precacheLocalDocs() sync* {
     for (ModelElement m in allModelElements) {
+      // Skip if there is a canonicalModelElement somewhere else we can run this
+      // for.  Not the same as allCanonicalModelElements since we need to run
+      // for any ModelElement that might not have a canonical ModelElement,
+      // too.
+      if (m.canonicalModelElement != null && !m.isCanonical) continue;
       if (m.documentationComment != null &&
           needsPrecacheRegExp.hasMatch(m.documentationComment)) {
         yield m._precacheLocalDocs();
@@ -5799,6 +5803,9 @@ class Package extends LibraryContainer
   bool get isCanonical => true;
   @override
   Library get canonicalLibrary => null;
+
+  /// Number of times we have invoked a tool for this package.
+  int toolInvocationIndex = 0;
 
   /// Pieces of the location split by [locationSplitter] (removing package: and
   /// slashes).
