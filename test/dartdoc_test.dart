@@ -131,6 +131,43 @@ void main() {
         await Future.wait(CoverageSubprocessLauncher.coverageResults);
       });
 
+      test('invalid parameters return non-zero and print a fatal-error',
+          () async {
+        List outputLines = [];
+        await expectLater(
+            () => subprocessLauncher.runStreamed(
+                Platform.resolvedExecutable,
+                [
+                  dartdocPath,
+                  '--nonexisting',
+                ],
+                perLine: outputLines.add),
+            throwsA(const TypeMatcher<ProcessException>()));
+        expect(
+            outputLines.firstWhere((l) => l.startsWith(' fatal')),
+            equals(
+                ' fatal error: Could not find an option named "nonexisting".'));
+      });
+
+      test('missing a required file path prints a fatal-error', () async {
+        List outputLines = [];
+        String impossiblePath = pathLib.join(dartdocPath, 'impossible');
+        await expectLater(
+            () => subprocessLauncher.runStreamed(
+                Platform.resolvedExecutable,
+                [
+                  dartdocPath,
+                  '--input',
+                  impossiblePath,
+                ],
+                perLine: outputLines.add),
+            throwsA(const TypeMatcher<ProcessException>()));
+        expect(
+            outputLines.firstWhere((l) => l.startsWith(' fatal')),
+            startsWith(
+                ' fatal error: Argument --input, set to ${impossiblePath}, resolves to missing path: '));
+      });
+
       test('errors cause non-zero exit when warnings are off', () async {
         expect(
             () => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [

@@ -57,12 +57,6 @@ Future<void> main(List<String> arguments) async {
     // TODO(jcollins-g): use exit once dart-lang/sdk#31747 is fixed.
     exitCode = 64;
     return;
-  } on DartdocOptionError catch (e) {
-    stderr.writeln(' fatal error: ${e.message}');
-    stderr.writeln('');
-    _printUsage(optionSet.argParser);
-    exitCode = 64;
-    return;
   }
   if (optionSet['help'].valueAt(Directory.current)) {
     _printHelp(optionSet.argParser);
@@ -75,8 +69,17 @@ Future<void> main(List<String> arguments) async {
     return;
   }
 
-  DartdocProgramOptionContext config =
-      new DartdocProgramOptionContext(optionSet, null);
+  DartdocProgramOptionContext config;
+  try {
+    config = new DartdocProgramOptionContext(optionSet, null);
+  } on DartdocOptionError catch (e) {
+    stderr.writeln(' fatal error: ${e.message}');
+    stderr.writeln('');
+    await stderr.flush();
+    _printUsage(optionSet.argParser);
+    exitCode = 64;
+    return;
+  }
   startLogging(config);
 
   Directory outputDir = new Directory(config.output);
