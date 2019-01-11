@@ -2236,7 +2236,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
       _prefixToLibrary = {};
       // It is possible to have overlapping prefixes.
       for (ImportElement i in (element as LibraryElement).imports) {
-        if (i.prefix?.name != null) {
+        // Ignore invalid imports.
+        if (i.prefix?.name != null && i.importedLibrary != null) {
           _prefixToLibrary.putIfAbsent(i.prefix?.name, () => new Set());
           _prefixToLibrary[i.prefix?.name].add(
               new ModelElement.from(i.importedLibrary, library, packageGraph));

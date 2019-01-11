@@ -48,6 +48,9 @@ library fake;
 
 import 'dart:async';
 import 'dart:collection';
+// Make sure dartdoc ignores invalid prefixes imports (#1896)
+// ignore: uri_does_not_exist
+import 'dart:json' as invalidPrefix;
 import 'package:meta/meta.dart' show Required;
 import 'csspub.dart' as css;
 import 'csspub.dart' as renamedLib2;
