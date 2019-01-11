@@ -61,6 +61,8 @@ export 'src/notadotdartfile';
 export 'package:test_package_imported/categoryExporting.dart'
     show IAmAClassWithCategories;
 
+export 'src/tool.dart';
+
 // Explicitly export ourselves, because why not.
 // ignore: uri_does_not_exist
 export 'package:test_package/fake.dart';
@@ -1005,3 +1007,14 @@ abstract class MIEEMixin<K, V> implements MIEEThing<K, V> {
 abstract class MIEEThing<K, V> {
   void operator []=(K key, V value);
 }
+
+abstract class _NonCanonicalToolUser {
+  /// Invokes a tool without the $INPUT token or args.
+  ///
+  /// {@tool drill}
+  /// Some text in the drill that references [noInvokeTool].
+  /// {@end-tool}
+  void invokeToolNonCanonical();
+}
+
+abstract class CanonicalToolUser extends _NonCanonicalToolUser {}
