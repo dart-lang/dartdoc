@@ -48,6 +48,9 @@ library fake;
 
 import 'dart:async';
 import 'dart:collection';
+// Make sure dartdoc ignores invalid prefixes imports (#1896)
+// ignore: uri_does_not_exist
+import 'dart:json' as invalidPrefix;
 import 'package:meta/meta.dart' show Required;
 import 'csspub.dart' as css;
 import 'csspub.dart' as renamedLib2;
@@ -59,6 +62,8 @@ import 'two_exports.dart' show BaseClass;
 // ignore: uri_does_not_exist
 export 'package:test_package_imported/categoryExporting.dart'
     show IAmAClassWithCategories;
+
+export 'src/tool.dart';
 
 // Explicitly export ourselves, because why not.
 // ignore: uri_does_not_exist
@@ -1004,3 +1009,14 @@ abstract class MIEEMixin<K, V> implements MIEEThing<K, V> {
 abstract class MIEEThing<K, V> {
   void operator []=(K key, V value);
 }
+
+abstract class _NonCanonicalToolUser {
+  /// Invokes a tool without the $INPUT token or args.
+  ///
+  /// {@tool drill}
+  /// Some text in the drill that references [noInvokeTool].
+  /// {@end-tool}
+  void invokeToolNonCanonical();
+}
+
+abstract class CanonicalToolUser extends _NonCanonicalToolUser {}
