@@ -1297,10 +1297,10 @@ abstract class Documentable extends Nameable {
 }
 
 /// Mixin implementing dartdoc categorization for ModelElements.
-mixin Categorization on ModelElement {
+abstract class Categorization implements ModelElement {
   @override
   String _buildDocumentationAddition(String rawDocs) =>
-      _stripAndSetDartdocCategories(super._buildDocumentationAddition(rawDocs));
+      _stripAndSetDartdocCategories(rawDocs ??= '');
 
   /// Parse {@category ...} and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
