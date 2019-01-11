@@ -55,6 +55,7 @@ import 'example.dart';
 import 'mylibpub.dart' as renamedLib;
 import 'mylibpub.dart' as renamedLib2;
 import 'two_exports.dart' show BaseClass;
+export 'src/notadotdartfile';
 
 // ignore: uri_does_not_exist
 export 'package:test_package_imported/categoryExporting.dart'

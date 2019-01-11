@@ -6508,7 +6508,8 @@ class PackageBuilder {
       }
     }
     var sourceKind = await driver.getSourceKind(filePath);
-    if (sourceKind == SourceKind.LIBRARY) {
+    // Allow dart source files with inappropriate suffixes (#1897)
+    if (sourceKind != SourceKind.PART) {
       // Loading libraryElements from part files works, but is painfully slow
       // and creates many duplicates.
       return await driver.currentSession.getResolvedLibrary(source.fullName);
