@@ -144,7 +144,7 @@ void main() {
                 perLine: outputLines.add),
             throwsA(const TypeMatcher<ProcessException>()));
         expect(
-            outputLines.first,
+            outputLines.firstWhere((l) => l.startsWith(' fatal')),
             equals(
                 ' fatal error: Could not find an option named "nonexisting".'));
       });
@@ -163,7 +163,7 @@ void main() {
                 perLine: outputLines.add),
             throwsA(const TypeMatcher<ProcessException>()));
         expect(
-            outputLines.first,
+            outputLines.firstWhere((l) => l.startsWith(' fatal')),
             startsWith(
                 ' fatal error: Argument --input, set to ${impossiblePath}, resolves to missing path: '));
       });
