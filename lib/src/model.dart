@@ -3250,8 +3250,7 @@ abstract class ModelElement extends Canonicalization
 
   /// Separate from _buildDocumentationLocal for overriding.
   String _buildDocumentationBaseSync() {
-    // Prevent reentrancy.
-    assert(_rawDocs == null);
+    assert(_rawDocs == null, 'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
     assert(!isCanonical ||
         !needsPrecacheRegExp.hasMatch(documentationComment ?? ''));
@@ -3271,8 +3270,7 @@ abstract class ModelElement extends Canonicalization
   /// Separate from _buildDocumentationLocal for overriding.  Can only be
   /// used as part of [PackageGraph.setUpPackageGraph].
   Future<String> _buildDocumentationBase() async {
-    // Prevent reentrancy.
-    assert(_rawDocs == null);
+    assert(_rawDocs == null, 'reentrant calls to _buildDocumentation* not allowed');
     // Do not use the sync method if we need to evaluate tools or templates.
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
