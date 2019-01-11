@@ -1,6 +1,7 @@
 # dartdoc
 
 [![Build Status](https://travis-ci.org/dart-lang/dartdoc.svg?branch=master)](https://travis-ci.org/dart-lang/dartdoc)
+[![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/s6sh69et2ga00dlu?svg=true)](https://ci.appveyor.com/project/devoncarew/dartdoc)
 [![Coverage Status](https://coveralls.io/repos/github/dart-lang/dartdoc/badge.svg?branch=master)](https://coveralls.io/github/dart-lang/dartdoc?branch=master)
 
 
