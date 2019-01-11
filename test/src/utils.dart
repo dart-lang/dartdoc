@@ -182,10 +182,11 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
 
     Completer<String> portAsString = new Completer();
     void parsePortAsString(String line) {
-      if (perLine != null) perLine(line);
-      if (!portAsString.isCompleted) {
+      if (!portAsString.isCompleted && coverageEnabled) {
         Match m = observatoryPortRegexp.matchAsPrefix(line);
         if (m?.group(1) != null) portAsString.complete(m.group(1));
+      } else {
+        if (perLine != null) perLine(line);
       }
     }
 
