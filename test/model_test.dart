@@ -84,20 +84,42 @@ void main() {
 
   group('Tools', () {
     Class toolUser;
+    Class _NonCanonicalToolUser, CanonicalToolUser, PrivateLibraryToolUser;
     Method invokeTool;
     Method invokeToolNoInput;
     Method invokeToolMultipleSections;
+    Method invokeToolNonCanonical, invokeToolNonCanonicalSubclass;
+    Method invokeToolPrivateLibrary, invokeToolPrivateLibraryOriginal;
 
     setUpAll(() {
+      _NonCanonicalToolUser = fakeLibrary.allClasses.firstWhere((c) => c.name == '_NonCanonicalToolUser');
+      CanonicalToolUser = fakeLibrary.allClasses.firstWhere((c) => c.name == 'CanonicalToolUser');
+      PrivateLibraryToolUser = fakeLibrary.allClasses.firstWhere((c) => c.name == 'PrivateLibraryToolUser');
       toolUser = exLibrary.classes.firstWhere((c) => c.name == 'ToolUser');
       invokeTool =
           toolUser.allInstanceMethods.firstWhere((m) => m.name == 'invokeTool');
+      invokeToolNonCanonical = _NonCanonicalToolUser.allInstanceMethods.firstWhere((m) => m.name == 'invokeToolNonCanonical');
+      invokeToolNonCanonicalSubclass = CanonicalToolUser.allInstanceMethods.firstWhere((m) => m.name == 'invokeToolNonCanonical');
       invokeToolNoInput = toolUser.allInstanceMethods
           .firstWhere((m) => m.name == 'invokeToolNoInput');
       invokeToolMultipleSections = toolUser.allInstanceMethods
           .firstWhere((m) => m.name == 'invokeToolMultipleSections');
+      invokeToolPrivateLibrary = PrivateLibraryToolUser.allInstanceMethods
+          .firstWhere((m) => m.name == 'invokeToolPrivateLibrary');
+      invokeToolPrivateLibraryOriginal = (invokeToolPrivateLibrary.definingEnclosingElement as Class).allInstanceMethods.firstWhere((m) => m.name == 'invokeToolPrivateLibrary');
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
+
+    test('does _not_ invoke a tool multiple times unnecessarily', () {
+      RegExp packageInvocationIndexRegexp = new RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
+      expect(invokeToolNonCanonical.isCanonical, isFalse);
+      expect(invokeToolNonCanonicalSubclass.isCanonical, isTrue);
+      expect(packageInvocationIndexRegexp.firstMatch(invokeToolNonCanonical.documentation).group(1),
+             equals(packageInvocationIndexRegexp.firstMatch(invokeToolNonCanonicalSubclass.documentation).group(1)));
+      expect(invokeToolPrivateLibrary.documentation, isNot(contains('{@tool')));
+      expect(invokeToolPrivateLibraryOriginal.documentation, contains('{@tool'));
+    });
+
     test('can invoke a tool and pass args and environment', () {
       expect(invokeTool.documentation, contains('--file=<INPUT_FILE>'));
       expect(

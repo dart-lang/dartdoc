@@ -1297,10 +1297,10 @@ abstract class Documentable extends Nameable {
 }
 
 /// Mixin implementing dartdoc categorization for ModelElements.
-abstract class Categorization implements ModelElement {
+mixin Categorization on ModelElement {
   @override
   String _buildDocumentationAddition(String rawDocs) =>
-      _stripAndSetDartdocCategories(rawDocs);
+      _stripAndSetDartdocCategories(super._buildDocumentationAddition(rawDocs));
 
   /// Parse {@category ...} and related information in API comments, stripping
   /// out that information from the given comments and returning the stripped
@@ -3246,13 +3246,14 @@ abstract class ModelElement extends Canonicalization
 
   /// Override this to add more features to the documentation builder in a
   /// subclass.
-  String _buildDocumentationAddition(String docs) => docs;
+  String _buildDocumentationAddition(String docs) => docs ??= '';
 
   /// Separate from _buildDocumentationLocal for overriding.
   String _buildDocumentationBaseSync() {
+    // Prevent reentrancy.
     assert(_rawDocs == null);
     // Do not use the sync method if we need to evaluate tools or templates.
-    assert(!needsPrecacheRegExp.hasMatch(documentationComment ?? ''));
+    assert(!isCanonical || !needsPrecacheRegExp.hasMatch(documentationComment ?? ''));
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
     } else {
@@ -3269,6 +3270,7 @@ abstract class ModelElement extends Canonicalization
   /// Separate from _buildDocumentationLocal for overriding.  Can only be
   /// used as part of [PackageGraph.setUpPackageGraph].
   Future<String> _buildDocumentationBase() async {
+    // Prevent reentrancy.
     assert(_rawDocs == null);
     // Do not use the sync method if we need to evaluate tools or templates.
     if (config.dropTextFrom.contains(element.library.name)) {
@@ -4032,6 +4034,7 @@ abstract class ModelElement extends Canonicalization
               'LIBRARY_NAME': library?.fullyQualifiedName,
               'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
               'INVOCATION_INDEX': invocationIndex.toString(),
+              'PACKAGE_INVOCATION_INDEX': (package.toolInvocationIndex++).toString(),
             }..removeWhere((key, value) => value == null));
       });
     } else {
@@ -5810,6 +5813,9 @@ class Package extends LibraryContainer
   bool get isCanonical => true;
   @override
   Library get canonicalLibrary => null;
+
+  /// Number of times we have invoked a tool for this package.
+  int toolInvocationIndex = 0;
 
   /// Pieces of the location split by [locationSplitter] (removing package: and
   /// slashes).
