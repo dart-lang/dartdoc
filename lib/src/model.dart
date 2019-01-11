@@ -3631,6 +3631,7 @@ abstract class ModelElement extends Canonicalization
   @override
   PackageGraph get packageGraph => _packageGraph;
 
+  @override
   Package get package => library.package;
 
   bool get isPublicAndPackageDocumented =>
@@ -4622,15 +4623,10 @@ class Operator extends Method {
 
 class PackageGraph {
   PackageGraph.UninitializedPackageGraph(
-      this.config,
-      PackageWarningOptions packageWarningOptions,
-      this.driver,
-      this.sdk,
-      this.hasEmbedderSdk)
+      this.config, this.driver, this.sdk, this.hasEmbedderSdk)
       : packageMeta = config.topLevelPackageMeta,
-        session = driver.currentSession,
-        _packageWarningCounter =
-            new PackageWarningCounter(packageWarningOptions) {
+        session = driver.currentSession {
+    _packageWarningCounter = new PackageWarningCounter(this);
     // Make sure the default package exists, even if it has no libraries.
     // This can happen for packages that only contain embedder SDKs.
     new Package.fromPackageMeta(packageMeta, this);
@@ -4821,14 +4817,6 @@ class PackageGraph {
     return (_allRootDirs.contains(element.library.packageMeta?.resolvedDir));
   }
 
-  /// Flush out any warnings we might have collected while
-  /// [PackageWarningOptions.autoFlush] was false.
-  void flushWarnings() {
-    _packageWarningCounter.maybeFlush();
-  }
-
-  Tuple2<int, int> get lineAndColumn => null;
-
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
   final Set<Tuple3<Element, PackageWarning, String>> _warnAlreadySeen =
@@ -4877,6 +4865,7 @@ class PackageGraph {
       return;
     }
     // Some kinds of warnings it is OK to drop if we're not documenting them.
+    // TODO(jcollins-g): drop this and use new flag system instead.
     if (warnable != null &&
         skipWarningIfNotDocumentedFor.contains(kind) &&
         !warnable.isDocumented) {
@@ -5616,6 +5605,7 @@ class Category extends Nameable
         Indexable
     implements Documentable {
   /// All libraries in [libraries] must come from [package].
+  @override
   Package package;
   String _name;
   @override
@@ -5973,6 +5963,9 @@ class Package extends LibraryContainer
 
   @override
   String get name => _name;
+
+  @override
+  Package get package => this;
 
   @override
   PackageGraph get packageGraph => _packageGraph;
@@ -6369,7 +6362,7 @@ class PackageBuilder {
     }
 
     PackageGraph newGraph = new PackageGraph.UninitializedPackageGraph(
-        config, getWarningOptions(), driver, sdk, hasEmbedderSdkFiles);
+        config, driver, sdk, hasEmbedderSdkFiles);
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
     return newGraph;
@@ -6487,25 +6480,6 @@ class PackageBuilder {
       scheduler.start();
     }
     return _driver;
-  }
-
-  PackageWarningOptions getWarningOptions() {
-    PackageWarningOptions warningOptions =
-        new PackageWarningOptions(config.verboseWarnings);
-    // TODO(jcollins-g): explode this into detailed command line options.
-    for (PackageWarning kind in PackageWarning.values) {
-      switch (kind) {
-        case PackageWarning.toolError:
-        case PackageWarning.invalidParameter:
-        case PackageWarning.unresolvedExport:
-          warningOptions.error(kind);
-          break;
-        default:
-          if (config.showWarnings) warningOptions.warn(kind);
-          break;
-      }
-    }
-    return warningOptions;
   }
 
   /// Return an Iterable with the sdk files we should parse.

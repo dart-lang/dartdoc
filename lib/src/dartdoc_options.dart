@@ -24,6 +24,7 @@ import 'package:dartdoc/src/experiment_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as pathLib;
 import 'package:yaml/yaml.dart';
 
@@ -1271,7 +1272,7 @@ abstract class DartdocOptionContextBase {
 /// a single [ModelElement], [Package], [Category] and so forth has a single context
 /// and so this can be made a member variable of those structures.
 class DartdocOptionContext extends DartdocOptionContextBase
-    with DartdocExperimentOptionContext {
+    with DartdocExperimentOptionContext, PackageWarningOptionContext {
   @override
   final DartdocOptionSet optionSet;
   @override
@@ -1357,12 +1358,10 @@ class DartdocOptionContext extends DartdocOptionContextBase
   String get sdkDir => optionSet['sdkDir'].valueAt(context);
   bool get showUndocumentedCategories =>
       optionSet['showUndocumentedCategories'].valueAt(context);
-  bool get showWarnings => optionSet['showWarnings'].valueAt(context);
   PackageMeta get topLevelPackageMeta =>
       optionSet['topLevelPackageMeta'].valueAt(context);
   bool get useCategories => optionSet['useCategories'].valueAt(context);
   bool get validateLinks => optionSet['validateLinks'].valueAt(context);
-  bool get verboseWarnings => optionSet['verboseWarnings'].valueAt(context);
 
   bool isLibraryExcluded(String name) =>
       exclude.any((pattern) => name == pattern);
@@ -1540,8 +1539,6 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     }, help: 'Path to the SDK directory.', isDir: true, mustExist: true),
     new DartdocOptionArgFile<bool>('showUndocumentedCategories', false,
         help: "Label categories that aren't documented", negatable: true),
-    new DartdocOptionArgOnly<bool>('showWarnings', false,
-        help: 'Display all warnings.'),
     new DartdocOptionSyntheticOnly<PackageMeta>('topLevelPackageMeta',
         (DartdocSyntheticOption<PackageMeta> option, Directory dir) {
       PackageMeta packageMeta = new PackageMeta.fromDir(
@@ -1574,5 +1571,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
             'command.'),
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
-  ]..addAll(await createExperimentOptions());
+  ]
+    ..addAll(await createExperimentOptions())
+    ..addAll(await createPackageWarningOptions());
 }
