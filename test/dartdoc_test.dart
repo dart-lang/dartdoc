@@ -178,17 +178,6 @@ void main() {
             throwsA(const TypeMatcher<ProcessException>()));
       });
 
-      test('errors cause non-zero exit when warnings are on', () async {
-        expect(
-            () => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
-                  dartdocPath,
-                  '--input=${testPackageToolError.path}',
-                  '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}',
-                  '--show-warnings',
-                ]),
-            throwsA(const TypeMatcher<ProcessException>()));
-      });
-
       test('help prints command line args', () async {
         List<String> outputLines = [];
         await subprocessLauncher.runStreamed(
