@@ -10,6 +10,10 @@ set -ex
 # add globally activated packages to the path
 export PATH="$PATH":"~/.pub-cache/bin"
 DART_VERSION=`dart --version 2>&1 | awk '{print $4}'`
+// Do not run coverage on non-dev builds or non-Linux platforms.
+if ! echo "${DART_VERSION}" | grep -q dev || ! uname | grep -q Linux ; then
+  unset COVERAGE_TOKEN
+fi
 
 if [ "$DARTDOC_BOT" = "sdk-docs" ]; then
   # Build the SDK docs
@@ -39,8 +43,7 @@ elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
 else
   echo "Running main dartdoc bot"
   pub run grinder buildbot
-  if [ -n "$COVERAGE_TOKEN" ] && [ "${DART_VERSION}" != "2.1.0" ] && uname | grep -q Linux ; then
-    # Only attempt to upload coverage data for dev builds.
+  if [ -n "$COVERAGE_TOKEN" ] ; then
     coveralls-lcov --repo-token="${COVERAGE_TOKEN}" lcov.info
   fi
 fi
