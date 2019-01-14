@@ -1,0 +1,4 @@
+/// Test importing with an invalid dart file extension. (#1897)
+library test_package.notadotdartfile;
+
+class MyClassFromADartFile {}

@@ -155,8 +155,9 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
     /// Wait for all coverage runs to finish.
     await Future.wait(currentCoverageResults);
 
-    return launcher.runStreamed(Platform.executable, [
-      'tool/format_coverage.dart', // TODO(jcollins-g): use pub after dart-lang/coverage#240 is landed
+    return launcher.runStreamed('pub', [
+      'run',
+      'coverage:format_coverage',
       '--lcov',
       '-v',
       '-b', '.',
