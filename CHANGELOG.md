@@ -1,3 +1,24 @@
+## 0.28.0
+* Fix a crash when a Dart library doesn't have the .dart suffix (#1897)
+* Fix a crash when a Dart file is loaded with an unresolvable
+  prefix import in analyzer (#1896)
+* Do not execute tools to generate documentation for non-canonical
+  elements that have canonical counterparts.  This eliminates
+  "duplicate" tool runs that serve no purpose for generated docs
+  or macro loading.  (#1898)
+* Fix a minor problem where invalid command line parameters could
+  generate an ugly exception (#1895)
+* Remove internal copy of mustache4dart and depend on the mustache
+  package.  Many minor changes to templating as a result.  (#1894)
+* **Breaking change to warning handling**.  Many new command line options
+  and dartdoc_options.yaml settings can constrain and configure
+  how warnings are interpreted by dartdoc, and whether they are fatal.
+  The old --show-warnings flag has been removed. (#1891, #1343, #1412, #1480)
+* Fix a crash when loading README.md files that have invalid UTF-8.
+  (#1890, #1889)
+* Early implementation of experiment flags for Dart tools, based
+  on the analyzer (#1884)
+
 ## 0.27.0
 * Several dartdoc project infrastructure changes, including coverage
   support. (#1869, #1878, #1879, #1881, #1882)
