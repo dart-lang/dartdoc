@@ -32,7 +32,7 @@ dev_dependencies:
   build: ^1.0.1
   build_runner: ^1.0.0
   build_version: ^1.0.0
-  coverage: any
+  coverage: ^0.12.4
   dhttpd: ^3.0.0
   glob: ^1.1.5
   grinder: ^0.8.2
