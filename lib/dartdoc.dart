@@ -68,6 +68,12 @@ class Dartdoc extends PackageBuilder {
     return new Dartdoc._(config, generators);
   }
 
+  /// An asynchronous factory method building only
+  static Future<Dartdoc> withEmptyGenerator(DartdocOptionContext config) async {
+    List<Generator> generators = await initEmptyGenerators(config);
+    return new Dartdoc._(config, generators);
+  }
+
   /// Basic synchronous factory that gives a stripped down Dartdoc that won't
   /// use generators.  Useful for testing.
   factory Dartdoc.withoutGenerators(DartdocOptionContext config) {
@@ -101,7 +107,7 @@ class Dartdoc extends PackageBuilder {
         await generator.generate(packageGraph, outputDir.path);
         writtenFiles.addAll(generator.writtenFiles.map(pathLib.normalize));
       }
-      if (config.validateLinks) validateLinks(packageGraph, outputDir.path);
+      if (config.validateLinks && writtenFiles.isNotEmpty) validateLinks(packageGraph, outputDir.path);
     }
 
     int warnings = packageGraph.packageWarningCounter.warningCount;
@@ -122,6 +128,10 @@ class Dartdoc extends PackageBuilder {
   }
 
   Future<DartdocResults> generateDocs() async {
+    Directory outputDir = new Directory(config.output);
+    logInfo("Generating documentation for '${config.topLevelPackageMeta}' into "
+        "${outputDir.absolute.path}${Platform.pathSeparator}");
+
     DartdocResults dartdocResults = await generateDocsBase();
     if (dartdocResults.packageGraph.localPublicLibraries.isEmpty) {
       throw new DartdocFailure(
@@ -134,7 +144,7 @@ class Dartdoc extends PackageBuilder {
       throw new DartdocFailure(
           "dartdoc encountered $errorCount} errors while processing.");
     }
-
+    logInfo('Success! Docs generated into ${dartdocResults.outDir.absolute.path}');
     return dartdocResults;
   }
 

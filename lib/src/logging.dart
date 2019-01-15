@@ -52,6 +52,9 @@ void startLogging(LoggingContext config) {
   // By default, get all log output at `progressLevel` or greater.
   // This allows us to capture progress events and print `...`.
   Logger.root.level = progressLevel;
+  if (config.quiet) {
+    Logger.root.level = Level.WARNING;
+  }
   if (config.json) {
     Logger.root.onRecord.listen((record) {
       if (record.level == progressLevel) {
@@ -114,6 +117,7 @@ void startLogging(LoggingContext config) {
 abstract class LoggingContext implements DartdocOptionContextBase {
   bool get json => optionSet['json'].valueAt(context);
   bool get showProgress => optionSet['showProgress'].valueAt(context);
+  bool get quiet => optionSet['quiet'].valueAt(context);
 }
 
 Future<List<DartdocOption>> createLoggingOptions() async {
@@ -124,5 +128,7 @@ Future<List<DartdocOption>> createLoggingOptions() async {
     new DartdocOptionArgOnly<bool>('showProgress', false,
         help: 'Display progress indications to console stdout',
         negatable: false),
+    new DartdocOptionArgOnly<bool>('quiet', false, abbr: 'q', negatable: true,
+        help: 'Only show warnings and errors; silence all other output.'),
   ];
 }

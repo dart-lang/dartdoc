@@ -20,7 +20,7 @@ abstract class Generator {
   Future generate(PackageGraph packageGraph, String outputDirectoryPath);
 
   /// Fires when a file is created.
-  Stream<File> get onFileCreated;
+  Stream<void> get onFileCreated;
 
   /// Fetches all filenames written by this generator.
   Set<String> get writtenFiles;
