@@ -128,9 +128,7 @@ class Dartdoc extends PackageBuilder {
   }
 
   Future<DartdocResults> generateDocs() async {
-    Directory outputDir = new Directory(config.output);
-    logInfo("Generating documentation for '${config.topLevelPackageMeta}' into "
-        "${outputDir.absolute.path}${Platform.pathSeparator}");
+    logPrint("Documenting ${config.topLevelPackageMeta}...");
 
     DartdocResults dartdocResults = await generateDocsBase();
     if (dartdocResults.packageGraph.localPublicLibraries.isEmpty) {
