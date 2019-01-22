@@ -31,7 +31,8 @@ Future<List<DartdocOption>> createDartdocProgramOptions() async {
         help: 'Display coordinated asynchronous stack traces (slow)',
         negatable: true),
     new DartdocOptionArgOnly<bool>('generateDocs', true,
-        help: 'Generate docs into the output directory (or only display warnings if false).',
+        help:
+            'Generate docs into the output directory (or only display warnings if false).',
         negatable: true),
     new DartdocOptionArgOnly<bool>('help', false,
         abbr: 'h', help: 'Show command help.', negatable: false),
@@ -86,7 +87,9 @@ Future<void> main(List<String> arguments) async {
   }
   startLogging(config);
 
-  Dartdoc dartdoc = config.generateDocs ? await Dartdoc.withDefaultGenerators(config) : await Dartdoc.withEmptyGenerator(config);
+  Dartdoc dartdoc = config.generateDocs
+      ? await Dartdoc.withDefaultGenerators(config)
+      : await Dartdoc.withEmptyGenerator(config);
   dartdoc.onCheckProgress.listen(logProgress);
   try {
     await Chain.capture(() async {

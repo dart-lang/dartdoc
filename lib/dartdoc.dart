@@ -107,7 +107,8 @@ class Dartdoc extends PackageBuilder {
         await generator.generate(packageGraph, outputDir.path);
         writtenFiles.addAll(generator.writtenFiles.map(pathLib.normalize));
       }
-      if (config.validateLinks && writtenFiles.isNotEmpty) validateLinks(packageGraph, outputDir.path);
+      if (config.validateLinks && writtenFiles.isNotEmpty)
+        validateLinks(packageGraph, outputDir.path);
     }
 
     int warnings = packageGraph.packageWarningCounter.warningCount;
@@ -142,7 +143,8 @@ class Dartdoc extends PackageBuilder {
       throw new DartdocFailure(
           "dartdoc encountered $errorCount} errors while processing.");
     }
-    logInfo('Success! Docs generated into ${dartdocResults.outDir.absolute.path}');
+    logInfo(
+        'Success! Docs generated into ${dartdocResults.outDir.absolute.path}');
     return dartdocResults;
   }
 

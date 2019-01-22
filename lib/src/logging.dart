@@ -127,12 +127,15 @@ Future<List<DartdocOption>> createLoggingOptions() async {
     new DartdocOptionArgOnly<bool>('showProgress', false,
         help: 'Display progress indications to console stdout',
         negatable: false),
-    new DartdocOptionArgSynth<bool>('quiet', (DartdocSyntheticOption option, Directory dir) {
-          if (option.root['generateDocs']?.valueAt(dir) == false) {
-            return true;
-          }
-          return false;
-        }, abbr: 'q', negatable: true,
+    new DartdocOptionArgSynth<bool>('quiet',
+        (DartdocSyntheticOption option, Directory dir) {
+      if (option.root['generateDocs']?.valueAt(dir) == false) {
+        return true;
+      }
+      return false;
+    },
+        abbr: 'q',
+        negatable: true,
         help: 'Only show warnings and errors; silence all other output.'),
   ];
 }

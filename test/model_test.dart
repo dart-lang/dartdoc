@@ -676,7 +676,8 @@ void main() {
     });
 
     test('can be reexported even if the file suffix is not .dart', () {
-      expect(fakeLibrary.allClasses.map((c) => c.name), contains('MyClassFromADartFile'));
+      expect(fakeLibrary.allClasses.map((c) => c.name),
+          contains('MyClassFromADartFile'));
     });
 
     test('that is deprecated has a deprecated css class in linkedName', () {
