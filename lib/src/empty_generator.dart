@@ -1,14 +1,14 @@
 library dartdoc.empty_generator;
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 
 /// A generator that does not generate files, but does traverse the [PackageGraph]
-/// as though it was.
+/// and access [ModelElement.documetationAsHtml] for every element as though
+/// it were.
 class EmptyGenerator extends Generator {
   @override
   Future generate(PackageGraph _packageGraph, String outputDirectoryPath) {
@@ -24,6 +24,7 @@ class EmptyGenerator extends Generator {
             .forEach((m) => _onFileCreated.add(m.documentationAsHtml));
       }
     }
+    return null;
   }
 
   final StreamController<void> _onFileCreated =

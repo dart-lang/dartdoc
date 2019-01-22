@@ -6,7 +6,6 @@
 library dartdoc.generator;
 
 import 'dart:async' show Stream, Future;
-import 'dart:io' show File;
 
 import 'package:dartdoc/src/model.dart' show PackageGraph;
 
