@@ -231,5 +231,5 @@ void main() {
       File outFile = new File(pathLib.join(tempDir.path, 'index.html'));
       expect(outFile.readAsStringSync(), contains('footer text include'));
     });
-  }, timeout: new Timeout.factor(3));
+  }, timeout: new Timeout.factor(4));
 }
