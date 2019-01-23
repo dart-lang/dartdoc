@@ -9,6 +9,7 @@ import 'dart:io' show Directory, File;
 import 'dart:isolate';
 
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/empty_generator.dart';
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/html/html_generator_instance.dart';
 import 'package:dartdoc/src/html/template_data.dart';
@@ -41,11 +42,11 @@ class HtmlGenerator extends Generator {
   final HtmlGeneratorOptions _options;
   HtmlGeneratorInstance _instance;
 
-  final StreamController<File> _onFileCreated =
+  final StreamController<void> _onFileCreated =
       new StreamController(sync: true);
 
   @override
-  Stream<File> get onFileCreated => _onFileCreated.stream;
+  Stream<void> get onFileCreated => _onFileCreated.stream;
 
   @override
   final Set<String> writtenFiles = new Set<String>();
@@ -129,6 +130,10 @@ class HtmlGeneratorOptions implements HtmlOptions {
       String toolVersion,
       this.prettyIndexJson: false})
       : this.toolVersion = toolVersion ?? 'unknown';
+}
+
+Future<List<Generator>> initEmptyGenerators(DartdocOptionContext config) async {
+  return [EmptyGenerator()];
 }
 
 /// Initialize and setup the generators.

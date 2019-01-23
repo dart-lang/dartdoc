@@ -96,13 +96,15 @@ void startLogging(LoggingContext config) {
       assert(message.isNotEmpty);
 
       if (record.level < Level.WARNING) {
-        if (config.showProgress && message.endsWith('...')) {
-          // Assume there may be more progress to print, so omit the trailing
-          // newline
-          writingProgress = true;
-          stdout.write(message);
-        } else {
-          print(message);
+        if (!config.quiet) {
+          if (config.showProgress && message.endsWith('...')) {
+            // Assume there may be more progress to print, so omit the trailing
+            // newline
+            writingProgress = true;
+            stdout.write(message);
+          } else {
+            print(message);
+          }
         }
       } else {
         stderr.writeln(message);
@@ -114,6 +116,7 @@ void startLogging(LoggingContext config) {
 abstract class LoggingContext implements DartdocOptionContextBase {
   bool get json => optionSet['json'].valueAt(context);
   bool get showProgress => optionSet['showProgress'].valueAt(context);
+  bool get quiet => optionSet['quiet'].valueAt(context);
 }
 
 Future<List<DartdocOption>> createLoggingOptions() async {
@@ -124,5 +127,15 @@ Future<List<DartdocOption>> createLoggingOptions() async {
     new DartdocOptionArgOnly<bool>('showProgress', false,
         help: 'Display progress indications to console stdout',
         negatable: false),
+    new DartdocOptionArgSynth<bool>('quiet',
+        (DartdocSyntheticOption option, Directory dir) {
+      if (option.root['generateDocs']?.valueAt(dir) == false) {
+        return true;
+      }
+      return false;
+    },
+        abbr: 'q',
+        negatable: true,
+        help: 'Only show warnings and errors; silence all other output.'),
   ];
 }

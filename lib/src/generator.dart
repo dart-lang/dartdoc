@@ -6,7 +6,6 @@
 library dartdoc.generator;
 
 import 'dart:async' show Stream, Future;
-import 'dart:io' show File;
 
 import 'package:dartdoc/src/model.dart' show PackageGraph;
 
@@ -20,7 +19,7 @@ abstract class Generator {
   Future generate(PackageGraph packageGraph, String outputDirectoryPath);
 
   /// Fires when a file is created.
-  Stream<File> get onFileCreated;
+  Stream<void> get onFileCreated;
 
   /// Fetches all filenames written by this generator.
   Set<String> get writtenFiles;

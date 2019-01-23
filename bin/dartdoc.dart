@@ -20,6 +20,7 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
       : super(optionSet, dir);
 
   bool get asyncStackTraces => optionSet['asyncStackTraces'].valueAt(context);
+  bool get generateDocs => optionSet['generateDocs'].valueAt(context);
   bool get help => optionSet['help'].valueAt(context);
   bool get version => optionSet['version'].valueAt(context);
 }
@@ -28,6 +29,10 @@ Future<List<DartdocOption>> createDartdocProgramOptions() async {
   return <DartdocOption>[
     new DartdocOptionArgOnly<bool>('asyncStackTraces', false,
         help: 'Display coordinated asynchronous stack traces (slow)',
+        negatable: true),
+    new DartdocOptionArgOnly<bool>('generateDocs', true,
+        help:
+            'Generate docs into the output directory (or only display warnings if false).',
         negatable: true),
     new DartdocOptionArgOnly<bool>('help', false,
         abbr: 'h', help: 'Show command help.', negatable: false),
@@ -82,29 +87,23 @@ Future<void> main(List<String> arguments) async {
   }
   startLogging(config);
 
-  Directory outputDir = new Directory(config.output);
-  logInfo("Generating documentation for '${config.topLevelPackageMeta}' into "
-      "${outputDir.absolute.path}${Platform.pathSeparator}");
-
-  Dartdoc dartdoc = await Dartdoc.withDefaultGenerators(config);
-
+  Dartdoc dartdoc = config.generateDocs
+      ? await Dartdoc.withDefaultGenerators(config)
+      : await Dartdoc.withEmptyGenerator(config);
   dartdoc.onCheckProgress.listen(logProgress);
   try {
     await Chain.capture(() async {
-      await runZoned(() async {
-        DartdocResults results = await dartdoc.generateDocs();
-        logInfo('Success! Docs generated into ${results.outDir.absolute.path}');
-      },
+      await runZoned(dartdoc.generateDocs,
           zoneSpecification: new ZoneSpecification(
               print: (Zone self, ZoneDelegate parent, Zone zone, String line) =>
                   logPrint(line)));
     }, onError: (e, Chain chain) {
       if (e is DartdocFailure) {
-        stderr.writeln('\nGeneration failed: ${e}.');
+        stderr.writeln('\ndartdoc failed: ${e}.');
         exitCode = 1;
         return;
       } else {
-        stderr.writeln('\nGeneration failed: ${e}\n${chain.terse}');
+        stderr.writeln('\ndartdoc failed: ${e}\n${chain.terse}');
         exitCode = 255;
         return;
       }

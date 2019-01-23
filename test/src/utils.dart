@@ -160,12 +160,14 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       'coverage:format_coverage',
       '--lcov',
       '-v',
-      '-b', '.',
+      '-b',
+      '.',
       '--packages=.packages',
       '--sdk-root=${pathLib.canonicalize(pathLib.join(pathLib.dirname(Platform.executable), '..'))}',
       '--out=${pathLib.canonicalize(outputFile.path)}',
       '--report-on=bin,lib',
-      '-i', tempDir.path,
+      '-i',
+      tempDir.path,
     ]);
   }
 

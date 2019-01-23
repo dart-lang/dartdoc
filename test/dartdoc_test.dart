@@ -131,6 +131,36 @@ void main() {
         await Future.wait(CoverageSubprocessLauncher.coverageResults);
       });
 
+      test('running --no-generate-docs is quiet and does not generate docs',
+          () async {
+        Directory outputDir =
+            await Directory.systemTemp.createTemp('dartdoc.testEmpty.');
+        List<String> outputLines = [];
+        await subprocessLauncher.runStreamed(Platform.resolvedExecutable,
+            [dartdocPath, '--output', outputDir.path, '--no-generate-docs'],
+            perLine: outputLines.add, workingDirectory: _testPackagePath);
+        expect(outputLines, isNot(contains(matches('^parsing'))));
+        expect(outputLines, contains(matches('^  warning:')));
+        expect(
+            outputLines.last, matches(r'^found \d+ warnings and \d+ errors'));
+        expect(outputDir.listSync(), isEmpty);
+      });
+
+      test('running --quiet is quiet and does generate docs',
+          () async {
+        Directory outputDir =
+        await Directory.systemTemp.createTemp('dartdoc.testEmpty.');
+        List<String> outputLines = [];
+        await subprocessLauncher.runStreamed(Platform.resolvedExecutable,
+          [dartdocPath, '--output', outputDir.path, '--quiet'],
+          perLine: outputLines.add, workingDirectory: _testPackagePath);
+        expect(outputLines, isNot(contains(matches('^parsing'))));
+        expect(outputLines, contains(matches('^  warning:')));
+        expect(
+          outputLines.last, matches(r'^found \d+ warnings and \d+ errors'));
+        expect(outputDir.listSync(), isNotEmpty);
+      });
+
       test('invalid parameters return non-zero and print a fatal-error',
           () async {
         List outputLines = [];
