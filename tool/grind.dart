@@ -38,10 +38,8 @@ final String defaultPubCache =
     Platform.environment['PUB_CACHE'] ?? resolveTildePath('~/.pub-cache');
 
 /// Run no more than the number of processors available in parallel.
-final MultiFutureTracker testFutures = new MultiFutureTracker(
-    Platform.environment.containsKey('TRAVIS')
-        ? 1
-        : Platform.numberOfProcessors);
+final MultiFutureTracker testFutures =
+    new MultiFutureTracker(Platform.numberOfProcessors);
 
 // Directory.systemTemp is not a constant.  So wrap it.
 Directory createTempSync(String prefix) =>
@@ -829,10 +827,8 @@ Future<void> checkBuild() async {
 @Task('Dry run of publish to pub.dartlang')
 @Depends(checkChangelogHasVersion)
 Future<void> tryPublish() async {
-  log('FIXME:  tryPublish() disabled until dependency_override is removed'
-      ' (#1765)');
-  //var launcher = new SubprocessLauncher('try-publish');
-  //await launcher.runStreamed(sdkBin('pub'), ['publish', '-n']);
+  var launcher = new SubprocessLauncher('try-publish');
+  await launcher.runStreamed(sdkBin('pub'), ['publish', '-n']);
 }
 
 @Task('Run all the tests.')
@@ -840,12 +836,6 @@ Future<void> test() async {
   await testDart2();
   await testFutures.wait();
 }
-
-List<File> get binFiles => new Directory('bin')
-    .listSync(recursive: true)
-    .where((e) => e is File && e.path.endsWith('.dart'))
-    .cast<File>()
-    .toList();
 
 List<File> get testFiles => new Directory('test')
     .listSync(recursive: true)
@@ -866,18 +856,7 @@ Future<void> testDart2() async {
               ..add(dartFile.path)));
   }
 
-  for (File dartFile in binFiles) {
-    await testFutures.addFutureFromClosure(() => new CoverageSubprocessLauncher(
-            'dart2-bin-${pathLib.basename(dartFile.path)}-help')
-        .runStreamed(
-            Platform.resolvedExecutable,
-            <String>[]
-              ..addAll(parameters)
-              ..add(dartFile.path)
-              ..add('--help')));
-  }
-
-  return await CoverageSubprocessLauncher.generateCoverageToFile(
+  return CoverageSubprocessLauncher.generateCoverageToFile(
       new File('lcov.info'));
 }
 
