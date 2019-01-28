@@ -208,10 +208,9 @@ abstract class Warnable implements Canonicalization {
 
 /// Something that can be located for warning purposes.
 abstract class Locatable {
+  List<Locatable> get documentationFrom;
   String get fullyQualifiedName;
   String get href;
-
-  List<Locatable> get documentationFrom;
 
   /// A string indicating the URI of this Locatable, usually derived from
   /// [Element.location].

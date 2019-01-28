@@ -434,20 +434,34 @@ void main() {
       expect(useSomethingInTheSdk.modelType.linkedName, contains(stringLink));
     });
 
-    test('generate docs for ${pathLib.basename(testPackageDir.path)} works',
-        () async {
-      Dartdoc dartdoc = await buildDartdoc([], testPackageDir);
 
-      DartdocResults results = await dartdoc.generateDocs();
-      expect(results.packageGraph, isNotNull);
+    group('validate basic doc generation', () {
+      Dartdoc dartdoc;
+      DartdocResults results;
 
-      PackageGraph packageGraph = results.packageGraph;
-      Package p = packageGraph.defaultPackage;
-      expect(p.name, 'test_package');
-      expect(p.hasDocumentationFile, isTrue);
-      // Total number of public libraries in test_package.
-      expect(packageGraph.defaultPackage.publicLibraries, hasLength(12));
-      expect(packageGraph.localPackages.length, equals(1));
+      setUpAll(() async {
+        dartdoc = await buildDartdoc([], testPackageDir);
+        results = await dartdoc.generateDocs();
+      });
+
+      test('generate docs for ${pathLib.basename(testPackageDir.path)} works', () async {
+        expect(results.packageGraph, isNotNull);
+        PackageGraph packageGraph = results.packageGraph;
+        Package p = packageGraph.defaultPackage;
+        expect(p.name, 'test_package');
+        expect(p.hasDocumentationFile, isTrue);
+        // Total number of public libraries in test_package.
+        expect(packageGraph.defaultPackage.publicLibraries, hasLength(12));
+        expect(packageGraph.localPackages.length, equals(1));
+      });
+
+      test('source code links are visible', () async {
+        // Picked this object as this library explicitly should never contain
+        // a library directive, so we can predict what line number it will be.
+        File anonymousOutput = new File(pathLib.join(tempDir.path, 'anonymous_library', 'anonymous_library-library.html'));
+        expect(anonymousOutput.existsSync(), isTrue);
+        expect(anonymousOutput.readAsStringSync(), contains(r'<a class="source-link" title="View source code" href="https://github.com/dart-lang/dartdoc/blob/master/testing/test_package/lib/anonymous_library.dart#L1">'));
+      });
     });
 
     test('generate docs for ${pathLib.basename(testPackageBadDir.path)} fails',

@@ -437,6 +437,12 @@ h1 .category {
   vertical-align: middle;
 }
 
+h1 .source-link {
+  padding: 2px 4px;
+  font-size: 14px;
+  vertical-align: middle;
+}
+
 p.firstline {
   font-weight: bold;
 }

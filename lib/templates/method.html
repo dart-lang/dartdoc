@@ -7,7 +7,9 @@
   </div><!--/.sidebar-offcanvas-->
 
   <div class="col-xs-12 col-sm-9 col-md-8 main-content">
-    <h1>{{{self.nameWithGenerics}}} {{self.kind}}</h1>
+    {{#self}}
+      <h1>{{{nameWithGenerics}}} {{kind}} {{>source_link}}</h1>
+    {{/self}}
 
     {{#method}}
     <section class="multi-line-signature">
