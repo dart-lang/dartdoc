@@ -103,7 +103,8 @@ class SourceLinker {
     return uriTemplate.replaceAllMapped(uriTemplateRegexp, (match) {
       switch (match[1]) {
         case '%f%':
-          return pathLib.relative(sourceFileName, from: root);
+          var urlContext = new pathLib.Context(style: pathLib.Style.url);
+          return urlContext.joinAll(pathLib.split(pathLib.relative(sourceFileName, from: root)));
           break;
         case '%r%':
           return revision;
