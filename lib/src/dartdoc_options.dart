@@ -1273,7 +1273,10 @@ abstract class DartdocOptionContextBase {
 /// a single [ModelElement], [Package], [Category] and so forth has a single context
 /// and so this can be made a member variable of those structures.
 class DartdocOptionContext extends DartdocOptionContextBase
-    with DartdocExperimentOptionContext, PackageWarningOptionContext, SourceLinkerOptionContext {
+    with
+        DartdocExperimentOptionContext,
+        PackageWarningOptionContext,
+        SourceLinkerOptionContext {
   @override
   final DartdocOptionSet optionSet;
   @override

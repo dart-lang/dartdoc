@@ -47,7 +47,8 @@ void main() {
     Future<Dartdoc> buildDartdoc(
         List<String> argv, Directory packageRoot, Directory tempDir) async {
       return await Dartdoc.withDefaultGenerators(await generatorContextFromArgv(
-          argv..addAll(['--input', packageRoot.path, '--output', tempDir.path])));
+          argv
+            ..addAll(['--input', packageRoot.path, '--output', tempDir.path])));
     }
 
     group('Option handling', () {
@@ -157,7 +158,8 @@ void main() {
     });
 
     test('with broken reexport chain', () async {
-      Dartdoc dartdoc = await buildDartdoc([], testPackageImportExportError, tempDir);
+      Dartdoc dartdoc =
+          await buildDartdoc([], testPackageImportExportError, tempDir);
       DartdocResults results = await dartdoc.generateDocsBase();
       PackageGraph p = results.packageGraph;
       Iterable<String> unresolvedExportWarnings = p
@@ -174,7 +176,8 @@ void main() {
 
     group('include/exclude parameters', () {
       test('with config file', () async {
-        Dartdoc dartdoc = await buildDartdoc([], testPackageIncludeExclude, tempDir);
+        Dartdoc dartdoc =
+            await buildDartdoc([], testPackageIncludeExclude, tempDir);
         DartdocResults results = await dartdoc.generateDocs();
         PackageGraph p = results.packageGraph;
         expect(p.localPublicLibraries.map((l) => l.name),
@@ -182,8 +185,8 @@ void main() {
       });
 
       test('with include command line argument', () async {
-        Dartdoc dartdoc = await buildDartdoc(
-            ['--include', 'another_included'], testPackageIncludeExclude, tempDir);
+        Dartdoc dartdoc = await buildDartdoc(['--include', 'another_included'],
+            testPackageIncludeExclude, tempDir);
         DartdocResults results = await dartdoc.generateDocs();
         PackageGraph p = results.packageGraph;
         expect(p.localPublicLibraries.length, equals(1));
@@ -232,7 +235,6 @@ void main() {
       expect(useSomethingInTheSdk.modelType.linkedName, contains(stringLink));
     });
 
-
     group('validate basic doc generation', () {
       Dartdoc dartdoc;
       DartdocResults results;
@@ -248,7 +250,8 @@ void main() {
         tempDir.deleteSync(recursive: true);
       });
 
-      test('generate docs for ${pathLib.basename(testPackageDir.path)} works', () async {
+      test('generate docs for ${pathLib.basename(testPackageDir.path)} works',
+          () async {
         expect(results.packageGraph, isNotNull);
         PackageGraph packageGraph = results.packageGraph;
         Package p = packageGraph.defaultPackage;
@@ -262,9 +265,13 @@ void main() {
       test('source code links are visible', () async {
         // Picked this object as this library explicitly should never contain
         // a library directive, so we can predict what line number it will be.
-        File anonymousOutput = new File(pathLib.join(tempDir.path, 'anonymous_library', 'anonymous_library-library.html'));
+        File anonymousOutput = new File(pathLib.join(tempDir.path,
+            'anonymous_library', 'anonymous_library-library.html'));
         expect(anonymousOutput.existsSync(), isTrue);
-        expect(anonymousOutput.readAsStringSync(), contains(r'<a title="View source code" class="source-link" href="https://github.com/dart-lang/dartdoc/blob/master/testing/test_package/lib/anonymous_library.dart#L1"><i class="material-icons">code</i></a>'));
+        expect(
+            anonymousOutput.readAsStringSync(),
+            contains(
+                r'<a title="View source code" class="source-link" href="https://github.com/dart-lang/dartdoc/blob/master/testing/test_package/lib/anonymous_library.dart#L1"><i class="material-icons">code</i></a>'));
       });
     });
 
@@ -283,7 +290,8 @@ void main() {
             'from analysis_options');
 
     test('generate docs for a package that does not have a readme', () async {
-      Dartdoc dartdoc = await buildDartdoc([], testPackageWithNoReadme, tempDir);
+      Dartdoc dartdoc =
+          await buildDartdoc([], testPackageWithNoReadme, tempDir);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
@@ -325,7 +333,8 @@ void main() {
     });
 
     test('generate docs for package with embedder yaml', () async {
-      Dartdoc dartdoc = await buildDartdoc([], testPackageWithEmbedderYaml, tempDir);
+      Dartdoc dartdoc =
+          await buildDartdoc([], testPackageWithEmbedderYaml, tempDir);
 
       DartdocResults results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
