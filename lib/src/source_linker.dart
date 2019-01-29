@@ -104,7 +104,8 @@ class SourceLinker {
       switch (match[1]) {
         case '%f%':
           var urlContext = new pathLib.Context(style: pathLib.Style.url);
-          return urlContext.joinAll(pathLib.split(pathLib.relative(sourceFileName, from: root)));
+          return urlContext.joinAll(
+              pathLib.split(pathLib.relative(sourceFileName, from: root)));
           break;
         case '%r%':
           return revision;
