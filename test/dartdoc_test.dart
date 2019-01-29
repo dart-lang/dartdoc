@@ -246,7 +246,7 @@ void main() {
         // a library directive, so we can predict what line number it will be.
         File anonymousOutput = new File(pathLib.join(tempDir.path, 'anonymous_library', 'anonymous_library-library.html'));
         expect(anonymousOutput.existsSync(), isTrue);
-        expect(anonymousOutput.readAsStringSync(), contains(r'<a class="source-link" title="View source code" href="https://github.com/dart-lang/dartdoc/blob/master/testing/test_package/lib/anonymous_library.dart#L1">'));
+        expect(anonymousOutput.readAsStringSync(), contains(r'<a title="View source code" class="source-link" href="https://github.com/dart-lang/dartdoc/blob/master/testing/test_package/lib/anonymous_library.dart#L1"><i class="material-icons">code</i></a>'));
       });
     });
 

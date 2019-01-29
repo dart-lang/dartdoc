@@ -437,9 +437,26 @@ h1 .category {
   vertical-align: middle;
 }
 
-h1 .source-link {
-  padding: 2px 4px;
-  font-size: 14px;
+.source-link {
+  padding: 14px 4px;
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+  .source-link {
+    padding: 5px;
+    font-size: 10px;
+  }
+}
+
+#external-links {
+  float: right;
+}
+
+.btn-group {
+  position: relative;
+  display: inline-flex;
   vertical-align: middle;
 }
 
