@@ -56,6 +56,7 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta, FileContents;
+import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -3213,6 +3214,13 @@ abstract class ModelElement extends Canonicalization
       _documentationFrom = computeDocumentationFrom;
     }
     return _documentationFrom;
+  }
+
+  bool get hasSourceHref => sourceHref.isNotEmpty;
+  String _sourceHref;
+  String get sourceHref {
+    _sourceHref ??= new SourceLinker.fromElement(this).href();
+    return _sourceHref;
   }
 
   /// Returns the ModelElement(s) from which we will get documentation.

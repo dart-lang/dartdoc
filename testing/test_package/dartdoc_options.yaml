@@ -16,3 +16,6 @@ dartdoc:
       linux: ['/bin/sh', '-c', 'echo']
       windows: ['C:\\Windows\\System32\\cmd.exe', '/c', 'echo']
       description: 'Works on everything'
+  linkToSource:
+    root: '.'
+    uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/master/testing/test_package/%f%#L%l%'

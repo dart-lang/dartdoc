@@ -30,6 +30,7 @@ const _partials = const <String>[
   'sidebar_for_category',
   'sidebar_for_enum',
   'source_code',
+  'source_link',
   'sidebar_for_library',
   'accessor_getter',
   'accessor_setter',

@@ -22,6 +22,7 @@ import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/experiment_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -1272,7 +1273,10 @@ abstract class DartdocOptionContextBase {
 /// a single [ModelElement], [Package], [Category] and so forth has a single context
 /// and so this can be made a member variable of those structures.
 class DartdocOptionContext extends DartdocOptionContextBase
-    with DartdocExperimentOptionContext, PackageWarningOptionContext {
+    with
+        DartdocExperimentOptionContext,
+        PackageWarningOptionContext,
+        SourceLinkerOptionContext {
   @override
   final DartdocOptionSet optionSet;
   @override
@@ -1573,5 +1577,6 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     // each DartdocOptionContext that traverses the inheritance tree itself.
   ]
     ..addAll(await createExperimentOptions())
-    ..addAll(await createPackageWarningOptions());
+    ..addAll(await createPackageWarningOptions())
+    ..addAll(await createSourceLinkerOptions());
 }
