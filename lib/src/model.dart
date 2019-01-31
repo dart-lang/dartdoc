@@ -3216,12 +3216,10 @@ abstract class ModelElement extends Canonicalization
     return _documentationFrom;
   }
 
-  bool get hasSourceHref => sourceHref != '';
+  bool get hasSourceHref => sourceHref.isNotEmpty;
   String _sourceHref;
   String get sourceHref {
-    if (_sourceHref == null) {
-      _sourceHref = new SourceLinker.fromElement(this).href();
-    }
+    _sourceHref ??= new SourceLinker.fromElement(this).href();
     return _sourceHref;
   }
 

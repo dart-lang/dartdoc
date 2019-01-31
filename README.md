@@ -163,6 +163,19 @@ Unrecognized options will be ignored.  Supported options:
         No branch is considered to be "stable".
       * `%n%`: The name of this package, as defined in pubspec.yaml.
       * `%v%`: The version of this package as defined in pubspec.yaml.
+  * **linkToSource**: Generate links to a source code repository based on given templates and
+    revision information.
+    * **excludes**: A list of directories to exclude from processing source links.
+    * **root**: The directory to consider the 'root' for inserting relative paths into the template.
+      Source code outside the root directory will not be linked.
+    * **uriTemplate**: A template to substitute revision and file path information.  If revision
+      is present in the template but not specified, or if root is not specified, dartdoc will
+      throw an exception.  To hard-code a revision, don't specify it with `%r%`.
+      
+      The following strings will be substituted in to complete the URL:
+      * `%f%`:  Relative path of file to the repository root
+      * `%r%`:  Revision
+      * `%l%`:  Line number
   * **warnings**:  Specify otherwise ignored or set-to-error warnings to simply warn.  See the lists
     of valid warnings in the command line help for `--errors`, `--warnings`, and `--ignore`.
 
@@ -390,6 +403,35 @@ other elements on the page, since those may change in future versions of Dartdoc
 
 If `--auto-include-dependencies` flag is provided, dartdoc tries to automatically add
 all the used libraries, even from other packages, to the list of the documented libraries.
+
+### Using link-to-source
+
+The source linking feature in dartdoc is a little tricky to use, since pub packages do not actually
+include enough information to link back to source code and that's the context in which documentation
+is generated for the pub site.  This means that for now, it must be manually specified in
+dartdoc_options.yaml what revision to use.  It is currently recommended practice to
+specify a revision in dartdoc_options.yaml that points to the same revision as your public package.
+If you're using a documentation staging system outside of Dart's pub site, override the template and
+revision on the command line with the head revision number.  You can use the branch name,
+but generated docs will generate locations that may start drifting with further changes to the branch.
+
+Example dartdoc_options.yaml:
+```yaml
+link-to-source:
+  root: '.'
+  uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v0.28.0/%f%#L%l%'
+```
+
+Example staging command line:
+```bash
+pub global run dartdoc --link-to-source-root '.' --link-to-source-revision 6fac6f770d271312c88e8ae881861702a9a605be --link-to-source-uri-template 'https://github.com/dart-lang/dartdoc/blob/%r%/%f#L%l%'
+```
+
+This gets more complicated with `--auto-include-dependencies` as these command line flags
+will override all settings from individual packages.  In that case, to preserve
+source links from third party packages it may be necessary to generate
+dartdoc_options.yaml options for each package you are intending to add source links
+to yourself.
 
 ## Issues and bugs
 
