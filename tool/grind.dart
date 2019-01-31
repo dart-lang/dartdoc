@@ -779,10 +779,21 @@ Future<void> build() async {
   var launcher = new SubprocessLauncher('build');
   await launcher.runStreamed(sdkBin('pub'),
       ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
+
+  // TODO(jcollins-g): port to build system?
+  String version = _getPackageVersion();
+  File dartdoc_options = new File('dartdoc_options.yaml');
+  await dartdoc_options.writeAsString(
+'''dartdoc:
+  linkToSource:
+    root: '.'
+    uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v${version}/%f%#L%l%'
+''');
 }
 
 /// Paths in this list are relative to lib/.
 final _generated_files_list = <String>[
+  '../dartdoc_options.yaml',
   'src/html/resources.g.dart',
   'src/version.dart',
 ].map((s) => pathLib.joinAll(pathLib.posix.split(s)));
@@ -803,8 +814,7 @@ Future<void> checkBuild() async {
     }
   }
 
-  await launcher.runStreamed(sdkBin('pub'),
-      ['run', 'build_runner', 'build', '--delete-conflicting-outputs']);
+  await build();
   for (String relPath in _generated_files_list) {
     File newVersion = new File(pathLib.join('lib', relPath));
     if (!await newVersion.exists()) {

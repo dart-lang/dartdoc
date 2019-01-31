@@ -13,18 +13,18 @@ final uriTemplateRegexp = new RegExp(r'(%[frl]%)');
 
 abstract class SourceLinkerOptionContext implements DartdocOptionContextBase {
   List<String> get linkToSourceExcludes =>
-      optionSet['link-to-source']['excludes'].valueAt(context);
+      optionSet['linkToSource']['excludes'].valueAt(context);
   String get linkToSourceRevision =>
-      optionSet['link-to-source']['revision'].valueAt(context);
+      optionSet['linkToSource']['revision'].valueAt(context);
   String get linkToSourceRoot =>
-      optionSet['link-to-source']['root'].valueAt(context);
+      optionSet['linkToSource']['root'].valueAt(context);
   String get linkToSourceUriTemplate =>
-      optionSet['link-to-source']['uriTemplate'].valueAt(context);
+      optionSet['linkToSource']['uriTemplate'].valueAt(context);
 }
 
 Future<List<DartdocOption>> createSourceLinkerOptions() async {
   return <DartdocOption>[
-    new DartdocOptionSet('link-to-source')
+    new DartdocOptionSet('linkToSource')
       ..addAll([
         new DartdocOptionArgFile<List<String>>('excludes', [],
             isDir: true,
@@ -65,11 +65,11 @@ class SourceLinker {
       String this.revision,
       String this.root,
       String this.uriTemplate}) {
-    assert(excludes != null, 'link-to-source-excludes can not be null');
+    assert(excludes != null, 'linkToSource excludes can not be null');
     if (revision != null || root != null || uriTemplate != null) {
       if (root == null || uriTemplate == null) {
         throw DartdocOptionError(
-            'link-to-source root and uriTemplate must both be specified to generate repository links');
+            'linkToSource root and uriTemplate must both be specified to generate repository links');
       }
       if (uriTemplate.contains('%r%') && revision == null) {
         throw DartdocOptionError(
