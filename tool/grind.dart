@@ -783,8 +783,7 @@ Future<void> build() async {
   // TODO(jcollins-g): port to build system?
   String version = _getPackageVersion();
   File dartdoc_options = new File('dartdoc_options.yaml');
-  await dartdoc_options.writeAsString(
-'''dartdoc:
+  await dartdoc_options.writeAsString('''dartdoc:
   linkToSource:
     root: '.'
     uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v${version}/%f%#L%l%'
