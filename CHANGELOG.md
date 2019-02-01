@@ -1,4 +1,5 @@
 ## 0.28.1
+* Reenable three-pane scrolling in Chrome 72 (#1922, #1921)
 * A new version of the highlightjs pack supports syntax highlighting for
   SCSS. (#1906, #1907)
 * Allow manually-specified links to source code, appearing as a small icon
@@ -10,8 +11,8 @@
   links (#1916, #1372)
 * Viewport parameters for mobile now prevent "stuck page" syndrome (#1916,
   #1911).  Overscroll is now permitted for mobile.
-* Escape a `#` to be standards compliant and avoid a deprecation warning on
-  the console (#1919, #1918)
+* Fix a problem where we don't render greater than symbols in the header
+  for Chrome 72 (#1919, #1918)
 * Dartdoc now remembers scroll positions for all three columns while
   navigating (#1917, #1288, #1372, #779, #1870)
 * Update analyzer package to 0.35.0 and several internal test/coverage
