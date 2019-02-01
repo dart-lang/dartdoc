@@ -72,6 +72,7 @@ main {
   display: flex;
   flex-direction: row;
   padding: 20px;
+  min-height: 0;
 }
 
 .sidebar-offcanvas-left {
