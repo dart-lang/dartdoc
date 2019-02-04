@@ -1,3 +1,23 @@
+## 0.28.1
+* Reenable three-pane scrolling in Chrome 72 (#1922, #1921)
+* A new version of the highlightjs pack supports syntax highlighting for
+  SCSS. (#1906, #1907)
+* Allow manually-specified links to source code, appearing as a small icon
+  near the top of each element's page (#1913, #1454, #1892)
+* Dartdoc can be used just to generate warnings by passing --no-generate-docs
+  (#1909, #1537).
+* Dartdoc's default CSS now more closely resembles dartlang.org, with some
+  miscellaneous alignment tweaks, Roboto font, and use of `:hover` to highlight
+  links (#1916, #1372)
+* Viewport parameters for mobile now prevent "stuck page" syndrome (#1916,
+  #1911).  Overscroll is now permitted for mobile.
+* Fix a problem where we don't render greater than symbols in the header
+  for Chrome 72 (#1919, #1918)
+* Dartdoc now remembers scroll positions for all three columns while
+  navigating (#1917, #1288, #1372, #779, #1870)
+* Update analyzer package to 0.35.0 and several internal test/coverage
+  infrastructure fixes.
+
 ## 0.28.0
 * Fix a crash when a Dart library doesn't have the .dart suffix (#1897)
 * Fix a crash when a Dart file is loaded with an unresolvable
