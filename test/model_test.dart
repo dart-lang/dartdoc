@@ -53,6 +53,7 @@ void main() {
   PackageGraph packageGraph;
   PackageGraph packageGraphSmall;
   PackageGraph packageGraphErrors;
+  PackageGraph packageGraphExperiments;
   PackageGraph ginormousPackageGraph;
   Library exLibrary;
   Library fakeLibrary;
@@ -67,6 +68,7 @@ void main() {
     packageGraph = utils.testPackageGraph;
     packageGraphSmall = utils.testPackageGraphSmall;
     packageGraphErrors = utils.testPackageGraphErrors;
+    packageGraphExperiments = utils.testPackageGraphExperiments;
     ginormousPackageGraph = utils.testPackageGraphGinormous;
     exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
     errorLibrary = packageGraphErrors.libraries
@@ -80,6 +82,25 @@ void main() {
     interceptorsLib = packageGraph.libraries
         .firstWhere((lib) => lib.name == 'dart:_interceptors');
     sdkAsPackageGraph = utils.testPackageGraphSdk;
+  });
+
+  // Experimental features not yet enabled by default.  Move tests out of this block
+  // when the feature is enabled by default.
+  group('Experiments', () {
+    Library main;
+    TopLevelVariable untypedSet, untypedMap, typedSet;
+
+    setUpAll(() {
+      main = packageGraphExperiments.libraries.firstWhere((lib) => lib.name == 'main');
+      untypedSet = main.constants.firstWhere((v) => v.name == 'untypedSet');
+      untypedMap = main.constants.firstWhere((v) => v.name == 'untypedMap');
+      typedSet = main.constants.firstWhere((v) => v.name == 'typedSet');
+
+    });
+
+    test('Set literals test', () {
+      expect(main, isNotNull);
+    });
   });
 
   group('Tools', () {
