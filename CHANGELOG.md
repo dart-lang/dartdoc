@@ -1,3 +1,6 @@
+## 0.28.1+1
+* Make hamburger menu appear in Chrome 72.
+
 ## 0.28.1
 * Reenable three-pane scrolling in Chrome 72 (#1922, #1921)
 * A new version of the highlightjs pack supports syntax highlighting for
