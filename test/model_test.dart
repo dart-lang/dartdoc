@@ -88,18 +88,33 @@ void main() {
   // when the feature is enabled by default.
   group('Experiments', () {
     Library main;
-    TopLevelVariable untypedSet, untypedMap, typedSet;
+    TopLevelVariable aComplexSet, inferredTypeSet, specifiedSet, untypedMap, typedSet;
 
     setUpAll(() {
       main = packageGraphExperiments.libraries.firstWhere((lib) => lib.name == 'main');
-      untypedSet = main.constants.firstWhere((v) => v.name == 'untypedSet');
+      aComplexSet = main.constants.firstWhere((v) => v.name == 'aComplexSet');
+      inferredTypeSet = main.constants.firstWhere((v) => v.name == 'inferredTypeSet');
+      specifiedSet = main.constants.firstWhere((v) => v.name == 'specifiedSet');
       untypedMap = main.constants.firstWhere((v) => v.name == 'untypedMap');
       typedSet = main.constants.firstWhere((v) => v.name == 'typedSet');
-
     });
 
     test('Set literals test', () {
-      expect(main, isNotNull);
+      expect(aComplexSet.modelType.name, equals('Set'));
+      expect(aComplexSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['AClassContainingLiterals']));
+      expect(aComplexSet.constantValue, equals('const {const AClassContainingLiterals(3, 5)}'));
+      expect(inferredTypeSet.modelType.name, equals('Set'));
+      expect(inferredTypeSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['num']));
+      expect(inferredTypeSet.constantValue, equals('const {1, 2.5, 3}'));
+      expect(specifiedSet.modelType.name, equals('Set'));
+      expect(specifiedSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['int']));
+      expect(specifiedSet.constantValue, equals('const {}'));
+      expect(untypedMap.modelType.name, equals('Map'));
+      expect(untypedMap.modelType.typeArguments.map((a) => a.name).toList(), equals(['dynamic', 'dynamic']));
+      expect(untypedMap.constantValue, equals('const {}'));
+      expect(typedSet.modelType.name, equals('Set'));
+      expect(typedSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['String']));
+      expect(typedSet.constantValue, equals('const &lt;String&gt; {}'));
     });
   });
 
