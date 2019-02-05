@@ -1,3 +1,6 @@
+## 0.28.1+2
+* Fix alignment of search box text in Safari (#1926).
+
 ## 0.28.1+1
 * Make hamburger menu appear in Chrome 72.
 
