@@ -53,6 +53,7 @@ void main() {
   PackageGraph packageGraph;
   PackageGraph packageGraphSmall;
   PackageGraph packageGraphErrors;
+  PackageGraph packageGraphExperiments;
   PackageGraph ginormousPackageGraph;
   Library exLibrary;
   Library fakeLibrary;
@@ -67,6 +68,7 @@ void main() {
     packageGraph = utils.testPackageGraph;
     packageGraphSmall = utils.testPackageGraphSmall;
     packageGraphErrors = utils.testPackageGraphErrors;
+    packageGraphExperiments = utils.testPackageGraphExperiments;
     ginormousPackageGraph = utils.testPackageGraphGinormous;
     exLibrary = packageGraph.libraries.firstWhere((lib) => lib.name == 'ex');
     errorLibrary = packageGraphErrors.libraries
@@ -80,6 +82,40 @@ void main() {
     interceptorsLib = packageGraph.libraries
         .firstWhere((lib) => lib.name == 'dart:_interceptors');
     sdkAsPackageGraph = utils.testPackageGraphSdk;
+  });
+
+  // Experimental features not yet enabled by default.  Move tests out of this block
+  // when the feature is enabled by default.
+  group('Experiments', () {
+    Library main;
+    TopLevelVariable aComplexSet, inferredTypeSet, specifiedSet, untypedMap, typedSet;
+
+    setUpAll(() {
+      main = packageGraphExperiments.libraries.firstWhere((lib) => lib.name == 'main');
+      aComplexSet = main.constants.firstWhere((v) => v.name == 'aComplexSet');
+      inferredTypeSet = main.constants.firstWhere((v) => v.name == 'inferredTypeSet');
+      specifiedSet = main.constants.firstWhere((v) => v.name == 'specifiedSet');
+      untypedMap = main.constants.firstWhere((v) => v.name == 'untypedMap');
+      typedSet = main.constants.firstWhere((v) => v.name == 'typedSet');
+    });
+
+    test('Set literals test', () {
+      expect(aComplexSet.modelType.name, equals('Set'));
+      expect(aComplexSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['AClassContainingLiterals']));
+      expect(aComplexSet.constantValue, equals('const {const AClassContainingLiterals(3, 5)}'));
+      expect(inferredTypeSet.modelType.name, equals('Set'));
+      expect(inferredTypeSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['num']));
+      expect(inferredTypeSet.constantValue, equals('const {1, 2.5, 3}'));
+      expect(specifiedSet.modelType.name, equals('Set'));
+      expect(specifiedSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['int']));
+      expect(specifiedSet.constantValue, equals('const {}'));
+      expect(untypedMap.modelType.name, equals('Map'));
+      expect(untypedMap.modelType.typeArguments.map((a) => a.name).toList(), equals(['dynamic', 'dynamic']));
+      expect(untypedMap.constantValue, equals('const {}'));
+      expect(typedSet.modelType.name, equals('Set'));
+      expect(typedSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['String']));
+      expect(typedSet.constantValue, equals('const &lt;String&gt; {}'));
+    });
   });
 
   group('Tools', () {
