@@ -801,7 +801,6 @@ final _generated_files_list = <String>[
 Future<void> checkBuild() async {
   var originalFileContents = new Map<String, String>();
   var differentFiles = <String>[];
-  var launcher = new SubprocessLauncher('check-build');
 
   // Load original file contents into memory before running the builder;
   // it modifies them in place.
