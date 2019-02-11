@@ -24,17 +24,25 @@ void main() {
   });
 
   setUpAll(() {
-    emptyTempDir = Directory.systemTemp.createTempSync('experiment_options_test_empty');
+    emptyTempDir =
+        Directory.systemTemp.createTempSync('experiment_options_test_empty');
     // We don't test our functionality at all unless ExperimentStatus has at least
     // one of these.  TODO(jcollins-g): make analyzer+dartdoc connection
     // more amenable to testing.
-    defaultOnNotExpired = ExperimentStatus.knownFeatures.values.firstWhere((f) => f.isEnabledByDefault && !f.isExpired, orElse: () => null);
-    defaultOffNotExpired = ExperimentStatus.knownFeatures.values.firstWhere((f) => !f.isEnabledByDefault && !f.isExpired, orElse: () => null);
-    assert(defaultOnNotExpired != null || defaultOffNotExpired != null, 'No experimental options that are not expired found');
+    defaultOnNotExpired = ExperimentStatus.knownFeatures.values.firstWhere(
+        (f) => f.isEnabledByDefault && !f.isExpired,
+        orElse: () => null);
+    defaultOffNotExpired = ExperimentStatus.knownFeatures.values.firstWhere(
+        (f) => !f.isEnabledByDefault && !f.isExpired,
+        orElse: () => null);
+    assert(defaultOnNotExpired != null || defaultOffNotExpired != null,
+        'No experimental options that are not expired found');
 
     // The "bogus" entries should always exist.
-    defaultOnExpired = ExperimentStatus.knownFeatures.values.firstWhere((f) => f.isEnabledByDefault && f.isExpired);
-    defaultOffExpired = ExperimentStatus.knownFeatures.values.firstWhere((f) => !f.isEnabledByDefault && f.isExpired);
+    defaultOnExpired = ExperimentStatus.knownFeatures.values
+        .firstWhere((f) => f.isEnabledByDefault && f.isExpired);
+    defaultOffExpired = ExperimentStatus.knownFeatures.values
+        .firstWhere((f) => !f.isEnabledByDefault && f.isExpired);
   });
 
   tearDownAll(() {
@@ -45,22 +53,29 @@ void main() {
     test('Defaults work for all options', () {
       experimentOptions.parseArguments([]);
       DartdocOptionContext tester =
-          new DartdocOptionContext(
-              experimentOptions, emptyTempDir);
-      if (defaultOnNotExpired != null) expect(tester.experimentStatus.isEnabled(defaultOnNotExpired), isTrue);
-      if (defaultOffNotExpired != null) expect(tester.experimentStatus.isEnabled(defaultOffNotExpired), isFalse);
+          new DartdocOptionContext(experimentOptions, emptyTempDir);
+      if (defaultOnNotExpired != null)
+        expect(tester.experimentStatus.isEnabled(defaultOnNotExpired), isTrue);
+      if (defaultOffNotExpired != null)
+        expect(
+            tester.experimentStatus.isEnabled(defaultOffNotExpired), isFalse);
       expect(tester.experimentStatus.isEnabled(defaultOnExpired), isTrue);
       expect(tester.experimentStatus.isEnabled(defaultOffExpired), isFalse);
     });
 
     test('Overriding defaults works via args', () {
       // Set all arguments to non-default values.
-      experimentOptions.parseArguments(
-          ['--enable-experiment', '${defaultOffNotExpired?.disableString},${defaultOnNotExpired?.disableString},${defaultOnExpired.disableString},${defaultOffExpired.enableString}']);
+      experimentOptions.parseArguments([
+        '--enable-experiment',
+        '${defaultOffNotExpired?.disableString},${defaultOnNotExpired?.disableString},${defaultOnExpired.disableString},${defaultOffExpired.enableString}'
+      ]);
       DartdocOptionContext tester =
           new DartdocOptionContext(experimentOptions, emptyTempDir);
-      if (defaultOnNotExpired != null) expect(tester.experimentStatus.isEnabled(defaultOnNotExpired), isFalse);
-      if (defaultOffNotExpired != null) expect(tester.experimentStatus.isEnabled(defaultOffNotExpired), isFalse);
+      if (defaultOnNotExpired != null)
+        expect(tester.experimentStatus.isEnabled(defaultOnNotExpired), isFalse);
+      if (defaultOffNotExpired != null)
+        expect(
+            tester.experimentStatus.isEnabled(defaultOffNotExpired), isFalse);
       expect(tester.experimentStatus.isEnabled(defaultOnExpired), isTrue);
       expect(tester.experimentStatus.isEnabled(defaultOffExpired), isFalse);
     });
