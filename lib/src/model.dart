@@ -1929,7 +1929,7 @@ abstract class GetterSetterCombo implements ModelElement {
         _documentationFrom.addAll(setter.documentationFrom);
       }
       if (_documentationFrom.length == 0 ||
-          _documentationFrom.every((e) => e.documentation == ''))
+          _documentationFrom.every((e) => e.documentationComment == ''))
         _documentationFrom = computeDocumentationFrom;
     }
     return _documentationFrom;
@@ -4697,16 +4697,26 @@ class PackageGraph {
 
   /// Generate a list of futures for any docs that actually require precaching.
   Iterable<Future> precacheLocalDocs() sync* {
+    // Prevent reentrancy.
+    Set<ModelElement> precachedElements = new Set();
+
+    Iterable<Future> precacheOneElement(ModelElement m) sync* {
+      for (ModelElement d in m.documentationFrom.where((d) => d.documentationComment != null)) {
+        if (needsPrecacheRegExp.hasMatch(d.documentationComment)
+            && !precachedElements.contains(d)) {
+          precachedElements.add(d);
+          yield d._precacheLocalDocs();
+        }
+      }
+    }
+
     for (ModelElement m in allModelElements) {
       // Skip if there is a canonicalModelElement somewhere else we can run this
       // for.  Not the same as allCanonicalModelElements since we need to run
       // for any ModelElement that might not have a canonical ModelElement,
       // too.
       if (m.canonicalModelElement != null && !m.isCanonical) continue;
-      if (m.documentationComment != null &&
-          needsPrecacheRegExp.hasMatch(m.documentationComment)) {
-        yield m._precacheLocalDocs();
-      }
+      yield* precacheOneElement(m);
     }
   }
 
