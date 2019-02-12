@@ -8,25 +8,25 @@
 
   <div id="dartdoc-main-content" class="col-xs-12 col-sm-9 col-md-8 main-content">
     {{#self}}
-    <div>{{>source_link}}<h1>{{{name}}} {{kind}} {{>categorization}}</h1></div>
+      <div>{{>source_link}}<h1><span class="kind-top-level-property">{{{name}}}</span> {{kind}} {{>categorization}}</h1></div>
 
-    {{#hasNoGetterSetter}}
-    <section class="multi-line-signature">
-      <span class="returntype">{{{ linkedReturnType }}}</span>
-      {{>name_summary}}
-      {{>features}}
-    </section>
-    {{>documentation}}
-    {{>source_code}}
-    {{/hasNoGetterSetter}}
+      {{#hasNoGetterSetter}}
+        <section class="multi-line-signature">
+          <span class="returntype">{{{ linkedReturnType }}}</span>
+          {{>name_summary}}
+          {{>features}}
+        </section>
+        {{>documentation}}
+        {{>source_code}}
+      {{/hasNoGetterSetter}}
 
-    {{#hasExplicitGetter}}
-    {{>accessor_getter}}
-    {{/hasExplicitGetter}}
+      {{#hasExplicitGetter}}
+        {{>accessor_getter}}
+      {{/hasExplicitGetter}}
 
-    {{#hasExplicitSetter}}
-    {{>accessor_setter}}
-    {{/hasExplicitSetter}}
+      {{#hasExplicitSetter}}
+        {{>accessor_setter}}
+      {{/hasExplicitSetter}}
     {{/self}}
   </div> <!-- /.main-content -->
 
