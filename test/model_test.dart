@@ -121,11 +121,14 @@ void main() {
   group('Tools', () {
     Class toolUser;
     Class _NonCanonicalToolUser, CanonicalToolUser, PrivateLibraryToolUser;
+    Class ImplementingClassForTool, CanonicalPrivateInheritedToolUser;
     Method invokeTool;
     Method invokeToolNoInput;
     Method invokeToolMultipleSections;
     Method invokeToolNonCanonical, invokeToolNonCanonicalSubclass;
     Method invokeToolPrivateLibrary, invokeToolPrivateLibraryOriginal;
+    Method invokeToolParentDoc, invokeToolParentDocOriginal;
+    final RegExp packageInvocationIndexRegexp = new RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
 
     setUpAll(() {
       _NonCanonicalToolUser = fakeLibrary.allClasses
@@ -134,6 +137,10 @@ void main() {
           .firstWhere((c) => c.name == 'CanonicalToolUser');
       PrivateLibraryToolUser = fakeLibrary.allClasses
           .firstWhere((c) => c.name == 'PrivateLibraryToolUser');
+      ImplementingClassForTool = fakeLibrary.allClasses
+          .firstWhere((c) => c.name == 'ImplementingClassForTool');
+      CanonicalPrivateInheritedToolUser = fakeLibrary.allClasses
+          .firstWhere((c) => c.name == 'CanonicalPrivateInheritedToolUser');
       toolUser = exLibrary.classes.firstWhere((c) => c.name == 'ToolUser');
       invokeTool =
           toolUser.allInstanceMethods.firstWhere((m) => m.name == 'invokeTool');
@@ -151,24 +158,48 @@ void main() {
           (invokeToolPrivateLibrary.definingEnclosingElement as Class)
               .allInstanceMethods
               .firstWhere((m) => m.name == 'invokeToolPrivateLibrary');
+      invokeToolParentDoc = CanonicalPrivateInheritedToolUser.allInstanceMethods
+          .firstWhere((m) => m.name == 'invokeToolParentDoc');
+      invokeToolParentDocOriginal = ImplementingClassForTool.allInstanceMethods
+          .firstWhere((m) => m.name == 'invokeToolParentDoc');
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
 
-    test('does _not_ invoke a tool multiple times unnecessarily', () {
-      RegExp packageInvocationIndexRegexp =
-          new RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
-      expect(invokeToolNonCanonical.isCanonical, isFalse);
-      expect(invokeToolNonCanonicalSubclass.isCanonical, isTrue);
-      expect(
-          packageInvocationIndexRegexp
-              .firstMatch(invokeToolNonCanonical.documentation)
-              .group(1),
-          equals(packageInvocationIndexRegexp
-              .firstMatch(invokeToolNonCanonicalSubclass.documentation)
-              .group(1)));
-      expect(invokeToolPrivateLibrary.documentation, isNot(contains('{@tool')));
-      expect(
-          invokeToolPrivateLibraryOriginal.documentation, contains('{@tool'));
+    test('invokes tool when inherited documentation is the only means for it to be seen', () {
+      // Verify setup of the test is correct.
+      expect(invokeToolParentDoc.isCanonical, isTrue);
+      expect(invokeToolParentDoc.documentationComment, isNull);
+      // Error message here might look strange due to toString() on Methods, but if this
+      // fails that means we don't have the correct invokeToolParentDoc instance.
+      expect(invokeToolParentDoc.documentationFrom, contains(invokeToolParentDocOriginal));
+      // Tool should be substituted out here.
+      expect(invokeToolParentDoc.documentation, isNot(contains('{@tool')));
+    });
+
+    group('does _not_ invoke a tool multiple times unnecessarily', () {
+      test('non-canonical subclass case', () {
+        expect(invokeToolNonCanonical.isCanonical, isFalse);
+        expect(invokeToolNonCanonicalSubclass.isCanonical, isTrue);
+        expect(
+            packageInvocationIndexRegexp
+                .firstMatch(invokeToolNonCanonical.documentation)
+                .group(1),
+            equals(packageInvocationIndexRegexp
+                .firstMatch(invokeToolNonCanonicalSubclass.documentation)
+                .group(1)));
+        expect(invokeToolPrivateLibrary.documentation, isNot(contains('{@tool')));
+        expect(
+            invokeToolPrivateLibraryOriginal.documentation, contains('{@tool'));
+      });
+
+      test('Documentation borrowed from implementer case', () {
+        expect(packageInvocationIndexRegexp
+            .firstMatch(invokeToolParentDoc.documentation)
+            .group(1),
+        equals(packageInvocationIndexRegexp
+            .firstMatch(invokeToolParentDocOriginal.documentation)
+            .group(1)));
+      });
     });
 
     test('can invoke a tool and pass args and environment', () {

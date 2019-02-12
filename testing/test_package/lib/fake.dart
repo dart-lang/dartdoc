@@ -1021,3 +1021,20 @@ abstract class _NonCanonicalToolUser {
 }
 
 abstract class CanonicalToolUser extends _NonCanonicalToolUser {}
+
+abstract class ImplementingClassForTool {
+  /// Invokes a tool from inherited documentation via `implemented`
+  ///
+  /// {@tool drill}
+  /// This is some drill text right here.
+  /// {@end-tool}
+  void invokeToolParentDoc();
+}
+
+/// The method [invokeToolParentDoc] gets its documentation from an interface class.
+abstract class CanonicalPrivateInheritedToolUser implements ImplementingClassForTool {
+  @override
+  void invokeToolParentDoc() {
+    print('hello, tool world');
+  }
+}
