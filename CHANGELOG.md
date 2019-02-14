@@ -1,3 +1,10 @@
+## 0.28.2
+* Add empty CSS classes in spans around the names of entities so Dashing can pick
+  them up.  (flutter/flutter#27654, #1929)
+* Test fixups for experiments (#1932, #1931, #1929).
+* Make precaching work for borrowed documentation, fixing cases where `@tool` directives
+  were not being substituted correctly in generated docs (#1930, #1934).
+
 ## 0.28.1+2
 * Fix alignment of search box text in Safari (#1926).
 
@@ -15,8 +22,8 @@
 * Dartdoc's default CSS now more closely resembles dartlang.org, with some
   miscellaneous alignment tweaks, Roboto font, and use of `:hover` to highlight
   links (#1916, #1372)
-* Viewport parameters for mobile now prevent "stuck page" syndrome (#1916,
-  #1911).  Overscroll is now permitted for mobile.
+* Viewport parameters for mobile now prevent "stuck page" syndrome (#1916, #1911).
+  Overscroll is now permitted for mobile.
 * Fix a problem where we don't render greater than symbols in the header
   for Chrome 72 (#1919, #1918)
 * Dartdoc now remembers scroll positions for all three columns while
