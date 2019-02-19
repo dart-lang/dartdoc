@@ -114,7 +114,7 @@ void main() {
       expect(untypedMap.constantValue, equals('const {}'));
       expect(typedSet.modelType.name, equals('Set'));
       expect(typedSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['String']));
-      expect(typedSet.constantValue, equals('const &lt;String&gt; {}'));
+      expect(typedSet.constantValue, matches(new RegExp(r'const &lt;String&gt;\s?{}')));
     });
   });
 
@@ -3042,8 +3042,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('PRETTY_COLORS', () {
-      expect(prettyColorsConstant.constantValue,
-          "const &lt;String&gt; [COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;]");
+      expect(prettyColorsConstant.constantValue, matches(new RegExp(
+          r"const &lt;String&gt;\s?\[COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;\]")));
     });
 
     test('MY_CAT is linked', () {
