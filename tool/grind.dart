@@ -959,8 +959,11 @@ Future<void> testDartdocFlutterPlugin() async {
 @Task('Validate the SDK doc build.')
 @Depends(buildSdkDocs)
 void validateSdkDocs() {
-  const expectedLibCount = 0;
-  const expectedSubLibCount = 19;
+  // TODO(jcollins-g): Remove flexibility in library counts once dev build
+  // includes https://dart-review.googlesource.com/c/sdk/+/93160
+  const expectedLibCounts = [0, 1];
+  const expectedSubLibCount = [19, 20];
+  const expectedTotalCount = [19, 20];
   File indexHtml = joinFile(sdkDocsDir, ['index.html']);
   if (!indexHtml.existsSync()) {
     fail('no index.html found for SDK docs');
@@ -968,15 +971,15 @@ void validateSdkDocs() {
   log('found index.html');
   String indexContents = indexHtml.readAsStringSync();
   int foundLibs = _findCount(indexContents, '  <li><a href="dart-');
-  if (foundLibs != expectedLibCount) {
+  if (!expectedLibCounts.contains(foundLibs)) {
     fail(
-        'expected $expectedLibCount dart: index.html entries, found $foundLibs');
+        'expected $expectedTotalCount dart: index.html entries, found $foundLibs');
   }
   log('$foundLibs index.html dart: entries found');
 
   int foundSubLibs =
       _findCount(indexContents, '<li class="section-subitem"><a href="dart-');
-  if (foundSubLibs != expectedSubLibCount) {
+  if (!expectedSubLibCount.contains(foundSubLibs)) {
     fail(
         'expected $expectedSubLibCount dart: index.html entries in categories, found $foundSubLibs');
   }
@@ -985,9 +988,9 @@ void validateSdkDocs() {
   // check for the existence of certain files/dirs
   var libsLength =
       sdkDocsDir.listSync().where((fs) => fs.path.contains('dart-')).length;
-  if (libsLength != expectedLibCount + expectedSubLibCount) {
+  if (!expectedTotalCount.contains(libsLength)) {
     fail('docs not generated for all the SDK libraries, '
-        'expected ${expectedLibCount + expectedSubLibCount} directories, generated $libsLength directories');
+        'expected ${expectedTotalCount + expectedTotalCount} directories, generated $libsLength directories');
   }
   log('$libsLength dart: libraries found');
 
