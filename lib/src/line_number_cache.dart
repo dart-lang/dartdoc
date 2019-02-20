@@ -51,7 +51,7 @@ class LineNumberCache {
     if (lastKey != null) {
       return new Tuple2(lineMap[lastKey], offset - lastKey);
     } else {
-      return new Tuple2(lineMap[0], offset - 0);
+      return new Tuple2(lineMap[0], offset);
     }
   }
 }
