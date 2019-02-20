@@ -28,7 +28,9 @@ SplayTreeMap<int, int> _createLineNumbersMap(String contents) {
 
   do {
     result[offset] = lineNumber;
-    offset = (offset + 1 <= contents.length) ? contents.indexOf(newlineChar, offset + 1) : -1;
+    offset = (offset + 1 <= contents.length)
+        ? contents.indexOf(newlineChar, offset + 1)
+        : -1;
     lineNumber += 1;
   } while (offset != -1);
 

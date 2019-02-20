@@ -24,20 +24,26 @@ void main() {
     });
 
     test('validate empty file behavior', () {
-      File emptyFile = File(pathLib.join(_tempDir.path, 'empty_file'))..writeAsStringSync('');
+      File emptyFile = File(pathLib.join(_tempDir.path, 'empty_file'))
+        ..writeAsStringSync('');
       LineNumberCache cache = LineNumberCache();
       expect(cache.lineAndColumn(emptyFile.path, 0), equals(Tuple2(1, 0)));
     });
 
     test('single line without newline', () {
-      File singleLineWithoutNewline = File(pathLib.join(_tempDir.path, 'single_line'))..writeAsStringSync('a single line');
+      File singleLineWithoutNewline =
+          File(pathLib.join(_tempDir.path, 'single_line'))
+            ..writeAsStringSync('a single line');
       LineNumberCache cache = LineNumberCache();
-      expect(cache.lineAndColumn(singleLineWithoutNewline.path, 2), equals(Tuple2(1, 2)));
-      expect(cache.lineAndColumn(singleLineWithoutNewline.path, 0), equals(Tuple2(1, 0)));
+      expect(cache.lineAndColumn(singleLineWithoutNewline.path, 2),
+          equals(Tuple2(1, 2)));
+      expect(cache.lineAndColumn(singleLineWithoutNewline.path, 0),
+          equals(Tuple2(1, 0)));
     });
 
     test('multiple line without trailing newline', () {
-      File multipleLine = File(pathLib.join(_tempDir.path, 'multiple_line'))..writeAsStringSync('This is the first line\nThis is the second line');
+      File multipleLine = File(pathLib.join(_tempDir.path, 'multiple_line'))
+        ..writeAsStringSync('This is the first line\nThis is the second line');
       LineNumberCache cache = LineNumberCache();
       expect(cache.lineAndColumn(multipleLine.path, 60), equals(Tuple2(2, 38)));
       expect(cache.lineAndColumn(multipleLine.path, 30), equals(Tuple2(2, 8)));
@@ -46,7 +52,9 @@ void main() {
     });
 
     test('multiple lines with trailing newline', () {
-      File multipleLine = File(pathLib.join(_tempDir.path, 'multiple_line'))..writeAsStringSync('This is the first line\nThis is the second line\n');
+      File multipleLine = File(pathLib.join(_tempDir.path, 'multiple_line'))
+        ..writeAsStringSync(
+            'This is the first line\nThis is the second line\n');
       LineNumberCache cache = LineNumberCache();
       expect(cache.lineAndColumn(multipleLine.path, 60), equals(Tuple2(3, 14)));
       expect(cache.lineAndColumn(multipleLine.path, 30), equals(Tuple2(2, 8)));

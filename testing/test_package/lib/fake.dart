@@ -1032,7 +1032,8 @@ abstract class ImplementingClassForTool {
 }
 
 /// The method [invokeToolParentDoc] gets its documentation from an interface class.
-abstract class CanonicalPrivateInheritedToolUser implements ImplementingClassForTool {
+abstract class CanonicalPrivateInheritedToolUser
+    implements ImplementingClassForTool {
   @override
   void invokeToolParentDoc() {
     print('hello, tool world');

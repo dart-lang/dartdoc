@@ -10,7 +10,8 @@ class AClassContainingLiterals {
   const AClassContainingLiterals(this.value1, this.value2);
 
   @override
-  bool operator==(Object other) => other is AClassContainingLiterals && value1 == other.value1;
+  bool operator ==(Object other) =>
+      other is AClassContainingLiterals && value1 == other.value1;
 }
 
 const aComplexSet = {AClassContainingLiterals(3, 5)};

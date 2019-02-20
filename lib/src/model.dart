@@ -4701,9 +4701,10 @@ class PackageGraph {
     Set<ModelElement> precachedElements = new Set();
 
     Iterable<Future> precacheOneElement(ModelElement m) sync* {
-      for (ModelElement d in m.documentationFrom.where((d) => d.documentationComment != null)) {
-        if (needsPrecacheRegExp.hasMatch(d.documentationComment)
-            && !precachedElements.contains(d)) {
+      for (ModelElement d
+          in m.documentationFrom.where((d) => d.documentationComment != null)) {
+        if (needsPrecacheRegExp.hasMatch(d.documentationComment) &&
+            !precachedElements.contains(d)) {
           precachedElements.add(d);
           yield d._precacheLocalDocs();
         }

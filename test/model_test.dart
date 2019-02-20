@@ -88,12 +88,18 @@ void main() {
   // when the feature is enabled by default.
   group('Experiments', () {
     Library main;
-    TopLevelVariable aComplexSet, inferredTypeSet, specifiedSet, untypedMap, typedSet;
+    TopLevelVariable aComplexSet,
+        inferredTypeSet,
+        specifiedSet,
+        untypedMap,
+        typedSet;
 
     setUpAll(() {
-      main = packageGraphExperiments.libraries.firstWhere((lib) => lib.name == 'main');
+      main = packageGraphExperiments.libraries
+          .firstWhere((lib) => lib.name == 'main');
       aComplexSet = main.constants.firstWhere((v) => v.name == 'aComplexSet');
-      inferredTypeSet = main.constants.firstWhere((v) => v.name == 'inferredTypeSet');
+      inferredTypeSet =
+          main.constants.firstWhere((v) => v.name == 'inferredTypeSet');
       specifiedSet = main.constants.firstWhere((v) => v.name == 'specifiedSet');
       untypedMap = main.constants.firstWhere((v) => v.name == 'untypedMap');
       typedSet = main.constants.firstWhere((v) => v.name == 'typedSet');
@@ -101,19 +107,26 @@ void main() {
 
     test('Set literals test', () {
       expect(aComplexSet.modelType.name, equals('Set'));
-      expect(aComplexSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['AClassContainingLiterals']));
-      expect(aComplexSet.constantValue, equals('const {const AClassContainingLiterals(3, 5)}'));
+      expect(aComplexSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['AClassContainingLiterals']));
+      expect(aComplexSet.constantValue,
+          equals('const {const AClassContainingLiterals(3, 5)}'));
       expect(inferredTypeSet.modelType.name, equals('Set'));
-      expect(inferredTypeSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['num']));
+      expect(
+          inferredTypeSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['num']));
       expect(inferredTypeSet.constantValue, equals('const {1, 2.5, 3}'));
       expect(specifiedSet.modelType.name, equals('Set'));
-      expect(specifiedSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['int']));
+      expect(specifiedSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['int']));
       expect(specifiedSet.constantValue, equals('const {}'));
       expect(untypedMap.modelType.name, equals('Map'));
-      expect(untypedMap.modelType.typeArguments.map((a) => a.name).toList(), equals(['dynamic', 'dynamic']));
+      expect(untypedMap.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['dynamic', 'dynamic']));
       expect(untypedMap.constantValue, equals('const {}'));
       expect(typedSet.modelType.name, equals('Set'));
-      expect(typedSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['String']));
+      expect(typedSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['String']));
       expect(typedSet.constantValue, equals('const &lt;String&gt; {}'));
     });
   });
@@ -128,7 +141,8 @@ void main() {
     Method invokeToolNonCanonical, invokeToolNonCanonicalSubclass;
     Method invokeToolPrivateLibrary, invokeToolPrivateLibraryOriginal;
     Method invokeToolParentDoc, invokeToolParentDocOriginal;
-    final RegExp packageInvocationIndexRegexp = new RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
+    final RegExp packageInvocationIndexRegexp =
+        new RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
 
     setUpAll(() {
       _NonCanonicalToolUser = fakeLibrary.allClasses
@@ -165,13 +179,16 @@ void main() {
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
 
-    test('invokes tool when inherited documentation is the only means for it to be seen', () {
+    test(
+        'invokes tool when inherited documentation is the only means for it to be seen',
+        () {
       // Verify setup of the test is correct.
       expect(invokeToolParentDoc.isCanonical, isTrue);
       expect(invokeToolParentDoc.documentationComment, isNull);
       // Error message here might look strange due to toString() on Methods, but if this
       // fails that means we don't have the correct invokeToolParentDoc instance.
-      expect(invokeToolParentDoc.documentationFrom, contains(invokeToolParentDocOriginal));
+      expect(invokeToolParentDoc.documentationFrom,
+          contains(invokeToolParentDocOriginal));
       // Tool should be substituted out here.
       expect(invokeToolParentDoc.documentation, isNot(contains('{@tool')));
     });
@@ -187,18 +204,20 @@ void main() {
             equals(packageInvocationIndexRegexp
                 .firstMatch(invokeToolNonCanonicalSubclass.documentation)
                 .group(1)));
-        expect(invokeToolPrivateLibrary.documentation, isNot(contains('{@tool')));
+        expect(
+            invokeToolPrivateLibrary.documentation, isNot(contains('{@tool')));
         expect(
             invokeToolPrivateLibraryOriginal.documentation, contains('{@tool'));
       });
 
       test('Documentation borrowed from implementer case', () {
-        expect(packageInvocationIndexRegexp
-            .firstMatch(invokeToolParentDoc.documentation)
-            .group(1),
-        equals(packageInvocationIndexRegexp
-            .firstMatch(invokeToolParentDocOriginal.documentation)
-            .group(1)));
+        expect(
+            packageInvocationIndexRegexp
+                .firstMatch(invokeToolParentDoc.documentation)
+                .group(1),
+            equals(packageInvocationIndexRegexp
+                .firstMatch(invokeToolParentDocOriginal.documentation)
+                .group(1)));
       });
     });
 
