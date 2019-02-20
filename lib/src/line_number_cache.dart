@@ -8,6 +8,7 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:dartdoc/src/tuple.dart';
+import 'package:path/path.dart' as pathLib;
 
 String _getNewlineChar(String contents) {
   if (contents.contains("\r\n")) {
@@ -22,12 +23,12 @@ String _getNewlineChar(String contents) {
 SplayTreeMap<int, int> _createLineNumbersMap(String contents) {
   var newlineChar = _getNewlineChar(contents);
   var offset = 0;
-  var lineNumber = 0;
+  var lineNumber = 1;
   var result = new SplayTreeMap<int, int>();
 
   do {
     result[offset] = lineNumber;
-    offset = contents.indexOf(newlineChar, offset + 1);
+    offset = (offset + 1 <= contents.length) ? contents.indexOf(newlineChar, offset + 1) : -1;
     lineNumber += 1;
   } while (offset != -1);
 
@@ -36,22 +37,19 @@ SplayTreeMap<int, int> _createLineNumbersMap(String contents) {
 
 final LineNumberCache lineNumberCache = new LineNumberCache();
 
-// TODO(kevmoo): this could use some testing
 class LineNumberCache {
-  final Map<String, String> __fileContents = <String, String>{};
   final Map<String, SplayTreeMap<int, int>> _lineNumbers =
       <String, SplayTreeMap<int, int>>{};
 
   Tuple2<int, int> lineAndColumn(String file, int offset) {
+    file = pathLib.canonicalize(file);
     var lineMap = _lineNumbers.putIfAbsent(
-        file, () => _createLineNumbersMap(_fileContents(file)));
+        file, () => _createLineNumbersMap(new File(file).readAsStringSync()));
     var lastKey = lineMap.lastKeyBefore(offset);
     if (lastKey != null) {
-      return new Tuple2(lineMap[lastKey] + 1, offset - lastKey);
+      return new Tuple2(lineMap[lastKey], offset - lastKey);
+    } else {
+      return new Tuple2(lineMap[0], offset - 0);
     }
-    return null;
   }
-
-  String _fileContents(String file) =>
-      __fileContents.putIfAbsent(file, () => new File(file).readAsStringSync());
 }
