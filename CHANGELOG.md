@@ -516,7 +516,7 @@ This is a prerelease only, features listed as added here don't carry forward.
 ## 0.9.7+1
 * change how we truncate long constant values on the summary page
 * show the full docs for enums on the summary page; just show the first line of
-  docs for other contants
+  docs for other constants
 
 ## 0.9.7
 * fix the display of long constants
