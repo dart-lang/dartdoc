@@ -937,7 +937,7 @@ void main() {
               withYouTubeBadWidth,
               PackageWarning.invalidParameter,
               'A @youtube directive has an invalid width, "100px". The width '
-              'must be an integer.'),
+              'must be a positive integer.'),
           isTrue);
     });
     test("warns on youtube video with non-integer height", () {
@@ -946,7 +946,7 @@ void main() {
               withYouTubeBadHeight,
               PackageWarning.invalidParameter,
               'A @youtube directive has an invalid height, "100px". The height '
-              'must be an integer.'),
+              'must be a positive integer.'),
           isTrue);
     });
     test("warns on youtube video with invalid video URL", () {

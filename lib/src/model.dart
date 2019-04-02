@@ -4106,24 +4106,18 @@ abstract class ModelElement extends Canonicalization
         return '';
       }
 
-      int width;
-      try {
-        width = int.parse(positionalArgs[0]);
-      } on FormatException {
+      final int width = int.tryParse(positionalArgs[0]);
+      if (width == null || width <= 0) {
         warn(PackageWarning.invalidParameter,
             message: 'A @youtube directive has an invalid width, '
-                '"${positionalArgs[0]}". The width must be an integer.');
-        return '';
+                '"${positionalArgs[0]}". The width must be a positive integer.');
       }
 
-      int height;
-      try {
-        height = int.parse(positionalArgs[1]);
-      } on FormatException {
+      final int height = int.tryParse(positionalArgs[1]);
+      if (height == null || height <= 0) {
         warn(PackageWarning.invalidParameter,
             message: 'A @youtube directive has an invalid height, '
-                '"${positionalArgs[1]}". The height must be an integer.');
-        return '';
+                '"${positionalArgs[1]}". The height must be a positive integer.');
       }
 
       final Match url = validYouTubeUrlRegExp.firstMatch(positionalArgs[2]);
