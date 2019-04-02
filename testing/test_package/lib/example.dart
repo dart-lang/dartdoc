@@ -360,19 +360,7 @@ class Dog implements Cat, E {
   /// More docs
   void withYouTubeWatchUrl() {}
 
-  /// YouTube video method
-  ///
-  /// {@youtube 100 100 https://www.youtube.com/embed/oHg5SJYRHA0}
-  /// More docs
-  void withYouTubeEmbedUrl() {}
-
-  /// YouTube video method
-  ///
-  /// {@youtube 100 100 https://youtu.be/oHg5SJYRHA0}
-  /// More docs
-  void withYouTubeShortUrl() {}
-
-  /// YouTube video in one line doc {@youtube 100 100 https://youtu.be/oHg5SJYRHA0}
+  /// YouTube video in one line doc {@youtube 100 100 https://www.youtube.com/watch?v=oHg5SJYRHA0}
   ///
   /// This tests to see that we do the right thing if the animation is in
   /// the one line doc above.
@@ -380,7 +368,7 @@ class Dog implements Cat, E {
 
   /// YouTube video inline in text.
   ///
-  /// Tests to see that an inline {@youtube 100 100 https://youtu.be/oHg5SJYRHA0} works as expected.
+  /// Tests to see that an inline {@youtube 100 100 https://www.youtube.com/watch?v=oHg5SJYRHA0} works as expected.
   void withYouTubeInline() {}
 
   /// Animation method

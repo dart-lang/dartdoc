@@ -4070,16 +4070,11 @@ abstract class ModelElement extends Canonicalization
   /// Which will embed a YouTube player into the page that plays the specified
   /// videos.
   ///
-  /// The width and height must be integers specifying the dimensions of the
-  /// video in pixels.
-  ///
-  /// The following YouTube URL formats are supported:
-  ///
-  ///  * https://www.youtube.com/watch?v=oHg5SJYRHA0 (as shown in the browser's
-  ///    address bar)
-  ///  * https://youtu.be/oHg5SJYRHA0 (as shown in the "Share" dialog)
-  ///  * https://www.youtube.com/embed/oHg5SJYRHA0 (as shown in the "Share ->
-  ///    Embed" dialog)
+  /// The width and height must be positive integers specifying the dimensions
+  /// of the video in pixels. The video URL must have the following format:
+  /// https://www.youtube.com/watch?v=oHg5SJYRHA0. When viewing a YouTube video
+  /// in a browser, the URL shown in the browser's address bar has the correct
+  /// format and can be copied to be used in this directive.
   String _injectYouTube(String rawDocs) {
     // Matches all youtube directives (even some invalid ones). This is so
     // we can give good error messages if the directive is malformed, instead of
@@ -4087,8 +4082,8 @@ abstract class ModelElement extends Canonicalization
     final RegExp basicAnimationRegExp = new RegExp(r'''{@youtube\s+([^}]+)}''');
 
     // Matches YouTube IDs from supported YouTube URLs.
-    final RegExp validYouTubeUrlRegExp = new RegExp(
-        'https://((youtu\.be/)|(www\.youtube\.com/((watch\\?v=)|(embed/))))(.+)');
+    final RegExp validYouTubeUrlRegExp =
+        new RegExp('https://www\.youtube\.com/watch\\?v=(.+)');
 
     return rawDocs.replaceAllMapped(basicAnimationRegExp, (basicMatch) {
       final ArgParser parser = new ArgParser();
@@ -4124,11 +4119,8 @@ abstract class ModelElement extends Canonicalization
       if (url == null) {
         warn(PackageWarning.invalidParameter,
             message: 'A @youtube directive has an invalid URL: '
-                '"${positionalArgs[2]}". Supported YouTube URLs have one of '
-                'the following formats: '
-                'https://www.youtube.com/watch?v=oHg5SJYRHA0, '
-                'https://youtu.be/oHg5SJYRHA0, or '
-                'https://www.youtube.com/embed/oHg5SJYRHA0');
+                '"${positionalArgs[2]}". Supported YouTube URLs have the '
+                'follwing format: https://www.youtube.com/watch?v=oHg5SJYRHA0.');
         return '';
       }
       final String youTubeId = url.group(url.groupCount);

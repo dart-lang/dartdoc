@@ -956,10 +956,8 @@ void main() {
               PackageWarning.invalidParameter,
               'A @youtube directive has an invalid URL: '
               '"http://host/path/to/video.mp4". Supported YouTube URLs have '
-              'one of the following formats: '
-              'https://www.youtube.com/watch?v=oHg5SJYRHA0, '
-              'https://youtu.be/oHg5SJYRHA0, or '
-              'https://www.youtube.com/embed/oHg5SJYRHA0'),
+              'the follwing format: '
+              'https://www.youtube.com/watch?v=oHg5SJYRHA0.'),
           isTrue);
     });
   });
@@ -967,8 +965,6 @@ void main() {
   group('YouTube', () {
     Class dog;
     Method withYouTubeWatchUrl;
-    Method withYouTubeEmbedUrl;
-    Method withYouTubeShortUrl;
     Method withYouTubeInOneLineDoc;
     Method withYouTubeInline;
 
@@ -976,10 +972,6 @@ void main() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
       withYouTubeWatchUrl = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withYouTubeWatchUrl');
-      withYouTubeEmbedUrl = dog.allInstanceMethods
-          .firstWhere((m) => m.name == 'withYouTubeEmbedUrl');
-      withYouTubeShortUrl = dog.allInstanceMethods
-          .firstWhere((m) => m.name == 'withYouTubeShortUrl');
       withYouTubeInOneLineDoc = dog.allInstanceMethods
           .firstWhere((m) => m.name == 'withYouTubeInOneLineDoc');
       withYouTubeInline = dog.allInstanceMethods
@@ -988,18 +980,6 @@ void main() {
 
     test("renders a YouTube video within the method documentation", () {
       expect(withYouTubeWatchUrl.documentation,
-          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0"'));
-    });
-    test(
-        "renders a YouTube video with embeded URL within the method documentation",
-        () {
-      expect(withYouTubeEmbedUrl.documentation,
-          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0"'));
-    });
-    test(
-        "renders a YouTube video with short URL within the method documentation",
-        () {
-      expect(withYouTubeShortUrl.documentation,
           contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0"'));
     });
     test("Doesn't place YouTube video in one line doc", () {
