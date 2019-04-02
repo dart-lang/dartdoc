@@ -4144,13 +4144,15 @@ abstract class ModelElement extends Canonicalization
       // careful of whitespace here.
       return '''
 
-<iframe src="https://www.youtube.com/embed/$youTubeId"
-        width="$width" 
-        height="$height" 
-        frameborder="0"
-        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-</iframe>
+<p>
+  <iframe src="https://www.youtube.com/embed/$youTubeId"
+          width="$width"
+          height="$height"
+          frameborder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+  </iframe>
+</p>
 
 '''; // String must end at beginning of line, or following inline text will be
       // indented.
