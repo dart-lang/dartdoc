@@ -4083,7 +4083,7 @@ abstract class ModelElement extends Canonicalization
 
     // Matches YouTube IDs from supported YouTube URLs.
     final RegExp validYouTubeUrlRegExp =
-        new RegExp('https://www\.youtube\.com/watch\\?v=(.+)');
+        new RegExp('https://www\.youtube\.com/watch\\?v=([^&]+)\$');
 
     return rawDocs.replaceAllMapped(basicAnimationRegExp, (basicMatch) {
       final ArgParser parser = new ArgParser();
@@ -4131,7 +4131,7 @@ abstract class ModelElement extends Canonicalization
       return '''
 
 <p>
-  <iframe src="https://www.youtube.com/embed/$youTubeId"
+  <iframe src="https://www.youtube.com/embed/$youTubeId?rel=0"
           width="$width"
           height="$height"
           frameborder="0"

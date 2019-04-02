@@ -903,6 +903,7 @@ void main() {
     Method withYouTubeBadWidth;
     Method withYouTubeBadHeight;
     Method withYouTubeInvalidUrl;
+    Method withYouTubeUrlWithAdditionalParameters;
 
     setUpAll(() {
       documentationErrors = errorLibrary.classes
@@ -920,6 +921,9 @@ void main() {
       withYouTubeInvalidUrl = documentationErrors.allInstanceMethods
           .firstWhere((m) => m.name == 'withYouTubeInvalidUrl')
             ..documentation;
+      withYouTubeUrlWithAdditionalParameters = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeUrlWithAdditionalParameters')
+        ..documentation;
     });
 
     test("warns on youtube video with missing parameters", () {
@@ -960,6 +964,17 @@ void main() {
               'https://www.youtube.com/watch?v=oHg5SJYRHA0.'),
           isTrue);
     });
+    test("warns on youtube video with extra parameters in URL", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withYouTubeUrlWithAdditionalParameters,
+              PackageWarning.invalidParameter,
+              'A @youtube directive has an invalid URL: '
+              '"https://www.youtube.com/watch?v=yI-8QHpGIP4&list=PLjxrf2q8roU23XGwz3Km7sQZFTdB996iG&index=5". '
+              'Supported YouTube URLs have the follwing format: '
+              'https://www.youtube.com/watch?v=oHg5SJYRHA0.'),
+          isTrue);
+    });
   });
 
   group('YouTube', () {
@@ -980,15 +995,15 @@ void main() {
 
     test("renders a YouTube video within the method documentation", () {
       expect(withYouTubeWatchUrl.documentation,
-          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0"'));
+          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"'));
     });
     test("Doesn't place YouTube video in one line doc", () {
       expect(
           withYouTubeInOneLineDoc.oneLineDoc,
           isNot(contains(
-              '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0"')));
+              '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"')));
       expect(withYouTubeInOneLineDoc.documentation,
-          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0"'));
+          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"'));
     });
     test("Handles YouTube video inline properly", () {
       // Make sure it doesn't have a double-space before the continued line,

@@ -27,6 +27,11 @@ abstract class DocumentationErrors {
   /// {@youtube 100 100 http://host/path/to/video.mp4}
   void withYouTubeInvalidUrl() {}
 
+  /// YouTube video with extra parameters in URL.
+  ///
+  /// {@youtube 100 100 https://www.youtube.com/watch?v=yI-8QHpGIP4&list=PLjxrf2q8roU23XGwz3Km7sQZFTdB996iG&index=5}
+  void withYouTubeUrlWithAdditionalParameters() {}
+
   /// Animation method with invalid name
   ///
   /// {@animation 100 100 http://host/path/to/video.mp4 id=2isNot-A-ValidName}
