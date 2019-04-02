@@ -1890,7 +1890,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.publicInstanceMethods, hasLength(24));
+      expect(Dog.publicInstanceMethods, hasLength(22));
     });
 
     test('get operators', () {
@@ -1966,11 +1966,9 @@ void main() {
             'withPrivateMacro',
             'withQuotedNamedAnimation',
             'withUndefinedMacro',
-            'withYouTubeEmbedUrl',
-            'withYouTubeWatchUrl',
             'withYouTubeInline',
             'withYouTubeInOneLineDoc',
-            'withYouTubeShortUrl',
+            'withYouTubeWatchUrl',
           ]));
     });
 
