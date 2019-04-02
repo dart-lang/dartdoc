@@ -354,6 +354,35 @@ class Dog implements Cat, E {
   /// Don't define this:  {@macro ThatDoesNotExist}
   void withUndefinedMacro() {}
 
+  /// YouTube video method
+  ///
+  /// {@youtube 100 100 https://www.youtube.com/watch?v=oHg5SJYRHA0}
+  /// More docs
+  void withYouTubeWatchUrl() {}
+
+  /// YouTube video method
+  ///
+  /// {@youtube 100 100 https://www.youtube.com/embed/oHg5SJYRHA0}
+  /// More docs
+  void withYouTubeEmbedUrl() {}
+
+  /// YouTube video method
+  ///
+  /// {@youtube 100 100 https://youtu.be/oHg5SJYRHA0}
+  /// More docs
+  void withYouTubeShortUrl() {}
+
+  /// YouTube video in one line doc {@youtube 100 100 https://youtu.be/oHg5SJYRHA0}
+  ///
+  /// This tests to see that we do the right thing if the animation is in
+  /// the one line doc above.
+  void withYouTubeInOneLineDoc() {}
+
+  /// YouTube video inline in text.
+  ///
+  /// Tests to see that an inline {@youtube 100 100 https://youtu.be/oHg5SJYRHA0} works as expected.
+  void withYouTubeInline() {}
+
   /// Animation method
   ///
   /// {@animation 100 100 http://host/path/to/video.mp4}

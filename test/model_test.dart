@@ -897,6 +897,126 @@ void main() {
     });
   });
 
+  group('YouTube Errors', () {
+    Class documentationErrors;
+    Method withYouTubeWrongParams;
+    Method withYouTubeBadWidth;
+    Method withYouTubeBadHeight;
+    Method withYouTubeInvalidUrl;
+
+    setUpAll(() {
+      documentationErrors = errorLibrary.classes
+          .firstWhere((c) => c.name == 'DocumentationErrors')
+            ..documentation;
+      withYouTubeWrongParams = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeWrongParams')
+            ..documentation;
+      withYouTubeBadWidth = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeBadWidth')
+            ..documentation;
+      withYouTubeBadHeight = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeBadHeight')
+            ..documentation;
+      withYouTubeInvalidUrl = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeInvalidUrl')
+            ..documentation;
+    });
+
+    test("warns on youtube video with missing parameters", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withYouTubeWrongParams,
+              PackageWarning.invalidParameter,
+              'Invalid @youtube directive, "{@youtube https://youtu.be/oHg5SJYRHA0}"\n'
+              'YouTube directives must be of the form "{@youtube WIDTH HEIGHT URL}"'),
+          isTrue);
+    });
+    test("warns on youtube video with non-integer width", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withYouTubeBadWidth,
+              PackageWarning.invalidParameter,
+              'A @youtube directive has an invalid width, "100px". The width '
+              'must be an integer.'),
+          isTrue);
+    });
+    test("warns on youtube video with non-integer height", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withYouTubeBadHeight,
+              PackageWarning.invalidParameter,
+              'A @youtube directive has an invalid height, "100px". The height '
+              'must be an integer.'),
+          isTrue);
+    });
+    test("warns on youtube video with invalid video URL", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withYouTubeInvalidUrl,
+              PackageWarning.invalidParameter,
+              'A @youtube directive has an invalid URL: '
+              '"http://host/path/to/video.mp4". Supported YouTube URLs have '
+              'one of the following formats: '
+              'https://www.youtube.com/watch?v=oHg5SJYRHA0, '
+              'https://youtu.be/oHg5SJYRHA0, or '
+              'https://www.youtube.com/embed/oHg5SJYRHA0'),
+          isTrue);
+    });
+  });
+
+  group('YouTube', () {
+    Class dog;
+    Method withYouTubeWatchUrl;
+    Method withYouTubeEmbedUrl;
+    Method withYouTubeShortUrl;
+    Method withYouTubeInOneLineDoc;
+    Method withYouTubeInline;
+
+    setUpAll(() {
+      dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
+      withYouTubeWatchUrl = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeWatchUrl');
+      withYouTubeEmbedUrl = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeEmbedUrl');
+      withYouTubeShortUrl = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeShortUrl');
+      withYouTubeInOneLineDoc = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeInOneLineDoc');
+      withYouTubeInline = dog.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeInline');
+    });
+
+    test("renders a YouTube video within the method documentation", () {
+      expect(withYouTubeWatchUrl.documentation,
+          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0"'));
+    });
+    test(
+        "renders a YouTube video with embeded URL within the method documentation",
+        () {
+      expect(withYouTubeEmbedUrl.documentation,
+          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0"'));
+    });
+    test(
+        "renders a YouTube video with short URL within the method documentation",
+        () {
+      expect(withYouTubeShortUrl.documentation,
+          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0"'));
+    });
+    test("Doesn't place YouTube video in one line doc", () {
+      expect(
+          withYouTubeInOneLineDoc.oneLineDoc,
+          isNot(contains(
+              '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0"')));
+      expect(withYouTubeInOneLineDoc.documentation,
+          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0"'));
+    });
+    test("Handles YouTube video inline properly", () {
+      // Make sure it doesn't have a double-space before the continued line,
+      // which would indicate to Markdown to indent the line.
+      expect(withYouTubeInline.documentation, isNot(contains('  works')));
+    });
+  });
+
   group('Animation Errors', () {
     Class documentationErrors;
     Method withInvalidNamedAnimation;
@@ -1790,7 +1910,7 @@ void main() {
     });
 
     test('get methods', () {
-      expect(Dog.publicInstanceMethods, hasLength(19));
+      expect(Dog.publicInstanceMethods, hasLength(24));
     });
 
     test('get operators', () {
@@ -1865,7 +1985,12 @@ void main() {
             'withNamedAnimation',
             'withPrivateMacro',
             'withQuotedNamedAnimation',
-            'withUndefinedMacro'
+            'withUndefinedMacro',
+            'withYouTubeEmbedUrl',
+            'withYouTubeWatchUrl',
+            'withYouTubeInline',
+            'withYouTubeInOneLineDoc',
+            'withYouTubeShortUrl',
           ]));
     });
 

@@ -3270,6 +3270,7 @@ abstract class ModelElement extends Canonicalization
       _rawDocs = documentationComment ?? '';
       _rawDocs = stripComments(_rawDocs) ?? '';
       _rawDocs = _injectExamples(_rawDocs);
+      _rawDocs = _injectYouTube(_rawDocs);
       _rawDocs = _injectAnimations(_rawDocs);
       _rawDocs = _stripHtmlAndAddToIndex(_rawDocs);
     }
@@ -3291,6 +3292,7 @@ abstract class ModelElement extends Canonicalization
       // Must evaluate tools first, in case they insert any other directives.
       _rawDocs = await _evaluateTools(_rawDocs);
       _rawDocs = _injectExamples(_rawDocs);
+      _rawDocs = _injectYouTube(_rawDocs);
       _rawDocs = _injectAnimations(_rawDocs);
       _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
       _rawDocs = _stripHtmlAndAddToIndex(_rawDocs);
@@ -4052,6 +4054,107 @@ abstract class ModelElement extends Canonicalization
     } else {
       return rawDocs;
     }
+  }
+
+  /// Replace &#123;@youtube ...&#125; in API comments with some HTML to embed
+  /// a YouTube video.
+  ///
+  /// Syntax:
+  ///
+  ///     &#123;@youtube WIDTH HEIGHT URL&#125;
+  ///
+  /// Example:
+  ///
+  ///     &#123;@youtube 560 315 https://www.youtube.com/watch?v=oHg5SJYRHA0&#125;
+  ///
+  /// Which will embed a YouTube player into the page that plays the specified
+  /// videos.
+  ///
+  /// The width and height must be integers specifying the dimensions of the
+  /// video in pixels.
+  ///
+  /// The following YouTube URL formats are supported:
+  ///
+  ///  * https://www.youtube.com/watch?v=oHg5SJYRHA0 (as shown in the browser's
+  ///    address bar)
+  ///  * https://youtu.be/oHg5SJYRHA0 (as shown in the "Share" dialog)
+  ///  * https://www.youtube.com/embed/oHg5SJYRHA0 (as shown in the "Share ->
+  ///    Embed" dialog)
+  String _injectYouTube(String rawDocs) {
+    // Matches all youtube directives (even some invalid ones). This is so
+    // we can give good error messages if the directive is malformed, instead of
+    // just silently emitting it as-is.
+    final RegExp basicAnimationRegExp = new RegExp(r'''{@youtube\s+([^}]+)}''');
+
+    // Matches YouTube IDs from supported YouTube URLs.
+    final RegExp validYouTubeUrlRegExp = new RegExp(
+        'https://((youtu\.be/)|(www\.youtube\.com/((watch\\?v=)|(embed/))))(.+)');
+
+    return rawDocs.replaceAllMapped(basicAnimationRegExp, (basicMatch) {
+      final ArgParser parser = new ArgParser();
+      final ArgResults args = _parseArgs(basicMatch[1], parser, 'youtube');
+      if (args == null) {
+        // Already warned about an invalid parameter if this happens.
+        return '';
+      }
+      final List<String> positionalArgs = args.rest.sublist(0);
+      if (positionalArgs.length != 3) {
+        warn(PackageWarning.invalidParameter,
+            message: 'Invalid @youtube directive, "${basicMatch[0]}"\n'
+                'YouTube directives must be of the form "{@youtube WIDTH '
+                'HEIGHT URL}"');
+        return '';
+      }
+
+      int width;
+      try {
+        width = int.parse(positionalArgs[0]);
+      } on FormatException {
+        warn(PackageWarning.invalidParameter,
+            message: 'A @youtube directive has an invalid width, '
+                '"${positionalArgs[0]}". The width must be an integer.');
+        return '';
+      }
+
+      int height;
+      try {
+        height = int.parse(positionalArgs[1]);
+      } on FormatException {
+        warn(PackageWarning.invalidParameter,
+            message: 'A @youtube directive has an invalid height, '
+                '"${positionalArgs[1]}". The height must be an integer.');
+        return '';
+      }
+
+      final Match url = validYouTubeUrlRegExp.firstMatch(positionalArgs[2]);
+      if (url == null) {
+        warn(PackageWarning.invalidParameter,
+            message: 'A @youtube directive has an invalid URL: '
+                '"${positionalArgs[2]}". Supported YouTube URLs have one of '
+                'the following formats: '
+                'https://www.youtube.com/watch?v=oHg5SJYRHA0, '
+                'https://youtu.be/oHg5SJYRHA0, or '
+                'https://www.youtube.com/embed/oHg5SJYRHA0');
+        return '';
+      }
+      final String youTubeId = url.group(url.groupCount);
+
+      // Blank lines before and after, and no indenting at the beginning and end
+      // is needed so that Markdown doesn't confuse this with code, so be
+      // careful of whitespace here.
+      return '''
+
+<iframe src="https://www.youtube.com/embed/$youTubeId"
+        width="$width" 
+        height="$height" 
+        frameborder="0"
+        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen>
+</iframe>
+
+'''; // String must end at beginning of line, or following inline text will be
+      // indented.
+    });
   }
 
   /// Replace &#123;@animation ...&#125; in API comments with some HTML to manage an
