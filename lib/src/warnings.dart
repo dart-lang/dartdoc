@@ -396,7 +396,6 @@ class PackageWarningCounter {
   bool hasWarning(Warnable element, PackageWarning kind, String message) {
     Tuple2<PackageWarning, String> warningData = new Tuple2(kind, message);
     if (countedWarnings.containsKey(element?.element)) {
-      print(countedWarnings[element?.element]);
       return countedWarnings[element?.element].contains(warningData);
     }
     return false;
