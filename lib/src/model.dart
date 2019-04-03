@@ -4073,7 +4073,8 @@ abstract class ModelElement extends Canonicalization
   /// The width and height must be positive integers specifying the dimensions
   /// of the video in pixels. The height and width are used to calculate the
   /// aspect ratio of the video; the video is always rendered to take up all
-  /// available horizontal space.
+  /// available horizontal space to accommodate different screen sizes on
+  /// desktop and mobile.
   ///
   /// The video URL must have the following format:
   /// https://www.youtube.com/watch?v=oHg5SJYRHA0. This format can usually be
