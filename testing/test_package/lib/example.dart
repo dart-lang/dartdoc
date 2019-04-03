@@ -356,7 +356,7 @@ class Dog implements Cat, E {
 
   /// YouTube video method
   ///
-  /// {@youtube 100 100 https://www.youtube.com/watch?v=oHg5SJYRHA0}
+  /// {@youtube 560 315 https://www.youtube.com/watch?v=oHg5SJYRHA0}
   /// More docs
   void withYouTubeWatchUrl() {}
 

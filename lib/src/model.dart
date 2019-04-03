@@ -4068,13 +4068,16 @@ abstract class ModelElement extends Canonicalization
   ///     &#123;@youtube 560 315 https://www.youtube.com/watch?v=oHg5SJYRHA0&#125;
   ///
   /// Which will embed a YouTube player into the page that plays the specified
-  /// videos.
+  /// video.
   ///
   /// The width and height must be positive integers specifying the dimensions
-  /// of the video in pixels. The video URL must have the following format:
-  /// https://www.youtube.com/watch?v=oHg5SJYRHA0. When viewing a YouTube video
-  /// in a browser, the URL shown in the browser's address bar has the correct
-  /// format and can be copied to be used in this directive.
+  /// of the video in pixels. The height and width are used to calculate the
+  /// aspect ratio of the video; the video is always rendered to take up all
+  /// available horizontal space.
+  ///
+  /// The video URL must have the following format:
+  /// https://www.youtube.com/watch?v=oHg5SJYRHA0. This format can usually be
+  /// found in the address bar of the browser when viewing a YouTube video.
   String _injectYouTube(String rawDocs) {
     // Matches all youtube directives (even some invalid ones). This is so
     // we can give good error messages if the directive is malformed, instead of
@@ -4124,21 +4127,30 @@ abstract class ModelElement extends Canonicalization
         return '';
       }
       final String youTubeId = url.group(url.groupCount);
+      final String aspectRatio = (height / width * 100).toStringAsFixed(2);
 
       // Blank lines before and after, and no indenting at the beginning and end
       // is needed so that Markdown doesn't confuse this with code, so be
       // careful of whitespace here.
       return '''
 
-<p>
+<div style="position: relative;
+            padding-top: $aspectRatio%;">
   <iframe src="https://www.youtube.com/embed/$youTubeId?rel=0"
-          width="$width"
-          height="$height"
           frameborder="0"
-          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen>
+          allow="accelerometer;
+                 autoplay;
+                 encrypted-media;
+                 gyroscope;
+                 picture-in-picture"
+          allowfullscreen
+          style="position: absolute;
+                 top: 0;
+                 left: 0;
+                 width: 100%;
+                 height: 100%;">
   </iframe>
-</p>
+</div>
 
 '''; // String must end at beginning of line, or following inline text will be
       // indented.

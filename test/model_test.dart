@@ -993,9 +993,11 @@ void main() {
           .firstWhere((m) => m.name == 'withYouTubeInline');
     });
 
-    test("renders a YouTube video within the method documentation", () {
+    test("renders a YouTube video within the method documentation with correct aspect ratio", () {
       expect(withYouTubeWatchUrl.documentation,
           contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"'));
+      // Video is 560x315, which means height is 56.25% of width.
+      expect(withYouTubeWatchUrl.documentation, contains('padding-top: 56.25%;'));
     });
     test("Doesn't place YouTube video in one line doc", () {
       expect(
