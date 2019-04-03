@@ -4,6 +4,34 @@ library doc_errors;
 // This is the place to put documentation that has errors in it:
 // This package is expected to fail.
 abstract class DocumentationErrors {
+  /// Malformed YouTube video method with wrong parameters
+  ///
+  /// {@youtube https://youtu.be/oHg5SJYRHA0}
+  /// More docs
+  void withYouTubeWrongParams() {}
+
+  /// Malformed YouTube video method with non-integer width
+  ///
+  /// {@youtube 100px 100 https://youtu.be/oHg5SJYRHA0}
+  /// More docs
+  void withYouTubeBadWidth() {}
+
+  /// Malformed YouTube video method with non-integer height
+  ///
+  /// {@youtube 100 100px https://youtu.be/oHg5SJYRHA0}
+  /// More docs
+  void withYouTubeBadHeight() {}
+
+  /// YouTube video with an invalid URL.
+  ///
+  /// {@youtube 100 100 http://host/path/to/video.mp4}
+  void withYouTubeInvalidUrl() {}
+
+  /// YouTube video with extra parameters in URL.
+  ///
+  /// {@youtube 100 100 https://www.youtube.com/watch?v=yI-8QHpGIP4&list=PLjxrf2q8roU23XGwz3Km7sQZFTdB996iG&index=5}
+  void withYouTubeUrlWithAdditionalParameters() {}
+
   /// Animation method with invalid name
   ///
   /// {@animation 100 100 http://host/path/to/video.mp4 id=2isNot-A-ValidName}

@@ -1,3 +1,7 @@
+## 0.28.3
+* Support a new `{@youtube}` directive in documentation comments to embed
+  YouTube videos.
+
 ## 0.28.2
 * Add empty CSS classes in spans around the names of entities so Dashing can pick
   them up.  (flutter/flutter#27654, #1929)
