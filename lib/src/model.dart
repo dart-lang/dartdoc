@@ -4134,8 +4134,8 @@ abstract class ModelElement extends Canonicalization
       // careful of whitespace here.
       return '''
 
-<div style="position: relative;
-            padding-top: $aspectRatio%;">
+<p style="position: relative;
+          padding-top: $aspectRatio%;">
   <iframe src="https://www.youtube.com/embed/$youTubeId?rel=0"
           frameborder="0"
           allow="accelerometer;
@@ -4150,7 +4150,7 @@ abstract class ModelElement extends Canonicalization
                  width: 100%;
                  height: 100%;">
   </iframe>
-</div>
+</p>
 
 '''; // String must end at beginning of line, or following inline text will be
       // indented.
