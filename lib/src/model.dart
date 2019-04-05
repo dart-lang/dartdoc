@@ -38,7 +38,7 @@ import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart' hide AnalysisResult;
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/resolver.dart'
-    show Namespace, NamespaceBuilder, InheritanceManager;
+    show Namespace, NamespaceBuilder, InheritanceManager; // ignore: deprecated_member_use
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
@@ -1043,9 +1043,9 @@ class Class extends ModelElement
   List<ExecutableElement> get _inheritedElements {
     if (__inheritedElements == null) {
       Map<String, ExecutableElement> cmap = definingLibrary.inheritanceManager
-          .getMembersInheritedFromClasses(element);
+          .getMembersInheritedFromClasses(element); // ignore: deprecated_member_use
       Map<String, ExecutableElement> imap = definingLibrary.inheritanceManager
-          .getMembersInheritedFromInterfaces(element);
+          .getMembersInheritedFromInterfaces(element); // ignore: deprecated_member_use
       __inheritedElements = new List.from(cmap.values)
         ..addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
     }
@@ -1515,7 +1515,7 @@ abstract class Canonicalization implements Locatable, Documentable {
     // Penalty for deprecated libraries.
     if (lib.isDeprecated) scoredCandidate.alterScore(-1.0, 'is deprecated');
     // Give a big boost if the library has the package name embedded in it.
-    if (lib.package.namePieces.intersection(lib.namePieces).length > 0) {
+    if (lib.package.namePieces.intersection(lib.namePieces).isEmpty) {
       scoredCandidate.alterScore(1.0, 'embeds package name');
     }
     // Give a tiny boost for libraries with long names, assuming they're
@@ -1523,7 +1523,7 @@ abstract class Canonicalization implements Locatable, Documentable {
     scoredCandidate.alterScore(.01 * lib.namePieces.length, 'name is long');
     // If we don't know the location of this element, return our best guess.
     // TODO(jcollins-g): is that even possible?
-    assert(!locationPieces.isEmpty);
+    assert(locationPieces.isNotEmpty);
     if (locationPieces.isEmpty) return scoredCandidate;
     // The more pieces we have of the location in our library name, the more we should boost our score.
     scoredCandidate.alterScore(
@@ -1928,7 +1928,7 @@ abstract class GetterSetterCombo implements ModelElement {
       } else if (hasPublicSetter) {
         _documentationFrom.addAll(setter.documentationFrom);
       }
-      if (_documentationFrom.length == 0 ||
+      if (_documentationFrom.isEmpty||
           _documentationFrom.every((e) => e.documentationComment == ''))
         _documentationFrom = computeDocumentationFrom;
     }
@@ -2376,9 +2376,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return '${package.baseHref}${library.dirName}/$fileName';
   }
 
+  // ignore: deprecated_member_use
   InheritanceManager _inheritanceManager;
+  // ignore: deprecated_member_use
   InheritanceManager get inheritanceManager {
     if (_inheritanceManager == null) {
+  // ignore: deprecated_member_use
       _inheritanceManager = new InheritanceManager(element);
     }
     return _inheritanceManager;
@@ -3363,7 +3366,7 @@ abstract class ModelElement extends Canonicalization
           // Avoid claiming canonicalization for elements outside of this element's
           // defining package.
           // TODO(jcollins-g): Make the else block unconditional.
-          if (!candidateLibraries.isEmpty &&
+          if (candidateLibraries.isNotEmpty &&
               !candidateLibraries
                   .any((l) => l.package == definingLibrary.package)) {
             warn(PackageWarning.reexportedPrivateApiAcrossPackages,
@@ -3814,7 +3817,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   String linkedParams(
-      {bool showMetadata: true, bool showNames: true, String separator: ', '}) {
+      {bool showMetadata = true, bool showNames = true, String separator = ', '}) {
     List<Parameter> requiredParams =
         parameters.where((Parameter p) => !p.isOptional).toList();
     List<Parameter> positionalParams =
@@ -3886,7 +3889,7 @@ abstract class ModelElement extends Canonicalization
   String _calculateLinkedName() {
     // If we're calling this with an empty name, we probably have the wrong
     // element associated with a ModelElement or there's an analysis bug.
-    assert(!name.isEmpty ||
+    assert(name.isNotEmpty ||
         (this.element is TypeDefiningElement &&
             (this.element as TypeDefiningElement).type.name == "dynamic") ||
         this is ModelFunction);
@@ -3935,7 +3938,7 @@ abstract class ModelElement extends Canonicalization
       var fragmentFile = new File(pathLib.join(dirPath, args['file']));
       if (fragmentFile.existsSync()) {
         replacement = fragmentFile.readAsStringSync();
-        if (!lang.isEmpty) {
+        if (lang.isNotEmpty) {
           replacement = replacement.replaceFirst('```', '```$lang');
         }
       } else {
@@ -4517,7 +4520,7 @@ abstract class ModelElement extends Canonicalization
     final fragExtension = '.md';
     var file = src + fragExtension;
     var region = args['region'] ?? '';
-    if (!region.isEmpty) {
+    if (region.isNotEmpty) {
       var dir = pathLib.dirname(src);
       var basename = pathLib.basenameWithoutExtension(src);
       var ext = pathLib.extension(src);
@@ -5241,7 +5244,7 @@ class PackageGraph {
       }
     }
 
-    if (!c._mixins.isEmpty) {
+    if (c._mixins.isNotEmpty) {
       c._mixins.forEach((t) {
         _checkAndAddClass(t.element, c);
       });
@@ -5249,7 +5252,7 @@ class PackageGraph {
     if (c.supertype != null) {
       _checkAndAddClass(c.supertype.element, c);
     }
-    if (!c.interfaces.isEmpty) {
+    if (c.interfaces.isNotEmpty) {
       c.interfaces.forEach((t) {
         _checkAndAddClass(t.element, c);
       });
@@ -6551,7 +6554,7 @@ class PackageBuilder {
     final UriResolver packageResolver = new PackageMapUriResolver(
         PhysicalResourceProvider.INSTANCE, packageMap);
     UriResolver sdkResolver;
-    if (embedderSdk == null || embedderSdk.urlMappings.length == 0) {
+    if (embedderSdk == null || embedderSdk.urlMappings.isEmpty) {
       // The embedder uri resolver has no mappings. Use the default Dart SDK
       // uri resolver.
       sdkResolver = new DartUriResolver(sdk);

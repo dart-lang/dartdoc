@@ -153,7 +153,7 @@ final RegExp _hide_schemes = new RegExp('^(http|https)://');
 class MatchingLinkResult {
   final ModelElement element;
   final bool warn;
-  MatchingLinkResult(this.element, {this.warn: true});
+  MatchingLinkResult(this.element, {this.warn = true});
 }
 
 class IterableBlockParser extends md.BlockParser {
@@ -933,7 +933,7 @@ class MarkdownDocument extends md.Document {
 
 class Documentation {
   final Canonicalization _element;
-  Documentation.forElement(this._element) {}
+  Documentation.forElement(this._element);
 
   bool _hasExtendedDocs;
   bool get hasExtendedDocs {

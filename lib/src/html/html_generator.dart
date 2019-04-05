@@ -128,7 +128,7 @@ class HtmlGeneratorOptions implements HtmlOptions {
       this.relCanonicalPrefix,
       this.faviconPath,
       String toolVersion,
-      this.prettyIndexJson: false})
+      this.prettyIndexJson = false})
       : this.toolVersion = toolVersion ?? 'unknown';
 }
 

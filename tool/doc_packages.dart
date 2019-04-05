@@ -60,7 +60,7 @@ ArgParser _createArgsParser() {
 }
 
 /// Print help if we are passed the help option or invalid arguments.
-void _printUsageAndExit(ArgParser parser, {int exitCode: 0}) {
+void _printUsageAndExit(ArgParser parser, {int exitCode = 0}) {
   print('Generate documentation for published pub packages.\n');
   print('Usage: _doc_packages [OPTIONS] <package1> <package2>\n');
   print(parser.usage);
@@ -194,8 +194,8 @@ Future<bool> _generateFor(PackageInfo package) async {
 
 Future _exec(String command, List<String> args,
     {String cwd,
-    bool quiet: false,
-    Duration timeout: const Duration(seconds: 60)}) {
+    bool quiet = false,
+    Duration timeout = const Duration(seconds: 60)}) {
   return Process.start(command, args, workingDirectory: cwd)
       .then((Process process) {
     if (!quiet) {
