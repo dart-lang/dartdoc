@@ -1,3 +1,6 @@
+## 0.28.3+1
+* Fix scroll physics and behavior for Safari on iOS.
+
 ## 0.28.3
 * Support a new `{@youtube}` directive in documentation comments to embed
   YouTube videos.
@@ -137,7 +140,7 @@
 ## 0.22.0
 * Documentation updates. (#1760)
 * Fix incompatibility with head analyzer (endsWith exception). (#1768)
-* Added the ability to run external tools on a section of documentation and 
+* Added the ability to run external tools on a section of documentation and
   replace it with the output of the tool.
 
 ## 0.21.1
