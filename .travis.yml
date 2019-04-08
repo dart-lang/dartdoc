@@ -12,8 +12,13 @@ env:
 script: ./tool/travis.sh
 
 os:
-  - osx
   - linux
+
+matrix:
+  include:
+  - env: DARTDOC_BOT=main
+    os: osx
+    dart: "dev/raw/latest"
 
 install:
 - ./tool/install_travis.sh
