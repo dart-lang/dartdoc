@@ -27,7 +27,7 @@ elif [ "$DARTDOC_BOT" = "flutter" ]; then
   pub run grinder validate-flutter-docs
 elif [ "$DARTDOC_BOT" = "packages" ]; then
   echo "Running packages dartdoc bot"
-  if [ ${DART_VERSION} != 2.0.0 ] ; then
+  if [ ${DART_VERSION} != 2.2.0 ] ; then
     PACKAGE_NAME=angular PACKAGE_VERSION=">=5.1.0" DARTDOC_PARAMS="--include=angular,angular.security" pub run grinder build-pub-package
   else
     PACKAGE_NAME=angular PACKAGE_VERSION=">=5.0.0-beta <5.1.0" DARTDOC_PARAMS="--include=angular,angular.security" pub run grinder build-pub-package
