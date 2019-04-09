@@ -242,7 +242,7 @@ class SubprocessLauncher {
 
   // from flutter:dev/tools/dartdoc.dart, modified
   static Future<void> _printStream(Stream<List<int>> stream, Stdout output,
-      {String prefix: '', Iterable<String> Function(String line) filter}) {
+      {String prefix = '', Iterable<String> Function(String line) filter}) {
     assert(prefix != null);
     if (filter == null) filter = (line) => [line];
     return stream
@@ -273,7 +273,7 @@ class SubprocessLauncher {
   Future<Iterable<Map>> runStreamed(String executable, List<String> arguments,
       {String workingDirectory,
       Map<String, String> environment,
-      bool includeParentEnvironment: true,
+      bool includeParentEnvironment = true,
       void Function(String) perLine}) async {
     environment ??= {};
     environment.addAll(environmentDefaults);

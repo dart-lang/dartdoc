@@ -657,7 +657,7 @@ abstract class DartdocOption<T> {
   }
 
   /// Apply the function [visit] to [this] and all children.
-  void traverse(void visit(DartdocOption)) {
+  void traverse(void visit(DartdocOption option)) {
     visit(this);
     _children.values.forEach((d) => d.traverse(visit));
   }
@@ -832,7 +832,7 @@ class DartdocOptionSet extends DartdocOption<Null> {
 
   /// Traverse skips this node, because it doesn't represent a real configuration object.
   @override
-  void traverse(void visitor(DartdocOption)) {
+  void traverse(void visitor(DartdocOption option)) {
     _children.values.forEach((d) => d.traverse(visitor));
   }
 }
@@ -884,12 +884,12 @@ class DartdocOptionArgFile<T> extends DartdocOption<T>
   DartdocOptionArgFile(String name, T defaultsTo,
       {String abbr,
       bool mustExist = false,
-      String help: '',
+      String help = '',
       bool hide = false,
       bool isDir = false,
       bool isFile = false,
       bool negatable = false,
-      bool parentDirOverridesChild: false,
+      bool parentDirOverridesChild = false,
       bool splitCommas})
       : super(name, defaultsTo, help, isDir, isFile, mustExist, null) {
     _abbr = abbr;
@@ -936,10 +936,10 @@ class DartdocOptionFileOnly<T> extends DartdocOption<T>
   bool _parentDirOverridesChild;
   DartdocOptionFileOnly(String name, T defaultsTo,
       {bool mustExist = false,
-      String help: '',
+      String help = '',
       bool isDir = false,
       bool isFile = false,
-      bool parentDirOverridesChild: false,
+      bool parentDirOverridesChild = false,
       T Function(YamlMap, pathLib.Context) convertYamlToType})
       : super(name, defaultsTo, help, isDir, isFile, mustExist,
             convertYamlToType) {

@@ -87,7 +87,7 @@ Set<String> specialLibraryFiles(DartSdk sdk) => _specialClassDefinitions.values
 class SpecialClasses {
   final Map<SpecialClass, Class> _specialClass = {};
 
-  SpecialClasses() {}
+  SpecialClasses();
 
   /// Add a class object that could be special.
   void addSpecial(Class aClass) {

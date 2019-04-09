@@ -36,7 +36,7 @@ String resolveTildePath(String originalPath) {
 ///
 /// The returned paths are guaranteed to begin with [dir].
 Iterable<String> listDir(String dir,
-    {bool recursive: false,
+    {bool recursive = false,
     Iterable<FileSystemEntity> listDir(Directory dir)}) {
   if (listDir == null) listDir = (Directory dir) => dir.listSync();
 

@@ -237,7 +237,7 @@ class WarningsCollection {
   final String branch;
   final String pubCachePath;
   WarningsCollection(this.tempDir, this.pubCachePath, this.branch)
-      : this.warningKeyCounts = new Map() {}
+      : this.warningKeyCounts = new Map();
 
   static const String kPubCachePathReplacement = '_xxxPubDirectoryxxx_';
   static const String kTempDirReplacement = '_xxxTempDirectoryxxx_';
@@ -943,7 +943,7 @@ Future<void> buildDartdocFlutterPluginDocs() async {
 @Task('Verify docs for a package that requires flutter with remote linking')
 Future<void> testDartdocFlutterPlugin() async {
   WarningsCollection warnings = await _buildDartdocFlutterPluginDocs();
-  if (!warnings.warningKeyCounts.isEmpty) {
+  if (warnings.warningKeyCounts.isNotEmpty) {
     fail('No warnings should exist in : ${warnings.warningKeyCounts}');
   }
   // Verify that links to Dart SDK and Flutter SDK go to the flutter site.

@@ -318,7 +318,7 @@ class GenericTypeAliasElementType extends TypeParameterElementType
     with GenericTypeAliasElementTypeMixin {
   GenericTypeAliasElementType(TypeParameterType t, PackageGraph packageGraph,
       ModelElement element, ElementType returnedFrom)
-      : super(t, packageGraph, element, returnedFrom) {}
+      : super(t, packageGraph, element, returnedFrom);
 }
 
 /// A Callable generic type alias that may or may not have a name.
