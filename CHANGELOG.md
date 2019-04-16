@@ -1,5 +1,6 @@
 ## 0.28.3+2
 * Support the latest version of `package:html`.
+* Use latest version of the markdown package.
 
 ## 0.28.3+1
 * Fix scroll physics and behavior for Safari on iOS.
