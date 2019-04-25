@@ -29,7 +29,8 @@ PackageGraph testPackageGraphSdk;
 
 final Directory testPackageBadDir = new Directory('testing/test_package_bad');
 final Directory testPackageDir = new Directory('testing/test_package');
-final Directory testPackageExperimentsDir = new Directory('testing/test_package_experiments');
+final Directory testPackageExperimentsDir =
+    new Directory('testing/test_package_experiments');
 final Directory testPackageMinimumDir =
     new Directory('testing/test_package_minimum');
 final Directory testPackageWithEmbedderYaml =
@@ -82,8 +83,8 @@ void init({List<String> additionalArguments}) async {
 
   testPackageGraphExperiments = await bootBasicPackage(
       'testing/test_package_experiments', [],
-      additionalArguments: additionalArguments + ['--enable-experiment', 'set-literals']
-  );
+      additionalArguments:
+          additionalArguments + ['--enable-experiment', 'set-literals']);
 
   testPackageGraphSmall = await bootBasicPackage(
       'testing/test_package_small', [],
@@ -206,8 +207,11 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       coverageResult = new Completer();
       // This must be added before awaiting in this method.
       coverageResults.add(coverageResult.future);
-      arguments = ['--enable-vm-service:0', '--pause-isolates-on-exit']
-        ..addAll(arguments);
+      arguments = [
+        '--disable-service-auth-codes',
+        '--enable-vm-service:0',
+        '--pause-isolates-on-exit'
+      ]..addAll(arguments);
       if (!environment.containsKey('DARTDOC_COVERAGE_DATA')) {
         environment['DARTDOC_COVERAGE_DATA'] = tempDir.path;
       }
