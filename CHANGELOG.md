@@ -1,3 +1,7 @@
+## 0.28.3+3
+* Fix code highlighting in Dart after string interpolation(#1946, #1948) by
+updating the highlightjs dependency.
+
 ## 0.28.3+2
 * Support the latest version of `package:html`.
 * Use latest version of the markdown package.
