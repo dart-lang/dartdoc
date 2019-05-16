@@ -1,6 +1,7 @@
 ## 0.28.3+3
 * Fix code highlighting in Dart after string interpolation(#1946, #1948) by
 updating the highlightjs dependency.
+* Fix indentation of inheritance info to match others
 
 ## 0.28.3+2
 * Support the latest version of `package:html`.
