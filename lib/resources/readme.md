@@ -7,11 +7,13 @@ Included languages:
 * bash
 * css
 * dart
+* html, xml
 * java
 * javascript
 * json
+* kotlin
 * markdown
-* ruby - dragged in by `yaml` - 🙄
+* objective-c
 * shell
-* xml - includes html
+* swift
 * yaml
