@@ -1237,7 +1237,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
     } else if (_isInt || _isDouble || _isString) {
       argParser.addOption(argName,
           abbr: abbr,
-          defaultsTo: defaultsTo?.toString() ?? null,
+          defaultsTo: defaultsTo?.toString(),
           help: help,
           hide: hide);
     } else if (_isListString || _isMapString) {
