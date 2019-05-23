@@ -113,6 +113,8 @@ class SourceLinker {
         case '%l%':
           return lineNumber.toString();
           break;
+        default:
+          return null;
       }
     });
   }
