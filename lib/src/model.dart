@@ -6013,8 +6013,14 @@ class Package extends LibraryContainer
   /// was not excluded on the command line.
   bool get isLocal {
     if (_isLocal == null) {
+      // Document embedder SDK packages only when they are in the same path as
+      // the main package.
+      final partOfEmbedderSdk = packageGraph.hasEmbedderSdk &&
+          packageMeta.isSdk &&
+          packageMeta.resolvedDir
+              .startsWith(packageGraph.packageMeta.resolvedDir);
       _isLocal = (packageMeta == packageGraph.packageMeta ||
-              packageGraph.hasEmbedderSdk && packageMeta.isSdk ||
+              partOfEmbedderSdk ||
               packageGraph.config.autoIncludeDependencies) &&
           !packageGraph.config.isPackageExcluded(name);
     }
