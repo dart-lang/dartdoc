@@ -26,7 +26,7 @@ import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
 
 /// Constants to help with type checking, because T is int and so forth
@@ -41,8 +41,7 @@ const bool _kBoolVal = true;
 /// Args are computed relative to the current directory at the time the
 /// program starts.
 final Directory directoryCurrent = Directory.current;
-final String directoryCurrentPath =
-    pathLib.canonicalize(Directory.current.path);
+final String directoryCurrentPath = p.canonicalize(Directory.current.path);
 
 class DartdocOptionError extends DartdocFailure {
   DartdocOptionError(String details) : super(details);
@@ -85,7 +84,7 @@ class CategoryConfiguration {
   }
 
   static CategoryConfiguration fromYamlMap(
-      YamlMap yamlMap, pathLib.Context pathContext) {
+      YamlMap yamlMap, p.Context pathContext) {
     Map<String, CategoryDefinition> newCategoryDefinitions = {};
     for (MapEntry entry in yamlMap.entries) {
       String name = entry.key.toString();
@@ -136,7 +135,7 @@ class ToolDefinition {
   /// Returns true if the given executable path has an extension recognized as a
   /// Dart extension (e.g. '.dart' or '.snapshot').
   static bool isDartExecutable(String executable) {
-    var extension = pathLib.extension(executable);
+    var extension = p.extension(executable);
     return extension == '.dart' || extension == '.snapshot';
   }
 
@@ -189,6 +188,7 @@ class ToolDefinition {
 ///
 class Snapshot {
   File _snapshotFile;
+
   File get snapshotFile => _snapshotFile;
   final Completer _snapshotCompleter = Completer();
 
@@ -199,7 +199,7 @@ class Snapshot {
       snapshotCompleted();
     } else {
       _snapshotFile =
-          File(pathLib.join(snapshotCache.absolute.path, 'snapshot_$serial'));
+          File(p.join(snapshotCache.absolute.path, 'snapshot_$serial'));
     }
   }
 
@@ -216,6 +216,7 @@ class Snapshot {
   }
 
   Future<void> snapshotValid() => _snapshotCompleter.future;
+
   void snapshotCompleted() => _snapshotCompleter.complete();
 }
 
@@ -294,6 +295,7 @@ class ToolConfiguration {
   final Map<String, ToolDefinition> tools;
 
   ToolRunner _runner;
+
   ToolRunner get runner => _runner ??= ToolRunner(this);
 
   ToolConfiguration._(this.tools);
@@ -303,8 +305,7 @@ class ToolConfiguration {
   }
 
   // TODO(jcollins-g): consider caching these.
-  static ToolConfiguration fromYamlMap(
-      YamlMap yamlMap, pathLib.Context pathContext) {
+  static ToolConfiguration fromYamlMap(YamlMap yamlMap, p.Context pathContext) {
     var newToolDefinitions = <String, ToolDefinition>{};
     for (var entry in yamlMap.entries) {
       var name = entry.key.toString();
@@ -428,14 +429,14 @@ class _OptionValueWithContext<T> {
   String definingFile;
 
   /// A [pathLib.Context] variable initialized with canonicalDirectoryPath.
-  pathLib.Context pathContext;
+  p.Context pathContext;
 
   /// Build a _OptionValueWithContext.
   /// [path] is the path where this value came from (not required to be canonical)
   _OptionValueWithContext(this.value, String path, {String definingFile}) {
     this.definingFile = definingFile;
-    canonicalDirectoryPath = pathLib.canonicalize(path);
-    pathContext = new pathLib.Context(current: canonicalDirectoryPath);
+    canonicalDirectoryPath = p.canonicalize(path);
+    pathContext = new p.Context(current: canonicalDirectoryPath);
   }
 
   /// Assume value is a path, and attempt to resolve it.  Throws [UnsupportedError]
@@ -502,7 +503,7 @@ abstract class DartdocOption<T> {
   }
 
   /// Closure to convert yaml data into some other structure.
-  T Function(YamlMap, pathLib.Context) _convertYamlToType;
+  T Function(YamlMap, p.Context) _convertYamlToType;
 
   // The choice not to use reflection means there's some ugly type checking,
   // somewhat more ugly than we'd have to do anyway to automatically convert
@@ -510,10 +511,15 @@ abstract class DartdocOption<T> {
   //
   // Condense the ugly all in one place, this set of getters.
   bool get _isString => _kStringVal is T;
+
   bool get _isListString => _kListStringVal is T;
+
   bool get _isMapString => _kMapStringVal is T;
+
   bool get _isBool => _kBoolVal is T;
+
   bool get _isInt => _kIntVal is T;
+
   bool get _isDouble => _kDoubleVal is T;
 
   DartdocOption _parent;
@@ -529,6 +535,7 @@ abstract class DartdocOption<T> {
       root.__yamlAtCanonicalPathCache;
 
   final ArgParser __argParser = new ArgParser();
+
   ArgParser get argParser => root.__argParser;
 
   ArgResults __argResults;
@@ -573,8 +580,9 @@ abstract class DartdocOption<T> {
   /// For a [List<String>] or [String] value, if [isDir] or [isFile] is set,
   /// resolve paths in value relative to canonicalPath.
   T _handlePathsInContext(_OptionValueWithContext valueWithContext) {
-    if (valueWithContext?.value == null || !(isDir || isFile))
+    if (valueWithContext?.value == null || !(isDir || isFile)) {
       return valueWithContext?.value;
+    }
     _validatePaths(valueWithContext);
     return valueWithContext.resolvedValue;
   }
@@ -583,6 +591,7 @@ abstract class DartdocOption<T> {
   /// children.
   void parseArguments(List<String> arguments) =>
       root._parseArguments(arguments);
+
   ArgResults get _argResults => root.__argResults;
 
   /// Set the parent of this [DartdocOption].  Do not call more than once.
@@ -631,14 +640,15 @@ abstract class DartdocOption<T> {
   T valueAtCurrent() => valueAt(directoryCurrent);
 
   /// Calls [valueAt] on the directory this element is defined in.
-  T valueAtElement(Element element) => valueAt(new Directory(
-      pathLib.canonicalize(pathLib.basename(element.source.fullName))));
+  T valueAtElement(Element element) => valueAt(
+      new Directory(p.canonicalize(p.basename(element.source.fullName))));
 
   /// Adds a DartdocOption to the children of this DartdocOption.
   void add(DartdocOption option) {
-    if (_children.containsKey(option.name))
+    if (_children.containsKey(option.name)) {
       throw new DartdocOptionError(
           'Tried to add two children with the same name: ${option.name}');
+    }
     _children[option.name] = option;
     option.parent = this;
     option.traverse((option) => option._onAdd());
@@ -670,13 +680,14 @@ class DartdocOptionFileSynth<T> extends DartdocOption<T>
   bool _parentDirOverridesChild;
   @override
   T Function(DartdocSyntheticOption<T>, Directory) _compute;
+
   DartdocOptionFileSynth(String name, this._compute,
       {bool mustExist = false,
       String help = '',
       bool isDir = false,
       bool isFile = false,
       bool parentDirOverridesChild,
-      T Function(YamlMap, pathLib.Context) convertYamlToType})
+      T Function(YamlMap, p.Context) convertYamlToType})
       : super(name, null, help, isDir, isFile, mustExist, convertYamlToType) {
     _parentDirOverridesChild = parentDirOverridesChild;
   }
@@ -715,6 +726,7 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
 
   @override
   T Function(DartdocSyntheticOption<T>, Directory) _compute;
+
   DartdocOptionArgSynth(String name, this._compute,
       {String abbr,
       bool mustExist = false,
@@ -747,8 +759,10 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
 
   @override
   String get abbr => _abbr;
+
   @override
   bool get hide => _hide;
+
   @override
   bool get negatable => _negatable;
 
@@ -765,6 +779,7 @@ class DartdocOptionSyntheticOnly<T> extends DartdocOption<T>
     with DartdocSyntheticOption<T> {
   @override
   T Function(DartdocSyntheticOption<T>, Directory) _compute;
+
   DartdocOptionSyntheticOnly(String name, this._compute,
       {bool mustExist = false,
       String help = '',
@@ -864,10 +879,13 @@ class DartdocOptionArgOnly<T> extends DartdocOption<T>
 
   @override
   String get abbr => _abbr;
+
   @override
   bool get hide => _hide;
+
   @override
   bool get negatable => _negatable;
+
   @override
   bool get splitCommas => _splitCommas;
 }
@@ -921,12 +939,16 @@ class DartdocOptionArgFile<T> extends DartdocOption<T>
 
   @override
   String get abbr => _abbr;
+
   @override
   bool get hide => _hide;
+
   @override
   bool get negatable => _negatable;
+
   @override
   bool get parentDirOverridesChild => _parentDirOverridesChild;
+
   @override
   bool get splitCommas => _splitCommas;
 }
@@ -934,13 +956,14 @@ class DartdocOptionArgFile<T> extends DartdocOption<T>
 class DartdocOptionFileOnly<T> extends DartdocOption<T>
     with _DartdocFileOption<T> {
   bool _parentDirOverridesChild;
+
   DartdocOptionFileOnly(String name, T defaultsTo,
       {bool mustExist = false,
       String help = '',
       bool isDir = false,
       bool isFile = false,
       bool parentDirOverridesChild = false,
-      T Function(YamlMap, pathLib.Context) convertYamlToType})
+      T Function(YamlMap, p.Context) convertYamlToType})
       : super(name, defaultsTo, help, isDir, isFile, mustExist,
             convertYamlToType) {
     _parentDirOverridesChild = parentDirOverridesChild;
@@ -973,7 +996,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
 
   void _onMissingFromFiles(
       _OptionValueWithContext valueWithContext, String missingPath) {
-    String dartdocYaml = pathLib.join(
+    String dartdocYaml = p.join(
         valueWithContext.canonicalDirectoryPath, valueWithContext.definingFile);
     throw new DartdocFileMissing(
         'Field ${fieldName} from ${dartdocYaml}, set to ${valueWithContext.value}, resolves to missing path: "${missingPath}"');
@@ -988,10 +1011,11 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   }
 
   final Map<String, T> __valueAtFromFiles = new Map();
+
   // The value of this option from files will not change unless files are
   // modified during execution (not allowed in Dartdoc).
   T _valueAtFromFiles(Directory dir) {
-    String key = pathLib.canonicalize(dir.path);
+    String key = p.canonicalize(dir.path);
     if (!__valueAtFromFiles.containsKey(key)) {
       _OptionValueWithContext valueWithContext;
       if (parentDirOverridesChild) {
@@ -1011,7 +1035,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
     _OptionValueWithContext value;
     while (true) {
       value = _valueAtFromFile(dir);
-      if (value != null || pathLib.equals(dir.parent.path, dir.path)) break;
+      if (value != null || p.equals(dir.parent.path, dir.path)) break;
       dir = dir.parent;
     }
     return value;
@@ -1025,7 +1049,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
     while (true) {
       _OptionValueWithContext tmpValue = _valueAtFromFile(dir);
       if (tmpValue != null) value = tmpValue;
-      if (pathLib.equals(dir.parent.path, dir.path)) break;
+      if (p.equals(dir.parent.path, dir.path)) break;
       dir = dir.parent;
     }
     return value;
@@ -1059,7 +1083,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
       // _OptionValueWithContext into the return data here, and would not have
       // that be separate.
       if (_isMapString && _convertYamlToType == null) {
-        _convertYamlToType = (YamlMap yamlMap, pathLib.Context pathContext) {
+        _convertYamlToType = (YamlMap yamlMap, p.Context pathContext) {
           var returnData = <String, String>{};
           for (MapEntry entry in yamlMap.entries) {
             returnData[entry.key.toString()] = entry.value.toString();
@@ -1071,9 +1095,9 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
         throw new DartdocOptionError(
             'Unable to convert yaml to type for option: $fieldName, method not defined');
       }
-      String canonicalDirectoryPath = pathLib.canonicalize(contextPath);
+      String canonicalDirectoryPath = p.canonicalize(contextPath);
       returnData = _convertYamlToType(
-          yamlData, new pathLib.Context(current: canonicalDirectoryPath));
+          yamlData, new p.Context(current: canonicalDirectoryPath));
     } else if (_isDouble) {
       if (yamlData is num) {
         returnData = yamlData.toDouble();
@@ -1090,7 +1114,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
   }
 
   _YamlFileData _yamlAtDirectory(Directory dir) {
-    List<String> canonicalPaths = [pathLib.canonicalize(dir.path)];
+    List<String> canonicalPaths = [p.canonicalize(dir.path)];
     if (!_yamlAtCanonicalPathCache.containsKey(canonicalPaths.first)) {
       _YamlFileData yamlData =
           new _YamlFileData(new Map(), directoryCurrentPath);
@@ -1099,16 +1123,16 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
 
         while (true) {
           dartdocOptionsFile =
-              new File(pathLib.join(dir.path, 'dartdoc_options.yaml'));
+              new File(p.join(dir.path, 'dartdoc_options.yaml'));
           if (dartdocOptionsFile.existsSync() ||
-              pathLib.equals(dir.parent.path, dir.path)) break;
+              p.equals(dir.parent.path, dir.path)) break;
           dir = dir.parent;
-          canonicalPaths.add(pathLib.canonicalize(dir.path));
+          canonicalPaths.add(p.canonicalize(dir.path));
         }
         if (dartdocOptionsFile.existsSync()) {
           yamlData = new _YamlFileData(
               loadYaml(dartdocOptionsFile.readAsStringSync()),
-              pathLib.canonicalize(dir.path));
+              p.canonicalize(dir.path));
         }
       }
       canonicalPaths.forEach((p) => _yamlAtCanonicalPathCache[p] = yamlData);
@@ -1265,6 +1289,7 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
 /// DartdocOptionContext mixins they use for calculating synthetic options.
 abstract class DartdocOptionContextBase {
   DartdocOptionSet get optionSet;
+
   Directory get context;
 }
 
@@ -1293,8 +1318,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
           directoryCurrentPath;
       context = new Directory(inputDir);
     } else {
-      context = new Directory(pathLib
-          .canonicalize(entity is File ? entity.parent.path : entity.path));
+      context = new Directory(
+          p.canonicalize(entity is File ? entity.parent.path : entity.path));
     }
   }
 
@@ -1321,34 +1346,51 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   // All values defined in createDartdocOptions should be exposed here.
   bool get allowTools => optionSet['allowTools'].valueAt(context);
+
   double get ambiguousReexportScorerMinConfidence =>
       optionSet['ambiguousReexportScorerMinConfidence'].valueAt(context);
+
   bool get autoIncludeDependencies =>
       optionSet['autoIncludeDependencies'].valueAt(context);
+
   List<String> get categoryOrder => optionSet['categoryOrder'].valueAt(context);
+
   CategoryConfiguration get categories =>
       optionSet['categories'].valueAt(context);
+
   List<String> get dropTextFrom => optionSet['dropTextFrom'].valueAt(context);
+
   String get examplePathPrefix =>
       optionSet['examplePathPrefix'].valueAt(context);
+
   List<String> get exclude => optionSet['exclude'].valueAt(context);
+
   List<String> get excludePackages =>
       optionSet['excludePackages'].valueAt(context);
 
   String get flutterRoot => optionSet['flutterRoot'].valueAt(context);
+
   bool get hideSdkText => optionSet['hideSdkText'].valueAt(context);
+
   List<String> get include => optionSet['include'].valueAt(context);
+
   List<String> get includeExternal =>
       optionSet['includeExternal'].valueAt(context);
+
   bool get includeSource => optionSet['includeSource'].valueAt(context);
+
   bool get injectHtml => optionSet['injectHtml'].valueAt(context);
+
   ToolConfiguration get tools => optionSet['tools'].valueAt(context);
 
   /// _input is only used to construct synthetic options.
   // ignore: unused_element
   String get _input => optionSet['input'].valueAt(context);
+
   String get inputDir => optionSet['inputDir'].valueAt(context);
+
   bool get linkToRemote => optionSet['linkTo']['remote'].valueAt(context);
+
   String get linkToUrl => optionSet['linkTo']['url'].valueAt(context);
 
   /// _linkToHosted is only used to construct synthetic options.
@@ -1356,19 +1398,28 @@ class DartdocOptionContext extends DartdocOptionContextBase
   String get _linkToHosted => optionSet['linkTo']['hosted'].valueAt(context);
 
   String get output => optionSet['output'].valueAt(context);
+
   PackageMeta get packageMeta => optionSet['packageMeta'].valueAt(context);
+
   List<String> get packageOrder => optionSet['packageOrder'].valueAt(context);
+
   bool get sdkDocs => optionSet['sdkDocs'].valueAt(context);
+
   String get sdkDir => optionSet['sdkDir'].valueAt(context);
+
   bool get showUndocumentedCategories =>
       optionSet['showUndocumentedCategories'].valueAt(context);
+
   PackageMeta get topLevelPackageMeta =>
       optionSet['topLevelPackageMeta'].valueAt(context);
+
   bool get useCategories => optionSet['useCategories'].valueAt(context);
+
   bool get validateLinks => optionSet['validateLinks'].valueAt(context);
 
   bool isLibraryExcluded(String name) =>
       exclude.any((pattern) => name == pattern);
+
   bool isPackageExcluded(String name) =>
       excludePackages.any((pattern) => name == pattern);
 }
@@ -1508,7 +1559,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
             help: 'Allow links to be generated for packages outside this one.',
             negatable: true),
       ]),
-    new DartdocOptionArgOnly<String>('output', pathLib.join('doc', 'api'),
+    new DartdocOptionArgOnly<String>('output', p.join('doc', 'api'),
         isDir: true, help: 'Path to output directory.'),
     new DartdocOptionSyntheticOnly<PackageMeta>(
       'packageMeta',
@@ -1537,7 +1588,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
           throw new DartdocOptionError(
               'Top level package requires Flutter but FLUTTER_ROOT environment variable not set');
         }
-        return pathLib.join(flutterRoot, 'bin', 'cache', 'dart-sdk');
+        return p.join(flutterRoot, 'bin', 'cache', 'dart-sdk');
       }
       return defaultSdkDir.absolute.path;
     }, help: 'Path to the SDK directory.', isDir: true, mustExist: true),

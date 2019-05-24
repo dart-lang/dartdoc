@@ -153,6 +153,7 @@ final RegExp _hide_schemes = new RegExp('^(http|https)://');
 class MatchingLinkResult {
   final ModelElement element;
   final bool warn;
+
   MatchingLinkResult(this.element, {this.warn = true});
 }
 
@@ -211,8 +212,9 @@ MatchingLinkResult _getMatchingLinkElement(
   }
 
   // Ignore all parameters.
-  if (refModelElement is Parameter || refModelElement is TypeParameter)
+  if (refModelElement is Parameter || refModelElement is TypeParameter) {
     return new MatchingLinkResult(null, warn: false);
+  }
 
   // There have been places in the code which helpfully cache entities
   // regardless of what package they are associated with.  This assert
@@ -433,9 +435,11 @@ class _MarkdownCommentReference {
   }
 
   List<String> _codeRefParts;
+
   List<String> get codeRefParts => _codeRefParts ??= codeRef.split('.');
 
   List<String> _codeRefChompedParts;
+
   List<String> get codeRefChompedParts =>
       _codeRefChompedParts ??= codeRefChomped.split('.');
 
@@ -933,9 +937,11 @@ class MarkdownDocument extends md.Document {
 
 class Documentation {
   final Canonicalization _element;
+
   Documentation.forElement(this._element);
 
   bool _hasExtendedDocs;
+
   bool get hasExtendedDocs {
     if (_hasExtendedDocs == null) {
       _renderHtmlForDartdoc(_element.isCanonical && _asHtml == null);
@@ -944,6 +950,7 @@ class Documentation {
   }
 
   String _asHtml;
+
   String get asHtml {
     if (_asHtml == null) {
       assert(_asOneLiner == null || _element.isCanonical);
@@ -953,6 +960,7 @@ class Documentation {
   }
 
   String _asOneLiner;
+
   String get asOneLiner {
     if (_asOneLiner == null) {
       assert(_asHtml == null);

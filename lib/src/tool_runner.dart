@@ -8,7 +8,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dartdoc/src/io_utils.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 import 'dartdoc_options.dart';
 
 typedef ToolErrorCallback = void Function(String message);
@@ -30,13 +30,15 @@ class ToolTempFileTracker {
             Directory.systemTemp.createTempSync('dartdoc_tools_');
 
   static ToolTempFileTracker _instance;
+
   static ToolTempFileTracker get instance =>
       _instance ??= ToolTempFileTracker._();
 
   int _temporaryFileCount = 0;
+
   Future<File> createTemporaryFile() async {
     _temporaryFileCount++;
-    File tempFile = new File(pathLib.join(
+    File tempFile = new File(path.join(
         temporaryDirectory.absolute.path, 'input_$_temporaryFileCount'));
     await tempFile.create(recursive: true);
     return tempFile;
@@ -188,8 +190,9 @@ class ToolRunner {
       argsWithInput.add(newArg);
     }
 
-    if (toolDefinition.setupCommand != null && !toolDefinition.setupComplete)
+    if (toolDefinition.setupCommand != null && !toolDefinition.setupComplete) {
       await _runSetup(tool, toolDefinition, envWithInput, toolErrorCallback);
+    }
 
     argsWithInput = toolArgs + argsWithInput;
     var commandPath;

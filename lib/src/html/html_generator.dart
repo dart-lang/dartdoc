@@ -15,7 +15,7 @@ import 'package:dartdoc/src/html/html_generator_instance.dart';
 import 'package:dartdoc/src/html/template_data.dart';
 import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/model.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 
 typedef String Renderer(String input);
 
@@ -84,7 +84,7 @@ class HtmlGenerator extends Generator {
       // docs somehow.  Check data.self.isCanonical and callers for bugs.
       assert(allowOverwrite || !writtenFiles.contains(filePath));
 
-      var file = new File(pathLib.join(outputDirectoryPath, filePath));
+      var file = new File(path.join(outputDirectoryPath, filePath));
       var parent = file.parent;
       if (!parent.existsSync()) {
         parent.createSync(recursive: true);
@@ -209,7 +209,7 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
         // TODO(jcollins-g): Eliminate special casing for SDK and use config file.
         if (topLevelPackageMeta.isSdk == true) {
           footerTextPaths
-              .add(pathLib.canonicalize(_sdkFooterCopyrightUri.toFilePath()));
+              .add(path.canonicalize(_sdkFooterCopyrightUri.toFilePath()));
         }
         footerTextPaths.addAll(option.parent['footerText'].valueAt(dir));
         return footerTextPaths;

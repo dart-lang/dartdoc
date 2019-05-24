@@ -12,7 +12,7 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import 'src/utils.dart';
@@ -70,8 +70,8 @@ void main() {
 
       test('generator parameters', () async {
         File favicon = new File(
-            pathLib.joinAll([tempDir.path, 'static-assets', 'favicon.png']));
-        File index = new File(pathLib.joinAll([tempDir.path, 'index.html']));
+            path.joinAll([tempDir.path, 'static-assets', 'favicon.png']));
+        File index = new File(path.joinAll([tempDir.path, 'index.html']));
         expect(favicon.readAsStringSync(),
             contains('Not really a png, but a test file'));
         String indexString = index.readAsStringSync();
@@ -250,7 +250,7 @@ void main() {
         tempDir.deleteSync(recursive: true);
       });
 
-      test('generate docs for ${pathLib.basename(testPackageDir.path)} works',
+      test('generate docs for ${path.basename(testPackageDir.path)} works',
           () async {
         expect(results.packageGraph, isNotNull);
         PackageGraph packageGraph = results.packageGraph;
@@ -265,7 +265,7 @@ void main() {
       test('source code links are visible', () async {
         // Picked this object as this library explicitly should never contain
         // a library directive, so we can predict what line number it will be.
-        File anonymousOutput = new File(pathLib.join(tempDir.path,
+        File anonymousOutput = new File(path.join(tempDir.path,
             'anonymous_library', 'anonymous_library-library.html'));
         expect(anonymousOutput.existsSync(), isTrue);
         expect(
@@ -275,7 +275,7 @@ void main() {
       });
     });
 
-    test('generate docs for ${pathLib.basename(testPackageBadDir.path)} fails',
+    test('generate docs for ${path.basename(testPackageBadDir.path)} fails',
         () async {
       Dartdoc dartdoc = await buildDartdoc([], testPackageBadDir, tempDir);
 

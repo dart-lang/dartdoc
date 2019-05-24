@@ -226,8 +226,9 @@ bool _isOldSdkConstraint(var pubspecInfo) {
     if (sdk != null) {
       VersionConstraint constraint = new VersionConstraint.parse(sdk);
       String version = Platform.version;
-      if (version.contains(' '))
+      if (version.contains(' ')) {
         version = version.substring(0, version.indexOf(' '));
+      }
       if (!constraint.allows(new Version.parse(version))) {
         _log('sdk constraint = ${constraint}');
         return true;
