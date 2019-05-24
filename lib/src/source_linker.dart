@@ -59,12 +59,12 @@ class SourceLinker {
   /// Most users of this class should use the [SourceLinker.fromElement] factory
   /// instead.  This constructor is public for testing.
   SourceLinker(
-      {List<String> this.excludes,
-      int this.lineNumber,
-      String this.sourceFileName,
-      String this.revision,
-      String this.root,
-      String this.uriTemplate}) {
+      {this.excludes,
+      this.lineNumber,
+      this.sourceFileName,
+      this.revision,
+      this.root,
+      this.uriTemplate}) {
     assert(excludes != null, 'linkToSource excludes can not be null');
     if (revision != null || root != null || uriTemplate != null) {
       if (root == null || uriTemplate == null) {
