@@ -8,7 +8,7 @@ library dartdoc.io_utils;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 
 /// Return a resolved path including the home directory in place of tilde
 /// references.
@@ -20,12 +20,12 @@ String resolveTildePath(String originalPath) {
   String homeDir;
 
   if (Platform.isWindows) {
-    homeDir = pathLib.absolute(Platform.environment['USERPROFILE']);
+    homeDir = path.absolute(Platform.environment['USERPROFILE']);
   } else {
-    homeDir = pathLib.absolute(Platform.environment['HOME']);
+    homeDir = path.absolute(Platform.environment['HOME']);
   }
 
-  return pathLib.join(homeDir, originalPath.substring(2));
+  return path.join(homeDir, originalPath.substring(2));
 }
 
 /// Lists the contents of [dir].
@@ -53,7 +53,7 @@ Iterable<String> _doList(String dir, Set<String> listedDirectories,
 
     for (var entity in listDir(new Directory(dir))) {
       // Skip hidden files and directories
-      if (pathLib.basename(entity.path).startsWith('.')) {
+      if (path.basename(entity.path).startsWith('.')) {
         continue;
       }
 

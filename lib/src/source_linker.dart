@@ -7,17 +7,20 @@ library dartdoc.source_linker;
 
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 
 final uriTemplateRegexp = new RegExp(r'(%[frl]%)');
 
 abstract class SourceLinkerOptionContext implements DartdocOptionContextBase {
   List<String> get linkToSourceExcludes =>
       optionSet['linkToSource']['excludes'].valueAt(context);
+
   String get linkToSourceRevision =>
       optionSet['linkToSource']['revision'].valueAt(context);
+
   String get linkToSourceRoot =>
       optionSet['linkToSource']['root'].valueAt(context);
+
   String get linkToSourceUriTemplate =>
       optionSet['linkToSource']['uriTemplate'].valueAt(context);
 }
@@ -94,18 +97,20 @@ class SourceLinker {
   }
 
   String href() {
-    if (sourceFileName == null || root == null || uriTemplate == null)
+    if (sourceFileName == null || root == null || uriTemplate == null) {
       return '';
-    if (!pathLib.isWithin(root, sourceFileName) ||
+    }
+    if (!path.isWithin(root, sourceFileName) ||
         excludes
-            .any((String exclude) => pathLib.isWithin(exclude, sourceFileName)))
+            .any((String exclude) => path.isWithin(exclude, sourceFileName))) {
       return '';
+    }
     return uriTemplate.replaceAllMapped(uriTemplateRegexp, (match) {
       switch (match[1]) {
         case '%f%':
-          var urlContext = new pathLib.Context(style: pathLib.Style.url);
-          return urlContext.joinAll(
-              pathLib.split(pathLib.relative(sourceFileName, from: root)));
+          var urlContext = new path.Context(style: path.Style.url);
+          return urlContext
+              .joinAll(path.split(path.relative(sourceFileName, from: root)));
           break;
         case '%r%':
           return revision;

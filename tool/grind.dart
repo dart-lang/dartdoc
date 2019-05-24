@@ -8,7 +8,7 @@ import 'dart:io' hide ProcessException;
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:grinder/grinder.dart';
 import 'package:io/io.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart' as yaml;
 
 import '../test/src/utils.dart';
@@ -18,14 +18,16 @@ void main([List<String> args]) => grind(args);
 /// Thrown on failure to find something in a file.
 class GrindTestFailure {
   final String message;
+
   GrindTestFailure(this.message);
 }
 
 /// Kind of an inefficient grepper for now.
 void expectFileContains(String path, List<Pattern> items) {
   File source = new File(path);
-  if (!source.existsSync())
+  if (!source.existsSync()) {
     throw new GrindTestFailure('file not found: ${path}');
+  }
   for (Pattern item in items) {
     if (!new File(path).readAsStringSync().contains(item)) {
       throw new GrindTestFailure('Can not find ${item} in ${path}');
@@ -62,12 +64,12 @@ Future<FlutterRepo> get cleanFlutterRepo async {
     // it.
     await cleanFlutterDir.parent.create(recursive: true);
     assert(_lockFuture == null);
-    _lockFuture = new File(pathLib.join(cleanFlutterDir.parent.path, 'lock'))
+    _lockFuture = new File(path.join(cleanFlutterDir.parent.path, 'lock'))
         .openSync(mode: FileMode.write)
         .lock();
     await _lockFuture;
     File lastSynced =
-        new File(pathLib.join(cleanFlutterDir.parent.path, 'lastSynced'));
+        new File(path.join(cleanFlutterDir.parent.path, 'lastSynced'));
     FlutterRepo newRepo =
         new FlutterRepo.fromPath(cleanFlutterDir.path, {}, 'clean');
 
@@ -95,31 +97,38 @@ Future<FlutterRepo> get cleanFlutterRepo async {
 }
 
 Directory _dartdocDocsDir;
+
 Directory get dartdocDocsDir => _dartdocDocsDir ??= createTempSync('dartdoc');
 
 Directory _dartdocDocsDirRemote;
+
 Directory get dartdocDocsDirRemote =>
     _dartdocDocsDirRemote ??= createTempSync('dartdoc_remote');
 
 Directory _sdkDocsDir;
+
 Directory get sdkDocsDir => _sdkDocsDir ??= createTempSync('sdkdocs');
 
 Directory cleanFlutterDir = new Directory(
-    pathLib.join(resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
+    path.join(resolveTildePath('~/.dartdoc_grinder'), 'cleanFlutter'));
 
 Directory _flutterDir;
+
 Directory get flutterDir => _flutterDir ??= createTempSync('flutter');
 
 Directory get testPackage =>
-    new Directory(pathLib.joinAll(['testing', 'test_package']));
+    new Directory(path.joinAll(['testing', 'test_package']));
+
 Directory get pluginPackage =>
-    new Directory(pathLib.joinAll(['testing', 'test_package_flutter_plugin']));
+    new Directory(path.joinAll(['testing', 'test_package_flutter_plugin']));
 
 Directory _testPackageDocsDir;
+
 Directory get testPackageDocsDir =>
     _testPackageDocsDir ??= createTempSync('test_package');
 
 Directory _pluginPackageDocsDir;
+
 Directory get pluginPackageDocsDir =>
     _pluginPackageDocsDir ??= createTempSync('test_package_flutter_plugin');
 
@@ -149,14 +158,13 @@ List<String> get extraDartdocParameters {
 }
 
 final Directory flutterDirDevTools =
-    new Directory(pathLib.join(flutterDir.path, 'dev', 'tools'));
+    new Directory(path.join(flutterDir.path, 'dev', 'tools'));
 
 /// Creates a throwaway pub cache and returns the environment variables
 /// necessary to use it.
 Map<String, String> _createThrowawayPubCache() {
   final Directory pubCache = Directory.systemTemp.createTempSync('pubcache');
-  final Directory pubCacheBin =
-      new Directory(pathLib.join(pubCache.path, 'bin'));
+  final Directory pubCacheBin = new Directory(path.join(pubCache.path, 'bin'));
   pubCacheBin.createSync();
   return new Map.fromIterables([
     'PUB_CACHE',
@@ -173,6 +181,7 @@ final FilePath _mustache4dartDir =
     new FilePath('lib/src/third_party/pkg/mustache4dart');
 final RegExp _mustache4dartPatches =
     new RegExp(r'^\d\d\d-mustache4dart-.*[.]patch$');
+
 @Task('Update third_party forks')
 void updateThirdParty() async {
   run('rm', arguments: ['-rf', _mustache4dartDir.path]);
@@ -185,10 +194,10 @@ void updateThirdParty() async {
     'git@github.com:valotas/mustache4dart',
     _mustache4dartDir.path,
   ]);
-  run('rm', arguments: ['-rf', pathLib.join(_mustache4dartDir.path, '.git')]);
+  run('rm', arguments: ['-rf', path.join(_mustache4dartDir.path, '.git')]);
   for (String patchFileName in new Directory(_pkgDir.path)
       .listSync()
-      .map((e) => pathLib.basename(e.path))
+      .map((e) => path.basename(e.path))
       .where((String filename) => _mustache4dartPatches.hasMatch(filename))
       .toList()
         ..sort()) {
@@ -236,6 +245,7 @@ class WarningsCollection {
   final Map<String, int> warningKeyCounts;
   final String branch;
   final String pubCachePath;
+
   WarningsCollection(this.tempDir, this.pubCachePath, this.branch)
       : this.warningKeyCounts = new Map();
 
@@ -244,15 +254,17 @@ class WarningsCollection {
 
   String _toKey(String text) {
     String key = text.replaceAll(tempDir, kTempDirReplacement);
-    if (pubCachePath != null)
+    if (pubCachePath != null) {
       key = key.replaceAll(pubCachePath, kPubCachePathReplacement);
+    }
     return key;
   }
 
   String _fromKey(String text) {
     String key = text.replaceAll(kTempDirReplacement, tempDir);
-    if (pubCachePath != null)
+    if (pubCachePath != null) {
       key = key.replaceAll(kPubCachePathReplacement, pubCachePath);
+    }
     return key;
   }
 
@@ -394,7 +406,7 @@ Future<String> createSdkDartdoc() async {
     'https://dart.googlesource.com/sdk.git',
     sdkClone.path
   ]);
-  File dartdocPubspec = new File(pathLib.join(dartdocSdk.path, 'pubspec.yaml'));
+  File dartdocPubspec = new File(path.join(dartdocSdk.path, 'pubspec.yaml'));
   List<String> pubspecLines = await dartdocPubspec.readAsLines();
   List<String> pubspecLinesFiltered = [];
   for (String line in pubspecLines) {
@@ -443,7 +455,7 @@ Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
       Platform.resolvedExecutable,
       [
         '--enable-asserts',
-        pathLib.join('bin', 'dartdoc.dart'),
+        path.join('bin', 'dartdoc.dart'),
         '--output',
         '${sdkDocsPath}',
         '--sdk-docs',
@@ -469,7 +481,7 @@ Future<List<Map>> _buildTestPackageDocs(
       Platform.resolvedExecutable,
       [
         '--enable-asserts',
-        pathLib.join(cwd, 'bin', 'dartdoc.dart'),
+        path.join(cwd, 'bin', 'dartdoc.dart'),
         '--output',
         outputDir,
         '--example-path-prefix',
@@ -563,7 +575,7 @@ Future<void> compareFlutterWarnings() async {
       '--port',
       '9000',
       '--path',
-      pathLib.join(originalDartdocFlutter.absolute.path, 'dev', 'docs', 'doc'),
+      path.join(originalDartdocFlutter.absolute.path, 'dev', 'docs', 'doc'),
     ]);
     Future current = launcher.runStreamed(sdkBin('pub'), [
       'run',
@@ -571,7 +583,7 @@ Future<void> compareFlutterWarnings() async {
       '--port',
       '9001',
       '--path',
-      pathLib.join(flutterDir.absolute.path, 'dev', 'docs', 'doc'),
+      path.join(flutterDir.absolute.path, 'dev', 'docs', 'doc'),
     ]);
     await Future.wait([original, current]);
   }
@@ -589,7 +601,7 @@ Future<void> serveFlutterDocs() async {
     '--port',
     '8001',
     '--path',
-    pathLib.join(flutterDir.path, 'dev', 'docs', 'doc'),
+    path.join(flutterDir.path, 'dev', 'docs', 'doc'),
   ]);
 }
 
@@ -603,9 +615,9 @@ Future<void> buildFlutterDocs() async {
   Map<String, String> env = _createThrowawayPubCache();
   await _buildFlutterDocs(
       flutterDir.path, new Future.value(Directory.current.path), env, 'docs');
-  String index = new File(
-          pathLib.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
-      .readAsStringSync();
+  String index =
+      new File(path.join(flutterDir.path, 'dev', 'docs', 'doc', 'index.html'))
+          .readAsStringSync();
   stdout.write(index);
 }
 
@@ -613,15 +625,14 @@ Future<void> buildFlutterDocs() async {
 class FlutterRepo {
   final String flutterPath;
   final Map<String, String> env;
-  final String bin = pathLib.join('bin', 'flutter');
+  final String bin = path.join('bin', 'flutter');
 
   FlutterRepo._(this.flutterPath, this.env, String label) {
     cacheDart =
-        pathLib.join(flutterPath, 'bin', 'cache', 'dart-sdk', 'bin', 'dart');
-    cachePub =
-        pathLib.join(flutterPath, 'bin', 'cache', 'dart-sdk', 'bin', 'pub');
+        path.join(flutterPath, 'bin', 'cache', 'dart-sdk', 'bin', 'dart');
+    cachePub = path.join(flutterPath, 'bin', 'cache', 'dart-sdk', 'bin', 'pub');
     env['PATH'] =
-        '${pathLib.join(pathLib.canonicalize(flutterPath), "bin")}:${env['PATH'] ?? Platform.environment['PATH']}';
+        '${path.join(path.canonicalize(flutterPath), "bin")}:${env['PATH'] ?? Platform.environment['PATH']}';
     env['FLUTTER_ROOT'] = flutterPath;
     launcher =
         new SubprocessLauncher('flutter${label == null ? "" : "-$label"}', env);
@@ -685,19 +696,19 @@ Future<List<Map>> _buildFlutterDocs(
   await flutterRepo.launcher.runStreamed(
     flutterRepo.cachePub,
     ['get'],
-    workingDirectory: pathLib.join(flutterPath, 'dev', 'tools'),
+    workingDirectory: path.join(flutterPath, 'dev', 'tools'),
   );
   await flutterRepo.launcher.runStreamed(
     flutterRepo.cachePub,
     ['get'],
-    workingDirectory: pathLib.join(flutterPath, 'dev', 'snippets'),
+    workingDirectory: path.join(flutterPath, 'dev', 'snippets'),
   );
   await flutterRepo.launcher.runStreamed(
       flutterRepo.cachePub, ['global', 'activate', '-spath', '.'],
       workingDirectory: await futureCwd);
   return await flutterRepo.launcher.runStreamed(
     flutterRepo.cacheDart,
-    [pathLib.join('dev', 'tools', 'dartdoc.dart'), '-c', '--json'],
+    [path.join('dev', 'tools', 'dartdoc.dart'), '-c', '--json'],
     workingDirectory: flutterPath,
   );
 }
@@ -714,8 +725,8 @@ Future<String> _buildPubPackageDocs(
   if (version != null) args.addAll(<String>['-v', version]);
   args.add(pubPackageName);
   await launcher.runStreamed('pub', args);
-  Directory cache = new Directory(
-      pathLib.join(env['PUB_CACHE'], 'hosted', 'pub.dartlang.org'));
+  Directory cache =
+      new Directory(path.join(env['PUB_CACHE'], 'hosted', 'pub.dartlang.org'));
   Directory pubPackageDir =
       cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
   await launcher.runStreamed('pub', ['get'],
@@ -724,12 +735,12 @@ Future<String> _buildPubPackageDocs(
       Platform.resolvedExecutable,
       [
         '--enable-asserts',
-        pathLib.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+        path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
         '--json',
         '--show-progress',
       ]..addAll(dartdocParameters),
       workingDirectory: pubPackageDir.absolute.path);
-  return pathLib.join(pubPackageDir.absolute.path, 'doc', 'api');
+  return path.join(pubPackageDir.absolute.path, 'doc', 'api');
 }
 
 @Task(
@@ -795,7 +806,7 @@ final _generated_files_list = <String>[
   '../dartdoc_options.yaml',
   'src/html/resources.g.dart',
   'src/version.dart',
-].map((s) => pathLib.joinAll(pathLib.posix.split(s)));
+].map((s) => path.joinAll(path.posix.split(s)));
 
 @Task('Verify generated files are up to date')
 Future<void> checkBuild() async {
@@ -805,7 +816,7 @@ Future<void> checkBuild() async {
   // Load original file contents into memory before running the builder;
   // it modifies them in place.
   for (String relPath in _generated_files_list) {
-    String origPath = pathLib.joinAll(['lib', relPath]);
+    String origPath = path.joinAll(['lib', relPath]);
     File oldVersion = new File(origPath);
     if (oldVersion.existsSync()) {
       originalFileContents[relPath] = oldVersion.readAsStringSync();
@@ -814,7 +825,7 @@ Future<void> checkBuild() async {
 
   await build();
   for (String relPath in _generated_files_list) {
-    File newVersion = new File(pathLib.join('lib', relPath));
+    File newVersion = new File(path.join('lib', relPath));
     if (!await newVersion.exists()) {
       log('${newVersion.path} does not exist\n');
       differentFiles.add(relPath);
@@ -827,7 +838,7 @@ Future<void> checkBuild() async {
 
   if (differentFiles.isNotEmpty) {
     fail('The following generated files needed to be rebuilt:\n'
-        '  ${differentFiles.map((f) => pathLib.join('lib', f)).join("\n  ")}\n'
+        '  ${differentFiles.map((f) => path.join('lib', f)).join("\n  ")}\n'
         'Rebuild them with "grind build" and check the results in.');
   }
 }
@@ -855,13 +866,13 @@ Future<void> testDart2() async {
   List<String> parameters = ['--enable-asserts'];
 
   for (File dartFile in testFiles) {
-    await testFutures.addFutureFromClosure(() => new CoverageSubprocessLauncher(
-            'dart2-${pathLib.basename(dartFile.path)}')
-        .runStreamed(
-            Platform.resolvedExecutable,
-            <String>[]
-              ..addAll(parameters)
-              ..add(dartFile.path)));
+    await testFutures.addFutureFromClosure(() =>
+        new CoverageSubprocessLauncher('dart2-${path.basename(dartFile.path)}')
+            .runStreamed(
+                Platform.resolvedExecutable,
+                <String>[]
+                  ..addAll(parameters)
+                  ..add(dartFile.path)));
   }
 
   return CoverageSubprocessLauncher.generateCoverageToFile(
@@ -877,11 +888,11 @@ Future<void> testDartdoc() async {
     '--output',
     dartdocDocsDir.path
   ]);
-  expectFileContains(pathLib.join(dartdocDocsDir.path, 'index.html'),
+  expectFileContains(path.join(dartdocDocsDir.path, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
   final RegExp object = new RegExp('<li>Object</li>', multiLine: true);
   expectFileContains(
-      pathLib.join(dartdocDocsDir.path, 'dartdoc', 'ModelElement-class.html'),
+      path.join(dartdocDocsDir.path, 'dartdoc', 'ModelElement-class.html'),
       [object]);
 }
 
@@ -898,10 +909,10 @@ Future<void> testDartdocRemote() async {
     '--output',
     dartdocDocsDir.path
   ]);
-  expectFileContains(pathLib.join(dartdocDocsDir.path, 'index.html'),
+  expectFileContains(path.join(dartdocDocsDir.path, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
   expectFileContains(
-      pathLib.join(dartdocDocsDir.path, 'dartdoc', 'ModelElement-class.html'),
+      path.join(dartdocDocsDir.path, 'dartdoc', 'ModelElement-class.html'),
       [object]);
 }
 
@@ -921,7 +932,7 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
           flutterRepo.cacheDart,
           [
             '--enable-asserts',
-            pathLib.join(Directory.current.path, 'bin', 'dartdoc.dart'),
+            path.join(Directory.current.path, 'bin', 'dartdoc.dart'),
             '--exclude-packages',
             'Dart', // TODO(jcollins-g): dart-lang/dartdoc#1431
             '--json',
@@ -948,7 +959,7 @@ Future<void> testDartdocFlutterPlugin() async {
   }
   // Verify that links to Dart SDK and Flutter SDK go to the flutter site.
   expectFileContains(
-      pathLib.join(
+      path.join(
           pluginPackageDocsDir.path, 'testlib', 'MyAwesomeWidget-class.html'),
       [
         '<a href="https://docs.flutter.io/flutter/widgets/Widget-class.html">Widget</a>',
@@ -994,8 +1005,8 @@ void validateSdkDocs() {
   }
   log('$libsLength dart: libraries found');
 
-  var futureConstFile = joinFile(
-      sdkDocsDir, [pathLib.join('dart-async', 'Future', 'Future.html')]);
+  var futureConstFile =
+      joinFile(sdkDocsDir, [path.join('dart-async', 'Future', 'Future.html')]);
   if (!futureConstFile.existsSync()) {
     fail('no Future.html found for dart:async Future constructor');
   }

@@ -7,7 +7,7 @@ library dartdoc.package_utils_test;
 import 'dart:io';
 
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 void main() {
@@ -26,7 +26,7 @@ void main() {
 
   group('PackageMeta for the test package', () {
     PackageMeta p = new PackageMeta.fromDir(new Directory(
-        pathLib.join(Directory.current.path, 'testing', 'test_package')));
+        path.join(Directory.current.path, 'testing', 'test_package')));
 
     test('readme with corrupt UTF-8 loads without throwing', () {
       expect(p.getReadmeContents().contents,

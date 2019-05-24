@@ -8,7 +8,7 @@ import 'dart:io';
 
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/tool_runner.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
@@ -27,7 +27,7 @@ void main() {
   setUpAll(() async {
     ProcessResult result;
     tempDir = Directory.systemTemp.createTempSync('tool_runner_test_');
-    var snapshotFile = pathLib.join(tempDir.path, 'drill.snapshot');
+    var snapshotFile = path.join(tempDir.path, 'drill.snapshot');
     try {
       result = Process.runSync(
           Platform.resolvedExecutable,
@@ -46,7 +46,7 @@ void main() {
       stderr.writeln(result.stderr);
     }
     expect(result?.exitCode, equals(0));
-    setupFile = File(pathLib.join(tempDir.path, 'setup.stamp'));
+    setupFile = File(path.join(tempDir.path, 'setup.stamp'));
     // We use the Dart executable for our "non-dart" tool
     // test, because it's the only executable that we know the
     // exact location of that works on all platforms.
@@ -73,8 +73,7 @@ echo:
   windows: ['C:\\Windows\\System32\\cmd.exe', '/c', 'echo']
   description: 'Works on everything'
 ''';
-    var pathContext =
-        pathLib.Context(current: utils.testPackageDir.absolute.path);
+    var pathContext = path.Context(current: utils.testPackageDir.absolute.path);
     toolMap = ToolConfiguration.fromYamlMap(loadYaml(yamlMap), pathContext);
     // This shouldn't really happen, but if you didn't load the config from a
     // yaml map (which would fail on a missing executable), or a file is deleted

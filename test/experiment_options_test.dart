@@ -54,11 +54,13 @@ void main() {
       experimentOptions.parseArguments([]);
       DartdocOptionContext tester =
           new DartdocOptionContext(experimentOptions, emptyTempDir);
-      if (defaultOnNotExpired != null)
+      if (defaultOnNotExpired != null) {
         expect(tester.experimentStatus.isEnabled(defaultOnNotExpired), isTrue);
-      if (defaultOffNotExpired != null)
+      }
+      if (defaultOffNotExpired != null) {
         expect(
             tester.experimentStatus.isEnabled(defaultOffNotExpired), isFalse);
+      }
       expect(tester.experimentStatus.isEnabled(defaultOnExpired), isTrue);
       expect(tester.experimentStatus.isEnabled(defaultOffExpired), isFalse);
     });
@@ -71,11 +73,13 @@ void main() {
       ]);
       DartdocOptionContext tester =
           new DartdocOptionContext(experimentOptions, emptyTempDir);
-      if (defaultOnNotExpired != null)
+      if (defaultOnNotExpired != null) {
         expect(tester.experimentStatus.isEnabled(defaultOnNotExpired), isFalse);
-      if (defaultOffNotExpired != null)
+      }
+      if (defaultOffNotExpired != null) {
         expect(
             tester.experimentStatus.isEnabled(defaultOffNotExpired), isFalse);
+      }
       expect(tester.experimentStatus.isEnabled(defaultOnExpired), isTrue);
       expect(tester.experimentStatus.isEnabled(defaultOffExpired), isFalse);
     });

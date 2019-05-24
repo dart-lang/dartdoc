@@ -22,6 +22,7 @@ class TestLibraryContainer extends LibraryContainer with Nameable {
   String enclosingName;
   @override
   final String name;
+
   @override
   bool get isSdk => false;
   @override
@@ -88,12 +89,18 @@ void main() {
   // when the feature is enabled by default.
   group('Experiments', () {
     Library main;
-    TopLevelVariable aComplexSet, inferredTypeSet, specifiedSet, untypedMap, typedSet;
+    TopLevelVariable aComplexSet,
+        inferredTypeSet,
+        specifiedSet,
+        untypedMap,
+        typedSet;
 
     setUpAll(() {
-      main = packageGraphExperiments.libraries.firstWhere((lib) => lib.name == 'main');
+      main = packageGraphExperiments.libraries
+          .firstWhere((lib) => lib.name == 'main');
       aComplexSet = main.constants.firstWhere((v) => v.name == 'aComplexSet');
-      inferredTypeSet = main.constants.firstWhere((v) => v.name == 'inferredTypeSet');
+      inferredTypeSet =
+          main.constants.firstWhere((v) => v.name == 'inferredTypeSet');
       specifiedSet = main.constants.firstWhere((v) => v.name == 'specifiedSet');
       untypedMap = main.constants.firstWhere((v) => v.name == 'untypedMap');
       typedSet = main.constants.firstWhere((v) => v.name == 'typedSet');
@@ -101,20 +108,28 @@ void main() {
 
     test('Set literals test', () {
       expect(aComplexSet.modelType.name, equals('Set'));
-      expect(aComplexSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['AClassContainingLiterals']));
-      expect(aComplexSet.constantValue, equals('const {const AClassContainingLiterals(3, 5)}'));
+      expect(aComplexSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['AClassContainingLiterals']));
+      expect(aComplexSet.constantValue,
+          equals('const {const AClassContainingLiterals(3, 5)}'));
       expect(inferredTypeSet.modelType.name, equals('Set'));
-      expect(inferredTypeSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['num']));
+      expect(
+          inferredTypeSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['num']));
       expect(inferredTypeSet.constantValue, equals('const {1, 2.5, 3}'));
       expect(specifiedSet.modelType.name, equals('Set'));
-      expect(specifiedSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['int']));
+      expect(specifiedSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['int']));
       expect(specifiedSet.constantValue, equals('const {}'));
       expect(untypedMap.modelType.name, equals('Map'));
-      expect(untypedMap.modelType.typeArguments.map((a) => a.name).toList(), equals(['dynamic', 'dynamic']));
+      expect(untypedMap.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['dynamic', 'dynamic']));
       expect(untypedMap.constantValue, equals('const {}'));
       expect(typedSet.modelType.name, equals('Set'));
-      expect(typedSet.modelType.typeArguments.map((a) => a.name).toList(), equals(['String']));
-      expect(typedSet.constantValue, matches(new RegExp(r'const &lt;String&gt;\s?{}')));
+      expect(typedSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['String']));
+      expect(typedSet.constantValue,
+          matches(new RegExp(r'const &lt;String&gt;\s?{}')));
     });
   });
 
@@ -128,7 +143,8 @@ void main() {
     Method invokeToolNonCanonical, invokeToolNonCanonicalSubclass;
     Method invokeToolPrivateLibrary, invokeToolPrivateLibraryOriginal;
     Method invokeToolParentDoc, invokeToolParentDocOriginal;
-    final RegExp packageInvocationIndexRegexp = new RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
+    final RegExp packageInvocationIndexRegexp =
+        new RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
 
     setUpAll(() {
       _NonCanonicalToolUser = fakeLibrary.allClasses
@@ -165,13 +181,16 @@ void main() {
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
 
-    test('invokes tool when inherited documentation is the only means for it to be seen', () {
+    test(
+        'invokes tool when inherited documentation is the only means for it to be seen',
+        () {
       // Verify setup of the test is correct.
       expect(invokeToolParentDoc.isCanonical, isTrue);
       expect(invokeToolParentDoc.documentationComment, isNull);
       // Error message here might look strange due to toString() on Methods, but if this
       // fails that means we don't have the correct invokeToolParentDoc instance.
-      expect(invokeToolParentDoc.documentationFrom, contains(invokeToolParentDocOriginal));
+      expect(invokeToolParentDoc.documentationFrom,
+          contains(invokeToolParentDocOriginal));
       // Tool should be substituted out here.
       expect(invokeToolParentDoc.documentation, isNot(contains('{@tool')));
     });
@@ -187,18 +206,20 @@ void main() {
             equals(packageInvocationIndexRegexp
                 .firstMatch(invokeToolNonCanonicalSubclass.documentation)
                 .group(1)));
-        expect(invokeToolPrivateLibrary.documentation, isNot(contains('{@tool')));
+        expect(
+            invokeToolPrivateLibrary.documentation, isNot(contains('{@tool')));
         expect(
             invokeToolPrivateLibraryOriginal.documentation, contains('{@tool'));
       });
 
       test('Documentation borrowed from implementer case', () {
-        expect(packageInvocationIndexRegexp
-            .firstMatch(invokeToolParentDoc.documentation)
-            .group(1),
-        equals(packageInvocationIndexRegexp
-            .firstMatch(invokeToolParentDocOriginal.documentation)
-            .group(1)));
+        expect(
+            packageInvocationIndexRegexp
+                .firstMatch(invokeToolParentDoc.documentation)
+                .group(1),
+            equals(packageInvocationIndexRegexp
+                .firstMatch(invokeToolParentDocOriginal.documentation)
+                .group(1)));
       });
     });
 
@@ -519,9 +540,10 @@ void main() {
 
     test('multiple containers with specified sort order', () {
       List<LibraryContainer> containers = [];
-      for (String name in containerNames)
+      for (String name in containerNames) {
         containers
             .add(new TestLibraryContainer(name, sortOrderBasic, topLevel));
+      }
       containers
           .add(new TestLibraryContainerSdk('SDK', sortOrderBasic, topLevel));
       containers.sort();
@@ -540,8 +562,9 @@ void main() {
 
     test('multiple containers, no specified sort order', () {
       List<LibraryContainer> containers = [];
-      for (String name in containerNames)
+      for (String name in containerNames) {
         containers.add(new TestLibraryContainer(name, [], topLevel));
+      }
       containers.add(new TestLibraryContainerSdk('SDK', [], topLevel));
       containers.sort();
       expect(
@@ -921,9 +944,10 @@ void main() {
       withYouTubeInvalidUrl = documentationErrors.allInstanceMethods
           .firstWhere((m) => m.name == 'withYouTubeInvalidUrl')
             ..documentation;
-      withYouTubeUrlWithAdditionalParameters = documentationErrors.allInstanceMethods
+      withYouTubeUrlWithAdditionalParameters = documentationErrors
+          .allInstanceMethods
           .firstWhere((m) => m.name == 'withYouTubeUrlWithAdditionalParameters')
-        ..documentation;
+            ..documentation;
     });
 
     test("warns on youtube video with missing parameters", () {
@@ -993,19 +1017,26 @@ void main() {
           .firstWhere((m) => m.name == 'withYouTubeInline');
     });
 
-    test("renders a YouTube video within the method documentation with correct aspect ratio", () {
-      expect(withYouTubeWatchUrl.documentation,
-          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"'));
+    test(
+        "renders a YouTube video within the method documentation with correct aspect ratio",
+        () {
+      expect(
+          withYouTubeWatchUrl.documentation,
+          contains(
+              '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"'));
       // Video is 560x315, which means height is 56.25% of width.
-      expect(withYouTubeWatchUrl.documentation, contains('padding-top: 56.25%;'));
+      expect(
+          withYouTubeWatchUrl.documentation, contains('padding-top: 56.25%;'));
     });
     test("Doesn't place YouTube video in one line doc", () {
       expect(
           withYouTubeInOneLineDoc.oneLineDoc,
           isNot(contains(
               '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"')));
-      expect(withYouTubeInOneLineDoc.documentation,
-          contains('<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"'));
+      expect(
+          withYouTubeInOneLineDoc.documentation,
+          contains(
+              '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"'));
     });
     test("Handles YouTube video inline properly", () {
       // Make sure it doesn't have a double-space before the continued line,
@@ -3162,8 +3193,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('PRETTY_COLORS', () {
-      expect(prettyColorsConstant.constantValue, matches(new RegExp(
-          r"const &lt;String&gt;\s?\[COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;\]")));
+      expect(
+          prettyColorsConstant.constantValue,
+          matches(new RegExp(
+              r"const &lt;String&gt;\s?\[COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;\]")));
     });
 
     test('MY_CAT is linked', () {
@@ -3668,7 +3701,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 class StringName extends Nameable {
   @override
   final String name;
+
   StringName(this.name);
+
   @override
   String toString() => name;
 }

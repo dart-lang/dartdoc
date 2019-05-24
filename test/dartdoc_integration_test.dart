@@ -9,7 +9,7 @@ import 'dart:io';
 import 'dart:mirrors';
 
 import 'package:dartdoc/dartdoc.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import 'src/utils.dart';
@@ -17,14 +17,13 @@ import 'src/utils.dart';
 Uri get _currentFileUri =>
     (reflect(main) as ClosureMirror).function.location.sourceUri;
 String get _testPackagePath =>
-    pathLib.fromUri(_currentFileUri.resolve('../testing/test_package'));
-String get _testPackageFlutterPluginPath => pathLib
+    path.fromUri(_currentFileUri.resolve('../testing/test_package'));
+String get _testPackageFlutterPluginPath => path
     .fromUri(_currentFileUri.resolve('../testing/test_package_flutter_plugin'));
 
 void main() {
   group('Invoking command-line dartdoc', () {
-    String dartdocPath =
-        pathLib.canonicalize(pathLib.join('bin', 'dartdoc.dart'));
+    String dartdocPath = path.canonicalize(path.join('bin', 'dartdoc.dart'));
     CoverageSubprocessLauncher subprocessLauncher;
     Directory tempDir;
 
@@ -92,7 +91,7 @@ void main() {
 
     test('missing a required file path prints a fatal-error', () async {
       List outputLines = [];
-      String impossiblePath = pathLib.join(dartdocPath, 'impossible');
+      String impossiblePath = path.join(dartdocPath, 'impossible');
       await expectLater(
           () => subprocessLauncher.runStreamed(
               Platform.resolvedExecutable,
@@ -114,7 +113,7 @@ void main() {
           () => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
                 dartdocPath,
                 '--input=${testPackageToolError.path}',
-                '--output=${pathLib.join(tempDir.absolute.path, 'test_package_tool_error')}'
+                '--output=${path.join(tempDir.absolute.path, 'test_package_tool_error')}'
               ]),
           throwsA(const TypeMatcher<ProcessException>()));
     });
@@ -213,7 +212,7 @@ void main() {
 
     test('--footer-text includes text', () async {
       String footerTextPath =
-          pathLib.join(Directory.systemTemp.path, 'footer.txt');
+          path.join(Directory.systemTemp.path, 'footer.txt');
       new File(footerTextPath).writeAsStringSync(' footer text include ');
 
       var args = <String>[
@@ -228,7 +227,7 @@ void main() {
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
           workingDirectory: _testPackagePath);
 
-      File outFile = new File(pathLib.join(tempDir.path, 'index.html'));
+      File outFile = new File(path.join(tempDir.path, 'index.html'));
       expect(outFile.readAsStringSync(), contains('footer text include'));
     });
   }, timeout: new Timeout.factor(4));

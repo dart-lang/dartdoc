@@ -6,7 +6,7 @@ import 'dart:async';
 
 import 'package:build/build.dart';
 import 'package:glob/glob.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 
 String _resourcesFile(Iterable<String> packagePaths) => '''
 // WARNING: This file is auto-generated. Do not taunt.
@@ -30,7 +30,7 @@ class ResourceBuilder implements Builder {
     packagePaths.sort();
     await buildStep.writeAsString(
         new AssetId(buildStep.inputId.package,
-            pathLib.url.join('lib', 'src', 'html', 'resources.g.dart')),
+            path.url.join('lib', 'src', 'html', 'resources.g.dart')),
         _resourcesFile(packagePaths));
   }
 

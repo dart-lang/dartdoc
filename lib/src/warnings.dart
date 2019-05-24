@@ -14,10 +14,12 @@ import 'package:dartdoc/src/tuple.dart';
 abstract class PackageWarningOptionContext implements DartdocOptionContextBase {
   bool get allowNonLocalWarnings =>
       optionSet['allowNonLocalWarnings'].valueAt(context);
+
   // allowWarningsInPackages, ignoreWarningsInPackages, errors, warnings, and ignore
   // are only used indirectly via the synthetic packageWarningOptions option.
   PackageWarningOptions get packageWarningOptions =>
       optionSet['packageWarningOptions'].valueAt(context);
+
   bool get verboseWarnings => optionSet['verboseWarnings'].valueAt(context);
 }
 
@@ -201,15 +203,20 @@ final Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
 abstract class Warnable implements Canonicalization {
   void warn(PackageWarning warning,
       {String message, Iterable<Locatable> referredFrom});
+
   Element get element;
+
   Warnable get enclosingElement;
+
   Package get package;
 }
 
 /// Something that can be located for warning purposes.
 abstract class Locatable {
   List<Locatable> get documentationFrom;
+
   String get fullyQualifiedName;
+
   String get href;
 
   /// A string indicating the URI of this Locatable, usually derived from
@@ -339,8 +346,10 @@ class PackageWarningOptions {
 
   void ignore(PackageWarning kind) =>
       warningModes[kind] = PackageWarningMode.ignore;
+
   void warn(PackageWarning kind) =>
       warningModes[kind] = PackageWarningMode.warn;
+
   void error(PackageWarning kind) =>
       warningModes[kind] = PackageWarningMode.error;
 
@@ -415,9 +424,11 @@ class PackageWarningCounter {
         !element.package.isLocal) {
       warningMode = PackageWarningMode.ignore;
     }
-    if (warningMode == PackageWarningMode.warn)
+    if (warningMode == PackageWarningMode.warn) {
       warningCount += 1;
-    else if (warningMode == PackageWarningMode.error) errorCount += 1;
+    } else if (warningMode == PackageWarningMode.error) {
+      errorCount += 1;
+    }
     Tuple2<PackageWarning, String> warningData = new Tuple2(kind, message);
     countedWarnings.putIfAbsent(element?.element, () => new Set());
     countedWarnings[element?.element].add(warningData);
