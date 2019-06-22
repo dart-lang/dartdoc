@@ -31,6 +31,22 @@ const incorrectDocReference = 'same name as const from fake';
 /// This should [not work].
 const incorrectDocReferenceFromEx = 'doh';
 
+/// top level declarations with templates/macros
+///
+/// {@template ex1}
+/// ex2 macro content
+/// {@endtemplate}
+int myNumber = 3;
+
+/// {@macro ex1}
+void testMacro() {}
+
+/// {@template ex2}
+/// ex2 macro content
+/// {@endtemplate}
+bool get isCheck => true;
+
+
 /// A custom annotation.
 class aThingToDo {
   final String who;
