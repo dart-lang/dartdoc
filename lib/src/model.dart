@@ -4912,6 +4912,10 @@ class PackageGraph {
             !precachedElements.contains(d)) {
           precachedElements.add(d);
           yield d._precacheLocalDocs();
+          if (m is TopLevelVariable) {
+            precachedElements.add(m);
+            yield m._precacheLocalDocs();
+          }
         }
       }
     }
