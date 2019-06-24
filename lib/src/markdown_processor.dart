@@ -15,6 +15,7 @@ import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
+import 'package:sanitize_html/sanitize_html.dart';
 
 const validHtmlTags = [
   "a",
@@ -890,7 +891,13 @@ class MarkdownDocument extends md.Document {
         ? ''
         : asHtmlDocument.body.children.first.innerHtml;
 
-    return Tuple2(asHtml, asOneLiner);
+    String sanitize(String html) {
+      if (html == null || html.isEmpty) return html;
+      return sanitizeHtml(html,
+          allowElementId: (_) => true, allowClassName: (_) => true);
+    }
+
+    return Tuple2(sanitize(asHtml), sanitize(asOneLiner));
   }
 
   // From package:markdown/src/document.dart
