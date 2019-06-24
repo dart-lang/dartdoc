@@ -1063,11 +1063,11 @@ class Class extends ModelElement
   List<ExecutableElement> get _inheritedElements {
     if (__inheritedElements == null) {
       Map<String, ExecutableElement> cmap = definingLibrary.inheritanceManager
-          .getMembersInheritedFromClasses(
-              element); // ignore: deprecated_member_use
+          .getMembersInheritedFromClasses(// ignore: deprecated_member_use
+              element);
       Map<String, ExecutableElement> imap = definingLibrary.inheritanceManager
-          .getMembersInheritedFromInterfaces(
-              element); // ignore: deprecated_member_use
+          .getMembersInheritedFromInterfaces(// ignore: deprecated_member_use
+              element);
       __inheritedElements = new List.from(cmap.values)
         ..addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
     }
