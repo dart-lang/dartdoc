@@ -322,32 +322,17 @@ void main() {
     test("can inject HTML", () {
       expect(
           injectSimpleHtml.documentation,
-          contains(
-              '\n<dartdoc-html>bad2bbdd4a5cf9efb3212afff4449904756851aa</dartdoc-html>\n'));
-      expect(injectSimpleHtml.documentation,
-          isNot(contains('\n{@inject-html}\n')));
-      expect(injectSimpleHtml.documentation,
-          isNot(contains('\n{@end-inject-html}\n')));
+          'Injects some HTML.\n\n'
+          '<dartdoc-html>bad2bbdd4a5cf9efb3212afff4449904756851aa</dartdoc-html>\n');
       expect(injectSimpleHtml.documentationAsHtml,
-          contains('   <div style="opacity: 0.5;">[HtmlInjection]</div>'));
+          '<p>Injects some HTML.</p>\n<p />');
     });
+
     test("can inject HTML from tool", () {
-      RegExp envLine = RegExp(r'^Env: \{', multiLine: true);
-      expect(envLine.allMatches(injectHtmlFromTool.documentation).length,
-          equals(2));
-      RegExp argLine = RegExp(r'^Args: \[', multiLine: true);
-      expect(argLine.allMatches(injectHtmlFromTool.documentation).length,
-          equals(2));
-      expect(
-          injectHtmlFromTool.documentation,
-          contains(
-              'Invokes more than one tool in the same comment block, and injects HTML.'));
+      expect(injectHtmlFromTool.documentation,
+          'Invokes more than one tool in the same comment block, and injects HTML.\n\n');
       expect(injectHtmlFromTool.documentationAsHtml,
-          contains('<div class="title">Title</div>'));
-      expect(injectHtmlFromTool.documentationAsHtml,
-          isNot(contains('{@inject-html}')));
-      expect(injectHtmlFromTool.documentationAsHtml,
-          isNot(contains('{@end-inject-html}')));
+          '<p>Invokes more than one tool in the same comment block, and injects HTML.</p>');
     });
   });
 
