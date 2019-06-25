@@ -1,3 +1,6 @@
+## 0.28.4-dev
+* **Breaking change** The `allow-tools` command line flag defaults to false.
+
 ## 0.28.3+3
 * Fix code highlighting in Dart after string interpolation (#1946, #1948) by
   updating the highlightjs dependency.

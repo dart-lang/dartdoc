@@ -100,7 +100,7 @@ void main() {
     });
 
     test('errors generate errors even when warnings are off', () async {
-      Dartdoc dartdoc = await buildDartdoc([], testPackageToolError, tempDir);
+      Dartdoc dartdoc = await buildDartdoc(['--allow-tools'], testPackageToolError, tempDir);
       DartdocResults results = await dartdoc.generateDocsBase();
       PackageGraph p = results.packageGraph;
       Iterable<String> unresolvedToolErrors = p
