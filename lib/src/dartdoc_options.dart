@@ -1428,7 +1428,7 @@ class DartdocOptionContext extends DartdocOptionContextBase
 /// given command line arguments.
 Future<List<DartdocOption>> createDartdocOptions() async {
   return <DartdocOption>[
-    new DartdocOptionArgOnly<bool>('allowTools', true,
+    new DartdocOptionArgOnly<bool>('allowTools', false,
         help: 'Execute user-defined tools to fill in @tool directives.',
         negatable: true),
     new DartdocOptionArgFile<double>(

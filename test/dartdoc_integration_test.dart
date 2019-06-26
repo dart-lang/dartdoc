@@ -112,6 +112,7 @@ void main() {
       expect(
           () => subprocessLauncher.runStreamed(Platform.resolvedExecutable, [
                 dartdocPath,
+                '--allow-tools',
                 '--input=${testPackageToolError.path}',
                 '--output=${path.join(tempDir.absolute.path, 'test_package_tool_error')}'
               ]),

@@ -114,6 +114,7 @@ Future<PackageGraph> bootBasicPackage(
             sdkDir.path,
             '--exclude',
             excludeLibraries.join(','),
+            '--allow-tools',
           ] +
           additionalArguments))
       .buildPackageGraph();
