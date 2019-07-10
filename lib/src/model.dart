@@ -3032,7 +3032,7 @@ abstract class ModelElement extends Canonicalization
                   e.computeConstantValue().getField(e.name).toIntValue();
               newModelElement = new EnumField.forConstant(
                   index, e, library, packageGraph, getter);
-            } else if (e.enclosingElement.isEnum) {
+            } else if ((e.enclosingElement as ClassElement).isEnum) {
               newModelElement =
                   new EnumField(e, library, packageGraph, getter, setter);
             } else {
@@ -5882,7 +5882,7 @@ class Category extends Nameable
   /// All libraries in [libraries] must come from [package].
   @override
   Package package;
-  String _name;
+  final String _name;
   @override
   DartdocOptionContext config;
   final Set<Categorization> _allItems = new Set();
