@@ -679,7 +679,7 @@ class DartdocOptionFileSynth<T> extends DartdocOption<T>
     with DartdocSyntheticOption<T>, _DartdocFileOption<T> {
   bool _parentDirOverridesChild;
   @override
-  T Function(DartdocSyntheticOption<T>, Directory) _compute;
+  final T Function(DartdocSyntheticOption<T>, Directory) _compute;
 
   DartdocOptionFileSynth(String name, this._compute,
       {bool mustExist = false,
@@ -725,7 +725,7 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
   bool _splitCommas;
 
   @override
-  T Function(DartdocSyntheticOption<T>, Directory) _compute;
+  final T Function(DartdocSyntheticOption<T>, Directory) _compute;
 
   DartdocOptionArgSynth(String name, this._compute,
       {String abbr,
@@ -778,7 +778,7 @@ class DartdocOptionArgSynth<T> extends DartdocOption<T>
 class DartdocOptionSyntheticOnly<T> extends DartdocOption<T>
     with DartdocSyntheticOption<T> {
   @override
-  T Function(DartdocSyntheticOption<T>, Directory) _compute;
+  final T Function(DartdocSyntheticOption<T>, Directory) _compute;
 
   DartdocOptionSyntheticOnly(String name, this._compute,
       {bool mustExist = false,
