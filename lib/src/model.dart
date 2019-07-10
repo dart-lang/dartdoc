@@ -3032,6 +3032,7 @@ abstract class ModelElement extends Canonicalization
                   e.computeConstantValue().getField(e.name).toIntValue();
               newModelElement = new EnumField.forConstant(
                   index, e, library, packageGraph, getter);
+              // ignore: unnecessary_cast
             } else if ((e.enclosingElement as ClassElement).isEnum) {
               newModelElement =
                   new EnumField(e, library, packageGraph, getter, setter);
