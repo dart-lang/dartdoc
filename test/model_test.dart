@@ -3095,7 +3095,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('found five properties', () {
-      expect(exLibrary.publicProperties, hasLength(5));
+      expect(exLibrary.publicProperties, hasLength(7));
     });
 
     test('linked return type is a double', () {

@@ -11,7 +11,7 @@ For information about contributing to the dartdoc project, see the
 [contributor docs][].
 
 For issues/details related to hosted Dart API docs, see
-[dart-lang/api.dartlang.org](https://github.com/dart-lang/api.dartlang.org/).
+[dart-lang/api.dart.dev](https://github.com/dart-lang/api.dart.dev/).
 
 ## Installing dartdoc
 

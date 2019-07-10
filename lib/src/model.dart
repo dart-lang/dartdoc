@@ -1063,11 +1063,11 @@ class Class extends ModelElement
   List<ExecutableElement> get _inheritedElements {
     if (__inheritedElements == null) {
       Map<String, ExecutableElement> cmap = definingLibrary.inheritanceManager
-          .getMembersInheritedFromClasses(
-              element); // ignore: deprecated_member_use
+          .getMembersInheritedFromClasses(// ignore: deprecated_member_use
+              element);
       Map<String, ExecutableElement> imap = definingLibrary.inheritanceManager
-          .getMembersInheritedFromInterfaces(
-              element); // ignore: deprecated_member_use
+          .getMembersInheritedFromInterfaces(// ignore: deprecated_member_use
+              element);
       __inheritedElements = new List.from(cmap.values)
         ..addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
     }
@@ -3032,7 +3032,7 @@ abstract class ModelElement extends Canonicalization
                   e.computeConstantValue().getField(e.name).toIntValue();
               newModelElement = new EnumField.forConstant(
                   index, e, library, packageGraph, getter);
-            } else if (e.enclosingElement.isEnum) {
+            } else if ((e.enclosingElement as ClassElement).isEnum) {
               newModelElement =
                   new EnumField(e, library, packageGraph, getter, setter);
             } else {
@@ -4912,6 +4912,12 @@ class PackageGraph {
             !precachedElements.contains(d)) {
           precachedElements.add(d);
           yield d._precacheLocalDocs();
+          // TopLevelVariables get their documentation from getters and setters,
+          // so should be precached if either has a template.
+          if (m is TopLevelVariable) {
+            precachedElements.add(m);
+            yield m._precacheLocalDocs();
+          }
         }
       }
     }
@@ -5876,7 +5882,7 @@ class Category extends Nameable
   /// All libraries in [libraries] must come from [package].
   @override
   Package package;
-  String _name;
+  final String _name;
   @override
   DartdocOptionContext config;
   final Set<Categorization> _allItems = new Set();
