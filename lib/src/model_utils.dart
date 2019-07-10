@@ -33,9 +33,13 @@ AstNode getAstNode(
 }
 
 /// Remove elements that aren't documented.
-Iterable<T> filterNonDocumented<T extends Documentable>(
-    Iterable<T> maybeDocumentedItems) {
-  return maybeDocumentedItems.where((me) => me.isDocumented);
+Iterable<T> filterNonDocumented<T extends Documentable>(Iterable<T> items) {
+  return items.where((me) => me.isDocumented);
+}
+
+/// Remove elements that aren't canonical.
+Iterable<T> filterNonCanonical<T extends ModelElement>(Iterable<T> items) {
+  return items.where((me) => me.isCanonical);
 }
 
 /// Returns an iterable containing only public elements from [privacyItems].

@@ -36,6 +36,7 @@ class HtmlGeneratorInstance {
       _generateDocs();
       _generateSearchIndex();
       _generateCategoryJson();
+      _generateMarkdownApi();
     }
 
     await _copyResources();
@@ -46,6 +47,8 @@ class HtmlGeneratorInstance {
           allowOverwrite: true);
     }
   }
+
+  List<Categorization> _categorizationItems;
 
   void _generateCategoryJson() {
     var encoder = new JsonEncoder.withIndent('  ');
@@ -75,8 +78,6 @@ class HtmlGeneratorInstance {
     String json = encoder.convert(indexItems);
     _writer(path.join('categories.json'), '${json}\n');
   }
-
-  List<Categorization> _categorizationItems;
 
   void _generateSearchIndex() {
     var encoder = _options.prettyIndexJson
@@ -119,6 +120,224 @@ class HtmlGeneratorInstance {
     _writer(path.join('index.json'), '${json}\n');
   }
 
+  void _generateMarkdownApi() {
+    if (_packageGraph == null) return;
+
+    StringBuffer buffer = new StringBuffer();
+
+    // todo: show api impacting things like deprecated, sealed, final, const,
+    // abstract, static
+
+    // todo: do we need to show extends? implements?
+
+    // TODO: this should all be implemented with a visitor
+
+    buffer.writeln('# API for ${_packageGraph.defaultPackage.name} '
+        '${_packageGraph.defaultPackage.version}');
+
+    for (Package package in _packageGraph.localPackages) {
+      buffer.writeln();
+      buffer.writeln('# ${package.name}');
+      buffer.writeln();
+
+      for (Library library in filterNonDocumented(package.libraries)) {
+        final String relPath = path.relative(library.sourceFileName);
+        buffer.writeln('- $relPath');
+      }
+
+      for (Library library in filterNonDocumented(package.libraries)) {
+        buffer.writeln();
+
+        final String relPath = path.relative(library.sourceFileName);
+        buffer.writeln('## library $relPath');
+
+        buffer.writeln();
+
+        // todo: handle setter/getter
+        for (TopLevelVariable constant
+            in filterNonDocumented(library.constants)) {
+          // todo:
+          buffer.writeln('${constant.name} → ${constant.modelType.type}');
+        }
+
+        buffer.writeln();
+
+        // todo: handle setter/getter
+        for (TopLevelVariable property
+            in filterNonDocumented(library.properties)) {
+          // todo:
+          buffer.writeln('${property.name} → ${property.modelType.type}');
+        }
+
+        buffer.writeln();
+
+        // TODO: have types print params as type name
+
+        for (ModelFunction function in filterNonDocumented(library.functions)) {
+          // todo:
+          buffer.writeln('${function.name}${function.modelType.type}');
+        }
+
+        buffer.writeln();
+
+        // TODO: classes, ...
+        for (Class clazz in filterNonDocumented(library.allClasses)) {
+          buffer.writeln('class ${clazz.name}');
+
+          // todo: handle setter/getter
+          for (Field constant
+              in filterNonCanonical(filterNonDocumented(clazz.constants))) {
+            buffer.writeln('  ${constant.name} → ${constant.modelType.type}');
+          }
+
+          // todo: handle setter/getter
+          for (Field property in filterNonCanonical(
+              filterNonDocumented(clazz.staticProperties))) {
+            buffer.writeln('  ${property.name} → ${property.modelType.type}');
+          }
+
+          // todo: handle setter/getter
+          for (Field field in filterNonCanonical(
+              filterNonDocumented(clazz.allInstanceFields))) {
+            buffer.writeln('  ${field.name} → ${field.modelType.type}');
+          }
+
+          for (Constructor constructor
+              in filterNonCanonical(filterNonDocumented(clazz.constructors))) {
+            buffer
+                .writeln('  ${constructor.name}${constructor.modelType.type}');
+          }
+
+          for (Method method in filterNonCanonical(
+              filterNonDocumented(clazz.allInstanceMethods))) {
+            buffer.writeln('  ${method.name}${method.modelType.type}');
+          }
+
+          // todo:
+
+        }
+      }
+    }
+//    for (var package in _packageGraph.localPackages) {
+//      for (var category in filterNonDocumented(package.categories)) {
+//        generateCategory(_packageGraph, category);
+//      }
+//
+//      for (var lib in filterNonDocumented(package.libraries)) {
+//        generateLibrary(_packageGraph, lib);
+//
+//        for (var clazz in filterNonDocumented(lib.allClasses)) {
+//          generateClass(_packageGraph, lib, clazz);
+//
+//          for (var constructor in filterNonDocumented(clazz.constructors)) {
+//            if (!constructor.isCanonical) continue;
+//            generateConstructor(_packageGraph, lib, clazz, constructor);
+//          }
+//
+//          for (var constant in filterNonDocumented(clazz.constants)) {
+//            if (!constant.isCanonical) continue;
+//            generateConstant(_packageGraph, lib, clazz, constant);
+//          }
+//
+//          for (var property in filterNonDocumented(clazz.staticProperties)) {
+//            if (!property.isCanonical) continue;
+//            generateProperty(_packageGraph, lib, clazz, property);
+//          }
+//
+//          for (var field in filterNonDocumented(clazz.allInstanceFields)) {
+//            if (!field.isCanonical) continue;
+//            generateProperty(_packageGraph, lib, clazz, field);
+//          }
+//
+//          for (var method in filterNonDocumented(clazz.allInstanceMethods)) {
+//            if (!method.isCanonical) continue;
+//            generateMethod(_packageGraph, lib, clazz, method);
+//          }
+//
+//          for (var operator in filterNonDocumented(clazz.allOperators)) {
+//            if (!operator.isCanonical) continue;
+//            generateMethod(_packageGraph, lib, clazz, operator);
+//          }
+//
+//          for (var method in filterNonDocumented(clazz.staticMethods)) {
+//            if (!method.isCanonical) continue;
+//            generateMethod(_packageGraph, lib, clazz, method);
+//          }
+//        }
+//
+//        for (var mixin in filterNonDocumented(lib.mixins)) {
+//          generateMixins(_packageGraph, lib, mixin);
+//          for (var constructor in filterNonDocumented(mixin.constructors)) {
+//            if (!constructor.isCanonical) continue;
+//            generateConstructor(_packageGraph, lib, mixin, constructor);
+//          }
+//
+//          for (var constant in filterNonDocumented(mixin.constants)) {
+//            if (!constant.isCanonical) continue;
+//            generateConstant(_packageGraph, lib, mixin, constant);
+//          }
+//
+//          for (var property in filterNonDocumented(mixin.staticProperties)) {
+//            if (!property.isCanonical) continue;
+//            generateProperty(_packageGraph, lib, mixin, property);
+//          }
+//
+//          for (var property in filterNonDocumented(mixin.allInstanceFields)) {
+//            if (!property.isCanonical) continue;
+//            generateProperty(_packageGraph, lib, mixin, property);
+//          }
+//
+//          for (var method in filterNonDocumented(mixin.allInstanceMethods)) {
+//            if (!method.isCanonical) continue;
+//            generateMethod(_packageGraph, lib, mixin, method);
+//          }
+//
+//          for (var operator in filterNonDocumented(mixin.allOperators)) {
+//            if (!operator.isCanonical) continue;
+//            generateMethod(_packageGraph, lib, mixin, operator);
+//          }
+//
+//          for (var method in filterNonDocumented(mixin.staticMethods)) {
+//            if (!method.isCanonical) continue;
+//            generateMethod(_packageGraph, lib, mixin, method);
+//          }
+//        }
+//
+//        for (var eNum in filterNonDocumented(lib.enums)) {
+//          generateEnum(_packageGraph, lib, eNum);
+//          for (var property in filterNonDocumented(eNum.allInstanceFields)) {
+//            generateProperty(_packageGraph, lib, eNum, property);
+//          }
+//          for (var operator in filterNonDocumented(eNum.allOperators)) {
+//            generateMethod(_packageGraph, lib, eNum, operator);
+//          }
+//          for (var method in filterNonDocumented(eNum.allInstanceMethods)) {
+//            generateMethod(_packageGraph, lib, eNum, method);
+//          }
+//        }
+//
+//        for (var constant in filterNonDocumented(lib.constants)) {
+//          generateTopLevelConstant(_packageGraph, lib, constant);
+//        }
+//
+//        for (var property in filterNonDocumented(lib.properties)) {
+//          generateTopLevelProperty(_packageGraph, lib, property);
+//        }
+//
+//        for (var function in filterNonDocumented(lib.functions)) {
+//          generateFunction(_packageGraph, lib, function);
+//        }
+//
+//        for (var typeDef in filterNonDocumented(lib.typedefs)) {
+//          generateTypeDef(_packageGraph, lib, typeDef);
+//        }
+//      }
+//    }
+
+    _writer(path.join('api.md'),
+        buffer.toString().replaceAll(RegExp('\n\n\n+'), '\n\n'));
+  }
+
   void _generateDocs() {
     if (_packageGraph == null) return;
 
@@ -150,9 +369,9 @@ class HtmlGeneratorInstance {
             generateProperty(_packageGraph, lib, clazz, property);
           }
 
-          for (var property in filterNonDocumented(clazz.allInstanceFields)) {
-            if (!property.isCanonical) continue;
-            generateProperty(_packageGraph, lib, clazz, property);
+          for (var field in filterNonDocumented(clazz.allInstanceFields)) {
+            if (!field.isCanonical) continue;
+            generateProperty(_packageGraph, lib, clazz, field);
           }
 
           for (var method in filterNonDocumented(clazz.allInstanceMethods)) {
