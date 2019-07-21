@@ -1,3 +1,6 @@
+## 0.28.5-dev
+* Support the latest version of `package:analyzer`.
+
 ## 0.28.4
 * **Breaking change** Change the default for `allow-tools` command line flag to false.
 * Fix some lints.
