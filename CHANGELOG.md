@@ -1,4 +1,4 @@
-## 0.28.5
+## 0.28.5-dev
 * Support the latest version of `package:analyzer`.
 
 ## 0.28.4
