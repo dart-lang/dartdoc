@@ -7,7 +7,10 @@ library dartdoc.generator;
 
 import 'dart:async' show Stream, Future;
 
+import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/empty_generator.dart';
 import 'package:dartdoc/src/model.dart' show PackageGraph;
+import 'package:dartdoc/src/html/html_generator.dart';
 
 /// An abstract class that defines a generator that generates documentation for
 /// a given package.
@@ -23,4 +26,18 @@ abstract class Generator {
 
   /// Fetches all filenames written by this generator.
   Set<String> get writtenFiles;
+}
+
+/// Initialize and setup the generators.
+Future<List<Generator>> initGenerators(GeneratorContext config) async {
+  // TODO(jdkoren) this could support multiple generators.
+  var format = config.format;
+  switch (format) {
+    case 'html':
+      return [await createHtmlGenerator(config)];
+    case 'md':
+      return [await createEmptyGenerator(config)];
+    default:
+      throw DartdocFailure('Unsupported output format: ${format}');
+  }
 }
