@@ -363,5 +363,14 @@ void main() {
           dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
       expect(p.packageMap["Dart"].publicLibraries, hasLength(3));
     });
+
+    test('generate docs with unsupported format fails', () async {
+      try {
+        await buildDartdoc(['--format', 'bad'], testPackageOptions, tempDir);
+        fail('dartdoc should fail on unsupported format');
+      } catch (e) {
+        expect(e is DartdocFailure, isTrue);
+      }
+    });
   }, timeout: new Timeout.factor(8));
 }
