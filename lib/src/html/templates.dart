@@ -36,7 +36,7 @@ const _partials = const <String>[
   'accessor_setter',
 ];
 
-Future<Map<String, String>> _loadPartials(List<String> headerPaths,
+Future<Map<String, String>> _loadPartials(String format, List<String> headerPaths,
     List<String> footerPaths, List<String> footerTextPaths) async {
   final String headerPlaceholder = '<!-- header placeholder -->';
   final String footerPlaceholder = '<!-- footer placeholder -->';
@@ -49,7 +49,7 @@ Future<Map<String, String>> _loadPartials(List<String> headerPaths,
   var partials = <String, String>{};
 
   Future<String> _loadPartial(String templatePath) async {
-    String template = await _getTemplateFile(templatePath);
+    String template = await _getTemplateFile('$format/$templatePath.$format');
 
     if (templatePath.contains('_head')) {
       String headerValue = headerPaths
@@ -74,7 +74,7 @@ Future<Map<String, String>> _loadPartials(List<String> headerPaths,
   }
 
   for (String partial in _partials) {
-    partials[partial] = await _loadPartial('_$partial.html');
+    partials[partial] = await _loadPartial('_$partial');
   }
 
   return partials;
@@ -101,11 +101,12 @@ class Templates {
   final Template typeDefTemplate;
 
   static Future<Templates> create(
+      String format,
       {List<String> headerPaths,
       List<String> footerPaths,
       List<String> footerTextPaths}) async {
     var partials =
-        await _loadPartials(headerPaths, footerPaths, footerTextPaths);
+        await _loadPartials(format, headerPaths, footerPaths, footerTextPaths);
 
     Template _partial(String name) {
       String partial = partials[name];
@@ -116,27 +117,25 @@ class Templates {
     }
 
     Future<Template> _loadTemplate(String templatePath) async {
-      String templateContents = await _getTemplateFile(templatePath);
+      String templateContents = await _getTemplateFile('$format/$templatePath.$format');
       return Template(templateContents, partialResolver: _partial);
     }
 
-    var indexTemplate = await _loadTemplate('index.html');
-    var libraryTemplate = await _loadTemplate('library.html');
-    var categoryTemplate = await _loadTemplate('category.html');
-    var classTemplate = await _loadTemplate('class.html');
-    var enumTemplate = await _loadTemplate('enum.html');
-    var functionTemplate = await _loadTemplate('function.html');
-    var methodTemplate = await _loadTemplate('method.html');
-    var constructorTemplate = await _loadTemplate('constructor.html');
-    var errorTemplate = await _loadTemplate('404error.html');
-    var propertyTemplate = await _loadTemplate('property.html');
-    var constantTemplate = await _loadTemplate('constant.html');
-    var topLevelConstantTemplate =
-        await _loadTemplate('top_level_constant.html');
-    var topLevelPropertyTemplate =
-        await _loadTemplate('top_level_property.html');
-    var typeDefTemplate = await _loadTemplate('typedef.html');
-    var mixinTemplate = await _loadTemplate('mixin.html');
+    var indexTemplate = await _loadTemplate('index');
+    var libraryTemplate = await _loadTemplate('library');
+    var categoryTemplate = await _loadTemplate('category');
+    var classTemplate = await _loadTemplate('class');
+    var enumTemplate = await _loadTemplate('enum');
+    var functionTemplate = await _loadTemplate('function');
+    var methodTemplate = await _loadTemplate('method');
+    var constructorTemplate = await _loadTemplate('constructor');
+    var errorTemplate = await _loadTemplate('404error');
+    var propertyTemplate = await _loadTemplate('property');
+    var constantTemplate = await _loadTemplate('constant');
+    var topLevelConstantTemplate = await _loadTemplate('top_level_constant');
+    var topLevelPropertyTemplate = await _loadTemplate('top_level_property');
+    var typeDefTemplate = await _loadTemplate('typedef');
+    var mixinTemplate = await _loadTemplate('mixin');
 
     return new Templates._(
         indexTemplate,

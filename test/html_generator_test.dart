@@ -7,8 +7,8 @@ library dartdoc.html_generator_test;
 import 'dart:io' show File, Directory;
 
 import 'package:dartdoc/src/html/html_generator.dart';
-import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/html/resources.g.dart';
+import 'package:dartdoc/src/html/templates.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
@@ -17,7 +17,7 @@ void main() {
     Templates templates;
 
     setUp(() async {
-      templates = await Templates.create();
+      templates = await Templates.create('html');
     });
 
     test('index html', () {

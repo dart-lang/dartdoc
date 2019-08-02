@@ -56,6 +56,7 @@ class HtmlGenerator extends Generator {
       List<String> footers,
       List<String> footerTexts}) async {
     var templates = await Templates.create(
+        'html',
         headerPaths: headers,
         footerPaths: footers,
         footerTextPaths: footerTexts);

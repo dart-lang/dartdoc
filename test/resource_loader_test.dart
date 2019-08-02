@@ -11,7 +11,7 @@ void main() {
   group('Resource Loader', () {
     test('load from packages', () async {
       var contents =
-          await loader.loadAsString('package:dartdoc/templates/index.html');
+          await loader.loadAsString('package:dartdoc/templates/html/index.html');
       expect(contents, isNotNull);
     });
 
