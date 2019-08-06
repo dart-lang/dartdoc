@@ -100,7 +100,8 @@ void main() {
     });
 
     test('errors generate errors even when warnings are off', () async {
-      Dartdoc dartdoc = await buildDartdoc(['--allow-tools'], testPackageToolError, tempDir);
+      Dartdoc dartdoc =
+          await buildDartdoc(['--allow-tools'], testPackageToolError, tempDir);
       DartdocResults results = await dartdoc.generateDocsBase();
       PackageGraph p = results.packageGraph;
       Iterable<String> unresolvedToolErrors = p
@@ -258,7 +259,7 @@ void main() {
         expect(p.name, 'test_package');
         expect(p.hasDocumentationFile, isTrue);
         // Total number of public libraries in test_package.
-        expect(packageGraph.defaultPackage.publicLibraries, hasLength(12));
+        expect(packageGraph.defaultPackage.publicLibraries, hasLength(14));
         expect(packageGraph.localPackages.length, equals(1));
       });
 
@@ -327,7 +328,7 @@ void main() {
       PackageGraph p = results.packageGraph;
       expect(p.defaultPackage.name, 'test_package');
       expect(p.defaultPackage.hasDocumentationFile, isTrue);
-      expect(p.localPublicLibraries, hasLength(11));
+      expect(p.localPublicLibraries, hasLength(13));
       expect(p.localPublicLibraries.map((lib) => lib.name).contains('fake'),
           isFalse);
     });

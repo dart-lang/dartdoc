@@ -647,6 +647,10 @@ class _MarkdownCommentReference {
 
     for (Class tryClass in tryClasses) {
       if (tryClass != null) {
+        if (codeRefChomped.contains('.') &&
+            !codeRefChomped.startsWith(tryClass.name)) {
+          continue;
+        }
         _getResultsForClass(tryClass);
       }
       results.remove(null);
