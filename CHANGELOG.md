@@ -1,5 +1,6 @@
 ## 0.28.5-dev
 * Support the latest version of `package:analyzer`.
+* Fix hyperlinks to overriden methods (#1994).
 
 ## 0.28.4
 * **Breaking change** Change the default for `allow-tools` command line flag to false.

@@ -61,6 +61,7 @@ void main() {
   Library errorLibrary;
   Library twoExportsLib;
   Library interceptorsLib;
+  Library baseClassLib;
   PackageGraph sdkAsPackageGraph;
   Library dartAsync;
 
@@ -82,6 +83,8 @@ void main() {
         packageGraph.libraries.firstWhere((lib) => lib.name == 'two_exports');
     interceptorsLib = packageGraph.libraries
         .firstWhere((lib) => lib.name == 'dart:_interceptors');
+    baseClassLib =
+        packageGraph.libraries.firstWhere((lib) => lib.name == 'base_class');
     sdkAsPackageGraph = utils.testPackageGraphSdk;
   });
 
@@ -492,7 +495,7 @@ void main() {
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(5));
+          equals(7));
     });
 
     test('Verify libraries with multiple categories show up in multiple places',
@@ -516,7 +519,7 @@ void main() {
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(5));
+          equals(7));
     });
   });
 
@@ -588,7 +591,7 @@ void main() {
       });
 
       test('libraries', () {
-        expect(packageGraph.localPublicLibraries, hasLength(10));
+        expect(packageGraph.localPublicLibraries, hasLength(12));
         expect(interceptorsLib.isPublic, isFalse);
       });
 
@@ -603,7 +606,7 @@ void main() {
 
         Package package = packageGraph.localPackages.first;
         expect(package.name, 'test_package');
-        expect(package.publicLibraries, hasLength(10));
+        expect(package.publicLibraries, hasLength(12));
       });
 
       test('multiple packages, sorted default', () {
@@ -1430,6 +1433,15 @@ void main() {
             contains('<a href="ex/Apple-class.html">Apple</a>'));
         expect(helperClass.documentationAsHtml,
             contains('<a href="ex/B-class.html">ex.B</a>'));
+      });
+
+      test('link to override method in implementer from base class', () {
+        final Class helperClass =
+            baseClassLib.classes.firstWhere((c) => c.name == 'Constraints');
+        expect(
+            helperClass.documentationAsHtml,
+            contains(
+                '<a href="override_class/BoxConstraints/debugAssertIsValid.html">BoxConstraints.debugAssertIsValid</a>'));
       });
 
       test(
