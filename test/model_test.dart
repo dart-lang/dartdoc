@@ -1435,7 +1435,7 @@ void main() {
             contains('<a href="ex/B-class.html">ex.B</a>'));
       });
 
-      test('link to override methoed in implemetor from base class', () {
+      test('link to override method in implementer from base class', () {
         final Class helperClass =
             baseClassLib.classes.firstWhere((c) => c.name == 'Constraints');
         expect(

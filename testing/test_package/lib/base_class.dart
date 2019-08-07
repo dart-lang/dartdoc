@@ -1,4 +1,5 @@
 library base_class;
+
 /// Abstract class Constraints
 /// * The [debugAssertIsValid] method, which should assert if there's anything
 ///   wrong with the constraints object. (We use this approach rather than
