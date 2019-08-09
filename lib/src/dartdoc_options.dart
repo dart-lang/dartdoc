@@ -534,7 +534,7 @@ abstract class DartdocOption<T> {
   Map<String, _YamlFileData> get _yamlAtCanonicalPathCache =>
       root.__yamlAtCanonicalPathCache;
 
-  final ArgParser __argParser = new ArgParser();
+  final ArgParser __argParser = new ArgParser(usageLineLength: 80);
 
   ArgParser get argParser => root.__argParser;
 
