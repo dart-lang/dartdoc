@@ -17,7 +17,7 @@ void main() {
     Templates templates;
 
     setUp(() async {
-      templates = await Templates.create();
+      templates = await Templates.createDefault();
     });
 
     test('index html', () {

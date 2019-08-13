@@ -1,0 +1,14 @@
+{{>head}}
+
+<div>
+    {{#self}}
+      <div><h1>{{{nameWithGenerics}}} {{kind}}</h1></div>
+    {{/self}}
+
+    {{#typeDef}}
+    {{>documentation}}
+    {{/typeDef}}
+
+  </div>
+
+{{>footer}}

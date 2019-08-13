@@ -363,5 +363,40 @@ void main() {
           dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
       expect(p.packageMap["Dart"].publicLibraries, hasLength(3));
     });
+
+    test('generate docs with custom templates', () async {
+      String templatesDir = path.join(testPackageCustomTemplates.path, 'templates');
+      Dartdoc dartdoc =
+          await buildDartdoc(['--templates-dir', templatesDir],
+              testPackageCustomTemplates, tempDir);
+
+      DartdocResults results = await dartdoc.generateDocs();
+      expect(results.packageGraph, isNotNull);
+
+      PackageGraph p = results.packageGraph;
+      expect(p.defaultPackage.name, 'test_package_custom_templates');
+      expect(p.localPublicLibraries, hasLength(1));
+    });
+
+    test('generate docs with missing required template fails', () async {
+      var templatesDir = path.join(path.current, 'test/templates');
+      try {
+        await buildDartdoc(['--templates-dir', templatesDir], testPackageCustomTemplates, tempDir);
+        fail('dartdoc should fail with missing required template');
+      } catch (e) {
+        expect(e is DartdocFailure, isTrue);
+        expect((e as DartdocFailure).message, startsWith('Missing required template file'));
+      }
+    });
+
+    test('generate docs with bad templatesDir path fails', () async {
+      String badPath = path.join(tempDir.path, 'BAD');
+      try {
+        await buildDartdoc(['--templates-dir', badPath], testPackageCustomTemplates, tempDir);
+        fail('dartdoc should fail with bad templatesDir path');
+      } catch (e) {
+        expect(e is DartdocFailure, isTrue);
+      }
+    });
   }, timeout: Timeout.factor(8));
 }

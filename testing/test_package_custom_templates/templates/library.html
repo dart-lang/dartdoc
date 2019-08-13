@@ -1,0 +1,44 @@
+{{>head}}
+
+  <div>
+    {{#self}}
+      <div><h1>{{{name}}} {{kind}}</h1></div>
+    {{/self}}
+
+    {{#library}}
+    {{>documentation}}
+    {{/library}}
+
+    {{#library.hasPublicClasses}}
+    <div>
+      <h2>Classes</h2>
+
+      <dl>
+        {{#library.publicClasses}}
+        <dt>
+          {{{linkedName}}}{{{linkedGenericParameters}}}
+        </dt>
+        <dd>
+          {{{ oneLineDoc }}}
+        </dd>
+        {{/library.publicClasses}}
+      </dl>
+    </div>
+    {{/library.hasPublicClasses}}
+
+    {{#library.hasPublicFunctions}}
+    <div>
+      <h2>Functions</h2>
+
+      <dl>
+        {{#library.publicFunctions}}
+        {{{linkedName}}}{{{linkedGenericParameters}}}
+        {{{ oneLineDoc }}}
+        {{/library.publicFunctions}}
+      </dl>
+    </div>
+    {{/library.hasPublicFunctions}}
+
+  </div>
+
+{{>footer}}

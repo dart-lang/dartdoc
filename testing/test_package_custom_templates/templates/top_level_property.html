@@ -1,0 +1,21 @@
+{{>head}}
+
+  <div>
+    {{#self}}
+      <div><h1>{{{name}}} {{kind}}</h1></div>
+
+      {{#hasNoGetterSetter}}
+        {{>documentation}}
+      {{/hasNoGetterSetter}}
+
+      {{#hasExplicitGetter}}
+        <div>Has getter</div>
+      {{/hasExplicitGetter}}
+
+      {{#hasExplicitSetter}}
+        <div>Has setter</div>
+      {{/hasExplicitSetter}}
+    {{/self}}
+  </div>
+
+{{>footer}}
