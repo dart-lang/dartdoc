@@ -1340,6 +1340,16 @@ void main() {
                 '<tbody><tr><td><a href="fake/DocumentWithATable/foo-constant.html">foo</a></td>'),
             isTrue);
       });
+
+      test('Verify there is no emoji support', () {
+        TopLevelVariable tpvar = fakeLibrary.constants.firstWhere((t) => t.name == 'hasMarkdownInDoc');
+        docsAsHtml = tpvar.documentationAsHtml;
+        expect(
+            docsAsHtml.contains(
+                '3ffe:2a00:100:7031::1'),
+            isTrue);
+      });
+
     });
 
     group('doc references', () {

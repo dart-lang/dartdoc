@@ -141,11 +141,19 @@ final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.element);
 
 final List<md.InlineSyntax> _markdown_syntaxes = [
   new _InlineCodeSyntax(),
-  new _AutolinkWithoutScheme()
-]..addAll(md.ExtensionSet.gitHubWeb.inlineSyntaxes);
+  new _AutolinkWithoutScheme(),
+  md.InlineHtmlSyntax(),
+  md.StrikethroughSyntax(),
+  md.AutolinkExtensionSyntax(),
+];
 
-final List<md.BlockSyntax> _markdown_block_syntaxes = []
-  ..addAll(md.ExtensionSet.gitHubWeb.blockSyntaxes);
+final List<md.BlockSyntax> _markdown_block_syntaxes = [
+  const md.FencedCodeBlockSyntax(),
+  const md.HeaderWithIdSyntax(),
+  const md.SetextHeaderWithIdSyntax(),
+  const md.TableSyntax(),
+
+];
 
 // Remove these schemas from the display text for hyperlinks.
 final RegExp _hide_schemes = new RegExp('^(http|https)://');
