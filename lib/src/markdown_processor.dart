@@ -142,7 +142,7 @@ final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.element);
 final List<md.InlineSyntax> _markdown_syntaxes = [
   new _InlineCodeSyntax(),
   new _AutolinkWithoutScheme()
-]..addAll(md.ExtensionSet.gitHubWeb.inlineSyntaxes);
+]..addAll(md.ExtensionSet.gitHubFlavored.inlineSyntaxes);
 
 final List<md.BlockSyntax> _markdown_block_syntaxes = []
   ..addAll(md.ExtensionSet.gitHubWeb.blockSyntaxes);
