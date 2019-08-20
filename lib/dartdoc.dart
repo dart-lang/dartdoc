@@ -13,7 +13,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/empty_generator.dart';
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -69,9 +68,9 @@ class Dartdoc extends PackageBuilder {
     return new Dartdoc._(config, generators);
   }
 
-  /// An asynchronous factory method that builds an EmptyGenerator.
+  /// An asynchronous factory method that builds
   static Future<Dartdoc> withEmptyGenerator(DartdocOptionContext config) async {
-    List<Generator> generators = [await createEmptyGenerator(config)];
+    List<Generator> generators = await initEmptyGenerators(config);
     return new Dartdoc._(config, generators);
   }
 
