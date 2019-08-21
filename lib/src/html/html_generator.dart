@@ -17,7 +17,7 @@ import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:path/path.dart' as path;
 
-typedef String Renderer(String input);
+typedef Renderer = String Function(String input);
 
 // Generation order for libraries:
 //   constants

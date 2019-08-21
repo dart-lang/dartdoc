@@ -19,7 +19,8 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:mustache/mustache.dart';
 import 'package:path/path.dart' as path;
 
-typedef void FileWriter(String path, Object content, {bool allowOverwrite});
+typedef FileWriter = void Function(String path, Object content,
+    {bool allowOverwrite});
 
 class HtmlGeneratorInstance {
   final HtmlGeneratorOptions _options;

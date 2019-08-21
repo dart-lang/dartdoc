@@ -813,7 +813,7 @@ abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
   }
 }
 
-typedef Future<List<DartdocOption>> OptionGenerator();
+typedef OptionGenerator = Future<List<DartdocOption>> Function();
 
 /// A [DartdocOption] that only contains other [DartdocOption]s and is not an option itself.
 class DartdocOptionSet extends DartdocOption<Null> {
