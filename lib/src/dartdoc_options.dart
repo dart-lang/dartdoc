@@ -5,7 +5,7 @@
 ///
 /// dartdoc's dartdoc_options.yaml configuration file follows similar loading
 /// semantics to that of analysis_options.yaml,
-/// [documented here](https://www.dartlang.org/guides/language/analysis-options).
+/// [documented here](https://dart.dev/guides/language/analysis-options).
 /// It searches parent directories until it finds an analysis_options.yaml file,
 /// and uses built-in defaults if one is not found.
 ///
