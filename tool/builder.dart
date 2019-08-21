@@ -11,7 +11,7 @@ import 'package:path/path.dart' as path;
 String _resourcesFile(Iterable<String> packagePaths) => '''
 // WARNING: This file is auto-generated. Do not taunt.
 
-const List<String> resource_names = const [
+const List<String> resource_names = [
 ${packagePaths.map((p) => "  '$p'").join(',\n')}
 ];
 ''';
