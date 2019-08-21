@@ -2,7 +2,6 @@ library dartdoc.empty_generator;
 
 import 'dart:async';
 
-import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
@@ -39,8 +38,4 @@ class EmptyGenerator extends Generator {
 
   @override
   Set<String> get writtenFiles => new Set();
-}
-
-Future<Generator> createEmptyGenerator(DartdocOptionContext config) async {
-  return EmptyGenerator();
 }

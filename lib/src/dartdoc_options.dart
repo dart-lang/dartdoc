@@ -1422,8 +1422,6 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   bool isPackageExcluded(String name) =>
       excludePackages.any((pattern) => name == pattern);
-
-  String get format => optionSet['format'].valueAt(context);
 }
 
 /// Instantiate dartdoc's configuration file and options parser with the
@@ -1626,8 +1624,6 @@ Future<List<DartdocOption>> createDartdocOptions() async {
             'exist. Executables for different platforms are specified by '
             'giving the platform name as a key, and a list of strings as the '
             'command.'),
-    // TODO(jdkoren): unhide when this feature is in working order.
-    new DartdocOptionArgOnly<String>('format', 'html', hide: true)
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
   ]

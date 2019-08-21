@@ -9,6 +9,7 @@ import 'dart:io' show Directory, File;
 import 'dart:isolate';
 
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/empty_generator.dart';
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/html/html_generator_instance.dart';
 import 'package:dartdoc/src/html/template_data.dart';
@@ -131,8 +132,12 @@ class HtmlGeneratorOptions implements HtmlOptions {
       : this.toolVersion = toolVersion ?? 'unknown';
 }
 
+Future<List<Generator>> initEmptyGenerators(DartdocOptionContext config) async {
+  return [EmptyGenerator()];
+}
+
 /// Initialize and setup the generators.
-Future<HtmlGenerator> createHtmlGenerator(GeneratorContext config) async {
+Future<List<Generator>> initGenerators(GeneratorContext config) async {
   // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
   // through the generators.
   HtmlGeneratorOptions options = new HtmlGeneratorOptions(
@@ -142,12 +147,14 @@ Future<HtmlGenerator> createHtmlGenerator(GeneratorContext config) async {
       faviconPath: config.favicon,
       prettyIndexJson: config.prettyIndexJson);
 
-  return await HtmlGenerator.create(
-    options: options,
-    headers: config.header,
-    footers: config.footer,
-    footerTexts: config.footerTextPaths,
-  );
+  return [
+    await HtmlGenerator.create(
+      options: options,
+      headers: config.header,
+      footers: config.footer,
+      footerTexts: config.footerTextPaths,
+    )
+  ];
 }
 
 Uri _sdkFooterCopyrightUri;
