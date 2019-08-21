@@ -46,7 +46,6 @@ void testMacro() {}
 /// {@endtemplate}
 bool get isCheck => true;
 
-
 /// A custom annotation.
 class aThingToDo {
   final String who;
@@ -55,12 +54,8 @@ class aThingToDo {
   const aThingToDo(this.who, this.what);
 }
 
-const ConstantCat MY_CAT = const ConstantCat('tabby');
-const List<String> PRETTY_COLORS = const <String>[
-  COLOR_GREEN,
-  COLOR_ORANGE,
-  'blue'
-];
+const ConstantCat MY_CAT = ConstantCat('tabby');
+const List<String> PRETTY_COLORS = <String>[COLOR_GREEN, COLOR_ORANGE, 'blue'];
 @deprecated
 int deprecatedField;
 
@@ -157,7 +152,7 @@ class Apple {
   Apple();
 
   factory Apple.fromString(String s) {
-    return new Apple._internal(s);
+    return Apple._internal(s);
   }
 
   Apple._internal(this._s2);
@@ -300,7 +295,7 @@ class Dog implements Cat, E {
   static const String aStaticConstField = "A Constant Dog";
 
   /// Verify link substitution in constants (#1535)
-  static const ShortName aName = const ExtendedShortName("hello there");
+  static const ShortName aName = ExtendedShortName("hello there");
 
   @protected
   final int aProtectedFinalField;
@@ -321,7 +316,7 @@ class Dog implements Cat, E {
   @override
   bool get isImplemented => true;
 
-  int get aGetterReturningRandomThings => (new Random()).nextInt(50);
+  int get aGetterReturningRandomThings => (Random()).nextInt(50);
 
   @override
   operator ==(other) => other is Dog && name == other.name;
@@ -330,12 +325,12 @@ class Dog implements Cat, E {
 
   @deprecated
   List<Apple> getClassA() {
-    return [new Apple()];
+    return [Apple()];
   }
 
   @Deprecated('before v27.3')
   List<Dog> getAnotherClassD() {
-    return [new Dog()];
+    return [Dog()];
   }
 
   /// A tasty static + final property.
@@ -440,7 +435,7 @@ class Dog implements Cat, E {
 
   @Deprecated("Internal use")
   static Dog createDog(String s) {
-    return new Dog.deprecatedCreate(s);
+    return Dog.deprecatedCreate(s);
   }
 
   @override
@@ -511,8 +506,8 @@ class PublicClassImplementsPrivateInterface implements _PrivateInterface {
 ///    [MyError] and [MyException] and
 ///    [List<int>] foo bar.
 class ShapeType extends _RetainedEnum {
-  static const ShapeType rect = const ShapeType._internal("Rect");
-  static const ShapeType ellipse = const ShapeType._internal("Ellipse");
+  static const ShapeType rect = ShapeType._internal("Rect");
+  static const ShapeType ellipse = ShapeType._internal("Ellipse");
 
   const ShapeType._internal(String name) : super(name);
 }

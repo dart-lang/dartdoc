@@ -25,12 +25,12 @@ void main() {
       ..createSync();
     testPackageThree = Directory(path.join(tempDir.path, 'test_package_three'))
       ..createSync();
-    pubspecYamlOne = new File(path.join(testPackageOne.path, 'pubspec.yaml'));
+    pubspecYamlOne = File(path.join(testPackageOne.path, 'pubspec.yaml'));
     pubspecYamlOne.writeAsStringSync('name: test_package_one');
-    pubspecYamlTwo = new File(path.join(testPackageTwo.path, 'pubspec.yaml'));
+    pubspecYamlTwo = File(path.join(testPackageTwo.path, 'pubspec.yaml'));
     pubspecYamlTwo.writeAsStringSync('name: test_package_two');
     dartdocYamlThree =
-        new File(path.join(testPackageThree.path, 'dartdoc_options.yaml'));
+        File(path.join(testPackageThree.path, 'dartdoc_options.yaml'));
     dartdocYamlThree.writeAsStringSync('''
 dartdoc:
   warnings:
@@ -41,8 +41,7 @@ dartdoc:
   ignore:
     - ambiguous-reexport  
     ''');
-    pubspecYamlThree =
-        new File(path.join(testPackageThree.path, 'pubspec.yaml'));
+    pubspecYamlThree = File(path.join(testPackageThree.path, 'pubspec.yaml'));
     pubspecYamlThree.writeAsStringSync('name: test_package_three');
   });
 

@@ -32,8 +32,7 @@ void main() {
       DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
           'dartdoc', [createLoggingOptions]);
       optionSet.parseArguments([]);
-      startLogging(
-          new DartdocLoggingOptionContext(optionSet, Directory.current));
+      startLogging(DartdocLoggingOptionContext(optionSet, Directory.current));
     });
 
     setUp(() async {
@@ -69,9 +68,9 @@ void main() {
       });
 
       test('generator parameters', () async {
-        File favicon = new File(
-            path.joinAll([tempDir.path, 'static-assets', 'favicon.png']));
-        File index = new File(path.joinAll([tempDir.path, 'index.html']));
+        File favicon =
+            File(path.joinAll([tempDir.path, 'static-assets', 'favicon.png']));
+        File index = File(path.joinAll([tempDir.path, 'index.html']));
         expect(favicon.readAsStringSync(),
             contains('Not really a png, but a test file'));
         String indexString = index.readAsStringSync();
@@ -231,7 +230,7 @@ void main() {
           useSomethingInAnotherPackage.modelType.linkedName,
           matches(
               '<a href=\"https://pub.dartlang.org/documentation/meta/[^\"]*/meta/Required-class.html\">Required</a>'));
-      RegExp stringLink = new RegExp(
+      RegExp stringLink = RegExp(
           'https://api.dartlang.org/(dev|stable|edge|be)/${Platform.version.split(' ').first}/dart-core/String-class.html">String</a>');
       expect(useSomethingInTheSdk.modelType.linkedName, contains(stringLink));
     });
@@ -266,8 +265,8 @@ void main() {
       test('source code links are visible', () async {
         // Picked this object as this library explicitly should never contain
         // a library directive, so we can predict what line number it will be.
-        File anonymousOutput = new File(path.join(tempDir.path,
-            'anonymous_library', 'anonymous_library-library.html'));
+        File anonymousOutput = File(path.join(tempDir.path, 'anonymous_library',
+            'anonymous_library-library.html'));
         expect(anonymousOutput.existsSync(), isTrue);
         expect(
             anonymousOutput.readAsStringSync(),
@@ -364,5 +363,5 @@ void main() {
           dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
       expect(p.packageMap["Dart"].publicLibraries, hasLength(3));
     });
-  }, timeout: new Timeout.factor(8));
+  }, timeout: Timeout.factor(8));
 }

@@ -40,7 +40,7 @@ class HtmlGeneratorInstance {
 
     await _copyResources();
     if (_options.faviconPath != null) {
-      var bytes = new File(_options.faviconPath).readAsBytesSync();
+      var bytes = File(_options.faviconPath).readAsBytesSync();
       // Allow overwrite of favicon.
       _writer(path.join('static-assets', 'favicon.png'), bytes,
           allowOverwrite: true);
@@ -48,7 +48,7 @@ class HtmlGeneratorInstance {
   }
 
   void _generateCategoryJson() {
-    var encoder = new JsonEncoder.withIndent('  ');
+    var encoder = JsonEncoder.withIndent('  ');
     final List<Map> indexItems = _categorizationItems.map((Categorization e) {
       Map data = {
         'name': e.name,
@@ -79,9 +79,8 @@ class HtmlGeneratorInstance {
   List<Categorization> _categorizationItems;
 
   void _generateSearchIndex() {
-    var encoder = _options.prettyIndexJson
-        ? new JsonEncoder.withIndent(' ')
-        : new JsonEncoder();
+    var encoder =
+        _options.prettyIndexJson ? JsonEncoder.withIndent(' ') : JsonEncoder();
     _categorizationItems = [];
 
     final List<Map> indexItems = _indexedElements.map((Indexable e) {
@@ -242,8 +241,7 @@ class HtmlGeneratorInstance {
   }
 
   void generatePackage(PackageGraph packageGraph, Package package) {
-    TemplateData data =
-        new PackageTemplateData(_options, packageGraph, package);
+    TemplateData data = PackageTemplateData(_options, packageGraph, package);
     logInfo('documenting ${package.name}');
 
     _build('index.html', _templates.indexTemplate, data);
@@ -253,8 +251,7 @@ class HtmlGeneratorInstance {
   void generateCategory(PackageGraph packageGraph, Category category) {
     logInfo(
         'Generating docs for category ${category.name} from ${category.package.fullyQualifiedName}...');
-    TemplateData data =
-        new CategoryTemplateData(_options, packageGraph, category);
+    TemplateData data = CategoryTemplateData(_options, packageGraph, category);
 
     _build(path.joinAll(category.href.split('/')), _templates.categoryTemplate,
         data);
@@ -266,27 +263,25 @@ class HtmlGeneratorInstance {
     if (!lib.isAnonymous && !lib.hasDocumentation) {
       packageGraph.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);
     }
-    TemplateData data = new LibraryTemplateData(_options, packageGraph, lib);
+    TemplateData data = LibraryTemplateData(_options, packageGraph, lib);
 
     _build(path.join(lib.dirName, '${lib.fileName}'),
         _templates.libraryTemplate, data);
   }
 
   void generateClass(PackageGraph packageGraph, Library lib, Class clazz) {
-    TemplateData data =
-        new ClassTemplateData(_options, packageGraph, lib, clazz);
+    TemplateData data = ClassTemplateData(_options, packageGraph, lib, clazz);
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
 
   void generateMixins(PackageGraph packageGraph, Library lib, Mixin mixin) {
-    TemplateData data =
-        new MixinTemplateData(_options, packageGraph, lib, mixin);
+    TemplateData data = MixinTemplateData(_options, packageGraph, lib, mixin);
     _build(path.joinAll(mixin.href.split('/')), _templates.mixinTemplate, data);
   }
 
   void generateConstructor(PackageGraph packageGraph, Library lib, Class clazz,
       Constructor constructor) {
-    TemplateData data = new ConstructorTemplateData(
+    TemplateData data = ConstructorTemplateData(
         _options, packageGraph, lib, clazz, constructor);
 
     _build(path.joinAll(constructor.href.split('/')),
@@ -294,7 +289,7 @@ class HtmlGeneratorInstance {
   }
 
   void generateEnum(PackageGraph packageGraph, Library lib, Enum eNum) {
-    TemplateData data = new EnumTemplateData(_options, packageGraph, lib, eNum);
+    TemplateData data = EnumTemplateData(_options, packageGraph, lib, eNum);
 
     _build(path.joinAll(eNum.href.split('/')), _templates.enumTemplate, data);
   }
@@ -302,7 +297,7 @@ class HtmlGeneratorInstance {
   void generateFunction(
       PackageGraph packageGraph, Library lib, ModelFunction function) {
     TemplateData data =
-        new FunctionTemplateData(_options, packageGraph, lib, function);
+        FunctionTemplateData(_options, packageGraph, lib, function);
 
     _build(path.joinAll(function.href.split('/')), _templates.functionTemplate,
         data);
@@ -311,7 +306,7 @@ class HtmlGeneratorInstance {
   void generateMethod(
       PackageGraph packageGraph, Library lib, Class clazz, Method method) {
     TemplateData data =
-        new MethodTemplateData(_options, packageGraph, lib, clazz, method);
+        MethodTemplateData(_options, packageGraph, lib, clazz, method);
 
     _build(
         path.joinAll(method.href.split('/')), _templates.methodTemplate, data);
@@ -320,7 +315,7 @@ class HtmlGeneratorInstance {
   void generateConstant(
       PackageGraph packageGraph, Library lib, Class clazz, Field property) {
     TemplateData data =
-        new ConstantTemplateData(_options, packageGraph, lib, clazz, property);
+        ConstantTemplateData(_options, packageGraph, lib, clazz, property);
 
     _build(path.joinAll(property.href.split('/')), _templates.constantTemplate,
         data);
@@ -329,7 +324,7 @@ class HtmlGeneratorInstance {
   void generateProperty(
       PackageGraph packageGraph, Library lib, Class clazz, Field property) {
     TemplateData data =
-        new PropertyTemplateData(_options, packageGraph, lib, clazz, property);
+        PropertyTemplateData(_options, packageGraph, lib, clazz, property);
 
     _build(path.joinAll(property.href.split('/')), _templates.propertyTemplate,
         data);
@@ -338,7 +333,7 @@ class HtmlGeneratorInstance {
   void generateTopLevelProperty(
       PackageGraph packageGraph, Library lib, TopLevelVariable property) {
     TemplateData data =
-        new TopLevelPropertyTemplateData(_options, packageGraph, lib, property);
+        TopLevelPropertyTemplateData(_options, packageGraph, lib, property);
 
     _build(path.joinAll(property.href.split('/')),
         _templates.topLevelPropertyTemplate, data);
@@ -347,7 +342,7 @@ class HtmlGeneratorInstance {
   void generateTopLevelConstant(
       PackageGraph packageGraph, Library lib, TopLevelVariable property) {
     TemplateData data =
-        new TopLevelConstTemplateData(_options, packageGraph, lib, property);
+        TopLevelConstTemplateData(_options, packageGraph, lib, property);
 
     _build(path.joinAll(property.href.split('/')),
         _templates.topLevelConstantTemplate, data);
@@ -356,7 +351,7 @@ class HtmlGeneratorInstance {
   void generateTypeDef(
       PackageGraph packageGraph, Library lib, Typedef typeDef) {
     TemplateData data =
-        new TypedefTemplateData(_options, packageGraph, lib, typeDef);
+        TypedefTemplateData(_options, packageGraph, lib, typeDef);
 
     _build(path.joinAll(typeDef.href.split('/')), _templates.typeDefTemplate,
         data);
@@ -367,7 +362,7 @@ class HtmlGeneratorInstance {
     final prefix = 'package:dartdoc/resources/';
     for (String resourcePath in resources.resource_names) {
       if (!resourcePath.startsWith(prefix)) {
-        throw new StateError('Resource paths must start with $prefix, '
+        throw StateError('Resource paths must start with $prefix, '
             'encountered $resourcePath');
       }
       String destFileName = resourcePath.substring(prefix.length);

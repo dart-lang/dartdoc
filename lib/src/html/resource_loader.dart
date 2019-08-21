@@ -25,7 +25,7 @@ Future<String> loadAsString(String path) async {
 /// Loads a `package:` resource as an [List<int>].
 Future<List<int>> loadAsBytes(String path) async {
   if (!path.startsWith('package:')) {
-    throw new ArgumentError('path must begin with package:');
+    throw ArgumentError('path must begin with package:');
   }
 
   Uri uri = Uri.parse(path);

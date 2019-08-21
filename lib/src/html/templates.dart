@@ -10,7 +10,7 @@ import 'dart:io' show File;
 import 'package:dartdoc/src/html/resource_loader.dart' as loader;
 import 'package:mustache/mustache.dart';
 
-const _partials = const <String>[
+const _partials = <String>[
   'callable',
   'callable_multiline',
   'categorization',
@@ -52,20 +52,18 @@ Future<Map<String, String>> _loadPartials(List<String> headerPaths,
     String template = await _getTemplateFile(templatePath);
 
     if (templatePath.contains('_head')) {
-      String headerValue = headerPaths
-          .map((path) => new File(path).readAsStringSync())
-          .join('\n');
+      String headerValue =
+          headerPaths.map((path) => File(path).readAsStringSync()).join('\n');
       template = template.replaceAll(headerPlaceholder, headerValue);
     }
 
     if (templatePath.contains('_footer')) {
-      String footerValue = footerPaths
-          .map((path) => new File(path).readAsStringSync())
-          .join('\n');
+      String footerValue =
+          footerPaths.map((path) => File(path).readAsStringSync()).join('\n');
       template = template.replaceAll(footerPlaceholder, footerValue);
 
       String footerTextValue = footerTextPaths
-          .map((path) => new File(path).readAsStringSync())
+          .map((path) => File(path).readAsStringSync())
           .join('\n');
       template = template.replaceAll(footerTextPlaceholder, footerTextValue);
     }
@@ -110,7 +108,7 @@ class Templates {
     Template _partial(String name) {
       String partial = partials[name];
       if (partial == null || partial.isEmpty) {
-        throw new StateError('Did not find partial "$name"');
+        throw StateError('Did not find partial "$name"');
       }
       return Template(partial);
     }
@@ -138,7 +136,7 @@ class Templates {
     var typeDefTemplate = await _loadTemplate('typedef.html');
     var mixinTemplate = await _loadTemplate('mixin.html');
 
-    return new Templates._(
+    return Templates._(
         indexTemplate,
         categoryTemplate,
         libraryTemplate,

@@ -10,7 +10,7 @@ import 'dart:io';
 void main(List<String> args) {
   assert(args.isNotEmpty);
   // Just touch the file given on the command line.
-  File setupFile = new File(args[0])..createSync(recursive: true);
+  File setupFile = File(args[0])..createSync(recursive: true);
   setupFile.writeAsStringSync('setup');
   exit(0);
 }

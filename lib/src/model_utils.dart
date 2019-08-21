@@ -25,7 +25,7 @@ AstNode getAstNode(
       element.nameOffset != -1) {
     CompilationUnit unit = compilationUnitMap[element.source.fullName];
     if (unit != null) {
-      var locator = new NodeLocator2(element.nameOffset);
+      var locator = NodeLocator2(element.nameOffset);
       return (locator.searchWithin(unit)?.parent);
     }
   }
@@ -53,13 +53,13 @@ Iterable<Class> findCanonicalFor(Iterable<Class> classes) {
 String getFileContentsFor(Element e) {
   var location = e.source.fullName;
   if (!_fileContents.containsKey(location)) {
-    var contents = new File(location).readAsStringSync();
+    var contents = File(location).readAsStringSync();
     _fileContents.putIfAbsent(location, () => contents);
   }
   return _fileContents[location];
 }
 
-final RegExp slashes = new RegExp('[\/]');
+final RegExp slashes = RegExp('[\/]');
 bool hasPrivateName(Element e) {
   if (e.name == null) return false;
 

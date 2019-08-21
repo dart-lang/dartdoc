@@ -40,18 +40,18 @@ Iterable<String> listDir(String dir,
     Iterable<FileSystemEntity> listDir(Directory dir)}) {
   if (listDir == null) listDir = (Directory dir) => dir.listSync();
 
-  return _doList(dir, new Set<String>(), recursive, listDir);
+  return _doList(dir, Set<String>(), recursive, listDir);
 }
 
 Iterable<String> _doList(String dir, Set<String> listedDirectories,
     bool recurse, Iterable<FileSystemEntity> listDir(Directory dir)) sync* {
   // Avoid recursive symlinks.
-  var resolvedPath = new Directory(dir).resolveSymbolicLinksSync();
+  var resolvedPath = Directory(dir).resolveSymbolicLinksSync();
   if (!listedDirectories.contains(resolvedPath)) {
-    listedDirectories = new Set<String>.from(listedDirectories);
+    listedDirectories = Set<String>.from(listedDirectories);
     listedDirectories.add(resolvedPath);
 
-    for (var entity in listDir(new Directory(dir))) {
+    for (var entity in listDir(Directory(dir))) {
       // Skip hidden files and directories
       if (path.basename(entity.path).startsWith('.')) {
         continue;
@@ -76,16 +76,16 @@ Iterable<String> _doList(String dir, Set<String> listedDirectories,
 String getFileNameFor(String name) =>
     '${name.replaceAll(libraryNameRegexp, '-')}.html';
 
-final libraryNameRegexp = new RegExp('[.:]');
-final partOfRegexp = new RegExp('part of ');
-final newLinePartOfRegexp = new RegExp('\npart of ');
+final libraryNameRegexp = RegExp('[.:]');
+final partOfRegexp = RegExp('part of ');
+final newLinePartOfRegexp = RegExp('\npart of ');
 
 /// Best used with Future<void>.
 class MultiFutureTracker<T> {
   /// Approximate maximum number of simultaneous active Futures.
   final int parallel;
 
-  final Set<Future<T>> _trackedFutures = new Set();
+  final Set<Future<T>> _trackedFutures = Set();
 
   MultiFutureTracker(this.parallel);
 

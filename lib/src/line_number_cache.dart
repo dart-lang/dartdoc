@@ -23,7 +23,7 @@ SplayTreeMap<int, int> _createLineNumbersMap(String contents) {
   var newlineChar = _getNewlineChar(contents);
   var offset = 0;
   var lineNumber = 0;
-  var result = new SplayTreeMap<int, int>();
+  var result = SplayTreeMap<int, int>();
 
   do {
     result[offset] = lineNumber;
@@ -34,7 +34,7 @@ SplayTreeMap<int, int> _createLineNumbersMap(String contents) {
   return result;
 }
 
-final LineNumberCache lineNumberCache = new LineNumberCache();
+final LineNumberCache lineNumberCache = LineNumberCache();
 
 // TODO(kevmoo): this could use some testing
 class LineNumberCache {
@@ -47,11 +47,11 @@ class LineNumberCache {
         file, () => _createLineNumbersMap(_fileContents(file)));
     var lastKey = lineMap.lastKeyBefore(offset);
     if (lastKey != null) {
-      return new Tuple2(lineMap[lastKey] + 1, offset - lastKey);
+      return Tuple2(lineMap[lastKey] + 1, offset - lastKey);
     }
     return null;
   }
 
   String _fileContents(String file) =>
-      __fileContents.putIfAbsent(file, () => new File(file).readAsStringSync());
+      __fileContents.putIfAbsent(file, () => File(file).readAsStringSync());
 }

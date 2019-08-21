@@ -21,10 +21,9 @@ abstract class ElementType extends Privacy {
   factory ElementType.from(DartType f, PackageGraph packageGraph,
       [ElementType returnedFrom]) {
     if (f.element == null || f.element.kind == ElementKind.DYNAMIC) {
-      return new UndefinedElementType(f, packageGraph, returnedFrom);
+      return UndefinedElementType(f, packageGraph, returnedFrom);
     } else {
-      ModelElement element =
-          new ModelElement.fromElement(f.element, packageGraph);
+      ModelElement element = ModelElement.fromElement(f.element, packageGraph);
       assert(f is ParameterizedType || f is TypeParameterType);
       bool isGenericTypeAlias =
           f.element.enclosingElement is GenericTypeAliasElement;
@@ -32,33 +31,30 @@ abstract class ElementType extends Privacy {
         assert(f is ParameterizedType);
         if (isGenericTypeAlias) {
           assert(element is! ModelFunctionAnonymous);
-          return new CallableGenericTypeAliasElementType(
+          return CallableGenericTypeAliasElementType(
               f, packageGraph, element, returnedFrom);
         } else {
           if (element is ModelFunctionAnonymous) {
-            return new CallableAnonymousElementType(
+            return CallableAnonymousElementType(
                 f, packageGraph, element, returnedFrom);
           } else {
             assert(element is! ModelFunctionAnonymous);
-            return new CallableElementType(
-                f, packageGraph, element, returnedFrom);
+            return CallableElementType(f, packageGraph, element, returnedFrom);
           }
         }
       } else if (isGenericTypeAlias) {
         assert(f is TypeParameterType);
         assert(element is! ModelFunctionAnonymous);
-        return new GenericTypeAliasElementType(
+        return GenericTypeAliasElementType(
             f, packageGraph, element, returnedFrom);
       }
       if (f is TypeParameterType) {
         assert(element is! ModelFunctionAnonymous);
-        return new TypeParameterElementType(
-            f, packageGraph, element, returnedFrom);
+        return TypeParameterElementType(f, packageGraph, element, returnedFrom);
       }
       assert(f is ParameterizedType);
       assert(element is! ModelFunctionAnonymous);
-      return new ParameterizedElementType(
-          f, packageGraph, element, returnedFrom);
+      return ParameterizedElementType(f, packageGraph, element, returnedFrom);
     }
   }
 
@@ -117,7 +113,7 @@ class ParameterizedElementType extends DefinedElementType {
   @override
   String get linkedName {
     if (_linkedName == null) {
-      StringBuffer buf = new StringBuffer();
+      StringBuffer buf = StringBuffer();
 
       buf.write(element.linkedName);
 
@@ -140,7 +136,7 @@ class ParameterizedElementType extends DefinedElementType {
   @override
   String get nameWithGenerics {
     if (_nameWithGenerics == null) {
-      StringBuffer buf = new StringBuffer();
+      StringBuffer buf = StringBuffer();
 
       buf.write(element.name);
 
@@ -212,7 +208,7 @@ abstract class DefinedElementType extends ElementType {
   ElementType _returnType;
   ElementType get returnType {
     if (_returnType == null) {
-      _returnType = new ElementType.from(type, packageGraph, this);
+      _returnType = ElementType.from(type, packageGraph, this);
     }
     return _returnType;
   }
@@ -225,7 +221,7 @@ abstract class DefinedElementType extends ElementType {
     if (_typeArguments == null) {
       _typeArguments = (type as ParameterizedType)
           .typeArguments
-          .map((f) => new ElementType.from(f, packageGraph))
+          .map((f) => ElementType.from(f, packageGraph))
           .toList();
     }
     return _typeArguments;
@@ -242,7 +238,7 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
   @override
   ElementType get returnType {
     if (_returnType == null) {
-      _returnType = new ElementType.from(type.returnType, packageGraph, this);
+      _returnType = ElementType.from(type.returnType, packageGraph, this);
     }
     return _returnType;
   }
@@ -268,7 +264,7 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
       }
       if (dartTypeArguments != null) {
         _typeArguments = dartTypeArguments
-            .map((f) => new ElementType.from(f, packageGraph))
+            .map((f) => ElementType.from(f, packageGraph))
             .toList();
       }
     }
@@ -332,8 +328,8 @@ class CallableGenericTypeAliasElementType extends ParameterizedElementType
   @override
   ModelElement get returnElement {
     if (_returnElement == null) {
-      _returnElement = new ModelElement.fromElement(
-          type.element.enclosingElement, packageGraph);
+      _returnElement =
+          ModelElement.fromElement(type.element.enclosingElement, packageGraph);
     }
     return _returnElement;
   }
@@ -341,8 +337,8 @@ class CallableGenericTypeAliasElementType extends ParameterizedElementType
   @override
   ElementType get returnType {
     if (_returnType == null) {
-      _returnType = new ElementType.from(
-          returnElement.modelType.type, packageGraph, this);
+      _returnType =
+          ElementType.from(returnElement.modelType.type, packageGraph, this);
     }
     return _returnType;
   }

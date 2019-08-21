@@ -42,14 +42,13 @@ class HtmlGenerator extends Generator {
   final HtmlGeneratorOptions _options;
   HtmlGeneratorInstance _instance;
 
-  final StreamController<void> _onFileCreated =
-      new StreamController(sync: true);
+  final StreamController<void> _onFileCreated = StreamController(sync: true);
 
   @override
   Stream<void> get onFileCreated => _onFileCreated.stream;
 
   @override
-  final Set<String> writtenFiles = new Set<String>();
+  final Set<String> writtenFiles = Set<String>();
 
   static Future<HtmlGenerator> create(
       {HtmlGeneratorOptions options,
@@ -61,8 +60,7 @@ class HtmlGenerator extends Generator {
         footerPaths: footers,
         footerTextPaths: footerTexts);
 
-    return new HtmlGenerator._(
-        options ?? new HtmlGeneratorOptions(), templates);
+    return HtmlGenerator._(options ?? HtmlGeneratorOptions(), templates);
   }
 
   HtmlGenerator._(this._options, this._templates);
@@ -78,13 +76,13 @@ class HtmlGenerator extends Generator {
     void write(String filePath, Object content, {bool allowOverwrite}) {
       allowOverwrite ??= false;
       if (!enabled) {
-        throw new StateError('`write` was called after `generate` completed.');
+        throw StateError('`write` was called after `generate` completed.');
       }
       // If you see this assert, we're probably being called to build non-canonical
       // docs somehow.  Check data.self.isCanonical and callers for bugs.
       assert(allowOverwrite || !writtenFiles.contains(filePath));
 
-      var file = new File(path.join(outputDirectoryPath, filePath));
+      var file = File(path.join(outputDirectoryPath, filePath));
       var parent = file.parent;
       if (!parent.existsSync()) {
         parent.createSync(recursive: true);
@@ -95,7 +93,7 @@ class HtmlGenerator extends Generator {
       } else if (content is List<int>) {
         file.writeAsBytesSync(content);
       } else {
-        throw new ArgumentError.value(
+        throw ArgumentError.value(
             content, 'content', '`content` must be `String` or `List<int>`.');
       }
       _onFileCreated.add(file);
@@ -104,7 +102,7 @@ class HtmlGenerator extends Generator {
 
     try {
       _instance =
-          new HtmlGeneratorInstance(_options, _templates, packageGraph, write);
+          HtmlGeneratorInstance(_options, _templates, packageGraph, write);
       await _instance.generate();
     } finally {
       enabled = false;
@@ -140,7 +138,7 @@ Future<List<Generator>> initEmptyGenerators(DartdocOptionContext config) async {
 Future<List<Generator>> initGenerators(GeneratorContext config) async {
   // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
   // through the generators.
-  HtmlGeneratorOptions options = new HtmlGeneratorOptions(
+  HtmlGeneratorOptions options = HtmlGeneratorOptions(
       url: config.hostedUrl,
       relCanonicalPrefix: config.relCanonicalPrefix,
       toolVersion: dartdocVersion,
@@ -184,23 +182,23 @@ abstract class GeneratorContext implements DartdocOptionContext {
 Future<List<DartdocOption>> createGeneratorOptions() async {
   await _setSdkFooterCopyrightUri();
   return <DartdocOption>[
-    new DartdocOptionArgFile<String>('favicon', null,
+    DartdocOptionArgFile<String>('favicon', null,
         isFile: true,
         help: 'A path to a favicon for the generated docs.',
         mustExist: true),
-    new DartdocOptionArgFile<List<String>>('footer', [],
+    DartdocOptionArgFile<List<String>>('footer', [],
         isFile: true,
         help: 'paths to footer files containing HTML text.',
         mustExist: true,
         splitCommas: true),
-    new DartdocOptionArgFile<List<String>>('footerText', [],
+    DartdocOptionArgFile<List<String>>('footerText', [],
         isFile: true,
         help:
             'paths to footer-text files (optional text next to the package name '
             'and version).',
         mustExist: true,
         splitCommas: true),
-    new DartdocOptionSyntheticOnly<List<String>>(
+    DartdocOptionSyntheticOnly<List<String>>(
       'footerTextPaths',
       (DartdocSyntheticOption<List<String>> option, Directory dir) {
         final List<String> footerTextPaths = <String>[];
@@ -218,18 +216,18 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
       help: 'paths to footer-text-files (adding special case for SDK)',
       mustExist: true,
     ),
-    new DartdocOptionArgFile<List<String>>('header', [],
+    DartdocOptionArgFile<List<String>>('header', [],
         isFile: true,
         help: 'paths to header files containing HTML text.',
         splitCommas: true),
-    new DartdocOptionArgOnly<String>('hostedUrl', null,
+    DartdocOptionArgOnly<String>('hostedUrl', null,
         help:
             'URL where the docs will be hosted (used to generate the sitemap).'),
-    new DartdocOptionArgOnly<bool>('prettyIndexJson', false,
+    DartdocOptionArgOnly<bool>('prettyIndexJson', false,
         help:
             "Generates `index.json` with indentation and newlines. The file is larger, but it's also easier to diff.",
         negatable: false),
-    new DartdocOptionArgOnly<String>('relCanonicalPrefix', null,
+    DartdocOptionArgOnly<String>('relCanonicalPrefix', null,
         help:
             'If provided, add a rel="canonical" prefixed with provided value. '
             'Consider using if\nbuilding many versions of the docs for public '

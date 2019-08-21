@@ -132,7 +132,7 @@ void main() {
       expect(typedSet.modelType.typeArguments.map((a) => a.name).toList(),
           equals(['String']));
       expect(typedSet.constantValue,
-          matches(new RegExp(r'const &lt;String&gt;\s?{}')));
+          matches(RegExp(r'const &lt;String&gt;\s?{}')));
     });
   });
 
@@ -147,7 +147,7 @@ void main() {
     Method invokeToolPrivateLibrary, invokeToolPrivateLibraryOriginal;
     Method invokeToolParentDoc, invokeToolParentDocOriginal;
     final RegExp packageInvocationIndexRegexp =
-        new RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
+        RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
 
     setUpAll(() {
       _NonCanonicalToolUser = fakeLibrary.allClasses
@@ -228,12 +228,10 @@ void main() {
 
     test('can invoke a tool and pass args and environment', () {
       expect(invokeTool.documentation, contains('--file=<INPUT_FILE>'));
-      expect(
-          invokeTool.documentation,
-          contains(
-              new RegExp(r'--source=lib[/\\]example\.dart_[0-9]+_[0-9]+, ')));
       expect(invokeTool.documentation,
-          contains(new RegExp(r'--package-path=<PACKAGE_PATH>, ')));
+          contains(RegExp(r'--source=lib[/\\]example\.dart_[0-9]+_[0-9]+, ')));
+      expect(invokeTool.documentation,
+          contains(RegExp(r'--package-path=<PACKAGE_PATH>, ')));
       expect(
           invokeTool.documentation, contains('--package-name=test_package, '));
       expect(invokeTool.documentation, contains('--library-name=ex, '));
@@ -243,18 +241,18 @@ void main() {
           contains(r'''--special= |\[]!@#\"'$%^&*()_+]'''));
       expect(invokeTool.documentation, contains('INPUT: <INPUT_FILE>'));
       expect(invokeTool.documentation,
-          contains(new RegExp('SOURCE_COLUMN: [0-9]+, ')));
+          contains(RegExp('SOURCE_COLUMN: [0-9]+, ')));
       expect(invokeTool.documentation,
-          contains(new RegExp(r'SOURCE_PATH: lib[/\\]example\.dart, ')));
+          contains(RegExp(r'SOURCE_PATH: lib[/\\]example\.dart, ')));
       expect(invokeTool.documentation,
-          contains(new RegExp(r'PACKAGE_PATH: <PACKAGE_PATH>, ')));
+          contains(RegExp(r'PACKAGE_PATH: <PACKAGE_PATH>, ')));
       expect(
           invokeTool.documentation, contains('PACKAGE_NAME: test_package, '));
       expect(invokeTool.documentation, contains('LIBRARY_NAME: ex, '));
       expect(invokeTool.documentation,
           contains('ELEMENT_NAME: ToolUser.invokeTool, '));
       expect(invokeTool.documentation,
-          contains(new RegExp('INVOCATION_INDEX: [0-9]+}')));
+          contains(RegExp('INVOCATION_INDEX: [0-9]+}')));
       expect(invokeTool.documentation, contains('## `Yes it is a [Dog]!`'));
     });
     test('can invoke a tool and add a reference link', () {
@@ -529,7 +527,7 @@ void main() {
     List<String> containerNames;
 
     setUpAll(() {
-      topLevel = new TestLibraryContainer('topLevel', [], null);
+      topLevel = TestLibraryContainer('topLevel', [], null);
       sortOrderBasic = ['theFirst', 'second', 'fruit'];
       containerNames = [
         'moo',
@@ -544,11 +542,9 @@ void main() {
     test('multiple containers with specified sort order', () {
       List<LibraryContainer> containers = [];
       for (String name in containerNames) {
-        containers
-            .add(new TestLibraryContainer(name, sortOrderBasic, topLevel));
+        containers.add(TestLibraryContainer(name, sortOrderBasic, topLevel));
       }
-      containers
-          .add(new TestLibraryContainerSdk('SDK', sortOrderBasic, topLevel));
+      containers.add(TestLibraryContainerSdk('SDK', sortOrderBasic, topLevel));
       containers.sort();
       expect(
           containers.map((c) => c.name),
@@ -566,9 +562,9 @@ void main() {
     test('multiple containers, no specified sort order', () {
       List<LibraryContainer> containers = [];
       for (String name in containerNames) {
-        containers.add(new TestLibraryContainer(name, [], topLevel));
+        containers.add(TestLibraryContainer(name, [], topLevel));
       }
-      containers.add(new TestLibraryContainerSdk('SDK', [], topLevel));
+      containers.add(TestLibraryContainerSdk('SDK', [], topLevel));
       containers.sort();
       expect(
           containers.map((c) => c.name),
@@ -1342,14 +1338,11 @@ void main() {
       });
 
       test('Verify there is no emoji support', () {
-        TopLevelVariable tpvar = fakeLibrary.constants.firstWhere((t) => t.name == 'hasMarkdownInDoc');
+        TopLevelVariable tpvar = fakeLibrary.constants
+            .firstWhere((t) => t.name == 'hasMarkdownInDoc');
         docsAsHtml = tpvar.documentationAsHtml;
-        expect(
-            docsAsHtml.contains(
-                '3ffe:2a00:100:7031::1'),
-            isTrue);
+        expect(docsAsHtml.contains('3ffe:2a00:100:7031::1'), isTrue);
       });
-
     });
 
     group('doc references', () {
@@ -1687,8 +1680,8 @@ void main() {
         () {
       Field powers = superAwesomeClass.instanceProperties
           .firstWhere((p) => p.name == 'powers');
-      Iterable<Match> matches = new RegExp('In the super class')
-          .allMatches(powers.documentationAsHtml);
+      Iterable<Match> matches =
+          RegExp('In the super class').allMatches(powers.documentationAsHtml);
       expect(matches, hasLength(1));
     });
 
@@ -3217,7 +3210,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('PRETTY_COLORS', () {
       expect(
           prettyColorsConstant.constantValue,
-          matches(new RegExp(
+          matches(RegExp(
               r"const &lt;String&gt;\s?\[COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;\]")));
     });
 
@@ -3708,8 +3701,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       r"x100$",
     ];
     for (var i = 1; i < names.length; i++) {
-      var a = new StringName(names[i - 1]);
-      var b = new StringName(names[i]);
+      var a = StringName(names[i - 1]);
+      var b = StringName(names[i]);
       test('"$a" < "$b"', () {
         expect(byName(a, a), 0);
         expect(byName(b, b), 0);

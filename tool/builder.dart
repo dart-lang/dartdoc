@@ -20,7 +20,7 @@ class ResourceBuilder implements Builder {
   final BuilderOptions builderOptions;
   ResourceBuilder(this.builderOptions);
 
-  static final _allResources = new Glob('lib/resources/**');
+  static final _allResources = Glob('lib/resources/**');
   @override
   Future build(BuildStep buildStep) async {
     var packagePaths = <String>[];
@@ -29,15 +29,15 @@ class ResourceBuilder implements Builder {
     }
     packagePaths.sort();
     await buildStep.writeAsString(
-        new AssetId(buildStep.inputId.package,
+        AssetId(buildStep.inputId.package,
             path.url.join('lib', 'src', 'html', 'resources.g.dart')),
         _resourcesFile(packagePaths));
   }
 
   @override
   final Map<String, List<String>> buildExtensions = const {
-    r'$lib$': const ['src/html/resources.g.dart']
+    r'$lib$': ['src/html/resources.g.dart']
   };
 }
 
-Builder resourceBuilder(BuilderOptions options) => new ResourceBuilder(options);
+Builder resourceBuilder(BuilderOptions options) => ResourceBuilder(options);

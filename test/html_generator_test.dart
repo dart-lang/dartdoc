@@ -81,19 +81,19 @@ void main() {
 
       test('resources are put into the right place', () {
         Directory output =
-            new Directory(path.join(tempOutput.path, 'static-assets'));
+            Directory(path.join(tempOutput.path, 'static-assets'));
         expect(output, doesExist);
 
         for (var resource in resource_names.map((r) =>
             path.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
-          expect(new File(path.join(output.path, resource)), doesExist);
+          expect(File(path.join(output.path, resource)), doesExist);
         }
       });
     });
   });
 }
 
-const Matcher doesExist = const _DoesExist();
+const Matcher doesExist = _DoesExist();
 
 class _DoesExist extends Matcher {
   const _DoesExist();

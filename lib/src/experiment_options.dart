@@ -24,16 +24,16 @@ abstract class DartdocExperimentOptionContext
 Future<List<DartdocOption>> createExperimentOptions() async {
   return <DartdocOption>[
     // TODO(jcollins-g): Consider loading experiment values from dartdoc_options.yaml?
-    new DartdocOptionArgOnly<List<String>>('enable-experiment', [],
+    DartdocOptionArgOnly<List<String>>('enable-experiment', [],
         help: 'Enable or disable listed experiments.\n' +
             ExperimentStatus.knownFeatures.values
                 .where((e) => e.documentation != null)
                 .map((e) =>
                     '    [no-]${e.enableString}: ${e.documentation} (default: ${e.isEnabledByDefault})')
                 .join('\n')),
-    new DartdocOptionSyntheticOnly<ExperimentStatus>(
+    DartdocOptionSyntheticOnly<ExperimentStatus>(
         'experimentStatus',
-        (option, dir) => new ExperimentStatus.fromStrings(
+        (option, dir) => ExperimentStatus.fromStrings(
             option.parent['enable-experiment'].valueAt(dir))),
   ];
 }
