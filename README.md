@@ -15,7 +15,7 @@ For issues/details related to hosted Dart API docs, see
 
 ## Installing dartdoc
 
-- download the [Dart SDK](https://www.dartlang.org/downloads/)
+- download the [Dart SDK](https://dart.dev/get-dart)
 - add the SDK's `bin` directory to your `PATH`
 
 ## Generating docs
@@ -86,7 +86,7 @@ File names are _case-sensitive_.
 ## Writing docs
 
 Check out the
-[Effective Dart: Documentation guide](https://www.dartlang.org/effective-dart/documentation/).
+[Effective Dart: Documentation guide](https://dart.dev/guides/language/effective-dart/documentation).
 
 The guide covers formatting, linking, markup, and general best practices when
 authoring doc comments for Dart with `dartdoc`.
@@ -152,7 +152,7 @@ Unrecognized options will be ignored.  Supported options:
   * **includeExternal**:  Specify a list of library filenames to add to the list of documented libraries.
   * **linkTo**:  For other packages depending on this one, if this map is defined those packages
     will use the settings here to control how hyperlinks to the package are generated.
-    This will override the default for packages hosted on pub.dartlang.org.
+    This will override the default for packages hosted on pub.dev.
     * **url**:  A string indicating the base URL for documentation of this package.  Ordinarily
       you do not need to set this in the package: consider --link-to-hosted and
       --link-to-sdks instead of this option if you need to build your own website with
