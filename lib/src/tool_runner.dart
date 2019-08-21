@@ -17,7 +17,7 @@ typedef FakeResultCallback = String Function(String tool,
 
 /// Set a ceiling on how many tool instances can be in progress at once,
 /// limiting both parallelization and the number of open temporary files.
-final MultiFutureTracker _toolTracker = new MultiFutureTracker(4);
+final MultiFutureTracker _toolTracker = MultiFutureTracker(4);
 
 /// Can be called when the ToolRunner is no longer needed.
 ///
@@ -38,7 +38,7 @@ class ToolTempFileTracker {
 
   Future<File> createTemporaryFile() async {
     _temporaryFileCount++;
-    File tempFile = new File(path.join(
+    File tempFile = File(path.join(
         temporaryDirectory.absolute.path, 'input_$_temporaryFileCount'));
     await tempFile.create(recursive: true);
     return tempFile;

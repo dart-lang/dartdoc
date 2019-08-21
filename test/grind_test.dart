@@ -14,17 +14,16 @@ void main() {
     WarningsCollection originalWithDirs, currentWithDirs;
     setUp(() {
       original =
-          new WarningsCollection('/a/tempdir', '/pubcache/path', 'oldbranch');
+          WarningsCollection('/a/tempdir', '/pubcache/path', 'oldbranch');
       original.add('originalwarning');
       original.add('morewarning');
       original.add('duplicateoriginalwarning');
       original.add('duplicateoriginalwarning');
-      current =
-          new WarningsCollection('/a/tempdir2', '/pubcache/path2', 'current');
+      current = WarningsCollection('/a/tempdir2', '/pubcache/path2', 'current');
       current.add('newwarning');
       current.add('morewarning');
       current.add('duplicateoriginalwarning');
-      originalWithDirs = new WarningsCollection(
+      originalWithDirs = WarningsCollection(
           '/a/tempdirFOO', '/pubcache/pathFOO', 'DirsOriginal');
       originalWithDirs.add(
           'originalWarning found in /a/tempdirFOO/some/subdir/program.dart!!!!');
@@ -34,7 +33,7 @@ void main() {
           'insufficent exclamation mark warning found in /pubcache/pathFOO/some/package/lib/thingy.dart.');
       originalWithDirs.add(
           'another originalWarning found in /a/tempdirFOO/some/subdir/program.dart');
-      currentWithDirs = new WarningsCollection(
+      currentWithDirs = WarningsCollection(
           '/a/tempdirBAR', '/pubcache/pathBAR', 'DirsCurrent');
       currentWithDirs.add(
           'originalWarning found in /a/tempdirBAR/some/subdir/program.dart!!!!');

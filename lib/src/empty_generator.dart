@@ -27,8 +27,7 @@ class EmptyGenerator extends Generator {
     return null;
   }
 
-  final StreamController<void> _onFileCreated =
-      new StreamController(sync: true);
+  final StreamController<void> _onFileCreated = StreamController(sync: true);
 
   @override
 
@@ -37,5 +36,5 @@ class EmptyGenerator extends Generator {
   Stream<void> get onFileCreated => _onFileCreated.stream;
 
   @override
-  Set<String> get writtenFiles => new Set();
+  Set<String> get writtenFiles => Set();
 }

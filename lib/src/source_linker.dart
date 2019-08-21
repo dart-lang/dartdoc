@@ -9,7 +9,7 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:path/path.dart' as path;
 
-final uriTemplateRegexp = new RegExp(r'(%[frl]%)');
+final uriTemplateRegexp = RegExp(r'(%[frl]%)');
 
 abstract class SourceLinkerOptionContext implements DartdocOptionContextBase {
   List<String> get linkToSourceExcludes =>
@@ -27,20 +27,20 @@ abstract class SourceLinkerOptionContext implements DartdocOptionContextBase {
 
 Future<List<DartdocOption>> createSourceLinkerOptions() async {
   return <DartdocOption>[
-    new DartdocOptionSet('linkToSource')
+    DartdocOptionSet('linkToSource')
       ..addAll([
-        new DartdocOptionArgFile<List<String>>('excludes', [],
+        DartdocOptionArgFile<List<String>>('excludes', [],
             isDir: true,
             help:
                 'A list of directories to exclude from linking to a source code repository.'),
         // TODO(jcollins-g): Use [DartdocOptionArgSynth], possibly in combination with a repository type and the root directory, and get revision number automatically
-        new DartdocOptionArgOnly<String>('revision', null,
+        DartdocOptionArgOnly<String>('revision', null,
             help: 'Revision number to insert into the URI.'),
-        new DartdocOptionArgFile<String>('root', null,
+        DartdocOptionArgFile<String>('root', null,
             isDir: true,
             help:
                 'Path to a local directory that is the root of the repository we link to.  All source code files under this directory will be linked.'),
-        new DartdocOptionArgFile<String>('uriTemplate', null,
+        DartdocOptionArgFile<String>('uriTemplate', null,
             help:
                 '''Substitute into this template to generate a uri for an element's source code.
              Dartdoc dynamically substitutes the following fields into the template:
@@ -84,7 +84,7 @@ class SourceLinker {
   /// Build a SourceLinker from a ModelElement.
   factory SourceLinker.fromElement(ModelElement element) {
     SourceLinkerOptionContext config = element.config;
-    return new SourceLinker(
+    return SourceLinker(
       excludes: config.linkToSourceExcludes,
       // TODO(jcollins-g): disallow defaulting?  Some elements come back without
       // a line number right now.
@@ -108,7 +108,7 @@ class SourceLinker {
     return uriTemplate.replaceAllMapped(uriTemplateRegexp, (match) {
       switch (match[1]) {
         case '%f%':
-          var urlContext = new path.Context(style: path.Style.url);
+          var urlContext = path.Context(style: path.Style.url);
           return urlContext
               .joinAll(path.split(path.relative(sourceFileName, from: root)));
           break;

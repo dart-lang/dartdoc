@@ -79,10 +79,10 @@ echo:
     // yaml map (which would fail on a missing executable), or a file is deleted
     // during execution,it might, so we test it.
     toolMap.tools.addAll({
-      'missing': new ToolDefinition(['/a/missing/executable'], null, "missing"),
+      'missing': ToolDefinition(['/a/missing/executable'], null, "missing"),
     });
 
-    runner = new ToolRunner(toolMap);
+    runner = ToolRunner(toolMap);
     errorCallback = (String message) => errors.add(message);
   });
   tearDownAll(() {

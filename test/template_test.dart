@@ -19,7 +19,7 @@ void main() {
         if (sitemap == null) {
           var templatePath =
               path.join(path.current, 'test/templates/sitemap.xml');
-          File tmplFile = new File(templatePath);
+          File tmplFile = File(templatePath);
           var siteMapTmpl = tmplFile.readAsStringSync();
           sitemap = Template(siteMapTmpl);
         }

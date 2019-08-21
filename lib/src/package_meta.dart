@@ -15,10 +15,10 @@ import 'package:yaml/yaml.dart';
 import 'logging.dart';
 
 Map<String, PackageMeta> _packageMetaCache = {};
-Encoding utf8AllowMalformed = new Utf8Codec(allowMalformed: true);
+Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
 
 Directory get defaultSdkDir {
-  Directory sdkDir = new File(Platform.resolvedExecutable).parent.parent;
+  Directory sdkDir = File(Platform.resolvedExecutable).parent.parent;
   assert(path.equals(sdkDir.path, PackageMeta.sdkDirParent(sdkDir).path));
   return sdkDir;
 }
@@ -49,8 +49,8 @@ abstract class PackageMeta {
         for (List<String> paths in __sdkDirFilePathsPosix) {
           List<String> windowsPaths = [];
           for (String p in paths) {
-            windowsPaths.add(path
-                .joinAll(new path.Context(style: path.Style.posix).split(p)));
+            windowsPaths.add(
+                path.joinAll(path.Context(style: path.Style.posix).split(p)));
           }
           __sdkDirFilePaths.add(windowsPaths);
         }
@@ -71,7 +71,7 @@ abstract class PackageMeta {
       _sdkDirParent[dirPathCanonical] = null;
       while (dir.existsSync()) {
         if (_sdkDirFilePaths.every((List<String> l) {
-          return l.any((f) => new File(path.join(dir.path, f)).existsSync());
+          return l.any((f) => File(path.join(dir.path, f)).existsSync());
         })) {
           _sdkDirParent[dirPathCanonical] = dir;
           break;
@@ -99,14 +99,14 @@ abstract class PackageMeta {
     // context since sdkDir is argOnly and this is supposed to be a temporary
     // workaround.
     if (libraryElement.isInSdk) {
-      return new PackageMeta.fromDir(new Directory(config.sdkDir));
+      return PackageMeta.fromDir(Directory(config.sdkDir));
     }
-    return new PackageMeta.fromDir(
-        new File(path.canonicalize(libraryElement.source.fullName)).parent);
+    return PackageMeta.fromDir(
+        File(path.canonicalize(libraryElement.source.fullName)).parent);
   }
 
   factory PackageMeta.fromFilename(String filename) {
-    return new PackageMeta.fromDir(new File(filename).parent);
+    return PackageMeta.fromDir(File(filename).parent);
   }
 
   /// This factory is guaranteed to return the same object for any given
@@ -117,7 +117,7 @@ abstract class PackageMeta {
     Directory original = dir.absolute;
     dir = original;
     if (!original.existsSync()) {
-      throw new PackageMetaFailure(
+      throw PackageMetaFailure(
           "fatal error: unable to locate the input directory at ${original.path}.");
     }
 
@@ -126,12 +126,12 @@ abstract class PackageMeta {
       // There are pubspec.yaml files inside the SDK.  Ignore them.
       Directory parentSdkDir = sdkDirParent(dir);
       if (parentSdkDir != null) {
-        packageMeta = new _SdkMeta(parentSdkDir);
+        packageMeta = _SdkMeta(parentSdkDir);
       } else {
         while (dir.existsSync()) {
-          File pubspec = new File(path.join(dir.path, 'pubspec.yaml'));
+          File pubspec = File(path.join(dir.path, 'pubspec.yaml'));
           if (pubspec.existsSync()) {
-            packageMeta = new _FilePackageMeta(dir);
+            packageMeta = _FilePackageMeta(dir);
             break;
           }
           // Allow a package to be at root (possible in a Windows setting with
@@ -220,8 +220,7 @@ class FileContents {
 
   FileContents._(this.file);
 
-  factory FileContents(File file) =>
-      file == null ? null : new FileContents._(file);
+  factory FileContents(File file) => file == null ? null : FileContents._(file);
 
   String get contents => file.readAsStringSync(encoding: utf8AllowMalformed);
 
@@ -238,7 +237,7 @@ class _FilePackageMeta extends PackageMeta {
   Map _pubspec;
 
   _FilePackageMeta(Directory dir) : super(dir) {
-    File f = new File(path.join(dir.path, 'pubspec.yaml'));
+    File f = File(path.join(dir.path, 'pubspec.yaml'));
     if (f.existsSync()) {
       _pubspec = loadYaml(f.readAsStringSync());
     } else {
@@ -267,7 +266,7 @@ class _FilePackageMeta extends PackageMeta {
         String hosted = path.canonicalize(dir.parent.parent.path);
         String hostname = path.canonicalize(dir.parent.path);
         if (path.basename(hosted) == 'hosted' &&
-            new Directory(path.join(pubCacheRoot, '_temp')).existsSync()) {
+            Directory(path.join(pubCacheRoot, '_temp')).existsSync()) {
           _hostedAt = path.basename(hostname);
         }
       }
@@ -280,7 +279,7 @@ class _FilePackageMeta extends PackageMeta {
 
   @override
   bool get needsPubGet =>
-      !(new File(path.join(dir.path, '.packages')).existsSync());
+      !(File(path.join(dir.path, '.packages')).existsSync());
 
   @override
   void runPubGet() {
@@ -297,10 +296,10 @@ class _FilePackageMeta extends PackageMeta {
     }
 
     if (result.exitCode != 0) {
-      StringBuffer buf = new StringBuffer();
+      StringBuffer buf = StringBuffer();
       buf.writeln('${result.stdout}');
       buf.writeln('${result.stderr}');
-      throw new DartdocFailure('pub get failed: ${buf.toString().trim()}');
+      throw DartdocFailure('pub get failed: ${buf.toString().trim()}');
     }
   }
 
@@ -323,23 +322,22 @@ class _FilePackageMeta extends PackageMeta {
   @override
   FileContents getReadmeContents() {
     if (_readme != null) return _readme;
-    _readme =
-        new FileContents(_locate(dir, ['readme.md', 'readme.txt', 'readme']));
+    _readme = FileContents(_locate(dir, ['readme.md', 'readme.txt', 'readme']));
     return _readme;
   }
 
   @override
   FileContents getLicenseContents() {
     if (_license != null) return _license;
-    _license = new FileContents(
-        _locate(dir, ['license.md', 'license.txt', 'license']));
+    _license =
+        FileContents(_locate(dir, ['license.md', 'license.txt', 'license']));
     return _license;
   }
 
   @override
   FileContents getChangelogContents() {
     if (_changelog != null) return _changelog;
-    _changelog = new FileContents(
+    _changelog = FileContents(
         _locate(dir, ['changelog.md', 'changelog.txt', 'changelog']));
     return _changelog;
   }
@@ -359,8 +357,7 @@ class _FilePackageMeta extends PackageMeta {
 }
 
 File _locate(Directory dir, List<String> fileNames) {
-  List<File> files =
-      new List<File>.from(dir.listSync().where((f) => f is File));
+  List<File> files = dir.listSync().whereType<File>().toList();
 
   for (String name in fileNames) {
     for (File f in files) {
@@ -396,7 +393,7 @@ class _SdkMeta extends PackageMeta {
 
   @override
   String get version {
-    File versionFile = new File(path.join(dir.path, 'version'));
+    File versionFile = File(path.join(dir.path, 'version'));
     if (versionFile.existsSync()) return versionFile.readAsStringSync().trim();
     return 'unknown';
   }
@@ -414,11 +411,11 @@ class _SdkMeta extends PackageMeta {
 
   @override
   FileContents getReadmeContents() {
-    File f = new File(path.join(dir.path, 'lib', 'api_readme.md'));
+    File f = File(path.join(dir.path, 'lib', 'api_readme.md'));
     if (!f.existsSync()) {
-      f = new File(path.join(dir.path, 'api_readme.md'));
+      f = File(path.join(dir.path, 'api_readme.md'));
     }
-    return f.existsSync() ? new FileContents(f) : null;
+    return f.existsSync() ? FileContents(f) : null;
   }
 
   @override

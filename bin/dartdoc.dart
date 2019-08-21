@@ -27,16 +27,16 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
 
 Future<List<DartdocOption>> createDartdocProgramOptions() async {
   return <DartdocOption>[
-    new DartdocOptionArgOnly<bool>('asyncStackTraces', false,
+    DartdocOptionArgOnly<bool>('asyncStackTraces', false,
         help: 'Display coordinated asynchronous stack traces (slow)',
         negatable: true),
-    new DartdocOptionArgOnly<bool>('generateDocs', true,
+    DartdocOptionArgOnly<bool>('generateDocs', true,
         help:
             'Generate docs into the output directory (or only display warnings if false).',
         negatable: true),
-    new DartdocOptionArgOnly<bool>('help', false,
+    DartdocOptionArgOnly<bool>('help', false,
         abbr: 'h', help: 'Show command help.', negatable: false),
-    new DartdocOptionArgOnly<bool>('version', false,
+    DartdocOptionArgOnly<bool>('version', false,
         help: 'Display the version for $name.', negatable: false),
   ];
 }
@@ -76,7 +76,7 @@ Future<void> main(List<String> arguments) async {
 
   DartdocProgramOptionContext config;
   try {
-    config = new DartdocProgramOptionContext(optionSet, null);
+    config = DartdocProgramOptionContext(optionSet, null);
   } on DartdocOptionError catch (e) {
     stderr.writeln(' fatal error: ${e.message}');
     stderr.writeln('');
@@ -94,7 +94,7 @@ Future<void> main(List<String> arguments) async {
   try {
     await Chain.capture(() async {
       await runZoned(dartdoc.generateDocs,
-          zoneSpecification: new ZoneSpecification(
+          zoneSpecification: ZoneSpecification(
               print: (Zone self, ZoneDelegate parent, Zone zone, String line) =>
                   logPrint(line)));
     }, onError: (e, Chain chain) {

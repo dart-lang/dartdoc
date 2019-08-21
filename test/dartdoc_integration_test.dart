@@ -30,8 +30,8 @@ void main() {
     setUpAll(() async {
       tempDir =
           Directory.systemTemp.createTempSync('dartdoc_integration_test.');
-      subprocessLauncher = new CoverageSubprocessLauncher(
-          'dartdoc_integration_test-subprocesses');
+      subprocessLauncher =
+          CoverageSubprocessLauncher('dartdoc_integration_test-subprocesses');
     });
 
     tearDown(() async {
@@ -128,47 +128,46 @@ void main() {
           contains('Generate HTML documentation for Dart libraries.'));
       expect(
           outputLines.join('\n'),
-          contains(new RegExp('^-h, --help[ ]+Show command help.',
-              multiLine: true)));
+          contains(
+              RegExp('^-h, --help[ ]+Show command help.', multiLine: true)));
     });
 
     test('Validate missing FLUTTER_ROOT exception is clean', () async {
-      StringBuffer output = new StringBuffer();
+      StringBuffer output = StringBuffer();
       var args = <String>[dartdocPath];
       Future run = subprocessLauncher.runStreamed(
           Platform.resolvedExecutable, args,
-          environment: new Map.from(Platform.environment)
-            ..remove('FLUTTER_ROOT'),
+          environment: Map.from(Platform.environment)..remove('FLUTTER_ROOT'),
           includeParentEnvironment: false,
           workingDirectory: _testPackageFlutterPluginPath, perLine: (s) {
         output.writeln(s);
       });
       // Asynchronous exception, but we still need the output, too.
-      expect(run, throwsA(new TypeMatcher<ProcessException>()));
+      expect(run, throwsA(TypeMatcher<ProcessException>()));
       try {
         await run;
       } on ProcessException catch (_) {}
 
       expect(
           output.toString(),
-          contains(new RegExp(
+          contains(RegExp(
               'Top level package requires Flutter but FLUTTER_ROOT environment variable not set|test_package_flutter_plugin requires the Flutter SDK, version solving failed')));
       expect(output.toString(), isNot(contains('asynchronous gap')));
     });
 
     test("Validate --version works", () async {
-      StringBuffer output = new StringBuffer();
+      StringBuffer output = StringBuffer();
       var args = <String>[dartdocPath, '--version'];
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
           workingDirectory: _testPackagePath,
           perLine: (s) => output.writeln(s));
-      PackageMeta dartdocMeta = new PackageMeta.fromFilename(dartdocPath);
+      PackageMeta dartdocMeta = PackageMeta.fromFilename(dartdocPath);
       expect(output.toString(),
           endsWith('dartdoc version: ${dartdocMeta.version}\n'));
     });
 
     test('Check for sample code in examples', () async {
-      StringBuffer output = new StringBuffer();
+      StringBuffer output = StringBuffer();
       var args = <String>[
         dartdocPath,
         '--include',
@@ -185,7 +184,7 @@ void main() {
       // Examples are reported as unfound because we (purposefully)
       // did not use --example-path-prefix above.
       final sep = '.'; // We don't care what the path separator character is
-      final firstUnfoundExample = new RegExp('warning: lib${sep}example.dart: '
+      final firstUnfoundExample = RegExp('warning: lib${sep}example.dart: '
           '@example file not found.*test_package${sep}dog${sep}food.md');
       if (!output.toString().contains(firstUnfoundExample)) {
         fail('Should warn about unfound @example files');
@@ -209,12 +208,12 @@ void main() {
 
       expect(jsonValues, isNotEmpty,
           reason: 'All STDOUT lines should be JSON-encoded maps.');
-    }, timeout: new Timeout.factor(2));
+    }, timeout: Timeout.factor(2));
 
     test('--footer-text includes text', () async {
       String footerTextPath =
           path.join(Directory.systemTemp.path, 'footer.txt');
-      new File(footerTextPath).writeAsStringSync(' footer text include ');
+      File(footerTextPath).writeAsStringSync(' footer text include ');
 
       var args = <String>[
         dartdocPath,
@@ -228,8 +227,8 @@ void main() {
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
           workingDirectory: _testPackagePath);
 
-      File outFile = new File(path.join(tempDir.path, 'index.html'));
+      File outFile = File(path.join(tempDir.path, 'index.html'));
       expect(outFile.readAsStringSync(), contains('footer text include'));
     });
-  }, timeout: new Timeout.factor(4));
+  }, timeout: Timeout.factor(4));
 }

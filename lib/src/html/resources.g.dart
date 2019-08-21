@@ -1,6 +1,6 @@
 // WARNING: This file is auto-generated. Do not taunt.
 
-const List<String> resource_names = const [
+const List<String> resource_names = [
   'package:dartdoc/resources/URI.js',
   'package:dartdoc/resources/css/bootstrap.css',
   'package:dartdoc/resources/css/bootstrap.css.map',

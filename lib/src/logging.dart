@@ -9,17 +9,17 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 
 import 'package:logging/logging.dart';
 
-final _logger = new Logger('dartdoc');
+final _logger = Logger('dartdoc');
 
 /// A custom [Level] for tracking file writes and verification.
 ///
 /// Has a value of `501` – one more than [Level.FINE].
-final Level progressLevel = new Level('PROGRESS', 501);
+final Level progressLevel = Level('PROGRESS', 501);
 
 /// A custom [Level] for errant print statements.
 ///
 /// Has a value of `1201` – one more than [Level.SHOUT].
-final Level printLevel = new Level('PRINT', 1201);
+final Level printLevel = Level('PRINT', 1201);
 
 void logWarning(Object message) {
   _logger.log(Level.WARNING, message);
@@ -69,7 +69,7 @@ void startLogging(LoggingContext config) {
       print(json.encode(output));
     });
   } else {
-    final stopwatch = new Stopwatch()..start();
+    final stopwatch = Stopwatch()..start();
 
     // Used to track if we're printing `...` to show progress.
     // Allows unified new-line tracking
@@ -121,13 +121,13 @@ abstract class LoggingContext implements DartdocOptionContextBase {
 
 Future<List<DartdocOption>> createLoggingOptions() async {
   return <DartdocOption>[
-    new DartdocOptionArgOnly<bool>('json', false,
+    DartdocOptionArgOnly<bool>('json', false,
         help: 'Prints out progress JSON maps. One entry per line.',
         negatable: true),
-    new DartdocOptionArgOnly<bool>('showProgress', false,
+    DartdocOptionArgOnly<bool>('showProgress', false,
         help: 'Display progress indications to console stdout',
         negatable: false),
-    new DartdocOptionArgSynth<bool>('quiet',
+    DartdocOptionArgSynth<bool>('quiet',
         (DartdocSyntheticOption option, Directory dir) {
       if (option.root['generateDocs']?.valueAt(dir) == false) {
         return true;

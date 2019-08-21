@@ -14,9 +14,9 @@ import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 
-final RegExp quotables = new RegExp(r'[ "\r\n\$]');
+final RegExp quotables = RegExp(r'[ "\r\n\$]');
 final RegExp observatoryPortRegexp =
-    new RegExp(r'^Observatory listening on http://.*:(\d+)');
+    RegExp(r'^Observatory listening on http://.*:(\d+)');
 
 Directory sdkDir;
 PackageMeta sdkPackageMeta;
@@ -27,26 +27,25 @@ PackageGraph testPackageGraphSmall;
 PackageGraph testPackageGraphErrors;
 PackageGraph testPackageGraphSdk;
 
-final Directory testPackageBadDir = new Directory('testing/test_package_bad');
-final Directory testPackageDir = new Directory('testing/test_package');
+final Directory testPackageBadDir = Directory('testing/test_package_bad');
+final Directory testPackageDir = Directory('testing/test_package');
 final Directory testPackageExperimentsDir =
-    new Directory('testing/test_package_experiments');
+    Directory('testing/test_package_experiments');
 final Directory testPackageMinimumDir =
-    new Directory('testing/test_package_minimum');
+    Directory('testing/test_package_minimum');
 final Directory testPackageWithEmbedderYaml =
-    new Directory('testing/test_package_embedder_yaml');
+    Directory('testing/test_package_embedder_yaml');
 final Directory testPackageWithNoReadme =
-    new Directory('testing/test_package_small');
+    Directory('testing/test_package_small');
 final Directory testPackageIncludeExclude =
-    new Directory('testing/test_package_include_exclude');
+    Directory('testing/test_package_include_exclude');
 final Directory testPackageImportExportError =
-    new Directory('testing/test_package_import_export_error');
-final Directory testPackageOptions =
-    new Directory('testing/test_package_options');
+    Directory('testing/test_package_import_export_error');
+final Directory testPackageOptions = Directory('testing/test_package_options');
 final Directory testPackageOptionsImporter =
-    new Directory('testing/test_package_options_importer');
+    Directory('testing/test_package_options_importer');
 final Directory testPackageToolError =
-    new Directory('testing/test_package_tool_error');
+    Directory('testing/test_package_tool_error');
 
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
 /// it with a [DartdocOptionSet] based on the current working directory and/or
@@ -56,7 +55,7 @@ Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
   DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
       'dartdoc', [createDartdocOptions, createGeneratorOptions]);
   optionSet.parseArguments(argv);
-  return new DartdocGeneratorOptionContext(optionSet, null);
+  return DartdocGeneratorOptionContext(optionSet, null);
 }
 
 /// Convenience factory to build a [DartdocOptionContext] and associate it with a
@@ -65,12 +64,12 @@ Future<DartdocOptionContext> contextFromArgv(List<String> argv) async {
   DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
       'dartdoc', [createDartdocOptions]);
   optionSet.parseArguments(argv);
-  return new DartdocOptionContext(optionSet, Directory.current);
+  return DartdocOptionContext(optionSet, Directory.current);
 }
 
 void init({List<String> additionalArguments}) async {
   sdkDir = defaultSdkDir;
-  sdkPackageMeta = new PackageMeta.fromDir(sdkDir);
+  sdkPackageMeta = PackageMeta.fromDir(sdkDir);
   additionalArguments ??= <String>[];
 
   testPackageGraph = await bootBasicPackage(
@@ -98,16 +97,16 @@ void init({List<String> additionalArguments}) async {
 }
 
 Future<PackageGraph> bootSdkPackage() async {
-  return new PackageBuilder(await contextFromArgv(['--input', sdkDir.path]))
+  return PackageBuilder(await contextFromArgv(['--input', sdkDir.path]))
       .buildPackageGraph();
 }
 
 Future<PackageGraph> bootBasicPackage(
     String dirPath, List<String> excludeLibraries,
     {List<String> additionalArguments}) async {
-  Directory dir = new Directory(dirPath);
+  Directory dir = Directory(dirPath);
   additionalArguments ??= <String>[];
-  return new PackageBuilder(await contextFromArgv([
+  return PackageBuilder(await contextFromArgv([
             '--input',
             dir.path,
             '--sdk-dir',
@@ -142,7 +141,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
   static Directory get tempDir {
     if (_tempDir == null) {
       if (Platform.environment['DARTDOC_COVERAGE_DATA'] != null) {
-        _tempDir = new Directory(Platform.environment['DARTDOC_COVERAGE_DATA']);
+        _tempDir = Directory(Platform.environment['DARTDOC_COVERAGE_DATA']);
       } else {
         _tempDir = Directory.systemTemp.createTempSync('dartdoc_coverage_data');
       }
@@ -192,7 +191,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
             executable == Platform.resolvedExecutable,
         'Must use dart executable for tracking coverage');
 
-    Completer<String> portAsString = new Completer();
+    Completer<String> portAsString = Completer();
     void parsePortAsString(String line) {
       if (!portAsString.isCompleted && coverageEnabled) {
         Match m = observatoryPortRegexp.matchAsPrefix(line);
@@ -205,7 +204,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
     Completer<Iterable<Map>> coverageResult;
 
     if (coverageEnabled) {
-      coverageResult = new Completer();
+      coverageResult = Completer();
       // This must be added before awaiting in this method.
       coverageResults.add(coverageResult.future);
       arguments = [
@@ -297,7 +296,7 @@ class SubprocessLauncher {
       }
       if (result != null) {
         if (jsonObjects == null) {
-          jsonObjects = new List();
+          jsonObjects = List();
         }
         jsonObjects.add(result);
         if (result.containsKey('message')) {
@@ -363,7 +362,7 @@ class SubprocessLauncher {
 
     int exitCode = await process.exitCode;
     if (exitCode != 0) {
-      throw new ProcessException(executable, arguments,
+      throw ProcessException(executable, arguments,
           "SubprocessLauncher got non-zero exitCode: $exitCode", exitCode);
     }
     return jsonObjects;
