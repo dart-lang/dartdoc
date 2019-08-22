@@ -250,7 +250,7 @@ void main() {
       RegExpMatch m = footerRegex.firstMatch(outFile.readAsStringSync());
       RegExp version = RegExp(r'(\d+\.)?(\d+\.)?(\*|\d+)');
       expect(version.hasMatch(m.group(0)), false);
-    };
+    });
 
   }, timeout: Timeout.factor(4));
 }
