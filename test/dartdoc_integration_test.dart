@@ -230,5 +230,28 @@ void main() {
       File outFile = File(path.join(tempDir.path, 'index.html'));
       expect(outFile.readAsStringSync(), contains('footer text include'));
     });
+
+    test('--footer-text excludes version', () async {
+      String _testPackagePath =
+          path.fromUri(_currentFileUri.resolve('../testing/test_package_options'));
+
+      var args = <String>[
+        dartdocPath,
+        '--output',
+        tempDir.path
+      ];
+
+      await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
+          workingDirectory: _testPackagePath);
+
+      File outFile = File(path.join(tempDir.path, 'index.html'));
+      RegExp footerRegex = RegExp('<footer>(.*\s*?\n?)+?</footer>', multiLine: true);
+      // get footer, check for version number
+      RegExpMatch m = footerRegex.firstMatch(outFile.readAsStringSync());
+      RegExp version = RegExp(r'(\d+\.)?(\d+\.)?(\*|\d+)');
+      expect(version.hasMatch(m.group(0)), false);
+    };
+
   }, timeout: Timeout.factor(4));
 }
+

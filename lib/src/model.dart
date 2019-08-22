@@ -4993,6 +4993,8 @@ class PackageGraph {
 
   final bool hasEmbedderSdk;
 
+  bool get hasFooterVersion => !config.excludeFooterVersion;
+
   PackageGraph get packageGraph => this;
 
   /// Map of package name to Package.
