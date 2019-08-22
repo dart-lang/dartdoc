@@ -1376,6 +1376,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   bool get injectHtml => optionSet['injectHtml'].valueAt(context);
 
+  bool get excludeFooterVersion => optionSet['excludeFooterVersion'].valueAt(context);
+
   ToolConfiguration get tools => optionSet['tools'].valueAt(context);
 
   /// _input is only used to construct synthetic options.
@@ -1611,6 +1613,8 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     DartdocOptionArgOnly<bool>('verboseWarnings', true,
         help: 'Display extra debugging information and help with warnings.',
         negatable: true),
+    DartdocOptionFileOnly<bool>('excludeFooterVersion', false,
+        help: 'Excludes the package version number in the footer text'),
     DartdocOptionFileOnly<ToolConfiguration>('tools', ToolConfiguration.empty,
         convertYamlToType: ToolConfiguration.fromYamlMap,
         help: 'A map of tool names to executable paths. Each executable must '

@@ -8,3 +8,4 @@ dartdoc:
   linkTo:
     url: 'https://nonexistingsuperpackage.topdomain/%n%/%v%'
   showUndocumentedCategories: true
+  excludeFooterVersion: true

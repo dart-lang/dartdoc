@@ -2,7 +2,10 @@
 
 <footer>
   <span class="no-break">
-    {{packageGraph.defaultPackage.name}} {{packageGraph.defaultPackage.version}}
+    {{packageGraph.defaultPackage.name}}
+    {{#packageGraph.hasFooterVersion}}
+      {{packageGraph.defaultPackage.version}}
+    {{/packageGraph.hasFooterVersion}}
   </span>
 
   <!-- footer-text placeholder -->
