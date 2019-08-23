@@ -55,10 +55,21 @@ class HtmlGenerator extends Generator {
       List<String> headers,
       List<String> footers,
       List<String> footerTexts}) async {
-    var templates = await Templates.create(
-        headerPaths: headers,
-        footerPaths: footers,
-        footerTextPaths: footerTexts);
+    var templates;
+    String dirname = options?.templatesDir;
+    if (dirname != null) {
+      Directory templateDir = Directory(dirname);
+      templates = await Templates.fromDirectory(
+          templateDir,
+          headerPaths: headers,
+          footerPaths: footers,
+          footerTextPaths: footerTexts);
+    } else {
+      templates = await Templates.createDefault(
+          headerPaths: headers,
+          footerPaths: footers,
+          footerTextPaths: footerTexts);
+    }
 
     return HtmlGenerator._(options ?? HtmlGeneratorOptions(), templates);
   }
@@ -114,6 +125,7 @@ class HtmlGeneratorOptions implements HtmlOptions {
   final String url;
   final String faviconPath;
   final bool prettyIndexJson;
+  final String templatesDir;
 
   @override
   final String relCanonicalPrefix;
@@ -126,7 +138,8 @@ class HtmlGeneratorOptions implements HtmlOptions {
       this.relCanonicalPrefix,
       this.faviconPath,
       String toolVersion,
-      this.prettyIndexJson = false})
+      this.prettyIndexJson = false,
+      this.templatesDir})
       : this.toolVersion = toolVersion ?? 'unknown';
 }
 
@@ -143,7 +156,8 @@ Future<List<Generator>> initGenerators(GeneratorContext config) async {
       relCanonicalPrefix: config.relCanonicalPrefix,
       toolVersion: dartdocVersion,
       faviconPath: config.favicon,
-      prettyIndexJson: config.prettyIndexJson);
+      prettyIndexJson: config.prettyIndexJson,
+      templatesDir: config.templatesDir);
 
   return [
     await HtmlGenerator.create(

@@ -1419,6 +1419,9 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
   bool isPackageExcluded(String name) =>
       excludePackages.any((pattern) => name == pattern);
+
+  String get templatesDir =>
+      optionSet['templatesDir'].valueAt(context);
 }
 
 /// Instantiate dartdoc's configuration file and options parser with the
@@ -1621,6 +1624,13 @@ Future<List<DartdocOption>> createDartdocOptions() async {
             'exist. Executables for different platforms are specified by '
             'giving the platform name as a key, and a list of strings as the '
             'command.'),
+    DartdocOptionArgOnly<String>("templatesDir", null, isDir: true, mustExist: true, hide: true,
+        help: 'Path to a directory containing templates to use instead of the default ones. '
+            'Directory must contain an html file for each of the following: 404error, category, '
+            'class, constant, constructor, enum, function, index, library, method, mixin, '
+            'property, top_level_constant, top_level_property, typedef. Partial templates are '
+            'supported; they must begin with an underscore, and references to them must omit the '
+            'leading underscore (e.g. use {{>foo}} to reference the partial template _foo.html).'),
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
   ]

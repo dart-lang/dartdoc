@@ -46,6 +46,8 @@ final Directory testPackageOptionsImporter =
     Directory('testing/test_package_options_importer');
 final Directory testPackageToolError =
     Directory('testing/test_package_tool_error');
+final Directory testPackageCustomTemplates =
+    Directory('testing/test_package_custom_templates');
 
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
 /// it with a [DartdocOptionSet] based on the current working directory and/or

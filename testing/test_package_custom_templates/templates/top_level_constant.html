@@ -1,0 +1,15 @@
+{{>head}}
+
+  <div>
+    {{#self}}
+      <div><h1>{{{name}}} {{kind}}</h1></div>
+
+      <div>
+        = {{{ constantValue }}}
+      </div>
+      {{>documentation}}
+    {{/self}}
+
+  </div>
+
+{{>footer}}
