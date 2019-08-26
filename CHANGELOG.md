@@ -1,7 +1,7 @@
-## 0.28.5-dev
+## 0.28.5
 * Support the latest version of `package:analyzer`.
 * Fix hyperlinks to overriden methods (#1994).
-* Add an option to exclude version in footer info (#1982).
+* Option in dartdoc_options.yaml to exclude version in footer info (#1982).
 
 ## 0.28.4
 * **Breaking change** Change the default for `allow-tools` command line flag to false.
