@@ -161,8 +161,8 @@ abstract class Inheritable implements ModelElement {
   bool get isInherited;
 
   bool _canonicalEnclosingClassIsSet = false;
-  Class _canonicalEnclosingClass;
-  Class _definingEnclosingClass;
+  Container _canonicalEnclosingClass;
+  Container _definingEnclosingClass;
 
   ModelElement get definingEnclosingElement {
     if (_definingEnclosingClass == null) {
@@ -174,12 +174,24 @@ abstract class Inheritable implements ModelElement {
 
   @override
   ModelElement _buildCanonicalModelElement() {
-    return canonicalEnclosingElement?.allCanonicalModelElements?.firstWhere(
-        (m) => m.name == name && m.isPropertyAccessor == isPropertyAccessor,
-        orElse: () => null);
+    if (canonicalEnclosingElement is Extension) {
+      return this;
+    }
+    if (canonicalEnclosingElement is Class) {
+      return (canonicalEnclosingElement as Class)
+          ?.allCanonicalModelElements
+          ?.firstWhere(
+              (m) =>
+                  m.name == name && m.isPropertyAccessor == isPropertyAccessor,
+              orElse: () => null);
+    }
+    return null;
   }
 
-  Class get canonicalEnclosingElement {
+  Container get canonicalEnclosingElement {
+//    if (enclosingElement is Extension) {
+//      return enclosingElement;
+//    }
     Element searchElement = element;
     if (!_canonicalEnclosingClassIsSet) {
       if (isInherited) {
@@ -222,7 +234,8 @@ abstract class Inheritable implements ModelElement {
             definingEnclosingElement.isPublic) {
           assert(definingEnclosingElement == _canonicalEnclosingClass);
         }
-      } else {
+      } else if (enclosingElement is! Extension ||
+          (enclosingElement is Extension && enclosingElement.isDocumented)) {
         _canonicalEnclosingClass =
             packageGraph.findCanonicalModelElementFor(enclosingElement.element);
       }
@@ -275,6 +288,10 @@ abstract class Inheritable implements ModelElement {
       //
       // We use canonical elements here where possible to deal with reexports
       // as seen in Flutter.
+      if (enclosingElement is Extension) {
+        _isOverride = false;
+        return _isOverride;
+      }
       Class enclosingCanonical = enclosingElement;
       if (enclosingElement is ModelElement) {
         enclosingCanonical =
@@ -355,7 +372,7 @@ class InheritableAccessor extends Accessor with Inheritable {
   bool get isInherited => _isInherited;
 
   @override
-  Class get enclosingElement {
+  Container get enclosingElement {
     if (_enclosingElement == null) {
       _enclosingElement = super.enclosingElement;
     }
@@ -582,27 +599,144 @@ class Mixin extends Class {
   String get kind => 'mixin';
 }
 
-class Class extends ModelElement
+// Can be either a Class or Extension, used in the package graph and template data.
+// Aggregates some of the common getters.
+abstract class Container extends ModelElement {
+  List<Method> _allMethods;
+  List<Field> _constants;
+  List<Operator> _operators;
+  List<Method> _staticMethods;
+  List<Method> _instanceMethods;
+  List<Field> _fields;
+  List<Field> _staticFields;
+  List<Field> _instanceFields;
+  List<TypeParameter> _typeParameters;
+
+  Container(Element element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph, null);
+
+  bool get isClass => element is ClassElement;
+
+  bool get isExtension => element is ExtensionElement;
+
+  List<Method> get _methods => _allMethods;
+
+  List<Method> get instanceMethods {
+    if (_instanceMethods != null) return _instanceMethods;
+
+    _instanceMethods = _methods
+        .where((m) => !m.isStatic && !m.isOperator)
+        .toList(growable: false)
+          ..sort(byName);
+    return _instanceMethods;
+  }
+
+  bool get hasPublicMethods => filterNonPublic(instanceMethods).isNotEmpty;
+
+  Iterable<Method> get allPublicInstanceMethods =>
+      filterNonPublic(instanceMethods);
+
+  List<Method> get staticMethods {
+    if (_staticMethods != null) return _staticMethods;
+
+    _staticMethods = _methods.where((m) => m.isStatic).toList(growable: false)
+      ..sort(byName);
+
+    return _staticMethods;
+  }
+
+  bool get hasPublicStaticMethods => filterNonPublic(staticMethods).isNotEmpty;
+
+  Iterable<Method> get publicStaticMethods => filterNonPublic(staticMethods);
+
+  List<Operator> get operators {
+    if (_operators != null) return _operators;
+    _operators = _methods
+        .where((m) => m.isOperator)
+        .cast<Operator>()
+        .toList(growable: false)
+          ..sort(byName);
+    return _operators;
+  }
+
+  Iterable<Operator> get allOperators => operators;
+
+  bool get hasPublicOperators => publicOperators.isNotEmpty;
+
+  Iterable<Operator> get allPublicOperators => filterNonPublic(allOperators);
+
+  Iterable<Operator> get publicOperators => filterNonPublic(operators);
+
+  List<Field> get _allFields => [];
+
+  List<Field> get staticProperties {
+    if (_staticFields != null) return _staticFields;
+    _staticFields = _allFields
+        .where((f) => f.isStatic && !f.isConst)
+        .toList(growable: false)
+          ..sort(byName);
+
+    return _staticFields;
+  }
+
+  Iterable<Field> get publicStaticProperties =>
+      filterNonPublic(staticProperties);
+
+  bool get hasPublicStaticProperties => publicStaticProperties.isNotEmpty;
+
+  List<Field> get instanceProperties {
+    if (_instanceFields != null) return _instanceFields;
+    _instanceFields = _allFields
+        .where((f) => !f.isStatic && !f.isInherited && !f.isConst)
+        .toList(growable: false)
+          ..sort(byName);
+
+    return _instanceFields;
+  }
+
+  Iterable<Field> get publicInstanceProperties =>
+      filterNonPublic(instanceProperties);
+
+  bool get hasPublicProperties => publicInstanceProperties.isNotEmpty;
+
+  Iterable<Field> get allInstanceFields => instanceProperties;
+
+  Iterable<Field> get allPublicInstanceProperties =>
+      filterNonPublic(allInstanceFields);
+
+  bool isInheritingFrom(Container other) => false;
+
+  List<Field> get constants {
+    if (_constants != null) return _constants;
+    _constants = _allFields.where((f) => f.isConst).toList(growable: false)
+      ..sort(byName);
+
+    return _constants;
+  }
+
+  Iterable<Field> get publicConstants => filterNonPublic(constants);
+
+  bool get hasPublicConstants => publicConstants.isNotEmpty;
+
+  Iterable<Accessor> get allAccessors => quiver.concat([
+        allInstanceFields.expand((f) => f.allAccessors),
+        constants.map((c) => c.getter)
+      ]);
+}
+
+class Class extends Container
     with TypeParameters, Categorization
     implements EnclosedElement {
   List<DefinedElementType> _mixins;
   DefinedElementType supertype;
   List<DefinedElementType> _interfaces;
   List<Constructor> _constructors;
-  List<Method> _allMethods;
-  List<Operator> _operators;
   List<Operator> _inheritedOperators;
   List<Method> _inheritedMethods;
-  List<Method> _staticMethods;
-  List<Method> _instanceMethods;
-  List<Field> _fields;
-  List<Field> _staticFields;
-  List<Field> _constants;
-  List<Field> _instanceFields;
   List<Field> _inheritedProperties;
 
   Class(ClassElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph, null) {
+      : super(element, library, packageGraph) {
     packageGraph.specialClasses.addSpecial(this);
     _mixins = _cls.mixins
         .map((f) {
@@ -634,43 +768,26 @@ class Class extends ModelElement
   Iterable<Method> get allInstanceMethods =>
       quiver.concat([instanceMethods, inheritedMethods]);
 
+  @override
   Iterable<Method> get allPublicInstanceMethods =>
       filterNonPublic(allInstanceMethods);
 
   bool get allPublicInstanceMethodsInherited =>
       instanceMethods.every((f) => f.isInherited);
 
+  @override
   Iterable<Field> get allInstanceFields =>
       quiver.concat([instanceProperties, inheritedProperties]);
-
-  Iterable<Accessor> get allAccessors => quiver.concat([
-        allInstanceFields.expand((f) => f.allAccessors),
-        constants.map((c) => c.getter)
-      ]);
-
-  Iterable<Field> get allPublicInstanceProperties =>
-      filterNonPublic(allInstanceFields);
 
   bool get allPublicInstancePropertiesInherited =>
       allPublicInstanceProperties.every((f) => f.isInherited);
 
+  @override
   Iterable<Operator> get allOperators =>
       quiver.concat([operators, inheritedOperators]);
 
-  Iterable<Operator> get allPublicOperators => filterNonPublic(allOperators);
-
   bool get allPublicOperatorsInherited =>
       allPublicOperators.every((f) => f.isInherited);
-
-  List<Field> get constants {
-    if (_constants != null) return _constants;
-    _constants = _allFields.where((f) => f.isConst).toList(growable: false)
-      ..sort(byName);
-
-    return _constants;
-  }
-
-  Iterable<Field> get publicConstants => filterNonPublic(constants);
 
   Map<Element, ModelElement> _allElements;
 
@@ -786,18 +903,15 @@ class Class extends ModelElement
     return kind;
   }
 
-  bool get hasPublicConstants => publicConstants.isNotEmpty;
-
   bool get hasPublicConstructors => publicConstructors.isNotEmpty;
 
   bool get hasPublicImplementors => publicImplementors.isNotEmpty;
-
-  bool get hasInstanceMethods => instanceMethods.isNotEmpty;
 
   bool get hasInstanceProperties => instanceProperties.isNotEmpty;
 
   bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;
 
+  @override
   bool get hasPublicMethods =>
       publicInstanceMethods.isNotEmpty || publicInheritedMethods.isNotEmpty;
 
@@ -810,16 +924,17 @@ class Class extends ModelElement
       hasPublicSuperChainReversed ||
       hasPublicImplementors;
 
+  @override
   bool get hasPublicOperators =>
       publicOperators.isNotEmpty || publicInheritedOperators.isNotEmpty;
 
+  @override
   bool get hasPublicProperties =>
       publicInheritedProperties.isNotEmpty ||
       publicInstanceProperties.isNotEmpty;
 
+  @override
   bool get hasPublicStaticMethods => publicStaticMethods.isNotEmpty;
-
-  bool get hasPublicStaticProperties => publicStaticProperties.isNotEmpty;
 
   bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
 
@@ -903,30 +1018,7 @@ class Class extends ModelElement
   Iterable<Field> get publicInheritedProperties =>
       filterNonPublic(inheritedProperties);
 
-  List<Method> get instanceMethods {
-    if (_instanceMethods != null) return _instanceMethods;
-
-    _instanceMethods = _methods
-        .where((m) => !m.isStatic && !m.isOperator)
-        .toList(growable: false)
-          ..sort(byName);
-    return _instanceMethods;
-  }
-
   Iterable<Method> get publicInstanceMethods => instanceMethods;
-
-  List<Field> get instanceProperties {
-    if (_instanceFields != null) return _instanceFields;
-    _instanceFields = _allFields
-        .where((f) => !f.isStatic && !f.isInherited && !f.isConst)
-        .toList(growable: false)
-          ..sort(byName);
-
-    return _instanceFields;
-  }
-
-  Iterable<Field> get publicInstanceProperties =>
-      filterNonPublic(instanceProperties);
 
   List<DefinedElementType> get interfaces => _interfaces;
 
@@ -951,7 +1043,8 @@ class Class extends ModelElement
   }
 
   /// Returns true if [other] is a parent class for this class.
-  bool isInheritingFrom(Class other) =>
+  @override
+  bool isInheritingFrom(covariant Class other) =>
       superChain.map((et) => (et.element as Class)).contains(other);
 
   @override
@@ -963,42 +1056,6 @@ class Class extends ModelElement
 
   @override
   DefinedElementType get modelType => super.modelType;
-
-  List<Operator> get operators {
-    if (_operators != null) return _operators;
-    _operators = _methods
-        .where((m) => m.isOperator)
-        .cast<Operator>()
-        .toList(growable: false)
-          ..sort(byName);
-    return _operators;
-  }
-
-  Iterable<Operator> get publicOperators => filterNonPublic(operators);
-
-  List<Method> get staticMethods {
-    if (_staticMethods != null) return _staticMethods;
-
-    _staticMethods = _methods.where((m) => m.isStatic).toList(growable: false)
-      ..sort(byName);
-
-    return _staticMethods;
-  }
-
-  Iterable<Method> get publicStaticMethods => filterNonPublic(staticMethods);
-
-  List<Field> get staticProperties {
-    if (_staticFields != null) return _staticFields;
-    _staticFields = _allFields
-        .where((f) => f.isStatic && !f.isConst)
-        .toList(growable: false)
-          ..sort(byName);
-
-    return _staticFields;
-  }
-
-  Iterable<Field> get publicStaticProperties =>
-      filterNonPublic(staticProperties);
 
   /// Not the same as superChain as it may include mixins.
   /// It's really not even the same as ordinary Dart inheritance, either,
@@ -1074,6 +1131,7 @@ class Class extends ModelElement
 
   /// Internal only because subclasses are allowed to override how
   /// these are mapped to [allInheritedFields] and so forth.
+  @override
   List<Field> get _allFields {
     if (_fields != null) return _fields;
     _fields = [];
@@ -1181,6 +1239,7 @@ class Class extends ModelElement
 
   ClassElement get _cls => (element as ClassElement);
 
+  @override
   List<Method> get _methods {
     if (_allMethods != null) return _allMethods;
 
@@ -1191,8 +1250,6 @@ class Class extends ModelElement
 
     return _allMethods;
   }
-
-  List<TypeParameter> _typeParameters;
 
   // a stronger hash?
   @override
@@ -1212,6 +1269,104 @@ class Class extends ModelElement
       name == o.name &&
       o.library.name == library.name &&
       o.library.package.name == library.package.name;
+}
+
+/// Extension methods
+class Extension extends Container
+    with TypeParameters, Categorization
+    implements EnclosedElement {
+  DefinedElementType extendedType;
+
+  Extension(
+      ExtensionElement element, Library library, PackageGraph packageGraph)
+      : super(element, library, packageGraph) {
+    extendedType = ElementType.from(_extension.extendedType, packageGraph);
+  }
+
+  @override
+  ModelElement get enclosingElement => library;
+
+  ExtensionElement get _extension => (element as ExtensionElement);
+
+  @override
+  String get kind => 'extension';
+
+  @override
+  List<Method> get _methods {
+    if (_allMethods != null) return _allMethods;
+
+    _allMethods = _extension.methods.map((e) {
+      return ModelElement.from(e, library, packageGraph) as Method;
+    }).toList(growable: false)
+      ..sort(byName);
+
+    return _allMethods;
+  }
+
+  @override
+  List<Field> get _allFields {
+    if (_fields != null) return _fields;
+    _fields = _extension.fields.map((f) {
+      Accessor getter, setter;
+      if (f.getter != null) {
+        getter = InheritableAccessor(f.getter, library, packageGraph);
+      }
+      if (f.setter != null) {
+        setter = InheritableAccessor(f.setter, library, packageGraph);
+      }
+
+      return ModelElement.from(f, library, packageGraph,
+          enclosingClass: this, getter: getter, setter: setter) as Field;
+    }).toList(growable: false)
+      ..sort(byName);
+
+    return _fields;
+  }
+
+  // a stronger hash?
+  @override
+  List<TypeParameter> get typeParameters {
+    if (_typeParameters == null) {
+      _typeParameters = _extension.typeParameters.map((f) {
+        var lib = Library(f.enclosingElement.library, packageGraph);
+        return ModelElement.from(f, lib, packageGraph) as TypeParameter;
+      }).toList();
+    }
+    return _typeParameters;
+  }
+
+  @override
+  DefinedElementType get modelType => super.modelType;
+
+  List<ModelElement> _allModelElements;
+
+  List<ModelElement> get allModelElements {
+    if (_allModelElements == null) {
+      _allModelElements = List.from(
+          quiver.concat([
+            instanceMethods,
+            allInstanceFields,
+            allAccessors,
+            allOperators,
+            constants,
+            staticMethods,
+            staticProperties,
+            typeParameters,
+          ]),
+          growable: false);
+    }
+    return _allModelElements;
+  }
+
+  @override
+  String get href {
+    if (!identical(canonicalModelElement, this)) {
+      return canonicalModelElement?.href;
+    }
+    assert(canonicalLibrary != null);
+    assert(canonicalLibrary == library);
+    return '${package.baseHref}${library.dirName}/$fileName';
+  }
 }
 
 class Constructor extends ModelElement
@@ -1711,7 +1866,7 @@ class Field extends ModelElement
     with GetterSetterCombo, Inheritable
     implements EnclosedElement {
   bool _isInherited = false;
-  Class _enclosingClass;
+  Container _enclosingClass;
   @override
   final InheritableAccessor getter;
   @override
@@ -2205,6 +2360,16 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         .toList(growable: false);
   }
 
+  @override
+  Iterable<Extension> get extensions {
+    if (_extensions != null) return _extensions;
+    _extensions = _libraryElement.definingCompilationUnit.extensions
+        .map((e) => ModelElement.from(e, this, packageGraph) as Extension)
+        .toList(growable: false)
+          ..sort(byName);
+    return _extensions;
+  }
+
   SdkLibrary get sdkLib {
     if (packageGraph.sdkLibrarySources.containsKey(element.librarySource)) {
       return packageGraph.sdkLibrarySources[element.librarySource];
@@ -2661,6 +2826,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         library.functions,
         library.properties,
         library.typedefs,
+        library.extensions.expand((e) {
+          return quiver.concat([
+            [e],
+            e.allModelElements
+          ]);
+        }),
         library.allClasses.expand((c) {
           return quiver.concat([
             [c],
@@ -2715,7 +2886,7 @@ class Method extends ModelElement
     with Inheritable, TypeParameters
     implements EnclosedElement {
   bool _isInherited = false;
-  Class _enclosingClass;
+  Container _enclosingClass;
   @override
   List<TypeParameter> typeParameters = [];
 
@@ -2788,6 +2959,9 @@ class Method extends ModelElement
 
   @override
   Method get overriddenElement {
+    if (_enclosingClass is Extension) {
+      return null;
+    }
     ClassElement parent = element.enclosingElement;
     for (InterfaceType t in parent.allSupertypes) {
       Element e = t.getMethod(element.name);
@@ -2941,7 +3115,7 @@ abstract class ModelElement extends Canonicalization
   /// Specify enclosingClass only if this is to be an inherited object.
   factory ModelElement.from(
       Element e, Library library, PackageGraph packageGraph,
-      {Class enclosingClass, Accessor getter, Accessor setter}) {
+      {Container enclosingClass, Accessor getter, Accessor setter}) {
     assert(packageGraph != null && e != null);
     assert(library != null ||
         e is ParameterElement ||
@@ -2962,7 +3136,8 @@ abstract class ModelElement extends Canonicalization
       originalMember = e;
       e = basest;
     }
-    Tuple3<Element, Library, Class> key = Tuple3(e, library, enclosingClass);
+    Tuple3<Element, Library, Container> key =
+        Tuple3(e, library, enclosingClass);
     ModelElement newModelElement;
     if (e.kind != ElementKind.DYNAMIC &&
         packageGraph._allConstructedModelElements.containsKey(key)) {
@@ -2988,6 +3163,9 @@ abstract class ModelElement extends Canonicalization
           } else {
             newModelElement = Class(e, library, packageGraph);
           }
+        }
+        if (e is ExtensionElement) {
+          newModelElement = Extension(e, library, packageGraph);
         }
         if (e is FunctionElement) {
           newModelElement = ModelFunction(e, library, packageGraph);
@@ -3018,16 +3196,23 @@ abstract class ModelElement extends Canonicalization
               newModelElement = EnumField.forConstant(
                   index, e, library, packageGraph, getter);
               // ignore: unnecessary_cast
-            } else if ((e.enclosingElement as ClassElement).isEnum) {
+            } else if (e.enclosingElement is ExtensionElement) {
+              newModelElement = Field(e, library, packageGraph, getter, setter);
+            } else if (e.enclosingElement is ClassElement &&
+                (e.enclosingElement as ClassElement).isEnum) {
               newModelElement =
                   EnumField(e, library, packageGraph, getter, setter);
             } else {
               newModelElement = Field(e, library, packageGraph, getter, setter);
             }
           } else {
-            // EnumFields can't be inherited, so this case is simpler.
-            newModelElement = Field.inherited(
-                e, enclosingClass, library, packageGraph, getter, setter);
+            if (enclosingClass is Extension) {
+              newModelElement = Field(e, library, packageGraph, getter, setter);
+            } else {
+              // EnumFields can't be inherited, so this case is simpler.
+              newModelElement = Field.inherited(
+                  e, enclosingClass, library, packageGraph, getter, setter);
+            }
           }
         }
         if (e is ConstructorElement) {
@@ -3173,6 +3358,9 @@ abstract class ModelElement extends Canonicalization
       } else if (enclosingElement is Class &&
           !(enclosingElement as Class).isPublic) {
         _isPublic = false;
+      } else if (enclosingElement is Extension &&
+          !(enclosingElement as Extension).isPublic) {
+        _isPublic = false;
       } else {
         String docComment = documentationComment;
         if (docComment == null) {
@@ -3251,8 +3439,8 @@ abstract class ModelElement extends Canonicalization
       element is ExecutableElement || element is FunctionTypedElement;
 
   ModelElement _buildCanonicalModelElement() {
-    Class preferredClass;
-    if (enclosingElement is Class) {
+    Container preferredClass;
+    if (enclosingElement is Class || enclosingElement is Extension) {
       preferredClass = enclosingElement;
     }
     return packageGraph.findCanonicalModelElementFor(element,
@@ -4963,7 +5151,7 @@ class PackageGraph {
   PackageWarningCounter _packageWarningCounter;
 
   /// All ModelElements constructed for this package; a superset of [allModelElements].
-  final Map<Tuple3<Element, Library, Class>, ModelElement>
+  final Map<Tuple3<Element, Library, Container>, ModelElement>
       _allConstructedModelElements = Map();
 
   /// Anything that might be inheritable, place here for later lookup.
@@ -5468,11 +5656,12 @@ class PackageGraph {
   /// This doesn't know anything about [PackageGraph.inheritThrough] and probably
   /// shouldn't, so using it with [Inheritable]s without special casing is
   /// not advised.
-  ModelElement findCanonicalModelElementFor(Element e, {Class preferredClass}) {
+  ModelElement findCanonicalModelElementFor(Element e,
+      {Container preferredClass}) {
     assert(allLibrariesAdded);
     Library lib = findCanonicalLibraryFor(e);
-    if (preferredClass != null) {
-      Class canonicalClass =
+    if (preferredClass != null && preferredClass is Container) {
+      Container canonicalClass =
           findCanonicalModelElementFor(preferredClass.element);
       if (canonicalClass != null) preferredClass = canonicalClass;
     }
@@ -5480,6 +5669,15 @@ class PackageGraph {
       lib = findCanonicalLibraryFor(preferredClass.element);
     }
     ModelElement modelElement;
+    // For elements defined in extensions, they are canonical.
+    if (e?.enclosingElement is ExtensionElement) {
+      lib ??= Library(e.enclosingElement.library, packageGraph);
+      // (TODO:keertip) Find a better way to exclude members of extensions
+      //  when libraries are specified using the "--include" flag
+      if (lib?.isDocumented) {
+        return ModelElement.from(e, lib, packageGraph);
+      }
+    }
     // TODO(jcollins-g): Special cases are pretty large here.  Refactor to split
     // out into helpers.
     // TODO(jcollins-g): The data structures should be changed to eliminate guesswork
@@ -5523,7 +5721,9 @@ class PackageGraph {
 
       // This is for situations where multiple classes may actually be canonical
       // for an inherited element whose defining Class is not canonical.
-      if (matches.length > 1 && preferredClass != null) {
+      if (matches.length > 1 &&
+          preferredClass != null &&
+          preferredClass is Class) {
         // Search for matches inside our superchain.
         List<Class> superChain = preferredClass.superChain
             .map((et) => et.element)
@@ -5692,6 +5892,7 @@ class PackageGraph {
 /// of a [TopLevelContainer].
 abstract class TopLevelContainer implements Nameable {
   List<Class> _classes;
+  List<Extension> _extensions;
   List<Enum> _enums;
   List<Mixin> _mixins;
   List<Class> _exceptions;
@@ -5701,6 +5902,8 @@ abstract class TopLevelContainer implements Nameable {
   List<Typedef> _typedefs;
 
   Iterable<Class> get classes => _classes;
+
+  Iterable<Extension> get extensions => _extensions;
 
   Iterable<Enum> get enums => _enums;
 
@@ -5718,6 +5921,8 @@ abstract class TopLevelContainer implements Nameable {
 
   bool get hasPublicClasses => publicClasses.isNotEmpty;
 
+  bool get hasPublicExtensions => publicExtensions.isNotEmpty;
+
   bool get hasPublicConstants => publicConstants.isNotEmpty;
 
   bool get hasPublicEnums => publicEnums.isNotEmpty;
@@ -5733,6 +5938,8 @@ abstract class TopLevelContainer implements Nameable {
   bool get hasPublicTypedefs => publicTypedefs.isNotEmpty;
 
   Iterable<Class> get publicClasses => filterNonPublic(classes);
+
+  Iterable<Extension> get publicExtensions => filterNonPublic(extensions);
 
   Iterable<TopLevelVariable> get publicConstants => filterNonPublic(constants);
 
@@ -5876,6 +6083,7 @@ class Category extends Nameable
     _functions = [];
     _mixins = [];
     _typedefs = [];
+    _extensions = [];
   }
 
   void addItem(Categorization c) {
@@ -5903,6 +6111,8 @@ class Category extends Nameable
       _functions.add(c);
     } else if (c is Typedef) {
       _typedefs.add(c);
+    } else if (c is Extension) {
+      _extensions.add(c);
     } else {
       throw UnimplementedError("Unrecognized element");
     }
@@ -6739,7 +6949,8 @@ class PackageBuilder {
       AnalysisOptionsImpl options = AnalysisOptionsImpl();
 
       // TODO(jcollins-g): pass in an ExperimentStatus instead?
-      options.enabledExperiments = config.enableExperiment;
+      options.enabledExperiments = config.enableExperiment
+        ..add('extension-methods');
 
       // TODO(jcollins-g): Make use of currently not existing API for managing
       //                   many AnalysisDrivers

@@ -200,6 +200,16 @@ class Apple {
   final ParameterizedTypedef<bool> fieldWithTypedef;
 }
 
+
+/// Extension on Apple
+extension AppleExtension on Apple {
+/// Can call s on Apple
+  void s() {
+    print('Extension on Apple');
+  }
+}
+
+
 class WithGeneric<T> {
   T prop;
   WithGeneric(this.prop);
@@ -607,4 +617,38 @@ abstract class HtmlInjection {
   /// This text should also appear in the output.
   /// {@end-tool}
   void injectHtmlFromTool();
+}
+
+/// Extension on a class defined in the package
+extension AnExtension<Q> on WithGeneric<Q> {
+  int call(String s) => 0;
+}
+
+/// Extension on List
+extension FancyList<Z> on List<Z> {
+  int get doubleLength => this.length * 2;
+  List<Z> operator-() => this.reversed.toList();
+  List<List<Z>> split(int at) =>
+      <List<Z>>[this.sublist(0, at), this.sublist(at)];
+  static List<Z> big() => List(1000000);
+}
+
+extension SymDiff<Q> on Set<Q> {
+  Set<Q> symmetricDifference(Set<Q> other) =>
+    this.difference(other).union(other.difference(this));
+}
+
+/// Extensions can be made specific.
+extension IntSet on Set<int> {
+  int sum() => this.fold(0, (prev, element) => prev + element);
+}
+
+// Extensions can be private.
+extension _Shhh on Object {
+  void secret() { }
+}
+
+// Extension with no name
+extension on Object {
+  void bar() { }
 }

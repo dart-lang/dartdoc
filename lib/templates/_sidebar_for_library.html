@@ -7,6 +7,13 @@
   {{/publicClasses}}
   {{/hasPublicClasses}}
 
+  {{#hasPublicExtensions}}
+  <li class="section-title"><a href="{{{href}}}#extension">Extensions</a></li>
+  {{#publicExtensions}}
+  <li>{{{ linkedName }}}</li>
+  {{/publicExtensions}}
+  {{/hasPublicExtensions}}
+
   {{#hasPublicMixins}}
   <li class="section-title"><a href="{{{href}}}#mixins">Mixins</a></li>
   {{#publicMixins}}
