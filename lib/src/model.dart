@@ -189,9 +189,6 @@ abstract class Inheritable implements ModelElement {
   }
 
   Container get canonicalEnclosingElement {
-//    if (enclosingElement is Extension) {
-//      return enclosingElement;
-//    }
     Element searchElement = element;
     if (!_canonicalEnclosingClassIsSet) {
       if (isInherited) {

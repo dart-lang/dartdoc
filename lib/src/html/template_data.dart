@@ -187,7 +187,7 @@ class ClassTemplateData<T extends Class> extends TemplateData<T> {
 
 /// Base template data class for [Extension].
 class ExtensionTemplateData<T extends Extension> extends TemplateData<T> {
-  final Extension extension;
+  final T extension;
   final Library library;
 
   ExtensionTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
