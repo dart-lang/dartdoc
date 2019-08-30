@@ -2100,13 +2100,12 @@ void main() {
   });
 
   group('Extension', () {
-    Extension ext, anExt, fancyList;
+    Extension ext, fancyList;
     Method s;
     List<Extension> extensions;
 
     setUpAll(() {
       ext = exLibrary.extensions.firstWhere((e) => e.name == 'AppleExtension');
-      anExt = exLibrary.extensions.firstWhere((e) => e.name == 'AnExtension');
       fancyList = exLibrary.extensions.firstWhere((e) => e.name == 'FancyList');
       extensions = exLibrary.publicExtensions.toList();
     });
