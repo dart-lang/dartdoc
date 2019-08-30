@@ -1,3 +1,7 @@
+## 0.28.6-dev
+* Support for 0.38.2 version of `package:analyzer`.
+* Support generating docs for extension methods (#2001).
+
 ## 0.28.5
 * Support the latest version of `package:analyzer`.
 * Fix hyperlinks to overriden methods (#1994).

@@ -2099,6 +2099,71 @@ void main() {
     });
   });
 
+  group('Extension', () {
+    Extension ext, anExt, fancyList;
+    Method s;
+    List<Extension> extensions;
+
+    setUpAll(() {
+      ext = exLibrary.extensions.firstWhere((e) => e.name == 'AppleExtension');
+      anExt = exLibrary.extensions.firstWhere((e) => e.name == 'AnExtension');
+      fancyList = exLibrary.extensions.firstWhere((e) => e.name == 'FancyList');
+      extensions = exLibrary.publicExtensions.toList();
+    });
+
+    test('has a fully qualified name', () {
+      expect(ext.fullyQualifiedName, 'ex.AppleExtension');
+    });
+
+    test('has enclosing element', () {
+      expect(ext.enclosingElement.name, equals(exLibrary.name));
+    });
+
+    test('member method has href', () {
+      s = ext.instanceMethods.firstWhere((m) => m.name == 's');
+      expect(s.href, 'ex/AppleExtension/s.html');
+    });
+
+    test('has extended type', () {
+      expect(ext.extendedType.name, equals("Apple"));
+    });
+
+    test('extension name with generics', () {
+      expect(
+          fancyList.nameWithGenerics,
+          equals(
+              'FancyList&lt;<wbr><span class="type-parameter">Z</span>&gt;'));
+    });
+
+    test('get methods', () {
+      expect(fancyList.allPublicInstanceMethods, hasLength(1));
+    });
+
+    test('get operators', () {
+      expect(fancyList.allPublicOperators, hasLength(1));
+    });
+
+    test('get static methods', () {
+      expect(fancyList.publicStaticMethods, hasLength(1));
+    });
+
+    test('get properties', () {
+      expect(fancyList.publicInstanceProperties, hasLength(1));
+    });
+
+    test('get contants', () {
+      expect(fancyList.publicConstants, hasLength(0));
+    });
+
+    test('correctly finds all the extensions', () {
+      expect(exLibrary.extensions, hasLength(7));
+    });
+
+    test('correctly finds all the public extensions', () {
+      expect(extensions, hasLength(5));
+    });
+  });
+
   group('Enum', () {
     Enum animal;
 

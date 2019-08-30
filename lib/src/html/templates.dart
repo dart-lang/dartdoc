@@ -18,6 +18,7 @@ const _partials = <String>[
   'categorization',
   'class',
   'constant',
+  'extension',
   'footer',
   'head',
   'library',
@@ -31,6 +32,7 @@ const _partials = <String>[
   'sidebar_for_class',
   'sidebar_for_category',
   'sidebar_for_enum',
+  'sidebar_for_extension',
   'source_code',
   'source_link',
   'sidebar_for_library',
@@ -45,6 +47,7 @@ const _requiredTemplates = <String>[
   'constant.html',
   'constructor.html',
   'enum.html',
+  'extension.html',
   'function.html',
   'index.html',
   'library.html',
@@ -65,7 +68,6 @@ Future<Map<String, String>> _loadPartials(
     List<String> headerPaths,
     List<String> footerPaths,
     List<String> footerTextPaths) async {
-
   headerPaths ??= [];
   footerPaths ??= [];
   footerTextPaths ??= [];
@@ -75,8 +77,8 @@ Future<Map<String, String>> _loadPartials(
   void replacePlaceholder(String key, String placeholder, List<String> paths) {
     var template = partials[key];
     if (template != null && paths != null && paths.isNotEmpty) {
-      String replacement = paths.map((p) => File(p).readAsStringSync())
-          .join('\n');
+      String replacement =
+          paths.map((p) => File(p).readAsStringSync()).join('\n');
       template = template.replaceAll(placeholder, replacement);
       partials[key] = template;
     }
@@ -140,6 +142,7 @@ class _DirectoryTemplatesLoader extends _TemplatesLoader {
 class Templates {
   final Template categoryTemplate;
   final Template classTemplate;
+  final Template extensionTemplate;
   final Template enumTemplate;
   final Template constantTemplate;
   final Template constructorTemplate;
@@ -164,8 +167,7 @@ class Templates {
         footerTextPaths: footerTextPaths);
   }
 
-  static Future<Templates> fromDirectory(
-      Directory dir,
+  static Future<Templates> fromDirectory(Directory dir,
       {List<String> headerPaths,
       List<String> footerPaths,
       List<String> footerTextPaths}) async {
@@ -185,13 +187,12 @@ class Templates {
     }
   }
 
-  static Future<Templates> _create(
-      _TemplatesLoader templatesLoader,
+  static Future<Templates> _create(_TemplatesLoader templatesLoader,
       {List<String> headerPaths,
       List<String> footerPaths,
       List<String> footerTextPaths}) async {
-    var partials =
-        await _loadPartials(templatesLoader, headerPaths, footerPaths, footerTextPaths);
+    var partials = await _loadPartials(
+        templatesLoader, headerPaths, footerPaths, footerTextPaths);
 
     Template _partial(String name) {
       String partial = partials[name];
@@ -202,7 +203,8 @@ class Templates {
     }
 
     Future<Template> _loadTemplate(String templatePath) async {
-      String templateContents = await templatesLoader.loadTemplate(templatePath);
+      String templateContents =
+          await templatesLoader.loadTemplate(templatePath);
       return Template(templateContents, partialResolver: _partial);
     }
 
@@ -210,6 +212,7 @@ class Templates {
     var libraryTemplate = await _loadTemplate('library.html');
     var categoryTemplate = await _loadTemplate('category.html');
     var classTemplate = await _loadTemplate('class.html');
+    var extensionTemplate = await _loadTemplate('extension.html');
     var enumTemplate = await _loadTemplate('enum.html');
     var functionTemplate = await _loadTemplate('function.html');
     var methodTemplate = await _loadTemplate('method.html');
@@ -229,6 +232,7 @@ class Templates {
         categoryTemplate,
         libraryTemplate,
         classTemplate,
+        extensionTemplate,
         enumTemplate,
         functionTemplate,
         methodTemplate,
@@ -247,6 +251,7 @@ class Templates {
       this.categoryTemplate,
       this.libraryTemplate,
       this.classTemplate,
+      this.extensionTemplate,
       this.enumTemplate,
       this.functionTemplate,
       this.methodTemplate,

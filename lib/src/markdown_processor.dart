@@ -183,7 +183,7 @@ class IterableBlockParser extends md.BlockParser {
 // Calculate a class hint for findCanonicalModelElementFor.
 ModelElement _getPreferredClass(ModelElement modelElement) {
   if (modelElement is EnclosedElement &&
-      (modelElement as EnclosedElement).enclosingElement is Class) {
+      (modelElement as EnclosedElement).enclosingElement is Container) {
     return (modelElement as EnclosedElement).enclosingElement;
   } else if (modelElement is Class) {
     return modelElement;
@@ -204,7 +204,7 @@ MatchingLinkResult _getMatchingLinkElement(
 
   // Try expensive not-scoped lookup.
   if (refModelElement == null && element is ModelElement) {
-    Class preferredClass = _getPreferredClass(element);
+    Container preferredClass = _getPreferredClass(element);
     refModelElement =
         _MarkdownCommentReference(codeRef, element, commentRefs, preferredClass)
             .computeReferredElement();
@@ -692,7 +692,7 @@ class _MarkdownCommentReference {
   }
 
   // Add a result, but make it canonical.
-  void _addCanonicalResult(ModelElement modelElement, Class tryClass) {
+  void _addCanonicalResult(ModelElement modelElement, Container tryClass) {
     results.add(packageGraph.findCanonicalModelElementFor(modelElement.element,
         preferredClass: tryClass));
   }

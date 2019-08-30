@@ -171,6 +171,37 @@ class HtmlGeneratorInstance {
           }
         }
 
+        for (var extension in filterNonPublic(lib.extensions)) {
+          generateExtension(_packageGraph, lib, extension);
+
+          for (var constant in filterNonDocumented(extension.constants)) {
+            generateConstant(_packageGraph, lib, extension, constant);
+          }
+
+          for (var property
+              in filterNonDocumented(extension.staticProperties)) {
+            generateProperty(_packageGraph, lib, extension, property);
+          }
+
+          for (var method
+              in filterNonDocumented(extension.allPublicInstanceMethods)) {
+            generateMethod(_packageGraph, lib, extension, method);
+          }
+
+          for (var method in filterNonDocumented(extension.staticMethods)) {
+            generateMethod(_packageGraph, lib, extension, method);
+          }
+
+          for (var operator in filterNonDocumented(extension.allOperators)) {
+            generateMethod(_packageGraph, lib, extension, operator);
+          }
+
+          for (var property
+              in filterNonDocumented(extension.allInstanceFields)) {
+            generateProperty(_packageGraph, lib, extension, property);
+          }
+        }
+
         for (var mixin in filterNonDocumented(lib.mixins)) {
           generateMixins(_packageGraph, lib, mixin);
           for (var constructor in filterNonDocumented(mixin.constructors)) {
@@ -275,6 +306,13 @@ class HtmlGeneratorInstance {
     _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
   }
 
+  void generateExtension(
+      PackageGraph packageGraph, Library lib, Extension ext) {
+    TemplateData data = ExtensionTemplateData(_options, packageGraph, lib, ext);
+    _build(
+        path.joinAll(ext.href.split('/')), _templates.extensionTemplate, data);
+  }
+
   void generateMixins(PackageGraph packageGraph, Library lib, Mixin mixin) {
     TemplateData data = MixinTemplateData(_options, packageGraph, lib, mixin);
     _build(path.joinAll(mixin.href.split('/')), _templates.mixinTemplate, data);
@@ -305,7 +343,7 @@ class HtmlGeneratorInstance {
   }
 
   void generateMethod(
-      PackageGraph packageGraph, Library lib, Class clazz, Method method) {
+      PackageGraph packageGraph, Library lib, Container clazz, Method method) {
     TemplateData data =
         MethodTemplateData(_options, packageGraph, lib, clazz, method);
 
@@ -314,7 +352,7 @@ class HtmlGeneratorInstance {
   }
 
   void generateConstant(
-      PackageGraph packageGraph, Library lib, Class clazz, Field property) {
+      PackageGraph packageGraph, Library lib, Container clazz, Field property) {
     TemplateData data =
         ConstantTemplateData(_options, packageGraph, lib, clazz, property);
 
@@ -323,7 +361,7 @@ class HtmlGeneratorInstance {
   }
 
   void generateProperty(
-      PackageGraph packageGraph, Library lib, Class clazz, Field property) {
+      PackageGraph packageGraph, Library lib, Container clazz, Field property) {
     TemplateData data =
         PropertyTemplateData(_options, packageGraph, lib, clazz, property);
 

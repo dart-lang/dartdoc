@@ -1,4 +1,4 @@
 dartdoc:
   linkToSource:
     root: '.'
-    uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v0.28.5/%f%#L%l%'
+    uriTemplate: 'https://github.com/dart-lang/dartdoc/blob/v0.28.6-dev/%f%#L%l%'
