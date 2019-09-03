@@ -5671,7 +5671,7 @@ class PackageGraph {
       lib ??= Library(e.enclosingElement.library, packageGraph);
       // (TODO:keertip) Find a better way to exclude members of extensions
       //  when libraries are specified using the "--include" flag
-      if (lib?.isDocumented) {
+      if (lib?.isDocumented == true) {
         return ModelElement.from(e, lib, packageGraph);
       }
     }
