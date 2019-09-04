@@ -6952,6 +6952,8 @@ class PackageBuilder {
       // TODO(jcollins-g): Make use of currently not existing API for managing
       //                   many AnalysisDrivers
       // TODO(jcollins-g): make use of DartProject isApi()
+      // TODO(keertip): Use summary 2 after fixing #2017
+      AnalysisDriver.useSummary2 = false;
       _driver = AnalysisDriver(
           scheduler,
           log,
