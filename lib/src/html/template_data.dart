@@ -283,64 +283,64 @@ class FunctionTemplateData extends TemplateData<ModelFunction> {
 class MethodTemplateData extends TemplateData<Method> {
   final Library library;
   final Method method;
-  final Container clazz;
-  String container;
+  final Container container;
+  String containerDesc;
 
   MethodTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.clazz, this.method)
+      this.library, this.container, this.method)
       : super(htmlOptions, packageGraph) {
-    container = clazz.isClass ? 'class' : 'extension';
+    containerDesc = container.isClass ? 'class' : 'extension';
   }
 
   @override
   Method get self => method;
   @override
-  String get title => '${method.name} method - ${clazz.name} ${container} - '
+  String get title => '${method.name} method - ${container.name} ${containerDesc} - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle => _layoutTitle(
       method.nameWithGenerics, method.fullkind, method.isDeprecated);
   @override
   String get metaDescription =>
-      'API docs for the ${method.name} method from the ${clazz.name} ${container}, '
+      'API docs for the ${method.name} method from the ${container.name} ${containerDesc}, '
       'for the Dart programming language.';
   @override
   List get navLinks => [packageGraph.defaultPackage, library];
   @override
-  List get navLinksWithGenerics => [clazz];
+  List get navLinksWithGenerics => [container];
   @override
   String get htmlBase => '../..';
 }
 
 class PropertyTemplateData extends TemplateData<Field> {
   final Library library;
-  final Container clazz;
+  final Container container;
   final Field property;
-  String container;
+  String containerDesc;
 
   PropertyTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.clazz, this.property)
+      this.library, this.container, this.property)
       : super(htmlOptions, packageGraph) {
-    container = clazz.isClass ? 'class' : 'extension';
+    containerDesc = container.isClass ? 'class' : 'extension';
   }
 
   @override
   Field get self => property;
 
   @override
-  String get title => '${property.name} $type - ${clazz.name} ${container} - '
+  String get title => '${property.name} $type - ${container.name} ${containerDesc} - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle =>
       _layoutTitle(property.name, type, property.isDeprecated);
   @override
   String get metaDescription =>
-      'API docs for the ${property.name} $type from the ${clazz.name} ${container}, '
+      'API docs for the ${property.name} $type from the ${container.name} ${containerDesc}, '
       'for the Dart programming language.';
   @override
   List get navLinks => [packageGraph.defaultPackage, library];
   @override
-  List get navLinksWithGenerics => [clazz];
+  List get navLinksWithGenerics => [container];
   @override
   String get htmlBase => '../..';
 
@@ -349,8 +349,8 @@ class PropertyTemplateData extends TemplateData<Field> {
 
 class ConstantTemplateData extends PropertyTemplateData {
   ConstantTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      Library library, Container clazz, Field property)
-      : super(htmlOptions, packageGraph, library, clazz, property);
+      Library library, Container container, Field property)
+      : super(htmlOptions, packageGraph, library, container, property);
 
   @override
   String get type => 'constant';
