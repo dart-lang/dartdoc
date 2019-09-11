@@ -2777,23 +2777,19 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   static String getLibraryName(LibraryElement element) {
     var source = element.source;
 
-    String name = element.name;
-    if (name == null || name.isEmpty) {
-      // handle the case of an anonymous library
-      name = path.basename(source.fullName);
-
-      if (name.endsWith('.dart')) {
-        name = name.substring(0, name.length - '.dart'.length);
-      }
+    if (source.uri.isScheme('dart')) {
+      return '${source.uri}';
     }
 
-    // So, if the library is a system library, it's name is not
-    // dart:___, it's dart.___. Apparently the way to get to the dart:___
-    // name is to get source.encoding.
-    // This may be wrong or misleading, but developers expect the name
-    // of dart:____
-    name = source.isInSystemLibrary ? source.encoding : name;
+    var name = element.name;
+    if (name != null && name.isNotEmpty) {
+      return name;
+    }
 
+    name = path.basename(source.fullName);
+    if (name.endsWith('.dart')) {
+      name = name.substring(0, name.length - '.dart'.length);
+    }
     return name;
   }
 
