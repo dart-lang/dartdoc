@@ -32,16 +32,14 @@ import 'package:analyzer/src/dart/analysis/file_state.dart';
 import 'package:analyzer/src/dart/analysis/performance_logger.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/handle.dart';
+import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart' hide AnalysisResult;
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/resolver.dart'
-    show
-        Namespace,
-        NamespaceBuilder,
-        InheritanceManager; // ignore: deprecated_member_use
+    show Namespace, NamespaceBuilder;
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
@@ -1114,14 +1112,25 @@ class Class extends Container
 
   List<ExecutableElement> get _inheritedElements {
     if (__inheritedElements == null) {
-      Map<String, ExecutableElement> cmap = definingLibrary.inheritanceManager
-          .getMembersInheritedFromClasses(// ignore: deprecated_member_use
-              element);
-      Map<String, ExecutableElement> imap = definingLibrary.inheritanceManager
-          .getMembersInheritedFromInterfaces(// ignore: deprecated_member_use
-              element);
-      __inheritedElements = List.from(cmap.values)
-        ..addAll(imap.values.where((e) => !cmap.containsKey(e.name)));
+      var classElement = element as ClassElement;
+      var classType = classElement.type;
+      if (classType.isObject) {
+        return __inheritedElements = <ExecutableElement>[];
+      }
+
+      var inheritance = definingLibrary.inheritanceManager;
+      var cmap = inheritance.getInheritedConcreteMap(classType);
+      var imap = inheritance.getInheritedMap(classType);
+
+      var combinedMap = <String, ExecutableElement>{};
+      for (var nameObj in cmap.keys) {
+        combinedMap[nameObj.name] = cmap[nameObj];
+      }
+      for (var nameObj in imap.keys) {
+        combinedMap[nameObj.name] ??= imap[nameObj];
+      }
+
+      __inheritedElements = combinedMap.values.toList();
     }
     return __inheritedElements;
   }
@@ -2586,14 +2595,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return '${package.baseHref}${library.dirName}/$fileName';
   }
 
-  // ignore: deprecated_member_use
-  InheritanceManager _inheritanceManager;
+  InheritanceManager3 _inheritanceManager;
 
-  // ignore: deprecated_member_use
-  InheritanceManager get inheritanceManager {
+  InheritanceManager3 get inheritanceManager {
     if (_inheritanceManager == null) {
-      // ignore: deprecated_member_use
-      _inheritanceManager = InheritanceManager(element);
+      var typeSystem = element.context.typeSystem;
+      _inheritanceManager = InheritanceManager3(typeSystem);
     }
     return _inheritanceManager;
   }
