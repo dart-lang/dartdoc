@@ -3094,6 +3094,9 @@ abstract class ModelElement extends Canonicalization
 
   factory ModelElement.fromElement(Element e, PackageGraph p) {
     Library lib = p.findButDoNotCreateLibraryFor(e);
+    if (lib == null) {
+      return null;
+    }
     Accessor getter;
     Accessor setter;
     if (e is PropertyInducingElement) {

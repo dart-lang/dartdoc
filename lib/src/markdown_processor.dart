@@ -686,8 +686,10 @@ class _MarkdownCommentReference {
         refModelElement = (refModelElement as Accessor).enclosingCombo;
       }
       refModelElement =
-          refModelElement.canonicalModelElement ?? refModelElement;
-      results.add(refModelElement);
+          refModelElement?.canonicalModelElement ?? refModelElement;
+      if (refModelElement != null) {
+        results.add(refModelElement);
+      }
     }
   }
 
