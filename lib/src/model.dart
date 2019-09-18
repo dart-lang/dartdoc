@@ -4026,7 +4026,7 @@ abstract class ModelElement extends Canonicalization
       return 0;
     }
   }
-  
+
   @override
   String toString() => '$runtimeType $name';
 
@@ -4034,7 +4034,7 @@ abstract class ModelElement extends Canonicalization
     e ??= this;
     fqName ??= e.name;
 
-    if (e is! EnclosedElement) {
+    if (e is! EnclosedElement || e.enclosingElement == null) {
       return fqName;
     }
 
@@ -6455,8 +6455,9 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
-  ModelElement get enclosingElement =>
-      ModelElement.from(_parameter.enclosingElement, library, packageGraph);
+  ModelElement get enclosingElement => (_parameter.enclosingElement != null)
+      ? ModelElement.from(_parameter.enclosingElement, library, packageGraph)
+      : null;
 
   bool get hasDefaultValue {
     return _parameter.defaultValueCode != null &&
