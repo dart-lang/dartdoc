@@ -9,10 +9,138 @@ import 'dart:io';
 
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/dart/ast/utilities.dart';
 import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/element_type.dart';
 
 final Map<String, String> _fileContents = <String, String>{};
+
+String linkedParams(List<Parameter> parameters,
+    {bool showMetadata = true,
+    bool showNames = true,
+    String separator = ', '}) {
+  List<Parameter> requiredParams =
+      parameters.where((Parameter p) => !p.isOptional).toList();
+  List<Parameter> positionalParams =
+      parameters.where((Parameter p) => p.isOptionalPositional).toList();
+  List<Parameter> namedParams =
+      parameters.where((Parameter p) => p.isOptionalNamed).toList();
+
+  StringBuffer builder = StringBuffer();
+
+  // prefix
+  if (requiredParams.isEmpty && positionalParams.isNotEmpty) {
+    builder.write('[');
+  } else if (requiredParams.isEmpty && namedParams.isNotEmpty) {
+    builder.write('{');
+  }
+
+  // index over params
+  for (Parameter param in requiredParams) {
+    bool isLast = param == requiredParams.last;
+    String ext;
+    if (isLast && positionalParams.isNotEmpty) {
+      ext = ', [';
+    } else if (isLast && namedParams.isNotEmpty) {
+      ext = ', {';
+    } else {
+      ext = isLast ? '' : ', ';
+    }
+    builder.write(renderParam(param, ext, showMetadata, showNames));
+    builder.write(' ');
+  }
+  for (Parameter param in positionalParams) {
+    bool isLast = param == positionalParams.last;
+    builder
+        .write(renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
+    builder.write(' ');
+  }
+  for (Parameter param in namedParams) {
+    bool isLast = param == namedParams.last;
+    builder
+        .write(renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
+    builder.write(' ');
+  }
+
+  // suffix
+  if (namedParams.isNotEmpty) {
+    builder.write('}');
+  } else if (positionalParams.isNotEmpty) {
+    builder.write(']');
+  }
+
+  return builder.toString().trim();
+}
+
+String renderParam(
+    Parameter param, String suffix, bool showMetadata, bool showNames) {
+  StringBuffer buf = StringBuffer();
+  ElementType paramModelType = param.modelType;
+
+  buf.write('<span class="parameter" id="${param.htmlId}">');
+  if (showMetadata && param.hasAnnotations) {
+    param.annotations.forEach((String annotation) {
+      buf.write('<span>$annotation</span> ');
+    });
+  }
+  if (param.isCovariant) {
+    buf.write('<span>covariant</span> ');
+  }
+  if (paramModelType is CallableElementTypeMixin ||
+      paramModelType.type is FunctionType) {
+    String returnTypeName;
+    if (paramModelType.isTypedef) {
+      returnTypeName = paramModelType.linkedName;
+    } else {
+      returnTypeName = paramModelType.createLinkedReturnTypeName();
+    }
+    buf.write('<span class="type-annotation">${returnTypeName}</span>');
+    if (showNames) {
+      buf.write(' <span class="parameter-name">${param.name}</span>');
+    } else if (paramModelType.isTypedef ||
+        paramModelType is CallableAnonymousElementType ||
+        paramModelType.type is FunctionType) {
+      buf.write(' <span class="parameter-name">${paramModelType.name}</span>');
+    }
+    if (!paramModelType.isTypedef && paramModelType is DefinedElementType) {
+      buf.write('(');
+      buf.write(linkedParams(paramModelType.element.parameters,
+          showNames: showNames, showMetadata: showMetadata));
+      buf.write(')');
+    }
+    if (!paramModelType.isTypedef && paramModelType.type is FunctionType) {
+      buf.write('(');
+      buf.write(linkedParams(
+          (paramModelType as UndefinedElementType).parameters,
+          showNames: showNames,
+          showMetadata: showMetadata));
+      buf.write(')');
+    }
+  } else if (param.modelType != null) {
+    String typeName = paramModelType.linkedName;
+    if (typeName.isNotEmpty) {
+      buf.write('<span class="type-annotation">$typeName</span>');
+    }
+    if (typeName.isNotEmpty && showNames && param.name.isNotEmpty) {
+      buf.write(' ');
+    }
+    if (showNames && param.name.isNotEmpty) {
+      buf.write('<span class="parameter-name">${param.name}</span>');
+    }
+  }
+
+  if (param.hasDefaultValue) {
+    if (param.isOptionalNamed) {
+      buf.write(': ');
+    } else {
+      buf.write(' = ');
+    }
+    buf.write('<span class="default-value">${param.defaultValue}</span>');
+  }
+  buf.write('${suffix}</span>');
+  return buf.toString();
+}
 
 /// Returns the [AstNode] for a given [Element].
 ///
