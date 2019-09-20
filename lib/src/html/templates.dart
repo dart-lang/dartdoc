@@ -31,6 +31,7 @@ const _partials = <String>[
   'search_sidebar',
   'sidebar_for_class',
   'sidebar_for_category',
+  'sidebar_for_container',
   'sidebar_for_enum',
   'sidebar_for_extension',
   'source_code',

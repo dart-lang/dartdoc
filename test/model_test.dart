@@ -2135,6 +2135,13 @@ void main() {
               'FancyList&lt;<wbr><span class="type-parameter">Z</span>&gt;'));
     });
 
+    test('extended type has generics', () {
+      expect(
+          fancyList.extendedType.nameWithGenerics,
+          equals(
+              'List&lt;<wbr><span class="type-parameter">Z</span>&gt;'));
+    });
+
     test('get methods', () {
       expect(fancyList.allPublicInstanceMethods, hasLength(1));
     });
