@@ -1,5 +1,5 @@
-## 0.28.6-dev
-* Support for 0.38.2 version of `package:analyzer`.
+## 0.28.6
+* Support for 0.38.3 version of `package:analyzer`.
 * Support generating docs for extension methods (#2001).
 
 ## 0.28.5
