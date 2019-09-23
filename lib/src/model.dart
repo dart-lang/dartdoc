@@ -1033,15 +1033,15 @@ class Class extends Container
   bool get isCanonical => super.isCanonical && isPublic;
 
   bool get isErrorOrException {
-    bool _doCheck(InterfaceType type) {
-      return (type.element.library.isDartCore &&
-          (type.name == 'Exception' || type.name == 'Error'));
+    bool _doCheck(ClassElement element) {
+      return (element.library.isDartCore &&
+          (element.name == 'Exception' || element.name == 'Error'));
     }
 
     // if this class is itself Error or Exception, return true
-    if (_doCheck(_cls.type)) return true;
+    if (_doCheck(_cls)) return true;
 
-    return _cls.allSupertypes.any(_doCheck);
+    return _cls.allSupertypes.map((t) => t.element).any(_doCheck);
   }
 
   /// Returns true if [other] is a parent class for this class.
@@ -1121,12 +1121,12 @@ class Class extends Container
   List<ExecutableElement> get _inheritedElements {
     if (__inheritedElements == null) {
       var classElement = element as ClassElement;
-      var classType = classElement.type;
-      if (classType.isObject) {
+      if (classElement.isDartCoreObject) {
         return __inheritedElements = <ExecutableElement>[];
       }
 
       var inheritance = definingLibrary.inheritanceManager;
+      var classType = classElement.thisType;
       var cmap = inheritance.getInheritedConcreteMap(classType);
       var imap = inheritance.getInheritedMap(classType);
 
@@ -4049,8 +4049,7 @@ abstract class ModelElement extends Canonicalization
     // If we're calling this with an empty name, we probably have the wrong
     // element associated with a ModelElement or there's an analysis bug.
     assert(name.isNotEmpty ||
-        (this.element is TypeDefiningElement &&
-            (this.element as TypeDefiningElement).type.name == "dynamic") ||
+        this.element?.kind == ElementKind.DYNAMIC ||
         this is ModelFunction);
 
     if (href == null) {
