@@ -6,6 +6,7 @@
 library dartdoc.element_type;
 
 import 'dart:collection';
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/model.dart';
@@ -121,7 +122,7 @@ class UndefinedElementType extends ElementType {
   String get name => type.name ?? '';
 }
 
-// A FunctionType that does not have an underpinning Element.
+/// A FunctionType that does not have an underpinning Element.
 class FunctionTypeElementType extends UndefinedElementType {
   FunctionTypeElementType(DartType f, Library library,
       PackageGraph packageGraph, ElementType returnedFrom)
