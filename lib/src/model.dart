@@ -36,7 +36,7 @@ import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
 import 'package:analyzer/src/dart/sdk/sdk.dart';
-import 'package:analyzer/src/generated/engine.dart' hide AnalysisResult;
+import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/resolver.dart'
     show Namespace, NamespaceBuilder;
@@ -54,7 +54,7 @@ import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/line_number_cache.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
-import 'package:dartdoc/src/model_utils.dart';
+import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta, FileContents;
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/special_elements.dart';
@@ -572,7 +572,7 @@ class Mixin extends Class {
       _superclassConstraints = (element as ClassElement)
           .superclassConstraints
           .map<ParameterizedElementType>(
-              (InterfaceType i) => ElementType.from(i, packageGraph))
+              (InterfaceType i) => ElementType.from(i, library, packageGraph))
           .toList();
     }
     return _superclassConstraints;
@@ -582,7 +582,7 @@ class Mixin extends Class {
       publicSuperclassConstraints.isNotEmpty;
 
   Iterable<ParameterizedElementType> get publicSuperclassConstraints =>
-      filterNonPublic(superclassConstraints);
+      utils.filterNonPublic(superclassConstraints);
 
   @override
   bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;
@@ -626,10 +626,11 @@ abstract class Container extends ModelElement {
     return _instanceMethods;
   }
 
-  bool get hasPublicMethods => filterNonPublic(instanceMethods).isNotEmpty;
+  bool get hasPublicMethods =>
+      utils.filterNonPublic(instanceMethods).isNotEmpty;
 
   Iterable<Method> get allPublicInstanceMethods =>
-      filterNonPublic(instanceMethods);
+      utils.filterNonPublic(instanceMethods);
 
   List<Method> get staticMethods {
     if (_staticMethods != null) return _staticMethods;
@@ -640,9 +641,11 @@ abstract class Container extends ModelElement {
     return _staticMethods;
   }
 
-  bool get hasPublicStaticMethods => filterNonPublic(staticMethods).isNotEmpty;
+  bool get hasPublicStaticMethods =>
+      utils.filterNonPublic(staticMethods).isNotEmpty;
 
-  Iterable<Method> get publicStaticMethods => filterNonPublic(staticMethods);
+  Iterable<Method> get publicStaticMethods =>
+      utils.filterNonPublic(staticMethods);
 
   List<Operator> get operators {
     if (_operators != null) return _operators;
@@ -658,9 +661,10 @@ abstract class Container extends ModelElement {
 
   bool get hasPublicOperators => publicOperators.isNotEmpty;
 
-  Iterable<Operator> get allPublicOperators => filterNonPublic(allOperators);
+  Iterable<Operator> get allPublicOperators =>
+      utils.filterNonPublic(allOperators);
 
-  Iterable<Operator> get publicOperators => filterNonPublic(operators);
+  Iterable<Operator> get publicOperators => utils.filterNonPublic(operators);
 
   List<Field> get _allFields => [];
 
@@ -675,7 +679,7 @@ abstract class Container extends ModelElement {
   }
 
   Iterable<Field> get publicStaticProperties =>
-      filterNonPublic(staticProperties);
+      utils.filterNonPublic(staticProperties);
 
   bool get hasPublicStaticProperties => publicStaticProperties.isNotEmpty;
 
@@ -690,14 +694,14 @@ abstract class Container extends ModelElement {
   }
 
   Iterable<Field> get publicInstanceProperties =>
-      filterNonPublic(instanceProperties);
+      utils.filterNonPublic(instanceProperties);
 
   bool get hasPublicProperties => publicInstanceProperties.isNotEmpty;
 
   Iterable<Field> get allInstanceFields => instanceProperties;
 
   Iterable<Field> get allPublicInstanceProperties =>
-      filterNonPublic(allInstanceFields);
+      utils.filterNonPublic(allInstanceFields);
 
   bool isInheritingFrom(Container other) => false;
 
@@ -709,7 +713,7 @@ abstract class Container extends ModelElement {
     return _constants;
   }
 
-  Iterable<Field> get publicConstants => filterNonPublic(constants);
+  Iterable<Field> get publicConstants => utils.filterNonPublic(constants);
 
   bool get hasPublicConstants => publicConstants.isNotEmpty;
 
@@ -735,18 +739,19 @@ class Class extends Container
     packageGraph.specialClasses.addSpecial(this);
     _mixins = _cls.mixins
         .map((f) {
-          DefinedElementType t = ElementType.from(f, packageGraph);
+          DefinedElementType t = ElementType.from(f, library, packageGraph);
           return t;
         })
         .where((mixin) => mixin != null)
         .toList(growable: false);
 
     if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
-      supertype = ElementType.from(_cls.supertype, packageGraph);
+      supertype = ElementType.from(_cls.supertype, library, packageGraph);
     }
 
     _interfaces = _cls.interfaces
-        .map((f) => ElementType.from(f, packageGraph) as DefinedElementType)
+        .map((f) =>
+            ElementType.from(f, library, packageGraph) as DefinedElementType)
         .toList(growable: false);
   }
 
@@ -765,7 +770,7 @@ class Class extends Container
 
   @override
   Iterable<Method> get allPublicInstanceMethods =>
-      filterNonPublic(allInstanceMethods);
+      utils.filterNonPublic(allInstanceMethods);
 
   bool get allPublicInstanceMethodsInherited =>
       instanceMethods.every((f) => f.isInherited);
@@ -884,7 +889,8 @@ class Class extends Container
     return _constructors;
   }
 
-  Iterable<Constructor> get publicConstructors => filterNonPublic(constructors);
+  Iterable<Constructor> get publicConstructors =>
+      utils.filterNonPublic(constructors);
 
   /// Returns the library that encloses this element.
   @override
@@ -945,7 +951,7 @@ class Class extends Container
 
   /// Returns all the implementors of this class.
   Iterable<Class> get publicImplementors {
-    return filterNonPublic(findCanonicalFor(
+    return utils.filterNonPublic(utils.findCanonicalFor(
         packageGraph.implementors[href] != null
             ? packageGraph.implementors[href]
             : []));
@@ -974,7 +980,8 @@ class Class extends Container
     return _inheritedMethods;
   }
 
-  Iterable get publicInheritedMethods => filterNonPublic(inheritedMethods);
+  Iterable get publicInheritedMethods =>
+      utils.filterNonPublic(inheritedMethods);
 
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
@@ -1000,7 +1007,7 @@ class Class extends Container
   }
 
   Iterable<Operator> get publicInheritedOperators =>
-      filterNonPublic(inheritedOperators);
+      utils.filterNonPublic(inheritedOperators);
 
   List<Field> get inheritedProperties {
     if (_inheritedProperties == null) {
@@ -1011,14 +1018,14 @@ class Class extends Container
   }
 
   Iterable<Field> get publicInheritedProperties =>
-      filterNonPublic(inheritedProperties);
+      utils.filterNonPublic(inheritedProperties);
 
   Iterable<Method> get publicInstanceMethods => instanceMethods;
 
   List<DefinedElementType> get interfaces => _interfaces;
 
   Iterable<DefinedElementType> get publicInterfaces =>
-      filterNonPublic(interfaces);
+      utils.filterNonPublic(interfaces);
 
   bool get isAbstract => _cls.isAbstract;
 
@@ -1047,7 +1054,8 @@ class Class extends Container
 
   List<DefinedElementType> get mixins => _mixins;
 
-  Iterable<DefinedElementType> get publicMixins => filterNonPublic(mixins);
+  Iterable<DefinedElementType> get publicMixins =>
+      utils.filterNonPublic(mixins);
 
   @override
   DefinedElementType get modelType => super.modelType;
@@ -1093,7 +1101,7 @@ class Class extends Container
           parent = null;
         } else {
           parent = ElementType.from(
-              (parent.type as InterfaceType).superclass, packageGraph);
+              (parent.type as InterfaceType).superclass, library, packageGraph);
         }
       } else {
         parent = (parent.element as Class).supertype;
@@ -1103,7 +1111,7 @@ class Class extends Container
   }
 
   Iterable<DefinedElementType> get publicSuperChain =>
-      filterNonPublic(superChain);
+      utils.filterNonPublic(superChain);
 
   Iterable<DefinedElementType> get publicSuperChainReversed =>
       publicSuperChain.toList().reversed;
@@ -1286,7 +1294,8 @@ class Extension extends Container
   Extension(
       ExtensionElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
-    extendedType = ElementType.from(_extension.extendedType, packageGraph);
+    extendedType =
+        ElementType.from(_extension.extendedType, library, packageGraph);
   }
 
   @override
@@ -1648,7 +1657,7 @@ class ModelNode {
   }
 
   String get sourceCode {
-    String contents = getFileContentsFor(element);
+    String contents = utils.getFileContentsFor(element);
     if (_sourceOffset != null) {
       // Find the start of the line, so that we can line up all the indents.
       int i = _sourceOffset;
@@ -1665,8 +1674,8 @@ class ModelNode {
       String source = contents.substring(start, _sourceEnd);
 
       source = const HtmlEscape().convert(source);
-      source = stripIndentFromSource(source);
-      source = stripDartdocCommentsFromSource(source);
+      source = utils.stripIndentFromSource(source);
+      source = utils.stripDartdocCommentsFromSource(source);
 
       return source.trim();
     } else {
@@ -3364,9 +3373,9 @@ abstract class ModelElement extends Canonicalization
       } else {
         String docComment = documentationComment;
         if (docComment == null) {
-          _isPublic = hasPublicName(element);
+          _isPublic = utils.hasPublicName(element);
         } else {
-          _isPublic = hasPublicName(element) &&
+          _isPublic = utils.hasPublicName(element) &&
               !(docComment.contains('@nodoc') ||
                   docComment.contains('<nodoc>'));
         }
@@ -3593,7 +3602,7 @@ abstract class ModelElement extends Canonicalization
 
       // Privately named elements can never have a canonical library, so
       // just shortcut them out.
-      if (!hasPublicName(element)) {
+      if (!utils.hasPublicName(element)) {
         _canonicalLibrary = null;
       } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
         List<Library> candidateLibraries = definingLibrary.exportedInLibraries
@@ -3843,12 +3852,16 @@ abstract class ModelElement extends Canonicalization
     return _linkedName;
   }
 
-  String get linkedParamsLines => linkedParams().trim();
+  String get linkedParams => utils.linkedParams(parameters);
 
-  String get linkedParamsNoMetadata => linkedParams(showMetadata: false);
+  String get linkedParamsLines => utils.linkedParams(parameters).trim();
+
+  String get linkedParamsNoMetadata =>
+      utils.linkedParams(parameters, showMetadata: false);
 
   String get linkedParamsNoMetadataOrNames {
-    return linkedParams(showMetadata: false, showNames: false);
+    return utils.linkedParams(parameters,
+        showMetadata: false, showNames: false);
   }
 
   ElementType get modelType {
@@ -3859,18 +3872,21 @@ abstract class ModelElement extends Canonicalization
               _originalMember is ParameterMember)) {
         if (_originalMember is ExecutableMember) {
           _modelType = ElementType.from(
-              (_originalMember as ExecutableMember).type, packageGraph);
+              (_originalMember as ExecutableMember).type,
+              library,
+              packageGraph);
         } else {
           // ParameterMember
           _modelType = ElementType.from(
-              (_originalMember as ParameterMember).type, packageGraph);
+              (_originalMember as ParameterMember).type, library, packageGraph);
         }
       } else if (element is ExecutableElement ||
           element is FunctionTypedElement ||
           element is ParameterElement ||
           element is TypeDefiningElement ||
           element is PropertyInducingElement) {
-        _modelType = ElementType.from((element as dynamic).type, packageGraph);
+        _modelType =
+            ElementType.from((element as dynamic).type, library, packageGraph);
       }
     }
     return _modelType;
@@ -3924,8 +3940,9 @@ abstract class ModelElement extends Canonicalization
         recursedParameters.addAll(newParameters);
         newParameters.clear();
         for (Parameter p in recursedParameters) {
-          newParameters.addAll(p.modelType.parameters
-              .where((p) => !recursedParameters.contains(p)));
+          var l = p.modelType.parameters
+              .where((pm) => !recursedParameters.contains(pm));
+          newParameters.addAll(l);
         }
       }
       _allParameters = recursedParameters.toList();
@@ -4013,123 +4030,6 @@ abstract class ModelElement extends Canonicalization
     }
   }
 
-  String renderParam(
-      Parameter param, String suffix, bool showMetadata, bool showNames) {
-    StringBuffer buf = StringBuffer();
-    ElementType paramModelType = param.modelType;
-
-    buf.write('<span class="parameter" id="${param.htmlId}">');
-    if (showMetadata && param.hasAnnotations) {
-      param.annotations.forEach((String annotation) {
-        buf.write('<span>$annotation</span> ');
-      });
-    }
-    if (param.isCovariant) {
-      buf.write('<span>covariant</span> ');
-    }
-    if (paramModelType is CallableElementTypeMixin) {
-      String returnTypeName;
-      if (paramModelType.isTypedef) {
-        returnTypeName = paramModelType.linkedName;
-      } else {
-        returnTypeName = paramModelType.createLinkedReturnTypeName();
-      }
-      buf.write('<span class="type-annotation">${returnTypeName}</span>');
-      if (showNames) {
-        buf.write(' <span class="parameter-name">${param.name}</span>');
-      } else if (paramModelType.isTypedef ||
-          paramModelType is CallableAnonymousElementType) {
-        buf.write(
-            ' <span class="parameter-name">${paramModelType.name}</span>');
-      }
-      if (!paramModelType.isTypedef) {
-        buf.write('(');
-        buf.write(paramModelType.element
-            .linkedParams(showNames: showNames, showMetadata: showMetadata));
-        buf.write(')');
-      }
-    } else if (param.modelType != null) {
-      String typeName = paramModelType.linkedName;
-      if (typeName.isNotEmpty) {
-        buf.write('<span class="type-annotation">$typeName</span>');
-      }
-      if (typeName.isNotEmpty && showNames && param.name.isNotEmpty) {
-        buf.write(' ');
-      }
-      if (showNames && param.name.isNotEmpty) {
-        buf.write('<span class="parameter-name">${param.name}</span>');
-      }
-    }
-
-    if (param.hasDefaultValue) {
-      if (param.isOptionalNamed) {
-        buf.write(': ');
-      } else {
-        buf.write(' = ');
-      }
-      buf.write('<span class="default-value">${param.defaultValue}</span>');
-    }
-    buf.write('${suffix}</span>');
-    return buf.toString();
-  }
-
-  String linkedParams(
-      {bool showMetadata = true,
-      bool showNames = true,
-      String separator = ', '}) {
-    List<Parameter> requiredParams =
-        parameters.where((Parameter p) => !p.isOptional).toList();
-    List<Parameter> positionalParams =
-        parameters.where((Parameter p) => p.isOptionalPositional).toList();
-    List<Parameter> namedParams =
-        parameters.where((Parameter p) => p.isOptionalNamed).toList();
-
-    StringBuffer builder = StringBuffer();
-
-    // prefix
-    if (requiredParams.isEmpty && positionalParams.isNotEmpty) {
-      builder.write('[');
-    } else if (requiredParams.isEmpty && namedParams.isNotEmpty) {
-      builder.write('{');
-    }
-
-    // index over params
-    for (Parameter param in requiredParams) {
-      bool isLast = param == requiredParams.last;
-      String ext;
-      if (isLast && positionalParams.isNotEmpty) {
-        ext = ', [';
-      } else if (isLast && namedParams.isNotEmpty) {
-        ext = ', {';
-      } else {
-        ext = isLast ? '' : ', ';
-      }
-      builder.write(renderParam(param, ext, showMetadata, showNames));
-      builder.write(' ');
-    }
-    for (Parameter param in positionalParams) {
-      bool isLast = param == positionalParams.last;
-      builder.write(
-          renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
-      builder.write(' ');
-    }
-    for (Parameter param in namedParams) {
-      bool isLast = param == namedParams.last;
-      builder.write(
-          renderParam(param, isLast ? '' : ', ', showMetadata, showNames));
-      builder.write(' ');
-    }
-
-    // suffix
-    if (namedParams.isNotEmpty) {
-      builder.write('}');
-    } else if (positionalParams.isNotEmpty) {
-      builder.write(']');
-    }
-
-    return builder.toString().trim();
-  }
-
   @override
   String toString() => '$runtimeType $name';
 
@@ -4137,7 +4037,7 @@ abstract class ModelElement extends Canonicalization
     e ??= this;
     fqName ??= e.name;
 
-    if (e is! EnclosedElement) {
+    if (e is! EnclosedElement || e.enclosingElement == null) {
       return fqName;
     }
 
@@ -5107,8 +5007,10 @@ class PackageGraph {
 
   void _populateModelNodeFor(
       Element element, Map<String, CompilationUnit> compilationUnitMap) {
-    _modelNodes.putIfAbsent(element,
-        () => ModelNode(getAstNode(element, compilationUnitMap), element));
+    _modelNodes.putIfAbsent(
+        element,
+        () =>
+            ModelNode(utils.getAstNode(element, compilationUnitMap), element));
   }
 
   ModelNode _getModelNodeFor(Element element) => _modelNodes[element];
@@ -5131,7 +5033,7 @@ class PackageGraph {
       assert(packageGraph.allLibrariesAdded);
       _findRefElementCache = Map();
       for (final modelElement
-          in filterNonDocumented(packageGraph.allLocalModelElements)) {
+          in utils.filterNonDocumented(packageGraph.allLocalModelElements)) {
         _findRefElementCache.putIfAbsent(
             modelElement.fullyQualifiedNameWithoutLibrary, () => Set());
         _findRefElementCache.putIfAbsent(
@@ -5553,7 +5455,7 @@ class PackageGraph {
   Iterable<Library> get publicLibraries {
     if (_publicLibraries == null) {
       assert(allLibrariesAdded);
-      _publicLibraries = filterNonPublic(libraries).toList();
+      _publicLibraries = utils.filterNonPublic(libraries).toList();
     }
     return _publicLibraries;
   }
@@ -5574,7 +5476,7 @@ class PackageGraph {
   Iterable<Library> get localPublicLibraries {
     if (_localPublicLibraries == null) {
       assert(allLibrariesAdded);
-      _localPublicLibraries = filterNonPublic(localLibraries).toList();
+      _localPublicLibraries = utils.filterNonPublic(localLibraries).toList();
     }
     return _localPublicLibraries;
   }
@@ -5937,24 +5839,26 @@ abstract class TopLevelContainer implements Nameable {
 
   bool get hasPublicTypedefs => publicTypedefs.isNotEmpty;
 
-  Iterable<Class> get publicClasses => filterNonPublic(classes);
+  Iterable<Class> get publicClasses => utils.filterNonPublic(classes);
 
-  Iterable<Extension> get publicExtensions => filterNonPublic(extensions);
+  Iterable<Extension> get publicExtensions => utils.filterNonPublic(extensions);
 
-  Iterable<TopLevelVariable> get publicConstants => filterNonPublic(constants);
+  Iterable<TopLevelVariable> get publicConstants =>
+      utils.filterNonPublic(constants);
 
-  Iterable<Enum> get publicEnums => filterNonPublic(enums);
+  Iterable<Enum> get publicEnums => utils.filterNonPublic(enums);
 
-  Iterable<Class> get publicExceptions => filterNonPublic(exceptions);
+  Iterable<Class> get publicExceptions => utils.filterNonPublic(exceptions);
 
-  Iterable<ModelFunction> get publicFunctions => filterNonPublic(functions);
+  Iterable<ModelFunction> get publicFunctions =>
+      utils.filterNonPublic(functions);
 
-  Iterable<Mixin> get publicMixins => filterNonPublic(mixins);
+  Iterable<Mixin> get publicMixins => utils.filterNonPublic(mixins);
 
   Iterable<TopLevelVariable> get publicProperties =>
-      filterNonPublic(properties);
+      utils.filterNonPublic(properties);
 
-  Iterable<Typedef> get publicTypedefs => filterNonPublic(typedefs);
+  Iterable<Typedef> get publicTypedefs => utils.filterNonPublic(typedefs);
 }
 
 /// A set of libraries, initialized after construction by accessing [_libraries].
@@ -5968,7 +5872,7 @@ abstract class LibraryContainer
 
   PackageGraph get packageGraph;
 
-  Iterable<Library> get publicLibraries => filterNonPublic(libraries);
+  Iterable<Library> get publicLibraries => utils.filterNonPublic(libraries);
 
   bool get hasPublicLibraries => publicLibraries.isNotEmpty;
 
@@ -6554,8 +6458,9 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
-  ModelElement get enclosingElement =>
-      ModelElement.from(_parameter.enclosingElement, library, packageGraph);
+  ModelElement get enclosingElement => (_parameter.enclosingElement != null)
+      ? ModelElement.from(_parameter.enclosingElement, library, packageGraph)
+      : null;
 
   bool get hasDefaultValue {
     return _parameter.defaultValueCode != null &&
@@ -6569,20 +6474,31 @@ class Parameter extends ModelElement implements EnclosedElement {
 
   @override
   String get htmlId {
-    String enclosingName = _parameter.enclosingElement.name;
-    if (_parameter.enclosingElement is GenericFunctionTypeElement) {
-      // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates name.
-      // Also, allowing null here is allowed as a workaround for
-      // dart-lang/sdk#32005.
-      for (Element e = _parameter.enclosingElement;
-          e.enclosingElement != null;
-          e = e.enclosingElement) {
-        enclosingName = e.name;
-        if (enclosingName != null && enclosingName.isNotEmpty) break;
+    if (_parameter.enclosingElement != null) {
+      String enclosingName = _parameter.enclosingElement.name;
+      if (_parameter.enclosingElement is GenericFunctionTypeElement) {
+        // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates name.
+        // Also, allowing null here is allowed as a workaround for
+        // dart-lang/sdk#32005.
+        for (Element e = _parameter.enclosingElement;
+            e.enclosingElement != null;
+            e = e.enclosingElement) {
+          enclosingName = e.name;
+          if (enclosingName != null && enclosingName.isNotEmpty) break;
+        }
       }
+      return '${enclosingName}-param-${name}';
+    } else {
+      return 'param-${name}';
     }
-    return '${enclosingName}-param-${name}';
   }
+
+  @override
+  int get hashCode => _element == null ? 0 : _element.hashCode;
+
+  @override
+  bool operator ==(Object object) =>
+      object is Parameter && (_parameter.type == object._parameter.type);
 
   bool get isCovariant => _parameter.isCovariant;
 
@@ -6780,8 +6696,9 @@ class TypeParameter extends ModelElement {
       : super(element, library, packageGraph, null);
 
   @override
-  ModelElement get enclosingElement =>
-      ModelElement.from(element.enclosingElement, library, packageGraph);
+  ModelElement get enclosingElement => (element.enclosingElement != null)
+      ? ModelElement.from(element.enclosingElement, library, packageGraph)
+      : null;
 
   @override
   String get href {
@@ -6802,7 +6719,7 @@ class TypeParameter extends ModelElement {
     if (_boundType == null) {
       var bound = _typeParameter.bound;
       if (bound != null) {
-        _boundType = ElementType.from(bound, packageGraph);
+        _boundType = ElementType.from(bound, library, packageGraph);
       }
     }
     return _boundType;
@@ -6955,8 +6872,6 @@ class PackageBuilder {
       // TODO(jcollins-g): Make use of currently not existing API for managing
       //                   many AnalysisDrivers
       // TODO(jcollins-g): make use of DartProject isApi()
-      // TODO(keertip): Use summary 2 after fixing #2017
-      AnalysisDriver.useSummary2 = false;
       _driver = AnalysisDriver(
           scheduler,
           log,
