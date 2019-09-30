@@ -8,7 +8,7 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:dartdoc/src/tuple.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 
 String _getNewlineChar(String contents) {
   if (contents.contains("\r\n")) {
@@ -44,7 +44,7 @@ class LineNumberCache {
       <String, SplayTreeMap<int, int>>{};
 
   Tuple2<int, int> lineAndColumn(String file, int offset) {
-    file = pathLib.canonicalize(file);
+    file = path.canonicalize(file);
     var lineMap = _lineNumbers.putIfAbsent(
         file, () => _createLineNumbersMap(File(file).readAsStringSync()));
     var lastKey = lineMap.lastKeyBefore(offset);
