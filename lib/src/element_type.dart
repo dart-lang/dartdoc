@@ -8,6 +8,7 @@ library dartdoc.element_type;
 import 'dart:collection';
 
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
@@ -341,7 +342,7 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
         if (type.typeFormals.isEmpty) {
           dartTypeArguments = type.typeArguments;
         } else {
-          dartTypeArguments = type.typeFormals.map((f) => f.type);
+          dartTypeArguments = type.typeFormals.map(_legacyTypeParameterType);
         }
       } else {
         DefinedElementType elementType = returnedFrom as DefinedElementType;
@@ -353,7 +354,7 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
             returnedFrom.type.element is GenericFunctionTypeElement) {
           _typeArguments = (returnedFrom as DefinedElementType).typeArguments;
         } else {
-          dartTypeArguments = type.typeFormals.map((f) => f.type);
+          dartTypeArguments = type.typeFormals.map(_legacyTypeParameterType);
         }
       }
       if (dartTypeArguments != null) {
@@ -363,6 +364,20 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
       }
     }
     return _typeArguments;
+  }
+
+  /// Return the [TypeParameterType] with the legacy nullability for the given
+  /// type parameter [element].
+  ///
+  /// TODO(scheglov) This method is a work around that fact that DartDoc
+  /// currently represents both type formals and uses of them as actual types,
+  /// as [TypeParameterType]s. This was not perfect, but worked before NNBD.
+  /// With NNBD types have nullability suffixes, but type formals should not.
+  /// Eventually we should separate models for type formals and types.
+  static TypeParameterType _legacyTypeParameterType(
+    TypeParameterElement element,
+  ) {
+    return element.instantiate(nullabilitySuffix: NullabilitySuffix.star);
   }
 }
 
