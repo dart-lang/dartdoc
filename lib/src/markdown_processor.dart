@@ -16,7 +16,7 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 
-const validHtmlTags = const [
+const validHtmlTags = [
   "a",
   "abbr",
   "address",
@@ -118,42 +118,50 @@ const validHtmlTags = const [
 ];
 
 final RegExp nonHTML =
-    new RegExp("</?(?!(${validHtmlTags.join("|")})[> ])\\w+[> ]");
+    RegExp("</?(?!(${validHtmlTags.join("|")})[> ])\\w+[> ]");
 
 // Type parameters and other things to ignore at the end of doc references.
-final RegExp trailingIgnoreStuff = new RegExp(r'(<.*>|\(.*\))$');
+final RegExp trailingIgnoreStuff = RegExp(r'(<.*>|\(.*\))$');
 
 // Things to ignore at the beginning of doc references
 final RegExp leadingIgnoreStuff =
-    new RegExp(r'^(const|final|var)[\s]+', multiLine: true);
+    RegExp(r'^(const|final|var)[\s]+', multiLine: true);
 
 // If found, this may be intended as a reference to a constructor.
-final RegExp isConstructor = new RegExp(r'(^new[\s]+|\(\)$)', multiLine: true);
+final RegExp isConstructor = RegExp(r'(^new[\s]+|\(\)$)', multiLine: true);
 
 // This is probably not really intended as a doc reference, so don't try or
 // warn about them.
 // Covers anything with leading digits/symbols, empty string, weird punctuation, spaces.
-final RegExp notARealDocReference = new RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
+final RegExp notARealDocReference = RegExp(r'''(^[^\w]|^[\d]|[,"'/]|^$)''');
 
-final RegExp operatorPrefix = new RegExp(r'^operator[ ]*');
+final RegExp operatorPrefix = RegExp(r'^operator[ ]*');
 
 final HtmlEscape htmlEscape = const HtmlEscape(HtmlEscapeMode.element);
 
 final List<md.InlineSyntax> _markdown_syntaxes = [
-  new _InlineCodeSyntax(),
-  new _AutolinkWithoutScheme()
-]..addAll(md.ExtensionSet.gitHubWeb.inlineSyntaxes);
+  _InlineCodeSyntax(),
+  _AutolinkWithoutScheme(),
+  md.InlineHtmlSyntax(),
+  md.StrikethroughSyntax(),
+  md.AutolinkExtensionSyntax(),
+];
 
-final List<md.BlockSyntax> _markdown_block_syntaxes = []
-  ..addAll(md.ExtensionSet.gitHubWeb.blockSyntaxes);
+final List<md.BlockSyntax> _markdown_block_syntaxes = [
+  const md.FencedCodeBlockSyntax(),
+  const md.HeaderWithIdSyntax(),
+  const md.SetextHeaderWithIdSyntax(),
+  const md.TableSyntax(),
+];
 
 // Remove these schemas from the display text for hyperlinks.
-final RegExp _hide_schemes = new RegExp('^(http|https)://');
+final RegExp _hide_schemes = RegExp('^(http|https)://');
 
 class MatchingLinkResult {
   final ModelElement element;
   final bool warn;
-  MatchingLinkResult(this.element, {this.warn: true});
+
+  MatchingLinkResult(this.element, {this.warn = true});
 }
 
 class IterableBlockParser extends md.BlockParser {
@@ -175,7 +183,7 @@ class IterableBlockParser extends md.BlockParser {
 // Calculate a class hint for findCanonicalModelElementFor.
 ModelElement _getPreferredClass(ModelElement modelElement) {
   if (modelElement is EnclosedElement &&
-      (modelElement as EnclosedElement).enclosingElement is Class) {
+      (modelElement as EnclosedElement).enclosingElement is Container) {
     return (modelElement as EnclosedElement).enclosingElement;
   } else if (modelElement is Class) {
     return modelElement;
@@ -189,17 +197,17 @@ MatchingLinkResult _getMatchingLinkElement(
   if (!codeRef.contains(isConstructor) &&
       codeRef.contains(notARealDocReference)) {
     // Don't waste our time on things we won't ever find.
-    return new MatchingLinkResult(null, warn: false);
+    return MatchingLinkResult(null, warn: false);
   }
 
   ModelElement refModelElement;
 
   // Try expensive not-scoped lookup.
   if (refModelElement == null && element is ModelElement) {
-    Class preferredClass = _getPreferredClass(element);
-    refModelElement = new _MarkdownCommentReference(
-            codeRef, element, commentRefs, preferredClass)
-        .computeReferredElement();
+    Container preferredClass = _getPreferredClass(element);
+    refModelElement =
+        _MarkdownCommentReference(codeRef, element, commentRefs, preferredClass)
+            .computeReferredElement();
   }
 
   // Did not find it anywhere.
@@ -207,12 +215,13 @@ MatchingLinkResult _getMatchingLinkElement(
     // TODO(jcollins-g): remove squelching of non-canonical warnings here
     //                   once we no longer process full markdown for
     //                   oneLineDocs (#1417)
-    return new MatchingLinkResult(null, warn: element.isCanonical);
+    return MatchingLinkResult(null, warn: element.isCanonical);
   }
 
   // Ignore all parameters.
-  if (refModelElement is Parameter || refModelElement is TypeParameter)
-    return new MatchingLinkResult(null, warn: false);
+  if (refModelElement is Parameter || refModelElement is TypeParameter) {
+    return MatchingLinkResult(null, warn: false);
+  }
 
   // There have been places in the code which helpfully cache entities
   // regardless of what package they are associated with.  This assert
@@ -220,7 +229,7 @@ MatchingLinkResult _getMatchingLinkElement(
   assert(refModelElement == null ||
       refModelElement.packageGraph == element.packageGraph);
   if (refModelElement != null) {
-    return new MatchingLinkResult(refModelElement);
+    return MatchingLinkResult(refModelElement);
   }
   // From this point on, we haven't been able to find a canonical ModelElement.
   if (!refModelElement.isCanonical) {
@@ -230,7 +239,7 @@ MatchingLinkResult _getMatchingLinkElement(
     }
     // Don't warn about doc references because that's covered by the no
     // canonical library found message.
-    return new MatchingLinkResult(null, warn: false);
+    return MatchingLinkResult(null, warn: false);
   }
   // We should never get here unless there's a bug in findCanonicalModelElementFor.
   // findCanonicalModelElementFor(searchElement, preferredClass: preferredClass)
@@ -238,7 +247,7 @@ MatchingLinkResult _getMatchingLinkElement(
   // would return a non-canonical element.  However, outside of checked mode,
   // at least we have a canonical element, so proceed.
   assert(false);
-  return new MatchingLinkResult(refModelElement);
+  return MatchingLinkResult(refModelElement);
 }
 
 /// Given a set of commentRefs, return the one whose name matches the codeRef.
@@ -346,7 +355,7 @@ class _MarkdownCommentReference {
   /// [element.warn] for [PackageWarning.ambiguousDocReference] if there
   /// are more than one, but does not warn otherwise.
   ModelElement computeReferredElement() {
-    results = new Set();
+    results = Set();
     // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
     for (void Function() findMethod in [
       // This might be an operator.  Strip the operator prefix and try again.
@@ -433,9 +442,11 @@ class _MarkdownCommentReference {
   }
 
   List<String> _codeRefParts;
+
   List<String> get codeRefParts => _codeRefParts ??= codeRef.split('.');
 
   List<String> _codeRefChompedParts;
+
   List<String> get codeRefChompedParts =>
       _codeRefChompedParts ??= codeRefChomped.split('.');
 
@@ -499,7 +510,7 @@ class _MarkdownCommentReference {
   void _findWithoutLeadingIgnoreStuff() {
     if (codeRef.contains(leadingIgnoreStuff)) {
       String newCodeRef = codeRef.replaceFirst(leadingIgnoreStuff, '');
-      results.add(new _MarkdownCommentReference(
+      results.add(_MarkdownCommentReference(
               newCodeRef, element, commentRefs, preferredClass)
           .computeReferredElement());
     }
@@ -508,7 +519,7 @@ class _MarkdownCommentReference {
   void _findWithoutTrailingIgnoreStuff() {
     if (codeRef.contains(trailingIgnoreStuff)) {
       String newCodeRef = codeRef.replaceFirst(trailingIgnoreStuff, '');
-      results.add(new _MarkdownCommentReference(
+      results.add(_MarkdownCommentReference(
               newCodeRef, element, commentRefs, preferredClass)
           .computeReferredElement());
     }
@@ -517,7 +528,7 @@ class _MarkdownCommentReference {
   void _findWithoutOperatorPrefix() {
     if (codeRef.startsWith(operatorPrefix)) {
       String newCodeRef = codeRef.replaceFirst(operatorPrefix, '');
-      results.add(new _MarkdownCommentReference(
+      results.add(_MarkdownCommentReference(
               newCodeRef, element, commentRefs, preferredClass)
           .computeReferredElement());
     }
@@ -643,6 +654,10 @@ class _MarkdownCommentReference {
 
     for (Class tryClass in tryClasses) {
       if (tryClass != null) {
+        if (codeRefChomped.contains('.') &&
+            !codeRefChomped.startsWith(tryClass.name)) {
+          continue;
+        }
         _getResultsForClass(tryClass);
       }
       results.remove(null);
@@ -664,7 +679,7 @@ class _MarkdownCommentReference {
   void _findAnalyzerReferences() {
     Element refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
     if (refElement != null) {
-      ModelElement refModelElement = new ModelElement.fromElement(
+      ModelElement refModelElement = ModelElement.fromElement(
           _getRefElementFromCommentRefs(commentRefs, codeRef),
           element.packageGraph);
       if (refModelElement is Accessor) {
@@ -677,7 +692,7 @@ class _MarkdownCommentReference {
   }
 
   // Add a result, but make it canonical.
-  void _addCanonicalResult(ModelElement modelElement, Class tryClass) {
+  void _addCanonicalResult(ModelElement modelElement, Container tryClass) {
     results.add(packageGraph.findCanonicalModelElementFor(modelElement.element,
         preferredClass: tryClass));
   }
@@ -768,8 +783,8 @@ const maxPriorContext = 20;
 // Maximum number of characters to display after the beginning of a suspected generic.
 const maxPostContext = 30;
 
-final RegExp allBeforeFirstNewline = new RegExp(r'^.*\n', multiLine: true);
-final RegExp allAfterLastNewline = new RegExp(r'\n.*$', multiLine: true);
+final RegExp allBeforeFirstNewline = RegExp(r'^.*\n', multiLine: true);
+final RegExp allAfterLastNewline = RegExp(r'\n.*$', multiLine: true);
 
 // Generics should be wrapped into `[]` blocks, to avoid handling them as HTML tags
 // (like, [Apple<int>]). @Hixie asked for a warning when there's something, that looks
@@ -842,7 +857,7 @@ class MarkdownDocument extends md.Document {
   /// Returns a tuple of longHtml, shortHtml.  longHtml is NULL if [processFullDocs] is true.
   static Tuple2<String, String> _renderNodesToHtml(
       List<md.Node> nodes, bool processFullDocs) {
-    var rawHtml = new md.HtmlRenderer().render(nodes);
+    var rawHtml = md.HtmlRenderer().render(nodes);
     var asHtmlDocument = parse(rawHtml);
     for (var s in asHtmlDocument.querySelectorAll('script')) {
       s.remove();
@@ -875,7 +890,7 @@ class MarkdownDocument extends md.Document {
         ? ''
         : asHtmlDocument.body.children.first.innerHtml;
 
-    return new Tuple2(asHtml, asOneLiner);
+    return Tuple2(asHtml, asOneLiner);
   }
 
   // From package:markdown/src/document.dart
@@ -885,7 +900,7 @@ class MarkdownDocument extends md.Document {
       var node = nodes[i];
       if (node is md.UnparsedContent) {
         List<md.Node> inlineNodes =
-            new md.InlineParser(node.textContent, this).parse();
+            md.InlineParser(node.textContent, this).parse();
         nodes.removeAt(i);
         nodes.insertAll(i, inlineNodes);
         i += inlineNodes.length - 1;
@@ -902,7 +917,7 @@ class MarkdownDocument extends md.Document {
     md.Node firstNode;
     List<md.Node> nodes = [];
     for (md.Node node
-        in new IterableBlockParser(lines, this).parseLinesGenerator()) {
+        in IterableBlockParser(lines, this).parseLinesGenerator()) {
       if (firstNode != null) {
         hasExtendedDocs = true;
         if (!processFullDocs) break;
@@ -926,16 +941,17 @@ class MarkdownDocument extends md.Document {
         shortHtml = '';
       }
     }
-    return new Tuple3<String, String, bool>(
-        longHtml, shortHtml, hasExtendedDocs);
+    return Tuple3<String, String, bool>(longHtml, shortHtml, hasExtendedDocs);
   }
 }
 
 class Documentation {
   final Canonicalization _element;
-  Documentation.forElement(this._element) {}
+
+  Documentation.forElement(this._element);
 
   bool _hasExtendedDocs;
+
   bool get hasExtendedDocs {
     if (_hasExtendedDocs == null) {
       _renderHtmlForDartdoc(_element.isCanonical && _asHtml == null);
@@ -944,6 +960,7 @@ class Documentation {
   }
 
   String _asHtml;
+
   String get asHtml {
     if (_asHtml == null) {
       assert(_asOneLiner == null || _element.isCanonical);
@@ -953,6 +970,7 @@ class Documentation {
   }
 
   String _asOneLiner;
+
   String get asOneLiner {
     if (_asOneLiner == null) {
       assert(_asHtml == null);
@@ -985,12 +1003,12 @@ class Documentation {
       if (name.isEmpty) {
         return null;
       }
-      return new md.Text(_linkDocReference(name, _element, commentRefs));
+      return md.Text(_linkDocReference(name, _element, commentRefs));
     }
 
     String text = _element.documentation;
     _showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
-    MarkdownDocument document = new MarkdownDocument(
+    MarkdownDocument document = MarkdownDocument(
         inlineSyntaxes: _markdown_syntaxes,
         blockSyntaxes: _markdown_block_syntaxes,
         linkResolver: _linkResolver);
@@ -1004,7 +1022,7 @@ class _InlineCodeSyntax extends md.InlineSyntax {
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
-    var element = new md.Element.text('code', htmlEscape.convert(match[1]));
+    var element = md.Element.text('code', htmlEscape.convert(match[1]));
     parser.addNode(element);
     return true;
   }
@@ -1015,7 +1033,7 @@ class _AutolinkWithoutScheme extends md.AutolinkSyntax {
   bool onMatch(md.InlineParser parser, Match match) {
     var url = match[1];
     var text = htmlEscape.convert(url).replaceFirst(_hide_schemes, '');
-    var anchor = new md.Element.text('a', text);
+    var anchor = md.Element.text('a', text);
     anchor.attributes['href'] = url;
     parser.addNode(anchor);
 

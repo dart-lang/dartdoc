@@ -12,7 +12,7 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import 'src/utils.dart';
@@ -32,8 +32,7 @@ void main() {
       DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
           'dartdoc', [createLoggingOptions]);
       optionSet.parseArguments([]);
-      startLogging(
-          new DartdocLoggingOptionContext(optionSet, Directory.current));
+      startLogging(DartdocLoggingOptionContext(optionSet, Directory.current));
     });
 
     setUp(() async {
@@ -69,9 +68,9 @@ void main() {
       });
 
       test('generator parameters', () async {
-        File favicon = new File(
-            pathLib.joinAll([tempDir.path, 'static-assets', 'favicon.png']));
-        File index = new File(pathLib.joinAll([tempDir.path, 'index.html']));
+        File favicon =
+            File(path.joinAll([tempDir.path, 'static-assets', 'favicon.png']));
+        File index = File(path.joinAll([tempDir.path, 'index.html']));
         expect(favicon.readAsStringSync(),
             contains('Not really a png, but a test file'));
         String indexString = index.readAsStringSync();
@@ -100,7 +99,8 @@ void main() {
     });
 
     test('errors generate errors even when warnings are off', () async {
-      Dartdoc dartdoc = await buildDartdoc([], testPackageToolError, tempDir);
+      Dartdoc dartdoc =
+          await buildDartdoc(['--allow-tools'], testPackageToolError, tempDir);
       DartdocResults results = await dartdoc.generateDocsBase();
       PackageGraph p = results.packageGraph;
       Iterable<String> unresolvedToolErrors = p
@@ -230,7 +230,7 @@ void main() {
           useSomethingInAnotherPackage.modelType.linkedName,
           matches(
               '<a href=\"https://pub.dartlang.org/documentation/meta/[^\"]*/meta/Required-class.html\">Required</a>'));
-      RegExp stringLink = new RegExp(
+      RegExp stringLink = RegExp(
           'https://api.dartlang.org/(dev|stable|edge|be)/${Platform.version.split(' ').first}/dart-core/String-class.html">String</a>');
       expect(useSomethingInTheSdk.modelType.linkedName, contains(stringLink));
     });
@@ -250,7 +250,7 @@ void main() {
         tempDir.deleteSync(recursive: true);
       });
 
-      test('generate docs for ${pathLib.basename(testPackageDir.path)} works',
+      test('generate docs for ${path.basename(testPackageDir.path)} works',
           () async {
         expect(results.packageGraph, isNotNull);
         PackageGraph packageGraph = results.packageGraph;
@@ -258,15 +258,15 @@ void main() {
         expect(p.name, 'test_package');
         expect(p.hasDocumentationFile, isTrue);
         // Total number of public libraries in test_package.
-        expect(packageGraph.defaultPackage.publicLibraries, hasLength(12));
+        expect(packageGraph.defaultPackage.publicLibraries, hasLength(14));
         expect(packageGraph.localPackages.length, equals(1));
       });
 
       test('source code links are visible', () async {
         // Picked this object as this library explicitly should never contain
         // a library directive, so we can predict what line number it will be.
-        File anonymousOutput = new File(pathLib.join(tempDir.path,
-            'anonymous_library', 'anonymous_library-library.html'));
+        File anonymousOutput = File(path.join(tempDir.path, 'anonymous_library',
+            'anonymous_library-library.html'));
         expect(anonymousOutput.existsSync(), isTrue);
         expect(
             anonymousOutput.readAsStringSync(),
@@ -275,7 +275,7 @@ void main() {
       });
     });
 
-    test('generate docs for ${pathLib.basename(testPackageBadDir.path)} fails',
+    test('generate docs for ${path.basename(testPackageBadDir.path)} fails',
         () async {
       Dartdoc dartdoc = await buildDartdoc([], testPackageBadDir, tempDir);
 
@@ -327,7 +327,7 @@ void main() {
       PackageGraph p = results.packageGraph;
       expect(p.defaultPackage.name, 'test_package');
       expect(p.defaultPackage.hasDocumentationFile, isTrue);
-      expect(p.localPublicLibraries, hasLength(11));
+      expect(p.localPublicLibraries, hasLength(13));
       expect(p.localPublicLibraries.map((lib) => lib.name).contains('fake'),
           isFalse);
     });
@@ -363,5 +363,43 @@ void main() {
           dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
       expect(p.packageMap["Dart"].publicLibraries, hasLength(3));
     });
-  }, timeout: new Timeout.factor(8));
+
+    test('generate docs with custom templates', () async {
+      String templatesDir =
+          path.join(testPackageCustomTemplates.path, 'templates');
+      Dartdoc dartdoc = await buildDartdoc(['--templates-dir', templatesDir],
+          testPackageCustomTemplates, tempDir);
+
+      DartdocResults results = await dartdoc.generateDocs();
+      expect(results.packageGraph, isNotNull);
+
+      PackageGraph p = results.packageGraph;
+      expect(p.defaultPackage.name, 'test_package_custom_templates');
+      expect(p.localPublicLibraries, hasLength(1));
+    });
+
+    test('generate docs with missing required template fails', () async {
+      var templatesDir = path.join(path.current, 'test/templates');
+      try {
+        await buildDartdoc(['--templates-dir', templatesDir],
+            testPackageCustomTemplates, tempDir);
+        fail('dartdoc should fail with missing required template');
+      } catch (e) {
+        expect(e is DartdocFailure, isTrue);
+        expect((e as DartdocFailure).message,
+            startsWith('Missing required template file'));
+      }
+    });
+
+    test('generate docs with bad templatesDir path fails', () async {
+      String badPath = path.join(tempDir.path, 'BAD');
+      try {
+        await buildDartdoc(
+            ['--templates-dir', badPath], testPackageCustomTemplates, tempDir);
+        fail('dartdoc should fail with bad templatesDir path');
+      } catch (e) {
+        expect(e is DartdocFailure, isTrue);
+      }
+    });
+  }, timeout: Timeout.factor(8));
 }

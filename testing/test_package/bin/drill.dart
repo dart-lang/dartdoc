@@ -22,12 +22,12 @@ void main(List<String> argList) {
   // Normalize the filenames, since they include random
   // and system-specific components, but make sure they
   // match the patterns we expect.
-  RegExp inputFileRegExp = new RegExp(
-      r'(--file=)?(.*)([/\\]dartdoc_tools_)([^/\\]+)([/\\]input_)(\d+)');
-  RegExp packagePathRegExp = new RegExp(
-      r'(--package-path=)?(.+dartdoc.*[/\\]testing[/\\]test_package)');
+  RegExp inputFileRegExp =
+      RegExp(r'(--file=)?(.*)([/\\]dartdoc_tools_)([^/\\]+)([/\\]input_)(\d+)');
+  RegExp packagePathRegExp =
+      RegExp(r'(--package-path=)?(.+dartdoc.*[/\\]testing[/\\]test_package)');
 
-  final Set<String> variableNames = new Set<String>.from([
+  final Set<String> variableNames = Set<String>.from([
     'INPUT',
     'SOURCE_COLUMN',
     'SOURCE_PATH',
@@ -56,9 +56,9 @@ void main(List<String> argList) {
     }
   }).toList();
   RegExp snapshotCacheRegExp =
-      new RegExp(r'.*[/\\]dartdoc_snapshot_cache_[^/\\]+[/\\]snapshot_0');
+      RegExp(r'.*[/\\]dartdoc_snapshot_cache_[^/\\]+[/\\]snapshot_0');
   RegExp snapshotFirstRegExp =
-      new RegExp(r'.*[/\\]testing[/\\]test_package[/\\]bin[/\\]drill.dart$');
+      RegExp(r'.*[/\\]testing[/\\]test_package[/\\]bin[/\\]drill.dart$');
   if (snapshotCacheRegExp.hasMatch(Platform.script.path)) {
     print('Script location is in snapshot cache.');
   } else if (snapshotFirstRegExp.hasMatch(Platform.script.path)) {
@@ -68,7 +68,7 @@ void main(List<String> argList) {
   }
   print('Args: $normalized');
   if (args['file'] != null) {
-    File file = new File(args['file']);
+    File file = File(args['file']);
     if (file.existsSync()) {
       List<String> lines = file.readAsLinesSync();
       for (String line in lines) {

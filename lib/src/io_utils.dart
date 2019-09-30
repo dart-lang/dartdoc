@@ -8,7 +8,7 @@ library dartdoc.io_utils;
 import 'dart:async';
 import 'dart:io';
 
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 
 /// Return a resolved path including the home directory in place of tilde
 /// references.
@@ -20,12 +20,12 @@ String resolveTildePath(String originalPath) {
   String homeDir;
 
   if (Platform.isWindows) {
-    homeDir = pathLib.absolute(Platform.environment['USERPROFILE']);
+    homeDir = path.absolute(Platform.environment['USERPROFILE']);
   } else {
-    homeDir = pathLib.absolute(Platform.environment['HOME']);
+    homeDir = path.absolute(Platform.environment['HOME']);
   }
 
-  return pathLib.join(homeDir, originalPath.substring(2));
+  return path.join(homeDir, originalPath.substring(2));
 }
 
 /// Lists the contents of [dir].
@@ -36,24 +36,24 @@ String resolveTildePath(String originalPath) {
 ///
 /// The returned paths are guaranteed to begin with [dir].
 Iterable<String> listDir(String dir,
-    {bool recursive: false,
+    {bool recursive = false,
     Iterable<FileSystemEntity> listDir(Directory dir)}) {
   if (listDir == null) listDir = (Directory dir) => dir.listSync();
 
-  return _doList(dir, new Set<String>(), recursive, listDir);
+  return _doList(dir, Set<String>(), recursive, listDir);
 }
 
 Iterable<String> _doList(String dir, Set<String> listedDirectories,
     bool recurse, Iterable<FileSystemEntity> listDir(Directory dir)) sync* {
   // Avoid recursive symlinks.
-  var resolvedPath = new Directory(dir).resolveSymbolicLinksSync();
+  var resolvedPath = Directory(dir).resolveSymbolicLinksSync();
   if (!listedDirectories.contains(resolvedPath)) {
-    listedDirectories = new Set<String>.from(listedDirectories);
+    listedDirectories = Set<String>.from(listedDirectories);
     listedDirectories.add(resolvedPath);
 
-    for (var entity in listDir(new Directory(dir))) {
+    for (var entity in listDir(Directory(dir))) {
       // Skip hidden files and directories
-      if (pathLib.basename(entity.path).startsWith('.')) {
+      if (path.basename(entity.path).startsWith('.')) {
         continue;
       }
 
@@ -76,16 +76,16 @@ Iterable<String> _doList(String dir, Set<String> listedDirectories,
 String getFileNameFor(String name) =>
     '${name.replaceAll(libraryNameRegexp, '-')}.html';
 
-final libraryNameRegexp = new RegExp('[.:]');
-final partOfRegexp = new RegExp('part of ');
-final newLinePartOfRegexp = new RegExp('\npart of ');
+final libraryNameRegexp = RegExp('[.:]');
+final partOfRegexp = RegExp('part of ');
+final newLinePartOfRegexp = RegExp('\npart of ');
 
 /// Best used with Future<void>.
 class MultiFutureTracker<T> {
   /// Approximate maximum number of simultaneous active Futures.
   final int parallel;
 
-  final Set<Future<T>> _trackedFutures = new Set();
+  final Set<Future<T>> _trackedFutures = Set();
 
   MultiFutureTracker(this.parallel);
 

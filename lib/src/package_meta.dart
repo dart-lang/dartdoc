@@ -9,17 +9,17 @@ import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 import 'package:yaml/yaml.dart';
 
 import 'logging.dart';
 
 Map<String, PackageMeta> _packageMetaCache = {};
-Encoding utf8AllowMalformed = new Utf8Codec(allowMalformed: true);
+Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
 
 Directory get defaultSdkDir {
-  Directory sdkDir = new File(Platform.resolvedExecutable).parent.parent;
-  assert(pathLib.equals(sdkDir.path, PackageMeta.sdkDirParent(sdkDir).path));
+  Directory sdkDir = File(Platform.resolvedExecutable).parent.parent;
+  assert(path.equals(sdkDir.path, PackageMeta.sdkDirParent(sdkDir).path));
   return sdkDir;
 }
 
@@ -41,15 +41,16 @@ abstract class PackageMeta {
   PackageMeta(this.dir);
 
   static List<List<String>> __sdkDirFilePaths;
+
   static List<List<String>> get _sdkDirFilePaths {
     if (__sdkDirFilePaths == null) {
       __sdkDirFilePaths = [];
       if (Platform.isWindows) {
         for (List<String> paths in __sdkDirFilePathsPosix) {
           List<String> windowsPaths = [];
-          for (String path in paths) {
-            windowsPaths.add(pathLib.joinAll(
-                new pathLib.Context(style: pathLib.Style.posix).split(path)));
+          for (String p in paths) {
+            windowsPaths.add(
+                path.joinAll(path.Context(style: path.Style.posix).split(p)));
           }
           __sdkDirFilePaths.add(windowsPaths);
         }
@@ -63,18 +64,19 @@ abstract class PackageMeta {
   /// Returns the directory of the SDK if the given directory is inside a Dart
   /// SDK.  Returns null if the directory isn't a subdirectory of the SDK.
   static final Map<String, Directory> _sdkDirParent = {};
+
   static Directory sdkDirParent(Directory dir) {
-    String dirPathCanonical = pathLib.canonicalize(dir.path);
+    String dirPathCanonical = path.canonicalize(dir.path);
     if (!_sdkDirParent.containsKey(dirPathCanonical)) {
       _sdkDirParent[dirPathCanonical] = null;
       while (dir.existsSync()) {
         if (_sdkDirFilePaths.every((List<String> l) {
-          return l.any((f) => new File(pathLib.join(dir.path, f)).existsSync());
+          return l.any((f) => File(path.join(dir.path, f)).existsSync());
         })) {
           _sdkDirParent[dirPathCanonical] = dir;
           break;
         }
-        if (pathLib.equals(dir.path, dir.parent.path)) break;
+        if (path.equals(dir.path, dir.parent.path)) break;
         dir = dir.parent;
       }
     }
@@ -84,11 +86,11 @@ abstract class PackageMeta {
   @override
   bool operator ==(other) {
     if (other is! PackageMeta) return false;
-    return pathLib.equals(dir.absolute.path, other.dir.absolute.path);
+    return path.equals(dir.absolute.path, other.dir.absolute.path);
   }
 
   @override
-  int get hashCode => pathLib.hash(dir.absolute.path);
+  int get hashCode => path.hash(dir.absolute.path);
 
   /// Use this instead of fromDir where possible.
   factory PackageMeta.fromElement(
@@ -96,14 +98,15 @@ abstract class PackageMeta {
     // [config] is only here for sdkDir, and it's OK that it is the wrong
     // context since sdkDir is argOnly and this is supposed to be a temporary
     // workaround.
-    if (libraryElement.isInSdk)
-      return new PackageMeta.fromDir(new Directory(config.sdkDir));
-    return new PackageMeta.fromDir(
-        new File(pathLib.canonicalize(libraryElement.source.fullName)).parent);
+    if (libraryElement.isInSdk) {
+      return PackageMeta.fromDir(Directory(config.sdkDir));
+    }
+    return PackageMeta.fromDir(
+        File(path.canonicalize(libraryElement.source.fullName)).parent);
   }
 
   factory PackageMeta.fromFilename(String filename) {
-    return new PackageMeta.fromDir(new File(filename).parent);
+    return PackageMeta.fromDir(File(filename).parent);
   }
 
   /// This factory is guaranteed to return the same object for any given
@@ -114,7 +117,7 @@ abstract class PackageMeta {
     Directory original = dir.absolute;
     dir = original;
     if (!original.existsSync()) {
-      throw new PackageMetaFailure(
+      throw PackageMetaFailure(
           "fatal error: unable to locate the input directory at ${original.path}.");
     }
 
@@ -123,17 +126,17 @@ abstract class PackageMeta {
       // There are pubspec.yaml files inside the SDK.  Ignore them.
       Directory parentSdkDir = sdkDirParent(dir);
       if (parentSdkDir != null) {
-        packageMeta = new _SdkMeta(parentSdkDir);
+        packageMeta = _SdkMeta(parentSdkDir);
       } else {
         while (dir.existsSync()) {
-          File pubspec = new File(pathLib.join(dir.path, 'pubspec.yaml'));
+          File pubspec = File(path.join(dir.path, 'pubspec.yaml'));
           if (pubspec.existsSync()) {
-            packageMeta = new _FilePackageMeta(dir);
+            packageMeta = _FilePackageMeta(dir);
             break;
           }
           // Allow a package to be at root (possible in a Windows setting with
           // drive letter mappings).
-          if (pathLib.equals(dir.path, dir.parent.path)) break;
+          if (path.equals(dir.path, dir.parent.path)) break;
           dir = dir.parent.absolute;
         }
       }
@@ -151,15 +154,15 @@ abstract class PackageMeta {
   /// "both"), or null if this package is not part of a SDK.
   String sdkType(String flutterRootPath) {
     if (flutterRootPath != null) {
-      String flutterPackages = pathLib.join(flutterRootPath, 'packages');
-      String flutterBinCache = pathLib.join(flutterRootPath, 'bin', 'cache');
+      String flutterPackages = path.join(flutterRootPath, 'packages');
+      String flutterBinCache = path.join(flutterRootPath, 'bin', 'cache');
 
       /// Don't include examples or other non-SDK components as being the
       /// "Flutter SDK".
-      if (pathLib.isWithin(
-              flutterPackages, pathLib.canonicalize(dir.absolute.path)) ||
-          pathLib.isWithin(
-              flutterBinCache, pathLib.canonicalize(dir.absolute.path))) {
+      if (path.isWithin(
+              flutterPackages, path.canonicalize(dir.absolute.path)) ||
+          path.isWithin(
+              flutterBinCache, path.canonicalize(dir.absolute.path))) {
         return 'Flutter';
       }
     }
@@ -177,11 +180,15 @@ abstract class PackageMeta {
   /// null if not a hosted pub package.  If set, the hostname
   /// that the package is hosted at -- usually 'pub.dartlang.org'.
   String get hostedAt;
+
   String get version;
+
   String get description;
+
   String get homepage;
 
   String _resolvedDir;
+
   String get resolvedDir {
     if (_resolvedDir == null) {
       _resolvedDir = dir.resolveSymbolicLinksSync();
@@ -190,7 +197,9 @@ abstract class PackageMeta {
   }
 
   FileContents getReadmeContents();
+
   FileContents getLicenseContents();
+
   FileContents getChangelogContents();
 
   /// Returns true if we are a valid package, valid enough to generate docs.
@@ -211,8 +220,7 @@ class FileContents {
 
   FileContents._(this.file);
 
-  factory FileContents(File file) =>
-      file == null ? null : new FileContents._(file);
+  factory FileContents(File file) => file == null ? null : FileContents._(file);
 
   String get contents => file.readAsStringSync(encoding: utf8AllowMalformed);
 
@@ -229,7 +237,7 @@ class _FilePackageMeta extends PackageMeta {
   Map _pubspec;
 
   _FilePackageMeta(Directory dir) : super(dir) {
-    File f = new File(pathLib.join(dir.path, 'pubspec.yaml'));
+    File f = File(path.join(dir.path, 'pubspec.yaml'));
     if (f.existsSync()) {
       _pubspec = loadYaml(f.readAsStringSync());
     } else {
@@ -239,6 +247,7 @@ class _FilePackageMeta extends PackageMeta {
 
   bool _setHostedAt = false;
   String _hostedAt;
+
   @override
   String get hostedAt {
     if (!_setHostedAt) {
@@ -252,13 +261,13 @@ class _FilePackageMeta extends PackageMeta {
       // possibly by calculating hosting directly from pubspec.yaml or importing
       // a pub library to do this.
       // People could have a pub cache at root with Windows drive mappings.
-      if (pathLib.split(pathLib.canonicalize(dir.path)).length >= 3) {
+      if (path.split(path.canonicalize(dir.path)).length >= 3) {
         String pubCacheRoot = dir.parent.parent.parent.path;
-        String hosted = pathLib.canonicalize(dir.parent.parent.path);
-        String hostname = pathLib.canonicalize(dir.parent.path);
-        if (pathLib.basename(hosted) == 'hosted' &&
-            new Directory(pathLib.join(pubCacheRoot, '_temp')).existsSync()) {
-          _hostedAt = pathLib.basename(hostname);
+        String hosted = path.canonicalize(dir.parent.parent.path);
+        String hostname = path.canonicalize(dir.parent.path);
+        if (path.basename(hosted) == 'hosted' &&
+            Directory(path.join(pubCacheRoot, '_temp')).existsSync()) {
+          _hostedAt = path.basename(hostname);
         }
       }
     }
@@ -270,12 +279,12 @@ class _FilePackageMeta extends PackageMeta {
 
   @override
   bool get needsPubGet =>
-      !(new File(pathLib.join(dir.path, '.packages')).existsSync());
+      !(File(path.join(dir.path, '.packages')).existsSync());
 
   @override
   void runPubGet() {
     String pubPath =
-        pathLib.join(pathLib.dirname(Platform.resolvedExecutable), 'pub');
+        path.join(path.dirname(Platform.resolvedExecutable), 'pub');
     if (Platform.isWindows) pubPath += '.bat';
 
     ProcessResult result =
@@ -287,19 +296,22 @@ class _FilePackageMeta extends PackageMeta {
     }
 
     if (result.exitCode != 0) {
-      StringBuffer buf = new StringBuffer();
+      StringBuffer buf = StringBuffer();
       buf.writeln('${result.stdout}');
       buf.writeln('${result.stderr}');
-      throw new DartdocFailure('pub get failed: ${buf.toString().trim()}');
+      throw DartdocFailure('pub get failed: ${buf.toString().trim()}');
     }
   }
 
   @override
   String get name => _pubspec['name'];
+
   @override
   String get version => _pubspec['version'];
+
   @override
   String get description => _pubspec['description'];
+
   @override
   String get homepage => _pubspec['homepage'];
 
@@ -310,23 +322,22 @@ class _FilePackageMeta extends PackageMeta {
   @override
   FileContents getReadmeContents() {
     if (_readme != null) return _readme;
-    _readme =
-        new FileContents(_locate(dir, ['readme.md', 'readme.txt', 'readme']));
+    _readme = FileContents(_locate(dir, ['readme.md', 'readme.txt', 'readme']));
     return _readme;
   }
 
   @override
   FileContents getLicenseContents() {
     if (_license != null) return _license;
-    _license = new FileContents(
-        _locate(dir, ['license.md', 'license.txt', 'license']));
+    _license =
+        FileContents(_locate(dir, ['license.md', 'license.txt', 'license']));
     return _license;
   }
 
   @override
   FileContents getChangelogContents() {
     if (_changelog != null) return _changelog;
-    _changelog = new FileContents(
+    _changelog = FileContents(
         _locate(dir, ['changelog.md', 'changelog.txt', 'changelog']));
     return _changelog;
   }
@@ -346,12 +357,11 @@ class _FilePackageMeta extends PackageMeta {
 }
 
 File _locate(Directory dir, List<String> fileNames) {
-  List<File> files =
-      new List<File>.from(dir.listSync().where((f) => f is File));
+  List<File> files = dir.listSync().whereType<File>().toList();
 
   for (String name in fileNames) {
     for (File f in files) {
-      String baseName = pathLib.basename(f.path).toLowerCase();
+      String baseName = path.basename(f.path).toLowerCase();
       if (baseName == name) return f;
       if (baseName.startsWith(name)) return f;
     }
@@ -364,7 +374,7 @@ class _SdkMeta extends PackageMeta {
   String sdkReadmePath;
 
   _SdkMeta(Directory dir) : super(dir) {
-    sdkReadmePath = pathLib.join(dir.path, 'lib', 'api_readme.md');
+    sdkReadmePath = path.join(dir.path, 'lib', 'api_readme.md');
   }
 
   @override
@@ -380,9 +390,10 @@ class _SdkMeta extends PackageMeta {
 
   @override
   String get name => 'Dart';
+
   @override
   String get version {
-    File versionFile = new File(pathLib.join(dir.path, 'version'));
+    File versionFile = File(path.join(dir.path, 'version'));
     if (versionFile.existsSync()) return versionFile.readAsStringSync().trim();
     return 'unknown';
   }
@@ -391,6 +402,7 @@ class _SdkMeta extends PackageMeta {
   String get description =>
       'The Dart SDK is a set of tools and libraries for the '
       'Dart programming language.';
+
   @override
   String get homepage => 'https://github.com/dart-lang/sdk';
 
@@ -399,11 +411,11 @@ class _SdkMeta extends PackageMeta {
 
   @override
   FileContents getReadmeContents() {
-    File f = new File(pathLib.join(dir.path, 'lib', 'api_readme.md'));
+    File f = File(path.join(dir.path, 'lib', 'api_readme.md'));
     if (!f.existsSync()) {
-      f = new File(pathLib.join(dir.path, 'api_readme.md'));
+      f = File(path.join(dir.path, 'api_readme.md'));
     }
-    return f.existsSync() ? new FileContents(f) : null;
+    return f.existsSync() ? FileContents(f) : null;
   }
 
   @override

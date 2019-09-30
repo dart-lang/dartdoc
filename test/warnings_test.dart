@@ -9,7 +9,7 @@ import 'dart:io';
 
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 void main() {
@@ -19,21 +19,18 @@ void main() {
 
   setUpAll(() {
     tempDir = Directory.systemTemp.createTempSync('warnings_test');
-    testPackageOne = Directory(pathLib.join(tempDir.path, 'test_package_one'))
+    testPackageOne = Directory(path.join(tempDir.path, 'test_package_one'))
       ..createSync();
-    testPackageTwo = Directory(pathLib.join(tempDir.path, 'test_package_two'))
+    testPackageTwo = Directory(path.join(tempDir.path, 'test_package_two'))
       ..createSync();
-    testPackageThree =
-        Directory(pathLib.join(tempDir.path, 'test_package_three'))
-          ..createSync();
-    pubspecYamlOne =
-        new File(pathLib.join(testPackageOne.path, 'pubspec.yaml'));
+    testPackageThree = Directory(path.join(tempDir.path, 'test_package_three'))
+      ..createSync();
+    pubspecYamlOne = File(path.join(testPackageOne.path, 'pubspec.yaml'));
     pubspecYamlOne.writeAsStringSync('name: test_package_one');
-    pubspecYamlTwo =
-        new File(pathLib.join(testPackageTwo.path, 'pubspec.yaml'));
+    pubspecYamlTwo = File(path.join(testPackageTwo.path, 'pubspec.yaml'));
     pubspecYamlTwo.writeAsStringSync('name: test_package_two');
     dartdocYamlThree =
-        new File(pathLib.join(testPackageThree.path, 'dartdoc_options.yaml'));
+        File(path.join(testPackageThree.path, 'dartdoc_options.yaml'));
     dartdocYamlThree.writeAsStringSync('''
 dartdoc:
   warnings:
@@ -44,8 +41,7 @@ dartdoc:
   ignore:
     - ambiguous-reexport  
     ''');
-    pubspecYamlThree =
-        new File(pathLib.join(testPackageThree.path, 'pubspec.yaml'));
+    pubspecYamlThree = File(path.join(testPackageThree.path, 'pubspec.yaml'));
     pubspecYamlThree.writeAsStringSync('name: test_package_three');
   });
 

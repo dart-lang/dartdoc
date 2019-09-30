@@ -1,9 +1,8 @@
 // WARNING: This file is auto-generated. Do not taunt.
 
-const List<String> resource_names = const [
+const List<String> resource_names = [
   'package:dartdoc/resources/URI.js',
   'package:dartdoc/resources/css/bootstrap.css',
-  'package:dartdoc/resources/css/bootstrap.css.map',
   'package:dartdoc/resources/css/bootstrap.min.css',
   'package:dartdoc/resources/favicon.png',
   'package:dartdoc/resources/github.css',

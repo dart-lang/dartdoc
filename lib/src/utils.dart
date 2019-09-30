@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 library dartdoc.utils;
 
-final RegExp leadingWhiteSpace = new RegExp(r'^([ \t]*)[^ ]');
+final RegExp leadingWhiteSpace = RegExp(r'^([ \t]*)[^ ]');
 
 Iterable<String> stripCommonWhitespace(String str) sync* {
   List<String> lines = str.split('\n');
@@ -32,7 +32,7 @@ Iterable<String> stripCommonWhitespace(String str) sync* {
 String stripComments(String str) {
   bool cStyle = false;
   if (str == null) return null;
-  StringBuffer buf = new StringBuffer();
+  StringBuffer buf = StringBuffer();
 
   if (str.startsWith('///')) {
     for (String line in stripCommonWhitespace(str)) {

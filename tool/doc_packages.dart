@@ -47,7 +47,7 @@ void main(List<String> _args) {
 }
 
 ArgParser _createArgsParser() {
-  var parser = new ArgParser();
+  var parser = ArgParser();
   parser.addFlag('help',
       abbr: 'h', negatable: false, help: 'Show command help.');
   parser.addFlag('list', help: 'Show available pub packages', negatable: false);
@@ -60,7 +60,7 @@ ArgParser _createArgsParser() {
 }
 
 /// Print help if we are passed the help option or invalid arguments.
-void _printUsageAndExit(ArgParser parser, {int exitCode: 0}) {
+void _printUsageAndExit(ArgParser parser, {int exitCode = 0}) {
   print('Generate documentation for published pub packages.\n');
   print('Usage: _doc_packages [OPTIONS] <package1> <package2>\n');
   print(parser.usage);
@@ -125,7 +125,7 @@ Future<List<String>> _packageUrls(int page) {
   return http
       .get('https://pub.dartlang.org/packages.json?page=${page}')
       .then((response) {
-    return new List<String>.from(json.decode(response.body)['packages']);
+    return List<String>.from(json.decode(response.body)['packages']);
   });
 }
 
@@ -134,9 +134,9 @@ Future<List<PackageInfo>> _getPackageInfos(List<String> packageUrls) {
     return http.get(p).then((response) {
       var decodedJson = json.decode(response.body);
       String name = decodedJson['name'];
-      List<Version> versions = new List<Version>.from(
-          decodedJson['versions'].map((v) => new Version.parse(v)));
-      return new PackageInfo(name, Version.primary(versions));
+      List<Version> versions = List<Version>.from(
+          decodedJson['versions'].map((v) => Version.parse(v)));
+      return PackageInfo(name, Version.primary(versions));
     });
   }).toList();
 
@@ -148,24 +148,23 @@ StringBuffer _logBuffer;
 /// Generate the docs for the given package into _rootDir. Return whether
 /// generation was performed or was skipped (due to an older package).
 Future<bool> _generateFor(PackageInfo package) async {
-  _logBuffer = new StringBuffer();
+  _logBuffer = StringBuffer();
 
   // Get the package archive (tar zxvf foo.tar.gz).
   var response = await http.get(package.archiveUrl);
   if (response.statusCode != 200) throw response;
 
-  Directory output = new Directory('${_rootDir}/${package.name}');
+  Directory output = Directory('${_rootDir}/${package.name}');
   output.createSync(recursive: true);
 
   try {
-    new File(output.path + '/archive.tar.gz')
-        .writeAsBytesSync(response.bodyBytes);
+    File(output.path + '/archive.tar.gz').writeAsBytesSync(response.bodyBytes);
 
     await _exec('tar', ['zxvf', 'archive.tar.gz'],
         cwd: output.path, quiet: true);
 
     // Rule out any old packages (old sdk constraints).
-    File pubspecFile = new File(output.path + '/pubspec.yaml');
+    File pubspecFile = File(output.path + '/pubspec.yaml');
     var pubspecInfo = loadYaml(pubspecFile.readAsStringSync());
 
     // Check for old versions.
@@ -176,7 +175,7 @@ Future<bool> _generateFor(PackageInfo package) async {
 
     // Run pub get.
     await _exec('pub', ['get'],
-        cwd: output.path, timeout: new Duration(seconds: 30));
+        cwd: output.path, timeout: Duration(seconds: 30));
 
     // Run dartdoc.
     await _exec('dart', ['../../bin/dartdoc.dart'], cwd: output.path);
@@ -187,15 +186,14 @@ Future<bool> _generateFor(PackageInfo package) async {
     _log(st.toString());
     rethrow;
   } finally {
-    new File(output.path + '/output.txt')
-        .writeAsStringSync(_logBuffer.toString());
+    File(output.path + '/output.txt').writeAsStringSync(_logBuffer.toString());
   }
 }
 
 Future _exec(String command, List<String> args,
     {String cwd,
-    bool quiet: false,
-    Duration timeout: const Duration(seconds: 60)}) {
+    bool quiet = false,
+    Duration timeout = const Duration(seconds: 60)}) {
   return Process.start(command, args, workingDirectory: cwd)
       .then((Process process) {
     if (!quiet) {
@@ -224,11 +222,12 @@ bool _isOldSdkConstraint(var pubspecInfo) {
   if (environment != null) {
     var sdk = environment['sdk'];
     if (sdk != null) {
-      VersionConstraint constraint = new VersionConstraint.parse(sdk);
+      VersionConstraint constraint = VersionConstraint.parse(sdk);
       String version = Platform.version;
-      if (version.contains(' '))
+      if (version.contains(' ')) {
         version = version.substring(0, version.indexOf(' '));
-      if (!constraint.allows(new Version.parse(version))) {
+      }
+      if (!constraint.allows(Version.parse(version))) {
         _log('sdk constraint = ${constraint}');
         return true;
       } else {

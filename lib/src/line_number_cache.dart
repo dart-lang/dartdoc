@@ -24,7 +24,7 @@ SplayTreeMap<int, int> _createLineNumbersMap(String contents) {
   var newlineChar = _getNewlineChar(contents);
   var offset = 0;
   var lineNumber = 1;
-  var result = new SplayTreeMap<int, int>();
+  var result = SplayTreeMap<int, int>();
 
   do {
     result[offset] = lineNumber;
@@ -37,7 +37,7 @@ SplayTreeMap<int, int> _createLineNumbersMap(String contents) {
   return result;
 }
 
-final LineNumberCache lineNumberCache = new LineNumberCache();
+final LineNumberCache lineNumberCache = LineNumberCache();
 
 class LineNumberCache {
   final Map<String, SplayTreeMap<int, int>> _lineNumbers =
@@ -46,12 +46,12 @@ class LineNumberCache {
   Tuple2<int, int> lineAndColumn(String file, int offset) {
     file = pathLib.canonicalize(file);
     var lineMap = _lineNumbers.putIfAbsent(
-        file, () => _createLineNumbersMap(new File(file).readAsStringSync()));
+        file, () => _createLineNumbersMap(File(file).readAsStringSync()));
     var lastKey = lineMap.lastKeyBefore(offset);
     if (lastKey != null) {
-      return new Tuple2(lineMap[lastKey], offset - lastKey);
+      return Tuple2(lineMap[lastKey], offset - lastKey);
     } else {
-      return new Tuple2(lineMap[0], offset);
+      return Tuple2(lineMap[0], offset);
     }
   }
 }

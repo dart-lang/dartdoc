@@ -11,7 +11,7 @@ import 'package:test/test.dart';
 void main() {
   group('Source link computations', () {
     test('Basic usage', () {
-      var sourceLinkerHref = () => new SourceLinker(
+      var sourceLinkerHref = () => SourceLinker(
               excludes: [],
               lineNumber: 14,
               root: 'path',
@@ -24,7 +24,7 @@ void main() {
     });
 
     test('Throw when missing a revision if one is in the template', () {
-      var sourceLinkerHref = () => new SourceLinker(
+      var sourceLinkerHref = () => SourceLinker(
               excludes: [],
               lineNumber: 20,
               root: 'path',
@@ -35,7 +35,7 @@ void main() {
     });
 
     test('Allow a missing revision as long as it is not in the template', () {
-      var sourceLinkerHref = () => new SourceLinker(
+      var sourceLinkerHref = () => SourceLinker(
               excludes: [],
               lineNumber: 71,
               root: 'path',
@@ -47,7 +47,7 @@ void main() {
     });
 
     test('Throw if only revision specified', () {
-      var sourceLinkerHref = () => new SourceLinker(
+      var sourceLinkerHref = () => SourceLinker(
             excludes: [],
             lineNumber: 20,
             revision: '12345',
@@ -56,7 +56,7 @@ void main() {
     });
 
     test('Hide a path inside an exclude', () {
-      var sourceLinkerHref = () => new SourceLinker(
+      var sourceLinkerHref = () => SourceLinker(
               excludes: ['path/under/exclusion'],
               lineNumber: 14,
               root: 'path',
@@ -68,7 +68,7 @@ void main() {
     });
 
     test('Check that paths outside exclusions work', () {
-      var sourceLinkerHref = () => new SourceLinker(
+      var sourceLinkerHref = () => SourceLinker(
               excludes: ['path/under/exclusion'],
               lineNumber: 14,
               root: 'path',

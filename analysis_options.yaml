@@ -1,4 +1,9 @@
+include: package:pedantic/analysis_options.1.8.0.yaml
+
 analyzer:
+  # enable for analysis on test package sources.
+  enable-experiment:
+    - extension-methods
   exclude:
     - 'doc/**'
     - 'lib/src/third_party/pkg/**'
@@ -15,7 +20,8 @@ linter:
     - directives_ordering
     - no_adjacent_strings_in_list
     - package_api_docs
-    - slash_for_doc_comments
     - prefer_final_fields
+    - prefer_generic_function_type_aliases
+    - slash_for_doc_comments
     - unawaited_futures
 #    - unnecessary_brace_in_string_interps

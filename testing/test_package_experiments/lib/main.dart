@@ -1,5 +1,5 @@
 const inferredTypeSet = {1, 2.5, 3};
-const Set<int> specifiedSet = const {};
+const Set<int> specifiedSet = {};
 const untypedMap = {};
 const typedSet = <String>{};
 

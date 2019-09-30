@@ -12,11 +12,11 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 
-final RegExp quotables = new RegExp(r'[ "\r\n\$]');
+final RegExp quotables = RegExp(r'[ "\r\n\$]');
 final RegExp observatoryPortRegexp =
-    new RegExp(r'^Observatory listening on http://.*:(\d+)');
+    RegExp(r'^Observatory listening on http://.*:(\d+)');
 
 Directory sdkDir;
 PackageMeta sdkPackageMeta;
@@ -27,26 +27,27 @@ PackageGraph testPackageGraphSmall;
 PackageGraph testPackageGraphErrors;
 PackageGraph testPackageGraphSdk;
 
-final Directory testPackageBadDir = new Directory('testing/test_package_bad');
-final Directory testPackageDir = new Directory('testing/test_package');
+final Directory testPackageBadDir = Directory('testing/test_package_bad');
+final Directory testPackageDir = Directory('testing/test_package');
 final Directory testPackageExperimentsDir =
-    new Directory('testing/test_package_experiments');
+    Directory('testing/test_package_experiments');
 final Directory testPackageMinimumDir =
-    new Directory('testing/test_package_minimum');
+    Directory('testing/test_package_minimum');
 final Directory testPackageWithEmbedderYaml =
-    new Directory('testing/test_package_embedder_yaml');
+    Directory('testing/test_package_embedder_yaml');
 final Directory testPackageWithNoReadme =
-    new Directory('testing/test_package_small');
+    Directory('testing/test_package_small');
 final Directory testPackageIncludeExclude =
-    new Directory('testing/test_package_include_exclude');
+    Directory('testing/test_package_include_exclude');
 final Directory testPackageImportExportError =
-    new Directory('testing/test_package_import_export_error');
-final Directory testPackageOptions =
-    new Directory('testing/test_package_options');
+    Directory('testing/test_package_import_export_error');
+final Directory testPackageOptions = Directory('testing/test_package_options');
 final Directory testPackageOptionsImporter =
-    new Directory('testing/test_package_options_importer');
+    Directory('testing/test_package_options_importer');
 final Directory testPackageToolError =
-    new Directory('testing/test_package_tool_error');
+    Directory('testing/test_package_tool_error');
+final Directory testPackageCustomTemplates =
+    Directory('testing/test_package_custom_templates');
 
 /// Convenience factory to build a [DartdocGeneratorOptionContext] and associate
 /// it with a [DartdocOptionSet] based on the current working directory and/or
@@ -56,7 +57,7 @@ Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
   DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
       'dartdoc', [createDartdocOptions, createGeneratorOptions]);
   optionSet.parseArguments(argv);
-  return new DartdocGeneratorOptionContext(optionSet, null);
+  return DartdocGeneratorOptionContext(optionSet, null);
 }
 
 /// Convenience factory to build a [DartdocOptionContext] and associate it with a
@@ -65,12 +66,12 @@ Future<DartdocOptionContext> contextFromArgv(List<String> argv) async {
   DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
       'dartdoc', [createDartdocOptions]);
   optionSet.parseArguments(argv);
-  return new DartdocOptionContext(optionSet, Directory.current);
+  return DartdocOptionContext(optionSet, Directory.current);
 }
 
 void init({List<String> additionalArguments}) async {
   sdkDir = defaultSdkDir;
-  sdkPackageMeta = new PackageMeta.fromDir(sdkDir);
+  sdkPackageMeta = PackageMeta.fromDir(sdkDir);
   additionalArguments ??= <String>[];
 
   testPackageGraph = await bootBasicPackage(
@@ -98,22 +99,23 @@ void init({List<String> additionalArguments}) async {
 }
 
 Future<PackageGraph> bootSdkPackage() async {
-  return new PackageBuilder(await contextFromArgv(['--input', sdkDir.path]))
+  return PackageBuilder(await contextFromArgv(['--input', sdkDir.path]))
       .buildPackageGraph();
 }
 
 Future<PackageGraph> bootBasicPackage(
     String dirPath, List<String> excludeLibraries,
     {List<String> additionalArguments}) async {
-  Directory dir = new Directory(dirPath);
+  Directory dir = Directory(dirPath);
   additionalArguments ??= <String>[];
-  return new PackageBuilder(await contextFromArgv([
+  return PackageBuilder(await contextFromArgv([
             '--input',
             dir.path,
             '--sdk-dir',
             sdkDir.path,
             '--exclude',
             excludeLibraries.join(','),
+            '--allow-tools',
           ] +
           additionalArguments))
       .buildPackageGraph();
@@ -141,7 +143,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
   static Directory get tempDir {
     if (_tempDir == null) {
       if (Platform.environment['DARTDOC_COVERAGE_DATA'] != null) {
-        _tempDir = new Directory(Platform.environment['DARTDOC_COVERAGE_DATA']);
+        _tempDir = Directory(Platform.environment['DARTDOC_COVERAGE_DATA']);
       } else {
         _tempDir = Directory.systemTemp.createTempSync('dartdoc_coverage_data');
       }
@@ -150,7 +152,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
   }
 
   static String buildNextCoverageFilename() =>
-      pathLib.join(tempDir.path, 'dart-cov-${pid}-${nextRun++}.json');
+      path.join(tempDir.path, 'dart-cov-${pid}-${nextRun++}.json');
 
   /// Call once all coverage runs have been generated by calling runStreamed
   /// on all [CoverageSubprocessLaunchers].
@@ -171,8 +173,8 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       '-b',
       '.',
       '--packages=.packages',
-      '--sdk-root=${pathLib.canonicalize(pathLib.join(pathLib.dirname(Platform.executable), '..'))}',
-      '--out=${pathLib.canonicalize(outputFile.path)}',
+      '--sdk-root=${path.canonicalize(path.join(path.dirname(Platform.executable), '..'))}',
+      '--out=${path.canonicalize(outputFile.path)}',
       '--report-on=bin,lib',
       '-i',
       tempDir.path,
@@ -191,7 +193,7 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
             executable == Platform.resolvedExecutable,
         'Must use dart executable for tracking coverage');
 
-    Completer<String> portAsString = new Completer();
+    Completer<String> portAsString = Completer();
     void parsePortAsString(String line) {
       if (!portAsString.isCompleted && coverageEnabled) {
         Match m = observatoryPortRegexp.matchAsPrefix(line);
@@ -204,11 +206,14 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
     Completer<Iterable<Map>> coverageResult;
 
     if (coverageEnabled) {
-      coverageResult = new Completer();
+      coverageResult = Completer();
       // This must be added before awaiting in this method.
       coverageResults.add(coverageResult.future);
-      arguments = ['--enable-vm-service:0', '--pause-isolates-on-exit']
-        ..addAll(arguments);
+      arguments = [
+        '--disable-service-auth-codes',
+        '--enable-vm-service:0',
+        '--pause-isolates-on-exit'
+      ]..addAll(arguments);
       if (!environment.containsKey('DARTDOC_COVERAGE_DATA')) {
         environment['DARTDOC_COVERAGE_DATA'] = tempDir.path;
       }
@@ -243,7 +248,7 @@ class SubprocessLauncher {
 
   // from flutter:dev/tools/dartdoc.dart, modified
   static Future<void> _printStream(Stream<List<int>> stream, Stdout output,
-      {String prefix: '', Iterable<String> Function(String line) filter}) {
+      {String prefix = '', Iterable<String> Function(String line) filter}) {
     assert(prefix != null);
     if (filter == null) filter = (line) => [line];
     return stream
@@ -274,7 +279,7 @@ class SubprocessLauncher {
   Future<Iterable<Map>> runStreamed(String executable, List<String> arguments,
       {String workingDirectory,
       Map<String, String> environment,
-      bool includeParentEnvironment: true,
+      bool includeParentEnvironment = true,
       void Function(String) perLine}) async {
     environment ??= {};
     environment.addAll(environmentDefaults);
@@ -288,10 +293,12 @@ class SubprocessLauncher {
       Map result;
       try {
         result = json.decoder.convert(line);
-      } catch (FormatException) {}
+      } catch (FormatException) {
+        // ignore
+      }
       if (result != null) {
         if (jsonObjects == null) {
-          jsonObjects = new List();
+          jsonObjects = List();
         }
         jsonObjects.add(result);
         if (result.containsKey('message')) {
@@ -357,7 +364,7 @@ class SubprocessLauncher {
 
     int exitCode = await process.exitCode;
     if (exitCode != 0) {
-      throw new ProcessException(executable, arguments,
+      throw ProcessException(executable, arguments,
           "SubprocessLauncher got non-zero exitCode: $exitCode", exitCode);
     }
     return jsonObjects;

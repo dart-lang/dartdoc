@@ -21,7 +21,7 @@ void main() {
       // Trim the left margin of every following line.
       .replaceAll('\n$multilineStringMargin  ', '\n')
       // Trim the last line.
-      .replaceFirst(new RegExp('\n$multilineStringMargin\$'), '');
+      .replaceFirst(RegExp('\n$multilineStringMargin\$'), '');
 
   void expectCorrectDocumentation() =>
       expect(stripComments(trimMargin(comment)), trimMargin(documentation));

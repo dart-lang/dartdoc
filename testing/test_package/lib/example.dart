@@ -31,6 +31,21 @@ const incorrectDocReference = 'same name as const from fake';
 /// This should [not work].
 const incorrectDocReferenceFromEx = 'doh';
 
+/// top level declarations with templates/macros
+///
+/// {@template ex1}
+/// ex2 macro content
+/// {@endtemplate}
+int myNumber = 3;
+
+/// {@macro ex1}
+void testMacro() {}
+
+/// {@template ex2}
+/// ex2 macro content
+/// {@endtemplate}
+bool get isCheck => true;
+
 /// A custom annotation.
 class aThingToDo {
   final String who;
@@ -39,12 +54,8 @@ class aThingToDo {
   const aThingToDo(this.who, this.what);
 }
 
-const ConstantCat MY_CAT = const ConstantCat('tabby');
-const List<String> PRETTY_COLORS = const <String>[
-  COLOR_GREEN,
-  COLOR_ORANGE,
-  'blue'
-];
+const ConstantCat MY_CAT = ConstantCat('tabby');
+const List<String> PRETTY_COLORS = <String>[COLOR_GREEN, COLOR_ORANGE, 'blue'];
 @deprecated
 int deprecatedField;
 
@@ -141,7 +152,7 @@ class Apple {
   Apple();
 
   factory Apple.fromString(String s) {
-    return new Apple._internal(s);
+    return Apple._internal(s);
   }
 
   Apple._internal(this._s2);
@@ -188,6 +199,16 @@ class Apple {
    */
   final ParameterizedTypedef<bool> fieldWithTypedef;
 }
+
+
+/// Extension on Apple
+extension AppleExtension on Apple {
+/// Can call s on Apple
+  void s() {
+    print('Extension on Apple');
+  }
+}
+
 
 class WithGeneric<T> {
   T prop;
@@ -284,7 +305,7 @@ class Dog implements Cat, E {
   static const String aStaticConstField = "A Constant Dog";
 
   /// Verify link substitution in constants (#1535)
-  static const ShortName aName = const ExtendedShortName("hello there");
+  static const ShortName aName = ExtendedShortName("hello there");
 
   @protected
   final int aProtectedFinalField;
@@ -305,7 +326,7 @@ class Dog implements Cat, E {
   @override
   bool get isImplemented => true;
 
-  int get aGetterReturningRandomThings => (new Random()).nextInt(50);
+  int get aGetterReturningRandomThings => (Random()).nextInt(50);
 
   @override
   operator ==(other) => other is Dog && name == other.name;
@@ -314,12 +335,12 @@ class Dog implements Cat, E {
 
   @deprecated
   List<Apple> getClassA() {
-    return [new Apple()];
+    return [Apple()];
   }
 
   @Deprecated('before v27.3')
   List<Dog> getAnotherClassD() {
-    return [new Dog()];
+    return [Dog()];
   }
 
   /// A tasty static + final property.
@@ -353,6 +374,23 @@ class Dog implements Cat, E {
 
   /// Don't define this:  {@macro ThatDoesNotExist}
   void withUndefinedMacro() {}
+
+  /// YouTube video method
+  ///
+  /// {@youtube 560 315 https://www.youtube.com/watch?v=oHg5SJYRHA0}
+  /// More docs
+  void withYouTubeWatchUrl() {}
+
+  /// YouTube video in one line doc {@youtube 100 100 https://www.youtube.com/watch?v=oHg5SJYRHA0}
+  ///
+  /// This tests to see that we do the right thing if the animation is in
+  /// the one line doc above.
+  void withYouTubeInOneLineDoc() {}
+
+  /// YouTube video inline in text.
+  ///
+  /// Tests to see that an inline {@youtube 100 100 https://www.youtube.com/watch?v=oHg5SJYRHA0} works as expected.
+  void withYouTubeInline() {}
 
   /// Animation method
   ///
@@ -407,7 +445,7 @@ class Dog implements Cat, E {
 
   @Deprecated("Internal use")
   static Dog createDog(String s) {
-    return new Dog.deprecatedCreate(s);
+    return Dog.deprecatedCreate(s);
   }
 
   @override
@@ -478,8 +516,8 @@ class PublicClassImplementsPrivateInterface implements _PrivateInterface {
 ///    [MyError] and [MyException] and
 ///    [List<int>] foo bar.
 class ShapeType extends _RetainedEnum {
-  static const ShapeType rect = const ShapeType._internal("Rect");
-  static const ShapeType ellipse = const ShapeType._internal("Ellipse");
+  static const ShapeType rect = ShapeType._internal("Rect");
+  static const ShapeType ellipse = ShapeType._internal("Ellipse");
 
   const ShapeType._internal(String name) : super(name);
 }
@@ -579,4 +617,38 @@ abstract class HtmlInjection {
   /// This text should also appear in the output.
   /// {@end-tool}
   void injectHtmlFromTool();
+}
+
+/// Extension on a class defined in the package
+extension AnExtension<Q> on WithGeneric<Q> {
+  int call(String s) => 0;
+}
+
+/// Extension on List
+extension FancyList<Z> on List<Z> {
+  int get doubleLength => this.length * 2;
+  List<Z> operator-() => this.reversed.toList();
+  List<List<Z>> split(int at) =>
+      <List<Z>>[this.sublist(0, at), this.sublist(at)];
+  static List<Z> big() => List(1000000);
+}
+
+extension SymDiff<Q> on Set<Q> {
+  Set<Q> symmetricDifference(Set<Q> other) =>
+    this.difference(other).union(other.difference(this));
+}
+
+/// Extensions can be made specific.
+extension IntSet on Set<int> {
+  int sum() => this.fold(0, (prev, element) => prev + element);
+}
+
+// Extensions can be private.
+extension _Shhh on Object {
+  void secret() { }
+}
+
+// Extension with no name
+extension on Object {
+  void bar() { }
 }

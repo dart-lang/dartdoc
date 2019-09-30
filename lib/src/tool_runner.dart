@@ -8,7 +8,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dartdoc/src/io_utils.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 import 'dartdoc_options.dart';
 
 typedef ToolErrorCallback = void Function(String message);
@@ -17,7 +17,7 @@ typedef FakeResultCallback = String Function(String tool,
 
 /// Set a ceiling on how many tool instances can be in progress at once,
 /// limiting both parallelization and the number of open temporary files.
-final MultiFutureTracker _toolTracker = new MultiFutureTracker(4);
+final MultiFutureTracker _toolTracker = MultiFutureTracker(4);
 
 /// Can be called when the ToolRunner is no longer needed.
 ///
@@ -30,13 +30,15 @@ class ToolTempFileTracker {
             Directory.systemTemp.createTempSync('dartdoc_tools_');
 
   static ToolTempFileTracker _instance;
+
   static ToolTempFileTracker get instance =>
       _instance ??= ToolTempFileTracker._();
 
   int _temporaryFileCount = 0;
+
   Future<File> createTemporaryFile() async {
     _temporaryFileCount++;
-    File tempFile = new File(pathLib.join(
+    File tempFile = File(path.join(
         temporaryDirectory.absolute.path, 'input_$_temporaryFileCount'));
     await tempFile.create(recursive: true);
     return tempFile;
@@ -188,8 +190,9 @@ class ToolRunner {
       argsWithInput.add(newArg);
     }
 
-    if (toolDefinition.setupCommand != null && !toolDefinition.setupComplete)
+    if (toolDefinition.setupCommand != null && !toolDefinition.setupComplete) {
       await _runSetup(tool, toolDefinition, envWithInput, toolErrorCallback);
+    }
 
     argsWithInput = toolArgs + argsWithInput;
     var commandPath;

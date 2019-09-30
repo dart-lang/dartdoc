@@ -4,5 +4,5 @@ import 'foo.dart';
 void myTestFunction() {
   print('one');
   print('two');
-  Foo foo = new Foo('three');
+  Foo foo = Foo('three');
 }

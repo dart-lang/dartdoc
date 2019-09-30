@@ -1,3 +1,33 @@
+## 0.28.6
+* Support for 0.38.3 version of `package:analyzer`.
+* Support generating docs for extension methods (#2001).
+
+## 0.28.5
+* Support the latest version of `package:analyzer`.
+* Fix hyperlinks to overriden methods (#1994).
+* Option in dartdoc_options.yaml to exclude version in footer info (#1982).
+
+## 0.28.4
+* **Breaking change** Change the default for `allow-tools` command line flag to false.
+* Fix some lints.
+* Update to support a future version of analyzer.
+
+## 0.28.3+3
+* Fix code highlighting in Dart after string interpolation (#1946, #1948) by
+  updating the highlightjs dependency.
+* Fix indentation of inheritance info to match others
+
+## 0.28.3+2
+* Support the latest version of `package:html`.
+* Use latest version of the markdown package.
+
+## 0.28.3+1
+* Fix scroll physics and behavior for Safari on iOS.
+
+## 0.28.3
+* Support a new `{@youtube}` directive in documentation comments to embed
+  YouTube videos.
+
 ## 0.28.2
 * Add empty CSS classes in spans around the names of entities so Dashing can pick
   them up.  (flutter/flutter#27654, #1929)
@@ -133,7 +163,7 @@
 ## 0.22.0
 * Documentation updates. (#1760)
 * Fix incompatibility with head analyzer (endsWith exception). (#1768)
-* Added the ability to run external tools on a section of documentation and 
+* Added the ability to run external tools on a section of documentation and
   replace it with the output of the tool.
 
 ## 0.21.1
@@ -516,7 +546,7 @@ This is a prerelease only, features listed as added here don't carry forward.
 ## 0.9.7+1
 * change how we truncate long constant values on the summary page
 * show the full docs for enums on the summary page; just show the first line of
-  docs for other contants
+  docs for other constants
 
 ## 0.9.7
 * fix the display of long constants

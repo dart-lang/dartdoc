@@ -1,0 +1,48 @@
+<ol>
+    {{#extension}}
+
+    {{#hasPublicProperties}}
+    <li class="section-title"> <a href="{{{href}}}#instance-properties">Properties</a>
+    </li>
+    {{#allPublicInstanceProperties}}
+    <li>{{{ linkedName }}}</li>
+    {{/allPublicInstanceProperties}}
+    {{/hasPublicProperties}}
+
+    {{#hasPublicMethods}}
+    <li class="section-title"><a href="{{{href}}}#instance-methods">Methods</a></li>
+    {{#allPublicInstanceMethods}}
+    <li>{{{ linkedName }}}</li>
+    {{/allPublicInstanceMethods}}
+    {{/hasPublicMethods}}
+
+    {{#hasPublicOperators}}
+    <li class="section-title"><a href="{{{href}}}#operators">Operators</a></li>
+    {{#allPublicOperators}}
+    <li>{{{ linkedName }}}</li>
+    {{/allPublicOperators}}
+    {{/hasPublicOperators}}
+
+    {{#hasPublicStaticProperties}}
+    <li class="section-title"><a href="{{{href}}}#static-properties">Static properties</a></li>
+    {{#publicStaticProperties}}
+    <li>{{{ linkedName }}}</li>
+    {{/publicStaticProperties}}
+    {{/hasPublicStaticProperties}}
+
+    {{#hasPublicStaticMethods}}
+    <li class="section-title"><a href="{{{href}}}#static-methods">Static methods</a></li>
+    {{#publicStaticMethods}}
+    <li>{{{ linkedName }}}</li>
+    {{/publicStaticMethods}}
+    {{/hasPublicStaticMethods}}
+
+    {{#hasPublicConstants}}
+    <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
+    {{#publicConstants}}
+    <li>{{{linkedName}}}</li>
+    {{/publicConstants}}
+    {{/hasPublicConstants}}
+
+    {{/extension}}
+</ol>

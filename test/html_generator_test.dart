@@ -9,7 +9,7 @@ import 'dart:io' show File, Directory;
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/html/resources.g.dart';
-import 'package:path/path.dart' as pathLib;
+import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 void main() {
@@ -17,7 +17,7 @@ void main() {
     Templates templates;
 
     setUp(() async {
-      templates = await Templates.create();
+      templates = await Templates.createDefault();
     });
 
     test('index html', () {
@@ -81,19 +81,19 @@ void main() {
 
       test('resources are put into the right place', () {
         Directory output =
-            new Directory(pathLib.join(tempOutput.path, 'static-assets'));
+            Directory(path.join(tempOutput.path, 'static-assets'));
         expect(output, doesExist);
 
         for (var resource in resource_names.map((r) =>
-            pathLib.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
-          expect(new File(pathLib.join(output.path, resource)), doesExist);
+            path.relative(Uri.parse(r).path, from: 'dartdoc/resources'))) {
+          expect(File(path.join(output.path, resource)), doesExist);
         }
       });
     });
   });
 }
 
-const Matcher doesExist = const _DoesExist();
+const Matcher doesExist = _DoesExist();
 
 class _DoesExist extends Matcher {
   const _DoesExist();

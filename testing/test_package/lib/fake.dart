@@ -70,6 +70,9 @@ export 'src/tool.dart';
 // ignore: uri_does_not_exist
 export 'package:test_package/fake.dart';
 
+/// Does not render with emoji 3ffe:2a00:100:7031::1
+const int hasMarkdownInDoc = 1;
+
 abstract class ImplementingThingy implements BaseThingy {}
 
 abstract class BaseThingy {
@@ -177,8 +180,8 @@ class HasDynamicAnnotation {}
 /// | [foo]                | Not really   | "blah"    |
 /// | [bar]                | Maybe        | "stuff"   |
 class DocumentWithATable {
-  static const DocumentWithATable foo = const DocumentWithATable();
-  static const DocumentWithATable bar = const DocumentWithATable();
+  static const DocumentWithATable foo = DocumentWithATable();
+  static const DocumentWithATable bar = DocumentWithATable();
 
   const DocumentWithATable();
   void aMethod(String parameter) {}
@@ -242,7 +245,7 @@ class AClassWithFancyProperties {
   String aProperty;
 }
 
-const _APrivateConstClass CUSTOM_CLASS_PRIVATE = const _APrivateConstClass();
+const _APrivateConstClass CUSTOM_CLASS_PRIVATE = _APrivateConstClass();
 
 /// Type inference mixing with anonymous functions.
 final importantComputations = {
@@ -253,7 +256,7 @@ final importantComputations = {
 };
 
 // No dart docs on purpose. Also, a non-primitive const class.
-const ConstantClass CUSTOM_CLASS = const ConstantClass('custom');
+const ConstantClass CUSTOM_CLASS = ConstantClass('custom');
 
 /// Up is a direction.
 ///
@@ -507,7 +510,7 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   @override
 
   /// Getter doc for explicitGetterImplicitSetter
-  List<int> get explicitGetterImplicitSetter => new List<int>();
+  List<int> get explicitGetterImplicitSetter => List<int>();
 
   myCoolTypedef _aFunction;
 
@@ -543,7 +546,7 @@ class ClassWithUnusualProperties extends ImplicitProperties {
   set explicitSetter(f(int bar, Cool baz, List<int> macTruck)) {}
 
   /// This property has some docs, too.
-  final Set finalProperty = new Set();
+  final Set finalProperty = Set();
 
   Map implicitReadWrite;
 
@@ -658,8 +661,8 @@ class Foo2 {
   final int index;
   const Foo2(this.index);
 
-  static const Foo2 BAR = const Foo2(0);
-  static const Foo2 BAZ = const Foo2(1);
+  static const Foo2 BAR = Foo2(0);
+  static const Foo2 BAZ = Foo2(1);
 }
 
 class OtherGenericsThing<A> {
@@ -996,7 +999,7 @@ abstract class MIEEMixinWithOverride<K, V> = MIEEBase<K, V>
 abstract class _MIEEPrivateOverride<K, V> implements MIEEThing<K, V> {
   // ignore: annotate_overrides
   void operator []=(K key, V value) {
-    throw new UnsupportedError("Never use this");
+    throw UnsupportedError("Never use this");
   }
 }
 
