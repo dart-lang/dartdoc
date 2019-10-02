@@ -752,6 +752,10 @@ void main() {
       expect(exLibrary.name, 'ex');
     });
 
+    test('does not have a line number and column', () {
+      expect(exLibrary.characterLocation, isNull);
+    });
+
     test('packageName', () {
       expect(exLibrary.packageName, 'test_package');
     });
@@ -1734,6 +1738,10 @@ void main() {
           .firstWhere((f) => f.name == 'overrideByModifierClass');
     });
 
+    test('does have a line number and column', () {
+      expect(GenericMixin.characterLocation, isNotNull);
+    });
+
     test(('Verify mixin member is available in findRefElementCache'), () {
       expect(packageGraph.findRefElementCache['GenericMixin.mixinMember'],
           isNotEmpty);
@@ -1864,6 +1872,10 @@ void main() {
 
     test('has a fully qualified name', () {
       expect(Apple.fullyQualifiedName, 'ex.Apple');
+    });
+
+    test('does have a line number and column', () {
+      expect(Apple.characterLocation, isNotNull);
     });
 
     test('we got the classes we expect', () {
@@ -2115,6 +2127,10 @@ void main() {
       expect(ext.fullyQualifiedName, 'ex.AppleExtension');
     });
 
+    test('does have a line number and column', () {
+      expect(ext.characterLocation, isNotNull);
+    });
+
     test('has enclosing element', () {
       expect(ext.enclosingElement.name, equals(exLibrary.name));
     });
@@ -2267,6 +2283,10 @@ void main() {
 
     test('has a fully qualified name', () {
       expect(thisIsAsync.fullyQualifiedName, 'fake.thisIsAsync');
+    });
+
+    test('does have a line number and column', () {
+      expect(thisIsAsync.characterLocation, isNotNull);
     });
 
     test('has enclosing element', () {
@@ -2552,6 +2572,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'getAFunctionReturningVoid');
       getAFunctionReturningBool = TypedFunctionsWithoutTypedefs.instanceMethods
           .singleWhere((m) => m.name == 'getAFunctionReturningBool');
+    });
+
+    test('does have a line number and column', () {
+      expect(abstractMethod.characterLocation, isNotNull);
     });
 
     test('verify parameter types are correctly displayed', () {

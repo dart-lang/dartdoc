@@ -88,7 +88,7 @@ class SourceLinker {
       excludes: config.linkToSourceExcludes,
       // TODO(jcollins-g): disallow defaulting?  Some elements come back without
       // a line number right now.
-      lineNumber: element.lineAndColumn?.item1 ?? 1,
+      lineNumber: element.characterLocation?.lineNumber ?? 1,
       sourceFileName: element.sourceFileName,
       revision: config.linkToSourceRevision,
       root: config.linkToSourceRoot,

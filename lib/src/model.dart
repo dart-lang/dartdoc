@@ -25,6 +25,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/file_system/file_system.dart' as file_system;
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/context/builder.dart';
 import 'package:analyzer/src/dart/analysis/byte_store.dart';
 import 'package:analyzer/src/dart/analysis/driver.dart';
@@ -51,7 +52,6 @@ import 'package:crypto/crypto.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/io_utils.dart';
-import 'package:dartdoc/src/line_number_cache.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
 import 'package:dartdoc/src/model_utils.dart' as utils;
@@ -3721,8 +3721,8 @@ abstract class ModelElement extends Canonicalization
   @override
   String get location {
     // Call nothing from here that can emit warnings or you'll cause stack overflows.
-    if (lineAndColumn != null) {
-      return "(${path.toUri(sourceFileName)}:${lineAndColumn.item1}:${lineAndColumn.item2})";
+    if (characterLocation != null) {
+      return "(${path.toUri(sourceFileName)}:${characterLocation.toString()})";
     }
     return "(${path.toUri(sourceFileName)})";
   }
@@ -3757,17 +3757,21 @@ abstract class ModelElement extends Canonicalization
 
   String get sourceFileName => element.source.fullName;
 
-  Tuple2<int, int> _lineAndColumn;
-  bool _isLineNumberComputed = false;
+  CharacterLocation _characterLocation;
+  bool _characterLocationIsSet = false;
 
   @override
-  Tuple2<int, int> get lineAndColumn {
-    // TODO(jcollins-g): implement lineAndColumn for explicit fields
-    if (!_isLineNumberComputed) {
-      _lineAndColumn = lineNumberCache.lineAndColumn(
-          element.source.fullName, element.nameOffset);
+  CharacterLocation get characterLocation {
+    // TODO(jcollins-g): implement for explicit fields
+    if (!_characterLocationIsSet) {
+      CompilationUnitElement compilationUnitElement = element.getAncestor((Element e) => e is CompilationUnitElement);
+      LineInfo lineInfo = compilationUnitElement?.lineInfo;
+      _characterLocationIsSet = true;
+      if (element.nameOffset > 0) {
+        _characterLocation = lineInfo?.getLocation(element.nameOffset);
+      }
     }
-    return _lineAndColumn;
+    return _characterLocation;
   }
 
   bool get hasAnnotations => annotations.isNotEmpty;
@@ -4197,8 +4201,8 @@ abstract class ModelElement extends Canonicalization
                 warn(PackageWarning.toolError, message: message),
             content: basicMatch[2],
             environment: {
-              'SOURCE_LINE': lineAndColumn?.item1?.toString(),
-              'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
+              'SOURCE_LINE': characterLocation?.lineNumber.toString(),
+              'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
               'SOURCE_PATH': (sourceFileName == null ||
                       package?.packagePath == null)
                   ? null
@@ -5279,14 +5283,14 @@ class PackageGraph {
     List<String> messageParts = [warningMessage];
     if (warnable != null) {
       messageParts
-          .add("${warnablePrefix} ${warnableName}: ${warnable.location ?? ''}");
+          .add("${warnablePrefix} ${warnableName}: ${warnable.location}");
     }
     if (referredFrom != null) {
       for (Locatable referral in referredFrom) {
         if (referral != warnable) {
           var referredFromStrings = _safeWarnableName(referral);
           messageParts.add(
-              "${referredFromPrefix} ${referredFromStrings}: ${referral.location ?? ''}");
+              "${referredFromPrefix} ${referredFromStrings}: ${referral.location}");
         }
       }
     }
@@ -6516,7 +6520,7 @@ class Parameter extends ModelElement implements EnclosedElement {
 abstract class SourceCodeMixin implements Documentable {
   ModelNode get modelNode;
 
-  Tuple2<int, int> get lineAndColumn;
+  CharacterLocation get characterLocation;
 
   Element get element;
 
