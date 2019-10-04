@@ -771,8 +771,11 @@ String _linkDocReference(String codeRef, Warnable warnable,
     }
   } else {
     if (result.warn) {
+      // Avoid claiming documentation is inherited when it comes from the
+      // current element.
       warnable.warn(PackageWarning.unresolvedDocReference,
-          message: codeRef, referredFrom: warnable.documentationFrom);
+          message: codeRef,
+          referredFrom: warnable.documentationIsLocal ? null : warnable.documentationFrom);
     }
     return '<code>${htmlEscape.convert(codeRef)}</code>';
   }

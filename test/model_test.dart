@@ -752,8 +752,8 @@ void main() {
       expect(exLibrary.name, 'ex');
     });
 
-    test('does not have a line number and column', () {
-      expect(exLibrary.characterLocation, isNull);
+    test('has a line number and column', () {
+      expect(exLibrary.characterLocation, isNotNull);
     });
 
     test('packageName', () {
@@ -2189,9 +2189,11 @@ void main() {
 
   group('Enum', () {
     Enum animal;
+    Method animalToString;
 
     setUpAll(() {
       animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
+      animalToString = animal.allInstanceMethods.firstWhere((m) => m.name == 'toString');
 
       /// Trigger code reference resolution
       animal.documentationAsHtml;
@@ -2199,6 +2201,12 @@ void main() {
 
     test('has a fully qualified name', () {
       expect(animal.fullyQualifiedName, 'ex.Animal');
+    });
+
+    test('toString() method location is handled specially', () {
+      expect(animalToString.characterLocation, isNotNull);
+      expect(animalToString.characterLocation.toString(),
+          equals(animal.characterLocation.toString()));
     });
 
     test('has enclosing element', () {
@@ -2829,6 +2837,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((f) => f.name == 'covariantSetter');
     });
 
+    test('Fields always have line and column information', () {
+        expect(implicitGetterExplicitSetter.characterLocation, isNotNull);
+        expect(explicitGetterImplicitSetter.characterLocation, isNotNull);
+        expect(explicitGetterSetter.characterLocation, isNotNull);
+        expect(constField.characterLocation, isNotNull);
+        expect(aProperty.characterLocation, isNotNull);
+    });
+
     test('covariant fields are recognized', () {
       expect(covariantField.isCovariant, isTrue);
       expect(covariantField.featuresAsString, contains('covariant'));
@@ -3373,6 +3389,17 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('has a fully qualified name', () {
       expect(
           appleConstructorFromString.fullyQualifiedName, 'ex.Apple.fromString');
+    });
+
+    test('has a line number and column', () {
+      expect(appleDefaultConstructor.characterLocation, isNotNull);
+      expect(appleConstructorFromString.characterLocation, isNotNull);
+      // The default constructor should reference the class for location.
+      expect(appleDefaultConstructor.characterLocation.toString(),
+          equals(apple.characterLocation.toString()));
+      // Other constructors should not.
+      expect(appleConstructorFromString.characterLocation.toString(),
+          isNot(equals(appleDefaultConstructor.characterLocation.toString())));
     });
 
     test('has enclosing element', () {
