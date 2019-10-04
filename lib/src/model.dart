@@ -1393,9 +1393,9 @@ class Constructor extends ModelElement
 
   @override
   CharacterLocation get characterLocation {
-    if (isDefaultConstructor) {
-      // Make warnings for the default constructor refer to somewhere reasonable
-      // since the default constructor has no definition independent of the
+    if (element.isSynthetic) {
+      // Make warnings for a synthetic constructor refer to somewhere reasonable
+      // since a synthetic constructor has no definition independent of the
       // parent class.
       return enclosingElement.characterLocation;
     }

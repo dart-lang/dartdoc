@@ -3394,7 +3394,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('has a line number and column', () {
       expect(appleDefaultConstructor.characterLocation, isNotNull);
       expect(appleConstructorFromString.characterLocation, isNotNull);
-      // The default constructor should reference the class for location.
+      // The default constructor should reference the class for location
+      // because it is synthetic.
       expect(appleDefaultConstructor.characterLocation.toString(),
           equals(apple.characterLocation.toString()));
       // Other constructors should not.
