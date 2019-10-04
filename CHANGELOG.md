@@ -1,3 +1,6 @@
+## 0.28.7
+* Remove obsolete references to Element.type and ElementHandle (#2028, #2031)
+
 ## 0.28.6
 * Support for 0.38.3 version of `package:analyzer`.
 * Support generating docs for extension methods (#2001).
