@@ -494,7 +494,7 @@ void main() {
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(7));
+          equals(8));
     });
 
     test('Verify libraries with multiple categories show up in multiple places',
@@ -518,7 +518,7 @@ void main() {
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(7));
+          equals(8));
     });
   });
 
@@ -588,7 +588,7 @@ void main() {
       });
 
       test('libraries', () {
-        expect(packageGraph.localPublicLibraries, hasLength(12));
+        expect(packageGraph.localPublicLibraries, hasLength(13));
         expect(interceptorsLib.isPublic, isFalse);
       });
 
@@ -603,7 +603,7 @@ void main() {
 
         Package package = packageGraph.localPackages.first;
         expect(package.name, 'test_package');
-        expect(package.publicLibraries, hasLength(12));
+        expect(package.publicLibraries, hasLength(13));
       });
 
       test('multiple packages, sorted default', () {
@@ -1904,7 +1904,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(30));
+      expect(classes, hasLength(31));
     });
 
     test('abstract', () {
@@ -3348,7 +3348,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Constructor appleDefaultConstructor, constCatConstructor;
     Constructor appleConstructorFromString;
     Constructor constructorTesterDefault, constructorTesterFromSomething;
-    Class apple, constCat, constructorTester, referToADefaultConstructor;
+    Constructor syntheticConstructor;
+    Class apple, constCat, constructorTester, referToADefaultConstructor,
+        withSyntheticConstructor;
     setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       constCat = exLibrary.classes.firstWhere((c) => c.name == 'ConstantCat');
@@ -3365,6 +3367,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'ConstructorTester.fromSomething');
       referToADefaultConstructor = fakeLibrary.classes
           .firstWhere((c) => c.name == 'ReferToADefaultConstructor');
+      withSyntheticConstructor = exLibrary.classes.firstWhere((c) => c.name == 'WithSyntheticConstructor');
+      syntheticConstructor = withSyntheticConstructor.defaultConstructor;
     });
 
     test('calculates comment references to classes vs. constructors correctly',
@@ -3393,14 +3397,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has a line number and column', () {
       expect(appleDefaultConstructor.characterLocation, isNotNull);
-      expect(appleConstructorFromString.characterLocation, isNotNull);
-      // The default constructor should reference the class for location
-      // because it is synthetic.
+      expect(syntheticConstructor.characterLocation, isNotNull);
+      // The default constructor should not reference the class for location
+      // because it is not synthetic.
       expect(appleDefaultConstructor.characterLocation.toString(),
-          equals(apple.characterLocation.toString()));
-      // Other constructors should not.
-      expect(appleConstructorFromString.characterLocation.toString(),
-          isNot(equals(appleDefaultConstructor.characterLocation.toString())));
+          isNot(equals(apple.characterLocation.toString())));
+      // A synthetic class should reference its parent.
+      expect(syntheticConstructor.characterLocation.toString(),
+          equals(withSyntheticConstructor.characterLocation.toString()));
     });
 
     test('has enclosing element', () {
