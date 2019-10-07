@@ -1,5 +1,6 @@
 ## 0.28.7
-* Remove obsolete references to Element.type and ElementHandle (#2028, #2031)
+* Remove obsolete references to Element.type and ElementHandle (#2028, #2031).
+* Fix problem with return values for typedefs with analyzer 0.38.5 (#2036).
 
 ## 0.28.6
 * Support for 0.38.3 version of `package:analyzer`.
