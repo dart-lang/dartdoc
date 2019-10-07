@@ -32,7 +32,6 @@ import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:analyzer/src/dart/analysis/file_state.dart';
 import 'package:analyzer/src/dart/analysis/performance_logger.dart';
 import 'package:analyzer/src/dart/element/element.dart';
-import 'package:analyzer/src/dart/element/handle.dart';
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
@@ -3181,11 +3180,6 @@ abstract class ModelElement extends Canonicalization
         e is TypeParameterElement ||
         e is GenericFunctionTypeElementImpl ||
         e.kind == ElementKind.DYNAMIC);
-    // With AnalysisDriver, we sometimes get ElementHandles when building
-    // docs for the SDK, seen via [Library.importedExportedLibraries].  Why?
-    if (e is ElementHandle) {
-      e = (e as ElementHandle).actualElement;
-    }
 
     Member originalMember;
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
