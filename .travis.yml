@@ -6,8 +6,7 @@ dart:
 env:
   - DARTDOC_BOT=main
   - DARTDOC_BOT=flutter
-  # Disable pending #2036
-  #- DARTDOC_BOT=sdk-analyzer
+  - DARTDOC_BOT=sdk-analyzer
   - DARTDOC_BOT=packages
   - DARTDOC_BOT=sdk-docs
 script: ./tool/travis.sh
