@@ -447,7 +447,7 @@ class CallableGenericTypeAliasElementType extends ParameterizedElementType
   ElementType get returnType {
     if (_returnType == null) {
       _returnType = ElementType.from(
-          returnElement.modelType.type, library, packageGraph, this);
+          type.returnType, library, packageGraph, this);
     }
     return _returnType;
   }
