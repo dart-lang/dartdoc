@@ -619,6 +619,9 @@ abstract class HtmlInjection {
   void injectHtmlFromTool();
 }
 
+/// Just a class with a synthetic constructor.
+class WithSyntheticConstructor {}
+
 /// Extension on a class defined in the package
 extension AnExtension<Q> on WithGeneric<Q> {
   int call(String s) => 0;

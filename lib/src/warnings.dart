@@ -208,6 +208,9 @@ abstract class Warnable implements Canonicalization {
 abstract class Locatable {
   List<Locatable> get documentationFrom;
 
+  /// True if documentationFrom contains only one item, [this].
+  bool get documentationIsLocal => documentationFrom.length == 1 && identical(documentationFrom.first, this);
+
   String get fullyQualifiedName;
 
   String get href;
