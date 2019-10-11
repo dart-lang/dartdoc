@@ -494,7 +494,7 @@ void main() {
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(7));
+          equals(8));
     });
 
     test('Verify libraries with multiple categories show up in multiple places',
@@ -518,7 +518,7 @@ void main() {
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(7));
+          equals(8));
     });
   });
 
@@ -588,7 +588,7 @@ void main() {
       });
 
       test('libraries', () {
-        expect(packageGraph.localPublicLibraries, hasLength(12));
+        expect(packageGraph.localPublicLibraries, hasLength(13));
         expect(interceptorsLib.isPublic, isFalse);
       });
 
@@ -603,7 +603,7 @@ void main() {
 
         Package package = packageGraph.localPackages.first;
         expect(package.name, 'test_package');
-        expect(package.publicLibraries, hasLength(12));
+        expect(package.publicLibraries, hasLength(13));
       });
 
       test('multiple packages, sorted default', () {
@@ -750,6 +750,10 @@ void main() {
 
     test('has a name', () {
       expect(exLibrary.name, 'ex');
+    });
+
+    test('has a line number and column', () {
+      expect(exLibrary.characterLocation, isNotNull);
     });
 
     test('packageName', () {
@@ -1734,6 +1738,10 @@ void main() {
           .firstWhere((f) => f.name == 'overrideByModifierClass');
     });
 
+    test('does have a line number and column', () {
+      expect(GenericMixin.characterLocation, isNotNull);
+    });
+
     test(('Verify mixin member is available in findRefElementCache'), () {
       expect(packageGraph.findRefElementCache['GenericMixin.mixinMember'],
           isNotEmpty);
@@ -1866,6 +1874,10 @@ void main() {
       expect(Apple.fullyQualifiedName, 'ex.Apple');
     });
 
+    test('does have a line number and column', () {
+      expect(Apple.characterLocation, isNotNull);
+    });
+
     test('we got the classes we expect', () {
       expect(Apple.name, equals('Apple'));
       expect(B.name, equals('B'));
@@ -1892,7 +1904,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(32));
+      expect(classes, hasLength(33));
     });
 
     test('abstract', () {
@@ -2137,6 +2149,10 @@ void main() {
       expect(ext.fullyQualifiedName, 'ex.AppleExtension');
     });
 
+    test('does have a line number and column', () {
+      expect(ext.characterLocation, isNotNull);
+    });
+
     test('has enclosing element', () {
       expect(ext.enclosingElement.name, equals(exLibrary.name));
     });
@@ -2195,9 +2211,11 @@ void main() {
 
   group('Enum', () {
     Enum animal;
+    Method animalToString;
 
     setUpAll(() {
       animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
+      animalToString = animal.allInstanceMethods.firstWhere((m) => m.name == 'toString');
 
       /// Trigger code reference resolution
       animal.documentationAsHtml;
@@ -2205,6 +2223,12 @@ void main() {
 
     test('has a fully qualified name', () {
       expect(animal.fullyQualifiedName, 'ex.Animal');
+    });
+
+    test('toString() method location is handled specially', () {
+      expect(animalToString.characterLocation, isNotNull);
+      expect(animalToString.characterLocation.toString(),
+          equals(animal.characterLocation.toString()));
     });
 
     test('has enclosing element', () {
@@ -2289,6 +2313,10 @@ void main() {
 
     test('has a fully qualified name', () {
       expect(thisIsAsync.fullyQualifiedName, 'fake.thisIsAsync');
+    });
+
+    test('does have a line number and column', () {
+      expect(thisIsAsync.characterLocation, isNotNull);
     });
 
     test('has enclosing element', () {
@@ -2576,6 +2604,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'getAFunctionReturningBool');
     });
 
+    test('does have a line number and column', () {
+      expect(abstractMethod.characterLocation, isNotNull);
+    });
+
     test('verify parameter types are correctly displayed', () {
       expect(
           getAFunctionReturningVoid.linkedReturnType,
@@ -2825,6 +2857,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'CovariantMemberParams')
           .allInstanceFields
           .firstWhere((f) => f.name == 'covariantSetter');
+    });
+
+    test('Fields always have line and column information', () {
+        expect(implicitGetterExplicitSetter.characterLocation, isNotNull);
+        expect(explicitGetterImplicitSetter.characterLocation, isNotNull);
+        expect(explicitGetterSetter.characterLocation, isNotNull);
+        expect(constField.characterLocation, isNotNull);
+        expect(aProperty.characterLocation, isNotNull);
     });
 
     test('covariant fields are recognized', () {
@@ -3330,7 +3370,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Constructor appleDefaultConstructor, constCatConstructor;
     Constructor appleConstructorFromString;
     Constructor constructorTesterDefault, constructorTesterFromSomething;
-    Class apple, constCat, constructorTester, referToADefaultConstructor;
+    Constructor syntheticConstructor;
+    Class apple, constCat, constructorTester, referToADefaultConstructor,
+        withSyntheticConstructor;
     setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       constCat = exLibrary.classes.firstWhere((c) => c.name == 'ConstantCat');
@@ -3347,6 +3389,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'ConstructorTester.fromSomething');
       referToADefaultConstructor = fakeLibrary.classes
           .firstWhere((c) => c.name == 'ReferToADefaultConstructor');
+      withSyntheticConstructor = exLibrary.classes.firstWhere((c) => c.name == 'WithSyntheticConstructor');
+      syntheticConstructor = withSyntheticConstructor.defaultConstructor;
     });
 
     test('calculates comment references to classes vs. constructors correctly',
@@ -3371,6 +3415,18 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('has a fully qualified name', () {
       expect(
           appleConstructorFromString.fullyQualifiedName, 'ex.Apple.fromString');
+    });
+
+    test('has a line number and column', () {
+      expect(appleDefaultConstructor.characterLocation, isNotNull);
+      expect(syntheticConstructor.characterLocation, isNotNull);
+      // The default constructor should not reference the class for location
+      // because it is not synthetic.
+      expect(appleDefaultConstructor.characterLocation.toString(),
+          isNot(equals(apple.characterLocation.toString())));
+      // A synthetic class should reference its parent.
+      expect(syntheticConstructor.characterLocation.toString(),
+          equals(withSyntheticConstructor.characterLocation.toString()));
     });
 
     test('has enclosing element', () {

@@ -56,7 +56,7 @@ void main() {
       expect(outputLines, contains(matches('^  warning:')));
       expect(outputLines.last, matches(r'^found \d+ warnings and \d+ errors'));
       expect(outputDir.listSync(), isEmpty);
-    });
+    }, timeout: Timeout.factor(2));
 
     test('running --quiet is quiet and does generate docs', () async {
       Directory outputDir =
