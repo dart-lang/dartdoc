@@ -139,6 +139,19 @@ final categoryRegexp = RegExp(
 final macroRegExp = RegExp(r'{@macro\s+([^}]+)}');
 
 /// Mixin for subclasses of ModelElement representing Elements that can be
+/// 
+mixin Extendable on ModelElement {
+  ModelElement get definingEnclosingElement {
+    if (_definingEnclosingContainer == null) {
+      _definingEnclosingContainer =
+          ModelElement.fromElement(element.enclosingElement, packageGraph);
+    }
+    return _definingEnclosingContainer;
+  }
+}
+
+
+/// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
 ///
 /// Inheritable adds yet another view to help canonicalization for member
@@ -159,14 +172,14 @@ abstract class Inheritable implements ModelElement {
 
   bool _canonicalEnclosingClassIsSet = false;
   Container _canonicalEnclosingClass;
-  Container _definingEnclosingClass;
+  Container _definingEnclosingContainer;
 
   ModelElement get definingEnclosingElement {
-    if (_definingEnclosingClass == null) {
-      _definingEnclosingClass =
+    if (_definingEnclosingContainer == null) {
+      _definingEnclosingContainer =
           ModelElement.fromElement(element.enclosingElement, packageGraph);
     }
-    return _definingEnclosingClass;
+    return _definingEnclosingContainer;
   }
 
   @override
