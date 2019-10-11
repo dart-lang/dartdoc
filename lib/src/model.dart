@@ -3809,8 +3809,8 @@ abstract class ModelElement extends Canonicalization
     if (!_characterLocationIsSet) {
       LineInfo lineInfo = compilationUnitElement.lineInfo;
       _characterLocationIsSet = true;
-      assert(element.nameOffset >= 0, 'Invalid location data for element: ${fullyQualifiedName}');
-      assert(lineInfo != null, 'No lineInfo data available for element: ${fullyQualifiedName}');
+      assert(element.nameOffset >= 0, 'Invalid location data for element: $fullyQualifiedName');
+      assert(lineInfo != null, 'No lineInfo data available for element: $fullyQualifiedName');
       if (element.nameOffset >= 0) {
         _characterLocation = lineInfo?.getLocation(element.nameOffset);
       }
@@ -5319,14 +5319,14 @@ class PackageGraph {
     List<String> messageParts = [warningMessage];
     if (warnable != null) {
       messageParts
-          .add("${warnablePrefix} ${warnableName}: ${warnable.location}");
+          .add("$warnablePrefix $warnableName: $warnable.location");
     }
     if (referredFrom != null) {
       for (Locatable referral in referredFrom) {
         if (referral != warnable) {
           var referredFromStrings = _safeWarnableName(referral);
           messageParts.add(
-              "${referredFromPrefix} ${referredFromStrings}: ${referral.location}");
+              "$referredFromPrefix $referredFromStrings: ${referral.location}");
         }
       }
     }
