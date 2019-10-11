@@ -1892,7 +1892,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(30));
+      expect(classes, hasLength(31));
     });
 
     test('abstract', () {
@@ -2101,14 +2101,23 @@ void main() {
   });
 
   group('Extension', () {
-    Extension ext, fancyList;
-    Method s;
+    Extension ext, fancyList, simpleStringExtension;
+    Method doSomeStuff, doStuff, s;
     List<Extension> extensions;
 
     setUpAll(() {
       ext = exLibrary.extensions.firstWhere((e) => e.name == 'AppleExtension');
       fancyList = exLibrary.extensions.firstWhere((e) => e.name == 'FancyList');
+      doSomeStuff = exLibrary.classes.firstWhere((c) => c.name == 'ExtensionUser')
+          .allInstanceMethods.firstWhere((m) => m.name == 'doSomeStuff');
+      doStuff = exLibrary.extensions.firstWhere((e) => e.name == 'SimpleStringExtension')
+          .instanceMethods.firstWhere((m) => m.name == 'doStuff');
       extensions = exLibrary.publicExtensions.toList();
+    });
+
+    test('documentation links correctly in base cases', () {
+      expect(doStuff.documentationAsHtml, contains('hello world'));
+      expect(doSomeStuff.documentationAsHtml, contains('hello world'));
     });
 
     test('has a fully qualified name', () {
@@ -2163,11 +2172,11 @@ void main() {
     });
 
     test('correctly finds all the extensions', () {
-      expect(exLibrary.extensions, hasLength(7));
+      expect(exLibrary.extensions, hasLength(8));
     });
 
     test('correctly finds all the public extensions', () {
-      expect(extensions, hasLength(5));
+      expect(extensions, hasLength(6));
     });
   });
 

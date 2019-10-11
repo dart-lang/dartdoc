@@ -69,7 +69,7 @@ void main() {
       expect(outputLines, contains(matches('^  warning:')));
       expect(outputLines.last, matches(r'^found \d+ warnings and \d+ errors'));
       expect(outputDir.listSync(), isNotEmpty);
-    }, timeout: new Timeout.factor(2));
+    }, timeout: Timeout.factor(2));
 
     test('invalid parameters return non-zero and print a fatal-error',
         () async {
