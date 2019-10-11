@@ -1892,7 +1892,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(31));
+      expect(classes, hasLength(32));
     });
 
     test('abstract', () {
@@ -2101,12 +2101,14 @@ void main() {
   });
 
   group('Extension', () {
-    Extension ext, fancyList, simpleStringExtension;
+    Extension ext, fancyList;
+    Class extensionReferencer;
     Method doSomeStuff, doStuff, s;
     List<Extension> extensions;
 
     setUpAll(() {
       ext = exLibrary.extensions.firstWhere((e) => e.name == 'AppleExtension');
+      extensionReferencer = exLibrary.classes.firstWhere((c) => c.name == 'ExtensionReferencer');
       fancyList = exLibrary.extensions.firstWhere((e) => e.name == 'FancyList');
       doSomeStuff = exLibrary.classes.firstWhere((c) => c.name == 'ExtensionUser')
           .allInstanceMethods.firstWhere((m) => m.name == 'doSomeStuff');
@@ -2115,9 +2117,20 @@ void main() {
       extensions = exLibrary.publicExtensions.toList();
     });
 
-    test('documentation links correctly in base cases', () {
-      expect(doStuff.documentationAsHtml, contains('hello world'));
-      expect(doSomeStuff.documentationAsHtml, contains('hello world'));
+    // TODO(jcollins-g): implement feature and update tests
+    test('documentation links do not crash in base cases', () {
+      packageGraph.packageWarningCounter.hasWarning(doStuff, PackageWarning.notImplemented,
+          'Comment reference resolution inside extension methods is not yet implemented');
+      packageGraph.packageWarningCounter.hasWarning(doSomeStuff, PackageWarning.notImplemented,
+          'Comment reference resolution inside extension methods is not yet implemented');
+      expect(doStuff.documentationAsHtml, contains('<code>another</code>'));
+      expect(doSomeStuff.documentationAsHtml, contains('<code>String.extensionNumber</code>'));
+    });
+
+    test('references from outside an extension refer correctly to the extension', () {
+      expect(extensionReferencer.documentationAsHtml, contains('<code>_Shhh</code>'));
+      expect(extensionReferencer.documentationAsHtml, contains('<a href="ex/FancyList.html">FancyList</a>'));
+      expect(extensionReferencer.documentationAsHtml, contains('<a href="ex/AnExtension/call.html">AnExtension.call</a>'));
     });
 
     test('has a fully qualified name', () {

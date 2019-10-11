@@ -626,13 +626,6 @@ extension AnExtension<Q> on WithGeneric<Q> {
 
 extension SimpleStringExtension on String {
   /// Print this and [another].
-  void doStuff(String another) {
-    print(this + another);
-  }
-}
-
-extension SimpleStringExtension on String {
-  /// Print this and [another].
   /// Refer to [indexOf], from [String].
   /// Also refer to [extensionNumber].
   void doStuff(String another) {
@@ -677,3 +670,8 @@ extension _Shhh on Object {
 extension on Object {
   void bar() { }
 }
+
+
+/// This class has nothing to do with [_Shhh], [FancyList], or [AnExtension.call],
+/// but should not crash because we referenced them.
+class ExtensionReferencer {}

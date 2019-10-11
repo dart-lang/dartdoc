@@ -5222,6 +5222,9 @@ class PackageGraph {
         warningMessage =
             "private API of ${message} is reexported by libraries in other packages: ";
         break;
+      case PackageWarning.notImplemented:
+        warningMessage = message;
+        break;
       case PackageWarning.unresolvedDocReference:
         warningMessage = "unresolved doc reference [${message}]";
         if (referredFrom == null) {

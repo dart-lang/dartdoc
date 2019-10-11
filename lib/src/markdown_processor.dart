@@ -205,9 +205,13 @@ MatchingLinkResult _getMatchingLinkElement(
   // Try expensive not-scoped lookup.
   if (refModelElement == null && element is ModelElement) {
     Container preferredClass = _getPreferredClass(element);
-    refModelElement =
-        _MarkdownCommentReference(codeRef, element, commentRefs, preferredClass)
-            .computeReferredElement();
+    if (preferredClass is Extension) {
+      element.warn(PackageWarning.notImplemented, message: 'Comment reference resolution inside extension methods is not yet implemented');
+    } else {
+      refModelElement =
+          _MarkdownCommentReference(codeRef, element, commentRefs, preferredClass)
+              .computeReferredElement();
+    }
   }
 
   // Did not find it anywhere.
