@@ -229,7 +229,7 @@ void main() {
 
       File outFile = File(path.join(tempDir.path, 'index.html'));
       expect(outFile.readAsStringSync(), contains('footer text include'));
-    });
+    }, timeout: Timeout.factor(2));
 
     test('--footer-text excludes version', () async {
       String _testPackagePath =
