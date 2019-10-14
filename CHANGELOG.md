@@ -1,3 +1,7 @@
+## 0.28.8
+* Use analyzer line number library, fixing crash on empty file (#2034, #1938).
+* Fix crash on resolving comment references inside extension methods (#2040, #2033).
+
 ## 0.28.7
 * Remove obsolete references to Element.type and ElementHandle (#2028, #2031).
 * Fix problem with return values for typedefs with analyzer 0.38.5 (#2036).
