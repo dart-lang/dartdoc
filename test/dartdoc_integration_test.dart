@@ -69,7 +69,7 @@ void main() {
       expect(outputLines, contains(matches('^  warning:')));
       expect(outputLines.last, matches(r'^found \d+ warnings and \d+ errors'));
       expect(outputDir.listSync(), isNotEmpty);
-    }, timeout: new Timeout.factor(2));
+    }, timeout: Timeout.factor(2));
 
     test('invalid parameters return non-zero and print a fatal-error',
         () async {
@@ -229,7 +229,7 @@ void main() {
 
       File outFile = File(path.join(tempDir.path, 'index.html'));
       expect(outFile.readAsStringSync(), contains('footer text include'));
-    });
+    }, timeout: Timeout.factor(2));
 
     test('--footer-text excludes version', () async {
       String _testPackagePath =

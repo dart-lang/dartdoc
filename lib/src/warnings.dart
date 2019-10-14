@@ -135,6 +135,10 @@ final Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       PackageWarning.noCanonicalFound,
       "no-canonical-found",
       "A symbol is part of the public interface for this package, but no library documented with this package documents it so dartdoc can not link to it"),
+  PackageWarning.notImplemented: PackageWarningDefinition(
+      PackageWarning.notImplemented,
+      "not-implemented",
+      "The code makes use of a feature that is not yet implemented in dartdoc"),
   PackageWarning.noLibraryLevelDocs: PackageWarningDefinition(
       PackageWarning.noLibraryLevelDocs,
       "no-library-level-docs",
@@ -226,6 +230,7 @@ enum PackageWarning {
   ambiguousReexport,
   ignoredCanonicalFor,
   noCanonicalFound,
+  notImplemented,
   noLibraryLevelDocs,
   packageOrderGivesMissingPackageName,
   reexportedPrivateApiAcrossPackages,
