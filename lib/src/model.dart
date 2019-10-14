@@ -139,14 +139,22 @@ final categoryRegexp = RegExp(
 final macroRegExp = RegExp(r'{@macro\s+([^}]+)}');
 
 /// Mixin for subclasses of ModelElement representing Elements that can be
-/// 
+/// extension methods.
 mixin Extendable on ModelElement {
-  ModelElement get definingEnclosingElement {
-    if (_definingEnclosingContainer == null) {
-      _definingEnclosingContainer =
+  // Returns true if this element is
+  bool get isExtension => enclosingElement is! Extension && element.enclosingElement is ExtensionElement;
+
+  Extendable _declaringExtension;
+  /// Returns this Extendable from the declared Extension.
+  Extendable get declaringExtension {
+    if (_declaringExtension == null) {
+      Extension definingEnclosingContainer =
           ModelElement.fromElement(element.enclosingElement, packageGraph);
+      // FIXME(jcollins-g): ridiculously slow, just to get things working
+      _declaringExtension = definingEnclosingContainer.allModelElements.whereType<Extendable>().where((m) => m.element == element).first;
+      assert(_declaringExtension.isExtension == false);
     }
-    return _definingEnclosingContainer;
+    return _declaringExtension;
   }
 }
 
@@ -5335,7 +5343,7 @@ class PackageGraph {
     List<String> messageParts = [warningMessage];
     if (warnable != null) {
       messageParts
-          .add("$warnablePrefix $warnableName: $warnable.location");
+          .add("$warnablePrefix $warnableName: ${warnable.location}");
     }
     if (referredFrom != null) {
       for (Locatable referral in referredFrom) {
