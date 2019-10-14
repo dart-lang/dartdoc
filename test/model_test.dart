@@ -1904,7 +1904,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(31));
+      expect(classes, hasLength(33));
     });
 
     test('abstract', () {
@@ -2114,13 +2114,35 @@ void main() {
 
   group('Extension', () {
     Extension ext, fancyList;
-    Method s;
+    Class extensionReferencer;
+    Method doSomeStuff, doStuff, s;
     List<Extension> extensions;
 
     setUpAll(() {
       ext = exLibrary.extensions.firstWhere((e) => e.name == 'AppleExtension');
+      extensionReferencer = exLibrary.classes.firstWhere((c) => c.name == 'ExtensionReferencer');
       fancyList = exLibrary.extensions.firstWhere((e) => e.name == 'FancyList');
+      doSomeStuff = exLibrary.classes.firstWhere((c) => c.name == 'ExtensionUser')
+          .allInstanceMethods.firstWhere((m) => m.name == 'doSomeStuff');
+      doStuff = exLibrary.extensions.firstWhere((e) => e.name == 'SimpleStringExtension')
+          .instanceMethods.firstWhere((m) => m.name == 'doStuff');
       extensions = exLibrary.publicExtensions.toList();
+    });
+
+    // TODO(jcollins-g): implement feature and update tests
+    test('documentation links do not crash in base cases', () {
+      packageGraph.packageWarningCounter.hasWarning(doStuff, PackageWarning.notImplemented,
+          'Comment reference resolution inside extension methods is not yet implemented');
+      packageGraph.packageWarningCounter.hasWarning(doSomeStuff, PackageWarning.notImplemented,
+          'Comment reference resolution inside extension methods is not yet implemented');
+      expect(doStuff.documentationAsHtml, contains('<code>another</code>'));
+      expect(doSomeStuff.documentationAsHtml, contains('<code>String.extensionNumber</code>'));
+    });
+
+    test('references from outside an extension refer correctly to the extension', () {
+      expect(extensionReferencer.documentationAsHtml, contains('<code>_Shhh</code>'));
+      expect(extensionReferencer.documentationAsHtml, contains('<a href="ex/FancyList.html">FancyList</a>'));
+      expect(extensionReferencer.documentationAsHtml, contains('<a href="ex/AnExtension/call.html">AnExtension.call</a>'));
     });
 
     test('has a fully qualified name', () {
@@ -2179,11 +2201,11 @@ void main() {
     });
 
     test('correctly finds all the extensions', () {
-      expect(exLibrary.extensions, hasLength(7));
+      expect(exLibrary.extensions, hasLength(8));
     });
 
     test('correctly finds all the public extensions', () {
-      expect(extensions, hasLength(5));
+      expect(extensions, hasLength(6));
     });
   });
 
