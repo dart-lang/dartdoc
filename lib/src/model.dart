@@ -25,6 +25,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/file_system/file_system.dart' as file_system;
 import 'package:analyzer/file_system/physical_file_system.dart';
+import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/context/builder.dart';
 import 'package:analyzer/src/dart/analysis/byte_store.dart';
 import 'package:analyzer/src/dart/analysis/driver.dart';
@@ -50,7 +51,6 @@ import 'package:crypto/crypto.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/io_utils.dart';
-import 'package:dartdoc/src/line_number_cache.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
 import 'package:dartdoc/src/model_utils.dart' as utils;
@@ -1404,6 +1404,17 @@ class Constructor extends ModelElement
       : super(element, library, packageGraph, null);
 
   @override
+  CharacterLocation get characterLocation {
+    if (element.isSynthetic) {
+      // Make warnings for a synthetic constructor refer to somewhere reasonable
+      // since a synthetic constructor has no definition independent of the
+      // parent class.
+      return enclosingElement.characterLocation;
+    }
+    return super.characterLocation;
+  }
+
+  @override
   // TODO(jcollins-g): Revisit this when dart-lang/sdk#31517 is implemented.
   List<TypeParameter> get typeParameters =>
       (enclosingElement as Class).typeParameters;
@@ -2070,7 +2081,7 @@ class Field extends ModelElement
 }
 
 /// Mixin for top-level variables and fields (aka properties)
-abstract class GetterSetterCombo implements ModelElement {
+mixin GetterSetterCombo on ModelElement {
   Accessor get getter;
 
   Iterable<Accessor> get allAccessors sync* {
@@ -2125,6 +2136,20 @@ abstract class GetterSetterCombo implements ModelElement {
   String _buildConstantValueBase() {
     String result = constantInitializer?.toString() ?? '';
     return const HtmlEscape(HtmlEscapeMode.unknown).convert(result);
+  }
+
+  @override
+  CharacterLocation get characterLocation {
+    // Handle all synthetic possibilities.  Ordinarily, warnings for
+    // explicit setters/getters will be handled by those objects, but
+    // if a warning comes up for an enclosing synthetic field we have to
+    // put it somewhere.  So pick an accessor.
+    if (element.isSynthetic) {
+      if (hasExplicitGetter) return getter.characterLocation;
+      if (hasExplicitSetter) return setter.characterLocation;
+      assert(false, 'Field and accessors can not all be synthetic');
+    }
+    return super.characterLocation;
   }
 
   String get constantValue => linkifyConstantValue(constantValueBase);
@@ -2379,6 +2404,18 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   List<Class> get allClasses => _allClasses;
+
+  @override
+  CharacterLocation get characterLocation {
+    if (element.nameOffset == -1) {
+      assert(isAnonymous, 'Only anonymous libraries are allowed to have no declared location');
+      return CharacterLocation(1, 1);
+    }
+    return super.characterLocation;
+  }
+
+  @override
+  CompilationUnitElement get compilationUnitElement => (element as LibraryElement).definingCompilationUnit;
 
   @override
   Iterable<Class> get classes {
@@ -2931,6 +2968,19 @@ class Method extends ModelElement
   }
 
   @override
+  CharacterLocation get characterLocation {
+    if (enclosingElement is Enum && name == 'toString') {
+      // The toString() method on Enums is special, treated as not having
+      // a definition location by the analyzer yet not being inherited, either.
+      // Just directly override our location with the Enum definition --
+      // this is OK because Enums can not inherit from each other nor
+      // have their definitions split between files.
+      return enclosingElement.characterLocation;
+    }
+    return super.characterLocation;
+  }
+
+  @override
   ModelElement get enclosingElement {
     if (_enclosingClass == null) {
       _enclosingClass =
@@ -3091,7 +3141,7 @@ abstract class Privacy {
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
 abstract class ModelElement extends Canonicalization
-    with Privacy, Warnable, Nameable, SourceCodeMixin, Indexable
+    with Privacy, Warnable, Locatable, Nameable, SourceCodeMixin, Indexable
     implements Comparable, Documentable {
   final Element _element;
 
@@ -3728,8 +3778,8 @@ abstract class ModelElement extends Canonicalization
   @override
   String get location {
     // Call nothing from here that can emit warnings or you'll cause stack overflows.
-    if (lineAndColumn != null) {
-      return "(${path.toUri(sourceFileName)}:${lineAndColumn.item1}:${lineAndColumn.item2})";
+    if (characterLocation != null) {
+      return "(${path.toUri(sourceFileName)}:${characterLocation.toString()})";
     }
     return "(${path.toUri(sourceFileName)})";
   }
@@ -3764,18 +3814,24 @@ abstract class ModelElement extends Canonicalization
 
   String get sourceFileName => element.source.fullName;
 
-  Tuple2<int, int> _lineAndColumn;
-  bool _isLineNumberComputed = false;
+  CharacterLocation _characterLocation;
+  bool _characterLocationIsSet = false;
 
   @override
-  Tuple2<int, int> get lineAndColumn {
-    // TODO(jcollins-g): implement lineAndColumn for explicit fields
-    if (!_isLineNumberComputed) {
-      _lineAndColumn = lineNumberCache.lineAndColumn(
-          element.source.fullName, element.nameOffset);
+  CharacterLocation get characterLocation {
+    if (!_characterLocationIsSet) {
+      LineInfo lineInfo = compilationUnitElement.lineInfo;
+      _characterLocationIsSet = true;
+      assert(element.nameOffset >= 0, 'Invalid location data for element: $fullyQualifiedName');
+      assert(lineInfo != null, 'No lineInfo data available for element: $fullyQualifiedName');
+      if (element.nameOffset >= 0) {
+        _characterLocation = lineInfo?.getLocation(element.nameOffset);
+      }
     }
-    return _lineAndColumn;
+    return _characterLocation;
   }
+
+  CompilationUnitElement get compilationUnitElement => element.getAncestor((e) => e is CompilationUnitElement);
 
   bool get hasAnnotations => annotations.isNotEmpty;
 
@@ -4204,8 +4260,8 @@ abstract class ModelElement extends Canonicalization
                 warn(PackageWarning.toolError, message: message),
             content: basicMatch[2],
             environment: {
-              'SOURCE_LINE': lineAndColumn?.item1?.toString(),
-              'SOURCE_COLUMN': lineAndColumn?.item2?.toString(),
+              'SOURCE_LINE': characterLocation?.lineNumber.toString(),
+              'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
               'SOURCE_PATH': (sourceFileName == null ||
                       package?.packagePath == null)
                   ? null
@@ -5166,13 +5222,6 @@ class PackageGraph {
           warnable = warnable.enclosingElement;
         }
       }
-      if (warnable is Accessor) {
-        // This might be part of a Field, if so, assign this warning to the field
-        // rather than the Accessor.
-        if ((warnable as Accessor).enclosingCombo != null) {
-          warnable = (warnable as Accessor).enclosingCombo;
-        }
-      }
     } else {
       // If we don't have an element, we need a message to disambiguate.
       assert(message != null);
@@ -5240,9 +5289,6 @@ class PackageGraph {
         break;
       case PackageWarning.unresolvedDocReference:
         warningMessage = "unresolved doc reference [${message}]";
-        if (referredFrom == null) {
-          referredFrom = warnable.documentationFrom;
-        }
         referredFromPrefix = 'in documentation inherited from';
         break;
       case PackageWarning.unknownMacro:
@@ -5289,14 +5335,14 @@ class PackageGraph {
     List<String> messageParts = [warningMessage];
     if (warnable != null) {
       messageParts
-          .add("${warnablePrefix} ${warnableName}: ${warnable.location ?? ''}");
+          .add("$warnablePrefix $warnableName: $warnable.location");
     }
     if (referredFrom != null) {
       for (Locatable referral in referredFrom) {
         if (referral != warnable) {
           var referredFromStrings = _safeWarnableName(referral);
           messageParts.add(
-              "${referredFromPrefix} ${referredFromStrings}: ${referral.location ?? ''}");
+              "$referredFromPrefix $referredFromStrings: ${referral.location}");
         }
       }
     }
@@ -5973,6 +6019,7 @@ abstract class MarkdownFileDocumentation
 class Category extends Nameable
     with
         Warnable,
+        Locatable,
         Canonicalization,
         MarkdownFileDocumentation,
         LibraryContainer,
@@ -6526,7 +6573,7 @@ class Parameter extends ModelElement implements EnclosedElement {
 abstract class SourceCodeMixin implements Documentable {
   ModelNode get modelNode;
 
-  Tuple2<int, int> get lineAndColumn;
+  CharacterLocation get characterLocation;
 
   Element get element;
 

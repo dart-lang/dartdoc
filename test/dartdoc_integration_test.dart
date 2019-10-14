@@ -56,7 +56,7 @@ void main() {
       expect(outputLines, contains(matches('^  warning:')));
       expect(outputLines.last, matches(r'^found \d+ warnings and \d+ errors'));
       expect(outputDir.listSync(), isEmpty);
-    });
+    }, timeout: Timeout.factor(2));
 
     test('running --quiet is quiet and does generate docs', () async {
       Directory outputDir =
@@ -229,7 +229,7 @@ void main() {
 
       File outFile = File(path.join(tempDir.path, 'index.html'));
       expect(outFile.readAsStringSync(), contains('footer text include'));
-    });
+    }, timeout: Timeout.factor(2));
 
     test('--footer-text excludes version', () async {
       String _testPackagePath =
