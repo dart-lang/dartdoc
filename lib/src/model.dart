@@ -5322,7 +5322,7 @@ class PackageGraph {
     List<String> messageParts = [warningMessage];
     if (warnable != null) {
       messageParts
-          .add("$warnablePrefix $warnableName: $warnable.location");
+          .add("$warnablePrefix $warnableName: ${warnable.location}");
     }
     if (referredFrom != null) {
       for (Locatable referral in referredFrom) {
