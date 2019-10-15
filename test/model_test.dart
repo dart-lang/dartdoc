@@ -175,7 +175,7 @@ void main() {
       invokeToolPrivateLibrary = PrivateLibraryToolUser.allInstanceMethods
           .firstWhere((m) => m.name == 'invokeToolPrivateLibrary');
       invokeToolPrivateLibraryOriginal =
-          (invokeToolPrivateLibrary.definingEnclosingElement as Class)
+          (invokeToolPrivateLibrary.definingEnclosingContainer as Class)
               .allInstanceMethods
               .firstWhere((m) => m.name == 'invokeToolPrivateLibrary');
       invokeToolParentDoc = CanonicalPrivateInheritedToolUser.allInstanceMethods
@@ -696,7 +696,7 @@ void main() {
         // If EventTarget really does start implementing hashCode, this will
         // fail.
         expect(hashCode.href, equals('dart-core/Object/hashCode.html'));
-        expect(hashCode.canonicalEnclosingElement, equals(objectModelElement));
+        expect(hashCode.canonicalEnclosingContainer, equals(objectModelElement));
         expect(
             EventTarget.publicSuperChainReversed
                 .any((et) => et.name == 'Interceptor'),
@@ -1777,18 +1777,18 @@ void main() {
           .firstWhere((f) => f.name == 'modifierMember');
       final Field mixinMember = TypeInferenceMixedIn.allInstanceFields
           .firstWhere((f) => f.name == 'mixinMember');
-      expect(member.canonicalEnclosingElement, equals(GenericClass));
-      expect(modifierMember.canonicalEnclosingElement, equals(ModifierClass));
-      expect(mixinMember.canonicalEnclosingElement, equals(GenericMixin));
+      expect(member.canonicalEnclosingContainer, equals(GenericClass));
+      expect(modifierMember.canonicalEnclosingContainer, equals(ModifierClass));
+      expect(mixinMember.canonicalEnclosingContainer, equals(GenericMixin));
     });
 
     test(('Verify overrides & documentation inheritance work as intended'), () {
-      expect(overrideByEverything.canonicalEnclosingElement,
+      expect(overrideByEverything.canonicalEnclosingContainer,
           equals(TypeInferenceMixedIn));
-      expect(overrideByGenericMixin.canonicalEnclosingElement,
+      expect(overrideByGenericMixin.canonicalEnclosingContainer,
           equals(GenericMixin));
-      expect(overrideByBoth.canonicalEnclosingElement, equals(GenericMixin));
-      expect(overrideByModifierClass.canonicalEnclosingElement,
+      expect(overrideByBoth.canonicalEnclosingContainer, equals(GenericMixin));
+      expect(overrideByModifierClass.canonicalEnclosingContainer,
           equals(ModifierClass));
       expect(
           overrideByEverything.documentationFrom.first,

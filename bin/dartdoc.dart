@@ -37,7 +37,7 @@ Future<List<DartdocOption>> createDartdocProgramOptions() async {
     DartdocOptionArgOnly<bool>('help', false,
         abbr: 'h', help: 'Show command help.', negatable: false),
     DartdocOptionArgOnly<bool>('version', false,
-        help: 'Display the version for $name.', negatable: false),
+        help: 'Display the version for $programName.', negatable: false),
   ];
 }
 

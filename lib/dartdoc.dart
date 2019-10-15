@@ -32,7 +32,7 @@ export 'package:dartdoc/src/generator.dart';
 export 'package:dartdoc/src/model.dart';
 export 'package:dartdoc/src/package_meta.dart';
 
-const String name = 'dartdoc';
+const String programName = 'dartdoc';
 // Update when pubspec version changes by running `pub run build_runner build`
 const String dartdocVersion = packageVersion;
 

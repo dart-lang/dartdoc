@@ -48,6 +48,7 @@ import 'package:analyzer/src/source/sdk_ext.dart';
 import 'package:args/args.dart';
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
+import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/io_utils.dart';
@@ -141,8 +142,7 @@ final macroRegExp = RegExp(r'{@macro\s+([^}]+)}');
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// extension methods.
 mixin Extendable on ModelElement {
-  // Returns true if this element is
-  bool get isExtension => enclosingElement is! Extension && element.enclosingElement is ExtensionElement;
+  bool get isExtension;
 
   Extendable _declaringExtension;
   /// Returns this Extendable from the declared Extension.
@@ -158,14 +158,33 @@ mixin Extendable on ModelElement {
   }
 }
 
+/// A [ModelElement] that is a [Container] member.
+abstract class MemberElement extends ModelElement {
+  MemberElement(Element element, Library library, PackageGraph packageGraph, Member originalMember) : super(element, library, packageGraph, originalMember);
+
+  bool get isInherited => false;
+  bool get isOverride => false;
+  bool get isCovariant => false;
+  bool get isExtension => false;
+
+  @override
+  Set<String> get features {
+    Set<String> _features = _baseFeatures();
+    if (isOverride) _features.add('override');
+    if (isInherited) _features.add('inherited');
+    if (isCovariant) _features.add('covariant');
+    if (isExtension) _features.add('extension');
+    return _features;
+  }
+}
 
 /// Mixin for subclasses of ModelElement representing Elements that can be
 /// inherited from one class to another.
 ///
 /// Inheritable adds yet another view to help canonicalization for member
-/// [ModelElement]s -- [Inheritable.definingEnclosingElement].  With this
+/// [ModelElement]s -- [Inheritable.definingEnclosingContainer].  With this
 /// as an end point, we can search the inheritance chain between this instance and
-/// the [Inheritable.definingEnclosingElement] in [Inheritable.canonicalEnclosingElement],
+/// the [Inheritable.definingEnclosingContainer] in [Inheritable.canonicalEnclosingContainer],
 /// for the canonical [Class] closest to where this member was defined.  We
 /// can then know that when we find [Inheritable.element] inside that [Class]'s
 /// namespace, that's the one we should treat as canonical and implementors
@@ -175,14 +194,14 @@ mixin Extendable on ModelElement {
 /// children of that class inheriting the same member will point to the same
 /// place in the documentation, and we pick a canonical class because that's
 /// the one in the public namespace that will be documented.
-abstract class Inheritable implements ModelElement {
-  bool get isInherited;
+mixin Inheritable on ModelElement {
+  bool get isInherited => throw UnimplementedError;
 
   bool _canonicalEnclosingClassIsSet = false;
   Container _canonicalEnclosingClass;
   Container _definingEnclosingContainer;
 
-  ModelElement get definingEnclosingElement {
+  Container get definingEnclosingContainer {
     if (_definingEnclosingContainer == null) {
       _definingEnclosingContainer =
           ModelElement.fromElement(element.enclosingElement, packageGraph);
@@ -192,11 +211,11 @@ abstract class Inheritable implements ModelElement {
 
   @override
   ModelElement _buildCanonicalModelElement() {
-    if (canonicalEnclosingElement is Extension) {
+    if (canonicalEnclosingContainer is Extension) {
       return this;
     }
-    if (canonicalEnclosingElement is Class) {
-      return (canonicalEnclosingElement as Class)
+    if (canonicalEnclosingContainer is Class) {
+      return (canonicalEnclosingContainer as Class)
           ?.allCanonicalModelElements
           ?.firstWhere(
               (m) =>
@@ -206,7 +225,7 @@ abstract class Inheritable implements ModelElement {
     return null;
   }
 
-  Container get canonicalEnclosingElement {
+  Container get canonicalEnclosingContainer {
     Element searchElement = element;
     if (!_canonicalEnclosingClassIsSet) {
       if (isInherited) {
@@ -221,11 +240,11 @@ abstract class Inheritable implements ModelElement {
           // Filter out mixins.
           if (c.contains(searchElement)) {
             if ((packageGraph.inheritThrough.contains(previous) &&
-                    c != definingEnclosingElement) ||
+                    c != definingEnclosingContainer) ||
                 (packageGraph.inheritThrough.contains(c) &&
-                    c == definingEnclosingElement)) {
+                    c == definingEnclosingContainer)) {
               return (previousNonSkippable.memberByExample(this) as Inheritable)
-                  .canonicalEnclosingElement;
+                  .canonicalEnclosingContainer;
             }
             Class canonicalC =
                 packageGraph.findCanonicalModelElementFor(c.element);
@@ -245,9 +264,9 @@ abstract class Inheritable implements ModelElement {
         }
         // This is still OK because we're never supposed to cloak public
         // classes.
-        if (definingEnclosingElement.isCanonical &&
-            definingEnclosingElement.isPublic) {
-          assert(definingEnclosingElement == _canonicalEnclosingClass);
+        if (definingEnclosingContainer.isCanonical &&
+            definingEnclosingContainer.isPublic) {
+          assert(definingEnclosingContainer == _canonicalEnclosingClass);
         }
       } else if (enclosingElement is! Extension ||
           (enclosingElement is Extension && enclosingElement.isDocumented)) {
@@ -263,24 +282,15 @@ abstract class Inheritable implements ModelElement {
     return _canonicalEnclosingClass;
   }
 
-  @override
-  Set<String> get features {
-    Set<String> _features = _baseFeatures();
-    if (isOverride) _features.add('override');
-    if (isInherited) _features.add('inherited');
-    if (isCovariant) _features.add('covariant');
-    return _features;
-  }
-
-  bool get isCovariant;
+  bool get isCovariant => throw UnimplementedError;
 
   List<Class> get inheritance {
     List<Class> inheritance = [];
     inheritance.addAll((enclosingElement as Class).inheritanceChain);
     Class object = packageGraph.specialClasses[SpecialClass.object];
-    if (!inheritance.contains(definingEnclosingElement) &&
-        definingEnclosingElement != null) {
-      assert(definingEnclosingElement == object);
+    if (!inheritance.contains(definingEnclosingContainer) &&
+        definingEnclosingContainer != null) {
+      assert(definingEnclosingContainer == object);
     }
     // Unless the code explicitly extends dart-core's Object, we won't get
     // an entry here.  So add it.
@@ -312,10 +322,10 @@ abstract class Inheritable implements ModelElement {
         enclosingCanonical =
             (enclosingElement as ModelElement).canonicalModelElement;
       }
-      // The class in which this element was defined, canonical if available.
-      Class definingCanonical =
-          definingEnclosingElement.canonicalModelElement ??
-              definingEnclosingElement;
+      // The container in which this element was defined, canonical if available.
+      Container definingCanonical =
+          definingEnclosingContainer.canonicalModelElement ??
+              definingEnclosingContainer;
       // The canonical version of the element we're overriding, if available.
       ModelElement overriddenCanonical =
           overriddenElement?.canonicalModelElement ?? overriddenElement;
@@ -335,7 +345,6 @@ abstract class Inheritable implements ModelElement {
   }
 
   int _overriddenDepth;
-
   @override
   int get overriddenDepth {
     if (_overriddenDepth == null) {
@@ -361,7 +370,7 @@ class InheritableAccessor extends Accessor with Inheritable {
     if (inheritedAccessors.contains(element)) {
       accessor = ModelElement.from(
           element, enclosingClass.library, enclosingClass.packageGraph,
-          enclosingClass: enclosingClass);
+          enclosingContainer: enclosingClass);
     } else {
       accessor = ModelElement.from(
           element, enclosingClass.library, enclosingClass.packageGraph);
@@ -371,6 +380,9 @@ class InheritableAccessor extends Accessor with Inheritable {
 
   ModelElement _enclosingElement;
   bool _isInherited = false;
+
+  @override
+  bool get isCovariant => isSetter && parameters.first.isCovariant;
 
   InheritableAccessor(PropertyAccessorElement element, Library library,
       PackageGraph packageGraph)
@@ -439,7 +451,7 @@ class InheritableAccessor extends Accessor with Inheritable {
 }
 
 /// Getters and setters.
-class Accessor extends ModelElement implements EnclosedElement {
+class Accessor extends MemberElement implements EnclosedElement {
   GetterSetterCombo _enclosingCombo;
 
   Accessor(PropertyAccessorElement element, Library library,
@@ -522,15 +534,8 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
-  Set<String> get features {
-    if (!isCovariant) return super.features;
-    return super.features..add('covariant');
-  }
-
-  @override
   bool get isCanonical => enclosingCombo.isCanonical;
 
-  bool get isCovariant => isSetter && parameters.first.isCovariant;
 
   @override
   String get href {
@@ -838,7 +843,7 @@ class Class extends Container
   }
 
   /// This class might be canonical for elements it does not contain.
-  /// See [Inheritable.canonicalEnclosingElement].
+  /// See [Inheritable.canonicalEnclosingContainer].
   bool contains(Element element) => allElements.containsKey(element);
 
   Map<String, List<ModelElement>> _membersByName;
@@ -992,7 +997,7 @@ class Class extends Container
 
       for (ExecutableElement e in inheritedMethodElements) {
         Method m =
-            ModelElement.from(e, library, packageGraph, enclosingClass: this);
+            ModelElement.from(e, library, packageGraph, enclosingContainer: this);
         _inheritedMethods.add(m);
       }
       _inheritedMethods.sort(byName);
@@ -1018,7 +1023,7 @@ class Class extends Container
       }).toSet();
       for (ExecutableElement e in inheritedOperatorElements) {
         Operator o =
-            ModelElement.from(e, library, packageGraph, enclosingClass: this);
+            ModelElement.from(e, library, packageGraph, enclosingContainer: this);
         _inheritedOperators.add(o);
       }
       _inheritedOperators.sort(byName);
@@ -1259,7 +1264,7 @@ class Class extends Container
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
       field = ModelElement.from(f, library, packageGraph,
-          enclosingClass: this, getter: getter, setter: setter);
+          enclosingContainer: this, getter: getter, setter: setter);
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
@@ -1349,9 +1354,7 @@ class Extension extends Container
       if (f.setter != null) {
         setter = InheritableAccessor(f.setter, library, packageGraph);
       }
-
-      return ModelElement.from(f, library, packageGraph,
-          enclosingClass: this, getter: getter, setter: setter) as Field;
+      return ModelElement.from(f, library, packageGraph, getter: getter, setter: setter) as Field;
     }).toList(growable: false)
       ..sort(byName);
 
@@ -1811,6 +1814,7 @@ abstract class EnclosedElement {
   ModelElement get enclosingElement;
 }
 
+// TODO(jcollins-g): Consider Enum as subclass of Container?
 class Enum extends Class {
   Enum(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
@@ -1858,7 +1862,7 @@ class EnumField extends Field {
 
   @override
   List<ModelElement> get documentationFrom {
-    if (name == 'values' && name == 'index') return [this];
+    if (name == 'values' || name == 'index') return [this];
     return super.documentationFrom;
   }
 
@@ -1878,9 +1882,9 @@ class EnumField extends Field {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
+    assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
     assert(canonicalLibrary == library);
-    assert(canonicalEnclosingElement == enclosingElement);
+    assert(canonicalEnclosingContainer == enclosingElement);
     return '${package.baseHref}${enclosingElement.library.dirName}/${(enclosingElement as Class).fileName}';
   }
 
@@ -1908,7 +1912,7 @@ class EnumField extends Field {
   Inheritable get overriddenElement => null;
 }
 
-class Field extends ModelElement
+class Field extends MemberElement
     with GetterSetterCombo, Inheritable
     implements EnclosedElement {
   bool _isInherited = false;
@@ -1939,7 +1943,7 @@ class Field extends ModelElement
     newField._enclosingClass = enclosingClass;
     // Can't set _isInherited to true if this is the defining element, because
     // that would mean it isn't inherited.
-    assert(newField.enclosingElement != newField.definingEnclosingElement);
+    assert(newField.enclosingElement != newField.definingEnclosingContainer);
     return newField;
   }
 
@@ -1971,7 +1975,7 @@ class Field extends ModelElement
       return canonicalModelElement?.href;
     }
     assert(canonicalLibrary != null);
-    assert(canonicalEnclosingElement == enclosingElement);
+    assert(canonicalEnclosingContainer == enclosingElement);
     assert(canonicalLibrary == library);
     return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
   }
@@ -2109,11 +2113,8 @@ mixin GetterSetterCombo on ModelElement {
     if (readOnly && !isFinal && !isConst) allFeatures.add('read-only');
     if (writeOnly) allFeatures.add('write-only');
     if (readWrite) allFeatures.add('read / write');
-    if (isCovariant) allFeatures.add('covariant');
     return allFeatures;
   }
-
-  bool get isCovariant => (hasSetter && setter.isCovariant);
 
   @override
   ModelElement enclosingElement;
@@ -3007,9 +3008,9 @@ class Method extends ModelElement
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    assert(!(canonicalLibrary == null || canonicalEnclosingElement == null));
+    assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
     assert(canonicalLibrary == library);
-    assert(canonicalEnclosingElement == enclosingElement);
+    assert(canonicalEnclosingContainer == enclosingElement);
     return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/${fileName}';
   }
 
@@ -3114,7 +3115,7 @@ ModelElement resolveMultiplyInheritedElement(
     }
   }
   return ModelElement.from(foundInheritable.element, library, packageGraph,
-      enclosingClass: enclosingClass);
+      enclosingContainer: enclosingClass);
 }
 
 /// Classes implementing this have a public/private distinction.
@@ -3194,7 +3195,7 @@ abstract class ModelElement extends Canonicalization
   /// Specify enclosingClass only if this is to be an inherited object.
   factory ModelElement.from(
       Element e, Library library, PackageGraph packageGraph,
-      {Container enclosingClass, Accessor getter, Accessor setter}) {
+      {Container enclosingContainer, Accessor getter, Accessor setter}) {
     assert(packageGraph != null && e != null);
     assert(library != null ||
         e is ParameterElement ||
@@ -3211,7 +3212,7 @@ abstract class ModelElement extends Canonicalization
       e = basest;
     }
     Tuple3<Element, Library, Container> key =
-        Tuple3(e, library, enclosingClass);
+        Tuple3(e, library, enclosingContainer);
     ModelElement newModelElement;
     if (e.kind != ElementKind.DYNAMIC &&
         packageGraph._allConstructedModelElements.containsKey(key)) {
@@ -3223,7 +3224,7 @@ abstract class ModelElement extends Canonicalization
       }
       if (e is MultiplyInheritedExecutableElement) {
         newModelElement = resolveMultiplyInheritedElement(
-            e, library, packageGraph, enclosingClass);
+            e, library, packageGraph, enclosingContainer);
       } else {
         if (e is LibraryElement) {
           newModelElement = Library(e, packageGraph);
@@ -3263,7 +3264,7 @@ abstract class ModelElement extends Canonicalization
           newModelElement = Typedef(e, library, packageGraph);
         }
         if (e is FieldElement) {
-          if (enclosingClass == null) {
+          if (enclosingContainer == null) {
             if (e.isEnumConstant) {
               int index =
                   e.computeConstantValue().getField(e.name).toIntValue();
@@ -3280,33 +3281,29 @@ abstract class ModelElement extends Canonicalization
               newModelElement = Field(e, library, packageGraph, getter, setter);
             }
           } else {
-            if (enclosingClass is Extension) {
-              newModelElement = Field(e, library, packageGraph, getter, setter);
-            } else {
-              // EnumFields can't be inherited, so this case is simpler.
-              newModelElement = Field.inherited(
-                  e, enclosingClass, library, packageGraph, getter, setter);
-            }
+            // EnumFields can't be inherited, so this case is simpler.
+            newModelElement = Field.inherited(
+                e, enclosingContainer, library, packageGraph, getter, setter);
           }
         }
         if (e is ConstructorElement) {
           newModelElement = Constructor(e, library, packageGraph);
         }
         if (e is MethodElement && e.isOperator) {
-          if (enclosingClass == null) {
+          if (enclosingContainer == null) {
             newModelElement = Operator(e, library, packageGraph);
           } else {
             newModelElement = Operator.inherited(
-                e, enclosingClass, library, packageGraph,
+                e, enclosingContainer, library, packageGraph,
                 originalMember: originalMember);
           }
         }
         if (e is MethodElement && !e.isOperator) {
-          if (enclosingClass == null) {
+          if (enclosingContainer == null) {
             newModelElement = Method(e, library, packageGraph);
           } else {
             newModelElement = Method.inherited(
-                e, enclosingClass, library, packageGraph,
+                e, enclosingContainer, library, packageGraph,
                 originalMember: originalMember);
           }
         }
@@ -3319,11 +3316,11 @@ abstract class ModelElement extends Canonicalization
           // TODO(jcollins-g): why test for ClassElement in enclosingElement?
           if (e.enclosingElement is ClassElement ||
               e is MultiplyInheritedExecutableElement) {
-            if (enclosingClass == null) {
+            if (enclosingContainer == null) {
               newModelElement = InheritableAccessor(e, library, packageGraph);
             } else {
               newModelElement = InheritableAccessor.inherited(
-                  e, library, packageGraph, enclosingClass,
+                  e, library, packageGraph, enclosingContainer,
                   originalMember: originalMember);
             }
           } else {
@@ -3341,7 +3338,7 @@ abstract class ModelElement extends Canonicalization
     }
 
     if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
-    if (enclosingClass != null) assert(newModelElement is Inheritable);
+    if (enclosingContainer != null) assert(newModelElement is Inheritable);
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
     if (library != null && newModelElement is! Parameter) {
@@ -3564,10 +3561,8 @@ abstract class ModelElement extends Canonicalization
       docFrom = (this as Inheritable).overriddenElement.documentationFrom;
     } else if (this is Inheritable && (this as Inheritable).isInherited) {
       Inheritable thisInheritable = (this as Inheritable);
-      Class definingEnclosingClass =
-          thisInheritable.definingEnclosingElement as Class;
       ModelElement fromThis = ModelElement.fromElement(
-          element, definingEnclosingClass.packageGraph);
+          element, thisInheritable.definingEnclosingContainer.packageGraph);
       docFrom = fromThis.documentationFrom;
     } else {
       docFrom = [this];
@@ -3759,7 +3754,7 @@ abstract class ModelElement extends Canonicalization
         // If we're the defining element, or if the defining element is not
         // in the set of libraries being documented, then this element
         // should be treated as canonical (given library == canonicalLibrary).
-        if (i.enclosingElement == i.canonicalEnclosingElement) {
+        if (i.enclosingElement == i.canonicalEnclosingContainer) {
           return true;
         } else {
           return false;
