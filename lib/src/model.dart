@@ -86,6 +86,7 @@ const Map<String, int> featureOrder = {
   'override': 3,
   'override-getter': 3,
   'override-setter': 3,
+  'extended': 3,
 };
 
 int byFeatureOrdering(String a, String b) {
@@ -139,68 +140,36 @@ final categoryRegexp = RegExp(
     multiLine: true);
 final macroRegExp = RegExp(r'{@macro\s+([^}]+)}');
 
-/// Mixin for subclasses of ModelElement representing Elements that can be
+/// Mixin for subclasses of [ModelElement] representing Elements that can be
 /// extension methods.
-mixin Extendable on ModelElement {
-  bool get isExtension;
+mixin Extendable on ContainerMember {
+  /// Returns this Extendable from the [Extension] in which it was declared.
+  Extendable get definingExtension => throw UnimplementedError;
 
-  Extendable _declaringExtension;
-  /// Returns this Extendable from the declared Extension.
-  Extendable get declaringExtension {
-    if (_declaringExtension == null) {
-      Extension definingEnclosingContainer =
-          ModelElement.fromElement(element.enclosingElement, packageGraph);
-      // FIXME(jcollins-g): ridiculously slow, just to get things working
-      _declaringExtension = definingEnclosingContainer.allModelElements.whereType<Extendable>().where((m) => m.element == element).first;
-      assert(_declaringExtension.isExtension == false);
-    }
-    return _declaringExtension;
-  }
+  @override
+  Container get canonicalEnclosingContainer => throw UnimplementedError;
 }
 
 /// A [ModelElement] that is a [Container] member.
-abstract class MemberElement extends ModelElement {
-  MemberElement(Element element, Library library, PackageGraph packageGraph, Member originalMember) : super(element, library, packageGraph, originalMember);
+mixin ContainerMember on ModelElement implements EnclosedElement {
+  /// True if this [ContainerMember] is inherited from a different class.
+  bool get isInherited;
+  /// True if this [ContainerMember] is overriding a superclass.
+  bool get isOverride;
+  /// True if this [ContainerMember] has a parameter whose type is overridden
+  /// by a subtype.
+  bool get isCovariant;
+  /// True if this [ContainerMember] is from an applicable [Extension].
+  /// False otherwise, including if this [ContainerMember]'s [enclosingElement]
+  /// is the extension it was declared in.
+  // TODO(jcollins-g): This semantic is a little confusing, because a declared
+  // extension member element returns false.  The rationale is an
+  // extension member is not extending itself.
+  // FIXME(jcollins-g): Remove concrete implementation after [Extendable] is
+  // implemented.
+  bool get isExtended => false;
 
-  bool get isInherited => false;
-  bool get isOverride => false;
-  bool get isCovariant => false;
-  bool get isExtension => false;
-
-  @override
-  Set<String> get features {
-    Set<String> _features = _baseFeatures();
-    if (isOverride) _features.add('override');
-    if (isInherited) _features.add('inherited');
-    if (isCovariant) _features.add('covariant');
-    if (isExtension) _features.add('extension');
-    return _features;
-  }
-}
-
-/// Mixin for subclasses of ModelElement representing Elements that can be
-/// inherited from one class to another.
-///
-/// Inheritable adds yet another view to help canonicalization for member
-/// [ModelElement]s -- [Inheritable.definingEnclosingContainer].  With this
-/// as an end point, we can search the inheritance chain between this instance and
-/// the [Inheritable.definingEnclosingContainer] in [Inheritable.canonicalEnclosingContainer],
-/// for the canonical [Class] closest to where this member was defined.  We
-/// can then know that when we find [Inheritable.element] inside that [Class]'s
-/// namespace, that's the one we should treat as canonical and implementors
-/// of this class can use that knowledge to determine canonicalization.
-///
-/// We pick the class closest to the definingEnclosingElement so that all
-/// children of that class inheriting the same member will point to the same
-/// place in the documentation, and we pick a canonical class because that's
-/// the one in the public namespace that will be documented.
-mixin Inheritable on ModelElement {
-  bool get isInherited => throw UnimplementedError;
-
-  bool _canonicalEnclosingClassIsSet = false;
-  Container _canonicalEnclosingClass;
   Container _definingEnclosingContainer;
-
   Container get definingEnclosingContainer {
     if (_definingEnclosingContainer == null) {
       _definingEnclosingContainer =
@@ -209,6 +178,51 @@ mixin Inheritable on ModelElement {
     return _definingEnclosingContainer;
   }
 
+  @override
+  Set<String> get features {
+    Set<String> _features = super.features;
+    if (isOverride) _features.add('override');
+    if (isInherited) _features.add('inherited');
+    if (isCovariant) _features.add('covariant');
+    if (isExtended) _features.add('extended');
+    return _features;
+  }
+
+  bool _canonicalEnclosingContainerIsSet = false;
+  Container _canonicalEnclosingContainer;
+  Container get canonicalEnclosingContainer {
+    if (!_canonicalEnclosingContainerIsSet) {
+      // TODO(jcollins-g): move Extension specific code to [Extendable]
+      if (enclosingElement is! Extension ||
+          (enclosingElement is Extension && enclosingElement.isDocumented)) {
+        _canonicalEnclosingContainer =
+            packageGraph.findCanonicalModelElementFor(enclosingElement.element);
+      }
+      _canonicalEnclosingContainerIsSet = true;
+      assert(_canonicalEnclosingContainer == null ||
+          _canonicalEnclosingContainer.isDocumented);
+    }
+    assert(_canonicalEnclosingContainer == null ||
+        (_canonicalEnclosingContainer.isDocumented));
+    return _canonicalEnclosingContainer;
+  }
+}
+
+/// Mixin for subclasses of ModelElement representing Elements that can be
+/// inherited from one class to another.
+///
+/// We can search the inheritance chain between this instance and
+/// [definingEnclosingContainer] in [Inheritable.canonicalEnclosingContainer],
+/// for the canonical [Class] closest to where this member was defined.  We
+/// can then know that when we find [Inheritable.element] inside that [Class]'s
+/// namespace, that's the one we should treat as canonical and implementors
+/// of this class can use that knowledge to determine canonicalization.
+///
+/// We pick the class closest to the [definingEnclosingElement] so that all
+/// children of that class inheriting the same member will point to the same
+/// place in the documentation, and we pick a canonical class because that's
+/// the one in the public namespace that will be documented.
+mixin Inheritable on ContainerMember {
   @override
   ModelElement _buildCanonicalModelElement() {
     if (canonicalEnclosingContainer is Extension) {
@@ -225,9 +239,10 @@ mixin Inheritable on ModelElement {
     return null;
   }
 
+  @override
   Container get canonicalEnclosingContainer {
     Element searchElement = element;
-    if (!_canonicalEnclosingClassIsSet) {
+    if (!_canonicalEnclosingContainerIsSet) {
       if (isInherited) {
         searchElement = searchElement is Member
             ? PackageGraph.getBasestElement(searchElement)
@@ -253,7 +268,7 @@ mixin Inheritable on ModelElement {
             if (canonicalC != null) {
               assert(canonicalC.isCanonical);
               assert(canonicalC.contains(searchElement));
-              _canonicalEnclosingClass = canonicalC;
+              _canonicalEnclosingContainer = canonicalC;
               break;
             }
           }
@@ -266,23 +281,15 @@ mixin Inheritable on ModelElement {
         // classes.
         if (definingEnclosingContainer.isCanonical &&
             definingEnclosingContainer.isPublic) {
-          assert(definingEnclosingContainer == _canonicalEnclosingClass);
+          assert(definingEnclosingContainer == _canonicalEnclosingContainer);
         }
-      } else if (enclosingElement is! Extension ||
-          (enclosingElement is Extension && enclosingElement.isDocumented)) {
-        _canonicalEnclosingClass =
-            packageGraph.findCanonicalModelElementFor(enclosingElement.element);
+        _canonicalEnclosingContainerIsSet = true;
+        assert(_canonicalEnclosingContainer == null ||
+            _canonicalEnclosingContainer.isDocumented);
       }
-      _canonicalEnclosingClassIsSet = true;
-      assert(_canonicalEnclosingClass == null ||
-          _canonicalEnclosingClass.isDocumented);
     }
-    assert(_canonicalEnclosingClass == null ||
-        (_canonicalEnclosingClass.isDocumented));
-    return _canonicalEnclosingClass;
+    return super.canonicalEnclosingContainer;
   }
-
-  bool get isCovariant => throw UnimplementedError;
 
   List<Class> get inheritance {
     List<Class> inheritance = [];
@@ -305,6 +312,7 @@ mixin Inheritable on ModelElement {
 
   bool _isOverride;
 
+  @override
   bool get isOverride {
     if (_isOverride == null) {
       // The canonical version of the enclosing element -- not canonicalEnclosingElement,
@@ -317,11 +325,7 @@ mixin Inheritable on ModelElement {
         _isOverride = false;
         return _isOverride;
       }
-      Class enclosingCanonical = enclosingElement;
-      if (enclosingElement is ModelElement) {
-        enclosingCanonical =
-            (enclosingElement as ModelElement).canonicalModelElement;
-      }
+      Class enclosingCanonical = enclosingElement.canonicalModelElement;
       // The container in which this element was defined, canonical if available.
       Container definingCanonical =
           definingEnclosingContainer.canonicalModelElement ??
@@ -359,13 +363,13 @@ mixin Inheritable on ModelElement {
   }
 }
 
-/// A getter or setter that is a member of a Class.
-class InheritableAccessor extends Accessor with Inheritable {
-  /// Factory will return an [InheritableAccessor] with isInherited = true
+/// A getter or setter that is a member of a [Container].
+class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
+  /// Factory will return an [ContainerAccessor] with isInherited = true
   /// if [element] is in [inheritedAccessors].
-  factory InheritableAccessor.from(PropertyAccessorElement element,
+  factory ContainerAccessor.from(PropertyAccessorElement element,
       Set<PropertyAccessorElement> inheritedAccessors, Class enclosingClass) {
-    InheritableAccessor accessor;
+    ContainerAccessor accessor;
     if (element == null) return null;
     if (inheritedAccessors.contains(element)) {
       accessor = ModelElement.from(
@@ -384,11 +388,11 @@ class InheritableAccessor extends Accessor with Inheritable {
   @override
   bool get isCovariant => isSetter && parameters.first.isCovariant;
 
-  InheritableAccessor(PropertyAccessorElement element, Library library,
+  ContainerAccessor(PropertyAccessorElement element, Library library,
       PackageGraph packageGraph)
       : super(element, library, packageGraph, null);
 
-  InheritableAccessor.inherited(PropertyAccessorElement element,
+  ContainerAccessor.inherited(PropertyAccessorElement element,
       Library library, PackageGraph packageGraph, this._enclosingElement,
       {Member originalMember})
       : super(element, library, packageGraph, originalMember) {
@@ -410,7 +414,7 @@ class InheritableAccessor extends Accessor with Inheritable {
   ModelElement _overriddenElement;
 
   @override
-  InheritableAccessor get overriddenElement {
+  ContainerAccessor get overriddenElement {
     assert(packageGraph.allLibrariesAdded);
     if (!_overriddenElementIsSet) {
       _overriddenElementIsSet = true;
@@ -439,7 +443,7 @@ class InheritableAccessor extends Accessor with Inheritable {
               } else {
                 _overriddenElement = foundField.setter;
               }
-              assert(!(_overriddenElement as InheritableAccessor).isInherited);
+              assert(!(_overriddenElement as ContainerAccessor).isInherited);
               break;
             }
           }
@@ -451,7 +455,7 @@ class InheritableAccessor extends Accessor with Inheritable {
 }
 
 /// Getters and setters.
-class Accessor extends MemberElement implements EnclosedElement {
+class Accessor extends ModelElement implements EnclosedElement {
   GetterSetterCombo _enclosingCombo;
 
   Accessor(PropertyAccessorElement element, Library library,
@@ -1229,10 +1233,10 @@ class Class extends Container
       PropertyAccessorElement setterElement,
       Set<PropertyAccessorElement> inheritedAccessors,
       [FieldElement f]) {
-    InheritableAccessor getter =
-        InheritableAccessor.from(getterElement, inheritedAccessors, this);
-    InheritableAccessor setter =
-        InheritableAccessor.from(setterElement, inheritedAccessors, this);
+    ContainerAccessor getter =
+        ContainerAccessor.from(getterElement, inheritedAccessors, this);
+    ContainerAccessor setter =
+        ContainerAccessor.from(setterElement, inheritedAccessors, this);
     // Rebind getterElement/setterElement as ModelElement.from can resolve
     // MultiplyInheritedExecutableElements or resolve Members.
     getterElement = getter?.element;
@@ -1349,10 +1353,10 @@ class Extension extends Container
     _fields = _extension.fields.map((f) {
       Accessor getter, setter;
       if (f.getter != null) {
-        getter = InheritableAccessor(f.getter, library, packageGraph);
+        getter = ContainerAccessor(f.getter, library, packageGraph);
       }
       if (f.setter != null) {
-        setter = InheritableAccessor(f.setter, library, packageGraph);
+        setter = ContainerAccessor(f.setter, library, packageGraph);
       }
       return ModelElement.from(f, library, packageGraph, getter: getter, setter: setter) as Field;
     }).toList(growable: false)
@@ -1912,15 +1916,15 @@ class EnumField extends Field {
   Inheritable get overriddenElement => null;
 }
 
-class Field extends MemberElement
-    with GetterSetterCombo, Inheritable
+class Field extends ModelElement
+    with GetterSetterCombo, ContainerMember, Inheritable
     implements EnclosedElement {
   bool _isInherited = false;
   Container _enclosingClass;
   @override
-  final InheritableAccessor getter;
+  final ContainerAccessor getter;
   @override
-  final InheritableAccessor setter;
+  final ContainerAccessor setter;
 
   Field(FieldElement element, Library library, PackageGraph packageGraph,
       this.getter, this.setter)
@@ -2018,7 +2022,7 @@ class Field extends MemberElement
 
   @override
   Set<String> get features {
-    Set<String> allFeatures = _baseFeatures()..addAll(comboFeatures);
+    Set<String> allFeatures = super.features..addAll(comboFeatures);
     // Combo features can indicate 'inherited' and 'override' if
     // either the getter or setter has one of those properties, but that's not
     // really specific enough for [Field]s that have public getter/setters.
@@ -2950,10 +2954,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 }
 
 class Method extends ModelElement
-    with Inheritable, TypeParameters
+    with ContainerMember, Inheritable, TypeParameters
     implements EnclosedElement {
   bool _isInherited = false;
-  Container _enclosingClass;
+  Container _enclosingContainer;
   @override
   List<TypeParameter> typeParameters = [];
 
@@ -2962,7 +2966,7 @@ class Method extends ModelElement
     _calcTypeParameters();
   }
 
-  Method.inherited(MethodElement element, this._enclosingClass, Library library,
+  Method.inherited(MethodElement element, this._enclosingContainer, Library library,
       PackageGraph packageGraph,
       {Member originalMember})
       : super(element, library, packageGraph, originalMember) {
@@ -2991,11 +2995,11 @@ class Method extends ModelElement
 
   @override
   ModelElement get enclosingElement {
-    if (_enclosingClass == null) {
-      _enclosingClass =
+    if (_enclosingContainer == null) {
+      _enclosingContainer =
           ModelElement.from(_method.enclosingElement, library, packageGraph);
     }
-    return _enclosingClass;
+    return _enclosingContainer;
   }
 
   String get fullkind {
@@ -3039,7 +3043,7 @@ class Method extends ModelElement
 
   @override
   Method get overriddenElement {
-    if (_enclosingClass is Extension) {
+    if (_enclosingContainer is Extension) {
       return null;
     }
     ClassElement parent = element.enclosingElement;
@@ -3192,7 +3196,8 @@ abstract class ModelElement extends Canonicalization
   // TODO(jcollins-g): Auto-vivify element's defining library for library
   // parameter when given a null.
   /// Do not construct any ModelElements unless they are from this constructor.
-  /// Specify enclosingClass only if this is to be an inherited object.
+  /// Specify enclosingContainer if and only if this is to be an inherited or
+  /// extended object.
   factory ModelElement.from(
       Element e, Library library, PackageGraph packageGraph,
       {Container enclosingContainer, Accessor getter, Accessor setter}) {
@@ -3317,9 +3322,9 @@ abstract class ModelElement extends Canonicalization
           if (e.enclosingElement is ClassElement ||
               e is MultiplyInheritedExecutableElement) {
             if (enclosingContainer == null) {
-              newModelElement = InheritableAccessor(e, library, packageGraph);
+              newModelElement = ContainerAccessor(e, library, packageGraph);
             } else {
-              newModelElement = InheritableAccessor.inherited(
+              newModelElement = ContainerAccessor.inherited(
                   e, library, packageGraph, enclosingContainer,
                   originalMember: originalMember);
             }
@@ -3482,7 +3487,7 @@ abstract class ModelElement extends Canonicalization
         .where((s) => s.isNotEmpty));
   }
 
-  Set<String> _baseFeatures() {
+  Set<String> get features {
     Set<String> allFeatures = Set<String>();
     allFeatures.addAll(annotations);
 
@@ -3498,8 +3503,6 @@ abstract class ModelElement extends Canonicalization
     if (isFinal) allFeatures.add('final');
     return allFeatures;
   }
-
-  Set<String> get features => _baseFeatures();
 
   String get featuresAsString {
     List<String> allFeatures = features.toList()..sort(byFeatureOrdering);

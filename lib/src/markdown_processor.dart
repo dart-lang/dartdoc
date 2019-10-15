@@ -650,8 +650,7 @@ class _MarkdownCommentReference {
           (element as Inheritable).overriddenElement;
       while (overriddenElement != null) {
         tryClasses.add(
-            ((element as Inheritable).overriddenElement as EnclosedElement)
-                .enclosingElement);
+            (element as Inheritable).overriddenElement.enclosingElement);
         overriddenElement = overriddenElement.overriddenElement;
       }
     }
