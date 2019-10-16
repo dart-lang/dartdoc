@@ -1,6 +1,7 @@
 /// {@canonicalFor reexport.somelib.SomeClass}
 /// {@canonicalFor reexport.somelib.AUnicornClass}
 /// {@canonicalFor something.ThatDoesntExist}
+/// {@canonicalFor reexport.somelib.DocumentThisExtensionOnce}
 /// {@category Unreal}
 library reexport_two;
 
