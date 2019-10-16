@@ -233,7 +233,7 @@ dartdoc:
       expect(
           errorMessage,
           equals(
-              'Synthetic configuration option dartdoc from <internal>, computed as [existing.dart], resolves to missing path: "${path.canonicalize(path.join(tempDir.absolute.path, 'existing.dart'))}"'));
+              'Synthetic configuration option vegetableLoaderChecked from <internal>, computed as [existing.dart], resolves to missing path: "${path.canonicalize(path.join(tempDir.absolute.path, 'existing.dart'))}"'));
     });
 
     test('file can override synthetic in FileSynth', () {
