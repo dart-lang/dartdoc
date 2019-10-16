@@ -2114,11 +2114,20 @@ void main() {
 
   group('Extension', () {
     Extension ext, fancyList;
+    Extension documentOnceReexportOne, documentOnceReexportTwo;
+    Library reexportOneLib, reexportTwoLib;
     Class extensionReferencer;
     Method doSomeStuff, doStuff, s;
     List<Extension> extensions;
 
     setUpAll(() {
+      reexportOneLib = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'reexport_one');
+      reexportTwoLib = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'reexport_two');
+      documentOnceReexportOne = reexportOneLib.extensions.firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
+      documentOnceReexportTwo = reexportTwoLib.extensions.firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
+
       ext = exLibrary.extensions.firstWhere((e) => e.name == 'AppleExtension');
       extensionReferencer = exLibrary.classes.firstWhere((c) => c.name == 'ExtensionReferencer');
       fancyList = exLibrary.extensions.firstWhere((e) => e.name == 'FancyList');
@@ -2127,6 +2136,12 @@ void main() {
       doStuff = exLibrary.extensions.firstWhere((e) => e.name == 'SimpleStringExtension')
           .instanceMethods.firstWhere((m) => m.name == 'doStuff');
       extensions = exLibrary.publicExtensions.toList();
+    });
+
+    test('basic canonicalization for extensions', () {
+      expect(documentOnceReexportOne.isCanonical, isFalse);
+      expect(documentOnceReexportOne.href, equals(documentOnceReexportTwo.href));
+      expect(documentOnceReexportTwo.isCanonical, isTrue);
     });
 
     // TODO(jcollins-g): implement feature and update tests
@@ -2143,6 +2158,7 @@ void main() {
       expect(extensionReferencer.documentationAsHtml, contains('<code>_Shhh</code>'));
       expect(extensionReferencer.documentationAsHtml, contains('<a href="ex/FancyList.html">FancyList</a>'));
       expect(extensionReferencer.documentationAsHtml, contains('<a href="ex/AnExtension/call.html">AnExtension.call</a>'));
+      expect(extensionReferencer.documentationAsHtml, contains('<a href="reexport_two/DocumentThisExtensionOnce.html">DocumentThisExtensionOnce</a>'));
     });
 
     test('has a fully qualified name', () {
