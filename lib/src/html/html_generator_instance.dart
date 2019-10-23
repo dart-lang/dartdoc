@@ -171,7 +171,7 @@ class HtmlGeneratorInstance {
           }
         }
 
-        for (var extension in filterNonPublic(lib.extensions)) {
+        for (var extension in filterNonDocumented(lib.extensions)) {
           generateExtension(_packageGraph, lib, extension);
 
           for (var constant in filterNonDocumented(extension.constants)) {

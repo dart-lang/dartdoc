@@ -2415,8 +2415,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _allOriginalModelElementNames;
   }
 
-  List<Class> get allClasses => _allClasses;
-
   @override
   CharacterLocation get characterLocation {
     if (element.nameOffset == -1) {
@@ -2430,19 +2428,30 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   CompilationUnitElement get compilationUnitElement => (element as LibraryElement).definingCompilationUnit;
 
   @override
-  Iterable<Class> get classes {
-    return _allClasses
-        .where((c) => !c.isErrorOrException)
-        .toList(growable: false);
-  }
+  Iterable<Class> get classes => allClasses.where((c) => !c.isErrorOrException);
 
   @override
   Iterable<Extension> get extensions {
-    if (_extensions != null) return _extensions;
-    _extensions = _libraryElement.definingCompilationUnit.extensions
-        .map((e) => ModelElement.from(e, this, packageGraph) as Extension)
-        .toList(growable: false)
-          ..sort(byName);
+    if (_extensions == null) {
+      // De-dupe extensions coming from multiple exported libraries at once.
+      Set<ExtensionElement> extensionElements = Set();
+      extensionElements.addAll(_libraryElement.definingCompilationUnit.extensions);
+      for (CompilationUnitElement cu in _libraryElement.parts) {
+        extensionElements.addAll(cu.extensions);
+      }
+      for (LibraryElement le in _libraryElement.exportedLibraries) {
+        extensionElements.addAll(le.definingCompilationUnit.extensions
+            .where((t) => _exportedNamespace.definedNames.values.contains(t.name)));
+      }
+
+      extensionElements.addAll(_exportedNamespace.definedNames.values
+          .whereType<ExtensionElement>());
+
+      _extensions = extensionElements
+          .map((e) => ModelElement.from(e, this, packageGraph) as Extension)
+          .toList(growable: false)
+        ..sort(byName);
+    }
     return _extensions;
   }
 
@@ -2628,10 +2637,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   List<Class> get exceptions {
-    return _allClasses
-        .where((c) => c.isErrorOrException)
-        .toList(growable: false)
-          ..sort(byName);
+    if (_exceptions == null) {
+      _exceptions = allClasses.where((c) => c.isErrorOrException).toList(growable: false);
+    }
+    return _exceptions;
   }
 
   @override
@@ -2752,9 +2761,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _typedefs;
   }
 
-  List<Class> get _allClasses {
+  List<Class> get allClasses {
     if (_classes != null) return _classes;
 
+    // De-dupe classes coming from multiple exported libraries at once.
     Set<ClassElement> types = Set();
     types.addAll(_libraryElement.definingCompilationUnit.types);
     for (CompilationUnitElement cu in _libraryElement.parts) {
@@ -2762,14 +2772,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     }
     for (LibraryElement le in _libraryElement.exportedLibraries) {
       types.addAll(le.definingCompilationUnit.types
-          .where((t) => _exportedNamespace.definedNames.values.contains(t.name))
-          .toList());
+          .where((t) => _exportedNamespace.definedNames.values.contains(t.name)));
     }
 
     types.addAll(_exportedNamespace.definedNames.values
-        .where((e) => e is ClassElement && !e.isMixin)
-        .cast<ClassElement>()
-        .where((element) => !element.isEnum));
+        .whereType<ClassElement>()
+        .where((e) => !e.isMixin && !e.isEnum));
 
     _classes = types
         .map((e) => ModelElement.from(e, this, packageGraph) as Class)
@@ -2783,7 +2791,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   LibraryElement get _libraryElement => (element as LibraryElement);
 
   Class getClassByName(String name) {
-    return _allClasses.firstWhere((it) => it.name == name, orElse: () => null);
+    return allClasses.firstWhere((it) => it.name == name, orElse: () => null);
   }
 
   List<TopLevelVariable> _getVariables() {
@@ -5026,7 +5034,7 @@ class PackageGraph {
     documentedPackages.toList().forEach((package) {
       package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
-        library._allClasses.forEach(_addToImplementors);
+        library.allClasses.forEach(_addToImplementors);
       });
     });
     _implementors.values.forEach((l) => l.sort());
