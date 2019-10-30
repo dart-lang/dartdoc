@@ -3517,7 +3517,9 @@ abstract class ModelElement extends Canonicalization
   }
 
   bool get canHaveParameters =>
-      element is ExecutableElement || element is FunctionTypedElement;
+      element is ExecutableElement ||
+      element is FunctionTypedElement ||
+      element is FunctionTypeAliasElement;
 
   ModelElement _buildCanonicalModelElement() {
     Container preferredClass;
@@ -4048,6 +4050,9 @@ abstract class ModelElement extends Canonicalization
         } else {
           params = (element as FunctionTypedElement).parameters;
         }
+      }
+      if (params == null && element is FunctionTypeAliasElement) {
+        params = (element as FunctionTypeAliasElement).function.parameters;
       }
 
       _parameters = UnmodifiableListView<Parameter>(params
