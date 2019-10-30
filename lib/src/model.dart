@@ -794,6 +794,16 @@ class Class extends Container
     return _defaultConstructor;
   }
 
+  List<Extension> _applicableExtensions;
+  Iterable<Extension> get applicableExtensions {
+    if (_applicableExtensions == null) {
+      _applicableExtensions = packageGraph.extensions
+          .where((e) => e.couldApplyTo(this))
+          .toList(growable: false);
+    }
+    return _applicableExtensions;
+  }
+
   Iterable<Method> get allInstanceMethods =>
       quiver.concat([instanceMethods, inheritedMethods]);
 
@@ -1325,6 +1335,74 @@ class Extension extends Container
       : super(element, library, packageGraph) {
     extendedType =
         ElementType.from(_extension.extendedType, library, packageGraph);
+  }
+
+  /// Returns [true] if this extension in context applies to the given
+  /// [ModelElement].
+  ///
+  /// It may or may not be the most specific for a given
+  /// method reference, and this does not guarantee any methods will actually
+  /// be applicable to, most specific for, and not shadowed for [e].
+  bool appliesTo(ModelElement e) => (e.library == library) && couldApplyTo(e);
+
+  /// Returns [true] if the extension could apply to [e] if both are imported,
+  /// possibly with show/hide.
+  bool couldApplyTo(ModelElement e) => extendedType.type.isSubtypeOf(
+      e.modelType.type);
+
+  /// Assuming that [possibleExtensions] contain multiple applicable extensions
+  /// for the same extension method reference, return the set of extensions
+  /// most applicable.
+  static Iterable<Extension> mostSpecificExtensions(
+      Iterable<Extension> possibleExtensions) {
+    Set<Extension> returningExtensions = {};
+    // The extension at least tied for most specific that we have seen.
+    Extension mostSpecificSoFar;
+    for (Extension possible in possibleExtensions) {
+      if (mostSpecificSoFar == null) {
+        mostSpecificSoFar = possible;
+        continue;
+      }
+      if (possible._isMoreSpecificThan(mostSpecificSoFar)) {
+        mostSpecificSoFar = possible;
+      }
+    }
+
+    // Collect all extensions tied with the most specific one.
+    for (Extension possible in possibleExtensions) {
+      if (!mostSpecificSoFar._isMoreSpecificThan(possible)) {
+        returningExtensions.add(possible);
+      }
+    }
+    return returningExtensions;
+  }
+
+  /// Is this extension more specific than [e2]?
+  ///
+  /// If false, does not imply that this is less specific than [e2].
+  ///
+  /// From:  https://github.com/dart-lang/language/blob/master/accepted/2.6/static-extension-members/feature-specification.md#Specificity
+  bool _isMoreSpecificThan(Extension e2) {
+    Extension e1 = this;
+    DartType e1Type = e1.modelType.type;
+    DartType e2Type = e2.modelType.type;
+    DartType e1Resolved = e1Type.resolveToBound(null);
+    DartType e2Resolved = e2Type.resolveToBound(null);
+    // 1
+    if ((e2.definingLibrary.isInSdk && !e1.definingLibrary.isInSdk) || (
+        // 2
+        e1.definingLibrary.isInSdk == e2.definingLibrary.isInSdk && (
+            // 3
+            e1Type.isSubtypeOf(e2Type) && (
+                // 4
+                !e2Type.isSubtypeOf(e1Type) || (
+                    // 5
+                    e1Resolved.isSubtypeOf(e2Resolved) &&
+                        !e2Resolved.isSubtypeOf(e1Resolved)
+                ))))) {
+      return false;
+    }
+    return true;
   }
 
   @override
@@ -2402,6 +2480,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   List<String> _allOriginalModelElementNames;
+
+  bool get isInSdk => _libraryElement.isInSdk;
 
   final Package _package;
 
@@ -5016,10 +5096,13 @@ class PackageGraph {
       package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
         library.allClasses.forEach(_addToImplementors);
+        _extensions.addAll(library.extensions);
       });
     });
     _implementors.values.forEach((l) => l.sort());
+    _extensions.sort(byName);
     allImplementorsAdded = true;
+    allExtensionsAdded = true;
 
     // We should have found all special classes by now.
     specialClasses.assertSpecials();
@@ -5073,13 +5156,22 @@ class PackageGraph {
 
   SpecialClasses specialClasses;
 
-  /// It is safe to cache values derived from the _implementors table if this
+  /// It is safe to cache values derived from the [_implementors] table if this
   /// is true.
   bool allImplementorsAdded = false;
+  /// It is safe to cache values derived from the [_extensions] table if this
+  /// is true.
+  bool allExtensionsAdded = false;
+
 
   Map<String, List<Class>> get implementors {
     assert(allImplementorsAdded);
     return _implementors;
+  }
+
+  Iterable<Extension> get extensions {
+    assert(allExtensionsAdded);
+    return _extensions;
   }
 
   Map<String, Set<ModelElement>> _findRefElementCache;
@@ -5118,6 +5210,10 @@ class PackageGraph {
 
   /// Map of Class.href to a list of classes implementing that class
   final Map<String, List<Class>> _implementors = Map();
+
+  /// A list of extensions that exist in the package graph.
+  // TODO(jcollins-g): Consider implementing a smarter structure for this.
+  final List<Extension> _extensions = List();
 
   /// PackageMeta for the default package.
   final PackageMeta packageMeta;

@@ -2128,7 +2128,7 @@ void main() {
     Extension ext, fancyList;
     Extension documentOnceReexportOne, documentOnceReexportTwo;
     Library reexportOneLib, reexportTwoLib;
-    Class extensionReferencer;
+    Class apple, extensionReferencer;
     Method doSomeStuff, doStuff, s;
     List<Extension> extensions;
 
@@ -2142,6 +2142,7 @@ void main() {
       documentOnceReexportTwo = reexportTwoLib.extensions
           .firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
 
+      apple = exLibrary.classes.firstWhere((e) => e.name == 'Apple');
       ext = exLibrary.extensions.firstWhere((e) => e.name == 'AppleExtension');
       extensionReferencer =
           exLibrary.classes.firstWhere((c) => c.name == 'ExtensionReferencer');
@@ -2162,6 +2163,10 @@ void main() {
       expect(
           documentOnceReexportOne.href, equals(documentOnceReexportTwo.href));
       expect(documentOnceReexportTwo.isCanonical, isTrue);
+    });
+
+    test('classes know about applicable extensions', () {
+      expect(apple.applicableExtensions, contains(ext));
     });
 
     // TODO(jcollins-g): implement feature and update tests
