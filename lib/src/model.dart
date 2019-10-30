@@ -38,7 +38,6 @@ import 'package:analyzer/src/dart/element/member.dart'
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
-import 'package:analyzer/src/generated/resolver.dart' show NamespaceBuilder;
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
@@ -2450,11 +2449,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
     // Initialize the list of elements defined in this library and
     // exported via its export directives.
-    Set<Element> exportedAndLocalElements = NamespaceBuilder()
-        .createExportNamespaceForLibrary(element)
+    Set<Element> exportedAndLocalElements = _libraryElement
+        .exportNamespace
         .definedNames
         .values
         .toSet();
+    // TODO(jcollins-g): Consider switch to [_libraryElement.topLevelElements].
     exportedAndLocalElements
         .addAll(getDefinedElements(_libraryElement.definingCompilationUnit));
     for (CompilationUnitElement cu in _libraryElement.parts) {
