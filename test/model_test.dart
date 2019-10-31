@@ -2125,10 +2125,11 @@ void main() {
   });
 
   group('Extension', () {
-    Extension ext, fancyList;
+    Extension arm, leg, ext, fancyList, uphill;
     Extension documentOnceReexportOne, documentOnceReexportTwo;
     Library reexportOneLib, reexportTwoLib;
-    Class apple, extensionReferencer, string;
+    Class apple, anotherExtended, baseTest, bigAnotherExtended,
+        extensionReferencer, megaTron, superMegaTron, string;
     Method doSomeStuff, doStuff, s;
     List<Extension> extensions;
 
@@ -2159,6 +2160,15 @@ void main() {
           .instanceMethods
           .firstWhere((m) => m.name == 'doStuff');
       extensions = exLibrary.publicExtensions.toList();
+      baseTest = fakeLibrary.classes.firstWhere((e) => e.name == 'BaseTest');
+      bigAnotherExtended = fakeLibrary.classes.firstWhere((e) => e.name == 'BigAnotherExtended');
+      anotherExtended = fakeLibrary.classes.firstWhere((e) => e.name == 'AnotherExtended');
+      arm = fakeLibrary.extensions.firstWhere((e) => e.name == 'Arm');
+      leg = fakeLibrary.extensions.firstWhere((e) => e.name == 'Leg');
+      uphill = fakeLibrary.extensions.firstWhere((e) => e.name == 'Uphill');
+      megaTron = fakeLibrary.classes.firstWhere((e) => e.name == 'Megatron');
+      superMegaTron = fakeLibrary.classes
+          .firstWhere((e) => e.name == 'SuperMegaTron');
     });
 
     test('basic canonicalization for extensions', () {
@@ -2168,10 +2178,19 @@ void main() {
       expect(documentOnceReexportTwo.isCanonical, isTrue);
     });
 
-    test('classes know about applicable extensions', () {
+    test('classes know about applicableExtensions', () {
       expect(apple.applicableExtensions, orderedEquals([ext]));
-      expect(string.applicableExtensions, isNot(contains(documentOnceReexportOne)));
+      expect(string.applicableExtensions,
+          isNot(contains(documentOnceReexportOne)));
       expect(string.applicableExtensions, contains(documentOnceReexportTwo));
+      expect(baseTest.applicableExtensions, isEmpty);
+      expect(anotherExtended.applicableExtensions, orderedEquals([uphill]));
+      expect(bigAnotherExtended.applicableExtensions, orderedEquals([uphill]));
+    });
+
+    test('type parameters and bounds work with applicableExtensions', () {
+      expect(superMegaTron.applicableExtensions, orderedEquals([leg]));
+      expect(megaTron.applicableExtensions, orderedEquals([arm, leg]));
     });
 
     // TODO(jcollins-g): implement feature and update tests

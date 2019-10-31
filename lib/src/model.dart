@@ -22,6 +22,7 @@ import 'package:analyzer/dart/ast/ast.dart'
         InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/file_system/file_system.dart' as file_system;
 import 'package:analyzer/file_system/physical_file_system.dart';
@@ -35,12 +36,16 @@ import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
+import 'package:analyzer/src/dart/element/type.dart'
+    show InterfaceTypeImpl;
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:analyzer/src/generated/type_system.dart'
+    show Dart2TypeSystem;
 import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:analyzer/src/source/sdk_ext.dart';
 import 'package:args/args.dart';
@@ -798,6 +803,10 @@ class Class extends Container
   List<Extension> _applicableExtensions;
   Iterable<Extension> get applicableExtensions {
     if (_applicableExtensions == null) {
+      if (name.contains('BaseTest')) {
+        print('hello');
+        print(packageGraph.extensions.firstWhere((e) => e.name == 'Uphill').couldApplyTo(this));
+      }
       _applicableExtensions = utils
           .filterNonDocumented(packageGraph.extensions)
           .where((e) => e.couldApplyTo(this))
@@ -964,7 +973,8 @@ class Class extends Container
       hasAnnotations ||
       hasPublicInterfaces ||
       hasPublicSuperChainReversed ||
-      hasPublicImplementors;
+      hasPublicImplementors ||
+      hasApplicableExtensions;
 
   @override
   bool get hasPublicOperators =>
@@ -1339,10 +1349,54 @@ class Extension extends Container
         ElementType.from(_extension.extendedType, library, packageGraph);
   }
 
-  /// Returns [true] if the extension could apply to [e] if both are imported,
-  /// possibly with show/hide.
-  bool couldApplyTo(ModelElement e) =>
-      extendedType.type.isSubtypeOf(e.modelType.type);
+  /// Returns [true] if [this] extension could theoretically apply to [e] if
+  /// both are imported, possibly with show/hide.
+  bool couldApplyTo(Class c) {
+    if (name == 'Int8Pointer' && c.name == 'Pointer')
+      print ('hi');
+    return _couldApplyTo(
+        extendedType.type, c.element, packageGraph.typeSystem);
+  }
+
+  static bool _couldApplyTo(DartType thisType, ClassElement element, Dart2TypeSystem typeSystem) {
+    if (element.name == 'SuperMegaTron') {
+      print('hello');
+    }
+
+    /*if (thisType is TypeParameterType) {
+      return _couldApplyTo(thisType.element.bound, element, typeSystem);
+    }*/
+
+    InterfaceType classInstantiated = typeSystem.instantiateToBounds(element.thisType);
+    classInstantiated = typeSystem.instantiateType(element.thisType,
+        classInstantiated.typeArguments.map((a) {
+          if (a.isDynamic) {
+            return typeSystem.typeProvider.neverType;
+          }
+          return a;
+        }).toList());
+
+
+    if (typeSystem.isSubtypeOf(classInstantiated, thisType)) {
+      return true;
+    }
+
+    return classInstantiated.element == thisType.element;
+/*
+    if (thisType is TypeParameterType) {
+      return (thisType.element.bound as InterfaceTypeImpl).asInstanceOf(element) != null;
+    }
+    if (!typeSystem.isAssignableTo(element.type, typeSystem.leastUpperBound(element.type, thisType))) return false;
+    if ((thisType as InterfaceTypeImpl).asInstanceOf(element) == null)
+      return false;
+    if (typeSystem.isSubtypeOf(element.type, thisType)) return true;
+    /*if (thisType is InterfaceTypeImpl) {
+      return thisType.asInstanceOf(element) != null;
+    }
+     */
+    return (element.type as InterfaceTypeImpl).asInstanceOf(thisType.element as ClassElement) != null;
+    throw UnimplementedError('unrecognized DartType');*/
+  }
 
   @override
   ModelElement get enclosingElement => library;
@@ -4977,7 +5031,7 @@ class Operator extends Method {
 
 class PackageGraph {
   PackageGraph.UninitializedPackageGraph(
-      this.config, this.driver, this.sdk, this.hasEmbedderSdk)
+      this.config, this.driver, this.typeSystem, this.sdk, this.hasEmbedderSdk)
       : packageMeta = config.topLevelPackageMeta,
         session = driver.currentSession {
     _packageWarningCounter = PackageWarningCounter(this);
@@ -5182,6 +5236,7 @@ class PackageGraph {
   /// TODO(brianwilkerson) Replace the driver with the session.
   final AnalysisDriver driver;
   final AnalysisSession session;
+  final TypeSystem typeSystem;
   final DartSdk sdk;
 
   Map<Source, SdkLibrary> _sdkLibrarySources;
@@ -6844,7 +6899,8 @@ class PackageBuilder {
     }
 
     PackageGraph newGraph = PackageGraph.UninitializedPackageGraph(
-        config, driver, sdk, hasEmbedderSdkFiles);
+        config, driver, await driver.currentSession.typeSystem, sdk,
+        hasEmbedderSdkFiles);
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
     return newGraph;
