@@ -248,5 +248,5 @@ void main() {
       RegExp version = RegExp(r'(\d+\.)?(\d+\.)?(\*|\d+)');
       expect(version.hasMatch(m.group(0)), false);
     });
-  }, timeout: Timeout.factor(4));
+  }, timeout: Timeout.factor(8));
 }
