@@ -8,7 +8,6 @@ class YetAnotherClass {}
 
 class AUnicornClass {}
 
-
 /// A private extension.
 extension _Unseen on Object {
   void doYouSeeMe() { }

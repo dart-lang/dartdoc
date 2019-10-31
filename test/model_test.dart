@@ -494,7 +494,7 @@ void main() {
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(8));
+          equals(9));
     });
 
     test('Verify libraries with multiple categories show up in multiple places',
@@ -518,7 +518,7 @@ void main() {
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(8));
+          equals(9));
     });
   });
 
@@ -588,7 +588,7 @@ void main() {
       });
 
       test('libraries', () {
-        expect(packageGraph.localPublicLibraries, hasLength(13));
+        expect(packageGraph.localPublicLibraries, hasLength(14));
         expect(interceptorsLib.isPublic, isFalse);
       });
 
@@ -603,7 +603,7 @@ void main() {
 
         Package package = packageGraph.localPackages.first;
         expect(package.name, 'test_package');
-        expect(package.publicLibraries, hasLength(13));
+        expect(package.publicLibraries, hasLength(14));
       });
 
       test('multiple packages, sorted default', () {
@@ -696,7 +696,8 @@ void main() {
         // If EventTarget really does start implementing hashCode, this will
         // fail.
         expect(hashCode.href, equals('dart-core/Object/hashCode.html'));
-        expect(hashCode.canonicalEnclosingContainer, equals(objectModelElement));
+        expect(
+            hashCode.canonicalEnclosingContainer, equals(objectModelElement));
         expect(
             EventTarget.publicSuperChainReversed
                 .any((et) => et.name == 'Interceptor'),
@@ -720,13 +721,17 @@ void main() {
         isDeprecated,
         someLib,
         reexportOneLib,
-        reexportTwoLib;
-    Class SomeClass, SomeOtherClass, YetAnotherClass, AUnicornClass;
+        reexportTwoLib,
+        reexportThreeLib;
+    Class SomeClass,
+        SomeOtherClass,
+        YetAnotherClass,
+        AUnicornClass,
+        ADuplicateClass;
 
     setUpAll(() {
       dartAsyncLib = utils.testPackageGraphSdk.libraries
           .firstWhere((l) => l.name == 'dart:async');
-
       anonLib = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'anonymous_library');
 
@@ -736,10 +741,13 @@ void main() {
           .firstWhere((lib) => lib.name == 'reexport_one');
       reexportTwoLib = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'reexport_two');
+      reexportThreeLib = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'reexport_three');
       SomeClass = someLib.getClassByName('SomeClass');
       SomeOtherClass = someLib.getClassByName('SomeOtherClass');
       YetAnotherClass = someLib.getClassByName('YetAnotherClass');
       AUnicornClass = someLib.getClassByName('AUnicornClass');
+      ADuplicateClass = reexportThreeLib.getClassByName('ADuplicateClass');
 
       isDeprecated = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'is_deprecated');
@@ -870,6 +878,10 @@ void main() {
     test('@canonicalFor directive works', () {
       expect(SomeOtherClass.canonicalLibrary, reexportOneLib);
       expect(SomeClass.canonicalLibrary, reexportTwoLib);
+    });
+
+    test('with correct show/hide behavior', () {
+      expect(ADuplicateClass.definingLibrary.name, equals('shadowing_lib'));
     });
   });
 
@@ -2125,40 +2137,62 @@ void main() {
           .firstWhere((lib) => lib.name == 'reexport_one');
       reexportTwoLib = packageGraph.libraries
           .firstWhere((lib) => lib.name == 'reexport_two');
-      documentOnceReexportOne = reexportOneLib.extensions.firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
-      documentOnceReexportTwo = reexportTwoLib.extensions.firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
+      documentOnceReexportOne = reexportOneLib.extensions
+          .firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
+      documentOnceReexportTwo = reexportTwoLib.extensions
+          .firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
 
       ext = exLibrary.extensions.firstWhere((e) => e.name == 'AppleExtension');
-      extensionReferencer = exLibrary.classes.firstWhere((c) => c.name == 'ExtensionReferencer');
+      extensionReferencer =
+          exLibrary.classes.firstWhere((c) => c.name == 'ExtensionReferencer');
       fancyList = exLibrary.extensions.firstWhere((e) => e.name == 'FancyList');
-      doSomeStuff = exLibrary.classes.firstWhere((c) => c.name == 'ExtensionUser')
-          .allInstanceMethods.firstWhere((m) => m.name == 'doSomeStuff');
-      doStuff = exLibrary.extensions.firstWhere((e) => e.name == 'SimpleStringExtension')
-          .instanceMethods.firstWhere((m) => m.name == 'doStuff');
+      doSomeStuff = exLibrary.classes
+          .firstWhere((c) => c.name == 'ExtensionUser')
+          .allInstanceMethods
+          .firstWhere((m) => m.name == 'doSomeStuff');
+      doStuff = exLibrary.extensions
+          .firstWhere((e) => e.name == 'SimpleStringExtension')
+          .instanceMethods
+          .firstWhere((m) => m.name == 'doStuff');
       extensions = exLibrary.publicExtensions.toList();
     });
 
     test('basic canonicalization for extensions', () {
       expect(documentOnceReexportOne.isCanonical, isFalse);
-      expect(documentOnceReexportOne.href, equals(documentOnceReexportTwo.href));
+      expect(
+          documentOnceReexportOne.href, equals(documentOnceReexportTwo.href));
       expect(documentOnceReexportTwo.isCanonical, isTrue);
     });
 
     // TODO(jcollins-g): implement feature and update tests
     test('documentation links do not crash in base cases', () {
-      packageGraph.packageWarningCounter.hasWarning(doStuff, PackageWarning.notImplemented,
+
+      packageGraph.packageWarningCounter.hasWarning(
+          doStuff,
+          PackageWarning.notImplemented,
           'Comment reference resolution inside extension methods is not yet implemented');
-      packageGraph.packageWarningCounter.hasWarning(doSomeStuff, PackageWarning.notImplemented,
+      packageGraph.packageWarningCounter.hasWarning(
+          doSomeStuff,
+          PackageWarning.notImplemented,
           'Comment reference resolution inside extension methods is not yet implemented');
       expect(doStuff.documentationAsHtml, contains('<code>another</code>'));
-      expect(doSomeStuff.documentationAsHtml, contains('<code>String.extensionNumber</code>'));
+      expect(doSomeStuff.documentationAsHtml,
+          contains('<code>String.extensionNumber</code>'));
     });
 
-    test('references from outside an extension refer correctly to the extension', () {
-      expect(extensionReferencer.documentationAsHtml, contains('<code>_Shhh</code>'));
-      expect(extensionReferencer.documentationAsHtml, contains('<a href="ex/FancyList.html">FancyList</a>'));
-      expect(extensionReferencer.documentationAsHtml, contains('<a href="ex/AnExtension/call.html">AnExtension.call</a>'));
-      expect(extensionReferencer.documentationAsHtml, contains('<a href="reexport_two/DocumentThisExtensionOnce.html">DocumentThisExtensionOnce</a>'));
+    test(
+        'references from outside an extension refer correctly to the extension',
+        () {
+      expect(extensionReferencer.documentationAsHtml,
+          contains('<code>_Shhh</code>'));
+      expect(extensionReferencer.documentationAsHtml,
+          contains('<a href="ex/FancyList.html">FancyList</a>'));
+      expect(extensionReferencer.documentationAsHtml,
+          contains('<a href="ex/AnExtension/call.html">AnExtension.call</a>'));
+      expect(
+          extensionReferencer.documentationAsHtml,
+          contains(
+              '<a href="reexport_two/DocumentThisExtensionOnce.html">DocumentThisExtensionOnce</a>'));
     });
 
     test('has a fully qualified name', () {
@@ -2190,10 +2224,8 @@ void main() {
     });
 
     test('extended type has generics', () {
-      expect(
-          fancyList.extendedType.nameWithGenerics,
-          equals(
-              'List&lt;<wbr><span class="type-parameter">Z</span>&gt;'));
+      expect(fancyList.extendedType.nameWithGenerics,
+          equals('List&lt;<wbr><span class="type-parameter">Z</span>&gt;'));
     });
 
     test('get methods', () {
@@ -2231,7 +2263,8 @@ void main() {
 
     setUpAll(() {
       animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
-      animalToString = animal.allInstanceMethods.firstWhere((m) => m.name == 'toString');
+      animalToString =
+          animal.allInstanceMethods.firstWhere((m) => m.name == 'toString');
 
       /// Trigger code reference resolution
       animal.documentationAsHtml;
@@ -2876,11 +2909,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('Fields always have line and column information', () {
-        expect(implicitGetterExplicitSetter.characterLocation, isNotNull);
-        expect(explicitGetterImplicitSetter.characterLocation, isNotNull);
-        expect(explicitGetterSetter.characterLocation, isNotNull);
-        expect(constField.characterLocation, isNotNull);
-        expect(aProperty.characterLocation, isNotNull);
+      expect(implicitGetterExplicitSetter.characterLocation, isNotNull);
+      expect(explicitGetterImplicitSetter.characterLocation, isNotNull);
+      expect(explicitGetterSetter.characterLocation, isNotNull);
+      expect(constField.characterLocation, isNotNull);
+      expect(aProperty.characterLocation, isNotNull);
     });
 
     test('covariant fields are recognized', () {
@@ -3387,7 +3420,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Constructor appleConstructorFromString;
     Constructor constructorTesterDefault, constructorTesterFromSomething;
     Constructor syntheticConstructor;
-    Class apple, constCat, constructorTester, referToADefaultConstructor,
+    Class apple,
+        constCat,
+        constructorTester,
+        referToADefaultConstructor,
         withSyntheticConstructor;
     setUpAll(() {
       apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
@@ -3405,7 +3441,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .firstWhere((c) => c.name == 'ConstructorTester.fromSomething');
       referToADefaultConstructor = fakeLibrary.classes
           .firstWhere((c) => c.name == 'ReferToADefaultConstructor');
-      withSyntheticConstructor = exLibrary.classes.firstWhere((c) => c.name == 'WithSyntheticConstructor');
+      withSyntheticConstructor = exLibrary.classes
+          .firstWhere((c) => c.name == 'WithSyntheticConstructor');
       syntheticConstructor = withSyntheticConstructor.defaultConstructor;
     });
 

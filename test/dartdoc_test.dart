@@ -258,7 +258,7 @@ void main() {
         expect(p.name, 'test_package');
         expect(p.hasDocumentationFile, isTrue);
         // Total number of public libraries in test_package.
-        expect(packageGraph.defaultPackage.publicLibraries, hasLength(15));
+        expect(packageGraph.defaultPackage.publicLibraries, hasLength(16));
         expect(packageGraph.localPackages.length, equals(1));
       });
 
@@ -327,7 +327,7 @@ void main() {
       PackageGraph p = results.packageGraph;
       expect(p.defaultPackage.name, 'test_package');
       expect(p.defaultPackage.hasDocumentationFile, isTrue);
-      expect(p.localPublicLibraries, hasLength(14));
+      expect(p.localPublicLibraries, hasLength(15));
       expect(p.localPublicLibraries.map((lib) => lib.name).contains('fake'),
           isFalse);
     });

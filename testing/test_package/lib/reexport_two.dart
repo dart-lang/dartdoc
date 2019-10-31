@@ -5,6 +5,6 @@
 /// {@category Unreal}
 library reexport_two;
 
-export 'src/somelib.dart';
-
+// Intentionally create some duplicates via reexporting.
 export 'src/mixins.dart' show MixedIn, AMixin;
+export 'src/somelib.dart';
