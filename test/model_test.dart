@@ -2128,8 +2128,14 @@ void main() {
     Extension arm, leg, ext, fancyList, uphill;
     Extension documentOnceReexportOne, documentOnceReexportTwo;
     Library reexportOneLib, reexportTwoLib;
-    Class apple, anotherExtended, baseTest, bigAnotherExtended,
-        extensionReferencer, megaTron, superMegaTron, string;
+    Class apple,
+        anotherExtended,
+        baseTest,
+        bigAnotherExtended,
+        extensionReferencer,
+        megaTron,
+        superMegaTron,
+        string;
     Method doSomeStuff, doStuff, s;
     List<Extension> extensions;
 
@@ -2161,14 +2167,16 @@ void main() {
           .firstWhere((m) => m.name == 'doStuff');
       extensions = exLibrary.publicExtensions.toList();
       baseTest = fakeLibrary.classes.firstWhere((e) => e.name == 'BaseTest');
-      bigAnotherExtended = fakeLibrary.classes.firstWhere((e) => e.name == 'BigAnotherExtended');
-      anotherExtended = fakeLibrary.classes.firstWhere((e) => e.name == 'AnotherExtended');
+      bigAnotherExtended =
+          fakeLibrary.classes.firstWhere((e) => e.name == 'BigAnotherExtended');
+      anotherExtended =
+          fakeLibrary.classes.firstWhere((e) => e.name == 'AnotherExtended');
       arm = fakeLibrary.extensions.firstWhere((e) => e.name == 'Arm');
       leg = fakeLibrary.extensions.firstWhere((e) => e.name == 'Leg');
       uphill = fakeLibrary.extensions.firstWhere((e) => e.name == 'Uphill');
       megaTron = fakeLibrary.classes.firstWhere((e) => e.name == 'Megatron');
-      superMegaTron = fakeLibrary.classes
-          .firstWhere((e) => e.name == 'SuperMegaTron');
+      superMegaTron =
+          fakeLibrary.classes.firstWhere((e) => e.name == 'SuperMegaTron');
     });
 
     test('basic canonicalization for extensions', () {
@@ -2182,20 +2190,24 @@ void main() {
       expect(apple.potentiallyApplicableExtensions, orderedEquals([ext]));
       expect(string.potentiallyApplicableExtensions,
           isNot(contains(documentOnceReexportOne)));
-      expect(string.potentiallyApplicableExtensions, contains(documentOnceReexportTwo));
+      expect(string.potentiallyApplicableExtensions,
+          contains(documentOnceReexportTwo));
       expect(baseTest.potentiallyApplicableExtensions, isEmpty);
-      expect(anotherExtended.potentiallyApplicableExtensions, orderedEquals([uphill]));
-      expect(bigAnotherExtended.potentiallyApplicableExtensions, orderedEquals([uphill]));
+      expect(anotherExtended.potentiallyApplicableExtensions,
+          orderedEquals([uphill]));
+      expect(bigAnotherExtended.potentiallyApplicableExtensions,
+          orderedEquals([uphill]));
     });
 
     test('type parameters and bounds work with applicableExtensions', () {
-      expect(superMegaTron.potentiallyApplicableExtensions, orderedEquals([leg]));
-      expect(megaTron.potentiallyApplicableExtensions, orderedEquals([arm, leg]));
+      expect(
+          superMegaTron.potentiallyApplicableExtensions, orderedEquals([leg]));
+      expect(
+          megaTron.potentiallyApplicableExtensions, orderedEquals([arm, leg]));
     });
 
     // TODO(jcollins-g): implement feature and update tests
     test('documentation links do not crash in base cases', () {
-
       packageGraph.packageWarningCounter.hasWarning(
           doStuff,
           PackageWarning.notImplemented,

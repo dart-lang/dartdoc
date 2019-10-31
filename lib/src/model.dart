@@ -36,16 +36,14 @@ import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
-import 'package:analyzer/src/dart/element/type.dart'
-    show InterfaceTypeImpl;
+import 'package:analyzer/src/dart/element/type.dart' show InterfaceTypeImpl;
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:analyzer/src/generated/type_system.dart'
-    show Dart2TypeSystem;
+import 'package:analyzer/src/generated/type_system.dart' show Dart2TypeSystem;
 import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:analyzer/src/source/sdk_ext.dart';
 import 'package:args/args.dart';
@@ -798,14 +796,17 @@ class Class extends Container
     return _defaultConstructor;
   }
 
-  bool get hasPotentiallyApplicableExtensions => potentiallyApplicableExtensions.isNotEmpty;
+  bool get hasPotentiallyApplicableExtensions =>
+      potentiallyApplicableExtensions.isNotEmpty;
 
   List<Extension> _potentiallyApplicableExtensions;
   Iterable<Extension> get potentiallyApplicableExtensions {
     if (_potentiallyApplicableExtensions == null) {
       if (name.contains('BaseTest')) {
         print('hello');
-        print(packageGraph.extensions.firstWhere((e) => e.name == 'Uphill').couldApplyTo(this));
+        print(packageGraph.extensions
+            .firstWhere((e) => e.name == 'Uphill')
+            .couldApplyTo(this));
       }
       _potentiallyApplicableExtensions = utils
           .filterNonDocumented(packageGraph.extensions)
@@ -1351,21 +1352,21 @@ class Extension extends Container
 
   /// Returns [true] if this extension could be applicable to any possible
   /// instantiation of [c].
-  bool couldApplyTo(Class c) => _couldApplyTo(
-        extendedType.type, c.element, packageGraph.typeSystem);
+  bool couldApplyTo(Class c) =>
+      _couldApplyTo(extendedType.type, c.element, packageGraph.typeSystem);
 
   static bool _couldApplyTo(
       DartType extendedType, ClassElement element, Dart2TypeSystem typeSystem) {
-    InterfaceTypeImpl classInstantiated = typeSystem.instantiateToBounds(
-        element.thisType);
-    classInstantiated = element.instantiate(typeArguments:
-        classInstantiated.typeArguments.map((a) {
+    InterfaceTypeImpl classInstantiated =
+        typeSystem.instantiateToBounds(element.thisType);
+    classInstantiated = element.instantiate(
+        typeArguments: classInstantiated.typeArguments.map((a) {
           if (a.isDynamic) {
             return typeSystem.typeProvider.neverType;
           }
           return a;
         }).toList(),
-    nullabilitySuffix: classInstantiated.nullabilitySuffix);
+        nullabilitySuffix: classInstantiated.nullabilitySuffix);
 
     return (classInstantiated.element == extendedType.element) ||
         typeSystem.isSubtypeOf(classInstantiated, extendedType);
@@ -6873,7 +6874,10 @@ class PackageBuilder {
     }
 
     PackageGraph newGraph = PackageGraph.UninitializedPackageGraph(
-        config, driver, await driver.currentSession.typeSystem, sdk,
+        config,
+        driver,
+        await driver.currentSession.typeSystem,
+        sdk,
         hasEmbedderSdkFiles);
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
