@@ -22,6 +22,7 @@ import 'package:analyzer/dart/ast/ast.dart'
         InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/file_system/file_system.dart' as file_system;
 import 'package:analyzer/file_system/physical_file_system.dart';
@@ -35,12 +36,14 @@ import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
+import 'package:analyzer/src/dart/element/type.dart' show InterfaceTypeImpl;
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:analyzer/src/generated/type_system.dart' show Dart2TypeSystem;
 import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:analyzer/src/source/sdk_ext.dart';
 import 'package:args/args.dart';
@@ -793,6 +796,20 @@ class Class extends Container
     return _defaultConstructor;
   }
 
+  bool get hasPotentiallyApplicableExtensions =>
+      potentiallyApplicableExtensions.isNotEmpty;
+
+  List<Extension> _potentiallyApplicableExtensions;
+  Iterable<Extension> get potentiallyApplicableExtensions {
+    if (_potentiallyApplicableExtensions == null) {
+      _potentiallyApplicableExtensions = utils
+          .filterNonDocumented(packageGraph.extensions)
+          .where((e) => e.couldApplyTo(this))
+          .toList(growable: false);
+    }
+    return _potentiallyApplicableExtensions;
+  }
+
   Iterable<Method> get allInstanceMethods =>
       quiver.concat([instanceMethods, inheritedMethods]);
 
@@ -951,7 +968,8 @@ class Class extends Container
       hasAnnotations ||
       hasPublicInterfaces ||
       hasPublicSuperChainReversed ||
-      hasPublicImplementors;
+      hasPublicImplementors ||
+      hasPotentiallyApplicableExtensions;
 
   @override
   bool get hasPublicOperators =>
@@ -1324,6 +1342,28 @@ class Extension extends Container
       : super(element, library, packageGraph) {
     extendedType =
         ElementType.from(_extension.extendedType, library, packageGraph);
+  }
+
+  /// Returns [true] if there is an instantiation of [c] to which this extension
+  /// could be applied.
+  bool couldApplyTo(Class c) =>
+      _couldApplyTo(extendedType.type, c.element, packageGraph.typeSystem);
+
+  static bool _couldApplyTo(
+      DartType extendedType, ClassElement element, Dart2TypeSystem typeSystem) {
+    InterfaceTypeImpl classInstantiated =
+        typeSystem.instantiateToBounds(element.thisType);
+    classInstantiated = element.instantiate(
+        typeArguments: classInstantiated.typeArguments.map((a) {
+          if (a.isDynamic) {
+            return typeSystem.typeProvider.neverType;
+          }
+          return a;
+        }).toList(),
+        nullabilitySuffix: classInstantiated.nullabilitySuffix);
+
+    return (classInstantiated.element == extendedType.element) ||
+        typeSystem.isSubtypeOf(classInstantiated, extendedType);
   }
 
   @override
@@ -2371,11 +2411,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
     // Initialize the list of elements defined in this library and
     // exported via its export directives.
-    Set<Element> exportedAndLocalElements = _libraryElement
-        .exportNamespace
-        .definedNames
-        .values
-        .toSet();
+    Set<Element> exportedAndLocalElements =
+        _libraryElement.exportNamespace.definedNames.values.toSet();
     // TODO(jcollins-g): Consider switch to [_libraryElement.topLevelElements].
     exportedAndLocalElements
         .addAll(getDefinedElements(_libraryElement.definingCompilationUnit));
@@ -2402,6 +2439,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   List<String> _allOriginalModelElementNames;
+
+  bool get isInSdk => _libraryElement.isInSdk;
 
   final Package _package;
 
@@ -4967,7 +5006,7 @@ class Operator extends Method {
 
 class PackageGraph {
   PackageGraph.UninitializedPackageGraph(
-      this.config, this.driver, this.sdk, this.hasEmbedderSdk)
+      this.config, this.driver, this.typeSystem, this.sdk, this.hasEmbedderSdk)
       : packageMeta = config.topLevelPackageMeta,
         session = driver.currentSession {
     _packageWarningCounter = PackageWarningCounter(this);
@@ -5023,10 +5062,14 @@ class PackageGraph {
       package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
         library.allClasses.forEach(_addToImplementors);
+        // TODO(jcollins-g): Use a better data structure.
+        _extensions.addAll(library.extensions);
       });
     });
     _implementors.values.forEach((l) => l.sort());
     allImplementorsAdded = true;
+    _extensions.sort(byName);
+    allExtensionsAdded = true;
 
     // We should have found all special classes by now.
     specialClasses.assertSpecials();
@@ -5080,13 +5123,22 @@ class PackageGraph {
 
   SpecialClasses specialClasses;
 
-  /// It is safe to cache values derived from the _implementors table if this
+  /// It is safe to cache values derived from the [_implementors] table if this
   /// is true.
   bool allImplementorsAdded = false;
+
+  /// It is safe to cache values derived from the [_extensions] table if this
+  /// is true.
+  bool allExtensionsAdded = false;
 
   Map<String, List<Class>> get implementors {
     assert(allImplementorsAdded);
     return _implementors;
+  }
+
+  Iterable<Extension> get extensions {
+    assert(allExtensionsAdded);
+    return _extensions;
   }
 
   Map<String, Set<ModelElement>> _findRefElementCache;
@@ -5126,6 +5178,10 @@ class PackageGraph {
   /// Map of Class.href to a list of classes implementing that class
   final Map<String, List<Class>> _implementors = Map();
 
+  /// A list of extensions that exist in the package graph.
+  // TODO(jcollins-g): Consider implementing a smarter structure for this.
+  final List<Extension> _extensions = List();
+
   /// PackageMeta for the default package.
   final PackageMeta packageMeta;
 
@@ -5156,6 +5212,7 @@ class PackageGraph {
   /// TODO(brianwilkerson) Replace the driver with the session.
   final AnalysisDriver driver;
   final AnalysisSession session;
+  final TypeSystem typeSystem;
   final DartSdk sdk;
 
   Map<Source, SdkLibrary> _sdkLibrarySources;
@@ -6818,7 +6875,11 @@ class PackageBuilder {
     }
 
     PackageGraph newGraph = PackageGraph.UninitializedPackageGraph(
-        config, driver, sdk, hasEmbedderSdkFiles);
+        config,
+        driver,
+        await driver.currentSession.typeSystem,
+        sdk,
+        hasEmbedderSdkFiles);
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
     return newGraph;

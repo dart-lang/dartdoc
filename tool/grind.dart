@@ -486,6 +486,7 @@ Future<List<Map>> _buildTestPackageDocs(
         'examples',
         '--include-source',
         '--json',
+        '--link-to-remote',
         '--pretty-index-json',
       ]..addAll(extraDartdocParameters),
       workingDirectory: testPackage.absolute.path);

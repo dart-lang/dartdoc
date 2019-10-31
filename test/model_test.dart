@@ -2125,10 +2125,17 @@ void main() {
   });
 
   group('Extension', () {
-    Extension ext, fancyList;
+    Extension arm, leg, ext, fancyList, uphill;
     Extension documentOnceReexportOne, documentOnceReexportTwo;
     Library reexportOneLib, reexportTwoLib;
-    Class extensionReferencer;
+    Class apple,
+        anotherExtended,
+        baseTest,
+        bigAnotherExtended,
+        extensionReferencer,
+        megaTron,
+        superMegaTron,
+        string;
     Method doSomeStuff, doStuff, s;
     List<Extension> extensions;
 
@@ -2141,7 +2148,11 @@ void main() {
           .firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
       documentOnceReexportTwo = reexportTwoLib.extensions
           .firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
-
+      string = packageGraph.allLibraries.values
+          .firstWhere((e) => e.name == 'dart:core')
+          .allClasses
+          .firstWhere((c) => c.name == 'String');
+      apple = exLibrary.classes.firstWhere((e) => e.name == 'Apple');
       ext = exLibrary.extensions.firstWhere((e) => e.name == 'AppleExtension');
       extensionReferencer =
           exLibrary.classes.firstWhere((c) => c.name == 'ExtensionReferencer');
@@ -2155,6 +2166,17 @@ void main() {
           .instanceMethods
           .firstWhere((m) => m.name == 'doStuff');
       extensions = exLibrary.publicExtensions.toList();
+      baseTest = fakeLibrary.classes.firstWhere((e) => e.name == 'BaseTest');
+      bigAnotherExtended =
+          fakeLibrary.classes.firstWhere((e) => e.name == 'BigAnotherExtended');
+      anotherExtended =
+          fakeLibrary.classes.firstWhere((e) => e.name == 'AnotherExtended');
+      arm = fakeLibrary.extensions.firstWhere((e) => e.name == 'Arm');
+      leg = fakeLibrary.extensions.firstWhere((e) => e.name == 'Leg');
+      uphill = fakeLibrary.extensions.firstWhere((e) => e.name == 'Uphill');
+      megaTron = fakeLibrary.classes.firstWhere((e) => e.name == 'Megatron');
+      superMegaTron =
+          fakeLibrary.classes.firstWhere((e) => e.name == 'SuperMegaTron');
     });
 
     test('basic canonicalization for extensions', () {
@@ -2164,9 +2186,28 @@ void main() {
       expect(documentOnceReexportTwo.isCanonical, isTrue);
     });
 
+    test('classes know about applicableExtensions', () {
+      expect(apple.potentiallyApplicableExtensions, orderedEquals([ext]));
+      expect(string.potentiallyApplicableExtensions,
+          isNot(contains(documentOnceReexportOne)));
+      expect(string.potentiallyApplicableExtensions,
+          contains(documentOnceReexportTwo));
+      expect(baseTest.potentiallyApplicableExtensions, isEmpty);
+      expect(anotherExtended.potentiallyApplicableExtensions,
+          orderedEquals([uphill]));
+      expect(bigAnotherExtended.potentiallyApplicableExtensions,
+          orderedEquals([uphill]));
+    });
+
+    test('type parameters and bounds work with applicableExtensions', () {
+      expect(
+          superMegaTron.potentiallyApplicableExtensions, orderedEquals([leg]));
+      expect(
+          megaTron.potentiallyApplicableExtensions, orderedEquals([arm, leg]));
+    });
+
     // TODO(jcollins-g): implement feature and update tests
     test('documentation links do not crash in base cases', () {
-
       packageGraph.packageWarningCounter.hasWarning(
           doStuff,
           PackageWarning.notImplemented,
