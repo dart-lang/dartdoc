@@ -990,6 +990,38 @@ class ReferringClass {
   }
 }
 
+//
+// Test classes for extension discovery.
+//
+
+extension Arm on Megatron<int> {
+  bool get hasLeftArm => true;
+}
+
+extension Leg on Megatron<String> {
+  bool get hasRightLeg => true;
+}
+
+class Megatron<T> {}
+
+class SuperMegaTron<T extends String> extends Megatron<String> {}
+
+extension Uphill on AnotherExtended<SubclassBaseTest> {
+  bool get hasDirection => false;
+}
+
+class SubclassBaseTest extends BaseTest {}
+
+class BaseTest {}
+
+class AnotherExtended<T extends BaseTest> extends BaseTest {}
+
+class BigAnotherExtended extends AnotherExtended<SubclassBaseTest> {}
+
+//
+//
+//
+
 /// Test an edge case for cases where inherited ExecutableElements can come
 /// both from private classes and public interfaces.  The test makes sure the
 /// class still takes precedence (#1561).
