@@ -802,12 +802,6 @@ class Class extends Container
   List<Extension> _potentiallyApplicableExtensions;
   Iterable<Extension> get potentiallyApplicableExtensions {
     if (_potentiallyApplicableExtensions == null) {
-      if (name.contains('BaseTest')) {
-        print('hello');
-        print(packageGraph.extensions
-            .firstWhere((e) => e.name == 'Uphill')
-            .couldApplyTo(this));
-      }
       _potentiallyApplicableExtensions = utils
           .filterNonDocumented(packageGraph.extensions)
           .where((e) => e.couldApplyTo(this))
@@ -1350,8 +1344,8 @@ class Extension extends Container
         ElementType.from(_extension.extendedType, library, packageGraph);
   }
 
-  /// Returns [true] if this extension could be applicable to any possible
-  /// instantiation of [c].
+  /// Returns [true] if there is an instantiation of [c] to which this extension
+  /// could be applied.
   bool couldApplyTo(Class c) =>
       _couldApplyTo(extendedType.type, c.element, packageGraph.typeSystem);
 
