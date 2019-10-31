@@ -57,6 +57,15 @@
         </ul></dd>
         {{/hasPublicImplementors}}
 
+        {{#hasApplicableExtensions}}
+        <dt>Available Extensions</dt>
+        <dd><ul class="comma-separated clazz-relationships">
+          {{#applicableExtensions}}
+          <li>{{{linkedName}}}</li>
+          {{/applicableExtensions}}
+        </ul></dd>
+        {{/hasApplicableExtensions}}
+
         {{#hasAnnotations}}
         <dt>Annotations</dt>
         <dd><ul class="annotation-list clazz-relationships">

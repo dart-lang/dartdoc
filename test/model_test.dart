@@ -2128,7 +2128,7 @@ void main() {
     Extension ext, fancyList;
     Extension documentOnceReexportOne, documentOnceReexportTwo;
     Library reexportOneLib, reexportTwoLib;
-    Class apple, extensionReferencer;
+    Class apple, extensionReferencer, string;
     Method doSomeStuff, doStuff, s;
     List<Extension> extensions;
 
@@ -2141,7 +2141,10 @@ void main() {
           .firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
       documentOnceReexportTwo = reexportTwoLib.extensions
           .firstWhere((e) => e.name == 'DocumentThisExtensionOnce');
-
+      string = packageGraph.allLibraries.values
+          .firstWhere((e) => e.name == 'dart:core')
+          .allClasses
+          .firstWhere((c) => c.name == 'String');
       apple = exLibrary.classes.firstWhere((e) => e.name == 'Apple');
       ext = exLibrary.extensions.firstWhere((e) => e.name == 'AppleExtension');
       extensionReferencer =
@@ -2166,7 +2169,9 @@ void main() {
     });
 
     test('classes know about applicable extensions', () {
-      expect(apple.applicableExtensions, contains(ext));
+      expect(apple.applicableExtensions, orderedEquals([ext]));
+      expect(string.applicableExtensions, isNot(contains(documentOnceReexportOne)));
+      expect(string.applicableExtensions, contains(documentOnceReexportTwo));
     });
 
     // TODO(jcollins-g): implement feature and update tests

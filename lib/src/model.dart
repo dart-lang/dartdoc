@@ -793,10 +793,12 @@ class Class extends Container
     return _defaultConstructor;
   }
 
+  bool get hasApplicableExtensions => applicableExtensions.isNotEmpty;
+
   List<Extension> _applicableExtensions;
   Iterable<Extension> get applicableExtensions {
     if (_applicableExtensions == null) {
-      _applicableExtensions = packageGraph.extensions
+      _applicableExtensions = utils.filterNonDocumented(packageGraph.extensions)
           .where((e) => e.couldApplyTo(this))
           .toList(growable: false);
     }
