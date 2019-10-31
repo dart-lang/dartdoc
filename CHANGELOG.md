@@ -1,8 +1,9 @@
 ## 0.29.0
-* Internal change to use of FunctionTypeAliasElement (#2051).
+* Internal change to our use of FunctionTypeAliasElement for the analyzer
+  (#2051).
 * Analyzer version to 0.29+ (#2049).
 * Refactor element discovery and fix extension discovery to work with imports
- (#2050).
+  (#2050).
 * Bugfix for corrupt location reporting in many cases (#2043).
 * Add a list of extensions to applicable class pages (#2053).
 
