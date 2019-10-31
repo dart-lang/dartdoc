@@ -3235,6 +3235,8 @@ abstract class ModelElement extends Canonicalization
         if (e is FunctionElement) {
           newModelElement = ModelFunction(e, library, packageGraph);
         } else if (e is GenericFunctionTypeElement) {
+          // TODO(scheglov) "e" cannot be both GenericFunctionTypeElement,
+          // and FunctionTypeAliasElement or GenericTypeAliasElement.
           if (e is FunctionTypeAliasElement) {
             assert(e.name != '');
             newModelElement = ModelFunctionTypedef(e, library, packageGraph);
@@ -3495,7 +3497,9 @@ abstract class ModelElement extends Canonicalization
   }
 
   bool get canHaveParameters =>
-      element is ExecutableElement || element is FunctionTypedElement;
+      element is ExecutableElement ||
+      element is FunctionTypedElement ||
+      element is FunctionTypeAliasElement;
 
   ModelElement _buildCanonicalModelElement() {
     Container preferredClass;
@@ -4029,6 +4033,9 @@ abstract class ModelElement extends Canonicalization
         } else {
           params = (element as FunctionTypedElement).parameters;
         }
+      }
+      if (params == null && element is FunctionTypeAliasElement) {
+        params = (element as FunctionTypeAliasElement).function.parameters;
       }
 
       _parameters = UnmodifiableListView<Parameter>(params
