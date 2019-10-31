@@ -798,21 +798,21 @@ class Class extends Container
     return _defaultConstructor;
   }
 
-  bool get hasApplicableExtensions => applicableExtensions.isNotEmpty;
+  bool get hasPotentiallyApplicableExtensions => potentiallyApplicableExtensions.isNotEmpty;
 
-  List<Extension> _applicableExtensions;
-  Iterable<Extension> get applicableExtensions {
-    if (_applicableExtensions == null) {
+  List<Extension> _potentiallyApplicableExtensions;
+  Iterable<Extension> get potentiallyApplicableExtensions {
+    if (_potentiallyApplicableExtensions == null) {
       if (name.contains('BaseTest')) {
         print('hello');
         print(packageGraph.extensions.firstWhere((e) => e.name == 'Uphill').couldApplyTo(this));
       }
-      _applicableExtensions = utils
+      _potentiallyApplicableExtensions = utils
           .filterNonDocumented(packageGraph.extensions)
           .where((e) => e.couldApplyTo(this))
           .toList(growable: false);
     }
-    return _applicableExtensions;
+    return _potentiallyApplicableExtensions;
   }
 
   Iterable<Method> get allInstanceMethods =>
@@ -974,7 +974,7 @@ class Class extends Container
       hasPublicInterfaces ||
       hasPublicSuperChainReversed ||
       hasPublicImplementors ||
-      hasApplicableExtensions;
+      hasPotentiallyApplicableExtensions;
 
   @override
   bool get hasPublicOperators =>
@@ -1349,53 +1349,26 @@ class Extension extends Container
         ElementType.from(_extension.extendedType, library, packageGraph);
   }
 
-  /// Returns [true] if [this] extension could theoretically apply to [e] if
-  /// both are imported, possibly with show/hide.
-  bool couldApplyTo(Class c) {
-    if (name == 'Int8Pointer' && c.name == 'Pointer')
-      print ('hi');
-    return _couldApplyTo(
+  /// Returns [true] if this extension could be applicable to any possible
+  /// instantiation of [c].
+  bool couldApplyTo(Class c) => _couldApplyTo(
         extendedType.type, c.element, packageGraph.typeSystem);
-  }
 
-  static bool _couldApplyTo(DartType thisType, ClassElement element, Dart2TypeSystem typeSystem) {
-    if (element.name == 'SuperMegaTron') {
-      print('hello');
-    }
-
-    /*if (thisType is TypeParameterType) {
-      return _couldApplyTo(thisType.element.bound, element, typeSystem);
-    }*/
-
-    InterfaceType classInstantiated = typeSystem.instantiateToBounds(element.thisType);
-    classInstantiated = typeSystem.instantiateType(element.thisType,
+  static bool _couldApplyTo(
+      DartType extendedType, ClassElement element, Dart2TypeSystem typeSystem) {
+    InterfaceTypeImpl classInstantiated = typeSystem.instantiateToBounds(
+        element.thisType);
+    classInstantiated = element.instantiate(typeArguments:
         classInstantiated.typeArguments.map((a) {
           if (a.isDynamic) {
             return typeSystem.typeProvider.neverType;
           }
           return a;
-        }).toList());
+        }).toList(),
+    nullabilitySuffix: classInstantiated.nullabilitySuffix);
 
-
-    if (typeSystem.isSubtypeOf(classInstantiated, thisType)) {
-      return true;
-    }
-
-    return classInstantiated.element == thisType.element;
-/*
-    if (thisType is TypeParameterType) {
-      return (thisType.element.bound as InterfaceTypeImpl).asInstanceOf(element) != null;
-    }
-    if (!typeSystem.isAssignableTo(element.type, typeSystem.leastUpperBound(element.type, thisType))) return false;
-    if ((thisType as InterfaceTypeImpl).asInstanceOf(element) == null)
-      return false;
-    if (typeSystem.isSubtypeOf(element.type, thisType)) return true;
-    /*if (thisType is InterfaceTypeImpl) {
-      return thisType.asInstanceOf(element) != null;
-    }
-     */
-    return (element.type as InterfaceTypeImpl).asInstanceOf(thisType.element as ClassElement) != null;
-    throw UnimplementedError('unrecognized DartType');*/
+    return (classInstantiated.element == extendedType.element) ||
+        typeSystem.isSubtypeOf(classInstantiated, extendedType);
   }
 
   @override
@@ -5087,12 +5060,13 @@ class PackageGraph {
       package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
         library.allClasses.forEach(_addToImplementors);
+        // TODO(jcollins-g): Use a better data structure.
         _extensions.addAll(library.extensions);
       });
     });
     _implementors.values.forEach((l) => l.sort());
-    _extensions.sort(byName);
     allImplementorsAdded = true;
+    _extensions.sort(byName);
     allExtensionsAdded = true;
 
     // We should have found all special classes by now.

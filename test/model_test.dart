@@ -2179,18 +2179,18 @@ void main() {
     });
 
     test('classes know about applicableExtensions', () {
-      expect(apple.applicableExtensions, orderedEquals([ext]));
-      expect(string.applicableExtensions,
+      expect(apple.potentiallyApplicableExtensions, orderedEquals([ext]));
+      expect(string.potentiallyApplicableExtensions,
           isNot(contains(documentOnceReexportOne)));
-      expect(string.applicableExtensions, contains(documentOnceReexportTwo));
-      expect(baseTest.applicableExtensions, isEmpty);
-      expect(anotherExtended.applicableExtensions, orderedEquals([uphill]));
-      expect(bigAnotherExtended.applicableExtensions, orderedEquals([uphill]));
+      expect(string.potentiallyApplicableExtensions, contains(documentOnceReexportTwo));
+      expect(baseTest.potentiallyApplicableExtensions, isEmpty);
+      expect(anotherExtended.potentiallyApplicableExtensions, orderedEquals([uphill]));
+      expect(bigAnotherExtended.potentiallyApplicableExtensions, orderedEquals([uphill]));
     });
 
     test('type parameters and bounds work with applicableExtensions', () {
-      expect(superMegaTron.applicableExtensions, orderedEquals([leg]));
-      expect(megaTron.applicableExtensions, orderedEquals([arm, leg]));
+      expect(superMegaTron.potentiallyApplicableExtensions, orderedEquals([leg]));
+      expect(megaTron.potentiallyApplicableExtensions, orderedEquals([arm, leg]));
     });
 
     // TODO(jcollins-g): implement feature and update tests
