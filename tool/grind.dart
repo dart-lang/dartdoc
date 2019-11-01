@@ -425,6 +425,8 @@ dependency_overrides:
     path: '${sdkClone.path}/pkg/front_end'
   kernel:
     path: '${sdkClone.path}/pkg/kernel'
+  _fe_analyzer_shared:
+    path: '${sdkClone.path}/pkg/_fe_analyzer_shared'
 ''', mode: FileMode.append);
   await launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: dartdocSdk.path);
