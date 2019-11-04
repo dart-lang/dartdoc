@@ -10,6 +10,8 @@ import 'dart:collection';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:analyzer/src/dart/element/type.dart' show InterfaceTypeImpl;
+import 'package:analyzer/src/generated/type_system.dart' show Dart2TypeSystem;
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 
@@ -311,6 +313,27 @@ abstract class DefinedElementType extends ElementType {
     }
     return _typeArguments;
   }
+
+  InterfaceTypeImpl _instantiatedType;
+
+  /// Return this type, instantiated to upper-bounds.
+  DartType get instantiatedType {
+    if (_instantiatedType == null) {
+      assert(element is Class || element is ModelFunctionTyped);
+      Dart2TypeSystem typeSystem = packageGraph.typeSystem;
+      _instantiatedType = typeSystem
+          .instantiateToBounds((element.element as ClassElement).thisType);
+      _instantiatedType = (element.element as ClassElement).instantiate(
+          typeArguments: _instantiatedType.typeArguments.map((a) {
+            if (a.isDynamic) {
+              return typeSystem.typeProvider.neverType;
+            }
+            return a;
+          }).toList(),
+          nullabilitySuffix: _instantiatedType.nullabilitySuffix);
+    }
+    return _instantiatedType;
+  }
 }
 
 /// Any callable ElementType will mix-in this class, whether anonymous or not.
@@ -446,8 +469,8 @@ class CallableGenericTypeAliasElementType extends ParameterizedElementType
   @override
   ElementType get returnType {
     if (_returnType == null) {
-      _returnType = ElementType.from(
-          type.returnType, library, packageGraph, this);
+      _returnType =
+          ElementType.from(type.returnType, library, packageGraph, this);
     }
     return _returnType;
   }

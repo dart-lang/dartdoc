@@ -36,14 +36,12 @@ import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
-import 'package:analyzer/src/dart/element/type.dart' show InterfaceTypeImpl;
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:analyzer/src/generated/type_system.dart' show Dart2TypeSystem;
 import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:analyzer/src/source/sdk_ext.dart';
 import 'package:args/args.dart';
@@ -1347,24 +1345,9 @@ class Extension extends Container
   /// Returns [true] if there is an instantiation of [c] to which this extension
   /// could be applied.
   bool couldApplyTo(Class c) =>
-      _couldApplyTo(extendedType.type, c.element, packageGraph.typeSystem);
-
-  static bool _couldApplyTo(
-      DartType extendedType, ClassElement element, Dart2TypeSystem typeSystem) {
-    InterfaceTypeImpl classInstantiated =
-        typeSystem.instantiateToBounds(element.thisType);
-    classInstantiated = element.instantiate(
-        typeArguments: classInstantiated.typeArguments.map((a) {
-          if (a.isDynamic) {
-            return typeSystem.typeProvider.neverType;
-          }
-          return a;
-        }).toList(),
-        nullabilitySuffix: classInstantiated.nullabilitySuffix);
-
-    return (classInstantiated.element == extendedType.element) ||
-        typeSystem.isSubtypeOf(classInstantiated, extendedType);
-  }
+      (c.element == extendedType.element.element) ||
+      packageGraph.typeSystem
+          .isSubtypeOf(c.modelType.instantiatedType, extendedType.type);
 
   @override
   ModelElement get enclosingElement => library;
@@ -1418,7 +1401,7 @@ class Extension extends Container
   }
 
   @override
-  DefinedElementType get modelType => super.modelType;
+  ParameterizedElementType get modelType => super.modelType;
 
   List<ModelElement> _allModelElements;
 
