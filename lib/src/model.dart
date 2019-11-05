@@ -1342,8 +1342,8 @@ class Extension extends Container
         ElementType.from(_extension.extendedType, library, packageGraph);
   }
 
-  /// Returns [true] if there is an instantiation of [c] to which this extension
-  /// could be applied.
+  /// Returns [true] if there is an instantiation of [c] to which this
+  /// extension could be applied.
   bool couldApplyTo(Class c) =>
       (c.element == extendedType.element.element) ||
       packageGraph.typeSystem
