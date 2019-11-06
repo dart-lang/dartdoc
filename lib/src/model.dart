@@ -4480,7 +4480,7 @@ abstract class ModelElement extends Canonicalization
       bool wasDeprecated = false;
       if (positionalArgs.length == 4) {
         // Supports the original form of the animation tag for backward
-        // compatibility.`
+        // compatibility.
         uniqueId = positionalArgs.removeAt(0);
         wasDeprecated = true;
       } else if (positionalArgs.length == 3) {
