@@ -10,7 +10,8 @@ import 'dart:collection';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/src/dart/element/type.dart' show InterfaceTypeImpl;
+import 'package:analyzer/src/dart/element/type.dart'
+    show InterfaceTypeImpl, TypeParameterTypeImpl;
 import 'package:analyzer/src/generated/type_system.dart' show Dart2TypeSystem;
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
@@ -256,6 +257,11 @@ class TypeParameterElementType extends DefinedElementType {
     }
     return _nameWithGenerics;
   }
+
+  @override
+  ClassElement get _boundClassElement => interfaceType.element;
+  @override
+  InterfaceType get interfaceType => (type as TypeParameterTypeImpl).bound;
 }
 
 /// An [ElementType] associated with an [Element].
@@ -314,23 +320,34 @@ abstract class DefinedElementType extends ElementType {
     return _typeArguments;
   }
 
+  /// By default, the bound is the type of the declared class.
+  ClassElement get _boundClassElement => (element.element as ClassElement);
+  Class get boundClass =>
+      ModelElement.fromElement(_boundClassElement, packageGraph);
+  InterfaceType get interfaceType => type;
+
   InterfaceTypeImpl _instantiatedType;
 
   /// Return this type, instantiated to upper-bounds.
   DartType get instantiatedType {
     if (_instantiatedType == null) {
-      assert(element is Class || element is ModelFunctionTyped);
+      if (type.name == 'Pointer') {
+        print('hi');
+      }
       Dart2TypeSystem typeSystem = packageGraph.typeSystem;
-      _instantiatedType = typeSystem
-          .instantiateToBounds((element.element as ClassElement).thisType);
-      _instantiatedType = (element.element as ClassElement).instantiate(
-          typeArguments: _instantiatedType.typeArguments.map((a) {
-            if (a.isDynamic) {
-              return typeSystem.typeProvider.neverType;
-            }
-            return a;
-          }).toList(),
-          nullabilitySuffix: _instantiatedType.nullabilitySuffix);
+      if (!interfaceType.typeArguments.every((t) => t is InterfaceType)) {
+        _instantiatedType = typeSystem.instantiateToBounds(interfaceType);
+        _instantiatedType = _boundClassElement.instantiate(
+            typeArguments: _instantiatedType.typeArguments.map((a) {
+              if (a.isDynamic) {
+                return typeSystem.typeProvider.neverType;
+              }
+              return a;
+            }).toList(),
+            nullabilitySuffix: _instantiatedType.nullabilitySuffix);
+      } else {
+        _instantiatedType = interfaceType;
+      }
     }
     return _instantiatedType;
   }

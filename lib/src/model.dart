@@ -64,6 +64,8 @@ import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:quiver/iterables.dart' as quiver;
 
+import 'extension_tree.dart';
+
 int byName(Nameable a, Nameable b) =>
     compareAsciiLowerCaseNatural(a.name, b.name);
 
@@ -800,10 +802,13 @@ class Class extends Container
   List<Extension> _potentiallyApplicableExtensions;
   Iterable<Extension> get potentiallyApplicableExtensions {
     if (_potentiallyApplicableExtensions == null) {
+      if (name == 'Megatron') {
+        print('hello');
+      }
       _potentiallyApplicableExtensions = utils
-          .filterNonDocumented(packageGraph.extensions)
-          .where((e) => e.couldApplyTo(this))
-          .toList(growable: false);
+          .filterNonDocumented(packageGraph.extensions.allCouldApplyTo(this))
+          .toList(growable: false)
+            ..sort(byName);
     }
     return _potentiallyApplicableExtensions;
   }
@@ -5045,17 +5050,26 @@ class PackageGraph {
       package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
         library.allClasses.forEach(_addToImplementors);
-        // TODO(jcollins-g): Use a better data structure.
-        _extensions.addAll(library.extensions);
       });
     });
     _implementors.values.forEach((l) => l.sort());
     allImplementorsAdded = true;
-    _extensions.sort(byName);
-    allExtensionsAdded = true;
 
     // We should have found all special classes by now.
     specialClasses.assertSpecials();
+
+    // Build the extension tracking tree.  We have to have found Object
+    // first, so the traversal is separate from special object discovery.
+    _extensions = ExtensionNode.fromRoot(this);
+    documentedPackages.toList().forEach((package) {
+      package._libraries.forEach((library) {
+        for (Extension e in library.extensions) {
+          ExtensionNode returned = _extensions.addExtension(e);
+          assert(returned != null && returned.extensions.contains(e));
+        }
+      });
+    });
+    allExtensionsAdded = true;
   }
 
   /// Generate a list of futures for any docs that actually require precaching.
@@ -5119,7 +5133,7 @@ class PackageGraph {
     return _implementors;
   }
 
-  Iterable<Extension> get extensions {
+  ExtensionNode get extensions {
     assert(allExtensionsAdded);
     return _extensions;
   }
@@ -5161,9 +5175,8 @@ class PackageGraph {
   /// Map of Class.href to a list of classes implementing that class
   final Map<String, List<Class>> _implementors = Map();
 
-  /// A list of extensions that exist in the package graph.
-  // TODO(jcollins-g): Consider implementing a smarter structure for this.
-  final List<Extension> _extensions = List();
+  /// A tree of extensions that exist in the package graph.
+  ExtensionNode _extensions;
 
   /// PackageMeta for the default package.
   final PackageMeta packageMeta;

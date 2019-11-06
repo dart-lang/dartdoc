@@ -2186,6 +2186,21 @@ void main() {
       expect(documentOnceReexportTwo.isCanonical, isTrue);
     });
 
+    test('extension tree structure is built correctly', () {
+      expect(
+          packageGraph.extensions.children
+              .any((e) => e.extensions.any((e) => e.name == 'Arm')),
+          isTrue);
+      expect(
+          packageGraph.extensions.children
+              .any((e) => e.extensions.any((e) => e.name == 'Leg')),
+          isTrue);
+      expect(
+          packageGraph.extensions.children
+              .any((e) => e.extensions.any((e) => e.name == 'SymDiff')),
+          isTrue);
+    });
+
     test('classes know about applicableExtensions', () {
       expect(apple.potentiallyApplicableExtensions, orderedEquals([ext]));
       expect(string.potentiallyApplicableExtensions,
@@ -2193,8 +2208,8 @@ void main() {
       expect(string.potentiallyApplicableExtensions,
           contains(documentOnceReexportTwo));
       expect(baseTest.potentiallyApplicableExtensions, isEmpty);
-      expect(anotherExtended.potentiallyApplicableExtensions,
-          orderedEquals([uphill]));
+      expect(
+          anotherExtended.potentiallyApplicableExtensions, orderedEquals([]));
       expect(bigAnotherExtended.potentiallyApplicableExtensions,
           orderedEquals([uphill]));
     });
