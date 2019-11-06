@@ -452,6 +452,23 @@ class Dog implements Cat, E {
   void abstractMethod() {}
 }
 
+/// Animation in an enum
+enum EnumWithAnimation {
+  /// Animation enum value1
+  ///
+  /// {@animation 100 100 http://host/path/to/video1.mp4}
+  /// {@animation 100 100 http://host/path/to/video2.mp4}
+  /// More docs
+  value1,
+
+  /// Animation enum value2
+  ///
+  /// {@animation 100 100 http://host/path/to/video1.mp4}
+  /// {@animation 100 100 http://host/path/to/video2.mp4}
+  /// More docs
+  value2,
+}
+
 abstract class E {}
 
 class F<T extends String> extends Dog with _PrivateAbstractClass {
