@@ -7,6 +7,7 @@ library dartdoc.model_test;
 import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/extension_tree.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/special_elements.dart';
@@ -2187,12 +2188,15 @@ void main() {
     });
 
     test('extension tree structure is built correctly', () {
+      ExtensionNode megaTron = packageGraph.extensions.children
+          .firstWhere((n) => n.extendedType.name.contains('Megatron'));
+      expect(megaTron.extensions, isEmpty);
       expect(
-          packageGraph.extensions.children
+          megaTron.children
               .any((e) => e.extensions.any((e) => e.name == 'Arm')),
           isTrue);
       expect(
-          packageGraph.extensions.children
+          megaTron.children
               .any((e) => e.extensions.any((e) => e.name == 'Leg')),
           isTrue);
       expect(
@@ -2208,8 +2212,8 @@ void main() {
       expect(string.potentiallyApplicableExtensions,
           contains(documentOnceReexportTwo));
       expect(baseTest.potentiallyApplicableExtensions, isEmpty);
-      expect(
-          anotherExtended.potentiallyApplicableExtensions, orderedEquals([]));
+      expect(anotherExtended.potentiallyApplicableExtensions,
+          orderedEquals([uphill]));
       expect(bigAnotherExtended.potentiallyApplicableExtensions,
           orderedEquals([uphill]));
     });

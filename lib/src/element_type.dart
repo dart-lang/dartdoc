@@ -337,14 +337,14 @@ abstract class DefinedElementType extends ElementType {
       Dart2TypeSystem typeSystem = packageGraph.typeSystem;
       if (!interfaceType.typeArguments.every((t) => t is InterfaceType)) {
         _instantiatedType = typeSystem.instantiateToBounds(interfaceType);
-        _instantiatedType = _boundClassElement.instantiate(
+        /*_instantiatedType = _boundClassElement.instantiate(
             typeArguments: _instantiatedType.typeArguments.map((a) {
               if (a.isDynamic) {
                 return typeSystem.typeProvider.neverType;
               }
               return a;
             }).toList(),
-            nullabilitySuffix: _instantiatedType.nullabilitySuffix);
+            nullabilitySuffix: _instantiatedType.nullabilitySuffix);*/
       } else {
         _instantiatedType = interfaceType;
       }
