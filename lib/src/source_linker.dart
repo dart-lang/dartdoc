@@ -6,7 +6,7 @@
 library dartdoc.source_linker;
 
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/model/model.dart';
 import 'package:path/path.dart' as path;
 
 final uriTemplateRegexp = RegExp(r'(%[frl]%)');

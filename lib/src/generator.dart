@@ -7,7 +7,7 @@ library dartdoc.generator;
 
 import 'dart:async' show Stream, Future;
 
-import 'package:dartdoc/src/model.dart' show PackageGraph;
+import 'package:dartdoc/src/model/model.dart' show PackageGraph;
 
 /// An abstract class that defines a generator that generates documentation for
 /// a given package.
