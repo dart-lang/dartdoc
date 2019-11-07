@@ -6,7 +6,7 @@
 library dartdoc.models;
 
 import 'dart:async';
-import 'dart:collection' show UnmodifiableListView;
+import 'dart:collection' show HashSet, UnmodifiableListView;
 import 'dart:convert';
 import 'dart:io';
 
@@ -63,8 +63,6 @@ import 'package:package_config/discovery.dart' as package_config;
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:quiver/iterables.dart' as quiver;
-
-import 'extension_tree.dart';
 
 int byName(Nameable a, Nameable b) =>
     compareAsciiLowerCaseNatural(a.name, b.name);
@@ -803,7 +801,8 @@ class Class extends Container
   Iterable<Extension> get potentiallyApplicableExtensions {
     if (_potentiallyApplicableExtensions == null) {
       _potentiallyApplicableExtensions = utils
-          .filterNonDocumented(packageGraph.extensions.allCouldApplyTo(this))
+          .filterNonDocumented(packageGraph.extensions)
+          .where((e) => e.couldApplyTo(this))
           .toList(growable: false)
             ..sort(byName);
     }
@@ -1342,6 +1341,49 @@ class Extension extends Container
       : super(element, library, packageGraph) {
     extendedType =
         ElementType.from(_extension.extendedType, library, packageGraph);
+  }
+
+  bool couldApplyTo(Class c) => _couldApplyTo(c.modelType);
+
+  /// Return true if this extension could apply to [t].
+  bool _couldApplyTo(DefinedElementType t) {
+    if (t.element.name == 'Implementor2' && name == 'ExtensionCheckLeft') {
+      print('hi');
+    }
+    return t.instantiatedType == extendedType.instantiatedType ||
+        (t.instantiatedType.element == extendedType.instantiatedType.element &&
+            isSubtypeOf(t)) ||
+        isBoundSupertypeTo(t);
+  }
+
+  /// The instantiated to bounds [extendedType] of this extension is a subtype of
+  /// [t].
+  bool isSubtypeOf(DefinedElementType t) => packageGraph.typeSystem
+      .isSubtypeOf(extendedType.instantiatedType, t.instantiatedType);
+
+  bool isBoundSupertypeTo(DefinedElementType t) =>
+      _isBoundSupertypeTo(t.type, HashSet());
+
+  /// Returns true if at least one supertype (including via mixins and
+  /// interfaces) is equivalent to or a subtype of [extendedType] when
+  /// instantiated to bounds.
+  bool _isBoundSupertypeTo(
+      InterfaceType superType, HashSet<InterfaceType> visited) {
+    ClassElement superClass = superType?.element;
+    if (visited.contains(superType)) return false;
+    visited.add(superType);
+    if (superClass == extendedType.type.element &&
+        (superType == extendedType.instantiatedType ||
+            packageGraph.typeSystem
+                .isSubtypeOf(superType, extendedType.instantiatedType))) {
+      return true;
+    }
+    List<InterfaceType> supertypes = [];
+    ClassElementImpl.collectAllSupertypes(supertypes, superType, null);
+    for (InterfaceType toVisit in supertypes) {
+      if (_isBoundSupertypeTo(toVisit, visited)) return true;
+    }
+    return false;
   }
 
   @override
@@ -5040,26 +5082,15 @@ class PackageGraph {
       package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
         library.allClasses.forEach(_addToImplementors);
+        _extensions.addAll(library.extensions);
       });
     });
     _implementors.values.forEach((l) => l.sort());
     allImplementorsAdded = true;
+    allExtensionsAdded = true;
 
     // We should have found all special classes by now.
     specialClasses.assertSpecials();
-
-    // Build the extension tracking tree.  We have to have found Object
-    // first, so the traversal is separate from special object discovery.
-    _extensions = ExtensionNode.fromRoot(this);
-    documentedPackages.toList().forEach((package) {
-      package._libraries.forEach((library) {
-        for (Extension e in library.extensions) {
-          ExtensionNode returned = _extensions.addExtension(e);
-          assert(returned != null && returned.extensions.contains(e));
-        }
-      });
-    });
-    allExtensionsAdded = true;
   }
 
   /// Generate a list of futures for any docs that actually require precaching.
@@ -5123,7 +5154,7 @@ class PackageGraph {
     return _implementors;
   }
 
-  ExtensionNode get extensions {
+  Iterable<Extension> get extensions {
     assert(allExtensionsAdded);
     return _extensions;
   }
@@ -5165,8 +5196,8 @@ class PackageGraph {
   /// Map of Class.href to a list of classes implementing that class
   final Map<String, List<Class>> _implementors = Map();
 
-  /// A tree of extensions that exist in the package graph.
-  ExtensionNode _extensions;
+  /// A list of extensions that exist in the package graph.
+  final List<Extension> _extensions = [];
 
   /// PackageMeta for the default package.
   final PackageMeta packageMeta;
