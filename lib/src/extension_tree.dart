@@ -11,16 +11,19 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 
-/// This class defines a node in an [Extension] tree.  An extension tree's
-/// nodes are arranged given the following:
+/// This class defines a node in an [Extension] tree.  A hybrid of a heap and
+/// a type tree, an extension tree's nodes are arranged to the following
+/// invariants on public methods:
 ///
 /// - Each node contains the set of extensions declared as being directly on
-///   [extendedType].
-/// - All parents, recursively, of a node contain extensions that could
-///   apply to any instantiated type of [extendedType.bound].
+///   [extendedType], or an equivalent type.
+/// - All parents, recursively, of a node and the node itself contain extensions
+///   that could apply to any instantiated type of [extendedType].
 ///
-/// A tree of ExtensionNodes will have a root node associated with the [Object]
-/// type and more specific types will be further down the tree.
+/// An extension "could apply" to a type if there exists some valid
+/// instantiation of that type where the extension would be applicable if
+/// made accessible in the namespace per:
+/// https://github.com/dart-lang/language/blob/master/accepted/2.6/static-extension-members/feature-specification.md#implicit-extension-member-invocation
 class ExtensionNode {
   /// The set of extensions that directly apply to [extendedType].
   final Set<Extension> extensions;
@@ -31,12 +34,12 @@ class ExtensionNode {
 
   /// The set of seen [ModelElement]s backing [extendedType]s in this tree.
   /// Only valid at the root.
-  final Set<ModelElement> _seen = {};
+  Set<ModelElement> _seen;
 
   /// The set of seen [ModelElement]s that have had empty nodes inserted in the
   /// tree if appropriate, or simply seen more than once if not.  Subset of
   /// [_seen].
-  final Set<ModelElement> _sparesInserted = {};
+  Set<ModelElement> _genericsInserted;
 
   /// The type all [extensions] are extending.
   final DefinedElementType extendedType;
@@ -64,42 +67,34 @@ class ExtensionNode {
     }
   }
 
-  /// Insert a node for the supertype if there are a lot of type-specific
-  /// extensions for the same class.  Makes the heap more efficient for
+  /// Insert a node for the instantiated-to-bound type of [newExtendedType]s
+  /// class if there are a lot of type-specific extensions for the same class.
+  /// Makes the structure more efficient in the C++ template-emulation use case
+  /// for extension methods.
   void _maybeInsertGenericNode(DefinedElementType newExtendedType) {
-    if (!_seen.contains(newExtendedType.element)) {
+    if (!(_seen ??= {}).contains(newExtendedType.element)) {
       _seen.add(newExtendedType.element);
       return;
     }
-    if (!_sparesInserted.contains(newExtendedType.element)) {
-      if (newExtendedType.element.name == 'Megatron') {
-        print('hi');
-      }
-      ElementType spareType = newExtendedType.element.modelType;
-      if (spareType is DefinedElementType) {
-        if (spareType.name == 'Pointer') {
-          print('hi');
-        }
-        if (spareType.typeArguments.isNotEmpty &&
-            spareType.type != extendedType.type) {
-          ElementType spareElementType = ElementType.from(
-              spareType.instantiatedType,
+    if (!(_genericsInserted ??= {}).contains(newExtendedType.element)) {
+      ElementType genericType = newExtendedType.element.modelType;
+      if (genericType is DefinedElementType) {
+        if (genericType.typeArguments.isNotEmpty &&
+            genericType.type != extendedType.type) {
+          ElementType genericElementType = ElementType.from(
+              genericType.instantiatedType,
               newExtendedType.element.library,
               packageGraph);
-          _addExtensionNode(ExtensionNode(spareElementType, packageGraph, {}));
+          _addExtensionNode(ExtensionNode(genericElementType, packageGraph, {}));
         }
       }
-      _sparesInserted.add(newExtendedType.element);
+      _genericsInserted.add(newExtendedType.element);
     }
   }
 
   /// Returns the added or modified extension node.  If the extension is
   /// already in the tree, will return the node it was found in.
   ExtensionNode addExtension(Extension newExtension) {
-    if (newExtension.name == 'StructPointer' ||
-        newExtension.name == 'DoublePointer') {
-      print('hi');
-    }
     assert(identical(newExtension.packageGraph, packageGraph));
     ExtensionNode newNode =
         ExtensionNode(newExtension.extendedType, packageGraph, {newExtension});
@@ -108,16 +103,12 @@ class ExtensionNode {
   }
 
   ExtensionNode _addExtensionNode(ExtensionNode newNode) {
-    if (newNode.extensions.isEmpty) {
-      print('hi');
-    }
     if (extendedType.instantiatedType ==
         newNode.extendedType.instantiatedType) {
       // Extended on the exact same type.  Add to this set.
       _merge(newNode);
       return this;
     }
-    //assert(!newNode.couldApplyTo(extendedType));
 
     Set<ExtensionNode> foundApplicable = {};
     for (ExtensionNode child in children) {
@@ -139,8 +130,6 @@ class ExtensionNode {
             newNode.isBoundSuperclassTo(applicable.extendedType)) {
           _addChild(applicable);
           return applicable._addExtensionNode(newNode);
-        } else {
-          print('do nothin');
         }
       }
     }
@@ -151,39 +140,9 @@ class ExtensionNode {
       }
     }
 
-    /*
-    assert(foundApplicable.length <= 1,
-        'tree structure invalid, multiple possible parents found');
-    if (foundApplicable.isNotEmpty) {
-      return foundApplicable.first._addExtensionNode(newNode);
-    }
-    // Some children of this node may need to be reparented under this
-    // node.
-
-    Set<ExtensionNode> reparentThese = {};
-    for (ExtensionNode child in children) {
-      if (newNode.extendedType.type == child.extendedType.type) {
-        // Any reparenting should already have taken place.
-        assert(reparentThese.isEmpty);
-        return child._addExtensionNode(newNode);
-      }
-      else if (newNode.isSuperType(child.extendedType)) {
-        reparentThese.add(child);
-      }
-    }
-    for (ExtensionNode reparentMe in reparentThese) {
-      if (reparentMe.extendedType.name == 'String' && newNode.extendedType.name == 'String') {
-        print('wtf');
-      }
-      reparentMe._detach();
-      newNode._addChild(reparentMe);
-    }
-    */
     _addChild(newNode);
     return newNode;
   }
-
-  List<ExtensionNode> get childList => children.toList();
 
   /// Add a child, unconditionally.
   void _addChild(ExtensionNode newChild) {
@@ -191,16 +150,21 @@ class ExtensionNode {
     newChild.parent = this;
   }
 
-  /// The instantiated to upper bounds [extendedType] of this node is a supertype of [t].
+  /// The instantiated to bounds [extendedType] of this node is a supertype of
+  /// [t].
   bool isSupertypeOf(DefinedElementType t) => packageGraph.typeSystem
       .isSubtypeOf(t.instantiatedType, extendedType.instantiatedType);
 
-  /// The instantiated to upper bounds [extendedType] of this node is a subtype of [t].
+  /// The instantiated to bounds [extendedType] of this node is a subtype of
+  /// [t].
   bool isSubtypeOf(DefinedElementType t) => packageGraph.typeSystem
       .isSubtypeOf(extendedType.instantiatedType, t.instantiatedType);
 
-  /// The class from this [extendedType] is a superclass of the class from [t]
-  /// and any type parameters from [t] result in an instantiated subtype on that class.
+  /// The class from this [extendedType]:
+  ///
+  /// 1) is a superclass of the class associated with [t] and
+  /// 2) any type parameters from [t] instantiated with that superclass type
+  ///    result in a subtype of [t].
   bool isBoundSuperclassTo(DefinedElementType t) {
     InterfaceType supertype = (t.type.element is ClassElement
         ? (t.type.element as ClassElement)?.supertype
@@ -219,15 +183,11 @@ class ExtensionNode {
     return false;
   }
 
+  /// Return true if the [extensions] in this node could apply to [t].
+  /// If true, the children of this node may also apply but must be checked
+  /// individually with their [couldApplyTo] methods. If false, neither this
+  /// node's extensions nor its children could apply.
   bool couldApplyTo(DefinedElementType t) {
-    if (t.instantiatedType.element.name == 'Set' &&
-        extendedType.instantiatedType.element.name == 'Set') {
-      print('hello');
-    }
-    if (toString().contains('Pointer') &&
-        t.nameWithGenerics.contains('Pointer')) {
-      print('hello');
-    }
     return t.instantiatedType == extendedType.instantiatedType ||
         (t.instantiatedType.element == extendedType.instantiatedType.element &&
             isSubtypeOf(t)) ||
@@ -254,6 +214,8 @@ class ExtensionNode {
   bool operator ==(other) => extendedType.type == other.extendedType.type;
 
   @override
+  /// Intended for debugging only.
+  /// Format : {ExtensionName1, ExtensionName2, ...} => extendedType (extendedType.instantiatedType)
   String toString() =>
       '{${extensions.map((e) => e.name).join(', ')}} => ${extendedType.toString()}  (${extendedType.instantiatedType.toString()})';
 }

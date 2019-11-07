@@ -22,7 +22,6 @@ import 'package:analyzer/dart/ast/ast.dart'
         InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/file_system/file_system.dart' as file_system;
 import 'package:analyzer/file_system/physical_file_system.dart';
@@ -42,6 +41,7 @@ import 'package:analyzer/src/generated/java_io.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:analyzer/src/generated/type_system.dart' show Dart2TypeSystem;
 import 'package:analyzer/src/source/package_map_resolver.dart';
 import 'package:analyzer/src/source/sdk_ext.dart';
 import 'package:args/args.dart';
@@ -802,9 +802,6 @@ class Class extends Container
   List<Extension> _potentiallyApplicableExtensions;
   Iterable<Extension> get potentiallyApplicableExtensions {
     if (_potentiallyApplicableExtensions == null) {
-      if (name == 'Megatron') {
-        print('hello');
-      }
       _potentiallyApplicableExtensions = utils
           .filterNonDocumented(packageGraph.extensions.allCouldApplyTo(this))
           .toList(growable: false)
@@ -1346,13 +1343,6 @@ class Extension extends Container
     extendedType =
         ElementType.from(_extension.extendedType, library, packageGraph);
   }
-
-  /// Returns [true] if there is an instantiation of [c] to which this
-  /// extension could be applied.
-  bool couldApplyTo(Class c) =>
-      (c.element == extendedType.element.element) ||
-      packageGraph.typeSystem
-          .isSubtypeOf(c.modelType.instantiatedType, extendedType.type);
 
   @override
   ModelElement get enclosingElement => library;
@@ -5208,7 +5198,7 @@ class PackageGraph {
   /// TODO(brianwilkerson) Replace the driver with the session.
   final AnalysisDriver driver;
   final AnalysisSession session;
-  final TypeSystem typeSystem;
+  final Dart2TypeSystem typeSystem;
   final DartSdk sdk;
 
   Map<Source, SdkLibrary> _sdkLibrarySources;

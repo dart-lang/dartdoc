@@ -2201,7 +2201,8 @@ void main() {
           isTrue);
       expect(
           packageGraph.extensions.children
-              .any((e) => e.extensions.any((e) => e.name == 'SymDiff')),
+              .firstWhere((n) => n.extendedType.name == 'Set')
+              .extensions.any((e) => e.name == 'SymDiff'),
           isTrue);
     });
 

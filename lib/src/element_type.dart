@@ -10,9 +10,6 @@ import 'dart:collection';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/src/dart/element/type.dart'
-    show InterfaceTypeImpl, TypeParameterTypeImpl;
-import 'package:analyzer/src/generated/type_system.dart' show Dart2TypeSystem;
 import 'package:dartdoc/src/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 
@@ -261,7 +258,7 @@ class TypeParameterElementType extends DefinedElementType {
   @override
   ClassElement get _boundClassElement => interfaceType.element;
   @override
-  InterfaceType get interfaceType => (type as TypeParameterTypeImpl).bound;
+  InterfaceType get interfaceType => (type as TypeParameterType).bound;
 }
 
 /// An [ElementType] associated with an [Element].
@@ -326,25 +323,13 @@ abstract class DefinedElementType extends ElementType {
       ModelElement.fromElement(_boundClassElement, packageGraph);
   InterfaceType get interfaceType => type;
 
-  InterfaceTypeImpl _instantiatedType;
+  InterfaceType _instantiatedType;
 
-  /// Return this type, instantiated to upper-bounds.
+  /// Return this type, instantiated to bounds if it isn't already.
   DartType get instantiatedType {
     if (_instantiatedType == null) {
-      if (type.name == 'Pointer') {
-        print('hi');
-      }
-      Dart2TypeSystem typeSystem = packageGraph.typeSystem;
       if (!interfaceType.typeArguments.every((t) => t is InterfaceType)) {
-        _instantiatedType = typeSystem.instantiateToBounds(interfaceType);
-        /*_instantiatedType = _boundClassElement.instantiate(
-            typeArguments: _instantiatedType.typeArguments.map((a) {
-              if (a.isDynamic) {
-                return typeSystem.typeProvider.neverType;
-              }
-              return a;
-            }).toList(),
-            nullabilitySuffix: _instantiatedType.nullabilitySuffix);*/
+        _instantiatedType = packageGraph.typeSystem.instantiateToBounds(interfaceType);
       } else {
         _instantiatedType = interfaceType;
       }
