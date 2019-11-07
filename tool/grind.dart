@@ -427,6 +427,8 @@ dependency_overrides:
     path: '${sdkClone.path}/pkg/kernel'
   _fe_analyzer_shared:
     path: '${sdkClone.path}/pkg/_fe_analyzer_shared'
+  telemetry:
+    path: '${sdkClone.path}/pkg/telemetry'
 ''', mode: FileMode.append);
   await launcher.runStreamed(sdkBin('pub'), ['get'],
       workingDirectory: dartdocSdk.path);
