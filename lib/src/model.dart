@@ -1347,9 +1347,6 @@ class Extension extends Container
 
   /// Return true if this extension could apply to [t].
   bool _couldApplyTo(DefinedElementType t) {
-    if (t.element.name == 'Implementor2' && name == 'ExtensionCheckLeft') {
-      print('hi');
-    }
     return t.instantiatedType == extendedType.instantiatedType ||
         (t.instantiatedType.element == extendedType.instantiatedType.element &&
             isSubtypeOf(t)) ||
