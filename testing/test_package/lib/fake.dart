@@ -1018,6 +1018,34 @@ class AnotherExtended<T extends BaseTest> extends BaseTest {}
 
 class BigAnotherExtended extends AnotherExtended<SubclassBaseTest> {}
 
+
+extension ExtensionCheckLeft on Implemented1 {
+  int get left => 3;
+}
+
+extension ExtensionCheckRight on Implemented2 {
+  int get right => 4;
+}
+
+extension ExtensionCheckCenter on BaseExtended {
+  bool get center => true;
+}
+
+class BaseExtended {}
+
+class Implemented1 {}
+
+class Implemented2 {}
+
+class Implementor extends BaseExtended implements Implemented1, Implemented2, Implementor2 {}
+
+extension ExtensionCheckImplementor2 on Implementor2 {
+  int get test => 1;
+}
+
+class Implementor2 implements Implemented1 {}
+
+
 //
 //
 //
