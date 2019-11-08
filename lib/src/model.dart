@@ -4469,13 +4469,17 @@ abstract class ModelElement extends Canonicalization
     // Matches valid javascript identifiers.
     final RegExp validIdRegExp = RegExp(r'^[a-zA-Z_]\w*$');
 
-    final Set<String> uniqueIds = Set<String>();
+    // Make sure we have a set to keep track of used IDs for this href.
+    package.usedAnimationIdsByHref[href] ??= {};
+
     String getUniqueId(String base) {
-      int count = 1;
-      String id = '$base$count';
-      while (uniqueIds.contains(id)) {
-        count++;
-        id = '$base$count';
+      int animationIdCount = 1;
+      String id = '$base$animationIdCount';
+      // We check for duplicate IDs so that we make sure not to collide with
+      // user-supplied ids on the same page.
+      while (package.usedAnimationIdsByHref[href].contains(id)) {
+        animationIdCount++;
+        id = '$base$animationIdCount';
       }
       return id;
     }
@@ -4513,13 +4517,13 @@ abstract class ModelElement extends Canonicalization
                 'and must not begin with a number.');
         return '';
       }
-      if (uniqueIds.contains(uniqueId)) {
+      if (package.usedAnimationIdsByHref[href].contains(uniqueId)) {
         warn(PackageWarning.invalidParameter,
             message: 'An animation has a non-unique identifier, "$uniqueId". '
                 'Animation identifiers must be unique.');
         return '';
       }
-      uniqueIds.add(uniqueId);
+      package.usedAnimationIdsByHref[href].add(uniqueId);
 
       int width;
       try {
@@ -4569,7 +4573,8 @@ abstract class ModelElement extends Canonicalization
 
 <div style="position: relative;">
   <div id="${overlayId}"
-       onclick="if ($uniqueId.paused) {
+       onclick="var $uniqueId = document.getElementById('$uniqueId');
+                if ($uniqueId.paused) {
                   $uniqueId.play();
                   this.style.display = 'none';
                 } else {
@@ -4586,7 +4591,8 @@ abstract class ModelElement extends Canonicalization
   </div>
   <video id="$uniqueId"
          style="width:${width}px; height:${height}px;"
-         onclick="if (this.paused) {
+         onclick="var $overlayId = document.getElementById('$overlayId');
+                  if (this.paused) {
                     this.play();
                     $overlayId.style.display = 'none';
                   } else {
@@ -6307,6 +6313,10 @@ class Package extends LibraryContainer
 
   /// Number of times we have invoked a tool for this package.
   int toolInvocationIndex = 0;
+
+  // The animation IDs that have already been used, indexed by the [href] of the
+  // object that contains them.
+  Map<String, Set<String>> usedAnimationIdsByHref = {};
 
   /// Pieces of the location split by [locationSplitter] (removing package: and
   /// slashes).

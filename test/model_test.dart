@@ -1176,8 +1176,16 @@ void main() {
     Method withAnimationInOneLineDoc;
     Method withAnimationInline;
     Method withAnimationOutOfOrder;
+    Enum enumWithAnimation;
+    EnumField enumValue1;
+    EnumField enumValue2;
 
     setUpAll(() {
+      enumWithAnimation = exLibrary.enums.firstWhere((c) => c.name == 'EnumWithAnimation');
+      enumValue1 = enumWithAnimation.constants
+          .firstWhere((m) => m.name == 'value1');
+      enumValue2 = enumWithAnimation.constants
+          .firstWhere((m) => m.name == 'value2');
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
       withAnimation =
           dog.allInstanceMethods.firstWhere((m) => m.name == 'withAnimation');
@@ -1236,6 +1244,14 @@ void main() {
     test("Out of order arguments work.", () {
       expect(withAnimationOutOfOrder.documentation,
           contains('<video id="outOfOrder"'));
+    });
+    test("Enum field animation identifiers are unique.", () {
+      expect(enumValue1.documentationAsHtml, contains('<video id="animation_1"'));
+      expect(enumValue1.documentationAsHtml, contains('<video id="animation_2"'));
+      expect(enumValue2.documentationAsHtml, isNot(contains('<video id="animation_1"')));
+      expect(enumValue2.documentationAsHtml, isNot(contains('<video id="animation_2"')));
+      expect(enumValue2.documentationAsHtml, contains('<video id="animation_3"'));
+      expect(enumValue2.documentationAsHtml, contains('<video id="animation_4"'));
     });
   });
 
