@@ -42,7 +42,11 @@ elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
   DARTDOC_GRIND_STEP=buildbot-no-publish pub run grinder test-with-analyzer-sdk
 else
   echo "Running main dartdoc bot"
-  pub run grinder buildbot
+  if echo "${DART_VERSION}" | grep -q dev ; then
+    pub run grinder buildbot-no-publish
+  else
+    pub run grinder buildbot
+  fi
   if [ -n "$COVERAGE_TOKEN" ] ; then
     coveralls-lcov --repo-token="${COVERAGE_TOKEN}" lcov.info
   fi
