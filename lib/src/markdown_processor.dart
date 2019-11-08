@@ -206,11 +206,13 @@ MatchingLinkResult _getMatchingLinkElement(
   if (refModelElement == null && element is ModelElement) {
     Container preferredClass = _getPreferredClass(element);
     if (preferredClass is Extension) {
-      element.warn(PackageWarning.notImplemented, message: 'Comment reference resolution inside extension methods is not yet implemented');
+      element.warn(PackageWarning.notImplemented,
+          message:
+              'Comment reference resolution inside extension methods is not yet implemented');
     } else {
-      refModelElement =
-          _MarkdownCommentReference(codeRef, element, commentRefs, preferredClass)
-              .computeReferredElement();
+      refModelElement = _MarkdownCommentReference(
+              codeRef, element, commentRefs, preferredClass)
+          .computeReferredElement();
     }
   }
 
@@ -649,8 +651,8 @@ class _MarkdownCommentReference {
       Inheritable overriddenElement =
           (element as Inheritable).overriddenElement;
       while (overriddenElement != null) {
-        tryClasses.add(
-            (element as Inheritable).overriddenElement.enclosingElement);
+        tryClasses
+            .add((element as Inheritable).overriddenElement.enclosingElement);
         overriddenElement = overriddenElement.overriddenElement;
       }
     }
@@ -669,7 +671,7 @@ class _MarkdownCommentReference {
 
     if (results.isEmpty && realClass != null) {
       for (Class superClass
-          in realClass.publicSuperChain.map((et) => et.element as Class)) {
+          in realClass.publicSuperChain.map((et) => et.element)) {
         if (!tryClasses.contains(superClass)) {
           _getResultsForClass(superClass);
         }
@@ -719,12 +721,12 @@ class _MarkdownCommentReference {
         // TODO(jcollins-g): get rid of reimplementation of identifier resolution
         //                   or integrate into ModelElement in a simpler way.
         List<Class> superChain = [tryClass];
-        superChain.addAll(tryClass.interfaces.map((t) => t.element as Class));
+        superChain.addAll(tryClass.interfaces.map((t) => t.element));
         // This seems duplicitous with our caller, but the preferredClass
         // hint matters with findCanonicalModelElementFor.
         // TODO(jcollins-g): This makes our caller ~O(n^2) vs length of superChain.
         //                   Fortunately superChains are short, but optimize this if it matters.
-        superChain.addAll(tryClass.superChain.map((t) => t.element as Class));
+        superChain.addAll(tryClass.superChain.map((t) => t.element));
         for (final c in superChain) {
           _getResultsForSuperChainElement(c, tryClass);
           if (results.isNotEmpty) break;
@@ -778,7 +780,9 @@ String _linkDocReference(String codeRef, Warnable warnable,
       // current element.
       warnable.warn(PackageWarning.unresolvedDocReference,
           message: codeRef,
-          referredFrom: warnable.documentationIsLocal ? null : warnable.documentationFrom);
+          referredFrom: warnable.documentationIsLocal
+              ? null
+              : warnable.documentationFrom);
     }
     return '<code>${htmlEscape.convert(codeRef)}</code>';
   }

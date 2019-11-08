@@ -6,7 +6,7 @@
 library dartdoc.models;
 
 import 'dart:async';
-import 'dart:collection' show UnmodifiableListView;
+import 'dart:collection' show HashSet, UnmodifiableListView;
 import 'dart:convert';
 import 'dart:io';
 
@@ -22,7 +22,6 @@ import 'package:analyzer/dart/ast/ast.dart'
         InstanceCreationExpression;
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/file_system/file_system.dart' as file_system;
 import 'package:analyzer/file_system/physical_file_system.dart';
@@ -36,7 +35,6 @@ import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
-import 'package:analyzer/src/dart/element/type.dart' show InterfaceTypeImpl;
 import 'package:analyzer/src/dart/sdk/sdk.dart';
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/generated/java_io.dart';
@@ -805,7 +803,8 @@ class Class extends Container
       _potentiallyApplicableExtensions = utils
           .filterNonDocumented(packageGraph.extensions)
           .where((e) => e.couldApplyTo(this))
-          .toList(growable: false);
+          .toList(growable: false)
+            ..sort(byName);
     }
     return _potentiallyApplicableExtensions;
   }
@@ -1344,26 +1343,44 @@ class Extension extends Container
         ElementType.from(_extension.extendedType, library, packageGraph);
   }
 
-  /// Returns [true] if there is an instantiation of [c] to which this extension
-  /// could be applied.
-  bool couldApplyTo(Class c) =>
-      _couldApplyTo(extendedType.type, c.element, packageGraph.typeSystem);
+  bool couldApplyTo(Class c) => _couldApplyTo(c.modelType);
 
-  static bool _couldApplyTo(
-      DartType extendedType, ClassElement element, Dart2TypeSystem typeSystem) {
-    InterfaceTypeImpl classInstantiated =
-        typeSystem.instantiateToBounds(element.thisType);
-    classInstantiated = element.instantiate(
-        typeArguments: classInstantiated.typeArguments.map((a) {
-          if (a.isDynamic) {
-            return typeSystem.typeProvider.neverType;
-          }
-          return a;
-        }).toList(),
-        nullabilitySuffix: classInstantiated.nullabilitySuffix);
+  /// Return true if this extension could apply to [t].
+  bool _couldApplyTo(DefinedElementType t) {
+    return t.instantiatedType == extendedType.instantiatedType ||
+        (t.instantiatedType.element == extendedType.instantiatedType.element &&
+            isSubtypeOf(t)) ||
+        isBoundSupertypeTo(t);
+  }
 
-    return (classInstantiated.element == extendedType.element) ||
-        typeSystem.isSubtypeOf(classInstantiated, extendedType);
+  /// The instantiated to bounds [extendedType] of this extension is a subtype of
+  /// [t].
+  bool isSubtypeOf(DefinedElementType t) => packageGraph.typeSystem
+      .isSubtypeOf(extendedType.instantiatedType, t.instantiatedType);
+
+  bool isBoundSupertypeTo(DefinedElementType t) =>
+      _isBoundSupertypeTo(t.type, HashSet());
+
+  /// Returns true if at least one supertype (including via mixins and
+  /// interfaces) is equivalent to or a subtype of [extendedType] when
+  /// instantiated to bounds.
+  bool _isBoundSupertypeTo(
+      InterfaceType superType, HashSet<InterfaceType> visited) {
+    ClassElement superClass = superType?.element;
+    if (visited.contains(superType)) return false;
+    visited.add(superType);
+    if (superClass == extendedType.type.element &&
+        (superType == extendedType.instantiatedType ||
+            packageGraph.typeSystem
+                .isSubtypeOf(superType, extendedType.instantiatedType))) {
+      return true;
+    }
+    List<InterfaceType> supertypes = [];
+    ClassElementImpl.collectAllSupertypes(supertypes, superType, null);
+    for (InterfaceType toVisit in supertypes) {
+      if (_isBoundSupertypeTo(toVisit, visited)) return true;
+    }
+    return false;
   }
 
   @override
@@ -1418,7 +1435,7 @@ class Extension extends Container
   }
 
   @override
-  DefinedElementType get modelType => super.modelType;
+  ParameterizedElementType get modelType => super.modelType;
 
   List<ModelElement> _allModelElements;
 
@@ -5062,13 +5079,11 @@ class PackageGraph {
       package._libraries.sort((a, b) => compareNatural(a.name, b.name));
       package._libraries.forEach((library) {
         library.allClasses.forEach(_addToImplementors);
-        // TODO(jcollins-g): Use a better data structure.
         _extensions.addAll(library.extensions);
       });
     });
     _implementors.values.forEach((l) => l.sort());
     allImplementorsAdded = true;
-    _extensions.sort(byName);
     allExtensionsAdded = true;
 
     // We should have found all special classes by now.
@@ -5179,8 +5194,7 @@ class PackageGraph {
   final Map<String, List<Class>> _implementors = Map();
 
   /// A list of extensions that exist in the package graph.
-  // TODO(jcollins-g): Consider implementing a smarter structure for this.
-  final List<Extension> _extensions = List();
+  final List<Extension> _extensions = [];
 
   /// PackageMeta for the default package.
   final PackageMeta packageMeta;
@@ -5212,7 +5226,7 @@ class PackageGraph {
   /// TODO(brianwilkerson) Replace the driver with the session.
   final AnalysisDriver driver;
   final AnalysisSession session;
-  final TypeSystem typeSystem;
+  final Dart2TypeSystem typeSystem;
   final DartSdk sdk;
 
   Map<Source, SdkLibrary> _sdkLibrarySources;

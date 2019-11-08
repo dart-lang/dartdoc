@@ -254,6 +254,11 @@ class TypeParameterElementType extends DefinedElementType {
     }
     return _nameWithGenerics;
   }
+
+  @override
+  ClassElement get _boundClassElement => interfaceType.element;
+  @override
+  InterfaceType get interfaceType => (type as TypeParameterType).bound;
 }
 
 /// An [ElementType] associated with an [Element].
@@ -310,6 +315,26 @@ abstract class DefinedElementType extends ElementType {
           .toList();
     }
     return _typeArguments;
+  }
+
+  /// By default, the bound is the type of the declared class.
+  ClassElement get _boundClassElement => (element.element as ClassElement);
+  Class get boundClass =>
+      ModelElement.fromElement(_boundClassElement, packageGraph);
+  InterfaceType get interfaceType => type;
+
+  InterfaceType _instantiatedType;
+
+  /// Return this type, instantiated to bounds if it isn't already.
+  DartType get instantiatedType {
+    if (_instantiatedType == null) {
+      if (!interfaceType.typeArguments.every((t) => t is InterfaceType)) {
+        _instantiatedType = packageGraph.typeSystem.instantiateToBounds(interfaceType);
+      } else {
+        _instantiatedType = interfaceType;
+      }
+    }
+    return _instantiatedType;
   }
 }
 
@@ -446,8 +471,8 @@ class CallableGenericTypeAliasElementType extends ParameterizedElementType
   @override
   ElementType get returnType {
     if (_returnType == null) {
-      _returnType = ElementType.from(
-          type.returnType, library, packageGraph, this);
+      _returnType =
+          ElementType.from(type.returnType, library, packageGraph, this);
     }
     return _returnType;
   }

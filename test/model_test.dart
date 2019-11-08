@@ -2199,6 +2199,43 @@ void main() {
           orderedEquals([uphill]));
     });
 
+    test('applicableExtensions include those from implements & mixins', () {
+      Extension extensionCheckLeft,
+          extensionCheckRight,
+          extensionCheckCenter,
+          extensionCheckImplementor2,
+          onNewSchool,
+          onOldSchool;
+      Class implementor, implementor2, school;
+      Extension getExtension(String name) =>
+          fakeLibrary.extensions.firstWhere((e) => e.name == name);
+      Class getClass(String name) =>
+          fakeLibrary.classes.firstWhere((e) => e.name == name);
+      extensionCheckLeft = getExtension('ExtensionCheckLeft');
+      extensionCheckRight = getExtension('ExtensionCheckRight');
+      extensionCheckCenter = getExtension('ExtensionCheckCenter');
+      extensionCheckImplementor2 = getExtension('ExtensionCheckImplementor2');
+      onNewSchool = getExtension('OnNewSchool');
+      onOldSchool = getExtension('OnOldSchool');
+
+      implementor = getClass('Implementor');
+      implementor2 = getClass('Implementor2');
+      school = getClass('School');
+
+      expect(
+          implementor.potentiallyApplicableExtensions,
+          orderedEquals([
+            extensionCheckCenter,
+            extensionCheckImplementor2,
+            extensionCheckLeft,
+            extensionCheckRight
+          ]));
+      expect(implementor2.potentiallyApplicableExtensions,
+          orderedEquals([extensionCheckImplementor2, extensionCheckLeft]));
+      expect(school.potentiallyApplicableExtensions,
+          orderedEquals([onNewSchool, onOldSchool]));
+    });
+
     test('type parameters and bounds work with applicableExtensions', () {
       expect(
           superMegaTron.potentiallyApplicableExtensions, orderedEquals([leg]));
