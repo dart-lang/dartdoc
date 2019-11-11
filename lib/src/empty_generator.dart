@@ -3,7 +3,7 @@ library dartdoc.empty_generator;
 import 'dart:async';
 
 import 'package:dartdoc/src/generator.dart';
-import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 
 /// A generator that does not generate files, but does traverse the [PackageGraph]

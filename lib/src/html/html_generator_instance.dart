@@ -13,7 +13,7 @@ import 'package:dartdoc/src/html/resources.g.dart' as resources;
 import 'package:dartdoc/src/html/template_data.dart';
 import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:mustache/mustache.dart';

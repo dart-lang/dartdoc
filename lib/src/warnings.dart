@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/tuple.dart';
 
@@ -206,22 +206,6 @@ abstract class Warnable implements Canonicalization {
   Warnable get enclosingElement;
 
   Package get package;
-}
-
-/// Something that can be located for warning purposes.
-abstract class Locatable {
-  List<Locatable> get documentationFrom;
-
-  /// True if documentationFrom contains only one item, [this].
-  bool get documentationIsLocal => documentationFrom.length == 1 && identical(documentationFrom.first, this);
-
-  String get fullyQualifiedName;
-
-  String get href;
-
-  /// A string indicating the URI of this Locatable, usually derived from
-  /// [Element.location].
-  String get location;
 }
 
 // The kinds of warnings that can be displayed when documenting a package.
