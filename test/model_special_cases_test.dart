@@ -11,7 +11,7 @@ library dartdoc.model_special_cases_test;
 import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
