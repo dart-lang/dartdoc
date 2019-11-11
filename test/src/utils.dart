@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:async/async.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/model.dart';
@@ -21,49 +22,36 @@ final RegExp observatoryPortRegexp =
 Directory sdkDir = defaultSdkDir;
 PackageMeta sdkPackageMeta = PackageMeta.fromDir(sdkDir);
 
-PackageGraph _testPackageGraph;
-Future<PackageGraph> get testPackageGraph async {
-  _testPackageGraph ??= await bootBasicPackage(
-      'testing/test_package', ['css', 'code_in_comments', 'excluded']);
-  return _testPackageGraph;
-}
+final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraph =>
+    _testPackageGraphMemo.runOnce(() => bootBasicPackage(
+        'testing/test_package', ['css', 'code_in_comments', 'excluded']));
 
-PackageGraph _testPackageGraphExperiments;
-Future<PackageGraph> get testPackageGraphExperiments async {
-  _testPackageGraphExperiments ??= await bootBasicPackage(
-      'testing/test_package_experiments', [],
-      additionalArguments: ['--enable-experiment', 'set-literals']);
-  return _testPackageGraphExperiments;
-}
+final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraphExperiments =>
+    _testPackageGraphExperimentsMemo.runOnce(() => bootBasicPackage(
+        'testing/test_package_experiments', [],
+        additionalArguments: ['--enable-experiment', 'set-literals']));
 
-PackageGraph _testPackageGraphGinormous;
-Future<PackageGraph> get testPackageGraphGinormous async {
-  _testPackageGraphGinormous ??= await bootBasicPackage(
-      'testing/test_package', ['css', 'code_in_commnets', 'excluded'],
-      additionalArguments: ['--auto-include-dependencies']);
-  return _testPackageGraphGinormous;
-}
+final _testPackageGraphGinormousMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraphGinormous =>
+    _testPackageGraphGinormousMemo.runOnce(() => bootBasicPackage(
+        'testing/test_package', ['css', 'code_in_commnets', 'excluded'],
+        additionalArguments: ['--auto-include-dependencies']));
 
-PackageGraph _testPackageGraphSmall;
-Future<PackageGraph> get testPackageGraphSmall async {
-  _testPackageGraphSmall ??=
-      await bootBasicPackage('testing/test_package_small', []);
-  return _testPackageGraphSmall;
-}
+final _testPackageGraphSmallMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraphSmall => _testPackageGraphSmallMemo
+    .runOnce(() => bootBasicPackage('testing/test_package_small', []));
 
-PackageGraph _testPackageGraphErrors;
-Future<PackageGraph> get testPackageGraphErrors async {
-  _testPackageGraphErrors ??= await bootBasicPackage(
-      'testing/test_package_doc_errors',
-      ['css', 'code_in_comments', 'excluded']);
-  return _testPackageGraphErrors;
-}
+final _testPackageGraphErrorsMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraphErrors =>
+    _testPackageGraphErrorsMemo.runOnce(() => bootBasicPackage(
+        'testing/test_package_doc_errors',
+        ['css', 'code_in_comments', 'excluded']));
 
-PackageGraph _testPackageGraphSdk;
-Future<PackageGraph> get testPackageGraphSdk async {
-  _testPackageGraphSdk ??= await bootSdkPackage();
-  return _testPackageGraphSdk;
-}
+final _testPackageGraphSdkMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraphSdk =>
+    _testPackageGraphSdkMemo.runOnce(bootSdkPackage);
 
 final Directory testPackageBadDir = Directory('testing/test_package_bad');
 final Directory testPackageDir = Directory('testing/test_package');

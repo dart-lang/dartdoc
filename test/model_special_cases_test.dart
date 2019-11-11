@@ -342,205 +342,198 @@ void main() {
     });
   });
 
-  group('packages with errors testing', () {
+  group('YouTube Errors', () {
     PackageGraph packageGraphErrors;
+    Class documentationErrors;
+    Method withYouTubeWrongParams;
+    Method withYouTubeBadWidth;
+    Method withYouTubeBadHeight;
+    Method withYouTubeInvalidUrl;
+    Method withYouTubeUrlWithAdditionalParameters;
+
     setUpAll(() async {
       packageGraphErrors = await utils.testPackageGraphErrors;
+      documentationErrors = packageGraphErrors.libraries
+          .firstWhere((lib) => lib.name == 'doc_errors')
+          .classes
+          .firstWhere((c) => c.name == 'DocumentationErrors')
+            ..documentation;
+      withYouTubeWrongParams = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeWrongParams')
+            ..documentation;
+      withYouTubeBadWidth = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeBadWidth')
+            ..documentation;
+      withYouTubeBadHeight = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeBadHeight')
+            ..documentation;
+      withYouTubeInvalidUrl = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeInvalidUrl')
+            ..documentation;
+      withYouTubeUrlWithAdditionalParameters = documentationErrors
+          .allInstanceMethods
+          .firstWhere((m) => m.name == 'withYouTubeUrlWithAdditionalParameters')
+            ..documentation;
     });
 
-    group('YouTube Errors', () {
-      Class documentationErrors;
-      Method withYouTubeWrongParams;
-      Method withYouTubeBadWidth;
-      Method withYouTubeBadHeight;
-      Method withYouTubeInvalidUrl;
-      Method withYouTubeUrlWithAdditionalParameters;
+    test("warns on youtube video with missing parameters", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withYouTubeWrongParams,
+              PackageWarning.invalidParameter,
+              'Invalid @youtube directive, "{@youtube https://youtu.be/oHg5SJYRHA0}"\n'
+              'YouTube directives must be of the form "{@youtube WIDTH HEIGHT URL}"'),
+          isTrue);
+    });
+    test("warns on youtube video with non-integer width", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withYouTubeBadWidth,
+              PackageWarning.invalidParameter,
+              'A @youtube directive has an invalid width, "100px". The width '
+              'must be a positive integer.'),
+          isTrue);
+    });
+    test("warns on youtube video with non-integer height", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withYouTubeBadHeight,
+              PackageWarning.invalidParameter,
+              'A @youtube directive has an invalid height, "100px". The height '
+              'must be a positive integer.'),
+          isTrue);
+    });
+    test("warns on youtube video with invalid video URL", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withYouTubeInvalidUrl,
+              PackageWarning.invalidParameter,
+              'A @youtube directive has an invalid URL: '
+              '"http://host/path/to/video.mp4". Supported YouTube URLs have '
+              'the follwing format: '
+              'https://www.youtube.com/watch?v=oHg5SJYRHA0.'),
+          isTrue);
+    });
+    test("warns on youtube video with extra parameters in URL", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withYouTubeUrlWithAdditionalParameters,
+              PackageWarning.invalidParameter,
+              'A @youtube directive has an invalid URL: '
+              '"https://www.youtube.com/watch?v=yI-8QHpGIP4&list=PLjxrf2q8roU23XGwz3Km7sQZFTdB996iG&index=5". '
+              'Supported YouTube URLs have the follwing format: '
+              'https://www.youtube.com/watch?v=oHg5SJYRHA0.'),
+          isTrue);
+    });
+  });
 
-      setUpAll(() async {
-        documentationErrors = packageGraphErrors.libraries
-            .firstWhere((lib) => lib.name == 'doc_errors')
-            .classes
-            .firstWhere((c) => c.name == 'DocumentationErrors')
-              ..documentation;
-        withYouTubeWrongParams = documentationErrors.allInstanceMethods
-            .firstWhere((m) => m.name == 'withYouTubeWrongParams')
-              ..documentation;
-        withYouTubeBadWidth = documentationErrors.allInstanceMethods
-            .firstWhere((m) => m.name == 'withYouTubeBadWidth')
-              ..documentation;
-        withYouTubeBadHeight = documentationErrors.allInstanceMethods
-            .firstWhere((m) => m.name == 'withYouTubeBadHeight')
-              ..documentation;
-        withYouTubeInvalidUrl = documentationErrors.allInstanceMethods
-            .firstWhere((m) => m.name == 'withYouTubeInvalidUrl')
-              ..documentation;
-        withYouTubeUrlWithAdditionalParameters = documentationErrors
-            .allInstanceMethods
-            .firstWhere(
-                (m) => m.name == 'withYouTubeUrlWithAdditionalParameters')
-              ..documentation;
-      });
+  group('Animation Errors', () {
+    PackageGraph packageGraphErrors;
+    Class documentationErrors;
+    Method withInvalidNamedAnimation;
+    Method withAnimationNonUnique;
+    Method withAnimationNonUniqueDeprecated;
+    Method withAnimationWrongParams;
+    Method withAnimationBadWidth;
+    Method withAnimationBadHeight;
+    Method withAnimationUnknownArg;
 
-      test("warns on youtube video with missing parameters", () {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withYouTubeWrongParams,
-                PackageWarning.invalidParameter,
-                'Invalid @youtube directive, "{@youtube https://youtu.be/oHg5SJYRHA0}"\n'
-                'YouTube directives must be of the form "{@youtube WIDTH HEIGHT URL}"'),
-            isTrue);
-      });
-      test("warns on youtube video with non-integer width", () {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withYouTubeBadWidth,
-                PackageWarning.invalidParameter,
-                'A @youtube directive has an invalid width, "100px". The width '
-                'must be a positive integer.'),
-            isTrue);
-      });
-      test("warns on youtube video with non-integer height", () {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withYouTubeBadHeight,
-                PackageWarning.invalidParameter,
-                'A @youtube directive has an invalid height, "100px". The height '
-                'must be a positive integer.'),
-            isTrue);
-      });
-      test("warns on youtube video with invalid video URL", () {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withYouTubeInvalidUrl,
-                PackageWarning.invalidParameter,
-                'A @youtube directive has an invalid URL: '
-                '"http://host/path/to/video.mp4". Supported YouTube URLs have '
-                'the follwing format: '
-                'https://www.youtube.com/watch?v=oHg5SJYRHA0.'),
-            isTrue);
-      });
-      test("warns on youtube video with extra parameters in URL", () {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withYouTubeUrlWithAdditionalParameters,
-                PackageWarning.invalidParameter,
-                'A @youtube directive has an invalid URL: '
-                '"https://www.youtube.com/watch?v=yI-8QHpGIP4&list=PLjxrf2q8roU23XGwz3Km7sQZFTdB996iG&index=5". '
-                'Supported YouTube URLs have the follwing format: '
-                'https://www.youtube.com/watch?v=oHg5SJYRHA0.'),
-            isTrue);
-      });
+    setUpAll(() async {
+      packageGraphErrors = await utils.testPackageGraphErrors;
+      documentationErrors = packageGraphErrors.libraries
+          .firstWhere((lib) => lib.name == 'doc_errors')
+          .classes
+          .firstWhere((c) => c.name == 'DocumentationErrors')
+            ..documentation;
+      withInvalidNamedAnimation = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withInvalidNamedAnimation')
+            ..documentation;
+      withAnimationNonUnique = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationNonUnique')
+            ..documentation;
+      withAnimationNonUniqueDeprecated = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationNonUniqueDeprecated')
+            ..documentation;
+      withAnimationWrongParams = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationWrongParams')
+            ..documentation;
+      withAnimationBadWidth = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationBadWidth')
+            ..documentation;
+      withAnimationBadHeight = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationBadHeight')
+            ..documentation;
+      withAnimationUnknownArg = documentationErrors.allInstanceMethods
+          .firstWhere((m) => m.name == 'withAnimationUnknownArg')
+            ..documentation;
     });
 
-    group('Animation Errors', () {
-      Class documentationErrors;
-      Method withInvalidNamedAnimation;
-      Method withAnimationNonUnique;
-      Method withAnimationNonUniqueDeprecated;
-      Method withAnimationWrongParams;
-      Method withAnimationBadWidth;
-      Method withAnimationBadHeight;
-      Method withAnimationUnknownArg;
-
-      setUpAll(() async {
-        documentationErrors = packageGraphErrors.libraries
-            .firstWhere((lib) => lib.name == 'doc_errors')
-            .classes
-            .firstWhere((c) => c.name == 'DocumentationErrors')
-              ..documentation;
-        withInvalidNamedAnimation = documentationErrors.allInstanceMethods
-            .firstWhere((m) => m.name == 'withInvalidNamedAnimation')
-              ..documentation;
-        withAnimationNonUnique = documentationErrors.allInstanceMethods
-            .firstWhere((m) => m.name == 'withAnimationNonUnique')
-              ..documentation;
-        withAnimationNonUniqueDeprecated = documentationErrors
-            .allInstanceMethods
-            .firstWhere((m) => m.name == 'withAnimationNonUniqueDeprecated')
-              ..documentation;
-        withAnimationWrongParams = documentationErrors.allInstanceMethods
-            .firstWhere((m) => m.name == 'withAnimationWrongParams')
-              ..documentation;
-        withAnimationBadWidth = documentationErrors.allInstanceMethods
-            .firstWhere((m) => m.name == 'withAnimationBadWidth')
-              ..documentation;
-        withAnimationBadHeight = documentationErrors.allInstanceMethods
-            .firstWhere((m) => m.name == 'withAnimationBadHeight')
-              ..documentation;
-        withAnimationUnknownArg = documentationErrors.allInstanceMethods
-            .firstWhere((m) => m.name == 'withAnimationUnknownArg')
-              ..documentation;
-      });
-
-      test(
-          "warns with invalidly-named animation within the method documentation",
-          () async {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withInvalidNamedAnimation,
-                PackageWarning.invalidParameter,
-                'An animation has an invalid identifier, "2isNot-A-ValidName". '
-                'The identifier can only contain letters, numbers and '
-                'underscores, and must not begin with a number.'),
-            isTrue);
-      });
-      test("warns on a non-unique animation name within a method", () {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withAnimationNonUnique,
-                PackageWarning.invalidParameter,
-                'An animation has a non-unique identifier, "barHerderAnimation". '
-                'Animation identifiers must be unique.'),
-            isTrue);
-      });
-      test(
-          "warns on a non-unique animation name within a deprecated-form method",
-          () {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withAnimationNonUniqueDeprecated,
-                PackageWarning.invalidParameter,
-                'An animation has a non-unique identifier, "fooHerderAnimation". '
-                'Animation identifiers must be unique.'),
-            isTrue);
-      });
-      test("warns on animation with missing parameters", () {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withAnimationWrongParams,
-                PackageWarning.invalidParameter,
-                'Invalid @animation directive, "{@animation http://host/path/to/video.mp4}"\n'
-                'Animation directives must be of the form "{@animation WIDTH '
-                'HEIGHT URL [id=ID]}"'),
-            isTrue);
-      });
-      test("warns on animation with non-integer width", () {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withAnimationBadWidth,
-                PackageWarning.invalidParameter,
-                'An animation has an invalid width (badWidthAnimation), "100px". '
-                'The width must be an integer.'),
-            isTrue);
-      });
-      test("warns on animation with non-integer height", () {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withAnimationBadHeight,
-                PackageWarning.invalidParameter,
-                'An animation has an invalid height (badHeightAnimation), '
-                '"100px". The height must be an integer.'),
-            isTrue);
-      });
-      test("Unknown arguments generate an error.", () {
-        expect(
-            packageGraphErrors.packageWarningCounter.hasWarning(
-                withAnimationUnknownArg,
-                PackageWarning.invalidParameter,
-                'The {@animation ...} directive was called with invalid '
-                'parameters. FormatException: Could not find an option named "name".'),
-            isTrue);
-      });
+    test("warns with invalidly-named animation within the method documentation",
+        () async {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withInvalidNamedAnimation,
+              PackageWarning.invalidParameter,
+              'An animation has an invalid identifier, "2isNot-A-ValidName". '
+              'The identifier can only contain letters, numbers and '
+              'underscores, and must not begin with a number.'),
+          isTrue);
+    });
+    test("warns on a non-unique animation name within a method", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withAnimationNonUnique,
+              PackageWarning.invalidParameter,
+              'An animation has a non-unique identifier, "barHerderAnimation". '
+              'Animation identifiers must be unique.'),
+          isTrue);
+    });
+    test("warns on a non-unique animation name within a deprecated-form method",
+        () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withAnimationNonUniqueDeprecated,
+              PackageWarning.invalidParameter,
+              'An animation has a non-unique identifier, "fooHerderAnimation". '
+              'Animation identifiers must be unique.'),
+          isTrue);
+    });
+    test("warns on animation with missing parameters", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withAnimationWrongParams,
+              PackageWarning.invalidParameter,
+              'Invalid @animation directive, "{@animation http://host/path/to/video.mp4}"\n'
+              'Animation directives must be of the form "{@animation WIDTH '
+              'HEIGHT URL [id=ID]}"'),
+          isTrue);
+    });
+    test("warns on animation with non-integer width", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withAnimationBadWidth,
+              PackageWarning.invalidParameter,
+              'An animation has an invalid width (badWidthAnimation), "100px". '
+              'The width must be an integer.'),
+          isTrue);
+    });
+    test("warns on animation with non-integer height", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withAnimationBadHeight,
+              PackageWarning.invalidParameter,
+              'An animation has an invalid height (badHeightAnimation), '
+              '"100px". The height must be an integer.'),
+          isTrue);
+    });
+    test("Unknown arguments generate an error.", () {
+      expect(
+          packageGraphErrors.packageWarningCounter.hasWarning(
+              withAnimationUnknownArg,
+              PackageWarning.invalidParameter,
+              'The {@animation ...} directive was called with invalid '
+              'parameters. FormatException: Could not find an option named "name".'),
+          isTrue);
     });
   });
 }
