@@ -1,3 +1,7 @@
+## 0.29.1
+* Fix edge cases on extension discovery (#2062)
+* Make sure that enum documentation contains unique IDs for animations (#2060)
+
 ## 0.29.0
 * Internal change to our use of FunctionTypeAliasElement for the analyzer
   (#2051).

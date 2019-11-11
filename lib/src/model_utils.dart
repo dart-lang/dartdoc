@@ -11,7 +11,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/dart/ast/utilities.dart';
-import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/element_type.dart';
 
 final Map<String, String> _fileContents = <String, String>{};

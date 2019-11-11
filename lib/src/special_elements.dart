@@ -11,7 +11,7 @@ library dartdoc.special_elements;
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/generated/sdk.dart';
-import 'package:dartdoc/src/model.dart';
+import 'package:dartdoc/src/model/model.dart';
 
 /// Which of the [SpecialClasses] to get.
 enum SpecialClass {
