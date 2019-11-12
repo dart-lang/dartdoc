@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:async/async.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -18,14 +19,39 @@ final RegExp quotables = RegExp(r'[ "\r\n\$]');
 final RegExp observatoryPortRegexp =
     RegExp(r'^Observatory listening on http://.*:(\d+)');
 
-Directory sdkDir;
-PackageMeta sdkPackageMeta;
-PackageGraph testPackageGraph;
-PackageGraph testPackageGraphExperiments;
-PackageGraph testPackageGraphGinormous;
-PackageGraph testPackageGraphSmall;
-PackageGraph testPackageGraphErrors;
-PackageGraph testPackageGraphSdk;
+Directory sdkDir = defaultSdkDir;
+PackageMeta sdkPackageMeta = PackageMeta.fromDir(sdkDir);
+
+final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraph =>
+    _testPackageGraphMemo.runOnce(() => bootBasicPackage(
+        'testing/test_package', ['css', 'code_in_comments', 'excluded']));
+
+final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraphExperiments =>
+    _testPackageGraphExperimentsMemo.runOnce(() => bootBasicPackage(
+        'testing/test_package_experiments', [],
+        additionalArguments: ['--enable-experiment', 'set-literals']));
+
+final _testPackageGraphGinormousMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraphGinormous =>
+    _testPackageGraphGinormousMemo.runOnce(() => bootBasicPackage(
+        'testing/test_package', ['css', 'code_in_commnets', 'excluded'],
+        additionalArguments: ['--auto-include-dependencies']));
+
+final _testPackageGraphSmallMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraphSmall => _testPackageGraphSmallMemo
+    .runOnce(() => bootBasicPackage('testing/test_package_small', []));
+
+final _testPackageGraphErrorsMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraphErrors =>
+    _testPackageGraphErrorsMemo.runOnce(() => bootBasicPackage(
+        'testing/test_package_doc_errors',
+        ['css', 'code_in_comments', 'excluded']));
+
+final _testPackageGraphSdkMemo = AsyncMemoizer<PackageGraph>();
+Future<PackageGraph> get testPackageGraphSdk =>
+    _testPackageGraphSdkMemo.runOnce(bootSdkPackage);
 
 final Directory testPackageBadDir = Directory('testing/test_package_bad');
 final Directory testPackageDir = Directory('testing/test_package');
@@ -67,35 +93,6 @@ Future<DartdocOptionContext> contextFromArgv(List<String> argv) async {
       'dartdoc', [createDartdocOptions]);
   optionSet.parseArguments(argv);
   return DartdocOptionContext(optionSet, Directory.current);
-}
-
-void init({List<String> additionalArguments}) async {
-  sdkDir = defaultSdkDir;
-  sdkPackageMeta = PackageMeta.fromDir(sdkDir);
-  additionalArguments ??= <String>[];
-
-  testPackageGraph = await bootBasicPackage(
-      'testing/test_package', ['css', 'code_in_comments', 'excluded'],
-      additionalArguments: additionalArguments);
-  testPackageGraphGinormous = await bootBasicPackage(
-      'testing/test_package', ['css', 'code_in_commnets', 'excluded'],
-      additionalArguments:
-          additionalArguments + ['--auto-include-dependencies']);
-
-  testPackageGraphExperiments = await bootBasicPackage(
-      'testing/test_package_experiments', [],
-      additionalArguments:
-          additionalArguments + ['--enable-experiment', 'set-literals']);
-
-  testPackageGraphSmall = await bootBasicPackage(
-      'testing/test_package_small', [],
-      additionalArguments: additionalArguments);
-
-  testPackageGraphErrors = await bootBasicPackage(
-      'testing/test_package_doc_errors',
-      ['css', 'code_in_comments', 'excluded'],
-      additionalArguments: additionalArguments);
-  testPackageGraphSdk = await bootSdkPackage();
 }
 
 Future<PackageGraph> bootSdkPackage() async {
