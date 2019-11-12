@@ -2,8 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:collection';
+import 'dart:math';
+
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
@@ -12,9 +16,26 @@ import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
+import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 import 'package:quiver/iterables.dart' as quiver;
+
+class _DeclarationVisitor extends UnifyingAstVisitor<void> {
+
+  final void Function(Declaration) nodeProcessor;
+
+  _DeclarationVisitor(this.nodeProcessor);
+
+  @override
+  void visitNode(AstNode thisNode) {
+    if (thisNode is Declaration) {
+      nodeProcessor(thisNode);
+    }
+    super.visitNode(thisNode);
+  }
+}
+
 
 /// Find all hashable children of a given element that are defined in the
 /// [LibraryElement] given at initialization.
@@ -67,12 +88,31 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
     // Initialize [packageGraph]'s cache of ModelNodes for relevant
     // elements in this library.
-    Map<String, CompilationUnit> _compilationUnitMap = Map();
+    HashMap<String, CompilationUnit> _compilationUnitMap = HashMap();
     _compilationUnitMap.addEntries(libraryResult.units
         .map((ResolvedUnitResult u) => MapEntry(u.path, u.unit)));
+    /*
     _HashableChildLibraryElementVisitor((Element e) =>
             packageGraph.populateModelNodeFor(e, _compilationUnitMap))
-        .visitElement(element);
+        .visitElement(element);*/
+
+    // Table of the location of the element name to the element itself.
+    HashMap<CompilationUnit, HashSet<Element>> _compilationUnitToElement = HashMap();
+    _HashableChildLibraryElementVisitor((e) {
+      _compilationUnitToElement
+          .putIfAbsent(_compilationUnitMap[element.source.fullName], () => HashSet())
+          .add(e);
+    }).visitElement(element);
+
+    _compilationUnitToElement.entries.map((entry) {
+      print('hi');
+      _DeclarationVisitor((Declaration d) {
+        if (entry.value.contains(d.declaredElement)) {
+          packageGraph.addModelNode(d.declaredElement, d);
+        }
+      }).visitNode(entry.key);
+    });
+
 
     // Initialize the list of elements defined in this library and
     // exported via its export directives.

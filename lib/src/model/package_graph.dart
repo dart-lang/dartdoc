@@ -136,6 +136,12 @@ class PackageGraph {
             ModelNode(utils.getAstNode(element, compilationUnitMap), element));
   }
 
+  void addModelNode(Element element, AstNode node) {
+    _modelNodes.putIfAbsent(
+        element,
+            () => ModelNode(node, element));
+  }
+
   ModelNode getModelNodeFor(Element element) => _modelNodes[element];
 
   SpecialClasses specialClasses;
