@@ -59,8 +59,7 @@ class HtmlGenerator extends Generator {
     String dirname = options?.templatesDir;
     if (dirname != null) {
       Directory templateDir = Directory(dirname);
-      templates = await Templates.fromDirectory(
-          templateDir,
+      templates = await Templates.fromDirectory(templateDir,
           headerPaths: headers,
           footerPaths: footers,
           footerTextPaths: footerTexts);

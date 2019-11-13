@@ -295,7 +295,8 @@ class MethodTemplateData extends TemplateData<Method> {
   @override
   Method get self => method;
   @override
-  String get title => '${method.name} method - ${container.name} ${containerDesc} - '
+  String get title =>
+      '${method.name} method - ${container.name} ${containerDesc} - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle => _layoutTitle(
@@ -328,7 +329,8 @@ class PropertyTemplateData extends TemplateData<Field> {
   Field get self => property;
 
   @override
-  String get title => '${property.name} $type - ${container.name} ${containerDesc} - '
+  String get title =>
+      '${property.name} $type - ${container.name} ${containerDesc} - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle =>

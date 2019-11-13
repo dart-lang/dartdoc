@@ -224,12 +224,42 @@ void analyze() async {
   );
 }
 
-@Task('analyze, test, and self-test dartdoc')
-@Depends(analyze, checkBuild, test, testDartdoc)
-void buildbotNoPublish() => null;
+@Task('Check for dartfmt cleanliness')
+void dartfmt() async {
+  if (Platform.version.contains('dev')) {
+    List<String> filesToFix = [];
+    // Filter out test packages as they always have strange formatting.
+    // Passing parameters to dartfmt for directories to search results in
+    // filenames being stripped of the dirname so we have to filter here.
+    void addFileToFix(String fileName) {
+      if (path.split(fileName).first == 'testing') return;
+      filesToFix.add(fileName);
+    }
 
-@Task('analyze, test, and self-test dartdoc')
-@Depends(analyze, checkBuild, test, testDartdoc, tryPublish)
+    log('Validating dartfmt with version ${Platform.version}');
+    await SubprocessLauncher('dartfmt').runStreamed(
+        sdkBin('dartfmt'),
+        [
+          '-n',
+          '.',
+        ],
+        perLine: addFileToFix);
+    if (filesToFix.isNotEmpty) {
+      fail(
+          'dartfmt found files needing reformatting. Use this command to reformat:\n'
+          'dartfmt -w ${filesToFix.map((f) => "\'$f\'").join(' ')}');
+    }
+  } else {
+    log('Skipping dartfmt check, requires latest dev version of SDK');
+  }
+}
+
+@Task('Run quick presubmit checks.')
+@Depends(analyze, checkBuild, smokeTest, dartfmt, tryPublish)
+void presubmit() => null;
+
+@Task('Run long tests, self-test dartdoc, and run the publish test')
+@Depends(presubmit, test, testDartdoc)
 void buildbot() => null;
 
 @Task('Generate docs for the Dart SDK')
@@ -846,26 +876,49 @@ Future<void> checkBuild() async {
 @Task('Dry run of publish to pub.dartlang')
 @Depends(checkChangelogHasVersion)
 Future<void> tryPublish() async {
-  var launcher = SubprocessLauncher('try-publish');
-  await launcher.runStreamed(sdkBin('pub'), ['publish', '-n']);
+  if (Platform.version.contains('dev')) {
+    log('Skipping publish check -- requires a stable version of the SDK');
+  } else {
+    var launcher = SubprocessLauncher('try-publish');
+    await launcher.runStreamed(sdkBin('pub'), ['publish', '-n']);
+  }
+}
+
+@Task('Run a smoke test, only')
+Future<void> smokeTest() async {
+  await testDart2(smokeTestFiles);
+  await testFutures.wait();
+}
+
+@Task('Run non-smoke tests, only')
+Future<void> longTest() async {
+  await testDart2(testFiles);
+  await testFutures.wait();
 }
 
 @Task('Run all the tests.')
 Future<void> test() async {
-  await testDart2();
+  await testDart2(smokeTestFiles.followedBy(testFiles));
   await testFutures.wait();
 }
 
-List<File> get testFiles => Directory('test')
+List<File> get smokeTestFiles => Directory('test')
     .listSync(recursive: true)
-    .where((e) => e is File && e.path.endsWith('test.dart'))
-    .cast<File>()
+    .whereType<File>()
+    .where((e) => path.basename(e.path) == 'model_test.dart')
     .toList();
 
-Future<void> testDart2() async {
+List<File> get testFiles => Directory('test')
+    .listSync(recursive: true)
+    .whereType<File>()
+    .where((e) => e.path.endsWith('test.dart'))
+    .where((e) => path.basename(e.path) != 'model_test.dart')
+    .toList();
+
+Future<void> testDart2(Iterable<File> tests) async {
   List<String> parameters = ['--enable-asserts'];
 
-  for (File dartFile in testFiles) {
+  for (File dartFile in tests) {
     await testFutures.addFutureFromClosure(() =>
         CoverageSubprocessLauncher('dart2-${path.basename(dartFile.path)}')
             .runStreamed(
