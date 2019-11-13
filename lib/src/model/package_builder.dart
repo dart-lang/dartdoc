@@ -152,8 +152,7 @@ class PackageBuilder {
       AnalysisOptionsImpl options = AnalysisOptionsImpl();
 
       // TODO(jcollins-g): pass in an ExperimentStatus instead?
-      options.enabledExperiments = config.enableExperiment
-        ..add('extension-methods');
+      options.enabledExperiments = config.enableExperiment;
 
       // TODO(jcollins-g): Make use of currently not existing API for managing
       //                   many AnalysisDrivers

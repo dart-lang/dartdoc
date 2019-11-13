@@ -15,6 +15,11 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 
+/// The number of public libraries in testing/test_package, minus 2 for
+/// the excluded libraries listed in the initializers for _testPackageGraphMemo
+/// and minus 1 for the <nodoc> tag in the 'excluded' library.
+const int kTestPackagePublicLibraries = 15;
+
 final RegExp quotables = RegExp(r'[ "\r\n\$]');
 final RegExp observatoryPortRegexp =
     RegExp(r'^Observatory listening on http://.*:(\d+)');
@@ -23,15 +28,14 @@ Directory sdkDir = defaultSdkDir;
 PackageMeta sdkPackageMeta = PackageMeta.fromDir(sdkDir);
 
 final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
-Future<PackageGraph> get testPackageGraph =>
-    _testPackageGraphMemo.runOnce(() => bootBasicPackage(
-        'testing/test_package', ['css', 'code_in_comments', 'excluded']));
+Future<PackageGraph> get testPackageGraph => _testPackageGraphMemo.runOnce(() =>
+    bootBasicPackage('testing/test_package', ['css', 'code_in_comments']));
 
 final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraphExperiments =>
     _testPackageGraphExperimentsMemo.runOnce(() => bootBasicPackage(
         'testing/test_package_experiments', [],
-        additionalArguments: ['--enable-experiment', 'set-literals']));
+        additionalArguments: ['--enable-experiment', 'non-nullable']));
 
 final _testPackageGraphGinormousMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraphGinormous =>

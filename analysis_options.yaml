@@ -1,9 +1,6 @@
 include: package:pedantic/analysis_options.1.8.0.yaml
 
 analyzer:
-  # enable for analysis on test package sources.
-  enable-experiment:
-    - extension-methods
   exclude:
     - 'doc/**'
     - 'lib/src/third_party/pkg/**'

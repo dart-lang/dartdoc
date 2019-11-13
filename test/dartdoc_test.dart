@@ -258,7 +258,9 @@ void main() {
         expect(p.name, 'test_package');
         expect(p.hasDocumentationFile, isTrue);
         // Total number of public libraries in test_package.
-        expect(packageGraph.defaultPackage.publicLibraries, hasLength(16));
+        // +2 since we are not manually excluding anything.
+        expect(packageGraph.defaultPackage.publicLibraries,
+            hasLength(kTestPackagePublicLibraries + 2));
         expect(packageGraph.localPackages.length, equals(1));
       });
 
@@ -313,8 +315,8 @@ void main() {
       PackageGraph p = results.packageGraph;
       expect(p.defaultPackage.name, 'test_package');
       expect(p.defaultPackage.hasDocumentationFile, isTrue);
-      expect(p.libraries, hasLength(1));
-      expect(p.libraries.map((lib) => lib.name), contains('fake'));
+      expect(p.localPublicLibraries, hasLength(1));
+      expect(p.localPublicLibraries.map((lib) => lib.name), contains('fake'));
     });
 
     test('generate docs excluding a single library', () async {
@@ -327,7 +329,10 @@ void main() {
       PackageGraph p = results.packageGraph;
       expect(p.defaultPackage.name, 'test_package');
       expect(p.defaultPackage.hasDocumentationFile, isTrue);
-      expect(p.localPublicLibraries, hasLength(15));
+      // Plus 1 here because we're excluding only two libraries (the specified
+      // one and the <nodoc> 'excluded' library) instead of three.
+      expect(
+          p.localPublicLibraries, hasLength(kTestPackagePublicLibraries + 1));
       expect(p.localPublicLibraries.map((lib) => lib.name).contains('fake'),
           isFalse);
     });
