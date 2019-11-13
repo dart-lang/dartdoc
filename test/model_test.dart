@@ -76,6 +76,55 @@ void main() {
         packageGraph.libraries.firstWhere((lib) => lib.name == 'base_class');
   });
 
+  group('Set Literals', () {
+    Library set_literals;
+    TopLevelVariable aComplexSet,
+        inferredTypeSet,
+        specifiedSet,
+        untypedMap,
+        typedSet;
+
+    setUpAll(() async {
+      set_literals = packageGraph.libraries
+          .firstWhere((lib) => lib.name == 'set_literals');
+      aComplexSet =
+          set_literals.constants.firstWhere((v) => v.name == 'aComplexSet');
+      inferredTypeSet =
+          set_literals.constants.firstWhere((v) => v.name == 'inferredTypeSet');
+      specifiedSet =
+          set_literals.constants.firstWhere((v) => v.name == 'specifiedSet');
+      untypedMap =
+          set_literals.constants.firstWhere((v) => v.name == 'untypedMap');
+      typedSet = set_literals.constants.firstWhere((v) => v.name == 'typedSet');
+    });
+
+    test('Set literals test', () {
+      expect(aComplexSet.modelType.name, equals('Set'));
+      expect(aComplexSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['AClassContainingLiterals']));
+      expect(aComplexSet.constantValue,
+          equals('const {const AClassContainingLiterals(3, 5)}'));
+      expect(inferredTypeSet.modelType.name, equals('Set'));
+      expect(
+          inferredTypeSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['num']));
+      expect(inferredTypeSet.constantValue, equals('const {1, 2.5, 3}'));
+      expect(specifiedSet.modelType.name, equals('Set'));
+      expect(specifiedSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['int']));
+      expect(specifiedSet.constantValue, equals('const {}'));
+      expect(untypedMap.modelType.name, equals('Map'));
+      expect(untypedMap.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['dynamic', 'dynamic']));
+      expect(untypedMap.constantValue, equals('const {}'));
+      expect(typedSet.modelType.name, equals('Set'));
+      expect(typedSet.modelType.typeArguments.map((a) => a.name).toList(),
+          equals(['String']));
+      expect(typedSet.constantValue,
+          matches(RegExp(r'const &lt;String&gt;\s?{}')));
+    });
+  });
+
   group('Tools', () {
     Class toolUser;
     Class _NonCanonicalToolUser, CanonicalToolUser, PrivateLibraryToolUser;
@@ -291,10 +340,6 @@ void main() {
           ]));
       expect(packageCategories.map((c) => c.libraries.length).toList(),
           orderedEquals([0, 2, 3, 1, 0, 0]));
-      expect(
-          packageGraph
-              .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(9));
     });
 
     test('Verify libraries with multiple categories show up in multiple places',
@@ -313,7 +358,8 @@ void main() {
       expect(
           packageGraph
               .localPackages.first.defaultCategory.publicLibraries.length,
-          equals(9));
+          // Only 5 libraries have categories, the rest belong in default.
+          equals(utils.kTestPackagePublicLibraries - 5));
     });
   });
 
@@ -383,7 +429,8 @@ void main() {
       });
 
       test('libraries', () {
-        expect(packageGraph.localPublicLibraries, hasLength(14));
+        expect(packageGraph.localPublicLibraries,
+            hasLength(utils.kTestPackagePublicLibraries));
         expect(interceptorsLib.isPublic, isFalse);
       });
 
@@ -398,7 +445,8 @@ void main() {
 
         Package package = packageGraph.localPackages.first;
         expect(package.name, 'test_package');
-        expect(package.publicLibraries, hasLength(14));
+        expect(package.publicLibraries,
+            hasLength(utils.kTestPackagePublicLibraries));
       });
 
       test('is documented in library', () {
