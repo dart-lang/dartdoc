@@ -23,4 +23,4 @@ install:
 build: off
 
 test_script:
-  - pub run grinder buildbot-no-publish
+  - pub run grinder buildbot
