@@ -29,49 +29,26 @@ void main() {
   // Experimental features not yet enabled by default.  Move tests out of this block
   // when the feature is enabled by default.
   group('Experiments', () {
-    Library main;
-    TopLevelVariable aComplexSet,
-        inferredTypeSet,
-        specifiedSet,
-        untypedMap,
-        typedSet;
-
+    Library lateFinalWithoutInitializer;
     setUpAll(() async {
-      main = (await utils.testPackageGraphExperiments)
+      lateFinalWithoutInitializer = (await utils.testPackageGraphExperiments)
           .libraries
-          .firstWhere((lib) => lib.name == 'main');
-      aComplexSet = main.constants.firstWhere((v) => v.name == 'aComplexSet');
-      inferredTypeSet =
-          main.constants.firstWhere((v) => v.name == 'inferredTypeSet');
-      specifiedSet = main.constants.firstWhere((v) => v.name == 'specifiedSet');
-      untypedMap = main.constants.firstWhere((v) => v.name == 'untypedMap');
-      typedSet = main.constants.firstWhere((v) => v.name == 'typedSet');
+          .firstWhere((lib) => lib.name == 'late_final_without_initializer');
     });
 
-    test('Set literals test', () {
-      expect(aComplexSet.modelType.name, equals('Set'));
-      expect(aComplexSet.modelType.typeArguments.map((a) => a.name).toList(),
-          equals(['AClassContainingLiterals']));
-      expect(aComplexSet.constantValue,
-          equals('const {const AClassContainingLiterals(3, 5)}'));
-      expect(inferredTypeSet.modelType.name, equals('Set'));
-      expect(
-          inferredTypeSet.modelType.typeArguments.map((a) => a.name).toList(),
-          equals(['num']));
-      expect(inferredTypeSet.constantValue, equals('const {1, 2.5, 3}'));
-      expect(specifiedSet.modelType.name, equals('Set'));
-      expect(specifiedSet.modelType.typeArguments.map((a) => a.name).toList(),
-          equals(['int']));
-      expect(specifiedSet.constantValue, equals('const {}'));
-      expect(untypedMap.modelType.name, equals('Map'));
-      expect(untypedMap.modelType.typeArguments.map((a) => a.name).toList(),
-          equals(['dynamic', 'dynamic']));
-      expect(untypedMap.constantValue, equals('const {}'));
-      expect(typedSet.modelType.name, equals('Set'));
-      expect(typedSet.modelType.typeArguments.map((a) => a.name).toList(),
-          equals(['String']));
-      expect(typedSet.constantValue,
-          matches(RegExp(r'const &lt;String&gt;\s?{}')));
+    test('Late finals test', () {
+      Class c = lateFinalWithoutInitializer.allClasses
+          .firstWhere((c) => c.name == 'C');
+      Field a = c.allFields.firstWhere((f) => f.name == 'a');
+      Field b = c.allFields.firstWhere((f) => f.name == 'b');
+      Field cField = c.allFields.firstWhere((f) => f.name == 'cField');
+      Field dField = c.allFields.firstWhere((f) => f.name == 'dField');
+      // If nnbd isn't enabled, fields named 'late' come back from the analyzer.
+      expect(c.allFields.any((f) => f.name == 'late'), isFalse);
+      expect(a.modelType.returnType.name, equals('dynamic'));
+      expect(b.modelType.returnType.name, equals('int'));
+      expect(cField.modelType.returnType.name, equals('dynamic'));
+      expect(dField.modelType.returnType.name, equals('double'));
     });
   });
 

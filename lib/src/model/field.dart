@@ -4,6 +4,7 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/element.dart';
+import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 class Field extends ModelElement
@@ -183,6 +184,9 @@ class Field extends ModelElement
       setModelType(getter.modelType);
     }
   }
+
+  @override
+  CallableElementType get modelType => super.modelType;
 
   @override
   Inheritable get overriddenElement => null;
