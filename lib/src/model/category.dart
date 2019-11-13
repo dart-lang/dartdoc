@@ -10,7 +10,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 
-
 /// A category is a subcategory of a package, containing libraries tagged
 /// with a @category identifier.
 class Category extends Nameable

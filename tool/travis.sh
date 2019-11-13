@@ -37,16 +37,12 @@ elif [ "$DARTDOC_BOT" = "packages" ]; then
   PACKAGE_NAME=flutter_plugin_tools PACKAGE_VERSION=">=0.0.14+1" pub run grinder build-pub-package 2>&1 | grep "dartdoc failed: dartdoc could not find any libraries to document.$"
   PACKAGE_NAME=shelf_exception_handler PACKAGE_VERSION=">=0.2.0" pub run grinder build-pub-package
 elif [ "$DARTDOC_BOT" = "sdk-analyzer" ]; then
-  echo "Running main dartdoc bot against the SDK analyzer"
+  echo "Running all tests against the SDK analyzer"
   unset COVERAGE_TOKEN
-  DARTDOC_GRIND_STEP=buildbot-no-publish pub run grinder test-with-analyzer-sdk
+  pub run grinder test-with-analyzer-sdk
 else
   echo "Running main dartdoc bot"
-  if echo "${DART_VERSION}" | grep -q dev ; then
-    pub run grinder buildbot-no-publish
-  else
-    pub run grinder buildbot
-  fi
+  pub run grinder buildbot
   if [ -n "$COVERAGE_TOKEN" ] ; then
     coveralls-lcov --repo-token="${COVERAGE_TOKEN}" lcov.info
   fi
