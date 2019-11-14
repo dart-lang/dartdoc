@@ -93,10 +93,7 @@ class Field extends ModelElement
   }
 
   @override
-  bool get isLate {
-    if (isFinal) return field.isLate;
-    return false;
-  }
+  bool get isLate => isFinal && field.isLate;
 
   @override
   bool get isInherited => _isInherited;

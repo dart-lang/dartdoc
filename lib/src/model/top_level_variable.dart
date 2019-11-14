@@ -66,10 +66,7 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  bool get isLate {
-    if (isFinal) return _variable.isLate;
-    return false;
-  }
+  bool get isLate => isFinal && _variable.isLate;
 
   @override
   String get kind => isConst ? 'top-level constant' : 'top-level property';
