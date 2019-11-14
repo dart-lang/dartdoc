@@ -4,6 +4,8 @@
 
 import 'dart:math';
 
+late final String initializeMe;
+
 class C {
   late final a;
   late final b = 0;
