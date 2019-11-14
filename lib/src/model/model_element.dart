@@ -43,6 +43,7 @@ const Map<String, int> featureOrder = {
   'read / write': 1,
   'covariant': 2,
   'final': 2,
+  'late': 2,
   'inherited': 3,
   'inherited-getter': 3,
   'inherited-setter': 3,
@@ -499,6 +500,7 @@ abstract class ModelElement extends Canonicalization
     // const and static are not needed here because const/static elements get
     // their own sections in the doc.
     if (isFinal) allFeatures.add('final');
+    if (isLate) allFeatures.add('late');
     return allFeatures;
   }
 
@@ -896,6 +898,8 @@ abstract class ModelElement extends Canonicalization
   bool get isExecutable => element is ExecutableElement;
 
   bool get isFinal => false;
+
+  bool get isLate => false;
 
   bool get isLocalElement => element is LocalElement;
 

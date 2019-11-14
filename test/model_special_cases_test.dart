@@ -36,19 +36,42 @@ void main() {
           .firstWhere((lib) => lib.name == 'late_final_without_initializer');
     });
 
-    test('Late finals test', () {
+    test('Late final class member test', () {
       Class c = lateFinalWithoutInitializer.allClasses
           .firstWhere((c) => c.name == 'C');
       Field a = c.allFields.firstWhere((f) => f.name == 'a');
       Field b = c.allFields.firstWhere((f) => f.name == 'b');
       Field cField = c.allFields.firstWhere((f) => f.name == 'cField');
       Field dField = c.allFields.firstWhere((f) => f.name == 'dField');
-      // If nnbd isn't enabled, fields named 'late' come back from the analyzer.
+
+      // If nnbd isn't enabled, fields named 'late' come back from the analyzer
+      // instead of setting up 'isLate'.
       expect(c.allFields.any((f) => f.name == 'late'), isFalse);
+
       expect(a.modelType.returnType.name, equals('dynamic'));
+      expect(a.isLate, isTrue);
+      expect(a.features, contains('late'));
+
       expect(b.modelType.returnType.name, equals('int'));
+      expect(b.isLate, isTrue);
+      expect(b.features, contains('late'));
+
       expect(cField.modelType.returnType.name, equals('dynamic'));
+      expect(cField.isLate, isTrue);
+      expect(cField.features, contains('late'));
+
       expect(dField.modelType.returnType.name, equals('double'));
+      expect(dField.isLate, isTrue);
+      expect(dField.features, contains('late'));
+    });
+
+    test('Late final top level variables', () {
+      TopLevelVariable initializeMe = lateFinalWithoutInitializer
+          .publicProperties
+          .firstWhere((v) => v.name == 'initializeMe');
+      expect(initializeMe.modelType.returnType.name, equals('String'));
+      expect(initializeMe.isLate, isTrue);
+      expect(initializeMe.features, contains('late'));
     });
   });
 

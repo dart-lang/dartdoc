@@ -2513,6 +2513,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Field explicitGetterSetter;
     Field explicitNonDocumentedInBaseClassGetter;
     Field documentedPartialFieldInSubclassOnly;
+    Field finalProperty;
     Field ExtraSpecialListLength;
     Field aProperty;
     Field covariantField, covariantSetter;
@@ -2539,6 +2540,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
               (e) => e.name == 'explicitNonDocumentedInBaseClassGetter');
       documentedPartialFieldInSubclassOnly = UnusualProperties.allModelElements
           .firstWhere((e) => e.name == 'documentedPartialFieldInSubclassOnly');
+      finalProperty = UnusualProperties.allModelElements
+          .firstWhere((e) => e.name == 'finalProperty');
 
       isEmpty =
           CatString.allInstanceFields.firstWhere((p) => p.name == 'isEmpty');
@@ -2774,8 +2777,18 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(constField.isConst, isTrue);
     });
 
-    test('is not final', () {
+    test('is final only when appropriate', () {
       expect(f1.isFinal, isFalse);
+      expect(finalProperty.isFinal, isTrue);
+      expect(finalProperty.isLate, isFalse);
+      expect(finalProperty.features, contains('final'));
+      expect(finalProperty.features, isNot(contains('late')));
+      expect(onlySetter.isFinal, isFalse);
+      expect(onlySetter.features, isNot(contains('final')));
+      expect(onlySetter.features, isNot(contains('late')));
+      expect(dynamicGetter.isFinal, isFalse);
+      expect(dynamicGetter.features, isNot(contains('final')));
+      expect(dynamicGetter.features, isNot(contains('late')));
     });
 
     test('is not static', () {
@@ -2885,11 +2898,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     TopLevelVariable setAndGet, mapWithDynamicKeys;
     TopLevelVariable nodocGetter, nodocSetter;
     TopLevelVariable complicatedReturn;
-    TopLevelVariable importantComputations;
+    TopLevelVariable meaningOfLife, importantComputations;
 
     setUpAll(() {
       v = exLibrary.properties.firstWhere((p) => p.name == 'number');
       v3 = exLibrary.properties.firstWhere((p) => p.name == 'y');
+      meaningOfLife =
+          fakeLibrary.properties.firstWhere((v) => v.name == 'meaningOfLife');
       importantComputations = fakeLibrary.properties
           .firstWhere((v) => v.name == 'importantComputations');
       complicatedReturn = fakeLibrary.properties
@@ -2906,6 +2921,19 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           fakeLibrary.properties.firstWhere((p) => p.name == 'setAndGet');
       mapWithDynamicKeys = fakeLibrary.properties
           .firstWhere((p) => p.name == 'mapWithDynamicKeys');
+    });
+
+    test('Verify that final and late show up (or not) appropriately', () {
+      expect(meaningOfLife.isFinal, isTrue);
+      expect(meaningOfLife.isLate, isFalse);
+      expect(meaningOfLife.features, contains('final'));
+      expect(meaningOfLife.features, isNot(contains('late')));
+      expect(justGetter.isFinal, isFalse);
+      expect(justGetter.features, isNot(contains('final')));
+      expect(justGetter.features, isNot(contains('late')));
+      expect(justSetter.isFinal, isFalse);
+      expect(justSetter.features, isNot(contains('final')));
+      expect(justSetter.features, isNot(contains('late')));
     });
 
     test(
