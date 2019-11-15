@@ -123,14 +123,7 @@ class Category extends Nameable
   String get href =>
       isCanonical ? '${package.baseHref}topics/${name}-topic.html' : null;
 
-  String get linkedName {
-    String unbrokenCategoryName = name.replaceAll(' ', '&nbsp;');
-    if (isDocumented) {
-      return '<a href="$href">$unbrokenCategoryName</a>';
-    } else {
-      return unbrokenCategoryName;
-    }
-  }
+  String get unbrokenName => name.replaceAll(' ', '&nbsp;');
 
   String _categoryNumberClass;
 

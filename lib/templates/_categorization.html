@@ -1,5 +1,13 @@
 {{#hasCategoryNames}}
   {{#displayedCategories}}
-  <span class="category {{spanClass}} {{categoryNumberClass}} {{#isDocumented}}linked{{/isDocumented}}" title="This is part of the {{name}} {{kind}}.">{{{linkedName}}}</span>
+  <span class="category {{spanClass}} {{categoryNumberClass}} {{#isDocumented}}linked{{/isDocumented}}"
+        title="This is part of the {{name}} {{kind}}.">
+    {{#isDocumented}}
+      <a href="{{{ href }}}">{{{ unbrokenName }}}</a>
+    {{/isDocumented}}
+    {{^isDocumented}}
+      {{{ unbrokenName }}}
+    {{/isDocumented}}
+  </span>
   {{/displayedCategories}}
 {{/hasCategoryNames}}
