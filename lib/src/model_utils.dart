@@ -109,13 +109,13 @@ abstract class ParameterRenderer {
           optionalPositionalParams.isNotEmpty || namedParams.isNotEmpty);
     }
     if (optionalPositionalParams.isNotEmpty) {
-      optional = orderedList(_linkedParameterSublist(
+      optional = _linkedParameterSublist(
           optionalPositionalParams, namedParams.isNotEmpty,
-          thisOpenBracket: '[', thisCloseBracket: ']'));
+          thisOpenBracket: '[', thisCloseBracket: ']');
     }
     if (namedParams.isNotEmpty) {
-      named = orderedList(_linkedParameterSublist(namedParams, false,
-          thisOpenBracket: '{', thisCloseBracket: '}'));
+      named = _linkedParameterSublist(namedParams, false,
+          thisOpenBracket: '{', thisCloseBracket: '}');
     }
     return (orderedList(positional + optional + named));
   }
