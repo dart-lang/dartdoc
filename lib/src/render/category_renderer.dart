@@ -1,0 +1,48 @@
+// Copyright (c) 2019, the Dart project authors. Please see the AUTHORS file
+// for details. All rights reserved. Use of this source code is governed by a
+// BSD-style license that can be found in the LICENSE file.
+
+import 'package:dartdoc/src/model/category.dart';
+
+abstract class CategoryRenderer {
+  String renderCategoryLabel(Category category);
+  String renderLinkedName(Category category);
+}
+
+class CategoryRendererHtml extends CategoryRenderer {
+  static final CategoryRendererHtml _instance = CategoryRendererHtml._();
+
+  factory CategoryRendererHtml() {
+    return _instance;
+  }
+
+  CategoryRendererHtml._();
+
+  @override
+  String renderCategoryLabel(Category category) {
+    List<String> spanClasses = [];
+    spanClasses.add('category');
+    spanClasses.add(category.name.split(' ').join('-').toLowerCase());
+    spanClasses.add('cp-${category.categoryIndex}');
+    if (category.isDocumented) {
+      spanClasses.add('linked');
+    }
+    var spanTitle = "This is part of the ${category.name} ${category.kind}.";
+
+    StringBuffer buf = StringBuffer();
+    buf.write('<span class="${spanClasses.join(' ')}" title="$spanTitle">');
+    buf.write(category.linkedName);
+    buf.write('</span>');
+    return buf.toString();
+  }
+
+  @override
+  String renderLinkedName(Category category) {
+    String unbrokenName = category.name.replaceAll(' ', '&nbsp;');
+    if (category.isDocumented) {
+      return '<a href="${category.href}">$unbrokenName</a>';
+    } else {
+      return unbrokenName;
+    }
+  }
+}
