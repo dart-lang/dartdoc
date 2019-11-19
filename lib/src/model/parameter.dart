@@ -62,11 +62,14 @@ class Parameter extends ModelElement implements EnclosedElement {
 
   bool get isCovariant => _parameter.isCovariant;
 
-  bool get isOptional => _parameter.isOptional;
+  bool get isRequiredPositional => _parameter.isRequiredPositional;
 
-  bool get isOptionalNamed => _parameter.isNamed;
+  bool get isNamed => _parameter.isNamed;
 
   bool get isOptionalPositional => _parameter.isOptionalPositional;
+
+  /// Only true if this is a required named parameter.
+  bool get isRequiredNamed => _parameter.isRequiredNamed;
 
   @override
   String get kind => 'parameter';

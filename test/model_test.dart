@@ -2108,7 +2108,7 @@ void main() {
       expect(
           linkedParams(paramOfFutureOrNull.parameters),
           equals(
-              '<span class="parameter" id="paramOfFutureOrNull-param-future"><span class="type-annotation">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">Null</span>&gt;</span></span> <span class="parameter-name">future</span></span>'));
+              '<span class="parameter" id="paramOfFutureOrNull-param-future"><span class="type-annotation">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">Null</span>&gt;</span></span> <span class="parameter-name">future</span></span><wbr>'));
     });
 
     test('function with a bound type to FutureOr', () {
@@ -2139,7 +2139,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           params,
           '<span class="parameter" id="addCallback-param-callback">'
           '<span class="type-annotation"><a href="fake/VoidCallback.html">VoidCallback</a></span> '
-          '<span class="parameter-name">callback</span></span>');
+          '<span class="parameter-name">callback</span></span><wbr>');
 
       function =
           fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback2');
@@ -2148,7 +2148,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           params,
           '<span class="parameter" id="addCallback2-param-callback">'
           '<span class="type-annotation"><a href="fake/Callback2.html">Callback2</a></span> '
-          '<span class="parameter-name">callback</span></span>');
+          '<span class="parameter-name">callback</span></span><wbr>');
     });
 
     test('supports generic methods', () {
@@ -2159,7 +2159,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('can resolve functions as parameters', () {
       String params = linkedParams(doAComplicatedThing.parameters);
       expect(params,
-          '<span class="parameter" id="doAComplicatedThing-param-x"><span class="type-annotation">int</span> <span class="parameter-name">x</span>, {</span> <span class="parameter" id="doAComplicatedThing-param-doSomething"><span class="type-annotation">void</span> <span class="parameter-name">doSomething</span>(<span class="parameter" id="param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span> <span class="parameter" id="param-anotherThing"><span class="type-annotation">String</span> <span class="parameter-name">anotherThing</span></span>), </span> <span class="parameter" id="doAComplicatedThing-param-doSomethingElse"><span class="type-annotation">void</span> <span class="parameter-name">doSomethingElse</span>(<span class="parameter" id="param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span> <span class="parameter" id="param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span>)</span> }');
+          '<span class="parameter" id="doAComplicatedThing-param-x"><span class="type-annotation">int</span> <span class="parameter-name">x</span>, </span><wbr><span class="parameter" id="doAComplicatedThing-param-doSomething">{<span class="type-annotation">void</span> <span class="parameter-name">doSomething</span>(<span class="parameter" id="param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span><wbr><span class="parameter" id="param-anotherThing"><span class="type-annotation">String</span> <span class="parameter-name">anotherThing</span></span><wbr>), </span><wbr><span class="parameter" id="doAComplicatedThing-param-doSomethingElse"><span class="type-annotation">void</span> <span class="parameter-name">doSomethingElse</span>(<span class="parameter" id="param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span><wbr><span class="parameter" id="param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span><wbr>)}</span><wbr>');
     });
   });
 
@@ -2179,7 +2179,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
       expect(explicitSetter.linkedReturnType,
-          '<span class="parameter" id="explicitSetter=-param-f"><span class="type-annotation">dynamic</span> <span class="parameter-name">Function</span>(<span class="parameter" id="param-bar"><span class="type-annotation">int</span>, </span> <span class="parameter" id="param-baz"><span class="type-annotation"><a href="fake/Cool-class.html">Cool</a></span>, </span> <span class="parameter" id="param-macTruck"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span></span>)</span>');
+          '<span class="parameter" id="explicitSetter=-param-f"><span class="type-annotation">dynamic</span> <span class="parameter-name">Function</span>(<span class="parameter" id="param-bar"><span class="type-annotation">int</span>, </span><wbr><span class="parameter" id="param-baz"><span class="type-annotation"><a href="fake/Cool-class.html">Cool</a></span>, </span><wbr><span class="parameter" id="param-macTruck"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span></span><wbr>)</span><wbr>');
     });
 
     test('parameterized type from field is correctly displayed', () {
@@ -2227,7 +2227,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
       expect(aInheritedSetter.enclosingCombo.linkedReturnType,
-          '<span class="parameter" id="aInheritedSetter=-param-thingToSet"><span class="type-annotation"><a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span></span>');
+          '<span class="parameter" id="aInheritedSetter=-param-thingToSet"><span class="type-annotation"><a href="ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span></span><wbr>');
     });
 
     test(
@@ -2276,7 +2276,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(aInheritedAdditionOperator.linkedReturnType,
           '<a href="ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
       expect(linkedParams(aInheritedAdditionOperator.parameters),
-          '<span class="parameter" id="+-param-other"><span class="type-annotation"><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">other</span></span>');
+          '<span class="parameter" id="+-param-other"><span class="type-annotation"><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">other</span></span><wbr>');
     });
 
     test('', () {});
@@ -2339,7 +2339,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           getAFunctionReturningVoid.linkedReturnType,
           equals(
-              'void Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="param-"><span class="type-annotation">T2</span></span>)</span>'));
+              'void Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">T1</span>, </span><wbr><span class="parameter" id="param-"><span class="type-annotation">T2</span></span><wbr>)</span>'));
     });
 
     test(
@@ -2348,7 +2348,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           getAFunctionReturningBool.linkedReturnType,
           equals(
-              'bool Function&lt;<wbr><span class="type-parameter">T4</span>&gt;<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">String</span>, </span> <span class="parameter" id="param-"><span class="type-annotation">T1</span>, </span> <span class="parameter" id="param-"><span class="type-annotation">T4</span></span>)</span>'));
+              'bool Function&lt;<wbr><span class="type-parameter">T4</span>&gt;<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">String</span>, </span><wbr><span class="parameter" id="param-"><span class="type-annotation">T1</span>, </span><wbr><span class="parameter" id="param-"><span class="type-annotation">T4</span></span><wbr>)</span>'));
     });
 
     test('has a fully qualified name', () {
@@ -2946,11 +2946,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           typeArguments.last.linkedName,
           equals(
-              'dynamic Function<span class="signature">(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span>)</span>'));
+              'dynamic Function<span class="signature">(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span><wbr>)</span>'));
       expect(
           importantComputations.linkedReturnType,
           equals(
-              'Map<span class="signature">&lt;<wbr><span class="type-parameter">int</span>, <span class="type-parameter">dynamic Function<span class="signature">(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span>)</span></span>&gt;</span>'));
+              'Map<span class="signature">&lt;<wbr><span class="type-parameter">int</span>, <span class="type-parameter">dynamic Function<span class="signature">(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span><wbr>)</span></span>&gt;</span>'));
     });
 
     test(
@@ -2959,7 +2959,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           complicatedReturn.linkedReturnType,
           equals(
-              '<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">String Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">int</span></span>)</span></span>&gt;</span>'));
+              '<a href="fake/ATypeTakingClass-class.html">ATypeTakingClass</a><span class="signature">&lt;<wbr><span class="type-parameter">String Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">int</span></span><wbr>)</span></span>&gt;</span>'));
     });
 
     test('@nodoc on simple property works', () {
@@ -3244,7 +3244,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           linkedParams(aVoidParameter.parameters,
               showMetadata: true, showNames: true),
           equals(
-              '<span class="parameter" id="aVoidParameter-param-p1"><span class="type-annotation">Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span> <span class="parameter-name">p1</span></span>'));
+              '<span class="parameter" id="aVoidParameter-param-p1"><span class="type-annotation">Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span> <span class="parameter-name">p1</span></span><wbr>'));
     });
 
     test('a class that extends Future<void>', () {
@@ -3326,7 +3326,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           linkedParams(theConstructor.parameters),
           equals(
-              '<span class="parameter" id="-param-x"><span class="type-annotation"><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">double</span>&gt;</span></span> <span class="parameter-name">x</span></span>'));
+              '<span class="parameter" id="-param-x"><span class="type-annotation"><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">double</span>&gt;</span></span> <span class="parameter-name">x</span></span><wbr>'));
     });
 
     test('anonymous nested functions inside typedefs are handled', () {
@@ -3343,11 +3343,13 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           aComplexTypedef.linkedReturnType,
           equals(
-              'void Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">A1</span>, </span> <span class="parameter" id="param-"><span class="type-annotation">A2</span>, </span> <span class="parameter" id="param-"><span class="type-annotation">A3</span></span>)</span>'));
+              'void Function<span class="signature">(<span class="parameter" id="param-"><span class="type-annotation">A1</span>, </span><wbr><span class="parameter" id="param-"><span class="type-annotation">A2</span>, </span><wbr><span class="parameter" id="param-"><span class="type-annotation">A3</span></span><wbr>)</span>'));
       expect(
           aComplexTypedef.linkedParamsLines,
           equals(
-              '<span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span>, </span> <span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">String</span></span>'));
+              '<ol class="parameter-list"><li><span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">A3</span>, </span></li>\n'
+              '<li><span class="parameter" id="aComplexTypedef-param-"><span class="type-annotation">String</span></span></li>\n'
+              '</ol>'));
     });
 
     test('has a fully qualified name', () {
@@ -3446,8 +3448,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('is optional', () {
-      expect(intCheckOptional.isOptional, isTrue);
-      expect(intNumber.isOptional, isFalse);
+      expect(intCheckOptional.isNamed, isTrue);
+      expect(intCheckOptional.isRequiredNamed, isFalse);
+      expect(intNumber.isNamed, isFalse);
+      expect(intNumber.isRequiredPositional, isTrue);
     });
 
     test('default value', () {
@@ -3455,7 +3459,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('is named', () {
-      expect(intCheckOptional.isOptionalNamed, isTrue);
+      expect(intCheckOptional.isNamed, isTrue);
     });
 
     test('linkedName', () {
@@ -3496,7 +3500,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(
           params,
           equals(
-              '<span class="parameter" id="methodWithTypedefParam-param-p"><span class="type-annotation"><a href="ex/processMessage.html">processMessage</a></span> <span class="parameter-name">p</span></span>'));
+              '<span class="parameter" id="methodWithTypedefParam-param-p"><span class="type-annotation"><a href="ex/processMessage.html">processMessage</a></span> <span class="parameter-name">p</span></span><wbr>'));
     });
   });
 

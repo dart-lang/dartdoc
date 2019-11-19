@@ -29,11 +29,61 @@ void main() {
   // Experimental features not yet enabled by default.  Move tests out of this block
   // when the feature is enabled by default.
   group('Experiments', () {
-    Library lateFinalWithoutInitializer;
+    Library lateFinalWithoutInitializer, nnbdClassMemberDeclarations;
+    Class b;
     setUpAll(() async {
       lateFinalWithoutInitializer = (await utils.testPackageGraphExperiments)
           .libraries
           .firstWhere((lib) => lib.name == 'late_final_without_initializer');
+      nnbdClassMemberDeclarations = (await utils.testPackageGraphExperiments)
+          .libraries
+          .firstWhere((lib) => lib.name == 'nnbd_class_member_declarations');
+      b = nnbdClassMemberDeclarations.allClasses
+          .firstWhere((c) => c.name == 'B');
+    });
+
+    test('method parameters with required', () {
+      Method m1 = b.allInstanceMethods.firstWhere((m) => m.name == 'm1');
+      Parameter p1 = m1.allParameters.firstWhere((p) => p.name == 'p1');
+      Parameter p2 = m1.allParameters.firstWhere((p) => p.name == 'p2');
+      expect(p1.isRequiredNamed, isTrue);
+      expect(p2.isRequiredNamed, isFalse);
+      expect(p2.isNamed, isTrue);
+
+      expect(
+          m1.linkedParamsLines,
+          equals(
+              '<ol class="parameter-list"><li><span class="parameter" id="m1-param-some"><span class="type-annotation">int</span> <span class="parameter-name">some</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-regular"><span class="type-annotation">dynamic</span> <span class="parameter-name">regular</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-parameters"><span>covariant</span> <span class="type-annotation">dynamic</span> <span class="parameter-name">parameters</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-p1">{<span>required</span> <span class="type-annotation">dynamic</span> <span class="parameter-name">p1</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-p2"><span class="type-annotation">int</span> <span class="parameter-name">p2</span>: <span class="default-value">3</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-p3"><span>required</span> <span>covariant</span> <span class="type-annotation">dynamic</span> <span class="parameter-name">p3</span>, </span></li>\n'
+              '<li><span class="parameter" id="m1-param-p4"><span>required</span> <span>covariant</span> <span class="type-annotation">int</span> <span class="parameter-name">p4</span>}</span></li>\n'
+              '</ol>'));
+    });
+
+    test('verify no regression on ordinary optionals', () {
+      Method m2 = b.allInstanceMethods.firstWhere((m) => m.name == 'm2');
+      Parameter sometimes =
+          m2.allParameters.firstWhere((p) => p.name == 'sometimes');
+      Parameter optionals =
+          m2.allParameters.firstWhere((p) => p.name == 'optionals');
+      expect(sometimes.isRequiredNamed, isFalse);
+      expect(sometimes.isRequiredPositional, isTrue);
+      expect(sometimes.isOptionalPositional, isFalse);
+      expect(optionals.isRequiredNamed, isFalse);
+      expect(optionals.isRequiredPositional, isFalse);
+      expect(optionals.isOptionalPositional, isTrue);
+
+      expect(
+          m2.linkedParamsLines,
+          equals(
+              '<ol class="parameter-list"><li><span class="parameter" id="m2-param-sometimes"><span class="type-annotation">int</span> <span class="parameter-name">sometimes</span>, </span></li>\n'
+              '<li><span class="parameter" id="m2-param-we"><span class="type-annotation">dynamic</span> <span class="parameter-name">we</span>, </span></li>\n'
+              '<li><span class="parameter" id="m2-param-have">[<span class="type-annotation">String</span> <span class="parameter-name">have</span>, </span></li>\n'
+              '<li><span class="parameter" id="m2-param-optionals"><span class="type-annotation">double</span> <span class="parameter-name">optionals</span>]</span></li>\n'
+              '</ol>'));
     });
 
     test('Late final class member test', () {

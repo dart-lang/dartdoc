@@ -930,7 +930,8 @@ abstract class ModelElement extends Canonicalization
 
   String get linkedParams => utils.linkedParams(parameters);
 
-  String get linkedParamsLines => utils.linkedParams(parameters).trim();
+  String get linkedParamsLines =>
+      utils.linkedParams(parameters, asList: true).trim();
 
   String get linkedParamsNoMetadata =>
       utils.linkedParams(parameters, showMetadata: false);
