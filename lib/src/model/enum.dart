@@ -5,6 +5,7 @@
 // TODO(jcollins-g): Consider Enum as subclass of Container?
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/render/enum_field_renderer.dart';
 
 class Enum extends Class {
   Enum(ClassElement element, Library library, PackageGraph packageGraph)
@@ -32,24 +33,18 @@ class Enum extends Class {
 /// Enum's fields are virtual, so we do a little work to create
 /// usable values for the docs.
 class EnumField extends Field {
-  int _index;
+  int index;
 
   EnumField(FieldElement element, Library library, PackageGraph packageGraph,
       Accessor getter, Accessor setter)
       : super(element, library, packageGraph, getter, setter);
 
-  EnumField.forConstant(this._index, FieldElement element, Library library,
+  EnumField.forConstant(this.index, FieldElement element, Library library,
       PackageGraph packageGraph, Accessor getter)
       : super(element, library, packageGraph, getter, null);
 
   @override
-  String get constantValueBase {
-    if (name == 'values') {
-      return 'const List&lt;<wbr><span class="type-parameter">${field.enclosingElement.name}</span>&gt;';
-    } else {
-      return 'const ${field.enclosingElement.name}($_index)';
-    }
-  }
+  String get constantValueBase => EnumFieldRendererHtml().renderValue(this);
 
   @override
   List<ModelElement> get documentationFrom {
@@ -87,7 +82,7 @@ class EnumField extends Field {
     if (name == 'index') return false;
     // If this is something inherited from Object, e.g. hashCode, let the
     // normal rules apply.
-    if (_index == null) {
+    if (index == null) {
       return super.isCanonical;
     }
     // TODO(jcollins-g): We don't actually document this as a separate entity;

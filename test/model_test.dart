@@ -10,6 +10,7 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
+import 'package:dartdoc/src/render/enum_field_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
@@ -1984,20 +1985,20 @@ void main() {
     });
 
     test("has a (synthetic) values constant", () {
-      var values = animal.constants.firstWhere((f) => f.name == 'values');
-      expect(values, isNotNull);
+      var valuesField = animal.constants.firstWhere((f) => f.name == 'values');
+      expect(valuesField, isNotNull);
       expect(
-          values.constantValue,
-          equals(
-              'const List&lt;<wbr><span class="type-parameter">Animal</span>&gt;'));
-      expect(values.documentation, startsWith('A constant List'));
+          valuesField.constantValue,
+          equals(EnumFieldRendererHtml().renderValue(valuesField)));
+      expect(valuesField.documentation, startsWith('A constant List'));
     });
 
     test('has a constant that does not link anywhere', () {
       var dog = animal.constants.firstWhere((f) => f.name == 'DOG');
       expect(dog.linkedName, equals('DOG'));
       expect(dog.isConst, isTrue);
-      expect(dog.constantValue, equals('const Animal(1)'));
+      expect(
+          dog.constantValue, equals(EnumFieldRendererHtml().renderValue(dog)));
     });
 
     test('constants have correct indicies', () {
