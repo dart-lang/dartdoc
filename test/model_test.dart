@@ -8,8 +8,8 @@ import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
+import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
@@ -2084,7 +2084,8 @@ void main() {
     });
 
     test('handles dynamic parameters correctly', () {
-      expect(linkedParams(f1.parameters), contains('lastParam'));
+      expect(ParameterRendererHtml().renderLinkedParams(f1.parameters),
+          contains('lastParam'));
     });
 
     test('async function', () {
@@ -2123,7 +2124,8 @@ void main() {
 
     test('function with a parameter having type FutureOr<Null>', () {
       expect(
-          linkedParams(paramOfFutureOrNull.parameters),
+          ParameterRendererHtml()
+              .renderLinkedParams(paramOfFutureOrNull.parameters),
           equals(
               '<span class="parameter" id="paramOfFutureOrNull-param-future"><span class="type-annotation">FutureOr<span class="signature">&lt;<wbr><span class="type-parameter">Null</span>&gt;</span></span> <span class="parameter-name">future</span></span><wbr>'));
     });
@@ -2151,7 +2153,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('typedef params have proper signature', () {
       ModelFunction function =
           fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback');
-      String params = linkedParams(function.parameters);
+      String params =
+          ParameterRendererHtml().renderLinkedParams(function.parameters);
       expect(
           params,
           '<span class="parameter" id="addCallback-param-callback">'
@@ -2160,7 +2163,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
       function =
           fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback2');
-      params = linkedParams(function.parameters);
+      params = ParameterRendererHtml().renderLinkedParams(function.parameters);
       expect(
           params,
           '<span class="parameter" id="addCallback2-param-callback">'
@@ -2174,7 +2177,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('can resolve functions as parameters', () {
-      String params = linkedParams(doAComplicatedThing.parameters);
+      String params = ParameterRendererHtml()
+          .renderLinkedParams(doAComplicatedThing.parameters);
       expect(params,
           '<span class="parameter" id="doAComplicatedThing-param-x"><span class="type-annotation">int</span> <span class="parameter-name">x</span>, </span><wbr><span class="parameter" id="doAComplicatedThing-param-doSomething">{<span class="type-annotation">void</span> <span class="parameter-name">doSomething</span>(<span class="parameter" id="param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span><wbr><span class="parameter" id="param-anotherThing"><span class="type-annotation">String</span> <span class="parameter-name">anotherThing</span></span><wbr>), </span><wbr><span class="parameter" id="doAComplicatedThing-param-doSomethingElse"><span class="type-annotation">void</span> <span class="parameter-name">doSomethingElse</span>(<span class="parameter" id="param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span><wbr><span class="parameter" id="param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span><wbr>)}</span><wbr>');
     });
@@ -2292,7 +2296,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           .singleWhere((m) => m.name == 'operator +');
       expect(aInheritedAdditionOperator.linkedReturnType,
           '<a href="ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
-      expect(linkedParams(aInheritedAdditionOperator.parameters),
+      expect(
+          ParameterRendererHtml()
+              .renderLinkedParams(aInheritedAdditionOperator.parameters),
           '<span class="parameter" id="+-param-other"><span class="type-annotation"><a href="ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">other</span></span><wbr>');
     });
 
@@ -3258,8 +3264,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('a function requiring a Future<void> parameter', () {
       expect(
-          linkedParams(aVoidParameter.parameters,
-              showMetadata: true, showNames: true),
+          ParameterRendererHtml(showMetadata: true, showNames: true)
+              .renderLinkedParams(aVoidParameter.parameters),
           equals(
               '<span class="parameter" id="aVoidParameter-param-p1"><span class="type-annotation">Future<span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span> <span class="parameter-name">p1</span></span><wbr>'));
     });
@@ -3341,7 +3347,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         () {
       Constructor theConstructor = TypedefUsingClass.constructors.first;
       expect(
-          linkedParams(theConstructor.parameters),
+          ParameterRendererHtml().renderLinkedParams(theConstructor.parameters),
           equals(
               '<span class="parameter" id="-param-x"><span class="type-annotation"><a href="ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">double</span>&gt;</span></span> <span class="parameter-name">x</span></span><wbr>'));
     });
@@ -3488,21 +3494,24 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('param with generics', () {
-      var params = linkedParams(methodWithGenericParam.parameters);
+      var params = ParameterRendererHtml()
+          .renderLinkedParams(methodWithGenericParam.parameters);
       expect(params.contains('List') && params.contains('Apple'), isTrue);
     });
 
     test('commas on same param line', () {
       ModelFunction method =
           fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage1');
-      String params = linkedParams(method.parameters);
+      String params =
+          ParameterRendererHtml().renderLinkedParams(method.parameters);
       expect(params, contains(', </span>'));
     });
 
     test('param with annotations', () {
       ModelFunction method =
           fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage1');
-      String params = linkedParams(method.parameters);
+      String params =
+          ParameterRendererHtml().renderLinkedParams(method.parameters);
       expect(params, contains('@required'));
     });
 
@@ -3513,7 +3522,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('typedef param is linked and does not include types', () {
-      var params = linkedParams(methodWithTypedefParam.parameters);
+      var params = ParameterRendererHtml()
+          .renderLinkedParams(methodWithTypedefParam.parameters);
       expect(
           params,
           equals(
