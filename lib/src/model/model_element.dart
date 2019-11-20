@@ -27,6 +27,7 @@ import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/render/parameter_renderer.dart';
+import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -1144,8 +1145,7 @@ abstract class ModelElement extends Canonicalization
       return htmlEscape.convert(name);
     }
 
-    var classContent = isDeprecated ? ' class="deprecated"' : '';
-    return '<a${classContent} href="${href}">$name</a>';
+    return ModelElementRendererHtml().renderLinkedName(this);
   }
 
   /// Replace &#123;@example ...&#125; in API comments with the content of named file.
@@ -1370,37 +1370,14 @@ abstract class ModelElement extends Canonicalization
         warn(PackageWarning.invalidParameter,
             message: 'A @youtube directive has an invalid URL: '
                 '"${positionalArgs[2]}". Supported YouTube URLs have the '
-                'follwing format: https://www.youtube.com/watch?v=oHg5SJYRHA0.');
+                'following format: https://www.youtube.com/watch?v=oHg5SJYRHA0.');
         return '';
       }
       final String youTubeId = url.group(url.groupCount);
       final String aspectRatio = (height / width * 100).toStringAsFixed(2);
 
-      // Blank lines before and after, and no indenting at the beginning and end
-      // is needed so that Markdown doesn't confuse this with code, so be
-      // careful of whitespace here.
-      return '''
-
-<p style="position: relative;
-          padding-top: $aspectRatio%;">
-  <iframe src="https://www.youtube.com/embed/$youTubeId?rel=0"
-          frameborder="0"
-          allow="accelerometer;
-                 autoplay;
-                 encrypted-media;
-                 gyroscope;
-                 picture-in-picture"
-          allowfullscreen
-          style="position: absolute;
-                 top: 0;
-                 left: 0;
-                 width: 100%;
-                 height: 100%;">
-  </iframe>
-</p>
-
-'''; // String must end at beginning of line, or following inline text will be
-      // indented.
+      return ModelElementRendererHtml().renderYoutubeUrl(
+          youTubeId, aspectRatio);
     });
   }
 
@@ -1531,45 +1508,8 @@ abstract class ModelElement extends Canonicalization
                 'parameter)');
       }
 
-      // Blank lines before and after, and no indenting at the beginning and end
-      // is needed so that Markdown doesn't confuse this with code, so be
-      // careful of whitespace here.
-      return '''
-
-<div style="position: relative;">
-  <div id="${overlayId}"
-       onclick="var $uniqueId = document.getElementById('$uniqueId');
-                if ($uniqueId.paused) {
-                  $uniqueId.play();
-                  this.style.display = 'none';
-                } else {
-                  $uniqueId.pause();
-                  this.style.display = 'block';
-                }"
-       style="position:absolute;
-              width:${width}px;
-              height:${height}px;
-              z-index:100000;
-              background-position: center;
-              background-repeat: no-repeat;
-              background-image: url(static-assets/play_button.svg);">
-  </div>
-  <video id="$uniqueId"
-         style="width:${width}px; height:${height}px;"
-         onclick="var $overlayId = document.getElementById('$overlayId');
-                  if (this.paused) {
-                    this.play();
-                    $overlayId.style.display = 'none';
-                  } else {
-                    this.pause();
-                    $overlayId.style.display = 'block';
-                  }" loop>
-    <source src="$movieUrl" type="video/mp4"/>
-  </video>
-</div>
-
-'''; // String must end at beginning of line, or following inline text will be
-      // indented.
+      return ModelElementRendererHtml().renderAnimation(
+          uniqueId, width, height, movieUrl, overlayId);
     });
   }
 
