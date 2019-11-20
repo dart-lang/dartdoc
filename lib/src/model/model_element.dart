@@ -26,6 +26,7 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
+import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -928,18 +929,18 @@ abstract class ModelElement extends Canonicalization
     return _linkedName;
   }
 
-  String get linkedParams => utils.linkedParams(parameters);
+  String get linkedParams =>
+      ParameterRendererHtml().renderLinkedParams(parameters);
 
   String get linkedParamsLines =>
-      utils.linkedParams(parameters, asList: true).trim();
+      ParameterRendererHtmlList().renderLinkedParams(parameters).trim();
 
   String get linkedParamsNoMetadata =>
-      utils.linkedParams(parameters, showMetadata: false);
+      ParameterRendererHtml(showMetadata: false).renderLinkedParams(parameters);
 
-  String get linkedParamsNoMetadataOrNames {
-    return utils.linkedParams(parameters,
-        showMetadata: false, showNames: false);
-  }
+  String get linkedParamsNoMetadataOrNames =>
+      ParameterRendererHtml(showMetadata: false, showNames: false)
+          .renderLinkedParams(parameters);
 
   ElementType get modelType {
     if (_modelType == null) {

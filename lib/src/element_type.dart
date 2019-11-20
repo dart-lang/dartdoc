@@ -11,7 +11,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/model_utils.dart';
+import 'package:dartdoc/src/render/parameter_renderer.dart';
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
@@ -147,7 +147,7 @@ class FunctionTypeElementType extends UndefinedElementType {
       buf.write('${returnType.linkedName} ');
       buf.write('${nameWithGenerics}');
       buf.write('<span class="signature">');
-      buf.write('(${linkedParams(parameters)})');
+      buf.write('(${ParameterRendererHtml().renderLinkedParams(parameters)})');
       buf.write('</span>');
       _linkedName = buf.toString();
     }
@@ -418,7 +418,7 @@ class CallableElementType extends ParameterizedElementType
   @override
   String get linkedName {
     if (name != null && name.isNotEmpty) return super.linkedName;
-    return '${nameWithGenerics}(${linkedParams(element.parameters, showNames: false).trim()}) → ${returnType.linkedName}';
+    return '${nameWithGenerics}(${ParameterRendererHtml(showNames: false).renderLinkedParams(element.parameters).trim()}) → ${returnType.linkedName}';
   }
 }
 
@@ -435,7 +435,7 @@ class CallableAnonymousElementType extends CallableElementType {
   String get linkedName {
     if (_linkedName == null) {
       _linkedName =
-          '${returnType.linkedName} ${super.linkedName}<span class="signature">(${linkedParams(element.parameters)})</span>';
+          '${returnType.linkedName} ${super.linkedName}<span class="signature">(${ParameterRendererHtml().renderLinkedParams(element.parameters)})</span>';
     }
     return _linkedName;
   }
