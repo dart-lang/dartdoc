@@ -2,16 +2,19 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:dartdoc/src/model/typedef.dart';
 
 abstract class TypedefRenderer {
-  String renderGenericParameters(List<TypeParameterElement> typeParameters);
+  String renderGenericParameters(Typedef typedef);
 }
 
 class TypedefRendererHtml extends TypedefRenderer {
   @override
-  String renderGenericParameters(List<TypeParameterElement> typeParameters) {
-    var joined = typeParameters
+  String renderGenericParameters(Typedef typedef) {
+    if (typedef.genericTypeParameters.isEmpty) {
+      return '';
+    }
+    var joined = typedef.genericTypeParameters
         .map((t) => t.name)
         .join('</span>, <span class="type-parameter">');
     return '&lt;<wbr><span class="type-parameter">${joined}</span>&gt;';

@@ -11,6 +11,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
+import 'package:dartdoc/src/render/typedef_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
@@ -1987,8 +1988,7 @@ void main() {
     test("has a (synthetic) values constant", () {
       var valuesField = animal.constants.firstWhere((f) => f.name == 'values');
       expect(valuesField, isNotNull);
-      expect(
-          valuesField.constantValue,
+      expect(valuesField.constantValue,
           equals(EnumFieldRendererHtml().renderValue(valuesField)));
       expect(valuesField.documentation, startsWith('A constant List'));
     });
@@ -3414,9 +3414,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     // TODO(jdkoren): Not easy to call TypedefRenderer directly because Typedef
     // inspects its element member. Find a better way when we start to isolate
     // renderer tests.
-    test("render generic parameters HTML", () {
-      expect(t.genericParameters, equals(''));
-      expect(generic.genericParameters,
+    test("TypedefRendererHtml renders genericParameters", () {
+      expect(TypedefRendererHtml().renderGenericParameters(t), equals(''));
+      expect(TypedefRendererHtml().renderGenericParameters(generic),
           equals('&lt;<wbr><span class="type-parameter">S</span>&gt;'));
     });
   });

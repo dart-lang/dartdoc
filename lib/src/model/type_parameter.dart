@@ -77,14 +77,11 @@ abstract class TypeParameters implements ModelElement {
   bool get hasGenericParameters => typeParameters.isNotEmpty;
 
   String get genericParameters {
-    if (typeParameters.isEmpty) return '';
-    return TypeParametersRendererHtml().renderGenericParameters(typeParameters);
+    return TypeParametersRendererHtml().renderGenericParameters(this);
   }
 
   String get linkedGenericParameters {
-    if (typeParameters.isEmpty) return '';
-    return TypeParametersRendererHtml()
-        .renderLinkedGenericParameters(typeParameters);
+    return TypeParametersRendererHtml().renderLinkedGenericParameters(this);
   }
 
   @override

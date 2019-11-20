@@ -1376,8 +1376,8 @@ abstract class ModelElement extends Canonicalization
       final String youTubeId = url.group(url.groupCount);
       final String aspectRatio = (height / width * 100).toStringAsFixed(2);
 
-      return ModelElementRendererHtml().renderYoutubeUrl(
-          youTubeId, aspectRatio);
+      return ModelElementRendererHtml()
+          .renderYoutubeUrl(youTubeId, aspectRatio);
     });
   }
 
@@ -1508,8 +1508,8 @@ abstract class ModelElement extends Canonicalization
                 'parameter)');
       }
 
-      return ModelElementRendererHtml().renderAnimation(
-          uniqueId, width, height, movieUrl, overlayId);
+      return ModelElementRendererHtml()
+          .renderAnimation(uniqueId, width, height, movieUrl, overlayId);
     });
   }
 
