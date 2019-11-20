@@ -3,8 +3,8 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/type.dart';
-import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/parameter.dart';
 
 /// Render HTML in an extended vertical format using <ol> tag.
 class ParameterRendererHtmlList extends ParameterRendererHtml {
