@@ -3411,7 +3411,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
               'NewGenericTypedef&lt;<wbr><span class="type-parameter">T</span>&gt;'));
     });
 
-    test("generic parameters", () {
+    // TODO(jdkoren): Not easy to call TypedefRenderer directly because Typedef
+    // inspects its element member. Find a better way when we start to isolate
+    // renderer tests.
+    test("render generic parameters HTML", () {
       expect(t.genericParameters, equals(''));
       expect(generic.genericParameters,
           equals('&lt;<wbr><span class="type-parameter">S</span>&gt;'));

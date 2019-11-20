@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 class Typedef extends ModelElement
     with SourceCodeMixin, TypeParameters, Categorization
@@ -25,10 +26,8 @@ class Typedef extends ModelElement
       List<TypeParameterElement> genericTypeParameters =
           (element as GenericTypeAliasElement).function.typeParameters;
       if (genericTypeParameters.isNotEmpty) {
-        var joined = genericTypeParameters
-            .map((t) => t.name)
-            .join('</span>, <span class="type-parameter">');
-        return '&lt;<wbr><span class="type-parameter">${joined}</span>&gt;';
+        return TypedefRendererHtml().renderGenericParameters(
+            genericTypeParameters);
       }
     } // else, all types are resolved.
     return '';
