@@ -256,8 +256,7 @@ void main() {
       expect(IAmAClassWithCategoriesReexport.displayedCategories, isNotEmpty);
       Category category =
           IAmAClassWithCategoriesReexport.displayedCategories.first;
-      expect(category.spanClass, equals('superb'));
-      expect(category.categoryNumberClass, equals('cp-0'));
+      expect(category.categoryIndex, equals(0));
       expect(category.isDocumented, isTrue);
     });
 

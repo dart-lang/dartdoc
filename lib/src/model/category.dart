@@ -8,6 +8,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// A category is a subcategory of a package, containing libraries tagged
@@ -123,27 +124,23 @@ class Category extends Nameable
   String get href =>
       isCanonical ? '${package.baseHref}topics/${name}-topic.html' : null;
 
-  String get linkedName {
-    String unbrokenCategoryName = name.replaceAll(' ', '&nbsp;');
-    if (isDocumented) {
-      return '<a href="$href">$unbrokenCategoryName</a>';
-    } else {
-      return unbrokenCategoryName;
-    }
+  String get categorization {
+    return CategoryRendererHtml().renderCategoryLabel(this);
   }
 
-  String _categoryNumberClass;
+  String get linkedName {
+    return CategoryRendererHtml().renderLinkedName(this);
+  }
+
+  int _categoryIndex;
 
   /// The position in the container order for this category.
-  String get categoryNumberClass {
-    if (_categoryNumberClass == null) {
-      _categoryNumberClass = "cp-${package.categories.indexOf(this)}";
+  int get categoryIndex {
+    if (_categoryIndex == null) {
+      _categoryIndex = package.categories.indexOf(this);
     }
-    return _categoryNumberClass;
+    return _categoryIndex;
   }
-
-  /// Category name used in template as part of the class.
-  String get spanClass => name.split(' ').join('-').toLowerCase();
 
   CategoryDefinition get categoryDefinition =>
       config.categories.categoryDefinitions[sortKey];

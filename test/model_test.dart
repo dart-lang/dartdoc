@@ -9,6 +9,7 @@ import 'dart:io';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
+import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
@@ -360,6 +361,22 @@ void main() {
               .localPackages.first.defaultCategory.publicLibraries.length,
           // Only 5 libraries have categories, the rest belong in default.
           equals(utils.kTestPackagePublicLibraries - 5));
+    });
+
+    test('CategoryRendererHtml renders category label', () {
+      Category category = packageGraph.publicPackages.first.categories.first;
+      CategoryRendererHtml renderer = CategoryRendererHtml();
+      expect(
+          renderer.renderCategoryLabel(category),
+          '<span class="category superb cp-0 linked" title="This is part of the Superb Topic.">'
+          '<a href="topics/Superb-topic.html">Superb</a></span>');
+    });
+
+    test('CategoryRendererHtml renders linkedName', () {
+      Category category = packageGraph.publicPackages.first.categories.first;
+      CategoryRendererHtml renderer = CategoryRendererHtml();
+      expect(renderer.renderLinkedName(category),
+          '<a href="topics/Superb-topic.html">Superb</a>');
     });
   });
 
