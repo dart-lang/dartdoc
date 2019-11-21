@@ -11,7 +11,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/render/parameter_renderer.dart';
+import 'package:dartdoc/src/render/element_type_renderer.dart';
 
 /// Base class representing a type in Dartdoc.  It wraps a [DartType], and
 /// may link to a [ModelElement].
@@ -143,13 +143,8 @@ class FunctionTypeElementType extends UndefinedElementType {
   @override
   String get linkedName {
     if (_linkedName == null) {
-      StringBuffer buf = StringBuffer();
-      buf.write('${returnType.linkedName} ');
-      buf.write('${nameWithGenerics}');
-      buf.write('<span class="signature">');
-      buf.write('(${ParameterRendererHtml().renderLinkedParams(parameters)})');
-      buf.write('</span>');
-      _linkedName = buf.toString();
+      _linkedName =
+          FunctionTypeElementTypeRendererHtml().renderLinkedName(this);
     }
     return _linkedName;
   }
@@ -162,17 +157,8 @@ class FunctionTypeElementType extends UndefinedElementType {
   @override
   String get nameWithGenerics {
     if (_nameWithGenerics == null) {
-      StringBuffer buf = StringBuffer();
-      buf.write(name);
-      if ((type as FunctionType).typeFormals.isNotEmpty) {
-        if (!typeFormals.every((t) => t.name == 'dynamic')) {
-          buf.write('&lt;<wbr><span class="type-parameter">');
-          buf.writeAll(typeFormals.map((t) => t.name),
-              '</span>, <span class="type-parameter">');
-          buf.write('</span>&gt;');
-        }
-      }
-      _nameWithGenerics = buf.toString();
+      _nameWithGenerics =
+          FunctionTypeElementTypeRendererHtml().renderNameWithGenerics(this);
     }
     return _nameWithGenerics;
   }
@@ -198,21 +184,8 @@ class ParameterizedElementType extends DefinedElementType {
   @override
   String get linkedName {
     if (_linkedName == null) {
-      StringBuffer buf = StringBuffer();
-
-      buf.write(element.linkedName);
-
-      if (!typeArguments.every((t) => t.name == 'dynamic') &&
-          typeArguments.isNotEmpty) {
-        buf.write('<span class="signature">');
-        buf.write('&lt;<wbr><span class="type-parameter">');
-        buf.writeAll(typeArguments.map((t) => t.linkedName),
-            '</span>, <span class="type-parameter">');
-        buf.write('</span>&gt;');
-        buf.write('</span>');
-      }
-
-      _linkedName = buf.toString();
+      _linkedName =
+          ParameterizedElementTypeRendererHtml().renderLinkedName(this);
     }
     return _linkedName;
   }
@@ -221,18 +194,8 @@ class ParameterizedElementType extends DefinedElementType {
   @override
   String get nameWithGenerics {
     if (_nameWithGenerics == null) {
-      StringBuffer buf = StringBuffer();
-
-      buf.write(element.name);
-
-      if (!typeArguments.every((t) => t.name == 'dynamic') &&
-          typeArguments.isNotEmpty) {
-        buf.write('&lt;<wbr><span class="type-parameter">');
-        buf.writeAll(typeArguments.map((t) => t.nameWithGenerics),
-            '</span>, <span class="type-parameter">');
-        buf.write('</span>&gt;');
-      }
-      _nameWithGenerics = buf.toString();
+      _nameWithGenerics =
+          ParameterizedElementTypeRendererHtml().renderNameWithGenerics(this);
     }
     return _nameWithGenerics;
   }
@@ -246,17 +209,12 @@ class TypeParameterElementType extends DefinedElementType {
   @override
   String get linkedName => name;
 
-  String _nameWithGenerics;
   @override
-  String get nameWithGenerics {
-    if (_nameWithGenerics == null) {
-      _nameWithGenerics = name;
-    }
-    return _nameWithGenerics;
-  }
+  String get nameWithGenerics => name;
 
   @override
   ClassElement get _boundClassElement => interfaceType.element;
+
   @override
   InterfaceType get interfaceType => (type as TypeParameterType).bound;
 }
@@ -417,9 +375,13 @@ class CallableElementType extends ParameterizedElementType
 
   @override
   String get linkedName {
-    if (name != null && name.isNotEmpty) return super.linkedName;
-    return '${nameWithGenerics}(${ParameterRendererHtml(showNames: false).renderLinkedParams(element.parameters).trim()}) → ${returnType.linkedName}';
+    if (_linkedName == null) {
+      _linkedName = CallableElementTypeRendererHtml().renderLinkedName(this);
+    }
+    return _linkedName;
   }
+
+  String get superLinkedName => super.linkedName;
 }
 
 /// This is an anonymous function using the generic function syntax (declared
@@ -435,7 +397,7 @@ class CallableAnonymousElementType extends CallableElementType {
   String get linkedName {
     if (_linkedName == null) {
       _linkedName =
-          '${returnType.linkedName} ${super.linkedName}<span class="signature">(${ParameterRendererHtml().renderLinkedParams(element.parameters)})</span>';
+          CallableAnonymousElementTypeRendererHtml().renderLinkedName(this);
     }
     return _linkedName;
   }
