@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 
 class TypeParameter extends ModelElement {
   TypeParameter(
@@ -76,21 +77,11 @@ abstract class TypeParameters implements ModelElement {
   bool get hasGenericParameters => typeParameters.isNotEmpty;
 
   String get genericParameters {
-    if (typeParameters.isEmpty) return '';
-
-    var joined = typeParameters
-        .map((t) => t.name)
-        .join('</span>, <span class="type-parameter">');
-    return '&lt;<wbr><span class="type-parameter">${joined}</span>&gt;';
+    return TypeParametersRendererHtml().renderGenericParameters(this);
   }
 
   String get linkedGenericParameters {
-    if (typeParameters.isEmpty) return '';
-
-    var joined = typeParameters
-        .map((t) => t.linkedName)
-        .join('</span>, <span class="type-parameter">');
-    return '<span class="signature">&lt;<wbr><span class="type-parameter">${joined}</span>&gt;</span>';
+    return TypeParametersRendererHtml().renderLinkedGenericParameters(this);
   }
 
   @override

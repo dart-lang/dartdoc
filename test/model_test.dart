@@ -10,6 +10,8 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
+import 'package:dartdoc/src/render/enum_field_renderer.dart';
+import 'package:dartdoc/src/render/typedef_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
@@ -1984,20 +1986,19 @@ void main() {
     });
 
     test("has a (synthetic) values constant", () {
-      var values = animal.constants.firstWhere((f) => f.name == 'values');
-      expect(values, isNotNull);
-      expect(
-          values.constantValue,
-          equals(
-              'const List&lt;<wbr><span class="type-parameter">Animal</span>&gt;'));
-      expect(values.documentation, startsWith('A constant List'));
+      var valuesField = animal.constants.firstWhere((f) => f.name == 'values');
+      expect(valuesField, isNotNull);
+      expect(valuesField.constantValue,
+          equals(EnumFieldRendererHtml().renderValue(valuesField)));
+      expect(valuesField.documentation, startsWith('A constant List'));
     });
 
     test('has a constant that does not link anywhere', () {
       var dog = animal.constants.firstWhere((f) => f.name == 'DOG');
       expect(dog.linkedName, equals('DOG'));
       expect(dog.isConst, isTrue);
-      expect(dog.constantValue, equals('const Animal(1)'));
+      expect(
+          dog.constantValue, equals(EnumFieldRendererHtml().renderValue(dog)));
     });
 
     test('constants have correct indicies', () {
@@ -3410,9 +3411,12 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
               'NewGenericTypedef&lt;<wbr><span class="type-parameter">T</span>&gt;'));
     });
 
-    test("generic parameters", () {
-      expect(t.genericParameters, equals(''));
-      expect(generic.genericParameters,
+    // TODO(jdkoren): Not easy to call TypedefRenderer directly because Typedef
+    // inspects its element member. Find a better way when we start to isolate
+    // renderer tests.
+    test("TypedefRendererHtml renders genericParameters", () {
+      expect(TypedefRendererHtml().renderGenericParameters(t), equals(''));
+      expect(TypedefRendererHtml().renderGenericParameters(generic),
           equals('&lt;<wbr><span class="type-parameter">S</span>&gt;'));
     });
   });

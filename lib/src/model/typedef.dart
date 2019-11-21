@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 class Typedef extends ModelElement
     with SourceCodeMixin, TypeParameters, Categorization
@@ -20,18 +21,14 @@ class Typedef extends ModelElement
   String get nameWithGenerics => '$name${super.genericParameters}';
 
   @override
-  String get genericParameters {
+  String get genericParameters =>
+      TypedefRendererHtml().renderGenericParameters(this);
+
+  List<TypeParameterElement> get genericTypeParameters {
     if (element is GenericTypeAliasElement) {
-      List<TypeParameterElement> genericTypeParameters =
-          (element as GenericTypeAliasElement).function.typeParameters;
-      if (genericTypeParameters.isNotEmpty) {
-        var joined = genericTypeParameters
-            .map((t) => t.name)
-            .join('</span>, <span class="type-parameter">');
-        return '&lt;<wbr><span class="type-parameter">${joined}</span>&gt;';
-      }
-    } // else, all types are resolved.
-    return '';
+      return (element as GenericTypeAliasElement).function.typeParameters;
+    }
+    return Iterable.empty();
   }
 
   @override
