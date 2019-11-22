@@ -46,7 +46,10 @@ void main() {
     });
 
     test('has a description', () {
-      expect(p.description, equals('A non-interactive HTML documentation generator for Dart source code.'));
+      expect(
+          p.description,
+          equals(
+              'A non-interactive HTML documentation generator for Dart source code.'));
     });
 
     test('has a homepage', () {
