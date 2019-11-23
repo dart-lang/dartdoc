@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/markdown_processor.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
 

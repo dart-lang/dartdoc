@@ -11,6 +11,7 @@ export 'constructor.dart';
 export 'container.dart';
 export 'container_member.dart';
 export 'documentable.dart';
+export 'documentation.dart';
 export 'dynamic.dart';
 export 'enclosed_element.dart';
 export 'enum.dart';
