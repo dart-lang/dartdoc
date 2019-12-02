@@ -403,8 +403,6 @@ functionUsingMixinReturningFunction() {
   GenericClass<int> using = aMixinReturningFunction();
 }
 
-String Function(int) aFunctionReturningFunction() => (int i) => i.toString();
-
 /// A super class, with many powers. Link to [Apple] from another library.
 @deprecated
 class SuperAwesomeClass {

@@ -93,19 +93,3 @@ class CallableElementTypeRendererHtml
     return buf.toString();
   }
 }
-
-class CallableAnonymousElementTypeRendererHtml
-    extends ElementTypeRenderer<CallableAnonymousElementType> {
-  @override
-  String renderLinkedName(CallableAnonymousElementType elementType) {
-    StringBuffer buf = StringBuffer();
-    buf.write(elementType.returnType.linkedName);
-    buf.write(' ');
-    buf.write(elementType.superLinkedName);
-    buf.write('<span class="signature">(');
-    buf.write(ParameterRendererHtml()
-        .renderLinkedParams(elementType.element.parameters));
-    buf.write(')</span>');
-    return buf.toString();
-  }
-}

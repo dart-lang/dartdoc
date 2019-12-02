@@ -39,32 +39,21 @@ abstract class ElementType extends Privacy {
       if (f is FunctionType) {
         assert(f is ParameterizedType);
         if (isGenericTypeAlias) {
-          assert(element is! ModelFunctionAnonymous);
           return CallableGenericTypeAliasElementType(
               f, library, packageGraph, element, returnedFrom);
-        } else {
-          if (element is ModelFunctionAnonymous) {
-            return CallableAnonymousElementType(
-                f, library, packageGraph, element, returnedFrom);
-          } else {
-            assert(element is! ModelFunctionAnonymous);
-            return CallableElementType(
-                f, library, packageGraph, element, returnedFrom);
-          }
         }
+        return CallableElementType(
+            f, library, packageGraph, element, returnedFrom);
       } else if (isGenericTypeAlias) {
         assert(f is TypeParameterType);
-        assert(element is! ModelFunctionAnonymous);
         return GenericTypeAliasElementType(
             f, library, packageGraph, element, returnedFrom);
       }
       if (f is TypeParameterType) {
-        assert(element is! ModelFunctionAnonymous);
         return TypeParameterElementType(
             f, library, packageGraph, element, returnedFrom);
       }
       assert(f is ParameterizedType);
-      assert(element is! ModelFunctionAnonymous);
       return ParameterizedElementType(
           f, library, packageGraph, element, returnedFrom);
     }
@@ -329,10 +318,7 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
           dartTypeArguments = type.typeFormals.map(_legacyTypeParameterType);
         }
       } else {
-        DefinedElementType elementType = returnedFrom as DefinedElementType;
-        if (type.typeFormals.isEmpty &&
-            element is! ModelFunctionAnonymous &&
-            elementType?.element is! ModelFunctionAnonymous) {
+        if (type.typeFormals.isEmpty) {
           dartTypeArguments = type.typeArguments;
         } else if (returnedFrom != null &&
             returnedFrom.type.element is GenericFunctionTypeElement) {
@@ -382,25 +368,6 @@ class CallableElementType extends ParameterizedElementType
   }
 
   String get superLinkedName => super.linkedName;
-}
-
-/// This is an anonymous function using the generic function syntax (declared
-/// literally with "Function").
-class CallableAnonymousElementType extends CallableElementType {
-  CallableAnonymousElementType(FunctionType t, Library library,
-      PackageGraph packageGraph, ModelElement element, ElementType returnedFrom)
-      : super(t, library, packageGraph, element, returnedFrom);
-  @override
-  String get name => 'Function';
-
-  @override
-  String get linkedName {
-    if (_linkedName == null) {
-      _linkedName =
-          CallableAnonymousElementTypeRendererHtml().renderLinkedName(this);
-    }
-    return _linkedName;
-  }
 }
 
 /// Types backed by a [GenericTypeAliasElement] that may or may not be callable.
