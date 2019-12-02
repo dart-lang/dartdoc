@@ -13,7 +13,6 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:html/parser.dart' show parse;
 import 'package:markdown/markdown.dart' as md;
 
 const validHtmlTags = [
@@ -757,23 +756,23 @@ class _MarkdownCommentReference {
   }
 }
 
-String _linkDocReference(String codeRef, Warnable warnable,
+md.Node _makeLinkNode(String codeRef, Warnable warnable,
     List<ModelCommentReference> commentRefs) {
-  MatchingLinkResult result;
-  result = _getMatchingLinkElement(codeRef, warnable, commentRefs);
+  MatchingLinkResult result =
+      _getMatchingLinkElement(codeRef, warnable, commentRefs);
+  final textContent = htmlEscape.convert(codeRef);
   final ModelElement linkedElement = result.element;
   if (linkedElement != null) {
-    var classContent = '';
-    if (linkedElement.isDeprecated) {
-      classContent = 'class="deprecated" ';
+    if (linkedElement.href != null) {
+      var anchor = md.Element.text('a', textContent);
+      if (linkedElement.isDeprecated) {
+        anchor.attributes['class'] = 'deprecated';
+      }
+      anchor.attributes['href'] = linkedElement.href;
+      return anchor;
     }
-    // This would be linkedElement.linkedName, but link bodies are slightly
-    // different for doc references.
-    if (linkedElement.href == null) {
-      return '<code>${htmlEscape.convert(codeRef)}</code>';
-    } else {
-      return '<a ${classContent}href="${linkedElement.href}">${htmlEscape.convert(codeRef)}</a>';
-    }
+    // else this would be linkedElement.linkedName, but link bodies are slightly
+    // different for doc references, so fall out.
   } else {
     if (result.warn) {
       // Avoid claiming documentation is inherited when it comes from the
@@ -784,8 +783,9 @@ String _linkDocReference(String codeRef, Warnable warnable,
               ? null
               : warnable.documentationFrom);
     }
-    return '<code>${htmlEscape.convert(codeRef)}</code>';
   }
+
+  return md.Element.text('code', textContent);
 }
 
 // Maximum number of characters to display before a suspected generic.
@@ -800,7 +800,7 @@ final RegExp allAfterLastNewline = RegExp(r'\n.*$', multiLine: true);
 // (like, [Apple<int>]). @Hixie asked for a warning when there's something, that looks
 // like a non HTML tag (a generic?) outside of a `[]` block.
 // https://github.com/dart-lang/dartdoc/issues/1250#issuecomment-269257942
-void _showWarningsForGenericsOutsideSquareBracketsBlocks(
+void showWarningsForGenericsOutsideSquareBracketsBlocks(
     String text, Warnable element) {
   List<int> tagPositions = findFreeHangingGenericsPositions(text);
   if (tagPositions.isNotEmpty) {
@@ -851,6 +851,21 @@ List<int> findFreeHangingGenericsPositions(String string) {
 }
 
 class MarkdownDocument extends md.Document {
+  factory MarkdownDocument.withElementLinkResolver(
+      Canonicalization element, List<ModelCommentReference> commentRefs) {
+    md.Node linkResolver(String name, [String _]) {
+      if (name.isEmpty) {
+        return null;
+      }
+      return _makeLinkNode(name, element, commentRefs);
+    }
+
+    return MarkdownDocument(
+        inlineSyntaxes: _markdown_syntaxes,
+        blockSyntaxes: _markdown_block_syntaxes,
+        linkResolver: linkResolver);
+  }
+
   MarkdownDocument(
       {Iterable<md.BlockSyntax> blockSyntaxes,
       Iterable<md.InlineSyntax> inlineSyntaxes,
@@ -864,43 +879,24 @@ class MarkdownDocument extends md.Document {
             linkResolver: linkResolver,
             imageLinkResolver: imageLinkResolver);
 
-  /// Returns a tuple of longHtml, shortHtml.  longHtml is NULL if [processFullDocs] is true.
-  static Tuple2<String, String> _renderNodesToHtml(
-      List<md.Node> nodes, bool processFullDocs) {
-    var rawHtml = md.HtmlRenderer().render(nodes);
-    var asHtmlDocument = parse(rawHtml);
-    for (var s in asHtmlDocument.querySelectorAll('script')) {
-      s.remove();
-    }
-    for (var pre in asHtmlDocument.querySelectorAll('pre')) {
-      if (pre.children.isNotEmpty &&
-          pre.children.length != 1 &&
-          pre.children.first.localName != 'code') {
-        continue;
+  /// Returns a tuple of List<md.Node> and hasExtendedContent
+  Tuple2<List<md.Node>, bool> parseMarkdownText(
+      String text, bool processFullText) {
+    bool hasExtendedContent = false;
+    List<String> lines = LineSplitter.split(text).toList();
+    md.Node firstNode;
+    List<md.Node> nodes = [];
+    for (md.Node node
+        in IterableBlockParser(lines, this).parseLinesGenerator()) {
+      if (firstNode != null) {
+        hasExtendedContent = true;
+        if (!processFullText) break;
       }
-
-      if (pre.children.isNotEmpty && pre.children.first.localName == 'code') {
-        var code = pre.children.first;
-        pre.classes
-            .addAll(code.classes.where((name) => name.startsWith('language-')));
-      }
-
-      bool specifiesLanguage = pre.classes.isNotEmpty;
-      // Assume the user intended Dart if there are no other classes present.
-      if (!specifiesLanguage) pre.classes.add('language-dart');
+      firstNode ??= node;
+      nodes.add(node);
     }
-    String asHtml;
-    String asOneLiner;
-
-    if (processFullDocs) {
-      // `trim` fixes issue with line ending differences between mac and windows.
-      asHtml = asHtmlDocument.body.innerHtml?.trim();
-    }
-    asOneLiner = asHtmlDocument.body.children.isEmpty
-        ? ''
-        : asHtmlDocument.body.children.first.innerHtml;
-
-    return Tuple2(asHtml, asOneLiner);
+    _parseInlineContent(nodes);
+    return Tuple2(nodes, hasExtendedContent);
   }
 
   // From package:markdown/src/document.dart
@@ -918,112 +914,6 @@ class MarkdownDocument extends md.Document {
         _parseInlineContent(node.children);
       }
     }
-  }
-
-  /// Returns a tuple of longHtml, shortHtml (longHtml is NULL if !processFullDocs)
-  Tuple3<String, String, bool> renderLinesToHtml(
-      List<String> lines, bool processFullDocs) {
-    bool hasExtendedDocs = false;
-    md.Node firstNode;
-    List<md.Node> nodes = [];
-    for (md.Node node
-        in IterableBlockParser(lines, this).parseLinesGenerator()) {
-      if (firstNode != null) {
-        hasExtendedDocs = true;
-        if (!processFullDocs) break;
-      }
-      firstNode ??= node;
-      nodes.add(node);
-    }
-    _parseInlineContent(nodes);
-
-    String shortHtml;
-    String longHtml;
-    if (processFullDocs) {
-      Tuple2 htmls = _renderNodesToHtml(nodes, processFullDocs);
-      longHtml = htmls.item1;
-      shortHtml = htmls.item2;
-    } else {
-      if (firstNode != null) {
-        Tuple2 htmls = _renderNodesToHtml([firstNode], processFullDocs);
-        shortHtml = htmls.item2;
-      } else {
-        shortHtml = '';
-      }
-    }
-    return Tuple3<String, String, bool>(longHtml, shortHtml, hasExtendedDocs);
-  }
-}
-
-class Documentation {
-  final Canonicalization _element;
-
-  Documentation.forElement(this._element);
-
-  bool _hasExtendedDocs;
-
-  bool get hasExtendedDocs {
-    if (_hasExtendedDocs == null) {
-      _renderHtmlForDartdoc(_element.isCanonical && _asHtml == null);
-    }
-    return _hasExtendedDocs;
-  }
-
-  String _asHtml;
-
-  String get asHtml {
-    if (_asHtml == null) {
-      assert(_asOneLiner == null || _element.isCanonical);
-      _renderHtmlForDartdoc(true);
-    }
-    return _asHtml;
-  }
-
-  String _asOneLiner;
-
-  String get asOneLiner {
-    if (_asOneLiner == null) {
-      assert(_asHtml == null);
-      _renderHtmlForDartdoc(_element.isCanonical);
-    }
-    return _asOneLiner;
-  }
-
-  List<ModelCommentReference> get commentRefs => _element.commentRefs;
-
-  void _renderHtmlForDartdoc(bool processAllDocs) {
-    Tuple3<String, String, bool> renderResults =
-        _renderMarkdownToHtml(processAllDocs);
-    if (processAllDocs) {
-      _asHtml = renderResults.item1;
-    }
-    if (_asOneLiner == null) {
-      _asOneLiner = renderResults.item2;
-    }
-    if (_hasExtendedDocs != null) {
-      assert(_hasExtendedDocs == renderResults.item3);
-    }
-    _hasExtendedDocs = renderResults.item3;
-  }
-
-  /// Returns a tuple of longHtml, shortHtml, hasExtendedDocs
-  /// (longHtml is NULL if !processFullDocs)
-  Tuple3<String, String, bool> _renderMarkdownToHtml(bool processFullDocs) {
-    md.Node _linkResolver(String name, [String _]) {
-      if (name.isEmpty) {
-        return null;
-      }
-      return md.Text(_linkDocReference(name, _element, commentRefs));
-    }
-
-    String text = _element.documentation;
-    _showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
-    MarkdownDocument document = MarkdownDocument(
-        inlineSyntaxes: _markdown_syntaxes,
-        blockSyntaxes: _markdown_block_syntaxes,
-        linkResolver: _linkResolver);
-    List<String> lines = LineSplitter.split(text).toList();
-    return document.renderLinesToHtml(lines, processFullDocs);
   }
 }
 
