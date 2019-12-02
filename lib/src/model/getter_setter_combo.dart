@@ -135,7 +135,7 @@ mixin GetterSetterCombo on ModelElement {
   String get oneLineDoc {
     if (_oneLineDoc == null) {
       if (!hasAccessorsWithDocs) {
-        _oneLineDoc = computeOneLineDoc();
+        _oneLineDoc = super.oneLineDoc;
       } else {
         StringBuffer buffer = StringBuffer();
         if (hasPublicGetter && getter.oneLineDoc.isNotEmpty) {

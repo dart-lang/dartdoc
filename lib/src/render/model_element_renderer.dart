@@ -7,6 +7,8 @@ import 'package:dartdoc/src/model/model_element.dart';
 abstract class ModelElementRenderer {
   String renderLinkedName(ModelElement modelElement);
 
+  String renderExtendedDocLink(ModelElement modelElement);
+
   String renderYoutubeUrl(String youTubeId, String aspectRatio);
 
   String renderAnimation(
@@ -18,6 +20,11 @@ class ModelElementRendererHtml extends ModelElementRenderer {
   String renderLinkedName(ModelElement modelElement) {
     var cssClass = modelElement.isDeprecated ? ' class="deprecated"' : '';
     return '<a${cssClass} href="${modelElement.href}">${modelElement.name}</a>';
+  }
+
+  @override
+  String renderExtendedDocLink(ModelElement modelElement) {
+    return '<a href="${modelElement.href}">[...]</a>';
   }
 
   @override

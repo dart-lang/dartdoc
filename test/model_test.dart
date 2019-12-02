@@ -9,8 +9,9 @@ import 'dart:io';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
-import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
+import 'package:dartdoc/src/render/model_element_renderer.dart';
+import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
@@ -584,7 +585,7 @@ void main() {
       expect(
           fakeLibrary.oneLineDoc,
           equals(
-              'WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a> <a href="fake/fake-library.html">[...]</a>'));
+              'WOW FAKE PACKAGE IS <strong>BEST</strong> <a href="http://example.org">PACKAGE</a>'));
     });
 
     test('has properties', () {
@@ -1196,7 +1197,7 @@ void main() {
       expect(
           add.oneLineDoc,
           equals(
-              'Adds <code>value</code> to the end of this list,\nextending the length by one. <a href="fake/SpecialList/add.html">[...]</a>'));
+              'Adds <code>value</code> to the end of this list,\nextending the length by one.'));
     });
 
     test(
@@ -1322,8 +1323,10 @@ void main() {
     });
 
     test('bullet points work in top level variables', () {
-      expect(bulletDoced.oneLineDoc,
-          contains('<a href="fake/bulletDoced-constant.html">[...]</a>'));
+      expect(
+          bulletDoced.extendedDocLink,
+          equals(
+              ModelElementRendererHtml().renderExtendedDocLink(bulletDoced)));
       expect(bulletDoced.documentationAsHtml, contains('<li>'));
     });
   });
@@ -2757,10 +2760,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has extended documentation', () {
       expect(lengthX.hasExtendedDocumentation, isTrue);
-      expect(
-          lengthX.oneLineDoc,
-          equals(
-              'Returns a length. <a href="fake/WithGetterAndSetter/lengthX.html">[...]</a>'));
+      expect(lengthX.oneLineDoc, equals('Returns a length.'));
+      expect(lengthX.extendedDocLink,
+          equals(ModelElementRendererHtml().renderExtendedDocLink(lengthX)));
       expect(lengthX.documentation, contains('the fourth dimension'));
       expect(lengthX.documentation, isNot(contains('[...]')));
     });

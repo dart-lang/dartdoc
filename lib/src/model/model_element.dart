@@ -797,7 +797,7 @@ abstract class ModelElement extends Canonicalization
   /// does not exist.
   String get extendedDocLink {
     if (hasExtendedDocumentation) {
-      return '<a href="${href}">[...]</a>';
+      return ModelElementRendererHtml().renderExtendedDocLink(this);
     }
     return '';
   }
@@ -977,19 +977,8 @@ abstract class ModelElement extends Canonicalization
   @override
   String get name => element.name;
 
-  // TODO(jcollins-g): refactor once dartdoc will only run in a VM where mixins
-  // calling super is allowed (SDK constraint >= 2.1.0).
-  String computeOneLineDoc() =>
-      '${_documentation.asOneLiner}${extendedDocLink.isEmpty ? "" : " $extendedDocLink"}';
-  String _oneLineDoc;
-
   @override
-  String get oneLineDoc {
-    if (_oneLineDoc == null) {
-      _oneLineDoc = computeOneLineDoc();
-    }
-    return _oneLineDoc;
-  }
+  String get oneLineDoc => _documentation.asOneLiner;
 
   Member get originalMember => _originalMember;
 
