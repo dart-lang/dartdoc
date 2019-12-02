@@ -60,17 +60,7 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
       : super(element, library, packageGraph);
 
   @override
-  String get name {
-    Element e = element;
-    while (e != null) {
-      if (e is FunctionTypeAliasElement || e is GenericTypeAliasElement) {
-        return e.name;
-      }
-      e = e.enclosingElement;
-    }
-    assert(false);
-    return super.name;
-  }
+  String get name => element.enclosingElement.name;
 }
 
 class ModelFunctionTyped extends ModelElement

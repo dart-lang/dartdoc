@@ -247,22 +247,9 @@ abstract class ModelElement extends Canonicalization
         if (e is FunctionElement) {
           newModelElement = ModelFunction(e, library, packageGraph);
         } else if (e is GenericFunctionTypeElement) {
-          // TODO(scheglov) "e" cannot be both GenericFunctionTypeElement,
-          // and FunctionTypeAliasElement or GenericTypeAliasElement.
-          if (e is FunctionTypeAliasElement) {
-            assert(e.name != '');
-            newModelElement = ModelFunctionTypedef(e, library, packageGraph);
-          } else {
-            if (e.enclosingElement is GenericTypeAliasElement) {
-              assert(e.enclosingElement.name != '');
-              newModelElement = ModelFunctionTypedef(e, library, packageGraph);
-            } else {
-              // Allowing null here is allowed as a workaround for
-              // dart-lang/sdk#32005.
-              assert(e.name == '' || e.name == null);
-              newModelElement = ModelFunctionAnonymous(e, packageGraph);
-            }
-          }
+          assert(e.enclosingElement is GenericTypeAliasElement);
+          assert(e.enclosingElement.name != '');
+          newModelElement = ModelFunctionTypedef(e, library, packageGraph);
         }
         if (e is FunctionTypeAliasElement) {
           newModelElement = Typedef(e, library, packageGraph);
