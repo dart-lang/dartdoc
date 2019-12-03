@@ -2002,6 +2002,7 @@ void main() {
       expect(dog.isConst, isTrue);
       expect(
           dog.constantValue, equals(EnumFieldRendererHtml().renderValue(dog)));
+      expect(dog.extendedDocLink, equals(''));
     });
 
     test('constants have correct indicies', () {
