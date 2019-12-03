@@ -2761,8 +2761,10 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test('has extended documentation', () {
       expect(lengthX.hasExtendedDocumentation, isTrue);
       expect(lengthX.oneLineDoc, equals('Returns a length.'));
+      // TODO(jdkoren): This is left here to have at least one literal matching
+      // test for extendedDocLink. Move this when extracting renderer tests.
       expect(lengthX.extendedDocLink,
-          equals(ModelElementRendererHtml().renderExtendedDocLink(lengthX)));
+          equals('<a href="fake/WithGetterAndSetter/lengthX.html">[...]</a>'));
       expect(lengthX.documentation, contains('the fourth dimension'));
       expect(lengthX.documentation, isNot(contains('[...]')));
     });
