@@ -1,5 +1,5 @@
 ## 0.29.2
-* Many refactoring changes to rendering and tests (#2080, #2078, #2077, #2076, #2068, #2067)
+* Many refactoring changes to rendering and tests (#2084, #2081, #2080, #2078, #2077, #2076, #2068, #2067)
 * Add 'required' for required named parameters with NNBD enabled (#2075)
 * Rewrite parameter handling and fix problems with brackets (#2075, #2059, #2052, #2082)
 * Add 'late' as a feature for final variables with NNBD enabled (#2071)
