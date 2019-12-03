@@ -24,34 +24,6 @@ class ModelFunction extends ModelFunctionTyped with Categorization {
   FunctionElement get _func => (element as FunctionElement);
 }
 
-/// A [ModelElement] for a [FunctionTypedElement] that is an
-/// explicit typedef.
-///
-/// Distinct from ModelFunctionTypedef in that it doesn't
-/// have a name, but we document it as "Function" to match how these are
-/// written in declarations.
-class ModelFunctionAnonymous extends ModelFunctionTyped {
-  ModelFunctionAnonymous(
-      FunctionTypedElement element, PackageGraph packageGraph)
-      : super(element, null, packageGraph);
-
-  @override
-  ModelElement get enclosingElement {
-    // These are not considered to be a part of libraries, so we can simply
-    // blindly instantiate a ModelElement for their enclosing element.
-    return ModelElement.fromElement(element.enclosingElement, packageGraph);
-  }
-
-  @override
-  String get name => 'Function';
-
-  @override
-  String get linkedName => 'Function';
-
-  @override
-  bool get isPublic => false;
-}
-
 /// A [ModelElement] for a [FunctionTypedElement] that is part of an
 /// explicit typedef.
 class ModelFunctionTypedef extends ModelFunctionTyped {
@@ -60,17 +32,7 @@ class ModelFunctionTypedef extends ModelFunctionTyped {
       : super(element, library, packageGraph);
 
   @override
-  String get name {
-    Element e = element;
-    while (e != null) {
-      if (e is FunctionTypeAliasElement || e is GenericTypeAliasElement) {
-        return e.name;
-      }
-      e = e.enclosingElement;
-    }
-    assert(false);
-    return super.name;
-  }
+  String get name => element.enclosingElement.name;
 }
 
 class ModelFunctionTyped extends ModelElement

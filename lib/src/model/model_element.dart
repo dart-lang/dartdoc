@@ -23,7 +23,6 @@ import 'package:crypto/crypto.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/logging.dart';
-import 'package:dartdoc/src/markdown_processor.dart' show Documentation;
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/render/parameter_renderer.dart';
@@ -247,22 +246,9 @@ abstract class ModelElement extends Canonicalization
         if (e is FunctionElement) {
           newModelElement = ModelFunction(e, library, packageGraph);
         } else if (e is GenericFunctionTypeElement) {
-          // TODO(scheglov) "e" cannot be both GenericFunctionTypeElement,
-          // and FunctionTypeAliasElement or GenericTypeAliasElement.
-          if (e is FunctionTypeAliasElement) {
-            assert(e.name != '');
-            newModelElement = ModelFunctionTypedef(e, library, packageGraph);
-          } else {
-            if (e.enclosingElement is GenericTypeAliasElement) {
-              assert(e.enclosingElement.name != '');
-              newModelElement = ModelFunctionTypedef(e, library, packageGraph);
-            } else {
-              // Allowing null here is allowed as a workaround for
-              // dart-lang/sdk#32005.
-              assert(e.name == '' || e.name == null);
-              newModelElement = ModelFunctionAnonymous(e, packageGraph);
-            }
-          }
+          assert(e.enclosingElement is GenericTypeAliasElement);
+          assert(e.enclosingElement.name != '');
+          newModelElement = ModelFunctionTypedef(e, library, packageGraph);
         }
         if (e is FunctionTypeAliasElement) {
           newModelElement = Typedef(e, library, packageGraph);

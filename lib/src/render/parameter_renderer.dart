@@ -135,7 +135,6 @@ abstract class ParameterRenderer {
       if (showNames) {
         buf.write(' ${parameterName(param.name)}');
       } else if (paramModelType.isTypedef ||
-          paramModelType is CallableAnonymousElementType ||
           paramModelType.type is FunctionType) {
         buf.write(' ${parameterName(paramModelType.name)}');
       }
