@@ -20,7 +20,7 @@
           {{/isFirstPackage}}
           <dl>
           {{#defaultCategory.publicLibraries}}
-            {{{ oneLineDoc }}}
+            {{{ oneLineDoc }}} {{{ extendedDocLink }}}
           {{/defaultCategory.publicLibraries}}
           {{#categoriesWithPublicLibraries}}
             <h3>{{name}}</h3>
@@ -29,7 +29,7 @@
                 {{{ linkedName }}}
               </dt>
               <dd>
-                {{#isDocumented}}{{{ oneLineDoc }}}{{/isDocumented}}
+                {{#isDocumented}}{{{ oneLineDoc }}} {{{ extendedDocLink }}}{{/isDocumented}}
               </dd>
             {{/publicLibraries}}
           {{/categoriesWithPublicLibraries}}

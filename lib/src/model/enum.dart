@@ -64,6 +64,14 @@ class EnumField extends Field {
   }
 
   @override
+  String get extendedDocLink {
+    // Ordinal members don't get extended doc links. Inherited members
+    // (e.g. hashcode) follow the normal rules.
+    if (index != null) return '';
+    return super.extendedDocLink;
+  }
+
+  @override
   String get href {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
