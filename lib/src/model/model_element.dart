@@ -25,8 +25,8 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
-import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
+import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -784,7 +784,7 @@ abstract class ModelElement extends Canonicalization
   /// does not exist.
   String get extendedDocLink {
     if (hasExtendedDocumentation) {
-      return ModelElementRendererHtml().renderExtendedDocLink(this);
+      return _modelElementRenderer.renderExtendedDocLink(this);
     }
     return '';
   }
@@ -916,18 +916,25 @@ abstract class ModelElement extends Canonicalization
     return _linkedName;
   }
 
-  String get linkedParams =>
-      ParameterRendererHtml().renderLinkedParams(parameters);
+  ModelElementRenderer get _modelElementRenderer =>
+      packageGraph.rendererFactory.modelElementRenderer;
+
+  ParameterRenderer get _parameterRenderer =>
+      packageGraph.rendererFactory.parameterRenderer;
+
+  ParameterRenderer get _parameterRendererDetailed =>
+      packageGraph.rendererFactory.parameterRendererDetailed;
+
+  String get linkedParams => _parameterRenderer.renderLinkedParams(parameters);
 
   String get linkedParamsLines =>
-      ParameterRendererHtmlList().renderLinkedParams(parameters).trim();
+      _parameterRendererDetailed.renderLinkedParams(parameters).trim();
 
   String get linkedParamsNoMetadata =>
-      ParameterRendererHtml(showMetadata: false).renderLinkedParams(parameters);
+      _parameterRenderer.renderLinkedParams(parameters, showMetadata: false);
 
-  String get linkedParamsNoMetadataOrNames =>
-      ParameterRendererHtml(showMetadata: false, showNames: false)
-          .renderLinkedParams(parameters);
+  String get linkedParamsNoMetadataOrNames => _parameterRenderer
+      .renderLinkedParams(parameters, showMetadata: false, showNames: false);
 
   ElementType get modelType {
     if (_modelType == null) {
@@ -1120,7 +1127,7 @@ abstract class ModelElement extends Canonicalization
       return htmlEscape.convert(name);
     }
 
-    return ModelElementRendererHtml().renderLinkedName(this);
+    return _modelElementRenderer.renderLinkedName(this);
   }
 
   /// Replace &#123;@example ...&#125; in API comments with the content of named file.
@@ -1351,8 +1358,7 @@ abstract class ModelElement extends Canonicalization
       final String youTubeId = url.group(url.groupCount);
       final String aspectRatio = (height / width * 100).toStringAsFixed(2);
 
-      return ModelElementRendererHtml()
-          .renderYoutubeUrl(youTubeId, aspectRatio);
+      return _modelElementRenderer.renderYoutubeUrl(youTubeId, aspectRatio);
     });
   }
 
@@ -1483,8 +1489,8 @@ abstract class ModelElement extends Canonicalization
                 'parameter)');
       }
 
-      return ModelElementRendererHtml()
-          .renderAnimation(uniqueId, width, height, movieUrl, overlayId);
+      return _modelElementRenderer.renderAnimation(
+          uniqueId, width, height, movieUrl, overlayId);
     });
   }
 

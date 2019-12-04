@@ -27,6 +27,7 @@ import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
+import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:package_config/discovery.dart' as package_config;
 import 'package:path/path.dart' as path;
@@ -42,13 +43,16 @@ class PackageBuilder {
     if (config.topLevelPackageMeta.needsPubGet) {
       config.topLevelPackageMeta.runPubGet();
     }
+    // TODO(jdkoren): change factory for other formats based on config options
+    RendererFactory rendererFactory = HtmlRenderFactory();
 
     PackageGraph newGraph = PackageGraph.UninitializedPackageGraph(
         config,
         driver,
         await driver.currentSession.typeSystem,
         sdk,
-        hasEmbedderSdkFiles);
+        hasEmbedderSdkFiles,
+        rendererFactory);
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
     return newGraph;

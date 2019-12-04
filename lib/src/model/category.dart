@@ -124,13 +124,9 @@ class Category extends Nameable
   String get href =>
       isCanonical ? '${package.baseHref}topics/${name}-topic.html' : null;
 
-  String get categorization {
-    return CategoryRendererHtml().renderCategoryLabel(this);
-  }
+  String get categorization => _renderer.renderCategoryLabel(this);
 
-  String get linkedName {
-    return CategoryRendererHtml().renderLinkedName(this);
-  }
+  String get linkedName => _renderer.renderLinkedName(this);
 
   int _categoryIndex;
 
@@ -201,4 +197,7 @@ class Category extends Nameable
 
   @override
   Iterable<Typedef> get typedefs => _typedefs;
+
+  CategoryRenderer get _renderer =>
+      packageGraph.rendererFactory.categoryRenderer;
 }

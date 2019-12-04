@@ -132,8 +132,7 @@ class FunctionTypeElementType extends UndefinedElementType {
   @override
   String get linkedName {
     if (_linkedName == null) {
-      _linkedName =
-          FunctionTypeElementTypeRendererHtml().renderLinkedName(this);
+      _linkedName = _renderer.renderLinkedName(this);
     }
     return _linkedName;
   }
@@ -146,8 +145,7 @@ class FunctionTypeElementType extends UndefinedElementType {
   @override
   String get nameWithGenerics {
     if (_nameWithGenerics == null) {
-      _nameWithGenerics =
-          FunctionTypeElementTypeRendererHtml().renderNameWithGenerics(this);
+      _nameWithGenerics = _renderer.renderNameWithGenerics(this);
     }
     return _nameWithGenerics;
   }
@@ -162,6 +160,9 @@ class FunctionTypeElementType extends UndefinedElementType {
 
   @override
   String get name => 'Function';
+
+  ElementTypeRenderer<FunctionTypeElementType> get _renderer =>
+      packageGraph.rendererFactory.functionTypeElementTypeRenderer;
 }
 
 class ParameterizedElementType extends DefinedElementType {
@@ -173,8 +174,7 @@ class ParameterizedElementType extends DefinedElementType {
   @override
   String get linkedName {
     if (_linkedName == null) {
-      _linkedName =
-          ParameterizedElementTypeRendererHtml().renderLinkedName(this);
+      _linkedName = _renderer.renderLinkedName(this);
     }
     return _linkedName;
   }
@@ -183,11 +183,13 @@ class ParameterizedElementType extends DefinedElementType {
   @override
   String get nameWithGenerics {
     if (_nameWithGenerics == null) {
-      _nameWithGenerics =
-          ParameterizedElementTypeRendererHtml().renderNameWithGenerics(this);
+      _nameWithGenerics = _renderer.renderNameWithGenerics(this);
     }
     return _nameWithGenerics;
   }
+
+  ElementTypeRenderer<ParameterizedElementType> get _renderer =>
+      packageGraph.rendererFactory.parameterizedElementTypeRenderer;
 }
 
 class TypeParameterElementType extends DefinedElementType {
@@ -362,12 +364,16 @@ class CallableElementType extends ParameterizedElementType
   @override
   String get linkedName {
     if (_linkedName == null) {
-      _linkedName = CallableElementTypeRendererHtml().renderLinkedName(this);
+      _linkedName = _renderer.renderLinkedName(this);
     }
     return _linkedName;
   }
 
   String get superLinkedName => super.linkedName;
+
+  @override
+  ElementTypeRenderer<CallableElementType> get _renderer =>
+      packageGraph.rendererFactory.callableElementTypeRenderer;
 }
 
 /// Types backed by a [GenericTypeAliasElement] that may or may not be callable.
