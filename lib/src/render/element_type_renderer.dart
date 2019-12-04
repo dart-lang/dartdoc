@@ -85,8 +85,8 @@ class CallableElementTypeRendererHtml
     StringBuffer buf = StringBuffer();
     buf.write(elementType.nameWithGenerics);
     buf.write('(');
-    buf.write(ParameterRendererHtml(showNames: false)
-        .renderLinkedParams(elementType.element.parameters)
+    buf.write(ParameterRendererHtml()
+        .renderLinkedParams(elementType.element.parameters, showNames: false)
         .trim());
     buf.write(') → ');
     buf.write(elementType.returnType.linkedName);

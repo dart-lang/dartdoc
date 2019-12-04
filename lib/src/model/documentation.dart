@@ -53,7 +53,7 @@ class Documentation {
     _hasExtendedDocs = parseResult.item2;
 
     Tuple2<String, String> renderResult =
-        DocumentationRendererHtml().render(parseResult.item1, processAllDocs);
+        _renderer.render(parseResult.item1, processAllDocs);
 
     if (processAllDocs) {
       _asHtml = renderResult.item1;
@@ -71,4 +71,7 @@ class Documentation {
         MarkdownDocument.withElementLinkResolver(_element, commentRefs);
     return document.parseMarkdownText(text, processFullDocs);
   }
+
+  DocumentationRenderer get _renderer =>
+      _element.packageGraph.rendererFactory.documentationRenderer;
 }

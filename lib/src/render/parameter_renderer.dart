@@ -8,8 +8,6 @@ import 'package:dartdoc/src/model/parameter.dart';
 
 /// Render HTML in an extended vertical format using <ol> tag.
 class ParameterRendererHtmlList extends ParameterRendererHtml {
-  ParameterRendererHtmlList({bool showMetadata = true, bool showNames = true})
-      : super(showMetadata: showMetadata, showNames: showNames);
   @override
   String listItem(String listItem) => '<li>$listItem</li>\n';
   @override
@@ -20,12 +18,6 @@ class ParameterRendererHtmlList extends ParameterRendererHtml {
 
 /// Render HTML suitable for a single, wrapped line.
 class ParameterRendererHtml extends ParameterRenderer {
-  @override
-  final bool showMetadata;
-  @override
-  final bool showNames;
-  ParameterRendererHtml({this.showMetadata = true, this.showNames = true});
-
   @override
   String listItem(String listItem) => '${listItem}<wbr>';
   @override
@@ -51,9 +43,6 @@ class ParameterRendererHtml extends ParameterRenderer {
 }
 
 abstract class ParameterRenderer {
-  bool get showMetadata;
-  bool get showNames;
-
   String listItem(String item);
   String orderedList(String listItems);
   String annotation(String annotation);
@@ -64,28 +53,8 @@ abstract class ParameterRenderer {
   String typeName(String typeName);
   String required(String required);
 
-  String _linkedParameterSublist(List<Parameter> parameters, bool trailingComma,
-      {String thisOpenBracket = '', String thisCloseBracket = ''}) {
-    StringBuffer builder = StringBuffer();
-    parameters.forEach((p) {
-      String prefix = '';
-      String suffix = '';
-      if (identical(p, parameters.first)) {
-        prefix = thisOpenBracket;
-      }
-      if (identical(p, parameters.last)) {
-        suffix += thisCloseBracket;
-        if (trailingComma) suffix += ', ';
-      } else {
-        suffix += ', ';
-      }
-      builder.write(
-          listItem(parameter(prefix + renderParam(p) + suffix, p.htmlId)));
-    });
-    return builder.toString();
-  }
-
-  String renderLinkedParams(List<Parameter> parameters) {
+  String renderLinkedParams(List<Parameter> parameters,
+      {showMetadata = true, showNames = true}) {
     List<Parameter> positionalParams =
         parameters.where((Parameter p) => p.isRequiredPositional).toList();
     List<Parameter> optionalPositionalParams =
@@ -96,21 +65,55 @@ abstract class ParameterRenderer {
     String positional = '', optional = '', named = '';
     if (positionalParams.isNotEmpty) {
       positional = _linkedParameterSublist(positionalParams,
-          optionalPositionalParams.isNotEmpty || namedParams.isNotEmpty);
+          optionalPositionalParams.isNotEmpty || namedParams.isNotEmpty,
+          showMetadata: showMetadata, showNames: showNames);
     }
     if (optionalPositionalParams.isNotEmpty) {
       optional = _linkedParameterSublist(
           optionalPositionalParams, namedParams.isNotEmpty,
-          thisOpenBracket: '[', thisCloseBracket: ']');
+          openBracket: '[',
+          closeBracket: ']',
+          showMetadata: showMetadata,
+          showNames: showNames);
     }
     if (namedParams.isNotEmpty) {
       named = _linkedParameterSublist(namedParams, false,
-          thisOpenBracket: '{', thisCloseBracket: '}');
+          openBracket: '{',
+          closeBracket: '}',
+          showMetadata: showMetadata,
+          showNames: showNames);
     }
     return (orderedList(positional + optional + named));
   }
 
-  String renderParam(Parameter param) {
+  String _linkedParameterSublist(List<Parameter> parameters, bool trailingComma,
+      {String openBracket = '',
+      String closeBracket = '',
+      showMetadata = true,
+      showNames = true}) {
+    StringBuffer builder = StringBuffer();
+    parameters.forEach((p) {
+      String prefix = '';
+      String suffix = '';
+      if (identical(p, parameters.first)) {
+        prefix = openBracket;
+      }
+      if (identical(p, parameters.last)) {
+        suffix += closeBracket;
+        if (trailingComma) suffix += ', ';
+      } else {
+        suffix += ', ';
+      }
+      String renderedParam =
+          _renderParam(p, showMetadata: showMetadata, showNames: showNames);
+      builder.write(
+          listItem(parameter(prefix + renderedParam + suffix, p.htmlId)));
+    });
+    return builder.toString();
+  }
+
+  String _renderParam(Parameter param,
+      {showMetadata = true, showNames = true}) {
     StringBuffer buf = StringBuffer();
     ElementType paramModelType = param.modelType;
 
@@ -140,13 +143,16 @@ abstract class ParameterRenderer {
       }
       if (!paramModelType.isTypedef && paramModelType is DefinedElementType) {
         buf.write('(');
-        buf.write(renderLinkedParams(paramModelType.element.parameters));
+        buf.write(renderLinkedParams(paramModelType.element.parameters,
+            showMetadata: showMetadata, showNames: showNames));
         buf.write(')');
       }
       if (!paramModelType.isTypedef && paramModelType.type is FunctionType) {
         buf.write('(');
         buf.write(renderLinkedParams(
-            (paramModelType as UndefinedElementType).parameters));
+            (paramModelType as UndefinedElementType).parameters,
+            showMetadata: showMetadata,
+            showNames: showNames));
         buf.write(')');
       }
     } else if (param.modelType != null) {

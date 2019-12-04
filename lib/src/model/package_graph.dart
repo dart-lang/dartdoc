@@ -19,13 +19,14 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
+import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 class PackageGraph {
-  PackageGraph.UninitializedPackageGraph(
-      this.config, this.driver, this.typeSystem, this.sdk, this.hasEmbedderSdk)
+  PackageGraph.UninitializedPackageGraph(this.config, this.driver,
+      this.typeSystem, this.sdk, this.hasEmbedderSdk, this.rendererFactory)
       : packageMeta = config.topLevelPackageMeta,
         session = driver.currentSession {
     _packageWarningCounter = PackageWarningCounter(this);
@@ -206,6 +207,9 @@ class PackageGraph {
 
   /// Dartdoc's configuration flags.
   final DartdocOptionContext config;
+
+  /// Factory for renderers
+  final RendererFactory rendererFactory;
 
   Package _defaultPackage;
 

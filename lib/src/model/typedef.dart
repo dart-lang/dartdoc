@@ -21,8 +21,7 @@ class Typedef extends ModelElement
   String get nameWithGenerics => '$name${super.genericParameters}';
 
   @override
-  String get genericParameters =>
-      TypedefRendererHtml().renderGenericParameters(this);
+  String get genericParameters => _renderer.renderGenericParameters(this);
 
   List<TypeParameterElement> get genericTypeParameters {
     if (element is GenericTypeAliasElement) {
@@ -59,4 +58,6 @@ class Typedef extends ModelElement
   List<TypeParameter> get typeParameters => _typedef.typeParameters.map((f) {
         return ModelElement.from(f, library, packageGraph) as TypeParameter;
       }).toList();
+
+  TypedefRenderer get _renderer => packageGraph.rendererFactory.typedefRenderer;
 }

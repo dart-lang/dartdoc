@@ -44,7 +44,7 @@ class EnumField extends Field {
       : super(element, library, packageGraph, getter, null);
 
   @override
-  String get constantValueBase => EnumFieldRendererHtml().renderValue(this);
+  String get constantValueBase => _fieldRenderer.renderValue(this);
 
   @override
   List<ModelElement> get documentationFrom {
@@ -104,4 +104,7 @@ class EnumField extends Field {
 
   @override
   Inheritable get overriddenElement => null;
+
+  EnumFieldRenderer get _fieldRenderer =>
+      packageGraph.rendererFactory.enumFieldRenderer;
 }
