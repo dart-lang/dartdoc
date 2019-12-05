@@ -76,7 +76,7 @@ class ModelElementRendererHtml extends ModelElementRenderer {
               z-index:100000;
               background-position: center;
               background-repeat: no-repeat;
-              background-image: url(static-assets/play_button.svg);">
+              background-image: url(/static-assets/play_button.svg);">
   </div>
   <video id="$uniqueId"
          style="width:${width}px; height:${height}px;"

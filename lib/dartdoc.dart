@@ -237,31 +237,26 @@ class Dartdoc extends PackageBuilder {
 
   // This is extracted to save memory during the check; be careful not to hang
   // on to anything referencing the full file and doc tree.
-  Tuple2<Iterable<String>, String> _getStringLinksAndHref(String fullPath) {
-    File file = File("$fullPath");
+  Iterable<String> _getStringLinks(String fullPath) {
+    File file = File(fullPath);
     if (!file.existsSync()) {
       return null;
     }
     Document doc = parse(file.readAsBytesSync());
-    Element base = doc.querySelector('base');
-    String baseHref;
-    if (base != null) {
-      baseHref = base.attributes['href'];
-    }
     List<Element> links = doc.querySelectorAll('a');
     List<String> stringLinks = links
         .map((link) => link.attributes['href'])
         .where((href) => href != null)
         .toList();
 
-    return Tuple2(stringLinks, baseHref);
+    return stringLinks;
   }
 
   void _doSearchIndexCheck(
       PackageGraph packageGraph, String origin, Set<String> visited) {
     String fullPath = path.joinAll([origin, 'index.json']);
     String indexPath = path.joinAll([origin, 'index.html']);
-    File file = File("$fullPath");
+    File file = File(fullPath);
     if (!file.existsSync()) {
       return null;
     }
@@ -275,7 +270,17 @@ class Dartdoc extends PackageBuilder {
     found.add(indexPath);
     for (Map<String, dynamic> entry in jsonData) {
       if (entry.containsKey('href')) {
-        String entryPath = path.joinAll([origin, entry['href']]);
+        String href = entry['href'];
+        var fullPath;
+        if (path.isAbsolute(href)) {
+          // Assume absolute hrefs belong to us and should match a generated
+          // file. However path.join() will ignore parts before an absolute
+          // one, so make the href relative by prefixing a dot.
+          fullPath = path.join(origin, '.$href');
+        } else {
+          fullPath = path.join(origin, href);
+        }
+        String entryPath = path.normalize(fullPath);
         if (!visited.contains(entryPath)) {
           _warn(packageGraph, PackageWarning.brokenLink, entryPath,
               path.normalize(origin),
@@ -301,8 +306,8 @@ class Dartdoc extends PackageBuilder {
       fullPath = path.normalize(fullPath);
     }
 
-    Tuple2 stringLinksAndHref = _getStringLinksAndHref(fullPath);
-    if (stringLinksAndHref == null) {
+    Iterable<String> stringLinks = _getStringLinks(fullPath);
+    if (stringLinks == null) {
       _warn(packageGraph, PackageWarning.brokenLink, pathToCheck,
           path.normalize(origin),
           referredFrom: source);
@@ -313,8 +318,6 @@ class Dartdoc extends PackageBuilder {
       return null;
     }
     visited.add(fullPath);
-    Iterable<String> stringLinks = stringLinksAndHref.item1;
-    String baseHref = stringLinksAndHref.item2;
 
     // Prevent extremely large stacks by storing the paths we are using
     // here instead -- occasionally, very large jobs have overflowed
@@ -334,17 +337,18 @@ class Dartdoc extends PackageBuilder {
 
         if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
           var full;
-          if (baseHref != null) {
-            full = '${path.dirname(pathToCheck)}/$baseHref/$href';
+          if (path.isAbsolute(href)) {
+            // Assume absolute hrefs belong to us and should match a generated
+            // file. However path.join() will ignore parts before an absolute
+            // one, so make the href relative by prefixing a dot.
+            full = path.join(origin, '.$href');
           } else {
-            full = '${path.dirname(pathToCheck)}/$href';
+            full = path.join(origin, href);
           }
           var newPathToCheck = path.normalize(full);
-          String newFullPath = path.joinAll([origin, newPathToCheck]);
-          newFullPath = path.normalize(newFullPath);
-          if (!visited.contains(newFullPath)) {
-            toVisit.add(Tuple2(newPathToCheck, newFullPath));
-            visited.add(newFullPath);
+          if (!visited.contains(newPathToCheck)) {
+            toVisit.add(Tuple2(href, newPathToCheck));
+            visited.add(newPathToCheck);
           }
         }
       }

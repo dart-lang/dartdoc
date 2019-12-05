@@ -203,6 +203,8 @@ class Package extends LibraryContainer
           }
         });
         if (!_baseHref.endsWith('/')) _baseHref = '${_baseHref}/';
+      } else if (documentedWhere == DocumentLocation.local) {
+        _baseHref = '/';
       } else {
         _baseHref = '';
       }
