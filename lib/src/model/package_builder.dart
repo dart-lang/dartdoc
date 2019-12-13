@@ -48,7 +48,6 @@ class PackageBuilder {
     PackageGraph newGraph = PackageGraph.UninitializedPackageGraph(
         config,
         driver,
-        await driver.currentSession.typeSystem,
         sdk,
         hasEmbedderSdkFiles,
         rendererFactory);
