@@ -876,12 +876,8 @@ Future<void> checkBuild() async {
 @Task('Dry run of publish to pub.dartlang')
 @Depends(checkChangelogHasVersion)
 Future<void> tryPublish() async {
-  if (Platform.version.contains('dev')) {
-    log('Skipping publish check -- requires a stable version of the SDK');
-  } else {
-    var launcher = SubprocessLauncher('try-publish');
-    await launcher.runStreamed(sdkBin('pub'), ['publish', '-n']);
-  }
+  var launcher = SubprocessLauncher('try-publish');
+  await launcher.runStreamed(sdkBin('pub'), ['publish', '-n']);
 }
 
 @Task('Run a smoke test, only')
