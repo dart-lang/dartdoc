@@ -131,7 +131,6 @@ class HtmlGenerator extends Generator {
 }
 
 class HtmlGeneratorOptions implements HtmlOptions {
-  final String url;
   final String faviconPath;
   final bool prettyIndexJson;
   final String templatesDir;
@@ -146,8 +145,7 @@ class HtmlGeneratorOptions implements HtmlOptions {
   final bool useBaseHref;
 
   HtmlGeneratorOptions(
-      {this.url,
-      this.relCanonicalPrefix,
+      {this.relCanonicalPrefix,
       this.faviconPath,
       String toolVersion,
       this.prettyIndexJson = false,
@@ -165,7 +163,6 @@ Future<List<Generator>> initGenerators(GeneratorContext config) async {
   // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
   // through the generators.
   HtmlGeneratorOptions options = HtmlGeneratorOptions(
-      url: config.hostedUrl,
       relCanonicalPrefix: config.relCanonicalPrefix,
       toolVersion: dartdocVersion,
       faviconPath: config.favicon,
@@ -191,6 +188,7 @@ Future<void> _setSdkFooterCopyrightUri() async {
   }
 }
 
+// Dartdoc options specific to generators
 abstract class GeneratorContext implements DartdocOptionContext {
   String get favicon => optionSet['favicon'].valueAt(context);
   List<String> get footer => optionSet['footer'].valueAt(context);
@@ -201,7 +199,6 @@ abstract class GeneratorContext implements DartdocOptionContext {
   List<String> get footerTextPaths =>
       optionSet['footerTextPaths'].valueAt(context);
   List<String> get header => optionSet['header'].valueAt(context);
-  String get hostedUrl => optionSet['hostedUrl'].valueAt(context);
   bool get prettyIndexJson => optionSet['prettyIndexJson'].valueAt(context);
   String get relCanonicalPrefix =>
       optionSet['relCanonicalPrefix'].valueAt(context);
@@ -248,9 +245,6 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
         isFile: true,
         help: 'paths to header files containing HTML text.',
         splitCommas: true),
-    DartdocOptionArgOnly<String>('hostedUrl', null,
-        help:
-            'URL where the docs will be hosted (used to generate the sitemap).'),
     DartdocOptionArgOnly<bool>('prettyIndexJson', false,
         help:
             "Generates `index.json` with indentation and newlines. The file is larger, but it's also easier to diff.",
