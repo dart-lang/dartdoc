@@ -46,11 +46,7 @@ class PackageBuilder {
     RendererFactory rendererFactory = HtmlRenderFactory();
 
     PackageGraph newGraph = PackageGraph.UninitializedPackageGraph(
-        config,
-        driver,
-        sdk,
-        hasEmbedderSdkFiles,
-        rendererFactory);
+        config, driver, sdk, hasEmbedderSdkFiles, rendererFactory);
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
     return newGraph;
