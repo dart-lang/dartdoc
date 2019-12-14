@@ -21,7 +21,6 @@ import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:analyzer/src/source/package_map_resolver.dart';
-import 'package:analyzer/src/source/sdk_ext.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -118,7 +117,6 @@ class PackageBuilder {
 
   SourceFactory get sourceFactory {
     List<UriResolver> resolvers = [];
-    resolvers.add(SdkExtUriResolver(packageMap));
     final UriResolver packageResolver =
         PackageMapUriResolver(PhysicalResourceProvider.INSTANCE, packageMap);
     UriResolver sdkResolver;
