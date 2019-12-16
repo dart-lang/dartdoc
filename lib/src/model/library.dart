@@ -5,6 +5,7 @@
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/analysis/driver.dart';
@@ -77,11 +78,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     // Initialize the list of elements defined in this library and
     // exported via its export directives.
     Set<Element> exportedAndLocalElements =
-        _libraryElement.exportNamespace.definedNames.values.toSet();
+        element.exportNamespace.definedNames.values.toSet();
     // TODO(jcollins-g): Consider switch to [_libraryElement.topLevelElements].
     exportedAndLocalElements
-        .addAll(getDefinedElements(_libraryElement.definingCompilationUnit));
-    for (CompilationUnitElement cu in _libraryElement.parts) {
+        .addAll(getDefinedElements(element.definingCompilationUnit));
+    for (CompilationUnitElement cu in element.parts) {
       exportedAndLocalElements.addAll(getDefinedElements(cu));
     }
     _exportedAndLocalElements = exportedAndLocalElements.toList();
@@ -105,7 +106,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   List<String> _allOriginalModelElementNames;
 
-  bool get isInSdk => _libraryElement.isInSdk;
+  bool get isInSdk => element.isInSdk;
 
   final Package _package;
 
@@ -160,10 +161,13 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   CompilationUnitElement get compilationUnitElement =>
-      (element as LibraryElement).definingCompilationUnit;
+      element.definingCompilationUnit;
 
   @override
   Iterable<Class> get classes => allClasses.where((c) => !c.isErrorOrException);
+
+  @override
+  LibraryElement get element => super.element;
 
   List<Extension> _extensions;
 
@@ -240,10 +244,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (_importedExportedLibraries == null) {
       _importedExportedLibraries = Set();
       Set<LibraryElement> importedExportedLibraryElements = Set();
-      importedExportedLibraryElements
-          .addAll((element as LibraryElement).importedLibraries);
-      importedExportedLibraryElements
-          .addAll((element as LibraryElement).exportedLibraries);
+      importedExportedLibraryElements.addAll(element.importedLibraries);
+      importedExportedLibraryElements.addAll(element.exportedLibraries);
       for (LibraryElement l in importedExportedLibraryElements) {
         Library lib = ModelElement.from(l, library, packageGraph);
         _importedExportedLibraries.add(lib);
@@ -260,7 +262,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (_prefixToLibrary == null) {
       _prefixToLibrary = {};
       // It is possible to have overlapping prefixes.
-      for (ImportElement i in (element as LibraryElement).imports) {
+      for (ImportElement i in element.imports) {
         // Ignore invalid imports.
         if (i.prefix?.name != null && i.importedLibrary != null) {
           _prefixToLibrary.putIfAbsent(i.prefix?.name, () => Set());
@@ -401,8 +403,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   InheritanceManager3 get inheritanceManager {
     if (_inheritanceManager == null) {
-      var typeSystem = element.context.typeSystem;
-      _inheritanceManager = InheritanceManager3(typeSystem);
+      _inheritanceManager = InheritanceManager3();
     }
     return _inheritanceManager;
   }
@@ -479,6 +480,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _typedefs;
   }
 
+  TypeSystem get typeSystem => element.typeSystem;
+
   List<Class> _classes;
 
   List<Class> get allClasses {
@@ -492,8 +495,6 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     }
     return _classes;
   }
-
-  LibraryElement get _libraryElement => (element as LibraryElement);
 
   Class getClassByName(String name) {
     return allClasses.firstWhere((it) => it.name == name, orElse: () => null);

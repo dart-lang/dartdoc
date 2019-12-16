@@ -666,9 +666,8 @@ abstract class ModelElement extends Canonicalization
 
         if (candidateLibraries != null) {
           candidateLibraries = candidateLibraries.where((l) {
-            Element lookup = (l.element as LibraryElement)
-                .exportNamespace
-                .definedNames[topLevelElement?.name];
+            Element lookup =
+                l.element.exportNamespace.definedNames[topLevelElement?.name];
             if (lookup is PropertyAccessorElement) {
               lookup = (lookup as PropertyAccessorElement).variable;
             }

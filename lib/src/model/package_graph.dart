@@ -13,7 +13,6 @@ import 'package:analyzer/src/dart/element/member.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
-import 'package:analyzer/src/generated/type_system.dart' show Dart2TypeSystem;
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -25,8 +24,8 @@ import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 class PackageGraph {
-  PackageGraph.UninitializedPackageGraph(this.config, this.driver,
-      this.typeSystem, this.sdk, this.hasEmbedderSdk, this.rendererFactory)
+  PackageGraph.UninitializedPackageGraph(this.config, this.driver, this.sdk,
+      this.hasEmbedderSdk, this.rendererFactory)
       : packageMeta = config.topLevelPackageMeta,
         session = driver.currentSession {
     _packageWarningCounter = PackageWarningCounter(this);
@@ -232,7 +231,6 @@ class PackageGraph {
   /// TODO(brianwilkerson) Replace the driver with the session.
   final AnalysisDriver driver;
   final AnalysisSession session;
-  final Dart2TypeSystem typeSystem;
   final DartSdk sdk;
 
   Map<Source, SdkLibrary> _sdkLibrarySources;
@@ -678,7 +676,7 @@ class PackageGraph {
   static Element getBasestElement(Element possibleMember) {
     Element element = possibleMember;
     while (element is Member) {
-      element = (element as Member).baseElement;
+      element = (element as Member).declaration;
     }
     return element;
   }

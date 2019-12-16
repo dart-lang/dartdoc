@@ -10,6 +10,7 @@ import 'dart:collection';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:analyzer/src/generated/type_system.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
 
@@ -278,8 +279,8 @@ abstract class DefinedElementType extends ElementType {
   DartType get instantiatedType {
     if (_instantiatedType == null) {
       if (!interfaceType.typeArguments.every((t) => t is InterfaceType)) {
-        _instantiatedType =
-            packageGraph.typeSystem.instantiateToBounds(interfaceType);
+        var typeSystem = library.element.typeSystem as TypeSystemImpl;
+        _instantiatedType = typeSystem.instantiateToBounds(interfaceType);
       } else {
         _instantiatedType = interfaceType;
       }

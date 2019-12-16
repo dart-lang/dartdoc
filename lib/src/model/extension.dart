@@ -36,7 +36,7 @@ class Extension extends Container
 
   /// The instantiated to bounds [extendedType] of this extension is a subtype of
   /// [t].
-  bool isSubtypeOf(DefinedElementType t) => packageGraph.typeSystem
+  bool isSubtypeOf(DefinedElementType t) => library.typeSystem
       .isSubtypeOf(extendedType.instantiatedType, t.instantiatedType);
 
   bool isBoundSupertypeTo(DefinedElementType t) =>
@@ -52,7 +52,7 @@ class Extension extends Container
     visited.add(superType);
     if (superClass == extendedType.type.element &&
         (superType == extendedType.instantiatedType ||
-            packageGraph.typeSystem
+            library.typeSystem
                 .isSubtypeOf(superType, extendedType.instantiatedType))) {
       return true;
     }
