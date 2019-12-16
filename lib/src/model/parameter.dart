@@ -28,6 +28,11 @@ class Parameter extends ModelElement implements EnclosedElement {
   }
 
   @override
+  String get filePath {
+    throw StateError('filePath not implemented for parameters');
+  }
+
+  @override
   String get href {
     throw StateError('href not implemented for parameters');
   }

@@ -120,6 +120,8 @@ class Category extends Nameable
   @override
   String get fullyQualifiedName => name;
 
+  String get filePath => 'topics/${name}-topic.html';
+
   @override
   String get href =>
       isCanonical ? '${package.baseHref}topics/${name}-topic.html' : null;

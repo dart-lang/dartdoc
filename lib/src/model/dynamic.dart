@@ -27,4 +27,7 @@ class Dynamic extends ModelElement {
 
   @override
   String get linkedName => 'dynamic';
+
+  @override
+  String get filePath => null;
 }

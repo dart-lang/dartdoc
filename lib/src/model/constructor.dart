@@ -34,6 +34,16 @@ class Constructor extends ModelElement
   ModelElement get enclosingElement =>
       ModelElement.from(_constructor.enclosingElement, library, packageGraph);
 
+  @override
+  String get filePath {
+    if (!identical(canonicalModelElement, this)) {
+      return canonicalModelElement?.filePath;
+    }
+    assert(canonicalLibrary != null);
+    assert(canonicalLibrary == library);
+    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$name.html';
+  }
+
   String get fullKind {
     if (isConst) return 'const $kind';
     if (isFactory) return 'factory $kind';

@@ -201,6 +201,16 @@ class Class extends Container
   @override
   String get fileName => "${name}-class.html";
 
+  @override
+  String get filePath {
+    if (!identical(canonicalModelElement, this)) {
+      return canonicalModelElement?.filePath;
+    }
+    assert(canonicalLibrary != null);
+    assert(canonicalLibrary == library);
+    return '${library.dirName}/$fileName';
+  }
+
   String get fullkind {
     if (isAbstract) return 'abstract $kind';
     return kind;

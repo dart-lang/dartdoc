@@ -289,7 +289,7 @@ class HtmlGeneratorInstance {
     TemplateData data =
         CategoryTemplateData(_options, packageGraph, _templateHelper, category);
 
-    _build(category.href, _templates.categoryTemplate, data);
+    _build(category.filePath, _templates.categoryTemplate, data);
   }
 
   void generateLibrary(PackageGraph packageGraph, Library lib) {
@@ -301,26 +301,26 @@ class HtmlGeneratorInstance {
     TemplateData data =
         LibraryTemplateData(_options, packageGraph, _templateHelper, lib);
 
-    _build(lib.href, _templates.libraryTemplate, data);
+    _build(lib.filePath, _templates.libraryTemplate, data);
   }
 
   void generateClass(PackageGraph packageGraph, Library lib, Class clazz) {
     TemplateData data =
         ClassTemplateData(_options, packageGraph, _templateHelper, lib, clazz);
-    _build(clazz.href, _templates.classTemplate, data);
+    _build(clazz.filePath, _templates.classTemplate, data);
   }
 
   void generateExtension(
       PackageGraph packageGraph, Library lib, Extension extension) {
     TemplateData data = ExtensionTemplateData(
         _options, packageGraph, _templateHelper, lib, extension);
-    _build(extension.href, _templates.extensionTemplate, data);
+    _build(extension.filePath, _templates.extensionTemplate, data);
   }
 
   void generateMixins(PackageGraph packageGraph, Library lib, Mixin mixin) {
     TemplateData data =
         MixinTemplateData(_options, packageGraph, _templateHelper, lib, mixin);
-    _build(mixin.href, _templates.mixinTemplate, data);
+    _build(mixin.filePath, _templates.mixinTemplate, data);
   }
 
   void generateConstructor(PackageGraph packageGraph, Library lib, Class clazz,
@@ -328,14 +328,14 @@ class HtmlGeneratorInstance {
     TemplateData data = ConstructorTemplateData(
         _options, packageGraph, _templateHelper, lib, clazz, constructor);
 
-    _build(constructor.href, _templates.constructorTemplate, data);
+    _build(constructor.filePath, _templates.constructorTemplate, data);
   }
 
   void generateEnum(PackageGraph packageGraph, Library lib, Enum eNum) {
     TemplateData data =
         EnumTemplateData(_options, packageGraph, _templateHelper, lib, eNum);
 
-    _build(eNum.href, _templates.enumTemplate, data);
+    _build(eNum.filePath, _templates.enumTemplate, data);
   }
 
   void generateFunction(
@@ -343,7 +343,7 @@ class HtmlGeneratorInstance {
     TemplateData data = FunctionTemplateData(
         _options, packageGraph, _templateHelper, lib, function);
 
-    _build(function.href, _templates.functionTemplate, data);
+    _build(function.filePath, _templates.functionTemplate, data);
   }
 
   void generateMethod(
@@ -351,7 +351,7 @@ class HtmlGeneratorInstance {
     TemplateData data = MethodTemplateData(
         _options, packageGraph, _templateHelper, lib, clazz, method);
 
-    _build(method.href, _templates.methodTemplate, data);
+    _build(method.filePath, _templates.methodTemplate, data);
   }
 
   void generateConstant(
@@ -359,7 +359,7 @@ class HtmlGeneratorInstance {
     TemplateData data = ConstantTemplateData(
         _options, packageGraph, _templateHelper, lib, clazz, property);
 
-    _build(property.href, _templates.constantTemplate, data);
+    _build(property.filePath, _templates.constantTemplate, data);
   }
 
   void generateProperty(
@@ -367,7 +367,7 @@ class HtmlGeneratorInstance {
     TemplateData data = PropertyTemplateData(
         _options, packageGraph, _templateHelper, lib, clazz, property);
 
-    _build(property.href, _templates.propertyTemplate, data);
+    _build(property.filePath, _templates.propertyTemplate, data);
   }
 
   void generateTopLevelProperty(
@@ -375,7 +375,7 @@ class HtmlGeneratorInstance {
     TemplateData data = TopLevelPropertyTemplateData(
         _options, packageGraph, _templateHelper, lib, property);
 
-    _build(property.href, _templates.topLevelPropertyTemplate, data);
+    _build(property.filePath, _templates.topLevelPropertyTemplate, data);
   }
 
   void generateTopLevelConstant(
@@ -383,7 +383,7 @@ class HtmlGeneratorInstance {
     TemplateData data = TopLevelConstTemplateData(
         _options, packageGraph, _templateHelper, lib, property);
 
-    _build(property.href, _templates.topLevelConstantTemplate, data);
+    _build(property.filePath, _templates.topLevelConstantTemplate, data);
   }
 
   void generateTypeDef(
@@ -391,7 +391,7 @@ class HtmlGeneratorInstance {
     TemplateData data = TypedefTemplateData(
         _options, packageGraph, _templateHelper, lib, typeDef);
 
-    _build(typeDef.href, _templates.typeDefTemplate, data);
+    _build(typeDef.filePath, _templates.typeDefTemplate, data);
   }
 
   // TODO: change this to use resource_loader

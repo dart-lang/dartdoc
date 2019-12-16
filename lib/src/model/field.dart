@@ -65,6 +65,17 @@ class Field extends ModelElement
   }
 
   @override
+  String get filePath {
+    if (!identical(canonicalModelElement, this)) {
+      return canonicalModelElement?.filePath;
+    }
+    assert(canonicalLibrary != null);
+    assert(canonicalEnclosingContainer == enclosingElement);
+    assert(canonicalLibrary == library);
+    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
+  }
+
+  @override
   String get href {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;

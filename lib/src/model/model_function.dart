@@ -57,6 +57,16 @@ class ModelFunctionTyped extends ModelElement
   ModelElement get enclosingElement => library;
 
   @override
+  String get filePath {
+    if (!identical(canonicalModelElement, this)) {
+      return canonicalModelElement?.filePath;
+    }
+    assert(canonicalLibrary != null);
+    assert(canonicalLibrary == library);
+    return '${library.dirName}/$fileName';
+  }
+
+  @override
   String get href {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
