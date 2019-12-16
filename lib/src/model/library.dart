@@ -480,7 +480,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _typedefs;
   }
 
-  TypeSystem get typeSystem => library.element.typeSystem;
+  TypeSystem get typeSystem => element.typeSystem;
 
   List<Class> _classes;
 
