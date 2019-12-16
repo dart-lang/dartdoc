@@ -14,6 +14,10 @@ import 'package:pub_semver/pub_semver.dart';
 
 final RegExp substituteNameVersion = RegExp(r'%([bnv])%');
 
+// Unlikely to be mistaken for an identifier, html tag, or something else that
+// might reasonably exist normally.
+final String HTMLBASE_PLACEHOLDER = '\%\%HTMLBASE\%\%';
+
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 class Package extends LibraryContainer
@@ -206,7 +210,7 @@ class Package extends LibraryContainer
         });
         if (!_baseHref.endsWith('/')) _baseHref = '${_baseHref}/';
       } else {
-        _baseHref = '';
+        _baseHref = HTMLBASE_PLACEHOLDER;
       }
     }
     return _baseHref;

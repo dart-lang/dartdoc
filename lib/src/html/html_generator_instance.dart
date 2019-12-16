@@ -76,6 +76,7 @@ class HtmlGeneratorInstance {
     });
 
     String json = encoder.convert(indexItems);
+    json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
     _writer(path.join('categories.json'), '${json}\n');
   }
 
@@ -118,6 +119,7 @@ class HtmlGeneratorInstance {
     });
 
     String json = encoder.convert(indexItems);
+    json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
     _writer(path.join('index.json'), '${json}\n');
   }
 
@@ -412,6 +414,8 @@ class HtmlGeneratorInstance {
     // Replaces '/' separators with proper separators for the platform.
     String outFile = path.joinAll(filename.split('/'));
     String content = template.renderString(data);
+
+    content = content.replaceAll(HTMLBASE_PLACEHOLDER, data.htmlBase);
     _writer(outFile, content,
         element: data.self is Warnable ? data.self : null);
     if (data.self is Indexable) _indexedElements.add(data.self as Indexable);
