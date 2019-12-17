@@ -153,6 +153,6 @@ class Extension extends Container
     }
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${library.dirName}/$fileName';
+    return '${package.baseHref}$filePath';
   }
 }

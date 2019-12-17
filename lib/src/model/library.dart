@@ -397,7 +397,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    return '${package.baseHref}${library.dirName}/$fileName';
+    return '${package.baseHref}$filePath';
   }
 
   InheritanceManager3 _inheritanceManager;

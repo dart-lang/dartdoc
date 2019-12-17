@@ -75,7 +75,7 @@ class Method extends ModelElement
     assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingContainer == enclosingElement);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/${fileName}';
+    return '${package.baseHref}$filePath';
   }
 
   @override

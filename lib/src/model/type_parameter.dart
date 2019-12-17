@@ -28,7 +28,7 @@ class TypeParameter extends ModelElement {
     }
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
+    return '${package.baseHref}$filePath';
   }
 
   @override

@@ -170,6 +170,8 @@ class Package extends LibraryContainer
   @override
   String get enclosingName => packageGraph.defaultPackageName;
 
+  String get filePath => 'index.html';
+
   @override
   String get fullyQualifiedName => 'package:$name';
 
@@ -211,7 +213,7 @@ class Package extends LibraryContainer
   }
 
   @override
-  String get href => '${baseHref}index.html';
+  String get href => '$baseHref$filePath';
 
   @override
   String get location => path.toUri(packageMeta.resolvedDir).toString();

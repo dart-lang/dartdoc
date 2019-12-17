@@ -76,7 +76,7 @@ class Field extends ModelElement
     assert(canonicalLibrary != null);
     assert(canonicalEnclosingContainer == enclosingElement);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
+    return '${package.baseHref}$filePath';
   }
 
   @override

@@ -279,7 +279,7 @@ class HtmlGeneratorInstance {
         PackageTemplateData(_options, packageGraph, _templateHelper, package);
     logInfo('documenting ${package.name}');
 
-    _build('index.html', _templates.indexTemplate, data);
+    _build(package.filePath, _templates.indexTemplate, data);
     _build('__404error.html', _templates.errorTemplate, data);
   }
 
