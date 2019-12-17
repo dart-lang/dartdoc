@@ -377,6 +377,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   String get fileName => '$dirName-library.html';
 
+  @override
+  String get filePath => '${library.dirName}/$fileName';
+
   List<ModelFunction> _functions;
 
   @override
@@ -396,7 +399,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (!identical(canonicalModelElement, this)) {
       return canonicalModelElement?.href;
     }
-    return '${package.baseHref}${library.dirName}/$fileName';
+    return '${package.baseHref}$filePath';
   }
 
   InheritanceManager3 _inheritanceManager;

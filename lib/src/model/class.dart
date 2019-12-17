@@ -201,6 +201,9 @@ class Class extends Container
   @override
   String get fileName => "${name}-class.html";
 
+  @override
+  String get filePath => '${library.dirName}/$fileName';
+
   String get fullkind {
     if (isAbstract) return 'abstract $kind';
     return kind;
@@ -249,7 +252,7 @@ class Class extends Container
     }
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${library.dirName}/$fileName';
+    return '${package.baseHref}$filePath';
   }
 
   /// Returns all the implementors of this class.

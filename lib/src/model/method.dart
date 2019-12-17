@@ -58,6 +58,10 @@ class Method extends ModelElement
     return _enclosingContainer;
   }
 
+  @override
+  String get filePath =>
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
+
   String get fullkind {
     if (_method.isAbstract) return 'abstract $kind';
     return kind;
@@ -71,7 +75,7 @@ class Method extends ModelElement
     assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
     assert(canonicalLibrary == library);
     assert(canonicalEnclosingContainer == enclosingElement);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/${fileName}';
+    return '${package.baseHref}$filePath';
   }
 
   @override

@@ -90,6 +90,9 @@ class Accessor extends ModelElement implements EnclosedElement {
   }
 
   @override
+  String get filePath => enclosingCombo.filePath;
+
+  @override
   bool get isCanonical => enclosingCombo.isCanonical;
 
   @override

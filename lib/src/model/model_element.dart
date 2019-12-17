@@ -790,6 +790,8 @@ abstract class ModelElement extends Canonicalization
 
   String get fileName => "${name}.html";
 
+  String get filePath;
+
   /// Returns the fully qualified name.
   ///
   /// For example: libraryName.className.methodName

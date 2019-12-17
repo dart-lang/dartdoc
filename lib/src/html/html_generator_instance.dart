@@ -279,7 +279,7 @@ class HtmlGeneratorInstance {
         PackageTemplateData(_options, packageGraph, _templateHelper, package);
     logInfo('documenting ${package.name}');
 
-    _build('index.html', _templates.indexTemplate, data);
+    _build(package.filePath, _templates.indexTemplate, data);
     _build('__404error.html', _templates.errorTemplate, data);
   }
 
@@ -289,8 +289,7 @@ class HtmlGeneratorInstance {
     TemplateData data =
         CategoryTemplateData(_options, packageGraph, _templateHelper, category);
 
-    _build(path.joinAll(category.href.split('/')), _templates.categoryTemplate,
-        data);
+    _build(category.filePath, _templates.categoryTemplate, data);
   }
 
   void generateLibrary(PackageGraph packageGraph, Library lib) {
@@ -302,28 +301,26 @@ class HtmlGeneratorInstance {
     TemplateData data =
         LibraryTemplateData(_options, packageGraph, _templateHelper, lib);
 
-    _build(path.join(lib.dirName, '${lib.fileName}'),
-        _templates.libraryTemplate, data);
+    _build(lib.filePath, _templates.libraryTemplate, data);
   }
 
   void generateClass(PackageGraph packageGraph, Library lib, Class clazz) {
     TemplateData data =
         ClassTemplateData(_options, packageGraph, _templateHelper, lib, clazz);
-    _build(path.joinAll(clazz.href.split('/')), _templates.classTemplate, data);
+    _build(clazz.filePath, _templates.classTemplate, data);
   }
 
   void generateExtension(
-      PackageGraph packageGraph, Library lib, Extension ext) {
+      PackageGraph packageGraph, Library lib, Extension extension) {
     TemplateData data = ExtensionTemplateData(
-        _options, packageGraph, _templateHelper, lib, ext);
-    _build(
-        path.joinAll(ext.href.split('/')), _templates.extensionTemplate, data);
+        _options, packageGraph, _templateHelper, lib, extension);
+    _build(extension.filePath, _templates.extensionTemplate, data);
   }
 
   void generateMixins(PackageGraph packageGraph, Library lib, Mixin mixin) {
     TemplateData data =
         MixinTemplateData(_options, packageGraph, _templateHelper, lib, mixin);
-    _build(path.joinAll(mixin.href.split('/')), _templates.mixinTemplate, data);
+    _build(mixin.filePath, _templates.mixinTemplate, data);
   }
 
   void generateConstructor(PackageGraph packageGraph, Library lib, Class clazz,
@@ -331,15 +328,14 @@ class HtmlGeneratorInstance {
     TemplateData data = ConstructorTemplateData(
         _options, packageGraph, _templateHelper, lib, clazz, constructor);
 
-    _build(path.joinAll(constructor.href.split('/')),
-        _templates.constructorTemplate, data);
+    _build(constructor.filePath, _templates.constructorTemplate, data);
   }
 
   void generateEnum(PackageGraph packageGraph, Library lib, Enum eNum) {
     TemplateData data =
         EnumTemplateData(_options, packageGraph, _templateHelper, lib, eNum);
 
-    _build(path.joinAll(eNum.href.split('/')), _templates.enumTemplate, data);
+    _build(eNum.filePath, _templates.enumTemplate, data);
   }
 
   void generateFunction(
@@ -347,8 +343,7 @@ class HtmlGeneratorInstance {
     TemplateData data = FunctionTemplateData(
         _options, packageGraph, _templateHelper, lib, function);
 
-    _build(path.joinAll(function.href.split('/')), _templates.functionTemplate,
-        data);
+    _build(function.filePath, _templates.functionTemplate, data);
   }
 
   void generateMethod(
@@ -356,8 +351,7 @@ class HtmlGeneratorInstance {
     TemplateData data = MethodTemplateData(
         _options, packageGraph, _templateHelper, lib, clazz, method);
 
-    _build(
-        path.joinAll(method.href.split('/')), _templates.methodTemplate, data);
+    _build(method.filePath, _templates.methodTemplate, data);
   }
 
   void generateConstant(
@@ -365,8 +359,7 @@ class HtmlGeneratorInstance {
     TemplateData data = ConstantTemplateData(
         _options, packageGraph, _templateHelper, lib, clazz, property);
 
-    _build(path.joinAll(property.href.split('/')), _templates.constantTemplate,
-        data);
+    _build(property.filePath, _templates.constantTemplate, data);
   }
 
   void generateProperty(
@@ -374,8 +367,7 @@ class HtmlGeneratorInstance {
     TemplateData data = PropertyTemplateData(
         _options, packageGraph, _templateHelper, lib, clazz, property);
 
-    _build(path.joinAll(property.href.split('/')), _templates.propertyTemplate,
-        data);
+    _build(property.filePath, _templates.propertyTemplate, data);
   }
 
   void generateTopLevelProperty(
@@ -383,8 +375,7 @@ class HtmlGeneratorInstance {
     TemplateData data = TopLevelPropertyTemplateData(
         _options, packageGraph, _templateHelper, lib, property);
 
-    _build(path.joinAll(property.href.split('/')),
-        _templates.topLevelPropertyTemplate, data);
+    _build(property.filePath, _templates.topLevelPropertyTemplate, data);
   }
 
   void generateTopLevelConstant(
@@ -392,8 +383,7 @@ class HtmlGeneratorInstance {
     TemplateData data = TopLevelConstTemplateData(
         _options, packageGraph, _templateHelper, lib, property);
 
-    _build(path.joinAll(property.href.split('/')),
-        _templates.topLevelConstantTemplate, data);
+    _build(property.filePath, _templates.topLevelConstantTemplate, data);
   }
 
   void generateTypeDef(
@@ -401,8 +391,7 @@ class HtmlGeneratorInstance {
     TemplateData data = TypedefTemplateData(
         _options, packageGraph, _templateHelper, lib, typeDef);
 
-    _build(path.joinAll(typeDef.href.split('/')), _templates.typeDefTemplate,
-        data);
+    _build(typeDef.filePath, _templates.typeDefTemplate, data);
   }
 
   // TODO: change this to use resource_loader
@@ -420,9 +409,11 @@ class HtmlGeneratorInstance {
   }
 
   void _build(String filename, Template template, TemplateData data) {
+    // Replaces '/' separators with proper separators for the platform.
+    String outFile = path.joinAll(filename.split('/'));
     String content = template.renderString(data);
 
-    _writer(filename, content);
+    _writer(outFile, content);
     if (data.self is Indexable) _indexedElements.add(data.self as Indexable);
   }
 }
