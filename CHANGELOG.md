@@ -1,14 +1,18 @@
+## 0.29.3
+* More refactoring changes to rendering (#2085, #2086).
+* Internal changes to stop using newly deprecated analyzer interfaces (#2091, #2093).
+
 ## 0.29.2
-* Many refactoring changes to rendering and tests (#2084, #2081, #2080, #2078, #2077, #2076, #2068, #2067)
-* Add 'required' for required named parameters with NNBD enabled (#2075)
-* Rewrite parameter handling and fix problems with brackets (#2075, #2059, #2052, #2082)
-* Add 'late' as a feature for final variables with NNBD enabled (#2071)
-* Add presubmit grinder and dartfmt check for dartdoc development (#2070)
-* Initial implementation of NNBD support (with --enable-experiment flag) (#2069)
+* Many refactoring changes to rendering and tests (#2084, #2081, #2080, #2078, #2077, #2076, #2068, #2067).
+* Add 'required' for required named parameters with NNBD enabled (#2075).
+* Rewrite parameter handling and fix problems with brackets (#2075, #2059, #2052, #2082).
+* Add 'late' as a feature for final variables with NNBD enabled (#2071).
+* Add presubmit grinder and dartfmt check for dartdoc development (#2070).
+* Initial implementation of NNBD support (with --enable-experiment flag) (#2069).
 
 ## 0.29.1
-* Fix edge cases on extension discovery (#2062)
-* Make sure that enum documentation contains unique IDs for animations (#2060)
+* Fix edge cases on extension discovery (#2062).
+* Make sure that enum documentation contains unique IDs for animations (#2060).
 
 ## 0.29.0
 * Internal change to our use of FunctionTypeAliasElement for the analyzer
