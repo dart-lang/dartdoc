@@ -18,14 +18,8 @@ class TypeParameter extends ModelElement {
       : null;
 
   @override
-  String get filePath {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.filePath;
-    }
-    assert(canonicalLibrary != null);
-    assert(canonicalLibrary == library);
-    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
-  }
+  String get filePath =>
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/$name';
 
   @override
   String get href {

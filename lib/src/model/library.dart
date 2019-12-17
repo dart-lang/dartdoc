@@ -376,12 +376,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   String get fileName => '$dirName-library.html';
 
   @override
-  String get filePath {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.filePath;
-    }
-    return '${library.dirName}/$fileName';
-  }
+  String get filePath => '${library.dirName}/$fileName';
 
   List<ModelFunction> _functions;
 

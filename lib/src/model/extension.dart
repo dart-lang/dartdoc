@@ -144,14 +144,7 @@ class Extension extends Container
   }
 
   @override
-  String get filePath {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.filePath;
-    }
-    assert(canonicalLibrary != null);
-    assert(canonicalLibrary == library);
-    return '${library.dirName}/$fileName';
-  }
+  String get filePath => '${library.dirName}/$fileName';
 
   @override
   String get href {

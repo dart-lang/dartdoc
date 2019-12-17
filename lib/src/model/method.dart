@@ -59,15 +59,8 @@ class Method extends ModelElement
   }
 
   @override
-  String get filePath {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.filePath;
-    }
-    assert(!(canonicalLibrary == null || canonicalEnclosingContainer == null));
-    assert(canonicalLibrary == library);
-    assert(canonicalEnclosingContainer == enclosingElement);
-    return '${enclosingElement.library.dirName}/${enclosingElement.name}/${fileName}';
-  }
+  String get filePath =>
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
 
   String get fullkind {
     if (_method.isAbstract) return 'abstract $kind';

@@ -35,14 +35,8 @@ class Constructor extends ModelElement
       ModelElement.from(_constructor.enclosingElement, library, packageGraph);
 
   @override
-  String get filePath {
-    if (!identical(canonicalModelElement, this)) {
-      return canonicalModelElement?.filePath;
-    }
-    assert(canonicalLibrary != null);
-    assert(canonicalLibrary == library);
-    return '${enclosingElement.library.dirName}/${enclosingElement.name}/$name.html';
-  }
+  String get filePath =>
+      '${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
 
   String get fullKind {
     if (isConst) return 'const $kind';
@@ -63,7 +57,7 @@ class Constructor extends ModelElement
     }
     assert(canonicalLibrary != null);
     assert(canonicalLibrary == library);
-    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$name.html';
+    return '${package.baseHref}${enclosingElement.library.dirName}/${enclosingElement.name}/$fileName';
   }
 
   @override
