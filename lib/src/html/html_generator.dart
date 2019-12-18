@@ -154,12 +154,8 @@ class HtmlGeneratorOptions implements HtmlOptions {
       : this.toolVersion = toolVersion ?? 'unknown';
 }
 
-Future<List<Generator>> initEmptyGenerators(DartdocOptionContext config) async {
-  return [EmptyGenerator()];
-}
-
 /// Initialize and setup the generators.
-Future<List<Generator>> initGenerators(
+Future<List<Generator>> initHtmlGenerators(
     DartdocGeneratorOptionContext config) async {
   // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
   // through the generators.
