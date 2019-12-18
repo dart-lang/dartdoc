@@ -159,7 +159,8 @@ Future<List<Generator>> initEmptyGenerators(DartdocOptionContext config) async {
 }
 
 /// Initialize and setup the generators.
-Future<List<Generator>> initGenerators(GeneratorContext config) async {
+Future<List<Generator>> initGenerators(
+    DartdocGeneratorOptionContext config) async {
   // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
   // through the generators.
   HtmlGeneratorOptions options = HtmlGeneratorOptions(
@@ -189,10 +190,8 @@ Future<void> _setSdkFooterCopyrightUri() async {
   }
 }
 
-// Dartdoc options specific to generators
-abstract class GeneratorContext implements DartdocOptionContextBase {
-  String get favicon => optionSet['favicon'].valueAt(context);
-
+/// Dartdoc options related to generators generally.
+mixin BaseGeneratorContext on DartdocOptionContextBase {
   List<String> get footer => optionSet['footer'].valueAt(context);
 
   /// _footerText is only used to construct synthetic options.
@@ -206,29 +205,33 @@ abstract class GeneratorContext implements DartdocOptionContextBase {
 
   bool get prettyIndexJson => optionSet['prettyIndexJson'].valueAt(context);
 
+  String get templatesDir => optionSet['templatesDir'].valueAt(context);
+}
+
+/// Dartdoc options related to html generation.
+mixin HtmlGeneratorContext on DartdocOptionContextBase {
+  String get favicon => optionSet['favicon'].valueAt(context);
+
   String get relCanonicalPrefix =>
       optionSet['relCanonicalPrefix'].valueAt(context);
-
-  String get templatesDir => optionSet['templatesDir'].valueAt(context);
 }
 
 Future<List<DartdocOption>> createGeneratorOptions() async {
   await _setSdkFooterCopyrightUri();
   return <DartdocOption>[
-    DartdocOptionArgFile<String>('favicon', null,
-        isFile: true,
-        help: 'A path to a favicon for the generated docs.',
-        mustExist: true),
     DartdocOptionArgFile<List<String>>('footer', [],
         isFile: true,
-        help: 'paths to footer files containing HTML text.',
+        help:
+            'Paths to files with content to add to page footers, but possibly '
+            'outside of dedicated footer elements for the generator (e.g. '
+            'outside of <footer> for an HTML generator). To add text content '
+            'to dedicated footer elements, use --footer-text instead.',
         mustExist: true,
         splitCommas: true),
     DartdocOptionArgFile<List<String>>('footerText', [],
         isFile: true,
-        help:
-            'paths to footer-text files (optional text next to the package name '
-            'and version).',
+        help: 'Paths to files with content to add to page footers (next to the '
+            'package name and version).',
         mustExist: true,
         splitCommas: true),
     DartdocOptionSyntheticOnly<List<String>>(
@@ -251,17 +254,12 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
     ),
     DartdocOptionArgFile<List<String>>('header', [],
         isFile: true,
-        help: 'paths to header files containing HTML text.',
+        help: 'Paths to files with content to add to page headers.',
         splitCommas: true),
     DartdocOptionArgOnly<bool>('prettyIndexJson', false,
         help:
             "Generates `index.json` with indentation and newlines. The file is larger, but it's also easier to diff.",
         negatable: false),
-    DartdocOptionArgOnly<String>('relCanonicalPrefix', null,
-        help:
-            'If provided, add a rel="canonical" prefixed with provided value. '
-            'Consider using if\nbuilding many versions of the docs for public '
-            'SEO; learn more at https://goo.gl/gktN6F.'),
     DartdocOptionArgOnly<String>("templatesDir", null,
         isDir: true,
         mustExist: true,
@@ -273,5 +271,19 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
             'property, top_level_constant, top_level_property, typedef. Partial templates are '
             'supported; they must begin with an underscore, and references to them must omit the '
             'leading underscore (e.g. use {{>foo}} to reference the partial template _foo.html).'),
+  ]..addAll(createHtmlGeneratorOptions());
+}
+
+List<DartdocOption> createHtmlGeneratorOptions() {
+  return <DartdocOption>[
+    DartdocOptionArgFile<String>('favicon', null,
+        isFile: true,
+        help: 'A path to a favicon for the generated docs.',
+        mustExist: true),
+    DartdocOptionArgOnly<String>('relCanonicalPrefix', null,
+        help:
+            'If provided, add a rel="canonical" prefixed with provided value. '
+            'Consider using if\nbuilding many versions of the docs for public '
+            'SEO; learn more at https://goo.gl/gktN6F.'),
   ];
 }

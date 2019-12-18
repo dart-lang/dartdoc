@@ -39,7 +39,7 @@ const String dartdocVersion = packageVersion;
 /// Helper class to initialize the default generators since they require
 /// GeneratorContext.
 class DartdocGeneratorOptionContext extends DartdocOptionContext
-    with GeneratorContext {
+    with BaseGeneratorContext, HtmlGeneratorContext {
   DartdocGeneratorOptionContext(DartdocOptionSet optionSet, Directory dir)
       : super(optionSet, dir);
 }
