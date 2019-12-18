@@ -329,14 +329,14 @@ class PropertyTemplateData extends TemplateData<Field> {
 
   @override
   String get title =>
-      '${property.name} $type - ${container.name} ${containerDesc} - '
+      '${property.name} $_type - ${container.name} ${containerDesc} - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle =>
-      _layoutTitle(property.name, type, property.isDeprecated);
+      _layoutTitle(property.name, _type, property.isDeprecated);
   @override
   String get metaDescription =>
-      'API docs for the ${property.name} $type from the '
+      'API docs for the ${property.name} $_type from the '
       '${container.name} ${containerDesc}, for the Dart programming language.';
   @override
   List get navLinks => [packageGraph.defaultPackage, library];
@@ -345,22 +345,7 @@ class PropertyTemplateData extends TemplateData<Field> {
   @override
   String get htmlBase => '../../';
 
-  String get type => 'property';
-}
-
-class ConstantTemplateData extends PropertyTemplateData {
-  ConstantTemplateData(
-      HtmlOptions htmlOptions,
-      PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper,
-      Library library,
-      Container container,
-      Field property)
-      : super(htmlOptions, packageGraph, renderHelper, library, container,
-            property);
-
-  @override
-  String get type => 'constant';
+  String get _type => property.isConst ? 'constant' : 'property';
 }
 
 class TypedefTemplateData extends TemplateData<Typedef> {
@@ -416,18 +401,5 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
   @override
   String get htmlBase => '../';
 
-  String get _type => 'property';
-}
-
-class TopLevelConstTemplateData extends TopLevelPropertyTemplateData {
-  TopLevelConstTemplateData(
-      HtmlOptions htmlOptions,
-      PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper,
-      Library library,
-      TopLevelVariable property)
-      : super(htmlOptions, packageGraph, renderHelper, library, property);
-
-  @override
-  String get _type => 'constant';
+  String get _type => property.isConst ? 'constant' : 'property';
 }

@@ -352,13 +352,9 @@ class HtmlGeneratorInstance {
     _build(method.filePath, _templates.methodTemplate, data);
   }
 
-  void generateConstant(
-      PackageGraph packageGraph, Library lib, Container clazz, Field property) {
-    TemplateData data = ConstantTemplateData(
-        _options, packageGraph, _templateHelper, lib, clazz, property);
-
-    _build(property.filePath, _templates.constantTemplate, data);
-  }
+  void generateConstant(PackageGraph packageGraph, Library lib, Container clazz,
+          Field property) =>
+      generateProperty(packageGraph, lib, clazz, property);
 
   void generateProperty(
       PackageGraph packageGraph, Library lib, Container clazz, Field property) {
@@ -377,12 +373,8 @@ class HtmlGeneratorInstance {
   }
 
   void generateTopLevelConstant(
-      PackageGraph packageGraph, Library lib, TopLevelVariable property) {
-    TemplateData data = TopLevelConstTemplateData(
-        _options, packageGraph, _templateHelper, lib, property);
-
-    _build(property.filePath, _templates.topLevelConstantTemplate, data);
-  }
+          PackageGraph packageGraph, Library lib, TopLevelVariable property) =>
+      generateTopLevelProperty(packageGraph, lib, property);
 
   void generateTypeDef(
       PackageGraph packageGraph, Library lib, Typedef typeDef) {
