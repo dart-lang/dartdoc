@@ -181,6 +181,7 @@ Future<List<Generator>> initGenerators(GeneratorContext config) async {
 }
 
 Uri _sdkFooterCopyrightUri;
+
 Future<void> _setSdkFooterCopyrightUri() async {
   if (_sdkFooterCopyrightUri == null) {
     _sdkFooterCopyrightUri = await Isolate.resolvePackageUri(
@@ -189,19 +190,26 @@ Future<void> _setSdkFooterCopyrightUri() async {
 }
 
 // Dartdoc options specific to generators
-abstract class GeneratorContext implements DartdocOptionContext {
+abstract class GeneratorContext implements DartdocOptionContextBase {
   String get favicon => optionSet['favicon'].valueAt(context);
+
   List<String> get footer => optionSet['footer'].valueAt(context);
 
   /// _footerText is only used to construct synthetic options.
   // ignore: unused_element
   List<String> get _footerText => optionSet['footerText'].valueAt(context);
+
   List<String> get footerTextPaths =>
       optionSet['footerTextPaths'].valueAt(context);
+
   List<String> get header => optionSet['header'].valueAt(context);
+
   bool get prettyIndexJson => optionSet['prettyIndexJson'].valueAt(context);
+
   String get relCanonicalPrefix =>
       optionSet['relCanonicalPrefix'].valueAt(context);
+
+  String get templatesDir => optionSet['templatesDir'].valueAt(context);
 }
 
 Future<List<DartdocOption>> createGeneratorOptions() async {
@@ -254,5 +262,16 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
             'If provided, add a rel="canonical" prefixed with provided value. '
             'Consider using if\nbuilding many versions of the docs for public '
             'SEO; learn more at https://goo.gl/gktN6F.'),
+    DartdocOptionArgOnly<String>("templatesDir", null,
+        isDir: true,
+        mustExist: true,
+        hide: true,
+        help:
+            'Path to a directory containing templates to use instead of the default ones. '
+            'Directory must contain an html file for each of the following: 404error, category, '
+            'class, constant, constructor, enum, function, index, library, method, mixin, '
+            'property, top_level_constant, top_level_property, typedef. Partial templates are '
+            'supported; they must begin with an underscore, and references to them must omit the '
+            'leading underscore (e.g. use {{>foo}} to reference the partial template _foo.html).'),
   ];
 }
