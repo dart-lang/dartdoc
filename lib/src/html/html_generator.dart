@@ -155,30 +155,28 @@ class HtmlGeneratorOptions implements HtmlOptions {
 }
 
 /// Initialize and setup the generators.
-Future<List<Generator>> initHtmlGenerators(
-    DartdocGeneratorOptionContext config) async {
+Future<List<Generator>> initHtmlGenerators(HtmlGeneratorContext context) async {
   // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
   // through the generators.
   HtmlGeneratorOptions options = HtmlGeneratorOptions(
-      relCanonicalPrefix: config.relCanonicalPrefix,
+      relCanonicalPrefix: context.relCanonicalPrefix,
       toolVersion: dartdocVersion,
-      faviconPath: config.favicon,
-      prettyIndexJson: config.prettyIndexJson,
-      templatesDir: config.templatesDir,
-      useBaseHref: config.useBaseHref);
-
+      faviconPath: context.favicon,
+      prettyIndexJson: context.prettyIndexJson,
+      templatesDir: context.templatesDir,
+      useBaseHref: context.useBaseHref);
   return [
     await HtmlGenerator.create(
       options: options,
-      headers: config.header,
-      footers: config.footer,
-      footerTexts: config.footerTextPaths,
+      headers: context.header,
+      footers: context.footer,
+      footerTexts: context.footerTextPaths,
     )
   ];
 }
 
 /// Dartdoc options related to html generation.
-mixin HtmlGeneratorContext on DartdocOptionContextBase {
+mixin HtmlGeneratorContext on BaseGeneratorContext {
   String get favicon => optionSet['favicon'].valueAt(context);
 
   String get relCanonicalPrefix =>
