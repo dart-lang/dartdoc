@@ -6,10 +6,8 @@ library dartdoc.html_generator;
 
 import 'dart:async' show Future, StreamController, Stream;
 import 'dart:io' show Directory, File;
-import 'dart:isolate';
 
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/empty_generator.dart';
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/html/html_generator_instance.dart';
 import 'package:dartdoc/src/html/template_data.dart';
@@ -17,26 +15,6 @@ import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
-
-typedef Renderer = String Function(String input);
-
-// Generation order for libraries:
-//   constants
-//   typedefs
-//   properties
-//   functions
-//   enums
-//   classes
-//   exceptions
-//
-// Generation order for classes:
-//   constants
-//   static properties
-//   static methods
-//   properties
-//   constructors
-//   operators
-//   methods
 
 class HtmlGenerator extends Generator {
   final Templates _templates;
@@ -76,10 +54,10 @@ class HtmlGenerator extends Generator {
 
   HtmlGenerator._(this._options, this._templates);
 
-  @override
 
   /// Actually write out the documentation for [packageGraph].
   /// Stores the HtmlGeneratorInstance so we can access it in [writtenFiles].
+  @override
   Future generate(PackageGraph packageGraph, String outputDirectoryPath) async {
     assert(_instance == null);
 
