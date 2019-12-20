@@ -9,10 +9,13 @@ import 'package:dartdoc/src/render/element_type_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
+import 'package:dartdoc/src/render/template_renderer.dart';
 import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 abstract class RendererFactory {
+  TemplateRenderer get templateRenderer;
+
   CategoryRenderer get categoryRenderer;
 
   DocumentationRenderer get documentationRenderer;
@@ -39,6 +42,9 @@ abstract class RendererFactory {
 }
 
 class HtmlRenderFactory extends RendererFactory {
+  @override
+  TemplateRenderer get templateRenderer => HtmlTemplateRenderer();
+
   @override
   CategoryRenderer get categoryRenderer => CategoryRendererHtml();
 
