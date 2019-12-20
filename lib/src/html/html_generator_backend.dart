@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/generator_fe.dart';
+import 'package:dartdoc/src/generator_frontend.dart';
 import 'package:dartdoc/src/generator_utils.dart' as generator_util;
 import 'package:dartdoc/src/html/resource_loader.dart' as loader;
 import 'package:dartdoc/src/html/resources.g.dart' as resources;
