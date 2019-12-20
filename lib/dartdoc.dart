@@ -15,6 +15,7 @@ import 'dart:io';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/empty_generator.dart';
 import 'package:dartdoc/src/generator.dart';
+import 'package:dartdoc/src/generator_frontend.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -44,18 +45,55 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext
       : super(optionSet, dir);
 }
 
+class DartdocFileWriter extends FileWriter {
+  @override
+  File write(String filePath, Object content,
+      {bool allowOverwrite, Warnable element}) {
+    allowOverwrite ??= false;
+    if (!allowOverwrite) {
+      if (writtenFiles.containsKey(filePath)) {
+        assert(element != null,
+            'Attempted overwrite of ${filePath} without corresponding element');
+        Warnable originalElement = writtenFiles[filePath];
+        Iterable<Warnable> referredFrom = originalElement != null ? [originalElement] : null;
+        element?.warn(PackageWarning.duplicateFile,
+            message: filePath, referredFrom: referredFrom);
+      }
+    }
+
+    var file = File(filePath);
+    var parent = file.parent;
+    if (!parent.existsSync()) {
+      parent.createSync(recursive: true);
+    }
+
+    if (content is String) {
+      file.writeAsStringSync(content);
+    } else if (content is List<int>) {
+      file.writeAsBytesSync(content);
+    } else {
+      throw ArgumentError.value(
+          content, 'content', '`content` must be `String` or `List<int>`.');
+    }
+    writtenFiles[filePath] = element;
+    return file;
+  }
+}
+
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
 class Dartdoc extends PackageBuilder {
   final Generator generator;
   final Set<String> writtenFiles = Set();
+  final FileWriter writer;
   Directory outputDir;
 
   // Fires when the self checks make progress.
   final StreamController<String> _onCheckProgress =
       StreamController(sync: true);
 
-  Dartdoc._(DartdocOptionContext config, this.generator) : super(config) {
+  Dartdoc._(DartdocOptionContext config, this.generator, this.writer)
+      : super(config) {
     outputDir = Directory(config.output)..createSync(recursive: true);
     generator?.onFileCreated?.listen(logProgress);
   }
@@ -64,12 +102,14 @@ class Dartdoc extends PackageBuilder {
   /// and returns a Dartdoc object with them.
   static Future<Dartdoc> withDefaultGenerators(
       DartdocGeneratorOptionContext config) async {
-    return Dartdoc._(config, await initHtmlGenerators(config));
+    FileWriter writer = DartdocFileWriter();
+    return Dartdoc._(config, await initHtmlGenerator(config, writer), writer);
   }
 
   /// An asynchronous factory method that builds
   static Future<Dartdoc> withEmptyGenerator(DartdocOptionContext config) async {
-    return Dartdoc._(config, await initEmptyGenerator(config));
+    return Dartdoc._(
+        config, await initEmptyGenerator(config), DartdocFileWriter());
   }
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
@@ -96,7 +136,7 @@ class Dartdoc extends PackageBuilder {
       if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
 
       await generator.generate(packageGraph, outputDir.path);
-      writtenFiles.addAll(generator.writtenFiles.keys.map(path.normalize));
+      writtenFiles.addAll(writer.writtenFiles.keys.map(path.normalize));
       if (config.validateLinks && writtenFiles.isNotEmpty) {
         validateLinks(packageGraph, outputDir.path);
       }

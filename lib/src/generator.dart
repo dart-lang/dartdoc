@@ -12,7 +12,6 @@ import 'dart:isolate';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart' show PackageGraph;
 import 'package:dartdoc/src/package_meta.dart';
-import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 
 /// An abstract class that defines a generator that generates documentation for
@@ -26,9 +25,6 @@ abstract class Generator {
 
   /// Fires when a file is created.
   Stream<void> get onFileCreated;
-
-  /// Fetches all filenames written by this generator.
-  Map<String, Warnable> get writtenFiles;
 }
 
 /// Dartdoc options related to generators generally.

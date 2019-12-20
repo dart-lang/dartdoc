@@ -6,7 +6,9 @@ library dartdoc.html_generator_test;
 
 import 'dart:io' show File, Directory;
 
-import 'package:dartdoc/src/html/html_generator.dart';
+import 'package:dartdoc/dartdoc.dart';
+import 'package:dartdoc/src/generator_frontend.dart';
+import 'package:dartdoc/src/html/html_generator_backend.dart';
 import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/html/resources.g.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
@@ -68,11 +70,13 @@ void main() {
   group('HtmlGenerator', () {
     // TODO: Run the HtmlGenerator and validate important constraints.
     group('for a null package', () {
-      HtmlGenerator generator;
+      Generator generator;
       Directory tempOutput;
 
       setUp(() async {
-        generator = await HtmlGenerator.create();
+        HtmlGeneratorBackend backend =
+            HtmlGeneratorBackend(null, await Templates.createDefault());
+        generator = GeneratorFrontEnd(backend, DartdocFileWriter());
         tempOutput = Directory.systemTemp.createTempSync('doc_test_temp');
         return generator.generate(null, tempOutput.path);
       });

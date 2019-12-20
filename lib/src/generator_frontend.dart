@@ -13,12 +13,18 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 
 abstract class FileWriter {
-  File write(String filePath, Object content, [bool allowOverwrite = false]);
+  final Map<String, Warnable> writtenFiles = {};
+
+  File write(String filePath, Object content,
+      {bool allowOverwrite, Warnable element});
 }
 
 class GeneratorFrontEnd implements Generator, FileWriter {
   final GeneratorBackend _generatorBackend;
   final FileWriter _writer;
+
+  // Used in write(). This being not null signals the generator is active.
+  String _outputDirectory;
 
   final StreamController<void> _onFileCreated = StreamController(sync: true);
 
@@ -26,30 +32,39 @@ class GeneratorFrontEnd implements Generator, FileWriter {
   Stream<void> get onFileCreated => _onFileCreated.stream;
 
   @override
-  final Set<String> writtenFiles = Set<String>();
+  final Map<String, Warnable> writtenFiles = {};
 
   GeneratorFrontEnd(this._generatorBackend, this._writer);
 
   @override
-  File write(String filePath, Object content, [bool allowOverwrite = false]) {
+  File write(String filePath, Object content, {bool allowOverwrite, Warnable element}) {
+    assert(_outputDirectory != null);
     // Replaces '/' separators with proper separators for the platform.
     String outFile = path.joinAll(filePath.split('/'));
-    File file = _writer.write(outFile, content, allowOverwrite);
+    outFile = path.join(_outputDirectory, outFile);
+    File file = _writer.write(outFile, content, allowOverwrite: allowOverwrite, element: element);
     _onFileCreated.add(file);
-    writtenFiles.add(outFile);
+    writtenFiles[filePath] = element;
     return file;
   }
 
   @override
-  Future generate(PackageGraph packageGraph, String outputDirectoryPath) async {
-    List<Indexable> indexElements = <Indexable>[];
-    _generateDocs(packageGraph, indexElements);
-    _generatorBackend.generateAdditionalFiles(this, packageGraph);
+  Future generate(PackageGraph packageGraph, String outputDirectory) async {
+    _outputDirectory = outputDirectory;
+    try {
+      List<Indexable> indexElements = <Indexable>[];
+      _generateDocs(packageGraph, indexElements);
+      _generatorBackend.generateAdditionalFiles(this, packageGraph);
 
-    Iterable<Categorization> categories =
-        indexElements.where((e) => e is Categorization && e.hasCategorization);
-    _generatorBackend.generateCategoryJson(this, categories);
-    _generatorBackend.generateSearchIndex(this, indexElements);
+      List<Categorization> categories = indexElements
+          .where((e) => e is Categorization && e.hasCategorization)
+          .map((e) => e as Categorization)
+          .toList();
+      _generatorBackend.generateCategoryJson(this, categories);
+      _generatorBackend.generateSearchIndex(this, indexElements);
+    } finally {
+      _outputDirectory = null;
+    }
   }
 
   void _generateDocs(

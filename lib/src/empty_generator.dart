@@ -36,9 +36,6 @@ class EmptyGenerator extends Generator {
   /// Implementation fires on each model element processed rather than
   /// file creation.
   Stream<void> get onFileCreated => _onFileCreated.stream;
-
-  @override
-  final Map<String, Warnable> writtenFiles = {};
 }
 
 Future<Generator> initEmptyGenerator(DartdocOptionContext config) async {
