@@ -54,7 +54,6 @@ class HtmlGenerator extends Generator {
 
   HtmlGenerator._(this._options, this._templates);
 
-
   /// Actually write out the documentation for [packageGraph].
   /// Stores the HtmlGeneratorInstance so we can access it in [writtenFiles].
   @override
@@ -133,7 +132,7 @@ class HtmlGeneratorOptions implements HtmlOptions {
 }
 
 /// Initialize and setup the generators.
-Future<List<Generator>> initHtmlGenerators(GeneratorContext context) async {
+Future<Generator> initHtmlGenerators(GeneratorContext context) async {
   // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
   // through the generators.
   HtmlGeneratorOptions options = HtmlGeneratorOptions(
@@ -143,12 +142,11 @@ Future<List<Generator>> initHtmlGenerators(GeneratorContext context) async {
       prettyIndexJson: context.prettyIndexJson,
       templatesDir: context.templatesDir,
       useBaseHref: context.useBaseHref);
-  return [
-    await HtmlGenerator.create(
-      options: options,
-      headers: context.header,
-      footers: context.footer,
-      footerTexts: context.footerTextPaths,
-    )
-  ];
+
+  return HtmlGenerator.create(
+    options: options,
+    headers: context.header,
+    footers: context.footer,
+    footerTexts: context.footerTextPaths,
+  );
 }

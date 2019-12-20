@@ -41,6 +41,6 @@ class EmptyGenerator extends Generator {
   final Map<String, Warnable> writtenFiles = {};
 }
 
-Future<List<Generator>> initEmptyGenerators(DartdocOptionContext config) async {
-  return [EmptyGenerator()];
+Future<Generator> initEmptyGenerator(DartdocOptionContext config) async {
+  return EmptyGenerator();
 }
