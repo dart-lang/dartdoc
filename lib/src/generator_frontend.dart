@@ -12,12 +12,10 @@ import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 
-abstract class FileWriter {
-  File write(String filePath, Object content,
-      {bool allowOverwrite, Warnable element});
-}
+typedef FileWriter = File Function(String filePath, Object content,
+    {bool allowOverwrite, Warnable element});
 
-class GeneratorFrontEnd implements Generator, FileWriter {
+class GeneratorFrontEnd implements Generator {
   final GeneratorBackend _generatorBackend;
   final FileWriter _writer;
 
@@ -34,13 +32,13 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
   GeneratorFrontEnd(this._generatorBackend, this._writer);
 
-  @override
+  // Implement FileWriter so we can wrap the one given to us.
   File write(String filePath, Object content, {bool allowOverwrite, Warnable element}) {
     assert(_outputDirectory != null);
     // Replaces '/' separators with proper separators for the platform.
     String outFile = path.joinAll(filePath.split('/'));
     outFile = path.join(_outputDirectory, outFile);
-    File file = _writer.write(outFile, content, allowOverwrite: allowOverwrite, element: element);
+    File file = _writer(outFile, content, allowOverwrite: allowOverwrite, element: element);
     _onFileCreated.add(file);
     writtenFiles[file.path] = element;
     return file;
@@ -52,14 +50,14 @@ class GeneratorFrontEnd implements Generator, FileWriter {
     try {
       List<Indexable> indexElements = <Indexable>[];
       _generateDocs(packageGraph, indexElements);
-      await _generatorBackend.generateAdditionalFiles(this, packageGraph);
+      await _generatorBackend.generateAdditionalFiles(write, packageGraph);
 
       List<Categorization> categories = indexElements
           .where((e) => e is Categorization && e.hasCategorization)
           .map((e) => e as Categorization)
           .toList();
-      _generatorBackend.generateCategoryJson(this, categories);
-      _generatorBackend.generateSearchIndex(this, indexElements);
+      _generatorBackend.generateCategoryJson(write, categories);
+      _generatorBackend.generateSearchIndex(write, indexElements);
     } finally {
       _outputDirectory = null;
     }
@@ -71,14 +69,14 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
     logInfo('documenting ${packageGraph.defaultPackage.name}');
     _generatorBackend.generatePackage(
-        this, packageGraph, packageGraph.defaultPackage);
+        write, packageGraph, packageGraph.defaultPackage);
 
     for (var package in packageGraph.localPackages) {
       for (var category in filterNonDocumented(package.categories)) {
         logInfo('Generating docs for category ${category.name} from '
             '${category.package.fullyQualifiedName}...');
         indexAccumulator.add(category);
-        _generatorBackend.generateCategory(this, packageGraph, category);
+        _generatorBackend.generateCategory(write, packageGraph, category);
       }
 
       for (var lib in filterNonDocumented(package.libraries)) {
@@ -88,18 +86,18 @@ class GeneratorFrontEnd implements Generator, FileWriter {
           packageGraph.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);
         }
         indexAccumulator.add(lib);
-        _generatorBackend.generateLibrary(this, packageGraph, lib);
+        _generatorBackend.generateLibrary(write, packageGraph, lib);
 
         for (var clazz in filterNonDocumented(lib.allClasses)) {
           indexAccumulator.add(clazz);
-          _generatorBackend.generateClass(this, packageGraph, lib, clazz);
+          _generatorBackend.generateClass(write, packageGraph, lib, clazz);
 
           for (var constructor in filterNonDocumented(clazz.constructors)) {
             if (!constructor.isCanonical) continue;
 
             indexAccumulator.add(constructor);
             _generatorBackend.generateConstructor(
-                this, packageGraph, lib, clazz, constructor);
+                write, packageGraph, lib, clazz, constructor);
           }
 
           for (var constant in filterNonDocumented(clazz.constants)) {
@@ -107,7 +105,7 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
             indexAccumulator.add(constant);
             _generatorBackend.generateConstant(
-                this, packageGraph, lib, clazz, constant);
+                write, packageGraph, lib, clazz, constant);
           }
 
           for (var property in filterNonDocumented(clazz.staticProperties)) {
@@ -115,7 +113,7 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
             indexAccumulator.add(property);
             _generatorBackend.generateProperty(
-                this, packageGraph, lib, clazz, property);
+                write, packageGraph, lib, clazz, property);
           }
 
           for (var property in filterNonDocumented(clazz.allInstanceFields)) {
@@ -123,7 +121,7 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
             indexAccumulator.add(property);
             _generatorBackend.generateProperty(
-                this, packageGraph, lib, clazz, property);
+                write, packageGraph, lib, clazz, property);
           }
 
           for (var method in filterNonDocumented(clazz.allInstanceMethods)) {
@@ -131,7 +129,7 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
-                this, packageGraph, lib, clazz, method);
+                write, packageGraph, lib, clazz, method);
           }
 
           for (var operator in filterNonDocumented(clazz.allOperators)) {
@@ -139,7 +137,7 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
             indexAccumulator.add(operator);
             _generatorBackend.generateMethod(
-                this, packageGraph, lib, clazz, operator);
+                write, packageGraph, lib, clazz, operator);
           }
 
           for (var method in filterNonDocumented(clazz.staticMethods)) {
@@ -147,72 +145,72 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
-                this, packageGraph, lib, clazz, method);
+                write, packageGraph, lib, clazz, method);
           }
         }
 
         for (var extension in filterNonDocumented(lib.extensions)) {
           indexAccumulator.add(extension);
           _generatorBackend.generateExtension(
-              this, packageGraph, lib, extension);
+              write, packageGraph, lib, extension);
 
           for (var constant in filterNonDocumented(extension.constants)) {
             indexAccumulator.add(constant);
             _generatorBackend.generateConstant(
-                this, packageGraph, lib, extension, constant);
+                write, packageGraph, lib, extension, constant);
           }
 
           for (var property
               in filterNonDocumented(extension.staticProperties)) {
             indexAccumulator.add(property);
             _generatorBackend.generateProperty(
-                this, packageGraph, lib, extension, property);
+                write, packageGraph, lib, extension, property);
           }
 
           for (var method
               in filterNonDocumented(extension.allPublicInstanceMethods)) {
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
-                this, packageGraph, lib, extension, method);
+                write, packageGraph, lib, extension, method);
           }
 
           for (var method in filterNonDocumented(extension.staticMethods)) {
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
-                this, packageGraph, lib, extension, method);
+                write, packageGraph, lib, extension, method);
           }
 
           for (var operator in filterNonDocumented(extension.allOperators)) {
             indexAccumulator.add(operator);
             _generatorBackend.generateMethod(
-                this, packageGraph, lib, extension, operator);
+                write, packageGraph, lib, extension, operator);
           }
 
           for (var property
               in filterNonDocumented(extension.allInstanceFields)) {
             indexAccumulator.add(property);
             _generatorBackend.generateProperty(
-                this, packageGraph, lib, extension, property);
+                write, packageGraph, lib, extension, property);
           }
         }
 
         for (var mixin in filterNonDocumented(lib.mixins)) {
           indexAccumulator.add(mixin);
-          _generatorBackend.generateMixin(this, packageGraph, lib, mixin);
+          _generatorBackend.generateMixin(write, packageGraph, lib, mixin);
 
           for (var constructor in filterNonDocumented(mixin.constructors)) {
             if (!constructor.isCanonical) continue;
 
             indexAccumulator.add(constructor);
             _generatorBackend.generateConstructor(
-                this, packageGraph, lib, mixin, constructor);
+                write, packageGraph, lib, mixin, constructor);
           }
 
           for (var constant in filterNonDocumented(mixin.constants)) {
             if (!constant.isCanonical) continue;
             indexAccumulator.add(constant);
             _generatorBackend.generateConstant(
-                this, packageGraph, lib, mixin, constant);
+                write, packageGraph, lib, mixin, constant);
           }
 
           for (var property in filterNonDocumented(mixin.staticProperties)) {
@@ -220,7 +218,7 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
             indexAccumulator.add(property);
             _generatorBackend.generateConstant(
-                this, packageGraph, lib, mixin, property);
+                write, packageGraph, lib, mixin, property);
           }
 
           for (var property in filterNonDocumented(mixin.allInstanceFields)) {
@@ -228,7 +226,7 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
             indexAccumulator.add(property);
             _generatorBackend.generateConstant(
-                this, packageGraph, lib, mixin, property);
+                write, packageGraph, lib, mixin, property);
           }
 
           for (var method in filterNonDocumented(mixin.allInstanceMethods)) {
@@ -236,7 +234,7 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
-                this, packageGraph, lib, mixin, method);
+                write, packageGraph, lib, mixin, method);
           }
 
           for (var operator in filterNonDocumented(mixin.allOperators)) {
@@ -244,7 +242,7 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
             indexAccumulator.add(operator);
             _generatorBackend.generateMethod(
-                this, packageGraph, lib, mixin, operator);
+                write, packageGraph, lib, mixin, operator);
           }
 
           for (var method in filterNonDocumented(mixin.staticMethods)) {
@@ -252,51 +250,52 @@ class GeneratorFrontEnd implements Generator, FileWriter {
 
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
-                this, packageGraph, lib, mixin, method);
+                write, packageGraph, lib, mixin, method);
           }
         }
 
         for (var eNum in filterNonDocumented(lib.enums)) {
           indexAccumulator.add(eNum);
-          _generatorBackend.generateEnum(this, packageGraph, lib, eNum);
+          _generatorBackend.generateEnum(write, packageGraph, lib, eNum);
 
           for (var property in filterNonDocumented(eNum.allInstanceFields)) {
             indexAccumulator.add(property);
             _generatorBackend.generateConstant(
-                this, packageGraph, lib, eNum, property);
+                write, packageGraph, lib, eNum, property);
           }
           for (var operator in filterNonDocumented(eNum.allOperators)) {
             indexAccumulator.add(operator);
             _generatorBackend.generateMethod(
-                this, packageGraph, lib, eNum, operator);
+                write, packageGraph, lib, eNum, operator);
           }
           for (var method in filterNonDocumented(eNum.allInstanceMethods)) {
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
-                this, packageGraph, lib, eNum, method);
+                write, packageGraph, lib, eNum, method);
           }
         }
 
         for (var constant in filterNonDocumented(lib.constants)) {
           indexAccumulator.add(constant);
           _generatorBackend.generateTopLevelConstant(
-              this, packageGraph, lib, constant);
+              write, packageGraph, lib, constant);
         }
 
         for (var property in filterNonDocumented(lib.properties)) {
           indexAccumulator.add(property);
           _generatorBackend.generateTopLevelProperty(
-              this, packageGraph, lib, property);
+              write, packageGraph, lib, property);
         }
 
         for (var function in filterNonDocumented(lib.functions)) {
           indexAccumulator.add(function);
-          _generatorBackend.generateFunction(this, packageGraph, lib, function);
+          _generatorBackend.generateFunction(
+              write, packageGraph, lib, function);
         }
 
         for (var typeDef in filterNonDocumented(lib.typedefs)) {
           indexAccumulator.add(typeDef);
-          _generatorBackend.generateTypeDef(this, packageGraph, lib, typeDef);
+          _generatorBackend.generateTypeDef(write, packageGraph, lib, typeDef);
         }
       }
     }

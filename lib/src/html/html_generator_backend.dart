@@ -56,7 +56,7 @@ class HtmlGeneratorBackend implements GeneratorBackend {
     if (!_options.useBaseHref) {
       content = content.replaceAll(HTMLBASE_PLACEHOLDER, data.htmlBase);
     }
-    writer.write(filename, content);
+    writer(filename, content);
   }
 
   @override
@@ -66,7 +66,7 @@ class HtmlGeneratorBackend implements GeneratorBackend {
     if (!_options.useBaseHref) {
       json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
     }
-    writer.write(path.join('categories.json'), '${json}\n');
+    writer(path.join('categories.json'), '${json}\n');
   }
 
   @override
@@ -77,7 +77,7 @@ class HtmlGeneratorBackend implements GeneratorBackend {
     if (!_options.useBaseHref) {
       json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
     }
-    writer.write(path.join('index.json'), '${json}\n');
+    writer(path.join('index.json'), '${json}\n');
   }
 
   @override
@@ -202,7 +202,7 @@ class HtmlGeneratorBackend implements GeneratorBackend {
     if (_options.favicon != null) {
       var bytes = File(_options.favicon).readAsBytesSync();
       // Allow overwrite of favicon.
-      writer.write(path.join('static-assets', 'favicon.png'), bytes,
+      writer(path.join('static-assets', 'favicon.png'), bytes,
           allowOverwrite: true);
     }
   }
@@ -216,7 +216,7 @@ class HtmlGeneratorBackend implements GeneratorBackend {
             'encountered $resourcePath');
       }
       String destFileName = resourcePath.substring(prefix.length);
-      writer.write(path.join('static-assets', destFileName),
+      writer(path.join('static-assets', destFileName),
           await loader.loadAsBytes(resourcePath));
     }
   }

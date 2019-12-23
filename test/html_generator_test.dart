@@ -18,6 +18,12 @@ import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
 
+// Helper to init a generator without a GeneratorContext
+Future<Generator> initHtmlGenerator(FileWriter writer) async {
+  var backend = HtmlGeneratorBackend(null, await Templates.createDefault());
+  return GeneratorFrontEnd(backend, writer);
+}
+
 void main() {
   group('Templates', () {
     Templates templates;
@@ -74,9 +80,7 @@ void main() {
       Directory tempOutput;
 
       setUp(() async {
-        HtmlGeneratorBackend backend =
-            HtmlGeneratorBackend(null, await Templates.createDefault());
-        generator = GeneratorFrontEnd(backend, DartdocFileWriter());
+        generator = await initHtmlGenerator(DartdocFileWriter().write);
         tempOutput = Directory.systemTemp.createTempSync('doc_test_temp');
         return generator.generate(null, tempOutput.path);
       });
@@ -100,12 +104,12 @@ void main() {
     });
 
     group('for a package that causes duplicate files', () {
-      HtmlGenerator generator;
+      Generator generator;
       PackageGraph packageGraph;
       Directory tempOutput;
 
       setUp(() async {
-        generator = await HtmlGenerator.create();
+        generator = await initHtmlGenerator(DartdocFileWriter().write);
         packageGraph = await utils
             .bootBasicPackage(utils.testPackageDuplicateDir.path, []);
         tempOutput = await Directory.systemTemp.createTemp('doc_test_temp');

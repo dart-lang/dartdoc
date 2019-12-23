@@ -15,7 +15,6 @@ import 'dart:io';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/empty_generator.dart';
 import 'package:dartdoc/src/generator.dart';
-import 'package:dartdoc/src/generator_frontend.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -45,10 +44,10 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext
       : super(optionSet, dir);
 }
 
-class DartdocFileWriter extends FileWriter {
+class DartdocFileWriter {
+  // Track written files so we don't need to use File.existsSync().
   final Map<String, Warnable> writtenFiles = {};
 
-  @override
   File write(String filePath, Object content,
       {bool allowOverwrite, Warnable element}) {
     allowOverwrite ??= false;
@@ -93,8 +92,7 @@ class Dartdoc extends PackageBuilder {
   final StreamController<String> _onCheckProgress =
       StreamController(sync: true);
 
-  Dartdoc._(DartdocOptionContext config, this.generator)
-      : super(config) {
+  Dartdoc._(DartdocOptionContext config, this.generator) : super(config) {
     outputDir = Directory(config.output)..createSync(recursive: true);
     generator?.onFileCreated?.listen(logProgress);
   }
@@ -104,7 +102,7 @@ class Dartdoc extends PackageBuilder {
   static Future<Dartdoc> withDefaultGenerators(
       DartdocGeneratorOptionContext config) async {
     return Dartdoc._(
-        config, await initHtmlGenerator(config, DartdocFileWriter()));
+        config, await initHtmlGenerator(config, DartdocFileWriter().write));
   }
 
   /// An asynchronous factory method that builds
