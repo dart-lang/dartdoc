@@ -13,8 +13,6 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 
 abstract class FileWriter {
-  final Map<String, Warnable> writtenFiles = {};
-
   File write(String filePath, Object content,
       {bool allowOverwrite, Warnable element});
 }
@@ -44,7 +42,7 @@ class GeneratorFrontEnd implements Generator, FileWriter {
     outFile = path.join(_outputDirectory, outFile);
     File file = _writer.write(outFile, content, allowOverwrite: allowOverwrite, element: element);
     _onFileCreated.add(file);
-    writtenFiles[filePath] = element;
+    writtenFiles[file.path] = element;
     return file;
   }
 
@@ -54,7 +52,7 @@ class GeneratorFrontEnd implements Generator, FileWriter {
     try {
       List<Indexable> indexElements = <Indexable>[];
       _generateDocs(packageGraph, indexElements);
-      _generatorBackend.generateAdditionalFiles(this, packageGraph);
+      await _generatorBackend.generateAdditionalFiles(this, packageGraph);
 
       List<Categorization> categories = indexElements
           .where((e) => e is Categorization && e.hasCategorization)

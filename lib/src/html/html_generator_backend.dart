@@ -198,12 +198,13 @@ class HtmlGeneratorBackend implements GeneratorBackend {
 
   @override
   void generateAdditionalFiles(FileWriter writer, PackageGraph graph) async {
+    await _copyResources(writer);
     if (_options.favicon != null) {
       var bytes = File(_options.favicon).readAsBytesSync();
       // Allow overwrite of favicon.
-      writer.write(path.join('static-assets', 'favicon.png'), bytes, allowOverwrite: true);
+      writer.write(path.join('static-assets', 'favicon.png'), bytes,
+          allowOverwrite: true);
     }
-    await _copyResources(writer);
   }
 
   // TODO: change this to use resource_loader

@@ -46,6 +46,8 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext
 }
 
 class DartdocFileWriter extends FileWriter {
+  final Map<String, Warnable> writtenFiles = {};
+
   @override
   File write(String filePath, Object content,
       {bool allowOverwrite, Warnable element}) {
@@ -85,14 +87,13 @@ class DartdocFileWriter extends FileWriter {
 class Dartdoc extends PackageBuilder {
   final Generator generator;
   final Set<String> writtenFiles = Set();
-  final FileWriter writer;
   Directory outputDir;
 
   // Fires when the self checks make progress.
   final StreamController<String> _onCheckProgress =
       StreamController(sync: true);
 
-  Dartdoc._(DartdocOptionContext config, this.generator, this.writer)
+  Dartdoc._(DartdocOptionContext config, this.generator)
       : super(config) {
     outputDir = Directory(config.output)..createSync(recursive: true);
     generator?.onFileCreated?.listen(logProgress);
@@ -102,14 +103,13 @@ class Dartdoc extends PackageBuilder {
   /// and returns a Dartdoc object with them.
   static Future<Dartdoc> withDefaultGenerators(
       DartdocGeneratorOptionContext config) async {
-    FileWriter writer = DartdocFileWriter();
-    return Dartdoc._(config, await initHtmlGenerator(config, writer), writer);
+    return Dartdoc._(
+        config, await initHtmlGenerator(config, DartdocFileWriter()));
   }
 
   /// An asynchronous factory method that builds
   static Future<Dartdoc> withEmptyGenerator(DartdocOptionContext config) async {
-    return Dartdoc._(
-        config, await initEmptyGenerator(config), DartdocFileWriter());
+    return Dartdoc._(config, await initEmptyGenerator(config));
   }
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
@@ -136,7 +136,7 @@ class Dartdoc extends PackageBuilder {
       if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
 
       await generator.generate(packageGraph, outputDir.path);
-      writtenFiles.addAll(writer.writtenFiles.keys.map(path.normalize));
+      writtenFiles.addAll(generator.writtenFiles.keys.map(path.normalize));
       if (config.validateLinks && writtenFiles.isNotEmpty) {
         validateLinks(packageGraph, outputDir.path);
       }
