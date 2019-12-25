@@ -182,9 +182,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
               ? t.getGetter(element.name)
               : t.getSetter(element.name);
           if (accessor != null) {
-            if (accessor is Member) {
-              accessor = PackageGraph.getBasestElement(accessor);
-            }
+            accessor = accessor.declaration;
             Class parentClass =
                 ModelElement.fromElement(t.element, packageGraph);
             List<Field> possibleFields = [];
