@@ -5,7 +5,7 @@
 import 'package:dartdoc/src/model/model.dart';
 
 // TODO(jcollins-g): Mix-in ExtensionTarget on Method, ModelFunction, Typedef,
-// and other possible documented symbols that could be extended.
+// and other possible documented symbols that could be extended (#2701).
 mixin ExtensionTarget on ModelElement {
   bool get hasModifiers;
 
