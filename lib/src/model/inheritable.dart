@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 
@@ -41,10 +40,7 @@ mixin Inheritable on ContainerMember {
   @override
   Container computeCanonicalEnclosingContainer() {
     if (isInherited) {
-      Element searchElement = element;
-      searchElement = searchElement is Member
-          ? PackageGraph.getBasestElement(searchElement)
-          : searchElement;
+      Element searchElement = element.declaration;
       // TODO(jcollins-g): generate warning if an inherited element's definition
       // is in an intermediate non-canonical class in the inheritance chain?
       Class previous;

@@ -208,9 +208,8 @@ abstract class ModelElement extends Canonicalization
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
     //                   for members?
     if (e is Member) {
-      var basest = PackageGraph.getBasestElement(e);
       originalMember = e;
-      e = basest;
+      e = e.declaration;
     }
     Tuple3<Element, Library, Container> key =
         Tuple3(e, library, enclosingContainer);

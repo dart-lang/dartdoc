@@ -9,7 +9,6 @@ import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/dart/analysis/driver.dart';
-import 'package:analyzer/src/dart/element/member.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
@@ -672,15 +671,6 @@ class PackageGraph {
     return _canonicalLibraryFor[e];
   }
 
-  // TODO(jcollins-g): Revise when dart-lang/sdk#29600 is fixed.
-  static Element getBasestElement(Element possibleMember) {
-    Element element = possibleMember;
-    while (element is Member) {
-      element = (element as Member).declaration;
-    }
-    return element;
-  }
-
   /// Tries to find a canonical ModelElement for this element.  If we know
   /// this element is related to a particular class, pass preferredClass to
   /// disambiguate.
@@ -715,7 +705,7 @@ class PackageGraph {
     // TODO(jcollins-g): The data structures should be changed to eliminate guesswork
     // with member elements.
     if (e is ClassMemberElement || e is PropertyAccessorElement) {
-      if (e is Member) e = getBasestElement(e);
+      e = e.declaration;
       Set<ModelElement> candidates = Set();
       Tuple2<Element, Library> iKey = Tuple2(e, lib);
       Tuple4<Element, Library, Class, ModelElement> key =
