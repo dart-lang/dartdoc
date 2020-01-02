@@ -415,7 +415,6 @@ class CallableGenericTypeAliasElementType extends ParameterizedElementType
     return _returnType;
   }
 
-  /// Return this type, instantiated to bounds if it isn't already.
   @override
   DartType get instantiatedType => type;
 }
