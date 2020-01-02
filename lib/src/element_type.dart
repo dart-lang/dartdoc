@@ -205,10 +205,10 @@ class TypeParameterElementType extends DefinedElementType {
   String get nameWithGenerics => name;
 
   @override
-  ClassElement get _boundClassElement => interfaceType.element;
+  ClassElement get _boundClassElement => type.element;
 
   @override
-  InterfaceType get interfaceType => (type as TypeParameterType).bound;
+  InterfaceType get _interfaceType => (type as TypeParameterType).bound;
 }
 
 /// An [ElementType] associated with an [Element].
@@ -271,18 +271,19 @@ abstract class DefinedElementType extends ElementType {
   ClassElement get _boundClassElement => (element.element as ClassElement);
   Class get boundClass =>
       ModelElement.fromElement(_boundClassElement, packageGraph);
-  InterfaceType get interfaceType => type;
+
+  InterfaceType get _interfaceType => type;
 
   InterfaceType _instantiatedType;
 
   /// Return this type, instantiated to bounds if it isn't already.
   DartType get instantiatedType {
     if (_instantiatedType == null) {
-      if (!interfaceType.typeArguments.every((t) => t is InterfaceType)) {
+      if (!_interfaceType.typeArguments.every((t) => t is InterfaceType)) {
         var typeSystem = library.element.typeSystem as TypeSystemImpl;
-        _instantiatedType = typeSystem.instantiateToBounds(interfaceType);
+        _instantiatedType = typeSystem.instantiateToBounds(_interfaceType);
       } else {
-        _instantiatedType = interfaceType;
+        _instantiatedType = _interfaceType;
       }
     }
     return _instantiatedType;
@@ -413,4 +414,8 @@ class CallableGenericTypeAliasElementType extends ParameterizedElementType
     }
     return _returnType;
   }
+
+  /// Return this type, instantiated to bounds if it isn't already.
+  @override
+  DartType get instantiatedType => type;
 }

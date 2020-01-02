@@ -8,6 +8,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:quiver/iterables.dart' as quiver;
 
@@ -24,7 +25,8 @@ class Extension extends Container
         ElementType.from(_extension.extendedType, library, packageGraph);
   }
 
-  bool couldApplyTo(Class c) => _couldApplyTo(c.modelType);
+  bool couldApplyTo<T extends ExtensionTarget>(T c) =>
+      _couldApplyTo(c.modelType);
 
   /// Return true if this extension could apply to [t].
   bool _couldApplyTo(DefinedElementType t) {
@@ -40,13 +42,14 @@ class Extension extends Container
       .isSubtypeOf(extendedType.instantiatedType, t.instantiatedType);
 
   bool isBoundSupertypeTo(DefinedElementType t) =>
-      _isBoundSupertypeTo(t.type, HashSet());
+      _isBoundSupertypeTo(t.instantiatedType, HashSet());
 
   /// Returns true if at least one supertype (including via mixins and
   /// interfaces) is equivalent to or a subtype of [extendedType] when
   /// instantiated to bounds.
-  bool _isBoundSupertypeTo(
-      InterfaceType superType, HashSet<InterfaceType> visited) {
+  bool _isBoundSupertypeTo(DartType superType, HashSet<DartType> visited) {
+    // Only InterfaceTypes can have superTypes.
+    if (superType is! InterfaceType) return false;
     ClassElement superClass = superType?.element;
     if (visited.contains(superType)) return false;
     visited.add(superType);
