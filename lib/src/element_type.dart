@@ -208,6 +208,7 @@ class TypeParameterElementType extends DefinedElementType {
   ClassElement get _boundClassElement => type.element;
 
   @override
+  // TODO(jcollins-g): This is wrong; bound is not always an InterfaceType.
   InterfaceType get _interfaceType => (type as TypeParameterType).bound;
 }
 
