@@ -10,7 +10,6 @@ import 'dart:io' show Directory;
 import 'dart:isolate';
 
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/model/model.dart' show PackageGraph;
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
@@ -33,7 +32,7 @@ abstract class Generator {
 }
 
 /// Dartdoc options related to generators generally.
-mixin BaseGeneratorContext on DartdocOptionContextBase {
+mixin GeneratorContext on DartdocOptionContextBase {
   List<String> get footer => optionSet['footer'].valueAt(context);
 
   /// _footerText is only used to construct synthetic options.
@@ -46,6 +45,11 @@ mixin BaseGeneratorContext on DartdocOptionContextBase {
   List<String> get header => optionSet['header'].valueAt(context);
 
   bool get prettyIndexJson => optionSet['prettyIndexJson'].valueAt(context);
+
+  String get favicon => optionSet['favicon'].valueAt(context);
+
+  String get relCanonicalPrefix =>
+      optionSet['relCanonicalPrefix'].valueAt(context);
 
   String get templatesDir => optionSet['templatesDir'].valueAt(context);
 }
@@ -106,6 +110,15 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
             'Generates `index.json` with indentation and newlines. The file is '
             'larger, but it\'s also easier to diff.',
         negatable: false),
+    DartdocOptionArgFile<String>('favicon', null,
+        isFile: true,
+        help: 'A path to a favicon for the generated docs.',
+        mustExist: true),
+    DartdocOptionArgOnly<String>('relCanonicalPrefix', null,
+        help:
+            'If provided, add a rel="canonical" prefixed with provided value. '
+            'Consider using if building many versions of the docs for public '
+            'SEO; learn more at https://goo.gl/gktN6F.'),
     DartdocOptionArgOnly<String>("templatesDir", null,
         isDir: true,
         mustExist: true,
@@ -119,5 +132,5 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
             'they must begin with an underscore, and references to them must '
             'omit the leading underscore (e.g. use {{>foo}} to reference the '
             'partial template _foo.html).'),
-  ]..addAll(createHtmlGeneratorOptions());
+  ];
 }

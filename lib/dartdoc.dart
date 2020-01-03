@@ -39,7 +39,7 @@ const String dartdocVersion = packageVersion;
 
 /// Helper class that consolidates option contexts for instantiating generators.
 class DartdocGeneratorOptionContext extends DartdocOptionContext
-    with BaseGeneratorContext, HtmlGeneratorContext {
+    with GeneratorContext {
   DartdocGeneratorOptionContext(DartdocOptionSet optionSet, Directory dir)
       : super(optionSet, dir);
 }

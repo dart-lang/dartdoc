@@ -155,7 +155,7 @@ class HtmlGeneratorOptions implements HtmlOptions {
 }
 
 /// Initialize and setup the generators.
-Future<List<Generator>> initHtmlGenerators(HtmlGeneratorContext context) async {
+Future<List<Generator>> initHtmlGenerators(GeneratorContext context) async {
   // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
   // through the generators.
   HtmlGeneratorOptions options = HtmlGeneratorOptions(
@@ -172,27 +172,5 @@ Future<List<Generator>> initHtmlGenerators(HtmlGeneratorContext context) async {
       footers: context.footer,
       footerTexts: context.footerTextPaths,
     )
-  ];
-}
-
-/// Dartdoc options related to html generation.
-mixin HtmlGeneratorContext on BaseGeneratorContext {
-  String get favicon => optionSet['favicon'].valueAt(context);
-
-  String get relCanonicalPrefix =>
-      optionSet['relCanonicalPrefix'].valueAt(context);
-}
-
-List<DartdocOption> createHtmlGeneratorOptions() {
-  return <DartdocOption>[
-    DartdocOptionArgFile<String>('favicon', null,
-        isFile: true,
-        help: 'A path to a favicon for the generated docs.',
-        mustExist: true),
-    DartdocOptionArgOnly<String>('relCanonicalPrefix', null,
-        help:
-            'If provided, add a rel="canonical" prefixed with provided value. '
-            'Consider using if\nbuilding many versions of the docs for public '
-            'SEO; learn more at https://goo.gl/gktN6F.'),
   ];
 }
