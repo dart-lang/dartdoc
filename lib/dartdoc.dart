@@ -105,7 +105,7 @@ class Dartdoc extends PackageBuilder {
 
       for (var generator in generators) {
         await generator.generate(packageGraph, outputDir.path);
-        writtenFiles.addAll(generator.writtenFiles.map(path.normalize));
+        writtenFiles.addAll(generator.writtenFiles.keys.map(path.normalize));
       }
       if (config.validateLinks && writtenFiles.isNotEmpty) {
         validateLinks(packageGraph, outputDir.path);
