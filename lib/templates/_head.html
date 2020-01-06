@@ -13,11 +13,19 @@
   <link rel="canonical" href="{{{relCanonicalPrefix}}}/{{{self.href}}}">
   {{ /relCanonicalPrefix}}
 
+  {{#useBaseHref}}{{! TODO(jdkoren): remove when the useBaseHref option is removed.}}
+  {{#htmlBase}}
+  <!-- required because all the links are pseudo-absolute -->
+  <base href="{{{htmlBase}}}">
+  {{/htmlBase}}
+  {{/useBaseHref}}
+
+  {{! TODO(jdkoren): unwrap ^useBaseHref sections when the option is removed.}}
   <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro:500,400i,400,300|Source+Sans+Pro:400,300,700" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="stylesheet" href="%%HTMLBASE%%static-assets/github.css">
-  <link rel="stylesheet" href="%%HTMLBASE%%static-assets/styles.css">
-  <link rel="icon" href="%%HTMLBASE%%static-assets/favicon.png">
+  <link rel="stylesheet" href="{{^useBaseHref}}%%HTMLBASE_dartdoc_internal%%{{/useBaseHref}}static-assets/github.css">
+  <link rel="stylesheet" href="{{^useBaseHref}}%%HTMLBASE_dartdoc_internal%%{{/useBaseHref}}static-assets/styles.css">
+  <link rel="icon" href="{{^useBaseHref}}%%HTMLBASE_dartdoc_internal%%{{/useBaseHref}}static-assets/favicon.png">
   <!-- header placeholder -->
 </head>
 

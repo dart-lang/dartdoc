@@ -8,6 +8,7 @@ import 'package:dartdoc/src/model/model.dart';
 abstract class HtmlOptions {
   String get relCanonicalPrefix;
   String get toolVersion;
+  bool get useBaseHref;
 }
 
 abstract class TemplateData<T extends Documentable> {
@@ -38,6 +39,7 @@ abstract class TemplateData<T extends Documentable> {
   T get self;
   String get version => htmlOptions.toolVersion;
   String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
+  bool get useBaseHref => htmlOptions.useBaseHref;
 
   String _layoutTitle(String name, String kind, bool isDeprecated) =>
       _renderHelper.composeLayoutTitle(name, kind, isDeprecated);

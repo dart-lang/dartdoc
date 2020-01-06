@@ -11,11 +11,12 @@
   <!-- footer-text placeholder -->
 </footer>
 
+{{! TODO(jdkoren): unwrap ^useBaseHref sections when the option is removed.}}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="%%HTMLBASE%%static-assets/typeahead.bundle.min.js"></script>
-<script src="%%HTMLBASE%%static-assets/highlight.pack.js"></script>
-<script src="%%HTMLBASE%%static-assets/URI.js"></script>
-<script src="%%HTMLBASE%%static-assets/script.js"></script>
+<script src="{{^useBaseHref}}%%HTMLBASE_dartdoc_internal%%{{/useBaseHref}}static-assets/typeahead.bundle.min.js"></script>
+<script src="{{^useBaseHref}}%%HTMLBASE_dartdoc_internal%%{{/useBaseHref}}static-assets/highlight.pack.js"></script>
+<script src="{{^useBaseHref}}%%HTMLBASE_dartdoc_internal%%{{/useBaseHref}}static-assets/URI.js"></script>
+<script src="{{^useBaseHref}}%%HTMLBASE_dartdoc_internal%%{{/useBaseHref}}static-assets/script.js"></script>
 <!-- footer placeholder -->
 
 </body>

@@ -76,7 +76,9 @@ class HtmlGeneratorInstance {
     });
 
     String json = encoder.convert(indexItems);
-    json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
+    if (!_options.useBaseHref) {
+      json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
+    }
     _writer(path.join('categories.json'), '${json}\n');
   }
 
@@ -119,7 +121,9 @@ class HtmlGeneratorInstance {
     });
 
     String json = encoder.convert(indexItems);
-    json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
+    if (!_options.useBaseHref) {
+      json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
+    }
     _writer(path.join('index.json'), '${json}\n');
   }
 
