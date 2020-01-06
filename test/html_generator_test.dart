@@ -9,8 +9,12 @@ import 'dart:io' show File, Directory;
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/html/resources.g.dart';
+import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
+
+import 'src/utils.dart' as utils;
 
 void main() {
   group('Templates', () {
@@ -89,6 +93,37 @@ void main() {
           expect(File(path.join(output.path, resource)), doesExist);
         }
       });
+    });
+
+    group('for a package that causes duplicate files', () {
+      HtmlGenerator generator;
+      PackageGraph packageGraph;
+      Directory tempOutput;
+
+      setUp(() async {
+        generator = await HtmlGenerator.create();
+        packageGraph = await utils
+            .bootBasicPackage(utils.testPackageDuplicateDir.path, []);
+        tempOutput = await Directory.systemTemp.createTemp('doc_test_temp');
+      });
+
+      tearDown(() {
+        if (tempOutput != null) {
+          tempOutput.deleteSync(recursive: true);
+        }
+      });
+
+      test('run generator and verify duplicate file error', () async {
+        await generator.generate(packageGraph, tempOutput.path);
+        expect(generator, isNotNull);
+        expect(tempOutput, isNotNull);
+        String expectedPath =
+            path.join('aDuplicate', 'aDuplicate-library.html');
+        expect(
+            packageGraph.localPublicLibraries,
+            anyElement((l) => packageGraph.packageWarningCounter
+                .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
+      }, timeout: Timeout.factor(2));
     });
   });
 }

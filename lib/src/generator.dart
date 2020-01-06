@@ -8,6 +8,7 @@ library dartdoc.generator;
 import 'dart:async' show Stream, Future;
 
 import 'package:dartdoc/src/model/model.dart' show PackageGraph;
+import 'package:dartdoc/src/warnings.dart';
 
 /// An abstract class that defines a generator that generates documentation for
 /// a given package.
@@ -22,5 +23,5 @@ abstract class Generator {
   Stream<void> get onFileCreated;
 
   /// Fetches all filenames written by this generator.
-  Set<String> get writtenFiles;
+  Map<String, Warnable> get writtenFiles;
 }
