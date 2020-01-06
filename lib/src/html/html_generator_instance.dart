@@ -419,7 +419,9 @@ class HtmlGeneratorInstance {
     String outFile = path.joinAll(filename.split('/'));
     String content = template.renderString(data);
 
-    content = content.replaceAll(HTMLBASE_PLACEHOLDER, data.htmlBase);
+    if (!_options.useBaseHref) {
+      content = content.replaceAll(HTMLBASE_PLACEHOLDER, data.htmlBase);
+    }
     _writer(outFile, content,
         element: data.self is Warnable ? data.self : null);
     if (data.self is Indexable) _indexedElements.add(data.self as Indexable);
