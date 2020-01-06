@@ -59,6 +59,8 @@ Future<PackageGraph> get testPackageGraphSdk =>
 
 final Directory testPackageBadDir = Directory('testing/test_package_bad');
 final Directory testPackageDir = Directory('testing/test_package');
+final Directory testPackageDuplicateDir =
+    Directory('testing/test_package_duplicate');
 final Directory testPackageExperimentsDir =
     Directory('testing/test_package_experiments');
 final Directory testPackageMinimumDir =

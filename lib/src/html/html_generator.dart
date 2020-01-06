@@ -15,6 +15,7 @@ import 'package:dartdoc/src/html/html_generator_instance.dart';
 import 'package:dartdoc/src/html/template_data.dart';
 import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 
 typedef Renderer = String Function(String input);
@@ -48,7 +49,7 @@ class HtmlGenerator extends Generator {
   Stream<void> get onFileCreated => _onFileCreated.stream;
 
   @override
-  final Set<String> writtenFiles = Set<String>();
+  final Map<String, Warnable> writtenFiles = {};
 
   static Future<HtmlGenerator> create(
       {HtmlGeneratorOptions options,
@@ -83,14 +84,23 @@ class HtmlGenerator extends Generator {
     assert(_instance == null);
 
     var enabled = true;
-    void write(String filePath, Object content, {bool allowOverwrite}) {
+    void write(String filePath, Object content,
+        {bool allowOverwrite, Warnable element}) {
       allowOverwrite ??= false;
       if (!enabled) {
         throw StateError('`write` was called after `generate` completed.');
       }
-      // If you see this assert, we're probably being called to build non-canonical
-      // docs somehow.  Check data.self.isCanonical and callers for bugs.
-      assert(allowOverwrite || !writtenFiles.contains(filePath));
+      if (!allowOverwrite) {
+        if (writtenFiles.containsKey(filePath)) {
+          assert(element != null,
+              'Attempted overwrite of ${filePath} without corresponding element');
+          Warnable originalElement = writtenFiles[filePath];
+          Iterable<Warnable> referredFrom =
+              originalElement != null ? [originalElement] : null;
+          element?.warn(PackageWarning.duplicateFile,
+              message: filePath, referredFrom: referredFrom);
+        }
+      }
 
       var file = File(path.join(outputDirectoryPath, filePath));
       var parent = file.parent;
@@ -107,7 +117,7 @@ class HtmlGenerator extends Generator {
             content, 'content', '`content` must be `String` or `List<int>`.');
       }
       _onFileCreated.add(file);
-      writtenFiles.add(filePath);
+      writtenFiles[filePath] = element;
     }
 
     try {

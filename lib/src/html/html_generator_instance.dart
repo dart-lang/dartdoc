@@ -21,7 +21,7 @@ import 'package:mustache/mustache.dart';
 import 'package:path/path.dart' as path;
 
 typedef FileWriter = void Function(String path, Object content,
-    {bool allowOverwrite});
+    {bool allowOverwrite, Warnable element});
 
 class HtmlGeneratorInstance {
   final HtmlGeneratorOptions _options;
@@ -412,8 +412,8 @@ class HtmlGeneratorInstance {
     // Replaces '/' separators with proper separators for the platform.
     String outFile = path.joinAll(filename.split('/'));
     String content = template.renderString(data);
-
-    _writer(outFile, content);
+    _writer(outFile, content,
+        element: data.self is Warnable ? data.self : null);
     if (data.self is Indexable) _indexedElements.add(data.self as Indexable);
   }
 }
