@@ -193,6 +193,19 @@ final Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
       "unresolved-export",
       "An export refers to a URI that cannot be resolved.",
       defaultWarningMode: PackageWarningMode.error),
+  PackageWarning.duplicateFile: PackageWarningDefinition(
+      PackageWarning.duplicateFile,
+      "duplicate-file",
+      "Dartdoc is trying to write to a duplicate filename based on the names of Dart symbols.",
+      longHelp: [
+        "Dartdoc generates a path and filename to write to for each symbol.",
+        "@@name@@ conflicts with another symbol in the generated path, and",
+        "therefore can not be written out.  Changing the name, library name, or",
+        "class name (if appropriate) of one of the conflicting items can resolve",
+        "the conflict.   Alternatively, use the @nodoc tag in one symbol's",
+        "documentation comments to hide it."
+      ],
+      defaultWarningMode: PackageWarningMode.error),
 };
 
 /// Something that package warnings can be called on.  Optionally associated
@@ -222,6 +235,7 @@ enum PackageWarning {
   unknownMacro,
   unknownHtmlFragment,
   brokenLink,
+  duplicateFile,
   orphanedFile,
   unknownFile,
   missingFromSearchIndex,
