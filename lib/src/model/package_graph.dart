@@ -152,13 +152,21 @@ class PackageGraph {
     return _implementors;
   }
 
+  List<Extension> _documentedExtensions;
+  Iterable<Extension> get documentedExtensions {
+    if (_documentedExtensions == null) {
+      _documentedExtensions =
+          utils.filterNonDocumented(extensions).toList(growable: false);
+    }
+    return _documentedExtensions;
+  }
+
   Iterable<Extension> get extensions {
     assert(allExtensionsAdded);
     return _extensions;
   }
 
   Map<String, Set<ModelElement>> _findRefElementCache;
-
   Map<String, Set<ModelElement>> get findRefElementCache {
     if (_findRefElementCache == null) {
       assert(packageGraph.allLibrariesAdded);

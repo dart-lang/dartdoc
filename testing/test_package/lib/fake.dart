@@ -1117,3 +1117,18 @@ abstract class CanonicalPrivateInheritedToolUser
     print('hello, tool world');
   }
 }
+
+/*
+ * Complex extension methods case.
+ *
+ * TODO(jcollins-g): add unit tests around behavior when #2701 is implemented.
+ * Until #2701 is fixed we mostly are testing that we don't crash because
+ * DoSomething2X is declared.
+ */
+
+typedef R Function1<A, R>(A a);
+typedef R Function2<A, B, R>(A a, B b);
+
+extension DoSomething2X<A, B, R> on Function1<A, Function1<B, R>> {
+  Function2<A, B, R> something() => (A first, B second) => this(first)(second);
+}

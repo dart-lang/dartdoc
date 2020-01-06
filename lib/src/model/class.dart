@@ -5,12 +5,13 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
+import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:quiver/iterables.dart' as quiver;
 
 class Class extends Container
-    with TypeParameters, Categorization
+    with TypeParameters, Categorization, ExtensionTarget
     implements EnclosedElement {
   List<DefinedElementType> mixins;
   DefinedElementType supertype;
@@ -49,22 +50,6 @@ class Class extends Container
           .firstWhere((c) => c.isDefaultConstructor, orElse: () => null);
     }
     return _defaultConstructor;
-  }
-
-  bool get hasPotentiallyApplicableExtensions =>
-      potentiallyApplicableExtensions.isNotEmpty;
-
-  List<Extension> _potentiallyApplicableExtensions;
-
-  Iterable<Extension> get potentiallyApplicableExtensions {
-    if (_potentiallyApplicableExtensions == null) {
-      _potentiallyApplicableExtensions = model_utils
-          .filterNonDocumented(packageGraph.extensions)
-          .where((e) => e.couldApplyTo(this))
-          .toList(growable: false)
-            ..sort(byName);
-    }
-    return _potentiallyApplicableExtensions;
   }
 
   Iterable<Method> get allInstanceMethods =>
@@ -223,6 +208,7 @@ class Class extends Container
 
   bool get hasPublicMixins => publicMixins.isNotEmpty;
 
+  @override
   bool get hasModifiers =>
       hasPublicMixins ||
       hasAnnotations ||
