@@ -13,6 +13,7 @@ import 'package:dartdoc/src/render/enum_field_renderer.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
+import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:test/test.dart';
 
@@ -1819,6 +1820,30 @@ void main() {
           orderedEquals([uphill]));
       expect(bigAnotherExtended.potentiallyApplicableExtensions,
           orderedEquals([uphill]));
+    });
+
+    test('extensions on special types work', () {
+      Extension extensionOnDynamic, extensionOnVoid, extensionOnNull;
+      Class object = packageGraph.specialClasses[SpecialClass.object];
+      Extension getExtension(String name) =>
+          fakeLibrary.extensions.firstWhere((e) => e.name == name);
+
+      extensionOnDynamic = getExtension('ExtensionOnDynamic');
+      extensionOnNull = getExtension('ExtensionOnNull');
+      extensionOnVoid = getExtension('ExtensionOnVoid');
+
+      expect(extensionOnDynamic.couldApplyTo(object), isTrue);
+      expect(extensionOnVoid.couldApplyTo(object), isTrue);
+      expect(extensionOnNull.couldApplyTo(object), isFalse);
+
+      expect(extensionOnDynamic.alwaysApplies, isTrue);
+      expect(extensionOnVoid.alwaysApplies, isTrue);
+      expect(extensionOnNull.alwaysApplies, isFalse);
+
+      // Even though it does have extensions that could apply to it,
+      // extensions that apply to [Object] should always be hidden from
+      // documentation.
+      expect(object.hasPotentiallyApplicableExtensions, isFalse);
     });
 
     test('applicableExtensions include those from implements & mixins', () {
