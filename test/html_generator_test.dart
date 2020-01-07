@@ -18,10 +18,10 @@ import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
 
-// Helper to init a generator without a GeneratorContext
-Future<Generator> initHtmlGenerator(FileWriter writer) async {
+// Init a generator without a GeneratorContext and with the default file writer.
+Future<Generator> _initGeneratorForTest() async {
   var backend = HtmlGeneratorBackend(null, await Templates.createDefault());
-  return GeneratorFrontEnd(backend, writer);
+  return GeneratorFrontEnd(backend, DartdocFileWriter().write);
 }
 
 void main() {
@@ -80,7 +80,7 @@ void main() {
       Directory tempOutput;
 
       setUp(() async {
-        generator = await initHtmlGenerator(DartdocFileWriter().write);
+        generator = await _initGeneratorForTest();
         tempOutput = Directory.systemTemp.createTempSync('doc_test_temp');
         return generator.generate(null, tempOutput.path);
       });
@@ -109,7 +109,7 @@ void main() {
       Directory tempOutput;
 
       setUp(() async {
-        generator = await initHtmlGenerator(DartdocFileWriter().write);
+        generator = await _initGeneratorForTest();
         packageGraph = await utils
             .bootBasicPackage(utils.testPackageDuplicateDir.path, []);
         tempOutput = await Directory.systemTemp.createTemp('doc_test_temp');
@@ -126,7 +126,7 @@ void main() {
         expect(generator, isNotNull);
         expect(tempOutput, isNotNull);
         String expectedPath =
-            path.join('aDuplicate', 'aDuplicate-library.html');
+            path.join(tempOutput.path, 'aDuplicate', 'aDuplicate-library.html');
         expect(
             packageGraph.localPublicLibraries,
             anyElement((l) => packageGraph.packageWarningCounter

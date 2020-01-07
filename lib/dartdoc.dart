@@ -45,18 +45,18 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext
 }
 
 class DartdocFileWriter {
-  // Track written files so we don't need to use File.existsSync().
-  final Map<String, Warnable> writtenFiles = {};
+  final Map<String, Warnable> _writtenFiles = {};
 
   File write(String filePath, Object content,
       {bool allowOverwrite, Warnable element}) {
     allowOverwrite ??= false;
     if (!allowOverwrite) {
-      if (writtenFiles.containsKey(filePath)) {
+      if (_writtenFiles.containsKey(filePath)) {
         assert(element != null,
             'Attempted overwrite of ${filePath} without corresponding element');
-        Warnable originalElement = writtenFiles[filePath];
-        Iterable<Warnable> referredFrom = originalElement != null ? [originalElement] : null;
+        Warnable originalElement = _writtenFiles[filePath];
+        Iterable<Warnable> referredFrom =
+            originalElement != null ? [originalElement] : null;
         element?.warn(PackageWarning.duplicateFile,
             message: filePath, referredFrom: referredFrom);
       }
@@ -76,7 +76,7 @@ class DartdocFileWriter {
       throw ArgumentError.value(
           content, 'content', '`content` must be `String` or `List<int>`.');
     }
-    writtenFiles[filePath] = element;
+    _writtenFiles[filePath] = element;
     return file;
   }
 }
@@ -94,7 +94,6 @@ class Dartdoc extends PackageBuilder {
 
   Dartdoc._(DartdocOptionContext config, this.generator) : super(config) {
     outputDir = Directory(config.output)..createSync(recursive: true);
-    generator?.onFileCreated?.listen(logProgress);
   }
 
   /// An asynchronous factory method that builds Dartdoc's file writers
@@ -129,7 +128,9 @@ class Dartdoc extends PackageBuilder {
         "in ${seconds.toStringAsFixed(1)} seconds");
     _stopwatch.reset();
 
+    final generator = this.generator;
     if (generator != null) {
+      generator.onFileCreated.listen(logProgress);
       // Create the out directory.
       if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
 

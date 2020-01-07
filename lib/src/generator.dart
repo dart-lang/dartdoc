@@ -27,7 +27,8 @@ abstract class Generator {
   /// Fires when a file is created.
   Stream<void> get onFileCreated;
 
-  final Map<String, Warnable> writtenFiles = {};
+  /// Fetches all filenames written by this generator.
+  Map<String, Warnable> get writtenFiles;
 }
 
 /// Dartdoc options related to generators generally.

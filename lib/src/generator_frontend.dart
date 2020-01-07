@@ -15,6 +15,8 @@ import 'package:path/path.dart' as path;
 typedef FileWriter = File Function(String filePath, Object content,
     {bool allowOverwrite, Warnable element});
 
+/// [Generator] that delegates rendering to a [GeneratorBackend] and delegates
+/// file creation to a [FileWriter].
 class GeneratorFrontEnd implements Generator {
   final GeneratorBackend _generatorBackend;
   final FileWriter _writer;
@@ -33,14 +35,16 @@ class GeneratorFrontEnd implements Generator {
   GeneratorFrontEnd(this._generatorBackend, this._writer);
 
   // Implement FileWriter so we can wrap the one given to us.
-  File write(String filePath, Object content, {bool allowOverwrite, Warnable element}) {
+  File write(String filePath, Object content,
+      {bool allowOverwrite, Warnable element}) {
     assert(_outputDirectory != null);
-    // Replaces '/' separators with proper separators for the platform.
+    // Replace '/' separators with proper separators for the platform.
     String outFile = path.joinAll(filePath.split('/'));
     outFile = path.join(_outputDirectory, outFile);
-    File file = _writer(outFile, content, allowOverwrite: allowOverwrite, element: element);
+    File file = _writer(outFile, content,
+        allowOverwrite: allowOverwrite, element: element);
+    writtenFiles[outFile] = element;
     _onFileCreated.add(file);
-    writtenFiles[file.path] = element;
     return file;
   }
 
@@ -63,6 +67,7 @@ class GeneratorFrontEnd implements Generator {
     }
   }
 
+  // Traverses the package graph and collects elements for the search index.
   void _generateDocs(
       PackageGraph packageGraph, List<Indexable> indexAccumulator) {
     if (packageGraph == null) return;
@@ -306,7 +311,7 @@ abstract class GeneratorBackend {
   /// Emit json describing the [categories] defined by the package.
   void generateCategoryJson(FileWriter writer, List<Categorization> categories);
 
-  /// Emit json cataloging [indexedElements] for use with a search index.
+  /// Emit json catalog of [indexedElements] for use with a search index.
   void generateSearchIndex(FileWriter writer, List<Indexable> indexedElements);
 
   /// Emit documentation content for the [package].

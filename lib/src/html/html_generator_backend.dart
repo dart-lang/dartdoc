@@ -14,9 +14,11 @@ import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
+import 'package:dartdoc/src/warnings.dart';
 import 'package:mustache/mustache.dart';
 import 'package:path/path.dart' as path;
 
+/// Configuration options for the html backend.
 class HtmlBackendOptions implements HtmlOptions {
   @override
   final String relCanonicalPrefix;
@@ -25,12 +27,20 @@ class HtmlBackendOptions implements HtmlOptions {
 
   final String favicon;
 
+  final bool prettyIndexJson;
+
   @override
   final bool useBaseHref;
 
-  HtmlBackendOptions({this.relCanonicalPrefix, this.toolVersion, this.favicon, this.useBaseHref});
+  HtmlBackendOptions(
+      {this.relCanonicalPrefix,
+      this.toolVersion,
+      this.favicon,
+      this.prettyIndexJson = false,
+      this.useBaseHref = false});
 }
 
+/// GeneratorBackend for html output.
 class HtmlGeneratorBackend implements GeneratorBackend {
   final HtmlBackendOptions _options;
   final Templates _templates;
@@ -38,10 +48,14 @@ class HtmlGeneratorBackend implements GeneratorBackend {
   static Future<HtmlGeneratorBackend> fromContext(
       GeneratorContext context) async {
     Templates templates = await Templates.fromContext(context);
+    // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
+    // through the generators.
     HtmlOptions options = HtmlBackendOptions(
       relCanonicalPrefix: context.relCanonicalPrefix,
       toolVersion: dartdocVersion,
       favicon: context.favicon,
+      prettyIndexJson: context.prettyIndexJson,
+      useBaseHref: context.useBaseHref,
     );
     return HtmlGeneratorBackend(options, templates);
   }
@@ -56,13 +70,15 @@ class HtmlGeneratorBackend implements GeneratorBackend {
     if (!_options.useBaseHref) {
       content = content.replaceAll(HTMLBASE_PLACEHOLDER, data.htmlBase);
     }
-    writer(filename, content);
+    writer(filename, content,
+        element: data.self is Warnable ? data.self : null);
   }
 
   @override
   void generateCategoryJson(
       FileWriter writer, List<Categorization> categories) {
-    String json = generator_util.generateCategoryJson(categories);
+    String json = generator_util.generateCategoryJson(
+        categories, _options.prettyIndexJson);
     if (!_options.useBaseHref) {
       json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
     }
@@ -71,9 +87,8 @@ class HtmlGeneratorBackend implements GeneratorBackend {
 
   @override
   void generateSearchIndex(FileWriter writer, List<Indexable> indexedElements) {
-    // TODO pretty-index-json from generator options
-    String json =
-        generator_util.generateSearchIndexJson(indexedElements, false);
+    String json = generator_util.generateSearchIndexJson(
+        indexedElements, _options.prettyIndexJson);
     if (!_options.useBaseHref) {
       json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
     }
@@ -200,14 +215,13 @@ class HtmlGeneratorBackend implements GeneratorBackend {
   void generateAdditionalFiles(FileWriter writer, PackageGraph graph) async {
     await _copyResources(writer);
     if (_options.favicon != null) {
-      var bytes = File(_options.favicon).readAsBytesSync();
       // Allow overwrite of favicon.
+      var bytes = File(_options.favicon).readAsBytesSync();
       writer(path.join('static-assets', 'favicon.png'), bytes,
           allowOverwrite: true);
     }
   }
 
-  // TODO: change this to use resource_loader
   Future _copyResources(FileWriter writer) async {
     final prefix = 'package:dartdoc/resources/';
     for (String resourcePath in resources.resource_names) {
