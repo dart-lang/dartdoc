@@ -8,7 +8,6 @@ import 'dart:io' show File;
 
 import 'package:collection/collection.dart' show compareNatural;
 import 'package:dartdoc/src/html/html_generator.dart' show HtmlGeneratorOptions;
-import 'package:dartdoc/src/html/template_render_helper.dart';
 import 'package:dartdoc/src/html/resource_loader.dart' as loader;
 import 'package:dartdoc/src/html/resources.g.dart' as resources;
 import 'package:dartdoc/src/html/template_data.dart';
@@ -29,7 +28,6 @@ class HtmlGeneratorInstance {
   final PackageGraph _packageGraph;
   final List<Indexable> _indexedElements = <Indexable>[];
   final FileWriter _writer;
-  final HtmlRenderHelper _templateHelper = HtmlRenderHelper();
 
   HtmlGeneratorInstance(
       this._options, this._templates, this._packageGraph, this._writer);
@@ -281,8 +279,7 @@ class HtmlGeneratorInstance {
   }
 
   void generatePackage(PackageGraph packageGraph, Package package) {
-    TemplateData data =
-        PackageTemplateData(_options, packageGraph, _templateHelper, package);
+    TemplateData data = PackageTemplateData(_options, packageGraph, package);
     logInfo('documenting ${package.name}');
 
     _build(package.filePath, _templates.indexTemplate, data);
@@ -292,8 +289,7 @@ class HtmlGeneratorInstance {
   void generateCategory(PackageGraph packageGraph, Category category) {
     logInfo(
         'Generating docs for category ${category.name} from ${category.package.fullyQualifiedName}...');
-    TemplateData data =
-        CategoryTemplateData(_options, packageGraph, _templateHelper, category);
+    TemplateData data = CategoryTemplateData(_options, packageGraph, category);
 
     _build(category.filePath, _templates.categoryTemplate, data);
   }
@@ -304,98 +300,86 @@ class HtmlGeneratorInstance {
     if (!lib.isAnonymous && !lib.hasDocumentation) {
       packageGraph.warnOnElement(lib, PackageWarning.noLibraryLevelDocs);
     }
-    TemplateData data =
-        LibraryTemplateData(_options, packageGraph, _templateHelper, lib);
+    TemplateData data = LibraryTemplateData(_options, packageGraph, lib);
 
     _build(lib.filePath, _templates.libraryTemplate, data);
   }
 
   void generateClass(PackageGraph packageGraph, Library lib, Class clazz) {
-    TemplateData data =
-        ClassTemplateData(_options, packageGraph, _templateHelper, lib, clazz);
+    TemplateData data = ClassTemplateData(_options, packageGraph, lib, clazz);
     _build(clazz.filePath, _templates.classTemplate, data);
   }
 
   void generateExtension(
       PackageGraph packageGraph, Library lib, Extension extension) {
-    TemplateData data = ExtensionTemplateData(
-        _options, packageGraph, _templateHelper, lib, extension);
+    TemplateData data =
+        ExtensionTemplateData(_options, packageGraph, lib, extension);
     _build(extension.filePath, _templates.extensionTemplate, data);
   }
 
   void generateMixins(PackageGraph packageGraph, Library lib, Mixin mixin) {
-    TemplateData data =
-        MixinTemplateData(_options, packageGraph, _templateHelper, lib, mixin);
+    TemplateData data = MixinTemplateData(_options, packageGraph, lib, mixin);
     _build(mixin.filePath, _templates.mixinTemplate, data);
   }
 
   void generateConstructor(PackageGraph packageGraph, Library lib, Class clazz,
       Constructor constructor) {
     TemplateData data = ConstructorTemplateData(
-        _options, packageGraph, _templateHelper, lib, clazz, constructor);
+        _options, packageGraph, lib, clazz, constructor);
 
     _build(constructor.filePath, _templates.constructorTemplate, data);
   }
 
   void generateEnum(PackageGraph packageGraph, Library lib, Enum eNum) {
-    TemplateData data =
-        EnumTemplateData(_options, packageGraph, _templateHelper, lib, eNum);
+    TemplateData data = EnumTemplateData(_options, packageGraph, lib, eNum);
 
     _build(eNum.filePath, _templates.enumTemplate, data);
   }
 
   void generateFunction(
       PackageGraph packageGraph, Library lib, ModelFunction function) {
-    TemplateData data = FunctionTemplateData(
-        _options, packageGraph, _templateHelper, lib, function);
+    TemplateData data =
+        FunctionTemplateData(_options, packageGraph, lib, function);
 
     _build(function.filePath, _templates.functionTemplate, data);
   }
 
   void generateMethod(
       PackageGraph packageGraph, Library lib, Container clazz, Method method) {
-    TemplateData data = MethodTemplateData(
-        _options, packageGraph, _templateHelper, lib, clazz, method);
+    TemplateData data =
+        MethodTemplateData(_options, packageGraph, lib, clazz, method);
 
     _build(method.filePath, _templates.methodTemplate, data);
   }
 
-  void generateConstant(
-      PackageGraph packageGraph, Library lib, Container clazz, Field property) {
-    TemplateData data = ConstantTemplateData(
-        _options, packageGraph, _templateHelper, lib, clazz, property);
-
-    _build(property.filePath, _templates.constantTemplate, data);
-  }
+  void generateConstant(PackageGraph packageGraph, Library lib, Container clazz,
+          Field property) =>
+      generateProperty(packageGraph, lib, clazz, property);
 
   void generateProperty(
       PackageGraph packageGraph, Library lib, Container clazz, Field property) {
-    TemplateData data = PropertyTemplateData(
-        _options, packageGraph, _templateHelper, lib, clazz, property);
+    TemplateData data =
+        PropertyTemplateData(_options, packageGraph, lib, clazz, property);
 
     _build(property.filePath, _templates.propertyTemplate, data);
   }
 
   void generateTopLevelProperty(
       PackageGraph packageGraph, Library lib, TopLevelVariable property) {
-    TemplateData data = TopLevelPropertyTemplateData(
-        _options, packageGraph, _templateHelper, lib, property);
+    TemplateData data =
+        TopLevelPropertyTemplateData(_options, packageGraph, lib, property);
 
     _build(property.filePath, _templates.topLevelPropertyTemplate, data);
   }
 
   void generateTopLevelConstant(
-      PackageGraph packageGraph, Library lib, TopLevelVariable property) {
-    TemplateData data = TopLevelConstTemplateData(
-        _options, packageGraph, _templateHelper, lib, property);
-
-    _build(property.filePath, _templates.topLevelConstantTemplate, data);
-  }
+          PackageGraph packageGraph, Library lib, TopLevelVariable property) =>
+      generateTopLevelProperty(packageGraph, lib, property);
 
   void generateTypeDef(
       PackageGraph packageGraph, Library lib, Typedef typeDef) {
-    TemplateData data = TypedefTemplateData(
-        _options, packageGraph, _templateHelper, lib, typeDef);
+    TemplateData data =
+        TypedefTemplateData(_options, packageGraph, lib, typeDef);
 
     _build(typeDef.filePath, _templates.typeDefTemplate, data);
   }

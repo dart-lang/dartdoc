@@ -2,7 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/html/template_render_helper.dart';
+import 'package:dartdoc/src/render/template_renderer.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 abstract class HtmlOptions {
@@ -14,9 +14,8 @@ abstract class HtmlOptions {
 abstract class TemplateData<T extends Documentable> {
   final PackageGraph packageGraph;
   final HtmlOptions htmlOptions;
-  final TemplateRenderHelper _renderHelper;
 
-  TemplateData(this.htmlOptions, this.packageGraph, this._renderHelper);
+  TemplateData(this.htmlOptions, this.packageGraph);
 
   String get title;
   String get layoutTitle;
@@ -42,14 +41,15 @@ abstract class TemplateData<T extends Documentable> {
   bool get useBaseHref => htmlOptions.useBaseHref;
 
   String _layoutTitle(String name, String kind, bool isDeprecated) =>
-      _renderHelper.composeLayoutTitle(name, kind, isDeprecated);
+      packageGraph.rendererFactory.templateRenderer
+          .composeLayoutTitle(name, kind, isDeprecated);
 }
 
 class PackageTemplateData extends TemplateData<Package> {
   final Package package;
-  PackageTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper, this.package)
-      : super(htmlOptions, packageGraph, renderHelper);
+  PackageTemplateData(
+      HtmlOptions htmlOptions, PackageGraph packageGraph, this.package)
+      : super(htmlOptions, packageGraph);
 
   @override
   bool get includeVersion => true;
@@ -77,9 +77,9 @@ class PackageTemplateData extends TemplateData<Package> {
 class CategoryTemplateData extends TemplateData<Category> {
   final Category category;
 
-  CategoryTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper, this.category)
-      : super(htmlOptions, packageGraph, renderHelper);
+  CategoryTemplateData(
+      HtmlOptions htmlOptions, PackageGraph packageGraph, this.category)
+      : super(htmlOptions, packageGraph);
 
   @override
   String get title => '${category.name} ${category.kind} - Dart API';
@@ -104,9 +104,9 @@ class CategoryTemplateData extends TemplateData<Category> {
 class LibraryTemplateData extends TemplateData<Library> {
   final Library library;
 
-  LibraryTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper, this.library)
-      : super(htmlOptions, packageGraph, renderHelper);
+  LibraryTemplateData(
+      HtmlOptions htmlOptions, PackageGraph packageGraph, this.library)
+      : super(htmlOptions, packageGraph);
 
   @override
   String get title => '${library.name} library - Dart API';
@@ -131,8 +131,8 @@ class MixinTemplateData extends ClassTemplateData<Mixin> {
   final Mixin mixin;
 
   MixinTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper, Library library, this.mixin)
-      : super(htmlOptions, packageGraph, renderHelper, library, mixin);
+      Library library, this.mixin)
+      : super(htmlOptions, packageGraph, library, mixin);
 
   @override
   Mixin get self => mixin;
@@ -145,8 +145,8 @@ class ClassTemplateData<T extends Class> extends TemplateData<T> {
   Class _objectType;
 
   ClassTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper, this.library, this.clazz)
-      : super(htmlOptions, packageGraph, renderHelper);
+      this.library, this.clazz)
+      : super(htmlOptions, packageGraph);
 
   @override
   T get self => clazz;
@@ -190,8 +190,8 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T> {
   final Library library;
 
   ExtensionTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper, this.library, this.extension)
-      : super(htmlOptions, packageGraph, renderHelper);
+      this.library, this.extension)
+      : super(htmlOptions, packageGraph);
 
   @override
   T get self => extension;
@@ -217,14 +217,9 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
   final Class clazz;
   final Constructor constructor;
 
-  ConstructorTemplateData(
-      HtmlOptions htmlOptions,
-      PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper,
-      this.library,
-      this.clazz,
-      this.constructor)
-      : super(htmlOptions, packageGraph, renderHelper);
+  ConstructorTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+      this.library, this.clazz, this.constructor)
+      : super(htmlOptions, packageGraph);
 
   @override
   Constructor get self => constructor;
@@ -250,8 +245,8 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
 
 class EnumTemplateData extends ClassTemplateData<Enum> {
   EnumTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper, Library library, Enum eNum)
-      : super(htmlOptions, packageGraph, renderHelper, library, eNum);
+      Library library, Enum eNum)
+      : super(htmlOptions, packageGraph, library, eNum);
 
   Enum get eNum => clazz;
   @override
@@ -263,8 +258,8 @@ class FunctionTemplateData extends TemplateData<ModelFunction> {
   final Library library;
 
   FunctionTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper, this.library, this.function)
-      : super(htmlOptions, packageGraph, renderHelper);
+      this.library, this.function)
+      : super(htmlOptions, packageGraph);
 
   @override
   ModelFunction get self => function;
@@ -290,14 +285,9 @@ class MethodTemplateData extends TemplateData<Method> {
   final Container container;
   String containerDesc;
 
-  MethodTemplateData(
-      HtmlOptions htmlOptions,
-      PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper,
-      this.library,
-      this.container,
-      this.method)
-      : super(htmlOptions, packageGraph, renderHelper) {
+  MethodTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+      this.library, this.container, this.method)
+      : super(htmlOptions, packageGraph) {
     containerDesc = container.isClass ? 'class' : 'extension';
   }
 
@@ -328,14 +318,9 @@ class PropertyTemplateData extends TemplateData<Field> {
   final Field property;
   String containerDesc;
 
-  PropertyTemplateData(
-      HtmlOptions htmlOptions,
-      PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper,
-      this.library,
-      this.container,
-      this.property)
-      : super(htmlOptions, packageGraph, renderHelper) {
+  PropertyTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+      this.library, this.container, this.property)
+      : super(htmlOptions, packageGraph) {
     containerDesc = container.isClass ? 'class' : 'extension';
   }
 
@@ -344,14 +329,14 @@ class PropertyTemplateData extends TemplateData<Field> {
 
   @override
   String get title =>
-      '${property.name} $type - ${container.name} ${containerDesc} - '
+      '${property.name} $_type - ${container.name} ${containerDesc} - '
       '${library.name} library - Dart API';
   @override
   String get layoutTitle =>
-      _layoutTitle(property.name, type, property.isDeprecated);
+      _layoutTitle(property.name, _type, property.isDeprecated);
   @override
   String get metaDescription =>
-      'API docs for the ${property.name} $type from the '
+      'API docs for the ${property.name} $_type from the '
       '${container.name} ${containerDesc}, for the Dart programming language.';
   @override
   List get navLinks => [packageGraph.defaultPackage, library];
@@ -360,22 +345,7 @@ class PropertyTemplateData extends TemplateData<Field> {
   @override
   String get htmlBase => '../../';
 
-  String get type => 'property';
-}
-
-class ConstantTemplateData extends PropertyTemplateData {
-  ConstantTemplateData(
-      HtmlOptions htmlOptions,
-      PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper,
-      Library library,
-      Container container,
-      Field property)
-      : super(htmlOptions, packageGraph, renderHelper, library, container,
-            property);
-
-  @override
-  String get type => 'constant';
+  String get _type => property.isConst ? 'constant' : 'property';
 }
 
 class TypedefTemplateData extends TemplateData<Typedef> {
@@ -383,8 +353,8 @@ class TypedefTemplateData extends TemplateData<Typedef> {
   final Typedef typeDef;
 
   TypedefTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper, this.library, this.typeDef)
-      : super(htmlOptions, packageGraph, renderHelper);
+      this.library, this.typeDef)
+      : super(htmlOptions, packageGraph);
 
   @override
   Typedef get self => typeDef;
@@ -409,13 +379,9 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
   final Library library;
   final TopLevelVariable property;
 
-  TopLevelPropertyTemplateData(
-      HtmlOptions htmlOptions,
-      PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper,
-      this.library,
-      this.property)
-      : super(htmlOptions, packageGraph, renderHelper);
+  TopLevelPropertyTemplateData(HtmlOptions htmlOptions,
+      PackageGraph packageGraph, this.library, this.property)
+      : super(htmlOptions, packageGraph);
 
   @override
   TopLevelVariable get self => property;
@@ -435,18 +401,5 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
   @override
   String get htmlBase => '../';
 
-  String get _type => 'property';
-}
-
-class TopLevelConstTemplateData extends TopLevelPropertyTemplateData {
-  TopLevelConstTemplateData(
-      HtmlOptions htmlOptions,
-      PackageGraph packageGraph,
-      TemplateRenderHelper renderHelper,
-      Library library,
-      TopLevelVariable property)
-      : super(htmlOptions, packageGraph, renderHelper, library, property);
-
-  @override
-  String get _type => 'constant';
+  String get _type => property.isConst ? 'constant' : 'property';
 }

@@ -2,11 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-abstract class TemplateRenderHelper {
+abstract class TemplateRenderer {
   String composeLayoutTitle(String name, String kind, bool isDeprecated);
 }
 
-class HtmlRenderHelper implements TemplateRenderHelper {
+class HtmlTemplateRenderer implements TemplateRenderer {
   @override
   String composeLayoutTitle(String name, String kind, bool isDeprecated) {
     if (isDeprecated) {
