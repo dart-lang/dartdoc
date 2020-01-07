@@ -13,6 +13,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/empty_generator.dart';
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -36,8 +37,7 @@ const String programName = 'dartdoc';
 // Update when pubspec version changes by running `pub run build_runner build`
 const String dartdocVersion = packageVersion;
 
-/// Helper class to initialize the default generators since they require
-/// GeneratorContext.
+/// Helper class that consolidates option contexts for instantiating generators.
 class DartdocGeneratorOptionContext extends DartdocOptionContext
     with GeneratorContext {
   DartdocGeneratorOptionContext(DartdocOptionSet optionSet, Directory dir)
@@ -64,7 +64,7 @@ class Dartdoc extends PackageBuilder {
   /// and returns a Dartdoc object with them.
   static Future<Dartdoc> withDefaultGenerators(
       DartdocGeneratorOptionContext config) async {
-    List<Generator> generators = await initGenerators(config);
+    List<Generator> generators = await initHtmlGenerators(config);
     return Dartdoc._(config, generators);
   }
 

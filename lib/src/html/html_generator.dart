@@ -131,7 +131,6 @@ class HtmlGenerator extends Generator {
 }
 
 class HtmlGeneratorOptions implements HtmlOptions {
-  final String url;
   final String faviconPath;
   final bool prettyIndexJson;
   final String templatesDir;
@@ -146,8 +145,7 @@ class HtmlGeneratorOptions implements HtmlOptions {
   final bool useBaseHref;
 
   HtmlGeneratorOptions(
-      {this.url,
-      this.relCanonicalPrefix,
+      {this.relCanonicalPrefix,
       this.faviconPath,
       String toolVersion,
       this.prettyIndexJson = false,
@@ -156,109 +154,23 @@ class HtmlGeneratorOptions implements HtmlOptions {
       : this.toolVersion = toolVersion ?? 'unknown';
 }
 
-Future<List<Generator>> initEmptyGenerators(DartdocOptionContext config) async {
-  return [EmptyGenerator()];
-}
-
 /// Initialize and setup the generators.
-Future<List<Generator>> initGenerators(GeneratorContext config) async {
+Future<List<Generator>> initHtmlGenerators(GeneratorContext context) async {
   // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
   // through the generators.
   HtmlGeneratorOptions options = HtmlGeneratorOptions(
-      url: config.hostedUrl,
-      relCanonicalPrefix: config.relCanonicalPrefix,
+      relCanonicalPrefix: context.relCanonicalPrefix,
       toolVersion: dartdocVersion,
-      faviconPath: config.favicon,
-      prettyIndexJson: config.prettyIndexJson,
-      templatesDir: config.templatesDir,
-      useBaseHref: config.useBaseHref);
-
+      faviconPath: context.favicon,
+      prettyIndexJson: context.prettyIndexJson,
+      templatesDir: context.templatesDir,
+      useBaseHref: context.useBaseHref);
   return [
     await HtmlGenerator.create(
       options: options,
-      headers: config.header,
-      footers: config.footer,
-      footerTexts: config.footerTextPaths,
+      headers: context.header,
+      footers: context.footer,
+      footerTexts: context.footerTextPaths,
     )
-  ];
-}
-
-Uri _sdkFooterCopyrightUri;
-Future<void> _setSdkFooterCopyrightUri() async {
-  if (_sdkFooterCopyrightUri == null) {
-    _sdkFooterCopyrightUri = await Isolate.resolvePackageUri(
-        Uri.parse('package:dartdoc/resources/sdk_footer_text.html'));
-  }
-}
-
-abstract class GeneratorContext implements DartdocOptionContext {
-  String get favicon => optionSet['favicon'].valueAt(context);
-  List<String> get footer => optionSet['footer'].valueAt(context);
-
-  /// _footerText is only used to construct synthetic options.
-  // ignore: unused_element
-  List<String> get _footerText => optionSet['footerText'].valueAt(context);
-  List<String> get footerTextPaths =>
-      optionSet['footerTextPaths'].valueAt(context);
-  List<String> get header => optionSet['header'].valueAt(context);
-  String get hostedUrl => optionSet['hostedUrl'].valueAt(context);
-  bool get prettyIndexJson => optionSet['prettyIndexJson'].valueAt(context);
-  String get relCanonicalPrefix =>
-      optionSet['relCanonicalPrefix'].valueAt(context);
-}
-
-Future<List<DartdocOption>> createGeneratorOptions() async {
-  await _setSdkFooterCopyrightUri();
-  return <DartdocOption>[
-    DartdocOptionArgFile<String>('favicon', null,
-        isFile: true,
-        help: 'A path to a favicon for the generated docs.',
-        mustExist: true),
-    DartdocOptionArgFile<List<String>>('footer', [],
-        isFile: true,
-        help: 'paths to footer files containing HTML text.',
-        mustExist: true,
-        splitCommas: true),
-    DartdocOptionArgFile<List<String>>('footerText', [],
-        isFile: true,
-        help:
-            'paths to footer-text files (optional text next to the package name '
-            'and version).',
-        mustExist: true,
-        splitCommas: true),
-    DartdocOptionSyntheticOnly<List<String>>(
-      'footerTextPaths',
-      (DartdocSyntheticOption<List<String>> option, Directory dir) {
-        final List<String> footerTextPaths = <String>[];
-        final PackageMeta topLevelPackageMeta =
-            option.root['topLevelPackageMeta'].valueAt(dir);
-        // TODO(jcollins-g): Eliminate special casing for SDK and use config file.
-        if (topLevelPackageMeta.isSdk == true) {
-          footerTextPaths
-              .add(path.canonicalize(_sdkFooterCopyrightUri.toFilePath()));
-        }
-        footerTextPaths.addAll(option.parent['footerText'].valueAt(dir));
-        return footerTextPaths;
-      },
-      isFile: true,
-      help: 'paths to footer-text-files (adding special case for SDK)',
-      mustExist: true,
-    ),
-    DartdocOptionArgFile<List<String>>('header', [],
-        isFile: true,
-        help: 'paths to header files containing HTML text.',
-        splitCommas: true),
-    DartdocOptionArgOnly<String>('hostedUrl', null,
-        help:
-            'URL where the docs will be hosted (used to generate the sitemap).'),
-    DartdocOptionArgOnly<bool>('prettyIndexJson', false,
-        help:
-            "Generates `index.json` with indentation and newlines. The file is larger, but it's also easier to diff.",
-        negatable: false),
-    DartdocOptionArgOnly<String>('relCanonicalPrefix', null,
-        help:
-            'If provided, add a rel="canonical" prefixed with provided value. '
-            'Consider using if\nbuilding many versions of the docs for public '
-            'SEO; learn more at https://goo.gl/gktN6F.'),
   ];
 }
