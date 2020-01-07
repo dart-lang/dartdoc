@@ -6,7 +6,7 @@ import 'package:dartdoc/src/render/template_renderer.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('HtmlTemplateHelper', () {
+  group('HtmlTemplateRenderer', () {
     HtmlTemplateRenderer renderer;
 
     setUpAll(() {
