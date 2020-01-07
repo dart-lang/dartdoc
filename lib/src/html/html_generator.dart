@@ -142,13 +142,17 @@ class HtmlGeneratorOptions implements HtmlOptions {
   @override
   final String toolVersion;
 
+  @override
+  final bool useBaseHref;
+
   HtmlGeneratorOptions(
       {this.url,
       this.relCanonicalPrefix,
       this.faviconPath,
       String toolVersion,
       this.prettyIndexJson = false,
-      this.templatesDir})
+      this.templatesDir,
+      this.useBaseHref = false})
       : this.toolVersion = toolVersion ?? 'unknown';
 }
 
@@ -166,7 +170,8 @@ Future<List<Generator>> initGenerators(GeneratorContext config) async {
       toolVersion: dartdocVersion,
       faviconPath: config.favicon,
       prettyIndexJson: config.prettyIndexJson,
-      templatesDir: config.templatesDir);
+      templatesDir: config.templatesDir,
+      useBaseHref: config.useBaseHref);
 
   return [
     await HtmlGenerator.create(

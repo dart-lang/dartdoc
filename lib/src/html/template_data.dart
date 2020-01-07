@@ -8,6 +8,7 @@ import 'package:dartdoc/src/model/model.dart';
 abstract class HtmlOptions {
   String get relCanonicalPrefix;
   String get toolVersion;
+  bool get useBaseHref;
 }
 
 abstract class TemplateData<T extends Documentable> {
@@ -38,6 +39,7 @@ abstract class TemplateData<T extends Documentable> {
   T get self;
   String get version => htmlOptions.toolVersion;
   String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
+  bool get useBaseHref => htmlOptions.useBaseHref;
 
   String _layoutTitle(String name, String kind, bool isDeprecated) =>
       _renderHelper.composeLayoutTitle(name, kind, isDeprecated);
@@ -67,9 +69,9 @@ class PackageTemplateData extends TemplateData<Package> {
   bool get hasHomepage => package.hasHomepage;
   String get homepage => package.homepage;
 
-  /// `null` for packages because they are at the root – not needed
+  /// empty for packages because they are at the root – not needed
   @override
-  String get htmlBase => null;
+  String get htmlBase => '';
 }
 
 class CategoryTemplateData extends TemplateData<Category> {
@@ -83,7 +85,7 @@ class CategoryTemplateData extends TemplateData<Category> {
   String get title => '${category.name} ${category.kind} - Dart API';
 
   @override
-  String get htmlBase => '..';
+  String get htmlBase => '../';
 
   @override
   String get layoutTitle => _layoutTitle(category.name, category.kind, false);
@@ -109,7 +111,7 @@ class LibraryTemplateData extends TemplateData<Library> {
   @override
   String get title => '${library.name} library - Dart API';
   @override
-  String get htmlBase => '..';
+  String get htmlBase => '../';
   @override
   String get metaDescription =>
       '${library.name} library API docs, for the Dart programming language.';
@@ -164,7 +166,7 @@ class ClassTemplateData<T extends Class> extends TemplateData<T> {
   @override
   List get navLinks => [packageGraph.defaultPackage, library];
   @override
-  String get htmlBase => '..';
+  String get htmlBase => '../';
 
   Class get objectType {
     if (_objectType != null) {
@@ -207,7 +209,7 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T> {
   @override
   List get navLinks => [packageGraph.defaultPackage, library];
   @override
-  String get htmlBase => '..';
+  String get htmlBase => '../';
 }
 
 class ConstructorTemplateData extends TemplateData<Constructor> {
@@ -235,7 +237,7 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
   List get navLinksWithGenerics => [clazz];
   @override
   @override
-  String get htmlBase => '../..';
+  String get htmlBase => '../../';
   @override
   String get title => '${constructor.name} constructor - ${clazz.name} class - '
       '${library.name} library - Dart API';
@@ -279,7 +281,7 @@ class FunctionTemplateData extends TemplateData<ModelFunction> {
   @override
   List get navLinks => [packageGraph.defaultPackage, library];
   @override
-  String get htmlBase => '..';
+  String get htmlBase => '../';
 }
 
 class MethodTemplateData extends TemplateData<Method> {
@@ -317,7 +319,7 @@ class MethodTemplateData extends TemplateData<Method> {
   @override
   List get navLinksWithGenerics => [container];
   @override
-  String get htmlBase => '../..';
+  String get htmlBase => '../../';
 }
 
 class PropertyTemplateData extends TemplateData<Field> {
@@ -356,7 +358,7 @@ class PropertyTemplateData extends TemplateData<Field> {
   @override
   List get navLinksWithGenerics => [container];
   @override
-  String get htmlBase => '../..';
+  String get htmlBase => '../../';
 
   String get type => 'property';
 }
@@ -400,7 +402,7 @@ class TypedefTemplateData extends TemplateData<Typedef> {
   @override
   List get navLinks => [packageGraph.defaultPackage, library];
   @override
-  String get htmlBase => '..';
+  String get htmlBase => '../';
 }
 
 class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
@@ -431,7 +433,7 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
   @override
   List get navLinks => [packageGraph.defaultPackage, library];
   @override
-  String get htmlBase => '..';
+  String get htmlBase => '../';
 
   String get _type => 'property';
 }

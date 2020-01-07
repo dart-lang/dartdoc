@@ -887,6 +887,10 @@ class BaseForDocComments {
   /// Reference containing a type parameter [ExtraSpecialList<Object>]
   ///
   /// Reference to something that doesn't exist containing a type parameter [ThisIsNotHereNoWay<MyType>]
+  ///
+  /// Link to a nonexistent file (erroneously expects base href): [link](SubForDocComments/localMethod.html)
+  ///
+  /// Link to an existing file: [link](../SubForDocComments/localMethod.html)
   String doAwesomeStuff(int value) => null;
 
   void anotherMethod() {}

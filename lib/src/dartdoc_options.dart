@@ -1422,6 +1422,9 @@ class DartdocOptionContext extends DartdocOptionContextBase
       excludePackages.any((pattern) => name == pattern);
 
   String get templatesDir => optionSet['templatesDir'].valueAt(context);
+
+  // TODO(jdkoren): temporary while we confirm href base behavior doesn't break important clients
+  bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
 }
 
 /// Instantiate dartdoc's configuration file and options parser with the
@@ -1635,6 +1638,14 @@ Future<List<DartdocOption>> createDartdocOptions() async {
             'property, top_level_constant, top_level_property, typedef. Partial templates are '
             'supported; they must begin with an underscore, and references to them must omit the '
             'leading underscore (e.g. use {{>foo}} to reference the partial template _foo.html).'),
+    DartdocOptionArgOnly<bool>('useBaseHref', false,
+        help:
+            'Use <base href> in generated files (legacy behavior). This option '
+            'is temporary and support will be removed in the future. Use only '
+            'if the default behavior breaks links between your documentation '
+            'pages, and please file an issue on Github.',
+        negatable: false,
+        hide: true),
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
   ]
