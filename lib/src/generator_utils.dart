@@ -11,9 +11,9 @@ import 'package:dartdoc/src/model/indexable.dart';
 
 /// Convenience function to generate category JSON since different generators
 /// will likely want the same content for this.
-String generateCategoryJson(Iterable<Categorization> cateories, bool pretty) {
+String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   var encoder = pretty ? JsonEncoder.withIndent(' ') : JsonEncoder();
-  final List<Map> indexItems = cateories.map((Categorization e) {
+  final List<Map> indexItems = categories.map((Categorization e) {
     Map data = {
       'name': e.name,
       'qualifiedName': e.fullyQualifiedName,
