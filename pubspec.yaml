@@ -1,13 +1,13 @@
 name: dartdoc
 # Run `grind build` after updating.
-version: 0.29.3
+version: 0.30.0
 description: A non-interactive HTML documentation generator for Dart source code.
 homepage: https://github.com/dart-lang/dartdoc
 environment:
   sdk: '>=2.6.0 <3.0.0'
 
 dependencies:
-  analyzer: ^0.39.2+1
+  analyzer: ^0.39.4
   args: '>=1.5.0 <2.0.0'
   collection: ^1.2.0
   crypto: ^2.0.6
