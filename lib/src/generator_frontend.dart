@@ -57,8 +57,8 @@ class GeneratorFrontEnd implements Generator {
       await _generatorBackend.generateAdditionalFiles(write, packageGraph);
 
       List<Categorization> categories = indexElements
-          .where((e) => e is Categorization && e.hasCategorization)
-          .map((e) => e as Categorization)
+          .whereType<Categorization>()
+          .where((e) => e.hasCategorization)
           .toList();
       _generatorBackend.generateCategoryJson(write, categories);
       _generatorBackend.generateSearchIndex(write, indexElements);
