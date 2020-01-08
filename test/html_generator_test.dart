@@ -123,7 +123,7 @@ void main() {
             packageGraph.localPublicLibraries,
             anyElement((l) => packageGraph.packageWarningCounter
                 .hasWarning(l, PackageWarning.duplicateFile, expectedPath)));
-      }, timeout: Timeout.factor(2));
+      }, timeout: Timeout.factor(4));
     });
   });
 }
