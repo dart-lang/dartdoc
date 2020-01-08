@@ -14,6 +14,17 @@ import 'package:pub_semver/pub_semver.dart';
 
 final RegExp substituteNameVersion = RegExp(r'%([bnv])%');
 
+// All hrefs are emitted as relative paths from the output root. We are unable
+// to compute them from the page we are generating, and many properties computed
+// using hrefs are memoized anyway. To build complete relative hrefs, we emit
+// the href with this placeholder, and then replace it with the current page's
+// base href afterwards.
+// See https://github.com/dart-lang/dartdoc/issues/2090 for further context.
+// TODO: Find an approach that doesn't require doing this.
+// Unlikely to be mistaken for an identifier, html tag, or something else that
+// might reasonably exist normally.
+final String HTMLBASE_PLACEHOLDER = '\%\%__HTMLBASE_dartdoc_internal__\%\%';
+
 /// A [LibraryContainer] that contains [Library] objects related to a particular
 /// package.
 class Package extends LibraryContainer
@@ -206,7 +217,7 @@ class Package extends LibraryContainer
         });
         if (!_baseHref.endsWith('/')) _baseHref = '${_baseHref}/';
       } else {
-        _baseHref = '';
+        _baseHref = config.useBaseHref ? '' : HTMLBASE_PLACEHOLDER;
       }
     }
     return _baseHref;

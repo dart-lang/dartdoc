@@ -2,24 +2,24 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/html/template_render_helper.dart';
+import 'package:dartdoc/src/render/template_renderer.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('HtmlTemplateHelper', () {
-    HtmlRenderHelper renderHelper;
+  group('HtmlTemplateRenderer', () {
+    HtmlTemplateRenderer renderer;
 
     setUpAll(() {
-      renderHelper = HtmlRenderHelper();
+      renderer = HtmlTemplateRenderer();
     });
 
     test('composeLayoutTitle', () {
-      String test = renderHelper.composeLayoutTitle('Banana', 'Fruit', false);
+      String test = renderer.composeLayoutTitle('Banana', 'Fruit', false);
       expect(test, equals('Banana Fruit'));
     });
 
     test('composeLayoutTitle deprecated', () {
-      String test = renderHelper.composeLayoutTitle('Banana', 'Fruit', true);
+      String test = renderer.composeLayoutTitle('Banana', 'Fruit', true);
       expect(test, equals('<span class="deprecated">Banana</span> Fruit'));
     });
   });
