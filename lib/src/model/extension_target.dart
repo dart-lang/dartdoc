@@ -14,9 +14,15 @@ mixin ExtensionTarget on ModelElement {
 
   List<Extension> _potentiallyApplicableExtensions;
 
+  /// The set of potentiallyApplicableExtensions, for display in templates.
+  ///
+  /// This is defined as those extensions where an instantiation of the type
+  /// defined by [element] can exist where this extension applies, not including
+  /// any extension that applies to every type.
   Iterable<Extension> get potentiallyApplicableExtensions {
     if (_potentiallyApplicableExtensions == null) {
       _potentiallyApplicableExtensions = packageGraph.documentedExtensions
+          .where((e) => !e.alwaysApplies)
           .where((e) => e.couldApplyTo(this))
           .toList(growable: false)
             ..sort(byName);

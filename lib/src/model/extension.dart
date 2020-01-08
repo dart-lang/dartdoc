@@ -2,11 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'dart:collection';
-
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
-import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -16,7 +12,7 @@ import 'package:quiver/iterables.dart' as quiver;
 class Extension extends Container
     with TypeParameters, Categorization
     implements EnclosedElement {
-  DefinedElementType extendedType;
+  ElementType extendedType;
 
   Extension(
       ExtensionElement element, Library library, PackageGraph packageGraph)
@@ -25,46 +21,29 @@ class Extension extends Container
         ElementType.from(_extension.extendedType, library, packageGraph);
   }
 
+  /// Detect if this extension applies to every object.
+  bool get alwaysApplies =>
+      extendedType.type.isDynamic ||
+      extendedType.type.isVoid ||
+      extendedType.type.isObject;
+
   bool couldApplyTo<T extends ExtensionTarget>(T c) =>
       _couldApplyTo(c.modelType);
 
   /// Return true if this extension could apply to [t].
   bool _couldApplyTo(DefinedElementType t) {
-    return t.instantiatedType == extendedType.instantiatedType ||
-        (t.instantiatedType.element == extendedType.instantiatedType.element &&
-            isSubtypeOf(t)) ||
-        isBoundSupertypeTo(t);
-  }
-
-  /// The instantiated to bounds [extendedType] of this extension is a subtype of
-  /// [t].
-  bool isSubtypeOf(DefinedElementType t) => library.typeSystem
-      .isSubtypeOf(extendedType.instantiatedType, t.instantiatedType);
-
-  bool isBoundSupertypeTo(DefinedElementType t) =>
-      _isBoundSupertypeTo(t.instantiatedType, HashSet());
-
-  /// Returns true if at least one supertype (including via mixins and
-  /// interfaces) is equivalent to or a subtype of [extendedType] when
-  /// instantiated to bounds.
-  bool _isBoundSupertypeTo(DartType superType, HashSet<DartType> visited) {
-    // Only InterfaceTypes can have superTypes.
-    if (superType is! InterfaceType) return false;
-    ClassElement superClass = superType?.element;
-    if (visited.contains(superType)) return false;
-    visited.add(superType);
-    if (superClass == extendedType.type.element &&
-        (superType == extendedType.instantiatedType ||
-            library.typeSystem
-                .isSubtypeOf(superType, extendedType.instantiatedType))) {
+    if (extendedType is UndefinedElementType) {
+      assert(extendedType.type.isDynamic || extendedType.type.isVoid);
       return true;
     }
-    List<InterfaceType> supertypes = [];
-    ClassElementImpl.collectAllSupertypes(supertypes, superType, null);
-    for (InterfaceType toVisit in supertypes) {
-      if (_isBoundSupertypeTo(toVisit, visited)) return true;
+    {
+      DefinedElementType extendedType = this.extendedType;
+      return t.instantiatedType == extendedType.instantiatedType ||
+          (t.instantiatedType.element ==
+                  extendedType.instantiatedType.element &&
+              extendedType.isSubtypeOf(t)) ||
+          extendedType.isBoundSupertypeTo(t);
     }
-    return false;
   }
 
   @override
