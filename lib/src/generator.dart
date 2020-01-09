@@ -56,6 +56,8 @@ mixin GeneratorContext on DartdocOptionContextBase {
 
   String get templatesDir => optionSet['templatesDir'].valueAt(context);
 
+  String get outputFormat => optionSet['format'].valueAt(context);
+
   // TODO(jdkoren): duplicated temporarily so that GeneratorContext is enough for configuration.
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
 }
@@ -137,6 +139,8 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
             'top_level_property, typedef. Partial templates are supported; '
             'they must begin with an underscore, and references to them must '
             'omit the leading underscore (e.g. use {{>foo}} to reference the '
-            'partial template _foo.html).'),
+            'partial template named _foo).'),
+    // TODO(jdkoren): Unhide when we have good support for another format.
+    DartdocOptionArgOnly<String>('format', 'html', hide: true),
   ];
 }

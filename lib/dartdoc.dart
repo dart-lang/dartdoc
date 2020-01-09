@@ -107,16 +107,29 @@ class Dartdoc extends PackageBuilder {
     outputDir = Directory(config.output)..createSync(recursive: true);
   }
 
-  /// An asynchronous factory method that builds Dartdoc's file writers
-  /// and returns a Dartdoc object with them.
-  static Future<Dartdoc> withDefaultGenerators(
-      DartdocGeneratorOptionContext config) async {
-    return Dartdoc._(config, await initHtmlGenerator(config));
-  }
-
-  /// An asynchronous factory method that builds
+  /// Asynchronous factory method that builds Dartdoc with an empty generator.
   static Future<Dartdoc> withEmptyGenerator(DartdocOptionContext config) async {
     return Dartdoc._(config, await initEmptyGenerator(config));
+  }
+
+  /// Asynchronous factory method that builds Dartdoc with a generator
+  /// determined by the given context.
+  static Future<Dartdoc> fromContext(
+      DartdocGeneratorOptionContext context) async {
+    Generator generator;
+    switch (context.outputFormat) {
+      case 'html':
+        generator = await initHtmlGenerator(context);
+        break;
+      case 'md':
+        // TODO(jdkoren): use a real generator
+        generator = await initEmptyGenerator(context);
+        break;
+      default:
+        throw DartdocFailure(
+            'Unsupported output format: ${context.outputFormat}');
+    }
+    return Dartdoc._(context, generator);
   }
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;

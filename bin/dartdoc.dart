@@ -88,7 +88,7 @@ Future<void> main(List<String> arguments) async {
   startLogging(config);
 
   Dartdoc dartdoc = config.generateDocs
-      ? await Dartdoc.withDefaultGenerators(config)
+      ? await Dartdoc.fromContext(config)
       : await Dartdoc.withEmptyGenerator(config);
   dartdoc.onCheckProgress.listen(logProgress);
   try {
