@@ -1,3 +1,6 @@
+## 0.30.0+1
+* Fix a broken search box on pages in subdirectories (#2117, #2118)
+
 ## 0.30.0
 * BREAKING CHANGE: no longer use `<base href>` in generated documentation, instead
   use real relative links.  This may break manually constructed links that rely
