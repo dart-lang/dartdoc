@@ -46,7 +46,7 @@ class HtmlGeneratorBackend implements GeneratorBackend {
   final Templates _templates;
 
   static Future<HtmlGeneratorBackend> fromContext(
-      GeneratorContext context) async {
+      DartdocGeneratorOptionContext context) async {
     Templates templates = await Templates.fromContext(context);
     // TODO(jcollins-g): Rationalize based on GeneratorContext all the way down
     // through the generators.

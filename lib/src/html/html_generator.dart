@@ -11,7 +11,8 @@ import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/generator_frontend.dart';
 import 'package:dartdoc/src/html/html_generator_backend.dart';
 
-Future<Generator> initHtmlGenerator(GeneratorContext context) async {
+Future<Generator> initHtmlGenerator(
+    DartdocGeneratorOptionContext context) async {
   var backend = await HtmlGeneratorBackend.fromContext(context);
   return GeneratorFrontEnd(backend);
 }
