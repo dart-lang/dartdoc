@@ -44,58 +44,10 @@ class DartdocGeneratorOptionContext extends DartdocOptionContext
       : super(optionSet, dir);
 }
 
-class DartdocFileWriter implements FileWriter {
-  final String outputDir;
-  final Map<String, Warnable> _fileElementMap = {};
-  @override
-  final Set<String> writtenFiles = Set();
-
-  DartdocFileWriter(this.outputDir);
-
-  @override
-  void write(String filePath, Object content,
-      {bool allowOverwrite, Warnable element}) {
-    // Replace '/' separators with proper separators for the platform.
-    String outFile = path.joinAll(filePath.split('/'));
-
-    allowOverwrite ??= false;
-    if (!allowOverwrite) {
-      if (_fileElementMap.containsKey(outFile)) {
-        assert(element != null,
-            'Attempted overwrite of ${outFile} without corresponding element');
-        Warnable originalElement = _fileElementMap[outFile];
-        Iterable<Warnable> referredFrom =
-            originalElement != null ? [originalElement] : null;
-        element?.warn(PackageWarning.duplicateFile,
-            message: outFile, referredFrom: referredFrom);
-      }
-    }
-    _fileElementMap[outFile] = element;
-
-    var file = File(path.join(outputDir, outFile));
-    var parent = file.parent;
-    if (!parent.existsSync()) {
-      parent.createSync(recursive: true);
-    }
-
-    if (content is String) {
-      file.writeAsStringSync(content);
-    } else if (content is List<int>) {
-      file.writeAsBytesSync(content);
-    } else {
-      throw ArgumentError.value(
-          content, 'content', '`content` must be `String` or `List<int>`.');
-    }
-
-    writtenFiles.add(outFile);
-    logProgress(outFile);
-  }
-}
-
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
 class Dartdoc extends PackageBuilder {
-  final Generator generator;
+  final List<Generator> generators;
   final Set<String> writtenFiles = Set();
   Directory outputDir;
 
@@ -103,20 +55,29 @@ class Dartdoc extends PackageBuilder {
   final StreamController<String> _onCheckProgress =
       StreamController(sync: true);
 
-  Dartdoc._(DartdocOptionContext config, this.generator) : super(config) {
+  Dartdoc._(DartdocOptionContext config, this.generators) : super(config) {
     outputDir = Directory(config.output)..createSync(recursive: true);
+    generators.forEach((g) => g.onFileCreated.listen(logProgress));
   }
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a Dartdoc object with them.
   static Future<Dartdoc> withDefaultGenerators(
       DartdocGeneratorOptionContext config) async {
-    return Dartdoc._(config, await initHtmlGenerator(config));
+    List<Generator> generators = await initHtmlGenerators(config);
+    return Dartdoc._(config, generators);
   }
 
   /// An asynchronous factory method that builds
   static Future<Dartdoc> withEmptyGenerator(DartdocOptionContext config) async {
-    return Dartdoc._(config, await initEmptyGenerator(config));
+    List<Generator> generators = await initEmptyGenerators(config);
+    return Dartdoc._(config, generators);
+  }
+
+  /// Basic synchronous factory that gives a stripped down Dartdoc that won't
+  /// use generators.  Useful for testing.
+  factory Dartdoc.withoutGenerators(DartdocOptionContext config) {
+    return Dartdoc._(config, []);
   }
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
@@ -133,20 +94,19 @@ class Dartdoc extends PackageBuilder {
     double seconds;
     packageGraph = await buildPackageGraph();
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
-    int libs = packageGraph.libraries.length;
-    logInfo("Initialized dartdoc with ${libs} librar${libs == 1 ? 'y' : 'ies'} "
+    logInfo(
+        "Initialized dartdoc with ${packageGraph.libraries.length} librar${packageGraph.libraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds");
     _stopwatch.reset();
 
-    final generator = this.generator;
-    if (generator != null) {
+    if (generators.isNotEmpty) {
       // Create the out directory.
       if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
 
-      DartdocFileWriter writer = DartdocFileWriter(outputDir.path);
-      await generator.generate(packageGraph, writer);
-
-      writtenFiles.addAll(writer.writtenFiles);
+      for (var generator in generators) {
+        await generator.generate(packageGraph, outputDir.path);
+        writtenFiles.addAll(generator.writtenFiles.keys.map(path.normalize));
+      }
       if (config.validateLinks && writtenFiles.isNotEmpty) {
         validateLinks(packageGraph, outputDir.path);
       }
@@ -162,8 +122,8 @@ class Dartdoc extends PackageBuilder {
     }
 
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
-    libs = packageGraph.localPublicLibraries.length;
-    logInfo("Documented ${libs} public librar${libs == 1 ? 'y' : 'ies'} "
+    logInfo(
+        "Documented ${packageGraph.localPublicLibraries.length} public librar${packageGraph.localPublicLibraries.length == 1 ? 'y' : 'ies'} "
         "in ${seconds.toStringAsFixed(1)} seconds");
     return DartdocResults(config.topLevelPackageMeta, packageGraph, outputDir);
   }
