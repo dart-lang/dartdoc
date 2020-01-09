@@ -6,9 +6,7 @@ library dartdoc.html_generator_test;
 
 import 'dart:io' show File, Directory;
 
-import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/generator_frontend.dart';
-import 'package:dartdoc/src/html/html_generator_backend.dart';
+import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/html/resources.g.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
@@ -17,12 +15,6 @@ import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
-
-// Init a generator without a GeneratorContext and with the default file writer.
-Future<Generator> _initGeneratorForTest() async {
-  var backend = HtmlGeneratorBackend(null, await Templates.createDefault());
-  return GeneratorFrontEnd(backend);
-}
 
 void main() {
   group('Templates', () {
@@ -76,15 +68,13 @@ void main() {
   group('HtmlGenerator', () {
     // TODO: Run the HtmlGenerator and validate important constraints.
     group('for a null package', () {
-      Generator generator;
+      HtmlGenerator generator;
       Directory tempOutput;
-      FileWriter writer;
 
       setUp(() async {
-        generator = await _initGeneratorForTest();
+        generator = await HtmlGenerator.create();
         tempOutput = Directory.systemTemp.createTempSync('doc_test_temp');
-        writer = DartdocFileWriter(tempOutput.path);
-        return generator.generate(null, writer);
+        return generator.generate(null, tempOutput.path);
       });
 
       tearDown(() {
@@ -106,17 +96,15 @@ void main() {
     });
 
     group('for a package that causes duplicate files', () {
-      Generator generator;
+      HtmlGenerator generator;
       PackageGraph packageGraph;
       Directory tempOutput;
-      FileWriter writer;
 
       setUp(() async {
-        generator = await _initGeneratorForTest();
+        generator = await HtmlGenerator.create();
         packageGraph = await utils
             .bootBasicPackage(utils.testPackageDuplicateDir.path, []);
         tempOutput = await Directory.systemTemp.createTemp('doc_test_temp');
-        writer = DartdocFileWriter(tempOutput.path);
       });
 
       tearDown(() {
@@ -126,7 +114,7 @@ void main() {
       });
 
       test('run generator and verify duplicate file error', () async {
-        await generator.generate(packageGraph, writer);
+        await generator.generate(packageGraph, tempOutput.path);
         expect(generator, isNotNull);
         expect(tempOutput, isNotNull);
         String expectedPath =
