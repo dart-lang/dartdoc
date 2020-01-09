@@ -130,7 +130,7 @@ void main() {
         expect(generator, isNotNull);
         expect(tempOutput, isNotNull);
         String expectedPath =
-            path.join(tempOutput.path, 'aDuplicate', 'aDuplicate-library.html');
+            path.join('aDuplicate', 'aDuplicate-library.html');
         expect(
             packageGraph.localPublicLibraries,
             anyElement((l) => packageGraph.packageWarningCounter
