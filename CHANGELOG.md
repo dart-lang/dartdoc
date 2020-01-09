@@ -1,3 +1,15 @@
+## 0.30.0
+* BREAKING CHANGE: no longer use `<base href>` in generated documentation, instead
+  use real relative links.  This may break manually constructed links that rely
+  on base href, or could impact post-processing of dartdoc HTML.  Most users
+  should not notice.  A hidden flag can for now restore the old behavior, but
+  will be removed soon. (#2098, #2096)
+* More refactors to prepare for markdown rendering. (#2100, #2114)
+* Fix crashes with extensions on special types. (#2112, #2102)
+* Add a new error type for multiple-file overwrite problems. (#2111, #2110)
+* Allow FunctionTypes to work in applicability checks for extensions. (#2109, #2101)
+* Refactor to use Element.declaration over Member.baseMember. (#2106)
+
 ## 0.29.3
 * More refactoring changes to rendering (#2085, #2086).
 * Internal changes to stop using newly deprecated analyzer interfaces (#2091, #2093).

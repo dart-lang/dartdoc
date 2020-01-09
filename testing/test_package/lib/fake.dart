@@ -1123,7 +1123,7 @@ abstract class CanonicalPrivateInheritedToolUser
 }
 
 /*
- * Complex extension methods case.
+ * Complex extension methods + typedefs case.
  *
  * TODO(jcollins-g): add unit tests around behavior when #2701 is implemented.
  * Until #2701 is fixed we mostly are testing that we don't crash because
@@ -1136,3 +1136,18 @@ typedef R Function2<A, B, R>(A a, B b);
 extension DoSomething2X<A, B, R> on Function1<A, Function1<B, R>> {
   Function2<A, B, R> something() => (A first, B second) => this(first)(second);
 }
+
+
+/// Extensions might exist on types defined by the language.
+extension ExtensionOnDynamic on dynamic {
+  void youCanAlwaysCallMe() {}
+}
+
+extension ExtensionOnVoid on void {
+  void youCanStillAlwaysCallMe() {}
+}
+
+extension ExtensionOnNull on Null {
+  void youCanOnlyCallMeOnNulls() {}
+}
+
