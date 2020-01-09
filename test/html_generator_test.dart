@@ -21,7 +21,7 @@ import 'src/utils.dart' as utils;
 // Init a generator without a GeneratorContext and with the default file writer.
 Future<Generator> _initGeneratorForTest() async {
   var backend = HtmlGeneratorBackend(null, await Templates.createDefault());
-  return GeneratorFrontEnd(backend, DartdocFileWriter().write);
+  return GeneratorFrontEnd(backend);
 }
 
 void main() {
@@ -78,11 +78,13 @@ void main() {
     group('for a null package', () {
       Generator generator;
       Directory tempOutput;
+      FileWriter writer;
 
       setUp(() async {
         generator = await _initGeneratorForTest();
         tempOutput = Directory.systemTemp.createTempSync('doc_test_temp');
-        return generator.generate(null, tempOutput.path);
+        writer = DartdocFileWriter(tempOutput.path);
+        return generator.generate(null, writer);
       });
 
       tearDown(() {
@@ -107,12 +109,14 @@ void main() {
       Generator generator;
       PackageGraph packageGraph;
       Directory tempOutput;
+      FileWriter writer;
 
       setUp(() async {
         generator = await _initGeneratorForTest();
         packageGraph = await utils
             .bootBasicPackage(utils.testPackageDuplicateDir.path, []);
         tempOutput = await Directory.systemTemp.createTemp('doc_test_temp');
+        writer = DartdocFileWriter(tempOutput.path);
       });
 
       tearDown(() {
@@ -122,7 +126,7 @@ void main() {
       });
 
       test('run generator and verify duplicate file error', () async {
-        await generator.generate(packageGraph, tempOutput.path);
+        await generator.generate(packageGraph, writer);
         expect(generator, isNotNull);
         expect(tempOutput, isNotNull);
         String expectedPath =

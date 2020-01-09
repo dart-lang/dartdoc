@@ -15,20 +15,23 @@ import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 
+abstract class FileWriter {
+  /// All filenames written by this generator.
+  Set<String> get writtenFiles;
+
+  /// Write [content] to a file at [filePath].
+  void write(String filePath, Object content,
+      {bool allowOverwrite, Warnable element});
+}
+
 /// An abstract class that defines a generator that generates documentation for
 /// a given package.
 ///
 /// Generators can generate documentation in different formats: html, json etc.
 abstract class Generator {
-  /// Generate the documentation for the given package in the specified
-  /// directory. Completes the returned future when done.
-  Future generate(PackageGraph packageGraph, String outputDirectoryPath);
-
-  /// Fires when a file is created.
-  Stream<void> get onFileCreated;
-
-  /// Fetches all filenames written by this generator.
-  Map<String, Warnable> get writtenFiles;
+  /// Generate the documentation for the given package using the specified
+  /// writer. Completes the returned future when done.
+  Future generate(PackageGraph packageGraph, FileWriter writer);
 }
 
 /// Dartdoc options related to generators generally.
