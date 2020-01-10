@@ -1,3 +1,7 @@
+## 0.30.1
+* A more complete fix for the broken search box. (#2125, #2124)
+* Fix the "--rel-canonical-prefix" flag post `base href`. (#2126, #2122) 
+
 ## 0.30.0+1
 * Fix a broken search box on pages in subdirectories (#2117, #2118)
 
