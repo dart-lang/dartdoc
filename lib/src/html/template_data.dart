@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:dartdoc/src/render/template_renderer.dart';
 import 'package:dartdoc/src/model/model.dart';
 
 abstract class HtmlOptions {
@@ -39,6 +38,13 @@ abstract class TemplateData<T extends Documentable> {
   String get version => htmlOptions.toolVersion;
   String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
   bool get useBaseHref => htmlOptions.useBaseHref;
+
+  String get bareHref {
+    if (self is Indexable) {
+      return (self as Indexable).href.replaceAll(HTMLBASE_PLACEHOLDER, '');
+    }
+    return '';
+  }
 
   String _layoutTitle(String name, String kind, bool isDeprecated) =>
       packageGraph.rendererFactory.templateRenderer
