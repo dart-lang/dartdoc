@@ -29,7 +29,8 @@
   <!-- header placeholder -->
 </head>
 
-<body>
+{{! We don't use <base href>, but we do lookup the htmlBase from javascript. }}
+<body data-base-href="{{{htmlBase}}}">
 
 <div id="overlay-under-drawer"></div>
 
