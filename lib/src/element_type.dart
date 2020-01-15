@@ -210,7 +210,7 @@ class TypeParameterElementType extends DefinedElementType {
 
   @override
   // TODO(jcollins-g): This is wrong; bound is not always an InterfaceType.
-  InterfaceType get _interfaceType => (type as TypeParameterType).bound;
+  DartType get _bound => (type as TypeParameterType).bound;
 }
 
 /// An [ElementType] associated with an [Element].
@@ -274,18 +274,21 @@ abstract class DefinedElementType extends ElementType {
   Class get boundClass =>
       ModelElement.fromElement(_boundClassElement, packageGraph);
 
-  InterfaceType get _interfaceType => type;
+  DartType get _bound => type;
 
-  InterfaceType _instantiatedType;
+  DartType _instantiatedType;
 
   /// Return this type, instantiated to bounds if it isn't already.
   DartType get instantiatedType {
     if (_instantiatedType == null) {
-      if (!_interfaceType.typeArguments.every((t) => t is InterfaceType)) {
+      if (_bound is InterfaceType &&
+          !(_bound as InterfaceType)
+              .typeArguments
+              .every((t) => t is InterfaceType)) {
         var typeSystem = library.element.typeSystem as TypeSystemImpl;
-        _instantiatedType = typeSystem.instantiateToBounds(_interfaceType);
+        _instantiatedType = typeSystem.instantiateToBounds(_bound);
       } else {
-        _instantiatedType = _interfaceType;
+        _instantiatedType = _bound;
       }
     }
     return _instantiatedType;
