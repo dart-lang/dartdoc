@@ -427,7 +427,7 @@ void main() {
 
     test('generate docs with bad output format', () async {
       try {
-        await buildDartdoc(['--format', 'bad'], testPackageMinimumDir, tempDir);
+        await buildDartdoc(['--format', 'bad'], testPackageDir, tempDir);
         fail('dartdoc should fail with bad output format');
       } catch (e) {
         expect(e is DartdocFailure, isTrue);

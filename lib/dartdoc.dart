@@ -107,6 +107,14 @@ class Dartdoc extends PackageBuilder {
     outputDir = Directory(config.output)..createSync(recursive: true);
   }
 
+  /// An asynchronous factory method that builds Dartdoc's file writers
+  /// and returns a Dartdoc object with them.
+  @deprecated
+  static Future<Dartdoc> withDefaultGenerators(
+      DartdocGeneratorOptionContext config) async {
+    return Dartdoc._(config, await initHtmlGenerator(config));
+  }
+
   /// Asynchronous factory method that builds Dartdoc with an empty generator.
   static Future<Dartdoc> withEmptyGenerator(DartdocOptionContext config) async {
     return Dartdoc._(config, await initEmptyGenerator(config));
@@ -117,7 +125,7 @@ class Dartdoc extends PackageBuilder {
   static Future<Dartdoc> fromContext(
       DartdocGeneratorOptionContext context) async {
     Generator generator;
-    switch (context.outputFormat) {
+    switch (context.format) {
       case 'html':
         generator = await initHtmlGenerator(context);
         break;
@@ -126,8 +134,7 @@ class Dartdoc extends PackageBuilder {
         generator = await initEmptyGenerator(context);
         break;
       default:
-        throw DartdocFailure(
-            'Unsupported output format: ${context.outputFormat}');
+        throw DartdocFailure('Unsupported output format: ${context.format}');
     }
     return Dartdoc._(context, generator);
   }

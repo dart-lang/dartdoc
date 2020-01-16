@@ -56,7 +56,8 @@ mixin GeneratorContext on DartdocOptionContextBase {
 
   String get templatesDir => optionSet['templatesDir'].valueAt(context);
 
-  String get outputFormat => optionSet['format'].valueAt(context);
+  /// Output format, e.g. 'html', 'md'
+  String get format => optionSet['format'].valueAt(context);
 
   // TODO(jdkoren): duplicated temporarily so that GeneratorContext is enough for configuration.
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
