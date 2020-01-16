@@ -228,7 +228,6 @@ class TypeParameterElementType extends DefinedElementType {
   ClassElement get _boundClassElement => type.element;
 
   @override
-  // TODO(jcollins-g): This is wrong; bound is not always an InterfaceType.
   DartType get _bound => (type as TypeParameterType).bound;
 }
 
