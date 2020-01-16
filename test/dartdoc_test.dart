@@ -406,5 +406,24 @@ void main() {
         expect(e is DartdocFailure, isTrue);
       }
     });
+
+    test('rel canonical prefix does not include base href', () async {
+      final String prefix = 'foo.bar/baz';
+      Dartdoc dartdoc = await buildDartdoc(
+          ['--rel-canonical-prefix', prefix], testPackageDir, tempDir);
+      await dartdoc.generateDocsBase();
+
+      // Verify files at different levels have correct <link> content.
+      File level1 = File(path.join(tempDir.path, 'ex', 'Apple-class.html'));
+      expect(level1.existsSync(), isTrue);
+      expect(
+          level1.readAsStringSync(),
+          contains(
+              '<link rel="canonical" href="$prefix/ex/Apple-class.html">'));
+      File level2 = File(path.join(tempDir.path, 'ex', 'Apple', 'm.html'));
+      expect(level2.existsSync(), isTrue);
+      expect(level2.readAsStringSync(),
+          contains('<link rel="canonical" href="$prefix/ex/Apple/m.html">'));
+    });
   }, timeout: Timeout.factor(8));
 }
