@@ -39,6 +39,13 @@ abstract class TemplateData<T extends Documentable> {
   String get relCanonicalPrefix => htmlOptions.relCanonicalPrefix;
   bool get useBaseHref => htmlOptions.useBaseHref;
 
+  String get bareHref {
+    if (self is Indexable) {
+      return (self as Indexable).href.replaceAll(HTMLBASE_PLACEHOLDER, '');
+    }
+    return '';
+  }
+
   String _layoutTitle(String name, String kind, bool isDeprecated) =>
       packageGraph.rendererFactory.templateRenderer
           .composeLayoutTitle(name, kind, isDeprecated);
