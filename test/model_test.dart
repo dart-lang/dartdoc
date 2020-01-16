@@ -1878,7 +1878,7 @@ void main() {
       extensionOnDynamic = getExtension('ExtensionOnDynamic');
       extensionOnNull = getExtension('ExtensionOnNull');
       extensionOnVoid = getExtension('ExtensionOnVoid');
-      extensionOnVoid = getExtension('ExtensionOnTypeParameter');
+      extensionOnTypeParameter = getExtension('ExtensionOnTypeParameter');
 
       expect(extensionOnDynamic.couldApplyTo(object), isTrue);
       expect(extensionOnVoid.couldApplyTo(object), isTrue);

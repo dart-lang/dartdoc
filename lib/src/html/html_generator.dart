@@ -6,10 +6,8 @@ library dartdoc.html_generator;
 
 import 'dart:async' show Future, StreamController, Stream;
 import 'dart:io' show Directory, File;
-import 'dart:isolate';
 
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/empty_generator.dart';
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/html/html_generator_instance.dart';
 import 'package:dartdoc/src/html/template_data.dart';
