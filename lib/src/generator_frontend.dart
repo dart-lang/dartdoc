@@ -3,14 +3,12 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show File;
 
 import 'package:dartdoc/src/generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as path;
 
 /// [Generator] that delegates rendering to a [GeneratorBackend] and delegates
 /// file creation to a [FileWriter].
