@@ -109,7 +109,7 @@ class Dartdoc extends PackageBuilder {
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a Dartdoc object with them.
-  @deprecated
+  @Deprecated('Prefer withContext() instead')
   static Future<Dartdoc> withDefaultGenerators(
       DartdocGeneratorOptionContext config) async {
     return Dartdoc._(config, await initHtmlGenerator(config));
