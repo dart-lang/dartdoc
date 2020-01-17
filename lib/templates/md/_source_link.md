@@ -1,0 +1,3 @@
+{{#hasSourceHref}}
+[source]({{{sourceHref}}})
+{{/hasSourceHref}}

@@ -127,7 +127,7 @@ class Category extends Nameable
   @override
   String get href => isCanonical ? '${package.baseHref}$filePath' : null;
 
-  String get categorization => _categoryRenderer.renderCategoryLabel(this);
+  String get categoryLabel => _categoryRenderer.renderCategoryLabel(this);
 
   String get linkedName => _categoryRenderer.renderLinkedName(this);
 
