@@ -1,6 +1,9 @@
 include: package:pedantic/analysis_options.1.8.0.yaml
 
 analyzer:
+  errors:
+    unused_import: warning
+    unused_shown_name: warning
   exclude:
     - 'doc/**'
     - 'lib/src/third_party/pkg/**'
