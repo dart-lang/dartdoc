@@ -9,6 +9,7 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/category_renderer.dart';
+import 'package:dartdoc/src/render/filename_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 /// A category is a subcategory of a package, containing libraries tagged
@@ -120,14 +121,14 @@ class Category extends Nameable
   @override
   String get fullyQualifiedName => name;
 
-  String get filePath => 'topics/${name}-topic.html';
+  String get filePath => _fileNameRenderer.renderFileName('topics/$name-topic');
 
   @override
   String get href => isCanonical ? '${package.baseHref}$filePath' : null;
 
-  String get categorization => _renderer.renderCategoryLabel(this);
+  String get categorization => _categoryRenderer.renderCategoryLabel(this);
 
-  String get linkedName => _renderer.renderLinkedName(this);
+  String get linkedName => _categoryRenderer.renderLinkedName(this);
 
   int _categoryIndex;
 
@@ -199,6 +200,9 @@ class Category extends Nameable
   @override
   Iterable<Typedef> get typedefs => _typedefs;
 
-  CategoryRenderer get _renderer =>
+  CategoryRenderer get _categoryRenderer =>
       packageGraph.rendererFactory.categoryRenderer;
+
+  FileNameRenderer get _fileNameRenderer =>
+      packageGraph.rendererFactory.fileNameRenderer;
 }

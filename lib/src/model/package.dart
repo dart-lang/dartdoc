@@ -181,7 +181,8 @@ class Package extends LibraryContainer
   @override
   String get enclosingName => packageGraph.defaultPackageName;
 
-  String get filePath => 'index.html';
+  String get filePath =>
+      packageGraph.rendererFactory.fileNameRenderer.renderFileName('index');
 
   @override
   String get fullyQualifiedName => 'package:$name';
