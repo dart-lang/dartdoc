@@ -9,7 +9,6 @@ import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/html/html_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/tool_runner.dart';
 import 'package:stack_trace/stack_trace.dart';
