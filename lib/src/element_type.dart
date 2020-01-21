@@ -71,7 +71,7 @@ abstract class ElementType extends Privacy {
 
   String get linkedName;
 
-  String get name => type.element.name;
+  String get name;
 
   String get nameWithGenerics;
 
@@ -244,6 +244,9 @@ abstract class DefinedElementType extends ElementType {
     return _element;
   }
 
+  @override
+  String get name => type.element.name;
+
   bool get isParameterType => (type is TypeParameterType);
 
   /// This type is a public type if the underlying, canonical element is public.
@@ -305,6 +308,8 @@ abstract class DefinedElementType extends ElementType {
               .typeArguments
               .every((t) => t is InterfaceType)) {
         var typeSystem = library.element.typeSystem as TypeSystemImpl;
+        // TODO(jcollins-g): convert to ClassElement.instantiateToBounds
+        // dart-lang/dartdoc#2135
         _instantiatedType = typeSystem.instantiateToBounds(_bound);
       } else {
         _instantiatedType = _bound;
