@@ -45,6 +45,12 @@ class Documentation {
   List<ModelCommentReference> get commentRefs => _element.commentRefs;
 
   void _renderDocumentation(bool processAllDocs) {
+    if (!_element.hasDocumentation) {
+      _asHtml = '';
+      _asOneLiner = '';
+      _hasExtendedDocs = false;
+      return;
+    }
     Tuple2<List<md.Node>, bool> parseResult =
         _parseDocumentation(processAllDocs);
     if (_hasExtendedDocs != null) {
