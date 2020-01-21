@@ -325,7 +325,7 @@ void main() {
 
       test('sdk description', () {
         expect(sdkAsPackageGraph.defaultPackage.documentation,
-            startsWith('Welcome to the Dart API reference doc'));
+            startsWith('Welcome'));
       });
     });
 
