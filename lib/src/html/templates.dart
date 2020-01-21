@@ -158,6 +158,21 @@ class Templates {
   final Template topLevelPropertyTemplate;
   final Template typeDefTemplate;
 
+  static Future<Templates> fromContext(GeneratorContext context) {
+    String templatesDir = context.templatesDir;
+    if (templatesDir != null) {
+      return fromDirectory(Directory(templatesDir),
+          headerPaths: context.header,
+          footerPaths: context.footer,
+          footerTextPaths: context.footerTextPaths);
+    } else {
+      return createDefault(
+          headerPaths: context.header,
+          footerPaths: context.footer,
+          footerTextPaths: context.footerTextPaths);
+    }
+  }
+
   static Future<Templates> createDefault(
       {List<String> headerPaths,
       List<String> footerPaths,

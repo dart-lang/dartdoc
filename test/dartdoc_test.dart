@@ -45,9 +45,8 @@ void main() {
 
     Future<Dartdoc> buildDartdoc(
         List<String> argv, Directory packageRoot, Directory tempDir) async {
-      return await Dartdoc.withDefaultGenerators(await generatorContextFromArgv(
-          argv
-            ..addAll(['--input', packageRoot.path, '--output', tempDir.path])));
+      return await Dartdoc.fromContext(await generatorContextFromArgv(argv
+        ..addAll(['--input', packageRoot.path, '--output', tempDir.path])));
     }
 
     group('Option handling', () {
@@ -404,6 +403,36 @@ void main() {
         fail('dartdoc should fail with bad templatesDir path');
       } catch (e) {
         expect(e is DartdocFailure, isTrue);
+      }
+    });
+
+    test('rel canonical prefix does not include base href', () async {
+      final String prefix = 'foo.bar/baz';
+      Dartdoc dartdoc = await buildDartdoc(
+          ['--rel-canonical-prefix', prefix], testPackageDir, tempDir);
+      await dartdoc.generateDocsBase();
+
+      // Verify files at different levels have correct <link> content.
+      File level1 = File(path.join(tempDir.path, 'ex', 'Apple-class.html'));
+      expect(level1.existsSync(), isTrue);
+      expect(
+          level1.readAsStringSync(),
+          contains(
+              '<link rel="canonical" href="$prefix/ex/Apple-class.html">'));
+      File level2 = File(path.join(tempDir.path, 'ex', 'Apple', 'm.html'));
+      expect(level2.existsSync(), isTrue);
+      expect(level2.readAsStringSync(),
+          contains('<link rel="canonical" href="$prefix/ex/Apple/m.html">'));
+    });
+
+    test('generate docs with bad output format', () async {
+      try {
+        await buildDartdoc(['--format', 'bad'], testPackageDir, tempDir);
+        fail('dartdoc should fail with bad output format');
+      } catch (e) {
+        expect(e is DartdocFailure, isTrue);
+        expect((e as DartdocFailure).message,
+            startsWith('Unsupported output format'));
       }
     });
   }, timeout: Timeout.factor(8));

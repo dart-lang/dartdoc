@@ -5,7 +5,7 @@
 /// A library containing an abstract documentation generator.
 library dartdoc.generator;
 
-import 'dart:async' show Stream, Future;
+import 'dart:async' show Future;
 import 'dart:io' show Directory;
 import 'dart:isolate';
 
@@ -15,20 +15,23 @@ import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 
+abstract class FileWriter {
+  /// All filenames written by this generator.
+  Set<String> get writtenFiles;
+
+  /// Write [content] to a file at [filePath].
+  void write(String filePath, Object content,
+      {bool allowOverwrite, Warnable element});
+}
+
 /// An abstract class that defines a generator that generates documentation for
 /// a given package.
 ///
 /// Generators can generate documentation in different formats: html, json etc.
 abstract class Generator {
-  /// Generate the documentation for the given package in the specified
-  /// directory. Completes the returned future when done.
-  Future generate(PackageGraph packageGraph, String outputDirectoryPath);
-
-  /// Fires when a file is created.
-  Stream<void> get onFileCreated;
-
-  /// Fetches all filenames written by this generator.
-  Map<String, Warnable> get writtenFiles;
+  /// Generate the documentation for the given package using the specified
+  /// writer. Completes the returned future when done.
+  Future generate(PackageGraph packageGraph, FileWriter writer);
 }
 
 /// Dartdoc options related to generators generally.
@@ -52,6 +55,9 @@ mixin GeneratorContext on DartdocOptionContextBase {
       optionSet['relCanonicalPrefix'].valueAt(context);
 
   String get templatesDir => optionSet['templatesDir'].valueAt(context);
+
+  /// Output format, e.g. 'html', 'md'
+  String get format => optionSet['format'].valueAt(context);
 
   // TODO(jdkoren): duplicated temporarily so that GeneratorContext is enough for configuration.
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
@@ -134,6 +140,8 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
             'top_level_property, typedef. Partial templates are supported; '
             'they must begin with an underscore, and references to them must '
             'omit the leading underscore (e.g. use {{>foo}} to reference the '
-            'partial template _foo.html).'),
+            'partial template named _foo).'),
+    // TODO(jdkoren): Unhide when we have good support for another format.
+    DartdocOptionArgOnly<String>('format', 'html', hide: true),
   ];
 }

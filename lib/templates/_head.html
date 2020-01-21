@@ -10,7 +10,7 @@
   <meta name="description" content="{{ metaDescription }}">
   <title>{{ title }}</title>
   {{ #relCanonicalPrefix }}
-  <link rel="canonical" href="{{{relCanonicalPrefix}}}/{{{self.href}}}">
+  <link rel="canonical" href="{{{relCanonicalPrefix}}}/{{{bareHref}}}">
   {{ /relCanonicalPrefix}}
 
   {{#useBaseHref}}{{! TODO(jdkoren): remove when the useBaseHref option is removed.}}
