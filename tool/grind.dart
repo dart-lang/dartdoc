@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io' hide ProcessException;
 
 import 'package:dartdoc/src/io_utils.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:grinder/grinder.dart';
 import 'package:io/io.dart';
 import 'package:path/path.dart' as path;
@@ -759,17 +760,37 @@ Future<String> _buildPubPackageDocs(
       Directory(path.join(env['PUB_CACHE'], 'hosted', 'pub.dartlang.org'));
   Directory pubPackageDir =
       cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
-  await launcher.runStreamed('pub', ['get'],
-      workingDirectory: pubPackageDir.absolute.path);
-  await launcher.runStreamed(
-      Platform.resolvedExecutable,
-      [
-        '--enable-asserts',
-        path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
-        '--json',
-        '--show-progress',
-      ]..addAll(dartdocParameters),
-      workingDirectory: pubPackageDir.absolute.path);
+  if (PackageMeta.fromDir(pubPackageDir).requiresFlutter) {
+    FlutterRepo flutterRepo =
+        await FlutterRepo.fromExistingFlutterRepo(await cleanFlutterRepo);
+    await launcher.runStreamed(flutterRepo.cachePub, ['get'],
+        environment: flutterRepo.env,
+        workingDirectory: pubPackageDir.absolute.path);
+    await launcher.runStreamed(
+        flutterRepo.cacheDart,
+        [
+          '--enable-asserts',
+          path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+          '--json',
+          '--link-to-remote',
+          '--show-progress',
+        ]..addAll(dartdocParameters),
+        environment: flutterRepo.env,
+        workingDirectory: pubPackageDir.absolute.path);
+  } else {
+    await launcher.runStreamed('pub', ['get'],
+        workingDirectory: pubPackageDir.absolute.path);
+    await launcher.runStreamed(
+        Platform.resolvedExecutable,
+        [
+          '--enable-asserts',
+          path.join(Directory.current.absolute.path, 'bin', 'dartdoc.dart'),
+          '--json',
+          '--link-to-remote',
+          '--show-progress',
+        ]..addAll(dartdocParameters),
+        workingDirectory: pubPackageDir.absolute.path);
+  }
   return path.join(pubPackageDir.absolute.path, 'doc', 'api');
 }
 
