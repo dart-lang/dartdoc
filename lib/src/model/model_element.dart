@@ -25,7 +25,6 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
-import 'package:dartdoc/src/render/filename_renderer.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/source_linker.dart';
@@ -788,7 +787,9 @@ abstract class ModelElement extends Canonicalization
     return '';
   }
 
-  String get fileName => fileNameRenderer.renderFileName(name);
+  String get fileName => '$name.$fileType';
+
+  String get fileType => package.fileType;
 
   String get filePath;
 
@@ -916,9 +917,6 @@ abstract class ModelElement extends Canonicalization
     }
     return _linkedName;
   }
-
-  FileNameRenderer get fileNameRenderer =>
-      packageGraph.rendererFactory.fileNameRenderer;
 
   ModelElementRenderer get _modelElementRenderer =>
       packageGraph.rendererFactory.modelElementRenderer;

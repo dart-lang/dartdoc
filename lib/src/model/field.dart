@@ -156,8 +156,7 @@ class Field extends ModelElement
   FieldElement get field => (element as FieldElement);
 
   @override
-  String get fileName =>
-      fileNameRenderer.renderFileName(isConst ? '$name-constant' : '$name');
+  String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
 
   String _sourceCode;
 

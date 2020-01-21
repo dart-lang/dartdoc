@@ -44,7 +44,7 @@ class Operator extends Method {
     if (friendlyNames.containsKey(actualName)) {
       actualName = "operator_${friendlyNames[actualName]}";
     }
-    return fileNameRenderer.renderFileName(actualName);
+    return '$actualName.$fileType';
   }
 
   @override

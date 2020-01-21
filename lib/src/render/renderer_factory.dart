@@ -7,7 +7,7 @@ import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/documentation_renderer.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
-import 'package:dartdoc/src/render/filename_renderer.dart';
+import 'package:dartdoc/src/render/file_type_renderer.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/template_renderer.dart';
@@ -15,7 +15,7 @@ import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 abstract class RendererFactory {
-  FileNameRenderer get fileNameRenderer;
+  FileTypeRenderer get fileTypeRenderer;
 
   TemplateRenderer get templateRenderer;
 
@@ -46,7 +46,7 @@ abstract class RendererFactory {
 
 class HtmlRenderFactory extends RendererFactory {
   @override
-  FileNameRenderer get fileNameRenderer => HtmlFileNameRenderer();
+  FileTypeRenderer get fileTypeRenderer => HtmlFileTypeRenderer();
 
   @override
   TemplateRenderer get templateRenderer => HtmlTemplateRenderer();

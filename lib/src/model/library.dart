@@ -375,7 +375,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   }
 
   @override
-  String get fileName => fileNameRenderer.renderFileName('$dirName-library');
+  String get fileName => '$dirName-library.$fileType';
 
   @override
   String get filePath => '${library.dirName}/$fileName';

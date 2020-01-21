@@ -2,11 +2,11 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-abstract class FileNameRenderer {
-  String renderFileName(String name);
+abstract class FileTypeRenderer {
+  String get fileType;
 }
 
-class HtmlFileNameRenderer extends FileNameRenderer {
+class HtmlFileTypeRenderer extends FileTypeRenderer {
   @override
-  String renderFileName(String name) => '$name.html';
+  String get fileType => 'html';
 }

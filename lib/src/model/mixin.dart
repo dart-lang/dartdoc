@@ -64,7 +64,7 @@ class Mixin extends Class {
   bool get hasModifiers => super.hasModifiers || hasPublicSuperclassConstraints;
 
   @override
-  String get fileName => fileNameRenderer.renderFileName('$name-mixin');
+  String get fileName => '$name-mixin.$fileType';
 
   @override
   String get kind => 'mixin';
