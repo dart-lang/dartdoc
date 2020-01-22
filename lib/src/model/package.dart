@@ -192,7 +192,7 @@ class Package extends LibraryContainer
     if (package.documentedWhere == DocumentLocation.remote) {
       return 'html';
     }
-    return packageGraph.rendererFactory.fileTypeRenderer.fileType;
+    return config.format;
   }
 
   @override
