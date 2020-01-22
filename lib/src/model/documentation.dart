@@ -45,12 +45,6 @@ class Documentation {
   List<ModelCommentReference> get commentRefs => _element.commentRefs;
 
   void _renderDocumentation(bool processAllDocs) {
-    if (!_element.hasDocumentation) {
-      _asHtml = '';
-      _asOneLiner = '';
-      _hasExtendedDocs = false;
-      return;
-    }
     Tuple2<List<md.Node>, bool> parseResult =
         _parseDocumentation(processAllDocs);
     if (_hasExtendedDocs != null) {
@@ -71,6 +65,9 @@ class Documentation {
 
   /// Returns a tuple of List<md.Node> and hasExtendedDocs
   Tuple2<List<md.Node>, bool> _parseDocumentation(bool processFullDocs) {
+    if (!_element.hasDocumentation) {
+      return Tuple2([], false);
+    }
     String text = _element.documentation;
     showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
     MarkdownDocument document =

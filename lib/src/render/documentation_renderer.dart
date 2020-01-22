@@ -13,6 +13,9 @@ abstract class DocumentationRenderer {
 class DocumentationRendererHtml extends DocumentationRenderer {
   @override
   Tuple2<String, String> render(List<md.Node> nodes, bool processFullDocs) {
+    if (nodes.isEmpty) {
+      return Tuple2('', '');
+    }
     var rawHtml = md.HtmlRenderer().render(nodes);
     var asHtmlDocument = parse(rawHtml);
     for (var s in asHtmlDocument.querySelectorAll('script')) {
