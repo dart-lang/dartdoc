@@ -85,7 +85,7 @@ class TopLevelVariable extends ModelElement
   }
 
   @override
-  String get fileName => isConst ? '$name-constant.html' : '$name.html';
+  String get fileName => '${isConst ? '$name-constant' : name}.$fileType';
 
   @override
   DefinedElementType get modelType => super.modelType;

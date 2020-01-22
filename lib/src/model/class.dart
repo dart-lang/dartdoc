@@ -184,7 +184,7 @@ class Class extends Container
   ModelElement get enclosingElement => library;
 
   @override
-  String get fileName => "${name}-class.html";
+  String get fileName => '$name-class.$fileType';
 
   @override
   String get filePath => '${library.dirName}/$fileName';
