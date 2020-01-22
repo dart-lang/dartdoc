@@ -111,8 +111,7 @@ void main() {
 
     test('has a readme', () {
       expect(p.getReadmeContents(), isNotNull);
-      expect(p.getReadmeContents().contents,
-          startsWith('Welcome to the Dart API reference documentation'));
+      expect(p.getReadmeContents().contents, startsWith('Welcome'));
     });
 
     test('does not have a license', () {
