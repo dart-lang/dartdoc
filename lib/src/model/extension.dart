@@ -23,27 +23,23 @@ class Extension extends Container
 
   /// Detect if this extension applies to every object.
   bool get alwaysApplies =>
-      extendedType.type.isDynamic ||
-      extendedType.type.isVoid ||
-      extendedType.type.isObject;
+      extendedType.instantiatedType.isDynamic ||
+      extendedType.instantiatedType.isVoid ||
+      extendedType.instantiatedType.isObject;
 
   bool couldApplyTo<T extends ExtensionTarget>(T c) =>
       _couldApplyTo(c.modelType);
 
   /// Return true if this extension could apply to [t].
   bool _couldApplyTo(DefinedElementType t) {
-    if (extendedType is UndefinedElementType) {
-      assert(extendedType.type.isDynamic || extendedType.type.isVoid);
+    if (extendedType.instantiatedType.isDynamic ||
+        extendedType.instantiatedType.isVoid) {
       return true;
     }
-    {
-      DefinedElementType extendedType = this.extendedType;
-      return t.instantiatedType == extendedType.instantiatedType ||
-          (t.instantiatedType.element ==
-                  extendedType.instantiatedType.element &&
-              extendedType.isSubtypeOf(t)) ||
-          extendedType.isBoundSupertypeTo(t);
-    }
+    return t.instantiatedType == extendedType.instantiatedType ||
+        (t.instantiatedType.element == extendedType.instantiatedType.element &&
+            extendedType.isSubtypeOf(t)) ||
+        extendedType.isBoundSupertypeTo(t);
   }
 
   @override
