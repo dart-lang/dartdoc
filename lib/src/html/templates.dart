@@ -60,9 +60,9 @@ const _requiredTemplates = <String>[
   'typedef.html',
 ];
 
-const String _headerPlaceholder = '<!-- header placeholder -->';
-const String _footerPlaceholder = '<!-- footer placeholder -->';
-const String _footerTextPlaceholder = '<!-- footer-text placeholder -->';
+const String _headerPlaceholder = '{{! header placeholder }}';
+const String _footerPlaceholder = '{{! footer placeholder }}';
+const String _footerTextPlaceholder = '{{! footer-text placeholder }}';
 
 Future<Map<String, String>> _loadPartials(
     _TemplatesLoader templatesLoader,
