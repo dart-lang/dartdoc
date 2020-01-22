@@ -317,7 +317,8 @@ class _FilePackageMeta extends PackageMeta {
 
   @override
   bool get requiresFlutter =>
-      _pubspec['environment']?.containsKey('flutter') == true;
+      _pubspec['environment']?.containsKey('flutter') == true ||
+      _pubspec['dependencies']?.containsKey('flutter') == true;
 
   @override
   FileContents getReadmeContents() {
