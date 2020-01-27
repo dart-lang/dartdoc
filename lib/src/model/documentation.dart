@@ -65,6 +65,9 @@ class Documentation {
 
   /// Returns a tuple of List<md.Node> and hasExtendedDocs
   Tuple2<List<md.Node>, bool> _parseDocumentation(bool processFullDocs) {
+    if (!_element.hasDocumentation) {
+      return Tuple2([], false);
+    }
     String text = _element.documentation;
     showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
     MarkdownDocument document =
