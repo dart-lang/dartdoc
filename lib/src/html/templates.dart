@@ -41,25 +41,6 @@ const _partials = <String>[
   'accessor_setter',
 ];
 
-const _requiredTemplates = <String>[
-  '404error.html',
-  'category.html',
-  'class.html',
-  'constant.html',
-  'constructor.html',
-  'enum.html',
-  'extension.html',
-  'function.html',
-  'index.html',
-  'library.html',
-  'method.html',
-  'mixin.html',
-  'property.html',
-  'top_level_constant.html',
-  'top_level_property.html',
-  'typedef.html',
-];
-
 const String _headerPlaceholder = '{{! header placeholder }}';
 const String _footerPlaceholder = '{{! footer placeholder }}';
 const String _footerTextPlaceholder = '{{! footer-text placeholder }}';
@@ -97,26 +78,33 @@ abstract class _TemplatesLoader {
   Future<String> loadTemplate(String name);
 }
 
+/// Loads default templates included in the Dartdoc program.
 class _DefaultTemplatesLoader extends _TemplatesLoader {
+  final String _format;
+
+  _DefaultTemplatesLoader(this._format);
+
   @override
   Future<Map<String, String>> loadPartials() async {
     var partials = <String, String>{};
-    for (String partial in _partials) {
-      var uri = 'package:dartdoc/templates/_$partial.html';
-      partials[partial] = await loader.loadAsString(uri);
+    for (String name in _partials) {
+      var uri = 'package:dartdoc/templates/$_format/_$name.$_format';
+      partials[name] = await loader.loadAsString(uri);
     }
     return partials;
   }
 
   @override
   Future<String> loadTemplate(String name) =>
-      loader.loadAsString('package:dartdoc/templates/$name');
+      loader.loadAsString('package:dartdoc/templates/$_format/$name.$_format');
 }
 
+/// Loads templates from a specified Directory.
 class _DirectoryTemplatesLoader extends _TemplatesLoader {
   final Directory _directory;
+  final String _format;
 
-  _DirectoryTemplatesLoader(this._directory);
+  _DirectoryTemplatesLoader(this._directory, this._format);
 
   @override
   Future<Map<String, String>> loadPartials() async {
@@ -124,7 +112,7 @@ class _DirectoryTemplatesLoader extends _TemplatesLoader {
 
     for (File file in _directory.listSync().whereType<File>()) {
       var basename = path.basename(file.path);
-      if (basename.startsWith('_') && basename.endsWith('.html')) {
+      if (basename.startsWith('_') && basename.endsWith('.$_format')) {
         var content = file.readAsString();
         var partialName = basename.substring(1, basename.lastIndexOf('.'));
         partials[partialName] = await content;
@@ -135,7 +123,10 @@ class _DirectoryTemplatesLoader extends _TemplatesLoader {
 
   @override
   Future<String> loadTemplate(String name) {
-    var file = File(path.join(_directory.path, name));
+    var file = File(path.join(_directory.path, '$name.$_format'));
+    if (!file.existsSync()) {
+      throw DartdocFailure('Missing required template file: $name.$_format');
+    }
     return file.readAsString();
   }
 }
@@ -158,49 +149,39 @@ class Templates {
   final Template topLevelPropertyTemplate;
   final Template typeDefTemplate;
 
-  static Future<Templates> fromContext(GeneratorContext context) {
+  static Future<Templates> fromContext(DartdocGeneratorOptionContext context) {
     String templatesDir = context.templatesDir;
     if (templatesDir != null) {
-      return fromDirectory(Directory(templatesDir),
+      return fromDirectory(Directory(templatesDir), context.format,
           headerPaths: context.header,
           footerPaths: context.footer,
           footerTextPaths: context.footerTextPaths);
     } else {
-      return createDefault(
+      return createDefault(context.format,
           headerPaths: context.header,
           footerPaths: context.footer,
           footerTextPaths: context.footerTextPaths);
     }
   }
 
-  static Future<Templates> createDefault(
+  static Future<Templates> createDefault(String format,
       {List<String> headerPaths,
       List<String> footerPaths,
       List<String> footerTextPaths}) async {
-    return _create(_DefaultTemplatesLoader(),
+    return _create(_DefaultTemplatesLoader(format),
         headerPaths: headerPaths,
         footerPaths: footerPaths,
         footerTextPaths: footerTextPaths);
   }
 
-  static Future<Templates> fromDirectory(Directory dir,
+  static Future<Templates> fromDirectory(Directory dir, String format,
       {List<String> headerPaths,
       List<String> footerPaths,
       List<String> footerTextPaths}) async {
-    await _checkRequiredTemplatesExist(dir);
-    return _create(_DirectoryTemplatesLoader(dir),
+    return _create(_DirectoryTemplatesLoader(dir, format),
         headerPaths: headerPaths,
         footerPaths: footerPaths,
         footerTextPaths: footerTextPaths);
-  }
-
-  static void _checkRequiredTemplatesExist(Directory dir) {
-    for (var name in _requiredTemplates) {
-      var file = File(path.join(dir.path, name));
-      if (!file.existsSync()) {
-        throw DartdocFailure('Missing required template file: "$name"');
-      }
-    }
   }
 
   static Future<Templates> _create(_TemplatesLoader templatesLoader,
@@ -224,24 +205,22 @@ class Templates {
       return Template(templateContents, partialResolver: _partial);
     }
 
-    var indexTemplate = await _loadTemplate('index.html');
-    var libraryTemplate = await _loadTemplate('library.html');
-    var categoryTemplate = await _loadTemplate('category.html');
-    var classTemplate = await _loadTemplate('class.html');
-    var extensionTemplate = await _loadTemplate('extension.html');
-    var enumTemplate = await _loadTemplate('enum.html');
-    var functionTemplate = await _loadTemplate('function.html');
-    var methodTemplate = await _loadTemplate('method.html');
-    var constructorTemplate = await _loadTemplate('constructor.html');
-    var errorTemplate = await _loadTemplate('404error.html');
-    var propertyTemplate = await _loadTemplate('property.html');
-    var constantTemplate = await _loadTemplate('constant.html');
-    var topLevelConstantTemplate =
-        await _loadTemplate('top_level_constant.html');
-    var topLevelPropertyTemplate =
-        await _loadTemplate('top_level_property.html');
-    var typeDefTemplate = await _loadTemplate('typedef.html');
-    var mixinTemplate = await _loadTemplate('mixin.html');
+    var indexTemplate = await _loadTemplate('index');
+    var libraryTemplate = await _loadTemplate('library');
+    var categoryTemplate = await _loadTemplate('category');
+    var classTemplate = await _loadTemplate('class');
+    var extensionTemplate = await _loadTemplate('extension');
+    var enumTemplate = await _loadTemplate('enum');
+    var functionTemplate = await _loadTemplate('function');
+    var methodTemplate = await _loadTemplate('method');
+    var constructorTemplate = await _loadTemplate('constructor');
+    var errorTemplate = await _loadTemplate('404error');
+    var propertyTemplate = await _loadTemplate('property');
+    var constantTemplate = await _loadTemplate('constant');
+    var topLevelConstantTemplate = await _loadTemplate('top_level_constant');
+    var topLevelPropertyTemplate = await _loadTemplate('top_level_property');
+    var typeDefTemplate = await _loadTemplate('typedef');
+    var mixinTemplate = await _loadTemplate('mixin');
 
     return Templates._(
         indexTemplate,

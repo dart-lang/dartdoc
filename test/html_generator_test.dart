@@ -20,7 +20,8 @@ import 'src/utils.dart' as utils;
 
 // Init a generator without a GeneratorContext and with the default file writer.
 Future<Generator> _initGeneratorForTest() async {
-  var backend = HtmlGeneratorBackend(null, await Templates.createDefault());
+  var backend =
+      HtmlGeneratorBackend(null, await Templates.createDefault('html'));
   return GeneratorFrontEnd(backend);
 }
 
@@ -29,7 +30,7 @@ void main() {
     Templates templates;
 
     setUp(() async {
-      templates = await Templates.createDefault();
+      templates = await Templates.createDefault('html');
     });
 
     test('index html', () {
