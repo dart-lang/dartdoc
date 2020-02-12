@@ -1,3 +1,5 @@
+{{>head}}
+
 {{#self}}
 # {{{nameWithGenerics}}} {{kind}}
 
@@ -61,3 +63,5 @@ on
 {{/publicConstants}}
 {{/hasPublicConstants}}
 {{/extension}}
+
+{{>footer}}

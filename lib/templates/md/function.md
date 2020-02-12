@@ -1,6 +1,8 @@
+{{>head}}
+
 {{#self}}
 # {{{nameWithGenerics}}} {{kind}}
- 
+
 {{>source_link}}
 {{>categorization}}
 {{/self}}
@@ -13,3 +15,5 @@
 {{>source_code}}
 
 {{/function}}
+
+{{>footer}}

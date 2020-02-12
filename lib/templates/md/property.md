@@ -1,3 +1,5 @@
+{{>head}}
+
 {{#self}}
 # {{name}} {{kind}}
 
@@ -23,3 +25,5 @@
 {{/hasSetter}}
 {{/hasGetterOrSetter}}
 {{/self}}
+
+{{>footer}}

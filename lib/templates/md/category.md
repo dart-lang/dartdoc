@@ -1,3 +1,5 @@
+{{>head}}
+
 {{#self}}
 # {{name}} {{kind}}
 
@@ -75,3 +77,5 @@
 {{/publicExceptions}}
 {{/hasPublicExceptions}}
 {{/self}}
+
+{{>footer}}

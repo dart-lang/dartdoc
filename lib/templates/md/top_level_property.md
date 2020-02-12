@@ -1,3 +1,5 @@
+{{>head}}
+
 {{#self}}
 # {{{name}}} {{kind}}
 
@@ -20,3 +22,5 @@
 {{>accessor_setter}}
 {{/hasExplicitSetter}}
 {{/self}}
+
+{{>footer}}

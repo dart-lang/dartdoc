@@ -1,3 +1,5 @@
+{{>head}}
+
 {{#self}}
 # {{{nameWithGenerics}}} {{kind}}
 
@@ -12,3 +14,5 @@
 {{>source_code}}
 
 {{/method}}
+
+{{>footer}}

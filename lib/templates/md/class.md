@@ -1,3 +1,5 @@
+{{>head}}
+
 {{#self}}
 # {{{nameWithGenerics}}} {{kind}}
 
@@ -53,7 +55,7 @@
 
 {{#hasAnnotations}}
 **Annotations**
-  
+
 {{#annotations}}
 - {{{.}}}
 {{/annotations}}
@@ -118,3 +120,5 @@
 {{/publicConstants}}
 {{/hasPublicConstants}}
 {{/clazz}}
+
+{{>footer}}

@@ -1,3 +1,5 @@
+{{>head}}
+
 {{#self}}
 # {{{name}}} {{kind}}
 
@@ -45,7 +47,7 @@
 
 {{#hasAnnotations}}
 **Annotations**
-  
+
 {{#annotations}}
 - {{{.}}}
 {{/annotations}}
@@ -111,3 +113,5 @@
 {{/publicStaticMethods}}
 {{/hasPublicStaticMethods}}
 {{/eNum}}
+
+{{>footer}}

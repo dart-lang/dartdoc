@@ -1,3 +1,5 @@
+{{>head}}
+
 # {{ title }}
 
 {{#packageGraph.defaultPackage}}
@@ -26,3 +28,5 @@
 {{/categoriesWithPublicLibraries}}
 {{/localPackages}}
 {{/packageGraph}}
+
+{{>footer}}

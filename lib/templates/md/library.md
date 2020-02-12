@@ -1,3 +1,5 @@
+{{>head}}
+
 {{#self}}
 # {{{ name }}} {{ kind }}
 
@@ -80,3 +82,5 @@
 {{>class}}
 {{/library.publicExceptions}}
 {{/library.hasPublicExceptions}}
+
+{{>footer}}
