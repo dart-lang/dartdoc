@@ -7,9 +7,9 @@ library dartdoc.html_generator;
 import 'dart:async' show Future;
 
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/generator.dart';
-import 'package:dartdoc/src/generator_frontend.dart';
-import 'package:dartdoc/src/html/html_generator_backend.dart';
+import 'package:dartdoc/src/generator/generator.dart';
+import 'package:dartdoc/src/generator/generator_frontend.dart';
+import 'package:dartdoc/src/generator/html_generator_backend.dart';
 
 Future<Generator> initHtmlGenerator(
     DartdocGeneratorOptionContext context) async {

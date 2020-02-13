@@ -7,10 +7,10 @@ library dartdoc.html_generator_test;
 import 'dart:io' show File, Directory;
 
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/generator_frontend.dart';
-import 'package:dartdoc/src/html/html_generator_backend.dart';
-import 'package:dartdoc/src/html/templates.dart';
+import 'package:dartdoc/src/generator/generator_frontend.dart';
+import 'package:dartdoc/src/generator/html_generator_backend.dart';
 import 'package:dartdoc/src/html/resources.g.dart';
+import 'package:dartdoc/src/html/templates.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;

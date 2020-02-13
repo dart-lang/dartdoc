@@ -5,8 +5,8 @@
 import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/generator_frontend.dart';
-import 'package:dartdoc/src/generator_utils.dart' as generator_util;
+import 'package:dartdoc/src/generator/generator_frontend.dart';
+import 'package:dartdoc/src/generator/generator_utils.dart' as generator_util;
 import 'package:dartdoc/src/html/resource_loader.dart' as loader;
 import 'package:dartdoc/src/html/resources.g.dart' as resources;
 import 'package:dartdoc/src/html/template_data.dart';
