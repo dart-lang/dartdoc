@@ -4,7 +4,7 @@
 
 import 'package:dartdoc/src/model/model.dart';
 
-abstract class HtmlOptions {
+abstract class TemplateOptions {
   String get relCanonicalPrefix;
   String get toolVersion;
   bool get useBaseHref;
@@ -12,7 +12,7 @@ abstract class HtmlOptions {
 
 abstract class TemplateData<T extends Documentable> {
   final PackageGraph packageGraph;
-  final HtmlOptions htmlOptions;
+  final TemplateOptions htmlOptions;
 
   TemplateData(this.htmlOptions, this.packageGraph);
 
@@ -54,7 +54,7 @@ abstract class TemplateData<T extends Documentable> {
 class PackageTemplateData extends TemplateData<Package> {
   final Package package;
   PackageTemplateData(
-      HtmlOptions htmlOptions, PackageGraph packageGraph, this.package)
+      TemplateOptions htmlOptions, PackageGraph packageGraph, this.package)
       : super(htmlOptions, packageGraph);
 
   @override
@@ -84,7 +84,7 @@ class CategoryTemplateData extends TemplateData<Category> {
   final Category category;
 
   CategoryTemplateData(
-      HtmlOptions htmlOptions, PackageGraph packageGraph, this.category)
+      TemplateOptions htmlOptions, PackageGraph packageGraph, this.category)
       : super(htmlOptions, packageGraph);
 
   @override
@@ -111,7 +111,7 @@ class LibraryTemplateData extends TemplateData<Library> {
   final Library library;
 
   LibraryTemplateData(
-      HtmlOptions htmlOptions, PackageGraph packageGraph, this.library)
+      TemplateOptions htmlOptions, PackageGraph packageGraph, this.library)
       : super(htmlOptions, packageGraph);
 
   @override
@@ -136,7 +136,7 @@ class LibraryTemplateData extends TemplateData<Library> {
 class MixinTemplateData extends ClassTemplateData<Mixin> {
   final Mixin mixin;
 
-  MixinTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+  MixinTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
       Library library, this.mixin)
       : super(htmlOptions, packageGraph, library, mixin);
 
@@ -150,7 +150,7 @@ class ClassTemplateData<T extends Class> extends TemplateData<T> {
   final Library library;
   Class _objectType;
 
-  ClassTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+  ClassTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
       this.library, this.clazz)
       : super(htmlOptions, packageGraph);
 
@@ -195,7 +195,7 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T> {
   final T extension;
   final Library library;
 
-  ExtensionTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+  ExtensionTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
       this.library, this.extension)
       : super(htmlOptions, packageGraph);
 
@@ -223,8 +223,8 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
   final Class clazz;
   final Constructor constructor;
 
-  ConstructorTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
-      this.library, this.clazz, this.constructor)
+  ConstructorTemplateData(TemplateOptions htmlOptions,
+      PackageGraph packageGraph, this.library, this.clazz, this.constructor)
       : super(htmlOptions, packageGraph);
 
   @override
@@ -250,7 +250,7 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
 }
 
 class EnumTemplateData extends ClassTemplateData<Enum> {
-  EnumTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+  EnumTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
       Library library, Enum eNum)
       : super(htmlOptions, packageGraph, library, eNum);
 
@@ -263,7 +263,7 @@ class FunctionTemplateData extends TemplateData<ModelFunction> {
   final ModelFunction function;
   final Library library;
 
-  FunctionTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+  FunctionTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
       this.library, this.function)
       : super(htmlOptions, packageGraph);
 
@@ -291,7 +291,7 @@ class MethodTemplateData extends TemplateData<Method> {
   final Container container;
   String containerDesc;
 
-  MethodTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+  MethodTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
       this.library, this.container, this.method)
       : super(htmlOptions, packageGraph) {
     containerDesc = container.isClass ? 'class' : 'extension';
@@ -324,7 +324,7 @@ class PropertyTemplateData extends TemplateData<Field> {
   final Field property;
   String containerDesc;
 
-  PropertyTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+  PropertyTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
       this.library, this.container, this.property)
       : super(htmlOptions, packageGraph) {
     containerDesc = container.isClass ? 'class' : 'extension';
@@ -358,7 +358,7 @@ class TypedefTemplateData extends TemplateData<Typedef> {
   final Library library;
   final Typedef typeDef;
 
-  TypedefTemplateData(HtmlOptions htmlOptions, PackageGraph packageGraph,
+  TypedefTemplateData(TemplateOptions htmlOptions, PackageGraph packageGraph,
       this.library, this.typeDef)
       : super(htmlOptions, packageGraph);
 
@@ -385,7 +385,7 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
   final Library library;
   final TopLevelVariable property;
 
-  TopLevelPropertyTemplateData(HtmlOptions htmlOptions,
+  TopLevelPropertyTemplateData(TemplateOptions htmlOptions,
       PackageGraph packageGraph, this.library, this.property)
       : super(htmlOptions, packageGraph);
 
