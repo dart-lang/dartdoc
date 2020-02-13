@@ -7,13 +7,10 @@ library dartdoc.generator;
 
 import 'dart:async' show Future;
 import 'dart:io' show Directory;
-import 'dart:isolate';
 
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart' show PackageGraph;
-import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
-import 'package:path/path.dart' as path;
 
 abstract class FileWriter {
   /// All filenames written by this generator.
@@ -38,12 +35,10 @@ abstract class Generator {
 mixin GeneratorContext on DartdocOptionContextBase {
   List<String> get footer => optionSet['footer'].valueAt(context);
 
-  /// _footerText is only used to construct synthetic options.
-  // ignore: unused_element
-  List<String> get _footerText => optionSet['footerText'].valueAt(context);
+  List<String> get footerText => optionSet['footerText'].valueAt(context);
 
-  List<String> get footerTextPaths =>
-      optionSet['footerTextPaths'].valueAt(context);
+  // Synthetic. TODO(jcollins-g): Eliminate special case for SDK and use config file.
+  bool get addSdkFooter => optionSet['addSdkFooter'].valueAt(context);
 
   List<String> get header => optionSet['header'].valueAt(context);
 
@@ -60,19 +55,7 @@ mixin GeneratorContext on DartdocOptionContextBase {
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
 }
 
-Uri _sdkFooterCopyrightUri;
-
-Future<void> _setSdkFooterCopyrightUri() async {
-  if (_sdkFooterCopyrightUri == null) {
-    // TODO(jdkoren): find a way to make this not specific to HTML, or have
-    // alternatives for other supported formats.
-    _sdkFooterCopyrightUri = await Isolate.resolvePackageUri(
-        Uri.parse('package:dartdoc/resources/sdk_footer_text.html'));
-  }
-}
-
 Future<List<DartdocOption>> createGeneratorOptions() async {
-  await _setSdkFooterCopyrightUri();
   return <DartdocOption>[
     DartdocOptionArgFile<List<String>>('footer', [],
         isFile: true,
@@ -89,23 +72,12 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
             'package name and version).',
         mustExist: true,
         splitCommas: true),
-    DartdocOptionSyntheticOnly<List<String>>(
-      'footerTextPaths',
-      (DartdocSyntheticOption<List<String>> option, Directory dir) {
-        final List<String> footerTextPaths = <String>[];
-        final PackageMeta topLevelPackageMeta =
-            option.root['topLevelPackageMeta'].valueAt(dir);
-        // TODO(jcollins-g): Eliminate special casing for SDK and use config file.
-        if (topLevelPackageMeta.isSdk == true) {
-          footerTextPaths
-              .add(path.canonicalize(_sdkFooterCopyrightUri.toFilePath()));
-        }
-        footerTextPaths.addAll(option.parent['footerText'].valueAt(dir));
-        return footerTextPaths;
+    DartdocOptionSyntheticOnly<bool>(
+      'addSdkFooter',
+      (DartdocSyntheticOption<bool> option, Directory dir) {
+        return option.root['topLevelPackageMeta'].valueAt(dir).isSdk;
       },
-      isFile: true,
-      help: 'paths to footer-text-files (adding special case for SDK)',
-      mustExist: true,
+      help: 'Whether the SDK footer text should be added (synthetic)',
     ),
     DartdocOptionArgFile<List<String>>('header', [],
         isFile: true,

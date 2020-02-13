@@ -6,6 +6,7 @@ library dartdoc.templates;
 
 import 'dart:async' show Future;
 import 'dart:io' show File, Directory;
+import 'dart:isolate';
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/html/resource_loader.dart' as loader;
@@ -149,18 +150,27 @@ class Templates {
   final Template topLevelPropertyTemplate;
   final Template typeDefTemplate;
 
-  static Future<Templates> fromContext(DartdocGeneratorOptionContext context) {
+  static Future<Templates> fromContext(
+      DartdocGeneratorOptionContext context) async {
     String templatesDir = context.templatesDir;
+    String format = context.format;
+    List<String> footerTextPaths = context.footerText;
+    if (context.addSdkFooter) {
+      Uri sdkFooter = await Isolate.resolvePackageUri(
+          Uri.parse('package:dartdoc/resources/sdk_footer_text.$format'));
+      footerTextPaths.add(path.canonicalize(sdkFooter.toFilePath()));
+    }
+
     if (templatesDir != null) {
-      return fromDirectory(Directory(templatesDir), context.format,
+      return fromDirectory(Directory(templatesDir), format,
           headerPaths: context.header,
           footerPaths: context.footer,
-          footerTextPaths: context.footerTextPaths);
+          footerTextPaths: footerTextPaths);
     } else {
-      return createDefault(context.format,
+      return createDefault(format,
           headerPaths: context.header,
           footerPaths: context.footer,
-          footerTextPaths: context.footerTextPaths);
+          footerTextPaths: footerTextPaths);
     }
   }
 
