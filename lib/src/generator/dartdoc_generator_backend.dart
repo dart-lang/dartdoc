@@ -5,8 +5,8 @@
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
 import 'package:dartdoc/src/generator/generator_utils.dart' as generator_util;
-import 'package:dartdoc/src/html/template_data.dart';
-import 'package:dartdoc/src/html/templates.dart';
+import 'package:dartdoc/src/generator/template_data.dart';
+import 'package:dartdoc/src/generator/templates.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model/package.dart';
 import 'package:dartdoc/src/model/package_graph.dart';
@@ -130,8 +130,8 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateConstructor(FileWriter writer, PackageGraph packageGraph,
       Library lib, Class clazz, Constructor constructor) {
-    TemplateData data = ConstructorTemplateData(
-        options, packageGraph, lib, clazz, constructor);
+    TemplateData data =
+        ConstructorTemplateData(options, packageGraph, lib, clazz, constructor);
 
     render(writer, constructor.filePath, templates.constructorTemplate, data);
   }
@@ -182,8 +182,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
     TemplateData data =
         TopLevelPropertyTemplateData(options, packageGraph, lib, property);
 
-    render(
-        writer, property.filePath, templates.topLevelPropertyTemplate, data);
+    render(writer, property.filePath, templates.topLevelPropertyTemplate, data);
   }
 
   @override
@@ -199,4 +198,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
 
     render(writer, typeDef.filePath, templates.typeDefTemplate, data);
   }
+
+  @override
+  void generateAdditionalFiles(FileWriter writer, PackageGraph graph) {}
 }

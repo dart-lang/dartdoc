@@ -11,10 +11,10 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/dartdoc_generator_backend.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
-import 'package:dartdoc/src/html/resource_loader.dart' as resource_loader;
-import 'package:dartdoc/src/html/resources.g.dart' as resources;
-import 'package:dartdoc/src/html/template_data.dart';
-import 'package:dartdoc/src/html/templates.dart';
+import 'package:dartdoc/src/generator/html_resources.g.dart' as resources;
+import 'package:dartdoc/src/generator/resource_loader.dart' as resource_loader;
+import 'package:dartdoc/src/generator/template_data.dart';
+import 'package:dartdoc/src/generator/templates.dart';
 import 'package:path/path.dart' as path;
 
 Future<Generator> initHtmlGenerator(
