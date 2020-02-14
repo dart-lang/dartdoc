@@ -1421,6 +1421,9 @@ class DartdocOptionContext extends DartdocOptionContextBase
   bool isPackageExcluded(String name) =>
       excludePackages.any((pattern) => name == pattern);
 
+  /// Output format, e.g. 'html', 'md'
+  String get format => optionSet['format'].valueAt(context);
+
   // TODO(jdkoren): temporary while we confirm href base behavior doesn't break important clients
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
 }
@@ -1633,6 +1636,8 @@ Future<List<DartdocOption>> createDartdocOptions() async {
             'pages, and please file an issue on Github.',
         negatable: false,
         hide: true),
+    // TODO(jdkoren): Unhide when we have good support for another format.
+    DartdocOptionArgOnly<String>('format', 'html', hide: true),
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
   ]

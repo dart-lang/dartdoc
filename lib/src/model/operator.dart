@@ -42,10 +42,9 @@ class Operator extends Method {
   String get fileName {
     var actualName = super.name;
     if (friendlyNames.containsKey(actualName)) {
-      return "operator_${friendlyNames[actualName]}.html";
-    } else {
-      return '$actualName.html';
+      actualName = "operator_${friendlyNames[actualName]}";
     }
+    return '$actualName.$fileType';
   }
 
   @override

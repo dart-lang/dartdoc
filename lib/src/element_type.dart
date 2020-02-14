@@ -71,11 +71,16 @@ abstract class ElementType extends Privacy {
 
   String get linkedName;
 
-  String get name => type.name ?? type.element.name;
+  String get name;
 
   String get nameWithGenerics;
 
   List<Parameter> get parameters => [];
+
+  DartType get instantiatedType;
+
+  bool isBoundSupertypeTo(ElementType t);
+  bool isSubtypeOf(ElementType t);
 
   @override
   String toString() => "$type";
@@ -96,22 +101,36 @@ class UndefinedElementType extends ElementType {
   bool get isPublic => true;
 
   @override
-  String get nameWithGenerics => name;
-
-  /// dynamic and void are not allowed to have parameterized types.
-  @override
-  String get linkedName {
-    if (type.isDynamic &&
-        returnedFrom != null &&
-        (returnedFrom is DefinedElementType &&
-            (returnedFrom as DefinedElementType).element.isAsynchronous)) {
-      return 'Future';
+  String get name {
+    if (type.isDynamic) {
+      if (returnedFrom != null &&
+          (returnedFrom is DefinedElementType &&
+              (returnedFrom as DefinedElementType).element.isAsynchronous)) {
+        return 'Future';
+      } else {
+        return 'dynamic';
+      }
     }
-    return name;
+    if (type.isVoid) return 'void';
+    assert(false, 'Unrecognized type for UndefinedElementType');
+    return '';
   }
 
   @override
-  String get name => type.name ?? '';
+  String get nameWithGenerics => name;
+
+  /// Assume that undefined elements don't have useful bounds.
+  @override
+  DartType get instantiatedType => type;
+
+  @override
+  bool isBoundSupertypeTo(ElementType t) => false;
+
+  @override
+  bool isSubtypeOf(ElementType t) => type.isBottom && !t.type.isBottom;
+
+  @override
+  String get linkedName => name;
 }
 
 /// A FunctionType that does not have an underpinning Element.
@@ -209,8 +228,7 @@ class TypeParameterElementType extends DefinedElementType {
   ClassElement get _boundClassElement => type.element;
 
   @override
-  // TODO(jcollins-g): This is wrong; bound is not always an InterfaceType.
-  InterfaceType get _interfaceType => (type as TypeParameterType).bound;
+  DartType get _bound => (type as TypeParameterType).bound;
 }
 
 /// An [ElementType] associated with an [Element].
@@ -225,6 +243,9 @@ abstract class DefinedElementType extends ElementType {
     assert(_element != null);
     return _element;
   }
+
+  @override
+  String get name => type.element.name;
 
   bool get isParameterType => (type is TypeParameterType);
 
@@ -274,18 +295,24 @@ abstract class DefinedElementType extends ElementType {
   Class get boundClass =>
       ModelElement.fromElement(_boundClassElement, packageGraph);
 
-  InterfaceType get _interfaceType => type;
+  DartType get _bound => type;
 
-  InterfaceType _instantiatedType;
+  DartType _instantiatedType;
 
   /// Return this type, instantiated to bounds if it isn't already.
+  @override
   DartType get instantiatedType {
     if (_instantiatedType == null) {
-      if (!_interfaceType.typeArguments.every((t) => t is InterfaceType)) {
+      if (_bound is InterfaceType &&
+          !(_bound as InterfaceType)
+              .typeArguments
+              .every((t) => t is InterfaceType)) {
         var typeSystem = library.element.typeSystem as TypeSystemImpl;
-        _instantiatedType = typeSystem.instantiateToBounds(_interfaceType);
+        // TODO(jcollins-g): convert to ClassElement.instantiateToBounds
+        // dart-lang/dartdoc#2135
+        _instantiatedType = typeSystem.instantiateToBounds(_bound);
       } else {
-        _instantiatedType = _interfaceType;
+        _instantiatedType = _bound;
       }
     }
     return _instantiatedType;
@@ -293,13 +320,15 @@ abstract class DefinedElementType extends ElementType {
 
   /// The instantiated to bounds type of this type is a subtype of
   /// [t].
-  bool isSubtypeOf(DefinedElementType t) =>
+  @override
+  bool isSubtypeOf(ElementType t) =>
       library.typeSystem.isSubtypeOf(instantiatedType, t.instantiatedType);
 
   /// Returns true if at least one supertype (including via mixins and
   /// interfaces) is equivalent to or a subtype of [this] when
   /// instantiated to bounds.
-  bool isBoundSupertypeTo(DefinedElementType t) =>
+  @override
+  bool isBoundSupertypeTo(ElementType t) =>
       _isBoundSupertypeTo(t.instantiatedType, HashSet());
 
   bool _isBoundSupertypeTo(DartType superType, HashSet<DartType> visited) {

@@ -10,8 +10,8 @@ import 'package:test/test.dart';
 void main() {
   group('Resource Loader', () {
     test('load from packages', () async {
-      var contents =
-          await loader.loadAsString('package:dartdoc/templates/index.html');
+      var contents = await loader
+          .loadAsString('package:dartdoc/templates/html/index.html');
       expect(contents, isNotNull);
     });
 

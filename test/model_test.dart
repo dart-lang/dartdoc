@@ -1867,7 +1867,10 @@ void main() {
     });
 
     test('extensions on special types work', () {
-      Extension extensionOnDynamic, extensionOnVoid, extensionOnNull;
+      Extension extensionOnDynamic,
+          extensionOnVoid,
+          extensionOnNull,
+          extensionOnTypeParameter;
       Class object = packageGraph.specialClasses[SpecialClass.object];
       Extension getExtension(String name) =>
           fakeLibrary.extensions.firstWhere((e) => e.name == name);
@@ -1875,14 +1878,17 @@ void main() {
       extensionOnDynamic = getExtension('ExtensionOnDynamic');
       extensionOnNull = getExtension('ExtensionOnNull');
       extensionOnVoid = getExtension('ExtensionOnVoid');
+      extensionOnTypeParameter = getExtension('ExtensionOnTypeParameter');
 
       expect(extensionOnDynamic.couldApplyTo(object), isTrue);
       expect(extensionOnVoid.couldApplyTo(object), isTrue);
       expect(extensionOnNull.couldApplyTo(object), isFalse);
+      expect(extensionOnTypeParameter.couldApplyTo(object), isTrue);
 
       expect(extensionOnDynamic.alwaysApplies, isTrue);
       expect(extensionOnVoid.alwaysApplies, isTrue);
       expect(extensionOnNull.alwaysApplies, isFalse);
+      expect(extensionOnTypeParameter.alwaysApplies, isTrue);
 
       // Even though it does have extensions that could apply to it,
       // extensions that apply to [Object] should always be hidden from

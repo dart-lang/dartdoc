@@ -787,7 +787,9 @@ abstract class ModelElement extends Canonicalization
     return '';
   }
 
-  String get fileName => "${name}.html";
+  String get fileName => '$name.$fileType';
+
+  String get fileType => package.fileType;
 
   String get filePath;
 

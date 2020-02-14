@@ -120,14 +120,16 @@ class Category extends Nameable
   @override
   String get fullyQualifiedName => name;
 
-  String get filePath => 'topics/${name}-topic.html';
+  String get fileType => package.fileType;
+
+  String get filePath => 'topics/$name-topic.$fileType';
 
   @override
   String get href => isCanonical ? '${package.baseHref}$filePath' : null;
 
-  String get categorization => _renderer.renderCategoryLabel(this);
+  String get categorization => _categoryRenderer.renderCategoryLabel(this);
 
-  String get linkedName => _renderer.renderLinkedName(this);
+  String get linkedName => _categoryRenderer.renderLinkedName(this);
 
   int _categoryIndex;
 
@@ -199,6 +201,6 @@ class Category extends Nameable
   @override
   Iterable<Typedef> get typedefs => _typedefs;
 
-  CategoryRenderer get _renderer =>
+  CategoryRenderer get _categoryRenderer =>
       packageGraph.rendererFactory.categoryRenderer;
 }
