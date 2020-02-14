@@ -14,7 +14,7 @@
 {{/hasAnnotations}}
 
 {{#isConst}}const{{/isConst}}
-{{#isDeprecated}}~~{{/isDeprecated}}{{{nameWithGenerics}}}({{#hasParameters}}{{{linkedParamsLines}}}{{/hasParameters}}){{#isDeprecated}}~~{{/isDeprecated}}
+{{{nameWithGenerics}}}({{#hasParameters}}{{{linkedParamsLines}}}{{/hasParameters}})
 
 {{>documentation}}
 

@@ -1,2 +1,2 @@
-{{#isDeprecated}}~~{{/isDeprecated}}{{{linkedName}}}{{{linkedGenericParameters}}} {{>categorization}}{{#isDeprecated}}~~{{/isDeprecated}}
+{{{linkedName}}}{{{linkedGenericParameters}}} {{>categorization}}
 : {{{ oneLineDoc }}} {{{ extendedDocLink }}}

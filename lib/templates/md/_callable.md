@@ -1,3 +1,3 @@
-{{#isDeprecated}}~~{{/isDeprecated}}{{{linkedName}}}{{{linkedGenericParameters}}}({{{ linkedParamsNoMetadata }}}) {{{ linkedReturnType }}} {{>categorization}}{{#isDeprecated}}~~{{/isDeprecated}}
+{{{linkedName}}}{{{linkedGenericParameters}}}({{{ linkedParamsNoMetadata }}}) {{{ linkedReturnType }}} {{>categorization}}
 : {{{ oneLineDoc }}} {{{ extendedDocLink }}}
 {{>features}}

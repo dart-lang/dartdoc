@@ -1,3 +1,3 @@
-{{#isDeprecated}}~~{{/isDeprecated}}{{{ linkedName }}} const {{{ linkedReturnType }}} {{>categorization}}{{#isDeprecated}}~~{{/isDeprecated}}
+{{{ linkedName }}} const {{{ linkedReturnType }}} {{>categorization}}
 : {{{ oneLineDoc }}} {{{ extendedDocLink }}}
 {{>features}}
