@@ -13,7 +13,9 @@ import 'package:dartdoc/src/generator/resource_loader.dart' as loader;
 import 'package:mustache/mustache.dart';
 import 'package:path/path.dart' as path;
 
-const _partials = <String>[
+// resource_loader and the Resource API doesn't support viewing resources like
+// a directory listing, so we have to explicitly list the partials.
+const _partials_html = <String>[
   'callable',
   'callable_multiline',
   'categorization',
@@ -40,6 +42,27 @@ const _partials = <String>[
   'sidebar_for_library',
   'accessor_getter',
   'accessor_setter',
+];
+
+const _partials_md = <String>[
+  'accessor_getter',
+  'accessor_setter',
+  'callable',
+  'callable_multiline',
+  'categorization',
+  'class',
+  'constant',
+  'documentation',
+  'extension',
+  'features',
+  'footer',
+  'head',
+  'library',
+  'mixin',
+  'name_summary',
+  'property',
+  'source_code',
+  'source_link',
 ];
 
 const String _headerPlaceholder = '{{! header placeholder }}';
@@ -82,17 +105,33 @@ abstract class _TemplatesLoader {
 /// Loads default templates included in the Dartdoc program.
 class _DefaultTemplatesLoader extends _TemplatesLoader {
   final String _format;
+  final List<String> _partials;
 
-  _DefaultTemplatesLoader(this._format);
+  factory _DefaultTemplatesLoader.create(String format) {
+    List<String> partials;
+    switch (format) {
+      case 'html':
+        partials = _partials_html;
+        break;
+      case 'md':
+        partials = _partials_md;
+        break;
+      default:
+        partials = [];
+    }
+    return _DefaultTemplatesLoader(format, partials);
+  }
+
+  _DefaultTemplatesLoader(this._format, this._partials);
 
   @override
   Future<Map<String, String>> loadPartials() async {
-    var partials = <String, String>{};
+    var templates = <String, String>{};
     for (String name in _partials) {
       var uri = 'package:dartdoc/templates/$_format/_$name.$_format';
-      partials[name] = await loader.loadAsString(uri);
+      templates[name] = await loader.loadAsString(uri);
     }
-    return partials;
+    return templates;
   }
 
   @override
@@ -178,7 +217,7 @@ class Templates {
       {List<String> headerPaths,
       List<String> footerPaths,
       List<String> footerTextPaths}) async {
-    return _create(_DefaultTemplatesLoader(format),
+    return _create(_DefaultTemplatesLoader.create(format),
         headerPaths: headerPaths,
         footerPaths: footerPaths,
         footerTextPaths: footerTextPaths);
