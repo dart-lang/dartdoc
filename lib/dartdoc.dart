@@ -16,6 +16,7 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/generator/empty_generator.dart';
 import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/generator/html_generator.dart';
+import 'package:dartdoc/src/generator/markdown_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -109,7 +110,7 @@ class Dartdoc extends PackageBuilder {
 
   /// An asynchronous factory method that builds Dartdoc's file writers
   /// and returns a Dartdoc object with them.
-  @Deprecated('Prefer withContext() instead')
+  @Deprecated('Prefer fromContext() instead')
   static Future<Dartdoc> withDefaultGenerators(
       DartdocGeneratorOptionContext config) async {
     return Dartdoc._(config, await initHtmlGenerator(config));
@@ -130,8 +131,7 @@ class Dartdoc extends PackageBuilder {
         generator = await initHtmlGenerator(context);
         break;
       case 'md':
-        // TODO(jdkoren): use a real generator
-        generator = await initEmptyGenerator(context);
+        generator = await initMarkdownGenerator(context);
         break;
       default:
         throw DartdocFailure('Unsupported output format: ${context.format}');
