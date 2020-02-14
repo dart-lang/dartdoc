@@ -20,3 +20,16 @@ class TypedefRendererHtml extends TypedefRenderer {
     return '&lt;<wbr><span class="type-parameter">${joined}</span>&gt;';
   }
 }
+
+class TypedefRendererMd extends TypedefRenderer {
+  @override
+  String renderGenericParameters(Typedef typedef) {
+    if (typedef.genericTypeParameters.isEmpty) {
+      return '';
+    }
+    var joined = typedef.genericTypeParameters
+        .map((t) => t.name)
+        .join(', ');
+    return '<{$joined}>';
+  }
+}

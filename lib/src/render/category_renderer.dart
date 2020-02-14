@@ -46,3 +46,17 @@ class CategoryRendererHtml extends CategoryRenderer {
     }
   }
 }
+
+class CategoryRendererMd extends CategoryRenderer {
+  @override
+  String renderCategoryLabel(Category category) => category.linkedName;
+
+  @override
+  String renderLinkedName(Category category) {
+    String name = category.name;
+    if (category.isDocumented) {
+      return '[$name](${category.href})';
+    }
+    return name;
+  }
+}
