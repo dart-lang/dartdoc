@@ -3,7 +3,8 @@
 * Fix the "--rel-canonical-prefix" flag post `base href`. (#2126, #2122) 
 * Tool change: `grind serve-pub-package` can now serve packages depending
   on flutter for debugging purposes (#2130)
-* More internal changes preparing for markdown output (#2138, #2140, #2132, #2121, #2115)
+* More internal changes preparing for markdown output (#2138, #2140, #2132,
+  #2121, #2115)
 * Fix a crash when using --no-generate-docs (#2139)
 
 ## 0.30.0+1
