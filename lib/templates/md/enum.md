@@ -61,7 +61,6 @@
 {{>constant}}
 {{/publicConstants}}
 {{/hasPublicConstants}}
-{{/clazz}}
 
 {{#hasPublicConstructors}}
 ## Constructors
