@@ -123,7 +123,7 @@ void main() {
       expect(initializeMe.isLate, isTrue);
       expect(initializeMe.features, contains('late'));
     });
-  });
+  }, skip: 'dart-lang/dartdoc#2148');
 
   group('HTML Injection when allowed', () {
     Class htmlInjection;

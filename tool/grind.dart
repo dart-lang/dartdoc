@@ -452,10 +452,6 @@ Future<String> createSdkDartdoc() async {
 dependency_overrides:
   analyzer:
     path: '${sdkClone.path}/pkg/analyzer'
-  front_end:
-    path: '${sdkClone.path}/pkg/front_end'
-  kernel:
-    path: '${sdkClone.path}/pkg/kernel'
   _fe_analyzer_shared:
     path: '${sdkClone.path}/pkg/_fe_analyzer_shared'
 ''', mode: FileMode.append);
