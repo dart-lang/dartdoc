@@ -27,9 +27,7 @@ class TypedefRendererMd extends TypedefRenderer {
     if (typedef.genericTypeParameters.isEmpty) {
       return '';
     }
-    var joined = typedef.genericTypeParameters
-        .map((t) => t.name)
-        .join(', ');
+    var joined = typedef.genericTypeParameters.map((t) => t.name).join(', ');
     return '<{$joined}>';
   }
 }

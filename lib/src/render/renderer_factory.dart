@@ -14,7 +14,6 @@ import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 abstract class RendererFactory {
-
   static RendererFactory forFormat(String format) {
     switch (format) {
       case 'html':
@@ -118,13 +117,13 @@ class MdRenderFactory extends RendererFactory {
 
   @override
   ElementTypeRenderer<FunctionTypeElementType>
-  get functionTypeElementTypeRenderer =>
-      FunctionTypeElementTypeRendererMd();
+      get functionTypeElementTypeRenderer =>
+          FunctionTypeElementTypeRendererMd();
 
   @override
   ElementTypeRenderer<ParameterizedElementType>
-  get parameterizedElementTypeRenderer =>
-      ParameterizedElementTypeRendererMd();
+      get parameterizedElementTypeRenderer =>
+          ParameterizedElementTypeRendererMd();
 
   @override
   EnumFieldRenderer get enumFieldRenderer => EnumFieldRendererMd();

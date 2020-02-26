@@ -106,8 +106,7 @@ class FunctionTypeElementTypeRendererMd
     buf.write('${elementType.returnType.linkedName} ');
     buf.write('${elementType.nameWithGenerics}');
     buf.write('(');
-    buf.write(
-        ParameterRendererMd().renderLinkedParams(elementType.parameters));
+    buf.write(ParameterRendererMd().renderLinkedParams(elementType.parameters));
     buf.write(')');
     return buf.toString();
   }

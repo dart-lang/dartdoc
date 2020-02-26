@@ -393,8 +393,7 @@ void main() {
     test('CategoryRendererMd renders category label', () {
       Category category = packageGraph.publicPackages.first.categories.first;
       CategoryRendererMd renderer = CategoryRendererMd();
-      expect(
-          renderer.renderCategoryLabel(category),
+      expect(renderer.renderCategoryLabel(category),
           '[Superb](${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html)');
     });
 
