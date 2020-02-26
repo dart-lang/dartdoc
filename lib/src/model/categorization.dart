@@ -42,14 +42,6 @@ abstract class Categorization implements ModelElement {
       return '';
     });
 
-    if (_categorySet.isEmpty) {
-      // All objects are in the default category if not specified.
-      _categorySet.add(null);
-    }
-    if (_subCategorySet.isEmpty) {
-      // All objects are in the default subcategory if not specified.
-      _subCategorySet.add(null);
-    }
     _categoryNames = _categorySet.toList()..sort();
     _subCategoryNames = _subCategorySet.toList()..sort();
     _image ??= '';
@@ -57,8 +49,7 @@ abstract class Categorization implements ModelElement {
     return rawDocs;
   }
 
-  bool get hasSubCategoryNames =>
-      subCategoryNames.length > 1 || subCategoryNames.first != null;
+  bool get hasSubCategoryNames => subCategoryNames.isNotEmpty;
   List<String> _subCategoryNames;
 
   /// Either a set of strings containing all declared subcategories for this symbol,
@@ -70,8 +61,7 @@ abstract class Categorization implements ModelElement {
   }
 
   @override
-  bool get hasCategoryNames =>
-      categoryNames.length > 1 || categoryNames.first != null;
+  bool get hasCategoryNames => categoryNames.isNotEmpty;
   List<String> _categoryNames;
 
   /// Either a set of strings containing all declared categories for this symbol,

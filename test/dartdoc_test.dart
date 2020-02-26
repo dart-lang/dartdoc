@@ -89,11 +89,11 @@ void main() {
       });
 
       test('includeExternal and showUndocumentedCategories', () async {
-        Class Something = p.allCanonicalModelElements
+        Class withUndocumentedCategory = p.allCanonicalModelElements
             .whereType<Class>()
-            .firstWhere((ModelElement c) => c.name == 'Something');
-        expect(Something.isPublic, isTrue);
-        expect(Something.displayedCategories, isNotEmpty);
+            .firstWhere((ModelElement c) => c.name == 'UseAnExampleHere');
+        expect(withUndocumentedCategory.isPublic, isTrue);
+        expect(withUndocumentedCategory.displayedCategories, isNotEmpty);
       });
     });
 
