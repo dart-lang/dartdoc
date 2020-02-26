@@ -2,7 +2,7 @@ builders:
   resource_builder:
     import: "tool/builder.dart"
     builder_factories: ["resourceBuilder"]
-    build_extensions: {'$lib$': ['src/html/resources.g.dart']}
+    build_extensions: {'$lib$': ['src/generator/html_resources.g.dart']}
     build_to: "source"
     auto_apply: none
 
