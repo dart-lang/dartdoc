@@ -9,7 +9,7 @@ import 'dart:io' show File, Directory;
 import 'dart:isolate';
 
 import 'package:dartdoc/dartdoc.dart';
-import 'package:dartdoc/src/html/resource_loader.dart' as loader;
+import 'package:dartdoc/src/generator/resource_loader.dart' as loader;
 import 'package:mustache/mustache.dart';
 import 'package:path/path.dart' as path;
 

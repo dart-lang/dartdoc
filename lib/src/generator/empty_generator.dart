@@ -3,7 +3,7 @@ library dartdoc.empty_generator;
 import 'dart:async';
 
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/generator.dart';
+import 'package:dartdoc/src/generator/generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart';

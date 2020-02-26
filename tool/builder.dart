@@ -30,13 +30,13 @@ class ResourceBuilder implements Builder {
     packagePaths.sort();
     await buildStep.writeAsString(
         AssetId(buildStep.inputId.package,
-            path.url.join('lib', 'src', 'html', 'resources.g.dart')),
+            path.url.join('lib', 'src', 'generator', 'html_resources.g.dart')),
         _resourcesFile(packagePaths));
   }
 
   @override
   final Map<String, List<String>> buildExtensions = const {
-    r'$lib$': ['src/html/resources.g.dart']
+    r'$lib$': ['src/generator/html_resources.g.dart']
   };
 }
 

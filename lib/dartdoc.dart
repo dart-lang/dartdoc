@@ -13,9 +13,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dartdoc/src/dartdoc_options.dart';
-import 'package:dartdoc/src/empty_generator.dart';
-import 'package:dartdoc/src/generator.dart';
-import 'package:dartdoc/src/html/html_generator.dart';
+import 'package:dartdoc/src/generator/empty_generator.dart';
+import 'package:dartdoc/src/generator/generator.dart';
+import 'package:dartdoc/src/generator/html_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
@@ -29,7 +29,7 @@ import 'package:path/path.dart' as path;
 
 export 'package:dartdoc/src/dartdoc_options.dart';
 export 'package:dartdoc/src/element_type.dart';
-export 'package:dartdoc/src/generator.dart';
+export 'package:dartdoc/src/generator/generator.dart';
 export 'package:dartdoc/src/model/model.dart';
 export 'package:dartdoc/src/package_meta.dart';
 
