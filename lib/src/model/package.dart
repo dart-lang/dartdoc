@@ -270,8 +270,13 @@ class Package extends LibraryContainer
       _nameToCategory[null] = Category(null, this, config);
       for (Categorization c in libraries.expand(
           (l) => l.allCanonicalModelElements.whereType<Categorization>())) {
-        for (String category in c.categoryNames) {
-          categoryFor(category).addItem(c);
+        if (c.hasCategoryNames) {
+          for (String category in c.categoryNames) {
+            categoryFor(category).addItem(c);
+          }
+        } else {
+          // Add to the default category.
+          categoryFor(null).addItem(c);
         }
       }
     }
