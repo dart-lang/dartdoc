@@ -1,3 +1,8 @@
+## 0.30.2
+* Fix the broken search box with --use-base-href in Flutter (#2158).
+* More internal changes preparing for markdown output
+  (#2145, #2150, #2151, #2153).
+
 ## 0.30.1
 * A more complete fix for the broken search box. (#2125, #2124)
 * Fix the "--rel-canonical-prefix" flag post `base href`. (#2126, #2122) 
