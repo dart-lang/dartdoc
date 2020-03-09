@@ -373,6 +373,7 @@ void main() {
           equals(utils.kTestPackagePublicLibraries - 5));
     });
 
+    // TODO consider moving these to a separate suite
     test('CategoryRendererHtml renders category label', () {
       Category category = packageGraph.publicPackages.first.categories.first;
       CategoryRendererHtml renderer = CategoryRendererHtml();
@@ -387,6 +388,20 @@ void main() {
       CategoryRendererHtml renderer = CategoryRendererHtml();
       expect(renderer.renderLinkedName(category),
           '<a href="${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html">Superb</a>');
+    });
+
+    test('CategoryRendererMd renders category label', () {
+      Category category = packageGraph.publicPackages.first.categories.first;
+      CategoryRendererMd renderer = CategoryRendererMd();
+      expect(renderer.renderCategoryLabel(category),
+          '[Superb](${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html)');
+    });
+
+    test('CategoryRendererMd renders linkedName', () {
+      Category category = packageGraph.publicPackages.first.categories.first;
+      CategoryRendererMd renderer = CategoryRendererMd();
+      expect(renderer.renderLinkedName(category),
+          '[Superb](${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html)');
     });
   });
 

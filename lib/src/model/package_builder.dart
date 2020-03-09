@@ -42,8 +42,8 @@ class PackageBuilder {
     if (config.topLevelPackageMeta.needsPubGet) {
       config.topLevelPackageMeta.runPubGet();
     }
-    // TODO(jdkoren): change factory for other formats based on config options
-    RendererFactory rendererFactory = HtmlRenderFactory();
+
+    RendererFactory rendererFactory = RendererFactory.forFormat(config.format);
 
     PackageGraph newGraph = PackageGraph.UninitializedPackageGraph(
         config, driver, sdk, hasEmbedderSdkFiles, rendererFactory);

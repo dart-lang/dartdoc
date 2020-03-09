@@ -14,6 +14,17 @@ import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 abstract class RendererFactory {
+  static RendererFactory forFormat(String format) {
+    switch (format) {
+      case 'html':
+        return HtmlRenderFactory();
+      case 'md':
+        return MdRenderFactory();
+      default:
+        throw ArgumentError('Unsupported format: $format');
+    }
+  }
+
   TemplateRenderer get templateRenderer;
 
   CategoryRenderer get categoryRenderer;
@@ -85,4 +96,51 @@ class HtmlRenderFactory extends RendererFactory {
 
   @override
   TypedefRenderer get typedefRenderer => TypedefRendererHtml();
+}
+
+class MdRenderFactory extends RendererFactory {
+  @override
+  TemplateRenderer get templateRenderer => MdTemplateRenderer();
+
+  @override
+  CategoryRenderer get categoryRenderer => CategoryRendererMd();
+
+  // We render documentation as HTML for now.
+  // TODO(jdkoren): explore using documentation directly in the output file.
+  @override
+  DocumentationRenderer get documentationRenderer =>
+      DocumentationRendererHtml();
+
+  @override
+  ElementTypeRenderer<CallableElementType> get callableElementTypeRenderer =>
+      CallableElementTypeRendererMd();
+
+  @override
+  ElementTypeRenderer<FunctionTypeElementType>
+      get functionTypeElementTypeRenderer =>
+          FunctionTypeElementTypeRendererMd();
+
+  @override
+  ElementTypeRenderer<ParameterizedElementType>
+      get parameterizedElementTypeRenderer =>
+          ParameterizedElementTypeRendererMd();
+
+  @override
+  EnumFieldRenderer get enumFieldRenderer => EnumFieldRendererMd();
+
+  @override
+  ModelElementRenderer get modelElementRenderer => ModelElementRendererMd();
+
+  @override
+  ParameterRenderer get parameterRenderer => ParameterRendererMd();
+
+  @override
+  ParameterRenderer get parameterRendererDetailed => parameterRenderer;
+
+  @override
+  TypeParametersRenderer get typeParametersRenderer =>
+      TypeParametersRendererMd();
+
+  @override
+  TypedefRenderer get typedefRenderer => TypedefRendererMd();
 }

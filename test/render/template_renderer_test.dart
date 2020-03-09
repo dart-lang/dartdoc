@@ -23,4 +23,22 @@ void main() {
       expect(test, equals('<span class="deprecated">Banana</span> Fruit'));
     });
   });
+
+  group('MdTemplateRenderer', () {
+    MdTemplateRenderer renderer;
+
+    setUpAll(() {
+      renderer = MdTemplateRenderer();
+    });
+
+    test('composeLayoutTitle', () {
+      String test = renderer.composeLayoutTitle('Banana', 'Fruit', false);
+      expect(test, equals('Banana Fruit'));
+    });
+
+    test('composeLayoutTitle deprecated', () {
+      String test = renderer.composeLayoutTitle('Banana', 'Fruit', true);
+      expect(test, equals('~~Banana~~ Fruit'));
+    });
+  });
 }
