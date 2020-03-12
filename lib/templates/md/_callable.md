@@ -1,3 +1,4 @@
 {{{linkedName}}}{{{linkedGenericParameters}}}({{{ linkedParamsNoMetadata }}}) {{{ linkedReturnType }}} {{>categorization}}
-: {{{ oneLineDoc }}} {{{ extendedDocLink }}}
+
+{{{ oneLineDoc }}} {{{ extendedDocLink }}}
 {{>features}}

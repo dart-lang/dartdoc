@@ -2,6 +2,7 @@
 
 {{#self}}
 # {{{nameWithGenerics}}} {{kind}}
+on {{#extendedType}}{{{linkedName}}}{{/extendedType}}
 
 {{>source_link}}
 
@@ -10,11 +11,6 @@
 
 {{#extension}}
 {{>documentation}}
-
-on
-{{#extendedType}}
-: {{{linkedName}}}
-{{/extendedType}}
 
 {{#hasPublicProperties}}
 ## Properties

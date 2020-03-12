@@ -1,2 +1,3 @@
 {{{linkedName}}} {{>categorization}}
-: {{{ oneLineDoc }}} {{{ extendedDocLink }}}
+
+{{{ oneLineDoc }}} {{{ extendedDocLink }}}

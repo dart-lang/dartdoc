@@ -67,7 +67,8 @@
 
 {{#publicConstructors}}
 {{{linkedName}}} ({{{ linkedParams }}})
-: {{{ oneLineDoc }}} {{{ extendedDocLink }}}
+
+{{{ oneLineDoc }}} {{{ extendedDocLink }}}
 {{#isConst}}const{{/isConst}} {{#isFactory}}factory{{/isFactory}}
 {{/publicConstructors}}
 {{/hasPublicConstructors}}
