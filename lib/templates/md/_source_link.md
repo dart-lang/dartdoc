@@ -1,3 +1,3 @@
 {{#hasSourceHref}}
-[source]({{{sourceHref}}})
+[view source]({{{sourceHref}}})
 {{/hasSourceHref}}
