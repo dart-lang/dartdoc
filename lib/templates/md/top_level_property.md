@@ -7,7 +7,7 @@
 {{>categorization}}
 
 {{#hasNoGetterSetter}}
-{{{ linkedReturnType }}} {{>name_summary}}
+{{{ linkedReturnType }}} {{>name_summary}}  {{!two spaces intentional}}
 {{>features}}
 
 {{>documentation}}

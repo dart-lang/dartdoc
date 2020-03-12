@@ -1,4 +1,4 @@
 {{{linkedName}}} {{{ arrow }}} {{{ linkedReturnType }}} {{>categorization}}
 
-{{{ oneLineDoc }}} {{{ extendedDocLink }}}
+{{{ oneLineDoc }}} {{{ extendedDocLink }}}  {{!two spaces intentional}}
 {{>features}}

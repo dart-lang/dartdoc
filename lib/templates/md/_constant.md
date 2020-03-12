@@ -1,4 +1,4 @@
 {{{ linkedName }}} const {{{ linkedReturnType }}} {{>categorization}}
 
-{{{ oneLineDoc }}} {{{ extendedDocLink }}}
+{{{ oneLineDoc }}} {{{ extendedDocLink }}}  {{!two spaces intentional}}
 {{>features}}

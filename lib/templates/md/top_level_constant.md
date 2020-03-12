@@ -6,7 +6,7 @@
 {{>source_link}}
 {{>categorization}}
 
-{{>name_summary}} = {{{ constantValue }}}
+{{>name_summary}} = {{{ constantValue }}}  {{!two spaces intentional}}
 {{>features}}
 
 {{>documentation}}
