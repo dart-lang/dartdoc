@@ -4,6 +4,7 @@
 # {{{nameWithGenerics}}} {{kind}}
 
 {{>source_link}}
+
 {{>categorization}}
 {{/self}}
 
@@ -20,6 +21,7 @@ on
 
 {{#allPublicInstanceProperties}}
 {{>property}}
+
 {{/allPublicInstanceProperties}}
 {{/hasPublicProperties}}
 
@@ -28,6 +30,7 @@ on
 
 {{#allPublicInstanceMethods}}
 {{>callable}}
+
 {{/allPublicInstanceMethods}}
 {{/hasPublicMethods}}
 
@@ -36,6 +39,7 @@ on
 
 {{#allPublicOperators}}
 {{>callable}}
+
 {{/allPublicOperators}}
 {{/hasPublicOperators}}
 
@@ -44,6 +48,7 @@ on
 
 {{#publicStaticProperties}}
 {{>property}}
+
 {{/publicStaticProperties}}
 {{/hasPublicStaticProperties}}
 
@@ -52,6 +57,7 @@ on
 
 {{#publicStaticMethods}}
 {{>callable}}
+
 {{/publicStaticMethods}}
 {{/hasPublicStaticMethods}}
 
@@ -60,6 +66,7 @@ on
 
 {{#publicConstants}}
 {{>constant}}
+
 {{/publicConstants}}
 {{/hasPublicConstants}}
 {{/extension}}

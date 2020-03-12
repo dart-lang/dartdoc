@@ -9,6 +9,7 @@
 {{#method}}
 {{>callable_multiline}}
 {{>features}}
+
 {{>documentation}}
 
 {{>source_code}}

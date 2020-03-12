@@ -10,6 +10,7 @@
 {{{ linkedReturnType }}} {{>name_summary}} = {{{ constantValue }}}
 
 {{>documentation}}
+
 {{>source_code}}
 {{/property}}
 

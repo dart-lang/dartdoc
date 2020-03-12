@@ -77,6 +77,7 @@
 
 {{#allPublicInstanceProperties}}
 {{>property}}
+
 {{/allPublicInstanceProperties}}
 {{/hasPublicProperties}}
 
@@ -85,6 +86,7 @@
 
 {{#allPublicInstanceMethods}}
 {{>callable}}
+
 {{/allPublicInstanceMethods}}
 {{/hasPublicMethods}}
 
@@ -93,6 +95,7 @@
 
 {{#allPublicOperators}}
 {{>callable}}
+
 {{/allPublicOperators}}
 {{/hasPublicOperators}}
 
@@ -101,6 +104,7 @@
 
 {{#publicStaticProperties}}
 {{>property}}
+
 {{/publicStaticProperties}}
 {{/hasPublicStaticProperties}}
 
@@ -109,6 +113,7 @@
 
 {{#publicStaticMethods}}
 {{>callable}}
+
 {{/publicStaticMethods}}
 {{/hasPublicStaticMethods}}
 
@@ -117,6 +122,7 @@
 
 {{#publicConstants}}
 {{>constant}}
+
 {{/publicConstants}}
 {{/hasPublicConstants}}
 {{/mixin}}
