@@ -1,3 +1,4 @@
-{{{linkedName}}} {{>categorization}}
+{{{linkedName}}}
+{{>categorization}}
 
 {{{ oneLineDoc }}} {{{ extendedDocLink }}}
