@@ -1,4 +1,4 @@
-{{{linkedName}}}{{{linkedGenericParameters}}}
+##### {{{linkedName}}}{{{linkedGenericParameters}}}
 {{>categorization}}
 
 {{{ oneLineDoc }}} {{{ extendedDocLink }}}

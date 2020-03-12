@@ -1,4 +1,4 @@
-{{{ linkedName }}}
+##### {{{ linkedName }}}
 {{#isDocumented}}
 {{{ oneLineDoc }}} {{{ extendedDocLink }}}
 
