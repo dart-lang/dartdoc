@@ -28,7 +28,9 @@ abstract class ElementType extends Privacy {
   factory ElementType.from(
       DartType f, Library library, PackageGraph packageGraph,
       [ElementType returnedFrom]) {
-    if (f.element == null || f.element.kind == ElementKind.DYNAMIC) {
+    if (f.element == null ||
+        f.element.kind == ElementKind.DYNAMIC ||
+        f.element.kind == ElementKind.NEVER) {
       if (f is FunctionType) {
         return FunctionTypeElementType(f, library, packageGraph, returnedFrom);
       }

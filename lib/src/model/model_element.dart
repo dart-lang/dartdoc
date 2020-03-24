@@ -202,7 +202,8 @@ abstract class ModelElement extends Canonicalization
         e is ParameterElement ||
         e is TypeParameterElement ||
         e is GenericFunctionTypeElementImpl ||
-        e.kind == ElementKind.DYNAMIC);
+        e.kind == ElementKind.DYNAMIC ||
+        e.kind == ElementKind.NEVER);
 
     Member originalMember;
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
@@ -215,12 +216,16 @@ abstract class ModelElement extends Canonicalization
         Tuple3(e, library, enclosingContainer);
     ModelElement newModelElement;
     if (e.kind != ElementKind.DYNAMIC &&
+        e.kind != ElementKind.NEVER &&
         packageGraph.allConstructedModelElements.containsKey(key)) {
       newModelElement = packageGraph.allConstructedModelElements[key];
       assert(newModelElement.element is! MultiplyInheritedExecutableElement);
     } else {
       if (e.kind == ElementKind.DYNAMIC) {
         newModelElement = Dynamic(e, packageGraph);
+      }
+      if (e.kind == ElementKind.NEVER) {
+        newModelElement = NeverType(e, packageGraph);
       }
       if (e is MultiplyInheritedExecutableElement) {
         newModelElement = resolveMultiplyInheritedElement(
@@ -1120,6 +1125,7 @@ abstract class ModelElement extends Canonicalization
     // element associated with a ModelElement or there's an analysis bug.
     assert(name.isNotEmpty ||
         this.element?.kind == ElementKind.DYNAMIC ||
+        this.element?.kind == ElementKind.NEVER ||
         this is ModelFunction);
 
     if (href == null) {
