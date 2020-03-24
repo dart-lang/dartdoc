@@ -19,6 +19,8 @@ matrix:
   - env: DARTDOC_BOT=main
     os: osx
     dart: "dev/raw/latest"
+  allow_failures:
+  - env: DARTDOC_BOT=sdk-analyzer
 
 install:
 - ./tool/install_travis.sh
