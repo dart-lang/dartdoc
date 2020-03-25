@@ -1,3 +1,8 @@
+## 0.30.3
+* Add support for `Never` type from analyzer (#2167).
+* First markdown renderers landed (#2152) and dartdoc can sometimes
+  generate markdown, but it is not ready for prime-time yet.
+
 ## 0.30.2
 * Fix the broken search box with --use-base-href in Flutter (#2158).
 * More internal changes preparing for markdown output
