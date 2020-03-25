@@ -256,7 +256,12 @@ void dartfmt() async {
 }
 
 @Task('Run quick presubmit checks.')
-@Depends(analyze, checkBuild, smokeTest, dartfmt, /*tryPublish*/)
+@Depends(
+  analyze,
+  checkBuild,
+  smokeTest,
+  dartfmt, /*tryPublish*/
+)
 void presubmit() => null;
 
 @Task('Run long tests, self-test dartdoc, and run the publish test')
