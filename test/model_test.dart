@@ -3085,8 +3085,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
               r'(dynamic|num) Function<span class="signature">\(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span><wbr>\)</span>')));
       expect(
           importantComputations.linkedReturnType,
-          equals(
-              'Map<span class="signature">&lt;<wbr><span class="type-parameter">int</span>, <span class="type-parameter">dynamic Function<span class="signature">(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span><wbr>)</span></span>&gt;</span>'));
+          matches(RegExp(
+              r'Map<span class="signature">&lt;<wbr><span class="type-parameter">int</span>, <span class="type-parameter">(dynamic|num) Function<span class="signature">\(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span><wbr>\)</span></span>&gt;</span>')));
     });
 
     test(
