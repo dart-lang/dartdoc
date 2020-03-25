@@ -24,7 +24,7 @@ class Class extends Container
   Class(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
     packageGraph.specialClasses.addSpecial(this);
-    mixins = _cls.mixins
+    mixins = element.mixins
         .map((f) {
           DefinedElementType t = ElementType.from(f, library, packageGraph);
           return t;
@@ -32,11 +32,11 @@ class Class extends Container
         .where((mixin) => mixin != null)
         .toList(growable: false);
 
-    if (_cls.supertype != null && _cls.supertype.element.supertype != null) {
-      supertype = ElementType.from(_cls.supertype, library, packageGraph);
+    if (element.supertype != null && element.supertype.element.supertype != null) {
+      supertype = ElementType.from(element.supertype, library, packageGraph);
     }
 
-    _interfaces = _cls.interfaces
+    _interfaces = element.interfaces
         .map((f) =>
             ElementType.from(f, library, packageGraph) as DefinedElementType)
         .toList(growable: false);
@@ -168,7 +168,7 @@ class Class extends Container
   List<Constructor> get constructors {
     if (_constructors != null) return _constructors;
 
-    _constructors = _cls.constructors.map((e) {
+    _constructors = element.constructors.map((e) {
       return ModelElement.from(e, library, packageGraph) as Constructor;
     }).toList(growable: true)
       ..sort(byName);
@@ -182,6 +182,9 @@ class Class extends Container
   /// Returns the library that encloses this element.
   @override
   ModelElement get enclosingElement => library;
+
+  @override
+  ClassElement get element => super.element;
 
   @override
   String get fileName => '$name-class.$fileType';
@@ -319,7 +322,7 @@ class Class extends Container
   Iterable<DefinedElementType> get publicInterfaces =>
       model_utils.filterNonPublic(interfaces);
 
-  bool get isAbstract => _cls.isAbstract;
+  bool get isAbstract => element.isAbstract;
 
   @override
   bool get isCanonical => super.isCanonical && isPublic;
@@ -331,9 +334,9 @@ class Class extends Container
     }
 
     // if this class is itself Error or Exception, return true
-    if (_doCheck(_cls)) return true;
+    if (_doCheck(element)) return true;
 
-    return _cls.allSupertypes.map((t) => t.element).any(_doCheck);
+    return element.allSupertypes.map((t) => t.element).any(_doCheck);
   }
 
   /// Returns true if [other] is a parent class for this class.
@@ -410,13 +413,12 @@ class Class extends Container
 
   List<ExecutableElement> get _inheritedElements {
     if (__inheritedElements == null) {
-      var classElement = element as ClassElement;
-      if (classElement.isDartCoreObject) {
+      if (element.isDartCoreObject) {
         return __inheritedElements = <ExecutableElement>[];
       }
 
       var inheritance = definingLibrary.inheritanceManager;
-      var classType = classElement.thisType;
+      var classType = element.thisType;
       var cmap = inheritance.getInheritedConcreteMap(classType);
       var imap = inheritance.getInheritedMap(classType);
 
@@ -456,7 +458,7 @@ class Class extends Container
       // For half-inherited fields, the analyzer only links the non-inherited
       // to the [FieldElement].  Compose our [Field] class by hand by looking up
       // inherited accessors that may be related.
-      for (FieldElement f in _cls.fields) {
+      for (FieldElement f in element.fields) {
         PropertyAccessorElement getterElement = f.getter;
         if (getterElement == null && accessorMap.containsKey(f.name)) {
           getterElement = accessorMap[f.name]
@@ -545,14 +547,12 @@ class Class extends Container
     _fields.add(field);
   }
 
-  ClassElement get _cls => (element as ClassElement);
-
   List<Method> _methods;
 
   @override
   List<Method> get methods {
     if (_methods == null) {
-      _methods = _cls.methods.map((e) {
+      _methods = element.methods.map((e) {
         return ModelElement.from(e, library, packageGraph) as Method;
       }).toList(growable: false)
         ..sort(byName);
@@ -566,7 +566,7 @@ class Class extends Container
   @override
   List<TypeParameter> get typeParameters {
     if (_typeParameters == null) {
-      _typeParameters = _cls.typeParameters.map((f) {
+      _typeParameters = element.typeParameters.map((f) {
         var lib = Library(f.enclosingElement.library, packageGraph);
         return ModelElement.from(f, lib, packageGraph) as TypeParameter;
       }).toList();

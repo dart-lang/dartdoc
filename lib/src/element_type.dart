@@ -11,7 +11,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/dart/element/element.dart' show ClassElementImpl;
-import 'package:analyzer/src/generated/type_system.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
 
@@ -307,10 +306,7 @@ abstract class DefinedElementType extends ElementType {
           !(_bound as InterfaceType)
               .typeArguments
               .every((t) => t is InterfaceType)) {
-        var typeSystem = library.element.typeSystem as TypeSystemImpl;
-        // TODO(jcollins-g): convert to ClassElement.instantiateToBounds
-        // dart-lang/dartdoc#2135
-        _instantiatedType = typeSystem.instantiateToBounds(_bound);
+        _instantiatedType = (_bound.element as ClassElement).instantiateToBounds(nullabilitySuffix: _bound.nullabilitySuffix);
       } else {
         _instantiatedType = _bound;
       }
