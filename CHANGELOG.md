@@ -1,5 +1,5 @@
 ## 0.30.3
-* Add support for `Never` type from analyzer (#2167).
+* Add support for `Never` type from analyzer (#2167, #2170).
 * First markdown renderers landed (#2152) and dartdoc can sometimes
   generate markdown, but it is not ready for prime-time yet.
 
