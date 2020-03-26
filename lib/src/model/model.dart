@@ -30,6 +30,7 @@ export 'model_element.dart';
 export 'model_function.dart';
 export 'model_node.dart';
 export 'nameable.dart';
+export 'never.dart';
 export 'operator.dart';
 export 'package.dart';
 export 'package_builder.dart';
