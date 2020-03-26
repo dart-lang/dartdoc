@@ -114,7 +114,9 @@ class UndefinedElementType extends ElementType {
       }
     }
     if (type.isVoid) return 'void';
-    assert(false, 'Unrecognized type for UndefinedElementType');
+    if (type.isBottom) return 'Never';
+    assert(false,
+        'Unrecognized type for UndefinedElementType: ${type.toString()}');
     return '';
   }
 
