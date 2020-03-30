@@ -114,6 +114,8 @@ abstract class Categorization implements ModelElement {
     return categories.where((c) => c.isDocumented);
   }
 
+  bool get hasDisplayedCategories => displayedCategories.isNotEmpty;
+
   /// True if categories, subcategories, a documentation icon, or samples were
   /// declared.
   bool get hasCategorization {

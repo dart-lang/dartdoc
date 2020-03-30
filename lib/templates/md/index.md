@@ -20,7 +20,7 @@
 {{/defaultCategory.publicLibraries}}
 
 {{#categoriesWithPublicLibraries}}
-### {{name}}
+### Category {{{categoryLabel}}}
 
 {{#publicLibraries}}
 {{>library}}

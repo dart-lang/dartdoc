@@ -49,6 +49,6 @@ class TypeParametersRendererMd extends TypeParametersRenderer {
       return '';
     }
     var joined = typeParameters.map(mapfn).join(', ');
-    return '<${joined}>';
+    return '&lt;${joined}>';
   }
 }
