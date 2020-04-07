@@ -105,7 +105,7 @@ class PackageGraph {
           yield d.precacheLocalDocs();
           // TopLevelVariables get their documentation from getters and setters,
           // so should be precached if either has a template.
-          if (m is TopLevelVariable) {
+          if (m is TopLevelVariable && !precachedElements.contains(m)) {
             precachedElements.add(m);
             yield m.precacheLocalDocs();
           }
