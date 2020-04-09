@@ -152,9 +152,23 @@ class Package extends LibraryContainer
   /// was not excluded on the command line.
   bool get isLocal {
     if (_isLocal == null) {
-      _isLocal = (packageMeta == packageGraph.packageMeta ||
-              packageGraph.hasEmbedderSdk && packageMeta.isSdk ||
-              packageGraph.config.autoIncludeDependencies) &&
+      _isLocal = (
+          // Document as local if this is the default package.
+          packageMeta == packageGraph.packageMeta ||
+              // Assume we want to document an embedded SDK as local if
+              // it has libraries defined in the default package.
+              // TODO(jcollins-g): Handle case where embedder SDKs can be
+              // assembled from multiple locations?
+              packageGraph.hasEmbedderSdk &&
+                  packageMeta.isSdk &&
+                  libraries.any(
+                          (l) => path.isWithin(packageGraph.packageMeta.dir.path,
+                          (l.element.source.fullName))) ||
+              // autoIncludeDependencies means everything is local.
+              packageGraph.config.autoIncludeDependencies
+      ) &&
+          // Regardless of the above rules, do not document as local if
+          // we excluded this package by name.
           !packageGraph.config.isPackageExcluded(name);
     }
     return _isLocal;
