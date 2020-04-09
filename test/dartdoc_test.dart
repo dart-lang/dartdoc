@@ -435,5 +435,5 @@ void main() {
             startsWith('Unsupported output format'));
       }
     });
-  }, timeout: Timeout.factor(8));
+  }, timeout: Timeout.factor(12));
 }
