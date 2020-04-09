@@ -52,8 +52,9 @@ mixin GetterSetterCombo on ModelElement {
         .toString();
     Element staticElement =
         (constantInitializer as InstanceCreationExpression).staticElement;
-    if (staticElement == null)
-      return original;
+    assert(staticElement != null,
+        '${original} should be able to be resolved but an analysis error prevents this');
+    if (staticElement == null) return original;
     Constructor target = ModelElement.fromElement(staticElement, packageGraph);
     Class targetClass = target.enclosingElement;
     // TODO(jcollins-g): this logic really should be integrated into Constructor,
