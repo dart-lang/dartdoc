@@ -586,5 +586,5 @@ void main() {
               'parameters. FormatException: Could not find an option named "name".'),
           isTrue);
     });
-  });
+  }, timeout: Timeout.factor(2));
 }
