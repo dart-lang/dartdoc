@@ -52,9 +52,9 @@ class PackageBuilder {
     return newGraph;
   }
 
-  DartSdk _sdk;
+  FolderBasedDartSdk _sdk;
 
-  DartSdk get sdk {
+  FolderBasedDartSdk get sdk {
     if (_sdk == null) {
       _sdk = FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
           PhysicalResourceProvider.INSTANCE.getFolder(config.sdkDir));
