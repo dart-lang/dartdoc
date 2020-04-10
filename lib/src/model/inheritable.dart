@@ -21,8 +21,25 @@ import 'package:dartdoc/src/special_elements.dart';
 /// place in the documentation, and we pick a canonical class because that's
 /// the one in the public namespace that will be documented.
 mixin Inheritable on ContainerMember {
+  /// True if this [Inheritable] is inherited from a different class.
+  bool get isInherited;
+
+  /// True if this [Inheritable] has a parameter whose type is overridden
+  /// by a subtype.
+  bool get isCovariant;
+
+  @override
+  Set<String> get features {
+    Set<String> _features = super.features;
+    if (isOverride) _features.add('override');
+    if (isInherited) _features.add('inherited');
+    if (isCovariant) _features.add('covariant');
+    return _features;
+  }
+
   @override
   ModelElement buildCanonicalModelElement() {
+    // TODO(jcollins-g): factor out extension logic into [Extendable]
     if (canonicalEnclosingContainer is Extension) {
       return this;
     }
@@ -33,6 +50,9 @@ mixin Inheritable on ContainerMember {
               (m) =>
                   m.name == name && m.isPropertyAccessor == isPropertyAccessor,
               orElse: () => null);
+    }
+    if (canonicalEnclosingContainer != null) {
+      throw UnimplementedError('${canonicalEnclosingContainer}: unknown type');
     }
     return null;
   }
@@ -77,8 +97,14 @@ mixin Inheritable on ContainerMember {
       if (definingEnclosingContainer.isCanonical &&
           definingEnclosingContainer.isPublic) {
         assert(definingEnclosingContainer == found);
+      }
+      if (found != null) {
         return found;
       }
+    } else if (!isInherited && definingEnclosingContainer is! Extension) {
+      // TODO(jcollins-g): factor out extension logic into [Extendable].
+      return packageGraph
+          .findCanonicalModelElementFor(element.enclosingElement);
     }
     return super.computeCanonicalEnclosingContainer();
   }
@@ -104,7 +130,7 @@ mixin Inheritable on ContainerMember {
 
   bool _isOverride;
 
-  @override
+  /// True if this [Inheritable] is overriding a superclass.
   bool get isOverride {
     if (_isOverride == null) {
       // The canonical version of the enclosing element -- not canonicalEnclosingElement,

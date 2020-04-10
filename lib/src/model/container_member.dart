@@ -6,16 +6,6 @@ import 'package:dartdoc/src/model/model.dart';
 
 /// A [ModelElement] that is a [Container] member.
 mixin ContainerMember on ModelElement implements EnclosedElement {
-  /// True if this [ContainerMember] is inherited from a different class.
-  bool get isInherited;
-
-  /// True if this [ContainerMember] is overriding a superclass.
-  bool get isOverride;
-
-  /// True if this [ContainerMember] has a parameter whose type is overridden
-  /// by a subtype.
-  bool get isCovariant;
-
   /// True if this [ContainerMember] is from an applicable [Extension].
   /// False otherwise, including if this [ContainerMember]'s [enclosingElement]
   /// is the extension it was declared in.
@@ -39,9 +29,6 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   @override
   Set<String> get features {
     Set<String> _features = super.features;
-    if (isOverride) _features.add('override');
-    if (isInherited) _features.add('inherited');
-    if (isCovariant) _features.add('covariant');
     if (isExtended) _features.add('extended');
     return _features;
   }
@@ -61,10 +48,13 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
 
   Container computeCanonicalEnclosingContainer() {
     // TODO(jcollins-g): move Extension specific code to [Extendable]
-    if (enclosingElement is! Extension ||
-        (enclosingElement is Extension && enclosingElement.isDocumented)) {
+    if (enclosingElement is Extension && enclosingElement.isDocumented) {
       return packageGraph
           .findCanonicalModelElementFor(enclosingElement.element);
+    }
+    if (enclosingElement is! Extension) {
+      return packageGraph
+          .findCanonicalModelElementFor(element.enclosingElement);
     }
     return null;
   }
