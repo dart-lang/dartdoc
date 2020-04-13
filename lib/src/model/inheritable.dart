@@ -38,6 +38,9 @@ mixin Inheritable on ContainerMember {
   }
 
   @override
+  Library get canonicalLibrary => canonicalEnclosingContainer?.canonicalLibrary;
+
+  @override
   ModelElement buildCanonicalModelElement() {
     // TODO(jcollins-g): factor out extension logic into [Extendable]
     if (canonicalEnclosingContainer is Extension) {
