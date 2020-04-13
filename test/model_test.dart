@@ -1389,6 +1389,17 @@ void main() {
   });
 
   group('Class edge cases', () {
+    test('Inherit from private class across private library to public library',
+        () {
+      Class GadgetExtender = packageGraph.localPublicLibraries
+          .firstWhere((l) => l.name == 'gadget_extender')
+          .allClasses
+          .firstWhere((c) => c.name == 'GadgetExtender');
+      Field gadgetGetter =
+          GadgetExtender.allFields.firstWhere((f) => f.name == 'gadgetGetter');
+      expect(gadgetGetter.isCanonical, isTrue);
+    });
+
     test(
         'ExecutableElements from private classes and from public interfaces (#1561)',
         () {

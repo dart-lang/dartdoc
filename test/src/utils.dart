@@ -17,7 +17,7 @@ import 'package:path/path.dart' as path;
 /// The number of public libraries in testing/test_package, minus 2 for
 /// the excluded libraries listed in the initializers for _testPackageGraphMemo
 /// and minus 1 for the <nodoc> tag in the 'excluded' library.
-const int kTestPackagePublicLibraries = 15;
+const int kTestPackagePublicLibraries = 16;
 
 final RegExp quotables = RegExp(r'[ "\r\n\$]');
 final RegExp observatoryPortRegexp =
