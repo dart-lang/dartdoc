@@ -647,7 +647,7 @@ abstract class ModelElement extends Canonicalization
     if (!_canonicalLibraryIsSet) {
       // This is not accurate if we are constructing the Package.
       assert(packageGraph.allLibrariesAdded);
-      // Since we're may be looking for a library, find the [Element] immediately
+      // Since we're looking for a library, find the [Element] immediately
       // contained by a [CompilationUnitElement] in the tree.
       Element topLevelElement = element;
       while (topLevelElement != null &&
