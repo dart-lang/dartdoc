@@ -24,7 +24,6 @@ install:
 - ./tool/install_travis.sh
 
 before_script:
-- ulimit -c unlimited -S
 - pub get
 
 before_install:
