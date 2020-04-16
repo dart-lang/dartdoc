@@ -290,7 +290,7 @@ void main() {
       List<Category> packageCategories =
           packageGraphSmall.localPackages.first.categories;
       expect(packageCategories.length, equals(0));
-    });
+    }, timeout: Timeout.factor(2));
   });
 
   group('Package', () {
