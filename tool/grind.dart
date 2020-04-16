@@ -639,7 +639,7 @@ Future<void> serveFlutterDocs() async {
 }
 
 @Task('Validate flutter docs')
-@Depends(buildFlutterDocs, buildDartdocFlutterPluginDocs)
+@Depends(buildFlutterDocs, testDartdocFlutterPlugin)
 void validateFlutterDocs() {}
 
 @Task('Build flutter docs')
