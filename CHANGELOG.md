@@ -1,3 +1,12 @@
+## 0.30.4
+* Fix regression in canonicalization from extension methods. (#2099).
+* Do not throw if a const constructor's staticElement can not be resolved
+  (#2176, #2143).
+* Hide non-local embedded SDKs, preventing Flutter's sky_engine from
+  being documented by default with Flutter packages (#1949, #2175).
+* Fix a problem with reentrance on TopLevelVariable doc caching. (#2173, #2143)
+* A batch of tweaks for the new markdown output templates (#2162)
+
 ## 0.30.3
 * Add support for `Never` type from analyzer (#2167, #2170).
 * First markdown renderers landed (#2152) and dartdoc can sometimes
