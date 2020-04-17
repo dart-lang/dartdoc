@@ -24,11 +24,7 @@ install:
 - ./tool/install_travis.sh
 
 before_script:
-- ulimit -c unlimited -S
 - pub get --no-precompile
-
-after_failure:
-- ./tool/after_failure_travis.sh
 
 before_install:
   # Disable non-blocking I/O for stdout, stderr https://github.com/travis-ci/travis-ci/issues/4704#issuecomment-348435959

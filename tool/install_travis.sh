@@ -8,8 +8,6 @@
 set -x
 
 if uname | grep -q Linux ; then
-  sudo apt-get update
-  sudo apt-get install -y gdb
   sudo gem install coveralls-lcov
   coveralls-lcov --help
 fi
