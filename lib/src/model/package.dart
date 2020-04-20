@@ -230,7 +230,7 @@ class Package extends LibraryContainer
                 if (version.isPreRelease) {
                   // version.preRelease is a List<dynamic> with a mix of
                   // integers and strings.  Given this, handle
-                  // 2.8.0-dev.1.0, 2.9.0-dev.1.0, and similar
+                  // 2.8.0-dev.1.0, 2.9.0-1.0.dev, and similar
                   // variations.
                   tag = version.preRelease.whereType<String>().first;
                   // Who knows about non-SDK packages, but assert that SDKs
