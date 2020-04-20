@@ -226,21 +226,20 @@ class Package extends LibraryContainer
             case 'b':
               {
                 Version version = Version.parse(packageMeta.version);
+                String tag = 'stable';
                 if (version.isPreRelease) {
                   // version.preRelease is a List<dynamic> with a mix of
                   // integers and strings.  Given this, handle
                   // 2.8.0-dev.1.0, 2.9.0-dev.1.0, and similar
                   // variations.
-                  String tag = version.preRelease.whereType<String>().first;
+                  tag = version.preRelease.whereType<String>().first;
                   // Who knows about non-SDK packages, but assert that SDKs
                   // must conform to the known format.
                   assert(
                       packageMeta.isSdk == false || int.tryParse(tag) == null,
                       'Got an integer as string instead of the expected "dev" tag');
                 }
-                return version.isPreRelease
-                    ? version.preRelease.whereType<String>().first
-                    : 'stable';
+                return tag;
               }
             case 'n':
               return name;
