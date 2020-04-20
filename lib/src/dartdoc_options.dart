@@ -1529,14 +1529,14 @@ Future<List<DartdocOption>> createDartdocOptions() async {
             'hosted',
             {
               'pub.dartlang.org':
-                  'https://pub.dartlang.org/documentation/%n%/%v%'
+                  'https://pub.dev/documentation/%n%/%v%'
             },
             help: 'Specify URLs for hosted pub packages'),
         DartdocOptionArgOnly<Map<String, String>>(
           'sdks',
           {
-            'Dart': 'https://api.dartlang.org/%b%/%v%',
-            'Flutter': 'https://docs.flutter.io/flutter',
+            'Dart': 'https://api.dart.dev/%b%/%v%',
+            'Flutter': 'https://api.flutter.dev/flutter',
           },
           help: 'Specify URLs for SDKs.',
         ),
@@ -1558,7 +1558,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
           }
           return '';
         }, help: 'Url to use for this particular package.'),
-        DartdocOptionArgOnly<bool>('remote', false,
+        DartdocOptionArgOnly<bool>('remote', true,
             help: 'Allow links to be generated for packages outside this one.',
             negatable: true),
       ]),
