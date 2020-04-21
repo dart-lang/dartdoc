@@ -960,7 +960,8 @@ Future<void> testDartdoc() async {
   ]);
   expectFileContains(path.join(dartdocDocsDir.path, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
-  final RegExp object = RegExp('<li>Object</li>', multiLine: true);
+  final RegExp object =
+      RegExp('Object-class.html">Object</a></li>', multiLine: true);
   expectFileContains(
       path.join(dartdocDocsDir.path, 'dartdoc', 'ModelElement-class.html'),
       [object]);
