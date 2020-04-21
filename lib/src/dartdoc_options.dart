@@ -205,8 +205,8 @@ class Snapshot {
 
   bool _needsSnapshot = true;
 
-  /// Will return true precisely once, unless [toolPath] was already a snapshot.
-  /// In that case, will always return false.
+  /// Will return true precisely once, unless [snapshotFile] was already a
+  /// snapshot.  In that case, will always return false.
   bool get needsSnapshot {
     if (_needsSnapshot == true) {
       _needsSnapshot = false;
@@ -1525,12 +1525,8 @@ Future<List<DartdocOption>> createDartdocOptions() async {
         mustExist: true),
     DartdocOptionSet('linkTo')
       ..addAll([
-        DartdocOptionArgOnly<Map<String, String>>(
-            'hosted',
-            {
-              'pub.dartlang.org':
-                  'https://pub.dev/documentation/%n%/%v%'
-            },
+        DartdocOptionArgOnly<Map<String, String>>('hosted',
+            {'pub.dartlang.org': 'https://pub.dev/documentation/%n%/%v%'},
             help: 'Specify URLs for hosted pub packages'),
         DartdocOptionArgOnly<Map<String, String>>(
           'sdks',

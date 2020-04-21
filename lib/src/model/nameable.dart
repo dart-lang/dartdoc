@@ -24,7 +24,7 @@ abstract class Nameable {
 
   String _namePart;
 
-  /// Utility getter/cache for [_MarkdownCommentReference._getResultsForClass].
+  /// Utility getter/cache for `_MarkdownCommentReference._getResultsForClass`.
   String get namePart {
     // TODO(jcollins-g): This should really be the same as 'name', but isn't
     // because of accessors and operators.

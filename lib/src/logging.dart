@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cli_util/cli_logging.dart' show Ansi;
 import 'package:dartdoc/src/dartdoc_options.dart';
 // Copyright (c) 2017, the Dart project authors.  Please see the AUTHORS file
 // for details. All rights reserved. Use of this source code is governed by a
@@ -27,6 +28,10 @@ void logWarning(Object message) {
 
 void logInfo(Object message) {
   _logger.log(Level.INFO, message);
+}
+
+void logDebug(Object message) {
+  _logger.log(Level.FINE, message);
 }
 
 void logProgress(Object message) {
@@ -74,12 +79,21 @@ void startLogging(LoggingContext config) {
     // Used to track if we're printing `...` to show progress.
     // Allows unified new-line tracking
     var writingProgress = false;
+    Ansi ansi = Ansi(Ansi.terminalSupportsAnsi);
+    int spinnerIndex = 0;
+    final List<String> spinner = ['-', r'\', '|', '/'];
 
     Logger.root.onRecord.listen((record) {
       if (record.level == progressLevel) {
-        if (config.showProgress && stopwatch.elapsed.inMilliseconds > 250) {
+        if (!config.quiet &&
+            config.showProgress &&
+            stopwatch.elapsed.inMilliseconds > 125) {
+          if (writingProgress = false) {
+            stdout.write(' ');
+          }
           writingProgress = true;
-          stdout.write('.');
+          stdout.write('${ansi.backspace}${spinner[spinnerIndex]}');
+          spinnerIndex = (spinnerIndex + 1) % spinner.length;
           stopwatch.reset();
         }
         return;
@@ -87,9 +101,7 @@ void startLogging(LoggingContext config) {
 
       stopwatch.reset();
       if (writingProgress) {
-        // print a new line after progress dots...
-        print('');
-        writingProgress = false;
+        stdout.write('${ansi.backspace} ${ansi.backspace}');
       }
       var message = record.message;
       assert(message == message.trimRight());
@@ -97,18 +109,17 @@ void startLogging(LoggingContext config) {
 
       if (record.level < Level.WARNING) {
         if (!config.quiet) {
-          if (config.showProgress && message.endsWith('...')) {
-            // Assume there may be more progress to print, so omit the trailing
-            // newline
-            writingProgress = true;
-            stdout.write(message);
-          } else {
-            print(message);
-          }
+          print(message);
         }
       } else {
-        stderr.writeln(message);
+        if (writingProgress) {
+          // Some console implementations, like IntelliJ, apparently need
+          // the backspace to occur for stderr as well.
+          stderr.write('${ansi.backspace} ${ansi.backspace}');
+        }
+        stderr.write('${message}\n');
       }
+      writingProgress = false;
     });
   }
 }
@@ -124,9 +135,9 @@ Future<List<DartdocOption>> createLoggingOptions() async {
     DartdocOptionArgOnly<bool>('json', false,
         help: 'Prints out progress JSON maps. One entry per line.',
         negatable: true),
-    DartdocOptionArgOnly<bool>('showProgress', false,
-        help: 'Display progress indications to console stdout',
-        negatable: false),
+    DartdocOptionArgOnly<bool>('showProgress', Ansi.terminalSupportsAnsi,
+        help: 'Display progress indications to console stdout.',
+        negatable: true),
     DartdocOptionArgSynth<bool>('quiet',
         (DartdocSyntheticOption option, Directory dir) {
       if (option.root['generateDocs']?.valueAt(dir) == false) {

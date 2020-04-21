@@ -28,29 +28,42 @@ PackageMeta sdkPackageMeta = PackageMeta.fromDir(sdkDir);
 
 final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraph => _testPackageGraphMemo.runOnce(() =>
-    bootBasicPackage('testing/test_package', ['css', 'code_in_comments']));
+    bootBasicPackage('testing/test_package', ['css', 'code_in_comments'],
+        additionalArguments: ['--no-link-to-remote']));
 
 final _testPackageGraphExperimentsMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraphExperiments =>
     _testPackageGraphExperimentsMemo.runOnce(() => bootBasicPackage(
-        'testing/test_package_experiments', [],
-        additionalArguments: ['--enable-experiment', 'non-nullable']));
+            'testing/test_package_experiments', [], additionalArguments: [
+          '--enable-experiment',
+          'non-nullable',
+          '--no-link-to-remote'
+        ]));
 
 final _testPackageGraphGinormousMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraphGinormous =>
     _testPackageGraphGinormousMemo.runOnce(() => bootBasicPackage(
-        'testing/test_package', ['css', 'code_in_commnets', 'excluded'],
-        additionalArguments: ['--auto-include-dependencies']));
+            'testing/test_package', [
+          'css',
+          'code_in_commnets',
+          'excluded'
+        ], additionalArguments: [
+          '--auto-include-dependencies',
+          '--no-link-to-remote'
+        ]));
 
 final _testPackageGraphSmallMemo = AsyncMemoizer<PackageGraph>();
-Future<PackageGraph> get testPackageGraphSmall => _testPackageGraphSmallMemo
-    .runOnce(() => bootBasicPackage('testing/test_package_small', []));
+Future<PackageGraph> get testPackageGraphSmall =>
+    _testPackageGraphSmallMemo.runOnce(() => bootBasicPackage(
+        'testing/test_package_small', [],
+        additionalArguments: ['--no-link-to-remote']));
 
 final _testPackageGraphErrorsMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraphErrors =>
     _testPackageGraphErrorsMemo.runOnce(() => bootBasicPackage(
         'testing/test_package_doc_errors',
-        ['css', 'code_in_comments', 'excluded']));
+        ['css', 'code_in_comments', 'excluded'],
+        additionalArguments: ['--no-link-to-remote']));
 
 final _testPackageGraphSdkMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraphSdk =>
