@@ -14,6 +14,7 @@ import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
@@ -103,11 +104,13 @@ class PackageGraph {
             !precachedElements.contains(d)) {
           precachedElements.add(d);
           yield d.precacheLocalDocs();
+          logProgress(d.name);
           // TopLevelVariables get their documentation from getters and setters,
           // so should be precached if either has a template.
           if (m is TopLevelVariable && !precachedElements.contains(m)) {
             precachedElements.add(m);
             yield m.precacheLocalDocs();
+            logProgress(d.name);
           }
         }
       }

@@ -147,9 +147,9 @@ class Package extends LibraryContainer
 
   bool _isLocal;
 
-  /// Return true if this is the default package, this is part of an embedder SDK,
-  /// or if [config.autoIncludeDependencies] is true -- but only if the package
-  /// was not excluded on the command line.
+  /// Return true if this is the default package, this is part of an embedder
+  /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
+  /// only if the package was not excluded on the command line.
   bool get isLocal {
     if (_isLocal == null) {
       _isLocal = (

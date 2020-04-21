@@ -189,7 +189,7 @@ class Dartdoc extends PackageBuilder {
   }
 
   Future<DartdocResults> generateDocs() async {
-    logPrint("Documenting ${config.topLevelPackageMeta}...");
+    logInfo("Documenting ${config.topLevelPackageMeta}...");
 
     DartdocResults dartdocResults = await generateDocsBase();
     if (dartdocResults.packageGraph.localPublicLibraries.isEmpty) {

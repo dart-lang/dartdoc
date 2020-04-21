@@ -744,6 +744,7 @@ abstract class ModelElement extends Canonicalization
 
   @override
   bool get isCanonical {
+    if (!isPublic) return false;
     if (library == canonicalLibrary) {
       if (this is Inheritable) {
         Inheritable i = (this as Inheritable);

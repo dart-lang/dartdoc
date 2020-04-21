@@ -205,8 +205,8 @@ class Snapshot {
 
   bool _needsSnapshot = true;
 
-  /// Will return true precisely once, unless [toolPath] was already a snapshot.
-  /// In that case, will always return false.
+  /// Will return true precisely once, unless [snapshotFile] was already a
+  /// snapshot.  In that case, will always return false.
   bool get needsSnapshot {
     if (_needsSnapshot == true) {
       _needsSnapshot = false;
@@ -1525,18 +1525,14 @@ Future<List<DartdocOption>> createDartdocOptions() async {
         mustExist: true),
     DartdocOptionSet('linkTo')
       ..addAll([
-        DartdocOptionArgOnly<Map<String, String>>(
-            'hosted',
-            {
-              'pub.dartlang.org':
-                  'https://pub.dartlang.org/documentation/%n%/%v%'
-            },
+        DartdocOptionArgOnly<Map<String, String>>('hosted',
+            {'pub.dartlang.org': 'https://pub.dev/documentation/%n%/%v%'},
             help: 'Specify URLs for hosted pub packages'),
         DartdocOptionArgOnly<Map<String, String>>(
           'sdks',
           {
-            'Dart': 'https://api.dartlang.org/%b%/%v%',
-            'Flutter': 'https://docs.flutter.io/flutter',
+            'Dart': 'https://api.dart.dev/%b%/%v%',
+            'Flutter': 'https://api.flutter.dev/flutter',
           },
           help: 'Specify URLs for SDKs.',
         ),
@@ -1558,7 +1554,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
           }
           return '';
         }, help: 'Url to use for this particular package.'),
-        DartdocOptionArgOnly<bool>('remote', false,
+        DartdocOptionArgOnly<bool>('remote', true,
             help: 'Allow links to be generated for packages outside this one.',
             negatable: true),
       ]),

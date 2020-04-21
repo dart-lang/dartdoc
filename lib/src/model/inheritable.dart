@@ -16,7 +16,7 @@ import 'package:dartdoc/src/special_elements.dart';
 /// namespace, that's the one we should treat as canonical and implementors
 /// of this class can use that knowledge to determine canonicalization.
 ///
-/// We pick the class closest to the [definingEnclosingElement] so that all
+/// We pick the class closest to the [definingEnclosingContainer] so that all
 /// children of that class inheriting the same member will point to the same
 /// place in the documentation, and we pick a canonical class because that's
 /// the one in the public namespace that will be documented.

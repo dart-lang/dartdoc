@@ -163,7 +163,7 @@ class PackageBuilder {
           null,
           sourceFactory,
           options);
-      driver.results.listen((_) {});
+      driver.results.listen((_) => logProgress(''));
       driver.exceptions.listen((_) {});
       scheduler.start();
     }
@@ -243,11 +243,12 @@ class PackageBuilder {
       // Be careful here not to accidentally stack up multiple
       // ResolvedLibraryResults, as those eat our heap.
       for (String f in files) {
+        logProgress(f);
         ResolvedLibraryResult r = await processLibrary(f);
         if (r != null &&
             !libraries.contains(r.element) &&
             isLibraryIncluded(r.element)) {
-          logInfo('parsing ${f}...');
+          logDebug('parsing ${f}...');
           libraryAdder(r);
           libraries.add(r.element);
         }

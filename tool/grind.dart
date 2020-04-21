@@ -949,14 +949,15 @@ Future<void> testDart2(Iterable<File> tests) async {
   return CoverageSubprocessLauncher.generateCoverageToFile(File('lcov.info'));
 }
 
-@Task('Generate docs for dartdoc')
+@Task('Generate docs for dartdoc without link-to-remote')
 Future<void> testDartdoc() async {
   var launcher = SubprocessLauncher('test-dartdoc');
   await launcher.runStreamed(Platform.resolvedExecutable, [
     '--enable-asserts',
     'bin/dartdoc.dart',
     '--output',
-    dartdocDocsDir.path
+    dartdocDocsDir.path,
+    '--no-link-to-remote',
   ]);
   expectFileContains(path.join(dartdocDocsDir.path, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
@@ -970,12 +971,11 @@ Future<void> testDartdoc() async {
 Future<void> testDartdocRemote() async {
   var launcher = SubprocessLauncher('test-dartdoc-remote');
   final RegExp object = RegExp(
-      '<a href="https://api.dartlang.org/(dev|stable)/[^/]*/dart-core/Object-class.html">Object</a>',
+      '<a href="https://api.dart.dev/(dev|stable|beta|edge)/[^/]*/dart-core/Object-class.html">Object</a>',
       multiLine: true);
   await launcher.runStreamed(Platform.resolvedExecutable, [
     '--enable-asserts',
     'bin/dartdoc.dart',
-    '--link-to-remote',
     '--output',
     dartdocDocsDir.path
   ]);
@@ -1032,8 +1032,8 @@ Future<void> testDartdocFlutterPlugin() async {
       path.join(
           pluginPackageDocsDir.path, 'testlib', 'MyAwesomeWidget-class.html'),
       [
-        '<a href="https://docs.flutter.io/flutter/widgets/Widget-class.html">Widget</a>',
-        '<a href="https://docs.flutter.io/flutter/dart-core/Object-class.html">Object</a>'
+        '<a href="https://api.flutter.dev/flutter/widgets/Widget-class.html">Widget</a>',
+        '<a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>'
       ]);
 }
 

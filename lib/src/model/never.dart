@@ -9,7 +9,7 @@ class NeverType extends ModelElement {
   NeverType(Element element, PackageGraph packageGraph)
       : super(element, null, packageGraph, null);
 
-  /// [never] is not a real object, and so we can't document it, so there
+  /// `Never` is not a real object, and so we can't document it, so there
   /// can be nothing canonical for it.
   @override
   ModelElement get canonicalModelElement => null;
