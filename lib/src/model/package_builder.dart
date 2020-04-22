@@ -40,7 +40,7 @@ class PackageBuilder {
 
   Future<PackageGraph> buildPackageGraph() async {
     if (config.topLevelPackageMeta.needsPubGet) {
-      config.topLevelPackageMeta.runPubGet();
+      config.topLevelPackageMeta.runPubGet(config);
     }
 
     RendererFactory rendererFactory = RendererFactory.forFormat(config.format);
