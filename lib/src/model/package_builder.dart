@@ -41,6 +41,7 @@ class PackageBuilder {
   Future<PackageGraph> buildPackageGraph() async {
     if (!config.sdkDocs) {
       if (config.topLevelPackageMeta.needsPubGet &&
+          config.topLevelPackageMeta.requiresFlutter &&
           config.flutterRoot == null) {
         throw DartdocOptionError(
             'Top level package requires Flutter but FLUTTER_ROOT environment variable not set');
