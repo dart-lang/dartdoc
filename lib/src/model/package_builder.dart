@@ -39,8 +39,15 @@ class PackageBuilder {
   PackageBuilder(this.config);
 
   Future<PackageGraph> buildPackageGraph() async {
-    if (config.topLevelPackageMeta.needsPubGet) {
-      config.topLevelPackageMeta.runPubGet(config);
+    if (!config.sdkDocs) {
+      if (config.topLevelPackageMeta.needsPubGet &&
+          config.flutterRoot == null) {
+        throw DartdocOptionError(
+            'Top level package requires Flutter but FLUTTER_ROOT environment variable not set');
+      }
+      if (config.topLevelPackageMeta.needsPubGet) {
+        config.topLevelPackageMeta.runPubGet(config.sdkDir);
+      }
     }
 
     RendererFactory rendererFactory = RendererFactory.forFormat(config.format);
