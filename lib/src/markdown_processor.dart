@@ -744,10 +744,14 @@ class _MarkdownCommentReference {
       // [thing], a member of this class
       _addCanonicalResult(modelElement, tryClass);
     }
-    membersToCheck = (c.allModelElementsByNamePart[codeRefChompedParts.last] ??
-            <ModelElement>[])
-        .map(_convertConstructors);
-    membersToCheck.forEach((m) => _addCanonicalResult(m, tryClass));
+    if (codeRefChompedParts.length < 2 ||
+        codeRefChompedParts[codeRefChompedParts.length - 2] == c.name) {
+      membersToCheck =
+          (c.allModelElementsByNamePart[codeRefChompedParts.last] ??
+                  <ModelElement>[])
+              .map(_convertConstructors);
+      membersToCheck.forEach((m) => _addCanonicalResult(m, tryClass));
+    }
     results.remove(null);
     if (results.isNotEmpty) return;
     if (c.fullyQualifiedNameWithoutLibrary == codeRefChomped) {

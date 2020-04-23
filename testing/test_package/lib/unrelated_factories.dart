@@ -1,12 +1,12 @@
 class A {
-  /// A link to [B.fromMap].
-  factory A.fromMap(Map<String, dynamic> map) => A();
+  /// A link to [AB.fromMap], [fromMap], and [AB] and [A].
+  factory A.fromMap(Map<String, dynamic> map) => A._A();
 
-  A();
+  A._A();
 }
 
-class B {
-  factory B.fromMap(Map<String, dynamic> map) => B();
+class AB {
+  factory AB.fromMap(Map<String, dynamic> map) => AB._AB();
 
-  B();
+  AB._AB();
 }
