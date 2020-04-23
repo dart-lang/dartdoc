@@ -42,7 +42,7 @@ class PackageGraph {
   void addLibraryToGraph(ResolvedLibraryResult result) {
     assert(!allLibrariesAdded);
     LibraryElement element = result.element;
-    var packageMeta = PackageMeta.fromElement(element, config);
+    var packageMeta = PackageMeta.fromElement(element, config.sdkDir);
     var lib = Library.fromLibraryResult(
         result, this, Package.fromPackageMeta(packageMeta, this));
     packageMap[packageMeta.name].libraries.add(lib);
@@ -850,7 +850,7 @@ class PackageGraph {
         result,
         this,
         Package.fromPackageMeta(
-            PackageMeta.fromElement(result.element.library, config),
+            PackageMeta.fromElement(result.element.library, config.sdkDir),
             packageGraph));
     allLibraries[result.element.library] = foundLibrary;
     return foundLibrary;

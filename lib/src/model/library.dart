@@ -452,7 +452,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   PackageMeta get packageMeta {
     if (_packageMeta == null) {
-      _packageMeta = PackageMeta.fromElement(element, config);
+      _packageMeta = PackageMeta.fromElement(element, config.sdkDir);
     }
     return _packageMeta;
   }

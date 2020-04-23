@@ -527,6 +527,7 @@ Future<List<Map>> _buildTestPackageDocs(
 }
 
 @Task('Build generated test package docs (with inherited docs and source code)')
+@Depends(clean)
 Future<void> buildTestPackageDocs() async {
   await _buildTestPackageDocs(
       testPackageDocsDir.absolute.path, Future.value(Directory.current.path));
@@ -903,21 +904,42 @@ Future<void> tryPublish() async {
 }
 
 @Task('Run a smoke test, only')
+@Depends(clean)
 Future<void> smokeTest() async {
   await testDart2(smokeTestFiles);
   await testFutures.wait();
 }
 
 @Task('Run non-smoke tests, only')
+@Depends(clean)
 Future<void> longTest() async {
   await testDart2(testFiles);
   await testFutures.wait();
 }
 
 @Task('Run all the tests.')
+@Depends(clean)
 Future<void> test() async {
   await testDart2(smokeTestFiles.followedBy(testFiles));
   await testFutures.wait();
+}
+
+@Task('Clean up pub data from test directories')
+Future<void> clean() async {
+  var toDelete = nonRootPubData;
+  toDelete.forEach((e) => e.deleteSync(recursive: true));
+}
+
+Iterable<FileSystemEntity> get nonRootPubData {
+  // This involves deleting things, so be careful.
+  if (!File(path.join('tool', 'grind.dart')).existsSync()) {
+    throw FileSystemException('wrong CWD, run from root of dartdoc package');
+  }
+  return Directory('.')
+      .listSync(recursive: true)
+      .where((e) => path.dirname(e.path) != '.')
+      .where((e) => <String>['.dart_tool', '.packages', 'pubspec.lock']
+          .contains(path.basename(e.path)));
 }
 
 List<File> get smokeTestFiles => Directory('test')
@@ -1017,6 +1039,7 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
 }
 
 @Task('Build docs for a package that requires flutter with remote linking')
+@Depends(clean)
 Future<void> buildDartdocFlutterPluginDocs() async {
   await _buildDartdocFlutterPluginDocs();
 }
