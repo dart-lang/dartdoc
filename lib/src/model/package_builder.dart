@@ -47,7 +47,7 @@ class PackageBuilder {
             'Top level package requires Flutter but FLUTTER_ROOT environment variable not set');
       }
       if (config.topLevelPackageMeta.needsPubGet) {
-        config.topLevelPackageMeta.runPubGet(config.sdkDir);
+        config.topLevelPackageMeta.runPubGet(config.flutterRoot);
       }
     }
 
