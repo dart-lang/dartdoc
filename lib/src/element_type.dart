@@ -143,15 +143,18 @@ class FunctionTypeElementType extends UndefinedElementType {
       : super(f, library, packageGraph, returnedFrom);
 
   @override
+  FunctionType get type => super.type;
+
+  @override
   List<Parameter> get parameters {
-    List<ParameterElement> params = (type as FunctionType).parameters;
+    List<ParameterElement> params = type.parameters;
     return UnmodifiableListView<Parameter>(params
         .map((p) => ModelElement.from(p, library, packageGraph) as Parameter)
         .toList());
   }
 
   ElementType get returnType => ElementType.from(
-      (type as FunctionType).returnType, library, packageGraph, this);
+      type.returnType, library, packageGraph, this);
 
   @override
   String get linkedName {
@@ -175,7 +178,7 @@ class FunctionTypeElementType extends UndefinedElementType {
   }
 
   List<TypeParameter> get typeFormals {
-    List<TypeParameterElement> typeFormals = (type as FunctionType).typeFormals;
+    List<TypeParameterElement> typeFormals = type.typeFormals;
     return UnmodifiableListView<TypeParameter>(typeFormals
         .map(
             (p) => ModelElement.from(p, library, packageGraph) as TypeParameter)
@@ -222,16 +225,16 @@ class TypeParameterElementType extends DefinedElementType {
       : super(type, library, packageGraph, element, returnedFrom);
 
   @override
+  TypeParameterType get type => super.type;
+
+  @override
   String get linkedName => name;
 
   @override
   String get nameWithGenerics => name;
 
   @override
-  ClassElement get _boundClassElement => type.element;
-
-  @override
-  DartType get _bound => (type as TypeParameterType).bound;
+  DartType get _bound => type.bound;
 }
 
 /// An [ElementType] associated with an [Element].
@@ -293,11 +296,6 @@ abstract class DefinedElementType extends ElementType {
     return _typeArguments;
   }
 
-  /// By default, the bound is the type of the declared class.
-  ClassElement get _boundClassElement => (element.element as ClassElement);
-  Class get boundClass =>
-      ModelElement.fromElement(_boundClassElement, packageGraph);
-
   DartType get _bound => type;
 
   DartType _instantiatedType;
@@ -310,7 +308,10 @@ abstract class DefinedElementType extends ElementType {
           !(_bound as InterfaceType)
               .typeArguments
               .every((t) => t is InterfaceType)) {
-        _instantiatedType = (_bound.element as ClassElement).instantiateToBounds(nullabilitySuffix: _bound.nullabilitySuffix);
+        var typeSystem = library.element.typeSystem;
+        _instantiatedType = typeSystem.instantiateToBounds2(
+            classElement: _bound.element as ClassElement,
+            nullabilitySuffix: _bound.nullabilitySuffix);
       } else {
         _instantiatedType = _bound;
       }
