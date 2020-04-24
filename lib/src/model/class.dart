@@ -32,7 +32,8 @@ class Class extends Container
         .where((mixin) => mixin != null)
         .toList(growable: false);
 
-    if (element.supertype != null && element.supertype.element.supertype != null) {
+    if (element.supertype != null &&
+        element.supertype.element.supertype != null) {
       supertype = ElementType.from(element.supertype, library, packageGraph);
     }
 

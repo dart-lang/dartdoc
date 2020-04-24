@@ -153,8 +153,8 @@ class FunctionTypeElementType extends UndefinedElementType {
         .toList());
   }
 
-  ElementType get returnType => ElementType.from(
-      type.returnType, library, packageGraph, this);
+  ElementType get returnType =>
+      ElementType.from(type.returnType, library, packageGraph, this);
 
   @override
   String get linkedName {

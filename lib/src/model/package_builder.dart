@@ -158,7 +158,8 @@ class PackageBuilder {
       AnalysisOptionsImpl options = AnalysisOptionsImpl();
 
       // TODO(jcollins-g): pass in an ExperimentStatus instead?
-      options.contextFeatures = FeatureSet.fromEnableFlags(config.enableExperiment);
+      options.contextFeatures =
+          FeatureSet.fromEnableFlags(config.enableExperiment);
 
       // TODO(jcollins-g): Make use of currently not existing API for managing
       //                   many AnalysisDrivers
