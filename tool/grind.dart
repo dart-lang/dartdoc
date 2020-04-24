@@ -256,7 +256,12 @@ void dartfmt() async {
 }
 
 @Task('Run quick presubmit checks.')
-@Depends(analyze, checkBuild, smokeTest, dartfmt, tryPublish)
+@Depends(
+  analyze,
+  checkBuild,
+  smokeTest,
+  dartfmt, /*tryPublish*/
+)
 void presubmit() => null;
 
 @Task('Run long tests, self-test dartdoc, and run the publish test')
@@ -522,6 +527,7 @@ Future<List<Map>> _buildTestPackageDocs(
 }
 
 @Task('Build generated test package docs (with inherited docs and source code)')
+@Depends(clean)
 Future<void> buildTestPackageDocs() async {
   await _buildTestPackageDocs(
       testPackageDocsDir.absolute.path, Future.value(Directory.current.path));
@@ -634,7 +640,7 @@ Future<void> serveFlutterDocs() async {
 }
 
 @Task('Validate flutter docs')
-@Depends(buildFlutterDocs, buildDartdocFlutterPluginDocs)
+@Depends(buildFlutterDocs, testDartdocFlutterPlugin)
 void validateFlutterDocs() {}
 
 @Task('Build flutter docs')
@@ -898,21 +904,42 @@ Future<void> tryPublish() async {
 }
 
 @Task('Run a smoke test, only')
+@Depends(clean)
 Future<void> smokeTest() async {
   await testDart2(smokeTestFiles);
   await testFutures.wait();
 }
 
 @Task('Run non-smoke tests, only')
+@Depends(clean)
 Future<void> longTest() async {
   await testDart2(testFiles);
   await testFutures.wait();
 }
 
 @Task('Run all the tests.')
+@Depends(clean)
 Future<void> test() async {
   await testDart2(smokeTestFiles.followedBy(testFiles));
   await testFutures.wait();
+}
+
+@Task('Clean up pub data from test directories')
+Future<void> clean() async {
+  var toDelete = nonRootPubData;
+  toDelete.forEach((e) => e.deleteSync(recursive: true));
+}
+
+Iterable<FileSystemEntity> get nonRootPubData {
+  // This involves deleting things, so be careful.
+  if (!File(path.join('tool', 'grind.dart')).existsSync()) {
+    throw FileSystemException('wrong CWD, run from root of dartdoc package');
+  }
+  return Directory('.')
+      .listSync(recursive: true)
+      .where((e) => path.dirname(e.path) != '.')
+      .where((e) => <String>['.dart_tool', '.packages', 'pubspec.lock']
+          .contains(path.basename(e.path)));
 }
 
 List<File> get smokeTestFiles => Directory('test')
@@ -944,14 +971,15 @@ Future<void> testDart2(Iterable<File> tests) async {
   return CoverageSubprocessLauncher.generateCoverageToFile(File('lcov.info'));
 }
 
-@Task('Generate docs for dartdoc')
+@Task('Generate docs for dartdoc without link-to-remote')
 Future<void> testDartdoc() async {
   var launcher = SubprocessLauncher('test-dartdoc');
   await launcher.runStreamed(Platform.resolvedExecutable, [
     '--enable-asserts',
     'bin/dartdoc.dart',
     '--output',
-    dartdocDocsDir.path
+    dartdocDocsDir.path,
+    '--no-link-to-remote',
   ]);
   expectFileContains(path.join(dartdocDocsDir.path, 'index.html'),
       ['<title>dartdoc - Dart API docs</title>']);
@@ -965,12 +993,11 @@ Future<void> testDartdoc() async {
 Future<void> testDartdocRemote() async {
   var launcher = SubprocessLauncher('test-dartdoc-remote');
   final RegExp object = RegExp(
-      '<a href="https://api.dartlang.org/(dev|stable)/[^/]*/dart-core/Object-class.html">Object</a>',
+      '<a href="https://api.dart.dev/(dev|stable|beta|edge)/[^/]*/dart-core/Object-class.html">Object</a>',
       multiLine: true);
   await launcher.runStreamed(Platform.resolvedExecutable, [
     '--enable-asserts',
     'bin/dartdoc.dart',
-    '--link-to-remote',
     '--output',
     dartdocDocsDir.path
   ]);
@@ -1012,6 +1039,7 @@ Future<WarningsCollection> _buildDartdocFlutterPluginDocs() async {
 }
 
 @Task('Build docs for a package that requires flutter with remote linking')
+@Depends(clean)
 Future<void> buildDartdocFlutterPluginDocs() async {
   await _buildDartdocFlutterPluginDocs();
 }
@@ -1027,8 +1055,8 @@ Future<void> testDartdocFlutterPlugin() async {
       path.join(
           pluginPackageDocsDir.path, 'testlib', 'MyAwesomeWidget-class.html'),
       [
-        '<a href="https://docs.flutter.io/flutter/widgets/Widget-class.html">Widget</a>',
-        '<a href="https://docs.flutter.io/flutter/dart-core/Object-class.html">Object</a>'
+        '<a href="https://api.flutter.dev/flutter/widgets/Widget-class.html">Widget</a>',
+        '<a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>'
       ]);
 }
 

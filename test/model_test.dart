@@ -373,6 +373,7 @@ void main() {
           equals(utils.kTestPackagePublicLibraries - 5));
     });
 
+    // TODO consider moving these to a separate suite
     test('CategoryRendererHtml renders category label', () {
       Category category = packageGraph.publicPackages.first.categories.first;
       CategoryRendererHtml renderer = CategoryRendererHtml();
@@ -387,6 +388,20 @@ void main() {
       CategoryRendererHtml renderer = CategoryRendererHtml();
       expect(renderer.renderLinkedName(category),
           '<a href="${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html">Superb</a>');
+    });
+
+    test('CategoryRendererMd renders category label', () {
+      Category category = packageGraph.publicPackages.first.categories.first;
+      CategoryRendererMd renderer = CategoryRendererMd();
+      expect(renderer.renderCategoryLabel(category),
+          '[Superb](${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html)');
+    });
+
+    test('CategoryRendererMd renders linkedName', () {
+      Category category = packageGraph.publicPackages.first.categories.first;
+      CategoryRendererMd renderer = CategoryRendererMd();
+      expect(renderer.renderLinkedName(category),
+          '[Superb](${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html)');
     });
   });
 
@@ -1374,6 +1389,17 @@ void main() {
   });
 
   group('Class edge cases', () {
+    test('Inherit from private class across private library to public library',
+        () {
+      Class GadgetExtender = packageGraph.localPublicLibraries
+          .firstWhere((l) => l.name == 'gadget_extender')
+          .allClasses
+          .firstWhere((c) => c.name == 'GadgetExtender');
+      Field gadgetGetter =
+          GadgetExtender.allFields.firstWhere((f) => f.name == 'gadgetGetter');
+      expect(gadgetGetter.isCanonical, isTrue);
+    });
+
     test(
         'ExecutableElements from private classes and from public interfaces (#1561)',
         () {
@@ -3064,12 +3090,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(typeArguments, isNotEmpty);
       expect(
           typeArguments.last.linkedName,
-          equals(
-              'dynamic Function<span class="signature">(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span><wbr>)</span>'));
+          // TODO(jcollins-g): after analyzer 0.39.5 change to 'num' in first
+          // group.
+          matches(RegExp(
+              r'(dynamic|num) Function<span class="signature">\(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span><wbr>\)</span>')));
       expect(
           importantComputations.linkedReturnType,
-          equals(
-              'Map<span class="signature">&lt;<wbr><span class="type-parameter">int</span>, <span class="type-parameter">dynamic Function<span class="signature">(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span><wbr>)</span></span>&gt;</span>'));
+          matches(RegExp(
+              r'Map<span class="signature">&lt;<wbr><span class="type-parameter">int</span>, <span class="type-parameter">(dynamic|num) Function<span class="signature">\(<span class="parameter" id="param-a"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">num</span>&gt;</span></span> <span class="parameter-name">a</span></span><wbr>\)</span></span>&gt;</span>')));
     });
 
     test(

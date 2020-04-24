@@ -11,6 +11,8 @@ abstract class ElementTypeRenderer<T extends ElementType> {
   String renderNameWithGenerics(T elementType) => '';
 }
 
+// Html implementations
+
 class FunctionTypeElementTypeRendererHtml
     extends ElementTypeRenderer<FunctionTypeElementType> {
   @override
@@ -86,6 +88,86 @@ class CallableElementTypeRendererHtml
     buf.write(elementType.nameWithGenerics);
     buf.write('(');
     buf.write(ParameterRendererHtml()
+        .renderLinkedParams(elementType.element.parameters, showNames: false)
+        .trim());
+    buf.write(') → ');
+    buf.write(elementType.returnType.linkedName);
+    return buf.toString();
+  }
+}
+
+// Markdown implementations
+
+class FunctionTypeElementTypeRendererMd
+    extends ElementTypeRenderer<FunctionTypeElementType> {
+  @override
+  String renderLinkedName(FunctionTypeElementType elementType) {
+    StringBuffer buf = StringBuffer();
+    buf.write('${elementType.returnType.linkedName} ');
+    buf.write('${elementType.nameWithGenerics}');
+    buf.write('(');
+    buf.write(ParameterRendererMd().renderLinkedParams(elementType.parameters));
+    buf.write(')');
+    return buf.toString();
+  }
+
+  @override
+  String renderNameWithGenerics(FunctionTypeElementType elementType) {
+    StringBuffer buf = StringBuffer();
+    buf.write(elementType.name);
+    if (elementType.typeFormals.isNotEmpty) {
+      if (!elementType.typeFormals.every((t) => t.name == 'dynamic')) {
+        buf.write('<');
+        buf.writeAll(elementType.typeFormals.map((t) => t.name), ', ');
+        buf.write('>');
+      }
+    }
+    return buf.toString();
+  }
+}
+
+class ParameterizedElementTypeRendererMd
+    extends ElementTypeRenderer<ParameterizedElementType> {
+  @override
+  String renderLinkedName(ParameterizedElementType elementType) {
+    StringBuffer buf = StringBuffer();
+    buf.write(elementType.element.linkedName);
+    if (elementType.typeArguments.isNotEmpty &&
+        !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
+      buf.write('<');
+      buf.writeAll(elementType.typeArguments.map((t) => t.linkedName), ', ');
+      buf.write('>');
+    }
+    return buf.toString();
+  }
+
+  @override
+  String renderNameWithGenerics(ParameterizedElementType elementType) {
+    StringBuffer buf = StringBuffer();
+    buf.write(elementType.element.name);
+    if (elementType.typeArguments.isNotEmpty &&
+        !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
+      buf.write('<');
+      buf.writeAll(
+          elementType.typeArguments.map((t) => t.nameWithGenerics), ', ');
+      buf.write('>');
+    }
+    return buf.toString();
+  }
+}
+
+class CallableElementTypeRendererMd
+    extends ElementTypeRenderer<CallableElementType> {
+  @override
+  String renderLinkedName(CallableElementType elementType) {
+    if (elementType.name != null && elementType.name.isNotEmpty) {
+      return elementType.superLinkedName;
+    }
+
+    StringBuffer buf = StringBuffer();
+    buf.write(elementType.nameWithGenerics);
+    buf.write('(');
+    buf.write(ParameterRendererMd()
         .renderLinkedParams(elementType.element.parameters, showNames: false)
         .trim());
     buf.write(') → ');

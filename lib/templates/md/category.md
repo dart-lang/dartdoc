@@ -10,6 +10,7 @@
 
 {{#publicLibraries}}
 {{>library}}
+
 {{/publicLibraries}}
 {{/hasPublicLibraries}}
 
@@ -18,6 +19,7 @@
 
 {{#publicClasses}}
 {{>class}}
+
 {{/publicClasses}}
 {{/hasPublicClasses}}
 
@@ -26,6 +28,7 @@
 
 {{#publicMixins}}
 {{>mixin}}
+
 {{/publicMixins}}
 {{/hasPublicMixins}}
 
@@ -34,6 +37,7 @@
 
 {{#publicConstants}}
 {{>constant}}
+
 {{/publicConstants}}
 {{/hasPublicConstants}}
 
@@ -42,6 +46,7 @@
 
 {{#publicProperties}}
 {{>property}}
+
 {{/publicProperties}}
 {{/hasPublicProperties}}
 
@@ -50,6 +55,7 @@
 
 {{#publicFunctions}}
 {{>callable}}
+
 {{/publicFunctions}}
 {{/hasPublicFunctions}}
 
@@ -58,6 +64,7 @@
 
 {{#publicEnums}}
 {{>class}}
+
 {{/publicEnums}}
 {{/hasPublicEnums}}
 
@@ -66,6 +73,7 @@
 
 {{#publicTypedefs}}
 {{>callable}}
+
 {{/publicTypedefs}}
 {{/hasPublicTypedefs}}
 
@@ -74,6 +82,7 @@
 
 {{#publicExceptions}}
 {{>class}}
+
 {{/publicExceptions}}
 {{/hasPublicExceptions}}
 {{/self}}

@@ -1,3 +1,27 @@
+## 0.31.0
+* `--link-to-remote` is now the default.  (#2147)
+* `--show-progress` is now the default on interactive terminals,
+  and has improved quality of output. (#2147)
+* Excessive notifications for "parsing" have been squelched from
+  stdout. (#2141, #2147)
+* Fixed a bug where explicitly requested private members in a comment
+  reference could result in broken link generation. (#2147)
+* Dartdoc now generates documentation for itself cleanly (#2147)
+
+## 0.30.4
+* Fix regression in canonicalization from extension methods. (#2099).
+* Do not throw if a const constructor's staticElement can not be resolved
+  (#2176, #2143).
+* Hide non-local embedded SDKs, preventing Flutter's sky_engine from
+  being documented by default with Flutter packages (#1949, #2175).
+* Fix a problem with reentrance on TopLevelVariable doc caching. (#2173, #2143)
+* A batch of tweaks for the new markdown output templates (#2162)
+
+## 0.30.3
+* Add support for `Never` type from analyzer (#2167, #2170).
+* First markdown renderers landed (#2152) and dartdoc can sometimes
+  generate markdown, but it is not ready for prime-time yet.
+
 ## 0.30.2
 * Fix the broken search box with --use-base-href in Flutter (#2158).
 * More internal changes preparing for markdown output

@@ -1,5 +1,6 @@
-{{#hasCategoryNames}}
+{{#hasDisplayedCategories}}
+Categories:
 {{#displayedCategories}}
 {{{categoryLabel}}}
 {{/displayedCategories}}
-{{/hasCategoryNames}}
+{{/hasDisplayedCategories}}

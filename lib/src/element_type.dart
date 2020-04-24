@@ -27,7 +27,9 @@ abstract class ElementType extends Privacy {
   factory ElementType.from(
       DartType f, Library library, PackageGraph packageGraph,
       [ElementType returnedFrom]) {
-    if (f.element == null || f.element.kind == ElementKind.DYNAMIC) {
+    if (f.element == null ||
+        f.element.kind == ElementKind.DYNAMIC ||
+        f.element.kind == ElementKind.NEVER) {
       if (f is FunctionType) {
         return FunctionTypeElementType(f, library, packageGraph, returnedFrom);
       }
@@ -111,7 +113,9 @@ class UndefinedElementType extends ElementType {
       }
     }
     if (type.isVoid) return 'void';
-    assert(false, 'Unrecognized type for UndefinedElementType');
+    if (type.isBottom) return 'Never';
+    assert(false,
+        'Unrecognized type for UndefinedElementType: ${type.toString()}');
     return '';
   }
 

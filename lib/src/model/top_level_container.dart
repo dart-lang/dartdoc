@@ -6,7 +6,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 
 /// A set of [Class]es, [Enum]s, [TopLevelVariable]s, [ModelFunction]s,
-/// [Property]s, and [Typedef]s, possibly initialized after construction by
+/// [Field]s, and [Typedef]s, possibly initialized after construction by
 /// accessing private member variables.  Do not call any methods or members
 /// excepting [name] and the private Lists below before finishing initialization
 /// of a [TopLevelContainer].

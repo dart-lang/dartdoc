@@ -42,6 +42,35 @@ class ParameterRendererHtml extends ParameterRenderer {
   String required(String required) => '<span>$required</span>';
 }
 
+class ParameterRendererMd extends ParameterRenderer {
+  @override
+  String annotation(String annotation) => annotation;
+
+  @override
+  String covariant(String covariant) => covariant;
+
+  @override
+  String defaultValue(String defaultValue) => defaultValue;
+
+  @override
+  String listItem(String item) => item;
+
+  @override
+  String orderedList(String listItems) => listItems;
+
+  @override
+  String parameter(String parameter, String id) => parameter;
+
+  @override
+  String parameterName(String parameterName) => parameterName;
+
+  @override
+  String required(String required) => required;
+
+  @override
+  String typeName(String typeName) => typeName;
+}
+
 abstract class ParameterRenderer {
   String listItem(String item);
   String orderedList(String listItems);

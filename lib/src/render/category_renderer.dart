@@ -31,7 +31,7 @@ class CategoryRendererHtml extends CategoryRenderer {
 
     StringBuffer buf = StringBuffer();
     buf.write('<span class="${spanClasses.join(' ')}" title="$spanTitle">');
-    buf.write(category.linkedName);
+    buf.write(renderLinkedName(category));
     buf.write('</span>');
     return buf.toString();
   }
@@ -44,5 +44,19 @@ class CategoryRendererHtml extends CategoryRenderer {
     } else {
       return unbrokenName;
     }
+  }
+}
+
+class CategoryRendererMd extends CategoryRenderer {
+  @override
+  String renderCategoryLabel(Category category) => renderLinkedName(category);
+
+  @override
+  String renderLinkedName(Category category) {
+    String name = category.name;
+    if (category.isDocumented) {
+      return '[$name](${category.href})';
+    }
+    return name;
   }
 }

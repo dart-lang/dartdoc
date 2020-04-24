@@ -91,7 +91,7 @@ class Class extends Container
 
   Map<String, List<ModelElement>> _allModelElementsByNamePart;
 
-  /// Helper for [_MarkdownCommentReference._getResultsForClass].
+  /// Helper for `_MarkdownCommentReference._getResultsForClass`.
   Map<String, List<ModelElement>> get allModelElementsByNamePart {
     if (_allModelElementsByNamePart == null) {
       _allModelElementsByNamePart = {};
@@ -437,8 +437,6 @@ class Class extends Container
 
   List<Field> _fields;
 
-  /// Internal only because subclasses are allowed to override how
-  /// these are mapped to [allInheritedFields] and so forth.
   @override
   List<Field> get allFields {
     if (_fields == null) {

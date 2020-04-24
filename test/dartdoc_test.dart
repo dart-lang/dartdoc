@@ -211,8 +211,7 @@ void main() {
     });
 
     test('basic interlinking test', () async {
-      Dartdoc dartdoc =
-          await buildDartdoc(['--link-to-remote'], testPackageDir, tempDir);
+      Dartdoc dartdoc = await buildDartdoc([], testPackageDir, tempDir);
       DartdocResults results = await dartdoc.generateDocs();
       PackageGraph p = results.packageGraph;
       Package meta = p.publicPackages.firstWhere((p) => p.name == 'meta');
@@ -228,9 +227,9 @@ void main() {
       expect(
           useSomethingInAnotherPackage.modelType.linkedName,
           matches(
-              '<a href=\"https://pub.dartlang.org/documentation/meta/[^\"]*/meta/Required-class.html\">Required</a>'));
+              '<a href=\"https://pub.dev/documentation/meta/[^\"]*/meta/Required-class.html\">Required</a>'));
       RegExp stringLink = RegExp(
-          'https://api.dartlang.org/(dev|stable|edge|be)/${Platform.version.split(' ').first}/dart-core/String-class.html">String</a>');
+          'https://api.dart.dev/(dev|stable|edge|be|beta)/${Platform.version.split(' ').first}/dart-core/String-class.html">String</a>');
       expect(useSomethingInTheSdk.modelType.linkedName, contains(stringLink));
     });
 
@@ -435,5 +434,5 @@ void main() {
             startsWith('Unsupported output format'));
       }
     });
-  }, timeout: Timeout.factor(8));
+  }, timeout: Timeout.factor(12));
 }

@@ -16,3 +16,14 @@ class HtmlTemplateRenderer implements TemplateRenderer {
     }
   }
 }
+
+class MdTemplateRenderer implements TemplateRenderer {
+  @override
+  String composeLayoutTitle(String name, String kind, bool isDeprecated) {
+    if (isDeprecated) {
+      return '~~${name}~~ ${kind}';
+    } else {
+      return '${name} ${kind}';
+    }
+  }
+}

@@ -94,12 +94,9 @@ abstract class PackageMeta {
 
   /// Use this instead of fromDir where possible.
   factory PackageMeta.fromElement(
-      LibraryElement libraryElement, DartdocOptionContext config) {
-    // [config] is only here for sdkDir, and it's OK that it is the wrong
-    // context since sdkDir is argOnly and this is supposed to be a temporary
-    // workaround.
+      LibraryElement libraryElement, String sdkDir) {
     if (libraryElement.isInSdk) {
-      return PackageMeta.fromDir(Directory(config.sdkDir));
+      return PackageMeta.fromDir(Directory(sdkDir));
     }
     return PackageMeta.fromDir(
         File(path.canonicalize(libraryElement.source.fullName)).parent);
@@ -173,7 +170,7 @@ abstract class PackageMeta {
 
   bool get requiresFlutter;
 
-  void runPubGet();
+  void runPubGet(String flutterRoot);
 
   String get name;
 
@@ -279,16 +276,24 @@ class _FilePackageMeta extends PackageMeta {
 
   @override
   bool get needsPubGet =>
-      !(File(path.join(dir.path, '.packages')).existsSync());
+      !(File(path.join(dir.path, '.dart_tool', 'package_config.json'))
+          .existsSync());
 
   @override
-  void runPubGet() {
-    String pubPath =
-        path.join(path.dirname(Platform.resolvedExecutable), 'pub');
-    if (Platform.isWindows) pubPath += '.bat';
+  void runPubGet(String flutterRoot) {
+    String binPath;
+    List<String> parameters;
+    if (requiresFlutter) {
+      binPath = path.join(flutterRoot, 'bin', 'flutter');
+      parameters = ['pub', 'get'];
+    } else {
+      binPath = path.join(path.dirname(Platform.resolvedExecutable), 'pub');
+      parameters = ['get'];
+    }
+    if (Platform.isWindows) binPath += '.bat';
 
     ProcessResult result =
-        Process.runSync(pubPath, ['get'], workingDirectory: dir.path);
+        Process.runSync(binPath, parameters, workingDirectory: dir.path);
 
     var trimmedStdout = (result.stdout as String).trim();
     if (trimmedStdout.isNotEmpty) {
@@ -385,7 +390,7 @@ class _SdkMeta extends PackageMeta {
   bool get isSdk => true;
 
   @override
-  void runPubGet() {
+  void runPubGet(String flutterRoot) {
     throw 'unsupported operation';
   }
 

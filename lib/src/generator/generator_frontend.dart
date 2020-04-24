@@ -36,7 +36,6 @@ class GeneratorFrontEnd implements Generator {
       List<Indexable> indexAccumulator) {
     if (packageGraph == null) return;
 
-    logInfo('documenting ${packageGraph.defaultPackage.name}');
     _generatorBackend.generatePackage(
         writer, packageGraph, packageGraph.defaultPackage);
 

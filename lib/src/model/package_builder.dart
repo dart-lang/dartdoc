@@ -39,11 +39,19 @@ class PackageBuilder {
   PackageBuilder(this.config);
 
   Future<PackageGraph> buildPackageGraph() async {
-    if (config.topLevelPackageMeta.needsPubGet) {
-      config.topLevelPackageMeta.runPubGet();
+    if (!config.sdkDocs) {
+      if (config.topLevelPackageMeta.needsPubGet &&
+          config.topLevelPackageMeta.requiresFlutter &&
+          config.flutterRoot == null) {
+        throw DartdocOptionError(
+            'Top level package requires Flutter but FLUTTER_ROOT environment variable not set');
+      }
+      if (config.topLevelPackageMeta.needsPubGet) {
+        config.topLevelPackageMeta.runPubGet(config.flutterRoot);
+      }
     }
-    // TODO(jdkoren): change factory for other formats based on config options
-    RendererFactory rendererFactory = HtmlRenderFactory();
+
+    RendererFactory rendererFactory = RendererFactory.forFormat(config.format);
 
     PackageGraph newGraph = PackageGraph.UninitializedPackageGraph(
         config, driver, sdk, hasEmbedderSdkFiles, rendererFactory);
@@ -52,9 +60,9 @@ class PackageBuilder {
     return newGraph;
   }
 
-  DartSdk _sdk;
+  FolderBasedDartSdk _sdk;
 
-  DartSdk get sdk {
+  FolderBasedDartSdk get sdk {
     if (_sdk == null) {
       _sdk = FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
           PhysicalResourceProvider.INSTANCE.getFolder(config.sdkDir));
@@ -163,7 +171,7 @@ class PackageBuilder {
           null,
           sourceFactory,
           options);
-      driver.results.listen((_) {});
+      driver.results.listen((_) => logProgress(''));
       driver.exceptions.listen((_) {});
       scheduler.start();
     }
@@ -243,11 +251,12 @@ class PackageBuilder {
       // Be careful here not to accidentally stack up multiple
       // ResolvedLibraryResults, as those eat our heap.
       for (String f in files) {
+        logProgress(f);
         ResolvedLibraryResult r = await processLibrary(f);
         if (r != null &&
             !libraries.contains(r.element) &&
             isLibraryIncluded(r.element)) {
-          logInfo('parsing ${f}...');
+          logDebug('parsing ${f}...');
           libraryAdder(r);
           libraries.add(r.element);
         }

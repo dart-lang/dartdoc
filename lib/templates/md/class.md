@@ -67,8 +67,10 @@
 
 {{#publicConstructors}}
 {{{linkedName}}} ({{{ linkedParams }}})
-: {{{ oneLineDoc }}} {{{ extendedDocLink }}}
-{{#isConst}}const{{/isConst}} {{#isFactory}}factory{{/isFactory}}
+
+{{{ oneLineDoc }}} {{{ extendedDocLink }}}  {{!two spaces intentional}}
+{{#isConst}}_const_{{/isConst}} {{#isFactory}}_factory_{{/isFactory}}
+
 {{/publicConstructors}}
 {{/hasPublicConstructors}}
 
@@ -77,6 +79,7 @@
 
 {{#allPublicInstanceProperties}}
 {{>property}}
+
 {{/allPublicInstanceProperties}}
 {{/hasPublicProperties}}
 
@@ -85,6 +88,7 @@
 
 {{#allPublicInstanceMethods}}
 {{>callable}}
+
 {{/allPublicInstanceMethods}}
 {{/hasPublicMethods}}
 
@@ -93,6 +97,7 @@
 
 {{#allPublicOperators}}
 {{>callable}}
+
 {{/allPublicOperators}}
 {{/hasPublicOperators}}
 
@@ -101,6 +106,7 @@
 
 {{#publicStaticProperties}}
 {{>property}}
+
 {{/publicStaticProperties}}
 {{/hasPublicStaticProperties}}
 
@@ -109,6 +115,7 @@
 
 {{#publicStaticMethods}}
 {{>callable}}
+
 {{/publicStaticMethods}}
 {{/hasPublicStaticMethods}}
 
@@ -117,6 +124,7 @@
 
 {{#publicConstants}}
 {{>constant}}
+
 {{/publicConstants}}
 {{/hasPublicConstants}}
 {{/clazz}}

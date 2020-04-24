@@ -290,7 +290,7 @@ void main() {
       List<Category> packageCategories =
           packageGraphSmall.localPackages.first.categories;
       expect(packageCategories.length, equals(0));
-    });
+    }, timeout: Timeout.factor(2));
   });
 
   group('Package', () {
@@ -586,5 +586,5 @@ void main() {
               'parameters. FormatException: Could not find an option named "name".'),
           isTrue);
     });
-  });
+  }, timeout: Timeout.factor(2));
 }

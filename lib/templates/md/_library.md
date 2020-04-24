@@ -1,4 +1,5 @@
-{{{ linkedName }}} ({{>categorization}})
+##### {{{ linkedName }}}
 {{#isDocumented}}
-: {{{ oneLineDoc }}} {{{ extendedDocLink }}}
+{{{ oneLineDoc }}} {{{ extendedDocLink }}}
+
 {{/isDocumented}}

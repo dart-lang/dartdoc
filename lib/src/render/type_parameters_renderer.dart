@@ -6,6 +6,7 @@ import 'package:dartdoc/src/model/type_parameter.dart';
 
 abstract class TypeParametersRenderer {
   String renderGenericParameters(TypeParameters typeParameters);
+
   String renderLinkedGenericParameters(TypeParameters typeParameters);
 }
 
@@ -30,5 +31,24 @@ class TypeParametersRendererHtml extends TypeParametersRenderer {
         .map((t) => t.linkedName)
         .join('</span>, <span class="type-parameter">');
     return '<span class="signature">&lt;<wbr><span class="type-parameter">${joined}</span>&gt;</span>';
+  }
+}
+
+class TypeParametersRendererMd extends TypeParametersRenderer {
+  @override
+  String renderGenericParameters(TypeParameters typeParameters) =>
+      _compose(typeParameters.typeParameters, (t) => t.name);
+
+  @override
+  String renderLinkedGenericParameters(TypeParameters typeParameters) =>
+      _compose(typeParameters.typeParameters, (t) => t.linkedName);
+
+  String _compose(List<TypeParameter> typeParameters,
+      String Function(TypeParameter) mapfn) {
+    if (typeParameters.isEmpty) {
+      return '';
+    }
+    var joined = typeParameters.map(mapfn).join(', ');
+    return '&lt;${joined}>';
   }
 }

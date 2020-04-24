@@ -147,14 +147,27 @@ class Package extends LibraryContainer
 
   bool _isLocal;
 
-  /// Return true if this is the default package, this is part of an embedder SDK,
-  /// or if [config.autoIncludeDependencies] is true -- but only if the package
-  /// was not excluded on the command line.
+  /// Return true if this is the default package, this is part of an embedder
+  /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
+  /// only if the package was not excluded on the command line.
   bool get isLocal {
     if (_isLocal == null) {
-      _isLocal = (packageMeta == packageGraph.packageMeta ||
-              packageGraph.hasEmbedderSdk && packageMeta.isSdk ||
-              packageGraph.config.autoIncludeDependencies) &&
+      _isLocal = (
+              // Document as local if this is the default package.
+              packageMeta == packageGraph.packageMeta ||
+                  // Assume we want to document an embedded SDK as local if
+                  // it has libraries defined in the default package.
+                  // TODO(jcollins-g): Handle case where embedder SDKs can be
+                  // assembled from multiple locations?
+                  packageGraph.hasEmbedderSdk &&
+                      packageMeta.isSdk &&
+                      libraries.any((l) => path.isWithin(
+                          packageGraph.packageMeta.dir.path,
+                          (l.element.source.fullName))) ||
+                  // autoIncludeDependencies means everything is local.
+                  packageGraph.config.autoIncludeDependencies) &&
+          // Regardless of the above rules, do not document as local if
+          // we excluded this package by name.
           !packageGraph.config.isPackageExcluded(name);
     }
     return _isLocal;
@@ -213,9 +226,20 @@ class Package extends LibraryContainer
             case 'b':
               {
                 Version version = Version.parse(packageMeta.version);
-                return version.isPreRelease
-                    ? version.preRelease.first
-                    : 'stable';
+                String tag = 'stable';
+                if (version.isPreRelease) {
+                  // version.preRelease is a List<dynamic> with a mix of
+                  // integers and strings.  Given this, handle
+                  // 2.8.0-dev.1.0, 2.9.0-1.0.dev, and similar
+                  // variations.
+                  tag = version.preRelease.whereType<String>().first;
+                  // Who knows about non-SDK packages, but assert that SDKs
+                  // must conform to the known format.
+                  assert(
+                      packageMeta.isSdk == false || int.tryParse(tag) == null,
+                      'Got an integer as string instead of the expected "dev" tag');
+                }
+                return tag;
               }
             case 'n':
               return name;

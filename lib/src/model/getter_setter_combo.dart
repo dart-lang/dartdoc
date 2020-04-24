@@ -10,6 +10,7 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/utils.dart';
+import 'package:dartdoc/src/warnings.dart';
 
 /// Mixin for top-level variables and fields (aka properties)
 mixin GetterSetterCombo on ModelElement {
@@ -47,11 +48,13 @@ mixin GetterSetterCombo on ModelElement {
 
   String linkifyConstantValue(String original) {
     if (constantInitializer is! InstanceCreationExpression) return original;
-    String constructorName = (constantInitializer as InstanceCreationExpression)
-        .constructorName
-        .toString();
-    Element staticElement =
-        (constantInitializer as InstanceCreationExpression).staticElement;
+    var creationExpression = constantInitializer as InstanceCreationExpression;
+    String constructorName = creationExpression.constructorName.toString();
+    Element staticElement = creationExpression.staticElement;
+    if (staticElement == null) {
+      warn(PackageWarning.missingConstantConstructor, message: constructorName);
+      return original;
+    }
     Constructor target = ModelElement.fromElement(staticElement, packageGraph);
     Class targetClass = target.enclosingElement;
     // TODO(jcollins-g): this logic really should be integrated into Constructor,
