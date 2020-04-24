@@ -120,18 +120,23 @@ dartdoc:
     - tool-error
 ```
 
+#### dartdoc_options.yaml fields
+
+In general, **paths are relative** to the directory the `dartdoc_options.yaml` the option is defined in
+and should be specified as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
 Unrecognized options will be ignored.  Supported options:
 
   * **categories**:  More details for each category/topic.  For topics you'd like to document, specify
     the markdown file with `markdown:` to use for the category page.  Optionally, rename the
-    category from the source code into a display name with 'name:'.  If there is no matching category
+    category from the source code into a display name with `name:`.  If there is no matching category
     defined in dartdoc_options.yaml, those declared categories in the source code will be invisible.
   * **categoryOrder**:  Specify the order of topics for display in the sidebar and
     the package page.
   * **examplePathPrefix**: Specify the location of the example directory for resolving `@example`
     directives.
   * **exclude**:  Specify a list of library names to avoid generating docs for,
-    overriding any specified in include.
+    overriding any specified in include.  All libraries listed must be local to this package, unlike
+    the command line `--exclude`.
   * **errors**:  Specify warnings to be treated as errors.  See the lists of valid warnings in the command
     line help for `--errors`, `--warnings`, and `--ignore`.
   * **favicon**:  A path to a favicon for the generated docs.
@@ -140,21 +145,23 @@ Unrecognized options will be ignored.  Supported options:
   * **header**:  A list of paths to header files containing HTML text.
   * **ignore**:  Specify warnings to be completely ignored.  See the lists of valid warnings in the command
     line help for `--errors`, `--warnings`, and `--ignore`.
-  * **include**:  Specify a list of library names to generate docs for, ignoring all others.
+  * **include**:  Specify a list of library names to generate docs for, ignoring all others.  All libraries
+    listed must be local to this package (unlike the command line `--include`).
   * **includeExternal**:  Specify a list of library filenames to add to the list of documented libraries.
   * **linkTo**:  For other packages depending on this one, if this map is defined those packages
     will use the settings here to control how hyperlinks to the package are generated.
-    This will override the default for packages hosted on pub.dev.
+    This will override the default for packages hosted on [pub.dev](https://pub.dev) and
+    [api.flutter.dev](https://api.flutter.dev).
     * **url**:  A string indicating the base URL for documentation of this package.  Ordinarily
-      you do not need to set this in the package: consider --link-to-hosted and
-      --link-to-sdks instead of this option if you need to build your own website with
+      you do not need to set this in the package: consider `--link-to-hosted` and
+      `--link-to-sdks` instead of this option if you need to build your own website with
       dartdoc.
 
       The following strings will be substituted in to complete the URL:
       * `%b%`: The branch as indicated by text in the version.  2.0.0-dev.3 is branch "dev".
         No branch is considered to be "stable".
-      * `%n%`: The name of this package, as defined in pubspec.yaml.
-      * `%v%`: The version of this package as defined in pubspec.yaml.
+      * `%n%`: The name of this package, as defined in `pubspec.yaml`.
+      * `%v%`: The version of this package as defined in `pubspec.yaml`.
   * **linkToSource**: Generate links to a source code repository based on given templates and
     revision information.
     * **excludes**: A list of directories to exclude from processing source links.
@@ -170,9 +177,6 @@ Unrecognized options will be ignored.  Supported options:
       * `%l%`:  Line number
   * **warnings**:  Specify otherwise ignored or set-to-error warnings to simply warn.  See the lists
     of valid warnings in the command line help for `--errors`, `--warnings`, and `--ignore`.
-
-In general, paths are relative to the directory the dartdoc_options.yaml the option is defined in
-and should be specified as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
 
 Unsupported and experimental options:
 
