@@ -1389,6 +1389,23 @@ void main() {
   });
 
   group('Class edge cases', () {
+    test('Factories from unrelated classes are linked correctly', () {
+      Class A = packageGraph.localPublicLibraries
+          .firstWhere((l) => l.name == 'unrelated_factories')
+          .allClasses
+          .firstWhere((c) => c.name == 'A');
+      Constructor fromMap =
+          A.constructors.firstWhere((c) => c.name == 'A.fromMap');
+      expect(fromMap.documentationAsHtml,
+          contains(r'unrelated_factories/AB/AB.fromMap.html">AB.fromMap</a>'));
+      expect(fromMap.documentationAsHtml,
+          contains(r'A/A.fromMap.html">fromMap</a>'));
+      expect(fromMap.documentationAsHtml,
+          contains(r'unrelated_factories/AB-class.html">AB</a>'));
+      expect(fromMap.documentationAsHtml,
+          contains(r'unrelated_factories/A-class.html">A</a>'));
+    });
+
     test('Inherit from private class across private library to public library',
         () {
       Class GadgetExtender = packageGraph.localPublicLibraries
