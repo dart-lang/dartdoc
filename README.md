@@ -122,8 +122,8 @@ dartdoc:
 
 #### dartdoc_options.yaml fields
 
-In general, **paths are relative** to the directory the `dartdoc_options.yaml` the option is defined in
-and should be specified as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
+In general, **paths are relative** to the directory of the `dartdoc_options.yaml` file the option is defined
+in and should be specified as POSIX paths.  Dartdoc will convert POSIX paths automatically on Windows.
 Unrecognized options will be ignored.  Supported options:
 
   * **categories**:  More details for each category/topic.  For topics you'd like to document, specify
