@@ -838,7 +838,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   CompilationUnitElement get compilationUnitElement =>
-      element.getAncestor((e) => e is CompilationUnitElement);
+      element.thisOrAncestorOfType<CompilationUnitElement>();
 
   bool get hasAnnotations => annotations.isNotEmpty;
 
