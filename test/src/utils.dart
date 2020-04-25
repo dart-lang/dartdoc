@@ -308,7 +308,7 @@ class SubprocessLauncher {
       Map result;
       try {
         result = json.decoder.convert(line);
-      } catch (FormatException) {
+      } on FormatException {
         // ignore
       }
       if (result != null) {
