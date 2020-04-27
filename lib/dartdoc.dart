@@ -388,7 +388,7 @@ class Dartdoc extends PackageBuilder {
         Uri uri;
         try {
           uri = Uri.parse(href);
-        } catch (FormatError) {
+        } on FormatException {
           // ignore
         }
 

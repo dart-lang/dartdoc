@@ -458,7 +458,7 @@ class PackageWithoutSdkResolver extends UriResolver {
     Uri resolved;
     try {
       resolved = _sdkResolver.restoreAbsolute(source);
-    } catch (ArgumentError) {
+    } on ArgumentError {
       // SDK resolvers really don't like being thrown package paths.
     }
     if (resolved == null) {
