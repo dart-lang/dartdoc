@@ -52,9 +52,9 @@ class PackageBuilder {
       }
     }
 
-    RendererFactory rendererFactory = RendererFactory.forFormat(config.format);
+    var rendererFactory = RendererFactory.forFormat(config.format);
 
-    PackageGraph newGraph = PackageGraph.UninitializedPackageGraph(
+    var newGraph = PackageGraph.UninitializedPackageGraph(
         config, driver, sdk, hasEmbedderSdkFiles, rendererFactory);
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
@@ -64,10 +64,8 @@ class PackageBuilder {
   FolderBasedDartSdk _sdk;
 
   FolderBasedDartSdk get sdk {
-    if (_sdk == null) {
-      _sdk = FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
-          PhysicalResourceProvider.INSTANCE.getFolder(config.sdkDir));
-    }
+    _sdk ??= FolderBasedDartSdk(PhysicalResourceProvider.INSTANCE,
+        PhysicalResourceProvider.INSTANCE.getFolder(config.sdkDir));
     return _sdk;
   }
 
@@ -83,14 +81,13 @@ class PackageBuilder {
 
   static Map<String, List<file_system.Folder>> _calculatePackageMap(
       file_system.Folder dir) {
-    Map<String, List<file_system.Folder>> map = Map();
+    var map = <String, List<file_system.Folder>>{};
     var info = package_config.findPackagesFromFile(dir.toUri());
 
-    for (String name in info.packages) {
-      Uri uri = info.asMap()[name];
-      String packagePath = path.normalize(path.fromUri(uri));
-      file_system.Resource resource =
-          PhysicalResourceProvider.INSTANCE.getResource(packagePath);
+    for (var name in info.packages) {
+      var uri = info.asMap()[name];
+      var packagePath = path.normalize(path.fromUri(uri));
+      var resource = PhysicalResourceProvider.INSTANCE.getResource(packagePath);
       if (resource is file_system.Folder) {
         map[name] = [resource];
       }
@@ -113,14 +110,12 @@ class PackageBuilder {
   DartUriResolver _embedderResolver;
 
   DartUriResolver get embedderResolver {
-    if (_embedderResolver == null) {
-      _embedderResolver = DartUriResolver(embedderSdk);
-    }
+    _embedderResolver ??= DartUriResolver(embedderSdk);
     return _embedderResolver;
   }
 
   SourceFactory get sourceFactory {
-    List<UriResolver> resolvers = [];
+    var resolvers = <UriResolver>[];
     final UriResolver packageResolver =
         PackageMapUriResolver(PhysicalResourceProvider.INSTANCE, packageMap);
     UriResolver sdkResolver;
@@ -145,7 +140,7 @@ class PackageBuilder {
 
     assert(
         resolvers.any((UriResolver resolver) => resolver is DartUriResolver));
-    SourceFactory sourceFactory = SourceFactory(resolvers);
+    var sourceFactory = SourceFactory(resolvers);
     return sourceFactory;
   }
 
@@ -153,9 +148,9 @@ class PackageBuilder {
 
   AnalysisDriver get driver {
     if (_driver == null) {
-      PerformanceLog log = PerformanceLog(null);
-      AnalysisDriverScheduler scheduler = AnalysisDriverScheduler(log);
-      AnalysisOptionsImpl options = AnalysisOptionsImpl();
+      var log = PerformanceLog(null);
+      var scheduler = AnalysisDriverScheduler(log);
+      var options = AnalysisOptionsImpl();
 
       // TODO(jcollins-g): pass in an ExperimentStatus instead?
       options.contextFeatures =
@@ -185,7 +180,7 @@ class PackageBuilder {
   /// [String.contains])
   Iterable<String> getSdkFilesToDocument() sync* {
     for (var sdkLib in sdk.sdkLibraries) {
-      Source source = sdk.mapDartUri(sdkLib.shortName);
+      var source = sdk.mapDartUri(sdkLib.shortName);
       yield source.fullName;
     }
   }
@@ -193,19 +188,19 @@ class PackageBuilder {
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
   Future<ResolvedLibraryResult> processLibrary(String filePath) async {
-    String name = filePath;
+    var name = filePath;
 
     if (name.startsWith(directoryCurrentPath)) {
       name = name.substring(directoryCurrentPath.length);
       if (name.startsWith(Platform.pathSeparator)) name = name.substring(1);
     }
-    JavaFile javaFile = JavaFile(filePath).getAbsoluteFile();
+    var javaFile = JavaFile(filePath).getAbsoluteFile();
     Source source = FileBasedSource(javaFile);
 
     // TODO(jcollins-g): remove the manual reversal using embedderSdk when we
     // upgrade to analyzer-0.30 (where DartUriResolver implements
     // restoreAbsolute)
-    Uri uri = embedderSdk?.fromFileUri(source.uri)?.uri;
+    var uri = embedderSdk?.fromFileUri(source.uri)?.uri;
     if (uri != null) {
       source = FileBasedSource(javaFile, uri);
     } else {
@@ -226,8 +221,8 @@ class PackageBuilder {
   }
 
   Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) {
-    Set<PackageMeta> metas = Set();
-    for (String filename in files) {
+    var metas = <PackageMeta>{};
+    for (var filename in files) {
       metas.add(PackageMeta.fromFilename(filename));
     }
     return metas;
@@ -245,16 +240,16 @@ class PackageBuilder {
       Set<String> files,
       [bool Function(LibraryElement) isLibraryIncluded]) async {
     isLibraryIncluded ??= (_) => true;
-    Set<PackageMeta> lastPass = Set();
+    var lastPass = <PackageMeta>{};
     Set<PackageMeta> current;
     do {
       lastPass = _packageMetasForFiles(files);
 
       // Be careful here not to accidentally stack up multiple
       // ResolvedLibraryResults, as those eat our heap.
-      for (String f in files) {
+      for (var f in files) {
         logProgress(f);
-        ResolvedLibraryResult r = await processLibrary(f);
+        var r = await processLibrary(f);
         if (r != null &&
             !libraries.contains(r.element) &&
             isLibraryIncluded(r.element)) {
@@ -274,7 +269,7 @@ class PackageBuilder {
       // add all libraries in dependent packages.  So if the analyzer
       // discovers some files in a package we haven't seen yet, add files
       // for that package.
-      for (PackageMeta meta in current.difference(lastPass)) {
+      for (var meta in current.difference(lastPass)) {
         if (meta.isSdk) {
           files.addAll(getSdkFilesToDocument());
         } else {
@@ -290,23 +285,23 @@ class PackageBuilder {
   Iterable<String> findFilesToDocumentInPackage(
       String basePackageDir, bool autoIncludeDependencies,
       [bool filterExcludes = true]) sync* {
-    final String sep = path.separator;
+    var sep = path.separator;
 
-    Set<String> packageDirs = Set()..add(basePackageDir);
+    var packageDirs = {basePackageDir};
 
     if (autoIncludeDependencies) {
-      Map<String, Uri> info = package_config
+      var info = package_config
           .findPackagesFromFile(
               Uri.file(path.join(basePackageDir, 'pubspec.yaml')))
           .asMap();
-      for (String packageName in info.keys) {
+      for (var packageName in info.keys) {
         if (!filterExcludes || !config.exclude.contains(packageName)) {
           packageDirs.add(path.dirname(info[packageName].toFilePath()));
         }
       }
     }
 
-    for (String packageDir in packageDirs) {
+    for (var packageDir in packageDirs) {
       var packageLibDir = path.join(packageDir, 'lib');
       var packageLibSrcDir = path.join(packageLibDir, 'src');
       // To avoid analyzing package files twice, only files with paths not
@@ -340,9 +335,8 @@ class PackageBuilder {
   /// objects to find any [DartdocOptionContext.includeExternal] configurations
   /// therein.
   Iterable<String> _includeExternalsFrom(Iterable<String> files) sync* {
-    for (String file in files) {
-      DartdocOptionContext fileContext =
-          DartdocOptionContext.fromContext(config, File(file));
+    for (var file in files) {
+      var fileContext = DartdocOptionContext.fromContext(config, File(file));
       if (fileContext.includeExternal != null) {
         yield* fileContext.includeExternal;
       }
@@ -365,8 +359,8 @@ class PackageBuilder {
     if (embedderSdk != null &&
         embedderSdk.urlMappings.isNotEmpty &&
         !config.topLevelPackageMeta.isSdk) {
-      for (String dartUri in embedderSdk.urlMappings.keys) {
-        Source source = embedderSdk.mapDartUri(dartUri);
+      for (var dartUri in embedderSdk.urlMappings.keys) {
+        var source = embedderSdk.mapDartUri(dartUri);
         yield (File(source.fullName)).absolute.path;
       }
     }
@@ -380,8 +374,8 @@ class PackageBuilder {
     if (embedderSdk != null && embedderSdk.urlMappings.isNotEmpty) {
       findSpecialsSdk = embedderSdk;
     }
-    Set<String> files = getFiles()..addAll(getEmbedderSdkFiles());
-    Set<String> specialFiles = specialLibraryFiles(findSpecialsSdk).toSet();
+    var files = getFiles()..addAll(getEmbedderSdkFiles());
+    var specialFiles = specialLibraryFiles(findSpecialsSdk).toSet();
 
     /// Returns true if this library element should be included according
     /// to the configuration.
@@ -393,12 +387,12 @@ class PackageBuilder {
       return true;
     }
 
-    Set<LibraryElement> foundLibraries = Set();
+    var foundLibraries = <LibraryElement>{};
     await _parseLibraries(uninitializedPackageGraph.addLibraryToGraph,
         foundLibraries, files, isLibraryIncluded);
     if (config.include.isNotEmpty) {
-      Iterable knownLibraryNames = foundLibraries.map((l) => l.name);
-      Set notFound = Set.from(config.include)
+      var knownLibraryNames = foundLibraries.map((l) => l.name);
+      var notFound = Set.from(config.include)
           .difference(Set.from(knownLibraryNames))
           .difference(Set.from(config.exclude));
       if (notFound.isNotEmpty) {

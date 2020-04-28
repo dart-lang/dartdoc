@@ -33,7 +33,7 @@ class Field extends ModelElement
       PackageGraph packageGraph,
       Accessor getter,
       Accessor setter) {
-    Field newField = Field(element, library, packageGraph, getter, setter);
+    var newField = Field(element, library, packageGraph, getter, setter);
     newField._isInherited = true;
     newField._enclosingClass = enclosingClass;
     // Can't set _isInherited to true if this is the defining element, because
@@ -47,7 +47,7 @@ class Field extends ModelElement
     // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
     // to prevent displaying more or less than one summary.
     if (isPublic) {
-      Set<bool> assertCheck = Set()
+      var assertCheck = <dynamic>{}
         ..addAll([hasPublicSetter, hasPublicGetterNoSetter]);
       assert(assertCheck.containsAll([true, false]));
     }
@@ -57,10 +57,8 @@ class Field extends ModelElement
 
   @override
   ModelElement get enclosingElement {
-    if (_enclosingClass == null) {
-      _enclosingClass =
-          ModelElement.from(field.enclosingElement, library, packageGraph);
-    }
+    _enclosingClass ??=
+        ModelElement.from(field.enclosingElement, library, packageGraph);
     return _enclosingClass;
   }
 
@@ -107,7 +105,7 @@ class Field extends ModelElement
 
   @override
   List<String> get annotations {
-    List<String> all_annotations = List<String>();
+    var all_annotations = <String>[];
     all_annotations.addAll(super.annotations);
 
     if (element is PropertyInducingElement) {
@@ -120,7 +118,7 @@ class Field extends ModelElement
 
   @override
   Set<String> get features {
-    Set<String> allFeatures = super.features..addAll(comboFeatures);
+    var allFeatures = super.features..addAll(comboFeatures);
     // Combo features can indicate 'inherited' and 'override' if
     // either the getter or setter has one of those properties, but that's not
     // really specific enough for [Field]s that have public getter/setters.
@@ -148,7 +146,7 @@ class Field extends ModelElement
 
   @override
   String computeDocumentationComment() {
-    String docs = getterSetterDocumentationComment;
+    var docs = getterSetterDocumentationComment;
     if (docs.isEmpty) return field.documentationComment;
     return docs;
   }
@@ -164,10 +162,10 @@ class Field extends ModelElement
   String get sourceCode {
     if (_sourceCode == null) {
       // We could use a set to figure the dupes out, but that would lose ordering.
-      String fieldSourceCode = modelNode.sourceCode ?? '';
-      String getterSourceCode = getter?.sourceCode ?? '';
-      String setterSourceCode = setter?.sourceCode ?? '';
-      StringBuffer buffer = StringBuffer();
+      var fieldSourceCode = modelNode.sourceCode ?? '';
+      var getterSourceCode = getter?.sourceCode ?? '';
+      var setterSourceCode = setter?.sourceCode ?? '';
+      var buffer = StringBuffer();
       if (fieldSourceCode.isNotEmpty) {
         buffer.write(fieldSourceCode);
       }

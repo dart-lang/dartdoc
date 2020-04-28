@@ -95,7 +95,7 @@ void generateForPackages(List<String> packages) {
   print('Generating docs into ${_rootDir}/');
   print('');
 
-  List<String> urls = packages
+  var urls = packages
       .map((s) => 'https://pub.dartlang.org/packages/${s}.json')
       .toList();
 
@@ -108,7 +108,7 @@ void generateForPackages(List<String> packages) {
 
 Future _printGenerationResult(
     PackageInfo package, Future<bool> generationResult) {
-  String name = package.name.padRight(20);
+  var name = package.name.padRight(20);
 
   return generationResult.then((bool result) {
     if (result) {
@@ -134,7 +134,7 @@ Future<List<PackageInfo>> _getPackageInfos(List<String> packageUrls) {
     return http.get(p).then((response) {
       var decodedJson = json.decode(response.body);
       String name = decodedJson['name'];
-      List<Version> versions = List<Version>.from(
+      var versions = List<Version>.from(
           decodedJson['versions'].map((v) => Version.parse(v)));
       return PackageInfo(name, Version.primary(versions));
     });
@@ -154,7 +154,7 @@ Future<bool> _generateFor(PackageInfo package) async {
   var response = await http.get(package.archiveUrl);
   if (response.statusCode != 200) throw response;
 
-  Directory output = Directory('${_rootDir}/${package.name}');
+  var output = Directory('${_rootDir}/${package.name}');
   output.createSync(recursive: true);
 
   try {
@@ -164,7 +164,7 @@ Future<bool> _generateFor(PackageInfo package) async {
         cwd: output.path, quiet: true);
 
     // Rule out any old packages (old sdk constraints).
-    File pubspecFile = File(output.path + '/pubspec.yaml');
+    var pubspecFile = File(output.path + '/pubspec.yaml');
     var pubspecInfo = loadYaml(pubspecFile.readAsStringSync());
 
     // Check for old versions.
@@ -201,7 +201,7 @@ Future _exec(String command, List<String> args,
       process.stderr.listen((bytes) => _log(utf8.decode(bytes)));
     }
 
-    Future f = process.exitCode.then((code) {
+    var f = process.exitCode.then((code) {
       if (code != 0) throw code;
     });
 
@@ -222,8 +222,8 @@ bool _isOldSdkConstraint(var pubspecInfo) {
   if (environment != null) {
     var sdk = environment['sdk'];
     if (sdk != null) {
-      VersionConstraint constraint = VersionConstraint.parse(sdk);
-      String version = Platform.version;
+      var constraint = VersionConstraint.parse(sdk);
+      var version = Platform.version;
       if (version.contains(' ')) {
         version = version.substring(0, version.indexOf(' '));
       }

@@ -20,16 +20,16 @@ class CategoryRendererHtml extends CategoryRenderer {
 
   @override
   String renderCategoryLabel(Category category) {
-    List<String> spanClasses = [];
+    var spanClasses = <String>[];
     spanClasses.add('category');
     spanClasses.add(category.name.split(' ').join('-').toLowerCase());
     spanClasses.add('cp-${category.categoryIndex}');
     if (category.isDocumented) {
       spanClasses.add('linked');
     }
-    var spanTitle = "This is part of the ${category.name} ${category.kind}.";
+    var spanTitle = 'This is part of the ${category.name} ${category.kind}.';
 
-    StringBuffer buf = StringBuffer();
+    var buf = StringBuffer();
     buf.write('<span class="${spanClasses.join(' ')}" title="$spanTitle">');
     buf.write(renderLinkedName(category));
     buf.write('</span>');
@@ -38,7 +38,7 @@ class CategoryRendererHtml extends CategoryRenderer {
 
   @override
   String renderLinkedName(Category category) {
-    String unbrokenName = category.name.replaceAll(' ', '&nbsp;');
+    var unbrokenName = category.name.replaceAll(' ', '&nbsp;');
     if (category.isDocumented) {
       return '<a href="${category.href}">$unbrokenName</a>';
     } else {
@@ -53,7 +53,7 @@ class CategoryRendererMd extends CategoryRenderer {
 
   @override
   String renderLinkedName(Category category) {
-    String name = category.name;
+    var name = category.name;
     if (category.isDocumented) {
       return '[$name](${category.href})';
     }

@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 
@@ -30,7 +29,7 @@ mixin Inheritable on ContainerMember {
 
   @override
   Set<String> get features {
-    Set<String> _features = super.features;
+    var _features = super.features;
     if (isOverride) _features.add('override');
     if (isInherited) _features.add('inherited');
     if (isCovariant) _features.add('covariant');
@@ -63,13 +62,13 @@ mixin Inheritable on ContainerMember {
   @override
   Container computeCanonicalEnclosingContainer() {
     if (isInherited) {
-      Element searchElement = element.declaration;
+      var searchElement = element.declaration;
       // TODO(jcollins-g): generate warning if an inherited element's definition
       // is in an intermediate non-canonical class in the inheritance chain?
       Class previous;
       Class previousNonSkippable;
       Class found;
-      for (Class c in inheritance.reversed) {
+      for (var c in inheritance.reversed) {
         // Filter out mixins.
         if (c.contains(searchElement)) {
           if ((packageGraph.inheritThrough.contains(previous) &&
@@ -113,9 +112,9 @@ mixin Inheritable on ContainerMember {
   }
 
   List<Class> get inheritance {
-    List<Class> inheritance = [];
+    var inheritance = <Class>[];
     inheritance.addAll((enclosingElement as Class).inheritanceChain);
-    Class object = packageGraph.specialClasses[SpecialClass.object];
+    var object = packageGraph.specialClasses[SpecialClass.object];
     if (!inheritance.contains(definingEnclosingContainer) &&
         definingEnclosingContainer != null) {
       assert(definingEnclosingContainer == object);
@@ -152,7 +151,7 @@ mixin Inheritable on ContainerMember {
           definingEnclosingContainer.canonicalModelElement ??
               definingEnclosingContainer;
       // The canonical version of the element we're overriding, if available.
-      ModelElement overriddenCanonical =
+      var overriddenCanonical =
           overriddenElement?.canonicalModelElement ?? overriddenElement;
 
       // We have to have an overridden element for it to be possible for this
@@ -175,7 +174,7 @@ mixin Inheritable on ContainerMember {
   int get overriddenDepth {
     if (_overriddenDepth == null) {
       _overriddenDepth = 0;
-      Inheritable e = this;
+      var e = this;
       while (e.overriddenElement != null) {
         _overriddenDepth += 1;
         e = e.overriddenElement;

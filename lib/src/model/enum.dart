@@ -15,14 +15,12 @@ class Enum extends Class {
 
   @override
   List<EnumField> get instanceProperties {
-    if (_instanceProperties == null) {
-      _instanceProperties = super
-          .instanceProperties
-          .map((Field p) => ModelElement.from(
-              p.element, p.library, p.packageGraph,
-              getter: p.getter, setter: p.setter) as EnumField)
-          .toList(growable: false);
-    }
+    _instanceProperties ??= super
+        .instanceProperties
+        .map((Field p) => ModelElement.from(
+            p.element, p.library, p.packageGraph,
+            getter: p.getter, setter: p.setter) as EnumField)
+        .toList(growable: false);
     return _instanceProperties;
   }
 

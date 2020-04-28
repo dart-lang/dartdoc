@@ -17,7 +17,7 @@ class FunctionTypeElementTypeRendererHtml
     extends ElementTypeRenderer<FunctionTypeElementType> {
   @override
   String renderLinkedName(FunctionTypeElementType elementType) {
-    StringBuffer buf = StringBuffer();
+    var buf = StringBuffer();
     buf.write('${elementType.returnType.linkedName} ');
     buf.write('${elementType.nameWithGenerics}');
     buf.write('<span class="signature">(');
@@ -29,7 +29,7 @@ class FunctionTypeElementTypeRendererHtml
 
   @override
   String renderNameWithGenerics(FunctionTypeElementType elementType) {
-    StringBuffer buf = StringBuffer();
+    var buf = StringBuffer();
     buf.write(elementType.name);
     if (elementType.typeFormals.isNotEmpty) {
       if (!elementType.typeFormals.every((t) => t.name == 'dynamic')) {
@@ -47,7 +47,7 @@ class ParameterizedElementTypeRendererHtml
     extends ElementTypeRenderer<ParameterizedElementType> {
   @override
   String renderLinkedName(ParameterizedElementType elementType) {
-    StringBuffer buf = StringBuffer();
+    var buf = StringBuffer();
     buf.write(elementType.element.linkedName);
     if (elementType.typeArguments.isNotEmpty &&
         !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
@@ -63,7 +63,7 @@ class ParameterizedElementTypeRendererHtml
 
   @override
   String renderNameWithGenerics(ParameterizedElementType elementType) {
-    StringBuffer buf = StringBuffer();
+    var buf = StringBuffer();
     buf.write(elementType.element.name);
     if (elementType.typeArguments.isNotEmpty &&
         !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
@@ -84,7 +84,7 @@ class CallableElementTypeRendererHtml
       return elementType.superLinkedName;
     }
 
-    StringBuffer buf = StringBuffer();
+    var buf = StringBuffer();
     buf.write(elementType.nameWithGenerics);
     buf.write('(');
     buf.write(ParameterRendererHtml()
@@ -102,7 +102,7 @@ class FunctionTypeElementTypeRendererMd
     extends ElementTypeRenderer<FunctionTypeElementType> {
   @override
   String renderLinkedName(FunctionTypeElementType elementType) {
-    StringBuffer buf = StringBuffer();
+    var buf = StringBuffer();
     buf.write('${elementType.returnType.linkedName} ');
     buf.write('${elementType.nameWithGenerics}');
     buf.write('(');
@@ -113,7 +113,7 @@ class FunctionTypeElementTypeRendererMd
 
   @override
   String renderNameWithGenerics(FunctionTypeElementType elementType) {
-    StringBuffer buf = StringBuffer();
+    var buf = StringBuffer();
     buf.write(elementType.name);
     if (elementType.typeFormals.isNotEmpty) {
       if (!elementType.typeFormals.every((t) => t.name == 'dynamic')) {
@@ -130,7 +130,7 @@ class ParameterizedElementTypeRendererMd
     extends ElementTypeRenderer<ParameterizedElementType> {
   @override
   String renderLinkedName(ParameterizedElementType elementType) {
-    StringBuffer buf = StringBuffer();
+    var buf = StringBuffer();
     buf.write(elementType.element.linkedName);
     if (elementType.typeArguments.isNotEmpty &&
         !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
@@ -143,7 +143,7 @@ class ParameterizedElementTypeRendererMd
 
   @override
   String renderNameWithGenerics(ParameterizedElementType elementType) {
-    StringBuffer buf = StringBuffer();
+    var buf = StringBuffer();
     buf.write(elementType.element.name);
     if (elementType.typeArguments.isNotEmpty &&
         !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
@@ -164,7 +164,7 @@ class CallableElementTypeRendererMd
       return elementType.superLinkedName;
     }
 
-    StringBuffer buf = StringBuffer();
+    var buf = StringBuffer();
     buf.write(elementType.nameWithGenerics);
     buf.write('(');
     buf.write(ParameterRendererMd()

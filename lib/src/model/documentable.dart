@@ -76,5 +76,5 @@ abstract class MarkdownFileDocumentation
   String get location => path.toUri(documentationFile.file.path).toString();
 
   @override
-  Set<String> get locationPieces => Set.from(<String>[location]);
+  Set<String> get locationPieces => <String>{location};
 }

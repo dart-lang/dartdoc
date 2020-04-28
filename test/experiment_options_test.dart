@@ -52,8 +52,7 @@ void main() {
   group('Experimental options test', () {
     test('Defaults work for all options', () {
       experimentOptions.parseArguments([]);
-      DartdocOptionContext tester =
-          DartdocOptionContext(experimentOptions, emptyTempDir);
+      var tester = DartdocOptionContext(experimentOptions, emptyTempDir);
       if (defaultOnNotExpired != null) {
         expect(tester.experimentStatus.isEnabled(defaultOnNotExpired), isTrue);
       }
@@ -71,8 +70,7 @@ void main() {
         '--enable-experiment',
         '${defaultOffNotExpired?.disableString},${defaultOnNotExpired?.disableString},${defaultOnExpired.disableString},${defaultOffExpired.enableString}'
       ]);
-      DartdocOptionContext tester =
-          DartdocOptionContext(experimentOptions, emptyTempDir);
+      var tester = DartdocOptionContext(experimentOptions, emptyTempDir);
       if (defaultOnNotExpired != null) {
         expect(tester.experimentStatus.isEnabled(defaultOnNotExpired), isFalse);
       }

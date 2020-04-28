@@ -40,12 +40,12 @@ class Parameter extends ModelElement implements EnclosedElement {
   @override
   String get htmlId {
     if (_parameter.enclosingElement != null) {
-      String enclosingName = _parameter.enclosingElement.name;
+      var enclosingName = _parameter.enclosingElement.name;
       if (_parameter.enclosingElement is GenericFunctionTypeElement) {
         // TODO(jcollins-g): Drop when GenericFunctionTypeElement populates name.
         // Also, allowing null here is allowed as a workaround for
         // dart-lang/sdk#32005.
-        for (Element e = _parameter.enclosingElement;
+        for (var e = _parameter.enclosingElement;
             e.enclosingElement != null;
             e = e.enclosingElement) {
           enclosingName = e.name;

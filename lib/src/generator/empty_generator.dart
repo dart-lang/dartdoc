@@ -15,13 +15,13 @@ class EmptyGenerator extends Generator {
   @override
   Future generate(PackageGraph _packageGraph, FileWriter writer) {
     logProgress(_packageGraph.defaultPackage.documentationAsHtml);
-    for (var package in Set.from([_packageGraph.defaultPackage])
+    for (var package in {_packageGraph.defaultPackage}
       ..addAll(_packageGraph.localPackages)) {
       for (var category in filterNonDocumented(package.categories)) {
         logProgress(category.documentationAsHtml);
       }
 
-      for (Library lib in filterNonDocumented(package.libraries)) {
+      for (var lib in filterNonDocumented(package.libraries)) {
         filterNonDocumented(lib.allModelElements)
             .forEach((m) => logProgress(m.documentationAsHtml));
       }

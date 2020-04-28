@@ -19,13 +19,13 @@ mixin GetterSetterCombo on ModelElement {
   Accessor get setter;
 
   Iterable<Accessor> get allAccessors sync* {
-    for (Accessor a in [getter, setter]) {
+    for (var a in [getter, setter]) {
       if (a != null) yield a;
     }
   }
 
   Set<String> get comboFeatures {
-    Set<String> allFeatures = Set();
+    var allFeatures = <String>{};
     if (hasExplicitGetter && hasPublicGetter) {
       allFeatures.addAll(getter.features);
     }
@@ -49,7 +49,7 @@ mixin GetterSetterCombo on ModelElement {
   String linkifyConstantValue(String original) {
     if (constantInitializer is! InstanceCreationExpression) return original;
     var creationExpression = constantInitializer as InstanceCreationExpression;
-    String constructorName = creationExpression.constructorName.toString();
+    var constructorName = creationExpression.constructorName.toString();
     Element staticElement = creationExpression.staticElement;
     if (staticElement == null) {
       warn(PackageWarning.missingConstantConstructor, message: constructorName);
@@ -60,14 +60,14 @@ mixin GetterSetterCombo on ModelElement {
     // TODO(jcollins-g): this logic really should be integrated into Constructor,
     // but that's not trivial because of linkedName's usage.
     if (targetClass.name == target.name) {
-      return original.replaceAll(constructorName, "${target.linkedName}");
+      return original.replaceAll(constructorName, '${target.linkedName}');
     }
-    return original.replaceAll("${targetClass.name}.${target.name}",
-        "${targetClass.linkedName}.${target.linkedName}");
+    return original.replaceAll('${targetClass.name}.${target.name}',
+        '${targetClass.linkedName}.${target.linkedName}');
   }
 
   String _buildConstantValueBase() {
-    String result = constantInitializer?.toString() ?? '';
+    var result = constantInitializer?.toString() ?? '';
     return const HtmlEscape(HtmlEscapeMode.unknown).convert(result);
   }
 
@@ -140,7 +140,7 @@ mixin GetterSetterCombo on ModelElement {
       if (!hasAccessorsWithDocs) {
         _oneLineDoc = super.oneLineDoc;
       } else {
-        StringBuffer buffer = StringBuffer();
+        var buffer = StringBuffer();
         if (hasPublicGetter && getter.oneLineDoc.isNotEmpty) {
           buffer.write('${getter.oneLineDoc}');
         }
@@ -162,7 +162,7 @@ mixin GetterSetterCombo on ModelElement {
       // doesn't yield the real elements for GetterSetterCombos.
       if (!config.dropTextFrom
           .contains(getter.documentationFrom.first.element.library.name)) {
-        String docs = getter.documentationFrom.first.documentationComment;
+        var docs = getter.documentationFrom.first.documentationComment;
         if (docs != null) buffer.write(docs);
       }
     }
@@ -171,7 +171,7 @@ mixin GetterSetterCombo on ModelElement {
       assert(setter.documentationFrom.length == 1);
       if (!config.dropTextFrom
           .contains(setter.documentationFrom.first.element.library.name)) {
-        String docs = setter.documentationFrom.first.documentationComment;
+        var docs = setter.documentationFrom.first.documentationComment;
         if (docs != null) {
           if (buffer.isNotEmpty) buffer.write('\n\n');
           buffer.write(docs);

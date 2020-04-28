@@ -44,12 +44,10 @@ class Mixin extends Class {
 
   /// Returns a list of superclass constraints for this mixin.
   Iterable<ParameterizedElementType> get superclassConstraints {
-    if (_superclassConstraints == null) {
-      _superclassConstraints = element.superclassConstraints
-          .map<ParameterizedElementType>(
-              (InterfaceType i) => ElementType.from(i, library, packageGraph))
-          .toList();
-    }
+    _superclassConstraints ??= element.superclassConstraints
+        .map<ParameterizedElementType>(
+            (InterfaceType i) => ElementType.from(i, library, packageGraph))
+        .toList();
     return _superclassConstraints;
   }
 

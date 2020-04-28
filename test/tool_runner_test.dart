@@ -79,7 +79,7 @@ echo:
     // yaml map (which would fail on a missing executable), or a file is deleted
     // during execution,it might, so we test it.
     toolMap.tools.addAll({
-      'missing': ToolDefinition(['/a/missing/executable'], null, "missing"),
+      'missing': ToolDefinition(['/a/missing/executable'], null, 'missing'),
     });
 
     runner = ToolRunner(toolMap);
@@ -134,7 +134,7 @@ echo:
       expect(setupFile.existsSync(), isFalse);
     });
     test('can invoke a non-Dart tool', () async {
-      String result = await runner.run(
+      var result = await runner.run(
         ['non_dart', '--version'],
         errorCallback,
         content: 'TEST INPUT',
@@ -164,7 +164,7 @@ echo:
       expect(setupFile.existsSync(), isTrue);
     });
     test('fails if tool not in tool map', () async {
-      String result = await runner.run(
+      var result = await runner.run(
         ['hammer', r'--file=$INPUT'],
         errorCallback,
         content: 'TEST INPUT',
@@ -175,7 +175,7 @@ echo:
       expect(result, isEmpty);
     });
     test('fails if tool returns non-zero status', () async {
-      String result = await runner.run(
+      var result = await runner.run(
         ['drill', r'--file=/a/missing/file'],
         errorCallback,
         content: 'TEST INPUT',
@@ -185,7 +185,7 @@ echo:
       expect(result, isEmpty);
     });
     test("fails if tool in tool map doesn't exist", () async {
-      String result = await runner.run(
+      var result = await runner.run(
         ['missing'],
         errorCallback,
         content: 'TEST INPUT',

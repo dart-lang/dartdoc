@@ -97,7 +97,7 @@ Future<List<DartdocOption>> createGeneratorOptions() async {
             'If provided, add a rel="canonical" prefixed with provided value. '
             'Consider using if building many versions of the docs for public '
             'SEO; learn more at https://goo.gl/gktN6F.'),
-    DartdocOptionArgOnly<String>("templatesDir", null,
+    DartdocOptionArgOnly<String>('templatesDir', null,
         isDir: true,
         mustExist: true,
         hide: true,

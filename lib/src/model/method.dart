@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:dartdoc/src/element_type.dart';
@@ -51,10 +50,8 @@ class Method extends ModelElement
 
   @override
   ModelElement get enclosingElement {
-    if (_enclosingContainer == null) {
-      _enclosingContainer =
-          ModelElement.from(_method.enclosingElement, library, packageGraph);
-    }
+    _enclosingContainer ??=
+        ModelElement.from(_method.enclosingElement, library, packageGraph);
     return _enclosingContainer;
   }
 
@@ -85,7 +82,7 @@ class Method extends ModelElement
 
   @override
   Set<String> get features {
-    Set<String> allFeatures = super.features;
+    var allFeatures = super.features;
     if (isInherited) allFeatures.add('inherited');
     return allFeatures;
   }
@@ -107,7 +104,7 @@ class Method extends ModelElement
       return null;
     }
     ClassElement parent = element.enclosingElement;
-    for (InterfaceType t in parent.allSupertypes) {
+    for (var t in parent.allSupertypes) {
       Element e = t.getMethod(element.name);
       if (e != null) {
         assert(e.enclosingElement is ClassElement);

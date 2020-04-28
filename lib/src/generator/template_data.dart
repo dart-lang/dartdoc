@@ -179,14 +179,14 @@ class ClassTemplateData<T extends Class> extends TemplateData<T> {
       return _objectType;
     }
 
-    Library dc = packageGraph.libraries
-        .firstWhere((it) => it.name == "dart:core", orElse: () => null);
+    var dc = packageGraph.libraries
+        .firstWhere((it) => it.name == 'dart:core', orElse: () => null);
 
     if (dc == null) {
       return _objectType = null;
     }
 
-    return _objectType = dc.getClassByName("Object");
+    return _objectType = dc.getClassByName('Object');
   }
 }
 

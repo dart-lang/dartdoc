@@ -23,7 +23,7 @@ AstNode getAstNode(
   if (element?.source?.fullName != null &&
       !element.isSynthetic &&
       element.nameOffset != -1) {
-    CompilationUnit unit = compilationUnitMap[element.source.fullName];
+    var unit = compilationUnitMap[element.source.fullName];
     if (unit != null) {
       var locator = NodeLocator2(element.nameOffset);
       return (locator.searchWithin(unit)?.parent);
@@ -80,7 +80,7 @@ bool hasPrivateName(Element e) {
     return true;
   }
   if (e is LibraryElement) {
-    List<String> locationParts = e.location.components[0].split(slashes);
+    var locationParts = e.location.components[0].split(slashes);
     // TODO(jcollins-g): Implement real cross package detection
     if (locationParts.length >= 2 &&
         locationParts[0].startsWith('package:') &&
@@ -93,11 +93,11 @@ bool hasPublicName(Element e) => !hasPrivateName(e);
 
 /// Strip leading dartdoc comments from the given source code.
 String stripDartdocCommentsFromSource(String source) {
-  String remainer = source.trimLeft();
-  HtmlEscape sanitizer = const HtmlEscape();
-  bool lineComments = remainer.startsWith('///') ||
+  var remainer = source.trimLeft();
+  var sanitizer = const HtmlEscape();
+  var lineComments = remainer.startsWith('///') ||
       remainer.startsWith(sanitizer.convert('///'));
-  bool blockComments = remainer.startsWith('/**') ||
+  var blockComments = remainer.startsWith('/**') ||
       remainer.startsWith(sanitizer.convert('/**'));
 
   return source.split('\n').where((String line) {
@@ -124,8 +124,8 @@ String stripDartdocCommentsFromSource(String source) {
 
 /// Strip the common indent from the given source fragment.
 String stripIndentFromSource(String source) {
-  String remainer = source.trimLeft();
-  String indent = source.substring(0, source.length - remainer.length);
+  var remainer = source.trimLeft();
+  var indent = source.substring(0, source.length - remainer.length);
   return source.split('\n').map((line) {
     line = line.trimRight();
     return line.startsWith(indent) ? line.substring(indent.length) : line;

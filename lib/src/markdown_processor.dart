@@ -16,104 +16,104 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:markdown/markdown.dart' as md;
 
 const validHtmlTags = [
-  "a",
-  "abbr",
-  "address",
-  "area",
-  "article",
-  "aside",
-  "audio",
-  "b",
-  "bdi",
-  "bdo",
-  "blockquote",
-  "br",
-  "button",
-  "canvas",
-  "caption",
-  "cite",
-  "code",
-  "col",
-  "colgroup",
-  "data",
-  "datalist",
-  "dd",
-  "del",
-  "dfn",
-  "div",
-  "dl",
-  "dt",
-  "em",
-  "fieldset",
-  "figcaption",
-  "figure",
-  "footer",
-  "form",
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "h5",
-  "h6",
-  "header",
-  "hr",
-  "i",
-  "iframe",
-  "img",
-  "input",
-  "ins",
-  "kbd",
-  "keygen",
-  "label",
-  "legend",
-  "li",
-  "link",
-  "main",
-  "map",
-  "mark",
-  "meta",
-  "meter",
-  "nav",
-  "noscript",
-  "object",
-  "ol",
-  "optgroup",
-  "option",
-  "output",
-  "p",
-  "param",
-  "pre",
-  "progress",
-  "q",
-  "s",
-  "samp",
-  "script",
-  "section",
-  "select",
-  "small",
-  "source",
-  "span",
-  "strong",
-  "style",
-  "sub",
-  "sup",
-  "table",
-  "tbody",
-  "td",
-  "template",
-  "textarea",
-  "tfoot",
-  "th",
-  "thead",
-  "time",
-  "title",
-  "tr",
-  "track",
-  "u",
-  "ul",
-  "var",
-  "video",
-  "wbr"
+  'a',
+  'abbr',
+  'address',
+  'area',
+  'article',
+  'aside',
+  'audio',
+  'b',
+  'bdi',
+  'bdo',
+  'blockquote',
+  'br',
+  'button',
+  'canvas',
+  'caption',
+  'cite',
+  'code',
+  'col',
+  'colgroup',
+  'data',
+  'datalist',
+  'dd',
+  'del',
+  'dfn',
+  'div',
+  'dl',
+  'dt',
+  'em',
+  'fieldset',
+  'figcaption',
+  'figure',
+  'footer',
+  'form',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'header',
+  'hr',
+  'i',
+  'iframe',
+  'img',
+  'input',
+  'ins',
+  'kbd',
+  'keygen',
+  'label',
+  'legend',
+  'li',
+  'link',
+  'main',
+  'map',
+  'mark',
+  'meta',
+  'meter',
+  'nav',
+  'noscript',
+  'object',
+  'ol',
+  'optgroup',
+  'option',
+  'output',
+  'p',
+  'param',
+  'pre',
+  'progress',
+  'q',
+  's',
+  'samp',
+  'script',
+  'section',
+  'select',
+  'small',
+  'source',
+  'span',
+  'strong',
+  'style',
+  'sub',
+  'sup',
+  'table',
+  'tbody',
+  'td',
+  'template',
+  'textarea',
+  'tfoot',
+  'th',
+  'thead',
+  'time',
+  'title',
+  'tr',
+  'track',
+  'u',
+  'ul',
+  'var',
+  'video',
+  'wbr'
 ];
 
 final RegExp nonHTML =
@@ -170,7 +170,7 @@ class IterableBlockParser extends md.BlockParser {
     while (!isDone) {
       for (var syntax in blockSyntaxes) {
         if (syntax.canParse(this)) {
-          md.Node block = syntax.parse(this);
+          var block = syntax.parse(this);
           if (block != null) yield (block);
           break;
         }
@@ -259,12 +259,12 @@ MatchingLinkResult _getMatchingLinkElement(
 Element _getRefElementFromCommentRefs(
     List<ModelCommentReference> commentRefs, String codeRef) {
   if (commentRefs != null) {
-    for (ModelCommentReference ref in commentRefs) {
+    for (var ref in commentRefs) {
       if (ref.name == codeRef) {
-        bool isConstrElement = ref.staticElement is ConstructorElement;
+        var isConstrElement = ref.staticElement is ConstructorElement;
         // Constructors are now handled by library search.
         if (!isConstrElement) {
-          Element refElement = ref.staticElement;
+          var refElement = ref.staticElement;
           if (refElement is PropertyAccessorElement) {
             // yay we found an accessor that wraps a const, but we really
             // want the top-level field itself
@@ -360,9 +360,9 @@ class _MarkdownCommentReference {
   /// [element.warn] for [PackageWarning.ambiguousDocReference] if there
   /// are more than one, but does not warn otherwise.
   ModelElement computeReferredElement() {
-    results = Set();
+    results = {};
     // TODO(jcollins-g): A complex package winds up spending a lot of cycles in here.  Optimize.
-    for (void Function() findMethod in [
+    for (var findMethod in [
       // This might be an operator.  Strip the operator prefix and try again.
       _findWithoutOperatorPrefix,
       // Oh, and someone might have thrown on a 'const' or 'final' in front.
@@ -405,7 +405,7 @@ class _MarkdownCommentReference {
     if (results.length > 1) {
       // This isn't C++.  References to class methods are slightly expensive
       // in Dart so don't build that list unless you need to.
-      for (void Function() reduceMethod in [
+      for (var reduceMethod in [
         // If a result is actually in this library, prefer that.
         _reducePreferResultsInSameLibrary,
         // If a result is accessible in this library, prefer that.
@@ -456,15 +456,15 @@ class _MarkdownCommentReference {
       _codeRefChompedParts ??= codeRefChomped.split('.');
 
   void _reducePreferAnalyzerResolution() {
-    Element refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
+    var refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
     if (results.any((me) => me.element == refElement)) {
       results.removeWhere((me) => me.element != refElement);
     }
   }
 
   void _reducePreferReferencesIncludingFullyQualifiedName() {
-    String startName = "${element.fullyQualifiedName}.";
-    String realName = "${element.fullyQualifiedName}.${codeRefChomped}";
+    var startName = '${element.fullyQualifiedName}.';
+    var realName = '${element.fullyQualifiedName}.${codeRefChomped}';
     if (results.any((r) => r.fullyQualifiedName == realName)) {
       results.removeWhere((r) => r.fullyQualifiedName != realName);
     }
@@ -501,20 +501,20 @@ class _MarkdownCommentReference {
   void _findTypeParameters() {
     if (element is TypeParameters) {
       results.addAll((element as TypeParameters).typeParameters.where((p) =>
-          p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
+          p.name == codeRefChomped || codeRefChomped.startsWith('${p.name}.')));
     }
   }
 
   void _findParameters() {
     if (element is ModelElement) {
       results.addAll((element as ModelElement).allParameters.where((p) =>
-          p.name == codeRefChomped || codeRefChomped.startsWith("${p.name}.")));
+          p.name == codeRefChomped || codeRefChomped.startsWith('${p.name}.')));
     }
   }
 
   void _findWithoutLeadingIgnoreStuff() {
     if (codeRef.contains(leadingIgnoreStuff)) {
-      String newCodeRef = codeRef.replaceFirst(leadingIgnoreStuff, '');
+      var newCodeRef = codeRef.replaceFirst(leadingIgnoreStuff, '');
       results.add(_MarkdownCommentReference(
               newCodeRef, element, commentRefs, preferredClass)
           .computeReferredElement());
@@ -523,7 +523,7 @@ class _MarkdownCommentReference {
 
   void _findWithoutTrailingIgnoreStuff() {
     if (codeRef.contains(trailingIgnoreStuff)) {
-      String newCodeRef = codeRef.replaceFirst(trailingIgnoreStuff, '');
+      var newCodeRef = codeRef.replaceFirst(trailingIgnoreStuff, '');
       results.add(_MarkdownCommentReference(
               newCodeRef, element, commentRefs, preferredClass)
           .computeReferredElement());
@@ -532,7 +532,7 @@ class _MarkdownCommentReference {
 
   void _findWithoutOperatorPrefix() {
     if (codeRef.startsWith(operatorPrefix)) {
-      String newCodeRef = codeRef.replaceFirst(operatorPrefix, '');
+      var newCodeRef = codeRef.replaceFirst(operatorPrefix, '');
       results.add(_MarkdownCommentReference(
               newCodeRef, element, commentRefs, preferredClass)
           .computeReferredElement());
@@ -543,10 +543,10 @@ class _MarkdownCommentReference {
     // TODO(jcollins-g): Put enum members in allModelElements with useful hrefs without blowing up other assumptions about what that means.
     // TODO(jcollins-g): This doesn't provide good warnings if an enum and class have the same name in different libraries in the same package.  Fix that.
     if (codeRefChompedParts.length >= 2) {
-      String maybeEnumName = codeRefChompedParts
+      var maybeEnumName = codeRefChompedParts
           .sublist(0, codeRefChompedParts.length - 1)
           .join('.');
-      String maybeEnumMember = codeRefChompedParts.last;
+      var maybeEnumMember = codeRefChompedParts.last;
       if (packageGraph.findRefElementCache.containsKey(maybeEnumName)) {
         for (final modelElement
             in packageGraph.findRefElementCache[maybeEnumName]) {
@@ -582,13 +582,13 @@ class _MarkdownCommentReference {
 
   void _findReferenceFromPrefixes() {
     if (element is! ModelElement) return;
-    Map<String, Set<Library>> prefixToLibrary =
+    var prefixToLibrary =
         (element as ModelElement).definingLibrary.prefixToLibrary;
     if (prefixToLibrary.containsKey(codeRefChompedParts.first)) {
       if (codeRefChompedParts.length == 1) {
         results.addAll(prefixToLibrary[codeRefChompedParts.first]);
       } else {
-        String lookup = codeRefChompedParts.sublist(1).join('.');
+        var lookup = codeRefChompedParts.sublist(1).join('.');
         prefixToLibrary[codeRefChompedParts.first]?.forEach((l) => l
             .modelElementsNameMap[lookup]
             ?.map(_convertConstructors)
@@ -626,7 +626,7 @@ class _MarkdownCommentReference {
     // if the codeRef might be qualified, and contains periods.)
     if (codeRefChomped.contains('.') &&
         packageGraph.findRefElementCache.containsKey(codeRefChomped)) {
-      for (final ModelElement modelElement
+      for (var modelElement
           in packageGraph.findRefElementCache[codeRefChomped]) {
         // For fully qualified matches, the original preferredClass passed
         // might make no sense.  Instead, use the enclosing class from the
@@ -644,11 +644,10 @@ class _MarkdownCommentReference {
   void _findWithinTryClasses() {
     // Maybe this is local to a class.
     // TODO(jcollins-g): tryClasses is a strict subset of the superclass chain.  Optimize.
-    List<Class> tryClasses = [preferredClass];
-    Class realClass = tryClasses.first;
+    var tryClasses = <Class>[preferredClass];
+    var realClass = tryClasses.first;
     if (element is Inheritable) {
-      Inheritable overriddenElement =
-          (element as Inheritable).overriddenElement;
+      var overriddenElement = (element as Inheritable).overriddenElement;
       while (overriddenElement != null) {
         tryClasses
             .add((element as Inheritable).overriddenElement.enclosingElement);
@@ -656,7 +655,7 @@ class _MarkdownCommentReference {
       }
     }
 
-    for (Class tryClass in tryClasses) {
+    for (var tryClass in tryClasses) {
       if (tryClass != null) {
         if (codeRefChomped.contains('.') &&
             !codeRefChomped.startsWith(tryClass.name)) {
@@ -669,7 +668,7 @@ class _MarkdownCommentReference {
     }
 
     if (results.isEmpty && realClass != null) {
-      for (Class superClass
+      for (var superClass
           in realClass.publicSuperChain.map((et) => et.element)) {
         if (!tryClasses.contains(superClass)) {
           _getResultsForClass(superClass);
@@ -681,9 +680,9 @@ class _MarkdownCommentReference {
   }
 
   void _findAnalyzerReferences() {
-    Element refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
+    var refElement = _getRefElementFromCommentRefs(commentRefs, codeRef);
     if (refElement != null) {
-      ModelElement refModelElement = ModelElement.fromElement(
+      var refModelElement = ModelElement.fromElement(
           _getRefElementFromCommentRefs(commentRefs, codeRef),
           element.packageGraph);
       if (refModelElement is Accessor) {
@@ -719,7 +718,7 @@ class _MarkdownCommentReference {
       } else {
         // TODO(jcollins-g): get rid of reimplementation of identifier resolution
         //                   or integrate into ModelElement in a simpler way.
-        List<Class> superChain = [tryClass];
+        var superChain = <Class>[tryClass];
         superChain.addAll(tryClass.interfaces.map((t) => t.element));
         // This seems duplicitous with our caller, but the preferredClass
         // hint matters with findCanonicalModelElementFor.
@@ -737,10 +736,9 @@ class _MarkdownCommentReference {
   /// Get any possible results for this class in the superChain.   Returns
   /// true if we found something.
   void _getResultsForSuperChainElement(Class c, Class tryClass) {
-    Iterable<ModelElement> membersToCheck =
-        (c.allModelElementsByNamePart[codeRefChomped] ?? [])
-            .map(_convertConstructors);
-    for (final ModelElement modelElement in membersToCheck) {
+    var membersToCheck = (c.allModelElementsByNamePart[codeRefChomped] ?? [])
+        .map(_convertConstructors);
+    for (var modelElement in membersToCheck) {
       // [thing], a member of this class
       _addCanonicalResult(modelElement, tryClass);
     }
@@ -762,10 +760,9 @@ class _MarkdownCommentReference {
 
 md.Node _makeLinkNode(String codeRef, Warnable warnable,
     List<ModelCommentReference> commentRefs) {
-  MatchingLinkResult result =
-      _getMatchingLinkElement(codeRef, warnable, commentRefs);
-  final textContent = htmlEscape.convert(codeRef);
-  final ModelElement linkedElement = result.element;
+  var result = _getMatchingLinkElement(codeRef, warnable, commentRefs);
+  var textContent = htmlEscape.convert(codeRef);
+  var linkedElement = result.element;
   if (linkedElement != null) {
     if (linkedElement.href != null) {
       var anchor = md.Element.text('a', textContent);
@@ -806,16 +803,16 @@ final RegExp allAfterLastNewline = RegExp(r'\n.*$', multiLine: true);
 // https://github.com/dart-lang/dartdoc/issues/1250#issuecomment-269257942
 void showWarningsForGenericsOutsideSquareBracketsBlocks(
     String text, Warnable element) {
-  List<int> tagPositions = findFreeHangingGenericsPositions(text);
+  var tagPositions = findFreeHangingGenericsPositions(text);
   if (tagPositions.isNotEmpty) {
     tagPositions.forEach((int position) {
-      String priorContext =
-          "${text.substring(max(position - maxPriorContext, 0), position)}";
-      String postContext =
-          "${text.substring(position, min(position + maxPostContext, text.length))}";
+      var priorContext =
+          '${text.substring(max(position - maxPriorContext, 0), position)}';
+      var postContext =
+          '${text.substring(position, min(position + maxPostContext, text.length))}';
       priorContext = priorContext.replaceAll(allBeforeFirstNewline, '');
       postContext = postContext.replaceAll(allAfterLastNewline, '');
-      String errorMessage = "$priorContext$postContext";
+      var errorMessage = '$priorContext$postContext';
       // TODO(jcollins-g):  allow for more specific error location inside comments
       element.warn(PackageWarning.typeAsHtml, message: errorMessage);
     });
@@ -823,18 +820,15 @@ void showWarningsForGenericsOutsideSquareBracketsBlocks(
 }
 
 List<int> findFreeHangingGenericsPositions(String string) {
-  int currentPosition = 0;
-  int squareBracketsDepth = 0;
-  List<int> results = [];
+  var currentPosition = 0;
+  var squareBracketsDepth = 0;
+  var results = <int>[];
   while (true) {
-    final int nextOpenBracket = string.indexOf("[", currentPosition);
-    final int nextCloseBracket = string.indexOf("]", currentPosition);
-    final int nextNonHTMLTag = string.indexOf(nonHTML, currentPosition);
-    final Iterable<int> nextPositions = [
-      nextOpenBracket,
-      nextCloseBracket,
-      nextNonHTMLTag
-    ].where((p) => p != -1);
+    var nextOpenBracket = string.indexOf('[', currentPosition);
+    var nextCloseBracket = string.indexOf(']', currentPosition);
+    var nextNonHTMLTag = string.indexOf(nonHTML, currentPosition);
+    var nextPositions = [nextOpenBracket, nextCloseBracket, nextNonHTMLTag]
+        .where((p) => p != -1);
     if (nextPositions.isNotEmpty) {
       final minPos = nextPositions.reduce(min);
       if (nextOpenBracket == minPos) {
@@ -886,12 +880,11 @@ class MarkdownDocument extends md.Document {
   /// Returns a tuple of List<md.Node> and hasExtendedContent
   Tuple2<List<md.Node>, bool> parseMarkdownText(
       String text, bool processFullText) {
-    bool hasExtendedContent = false;
-    List<String> lines = LineSplitter.split(text).toList();
+    var hasExtendedContent = false;
+    var lines = LineSplitter.split(text).toList();
     md.Node firstNode;
-    List<md.Node> nodes = [];
-    for (md.Node node
-        in IterableBlockParser(lines, this).parseLinesGenerator()) {
+    var nodes = <md.Node>[];
+    for (var node in IterableBlockParser(lines, this).parseLinesGenerator()) {
       if (firstNode != null) {
         hasExtendedContent = true;
         if (!processFullText) break;
@@ -906,11 +899,10 @@ class MarkdownDocument extends md.Document {
   // From package:markdown/src/document.dart
   // TODO(jcollins-g): consider making this a public method in markdown package
   void _parseInlineContent(List<md.Node> nodes) {
-    for (int i = 0; i < nodes.length; i++) {
+    for (var i = 0; i < nodes.length; i++) {
       var node = nodes[i];
       if (node is md.UnparsedContent) {
-        List<md.Node> inlineNodes =
-            md.InlineParser(node.textContent, this).parse();
+        var inlineNodes = md.InlineParser(node.textContent, this).parse();
         nodes.removeAt(i);
         nodes.insertAll(i, inlineNodes);
         i += inlineNodes.length - 1;

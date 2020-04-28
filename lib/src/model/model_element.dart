@@ -15,8 +15,6 @@ import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
-import 'package:analyzer/src/generated/source.dart';
-import 'package:analyzer/src/generated/source_io.dart';
 import 'package:args/args.dart';
 import 'package:collection/collection.dart';
 import 'package:crypto/crypto.dart';
@@ -55,8 +53,8 @@ const Map<String, int> featureOrder = {
 };
 
 int byFeatureOrdering(String a, String b) {
-  int scoreA = 0;
-  int scoreB = 0;
+  var scoreA = 0;
+  var scoreB = 0;
 
   if (featureOrder.containsKey(a)) scoreA = featureOrder[a];
   if (featureOrder.containsKey(b)) scoreB = featureOrder[b];
@@ -107,12 +105,12 @@ ModelElement resolveMultiplyInheritedElement(
     Library library,
     PackageGraph packageGraph,
     Class enclosingClass) {
-  Iterable<Inheritable> inheritables = e.inheritedElements
+  var inheritables = e.inheritedElements
       .map((ee) => ModelElement.fromElement(ee, packageGraph) as Inheritable);
   Inheritable foundInheritable;
-  int lowIndex = enclosingClass.inheritanceChain.length;
+  var lowIndex = enclosingClass.inheritanceChain.length;
   for (var inheritable in inheritables) {
-    int index =
+    var index =
         enclosingClass.inheritanceChain.indexOf(inheritable.enclosingElement);
     if (index < lowIndex) {
       foundInheritable = inheritable;
@@ -173,7 +171,7 @@ abstract class ModelElement extends Canonicalization
       this._element, this._library, this._packageGraph, this._originalMember);
 
   factory ModelElement.fromElement(Element e, PackageGraph p) {
-    Library lib = p.findButDoNotCreateLibraryFor(e);
+    var lib = p.findButDoNotCreateLibraryFor(e);
     Accessor getter;
     Accessor setter;
     if (e is PropertyInducingElement) {
@@ -212,8 +210,8 @@ abstract class ModelElement extends Canonicalization
       originalMember = e;
       e = e.declaration;
     }
-    Tuple3<Element, Library, Container> key =
-        Tuple3(e, library, enclosingContainer);
+    var key =
+        Tuple3<Element, Library, Container>(e, library, enclosingContainer);
     ModelElement newModelElement;
     if (e.kind != ElementKind.DYNAMIC &&
         e.kind != ElementKind.NEVER &&
@@ -260,7 +258,7 @@ abstract class ModelElement extends Canonicalization
         if (e is FieldElement) {
           if (enclosingContainer == null) {
             if (e.isEnumConstant) {
-              int index =
+              var index =
                   e.computeConstantValue().getField(e.name).toIntValue();
               newModelElement = EnumField.forConstant(
                   index, e, library, packageGraph, getter);
@@ -331,16 +329,15 @@ abstract class ModelElement extends Canonicalization
       }
     }
 
-    if (newModelElement == null) throw "Unknown type ${e.runtimeType}";
+    if (newModelElement == null) throw 'Unknown type ${e.runtimeType}';
     if (enclosingContainer != null) assert(newModelElement is Inheritable);
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
     if (library != null && newModelElement is! Parameter) {
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
-        Tuple2<Element, Library> iKey = Tuple2(e, library);
-        library.packageGraph.allInheritableElements
-            .putIfAbsent(iKey, () => Set());
+        var iKey = Tuple2<Element, Library>(e, library);
+        library.packageGraph.allInheritableElements.putIfAbsent(iKey, () => {});
         library.packageGraph.allInheritableElements[iKey].add(newModelElement);
       }
     }
@@ -358,8 +355,7 @@ abstract class ModelElement extends Canonicalization
   bool get hasCategoryNames => false;
 
   Set<Library> get exportedInLibraries {
-    return library
-        .packageGraph.libraryElementReexportedBy[this.element.library];
+    return library.packageGraph.libraryElementReexportedBy[element.library];
   }
 
   ModelNode _modelNode;
@@ -372,11 +368,11 @@ abstract class ModelElement extends Canonicalization
 
   /// Returns linked annotations from a given metadata set, with escaping.
   List<String> annotationsFromMetadata(List<ElementAnnotation> md) {
-    List<String> annotationStrings = [];
+    var annotationStrings = <String>[];
     if (md == null) return annotationStrings;
-    for (ElementAnnotation a in md) {
-      String annotation = (const HtmlEscape()).convert(a.toSource());
-      Element annotationElement = a.element;
+    for (var a in md) {
+      var annotation = (const HtmlEscape()).convert(a.toSource());
+      var annotationElement = a.element;
 
       ClassElement annotationClassElement;
       if (annotationElement is ExecutableElement) {
@@ -386,10 +382,10 @@ abstract class ModelElement extends Canonicalization
       if (annotationElement is ClassElement) {
         annotationClassElement = annotationElement;
       }
-      ModelElement annotationModelElement =
+      var annotationModelElement =
           packageGraph.findCanonicalModelElementFor(annotationElement);
       // annotationElement can be null if the element can't be resolved.
-      Class annotationClass = packageGraph
+      var annotationClass = packageGraph
           .findCanonicalModelElementFor(annotationClassElement) as Class;
       if (annotationClass == null &&
           annotationElement != null &&
@@ -427,7 +423,7 @@ abstract class ModelElement extends Canonicalization
           !(enclosingElement as Extension).isPublic) {
         _isPublic = false;
       } else {
-        String docComment = documentationComment;
+        var docComment = documentationComment;
         if (docComment == null) {
           _isPublic = utils.hasPublicName(element);
         } else {
@@ -446,12 +442,12 @@ abstract class ModelElement extends Canonicalization
   List<ModelCommentReference> get commentRefs {
     if (_commentRefs == null) {
       _commentRefs = [];
-      for (ModelElement from in documentationFrom) {
-        List<ModelElement> checkReferences = [from];
+      for (var from in documentationFrom) {
+        var checkReferences = <ModelElement>[from];
         if (from is Accessor) {
           checkReferences.add(from.enclosingCombo);
         }
-        for (ModelElement e in checkReferences) {
+        for (var e in checkReferences) {
           _commentRefs.addAll(e.modelNode.commentRefs ?? []);
         }
       }
@@ -463,10 +459,8 @@ abstract class ModelElement extends Canonicalization
 
   @override
   DartdocOptionContext get config {
-    if (_config == null) {
-      _config =
-          DartdocOptionContext.fromContextElement(packageGraph.config, element);
-    }
+    _config ??=
+        DartdocOptionContext.fromContextElement(packageGraph.config, element);
     return _config;
   }
 
@@ -479,7 +473,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   Set<String> get features {
-    Set<String> allFeatures = Set<String>();
+    var allFeatures = <String>{};
     allFeatures.addAll(annotations);
 
     // Replace the @override annotation with a feature that explicitly
@@ -497,7 +491,7 @@ abstract class ModelElement extends Canonicalization
   }
 
   String get featuresAsString {
-    List<String> allFeatures = features.toList()..sort(byFeatureOrdering);
+    var allFeatures = features.toList()..sort(byFeatureOrdering);
     return allFeatures.join(', ');
   }
 
@@ -527,9 +521,7 @@ abstract class ModelElement extends Canonicalization
   // TODO(jcollins-g): untangle when mixins can call super
   @override
   List<ModelElement> get documentationFrom {
-    if (_documentationFrom == null) {
-      _documentationFrom = computeDocumentationFrom;
-    }
+    _documentationFrom ??= computeDocumentationFrom;
     return _documentationFrom;
   }
 
@@ -557,8 +549,8 @@ abstract class ModelElement extends Canonicalization
         (this as Inheritable).overriddenElement != null) {
       docFrom = (this as Inheritable).overriddenElement.documentationFrom;
     } else if (this is Inheritable && (this as Inheritable).isInherited) {
-      Inheritable thisInheritable = (this as Inheritable);
-      ModelElement fromThis = ModelElement.fromElement(
+      var thisInheritable = (this as Inheritable);
+      var fromThis = ModelElement.fromElement(
           element, thisInheritable.definingEnclosingContainer.packageGraph);
       docFrom = fromThis.documentationFrom;
     } else {
@@ -649,7 +641,7 @@ abstract class ModelElement extends Canonicalization
       assert(packageGraph.allLibrariesAdded);
       // Since we're looking for a library, find the [Element] immediately
       // contained by a [CompilationUnitElement] in the tree.
-      Element topLevelElement = element;
+      var topLevelElement = element;
       while (topLevelElement != null &&
           topLevelElement.enclosingElement is! LibraryElement &&
           topLevelElement.enclosingElement is! CompilationUnitElement &&
@@ -662,7 +654,7 @@ abstract class ModelElement extends Canonicalization
       if (!utils.hasPublicName(element)) {
         _canonicalLibrary = null;
       } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
-        List<Library> candidateLibraries = definingLibrary.exportedInLibraries
+        var candidateLibraries = definingLibrary.exportedInLibraries
             ?.where((l) =>
                 l.isPublic &&
                 l.package.documentedWhere != DocumentLocation.missing)
@@ -670,7 +662,7 @@ abstract class ModelElement extends Canonicalization
 
         if (candidateLibraries != null) {
           candidateLibraries = candidateLibraries.where((l) {
-            Element lookup =
+            var lookup =
                 l.element.exportNamespace.definedNames[topLevelElement?.name];
             if (lookup is PropertyAccessorElement) {
               lookup = (lookup as PropertyAccessorElement).variable;
@@ -694,23 +686,23 @@ abstract class ModelElement extends Canonicalization
           }
 
           // Start with our top-level element.
-          ModelElement warnable =
+          var warnable =
               ModelElement.fromElement(topLevelElement, packageGraph);
           if (candidateLibraries.length > 1) {
             // Heuristic scoring to determine which library a human likely
             // considers this element to be primarily 'from', and therefore,
             // canonical.  Still warn if the heuristic isn't that confident.
-            List<ScoredCandidate> scoredCandidates =
+            var scoredCandidates =
                 warnable.scoreCanonicalCandidates(candidateLibraries);
             candidateLibraries =
                 scoredCandidates.map((s) => s.library).toList();
-            double secondHighestScore =
+            var secondHighestScore =
                 scoredCandidates[scoredCandidates.length - 2].score;
-            double highestScore = scoredCandidates.last.score;
-            double confidence = highestScore - secondHighestScore;
-            String message =
-                "${candidateLibraries.map((l) => l.name)} -> ${candidateLibraries.last.name} (confidence ${confidence.toStringAsPrecision(4)})";
-            List<String> debugLines = [];
+            var highestScore = scoredCandidates.last.score;
+            var confidence = highestScore - secondHighestScore;
+            var message =
+                '${candidateLibraries.map((l) => l.name)} -> ${candidateLibraries.last.name} (confidence ${confidence.toStringAsPrecision(4)})';
+            var debugLines = <String>[];
             debugLines.addAll(scoredCandidates.map((s) => '${s.toString()}'));
 
             if (confidence < config.ambiguousReexportScorerMinConfidence) {
@@ -747,7 +739,7 @@ abstract class ModelElement extends Canonicalization
     if (!isPublic) return false;
     if (library == canonicalLibrary) {
       if (this is Inheritable) {
-        Inheritable i = (this as Inheritable);
+        var i = (this as Inheritable);
         // If we're the defining element, or if the defining element is not
         // in the set of libraries being documented, then this element
         // should be treated as canonical (given library == canonicalLibrary).
@@ -779,9 +771,9 @@ abstract class ModelElement extends Canonicalization
   String get location {
     // Call nothing from here that can emit warnings or you'll cause stack overflows.
     if (characterLocation != null) {
-      return "(${path.toUri(sourceFileName)}:${characterLocation.toString()})";
+      return '(${path.toUri(sourceFileName)}:${characterLocation.toString()})';
     }
-    return "(${path.toUri(sourceFileName)})";
+    return '(${path.toUri(sourceFileName)})';
   }
 
   /// Returns a link to extended documentation, or the empty string if that
@@ -809,10 +801,8 @@ abstract class ModelElement extends Canonicalization
 
   String get fullyQualifiedNameWithoutLibrary {
     // Remember, periods are legal in library names.
-    if (_fullyQualifiedNameWithoutLibrary == null) {
-      _fullyQualifiedNameWithoutLibrary =
-          fullyQualifiedName.replaceFirst("${library.fullyQualifiedName}.", '');
-    }
+    _fullyQualifiedNameWithoutLibrary ??=
+        fullyQualifiedName.replaceFirst('${library.fullyQualifiedName}.', '');
     return _fullyQualifiedNameWithoutLibrary;
   }
 
@@ -824,7 +814,7 @@ abstract class ModelElement extends Canonicalization
   @override
   CharacterLocation get characterLocation {
     if (!_characterLocationIsSet) {
-      LineInfo lineInfo = compilationUnitElement.lineInfo;
+      var lineInfo = compilationUnitElement.lineInfo;
       _characterLocationIsSet = true;
       assert(element.nameOffset >= 0,
           'Invalid location data for element: $fullyQualifiedName');
@@ -918,9 +908,7 @@ abstract class ModelElement extends Canonicalization
   Library get library => _library;
 
   String get linkedName {
-    if (_linkedName == null) {
-      _linkedName = _calculateLinkedName();
-    }
+    _linkedName ??= _calculateLinkedName();
     return _linkedName;
   }
 
@@ -1001,8 +989,8 @@ abstract class ModelElement extends Canonicalization
   // elsewhere as appropriate?
   List<Parameter> get allParameters {
     if (_allParameters == null) {
-      final Set<Parameter> recursedParameters = Set();
-      final Set<Parameter> newParameters = Set();
+      var recursedParameters = <Parameter>{};
+      var newParameters = <Parameter>{};
       if (this is GetterSetterCombo &&
           (this as GetterSetterCombo).setter != null) {
         newParameters.addAll((this as GetterSetterCombo).setter.parameters);
@@ -1012,7 +1000,7 @@ abstract class ModelElement extends Canonicalization
       while (newParameters.isNotEmpty) {
         recursedParameters.addAll(newParameters);
         newParameters.clear();
-        for (Parameter p in recursedParameters) {
+        for (var p in recursedParameters) {
           var l = p.modelType.parameters
               .where((pm) => !recursedParameters.contains(pm));
           newParameters.addAll(l);
@@ -1025,7 +1013,7 @@ abstract class ModelElement extends Canonicalization
 
   List<Parameter> get parameters {
     if (!canHaveParameters) {
-      throw StateError("$element cannot have parameters");
+      throw StateError('$element cannot have parameters');
     }
 
     if (_parameters == null) {
@@ -1125,8 +1113,8 @@ abstract class ModelElement extends Canonicalization
     // If we're calling this with an empty name, we probably have the wrong
     // element associated with a ModelElement or there's an analysis bug.
     assert(name.isNotEmpty ||
-        this.element?.kind == ElementKind.DYNAMIC ||
-        this.element?.kind == ElementKind.NEVER ||
+        element?.kind == ElementKind.DYNAMIC ||
+        element?.kind == ElementKind.NEVER ||
         this is ModelFunction);
 
     if (href == null) {
@@ -1157,7 +1145,7 @@ abstract class ModelElement extends Canonicalization
   ///
   String _injectExamples(String rawdocs) {
     final dirPath = package.packageMeta.dir.path;
-    RegExp exampleRE = RegExp(r'{@example\s+([^}]+)}');
+    var exampleRE = RegExp(r'{@example\s+([^}]+)}');
     return rawdocs.replaceAllMapped(exampleRE, (match) {
       var args = _getExampleArgs(match[1]);
       if (args == null) {
@@ -1177,8 +1165,7 @@ abstract class ModelElement extends Canonicalization
         }
       } else {
         // TODO(jcollins-g): move this to Package.warn system
-        var filePath =
-            this.element.source.fullName.substring(dirPath.length + 1);
+        var filePath = element.source.fullName.substring(dirPath.length + 1);
 
         logWarning(
             'warning: ${filePath}: @example file not found, ${fragmentFile.path}');
@@ -1187,12 +1174,12 @@ abstract class ModelElement extends Canonicalization
     });
   }
 
-  static Future<String> _replaceAllMappedAsync(
-      String string, Pattern exp, Future<String> replace(Match match)) async {
-    StringBuffer replaced = StringBuffer();
-    int currentIndex = 0;
-    for (Match match in exp.allMatches(string)) {
-      String prefix = match.input.substring(currentIndex, match.start);
+  static Future<String> _replaceAllMappedAsync(String string, Pattern exp,
+      Future<String> Function(Match match) replace) async {
+    var replaced = StringBuffer();
+    var currentIndex = 0;
+    for (var match in exp.allMatches(string)) {
+      var prefix = match.input.substring(currentIndex, match.start);
       currentIndex = match.end;
       replaced..write(prefix)..write(await replace(match));
     }
@@ -1253,10 +1240,10 @@ abstract class ModelElement extends Canonicalization
   /// 2018-09-18T21:15+00:00
   Future<String> _evaluateTools(String rawDocs) async {
     if (config.allowTools) {
-      int invocationIndex = 0;
+      var invocationIndex = 0;
       return await _replaceAllMappedAsync(rawDocs, basicToolRegExp,
           (basicMatch) async {
-        List<String> args = _splitUpQuotedArgs(basicMatch[1]).toList();
+        var args = _splitUpQuotedArgs(basicMatch[1]).toList();
         // Tool name must come first.
         if (args.isEmpty) {
           warn(PackageWarning.toolError,
@@ -1320,20 +1307,20 @@ abstract class ModelElement extends Canonicalization
     // Matches all youtube directives (even some invalid ones). This is so
     // we can give good error messages if the directive is malformed, instead of
     // just silently emitting it as-is.
-    final RegExp basicAnimationRegExp = RegExp(r'''{@youtube\s+([^}]+)}''');
+    var basicAnimationRegExp = RegExp(r'''{@youtube\s+([^}]+)}''');
 
     // Matches YouTube IDs from supported YouTube URLs.
-    final RegExp validYouTubeUrlRegExp =
+    var validYouTubeUrlRegExp =
         RegExp('https://www\.youtube\.com/watch\\?v=([^&]+)\$');
 
     return rawDocs.replaceAllMapped(basicAnimationRegExp, (basicMatch) {
-      final ArgParser parser = ArgParser();
-      final ArgResults args = _parseArgs(basicMatch[1], parser, 'youtube');
+      var parser = ArgParser();
+      var args = _parseArgs(basicMatch[1], parser, 'youtube');
       if (args == null) {
         // Already warned about an invalid parameter if this happens.
         return '';
       }
-      final List<String> positionalArgs = args.rest.sublist(0);
+      var positionalArgs = args.rest.sublist(0);
       if (positionalArgs.length != 3) {
         warn(PackageWarning.invalidParameter,
             message: 'Invalid @youtube directive, "${basicMatch[0]}"\n'
@@ -1342,21 +1329,21 @@ abstract class ModelElement extends Canonicalization
         return '';
       }
 
-      final int width = int.tryParse(positionalArgs[0]);
+      var width = int.tryParse(positionalArgs[0]);
       if (width == null || width <= 0) {
         warn(PackageWarning.invalidParameter,
             message: 'A @youtube directive has an invalid width, '
                 '"${positionalArgs[0]}". The width must be a positive integer.');
       }
 
-      final int height = int.tryParse(positionalArgs[1]);
+      var height = int.tryParse(positionalArgs[1]);
       if (height == null || height <= 0) {
         warn(PackageWarning.invalidParameter,
             message: 'A @youtube directive has an invalid height, '
                 '"${positionalArgs[1]}". The height must be a positive integer.');
       }
 
-      final Match url = validYouTubeUrlRegExp.firstMatch(positionalArgs[2]);
+      var url = validYouTubeUrlRegExp.firstMatch(positionalArgs[2]);
       if (url == null) {
         warn(PackageWarning.invalidParameter,
             message: 'A @youtube directive has an invalid URL: '
@@ -1364,8 +1351,8 @@ abstract class ModelElement extends Canonicalization
                 'following format: https://www.youtube.com/watch?v=oHg5SJYRHA0.');
         return '';
       }
-      final String youTubeId = url.group(url.groupCount);
-      final String aspectRatio = (height / width * 100).toStringAsFixed(2);
+      var youTubeId = url.group(url.groupCount);
+      var aspectRatio = (height / width * 100).toStringAsFixed(2);
 
       return _modelElementRenderer.renderYoutubeUrl(youTubeId, aspectRatio);
     });
@@ -1396,17 +1383,17 @@ abstract class ModelElement extends Canonicalization
     // Matches all animation directives (even some invalid ones). This is so
     // we can give good error messages if the directive is malformed, instead of
     // just silently emitting it as-is.
-    final RegExp basicAnimationRegExp = RegExp(r'''{@animation\s+([^}]+)}''');
+    var basicAnimationRegExp = RegExp(r'''{@animation\s+([^}]+)}''');
 
     // Matches valid javascript identifiers.
-    final RegExp validIdRegExp = RegExp(r'^[a-zA-Z_]\w*$');
+    var validIdRegExp = RegExp(r'^[a-zA-Z_]\w*$');
 
     // Make sure we have a set to keep track of used IDs for this href.
     package.usedAnimationIdsByHref[href] ??= {};
 
     String getUniqueId(String base) {
-      int animationIdCount = 1;
-      String id = '$base$animationIdCount';
+      var animationIdCount = 1;
+      var id = '$base$animationIdCount';
       // We check for duplicate IDs so that we make sure not to collide with
       // user-supplied ids on the same page.
       while (package.usedAnimationIdsByHref[href].contains(id)) {
@@ -1417,16 +1404,16 @@ abstract class ModelElement extends Canonicalization
     }
 
     return rawDocs.replaceAllMapped(basicAnimationRegExp, (basicMatch) {
-      final ArgParser parser = ArgParser();
+      var parser = ArgParser();
       parser.addOption('id');
-      final ArgResults args = _parseArgs(basicMatch[1], parser, 'animation');
+      var args = _parseArgs(basicMatch[1], parser, 'animation');
       if (args == null) {
         // Already warned about an invalid parameter if this happens.
         return '';
       }
-      final List<String> positionalArgs = args.rest.sublist(0);
+      final positionalArgs = args.rest.sublist(0);
       String uniqueId;
-      bool wasDeprecated = false;
+      var wasDeprecated = false;
       if (positionalArgs.length == 4) {
         // Supports the original form of the animation tag for backward
         // compatibility.
@@ -1486,7 +1473,7 @@ abstract class ModelElement extends Canonicalization
                 '${positionalArgs[2]}\n$e');
         return '';
       }
-      final String overlayId = '${uniqueId}_play_button_';
+      var overlayId = '${uniqueId}_play_button_';
 
       // Only warn about deprecation if some other warning didn't occur.
       if (wasDeprecated) {
@@ -1541,7 +1528,7 @@ abstract class ModelElement extends Canonicalization
     if (!config.injectHtml) return rawDocs;
 
     return rawDocs.replaceAllMapped(htmlInjectRegExp, (match) {
-      String fragment = packageGraph.getHtmlFragment(match[1]);
+      var fragment = packageGraph.getHtmlFragment(match[1]);
       if (fragment == null) {
         warn(PackageWarning.unknownHtmlFragment, message: match[1]);
       }
@@ -1577,7 +1564,7 @@ abstract class ModelElement extends Canonicalization
   ///
   String _injectMacros(String rawDocs) {
     return rawDocs.replaceAllMapped(macroRegExp, (match) {
-      String macro = packageGraph.getMacro(match[1]);
+      var macro = packageGraph.getMacro(match[1]);
       if (macro == null) {
         warn(PackageWarning.unknownMacro, message: match[1]);
       }
@@ -1597,7 +1584,7 @@ abstract class ModelElement extends Canonicalization
   String _stripMacroTemplatesAndAddToIndex(String rawDocs) {
     return rawDocs.replaceAllMapped(templateRegExp, (match) {
       packageGraph.addMacro(match[1].trim(), match[2].trim());
-      return "{@macro ${match[1].trim()}}";
+      return '{@macro ${match[1].trim()}}';
     });
   }
 
@@ -1615,8 +1602,8 @@ abstract class ModelElement extends Canonicalization
   String _stripHtmlAndAddToIndex(String rawDocs) {
     if (!config.injectHtml) return rawDocs;
     return rawDocs.replaceAllMapped(htmlRegExp, (match) {
-      String fragment = match[1];
-      String digest = sha1.convert(fragment.codeUnits).toString();
+      var fragment = match[1];
+      var digest = sha1.convert(fragment.codeUnits).toString();
       packageGraph.addHtmlFragment(digest, fragment);
       // The newlines are so that Markdown will pass this through without
       // touching it.
@@ -1677,19 +1664,19 @@ abstract class ModelElement extends Canonicalization
   /// The computed file path, constructed from 'src' and 'region' will have key
   /// 'file'.
   Map<String, String> _getExampleArgs(String argsAsString) {
-    ArgParser parser = ArgParser();
+    var parser = ArgParser();
     parser.addOption('lang');
     parser.addOption('region');
-    ArgResults results = _parseArgs(argsAsString, parser, 'example');
+    var results = _parseArgs(argsAsString, parser, 'example');
     if (results == null) {
       return null;
     }
 
     // Extract PATH and fix the path separators.
-    final String src = results.rest.isEmpty
+    var src = results.rest.isEmpty
         ? ''
         : results.rest.first.replaceAll('/', Platform.pathSeparator);
-    final Map<String, String> args = <String, String>{
+    var args = <String, String>{
       'src': src,
       'lang': results['lang'],
       'region': results['region'] ?? '',

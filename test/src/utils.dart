@@ -98,7 +98,7 @@ final Directory testPackageCustomTemplates =
 /// the '--input' flag.
 Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
     List<String> argv) async {
-  DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
+  var optionSet = await DartdocOptionSet.fromOptionGenerators(
       'dartdoc', [createDartdocOptions, createGeneratorOptions]);
   optionSet.parseArguments(argv);
   return DartdocGeneratorOptionContext(optionSet, null);
@@ -107,7 +107,7 @@ Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
 /// Convenience factory to build a [DartdocOptionContext] and associate it with a
 /// [DartdocOptionSet] based on the current working directory.
 Future<DartdocOptionContext> contextFromArgv(List<String> argv) async {
-  DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
+  var optionSet = await DartdocOptionSet.fromOptionGenerators(
       'dartdoc', [createDartdocOptions]);
   optionSet.parseArguments(argv);
   return DartdocOptionContext(optionSet, Directory.current);
@@ -121,7 +121,7 @@ Future<PackageGraph> bootSdkPackage() async {
 Future<PackageGraph> bootBasicPackage(
     String dirPath, List<String> excludeLibraries,
     {List<String> additionalArguments}) async {
-  Directory dir = Directory(dirPath);
+  var dir = Directory(dirPath);
   additionalArguments ??= <String>[];
   return PackageBuilder(await contextFromArgv([
             '--input',
@@ -208,10 +208,10 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
             executable == Platform.resolvedExecutable,
         'Must use dart executable for tracking coverage');
 
-    Completer<String> portAsString = Completer();
+    var portAsString = Completer<String>();
     void parsePortAsString(String line) {
       if (!portAsString.isCompleted && coverageEnabled) {
-        Match m = observatoryPortRegexp.matchAsPrefix(line);
+        var m = observatoryPortRegexp.matchAsPrefix(line);
         if (m?.group(1) != null) portAsString.complete(m.group(1));
       } else {
         if (perLine != null) perLine(line);
@@ -227,14 +227,15 @@ class CoverageSubprocessLauncher extends SubprocessLauncher {
       arguments = [
         '--disable-service-auth-codes',
         '--enable-vm-service:0',
-        '--pause-isolates-on-exit'
-      ]..addAll(arguments);
+        '--pause-isolates-on-exit',
+        ...arguments
+      ];
       if (!environment.containsKey('DARTDOC_COVERAGE_DATA')) {
         environment['DARTDOC_COVERAGE_DATA'] = tempDir.path;
       }
     }
 
-    Future<Iterable<Map>> results = super.runStreamed(executable, arguments,
+    var results = super.runStreamed(executable, arguments,
         environment: environment,
         includeParentEnvironment: includeParentEnvironment,
         workingDirectory: workingDirectory,
@@ -265,7 +266,7 @@ class SubprocessLauncher {
   static Future<void> _printStream(Stream<List<int>> stream, Stdout output,
       {String prefix = '', Iterable<String> Function(String line) filter}) {
     assert(prefix != null);
-    if (filter == null) filter = (line) => [line];
+    filter ??= (line) => [line];
     return stream
         .transform(utf8.decoder)
         .transform(const LineSplitter())
@@ -279,7 +280,7 @@ class SubprocessLauncher {
   }
 
   SubprocessLauncher(this.context, [Map<String, String> environment])
-      : this.environmentDefaults = environment ?? <String, String>{};
+      : environmentDefaults = environment ?? <String, String>{};
 
   /// A wrapper around start/await process.exitCode that will display the
   /// output of the executable continuously and fail on non-zero exit codes.
@@ -315,9 +316,7 @@ class SubprocessLauncher {
         // line.  Just ignore it and leave result null.
       }
       if (result != null) {
-        if (jsonObjects == null) {
-          jsonObjects = List();
-        }
+        jsonObjects ??= [];
         jsonObjects.add(result);
         if (result.containsKey('message')) {
           line = result['message'];
@@ -335,18 +334,18 @@ class SubprocessLauncher {
         if (environment[key].contains(quotables)) {
           return "$key='${environment[key]}'";
         } else {
-          return "$key=${environment[key]}";
+          return '$key=${environment[key]}';
         }
       }).join(' '));
       stderr.write(' ');
     }
     stderr.write('$executable');
     if (arguments.isNotEmpty) {
-      for (String arg in arguments) {
+      for (var arg in arguments) {
         if (arg.contains(quotables)) {
           stderr.write(" '$arg'");
         } else {
-          stderr.write(" $arg");
+          stderr.write(' $arg');
         }
       }
     }
@@ -355,8 +354,8 @@ class SubprocessLauncher {
 
     if (Platform.environment.containsKey('DRY_RUN')) return null;
 
-    String realExecutable = executable;
-    final List<String> realArguments = [];
+    var realExecutable = executable;
+    var realArguments = <String>[];
     if (Platform.isLinux) {
       // Use GNU coreutils to force line buffering.  This makes sure that
       // subprocesses that die due to fatal signals do not chop off the
@@ -370,20 +369,20 @@ class SubprocessLauncher {
     }
     realArguments.addAll(arguments);
 
-    Process process = await Process.start(realExecutable, realArguments,
+    var process = await Process.start(realExecutable, realArguments,
         workingDirectory: workingDirectory,
         environment: environment,
         includeParentEnvironment: includeParentEnvironment);
-    Future<void> stdoutFuture = _printStream(process.stdout, stdout,
+    var stdoutFuture = _printStream(process.stdout, stdout,
         prefix: prefix, filter: jsonCallback);
-    Future<void> stderrFuture = _printStream(process.stderr, stderr,
+    var stderrFuture = _printStream(process.stderr, stderr,
         prefix: prefix, filter: jsonCallback);
     await Future.wait([stderrFuture, stdoutFuture, process.exitCode]);
 
-    int exitCode = await process.exitCode;
+    var exitCode = await process.exitCode;
     if (exitCode != 0) {
       throw ProcessException(executable, arguments,
-          "SubprocessLauncher got non-zero exitCode: $exitCode", exitCode);
+          'SubprocessLauncher got non-zero exitCode: $exitCode', exitCode);
     }
     return jsonObjects;
   }

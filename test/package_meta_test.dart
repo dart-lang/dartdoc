@@ -25,7 +25,7 @@ void main() {
   });
 
   group('PackageMeta for the test package', () {
-    PackageMeta p = PackageMeta.fromDir(Directory(
+    var p = PackageMeta.fromDir(Directory(
         path.join(Directory.current.path, 'testing', 'test_package')));
 
     test('readme with corrupt UTF-8 loads without throwing', () {
@@ -35,7 +35,7 @@ void main() {
   });
 
   group('PackageMeta.fromDir for this package', () {
-    PackageMeta p = PackageMeta.fromDir(Directory.current);
+    var p = PackageMeta.fromDir(Directory.current);
 
     test('has a name', () {
       expect(p.name, 'dartdoc');
@@ -82,7 +82,7 @@ void main() {
   });
 
   group('PackageMeta.fromSdk', () {
-    PackageMeta p = PackageMeta.fromDir(defaultSdkDir);
+    var p = PackageMeta.fromDir(defaultSdkDir);
 
     test('has a name', () {
       expect(p.name, 'Dart');

@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/src/dart/element/member.dart' show Member;
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -48,7 +47,7 @@ class Accessor extends ModelElement implements EnclosedElement {
   @override
   String computeDocumentationComment() {
     if (isSynthetic) {
-      String docComment =
+      var docComment =
           (element as PropertyAccessorElement).variable.documentationComment;
       // If we're a setter, only display something if we have something different than the getter.
       // TODO(jcollins-g): modify analyzer to do this itself?
@@ -111,9 +110,7 @@ class Accessor extends ModelElement implements EnclosedElement {
 
   @override
   String get namePart {
-    if (_namePart == null) {
-      _namePart = super.namePart.split('=').first;
-    }
+    _namePart ??= super.namePart.split('=').first;
     return _namePart;
   }
 
@@ -161,9 +158,7 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
 
   @override
   Container get enclosingElement {
-    if (_enclosingElement == null) {
-      _enclosingElement = super.enclosingElement;
-    }
+    _enclosingElement ??= super.enclosingElement;
     return _enclosingElement;
   }
 
@@ -175,25 +170,24 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
     assert(packageGraph.allLibrariesAdded);
     if (!_overriddenElementIsSet) {
       _overriddenElementIsSet = true;
-      Element parent = element.enclosingElement;
+      var parent = element.enclosingElement;
       if (parent is ClassElement) {
-        for (InterfaceType t in parent.allSupertypes) {
-          Element accessor = this.isGetter
-              ? t.getGetter(element.name)
-              : t.getSetter(element.name);
+        for (var t in parent.allSupertypes) {
+          Element accessor =
+              isGetter ? t.getGetter(element.name) : t.getSetter(element.name);
           if (accessor != null) {
             accessor = accessor.declaration;
             Class parentClass =
                 ModelElement.fromElement(t.element, packageGraph);
-            List<Field> possibleFields = [];
+            var possibleFields = <Field>[];
             possibleFields.addAll(parentClass.allInstanceFields);
             possibleFields.addAll(parentClass.staticProperties);
-            String fieldName = accessor.name.replaceFirst('=', '');
-            Field foundField = possibleFields.firstWhere(
+            var fieldName = accessor.name.replaceFirst('=', '');
+            var foundField = possibleFields.firstWhere(
                 (f) => f.element.name == fieldName,
                 orElse: () => null);
             if (foundField != null) {
-              if (this.isGetter) {
+              if (isGetter) {
                 _overriddenElement = foundField.getter;
               } else {
                 _overriddenElement = foundField.setter;

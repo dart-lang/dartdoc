@@ -7,6 +7,7 @@ library dartdoc.source_linker;
 
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 final uriTemplateRegexp = RegExp(r'(%[frl]%)');
@@ -62,13 +63,12 @@ class SourceLinker {
   /// Most users of this class should use the [SourceLinker.fromElement] factory
   /// instead.  This constructor is public for testing.
   SourceLinker(
-      {this.excludes,
+      {@required this.excludes,
       this.lineNumber,
       this.sourceFileName,
       this.revision,
       this.root,
       this.uriTemplate}) {
-    assert(excludes != null, 'linkToSource excludes can not be null');
     if (revision != null || root != null || uriTemplate != null) {
       if (root == null || uriTemplate == null) {
         throw DartdocOptionError(

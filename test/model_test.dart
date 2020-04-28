@@ -49,10 +49,10 @@ class TestLibraryContainerSdk extends TestLibraryContainer {
 }
 
 void main() {
-  Directory sdkDir = defaultSdkDir;
+  var sdkDir = defaultSdkDir;
 
   if (sdkDir == null) {
-    print("Warning: unable to locate the Dart SDK.");
+    print('Warning: unable to locate the Dart SDK.');
     exit(1);
   }
 
@@ -140,6 +140,7 @@ void main() {
     Method invokeToolNonCanonical, invokeToolNonCanonicalSubclass;
     Method invokeToolPrivateLibrary, invokeToolPrivateLibraryOriginal;
     Method invokeToolParentDoc, invokeToolParentDocOriginal;
+    // ignore: omit_local_variable_types
     final RegExp packageInvocationIndexRegexp =
         RegExp(r'PACKAGE_INVOCATION_INDEX: (\d+)');
 
@@ -272,11 +273,11 @@ void main() {
               '<a href="${HTMLBASE_PLACEHOLDER}ex/Dog-class.html">Dog</a>')));
     });
     test('can invoke a tool multiple times in one comment block', () {
-      RegExp envLine = RegExp(r'^Env: \{', multiLine: true);
+      var envLine = RegExp(r'^Env: \{', multiLine: true);
       expect(
           envLine.allMatches(invokeToolMultipleSections.documentation).length,
           equals(2));
-      RegExp argLine = RegExp(r'^Args: \[', multiLine: true);
+      var argLine = RegExp(r'^Args: \[', multiLine: true);
       expect(
           argLine.allMatches(invokeToolMultipleSections.documentation).length,
           equals(2));
@@ -333,8 +334,7 @@ void main() {
     test('Verify categories for test_package', () {
       expect(packageGraph.localPackages.length, equals(1));
       expect(packageGraph.localPackages.first.hasCategories, isTrue);
-      List<Category> packageCategories =
-          packageGraph.localPackages.first.categories;
+      var packageCategories = packageGraph.localPackages.first.categories;
       expect(packageCategories.length, equals(6));
       expect(
           packageGraph.localPackages.first.categoriesWithPublicLibraries.length,
@@ -355,11 +355,10 @@ void main() {
 
     test('Verify libraries with multiple categories show up in multiple places',
         () {
-      List<Category> packageCategories =
-          packageGraph.publicPackages.first.categories;
-      Category realLibraries =
+      var packageCategories = packageGraph.publicPackages.first.categories;
+      var realLibraries =
           packageCategories.firstWhere((c) => c.name == 'Real Libraries');
-      Category misc = packageCategories.firstWhere((c) => c.name == 'Misc');
+      var misc = packageCategories.firstWhere((c) => c.name == 'Misc');
       expect(
           realLibraries.libraries.map((l) => l.name), contains('two_exports'));
       expect(misc.libraries.map((l) => l.name), contains('two_exports'));
@@ -375,8 +374,8 @@ void main() {
 
     // TODO consider moving these to a separate suite
     test('CategoryRendererHtml renders category label', () {
-      Category category = packageGraph.publicPackages.first.categories.first;
-      CategoryRendererHtml renderer = CategoryRendererHtml();
+      var category = packageGraph.publicPackages.first.categories.first;
+      var renderer = CategoryRendererHtml();
       expect(
           renderer.renderCategoryLabel(category),
           '<span class="category superb cp-0 linked" title="This is part of the Superb Topic.">'
@@ -384,22 +383,22 @@ void main() {
     });
 
     test('CategoryRendererHtml renders linkedName', () {
-      Category category = packageGraph.publicPackages.first.categories.first;
-      CategoryRendererHtml renderer = CategoryRendererHtml();
+      var category = packageGraph.publicPackages.first.categories.first;
+      var renderer = CategoryRendererHtml();
       expect(renderer.renderLinkedName(category),
           '<a href="${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html">Superb</a>');
     });
 
     test('CategoryRendererMd renders category label', () {
-      Category category = packageGraph.publicPackages.first.categories.first;
-      CategoryRendererMd renderer = CategoryRendererMd();
+      var category = packageGraph.publicPackages.first.categories.first;
+      var renderer = CategoryRendererMd();
       expect(renderer.renderCategoryLabel(category),
           '[Superb](${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html)');
     });
 
     test('CategoryRendererMd renders linkedName', () {
-      Category category = packageGraph.publicPackages.first.categories.first;
-      CategoryRendererMd renderer = CategoryRendererMd();
+      var category = packageGraph.publicPackages.first.categories.first;
+      var renderer = CategoryRendererMd();
       expect(renderer.renderLinkedName(category),
           '[Superb](${HTMLBASE_PLACEHOLDER}topics/Superb-topic.html)');
     });
@@ -424,8 +423,9 @@ void main() {
     });
 
     test('multiple containers with specified sort order', () {
-      List<LibraryContainer> containers = [];
-      for (String name in containerNames) {
+      var containers = <LibraryContainer>[];
+      for (var i = 0; i < containerNames.length; i++) {
+        var name = containerNames[i];
         containers.add(TestLibraryContainer(name, sortOrderBasic, topLevel));
       }
       containers.add(TestLibraryContainerSdk('SDK', sortOrderBasic, topLevel));
@@ -444,8 +444,8 @@ void main() {
     });
 
     test('multiple containers, no specified sort order', () {
-      List<LibraryContainer> containers = [];
-      for (String name in containerNames) {
+      var containers = <LibraryContainer>[];
+      for (var name in containerNames) {
         containers.add(TestLibraryContainer(name, [], topLevel));
       }
       containers.add(TestLibraryContainerSdk('SDK', [], topLevel));
@@ -485,7 +485,7 @@ void main() {
       test('packages', () {
         expect(packageGraph.localPackages, hasLength(1));
 
-        Package package = packageGraph.localPackages.first;
+        var package = packageGraph.localPackages.first;
         expect(package.name, 'test_package');
         expect(package.publicLibraries,
             hasLength(utils.kTestPackagePublicLibraries));
@@ -526,7 +526,7 @@ void main() {
 
     group('SDK-specific cases', () {
       test('Verify pragma is hidden in docs', () {
-        Class HasPragma = fakeLibrary.allClasses
+        var HasPragma = fakeLibrary.allClasses
             .firstWhere((Class c) => c.name == 'HasPragma');
         expect(HasPragma.annotations, isEmpty);
       });
@@ -713,26 +713,26 @@ void main() {
           .firstWhere((e) => e.name == 'macroReferencedHere');
     });
 
-    test("renders a macro defined within a enum", () {
+    test('renders a macro defined within a enum', () {
       expect(macroReferencedHere.documentationAsHtml,
           contains('This is a macro defined in an Enum accessor.'));
     });
 
     test("renders a macro within the same comment where it's defined", () {
       expect(withMacro.documentation,
-          equals("Macro method\n\nFoo macro content\nMore docs"));
+          equals('Macro method\n\nFoo macro content\nMore docs'));
     });
 
     test("renders a macro in another method, not the same where it's defined",
         () {
-      expect(withMacro2.documentation, equals("Foo macro content"));
+      expect(withMacro2.documentation, equals('Foo macro content'));
     });
 
-    test("renders a macro defined in a private symbol", () {
-      expect(withPrivateMacro.documentation, contains("Private macro content"));
+    test('renders a macro defined in a private symbol', () {
+      expect(withPrivateMacro.documentation, contains('Private macro content'));
     });
 
-    test("a warning is generated for unknown macros", () {
+    test('a warning is generated for unknown macros', () {
       // Retrieve documentation first to generate the warning.
       withUndefinedMacro.documentation;
       expect(
@@ -759,7 +759,7 @@ void main() {
     });
 
     test(
-        "renders a YouTube video within the method documentation with correct aspect ratio",
+        'renders a YouTube video within the method documentation with correct aspect ratio',
         () {
       expect(
           withYouTubeWatchUrl.documentation,
@@ -779,7 +779,7 @@ void main() {
           contains(
               '<iframe src="https://www.youtube.com/embed/oHg5SJYRHA0?rel=0"'));
     });
-    test("Handles YouTube video inline properly", () {
+    test('Handles YouTube video inline properly', () {
       // Make sure it doesn't have a double-space before the continued line,
       // which would indicate to Markdown to indent the line.
       expect(withYouTubeInline.documentation, isNot(contains('  works')));
@@ -823,21 +823,21 @@ void main() {
           .firstWhere((m) => m.name == 'withAnimationOutOfOrder');
     });
 
-    test("renders an unnamed animation within the method documentation", () {
+    test('renders an unnamed animation within the method documentation', () {
       expect(withAnimation.documentation, contains('<video id="animation_1"'));
     });
-    test("renders a named animation within the method documentation", () {
+    test('renders a named animation within the method documentation', () {
       expect(withNamedAnimation.documentation,
           contains('<video id="namedAnimation"'));
     });
-    test("renders a quoted, named animation within the method documentation",
+    test('renders a quoted, named animation within the method documentation',
         () {
       expect(withQuoteNamedAnimation.documentation,
           contains('<video id="quotedNamedAnimation"'));
       expect(withQuoteNamedAnimation.documentation,
           contains('<video id="quotedNamedAnimation2"'));
     });
-    test("renders a deprecated-form animation within the method documentation",
+    test('renders a deprecated-form animation within the method documentation',
         () {
       expect(withDeprecatedAnimation.documentation,
           contains('<video id="deprecatedAnimation"'));
@@ -856,16 +856,16 @@ void main() {
       expect(withAnimationInOneLineDoc.oneLineDoc, isNot(contains('<video')));
       expect(withAnimationInOneLineDoc.documentation, contains('<video'));
     });
-    test("Handles animations inline properly", () {
+    test('Handles animations inline properly', () {
       // Make sure it doesn't have a double-space before the continued line,
       // which would indicate to Markdown to indent the line.
       expect(withAnimationInline.documentation, isNot(contains('  works')));
     });
-    test("Out of order arguments work.", () {
+    test('Out of order arguments work.', () {
       expect(withAnimationOutOfOrder.documentation,
           contains('<video id="outOfOrder"'));
     });
-    test("Enum field animation identifiers are unique.", () {
+    test('Enum field animation identifiers are unique.', () {
       expect(
           enumValue1.documentationAsHtml, contains('<video id="animation_1"'));
       expect(
@@ -997,7 +997,7 @@ void main() {
       });
 
       test('Verify there is no emoji support', () {
-        TopLevelVariable tpvar = fakeLibrary.constants
+        var tpvar = fakeLibrary.constants
             .firstWhere((t) => t.name == 'hasMarkdownInDoc');
         docsAsHtml = tpvar.documentationAsHtml;
         expect(docsAsHtml.contains('3ffe:2a00:100:7031::1'), isTrue);
@@ -1012,7 +1012,7 @@ void main() {
       });
 
       test('can handle renamed imports', () {
-        ModelFunction aFunctionUsingRenamedLib = fakeLibrary.functions
+        var aFunctionUsingRenamedLib = fakeLibrary.functions
             .firstWhere((f) => f.name == 'aFunctionUsingRenamedLib');
         expect(
             aFunctionUsingRenamedLib.documentationAsHtml,
@@ -1089,7 +1089,7 @@ void main() {
       test(
           'link to unresolved name in the library in this package still should be linked',
           () {
-        final Class helperClass =
+        var helperClass =
             exLibrary.classes.firstWhere((c) => c.name == 'Helper');
         expect(
             helperClass.documentationAsHtml,
@@ -1102,7 +1102,7 @@ void main() {
       });
 
       test('link to override method in implementer from base class', () {
-        final Class helperClass =
+        var helperClass =
             baseClassLib.classes.firstWhere((c) => c.name == 'Constraints');
         expect(
             helperClass.documentationAsHtml,
@@ -1238,7 +1238,7 @@ void main() {
 
     test('oneLine doc references in inherited methods should not have brackets',
         () {
-      Method add =
+      var add =
           specialList.allInstanceMethods.firstWhere((m) => m.name == 'add');
       expect(
           add.oneLineDoc,
@@ -1249,7 +1249,7 @@ void main() {
     test(
         'full documentation references from inherited methods should not have brackets',
         () {
-      Method add =
+      var add =
           specialList.allInstanceMethods.firstWhere((m) => m.name == 'add');
       expect(
           add.documentationAsHtml,
@@ -1287,7 +1287,7 @@ void main() {
     test('references are correct in exported libraries', () {
       expect(twoExportsLib, isNotNull);
       expect(extendedClass, isNotNull);
-      String resolved = extendedClass.documentationAsHtml;
+      var resolved = extendedClass.documentationAsHtml;
       expect(resolved, isNotNull);
       expect(
           resolved,
@@ -1300,7 +1300,7 @@ void main() {
     });
 
     test('references to class and constructors', () {
-      String comment = B.documentationAsHtml;
+      var comment = B.documentationAsHtml;
       expect(
           comment,
           contains(
@@ -1316,7 +1316,7 @@ void main() {
     });
 
     test('reference to class from another library', () {
-      String comment = superAwesomeClass.documentationAsHtml;
+      var comment = superAwesomeClass.documentationAsHtml;
       expect(
           comment,
           contains(
@@ -1324,7 +1324,7 @@ void main() {
     });
 
     test('reference to method', () {
-      String comment = foo2.documentationAsHtml;
+      var comment = foo2.documentationAsHtml;
       expect(
           comment,
           equals(
@@ -1334,7 +1334,7 @@ void main() {
     test(
         'code references to privately defined elements in public classes work properly',
         () {
-      Method notAMethodFromPrivateClass = fakeLibrary.allClasses
+      var notAMethodFromPrivateClass = fakeLibrary.allClasses
           .firstWhere((Class c) => c.name == 'ReferringClass')
           .allPublicInstanceMethods
           .firstWhere((Method m) => m.name == 'notAMethodFromPrivateClass');
@@ -1356,14 +1356,14 @@ void main() {
     });
 
     test('doc comments to parameters are marked as code', () {
-      Method localMethod = subForDocComments.instanceMethods
+      var localMethod = subForDocComments.instanceMethods
           .firstWhere((m) => m.name == 'localMethod');
       expect(localMethod.documentationAsHtml, contains('<code>foo</code>'));
       expect(localMethod.documentationAsHtml, contains('<code>bar</code>'));
     });
 
     test('doc comment inherited from getter', () {
-      Field getterWithDocs = subForDocComments.instanceProperties
+      var getterWithDocs = subForDocComments.instanceProperties
           .firstWhere((m) => m.name == 'getterWithDocs');
       expect(getterWithDocs.documentationAsHtml,
           contains('Some really great topics.'));
@@ -1372,7 +1372,7 @@ void main() {
     test(
         'a property with no explicit getters and setters does not duplicate docs',
         () {
-      Field powers = superAwesomeClass.instanceProperties
+      var powers = superAwesomeClass.instanceProperties
           .firstWhere((p) => p.name == 'powers');
       Iterable<Match> matches =
           RegExp('In the super class').allMatches(powers.documentationAsHtml);
@@ -1390,12 +1390,11 @@ void main() {
 
   group('Class edge cases', () {
     test('Factories from unrelated classes are linked correctly', () {
-      Class A = packageGraph.localPublicLibraries
+      var A = packageGraph.localPublicLibraries
           .firstWhere((l) => l.name == 'unrelated_factories')
           .allClasses
           .firstWhere((c) => c.name == 'A');
-      Constructor fromMap =
-          A.constructors.firstWhere((c) => c.name == 'A.fromMap');
+      var fromMap = A.constructors.firstWhere((c) => c.name == 'A.fromMap');
       expect(fromMap.documentationAsHtml,
           contains(r'unrelated_factories/AB/AB.fromMap.html">AB.fromMap</a>'));
       expect(fromMap.documentationAsHtml,
@@ -1408,11 +1407,11 @@ void main() {
 
     test('Inherit from private class across private library to public library',
         () {
-      Class GadgetExtender = packageGraph.localPublicLibraries
+      var GadgetExtender = packageGraph.localPublicLibraries
           .firstWhere((l) => l.name == 'gadget_extender')
           .allClasses
           .firstWhere((c) => c.name == 'GadgetExtender');
-      Field gadgetGetter =
+      var gadgetGetter =
           GadgetExtender.allFields.firstWhere((f) => f.name == 'gadgetGetter');
       expect(gadgetGetter.isCanonical, isTrue);
     });
@@ -1420,9 +1419,9 @@ void main() {
     test(
         'ExecutableElements from private classes and from public interfaces (#1561)',
         () {
-      Class MIEEMixinWithOverride = fakeLibrary.publicClasses
+      var MIEEMixinWithOverride = fakeLibrary.publicClasses
           .firstWhere((c) => c.name == 'MIEEMixinWithOverride');
-      Operator problematicOperator = MIEEMixinWithOverride.inheritedOperators
+      var problematicOperator = MIEEMixinWithOverride.inheritedOperators
           .firstWhere((o) => o.name == 'operator []=');
       expect(problematicOperator.element.enclosingElement.name,
           equals('_MIEEPrivateOverride'));
@@ -1440,7 +1439,7 @@ void main() {
         overrideByModifierClass;
 
     setUpAll(() {
-      Iterable<Class> classes = fakeLibrary.publicClasses;
+      var classes = fakeLibrary.publicClasses;
       GenericClass = classes.firstWhere((c) => c.name == 'GenericClass');
       ModifierClass = classes.firstWhere((c) => c.name == 'ModifierClass');
       GenericMixin =
@@ -1490,11 +1489,11 @@ void main() {
     });
 
     test(('Verify non-overridden members have right canonical classes'), () {
-      final Field member = TypeInferenceMixedIn.allInstanceFields
+      var member = TypeInferenceMixedIn.allInstanceFields
           .firstWhere((f) => f.name == 'member');
-      final Field modifierMember = TypeInferenceMixedIn.allInstanceFields
+      var modifierMember = TypeInferenceMixedIn.allInstanceFields
           .firstWhere((f) => f.name == 'modifierMember');
-      final Field mixinMember = TypeInferenceMixedIn.allInstanceFields
+      var mixinMember = TypeInferenceMixedIn.allInstanceFields
           .firstWhere((f) => f.name == 'mixinMember');
       expect(member.canonicalEnclosingContainer, equals(GenericClass));
       expect(modifierMember.canonicalEnclosingContainer, equals(ModifierClass));
@@ -1666,7 +1665,7 @@ void main() {
     });
 
     test('constructors have source', () {
-      Constructor ctor = Dog.constructors.first;
+      var ctor = Dog.constructors.first;
       expect(ctor.sourceCode, isNotEmpty);
     });
 
@@ -1724,7 +1723,7 @@ void main() {
 
     test('exported class should have linkedReturnType for the current library',
         () {
-      Method returnCool = Cool.instanceMethods
+      var returnCool = Cool.instanceMethods
           .firstWhere((m) => m.name == 'returnCool', orElse: () => null);
       expect(returnCool, isNotNull);
       expect(
@@ -1914,7 +1913,7 @@ void main() {
           extensionOnVoid,
           extensionOnNull,
           extensionOnTypeParameter;
-      Class object = packageGraph.specialClasses[SpecialClass.object];
+      var object = packageGraph.specialClasses[SpecialClass.object];
       Extension getExtension(String name) =>
           fakeLibrary.extensions.firstWhere((e) => e.name == name);
 
@@ -2035,7 +2034,7 @@ void main() {
     });
 
     test('has extended type', () {
-      expect(ext.extendedType.name, equals("Apple"));
+      expect(ext.extendedType.name, equals('Apple'));
     });
 
     test('extension name with generics', () {
@@ -2110,7 +2109,7 @@ void main() {
       expect(animal.constants, hasLength(4));
     });
 
-    test("has a (synthetic) values constant", () {
+    test('has a (synthetic) values constant', () {
       var valuesField = animal.constants.firstWhere((f) => f.name == 'values');
       expect(valuesField, isNotNull);
       expect(valuesField.constantValue,
@@ -2278,9 +2277,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('typedef params have proper signature', () {
-      ModelFunction function =
+      var function =
           fakeLibrary.functions.firstWhere((f) => f.name == 'addCallback');
-      String params =
+      var params =
           ParameterRendererHtml().renderLinkedParams(function.parameters);
       expect(
           params,
@@ -2304,7 +2303,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('can resolve functions as parameters', () {
-      String params = ParameterRendererHtml()
+      var params = ParameterRendererHtml()
           .renderLinkedParams(doAComplicatedThing.parameters);
       expect(params,
           '<span class="parameter" id="doAComplicatedThing-param-x"><span class="type-annotation">int</span> <span class="parameter-name">x</span>, </span><wbr><span class="parameter" id="doAComplicatedThing-param-doSomething">{<span class="type-annotation">void</span> <span class="parameter-name">doSomething</span>(<span class="parameter" id="param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span><wbr><span class="parameter" id="param-anotherThing"><span class="type-annotation">String</span> <span class="parameter-name">anotherThing</span></span><wbr>), </span><wbr><span class="parameter" id="doAComplicatedThing-param-doSomethingElse"><span class="type-annotation">void</span> <span class="parameter-name">doSomethingElse</span>(<span class="parameter" id="param-aThingParameter"><span class="type-annotation">int</span> <span class="parameter-name">aThingParameter</span>, </span><wbr><span class="parameter" id="param-somethingElse"><span class="type-annotation">double</span> <span class="parameter-name">somethingElse</span></span><wbr>)}</span><wbr>');
@@ -2322,7 +2321,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('setter that takes a function is correctly displayed', () {
-      Field explicitSetter = ClassWithUnusualProperties.instanceProperties
+      var explicitSetter = ClassWithUnusualProperties.instanceProperties
           .singleWhere((f) => f.name == 'explicitSetter');
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
@@ -2331,14 +2330,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('parameterized type from field is correctly displayed', () {
-      Field aField = TemplatedInterface.instanceProperties
+      var aField = TemplatedInterface.instanceProperties
           .singleWhere((f) => f.name == 'aField');
       expect(aField.linkedReturnType,
           '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Stream<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
     });
 
     test('parameterized type from inherited field is correctly displayed', () {
-      Field aInheritedField = TemplatedInterface.inheritedProperties
+      var aInheritedField = TemplatedInterface.inheritedProperties
           .singleWhere((f) => f.name == 'aInheritedField');
       expect(aInheritedField.linkedReturnType,
           '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
@@ -2381,7 +2380,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'parameterized type for return value from method is correctly displayed',
         () {
-      Method aMethodInterface = TemplatedInterface.allInstanceMethods
+      var aMethodInterface = TemplatedInterface.allInstanceMethods
           .singleWhere((m) => m.name == 'aMethodInterface');
       expect(aMethodInterface.linkedReturnType,
           '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
@@ -2390,7 +2389,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'parameterized type for return value from inherited method is correctly displayed',
         () {
-      Method aInheritedMethod = TemplatedInterface.allInstanceMethods
+      var aInheritedMethod = TemplatedInterface.allInstanceMethods
           .singleWhere((m) => m.name == 'aInheritedMethod');
       expect(aInheritedMethod.linkedReturnType,
           '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
@@ -2399,7 +2398,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'parameterized type for return value containing a parameterized typedef is correctly displayed',
         () {
-      Method aTypedefReturningMethodInterface = TemplatedInterface
+      var aTypedefReturningMethodInterface = TemplatedInterface
           .allInstanceMethods
           .singleWhere((m) => m.name == 'aTypedefReturningMethodInterface');
       expect(aTypedefReturningMethodInterface.linkedReturnType,
@@ -2409,7 +2408,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'parameterized type for return value containing a parameterized typedef from inherited method is correctly displayed',
         () {
-      Method aInheritedTypedefReturningMethod = TemplatedInterface
+      var aInheritedTypedefReturningMethod = TemplatedInterface
           .allInstanceMethods
           .singleWhere((m) => m.name == 'aInheritedTypedefReturningMethod');
       expect(aInheritedTypedefReturningMethod.linkedReturnType,
@@ -2418,8 +2417,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('parameterized types for inherited operator is correctly displayed',
         () {
-      Operator aInheritedAdditionOperator = TemplatedInterface
-          .inheritedOperators
+      var aInheritedAdditionOperator = TemplatedInterface.inheritedOperators
           .singleWhere((m) => m.name == 'operator +');
       expect(aInheritedAdditionOperator.linkedReturnType,
           '<a href="${HTMLBASE_PLACEHOLDER}ex/ParameterizedClass-class.html">ParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
@@ -2509,9 +2507,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       expect(abstractMethod.fullkind, 'abstract method');
     });
 
-    test("returns correct overriddenDepth", () {
+    test('returns correct overriddenDepth', () {
       final bAbstractMethod = classB.allInstanceMethods
-          .firstWhere((m) => m.name == "abstractMethod");
+          .firstWhere((m) => m.name == 'abstractMethod');
       expect(abstractMethod.overriddenDepth, equals(0));
       expect(bAbstractMethod.overriddenDepth, equals(1));
     });
@@ -2902,7 +2900,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('has valid documentation', () {
       expect(mFromApple.hasDocumentation, isTrue);
-      expect(mFromApple.documentation, "The read-write field `m`.");
+      expect(mFromApple.documentation, 'The read-write field `m`.');
     });
 
     test('inherited property has a linked name to superclass in package', () {
@@ -2995,11 +2993,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'has one inherited property for getter/setter when inherited from parameterized class',
         () {
-      Class withGenericSub =
+      var withGenericSub =
           exLibrary.classes.firstWhere((c) => c.name == 'WithGenericSub');
       expect(
           withGenericSub.inheritedProperties
-              .where((p) => p.name == "prop")
+              .where((p) => p.name == 'prop')
               .length,
           equals(1));
     });
@@ -3014,11 +3012,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     Class classB;
 
     setUpAll(() {
-      TopLevelVariable justGetter =
+      var justGetter =
           fakeLibrary.properties.firstWhere((p) => p.name == 'justGetter');
       onlyGetterGetter = justGetter.getter;
       onlyGetterSetter = justGetter.setter;
-      TopLevelVariable justSetter =
+      var justSetter =
           fakeLibrary.properties.firstWhere((p) => p.name == 'justSetter');
       onlySetterSetter = justSetter.setter;
       onlySetterGetter = justSetter.getter;
@@ -3035,18 +3033,18 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('if overridden, gets documentation from superclasses', () {
       final doc = classB.allInstanceFields
-          .firstWhere((p) => p.name == "s")
+          .firstWhere((p) => p.name == 's')
           .getter
           .documentation;
-      expect(doc, equals("The getter for `s`"));
+      expect(doc, equals('The getter for `s`'));
     });
 
     test(
-        "has correct linked return type if the return type is a parameterized typedef",
+        'has correct linked return type if the return type is a parameterized typedef',
         () {
-      Class apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
+      var apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       final fieldWithTypedef = apple.allInstanceFields
-          .firstWhere((m) => m.name == "fieldWithTypedef");
+          .firstWhere((m) => m.name == 'fieldWithTypedef');
       expect(
           fieldWithTypedef.linkedReturnType,
           equals(
@@ -3101,7 +3099,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'Verify that a map containing anonymous functions as values works correctly',
         () {
-      Iterable<ElementType> typeArguments =
+      var typeArguments =
           (importantComputations.modelType.returnType as DefinedElementType)
               .typeArguments;
       expect(typeArguments, isNotEmpty);
@@ -3127,14 +3125,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('@nodoc on simple property works', () {
-      TopLevelVariable nodocSimple = fakeLibrary.publicProperties.firstWhere(
+      var nodocSimple = fakeLibrary.publicProperties.firstWhere(
           (p) => p.name == 'simplePropertyHidden',
           orElse: () => null);
       expect(nodocSimple, isNull);
     });
 
     test('@nodoc on both hides both', () {
-      TopLevelVariable nodocBoth = fakeLibrary.publicProperties.firstWhere(
+      var nodocBoth = fakeLibrary.publicProperties.firstWhere(
           (p) => p.name == 'getterSetterNodocBoth',
           orElse: () => null);
       expect(nodocBoth, isNull);
@@ -3223,7 +3221,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       cat = exLibrary.constants.firstWhere((c) => c.name == 'MY_CAT');
       deprecated =
           exLibrary.constants.firstWhere((c) => c.name == 'deprecated');
-      Class Dog = exLibrary.allClasses.firstWhere((c) => c.name == 'Dog');
+      var Dog = exLibrary.allClasses.firstWhere((c) => c.name == 'Dog');
       customClassPrivate = fakeLibrary.constants
           .firstWhere((c) => c.name == 'CUSTOM_CLASS_PRIVATE');
       aStaticConstField =
@@ -3265,14 +3263,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('COLOR_ORANGE has correct value', () {
-      expect(orangeConstant.constantValue, "&#39;orange&#39;");
+      expect(orangeConstant.constantValue, '&#39;orange&#39;');
     });
 
     test('PRETTY_COLORS', () {
       expect(
           prettyColorsConstant.constantValue,
           matches(RegExp(
-              r"const &lt;String&gt;\s?\[COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;\]")));
+              r'const &lt;String&gt;\s?\[COLOR_GREEN, COLOR_ORANGE, &#39;blue&#39;\]')));
     });
 
     test('MY_CAT is linked', () {
@@ -3416,7 +3414,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           ExtendsFutureVoid.linkedName,
           equals(
               '<a href="${HTMLBASE_PLACEHOLDER}fake/ExtendsFutureVoid-class.html">ExtendsFutureVoid</a>'));
-      DefinedElementType FutureVoid = ExtendsFutureVoid.publicSuperChain
+      var FutureVoid = ExtendsFutureVoid.publicSuperChain
           .firstWhere((c) => c.name == 'Future');
       expect(
           FutureVoid.linkedName,
@@ -3429,7 +3427,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           ImplementsFutureVoid.linkedName,
           equals(
               '<a href="${HTMLBASE_PLACEHOLDER}fake/ImplementsFutureVoid-class.html">ImplementsFutureVoid</a>'));
-      DefinedElementType FutureVoid = ImplementsFutureVoid.publicInterfaces
+      var FutureVoid = ImplementsFutureVoid.publicInterfaces
           .firstWhere((c) => c.name == 'Future');
       expect(
           FutureVoid.linkedName,
@@ -3442,7 +3440,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
           ATypeTakingClassMixedIn.linkedName,
           equals(
               '<a href="${HTMLBASE_PLACEHOLDER}fake/ATypeTakingClassMixedIn-class.html">ATypeTakingClassMixedIn</a>'));
-      DefinedElementType ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixins
+      var ATypeTakingClassVoid = ATypeTakingClassMixedIn.mixins
           .firstWhere((c) => c.name == 'ATypeTakingClass');
       expect(
           ATypeTakingClassVoid.linkedName,
@@ -3486,7 +3484,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'Typedefs with bound type parameters indirectly referred in parameters are displayed',
         () {
-      Constructor theConstructor = TypedefUsingClass.constructors.first;
+      var theConstructor = TypedefUsingClass.constructors.first;
       expect(
           ParameterRendererHtml().renderLinkedParams(theConstructor.parameters),
           equals(
@@ -3540,7 +3538,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
               'List<span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span>'));
     });
 
-    test("name with generics", () {
+    test('name with generics', () {
       expect(
           t.nameWithGenerics,
           equals(
@@ -3554,7 +3552,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     // TODO(jdkoren): Not easy to call TypedefRenderer directly because Typedef
     // inspects its element member. Find a better way when we start to isolate
     // renderer tests.
-    test("TypedefRendererHtml renders genericParameters", () {
+    test('TypedefRendererHtml renders genericParameters', () {
       expect(TypedefRendererHtml().renderGenericParameters(t), equals(''));
       expect(TypedefRendererHtml().renderGenericParameters(generic),
           equals('&lt;<wbr><span class="type-parameter">S</span>&gt;'));
@@ -3644,17 +3642,17 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('commas on same param line', () {
-      ModelFunction method =
+      var method =
           fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage1');
-      String params =
+      var params =
           ParameterRendererHtml().renderLinkedParams(method.parameters);
       expect(params, contains(', </span>'));
     });
 
     test('param with annotations', () {
-      ModelFunction method =
+      var method =
           fakeLibrary.functions.firstWhere((f) => f.name == 'paintImage1');
-      String params =
+      var params =
           ParameterRendererHtml().renderLinkedParams(method.parameters);
       expect(params, contains('@required'));
     });
@@ -3703,7 +3701,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     test('Cat has implementors', () {
       expect(implC, hasLength(3));
-      List<String> implementors = ['B', 'Dog', 'ConstantCat'];
+      var implementors = <String>['B', 'Dog', 'ConstantCat'];
       expect(implementors.contains(implC[0].name), isTrue);
       expect(implementors.contains(implC[1].name), isTrue);
       expect(implementors.contains(implC[2].name), isTrue);
@@ -3717,7 +3715,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   });
 
   group('Errors and exceptions', () {
-    final List<String> expectedNames = [
+    var expectedNames = <String>[
       'MyError',
       'MyException',
       'MyErrorImplements',
@@ -3771,27 +3769,27 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     // Order by uppercased lexical ordering for non-digits,
     // lexicographical ordering of embedded digit sequences.
     var names = [
-      r"",
-      r"$",
-      r"0",
-      r"0a",
-      r"00",
-      r"1",
-      r"01",
-      r"_",
-      r"a",
-      r"aaab",
-      r"aab",
-      r"Ab",
-      r"B",
-      r"bA",
-      r"x0$",
-      r"x1$",
-      r"x01$",
-      r"x001$",
-      r"x10$",
-      r"x010$",
-      r"x100$",
+      r'',
+      r'$',
+      r'0',
+      r'0a',
+      r'00',
+      r'1',
+      r'01',
+      r'_',
+      r'a',
+      r'aaab',
+      r'aab',
+      r'Ab',
+      r'B',
+      r'bA',
+      r'x0$',
+      r'x1$',
+      r'x01$',
+      r'x001$',
+      r'x10$',
+      r'x010$',
+      r'x100$',
     ];
     for (var i = 1; i < names.length; i++) {
       var a = StringName(names[i - 1]);

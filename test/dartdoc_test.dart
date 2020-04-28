@@ -29,7 +29,7 @@ void main() {
 
     setUpAll(() async {
       tempDir = Directory.systemTemp.createTempSync('dartdoc.test.');
-      DartdocOptionSet optionSet = await DartdocOptionSet.fromOptionGenerators(
+      var optionSet = await DartdocOptionSet.fromOptionGenerators(
           'dartdoc', [createLoggingOptions]);
       optionSet.parseArguments([]);
       startLogging(DartdocLoggingOptionContext(optionSet, Directory.current));
@@ -67,19 +67,19 @@ void main() {
       });
 
       test('generator parameters', () async {
-        File favicon =
+        var favicon =
             File(path.joinAll([tempDir.path, 'static-assets', 'favicon.png']));
-        File index = File(path.joinAll([tempDir.path, 'index.html']));
+        var index = File(path.joinAll([tempDir.path, 'index.html']));
         expect(favicon.readAsStringSync(),
             contains('Not really a png, but a test file'));
-        String indexString = index.readAsStringSync();
+        var indexString = index.readAsStringSync();
         expect(indexString, contains('Footer things'));
         expect(indexString, contains('footer.txt data'));
         expect(indexString, contains('HTML header file'));
       });
 
       test('examplePathPrefix', () async {
-        Class UseAnExampleHere = p.allCanonicalModelElements
+        var UseAnExampleHere = p.allCanonicalModelElements
             .whereType<Class>()
             .firstWhere((ModelElement c) => c.name == 'UseAnExampleHere');
         expect(
@@ -89,7 +89,7 @@ void main() {
       });
 
       test('includeExternal and showUndocumentedCategories', () async {
-        Class withUndocumentedCategory = p.allCanonicalModelElements
+        var withUndocumentedCategory = p.allCanonicalModelElements
             .whereType<Class>()
             .firstWhere((ModelElement c) => c.name == 'UseAnExampleHere');
         expect(withUndocumentedCategory.isPublic, isTrue);
@@ -98,12 +98,11 @@ void main() {
     });
 
     test('errors generate errors even when warnings are off', () async {
-      Dartdoc dartdoc =
+      var dartdoc =
           await buildDartdoc(['--allow-tools'], testPackageToolError, tempDir);
-      DartdocResults results = await dartdoc.generateDocsBase();
-      PackageGraph p = results.packageGraph;
-      Iterable<String> unresolvedToolErrors = p
-          .packageWarningCounter.countedWarnings.values
+      var results = await dartdoc.generateDocsBase();
+      var p = results.packageGraph;
+      var unresolvedToolErrors = p.packageWarningCounter.countedWarnings.values
           .expand<String>((Set<Tuple2<PackageWarning, String>> s) => s
               .where((Tuple2<PackageWarning, String> t) =>
                   t.item1 == PackageWarning.toolError)
@@ -134,9 +133,9 @@ void main() {
       });
 
       test('linkToUrl', () async {
-        Library main = testPackageOptions.allLibraries
+        var main = testPackageOptions.allLibraries
             .firstWhere((Library l) => l.name == 'main');
-        Class UseAnExampleHere = main.allClasses
+        var UseAnExampleHere = main.allClasses
             .firstWhere((Class c) => c.name == 'UseAnExampleHere');
         expect(testPackageOptions.documentedWhere,
             equals(DocumentLocation.remote));
@@ -147,7 +146,7 @@ void main() {
       });
 
       test('includeExternal works via remote', () async {
-        Library unusualLibrary = testPackageOptions.allLibraries
+        var unusualLibrary = testPackageOptions.allLibraries
             .firstWhere((Library l) => l.name == 'unusualLibrary');
         expect(
             unusualLibrary.allClasses
@@ -157,11 +156,11 @@ void main() {
     });
 
     test('with broken reexport chain', () async {
-      Dartdoc dartdoc =
+      var dartdoc =
           await buildDartdoc([], testPackageImportExportError, tempDir);
-      DartdocResults results = await dartdoc.generateDocsBase();
-      PackageGraph p = results.packageGraph;
-      Iterable<String> unresolvedExportWarnings = p
+      var results = await dartdoc.generateDocsBase();
+      var p = results.packageGraph;
+      var unresolvedExportWarnings = p
           .packageWarningCounter.countedWarnings.values
           .expand<String>((Set<Tuple2<PackageWarning, String>> s) => s
               .where((Tuple2<PackageWarning, String> t) =>
@@ -175,28 +174,28 @@ void main() {
 
     group('include/exclude parameters', () {
       test('with config file', () async {
-        Dartdoc dartdoc =
+        var dartdoc =
             await buildDartdoc([], testPackageIncludeExclude, tempDir);
-        DartdocResults results = await dartdoc.generateDocs();
-        PackageGraph p = results.packageGraph;
+        var results = await dartdoc.generateDocs();
+        var p = results.packageGraph;
         expect(p.localPublicLibraries.map((l) => l.name),
             orderedEquals(['explicitly_included', 'more_included']));
       });
 
       test('with include command line argument', () async {
-        Dartdoc dartdoc = await buildDartdoc(['--include', 'another_included'],
+        var dartdoc = await buildDartdoc(['--include', 'another_included'],
             testPackageIncludeExclude, tempDir);
-        DartdocResults results = await dartdoc.generateDocs();
-        PackageGraph p = results.packageGraph;
+        var results = await dartdoc.generateDocs();
+        var p = results.packageGraph;
         expect(p.localPublicLibraries.length, equals(1));
         expect(p.localPublicLibraries.first.name, equals('another_included'));
       });
 
       test('with exclude command line argument', () async {
-        Dartdoc dartdoc = await buildDartdoc(
+        var dartdoc = await buildDartdoc(
             ['--exclude', 'more_included'], testPackageIncludeExclude, tempDir);
-        DartdocResults results = await dartdoc.generateDocs();
-        PackageGraph p = results.packageGraph;
+        var results = await dartdoc.generateDocs();
+        var p = results.packageGraph;
         expect(p.localPublicLibraries.length, equals(1));
         expect(
             p.localPublicLibraries.first.name, equals('explicitly_included'));
@@ -204,22 +203,22 @@ void main() {
     });
 
     test('package without version produces valid semver in docs', () async {
-      Dartdoc dartdoc = await buildDartdoc([], testPackageMinimumDir, tempDir);
-      DartdocResults results = await dartdoc.generateDocs();
-      PackageGraph p = results.packageGraph;
+      var dartdoc = await buildDartdoc([], testPackageMinimumDir, tempDir);
+      var results = await dartdoc.generateDocs();
+      var p = results.packageGraph;
       expect(p.defaultPackage.version, equals('0.0.0-unknown'));
     });
 
     test('basic interlinking test', () async {
-      Dartdoc dartdoc = await buildDartdoc([], testPackageDir, tempDir);
-      DartdocResults results = await dartdoc.generateDocs();
-      PackageGraph p = results.packageGraph;
-      Package meta = p.publicPackages.firstWhere((p) => p.name == 'meta');
-      TopLevelVariable useSomethingInAnotherPackage = p.publicLibraries
+      var dartdoc = await buildDartdoc([], testPackageDir, tempDir);
+      var results = await dartdoc.generateDocs();
+      var p = results.packageGraph;
+      var meta = p.publicPackages.firstWhere((p) => p.name == 'meta');
+      var useSomethingInAnotherPackage = p.publicLibraries
           .firstWhere((l) => l.name == 'fake')
           .properties
           .firstWhere((p) => p.name == 'useSomethingInAnotherPackage');
-      TopLevelVariable useSomethingInTheSdk = p.publicLibraries
+      var useSomethingInTheSdk = p.publicLibraries
           .firstWhere((l) => l.name == 'fake')
           .properties
           .firstWhere((p) => p.name == 'useSomethingInTheSdk');
@@ -228,7 +227,7 @@ void main() {
           useSomethingInAnotherPackage.modelType.linkedName,
           matches(
               '<a href=\"https://pub.dev/documentation/meta/[^\"]*/meta/Required-class.html\">Required</a>'));
-      RegExp stringLink = RegExp(
+      var stringLink = RegExp(
           'https://api.dart.dev/(dev|stable|edge|be|beta)/${Platform.version.split(' ').first}/dart-core/String-class.html">String</a>');
       expect(useSomethingInTheSdk.modelType.linkedName, contains(stringLink));
     });
@@ -251,8 +250,8 @@ void main() {
       test('generate docs for ${path.basename(testPackageDir.path)} works',
           () async {
         expect(results.packageGraph, isNotNull);
-        PackageGraph packageGraph = results.packageGraph;
-        Package p = packageGraph.defaultPackage;
+        var packageGraph = results.packageGraph;
+        var p = packageGraph.defaultPackage;
         expect(p.name, 'test_package');
         expect(p.hasDocumentationFile, isTrue);
         // Total number of public libraries in test_package.
@@ -265,7 +264,7 @@ void main() {
       test('source code links are visible', () async {
         // Picked this object as this library explicitly should never contain
         // a library directive, so we can predict what line number it will be.
-        File anonymousOutput = File(path.join(tempDir.path, 'anonymous_library',
+        var anonymousOutput = File(path.join(tempDir.path, 'anonymous_library',
             'anonymous_library-library.html'));
         expect(anonymousOutput.existsSync(), isTrue);
         expect(
@@ -277,7 +276,7 @@ void main() {
 
     test('generate docs for ${path.basename(testPackageBadDir.path)} fails',
         () async {
-      Dartdoc dartdoc = await buildDartdoc([], testPackageBadDir, tempDir);
+      var dartdoc = await buildDartdoc([], testPackageBadDir, tempDir);
 
       try {
         await dartdoc.generateDocs();
@@ -290,13 +289,12 @@ void main() {
             'from analysis_options');
 
     test('generate docs for a package that does not have a readme', () async {
-      Dartdoc dartdoc =
-          await buildDartdoc([], testPackageWithNoReadme, tempDir);
+      var dartdoc = await buildDartdoc([], testPackageWithNoReadme, tempDir);
 
-      DartdocResults results = await dartdoc.generateDocs();
+      var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
-      PackageGraph p = results.packageGraph;
+      var p = results.packageGraph;
       expect(p.defaultPackage.name, 'test_package_small');
       expect(p.defaultPackage.hasHomepage, isFalse);
       expect(p.defaultPackage.hasDocumentationFile, isFalse);
@@ -304,13 +302,13 @@ void main() {
     });
 
     test('generate docs including a single library', () async {
-      Dartdoc dartdoc =
+      var dartdoc =
           await buildDartdoc(['--include', 'fake'], testPackageDir, tempDir);
 
-      DartdocResults results = await dartdoc.generateDocs();
+      var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
-      PackageGraph p = results.packageGraph;
+      var p = results.packageGraph;
       expect(p.defaultPackage.name, 'test_package');
       expect(p.defaultPackage.hasDocumentationFile, isTrue);
       expect(p.localPublicLibraries, hasLength(1));
@@ -318,13 +316,13 @@ void main() {
     });
 
     test('generate docs excluding a single library', () async {
-      Dartdoc dartdoc =
+      var dartdoc =
           await buildDartdoc(['--exclude', 'fake'], testPackageDir, tempDir);
 
-      DartdocResults results = await dartdoc.generateDocs();
+      var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
-      PackageGraph p = results.packageGraph;
+      var p = results.packageGraph;
       expect(p.defaultPackage.name, 'test_package');
       expect(p.defaultPackage.hasDocumentationFile, isTrue);
       // Plus 1 here because we're excluding only two libraries (the specified
@@ -336,13 +334,13 @@ void main() {
     });
 
     test('generate docs for package with embedder yaml', () async {
-      Dartdoc dartdoc =
+      var dartdoc =
           await buildDartdoc([], testPackageWithEmbedderYaml, tempDir);
 
-      DartdocResults results = await dartdoc.generateDocs();
+      var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
-      PackageGraph p = results.packageGraph;
+      var p = results.packageGraph;
       expect(p.defaultPackage.name, 'test_package_embedder_yaml');
       expect(p.defaultPackage.hasDocumentationFile, isFalse);
       expect(p.libraries, hasLength(3));
@@ -351,8 +349,8 @@ void main() {
       expect(p.libraries.map((lib) => lib.name).contains('dart:bear'), isTrue);
       expect(p.packageMap.length, equals(2));
       // Things that do not override the core SDK belong in their own package.
-      expect(p.packageMap["Dart"].isSdk, isTrue);
-      expect(p.packageMap["test_package_embedder_yaml"].isSdk, isFalse);
+      expect(p.packageMap['Dart'].isSdk, isTrue);
+      expect(p.packageMap['test_package_embedder_yaml'].isSdk, isFalse);
       // Should be true once dart-lang/sdk#32707 is fixed.
       //expect(
       //    p.publicLibraries,
@@ -360,23 +358,23 @@ void main() {
       //        (l.element as LibraryElement).isInSdk == l.packageMeta.isSdk));
       // Ensure that we actually parsed some source by checking for
       // the 'Bear' class.
-      Library dart_bear = p.packageMap["Dart"].libraries
+      var dart_bear = p.packageMap['Dart'].libraries
           .firstWhere((lib) => lib.name == 'dart:bear');
       expect(
           dart_bear.allClasses.map((cls) => cls.name).contains('Bear'), isTrue);
-      expect(p.packageMap["Dart"].publicLibraries, hasLength(3));
+      expect(p.packageMap['Dart'].publicLibraries, hasLength(3));
     });
 
     test('generate docs with custom templates', () async {
-      String templatesDir =
+      var templatesDir =
           path.join(testPackageCustomTemplates.path, 'templates');
-      Dartdoc dartdoc = await buildDartdoc(['--templates-dir', templatesDir],
+      var dartdoc = await buildDartdoc(['--templates-dir', templatesDir],
           testPackageCustomTemplates, tempDir);
 
-      DartdocResults results = await dartdoc.generateDocs();
+      var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
-      PackageGraph p = results.packageGraph;
+      var p = results.packageGraph;
       expect(p.defaultPackage.name, 'test_package_custom_templates');
       expect(p.localPublicLibraries, hasLength(1));
     });
@@ -395,7 +393,7 @@ void main() {
     });
 
     test('generate docs with bad templatesDir path fails', () async {
-      String badPath = path.join(tempDir.path, 'BAD');
+      var badPath = path.join(tempDir.path, 'BAD');
       try {
         await buildDartdoc(
             ['--templates-dir', badPath], testPackageCustomTemplates, tempDir);
@@ -406,19 +404,20 @@ void main() {
     });
 
     test('rel canonical prefix does not include base href', () async {
+      // ignore: omit_local_variable_types
       final String prefix = 'foo.bar/baz';
-      Dartdoc dartdoc = await buildDartdoc(
+      var dartdoc = await buildDartdoc(
           ['--rel-canonical-prefix', prefix], testPackageDir, tempDir);
       await dartdoc.generateDocsBase();
 
       // Verify files at different levels have correct <link> content.
-      File level1 = File(path.join(tempDir.path, 'ex', 'Apple-class.html'));
+      var level1 = File(path.join(tempDir.path, 'ex', 'Apple-class.html'));
       expect(level1.existsSync(), isTrue);
       expect(
           level1.readAsStringSync(),
           contains(
               '<link rel="canonical" href="$prefix/ex/Apple-class.html">'));
-      File level2 = File(path.join(tempDir.path, 'ex', 'Apple', 'm.html'));
+      var level2 = File(path.join(tempDir.path, 'ex', 'Apple', 'm.html'));
       expect(level2.existsSync(), isTrue);
       expect(level2.readAsStringSync(),
           contains('<link rel="canonical" href="$prefix/ex/Apple/m.html">'));

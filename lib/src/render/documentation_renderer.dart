@@ -34,7 +34,7 @@ class DocumentationRendererHtml extends DocumentationRenderer {
             .addAll(code.classes.where((name) => name.startsWith('language-')));
       }
 
-      bool specifiesLanguage = pre.classes.isNotEmpty;
+      var specifiesLanguage = pre.classes.isNotEmpty;
       // Assume the user intended Dart if there are no other classes present.
       if (!specifiesLanguage) pre.classes.add('language-dart');
     }

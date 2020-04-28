@@ -43,10 +43,8 @@ abstract class Container extends ModelElement {
       model_utils.filterNonPublic(instanceMethods);
 
   List<Method> get staticMethods {
-    if (_staticMethods == null) {
-      _staticMethods = methods.where((m) => m.isStatic).toList(growable: false)
-        ..sort(byName);
-    }
+    _staticMethods ??= methods.where((m) => m.isStatic).toList(growable: false)
+      ..sort(byName);
     return _staticMethods;
   }
 
@@ -57,13 +55,11 @@ abstract class Container extends ModelElement {
       model_utils.filterNonPublic(staticMethods);
 
   List<Operator> get operators {
-    if (_operators == null) {
-      _operators = methods
-          .where((m) => m.isOperator)
-          .cast<Operator>()
-          .toList(growable: false)
-            ..sort(byName);
-    }
+    _operators ??= methods
+        .where((m) => m.isOperator)
+        .cast<Operator>()
+        .toList(growable: false)
+          ..sort(byName);
     return _operators;
   }
 
@@ -80,12 +76,10 @@ abstract class Container extends ModelElement {
   List<Field> get allFields => [];
 
   List<Field> get staticProperties {
-    if (_staticFields == null) {
-      _staticFields = allFields
-          .where((f) => f.isStatic && !f.isConst)
-          .toList(growable: false)
-            ..sort(byName);
-    }
+    _staticFields ??= allFields
+        .where((f) => f.isStatic && !f.isConst)
+        .toList(growable: false)
+          ..sort(byName);
     return _staticFields;
   }
 
@@ -95,12 +89,10 @@ abstract class Container extends ModelElement {
   bool get hasPublicStaticProperties => publicStaticProperties.isNotEmpty;
 
   List<Field> get instanceProperties {
-    if (_instanceFields == null) {
-      _instanceFields = allFields
-          .where((f) => !f.isStatic && !f.isInherited && !f.isConst)
-          .toList(growable: false)
-            ..sort(byName);
-    }
+    _instanceFields ??= allFields
+        .where((f) => !f.isStatic && !f.isInherited && !f.isConst)
+        .toList(growable: false)
+          ..sort(byName);
     return _instanceFields;
   }
 
@@ -117,10 +109,8 @@ abstract class Container extends ModelElement {
   bool isInheritingFrom(Container other) => false;
 
   List<Field> get constants {
-    if (_constants == null) {
-      _constants = allFields.where((f) => f.isConst).toList(growable: false)
-        ..sort(byName);
-    }
+    _constants ??= allFields.where((f) => f.isConst).toList(growable: false)
+      ..sort(byName);
     return _constants;
   }
 
