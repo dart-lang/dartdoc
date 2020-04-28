@@ -17,6 +17,7 @@ linter:
     - always_declare_return_types
     - annotate_overrides
     - avoid_init_to_null
+    - avoid_types_as_parameter_names
     - directives_ordering
     - no_adjacent_strings_in_list
     - package_api_docs

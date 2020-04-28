@@ -308,8 +308,11 @@ class SubprocessLauncher {
       Map result;
       try {
         result = json.decoder.convert(line);
-      } catch (FormatException) {
-        // ignore
+      } on FormatException {
+        // Assume invalid JSON is actually a line of normal text.
+      } on TypeError {
+        // The convert function returns a String if there is no JSON in the
+        // line.  Just ignore it and leave result null.
       }
       if (result != null) {
         if (jsonObjects == null) {
