@@ -6,6 +6,9 @@ analyzer:
   errors:
     unused_import: warning
     unused_shown_name: warning
+    ### Extra ignores for presubmit
+    deprecated_member_use: ignore
+    deprecated_member_use_from_same_package: ignore
   exclude:
     - 'doc/**'
     - 'lib/src/third_party/pkg/**'

@@ -45,22 +45,18 @@ class Documentation {
   List<ModelCommentReference> get commentRefs => _element.commentRefs;
 
   void _renderDocumentation(bool processAllDocs) {
-    Tuple2<List<md.Node>, bool> parseResult =
-        _parseDocumentation(processAllDocs);
+    var parseResult = _parseDocumentation(processAllDocs);
     if (_hasExtendedDocs != null) {
       assert(_hasExtendedDocs == parseResult.item2);
     }
     _hasExtendedDocs = parseResult.item2;
 
-    Tuple2<String, String> renderResult =
-        _renderer.render(parseResult.item1, processAllDocs);
+    var renderResult = _renderer.render(parseResult.item1, processAllDocs);
 
     if (processAllDocs) {
       _asHtml = renderResult.item1;
     }
-    if (_asOneLiner == null) {
-      _asOneLiner = renderResult.item2;
-    }
+    _asOneLiner ??= renderResult.item2;
   }
 
   /// Returns a tuple of List<md.Node> and hasExtendedDocs
@@ -68,9 +64,9 @@ class Documentation {
     if (!_element.hasDocumentation) {
       return Tuple2([], false);
     }
-    String text = _element.documentation;
+    var text = _element.documentation;
     showWarningsForGenericsOutsideSquareBracketsBlocks(text, _element);
-    MarkdownDocument document =
+    var document =
         MarkdownDocument.withElementLinkResolver(_element, commentRefs);
     return document.parseMarkdownText(text, processFullDocs);
   }

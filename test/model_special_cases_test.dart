@@ -19,10 +19,10 @@ import 'package:test/test.dart';
 import 'src/utils.dart' as utils;
 
 void main() {
-  Directory sdkDir = defaultSdkDir;
+  var sdkDir = defaultSdkDir;
 
   if (sdkDir == null) {
-    print("Warning: unable to locate the Dart SDK.");
+    print('Warning: unable to locate the Dart SDK.');
     exit(1);
   }
 
@@ -43,9 +43,9 @@ void main() {
     });
 
     test('method parameters with required', () {
-      Method m1 = b.allInstanceMethods.firstWhere((m) => m.name == 'm1');
-      Parameter p1 = m1.allParameters.firstWhere((p) => p.name == 'p1');
-      Parameter p2 = m1.allParameters.firstWhere((p) => p.name == 'p2');
+      var m1 = b.allInstanceMethods.firstWhere((m) => m.name == 'm1');
+      var p1 = m1.allParameters.firstWhere((p) => p.name == 'p1');
+      var p2 = m1.allParameters.firstWhere((p) => p.name == 'p2');
       expect(p1.isRequiredNamed, isTrue);
       expect(p2.isRequiredNamed, isFalse);
       expect(p2.isNamed, isTrue);
@@ -64,11 +64,9 @@ void main() {
     });
 
     test('verify no regression on ordinary optionals', () {
-      Method m2 = b.allInstanceMethods.firstWhere((m) => m.name == 'm2');
-      Parameter sometimes =
-          m2.allParameters.firstWhere((p) => p.name == 'sometimes');
-      Parameter optionals =
-          m2.allParameters.firstWhere((p) => p.name == 'optionals');
+      var m2 = b.allInstanceMethods.firstWhere((m) => m.name == 'm2');
+      var sometimes = m2.allParameters.firstWhere((p) => p.name == 'sometimes');
+      var optionals = m2.allParameters.firstWhere((p) => p.name == 'optionals');
       expect(sometimes.isRequiredNamed, isFalse);
       expect(sometimes.isRequiredPositional, isTrue);
       expect(sometimes.isOptionalPositional, isFalse);
@@ -87,12 +85,12 @@ void main() {
     });
 
     test('Late final class member test', () {
-      Class c = lateFinalWithoutInitializer.allClasses
+      var c = lateFinalWithoutInitializer.allClasses
           .firstWhere((c) => c.name == 'C');
-      Field a = c.allFields.firstWhere((f) => f.name == 'a');
-      Field b = c.allFields.firstWhere((f) => f.name == 'b');
-      Field cField = c.allFields.firstWhere((f) => f.name == 'cField');
-      Field dField = c.allFields.firstWhere((f) => f.name == 'dField');
+      var a = c.allFields.firstWhere((f) => f.name == 'a');
+      var b = c.allFields.firstWhere((f) => f.name == 'b');
+      var cField = c.allFields.firstWhere((f) => f.name == 'cField');
+      var dField = c.allFields.firstWhere((f) => f.name == 'dField');
 
       // If nnbd isn't enabled, fields named 'late' come back from the analyzer
       // instead of setting up 'isLate'.
@@ -116,8 +114,7 @@ void main() {
     });
 
     test('Late final top level variables', () {
-      TopLevelVariable initializeMe = lateFinalWithoutInitializer
-          .publicProperties
+      var initializeMe = lateFinalWithoutInitializer.publicProperties
           .firstWhere((v) => v.name == 'initializeMe');
       expect(initializeMe.modelType.returnType.name, equals('String'));
       expect(initializeMe.isLate, isTrue);
@@ -151,7 +148,7 @@ void main() {
           .forEach((m) => m.documentation);
     });
 
-    test("can inject HTML", () {
+    test('can inject HTML', () {
       expect(
           injectSimpleHtml.documentation,
           contains(
@@ -163,11 +160,11 @@ void main() {
       expect(injectSimpleHtml.documentationAsHtml,
           contains('   <div style="opacity: 0.5;">[HtmlInjection]</div>'));
     });
-    test("can inject HTML from tool", () {
-      RegExp envLine = RegExp(r'^Env: \{', multiLine: true);
+    test('can inject HTML from tool', () {
+      var envLine = RegExp(r'^Env: \{', multiLine: true);
       expect(envLine.allMatches(injectHtmlFromTool.documentation).length,
           equals(2));
-      RegExp argLine = RegExp(r'^Args: \[', multiLine: true);
+      var argLine = RegExp(r'^Args: \[', multiLine: true);
       expect(argLine.allMatches(injectHtmlFromTool.documentation).length,
           equals(2));
       expect(
@@ -226,7 +223,7 @@ void main() {
     test(
         'Verify auto-included dependencies do not use default package category definitions',
         () {
-      Class IAmAClassWithCategories = ginormousPackageGraph.localPackages
+      var IAmAClassWithCategories = ginormousPackageGraph.localPackages
           .firstWhere((Package p) => p.name == 'test_package_imported')
           .publicLibraries
           .firstWhere((Library l) => l.name == 'categoriesExported')
@@ -242,8 +239,7 @@ void main() {
     // For flutter, we allow reexports to pick up categories from the package
     // they are exposed in.
     test('Verify that reexported classes pick up categories', () {
-      Class IAmAClassWithCategoriesReexport = ginormousPackageGraph
-          .localPackages
+      var IAmAClassWithCategoriesReexport = ginormousPackageGraph.localPackages
           .firstWhere((Package p) => p.name == 'test_package')
           .publicLibraries
           .firstWhere((Library l) => l.name == 'fake')
@@ -254,20 +250,19 @@ void main() {
       expect(IAmAClassWithCategoriesReexport.categories.first.name,
           equals('Superb'));
       expect(IAmAClassWithCategoriesReexport.displayedCategories, isNotEmpty);
-      Category category =
-          IAmAClassWithCategoriesReexport.displayedCategories.first;
+      var category = IAmAClassWithCategoriesReexport.displayedCategories.first;
       expect(category.categoryIndex, equals(0));
       expect(category.isDocumented, isTrue);
     });
 
     test('Verify that multiple categories work correctly', () {
-      Library fakeLibrary = ginormousPackageGraph.localPackages
+      var fakeLibrary = ginormousPackageGraph.localPackages
           .firstWhere((Package p) => p.name == 'test_package')
           .publicLibraries
           .firstWhere((Library l) => l.name == 'fake');
-      Class BaseForDocComments = fakeLibrary.publicClasses
+      var BaseForDocComments = fakeLibrary.publicClasses
           .firstWhere((Class c) => c.name == 'BaseForDocComments');
-      Class SubForDocComments = fakeLibrary.publicClasses
+      var SubForDocComments = fakeLibrary.publicClasses
           .firstWhere((Class c) => c.name == 'SubForDocComments');
       expect(BaseForDocComments.hasCategoryNames, isTrue);
       // Display both, with the correct order and display name.
@@ -284,11 +279,10 @@ void main() {
     });
 
     test('Verify that packages without categories get handled', () async {
-      PackageGraph packageGraphSmall = await utils.testPackageGraphSmall;
+      var packageGraphSmall = await utils.testPackageGraphSmall;
       expect(packageGraphSmall.localPackages.length, equals(1));
       expect(packageGraphSmall.localPackages.first.hasCategories, isFalse);
-      List<Category> packageCategories =
-          packageGraphSmall.localPackages.first.categories;
+      var packageCategories = packageGraphSmall.localPackages.first.categories;
       expect(packageCategories.length, equals(0));
     }, timeout: Timeout.factor(2));
   });
@@ -331,7 +325,7 @@ void main() {
 
     group('test small package', () {
       test('does not have documentation', () async {
-        PackageGraph packageGraphSmall = await utils.testPackageGraphSmall;
+        var packageGraphSmall = await utils.testPackageGraphSmall;
         expect(packageGraphSmall.defaultPackage.hasDocumentation, isFalse);
         expect(packageGraphSmall.defaultPackage.hasDocumentationFile, isFalse);
         expect(packageGraphSmall.defaultPackage.documentationFile, isNull);
@@ -341,13 +335,13 @@ void main() {
 
     group('SDK-specific cases', () {
       test('Verify Interceptor is hidden from inheritance in docs', () {
-        Library htmlLibrary = sdkAsPackageGraph.libraries
+        var htmlLibrary = sdkAsPackageGraph.libraries
             .singleWhere((l) => l.name == 'dart:html');
-        Class EventTarget =
+        var EventTarget =
             htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
-        Field hashCode = EventTarget.allPublicInstanceProperties
+        var hashCode = EventTarget.allPublicInstanceProperties
             .singleWhere((f) => f.name == 'hashCode');
-        Class objectModelElement =
+        var objectModelElement =
             sdkAsPackageGraph.specialClasses[SpecialClass.object];
         // If this fails, EventTarget might have been changed to no longer
         // inherit from Interceptor.  If that's true, adjust test case to
@@ -367,7 +361,7 @@ void main() {
       });
 
       test('Verify pragma is hidden in SDK docs', () {
-        Class pragmaModelElement =
+        var pragmaModelElement =
             sdkAsPackageGraph.specialClasses[SpecialClass.pragma];
         expect(pragmaModelElement.name, equals('pragma'));
       });
@@ -427,7 +421,7 @@ void main() {
             ..documentation;
     });
 
-    test("warns on youtube video with missing parameters", () {
+    test('warns on youtube video with missing parameters', () {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
               withYouTubeWrongParams,
@@ -436,7 +430,7 @@ void main() {
               'YouTube directives must be of the form "{@youtube WIDTH HEIGHT URL}"'),
           isTrue);
     });
-    test("warns on youtube video with non-integer width", () {
+    test('warns on youtube video with non-integer width', () {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
               withYouTubeBadWidth,
@@ -445,7 +439,7 @@ void main() {
               'must be a positive integer.'),
           isTrue);
     });
-    test("warns on youtube video with non-integer height", () {
+    test('warns on youtube video with non-integer height', () {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
               withYouTubeBadHeight,
@@ -454,7 +448,7 @@ void main() {
               'must be a positive integer.'),
           isTrue);
     });
-    test("warns on youtube video with invalid video URL", () {
+    test('warns on youtube video with invalid video URL', () {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
               withYouTubeInvalidUrl,
@@ -465,7 +459,7 @@ void main() {
               'https://www.youtube.com/watch?v=oHg5SJYRHA0.'),
           isTrue);
     });
-    test("warns on youtube video with extra parameters in URL", () {
+    test('warns on youtube video with extra parameters in URL', () {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
               withYouTubeUrlWithAdditionalParameters,
@@ -519,7 +513,7 @@ void main() {
             ..documentation;
     });
 
-    test("warns with invalidly-named animation within the method documentation",
+    test('warns with invalidly-named animation within the method documentation',
         () async {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
@@ -530,7 +524,7 @@ void main() {
               'underscores, and must not begin with a number.'),
           isTrue);
     });
-    test("warns on a non-unique animation name within a method", () {
+    test('warns on a non-unique animation name within a method', () {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
               withAnimationNonUnique,
@@ -539,7 +533,7 @@ void main() {
               'Animation identifiers must be unique.'),
           isTrue);
     });
-    test("warns on a non-unique animation name within a deprecated-form method",
+    test('warns on a non-unique animation name within a deprecated-form method',
         () {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
@@ -549,7 +543,7 @@ void main() {
               'Animation identifiers must be unique.'),
           isTrue);
     });
-    test("warns on animation with missing parameters", () {
+    test('warns on animation with missing parameters', () {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
               withAnimationWrongParams,
@@ -559,7 +553,7 @@ void main() {
               'HEIGHT URL [id=ID]}"'),
           isTrue);
     });
-    test("warns on animation with non-integer width", () {
+    test('warns on animation with non-integer width', () {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
               withAnimationBadWidth,
@@ -568,7 +562,7 @@ void main() {
               'The width must be an integer.'),
           isTrue);
     });
-    test("warns on animation with non-integer height", () {
+    test('warns on animation with non-integer height', () {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
               withAnimationBadHeight,
@@ -577,7 +571,7 @@ void main() {
               '"100px". The height must be an integer.'),
           isTrue);
     });
-    test("Unknown arguments generate an error.", () {
+    test('Unknown arguments generate an error.', () {
       expect(
           packageGraphErrors.packageWarningCounter.hasWarning(
               withAnimationUnknownArg,

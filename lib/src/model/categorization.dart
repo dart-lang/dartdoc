@@ -18,8 +18,8 @@ abstract class Categorization implements ModelElement {
   /// out that information from the given comments and returning the stripped
   /// version.
   String _stripAndSetDartdocCategories(String rawDocs) {
-    Set<String> _categorySet = Set();
-    Set<String> _subCategorySet = Set();
+    var _categorySet = <String>{};
+    var _subCategorySet = <String>{};
     _hasCategorization = false;
 
     rawDocs = rawDocs.replaceAllMapped(categoryRegexp, (match) {
@@ -99,13 +99,11 @@ abstract class Categorization implements ModelElement {
   Iterable<Category> _categories;
 
   Iterable<Category> get categories {
-    if (_categories == null) {
-      _categories = categoryNames
-          .map((n) => package.nameToCategory[n])
-          .where((c) => c != null)
-          .toList()
-            ..sort();
-    }
+    _categories ??= categoryNames
+        .map((n) => package.nameToCategory[n])
+        .where((c) => c != null)
+        .toList()
+          ..sort();
     return _categories;
   }
 

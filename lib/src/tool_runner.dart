@@ -38,7 +38,7 @@ class ToolTempFileTracker {
 
   Future<File> createTemporaryFile() async {
     _temporaryFileCount++;
-    File tempFile = File(path.join(
+    var tempFile = File(path.join(
         temporaryDirectory.absolute.path, 'input_$_temporaryFileCount'));
     await tempFile.create(recursive: true);
     return tempFile;
@@ -68,7 +68,7 @@ class ToolRunner {
       ToolDefinition tool,
       Map<String, String> environment,
       ToolErrorCallback toolErrorCallback) async {
-    bool isDartSetup = ToolDefinition.isDartExecutable(tool.setupCommand[0]);
+    var isDartSetup = ToolDefinition.isDartExecutable(tool.setupCommand[0]);
     var args = tool.setupCommand.toList();
     String commandPath;
 
@@ -91,7 +91,7 @@ class ToolRunner {
       ToolErrorCallback toolErrorCallback) async {
     String commandString() => ([commandPath] + args).join(' ');
     try {
-      ProcessResult result =
+      var result =
           await Process.run(commandPath, args, environment: environment);
       if (result.exitCode != 0) {
         toolErrorCallback('Tool "$name" returned non-zero exit code '
@@ -144,7 +144,7 @@ class ToolRunner {
           'Did you add it to dartdoc_options.yaml?');
       return '';
     }
-    ToolDefinition toolDefinition = toolConfiguration.tools[tool];
+    var toolDefinition = toolConfiguration.tools[tool];
     var toolArgs = toolDefinition.command;
     // Ideally, we would just be able to send the input text into stdin, but
     // there's no way to do that synchronously, and converting dartdoc to an
@@ -179,7 +179,7 @@ class ToolRunner {
       }
     }
     var substitutions = envWithInput.map<RegExp, String>((key, value) {
-      String escapedKey = RegExp.escape(key);
+      var escapedKey = RegExp.escape(key);
       return MapEntry(RegExp('\\\$(\\($escapedKey\\)|$escapedKey\\b)'), value);
     });
     var argsWithInput = <String>[];

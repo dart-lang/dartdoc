@@ -83,8 +83,7 @@ Future<Map<String, String>> _loadPartials(
   void replacePlaceholder(String key, String placeholder, List<String> paths) {
     var template = partials[key];
     if (template != null && paths != null && paths.isNotEmpty) {
-      String replacement =
-          paths.map((p) => File(p).readAsStringSync()).join('\n');
+      var replacement = paths.map((p) => File(p).readAsStringSync()).join('\n');
       template = template.replaceAll(placeholder, replacement);
       partials[key] = template;
     }
@@ -127,7 +126,7 @@ class _DefaultTemplatesLoader extends _TemplatesLoader {
   @override
   Future<Map<String, String>> loadPartials() async {
     var templates = <String, String>{};
-    for (String name in _partials) {
+    for (var name in _partials) {
       var uri = 'package:dartdoc/templates/$_format/_$name.$_format';
       templates[name] = await loader.loadAsString(uri);
     }
@@ -150,7 +149,7 @@ class _DirectoryTemplatesLoader extends _TemplatesLoader {
   Future<Map<String, String>> loadPartials() async {
     var partials = <String, String>{};
 
-    for (File file in _directory.listSync().whereType<File>()) {
+    for (var file in _directory.listSync().whereType<File>()) {
       var basename = path.basename(file.path);
       if (basename.startsWith('_') && basename.endsWith('.$_format')) {
         var content = file.readAsString();
@@ -191,11 +190,11 @@ class Templates {
 
   static Future<Templates> fromContext(
       DartdocGeneratorOptionContext context) async {
-    String templatesDir = context.templatesDir;
-    String format = context.format;
-    List<String> footerTextPaths = context.footerText;
+    var templatesDir = context.templatesDir;
+    var format = context.format;
+    var footerTextPaths = context.footerText;
     if (context.addSdkFooter) {
-      Uri sdkFooter = await Isolate.resolvePackageUri(
+      var sdkFooter = await Isolate.resolvePackageUri(
           Uri.parse('package:dartdoc/resources/sdk_footer_text.$format'));
       footerTextPaths.add(path.canonicalize(sdkFooter.toFilePath()));
     }
@@ -241,7 +240,7 @@ class Templates {
         templatesLoader, headerPaths, footerPaths, footerTextPaths);
 
     Template _partial(String name) {
-      String partial = partials[name];
+      var partial = partials[name];
       if (partial == null || partial.isEmpty) {
         throw StateError('Did not find partial "$name"');
       }
@@ -249,8 +248,7 @@ class Templates {
     }
 
     Future<Template> _loadTemplate(String templatePath) async {
-      String templateContents =
-          await templatesLoader.loadTemplate(templatePath);
+      var templateContents = await templatesLoader.loadTemplate(templatePath);
       return Template(templateContents, partialResolver: _partial);
     }
 

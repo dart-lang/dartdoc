@@ -50,11 +50,9 @@ class TypeParameter extends ModelElement {
 
   @override
   String get name {
-    if (_name == null) {
-      _name = _typeParameter.bound != null
-          ? '${_typeParameter.name} extends ${boundType.nameWithGenerics}'
-          : _typeParameter.name;
-    }
+    _name ??= _typeParameter.bound != null
+        ? '${_typeParameter.name} extends ${boundType.nameWithGenerics}'
+        : _typeParameter.name;
     return _name;
   }
 
@@ -62,11 +60,9 @@ class TypeParameter extends ModelElement {
 
   @override
   String get linkedName {
-    if (_linkedName == null) {
-      _linkedName = _typeParameter.bound != null
-          ? '${_typeParameter.name} extends ${boundType.linkedName}'
-          : _typeParameter.name;
-    }
+    _linkedName ??= _typeParameter.bound != null
+        ? '${_typeParameter.name} extends ${boundType.linkedName}'
+        : _typeParameter.name;
     return _linkedName;
   }
 

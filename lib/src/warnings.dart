@@ -92,8 +92,8 @@ class PackageWarningDefinition implements Comparable<PackageWarningDefinition> {
 
   const PackageWarningDefinition(this.kind, this.warningName, this.shortHelp,
       {List<String> longHelp, PackageWarningMode defaultWarningMode})
-      : this.longHelp = longHelp ?? const [],
-        this.defaultWarningMode = defaultWarningMode ?? PackageWarningMode.warn;
+      : longHelp = longHelp ?? const [],
+        defaultWarningMode = defaultWarningMode ?? PackageWarningMode.warn;
 
   @override
   int compareTo(PackageWarningDefinition other) {
@@ -112,109 +112,109 @@ final Map<PackageWarning, PackageWarningDefinition> packageWarningDefinitions =
     const {
   PackageWarning.ambiguousDocReference: PackageWarningDefinition(
       PackageWarning.ambiguousDocReference,
-      "ambiguous-doc-reference",
-      "A comment reference could refer to two or more different objects"),
+      'ambiguous-doc-reference',
+      'A comment reference could refer to two or more different objects'),
   PackageWarning.ambiguousReexport: PackageWarningDefinition(
       PackageWarning.ambiguousReexport,
-      "ambiguous-reexport",
-      "A symbol is exported from private to public in more than one library and dartdoc can not determine which one is canonical",
+      'ambiguous-reexport',
+      'A symbol is exported from private to public in more than one library and dartdoc can not determine which one is canonical',
       longHelp: [
         "Use {@canonicalFor @@name@@} in the desired library's documentation to resolve",
         "the ambiguity and/or override dartdoc's decision, or structure your package ",
-        "so the reexport is less ambiguous.  The symbol will still be referenced in ",
-        "all candidates -- this only controls the location where it will be written ",
-        "and which library will be displayed in navigation for the relevant pages.",
-        "The flag --ambiguous-reexport-scorer-min-confidence allows you to set the",
-        "threshold at which this warning will appear."
+        'so the reexport is less ambiguous.  The symbol will still be referenced in ',
+        'all candidates -- this only controls the location where it will be written ',
+        'and which library will be displayed in navigation for the relevant pages.',
+        'The flag --ambiguous-reexport-scorer-min-confidence allows you to set the',
+        'threshold at which this warning will appear.'
       ]),
   PackageWarning.ignoredCanonicalFor: PackageWarningDefinition(
       PackageWarning.ignoredCanonicalFor,
-      "ignored-canonical-for",
-      "A @canonicalFor tag refers to a library which this symbol can not be canonical for"),
+      'ignored-canonical-for',
+      'A @canonicalFor tag refers to a library which this symbol can not be canonical for'),
   PackageWarning.noCanonicalFound: PackageWarningDefinition(
       PackageWarning.noCanonicalFound,
-      "no-canonical-found",
-      "A symbol is part of the public interface for this package, but no library documented with this package documents it so dartdoc can not link to it"),
+      'no-canonical-found',
+      'A symbol is part of the public interface for this package, but no library documented with this package documents it so dartdoc can not link to it'),
   PackageWarning.notImplemented: PackageWarningDefinition(
       PackageWarning.notImplemented,
-      "not-implemented",
-      "The code makes use of a feature that is not yet implemented in dartdoc"),
+      'not-implemented',
+      'The code makes use of a feature that is not yet implemented in dartdoc'),
   PackageWarning.noLibraryLevelDocs: PackageWarningDefinition(
       PackageWarning.noLibraryLevelDocs,
-      "no-library-level-docs",
-      "There are no library level docs for this library"),
+      'no-library-level-docs',
+      'There are no library level docs for this library'),
   PackageWarning.packageOrderGivesMissingPackageName: PackageWarningDefinition(
       PackageWarning.packageOrderGivesMissingPackageName,
-      "category-order-gives-missing-package-name",
-      "The category-order flag on the command line was given the name of a nonexistent package"),
+      'category-order-gives-missing-package-name',
+      'The category-order flag on the command line was given the name of a nonexistent package'),
   PackageWarning.reexportedPrivateApiAcrossPackages: PackageWarningDefinition(
       PackageWarning.reexportedPrivateApiAcrossPackages,
-      "reexported-private-api-across-packages",
-      "One or more libraries reexports private API members from outside its own package"),
+      'reexported-private-api-across-packages',
+      'One or more libraries reexports private API members from outside its own package'),
   PackageWarning.unresolvedDocReference: PackageWarningDefinition(
       PackageWarning.unresolvedDocReference,
-      "unresolved-doc-reference",
-      "A comment reference could not be found in parameters, enclosing class, enclosing library, or at the top level of any documented library with the package"),
+      'unresolved-doc-reference',
+      'A comment reference could not be found in parameters, enclosing class, enclosing library, or at the top level of any documented library with the package'),
   PackageWarning.brokenLink: PackageWarningDefinition(PackageWarning.brokenLink,
-      "broken-link", "Dartdoc generated a link to a non-existent file"),
+      'broken-link', 'Dartdoc generated a link to a non-existent file'),
   PackageWarning.unknownMacro: PackageWarningDefinition(
       PackageWarning.unknownMacro,
-      "unknown-macro",
-      "A comment reference contains an unknown macro"),
+      'unknown-macro',
+      'A comment reference contains an unknown macro'),
   PackageWarning.orphanedFile: PackageWarningDefinition(
       PackageWarning.orphanedFile,
-      "orphaned-file",
-      "Dartdoc generated files that are unreachable from the index"),
+      'orphaned-file',
+      'Dartdoc generated files that are unreachable from the index'),
   PackageWarning.unknownFile: PackageWarningDefinition(
       PackageWarning.unknownFile,
-      "unknown-file",
-      "A leftover file exists in the tree that dartdoc did not write in this pass"),
+      'unknown-file',
+      'A leftover file exists in the tree that dartdoc did not write in this pass'),
   PackageWarning.missingFromSearchIndex: PackageWarningDefinition(
       PackageWarning.missingFromSearchIndex,
-      "missing-from-search-index",
-      "A file generated by dartdoc is not present in the generated index.json"),
+      'missing-from-search-index',
+      'A file generated by dartdoc is not present in the generated index.json'),
   PackageWarning.typeAsHtml: PackageWarningDefinition(
       PackageWarning.typeAsHtml,
-      "type-as-html",
-      "Use of <> in a comment for type parameters is being treated as HTML by markdown",
+      'type-as-html',
+      'Use of <> in a comment for type parameters is being treated as HTML by markdown',
       defaultWarningMode: PackageWarningMode.ignore),
   PackageWarning.invalidParameter: PackageWarningDefinition(
       PackageWarning.invalidParameter,
-      "invalid-parameter",
-      "A parameter given to a dartdoc directive was invalid.",
+      'invalid-parameter',
+      'A parameter given to a dartdoc directive was invalid.',
       defaultWarningMode: PackageWarningMode.error),
   PackageWarning.toolError: PackageWarningDefinition(PackageWarning.toolError,
-      "tool-error", "Unable to execute external tool.",
+      'tool-error', 'Unable to execute external tool.',
       defaultWarningMode: PackageWarningMode.error),
   PackageWarning.deprecated: PackageWarningDefinition(PackageWarning.deprecated,
-      "deprecated", "A dartdoc directive has a deprecated format."),
+      'deprecated', 'A dartdoc directive has a deprecated format.'),
   PackageWarning.unresolvedExport: PackageWarningDefinition(
       PackageWarning.unresolvedExport,
-      "unresolved-export",
-      "An export refers to a URI that cannot be resolved.",
+      'unresolved-export',
+      'An export refers to a URI that cannot be resolved.',
       defaultWarningMode: PackageWarningMode.error),
   PackageWarning.duplicateFile: PackageWarningDefinition(
       PackageWarning.duplicateFile,
-      "duplicate-file",
-      "Dartdoc is trying to write to a duplicate filename based on the names of Dart symbols.",
+      'duplicate-file',
+      'Dartdoc is trying to write to a duplicate filename based on the names of Dart symbols.',
       longHelp: [
-        "Dartdoc generates a path and filename to write to for each symbol.",
-        "@@name@@ conflicts with another symbol in the generated path, and",
-        "therefore can not be written out.  Changing the name, library name, or",
-        "class name (if appropriate) of one of the conflicting items can resolve",
+        'Dartdoc generates a path and filename to write to for each symbol.',
+        '@@name@@ conflicts with another symbol in the generated path, and',
+        'therefore can not be written out.  Changing the name, library name, or',
+        'class name (if appropriate) of one of the conflicting items can resolve',
         "the conflict.   Alternatively, use the @nodoc tag in one symbol's",
-        "documentation comments to hide it."
+        'documentation comments to hide it.'
       ],
       defaultWarningMode: PackageWarningMode.error),
   PackageWarning.missingConstantConstructor: PackageWarningDefinition(
       PackageWarning.missingConstantConstructor,
-      "missing-constant-constructor",
-      "Dartdoc can not show the value of a constant because its constructor could not be resolved.",
+      'missing-constant-constructor',
+      'Dartdoc can not show the value of a constant because its constructor could not be resolved.',
       longHelp: [
-        "To resolve a constant into its literal value, Dartdoc relies on the",
+        'To resolve a constant into its literal value, Dartdoc relies on the',
         "analyzer to resolve the constructor.  The analyzer didn't provide",
-        "the constructor for @@name@@, which is usually due to an error in the",
-        "code.  Use the analyzer to find missing imports.",
+        'the constructor for @@name@@, which is usually due to an error in the',
+        'code.  Use the analyzer to find missing imports.',
       ],
       // Defaults to ignore as this doesn't impact the docs severely but is
       // useful for debugging package structure.
@@ -271,15 +271,16 @@ enum PackageWarningMode {
 /// In particular, this set should not include warnings around public/private
 /// or canonicalization problems, because those can break the isDocumented()
 /// check.
-final Set<PackageWarning> skipWarningIfNotDocumentedFor = Set()
-  ..addAll([PackageWarning.unresolvedDocReference, PackageWarning.typeAsHtml]);
+final Set<PackageWarning> skipWarningIfNotDocumentedFor = {
+  PackageWarning.unresolvedDocReference,
+  PackageWarning.typeAsHtml
+};
 
 class PackageWarningOptions {
   final Map<PackageWarning, PackageWarningMode> warningModes = {};
 
   PackageWarningOptions() {
-    for (PackageWarningDefinition definition
-        in packageWarningDefinitions.values) {
+    for (var definition in packageWarningDefinitions.values) {
       switch (definition.defaultWarningMode) {
         case PackageWarningMode.warn:
           {
@@ -304,8 +305,8 @@ class PackageWarningOptions {
   static PackageWarningOptions fromOptions(
       DartdocSyntheticOption<PackageWarningOptions> option, Directory dir) {
     // First, initialize defaults.
-    PackageWarningOptions newOptions = PackageWarningOptions();
-    PackageMeta packageMeta = PackageMeta.fromDir(dir);
+    var newOptions = PackageWarningOptions();
+    var packageMeta = PackageMeta.fromDir(dir);
 
     // Interpret errors/warnings/ignore options.  In the event of conflict, warning overrides error and
     // ignore overrides warning.
@@ -370,7 +371,7 @@ class PackageWarningOptions {
 }
 
 class PackageWarningCounter {
-  final countedWarnings = Map<Element, Set<Tuple2<PackageWarning, String>>>();
+  final countedWarnings = <Element, Set<Tuple2<PackageWarning, String>>>{};
   final _items = <Jsonable>[];
   final _displayedWarningCounts = <PackageWarning, int>{};
   final PackageGraph packageGraph;
@@ -385,21 +386,21 @@ class PackageWarningCounter {
     }
     String type;
     if (mode == PackageWarningMode.error) {
-      type = "error";
+      type = 'error';
     } else if (mode == PackageWarningMode.warn) {
-      type = "warning";
+      type = 'warning';
     }
     if (type != null) {
-      var entry = "  $type: $fullMessage";
+      var entry = '  $type: $fullMessage';
       _displayedWarningCounts.putIfAbsent(kind, () => 0);
       _displayedWarningCounts[kind] += 1;
       if (_displayedWarningCounts[kind] == 1 &&
           verboseWarnings &&
           packageWarningDefinitions[kind].longHelp.isNotEmpty) {
         // First time we've seen this warning.  Give a little extra info.
-        final String separator = '\n            ';
-        final String nameSub = r'@@name@@';
-        String verboseOut =
+        final separator = '\n            ';
+        final nameSub = r'@@name@@';
+        var verboseOut =
             '$separator${packageWarningDefinitions[kind].longHelp.join(separator)}'
                 .replaceAll(nameSub, name);
         entry = '$entry$verboseOut';
@@ -415,7 +416,7 @@ class PackageWarningCounter {
 
   /// Returns true if we've already warned for this.
   bool hasWarning(Warnable element, PackageWarning kind, String message) {
-    Tuple2<PackageWarning, String> warningData = Tuple2(kind, message);
+    var warningData = Tuple2<PackageWarning, String>(kind, message);
     if (countedWarnings.containsKey(element?.element)) {
       return countedWarnings[element?.element].contains(warningData);
     }
@@ -430,7 +431,7 @@ class PackageWarningCounter {
     // TODO(jcollins-g): Make addWarning not accept nulls for element.
     PackageWarningOptionContext config =
         element?.config ?? packageGraph.defaultPackage.config;
-    PackageWarningMode warningMode = config.packageWarningOptions.getMode(kind);
+    var warningMode = config.packageWarningOptions.getMode(kind);
     if (!config.allowNonLocalWarnings &&
         element != null &&
         !element.package.isLocal) {
@@ -441,8 +442,8 @@ class PackageWarningCounter {
     } else if (warningMode == PackageWarningMode.error) {
       errorCount += 1;
     }
-    Tuple2<PackageWarning, String> warningData = Tuple2(kind, message);
-    countedWarnings.putIfAbsent(element?.element, () => Set());
+    var warningData = Tuple2<PackageWarning, String>(kind, message);
+    countedWarnings.putIfAbsent(element?.element, () => {});
     countedWarnings[element?.element].add(warningData);
     _writeWarning(kind, warningMode, config.verboseWarnings,
         element?.fullyQualifiedName, fullMessage);
@@ -453,8 +454,8 @@ class PackageWarningCounter {
 
   @override
   String toString() {
-    String errors = '$errorCount ${errorCount == 1 ? "error" : "errors"}';
-    String warnings =
+    var errors = '$errorCount ${errorCount == 1 ? "error" : "errors"}';
+    var warnings =
         '$warningCount ${warningCount == 1 ? "warning" : "warnings"}';
     return [errors, warnings].join(', ');
   }

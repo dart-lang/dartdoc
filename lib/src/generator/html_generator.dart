@@ -52,12 +52,12 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
 
   Future _copyResources(FileWriter writer) async {
     final prefix = 'package:dartdoc/resources/';
-    for (String resourcePath in resources.resource_names) {
+    for (var resourcePath in resources.resource_names) {
       if (!resourcePath.startsWith(prefix)) {
         throw StateError('Resource paths must start with $prefix, '
             'encountered $resourcePath');
       }
-      String destFileName = resourcePath.substring(prefix.length);
+      var destFileName = resourcePath.substring(prefix.length);
       writer.write(path.join('static-assets', destFileName),
           await resource_loader.loadAsBytes(resourcePath));
     }

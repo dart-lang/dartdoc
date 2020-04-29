@@ -19,11 +19,11 @@ class GeneratorFrontEnd implements Generator {
 
   @override
   Future generate(PackageGraph packageGraph, FileWriter writer) async {
-    List<Indexable> indexElements = <Indexable>[];
+    var indexElements = <Indexable>[];
     _generateDocs(packageGraph, writer, indexElements);
     await _generatorBackend.generateAdditionalFiles(writer, packageGraph);
 
-    List<Categorization> categories = indexElements
+    var categories = indexElements
         .whereType<Categorization>()
         .where((e) => e.hasCategorization)
         .toList();

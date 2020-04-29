@@ -95,8 +95,7 @@ void main() {
       });
 
       test('resources are put into the right place', () {
-        Directory output =
-            Directory(path.join(tempOutput.path, 'static-assets'));
+        var output = Directory(path.join(tempOutput.path, 'static-assets'));
         expect(output, doesExist);
 
         for (var resource in resource_names.map((r) =>
@@ -130,8 +129,7 @@ void main() {
         await generator.generate(packageGraph, writer);
         expect(generator, isNotNull);
         expect(tempOutput, isNotNull);
-        String expectedPath =
-            path.join('aDuplicate', 'aDuplicate-library.html');
+        var expectedPath = path.join('aDuplicate', 'aDuplicate-library.html');
         expect(
             packageGraph.localPublicLibraries,
             anyElement((l) => packageGraph.packageWarningCounter

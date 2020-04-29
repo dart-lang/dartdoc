@@ -68,7 +68,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
     // Initialize [packageGraph]'s cache of ModelNodes for relevant
     // elements in this library.
-    Map<String, CompilationUnit> _compilationUnitMap = Map();
+    var _compilationUnitMap = <String, CompilationUnit>{};
     _compilationUnitMap.addEntries(libraryResult.units
         .map((ResolvedUnitResult u) => MapEntry(u.path, u.unit)));
     _HashableChildLibraryElementVisitor((Element e) =>
@@ -77,12 +77,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
     // Initialize the list of elements defined in this library and
     // exported via its export directives.
-    Set<Element> exportedAndLocalElements =
+    var exportedAndLocalElements =
         element.exportNamespace.definedNames.values.toSet();
     // TODO(jcollins-g): Consider switch to [_libraryElement.topLevelElements].
     exportedAndLocalElements
         .addAll(getDefinedElements(element.definingCompilationUnit));
-    for (CompilationUnitElement cu in element.parts) {
+    for (var cu in element.parts) {
       exportedAndLocalElements.addAll(getDefinedElements(cu));
     }
     _exportedAndLocalElements = exportedAndLocalElements.toList();
@@ -125,27 +125,25 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// to the defining library where each originally came from with respect
   /// to inheritance and reexporting.  Most useful for error reporting.
   Iterable<String> get allOriginalModelElementNames {
-    if (_allOriginalModelElementNames == null) {
-      _allOriginalModelElementNames = allModelElements.map((e) {
-        Accessor getter;
-        Accessor setter;
-        if (e is GetterSetterCombo) {
-          if (e.hasGetter) {
-            getter = ModelElement.fromElement(e.getter.element, packageGraph);
-          }
-          if (e.hasSetter) {
-            setter = ModelElement.fromElement(e.setter.element, packageGraph);
-          }
+    _allOriginalModelElementNames ??= allModelElements.map((e) {
+      Accessor getter;
+      Accessor setter;
+      if (e is GetterSetterCombo) {
+        if (e.hasGetter) {
+          getter = ModelElement.fromElement(e.getter.element, packageGraph);
         }
-        return ModelElement.from(
-                e.element,
-                packageGraph.findButDoNotCreateLibraryFor(e.element),
-                packageGraph,
-                getter: getter,
-                setter: setter)
-            .fullyQualifiedName;
-      }).toList();
-    }
+        if (e.hasSetter) {
+          setter = ModelElement.fromElement(e.setter.element, packageGraph);
+        }
+      }
+      return ModelElement.from(
+              e.element,
+              packageGraph.findButDoNotCreateLibraryFor(e.element),
+              packageGraph,
+              getter: getter,
+              setter: setter)
+          .fullyQualifiedName;
+    }).toList();
     return _allOriginalModelElementNames;
   }
 
@@ -173,13 +171,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   Iterable<Extension> get extensions {
-    if (_extensions == null) {
-      _extensions = _exportedAndLocalElements
-          .whereType<ExtensionElement>()
-          .map((e) => ModelElement.from(e, this, packageGraph) as Extension)
-          .toList(growable: false)
-            ..sort(byName);
-    }
+    _extensions ??= _exportedAndLocalElements
+        .whereType<ExtensionElement>()
+        .map((e) => ModelElement.from(e, this, packageGraph) as Extension)
+        .toList(growable: false)
+          ..sort(byName);
     return _extensions;
   }
 
@@ -207,11 +203,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   Iterable<TopLevelVariable> get constants {
-    if (_constants == null) {
-      // _getVariables() is already sorted.
-      _constants =
-          _getVariables().where((v) => v.isConst).toList(growable: false);
-    }
+    _constants ??=
+        _getVariables().where((v) => v.isConst).toList(growable: false);
     return _constants;
   }
 
@@ -226,7 +219,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   // more than one package.
   Set<Library> get packageImportedExportedLibraries {
     if (_packageImportedExportedLibraries == null) {
-      _packageImportedExportedLibraries = Set();
+      _packageImportedExportedLibraries = {};
       packageGraph.publicLibraries
           .where((l) => l.packageName == packageName)
           .forEach((l) {
@@ -242,11 +235,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// recursively.
   Set<Library> get importedExportedLibraries {
     if (_importedExportedLibraries == null) {
-      _importedExportedLibraries = Set();
-      Set<LibraryElement> importedExportedLibraryElements = Set();
+      _importedExportedLibraries = {};
+      var importedExportedLibraryElements = <LibraryElement>{};
       importedExportedLibraryElements.addAll(element.importedLibraries);
       importedExportedLibraryElements.addAll(element.exportedLibraries);
-      for (LibraryElement l in importedExportedLibraryElements) {
+      for (var l in importedExportedLibraryElements) {
         Library lib = ModelElement.from(l, library, packageGraph);
         _importedExportedLibraries.add(lib);
         _importedExportedLibraries.addAll(lib.importedExportedLibraries);
@@ -262,10 +255,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (_prefixToLibrary == null) {
       _prefixToLibrary = {};
       // It is possible to have overlapping prefixes.
-      for (ImportElement i in element.imports) {
+      for (var i in element.imports) {
         // Ignore invalid imports.
         if (i.prefix?.name != null && i.importedLibrary != null) {
-          _prefixToLibrary.putIfAbsent(i.prefix?.name, () => Set());
+          _prefixToLibrary.putIfAbsent(i.prefix?.name, () => {});
           _prefixToLibrary[i.prefix?.name]
               .add(ModelElement.from(i.importedLibrary, library, packageGraph));
         }
@@ -305,8 +298,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   @override
   String buildDocumentationAddition(String rawDocs) {
     rawDocs = super.buildDocumentationAddition(rawDocs);
-    Set<String> newCanonicalFor = Set();
-    Set<String> notFoundInAllModelElements = Set();
+    var newCanonicalFor = <String>{};
+    var notFoundInAllModelElements = <String>{};
     final canonicalRegExp = RegExp(r'{@canonicalFor\s([^}]+)}');
     rawDocs = rawDocs.replaceAllMapped(canonicalRegExp, (Match match) {
       newCanonicalFor.add(match.group(1));
@@ -316,14 +309,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (notFoundInAllModelElements.isNotEmpty) {
       notFoundInAllModelElements.removeAll(allOriginalModelElementNames);
     }
-    for (String notFound in notFoundInAllModelElements) {
+    for (var notFound in notFoundInAllModelElements) {
       warn(PackageWarning.ignoredCanonicalFor, message: notFound);
     }
     // TODO(jcollins-g): warn if a macro/tool _does_ generate an unexpected
     // canonicalFor?
-    if (_canonicalFor == null) {
-      _canonicalFor = newCanonicalFor;
-    }
+    _canonicalFor ??= newCanonicalFor;
     return rawDocs;
   }
 
@@ -335,14 +326,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   List<Enum> get enums {
-    if (_enums == null) {
-      _enums = _exportedAndLocalElements
-          .whereType<ClassElement>()
-          .where((element) => element.isEnum)
-          .map((e) => ModelElement.from(e, this, packageGraph) as Enum)
-          .toList(growable: false)
-            ..sort(byName);
-    }
+    _enums ??= _exportedAndLocalElements
+        .whereType<ClassElement>()
+        .where((element) => element.isEnum)
+        .map((e) => ModelElement.from(e, this, packageGraph) as Enum)
+        .toList(growable: false)
+          ..sort(byName);
     return _enums;
   }
 
@@ -350,16 +339,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   List<Mixin> get mixins {
-    if (_mixins == null) {
-      /// Can not be [MixinElementImpl] because [ClassHandle]s are sometimes
-      /// returned from _exportedElements.
-      _mixins = _exportedAndLocalElements
-          .whereType<ClassElement>()
-          .where((ClassElement c) => c.isMixin)
-          .map((e) => ModelElement.from(e, this, packageGraph) as Mixin)
-          .toList(growable: false)
-            ..sort(byName);
-    }
+    _mixins ??= _exportedAndLocalElements
+        .whereType<ClassElement>()
+        .where((ClassElement c) => c.isMixin)
+        .map((e) => ModelElement.from(e, this, packageGraph) as Mixin)
+        .toList(growable: false)
+          ..sort(byName);
     return _mixins;
   }
 
@@ -367,10 +352,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   List<Class> get exceptions {
-    if (_exceptions == null) {
-      _exceptions =
-          allClasses.where((c) => c.isErrorOrException).toList(growable: false);
-    }
+    _exceptions ??=
+        allClasses.where((c) => c.isErrorOrException).toList(growable: false);
     return _exceptions;
   }
 
@@ -384,13 +367,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   List<ModelFunction> get functions {
-    if (_functions == null) {
-      _functions =
-          _exportedAndLocalElements.whereType<FunctionElement>().map((e) {
-        return ModelElement.from(e, this, packageGraph) as ModelFunction;
-      }).toList(growable: false)
-            ..sort(byName);
-    }
+    _functions ??=
+        _exportedAndLocalElements.whereType<FunctionElement>().map((e) {
+      return ModelElement.from(e, this, packageGraph) as ModelFunction;
+    }).toList(growable: false)
+          ..sort(byName);
     return _functions;
   }
 
@@ -405,9 +386,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   InheritanceManager3 _inheritanceManager;
 
   InheritanceManager3 get inheritanceManager {
-    if (_inheritanceManager == null) {
-      _inheritanceManager = InheritanceManager3();
-    }
+    _inheritanceManager ??= InheritanceManager3();
     return _inheritanceManager;
   }
 
@@ -421,9 +400,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   String get name {
-    if (_name == null) {
-      _name = getLibraryName(element);
-    }
+    _name ??= getLibraryName(element);
     return _name;
   }
 
@@ -437,9 +414,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// 'lib') are the same, but this will include slashes and possibly colons
   /// for anonymous libraries in subdirectories or other packages.
   String get nameFromPath {
-    if (_nameFromPath == null) {
-      _nameFromPath = getNameFromPath(element, packageGraph.driver, package);
-    }
+    _nameFromPath ??= getNameFromPath(element, packageGraph.driver, package);
     return _nameFromPath;
   }
 
@@ -451,9 +426,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   PackageMeta _packageMeta;
 
   PackageMeta get packageMeta {
-    if (_packageMeta == null) {
-      _packageMeta = PackageMeta.fromElement(element, config.sdkDir);
-    }
+    _packageMeta ??= PackageMeta.fromElement(element, config.sdkDir);
     return _packageMeta;
   }
 
@@ -462,10 +435,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// All variables ("properties") except constants.
   @override
   Iterable<TopLevelVariable> get properties {
-    if (_properties == null) {
-      _properties =
-          _getVariables().where((v) => !v.isConst).toList(growable: false);
-    }
+    _properties ??=
+        _getVariables().where((v) => !v.isConst).toList(growable: false);
     return _properties;
   }
 
@@ -473,13 +444,11 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   @override
   List<Typedef> get typedefs {
-    if (_typedefs == null) {
-      _typedefs = _exportedAndLocalElements
-          .whereType<FunctionTypeAliasElement>()
-          .map((e) => ModelElement.from(e, this, packageGraph) as Typedef)
-          .toList(growable: false)
-            ..sort(byName);
-    }
+    _typedefs ??= _exportedAndLocalElements
+        .whereType<FunctionTypeAliasElement>()
+        .map((e) => ModelElement.from(e, this, packageGraph) as Typedef)
+        .toList(growable: false)
+          ..sort(byName);
     return _typedefs;
   }
 
@@ -488,14 +457,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   List<Class> _classes;
 
   List<Class> get allClasses {
-    if (_classes == null) {
-      _classes = _exportedAndLocalElements
-          .whereType<ClassElement>()
-          .where((e) => !e.isMixin && !e.isEnum)
-          .map((e) => ModelElement.from(e, this, packageGraph) as Class)
-          .toList(growable: false)
-            ..sort(byName);
-    }
+    _classes ??= _exportedAndLocalElements
+        .whereType<ClassElement>()
+        .where((e) => !e.isMixin && !e.isEnum)
+        .map((e) => ModelElement.from(e, this, packageGraph) as Class)
+        .toList(growable: false)
+          ..sort(byName);
     return _classes;
   }
 
@@ -505,14 +472,14 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   List<TopLevelVariable> _getVariables() {
     if (_variables == null) {
-      Set<TopLevelVariableElement> elements = _exportedAndLocalElements
+      var elements = _exportedAndLocalElements
           .whereType<TopLevelVariableElement>()
           .toSet();
       elements.addAll(_exportedAndLocalElements
           .whereType<PropertyAccessorElement>()
           .map((a) => a.variable));
       _variables = [];
-      for (TopLevelVariableElement element in elements) {
+      for (var element in elements) {
         Accessor getter;
         if (element.getter != null) {
           getter = ModelElement.from(element.getter, this, packageGraph);
@@ -521,7 +488,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         if (element.setter != null) {
           setter = ModelElement.from(element.setter, this, packageGraph);
         }
-        ModelElement me = ModelElement.from(element, this, packageGraph,
+        var me = ModelElement.from(element, this, packageGraph,
             getter: getter, setter: setter);
         _variables.add(me);
       }
@@ -552,7 +519,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     // restoreUri must not result in another file URI.
     assert(!name.startsWith('file:'));
 
-    String defaultPackagePrefix = 'package:$hidePackage/';
+    var defaultPackagePrefix = 'package:$hidePackage/';
     if (name.startsWith(defaultPackagePrefix)) {
       name = name.substring(defaultPackagePrefix.length, name.length);
     }
@@ -588,10 +555,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// in this library.  Used for code reference lookups.
   Map<String, Set<ModelElement>> get modelElementsNameMap {
     if (_modelElementsNameMap == null) {
-      _modelElementsNameMap = Map<String, Set<ModelElement>>();
+      _modelElementsNameMap = <String, Set<ModelElement>>{};
       allModelElements.forEach((ModelElement modelElement) {
         _modelElementsNameMap.putIfAbsent(
-            modelElement.fullyQualifiedNameWithoutLibrary, () => Set());
+            modelElement.fullyQualifiedNameWithoutLibrary, () => {});
         _modelElementsNameMap[modelElement.fullyQualifiedNameWithoutLibrary]
             .add(modelElement);
       });
@@ -603,7 +570,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   Map<Element, Set<ModelElement>> get modelElementsMap {
     if (_modelElementsMap == null) {
-      Iterable<ModelElement> results = quiver.concat([
+      var results = quiver.concat(<Iterable<ModelElement>>[
         library.constants,
         library.functions,
         library.properties,
@@ -633,12 +600,12 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
           ]);
         }),
       ]);
-      _modelElementsMap = Map<Element, Set<ModelElement>>();
+      _modelElementsMap = <Element, Set<ModelElement>>{};
       results.forEach((modelElement) {
-        _modelElementsMap.putIfAbsent(modelElement.element, () => Set());
+        _modelElementsMap.putIfAbsent(modelElement.element, () => {});
         _modelElementsMap[modelElement.element].add(modelElement);
       });
-      _modelElementsMap.putIfAbsent(element, () => Set());
+      _modelElementsMap.putIfAbsent(element, () => {});
       _modelElementsMap[element].add(this);
     }
     return _modelElementsMap;
@@ -649,7 +616,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   Iterable<ModelElement> get allModelElements {
     if (_allModelElements == null) {
       _allModelElements = [];
-      for (Set<ModelElement> modelElements in modelElementsMap.values) {
+      for (var modelElements in modelElementsMap.values) {
         _allModelElements.addAll(modelElements);
       }
     }

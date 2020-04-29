@@ -10,18 +10,18 @@ import 'package:test/test.dart';
 void main() {
   group('findFreeHangingGenericsPositions()', () {
     test('returns empty array if all the generics are in []', () {
-      final string = "One two [three<four>] [[five<six>] seven eight";
+      final string = 'One two [three<four>] [[five<six>] seven eight';
       expect(findFreeHangingGenericsPositions(string), equals([]));
     });
 
     test('returns positions of generics outside of []', () {
-      final string = "One two<int> [[three<four>] five<six>] seven<eight>";
+      final string = 'One two<int> [[three<four>] five<six>] seven<eight>';
       expect(findFreeHangingGenericsPositions(string), equals([7, 44]));
     });
 
     test('ignores HTML tags', () {
       final string =
-          "One two<int> foo<pre> [[three<four>] five<six>] bar</pre> seven<eight>";
+          'One two<int> foo<pre> [[three<four>] five<six>] bar</pre> seven<eight>';
       expect(findFreeHangingGenericsPositions(string), equals([7, 63]));
     });
   });

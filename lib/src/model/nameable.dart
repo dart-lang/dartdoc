@@ -15,10 +15,9 @@ abstract class Nameable {
   Set<String> _namePieces;
 
   Set<String> get namePieces {
-    if (_namePieces == null) {
-      _namePieces = Set()
-        ..addAll(name.split(locationSplitter).where((s) => s.isNotEmpty));
-    }
+    _namePieces ??= {
+      ...name.split(locationSplitter).where((s) => s.isNotEmpty)
+    };
     return _namePieces;
   }
 
@@ -28,9 +27,7 @@ abstract class Nameable {
   String get namePart {
     // TODO(jcollins-g): This should really be the same as 'name', but isn't
     // because of accessors and operators.
-    if (_namePart == null) {
-      _namePart = fullyQualifiedName.split('.').last;
-    }
+    _namePart ??= fullyQualifiedName.split('.').last;
     return _namePart;
   }
 

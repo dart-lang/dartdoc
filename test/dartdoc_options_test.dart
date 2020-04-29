@@ -21,9 +21,9 @@ class ConvertedOption {
   static ConvertedOption fromYamlMap(YamlMap yamlMap, path.Context context) {
     String p1;
     String p2;
-    String contextPath = context.current;
+    var contextPath = context.current;
 
-    for (MapEntry entry in yamlMap.entries) {
+    for (var entry in yamlMap.entries) {
       switch (entry.key.toString()) {
         case 'param1':
           p1 = entry.value.toString();

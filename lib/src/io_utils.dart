@@ -37,14 +37,17 @@ String resolveTildePath(String originalPath) {
 /// The returned paths are guaranteed to begin with [dir].
 Iterable<String> listDir(String dir,
     {bool recursive = false,
-    Iterable<FileSystemEntity> listDir(Directory dir)}) {
-  if (listDir == null) listDir = (Directory dir) => dir.listSync();
+    Iterable<FileSystemEntity> Function(Directory dir) listDir}) {
+  listDir ??= (Directory dir) => dir.listSync();
 
-  return _doList(dir, Set<String>(), recursive, listDir);
+  return _doList(dir, <String>{}, recursive, listDir);
 }
 
-Iterable<String> _doList(String dir, Set<String> listedDirectories,
-    bool recurse, Iterable<FileSystemEntity> listDir(Directory dir)) sync* {
+Iterable<String> _doList(
+    String dir,
+    Set<String> listedDirectories,
+    bool recurse,
+    Iterable<FileSystemEntity> Function(Directory dir) listDir) sync* {
   // Avoid recursive symlinks.
   var resolvedPath = Directory(dir).resolveSymbolicLinksSync();
   if (!listedDirectories.contains(resolvedPath)) {
@@ -85,7 +88,7 @@ class MultiFutureTracker<T> {
   /// Approximate maximum number of simultaneous active Futures.
   final int parallel;
 
-  final Set<Future<T>> _trackedFutures = Set();
+  final Set<Future<T>> _trackedFutures = {};
 
   MultiFutureTracker(this.parallel);
 

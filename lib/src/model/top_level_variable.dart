@@ -34,8 +34,7 @@ class TopLevelVariable extends ModelElement
     // Verify that hasSetter and hasGetterNoSetter are mutually exclusive,
     // to prevent displaying more or less than one summary.
     if (isPublic) {
-      Set<bool> assertCheck = Set()
-        ..addAll([hasPublicSetter, hasPublicGetterNoSetter]);
+      var assertCheck = {hasPublicSetter, hasPublicGetterNoSetter};
       assert(assertCheck.containsAll([true, false]));
     }
     return super.documentation;
@@ -79,7 +78,7 @@ class TopLevelVariable extends ModelElement
 
   @override
   String computeDocumentationComment() {
-    String docs = getterSetterDocumentationComment;
+    var docs = getterSetterDocumentationComment;
     if (docs.isEmpty) return _variable.documentationComment;
     return docs;
   }

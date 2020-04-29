@@ -84,14 +84,13 @@ abstract class ParameterRenderer {
 
   String renderLinkedParams(List<Parameter> parameters,
       {showMetadata = true, showNames = true}) {
-    List<Parameter> positionalParams =
+    var positionalParams =
         parameters.where((Parameter p) => p.isRequiredPositional).toList();
-    List<Parameter> optionalPositionalParams =
+    var optionalPositionalParams =
         parameters.where((Parameter p) => p.isOptionalPositional).toList();
-    List<Parameter> namedParams =
-        parameters.where((Parameter p) => p.isNamed).toList();
+    var namedParams = parameters.where((Parameter p) => p.isNamed).toList();
 
-    String positional = '', optional = '', named = '';
+    var positional = '', optional = '', named = '';
     if (positionalParams.isNotEmpty) {
       positional = _linkedParameterSublist(positionalParams,
           optionalPositionalParams.isNotEmpty || namedParams.isNotEmpty,
@@ -120,10 +119,10 @@ abstract class ParameterRenderer {
       String closeBracket = '',
       showMetadata = true,
       showNames = true}) {
-    StringBuffer builder = StringBuffer();
+    var builder = StringBuffer();
     parameters.forEach((p) {
-      String prefix = '';
-      String suffix = '';
+      var prefix = '';
+      var suffix = '';
       if (identical(p, parameters.first)) {
         prefix = openBracket;
       }
@@ -133,7 +132,7 @@ abstract class ParameterRenderer {
       } else {
         suffix += ', ';
       }
-      String renderedParam =
+      var renderedParam =
           _renderParam(p, showMetadata: showMetadata, showNames: showNames);
       builder.write(
           listItem(parameter(prefix + renderedParam + suffix, p.htmlId)));
@@ -143,8 +142,8 @@ abstract class ParameterRenderer {
 
   String _renderParam(Parameter param,
       {showMetadata = true, showNames = true}) {
-    StringBuffer buf = StringBuffer();
-    ElementType paramModelType = param.modelType;
+    var buf = StringBuffer();
+    var paramModelType = param.modelType;
 
     if (showMetadata && param.hasAnnotations) {
       buf.write(param.annotations.map(annotation).join(' ') + ' ');
@@ -185,7 +184,7 @@ abstract class ParameterRenderer {
         buf.write(')');
       }
     } else if (param.modelType != null) {
-      String linkedTypeName = paramModelType.linkedName;
+      var linkedTypeName = paramModelType.linkedName;
       if (linkedTypeName.isNotEmpty) {
         buf.write(typeName(linkedTypeName));
         if (showNames && param.name.isNotEmpty) {

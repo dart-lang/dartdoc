@@ -43,8 +43,7 @@ Future<List<DartdocOption>> createDartdocProgramOptions() async {
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
 Future<void> main(List<String> arguments) async {
-  DartdocOptionSet optionSet =
-      await DartdocOptionSet.fromOptionGenerators('dartdoc', [
+  var optionSet = await DartdocOptionSet.fromOptionGenerators('dartdoc', [
     createDartdocOptions,
     createDartdocProgramOptions,
     createLoggingOptions,
@@ -86,7 +85,7 @@ Future<void> main(List<String> arguments) async {
   }
   startLogging(config);
 
-  Dartdoc dartdoc = config.generateDocs
+  var dartdoc = config.generateDocs
       ? await Dartdoc.fromContext(config)
       : await Dartdoc.withEmptyGenerator(config);
   dartdoc.onCheckProgress.listen(logProgress);

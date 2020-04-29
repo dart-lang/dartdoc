@@ -48,9 +48,9 @@ class ModelNode {
   String get sourceCode {
     if (_sourceCode == null) {
       if (_sourceOffset != null) {
-        String contents = model_utils.getFileContentsFor(element);
+        var contents = model_utils.getFileContentsFor(element);
         // Find the start of the line, so that we can line up all the indents.
-        int i = _sourceOffset;
+        var i = _sourceOffset;
         while (i > 0) {
           i -= 1;
           if (contents[i] == '\n' || contents[i] == '\r') {
@@ -61,7 +61,7 @@ class ModelNode {
 
         // Trim the common indent from the source snippet.
         var start = _sourceOffset - (_sourceOffset - i);
-        String source = contents.substring(start, _sourceEnd);
+        var source = contents.substring(start, _sourceEnd);
 
         source = const HtmlEscape().convert(source);
         source = model_utils.stripIndentFromSource(source);

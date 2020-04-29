@@ -54,12 +54,10 @@ class Extension extends Container
 
   @override
   List<Method> get methods {
-    if (_methods == null) {
-      _methods = _extension.methods.map((e) {
-        return ModelElement.from(e, library, packageGraph) as Method;
-      }).toList(growable: false)
-        ..sort(byName);
-    }
+    _methods ??= _extension.methods.map((e) {
+      return ModelElement.from(e, library, packageGraph) as Method;
+    }).toList(growable: false)
+      ..sort(byName);
     return _methods;
   }
 
@@ -70,20 +68,18 @@ class Extension extends Container
 
   @override
   List<Field> get allFields {
-    if (_fields == null) {
-      _fields = _extension.fields.map((f) {
-        Accessor getter, setter;
-        if (f.getter != null) {
-          getter = ContainerAccessor(f.getter, library, packageGraph);
-        }
-        if (f.setter != null) {
-          setter = ContainerAccessor(f.setter, library, packageGraph);
-        }
-        return ModelElement.from(f, library, packageGraph,
-            getter: getter, setter: setter) as Field;
-      }).toList(growable: false)
-        ..sort(byName);
-    }
+    _fields ??= _extension.fields.map((f) {
+      Accessor getter, setter;
+      if (f.getter != null) {
+        getter = ContainerAccessor(f.getter, library, packageGraph);
+      }
+      if (f.setter != null) {
+        setter = ContainerAccessor(f.setter, library, packageGraph);
+      }
+      return ModelElement.from(f, library, packageGraph,
+          getter: getter, setter: setter) as Field;
+    }).toList(growable: false)
+      ..sort(byName);
     return _fields;
   }
 
@@ -92,12 +88,10 @@ class Extension extends Container
   // a stronger hash?
   @override
   List<TypeParameter> get typeParameters {
-    if (_typeParameters == null) {
-      _typeParameters = _extension.typeParameters.map((f) {
-        var lib = Library(f.enclosingElement.library, packageGraph);
-        return ModelElement.from(f, lib, packageGraph) as TypeParameter;
-      }).toList();
-    }
+    _typeParameters ??= _extension.typeParameters.map((f) {
+      var lib = Library(f.enclosingElement.library, packageGraph);
+      return ModelElement.from(f, lib, packageGraph) as TypeParameter;
+    }).toList();
     return _typeParameters;
   }
 
@@ -107,20 +101,18 @@ class Extension extends Container
   List<ModelElement> _allModelElements;
 
   List<ModelElement> get allModelElements {
-    if (_allModelElements == null) {
-      _allModelElements = List.from(
-          quiver.concat([
-            instanceMethods,
-            allInstanceFields,
-            allAccessors,
-            allOperators,
-            constants,
-            staticMethods,
-            staticProperties,
-            typeParameters,
-          ]),
-          growable: false);
-    }
+    _allModelElements ??= List.from(
+        quiver.concat([
+          instanceMethods,
+          allInstanceFields,
+          allAccessors,
+          allOperators,
+          constants,
+          staticMethods,
+          staticProperties,
+          typeParameters,
+        ]),
+        growable: false);
     return _allModelElements;
   }
 

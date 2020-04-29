@@ -38,9 +38,9 @@ class Package extends LibraryContainer
   // Creates a package, if necessary, and adds it to the [packageGraph].
   factory Package.fromPackageMeta(
       PackageMeta packageMeta, PackageGraph packageGraph) {
-    String packageName = packageMeta.name;
+    var packageName = packageMeta.name;
 
-    bool expectNonLocal = false;
+    var expectNonLocal = false;
 
     if (!packageGraph.packageMap.containsKey(packageName) &&
         packageGraph.allLibrariesAdded) expectNonLocal = true;
@@ -75,13 +75,13 @@ class Package extends LibraryContainer
 
   /// Pieces of the location, split to remove 'package:' and slashes.
   @override
-  Set<String> get locationPieces => Set();
+  Set<String> get locationPieces => {};
 
   /// Holds all libraries added to this package.  May include non-documented
   /// libraries, but is not guaranteed to include a complete list of
   /// non-documented libraries unless they are all referenced by documented ones.
   /// Not sorted.
-  final Set<Library> allLibraries = Set();
+  final Set<Library> allLibraries = {};
 
   bool get hasHomepage =>
       packageMeta.homepage != null && packageMeta.homepage.isNotEmpty;
@@ -141,7 +141,7 @@ class Package extends LibraryContainer
 
   @override
   bool get isPublic {
-    if (_isPublic == null) _isPublic = libraries.any((l) => l.isPublic);
+    _isPublic ??= libraries.any((l) => l.isPublic);
     return _isPublic;
   }
 
@@ -151,25 +151,23 @@ class Package extends LibraryContainer
   /// SDK, or if [DartdocOptionContext.autoIncludeDependencies] is true -- but
   /// only if the package was not excluded on the command line.
   bool get isLocal {
-    if (_isLocal == null) {
-      _isLocal = (
-              // Document as local if this is the default package.
-              packageMeta == packageGraph.packageMeta ||
-                  // Assume we want to document an embedded SDK as local if
-                  // it has libraries defined in the default package.
-                  // TODO(jcollins-g): Handle case where embedder SDKs can be
-                  // assembled from multiple locations?
-                  packageGraph.hasEmbedderSdk &&
-                      packageMeta.isSdk &&
-                      libraries.any((l) => path.isWithin(
-                          packageGraph.packageMeta.dir.path,
-                          (l.element.source.fullName))) ||
-                  // autoIncludeDependencies means everything is local.
-                  packageGraph.config.autoIncludeDependencies) &&
-          // Regardless of the above rules, do not document as local if
-          // we excluded this package by name.
-          !packageGraph.config.isPackageExcluded(name);
-    }
+    _isLocal ??= (
+            // Document as local if this is the default package.
+            packageMeta == packageGraph.packageMeta ||
+                // Assume we want to document an embedded SDK as local if
+                // it has libraries defined in the default package.
+                // TODO(jcollins-g): Handle case where embedder SDKs can be
+                // assembled from multiple locations?
+                packageGraph.hasEmbedderSdk &&
+                    packageMeta.isSdk &&
+                    libraries.any((l) => path.isWithin(
+                        packageGraph.packageMeta.dir.path,
+                        (l.element.source.fullName))) ||
+                // autoIncludeDependencies means everything is local.
+                packageGraph.config.autoIncludeDependencies) &&
+        // Regardless of the above rules, do not document as local if
+        // we excluded this package by name.
+        !packageGraph.config.isPackageExcluded(name);
     return _isLocal;
   }
 
@@ -225,8 +223,8 @@ class Package extends LibraryContainer
             // elsewhere.
             case 'b':
               {
-                Version version = Version.parse(packageMeta.version);
-                String tag = 'stable';
+                var version = Version.parse(packageMeta.version);
+                var tag = 'stable';
                 if (version.isPreRelease) {
                   // version.preRelease is a List<dynamic> with a mix of
                   // integers and strings.  Given this, handle
@@ -292,10 +290,10 @@ class Package extends LibraryContainer
       }
 
       _nameToCategory[null] = Category(null, this, config);
-      for (Categorization c in libraries.expand(
+      for (var c in libraries.expand(
           (l) => l.allCanonicalModelElements.whereType<Categorization>())) {
         if (c.hasCategoryNames) {
-          for (String category in c.categoryNames) {
+          for (var category in c.categoryNames) {
             categoryFor(category).addItem(c);
           }
         } else {
@@ -310,10 +308,8 @@ class Package extends LibraryContainer
   List<Category> _categories;
 
   List<Category> get categories {
-    if (_categories == null) {
-      _categories = nameToCategory.values.where((c) => c.name != null).toList()
-        ..sort();
-    }
+    _categories ??= nameToCategory.values.where((c) => c.name != null).toList()
+      ..sort();
     return _categories;
   }
 
@@ -329,10 +325,8 @@ class Package extends LibraryContainer
 
   @override
   DartdocOptionContext get config {
-    if (_config == null) {
-      _config = DartdocOptionContext.fromContext(
-          packageGraph.config, Directory(packagePath));
-    }
+    _config ??= DartdocOptionContext.fromContext(
+        packageGraph.config, Directory(packagePath));
     return _config;
   }
 
@@ -348,9 +342,7 @@ class Package extends LibraryContainer
   String _packagePath;
 
   String get packagePath {
-    if (_packagePath == null) {
-      _packagePath = path.canonicalize(packageMeta.dir.path);
-    }
+    _packagePath ??= path.canonicalize(packageMeta.dir.path);
     return _packagePath;
   }
 

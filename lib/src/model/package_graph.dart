@@ -41,7 +41,7 @@ class PackageGraph {
   /// span packages.
   void addLibraryToGraph(ResolvedLibraryResult result) {
     assert(!allLibrariesAdded);
-    LibraryElement element = result.element;
+    var element = result.element;
     var packageMeta = PackageMeta.fromElement(element, config.sdkDir);
     var lib = Library.fromLibraryResult(
         result, this, Package.fromPackageMeta(packageMeta, this));
@@ -67,8 +67,8 @@ class PackageGraph {
     specialClasses = SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.  Uses toList() in order to get all the precaching on the stack.
-    List<Future> precacheFutures = precacheLocalDocs().toList();
-    for (Future f in precacheFutures) {
+    var precacheFutures = precacheLocalDocs().toList();
+    for (var f in precacheFutures) {
       await f;
     }
     _localDocumentationBuilt = true;
@@ -95,10 +95,10 @@ class PackageGraph {
   /// Generate a list of futures for any docs that actually require precaching.
   Iterable<Future> precacheLocalDocs() sync* {
     // Prevent reentrancy.
-    Set<ModelElement> precachedElements = Set();
+    var precachedElements = <ModelElement>{};
 
     Iterable<Future> precacheOneElement(ModelElement m) sync* {
-      for (ModelElement d
+      for (var d
           in m.documentationFrom.where((d) => d.documentationComment != null)) {
         if (needsPrecacheRegExp.hasMatch(d.documentationComment) &&
             !precachedElements.contains(d)) {
@@ -116,7 +116,7 @@ class PackageGraph {
       }
     }
 
-    for (ModelElement m in allModelElements) {
+    for (var m in allModelElements) {
       // Skip if there is a canonicalModelElement somewhere else we can run this
       // for.  Not the same as allCanonicalModelElements since we need to run
       // for any ModelElement that might not have a canonical ModelElement,
@@ -128,7 +128,7 @@ class PackageGraph {
 
   // Many ModelElements have the same ModelNode; don't build/cache this data more
   // than once for them.
-  final Map<Element, ModelNode> _modelNodes = Map();
+  final Map<Element, ModelNode> _modelNodes = {};
 
   void populateModelNodeFor(
       Element element, Map<String, CompilationUnit> compilationUnitMap) {
@@ -157,10 +157,8 @@ class PackageGraph {
 
   List<Extension> _documentedExtensions;
   Iterable<Extension> get documentedExtensions {
-    if (_documentedExtensions == null) {
-      _documentedExtensions =
-          utils.filterNonDocumented(extensions).toList(growable: false);
-    }
+    _documentedExtensions ??=
+        utils.filterNonDocumented(extensions).toList(growable: false);
     return _documentedExtensions;
   }
 
@@ -173,13 +171,13 @@ class PackageGraph {
   Map<String, Set<ModelElement>> get findRefElementCache {
     if (_findRefElementCache == null) {
       assert(packageGraph.allLibrariesAdded);
-      _findRefElementCache = Map();
+      _findRefElementCache = {};
       for (final modelElement
           in utils.filterNonDocumented(packageGraph.allLocalModelElements)) {
         _findRefElementCache.putIfAbsent(
-            modelElement.fullyQualifiedNameWithoutLibrary, () => Set());
+            modelElement.fullyQualifiedNameWithoutLibrary, () => {});
         _findRefElementCache.putIfAbsent(
-            modelElement.fullyQualifiedName, () => Set());
+            modelElement.fullyQualifiedName, () => {});
         _findRefElementCache[modelElement.fullyQualifiedName].add(modelElement);
         _findRefElementCache[modelElement.fullyQualifiedNameWithoutLibrary]
             .add(modelElement);
@@ -189,21 +187,21 @@ class PackageGraph {
   }
 
   // All library objects related to this package; a superset of _libraries.
-  final Map<LibraryElement, Library> allLibraries = Map();
+  final Map<LibraryElement, Library> allLibraries = {};
 
   /// Keep track of warnings
   PackageWarningCounter _packageWarningCounter;
 
   /// All ModelElements constructed for this package; a superset of [allModelElements].
   final Map<Tuple3<Element, Library, Container>, ModelElement>
-      allConstructedModelElements = Map();
+      allConstructedModelElements = {};
 
   /// Anything that might be inheritable, place here for later lookup.
   final Map<Tuple2<Element, Library>, Set<ModelElement>>
-      allInheritableElements = Map();
+      allInheritableElements = {};
 
   /// Map of Class.href to a list of classes implementing that class
-  final Map<String, List<Class>> _implementors = Map();
+  final Map<String, List<Class>> _implementors = {};
 
   /// A list of extensions that exist in the package graph.
   final List<Extension> _extensions = [];
@@ -223,9 +221,7 @@ class PackageGraph {
   Package _defaultPackage;
 
   Package get defaultPackage {
-    if (_defaultPackage == null) {
-      _defaultPackage = Package.fromPackageMeta(packageMeta, this);
-    }
+    _defaultPackage ??= Package.fromPackageMeta(packageMeta, this);
     return _defaultPackage;
   }
 
@@ -247,8 +243,8 @@ class PackageGraph {
 
   Map<Source, SdkLibrary> get sdkLibrarySources {
     if (_sdkLibrarySources == null) {
-      _sdkLibrarySources = Map();
-      for (SdkLibrary lib in sdk?.sdkLibraries) {
+      _sdkLibrarySources = {};
+      for (var lib in sdk?.sdkLibraries) {
         _sdkLibrarySources[sdk.mapDartUri(lib.shortName)] = lib;
       }
     }
@@ -267,16 +263,15 @@ class PackageGraph {
   Set<String> _allRootDirs;
 
   bool packageDocumentedFor(ModelElement element) {
-    if (_allRootDirs == null) {
-      _allRootDirs = Set()
-        ..addAll(publicLibraries.map((l) => l.packageMeta?.resolvedDir));
-    }
+    _allRootDirs ??= {
+      ...(publicLibraries.map((l) => l.packageMeta?.resolvedDir))
+    };
     return (_allRootDirs.contains(element.library.packageMeta?.resolvedDir));
   }
 
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
 
-  final Set<Tuple3<Element, PackageWarning, String>> _warnAlreadySeen = Set();
+  final Set<Tuple3<Element, PackageWarning, String>> _warnAlreadySeen = {};
 
   void warnOnElement(Warnable warnable, PackageWarning kind,
       {String message,
@@ -331,8 +326,8 @@ class PackageGraph {
     //                   the user, yet we still want IntelliJ to link properly.
     final warnableName = _safeWarnableName(warnable);
 
-    String warnablePrefix = 'from';
-    String referredFromPrefix = 'referred to by';
+    var warnablePrefix = 'from';
+    var referredFromPrefix = 'referred to by';
     String warningMessage;
     switch (kind) {
       case PackageWarning.noCanonicalFound:
@@ -342,21 +337,21 @@ class PackageGraph {
         //                   messages and warn for non-public canonicalization
         //                   errors.
         warningMessage =
-            "no canonical library found for ${warnableName}, not linking";
+            'no canonical library found for ${warnableName}, not linking';
         break;
       case PackageWarning.ambiguousReexport:
         // Fix these warnings by adding the original library exporting the
         // symbol with --include, by using --auto-include-dependencies,
         // or by using --exclude to hide one of the libraries involved
         warningMessage =
-            "ambiguous reexport of ${warnableName}, canonicalization candidates: ${message}";
+            'ambiguous reexport of ${warnableName}, canonicalization candidates: ${message}';
         break;
       case PackageWarning.noLibraryLevelDocs:
         warningMessage =
-            "${warnable.fullyQualifiedName} has no library level documentation comments";
+            '${warnable.fullyQualifiedName} has no library level documentation comments';
         break;
       case PackageWarning.ambiguousDocReference:
-        warningMessage = "ambiguous doc reference ${message}";
+        warningMessage = 'ambiguous doc reference ${message}';
         break;
       case PackageWarning.ignoredCanonicalFor:
         warningMessage =
@@ -368,20 +363,20 @@ class PackageGraph {
         break;
       case PackageWarning.reexportedPrivateApiAcrossPackages:
         warningMessage =
-            "private API of ${message} is reexported by libraries in other packages: ";
+            'private API of ${message} is reexported by libraries in other packages: ';
         break;
       case PackageWarning.notImplemented:
         warningMessage = message;
         break;
       case PackageWarning.unresolvedDocReference:
-        warningMessage = "unresolved doc reference [${message}]";
+        warningMessage = 'unresolved doc reference [${message}]';
         referredFromPrefix = 'in documentation inherited from';
         break;
       case PackageWarning.unknownMacro:
-        warningMessage = "undefined macro [${message}]";
+        warningMessage = 'undefined macro [${message}]';
         break;
       case PackageWarning.unknownHtmlFragment:
-        warningMessage = "undefined HTML fragment identifier [${message}]";
+        warningMessage = 'undefined HTML fragment identifier [${message}]';
         break;
       case PackageWarning.brokenLink:
         warningMessage = 'dartdoc generated a broken link to: ${message}';
@@ -426,21 +421,21 @@ class PackageGraph {
         break;
     }
 
-    List<String> messageParts = [warningMessage];
+    var messageParts = <String>[warningMessage];
     if (warnable != null) {
-      messageParts.add("$warnablePrefix $warnableName: ${warnable.location}");
+      messageParts.add('$warnablePrefix $warnableName: ${warnable.location}');
     }
     if (referredFrom != null) {
-      for (Locatable referral in referredFrom) {
+      for (var referral in referredFrom) {
         if (referral != warnable) {
           var referredFromStrings = _safeWarnableName(referral);
           messageParts.add(
-              "$referredFromPrefix $referredFromStrings: ${referral.location}");
+              '$referredFromPrefix $referredFromStrings: ${referral.location}');
         }
       }
     }
     if (config.verboseWarnings && extendedDebug != null) {
-      messageParts.addAll(extendedDebug.map((s) => "    $s"));
+      messageParts.addAll(extendedDebug.map((s) => '    $s'));
     }
     String fullMessage;
     if (messageParts.length <= 2) {
@@ -468,7 +463,7 @@ class PackageGraph {
     if (_publicPackages == null) {
       assert(allLibrariesAdded);
       // Help the user if they pass us a package that doesn't exist.
-      for (String packageName in config.packageOrder) {
+      for (var packageName in config.packageOrder) {
         if (!packages.map((p) => p.name).contains(packageName)) {
           warnOnElement(
               null, PackageWarning.packageOrderGivesMissingPackageName,
@@ -489,16 +484,15 @@ class PackageGraph {
   Iterable<Package> get documentedPackages =>
       packages.where((p) => p.documentedWhere != DocumentLocation.missing);
 
-  Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = Map();
+  Map<LibraryElement, Set<Library>> _libraryElementReexportedBy = {};
 
   /// Prevent cycles from breaking our stack.
-  Set<Tuple2<Library, LibraryElement>> _reexportsTagged = Set();
+  Set<Tuple2<Library, LibraryElement>> _reexportsTagged = {};
 
   void _tagReexportsFor(
       final Library topLevelLibrary, final LibraryElement libraryElement,
       [ExportElement lastExportedElement]) {
-    Tuple2<Library, LibraryElement> key =
-        Tuple2(topLevelLibrary, libraryElement);
+    var key = Tuple2<Library, LibraryElement>(topLevelLibrary, libraryElement);
     if (_reexportsTagged.contains(key)) {
       return;
     }
@@ -513,9 +507,9 @@ class PackageGraph {
           referredFrom: <Locatable>[topLevelLibrary]);
       return;
     }
-    _libraryElementReexportedBy.putIfAbsent(libraryElement, () => Set());
+    _libraryElementReexportedBy.putIfAbsent(libraryElement, () => {});
     _libraryElementReexportedBy[libraryElement].add(topLevelLibrary);
-    for (ExportElement exportedElement in libraryElement.exports) {
+    for (var exportedElement in libraryElement.exports) {
       _tagReexportsFor(
           topLevelLibrary, exportedElement.exportedLibrary, exportedElement);
     }
@@ -527,9 +521,9 @@ class PackageGraph {
     // Table must be reset if we're still in the middle of adding libraries.
     if (allLibraries.keys.length != _lastSizeOfAllLibraries) {
       _lastSizeOfAllLibraries = allLibraries.keys.length;
-      _libraryElementReexportedBy = Map<LibraryElement, Set<Library>>();
-      _reexportsTagged = Set();
-      for (Library library in publicLibraries) {
+      _libraryElementReexportedBy = <LibraryElement, Set<Library>>{};
+      _reexportsTagged = {};
+      for (var library in publicLibraries) {
         _tagReexportsFor(library, library.element);
       }
     }
@@ -542,11 +536,10 @@ class PackageGraph {
   /// on more than just [allLocalModelElements] to make the error messages
   /// comprehensive.
   Map<String, Set<ModelElement>> get allHrefs {
-    Map<String, Set<ModelElement>> hrefMap = Map();
+    var hrefMap = <String, Set<ModelElement>>{};
     // TODO(jcollins-g ): handle calculating hrefs causing new elements better
     //                    than toList().
-    for (ModelElement modelElement
-        in allConstructedModelElements.values.toList()) {
+    for (var modelElement in allConstructedModelElements.values.toList()) {
       // Technically speaking we should be able to use canonical model elements
       // only here, but since the warnings that depend on this debug
       // canonicalization problems, don't limit ourselves in case an href is
@@ -555,13 +548,13 @@ class PackageGraph {
       // TODO: see [Accessor.enclosingCombo]
       if (modelElement is Accessor) continue;
       if (modelElement.href == null) continue;
-      hrefMap.putIfAbsent(modelElement.href, () => Set());
+      hrefMap.putIfAbsent(modelElement.href, () => {});
       hrefMap[modelElement.href].add(modelElement);
     }
-    for (Package package in packageMap.values) {
-      for (Library library in package.libraries) {
+    for (var package in packageMap.values) {
+      for (var library in package.libraries) {
         if (library.href == null) continue;
-        hrefMap.putIfAbsent(library.href, () => Set());
+        hrefMap.putIfAbsent(library.href, () => {});
         hrefMap[library.href].add(library);
       }
     }
@@ -638,7 +631,7 @@ class PackageGraph {
   /// and the class these inherit from should instead claim implementation.
   Set<Class> get inheritThrough {
     if (_inheritThrough == null) {
-      _inheritThrough = Set();
+      _inheritThrough = {};
       _inheritThrough.add(specialClasses[SpecialClass.interceptor]);
     }
     return _inheritThrough;
@@ -650,7 +643,7 @@ class PackageGraph {
   /// in that we should never count them as documentable annotations.
   Set<Class> get invisibleAnnotations {
     if (_invisibleAnnotations == null) {
-      _invisibleAnnotations = Set();
+      _invisibleAnnotations = {};
       _invisibleAnnotations.add(specialClasses[SpecialClass.pragma]);
     }
     return _invisibleAnnotations;
@@ -659,12 +652,12 @@ class PackageGraph {
   @override
   String toString() => 'PackageGraph built from ${defaultPackage.name}';
 
-  final Map<Element, Library> _canonicalLibraryFor = Map();
+  final Map<Element, Library> _canonicalLibraryFor = {};
 
   /// Tries to find a top level library that references this element.
   Library findCanonicalLibraryFor(Element e) {
     assert(allLibrariesAdded);
-    Element searchElement = e;
+    var searchElement = e;
     if (e is PropertyAccessorElement) {
       searchElement = e.variable;
     }
@@ -676,10 +669,9 @@ class PackageGraph {
       return _canonicalLibraryFor[e];
     }
     _canonicalLibraryFor[e] = null;
-    for (Library library in publicLibraries) {
+    for (var library in publicLibraries) {
       if (library.modelElementsMap.containsKey(searchElement)) {
-        for (ModelElement modelElement
-            in library.modelElementsMap[searchElement]) {
+        for (var modelElement in library.modelElementsMap[searchElement]) {
           if (modelElement.isCanonical) {
             _canonicalLibraryFor[e] = library;
             break;
@@ -700,7 +692,7 @@ class PackageGraph {
   ModelElement findCanonicalModelElementFor(Element e,
       {Container preferredClass}) {
     assert(allLibrariesAdded);
-    Library lib = findCanonicalLibraryFor(e);
+    var lib = findCanonicalLibraryFor(e);
     if (preferredClass != null && preferredClass is Container) {
       Container canonicalClass =
           findCanonicalModelElementFor(preferredClass.element);
@@ -725,12 +717,12 @@ class PackageGraph {
     // with member elements.
     if (e is ClassMemberElement || e is PropertyAccessorElement) {
       e = e.declaration;
-      Set<ModelElement> candidates = Set();
-      Tuple2<Element, Library> iKey = Tuple2(e, lib);
-      Tuple4<Element, Library, Class, ModelElement> key =
-          Tuple4(e, lib, null, null);
-      Tuple4<Element, Library, Class, ModelElement> keyWithClass =
-          Tuple4(e, lib, preferredClass, null);
+      var candidates = <ModelElement>{};
+      var iKey = Tuple2<Element, Library>(e, lib);
+      var key =
+          Tuple4<Element, Library, Class, ModelElement>(e, lib, null, null);
+      var keyWithClass = Tuple4<Element, Library, Class, ModelElement>(
+          e, lib, preferredClass, null);
       if (allConstructedModelElements.containsKey(key)) {
         candidates.add(allConstructedModelElements[key]);
       }
@@ -748,13 +740,12 @@ class PackageGraph {
           return false;
         }));
       }
-      Set<ModelElement> matches = Set()
-        ..addAll(candidates.where((me) => me.isCanonical));
+      var matches = <ModelElement>{...candidates.where((me) => me.isCanonical)};
 
       // It's possible to find accessors but no combos.  Be sure that if we
       // have Accessors, we find their combos too.
       if (matches.any((me) => me is Accessor)) {
-        List<GetterSetterCombo> combos =
+        var combos =
             matches.whereType<Accessor>().map((a) => a.enclosingCombo).toList();
         matches.addAll(combos);
         assert(combos.every((c) => c.isCanonical));
@@ -766,7 +757,7 @@ class PackageGraph {
           preferredClass != null &&
           preferredClass is Class) {
         // Search for matches inside our superchain.
-        List<Class> superChain = preferredClass.superChain
+        var superChain = preferredClass.superChain
             .map((et) => et.element)
             .cast<Class>()
             .toList();
@@ -775,10 +766,11 @@ class PackageGraph {
             !superChain.contains((me as EnclosedElement).enclosingElement));
         // Assumed all matches are EnclosedElement because we've been told about a
         // preferredClass.
-        Set<Class> enclosingElements = Set()
-          ..addAll(matches
-              .map((me) => (me as EnclosedElement).enclosingElement as Class));
-        for (Class c in superChain.reversed) {
+        var enclosingElements = {
+          ...matches
+              .map((me) => (me as EnclosedElement).enclosingElement as Class)
+        };
+        for (var c in superChain.reversed) {
           if (enclosingElements.contains(c)) {
             matches.removeWhere(
                 (me) => (me as EnclosedElement).enclosingElement != c);
@@ -846,7 +838,7 @@ class PackageGraph {
     if (result.element.library == null) {
       return null;
     }
-    Library foundLibrary = Library.fromLibraryResult(
+    var foundLibrary = Library.fromLibraryResult(
         result,
         this,
         Package.fromPackageMeta(
@@ -862,12 +854,12 @@ class PackageGraph {
     assert(allLibrariesAdded);
     if (_allModelElements == null) {
       _allModelElements = [];
-      Set<Package> packagesToDo = packages.toSet();
-      Set<Package> completedPackages = Set();
+      var packagesToDo = packages.toSet();
+      var completedPackages = <Package>{};
       while (packagesToDo.length > completedPackages.length) {
         packagesToDo.difference(completedPackages).forEach((Package p) {
-          Set<Library> librariesToDo = p.allLibraries.toSet();
-          Set<Library> completedLibraries = Set();
+          var librariesToDo = p.allLibraries.toSet();
+          var completedLibraries = <Library>{};
           while (librariesToDo.length > completedLibraries.length) {
             librariesToDo
                 .difference(completedLibraries)
@@ -891,7 +883,7 @@ class PackageGraph {
     assert(allLibrariesAdded);
     if (_allLocalModelElements == null) {
       _allLocalModelElements = [];
-      this.localLibraries.forEach((library) {
+      localLibraries.forEach((library) {
         _allLocalModelElements.addAll(library.allModelElements);
       });
     }

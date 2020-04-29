@@ -79,9 +79,9 @@ void startLogging(LoggingContext config) {
     // Used to track if we're printing `...` to show progress.
     // Allows unified new-line tracking
     var writingProgress = false;
-    Ansi ansi = Ansi(Ansi.terminalSupportsAnsi);
-    int spinnerIndex = 0;
-    final List<String> spinner = ['-', r'\', '|', '/'];
+    var ansi = Ansi(Ansi.terminalSupportsAnsi);
+    var spinnerIndex = 0;
+    final spinner = ['-', r'\', '|', '/'];
 
     Logger.root.onRecord.listen((record) {
       if (record.level == progressLevel) {

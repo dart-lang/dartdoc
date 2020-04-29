@@ -13,8 +13,9 @@ import 'package:dartdoc/src/model/indexable.dart';
 /// will likely want the same content for this.
 String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   var encoder = pretty ? JsonEncoder.withIndent(' ') : JsonEncoder();
+  // ignore: omit_local_variable_types
   final List<Map> indexItems = categories.map((Categorization e) {
-    Map data = {
+    var data = <String, dynamic>{
       'name': e.name,
       'qualifiedName': e.fullyQualifiedName,
       'href': e.href,
@@ -45,7 +46,7 @@ String generateSearchIndexJson(
     Iterable<Indexable> indexedElements, bool pretty) {
   var encoder = pretty ? JsonEncoder.withIndent(' ') : JsonEncoder();
   final List<Map> indexItems = indexedElements.map((Indexable e) {
-    Map data = {
+    var data = <String, dynamic>{
       'name': e.name,
       'qualifiedName': e.fullyQualifiedName,
       'href': e.href,
@@ -53,7 +54,7 @@ String generateSearchIndexJson(
       'overriddenDepth': e.overriddenDepth,
     };
     if (e is EnclosedElement) {
-      EnclosedElement ee = e as EnclosedElement;
+      var ee = e as EnclosedElement;
       data['enclosedBy'] = {
         'name': ee.enclosingElement.name,
         'type': ee.enclosingElement.kind

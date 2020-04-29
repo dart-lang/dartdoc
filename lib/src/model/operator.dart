@@ -8,26 +8,26 @@ import 'package:dartdoc/src/model/model.dart';
 
 class Operator extends Method {
   static const Map<String, String> friendlyNames = {
-    "[]": "get",
-    "[]=": "put",
-    "~": "bitwise_negate",
-    "==": "equals",
-    "-": "minus",
-    "+": "plus",
-    "*": "multiply",
-    "/": "divide",
-    "<": "less",
-    ">": "greater",
-    ">=": "greater_equal",
-    "<=": "less_equal",
-    "<<": "shift_left",
-    ">>": "shift_right",
-    "^": "bitwise_exclusive_or",
-    "unary-": "unary_minus",
-    "|": "bitwise_or",
-    "&": "bitwise_and",
-    "~/": "truncate_divide",
-    "%": "modulo"
+    '[]': 'get',
+    '[]=': 'put',
+    '~': 'bitwise_negate',
+    '==': 'equals',
+    '-': 'minus',
+    '+': 'plus',
+    '*': 'multiply',
+    '/': 'divide',
+    '<': 'less',
+    '>': 'greater',
+    '>=': 'greater_equal',
+    '<=': 'less_equal',
+    '<<': 'shift_left',
+    '>>': 'shift_right',
+    '^': 'bitwise_exclusive_or',
+    'unary-': 'unary_minus',
+    '|': 'bitwise_or',
+    '&': 'bitwise_and',
+    '~/': 'truncate_divide',
+    '%': 'modulo'
   };
 
   Operator(MethodElement element, Library library, PackageGraph packageGraph)
@@ -42,7 +42,7 @@ class Operator extends Method {
   String get fileName {
     var actualName = super.name;
     if (friendlyNames.containsKey(actualName)) {
-      actualName = "operator_${friendlyNames[actualName]}";
+      actualName = 'operator_${friendlyNames[actualName]}';
     }
     return '$actualName.$fileType';
   }

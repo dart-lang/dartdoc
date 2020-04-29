@@ -23,7 +23,7 @@ String get _testPackageFlutterPluginPath => path
 
 void main() {
   group('Invoking command-line dartdoc', () {
-    String dartdocPath = path.canonicalize(path.join('bin', 'dartdoc.dart'));
+    var dartdocPath = path.canonicalize(path.join('bin', 'dartdoc.dart'));
     CoverageSubprocessLauncher subprocessLauncher;
     Directory tempDir;
 
@@ -46,9 +46,9 @@ void main() {
 
     test('running --no-generate-docs is quiet and does not generate docs',
         () async {
-      Directory outputDir =
+      var outputDir =
           await Directory.systemTemp.createTemp('dartdoc.testEmpty.');
-      List<String> outputLines = [];
+      var outputLines = <String>[];
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable,
           [dartdocPath, '--output', outputDir.path, '--no-generate-docs'],
           perLine: outputLines.add, workingDirectory: _testPackagePath);
@@ -59,9 +59,9 @@ void main() {
     }, timeout: Timeout.factor(2));
 
     test('running --quiet is quiet and does generate docs', () async {
-      Directory outputDir =
+      var outputDir =
           await Directory.systemTemp.createTemp('dartdoc.testEmpty.');
-      List<String> outputLines = [];
+      var outputLines = <String>[];
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable,
           [dartdocPath, '--output', outputDir.path, '--quiet'],
           perLine: outputLines.add, workingDirectory: _testPackagePath);
@@ -73,7 +73,7 @@ void main() {
 
     test('invalid parameters return non-zero and print a fatal-error',
         () async {
-      List outputLines = [];
+      var outputLines = <String>[];
       await expectLater(
           () => subprocessLauncher.runStreamed(
               Platform.resolvedExecutable,
@@ -90,8 +90,8 @@ void main() {
     });
 
     test('missing a required file path prints a fatal-error', () async {
-      List outputLines = [];
-      String impossiblePath = path.join(dartdocPath, 'impossible');
+      var outputLines = [];
+      var impossiblePath = path.join(dartdocPath, 'impossible');
       await expectLater(
           () => subprocessLauncher.runStreamed(
               Platform.resolvedExecutable,
@@ -120,7 +120,7 @@ void main() {
     });
 
     test('help prints command line args', () async {
-      List<String> outputLines = [];
+      var outputLines = <String>[];
       await subprocessLauncher.runStreamed(
           Platform.resolvedExecutable, [dartdocPath, '--help'],
           perLine: outputLines.add);
@@ -133,7 +133,7 @@ void main() {
     });
 
     test('Validate missing FLUTTER_ROOT exception is clean', () async {
-      StringBuffer output = StringBuffer();
+      var output = StringBuffer();
       var args = <String>[dartdocPath];
       var dart_tool =
           Directory(path.join(_testPackageFlutterPluginPath, '.dart_tool'));
@@ -158,19 +158,19 @@ void main() {
       expect(output.toString(), isNot(contains('asynchronous gap')));
     });
 
-    test("Validate --version works", () async {
-      StringBuffer output = StringBuffer();
+    test('Validate --version works', () async {
+      var output = StringBuffer();
       var args = <String>[dartdocPath, '--version'];
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
           workingDirectory: _testPackagePath,
           perLine: (s) => output.writeln(s));
-      PackageMeta dartdocMeta = PackageMeta.fromFilename(dartdocPath);
+      var dartdocMeta = PackageMeta.fromFilename(dartdocPath);
       expect(output.toString(),
           endsWith('dartdoc version: ${dartdocMeta.version}\n'));
     });
 
     test('Check for sample code in examples', () async {
-      StringBuffer output = StringBuffer();
+      var output = StringBuffer();
       var args = <String>[
         dartdocPath,
         '--include',
@@ -205,7 +205,7 @@ void main() {
         '--json'
       ];
 
-      Iterable<Map> jsonValues = await subprocessLauncher.runStreamed(
+      var jsonValues = await subprocessLauncher.runStreamed(
           Platform.resolvedExecutable, args,
           workingDirectory: _testPackagePath);
 
@@ -214,8 +214,7 @@ void main() {
     }, timeout: Timeout.factor(2));
 
     test('--footer-text includes text', () async {
-      String footerTextPath =
-          path.join(Directory.systemTemp.path, 'footer.txt');
+      var footerTextPath = path.join(Directory.systemTemp.path, 'footer.txt');
       File(footerTextPath).writeAsStringSync(' footer text include ');
 
       var args = <String>[
@@ -230,12 +229,12 @@ void main() {
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
           workingDirectory: _testPackagePath);
 
-      File outFile = File(path.join(tempDir.path, 'index.html'));
+      var outFile = File(path.join(tempDir.path, 'index.html'));
       expect(outFile.readAsStringSync(), contains('footer text include'));
     }, timeout: Timeout.factor(2));
 
     test('--footer-text excludes version', () async {
-      String _testPackagePath = path
+      var _testPackagePath = path
           .fromUri(_currentFileUri.resolve('../testing/test_package_options'));
 
       var args = <String>[dartdocPath, '--output', tempDir.path];
@@ -243,12 +242,12 @@ void main() {
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
           workingDirectory: _testPackagePath);
 
-      File outFile = File(path.join(tempDir.path, 'index.html'));
-      RegExp footerRegex =
+      var outFile = File(path.join(tempDir.path, 'index.html'));
+      var footerRegex =
           RegExp('<footer>(.*\s*?\n?)+?</footer>', multiLine: true);
       // get footer, check for version number
-      RegExpMatch m = footerRegex.firstMatch(outFile.readAsStringSync());
-      RegExp version = RegExp(r'(\d+\.)?(\d+\.)?(\*|\d+)');
+      var m = footerRegex.firstMatch(outFile.readAsStringSync());
+      var version = RegExp(r'(\d+\.)?(\d+\.)?(\*|\d+)');
       expect(version.hasMatch(m.group(0)), false);
     });
   }, timeout: Timeout.factor(8));

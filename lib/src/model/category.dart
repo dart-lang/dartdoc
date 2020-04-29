@@ -29,7 +29,7 @@ class Category extends Nameable
   final String _name;
   @override
   DartdocOptionContext config;
-  final Set<Categorization> _allItems = Set();
+  final Set<Categorization> _allItems = {};
 
   final List<Class> _classes = [];
   final List<Extension> _extensions = [];
@@ -71,7 +71,7 @@ class Category extends Nameable
     } else if (c is Extension) {
       _extensions.add(c);
     } else {
-      throw UnimplementedError("Unrecognized element");
+      throw UnimplementedError('Unrecognized element');
     }
   }
 
@@ -110,10 +110,8 @@ class Category extends Nameable
 
   @override
   bool get isDocumented {
-    if (_isDocumented == null) {
-      _isDocumented = documentedWhere != DocumentLocation.missing &&
-          documentationFile != null;
-    }
+    _isDocumented ??= documentedWhere != DocumentLocation.missing &&
+        documentationFile != null;
     return _isDocumented;
   }
 
@@ -135,9 +133,7 @@ class Category extends Nameable
 
   /// The position in the container order for this category.
   int get categoryIndex {
-    if (_categoryIndex == null) {
-      _categoryIndex = package.categories.indexOf(this);
-    }
+    _categoryIndex ??= package.categories.indexOf(this);
     return _categoryIndex;
   }
 

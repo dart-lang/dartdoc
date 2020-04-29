@@ -46,10 +46,8 @@ class Class extends Container
   Constructor _defaultConstructor;
 
   Constructor get defaultConstructor {
-    if (_defaultConstructor == null) {
-      _defaultConstructor = constructors
-          .firstWhere((c) => c.isDefaultConstructor, orElse: () => null);
-    }
+    _defaultConstructor ??= constructors
+        .firstWhere((c) => c.isDefaultConstructor, orElse: () => null);
     return _defaultConstructor;
   }
 
@@ -81,8 +79,8 @@ class Class extends Container
 
   Map<Element, ModelElement> get allElements {
     if (_allElements == null) {
-      _allElements = Map();
-      for (ModelElement me in allModelElements) {
+      _allElements = {};
+      for (var me in allModelElements) {
         assert(!_allElements.containsKey(me.element));
         _allElements[me.element] = me;
       }
@@ -96,7 +94,7 @@ class Class extends Container
   Map<String, List<ModelElement>> get allModelElementsByNamePart {
     if (_allModelElementsByNamePart == null) {
       _allModelElementsByNamePart = {};
-      for (ModelElement me in allModelElements) {
+      for (var me in allModelElements) {
         _allModelElementsByNamePart.update(
             me.namePart, (List<ModelElement> v) => v..add(me),
             ifAbsent: () => <ModelElement>[me]);
@@ -118,16 +116,16 @@ class Class extends Container
   /// for Object.
   ModelElement memberByExample(ModelElement example) {
     if (_membersByName == null) {
-      _membersByName = Map();
-      for (ModelElement me in allModelElements) {
+      _membersByName = {};
+      for (var me in allModelElements) {
         if (!_membersByName.containsKey(me.name)) {
-          _membersByName[me.name] = List();
+          _membersByName[me.name] = [];
         }
         _membersByName[me.name].add(me);
       }
     }
     ModelElement member;
-    Iterable<ModelElement> possibleMembers = _membersByName[example.name]
+    var possibleMembers = _membersByName[example.name]
         .where((e) => e.runtimeType == example.runtimeType);
     if (example.runtimeType == Accessor) {
       possibleMembers = possibleMembers.where(
@@ -141,21 +139,19 @@ class Class extends Container
   List<ModelElement> _allModelElements;
 
   List<ModelElement> get allModelElements {
-    if (_allModelElements == null) {
-      _allModelElements = List.from(
-          quiver.concat([
-            allInstanceMethods,
-            allInstanceFields,
-            allAccessors,
-            allOperators,
-            constants,
-            constructors,
-            staticMethods,
-            staticProperties,
-            typeParameters,
-          ]),
-          growable: false);
-    }
+    _allModelElements ??= List.from(
+        quiver.concat([
+          allInstanceMethods,
+          allInstanceFields,
+          allAccessors,
+          allOperators,
+          constants,
+          constructors,
+          staticMethods,
+          staticProperties,
+          typeParameters,
+        ]),
+        growable: false);
     return _allModelElements;
   }
 
@@ -247,26 +243,23 @@ class Class extends Container
 
   /// Returns all the implementors of this class.
   Iterable<Class> get publicImplementors {
-    return model_utils.filterNonPublic(model_utils.findCanonicalFor(
-        packageGraph.implementors[href] != null
-            ? packageGraph.implementors[href]
-            : []));
+    return model_utils.filterNonPublic(
+        model_utils.findCanonicalFor(packageGraph.implementors[href] ?? []));
   }
 
   List<Method> get inheritedMethods {
     if (_inheritedMethods == null) {
       _inheritedMethods = <Method>[];
-      Set<String> methodNames = methods.map((m) => m.element.name).toSet();
+      var methodNames = methods.map((m) => m.element.name).toSet();
 
-      Set<ExecutableElement> inheritedMethodElements =
-          _inheritedElements.where((e) {
+      var inheritedMethodElements = _inheritedElements.where((e) {
         return (e is MethodElement &&
             !e.isOperator &&
             e is! PropertyAccessorElement &&
             !methodNames.contains(e.name));
       }).toSet();
 
-      for (ExecutableElement e in inheritedMethodElements) {
+      for (var e in inheritedMethodElements) {
         Method m = ModelElement.from(e, library, packageGraph,
             enclosingContainer: this);
         _inheritedMethods.add(m);
@@ -284,15 +277,14 @@ class Class extends Container
   List<Operator> get inheritedOperators {
     if (_inheritedOperators == null) {
       _inheritedOperators = [];
-      Set<String> operatorNames = operators.map((o) => o.element.name).toSet();
+      var operatorNames = operators.map((o) => o.element.name).toSet();
 
-      Set<ExecutableElement> inheritedOperatorElements =
-          _inheritedElements.where((e) {
+      var inheritedOperatorElements = _inheritedElements.where((e) {
         return (e is MethodElement &&
             e.isOperator &&
             !operatorNames.contains(e.name));
       }).toSet();
-      for (ExecutableElement e in inheritedOperatorElements) {
+      for (var e in inheritedOperatorElements) {
         Operator o = ModelElement.from(e, library, packageGraph,
             enclosingContainer: this);
         _inheritedOperators.add(o);
@@ -306,10 +298,8 @@ class Class extends Container
       model_utils.filterNonPublic(inheritedOperators);
 
   List<Field> get inheritedProperties {
-    if (_inheritedProperties == null) {
-      _inheritedProperties = allFields.where((f) => f.isInherited).toList()
-        ..sort(byName);
-    }
+    _inheritedProperties ??= allFields.where((f) => f.isInherited).toList()
+      ..sort(byName);
     return _inheritedProperties;
   }
 
@@ -367,11 +357,11 @@ class Class extends Container
       _inheritanceChain.add(this);
 
       /// Caching should make this recursion a little less painful.
-      for (Class c in mixins.reversed.map((e) => (e.element as Class))) {
+      for (var c in mixins.reversed.map((e) => (e.element as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
 
-      for (Class c in superChain.map((e) => (e.element as Class))) {
+      for (var c in superChain.map((e) => (e.element as Class))) {
         _inheritanceChain.addAll(c.inheritanceChain);
       }
 
@@ -384,8 +374,8 @@ class Class extends Container
   }
 
   List<DefinedElementType> get superChain {
-    List<DefinedElementType> typeChain = [];
-    DefinedElementType parent = supertype;
+    var typeChain = <DefinedElementType>[];
+    var parent = supertype;
     while (parent != null) {
       typeChain.add(parent);
       if (parent.type is InterfaceType) {
@@ -442,14 +432,14 @@ class Class extends Container
   List<Field> get allFields {
     if (_fields == null) {
       _fields = [];
-      Set<PropertyAccessorElement> inheritedAccessors = Set()
+      var inheritedAccessors = <PropertyAccessorElement>{}
         ..addAll(_inheritedElements.whereType<PropertyAccessorElement>());
 
       // This structure keeps track of inherited accessors, allowing lookup
       // by field name (stripping the '=' from setters).
-      Map<String, List<PropertyAccessorElement>> accessorMap = Map();
-      for (PropertyAccessorElement accessorElement in inheritedAccessors) {
-        String name = accessorElement.name.replaceFirst('=', '');
+      var accessorMap = <String, List<PropertyAccessorElement>>{};
+      for (var accessorElement in inheritedAccessors) {
+        var name = accessorElement.name.replaceFirst('=', '');
         accessorMap.putIfAbsent(name, () => []);
         accessorMap[name].add(accessorElement);
       }
@@ -457,13 +447,13 @@ class Class extends Container
       // For half-inherited fields, the analyzer only links the non-inherited
       // to the [FieldElement].  Compose our [Field] class by hand by looking up
       // inherited accessors that may be related.
-      for (FieldElement f in element.fields) {
-        PropertyAccessorElement getterElement = f.getter;
+      for (var f in element.fields) {
+        var getterElement = f.getter;
         if (getterElement == null && accessorMap.containsKey(f.name)) {
           getterElement = accessorMap[f.name]
               .firstWhere((e) => e.isGetter, orElse: () => null);
         }
-        PropertyAccessorElement setterElement = f.setter;
+        var setterElement = f.setter;
         if (setterElement == null && accessorMap.containsKey(f.name)) {
           setterElement = accessorMap[f.name]
               .firstWhere((e) => e.isSetter, orElse: () => null);
@@ -474,12 +464,11 @@ class Class extends Container
 
       // Now we only have inherited accessors who aren't associated with
       // anything in cls._fields.
-      for (String fieldName in accessorMap.keys) {
-        List<PropertyAccessorElement> elements =
-            accessorMap[fieldName].toList();
-        PropertyAccessorElement getterElement =
+      for (var fieldName in accessorMap.keys) {
+        var elements = accessorMap[fieldName].toList();
+        var getterElement =
             elements.firstWhere((e) => e.isGetter, orElse: () => null);
-        PropertyAccessorElement setterElement =
+        var setterElement =
             elements.firstWhere((e) => e.isSetter, orElse: () => null);
         _addSingleField(getterElement, setterElement, inheritedAccessors);
       }
@@ -499,9 +488,9 @@ class Class extends Container
       PropertyAccessorElement setterElement,
       Set<PropertyAccessorElement> inheritedAccessors,
       [FieldElement f]) {
-    ContainerAccessor getter =
+    var getter =
         ContainerAccessor.from(getterElement, inheritedAccessors, this);
-    ContainerAccessor setter =
+    var setter =
         ContainerAccessor.from(setterElement, inheritedAccessors, this);
     // Rebind getterElement/setterElement as ModelElement.from can resolve
     // MultiplyInheritedExecutableElements or resolve Members.
@@ -550,12 +539,10 @@ class Class extends Container
 
   @override
   List<Method> get methods {
-    if (_methods == null) {
-      _methods = element.methods.map((e) {
-        return ModelElement.from(e, library, packageGraph) as Method;
-      }).toList(growable: false)
-        ..sort(byName);
-    }
+    _methods ??= element.methods.map((e) {
+      return ModelElement.from(e, library, packageGraph) as Method;
+    }).toList(growable: false)
+      ..sort(byName);
     return _methods;
   }
 
@@ -564,12 +551,10 @@ class Class extends Container
   // a stronger hash?
   @override
   List<TypeParameter> get typeParameters {
-    if (_typeParameters == null) {
-      _typeParameters = element.typeParameters.map((f) {
-        var lib = Library(f.enclosingElement.library, packageGraph);
-        return ModelElement.from(f, lib, packageGraph) as TypeParameter;
-      }).toList();
-    }
+    _typeParameters ??= element.typeParameters.map((f) {
+      var lib = Library(f.enclosingElement.library, packageGraph);
+      return ModelElement.from(f, lib, packageGraph) as TypeParameter;
+    }).toList();
     return _typeParameters;
   }
 

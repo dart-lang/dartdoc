@@ -20,10 +20,10 @@ abstract class Canonicalization implements Locatable, Documentable {
   }
 
   ScoredCandidate scoreElementWithLibrary(Library lib) {
-    ScoredCandidate scoredCandidate = ScoredCandidate(this, lib);
+    var scoredCandidate = ScoredCandidate(this, lib);
     Iterable<String> resplit(Set<String> items) sync* {
-      for (String item in items) {
-        for (String subItem in item.split('_')) {
+      for (var item in items) {
+        for (var subItem in item.split('_')) {
           yield subItem;
         }
       }
@@ -52,9 +52,9 @@ abstract class Canonicalization implements Locatable, Documentable {
             locationPieces.length.toDouble(),
         'element location shares parts with name');
     // If pieces of location at least start with elements of our library name, boost the score a little bit.
-    double scoreBoost = 0.0;
-    for (String piece in resplit(locationPieces)) {
-      for (String namePiece in lib.namePieces) {
+    var scoreBoost = 0.0;
+    for (var piece in resplit(locationPieces)) {
+      for (var namePiece in lib.namePieces) {
         if (piece.startsWith(namePiece)) {
           scoreBoost += 0.001;
         }

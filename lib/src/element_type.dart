@@ -35,9 +35,9 @@ abstract class ElementType extends Privacy {
       }
       return UndefinedElementType(f, library, packageGraph, returnedFrom);
     } else {
-      ModelElement element = ModelElement.fromElement(f.element, packageGraph);
+      var element = ModelElement.fromElement(f.element, packageGraph);
       assert(f is ParameterizedType || f is TypeParameterType);
-      bool isGenericTypeAlias =
+      var isGenericTypeAlias =
           f.element.enclosingElement is GenericTypeAliasElement;
       if (f is FunctionType) {
         assert(f is ParameterizedType);
@@ -84,7 +84,7 @@ abstract class ElementType extends Privacy {
   bool isSubtypeOf(ElementType t);
 
   @override
-  String toString() => "$type";
+  String toString() => '$type';
 
   DartType get type => _type;
 }
@@ -147,7 +147,7 @@ class FunctionTypeElementType extends UndefinedElementType {
 
   @override
   List<Parameter> get parameters {
-    List<ParameterElement> params = type.parameters;
+    var params = type.parameters;
     return UnmodifiableListView<Parameter>(params
         .map((p) => ModelElement.from(p, library, packageGraph) as Parameter)
         .toList());
@@ -158,9 +158,7 @@ class FunctionTypeElementType extends UndefinedElementType {
 
   @override
   String get linkedName {
-    if (_linkedName == null) {
-      _linkedName = _renderer.renderLinkedName(this);
-    }
+    _linkedName ??= _renderer.renderLinkedName(this);
     return _linkedName;
   }
 
@@ -171,14 +169,12 @@ class FunctionTypeElementType extends UndefinedElementType {
 
   @override
   String get nameWithGenerics {
-    if (_nameWithGenerics == null) {
-      _nameWithGenerics = _renderer.renderNameWithGenerics(this);
-    }
+    _nameWithGenerics ??= _renderer.renderNameWithGenerics(this);
     return _nameWithGenerics;
   }
 
   List<TypeParameter> get typeFormals {
-    List<TypeParameterElement> typeFormals = type.typeFormals;
+    var typeFormals = type.typeFormals;
     return UnmodifiableListView<TypeParameter>(typeFormals
         .map(
             (p) => ModelElement.from(p, library, packageGraph) as TypeParameter)
@@ -200,18 +196,14 @@ class ParameterizedElementType extends DefinedElementType {
   String _linkedName;
   @override
   String get linkedName {
-    if (_linkedName == null) {
-      _linkedName = _renderer.renderLinkedName(this);
-    }
+    _linkedName ??= _renderer.renderLinkedName(this);
     return _linkedName;
   }
 
   String _nameWithGenerics;
   @override
   String get nameWithGenerics {
-    if (_nameWithGenerics == null) {
-      _nameWithGenerics = _renderer.renderNameWithGenerics(this);
-    }
+    _nameWithGenerics ??= _renderer.renderNameWithGenerics(this);
     return _nameWithGenerics;
   }
 
@@ -276,9 +268,7 @@ abstract class DefinedElementType extends ElementType {
   ModelElement get returnElement => element;
   ElementType _returnType;
   ElementType get returnType {
-    if (_returnType == null) {
-      _returnType = ElementType.from(type, library, packageGraph, this);
-    }
+    _returnType ??= ElementType.from(type, library, packageGraph, this);
     return _returnType;
   }
 
@@ -287,12 +277,10 @@ abstract class DefinedElementType extends ElementType {
 
   Iterable<ElementType> _typeArguments;
   Iterable<ElementType> get typeArguments {
-    if (_typeArguments == null) {
-      _typeArguments = (type as ParameterizedType)
-          .typeArguments
-          .map((f) => ElementType.from(f, library, packageGraph))
-          .toList();
-    }
+    _typeArguments ??= (type as ParameterizedType)
+        .typeArguments
+        .map((f) => ElementType.from(f, library, packageGraph))
+        .toList();
     return _typeArguments;
   }
 
@@ -343,9 +331,9 @@ abstract class DefinedElementType extends ElementType {
             library.typeSystem.isSubtypeOf(superType, instantiatedType))) {
       return true;
     }
-    List<InterfaceType> supertypes = [];
+    var supertypes = <InterfaceType>[];
     ClassElementImpl.collectAllSupertypes(supertypes, superType, null);
-    for (InterfaceType toVisit in supertypes) {
+    for (var toVisit in supertypes) {
       if (_isBoundSupertypeTo(toVisit, visited)) return true;
     }
     return false;
@@ -361,10 +349,8 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
 
   @override
   ElementType get returnType {
-    if (_returnType == null) {
-      _returnType =
-          ElementType.from(type.returnType, library, packageGraph, this);
-    }
+    _returnType ??=
+        ElementType.from(type.returnType, library, packageGraph, this);
     return _returnType;
   }
 
@@ -427,9 +413,7 @@ class CallableElementType extends ParameterizedElementType
 
   @override
   String get linkedName {
-    if (_linkedName == null) {
-      _linkedName = _renderer.renderLinkedName(this);
-    }
+    _linkedName ??= _renderer.renderLinkedName(this);
     return _linkedName;
   }
 
@@ -461,19 +445,15 @@ class CallableGenericTypeAliasElementType extends ParameterizedElementType
   ModelElement _returnElement;
   @override
   ModelElement get returnElement {
-    if (_returnElement == null) {
-      _returnElement =
-          ModelElement.fromElement(type.element.enclosingElement, packageGraph);
-    }
+    _returnElement ??=
+        ModelElement.fromElement(type.element.enclosingElement, packageGraph);
     return _returnElement;
   }
 
   @override
   ElementType get returnType {
-    if (_returnType == null) {
-      _returnType =
-          ElementType.from(type.returnType, library, packageGraph, this);
-    }
+    _returnType ??=
+        ElementType.from(type.returnType, library, packageGraph, this);
     return _returnType;
   }
 

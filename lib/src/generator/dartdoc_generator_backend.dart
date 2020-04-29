@@ -51,12 +51,12 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
 
   DartdocGeneratorBackend(
       DartdocGeneratorBackendOptions options, this.templates)
-      : this.options = (options ?? DartdocGeneratorBackendOptions());
+      : options = (options ?? DartdocGeneratorBackendOptions());
 
   /// Helper method to bind template data and emit the content to the writer.
   void render(FileWriter writer, String filename, Template template,
       TemplateData data) {
-    String content = template.renderString(data);
+    var content = template.renderString(data);
     if (!options.useBaseHref) {
       content = content.replaceAll(HTMLBASE_PLACEHOLDER, data.htmlBase);
     }
@@ -67,7 +67,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
   @override
   void generateCategoryJson(
       FileWriter writer, List<Categorization> categories) {
-    String json = generator_util.generateCategoryJson(
+    var json = generator_util.generateCategoryJson(
         categories, options.prettyIndexJson);
     if (!options.useBaseHref) {
       json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');
@@ -77,7 +77,7 @@ abstract class DartdocGeneratorBackend implements GeneratorBackend {
 
   @override
   void generateSearchIndex(FileWriter writer, List<Indexable> indexedElements) {
-    String json = generator_util.generateSearchIndexJson(
+    var json = generator_util.generateSearchIndexJson(
         indexedElements, options.prettyIndexJson);
     if (!options.useBaseHref) {
       json = json.replaceAll(HTMLBASE_PLACEHOLDER, '');

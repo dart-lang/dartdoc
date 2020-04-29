@@ -14,12 +14,12 @@ void main() {
     });
 
     test('composeLayoutTitle', () {
-      String test = renderer.composeLayoutTitle('Banana', 'Fruit', false);
+      var test = renderer.composeLayoutTitle('Banana', 'Fruit', false);
       expect(test, equals('Banana Fruit'));
     });
 
     test('composeLayoutTitle deprecated', () {
-      String test = renderer.composeLayoutTitle('Banana', 'Fruit', true);
+      var test = renderer.composeLayoutTitle('Banana', 'Fruit', true);
       expect(test, equals('<span class="deprecated">Banana</span> Fruit'));
     });
   });
@@ -32,12 +32,12 @@ void main() {
     });
 
     test('composeLayoutTitle', () {
-      String test = renderer.composeLayoutTitle('Banana', 'Fruit', false);
+      var test = renderer.composeLayoutTitle('Banana', 'Fruit', false);
       expect(test, equals('Banana Fruit'));
     });
 
     test('composeLayoutTitle deprecated', () {
-      String test = renderer.composeLayoutTitle('Banana', 'Fruit', true);
+      var test = renderer.composeLayoutTitle('Banana', 'Fruit', true);
       expect(test, equals('~~Banana~~ Fruit'));
     });
   });

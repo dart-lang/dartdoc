@@ -19,16 +19,14 @@ mixin ContainerMember on ModelElement implements EnclosedElement {
   Container _definingEnclosingContainer;
 
   Container get definingEnclosingContainer {
-    if (_definingEnclosingContainer == null) {
-      _definingEnclosingContainer =
-          ModelElement.fromElement(element.enclosingElement, packageGraph);
-    }
+    _definingEnclosingContainer ??=
+        ModelElement.fromElement(element.enclosingElement, packageGraph);
     return _definingEnclosingContainer;
   }
 
   @override
   Set<String> get features {
-    Set<String> _features = super.features;
+    var _features = super.features;
     if (isExtended) _features.add('extended');
     return _features;
   }

@@ -78,7 +78,7 @@ class Constructor extends ModelElement
   @override
   String get name {
     if (_name == null) {
-      String constructorName = element.name;
+      var constructorName = element.name;
       if (constructorName.isEmpty) {
         _name = enclosingElement.name;
       } else {
@@ -93,7 +93,7 @@ class Constructor extends ModelElement
   @override
   String get nameWithGenerics {
     if (_nameWithGenerics == null) {
-      String constructorName = element.name;
+      var constructorName = element.name;
       if (constructorName.isEmpty) {
         _nameWithGenerics = '${enclosingElement.name}${genericParameters}';
       } else {
