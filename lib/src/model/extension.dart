@@ -61,6 +61,9 @@ class Extension extends Container
     return _methods;
   }
 
+  @override
+  String get name => super.name ?? '';
+
   List<Field> _fields;
 
   @override
