@@ -117,6 +117,9 @@ Directory get flutterDir => _flutterDir ??= createTempSync('flutter');
 Directory get testPackage =>
     Directory(path.joinAll(['testing', 'test_package']));
 
+Directory get testPackageExperiments =>
+    Directory(path.joinAll(['testing', 'test_package_experiments']));
+
 Directory get pluginPackage =>
     Directory(path.joinAll(['testing', 'test_package_flutter_plugin']));
 
@@ -124,6 +127,11 @@ Directory _testPackageDocsDir;
 
 Directory get testPackageDocsDir =>
     _testPackageDocsDir ??= createTempSync('test_package');
+
+Directory _testPackageExperimentsDocsDir;
+Directory get testPackageExperimentsDocsDir =>
+    _testPackageExperimentsDocsDir ??=
+        createTempSync('test_package_experiments');
 
 Directory _pluginPackageDocsDir;
 
@@ -497,15 +505,14 @@ Future<List<Map>> _buildSdkDocs(String sdkDocsPath, Future<String> futureCwd,
       workingDirectory: cwd);
 }
 
-Future<List<Map>> _buildTestPackageDocs(
-    String outputDir, Future<String> futureCwd,
-    [String label]) async {
-  label ??= '';
+Future<List<Map>> _buildTestPackageDocs(String outputDir, String cwd,
+    {List<String> params, String label = '', String testPackagePath}) async {
   if (label != '') label = '-$label';
+  testPackagePath ??= testPackage.absolute.path;
+  params ??= [];
   var launcher = SubprocessLauncher('build-test-package-docs$label');
   Future testPackagePubGet = launcher.runStreamed(sdkBin('pub'), ['get'],
-      workingDirectory: testPackage.absolute.path);
-  var cwd = await futureCwd;
+      workingDirectory: testPackagePath);
   Future dartdocPubGet =
       launcher.runStreamed(sdkBin('pub'), ['get'], workingDirectory: cwd);
   await Future.wait([testPackagePubGet, dartdocPubGet]);
@@ -522,16 +529,33 @@ Future<List<Map>> _buildTestPackageDocs(
         '--json',
         '--link-to-remote',
         '--pretty-index-json',
+        ...params,
         ...extraDartdocParameters,
       ],
-      workingDirectory: testPackage.absolute.path);
+      workingDirectory: testPackagePath);
+}
+
+@Task('Build generated test package docs from the experiment test package')
+@Depends(clean)
+Future<void> buildTestExperimentsPackageDocs() async {
+  await _buildTestPackageDocs(
+      testPackageExperimentsDocsDir.absolute.path, Directory.current.path,
+      testPackagePath: testPackageExperiments.absolute.path,
+      params: ['--enable-experiment', 'non-nullable', '--no-link-to-remote']);
+}
+
+@Task('Serve experimental test package on port 8003.')
+@Depends(buildTestExperimentsPackageDocs)
+Future<void> serveTestExperimentsPackageDocs() async {
+  await _serveDocsFrom(testPackageExperimentsDocsDir.absolute.path, 8003,
+      'test-package-docs-experiments');
 }
 
 @Task('Build generated test package docs (with inherited docs and source code)')
 @Depends(clean)
 Future<void> buildTestPackageDocs() async {
   await _buildTestPackageDocs(
-      testPackageDocsDir.absolute.path, Future.value(Directory.current.path));
+      testPackageDocsDir.absolute.path, Directory.current.path);
 }
 
 @Task('Serve test package docs locally with dhttpd on port 8002')
@@ -549,11 +573,16 @@ Future<void> serveTestPackageDocs() async {
   ]);
 }
 
+bool _serveReady = false;
+
 Future<void> _serveDocsFrom(String servePath, int port, String context) async {
   log('launching dhttpd on port $port for $context');
   var launcher = SubprocessLauncher(context);
-  await launcher.runStreamed(sdkBin('pub'), ['get']);
-  await launcher.runStreamed(sdkBin('pub'), ['global', 'activate', 'dhttpd']);
+  if (!_serveReady) {
+    await launcher.runStreamed(sdkBin('pub'), ['get']);
+    await launcher.runStreamed(sdkBin('pub'), ['global', 'activate', 'dhttpd']);
+    _serveReady = true;
+  }
   await launcher.runStreamed(
       sdkBin('pub'), ['run', 'dhttpd', '--port', '$port', '--path', servePath]);
 }

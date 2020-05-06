@@ -14,9 +14,13 @@ import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import 'src/utils.dart' as utils;
+
+final String _platformVersionString = Platform.version.split(' ').first;
+final Version _platformVersion = Version.parse(_platformVersionString);
 
 void main() {
   var sdkDir = defaultSdkDir;
@@ -26,11 +30,19 @@ void main() {
     exit(1);
   }
 
+  // This doesn't have the `max` because NNBD is supposed to work after this
+  // version, and if the `max` is placed here we'll silently pass 2.10 stable
+  // if we haven't figured out how to switch on NNBD outside of `dev` builds
+  // as specified in #2148.
+  final _nnbdExperimentAllowed =
+      VersionRange(min: Version.parse('2.9.0'), includeMin: true);
+
   // Experimental features not yet enabled by default.  Move tests out of this block
   // when the feature is enabled by default.
   group('Experiments', () {
     Library lateFinalWithoutInitializer, nnbdClassMemberDeclarations;
     Class b;
+
     setUpAll(() async {
       lateFinalWithoutInitializer = (await utils.testPackageGraphExperiments)
           .libraries
@@ -120,7 +132,9 @@ void main() {
       expect(initializeMe.isLate, isTrue);
       expect(initializeMe.features, contains('late'));
     });
-  }, skip: 'dart-lang/dartdoc#2148');
+  },
+      skip: (!_nnbdExperimentAllowed.allows(_platformVersion) &&
+          !_platformVersionString.contains('edge')));
 
   group('HTML Injection when allowed', () {
     Class htmlInjection;
