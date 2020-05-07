@@ -98,6 +98,9 @@ Future<void> main(List<String> arguments) async {
     }, onError: (e, Chain chain) {
       if (e is DartdocFailure) {
         stderr.writeln('\ndartdoc failed: ${e}.');
+        if (config.verboseWarnings) {
+          stderr.writeln(chain.terse);
+        }
         exitCode = 1;
         return;
       } else {
