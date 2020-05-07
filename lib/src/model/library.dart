@@ -8,7 +8,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type_system.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:analyzer/source/line_info.dart';
-import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:analyzer/src/dart/element/inheritance_manager3.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -56,20 +55,22 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   List<TopLevelVariable> _variables;
   List<Element> _exportedAndLocalElements;
   String _name;
+  final String _restoredUri;
 
   factory Library(LibraryElement element, PackageGraph packageGraph) {
     return packageGraph.findButDoNotCreateLibraryFor(element);
   }
 
-  Library.fromLibraryResult(ResolvedLibraryResult libraryResult,
+  Library.fromLibraryResult(DartDocResolvedLibrary resolvedLibrary,
       PackageGraph packageGraph, this._package)
-      : super(libraryResult.element, null, packageGraph, null) {
+      : _restoredUri = resolvedLibrary.restoredUri,
+        super(resolvedLibrary.result.element, null, packageGraph, null) {
     if (element == null) throw ArgumentError.notNull('element');
 
     // Initialize [packageGraph]'s cache of ModelNodes for relevant
     // elements in this library.
     var _compilationUnitMap = <String, CompilationUnit>{};
-    _compilationUnitMap.addEntries(libraryResult.units
+    _compilationUnitMap.addEntries(resolvedLibrary.result.units
         .map((ResolvedUnitResult u) => MapEntry(u.path, u.unit)));
     _HashableChildLibraryElementVisitor((Element e) =>
             packageGraph.populateModelNodeFor(e, _compilationUnitMap))
@@ -414,7 +415,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// 'lib') are the same, but this will include slashes and possibly colons
   /// for anonymous libraries in subdirectories or other packages.
   String get nameFromPath {
-    _nameFromPath ??= getNameFromPath(element, packageGraph.driver, package);
+    _nameFromPath ??= _getNameFromPath(element, package, _restoredUri);
     return _nameFromPath;
   }
 
@@ -502,14 +503,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// path components; this function only strips the package prefix if the
   /// library is part of the default package or if it is being documented
   /// remotely.
-  static String getNameFromPath(
-      LibraryElement element, AnalysisDriver driver, Package package) {
-    String name;
-    if (element.source.uri.toString().startsWith('dart:')) {
-      name = element.source.uri.toString();
-    } else {
-      name = driver.sourceFactory.restoreUri(element.source).toString();
-    }
+  static String _getNameFromPath(
+      LibraryElement element, Package package, String restoredUri) {
+    var name = restoredUri;
     PackageMeta hidePackage;
     if (package.documentedWhere == DocumentLocation.remote) {
       hidePackage = package.packageMeta;
