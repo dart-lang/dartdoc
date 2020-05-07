@@ -651,15 +651,15 @@ class PackageGraph {
 
   @override
   String toString() {
-    final divider = "=========================================================";
+    final divider = '=========================================================';
     final buffer =
         StringBuffer('PackageGraph built from ${defaultPackage.name}');
     buffer.writeln(divider);
     buffer.writeln();
     for (final name in packageMap.keys) {
       final package = packageMap[name];
-      buffer.writeln("Package $name documented at ${package.documentedWhere} "
-          "with libraries: ${package.allLibraries}");
+      buffer.writeln('Package $name documented at ${package.documentedWhere} '
+          'with libraries: ${package.allLibraries}');
     }
     buffer.writeln(divider);
     return buffer.toString();
