@@ -38,8 +38,7 @@ enum DocumentLocation {
   remote,
 }
 
-abstract class MarkdownFileDocumentation
-    implements Documentable, Canonicalization {
+mixin MarkdownFileDocumentation implements Documentable, Canonicalization {
   DocumentLocation get documentedWhere;
 
   @override

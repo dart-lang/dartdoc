@@ -551,7 +551,7 @@ class _MarkdownCommentReference {
         for (final modelElement
             in packageGraph.findRefElementCache[maybeEnumName]) {
           if (modelElement is Enum) {
-            if (modelElement.constants.any((e) => e.name == maybeEnumMember)) {
+            if (modelElement.constantFields.any((e) => e.name == maybeEnumMember)) {
               results.add(modelElement);
               break;
             }

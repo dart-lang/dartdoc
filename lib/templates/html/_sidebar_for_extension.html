@@ -1,48 +1,48 @@
 <ol>
     {{#extension}}
 
-    {{#hasPublicProperties}}
+    {{#hasPublicInstanceFields}}
     <li class="section-title"> <a href="{{{href}}}#instance-properties">Properties</a>
     </li>
-    {{#allPublicInstanceProperties}}
+    {{#publicInstanceFieldsSorted}}
     <li>{{{ linkedName }}}</li>
-    {{/allPublicInstanceProperties}}
-    {{/hasPublicProperties}}
+    {{/publicInstanceFieldsSorted}}
+    {{/hasPublicInstanceFields}}
 
-    {{#hasPublicMethods}}
+    {{#hasPublicInstanceMethods}}
     <li class="section-title"><a href="{{{href}}}#instance-methods">Methods</a></li>
-    {{#allPublicInstanceMethods}}
+    {{#publicInstanceMethodsSorted}}
     <li>{{{ linkedName }}}</li>
-    {{/allPublicInstanceMethods}}
-    {{/hasPublicMethods}}
+    {{/publicInstanceMethodsSorted}}
+    {{/hasPublicInstanceMethods}}
 
-    {{#hasPublicOperators}}
+    {{#hasPublicInstanceOperators}}
     <li class="section-title"><a href="{{{href}}}#operators">Operators</a></li>
-    {{#allPublicOperators}}
+    {{#publicInstanceOperatorsSorted}}
     <li>{{{ linkedName }}}</li>
-    {{/allPublicOperators}}
-    {{/hasPublicOperators}}
+    {{/publicInstanceOperatorsSorted}}
+    {{/hasPublicInstanceOperators}}
 
-    {{#hasPublicStaticProperties}}
+    {{#hasPublicStaticFields}}
     <li class="section-title"><a href="{{{href}}}#static-properties">Static properties</a></li>
-    {{#publicStaticProperties}}
+    {{#publicStaticFieldsSorted}}
     <li>{{{ linkedName }}}</li>
-    {{/publicStaticProperties}}
-    {{/hasPublicStaticProperties}}
+    {{/publicStaticFieldsSorted}}
+    {{/hasPublicStaticFields}}
 
     {{#hasPublicStaticMethods}}
     <li class="section-title"><a href="{{{href}}}#static-methods">Static methods</a></li>
-    {{#publicStaticMethods}}
+    {{#publicStaticMethodsSorted}}
     <li>{{{ linkedName }}}</li>
-    {{/publicStaticMethods}}
+    {{/publicStaticMethodsSorted}}
     {{/hasPublicStaticMethods}}
 
-    {{#hasPublicConstants}}
+    {{#hasPublicConstantFields}}
     <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
-    {{#publicConstants}}
+    {{#publicConstantFieldsSorted}}
     <li>{{{linkedName}}}</li>
-    {{/publicConstants}}
-    {{/hasPublicConstants}}
+    {{/publicConstantFieldsSorted}}
+    {{/hasPublicConstantFields}}
 
     {{/extension}}
 </ol>

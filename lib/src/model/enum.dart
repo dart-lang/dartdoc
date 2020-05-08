@@ -11,19 +11,6 @@ class Enum extends Class {
   Enum(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph);
 
-  List<EnumField> _instanceProperties;
-
-  @override
-  List<EnumField> get instanceProperties {
-    _instanceProperties ??= super
-        .instanceProperties
-        .map((Field p) => ModelElement.from(
-            p.element, p.library, p.packageGraph,
-            getter: p.getter, setter: p.setter) as EnumField)
-        .toList(growable: false);
-    return _instanceProperties;
-  }
-
   @override
   String get kind => 'enum';
 }

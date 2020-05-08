@@ -70,7 +70,7 @@ mixin Inheritable on ContainerMember {
       Class found;
       for (var c in inheritance.reversed) {
         // Filter out mixins.
-        if (c.contains(searchElement)) {
+        if (c.containsElement(searchElement)) {
           if ((packageGraph.inheritThrough.contains(previous) &&
                   c != definingEnclosingContainer) ||
               (packageGraph.inheritThrough.contains(c) &&
@@ -84,7 +84,7 @@ mixin Inheritable on ContainerMember {
           // starting from the ModelElement.
           if (canonicalC != null) {
             assert(canonicalC.isCanonical);
-            assert(canonicalC.contains(searchElement));
+            assert(canonicalC.containsElement(searchElement));
             found = canonicalC;
             break;
           }

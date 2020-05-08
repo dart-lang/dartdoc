@@ -23,8 +23,9 @@ mixin ExtensionTarget on ModelElement {
     _potentiallyApplicableExtensions ??= packageGraph.documentedExtensions
         .where((e) => !e.alwaysApplies)
         .where((e) => e.couldApplyTo(this))
-        .toList(growable: false)
-          ..sort(byName);
+        .toList(growable: false);
     return _potentiallyApplicableExtensions;
   }
+
+  List<Extension> get potentiallyApplicableExtensionsSorted => potentiallyApplicableExtensions.toList()..sort(byName);
 }

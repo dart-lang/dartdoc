@@ -10,16 +10,23 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:quiver/iterables.dart' as quiver;
 
+
+/// A [Container] defined with a `class` declaration in Dart.
+///
+/// Members follow similar naming rules to [Container], with the following
+/// additions:
+///
+/// **instance**: As with [Container], but also includes inherited children.
+/// **inherited**: Filtered getters giving only inherited children.
 class Class extends Container
     with TypeParameters, Categorization, ExtensionTarget
     implements EnclosedElement {
   List<DefinedElementType> mixins;
   DefinedElementType supertype;
   List<DefinedElementType> _interfaces;
-  List<Constructor> _constructors;
   List<Operator> _inheritedOperators;
   List<Method> _inheritedMethods;
-  List<Field> _inheritedProperties;
+  List<Field> _inheritedFields;
 
   Class(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
@@ -51,104 +58,25 @@ class Class extends Container
     return _defaultConstructor;
   }
 
-  Iterable<Method> get allInstanceMethods =>
-      quiver.concat([instanceMethods, inheritedMethods]);
-
   @override
-  Iterable<Method> get allPublicInstanceMethods =>
-      model_utils.filterNonPublic(allInstanceMethods);
+  Iterable<Method> get instanceMethods =>
+      quiver.concat([super.instanceMethods, inheritedMethods]);
 
-  bool get allPublicInstanceMethodsInherited =>
+  bool get publicInstanceMethodsInherited =>
       instanceMethods.every((f) => f.isInherited);
 
   @override
-  Iterable<Field> get allInstanceFields =>
-      quiver.concat([instanceProperties, inheritedProperties]);
+  Iterable<Operator> get instanceOperators =>
+      quiver.concat([super.instanceOperators, inheritedOperators]);
 
-  bool get allPublicInstancePropertiesInherited =>
-      allPublicInstanceProperties.every((f) => f.isInherited);
-
-  @override
-  Iterable<Operator> get allOperators =>
-      quiver.concat([operators, inheritedOperators]);
-
-  bool get allPublicOperatorsInherited =>
-      allPublicOperators.every((f) => f.isInherited);
-
-  Map<Element, ModelElement> _allElements;
-
-  Map<Element, ModelElement> get allElements {
-    if (_allElements == null) {
-      _allElements = {};
-      for (var me in allModelElements) {
-        assert(!_allElements.containsKey(me.element));
-        _allElements[me.element] = me;
-      }
-    }
-    return _allElements;
-  }
-
-  Map<String, List<ModelElement>> _allModelElementsByNamePart;
-
-  /// Helper for `_MarkdownCommentReference._getResultsForClass`.
-  Map<String, List<ModelElement>> get allModelElementsByNamePart {
-    if (_allModelElementsByNamePart == null) {
-      _allModelElementsByNamePart = {};
-      for (var me in allModelElements) {
-        _allModelElementsByNamePart.update(
-            me.namePart, (List<ModelElement> v) => v..add(me),
-            ifAbsent: () => <ModelElement>[me]);
-      }
-    }
-    return _allModelElementsByNamePart;
-  }
-
-  /// This class might be canonical for elements it does not contain.
-  /// See [Inheritable.canonicalEnclosingContainer].
-  bool contains(Element element) => allElements.containsKey(element);
-
-  Map<String, List<ModelElement>> _membersByName;
-
-  /// Given a ModelElement that is a member of some other class, return
-  /// a member of this class that has the same name and return type.
-  ///
-  /// This enables object substitution for canonicalization, such as Interceptor
-  /// for Object.
-  ModelElement memberByExample(ModelElement example) {
-    if (_membersByName == null) {
-      _membersByName = {};
-      for (var me in allModelElements) {
-        if (!_membersByName.containsKey(me.name)) {
-          _membersByName[me.name] = [];
-        }
-        _membersByName[me.name].add(me);
-      }
-    }
-    ModelElement member;
-    var possibleMembers = _membersByName[example.name]
-        .where((e) => e.runtimeType == example.runtimeType);
-    if (example.runtimeType == Accessor) {
-      possibleMembers = possibleMembers.where(
-          (e) => (example as Accessor).isGetter == (e as Accessor).isGetter);
-    }
-    member = possibleMembers.first;
-    assert(possibleMembers.length == 1);
-    return member;
-  }
 
   List<ModelElement> _allModelElements;
-
+  @override
   List<ModelElement> get allModelElements {
     _allModelElements ??= List.from(
         quiver.concat([
-          allInstanceMethods,
-          allInstanceFields,
-          allAccessors,
-          allOperators,
-          constants,
+          super.allModelElements,
           constructors,
-          staticMethods,
-          staticProperties,
           typeParameters,
         ]),
         growable: false);
@@ -162,16 +90,9 @@ class Class extends Container
         allModelElements.where((e) => e.isCanonical).toList());
   }
 
-  List<Constructor> get constructors {
-    if (_constructors != null) return _constructors;
-
-    _constructors = element.constructors.map((e) {
+  Iterable<Constructor> get constructors => element.constructors.map((e) {
       return ModelElement.from(e, library, packageGraph) as Constructor;
-    }).toList(growable: true)
-      ..sort(byName);
-
-    return _constructors;
-  }
+    });
 
   Iterable<Constructor> get publicConstructors =>
       model_utils.filterNonPublic(constructors);
@@ -194,17 +115,14 @@ class Class extends Container
     return kind;
   }
 
-  bool get hasPublicConstructors => publicConstructors.isNotEmpty;
+  bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
+
+  List<Constructor> _publicConstructorsSorted;
+  List<Constructor> get publicConstructorsSorted => _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
 
   bool get hasPublicImplementors => publicImplementors.isNotEmpty;
 
-  bool get hasInstanceProperties => instanceProperties.isNotEmpty;
-
   bool get hasPublicInterfaces => publicInterfaces.isNotEmpty;
-
-  @override
-  bool get hasPublicMethods =>
-      publicInstanceMethods.isNotEmpty || publicInheritedMethods.isNotEmpty;
 
   bool get hasPublicMixins => publicMixins.isNotEmpty;
 
@@ -216,18 +134,6 @@ class Class extends Container
       hasPublicSuperChainReversed ||
       hasPublicImplementors ||
       hasPotentiallyApplicableExtensions;
-
-  @override
-  bool get hasPublicOperators =>
-      publicOperators.isNotEmpty || publicInheritedOperators.isNotEmpty;
-
-  @override
-  bool get hasPublicProperties =>
-      publicInheritedProperties.isNotEmpty ||
-      publicInstanceProperties.isNotEmpty;
-
-  @override
-  bool get hasPublicStaticMethods => publicStaticMethods.isNotEmpty;
 
   bool get hasPublicSuperChainReversed => publicSuperChainReversed.isNotEmpty;
 
@@ -247,10 +153,10 @@ class Class extends Container
         model_utils.findCanonicalFor(packageGraph.implementors[href] ?? []));
   }
 
-  List<Method> get inheritedMethods {
+  Iterable<Method> get inheritedMethods {
     if (_inheritedMethods == null) {
       _inheritedMethods = <Method>[];
-      var methodNames = methods.map((m) => m.element.name).toSet();
+      var methodNames = declaredMethods.map((m) => m.element.name).toSet();
 
       var inheritedMethodElements = _inheritedElements.where((e) {
         return (e is MethodElement &&
@@ -264,7 +170,6 @@ class Class extends Container
             enclosingContainer: this);
         _inheritedMethods.add(m);
       }
-      _inheritedMethods.sort(byName);
     }
     return _inheritedMethods;
   }
@@ -274,10 +179,10 @@ class Class extends Container
 
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
-  List<Operator> get inheritedOperators {
+  Iterable<Operator> get inheritedOperators {
     if (_inheritedOperators == null) {
       _inheritedOperators = [];
-      var operatorNames = operators.map((o) => o.element.name).toSet();
+      var operatorNames = declaredOperators.map((o) => o.element.name).toSet();
 
       var inheritedOperatorElements = _inheritedElements.where((e) {
         return (e is MethodElement &&
@@ -289,24 +194,18 @@ class Class extends Container
             enclosingContainer: this);
         _inheritedOperators.add(o);
       }
-      _inheritedOperators.sort(byName);
     }
     return _inheritedOperators;
   }
 
-  Iterable<Operator> get publicInheritedOperators =>
+  Iterable<Operator> get publicInstanceOperatorsInherited =>
       model_utils.filterNonPublic(inheritedOperators);
 
-  List<Field> get inheritedProperties {
-    _inheritedProperties ??= allFields.where((f) => f.isInherited).toList()
-      ..sort(byName);
-    return _inheritedProperties;
-  }
+  Iterable<Field> get fieldsInherited =>
+    _inheritedFields ??= allFields.where((f) => f.isInherited);
 
-  Iterable<Field> get publicInheritedProperties =>
-      model_utils.filterNonPublic(inheritedProperties);
-
-  Iterable<Method> get publicInstanceMethods => instanceMethods;
+  Iterable<Field> get publicFieldsInherited =>
+      model_utils.filterNonPublic(fieldsInherited);
 
   List<DefinedElementType> get interfaces => _interfaces;
 
@@ -331,7 +230,6 @@ class Class extends Container
   }
 
   /// Returns true if [other] is a parent class for this class.
-  @override
   bool isInheritingFrom(covariant Class other) =>
       superChain.map((et) => (et.element as Class)).contains(other);
 
@@ -426,19 +324,17 @@ class Class extends Container
     return __inheritedElements;
   }
 
-  List<Field> _fields;
-
-  @override
+  List<Field> _allFields;
   List<Field> get allFields {
-    if (_fields == null) {
-      _fields = [];
-      var inheritedAccessors = <PropertyAccessorElement>{}
+    if (_allFields == null) {
+      _allFields = [];
+      var inheritedAccessorElements = <PropertyAccessorElement>{}
         ..addAll(_inheritedElements.whereType<PropertyAccessorElement>());
 
       // This structure keeps track of inherited accessors, allowing lookup
       // by field name (stripping the '=' from setters).
       var accessorMap = <String, List<PropertyAccessorElement>>{};
-      for (var accessorElement in inheritedAccessors) {
+      for (var accessorElement in inheritedAccessorElements) {
         var name = accessorElement.name.replaceFirst('=', '');
         accessorMap.putIfAbsent(name, () => []);
         accessorMap[name].add(accessorElement);
@@ -448,6 +344,8 @@ class Class extends Container
       // to the [FieldElement].  Compose our [Field] class by hand by looking up
       // inherited accessors that may be related.
       for (var f in element.fields) {
+        if (name == 'Animal')
+          print('hmm');
         var getterElement = f.getter;
         if (getterElement == null && accessorMap.containsKey(f.name)) {
           getterElement = accessorMap[f.name]
@@ -458,7 +356,7 @@ class Class extends Container
           setterElement = accessorMap[f.name]
               .firstWhere((e) => e.isSetter, orElse: () => null);
         }
-        _addSingleField(getterElement, setterElement, inheritedAccessors, f);
+        _addSingleField(getterElement, setterElement, inheritedAccessorElements, f);
         accessorMap.remove(f.name);
       }
 
@@ -470,13 +368,15 @@ class Class extends Container
             elements.firstWhere((e) => e.isGetter, orElse: () => null);
         var setterElement =
             elements.firstWhere((e) => e.isSetter, orElse: () => null);
-        _addSingleField(getterElement, setterElement, inheritedAccessors);
+        _addSingleField(getterElement, setterElement, inheritedAccessorElements);
       }
 
-      _fields.sort(byName);
     }
-    return _fields;
+    return _allFields;
   }
+
+  @override
+  Iterable<Field> get declaredFields => allFields.where((f) => !f.isInherited);
 
   /// Add a single Field to _fields.
   ///
@@ -510,7 +410,7 @@ class Class extends Container
         // different places in the inheritance chain, there are two FieldElements
         // for this single Field we're trying to compose.  Pick the one closest
         // to this class on the inheritance chain.
-        if ((setter.enclosingElement)
+        if (setter.enclosingElement is Class && (setter.enclosingElement as Class)
             .isInheritingFrom(getter.enclosingElement)) {
           f = setterElement.variable;
         } else {
@@ -532,22 +432,19 @@ class Class extends Container
       field = ModelElement.from(f, library, packageGraph,
           getter: getter, setter: setter);
     }
-    _fields.add(field);
+    _allFields.add(field);
   }
 
-  List<Method> _methods;
-
+  List<Method> _declaredMethods;
   @override
-  List<Method> get methods {
-    _methods ??= element.methods.map((e) {
-      return ModelElement.from(e, library, packageGraph) as Method;
-    }).toList(growable: false)
-      ..sort(byName);
-    return _methods;
-  }
+  Iterable<Method> get declaredMethods => _declaredMethods ??=
+      element.methods.map((e) {
+        return ModelElement.from(e, library, packageGraph) as Method;
+      }).toList(growable: false);
+
+
 
   List<TypeParameter> _typeParameters;
-
   // a stronger hash?
   @override
   List<TypeParameter> get typeParameters {
@@ -557,6 +454,17 @@ class Class extends Container
     }).toList();
     return _typeParameters;
   }
+
+  Iterable<Field> _instanceFields;
+  @override
+  Iterable<Field> get instanceFields => _instanceFields ??= allFields
+        .where((f) => !f.isStatic);
+
+  bool get publicInstanceFieldsInherited =>
+      publicInstanceFields.every((f) => f.isInherited);
+
+  @override
+  Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
   @override
   bool operator ==(o) =>

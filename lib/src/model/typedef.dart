@@ -8,7 +8,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
 
 class Typedef extends ModelElement
-    with SourceCodeMixin, TypeParameters, Categorization
+    with TypeParameters, Categorization
     implements EnclosedElement {
   Typedef(FunctionTypeAliasElement element, Library library,
       PackageGraph packageGraph)
