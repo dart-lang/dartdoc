@@ -124,9 +124,6 @@ abstract class Container extends ModelElement {
   Iterable<Accessor> get instanceAccessors =>
       instanceFields.expand((f) => f.allAccessors);
 
-  Iterable<Accessor> get constantAccessors =>
-      constantFields.expand((f) => f.allAccessors);
-
   Iterable<Accessor> get staticAccessors =>
       staticFields.expand((f) => f.allAccessors);
 
@@ -197,7 +194,7 @@ abstract class Container extends ModelElement {
       staticFields.where((f) => !f.isConst);
 
   bool get hasPublicVariableStaticFields =>
-      publicVariableStaticFieldsSorted.isEmpty;
+      publicVariableStaticFieldsSorted.isNotEmpty;
 
   Iterable<Field> get publicVariableStaticFields =>
       model_utils.filterNonPublic(variableStaticFields);
