@@ -1,0 +1,25 @@
+<ol>
+  {{#packageGraph.localPackages}}
+    {{#isFirstPackage}}
+      {{#hasDocumentedCategories}}
+      <li class="section-title">Topics</li>
+        {{#documentedCategories}}
+        <li>{{{linkedName}}}</li>
+        {{/documentedCategories}}
+      {{/hasDocumentedCategories}}
+      <li class="section-title">Libraries</li>
+    {{/isFirstPackage}}
+    {{^isFirstPackage}}
+      <li class="section-title">{{name}}</li>
+    {{/isFirstPackage}}
+    {{#defaultCategory.publicLibraries}}
+      <li>{{{linkedName}}}</li>
+    {{/defaultCategory.publicLibraries}}
+    {{#categoriesWithPublicLibraries}}
+      <li class="section-subtitle">{{name}}</li>
+      {{#publicLibraries}}
+        <li class="section-subitem">{{{linkedName}}}</li>
+      {{/publicLibraries}}
+    {{/categoriesWithPublicLibraries}}
+  {{/packageGraph.localPackages}}
+</ol>

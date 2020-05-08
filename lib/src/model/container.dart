@@ -14,11 +14,10 @@ import 'package:quiver/iterables.dart' as quiver;
 /// Member naming in [Container] follows these general rules:
 ///
 /// **instance** : Members named 'instance' contain the children of this
-/// container that can be referenced from within the container without a prefix
-/// and are not statics.
+/// container that can be referenced from within the container without a prefix.
 /// Usually overridden in subclasses with calls to super.
 /// **constant** : Members named 'constant' contain children declared constant.
-/// **variable** : Members names 'variable' contain children not declared constant.
+/// **variable** : The opposite of constant.  For the templating system.
 /// **static** : Members named 'static' are related to static children of this
 /// container.
 /// **public** : Filtered versions of the getters showing only public items.
@@ -37,14 +36,14 @@ abstract class Container extends ModelElement {
 
   @mustCallSuper
   Iterable<ModelElement> get allModelElements => quiver.concat([
-      instanceMethods,
-      instanceFields,
-      instanceOperators,
-      instanceAccessors,
-      staticFields,
-      staticAccessors,
-      staticMethods,
-    ]);
+        instanceMethods,
+        instanceFields,
+        instanceOperators,
+        instanceAccessors,
+        staticFields,
+        staticAccessors,
+        staticMethods,
+      ]);
 
   /// All methods, including operators and statics, declared as part of this
   /// [Container].  [declaredMethods] must be the union of [instanceMethods],
@@ -52,53 +51,51 @@ abstract class Container extends ModelElement {
   ///
   Iterable<Method> get declaredMethods;
 
-  /// All methods declared as part of this [Container] that are [staticMethods]
-  /// or [operators].
-  ///
-  /// Subclasses may extend this with inheritance or extensions.
   Iterable<Method> get instanceMethods => declaredMethods
-        .where((m) => !m.isStatic && !m.isOperator)
-        .toList(growable: false);
-
-  @Deprecated('Use instanceMethods instead')
-  Iterable<Method> get allInstanceMethods => instanceMethods;
+      .where((m) => !m.isStatic && !m.isOperator)
+      .toList(growable: false);
 
   @nonVirtual
   bool get hasPublicInstanceMethods =>
       model_utils.filterNonPublic(instanceMethods).isNotEmpty;
 
-
-  Iterable<Method> get publicInstanceMethods => model_utils.filterNonPublic(instanceMethods);
+  Iterable<Method> get publicInstanceMethods =>
+      model_utils.filterNonPublic(instanceMethods);
 
   List<Method> _publicInstanceMethodsSorted;
-  List<Method> get publicInstanceMethodsSorted => _publicInstanceMethodsSorted ?? publicInstanceMethods.toList()..sort(byName);
+  List<Method> get publicInstanceMethodsSorted =>
+      _publicInstanceMethodsSorted ?? publicInstanceMethods.toList()
+        ..sort(byName);
 
   Iterable<Operator> _declaredOperators;
   @nonVirtual
   Iterable<Operator> get declaredOperators {
-    _declaredOperators ??= declaredMethods
-        .whereType<Operator>()
-        .toList(growable: false);
+    _declaredOperators ??=
+        declaredMethods.whereType<Operator>().toList(growable: false);
     return _declaredOperators;
   }
 
   Iterable<Operator> get instanceOperators => declaredOperators;
 
   @nonVirtual
-  bool get hasPublicInstanceOperators => publicInstanceOperatorsSorted.isNotEmpty;
+  bool get hasPublicInstanceOperators =>
+      publicInstanceOperatorsSorted.isNotEmpty;
 
   @nonVirtual
   Iterable<Operator> get publicInstanceOperators =>
       model_utils.filterNonPublic(instanceOperators);
 
   List<Operator> _publicInstanceOperatorsSorted;
-  List<Operator> get publicInstanceOperatorsSorted => _publicInstanceOperatorsSorted ??= publicInstanceOperators.toList()..sort(byName);
+  List<Operator> get publicInstanceOperatorsSorted =>
+      _publicInstanceOperatorsSorted ??= publicInstanceOperators.toList()
+        ..sort(byName);
 
   /// Fields fully declared in this [Container].
   Iterable<Field> get declaredFields;
 
   /// All fields accessible in this instance that are not static.
-  Iterable<Field> get instanceFields => declaredFields.where((f) => !f.isStatic);
+  Iterable<Field> get instanceFields =>
+      declaredFields.where((f) => !f.isStatic);
 
   bool get hasInstanceFields => instanceFields.isNotEmpty;
 
@@ -109,33 +106,40 @@ abstract class Container extends ModelElement {
   @nonVirtual
   bool get hasPublicInstanceFields => publicInstanceFields.isNotEmpty;
 
-
   List<Field> _publicInstanceFieldsSorted;
-  List<Field> get publicInstanceFieldsSorted => _publicInstanceFieldsSorted ??= publicInstanceFields.toList()..sort(byName);
+  List<Field> get publicInstanceFieldsSorted => _publicInstanceFieldsSorted ??=
+      publicInstanceFields.toList()..sort(byName);
 
   Iterable<Field> get constantFields => declaredFields.where((f) => f.isConst);
 
-  Iterable<Field> get publicConstantFields => model_utils.filterNonPublic(constantFields);
+  Iterable<Field> get publicConstantFields =>
+      model_utils.filterNonPublic(constantFields);
 
   bool get hasPublicConstantFields => publicConstantFieldsSorted.isNotEmpty;
 
   List<Field> _publicConstantFieldsSorted;
-  List<Field> get publicConstantFieldsSorted => _publicConstantFieldsSorted ??= publicConstantFields.toList()..sort(byName);
+  List<Field> get publicConstantFieldsSorted => _publicConstantFieldsSorted ??=
+      publicConstantFields.toList()..sort(byName);
 
-  Iterable<Accessor> get instanceAccessors => instanceFields.expand((f) => f.allAccessors);
+  Iterable<Accessor> get instanceAccessors =>
+      instanceFields.expand((f) => f.allAccessors);
 
-  Iterable<Accessor> get constantAccessors => constantFields.expand((f) => f.allAccessors);
+  Iterable<Accessor> get constantAccessors =>
+      constantFields.expand((f) => f.allAccessors);
 
-  Iterable<Accessor> get staticAccessors => staticFields.expand((f) => f.allAccessors);
+  Iterable<Accessor> get staticAccessors =>
+      staticFields.expand((f) => f.allAccessors);
 
   /// This container might be canonical for elements it does not contain.
   /// See [Inheritable.canonicalEnclosingContainer].
   bool containsElement(Element element) => allElements.contains(element);
 
   Set<Element> _allElements;
-  Set<Element> get allElements => _allElements ??= allModelElements.map((e) => e.element).toSet();
+  Set<Element> get allElements =>
+      _allElements ??= allModelElements.map((e) => e.element).toSet();
 
   Map<String, List<ModelElement>> _membersByName;
+
   /// Given a ModelElement that is a member of some other class, return
   /// a member of this class that has the same name and return type.
   ///
@@ -156,7 +160,7 @@ abstract class Container extends ModelElement {
         .where((e) => e.runtimeType == example.runtimeType);
     if (example.runtimeType == Accessor) {
       possibleMembers = possibleMembers.where(
-              (e) => (example as Accessor).isGetter == (e as Accessor).isGetter);
+          (e) => (example as Accessor).isGetter == (e as Accessor).isGetter);
     }
     member = possibleMembers.first;
     assert(possibleMembers.length == 1);
@@ -164,6 +168,7 @@ abstract class Container extends ModelElement {
   }
 
   Map<String, List<ModelElement>> _allModelElementsByNamePart;
+
   /// Helper for `_MarkdownCommentReference._getResultsForClass`.
   Map<String, List<ModelElement>> get allModelElementsByNamePart {
     if (_allModelElementsByNamePart == null) {
@@ -183,19 +188,35 @@ abstract class Container extends ModelElement {
       model_utils.filterNonPublic(staticFields);
 
   List<Field> _publicStaticFieldsSorted;
-  List<Field> get publicStaticFieldsSorted => _publicStaticFieldsSorted ??= publicStaticFields.toList()..sort(byName);
+  List<Field> get publicStaticFieldsSorted =>
+      _publicStaticFieldsSorted ??= publicStaticFields.toList()..sort(byName);
 
-  Iterable<Field> _staticFields;
-  Iterable<Field> get staticFields => _staticFields ??= declaredFields
-      .where((f) => f.isStatic);
+  Iterable<Field> get staticFields => declaredFields.where((f) => f.isStatic);
 
-  Iterable<Method> _staticMethods;
-  Iterable<Method> get staticMethods => _staticMethods ??=
-      instanceMethods.where((m) => m.isStatic);
+  Iterable<Field> get variableStaticFields =>
+      staticFields.where((f) => !f.isConst);
+
+  bool get hasPublicVariableStaticFields =>
+      publicVariableStaticFieldsSorted.isEmpty;
+
+  Iterable<Field> get publicVariableStaticFields =>
+      model_utils.filterNonPublic(variableStaticFields);
+
+  List<Field> _publicVariableStaticFieldsSorted;
+  List<Field> get publicVariableStaticFieldsSorted =>
+      _publicVariableStaticFieldsSorted ??= publicVariableStaticFields.toList()
+        ..sort(byName);
+
+  Iterable<Method> get staticMethods =>
+      declaredMethods.where((m) => m.isStatic);
 
   bool get hasPublicStaticMethods =>
-      model_utils.filterNonPublic(staticMethods).isNotEmpty;
+      model_utils.filterNonPublic(publicStaticMethodsSorted).isNotEmpty;
 
   Iterable<Method> get publicStaticMethods =>
       model_utils.filterNonPublic(staticMethods);
+
+  List<Method> _publicStaticMethodsSorted;
+  List<Method> get publicStaticMethodsSorted =>
+      _publicStaticMethodsSorted ??= publicStaticMethods.toList()..sort(byName);
 }

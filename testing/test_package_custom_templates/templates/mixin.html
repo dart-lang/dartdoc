@@ -1,13 +1,179 @@
 {{>head}}
 
-  <div>
+  <div id="dartdoc-sidebar-left" class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    {{>search_sidebar}}
+    <h5>{{parent.name}} {{parent.kind}}</h5>
+    {{>sidebar_for_library}}
+  </div>
+
+  <div id="dartdoc-main-content" class="col-xs-12 col-sm-9 col-md-8 main-content">
     {{#self}}
-      <div><h1>{{{nameWithGenerics}}} {{kind}}</h1></div>
+      <div>{{>source_link}}<h1><span class="kind-mixin">{{{nameWithGenerics}}}</span> {{kind}} {{>categorization}}</h1></div>
     {{/self}}
 
     {{#mixin}}
     {{>documentation}}
+
+    {{#hasModifiers}}
+    <section>
+      <dl class="dl-horizontal">
+        {{#hasPublicSuperclassConstraints}}
+        <dt>Superclass Constraints</dt>
+        <dd><ul class="comma-separated dark mixin-relationships">
+          {{#publicSuperclassConstraints}}
+          <li>{{{linkedName}}}</li>
+          {{/publicSuperclassConstraints}}
+        </ul></dd>
+        {{/hasPublicSuperclassConstraints}}
+
+        {{#hasPublicSuperChainReversed}}
+        <dt>Inheritance</dt>
+        <dd><ul class="gt-separated dark mixin-relationships">
+          <li>{{{linkedObjectType}}}</li>
+          {{#publicSuperChainReversed}}
+          <li>{{{linkedName}}}</li>
+          {{/publicSuperChainReversed}}
+          <li>{{{name}}}</li>
+        </ul></dd>
+        {{/hasPublicSuperChainReversed}}
+
+        {{#hasPublicInterfaces}}
+        <dt>Implements</dt>
+        <dd>
+          <ul class="comma-separated mixin-relationships">
+            {{#publicInterfaces}}
+            <li>{{{linkedName}}}</li>
+            {{/publicInterfaces}}
+          </ul>
+        </dd>
+        {{/hasPublicInterfaces}}
+
+        {{#hasPublicMixins}}
+        <dt>Mixes-in</dt>
+        <dd><ul class="comma-separated mixin-relationships">
+          {{#publicMixins}}
+          <li>{{{linkedName}}}</li>
+          {{/publicMixins}}
+        </ul></dd>
+        {{/hasPublicMixins}}
+
+        {{#hasPublicImplementors}}
+        <dt>Implemented by</dt>
+        <dd><ul class="comma-separated mixin-relationships">
+          {{#publicImplementors}}
+          <li>{{{linkedName}}}</li>
+          {{/publicImplementors}}
+        </ul></dd>
+        {{/hasPublicImplementors}}
+
+        {{#hasAnnotations}}
+        <dt>Annotations</dt>
+        <dd><ul class="annotation-list mixin-relationships">
+          {{#annotations}}
+          <li>{{{.}}}</li>
+          {{/annotations}}
+        </ul></dd>
+        {{/hasAnnotations}}
+      </dl>
+    </section>
+    {{/hasModifiers}}
+
+    {{#hasPublicConstructors}}
+    <section class="summary offset-anchor" id="constructors">
+      <h2>Constructors</h2>
+
+      <dl class="constructor-summary-list">
+        {{#publicConstructors}}
+        <dt id="{{htmlId}}" class="callable">
+          <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
+        </dt>
+        <dd>
+          {{{ oneLineDoc }}} {{{ extendedDocLink }}}
+          {{#isConst}}
+          <div class="constructor-modifier features">const</div>
+          {{/isConst}}
+          {{#isFactory}}
+          <div class="constructor-modifier features">factory</div>
+          {{/isFactory}}
+        </dd>
+        {{/publicConstructors}}
+      </dl>
+    </section>
+    {{/hasPublicConstructors}}
+
+    {{#hasPublicInstanceFields}}
+    <section class="summary offset-anchor{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}" id="instance-properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        {{#publicInstanceFields}}
+        {{>property}}
+        {{/publicInstanceFields}}
+      </dl>
+    </section>
+    {{/hasPublicInstanceFields}}
+
+    {{#hasPublicInstanceMethods}}
+    <section class="summary offset-anchor{{ #publicInheritedInstanceMethods }} inherited{{ /publicInheritedInstanceMethods }}" id="instance-methods">
+      <h2>Methods</h2>
+      <dl class="callables">
+        {{#publicInstanceMethods}}
+        {{>callable}}
+        {{/publicInstanceMethods}}
+      </dl>
+    </section>
+    {{/hasPublicInstanceMethods}}
+
+    {{#hasPublicInstanceOperators}}
+    <section class="summary offset-anchor{{ #publicInheritedInstanceOperators }} inherited{{ /publicInheritedInstanceOperators}}" id="operators">
+      <h2>Operators</h2>
+      <dl class="callables">
+        {{#publicInstanceOperatorsSorted}}
+        {{>callable}}
+        {{/publicInstanceOperatorsSorted}}
+      </dl>
+    </section>
+    {{/hasPublicInstanceOperators}}
+
+    {{#hasPublicStaticFields}}
+    <section class="summary offset-anchor" id="static-properties">
+      <h2>Static Properties</h2>
+
+      <dl class="properties">
+        {{#publicStaticProperties}}
+        {{>property}}
+        {{/publicStaticProperties}}
+      </dl>
+    </section>
+    {{/hasPublicStaticFields}}
+
+    {{#hasPublicStaticMethods}}
+    <section class="summary offset-anchor" id="static-methods">
+      <h2>Static Methods</h2>
+      <dl class="callables">
+        {{#publicStaticMethods}}
+        {{>callable}}
+        {{/publicStaticMethods}}
+      </dl>
+    </section>
+    {{/hasPublicStaticMethods}}
+
+    {{#hasPublicConstantFields}}
+    <section class="summary offset-anchor" id="constants">
+      <h2>Constants</h2>
+
+      <dl class="properties">
+        {{#publicConstantFieldsSorted}}
+        {{>constant}}
+        {{/publicConstantFieldsSorted}}
+      </dl>
+    </section>
+    {{/hasPublicConstantFields}}
     {{/mixin}}
-  </div>
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-right" class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+    {{>sidebar_for_class}}
+  </div><!--/.sidebar-offcanvas-->
 
 {{>footer}}

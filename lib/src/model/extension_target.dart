@@ -27,5 +27,6 @@ mixin ExtensionTarget on ModelElement {
     return _potentiallyApplicableExtensions;
   }
 
-  List<Extension> get potentiallyApplicableExtensionsSorted => potentiallyApplicableExtensions.toList()..sort(byName);
+  List<Extension> get potentiallyApplicableExtensionsSorted =>
+      potentiallyApplicableExtensions.toList()..sort(byName);
 }

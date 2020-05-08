@@ -418,8 +418,7 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     return _nameFromPath;
   }
 
-  /// The real package, as opposed to the package we are documenting it with,
-  /// [PackageGraph.name]
+  /// The name of the package we were defined in.
   String get packageName => packageMeta?.name ?? '';
 
   /// The real packageMeta, as opposed to the package we are documenting with.

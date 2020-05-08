@@ -105,7 +105,7 @@
     {{/hasPublicConstructors}}
 
     {{#hasPublicInstanceFields}}
-    <section class="summary offset-anchor{{ #publicInstanceFieldsInherited }} inherited{{ /publicInstanceFieldsInherited }}" id="instance-properties">
+    <section class="summary offset-anchor{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}" id="instance-properties">
       <h2>Properties</h2>
 
       <dl class="properties">
@@ -117,7 +117,7 @@
     {{/hasPublicInstanceFields}}
 
     {{#hasPublicInstanceMethods}}
-    <section class="summary offset-anchor{{ #publicInstanceMethodsInherited }} inherited{{ /publicInstanceMethodsInherited }}" id="instance-methods">
+    <section class="summary offset-anchor{{ #publicInheritedInstanceMethods }} inherited{{ /publicInheritedInstanceMethods }}" id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">
         {{#publicInstanceMethodsSorted}}
@@ -128,7 +128,7 @@
     {{/hasPublicInstanceMethods}}
 
     {{#hasPublicInstanceOperators}}
-    <section class="summary offset-anchor{{ #publicInstanceOperatorsInherited }} inherited{{ /publicInstanceOperatorsInherited}}" id="operators">
+    <section class="summary offset-anchor{{ #publicInheritedInstanceOperators }} inherited{{ /publicInheritedInstanceOperators}}" id="operators">
       <h2>Operators</h2>
       <dl class="callables">
         {{#publicInstanceOperatorsSorted}}
@@ -143,9 +143,9 @@
       <h2>Static Properties</h2>
 
       <dl class="properties">
-        {{#publicStaticFieldsSorted}}
+        {{#publicVariableStaticFieldsSorted}}
         {{>property}}
-        {{/publicStaticFieldsSorted}}
+        {{/publicVariableStaticFieldsSorted}}
       </dl>
     </section>
     {{/hasPublicStaticFields}}

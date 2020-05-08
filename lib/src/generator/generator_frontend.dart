@@ -76,7 +76,8 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, clazz, constant);
           }
 
-          for (var property in filterNonDocumented(clazz.staticFields)) {
+          for (var property
+              in filterNonDocumented(clazz.variableStaticFields)) {
             if (!property.isCanonical) continue;
 
             indexAccumulator.add(property);
@@ -135,14 +136,14 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, extension, method);
           }
 
-          for (var operator in filterNonDocumented(extension.instanceOperators)) {
+          for (var operator
+              in filterNonDocumented(extension.instanceOperators)) {
             indexAccumulator.add(operator);
             _generatorBackend.generateMethod(
                 writer, packageGraph, lib, extension, operator);
           }
 
-          for (var property
-              in filterNonDocumented(extension.instanceFields)) {
+          for (var property in filterNonDocumented(extension.instanceFields)) {
             indexAccumulator.add(property);
             _generatorBackend.generateProperty(
                 writer, packageGraph, lib, extension, property);
@@ -168,7 +169,8 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, mixin, constant);
           }
 
-          for (var property in filterNonDocumented(mixin.staticFields)) {
+          for (var property
+              in filterNonDocumented(mixin.variableStaticFields)) {
             if (!property.isCanonical) continue;
 
             indexAccumulator.add(property);

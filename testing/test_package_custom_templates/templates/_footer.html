@@ -1,14 +1,25 @@
 </main>
 
 <footer>
-  <p>(FOOT)</p>
-  <p>
-    {{packageGraph.defaultPackage.name}} {{packageGraph.defaultPackage.version}}
-  </p>
+  <span class="no-break">
+    {{packageGraph.defaultPackage.name}}
+    {{#packageGraph.hasFooterVersion}}
+      {{packageGraph.defaultPackage.version}}
+    {{/packageGraph.hasFooterVersion}}
+  </span>
 
   {{! footer-text placeholder }}
 </footer>
 
+{{! TODO(jdkoren): unwrap ^useBaseHref sections when the option is removed.}}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="{{^useBaseHref}}%%__HTMLBASE_dartdoc_internal__%%{{/useBaseHref}}static-assets/typeahead.bundle.min.js"></script>
+<script src="{{^useBaseHref}}%%__HTMLBASE_dartdoc_internal__%%{{/useBaseHref}}static-assets/highlight.pack.js"></script>
+<script src="{{^useBaseHref}}%%__HTMLBASE_dartdoc_internal__%%{{/useBaseHref}}static-assets/URI.js"></script>
+<script src="{{^useBaseHref}}%%__HTMLBASE_dartdoc_internal__%%{{/useBaseHref}}static-assets/script.js"></script>
+
 {{! footer placeholder }}
+
 </body>
+
 </html>

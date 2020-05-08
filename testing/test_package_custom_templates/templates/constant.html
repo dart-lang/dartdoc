@@ -1,13 +1,33 @@
 {{>head}}
 
-  <div>
+  <div id="dartdoc-sidebar-left" class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    {{>search_sidebar}}
+    <h5>{{parent.name}} {{parent.kind}}</h5>
+    {{>sidebar_for_container}}
+  </div><!--/.sidebar-offcanvas-left-->
+
+  <div id="dartdoc-main-content" class="col-xs-12 col-sm-9 col-md-8 main-content">
     {{#self}}
-      <div><h1>{{{name}}} {{kind}}</h1></div>
+      <div>{{>source_link}}<h1><span class="kind-constant">{{{name}}}</span> {{kind}}</h1></div>
     {{/self}}
+
+    <section class="multi-line-signature">
+      {{#property}}
+        <span class="returntype">{{{ linkedReturnType }}}</span>
+        {{>name_summary}}
+        =
+        <span class="constant-value">{{{ constantValue }}}</span>
+      {{/property}}
+    </section>
 
     {{#property}}
     {{>documentation}}
+    {{>source_code}}
     {{/property}}
-  </div>
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-right" class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
 
 {{>footer}}

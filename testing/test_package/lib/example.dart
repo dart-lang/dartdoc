@@ -302,6 +302,7 @@ class Dog implements Cat, E {
   int deprecatedField;
 
   final int aFinalField;
+
   static const String aStaticConstField = "A Constant Dog";
 
   /// Verify link substitution in constants (#1535)

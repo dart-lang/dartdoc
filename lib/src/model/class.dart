@@ -10,7 +10,6 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:quiver/iterables.dart' as quiver;
 
-
 /// A [Container] defined with a `class` declaration in Dart.
 ///
 /// Members follow similar naming rules to [Container], with the following
@@ -26,7 +25,6 @@ class Class extends Container
   List<DefinedElementType> _interfaces;
   List<Operator> _inheritedOperators;
   List<Method> _inheritedMethods;
-  List<Field> _inheritedFields;
 
   Class(ClassElement element, Library library, PackageGraph packageGraph)
       : super(element, library, packageGraph) {
@@ -62,13 +60,12 @@ class Class extends Container
   Iterable<Method> get instanceMethods =>
       quiver.concat([super.instanceMethods, inheritedMethods]);
 
-  bool get publicInstanceMethodsInherited =>
+  bool get publicInheritedInstanceMethods =>
       instanceMethods.every((f) => f.isInherited);
 
   @override
   Iterable<Operator> get instanceOperators =>
       quiver.concat([super.instanceOperators, inheritedOperators]);
-
 
   List<ModelElement> _allModelElements;
   @override
@@ -91,8 +88,8 @@ class Class extends Container
   }
 
   Iterable<Constructor> get constructors => element.constructors.map((e) {
-      return ModelElement.from(e, library, packageGraph) as Constructor;
-    });
+        return ModelElement.from(e, library, packageGraph) as Constructor;
+      });
 
   Iterable<Constructor> get publicConstructors =>
       model_utils.filterNonPublic(constructors);
@@ -118,7 +115,8 @@ class Class extends Container
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
 
   List<Constructor> _publicConstructorsSorted;
-  List<Constructor> get publicConstructorsSorted => _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
+  List<Constructor> get publicConstructorsSorted =>
+      _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
 
   bool get hasPublicImplementors => publicImplementors.isNotEmpty;
 
@@ -198,14 +196,13 @@ class Class extends Container
     return _inheritedOperators;
   }
 
-  Iterable<Operator> get publicInstanceOperatorsInherited =>
+  Iterable<Operator> get publicInheritedInstanceOperators =>
       model_utils.filterNonPublic(inheritedOperators);
 
-  Iterable<Field> get fieldsInherited =>
-    _inheritedFields ??= allFields.where((f) => f.isInherited);
+  Iterable<Field> get inheritedFields => allFields.where((f) => f.isInherited);
 
-  Iterable<Field> get publicFieldsInherited =>
-      model_utils.filterNonPublic(fieldsInherited);
+  Iterable<Field> get publicInheritedFields =>
+      model_utils.filterNonPublic(inheritedFields);
 
   List<DefinedElementType> get interfaces => _interfaces;
 
@@ -344,8 +341,6 @@ class Class extends Container
       // to the [FieldElement].  Compose our [Field] class by hand by looking up
       // inherited accessors that may be related.
       for (var f in element.fields) {
-        if (name == 'Animal')
-          print('hmm');
         var getterElement = f.getter;
         if (getterElement == null && accessorMap.containsKey(f.name)) {
           getterElement = accessorMap[f.name]
@@ -356,7 +351,8 @@ class Class extends Container
           setterElement = accessorMap[f.name]
               .firstWhere((e) => e.isSetter, orElse: () => null);
         }
-        _addSingleField(getterElement, setterElement, inheritedAccessorElements, f);
+        _addSingleField(
+            getterElement, setterElement, inheritedAccessorElements, f);
         accessorMap.remove(f.name);
       }
 
@@ -368,9 +364,9 @@ class Class extends Container
             elements.firstWhere((e) => e.isGetter, orElse: () => null);
         var setterElement =
             elements.firstWhere((e) => e.isSetter, orElse: () => null);
-        _addSingleField(getterElement, setterElement, inheritedAccessorElements);
+        _addSingleField(
+            getterElement, setterElement, inheritedAccessorElements);
       }
-
     }
     return _allFields;
   }
@@ -410,8 +406,9 @@ class Class extends Container
         // different places in the inheritance chain, there are two FieldElements
         // for this single Field we're trying to compose.  Pick the one closest
         // to this class on the inheritance chain.
-        if (setter.enclosingElement is Class && (setter.enclosingElement as Class)
-            .isInheritingFrom(getter.enclosingElement)) {
+        if (setter.enclosingElement is Class &&
+            (setter.enclosingElement as Class)
+                .isInheritingFrom(getter.enclosingElement)) {
           f = setterElement.variable;
         } else {
           f = getterElement.variable;
@@ -437,12 +434,10 @@ class Class extends Container
 
   List<Method> _declaredMethods;
   @override
-  Iterable<Method> get declaredMethods => _declaredMethods ??=
-      element.methods.map((e) {
+  Iterable<Method> get declaredMethods =>
+      _declaredMethods ??= element.methods.map((e) {
         return ModelElement.from(e, library, packageGraph) as Method;
       }).toList(growable: false);
-
-
 
   List<TypeParameter> _typeParameters;
   // a stronger hash?
@@ -457,10 +452,10 @@ class Class extends Container
 
   Iterable<Field> _instanceFields;
   @override
-  Iterable<Field> get instanceFields => _instanceFields ??= allFields
-        .where((f) => !f.isStatic);
+  Iterable<Field> get instanceFields =>
+      _instanceFields ??= allFields.where((f) => !f.isStatic);
 
-  bool get publicInstanceFieldsInherited =>
+  bool get publicInheritedInstanceFields =>
       publicInstanceFields.every((f) => f.isInherited);
 
   @override
