@@ -4,11 +4,8 @@
 
 import 'dart:async';
 
-import 'package:analyzer/dart/analysis/results.dart';
-import 'package:analyzer/dart/analysis/session.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/src/dart/analysis/driver.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
@@ -24,10 +21,9 @@ import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/warnings.dart';
 
 class PackageGraph {
-  PackageGraph.UninitializedPackageGraph(this.config, this.driver, this.sdk,
-      this.hasEmbedderSdk, this.rendererFactory)
-      : packageMeta = config.topLevelPackageMeta,
-        session = driver.currentSession {
+  PackageGraph.UninitializedPackageGraph(
+      this.config, this.sdk, this.hasEmbedderSdk, this.rendererFactory)
+      : packageMeta = config.topLevelPackageMeta {
     _packageWarningCounter = PackageWarningCounter(this);
     // Make sure the default package exists, even if it has no libraries.
     // This can happen for packages that only contain embedder SDKs.
@@ -39,12 +35,12 @@ class PackageGraph {
   /// Libraries added in this manner are assumed to be part of documented
   /// packages, even if includes or embedder.yaml files cause these to
   /// span packages.
-  void addLibraryToGraph(ResolvedLibraryResult result) {
+  void addLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     assert(!allLibrariesAdded);
-    var element = result.element;
+    var element = resolvedLibrary.element;
     var packageMeta = PackageMeta.fromElement(element, config.sdkDir);
     var lib = Library.fromLibraryResult(
-        result, this, Package.fromPackageMeta(packageMeta, this));
+        resolvedLibrary, this, Package.fromPackageMeta(packageMeta, this));
     packageMap[packageMeta.name].libraries.add(lib);
     allLibraries[element] = lib;
   }
@@ -52,10 +48,10 @@ class PackageGraph {
   /// Call during initialization to add a library possibly containing
   /// special/non-documented elements to this [PackageGraph].  Must be called
   /// after any normal libraries.
-  void addSpecialLibraryToGraph(ResolvedLibraryResult result) {
+  void addSpecialLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     allLibrariesAdded = true;
     assert(!_localDocumentationBuilt);
-    findOrCreateLibraryFor(result);
+    findOrCreateLibraryFor(resolvedLibrary);
   }
 
   /// Call after all libraries are added.
@@ -234,9 +230,6 @@ class PackageGraph {
   /// Map of package name to Package.
   final Map<String, Package> packageMap = {};
 
-  /// TODO(brianwilkerson) Replace the driver with the session.
-  final AnalysisDriver driver;
-  final AnalysisSession session;
   final DartSdk sdk;
 
   Map<Source, SdkLibrary> _sdkLibrarySources;
@@ -842,22 +835,23 @@ class PackageGraph {
   /// This is used when we might need a Library object that isn't actually
   /// a documentation entry point (for elements that have no Library within the
   /// set of canonical Libraries).
-  Library findOrCreateLibraryFor(ResolvedLibraryResult result) {
+  Library findOrCreateLibraryFor(DartDocResolvedLibrary resolvedLibrary) {
+    final elementLibrary = resolvedLibrary.library;
     // This is just a cache to avoid creating lots of libraries over and over.
-    if (allLibraries.containsKey(result.element.library)) {
-      return allLibraries[result.element.library];
+    if (allLibraries.containsKey(elementLibrary)) {
+      return allLibraries[elementLibrary];
     }
     // can be null if e is for dynamic
-    if (result.element.library == null) {
+    if (elementLibrary == null) {
       return null;
     }
     var foundLibrary = Library.fromLibraryResult(
-        result,
+        resolvedLibrary,
         this,
         Package.fromPackageMeta(
-            PackageMeta.fromElement(result.element.library, config.sdkDir),
+            PackageMeta.fromElement(elementLibrary, config.sdkDir),
             packageGraph));
-    allLibraries[result.element.library] = foundLibrary;
+    allLibraries[elementLibrary] = foundLibrary;
     return foundLibrary;
   }
 

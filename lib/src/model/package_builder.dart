@@ -55,7 +55,7 @@ class PackageBuilder {
     var rendererFactory = RendererFactory.forFormat(config.format);
 
     var newGraph = PackageGraph.UninitializedPackageGraph(
-        config, driver, sdk, hasEmbedderSdkFiles, rendererFactory);
+        config, sdk, hasEmbedderSdkFiles, rendererFactory);
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
     return newGraph;
@@ -187,7 +187,7 @@ class PackageBuilder {
 
   /// Parse a single library at [filePath] using the current analysis driver.
   /// If [filePath] is not a library, returns null.
-  Future<ResolvedLibraryResult> processLibrary(String filePath) async {
+  Future<DartDocResolvedLibrary> processLibrary(String filePath) async {
     var name = filePath;
 
     if (name.startsWith(directoryCurrentPath)) {
@@ -215,7 +215,15 @@ class PackageBuilder {
     if (sourceKind != SourceKind.PART) {
       // Loading libraryElements from part files works, but is painfully slow
       // and creates many duplicates.
-      return await driver.currentSession.getResolvedLibrary(source.fullName);
+      final library =
+          await driver.currentSession.getResolvedLibrary(source.fullName);
+      final libraryElement = library.element;
+      var restoredUri = libraryElement.source.uri.toString();
+      if (!restoredUri.startsWith('dart:')) {
+        restoredUri =
+            driver.sourceFactory.restoreUri(library.element.source).toString();
+      }
+      return DartDocResolvedLibrary(library, restoredUri);
     }
     return null;
   }
@@ -235,7 +243,7 @@ class PackageBuilder {
   /// the callback more than once with the same [LibraryElement].
   /// Adds [LibraryElement]s found to that parameter.
   Future<void> _parseLibraries(
-      void Function(ResolvedLibraryResult) libraryAdder,
+      void Function(DartDocResolvedLibrary) libraryAdder,
       Set<LibraryElement> libraries,
       Set<String> files,
       [bool Function(LibraryElement) isLibraryIncluded]) async {
@@ -246,7 +254,7 @@ class PackageBuilder {
       lastPass = _packageMetasForFiles(files);
 
       // Be careful here not to accidentally stack up multiple
-      // ResolvedLibraryResults, as those eat our heap.
+      // DartDocResolvedLibrarys, as those eat our heap.
       for (var f in files) {
         logProgress(f);
         var r = await processLibrary(f);
@@ -460,4 +468,21 @@ class PackageWithoutSdkResolver extends UriResolver {
     }
     return null;
   }
+}
+
+/// Contains the [ResolvedLibraryResult] and any additional information about
+/// the library coming from [AnalysisDriver].
+///
+/// Prefer to populate this class with more information rather than passing
+/// [AnalysisDriver] or [AnalysisSession] down to [PackageGraph]. The graph
+/// object is reachable by many DartDoc model objects and there's no guarantee
+/// that there's a valid [AnalysisDriver] in every environment dartdoc runs.
+class DartDocResolvedLibrary {
+  final ResolvedLibraryResult result;
+  final String restoredUri;
+
+  DartDocResolvedLibrary(this.result, this.restoredUri);
+
+  LibraryElement get element => result.element;
+  LibraryElement get library => result.element.library;
 }
