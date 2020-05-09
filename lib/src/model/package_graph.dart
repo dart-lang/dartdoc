@@ -37,7 +37,7 @@ class PackageGraph {
   /// span packages.
   void addLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     assert(!allLibrariesAdded);
-    var element = resolvedLibrary.result.element;
+    var element = resolvedLibrary.element;
     var packageMeta = PackageMeta.fromElement(element, config.sdkDir);
     var lib = Library.fromLibraryResult(
         resolvedLibrary, this, Package.fromPackageMeta(packageMeta, this));
@@ -823,7 +823,7 @@ class PackageGraph {
   /// a documentation entry point (for elements that have no Library within the
   /// set of canonical Libraries).
   Library findOrCreateLibraryFor(DartDocResolvedLibrary resolvedLibrary) {
-    final elementLibrary = resolvedLibrary.result.element.library;
+    final elementLibrary = resolvedLibrary.library;
     // This is just a cache to avoid creating lots of libraries over and over.
     if (allLibraries.containsKey(elementLibrary)) {
       return allLibraries[elementLibrary];

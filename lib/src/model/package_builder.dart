@@ -259,11 +259,11 @@ class PackageBuilder {
         logProgress(f);
         var r = await processLibrary(f);
         if (r != null &&
-            !libraries.contains(r.result.element) &&
-            isLibraryIncluded(r.result.element)) {
+            !libraries.contains(r.element) &&
+            isLibraryIncluded(r.element)) {
           logDebug('parsing ${f}...');
           libraryAdder(r);
-          libraries.add(r.result.element);
+          libraries.add(r.element);
         }
       }
 
@@ -482,4 +482,7 @@ class DartDocResolvedLibrary {
   final String restoredUri;
 
   DartDocResolvedLibrary(this.result, this.restoredUri);
+
+  LibraryElement get element => result.element;
+  LibraryElement get library => result.element.library;
 }
