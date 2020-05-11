@@ -75,7 +75,8 @@ mixin Inheritable on ContainerMember {
                   c != definingEnclosingContainer) ||
               (packageGraph.inheritThrough.contains(c) &&
                   c == definingEnclosingContainer)) {
-            return (previousNonSkippable.memberByExample(this) as Inheritable)
+            return previousNonSkippable
+                .memberByExample(this)
                 .canonicalEnclosingContainer;
           }
           Class canonicalC =

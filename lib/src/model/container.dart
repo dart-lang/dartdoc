@@ -48,7 +48,6 @@ abstract class Container extends ModelElement {
   /// All methods, including operators and statics, declared as part of this
   /// [Container].  [declaredMethods] must be the union of [instanceMethods],
   /// [staticMethods], and [instanceOperators].
-  ///
   Iterable<Method> get declaredMethods;
 
   Iterable<Method> get instanceMethods => declaredMethods
@@ -138,11 +137,11 @@ abstract class Container extends ModelElement {
   Map<String, List<ModelElement>> _membersByName;
 
   /// Given a ModelElement that is a member of some other class, return
-  /// a member of this class that has the same name and return type.
+  /// the member of this class that has the same name and runtime type.
   ///
   /// This enables object substitution for canonicalization, such as Interceptor
   /// for Object.
-  ModelElement memberByExample(ModelElement example) {
+  T memberByExample<T extends ModelElement>(T example) {
     if (_membersByName == null) {
       _membersByName = {};
       for (var me in allModelElements) {
@@ -153,11 +152,14 @@ abstract class Container extends ModelElement {
       }
     }
     ModelElement member;
+    // [T] is insufficiently specific to disambiguate between different
+    // subtypes of [Inheritable] or other mixins/implementations of
+    // [ModelElement] via [Iterable.whereType].
     var possibleMembers = _membersByName[example.name]
         .where((e) => e.runtimeType == example.runtimeType);
-    if (example.runtimeType == Accessor) {
-      possibleMembers = possibleMembers.where(
-          (e) => (example as Accessor).isGetter == (e as Accessor).isGetter);
+    if (example is Accessor) {
+      possibleMembers = possibleMembers
+          .where((e) => example.isGetter == (e as Accessor).isGetter);
     }
     member = possibleMembers.first;
     assert(possibleMembers.length == 1);

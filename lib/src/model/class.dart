@@ -432,12 +432,12 @@ class Class extends Container
     _allFields.add(field);
   }
 
-  List<Method> _declaredMethods;
+  Iterable<Method> _declaredMethods;
   @override
   Iterable<Method> get declaredMethods =>
       _declaredMethods ??= element.methods.map((e) {
         return ModelElement.from(e, library, packageGraph) as Method;
-      }).toList(growable: false);
+      });
 
   List<TypeParameter> _typeParameters;
   // a stronger hash?
