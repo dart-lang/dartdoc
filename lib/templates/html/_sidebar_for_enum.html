@@ -1,54 +1,54 @@
 <ol>
   {{#eNum}}
-  {{#hasPublicConstants}}
+  {{#hasPublicConstantFields}}
   <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
-  {{#publicConstants}}
+  {{#publicConstantFieldsSorted}}
   <li>{{{linkedName}}}</li>
-  {{/publicConstants}}
-  {{/hasPublicConstants}}
+  {{/publicConstantFieldsSorted}}
+  {{/hasPublicConstantFields}}
 
   {{#hasPublicConstructors}}
   <li class="section-title"><a href="{{{href}}}#constructors">Constructors</a></li>
-  {{#publicConstructors}}
+  {{#publicConstructorsSorted}}
   <li><a{{#isDeprecated}} class="deprecated"{{/isDeprecated}} href="{{{href}}}">{{shortName}}</a></li>
-  {{/publicConstructors}}
+  {{/publicConstructorsSorted}}
   {{/hasPublicConstructors}}
 
-  {{#hasPublicProperties}}
-  <li class="section-title{{ #allPublicInstancePropertiesInherited }} inherited{{ /allPublicInstancePropertiesInherited }}">
+  {{#hasPublicInstanceFields}}
+  <li class="section-title{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}">
     <a href="{{{href}}}#instance-properties">Properties</a>
   </li>
-  {{#allPublicInstanceProperties}}
+  {{#publicInstanceFieldsSorted}}
   <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
-  {{/allPublicInstanceProperties}}
-  {{/hasPublicProperties}}
+  {{/publicInstanceFieldsSorted}}
+  {{/hasPublicInstanceFields}}
 
-  {{#hasPublicMethods}}
-  <li class="section-title{{ #allPublicInstanceMethodsInherited }} inherited{{ /allPublicInstanceMethodsInherited }}"><a href="{{{href}}}#instance-methods">Methods</a></li>
-  {{#allPublicInstanceMethods}}
+  {{#hasPublicInstanceMethods}}
+  <li class="section-title{{ #publicInheritedInstanceMethods }} inherited{{ /publicInheritedInstanceMethods }}"><a href="{{{href}}}#instance-methods">Methods</a></li>
+  {{#publicInstanceMethodsSorted}}
   <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
-  {{/allPublicInstanceMethods}}
-  {{/hasPublicMethods}}
+  {{/publicInstanceMethodsSorted}}
+  {{/hasPublicInstanceMethods}}
 
-  {{#hasPublicOperators}}
-  <li class="section-title{{ #allPublicOperatorsInherited }} inherited{{ /allPublicOperatorsInherited}}"><a href="{{{href}}}#operators">Operators</a></li>
-  {{#allPublicOperators}}
+  {{#hasPublicInstanceOperators}}
+  <li class="section-title{{ #publicInheritedInstanceOperators }} inherited{{ /publicInheritedInstanceOperators}}"><a href="{{{href}}}#operators">Operators</a></li>
+  {{#publicInstanceOperatorsSorted}}
   <li{{ #isInherited }} class="inherited"{{ /isInherited}}>{{{ linkedName }}}</li>
-  {{/allPublicOperators}}
-  {{/hasPublicOperators}}
+  {{/publicInstanceOperatorsSorted}}
+  {{/hasPublicInstanceOperators}}
 
-  {{#hasPublicStaticProperties}}
+  {{#hasPublicVariableStaticFields}}
   <li class="section-title"><a href="{{{href}}}#static-properties">Static properties</a></li>
-  {{#publicStaticProperties}}
+  {{#publicVariableStaticFieldsSorted}}
   <li>{{{ linkedName }}}</li>
-  {{/publicStaticProperties}}
-  {{/hasPublicStaticProperties}}
+  {{/publicVariableStaticFieldsSorted}}
+  {{/hasPublicVariableStaticFields}}
 
   {{#hasPublicStaticMethods}}
   <li class="section-title"><a href="{{{href}}}#static-methods">Static methods</a></li>
-  {{#publicStaticMethods}}
+  {{#publicStaticMethodsSorted}}
   <li>{{{ linkedName }}}</li>
-  {{/publicStaticMethods}}
+  {{/publicStaticMethodsSorted}}
   {{/hasPublicStaticMethods}}
   {{/eNum}}
 </ol>

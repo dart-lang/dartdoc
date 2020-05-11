@@ -180,8 +180,8 @@ class ContainerAccessor extends Accessor with ContainerMember, Inheritable {
             Class parentClass =
                 ModelElement.fromElement(t.element, packageGraph);
             var possibleFields = <Field>[];
-            possibleFields.addAll(parentClass.allInstanceFields);
-            possibleFields.addAll(parentClass.staticProperties);
+            possibleFields.addAll(parentClass.instanceFields);
+            possibleFields.addAll(parentClass.staticFields);
             var fieldName = accessor.name.replaceFirst('=', '');
             var foundField = possibleFields.firstWhere(
                 (f) => f.element.name == fieldName,

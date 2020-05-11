@@ -377,6 +377,10 @@ void main() {
       var p = results.packageGraph;
       expect(p.defaultPackage.name, 'test_package_custom_templates');
       expect(p.localPublicLibraries, hasLength(1));
+
+      var index = File(path.join(tempDir.path, 'index.html'));
+      expect(index.readAsStringSync(),
+          contains('Welcome my friends to a custom template'));
     });
 
     test('generate docs with missing required template fails', () async {

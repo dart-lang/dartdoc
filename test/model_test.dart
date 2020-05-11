@@ -157,24 +157,24 @@ void main() {
           .firstWhere((c) => c.name == 'CanonicalPrivateInheritedToolUser');
       toolUser = exLibrary.classes.firstWhere((c) => c.name == 'ToolUser');
       invokeTool =
-          toolUser.allInstanceMethods.firstWhere((m) => m.name == 'invokeTool');
-      invokeToolNonCanonical = _NonCanonicalToolUser.allInstanceMethods
+          toolUser.instanceMethods.firstWhere((m) => m.name == 'invokeTool');
+      invokeToolNonCanonical = _NonCanonicalToolUser.instanceMethods
           .firstWhere((m) => m.name == 'invokeToolNonCanonical');
-      invokeToolNonCanonicalSubclass = CanonicalToolUser.allInstanceMethods
+      invokeToolNonCanonicalSubclass = CanonicalToolUser.instanceMethods
           .firstWhere((m) => m.name == 'invokeToolNonCanonical');
-      invokeToolNoInput = toolUser.allInstanceMethods
+      invokeToolNoInput = toolUser.instanceMethods
           .firstWhere((m) => m.name == 'invokeToolNoInput');
-      invokeToolMultipleSections = toolUser.allInstanceMethods
+      invokeToolMultipleSections = toolUser.instanceMethods
           .firstWhere((m) => m.name == 'invokeToolMultipleSections');
-      invokeToolPrivateLibrary = PrivateLibraryToolUser.allInstanceMethods
+      invokeToolPrivateLibrary = PrivateLibraryToolUser.instanceMethods
           .firstWhere((m) => m.name == 'invokeToolPrivateLibrary');
       invokeToolPrivateLibraryOriginal =
           (invokeToolPrivateLibrary.definingEnclosingContainer as Class)
-              .allInstanceMethods
+              .instanceMethods
               .firstWhere((m) => m.name == 'invokeToolPrivateLibrary');
-      invokeToolParentDoc = CanonicalPrivateInheritedToolUser.allInstanceMethods
+      invokeToolParentDoc = CanonicalPrivateInheritedToolUser.instanceMethods
           .firstWhere((m) => m.name == 'invokeToolParentDoc');
-      invokeToolParentDocOriginal = ImplementingClassForTool.allInstanceMethods
+      invokeToolParentDocOriginal = ImplementingClassForTool.instanceMethods
           .firstWhere((m) => m.name == 'invokeToolParentDoc');
       packageGraph.allLocalModelElements.forEach((m) => m.documentation);
     });
@@ -301,7 +301,7 @@ void main() {
     setUpAll(() {
       htmlInjection =
           exLibrary.classes.firstWhere((c) => c.name == 'HtmlInjection');
-      injectSimpleHtml = htmlInjection.allInstanceMethods
+      injectSimpleHtml = htmlInjection.instanceMethods
           .firstWhere((m) => m.name == 'injectSimpleHtml');
     });
     test("doesn't inject HTML if --inject-html option is not present", () {
@@ -699,17 +699,16 @@ void main() {
 
     setUpAll(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
-      withMacro =
-          dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro');
+      withMacro = dog.instanceMethods.firstWhere((m) => m.name == 'withMacro');
       withMacro2 =
-          dog.allInstanceMethods.firstWhere((m) => m.name == 'withMacro2');
-      withPrivateMacro = dog.allInstanceMethods
-          .firstWhere((m) => m.name == 'withPrivateMacro');
-      withUndefinedMacro = dog.allInstanceMethods
-          .firstWhere((m) => m.name == 'withUndefinedMacro');
+          dog.instanceMethods.firstWhere((m) => m.name == 'withMacro2');
+      withPrivateMacro =
+          dog.instanceMethods.firstWhere((m) => m.name == 'withPrivateMacro');
+      withUndefinedMacro =
+          dog.instanceMethods.firstWhere((m) => m.name == 'withUndefinedMacro');
       MacrosFromAccessors =
           fakeLibrary.enums.firstWhere((e) => e.name == 'MacrosFromAccessors');
-      macroReferencedHere = MacrosFromAccessors.publicConstants
+      macroReferencedHere = MacrosFromAccessors.publicConstantFields
           .firstWhere((e) => e.name == 'macroReferencedHere');
     });
 
@@ -750,12 +749,12 @@ void main() {
 
     setUpAll(() {
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
-      withYouTubeWatchUrl = dog.allInstanceMethods
+      withYouTubeWatchUrl = dog.instanceMethods
           .firstWhere((m) => m.name == 'withYouTubeWatchUrl');
-      withYouTubeInOneLineDoc = dog.allInstanceMethods
+      withYouTubeInOneLineDoc = dog.instanceMethods
           .firstWhere((m) => m.name == 'withYouTubeInOneLineDoc');
-      withYouTubeInline = dog.allInstanceMethods
-          .firstWhere((m) => m.name == 'withYouTubeInline');
+      withYouTubeInline =
+          dog.instanceMethods.firstWhere((m) => m.name == 'withYouTubeInline');
     });
 
     test(
@@ -802,24 +801,24 @@ void main() {
     setUpAll(() {
       enumWithAnimation =
           exLibrary.enums.firstWhere((c) => c.name == 'EnumWithAnimation');
-      enumValue1 =
-          enumWithAnimation.constants.firstWhere((m) => m.name == 'value1');
-      enumValue2 =
-          enumWithAnimation.constants.firstWhere((m) => m.name == 'value2');
+      enumValue1 = enumWithAnimation.constantFields
+          .firstWhere((m) => m.name == 'value1');
+      enumValue2 = enumWithAnimation.constantFields
+          .firstWhere((m) => m.name == 'value2');
       dog = exLibrary.classes.firstWhere((c) => c.name == 'Dog');
       withAnimation =
-          dog.allInstanceMethods.firstWhere((m) => m.name == 'withAnimation');
-      withNamedAnimation = dog.allInstanceMethods
-          .firstWhere((m) => m.name == 'withNamedAnimation');
-      withQuoteNamedAnimation = dog.allInstanceMethods
+          dog.instanceMethods.firstWhere((m) => m.name == 'withAnimation');
+      withNamedAnimation =
+          dog.instanceMethods.firstWhere((m) => m.name == 'withNamedAnimation');
+      withQuoteNamedAnimation = dog.instanceMethods
           .firstWhere((m) => m.name == 'withQuotedNamedAnimation');
-      withDeprecatedAnimation = dog.allInstanceMethods
+      withDeprecatedAnimation = dog.instanceMethods
           .firstWhere((m) => m.name == 'withDeprecatedAnimation');
-      withAnimationInOneLineDoc = dog.allInstanceMethods
+      withAnimationInOneLineDoc = dog.instanceMethods
           .firstWhere((m) => m.name == 'withAnimationInOneLineDoc');
-      withAnimationInline = dog.allInstanceMethods
+      withAnimationInline = dog.instanceMethods
           .firstWhere((m) => m.name == 'withAnimationInline');
-      withAnimationOutOfOrder = dog.allInstanceMethods
+      withAnimationOutOfOrder = dog.instanceMethods
           .firstWhere((m) => m.name == 'withAnimationOutOfOrder');
     });
 
@@ -896,11 +895,11 @@ void main() {
       ImplementingThingy2 = fakeLibrary.classes
           .firstWhere((c) => c.name == 'ImplementingThingy2');
 
-      aImplementingThingy = ImplementingThingy2.allInstanceFields
+      aImplementingThingy = ImplementingThingy2.instanceFields
           .firstWhere((m) => m.name == 'aImplementingThingy');
-      aImplementingThingyMethod = ImplementingThingy2.allInstanceMethods
+      aImplementingThingyMethod = ImplementingThingy2.instanceMethods
           .firstWhere((m) => m.name == 'aImplementingThingyMethod');
-      aImplementingThingyField = ImplementingThingy2.allInstanceFields
+      aImplementingThingyField = ImplementingThingy2.instanceFields
           .firstWhere((m) => m.name == 'aImplementingThingyField');
       aImplementingThingyAccessor = aImplementingThingyField.getter;
     });
@@ -1238,8 +1237,7 @@ void main() {
 
     test('oneLine doc references in inherited methods should not have brackets',
         () {
-      var add =
-          specialList.allInstanceMethods.firstWhere((m) => m.name == 'add');
+      var add = specialList.instanceMethods.firstWhere((m) => m.name == 'add');
       expect(
           add.oneLineDoc,
           equals(
@@ -1249,8 +1247,7 @@ void main() {
     test(
         'full documentation references from inherited methods should not have brackets',
         () {
-      var add =
-          specialList.allInstanceMethods.firstWhere((m) => m.name == 'add');
+      var add = specialList.instanceMethods.firstWhere((m) => m.name == 'add');
       expect(
           add.documentationAsHtml,
           startsWith(
@@ -1336,7 +1333,7 @@ void main() {
         () {
       var notAMethodFromPrivateClass = fakeLibrary.allClasses
           .firstWhere((Class c) => c.name == 'ReferringClass')
-          .allPublicInstanceMethods
+          .publicInstanceMethods
           .firstWhere((Method m) => m.name == 'notAMethodFromPrivateClass');
       expect(
           notAMethodFromPrivateClass.documentationAsHtml,
@@ -1363,7 +1360,7 @@ void main() {
     });
 
     test('doc comment inherited from getter', () {
-      var getterWithDocs = subForDocComments.instanceProperties
+      var getterWithDocs = subForDocComments.instanceFields
           .firstWhere((m) => m.name == 'getterWithDocs');
       expect(getterWithDocs.documentationAsHtml,
           contains('Some really great topics.'));
@@ -1372,7 +1369,7 @@ void main() {
     test(
         'a property with no explicit getters and setters does not duplicate docs',
         () {
-      var powers = superAwesomeClass.instanceProperties
+      var powers = superAwesomeClass.instanceFields
           .firstWhere((p) => p.name == 'powers');
       Iterable<Match> matches =
           RegExp('In the super class').allMatches(powers.documentationAsHtml);
@@ -1411,8 +1408,8 @@ void main() {
           .firstWhere((l) => l.name == 'gadget_extender')
           .allClasses
           .firstWhere((c) => c.name == 'GadgetExtender');
-      var gadgetGetter =
-          GadgetExtender.allFields.firstWhere((f) => f.name == 'gadgetGetter');
+      var gadgetGetter = GadgetExtender.instanceFields
+          .firstWhere((f) => f.name == 'gadgetGetter');
       expect(gadgetGetter.isCanonical, isTrue);
     });
 
@@ -1446,13 +1443,13 @@ void main() {
           fakeLibrary.publicMixins.firstWhere((m) => m.name == 'GenericMixin');
       TypeInferenceMixedIn =
           classes.firstWhere((c) => c.name == 'TypeInferenceMixedIn');
-      overrideByEverything = TypeInferenceMixedIn.allInstanceFields
+      overrideByEverything = TypeInferenceMixedIn.instanceFields
           .firstWhere((f) => f.name == 'overrideByEverything');
-      overrideByGenericMixin = TypeInferenceMixedIn.allInstanceFields
+      overrideByGenericMixin = TypeInferenceMixedIn.instanceFields
           .firstWhere((f) => f.name == 'overrideByGenericMixin');
-      overrideByBoth = TypeInferenceMixedIn.allInstanceFields
+      overrideByBoth = TypeInferenceMixedIn.instanceFields
           .firstWhere((f) => f.name == 'overrideByBoth');
-      overrideByModifierClass = TypeInferenceMixedIn.allInstanceFields
+      overrideByModifierClass = TypeInferenceMixedIn.instanceFields
           .firstWhere((f) => f.name == 'overrideByModifierClass');
     });
 
@@ -1489,11 +1486,11 @@ void main() {
     });
 
     test(('Verify non-overridden members have right canonical classes'), () {
-      var member = TypeInferenceMixedIn.allInstanceFields
+      var member = TypeInferenceMixedIn.instanceFields
           .firstWhere((f) => f.name == 'member');
-      var modifierMember = TypeInferenceMixedIn.allInstanceFields
+      var modifierMember = TypeInferenceMixedIn.instanceFields
           .firstWhere((f) => f.name == 'modifierMember');
-      var mixinMember = TypeInferenceMixedIn.allInstanceFields
+      var mixinMember = TypeInferenceMixedIn.instanceFields
           .firstWhere((f) => f.name == 'mixinMember');
       expect(member.canonicalEnclosingContainer, equals(GenericClass));
       expect(modifierMember.canonicalEnclosingContainer, equals(ModifierClass));
@@ -1510,22 +1507,22 @@ void main() {
           equals(ModifierClass));
       expect(
           overrideByEverything.documentationFrom.first,
-          equals(GenericClass.allInstanceFields
+          equals(GenericClass.instanceFields
               .firstWhere((f) => f.name == 'overrideByEverything')
               .getter));
       expect(
           overrideByGenericMixin.documentationFrom.first,
-          equals(GenericClass.allInstanceFields
+          equals(GenericClass.instanceFields
               .firstWhere((f) => f.name == 'overrideByGenericMixin')
               .getter));
       expect(
           overrideByBoth.documentationFrom.first,
-          equals(GenericClass.allInstanceFields
+          equals(GenericClass.instanceFields
               .firstWhere((f) => f.name == 'overrideByBoth')
               .getter));
       expect(
           overrideByModifierClass.documentationFrom.first,
-          equals(GenericClass.allInstanceFields
+          equals(GenericClass.instanceFields
               .firstWhere((f) => f.name == 'overrideByModifierClass')
               .getter));
     });
@@ -1604,10 +1601,8 @@ void main() {
     });
 
     test('a class with only inherited properties has some properties', () {
-      expect(CatString.hasInstanceProperties, isFalse);
-      expect(CatString.instanceProperties, isEmpty);
-      expect(CatString.hasPublicProperties, isTrue);
-      expect(CatString.allInstanceFields, isNotEmpty);
+      expect(CatString.hasInstanceFields, isTrue);
+      expect(CatString.instanceFields, isNotEmpty);
     });
 
     test('has enclosing element', () {
@@ -1661,7 +1656,7 @@ void main() {
     });
 
     test('get static fields', () {
-      expect(Apple.publicStaticProperties, hasLength(1));
+      expect(Apple.publicVariableStaticFields, hasLength(1));
     });
 
     test('constructors have source', () {
@@ -1670,26 +1665,28 @@ void main() {
     });
 
     test('get constants', () {
-      expect(Apple.publicConstants, hasLength(1));
-      expect(Apple.publicConstants.first.kind, equals('constant'));
+      expect(Apple.publicConstantFields, hasLength(1));
+      expect(Apple.publicConstantFields.first.kind, equals('constant'));
     });
 
     test('get instance fields', () {
-      expect(Apple.publicInstanceProperties, hasLength(3));
-      expect(Apple.publicInstanceProperties.first.kind, equals('property'));
+      expect(Apple.publicInstanceFields.where((f) => !f.isInherited),
+          hasLength(3));
+      expect(Apple.publicInstanceFields.first.kind, equals('property'));
     });
 
     test('get inherited properties, including properties of Object', () {
-      expect(B.publicInheritedProperties, hasLength(4));
+      expect(B.publicInheritedFields, hasLength(4));
     });
 
     test('get methods', () {
-      expect(Dog.publicInstanceMethods, hasLength(22));
+      expect(Dog.publicInstanceMethods.where((m) => !m.isInherited),
+          hasLength(21));
     });
 
     test('get operators', () {
-      expect(Dog.publicOperators, hasLength(1));
-      expect(Dog.publicOperators.first.name, 'operator ==');
+      expect(Dog.publicInstanceOperators, hasLength(1));
+      expect(Dog.publicInstanceOperators.first.name, 'operator ==');
     });
 
     test('inherited methods, including from Object ', () {
@@ -1698,11 +1695,10 @@ void main() {
     });
 
     test('all instance methods', () {
-      expect(B.allPublicInstanceMethods, isNotEmpty);
-      expect(
-          B.allPublicInstanceMethods.length,
-          equals(B.publicInstanceMethods.length +
-              B.publicInheritedMethods.length));
+      var methods = B.publicInstanceMethods.where((m) => !m.isInherited);
+      expect(methods, isNotEmpty);
+      expect(B.publicInstanceMethods.length,
+          equals(methods.length + B.publicInheritedMethods.length));
     });
 
     test('inherited methods exist', () {
@@ -1715,9 +1711,9 @@ void main() {
     test('exported class should have hrefs from the current library', () {
       expect(
           Dep.href, equals('${HTMLBASE_PLACEHOLDER}ex/Deprecated-class.html'));
-      expect(Dep.instanceMethods[0].href,
+      expect(Dep.instanceMethods.firstWhere((m) => m.name == 'toString').href,
           equals('${HTMLBASE_PLACEHOLDER}ex/Deprecated/toString.html'));
-      expect(Dep.instanceProperties[0].href,
+      expect(Dep.instanceFields.firstWhere((m) => m.name == 'expires').href,
           equals('${HTMLBASE_PLACEHOLDER}ex/Deprecated/expires.html'));
     });
 
@@ -1733,7 +1729,8 @@ void main() {
     });
 
     test('F has a single instance method', () {
-      expect(F.publicInstanceMethods, hasLength(1));
+      expect(
+          F.publicInstanceMethods.where((m) => !m.isInherited), hasLength(1));
       expect(
           F.publicInstanceMethods.first.name, equals('methodWithGenericParam'));
     });
@@ -1769,14 +1766,14 @@ void main() {
           ]));
     });
 
-    test('F has zero instance properties', () {
-      expect(F.publicInstanceProperties, hasLength(0));
+    test('F has zero declared instance properties', () {
+      expect(F.publicInstanceFields.where((f) => !f.isInherited), hasLength(0));
     });
 
     test('F has a few inherited properties', () {
-      expect(F.publicInheritedProperties, hasLength(10));
+      expect(F.publicInheritedFields, hasLength(10));
       expect(
-          F.publicInheritedProperties.map((ip) => ip.name),
+          F.publicInheritedFields.map((ip) => ip.name),
           containsAll([
             'aFinalField',
             'aGetterReturningRandomThings',
@@ -1792,14 +1789,17 @@ void main() {
     });
 
     test('SpecialList has zero instance methods', () {
-      expect(SpecialList.publicInstanceMethods, hasLength(0));
+      expect(SpecialList.publicInstanceMethods.where((m) => !m.isInherited),
+          hasLength(0));
     });
 
     test('SpecialList has many inherited methods', () {
       expect(SpecialList.publicInheritedMethods, hasLength(49));
-      expect(SpecialList.publicInheritedMethods.first.name, equals('add'));
-      expect(SpecialList.publicInheritedMethods.toList()[1].name,
-          equals('addAll'));
+      var methods = SpecialList.publicInstanceMethodsSorted
+          .where((m) => m.isInherited)
+          .toList();
+      expect(methods.first.name, equals('add'));
+      expect(methods[1].name, equals('addAll'));
     });
 
     test('ExtendingClass is in the right library', () {
@@ -1868,7 +1868,7 @@ void main() {
       fancyList = exLibrary.extensions.firstWhere((e) => e.name == 'FancyList');
       doSomeStuff = exLibrary.classes
           .firstWhere((c) => c.name == 'ExtensionUser')
-          .allInstanceMethods
+          .instanceMethods
           .firstWhere((m) => m.name == 'doSomeStuff');
       doStuff = exLibrary.extensions
           .firstWhere((e) => e.name == 'SimpleStringExtension')
@@ -2050,11 +2050,11 @@ void main() {
     });
 
     test('get methods', () {
-      expect(fancyList.allPublicInstanceMethods, hasLength(1));
+      expect(fancyList.publicInstanceMethods, hasLength(1));
     });
 
     test('get operators', () {
-      expect(fancyList.allPublicOperators, hasLength(1));
+      expect(fancyList.publicInstanceOperators, hasLength(1));
     });
 
     test('get static methods', () {
@@ -2062,11 +2062,11 @@ void main() {
     });
 
     test('get properties', () {
-      expect(fancyList.publicInstanceProperties, hasLength(1));
+      expect(fancyList.publicInstanceFields, hasLength(1));
     });
 
     test('get contants', () {
-      expect(fancyList.publicConstants, hasLength(0));
+      expect(fancyList.publicConstantFields, hasLength(0));
     });
 
     test('correctly finds all the extensions', () {
@@ -2085,7 +2085,7 @@ void main() {
     setUpAll(() {
       animal = exLibrary.enums.firstWhere((e) => e.name == 'Animal');
       animalToString =
-          animal.allInstanceMethods.firstWhere((m) => m.name == 'toString');
+          animal.instanceMethods.firstWhere((m) => m.name == 'toString');
 
       /// Trigger code reference resolution
       animal.documentationAsHtml;
@@ -2106,11 +2106,12 @@ void main() {
     });
 
     test('has correct number of constants', () {
-      expect(animal.constants, hasLength(4));
+      expect(animal.constantFields, hasLength(4));
     });
 
     test('has a (synthetic) values constant', () {
-      var valuesField = animal.constants.firstWhere((f) => f.name == 'values');
+      var valuesField =
+          animal.constantFields.firstWhere((f) => f.name == 'values');
       expect(valuesField, isNotNull);
       expect(valuesField.constantValue,
           equals(EnumFieldRendererHtml().renderValue(valuesField)));
@@ -2118,7 +2119,7 @@ void main() {
     });
 
     test('has a constant that does not link anywhere', () {
-      var dog = animal.constants.firstWhere((f) => f.name == 'DOG');
+      var dog = animal.constantFields.firstWhere((f) => f.name == 'DOG');
       expect(dog.linkedName, equals('DOG'));
       expect(dog.isConst, isTrue);
       expect(
@@ -2128,7 +2129,9 @@ void main() {
 
     test('constants have correct indicies', () {
       String valueByName(var name) {
-        return animal.constants.firstWhere((f) => f.name == name).constantValue;
+        return animal.constantFields
+            .firstWhere((f) => f.name == name)
+            .constantValue;
       }
 
       expect(valueByName('CAT'), equals('const Animal(0)'));
@@ -2137,13 +2140,16 @@ void main() {
     });
 
     test('has a single `index` property', () {
-      expect(animal.instanceProperties, hasLength(1));
-      expect(animal.instanceProperties.first, isNotNull);
-      expect(animal.instanceProperties.first.name, equals('index'));
+      var instanceFields = animal.instanceFields.where((f) => !f.isInherited);
+      expect(instanceFields, hasLength(1));
+      expect(instanceFields.first, isNotNull);
+      expect(instanceFields.first.name, equals('index'));
     });
 
     test('has a single `index` property that is not linked', () {
-      expect(animal.instanceProperties.first.linkedName, equals('index'));
+      expect(
+          animal.instanceFields.where((f) => !f.isInherited).first.linkedName,
+          equals('index'));
     });
   });
 
@@ -2321,7 +2327,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('setter that takes a function is correctly displayed', () {
-      var explicitSetter = ClassWithUnusualProperties.instanceProperties
+      var explicitSetter = ClassWithUnusualProperties.instanceFields
           .singleWhere((f) => f.name == 'explicitSetter');
       // TODO(jcollins-g): really, these shouldn't be called "parameters" in
       // the span class.
@@ -2330,14 +2336,14 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('parameterized type from field is correctly displayed', () {
-      var aField = TemplatedInterface.instanceProperties
+      var aField = TemplatedInterface.instanceFields
           .singleWhere((f) => f.name == 'aField');
       expect(aField.linkedReturnType,
           '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">Stream<span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span></span>&gt;</span>');
     });
 
     test('parameterized type from inherited field is correctly displayed', () {
-      var aInheritedField = TemplatedInterface.inheritedProperties
+      var aInheritedField = TemplatedInterface.inheritedFields
           .singleWhere((f) => f.name == 'aInheritedField');
       expect(aInheritedField.linkedReturnType,
           '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
@@ -2346,7 +2352,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'parameterized type for return value from explicit getter is correctly displayed',
         () {
-      Accessor aGetter = TemplatedInterface.instanceProperties
+      Accessor aGetter = TemplatedInterface.instanceFields
           .singleWhere((f) => f.name == 'aGetter')
           .getter;
       expect(aGetter.linkedReturnType,
@@ -2356,7 +2362,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'parameterized type for return value from inherited explicit getter is correctly displayed',
         () {
-      Accessor aInheritedGetter = TemplatedInterface.inheritedProperties
+      Accessor aInheritedGetter = TemplatedInterface.inheritedFields
           .singleWhere((f) => f.name == 'aInheritedGetter')
           .getter;
       expect(aInheritedGetter.linkedReturnType,
@@ -2366,7 +2372,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'parameterized type for return value from inherited explicit setter is correctly displayed',
         () {
-      Accessor aInheritedSetter = TemplatedInterface.inheritedProperties
+      Accessor aInheritedSetter = TemplatedInterface.inheritedFields
           .singleWhere((f) => f.name == 'aInheritedSetter')
           .setter;
       expect(aInheritedSetter.allParameters.first.modelType.linkedName,
@@ -2380,7 +2386,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'parameterized type for return value from method is correctly displayed',
         () {
-      var aMethodInterface = TemplatedInterface.allInstanceMethods
+      var aMethodInterface = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aMethodInterface');
       expect(aMethodInterface.linkedReturnType,
           '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
@@ -2389,7 +2395,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'parameterized type for return value from inherited method is correctly displayed',
         () {
-      var aInheritedMethod = TemplatedInterface.allInstanceMethods
+      var aInheritedMethod = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aInheritedMethod');
       expect(aInheritedMethod.linkedReturnType,
           '<a href="${HTMLBASE_PLACEHOLDER}ex/AnotherParameterizedClass-class.html">AnotherParameterizedClass</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
@@ -2398,8 +2404,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'parameterized type for return value containing a parameterized typedef is correctly displayed',
         () {
-      var aTypedefReturningMethodInterface = TemplatedInterface
-          .allInstanceMethods
+      var aTypedefReturningMethodInterface = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aTypedefReturningMethodInterface');
       expect(aTypedefReturningMethodInterface.linkedReturnType,
           '<a href="${HTMLBASE_PLACEHOLDER}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">String</span>&gt;</span></span>&gt;</span>');
@@ -2408,8 +2413,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     test(
         'parameterized type for return value containing a parameterized typedef from inherited method is correctly displayed',
         () {
-      var aInheritedTypedefReturningMethod = TemplatedInterface
-          .allInstanceMethods
+      var aInheritedTypedefReturningMethod = TemplatedInterface.instanceMethods
           .singleWhere((m) => m.name == 'aInheritedTypedefReturningMethod');
       expect(aInheritedTypedefReturningMethod.linkedReturnType,
           '<a href="${HTMLBASE_PLACEHOLDER}ex/ParameterizedTypedef.html">ParameterizedTypedef</a><span class="signature">&lt;<wbr><span class="type-parameter">List<span class="signature">&lt;<wbr><span class="type-parameter">int</span>&gt;</span></span>&gt;</span>');
@@ -2508,8 +2512,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('returns correct overriddenDepth', () {
-      final bAbstractMethod = classB.allInstanceMethods
-          .firstWhere((m) => m.name == 'abstractMethod');
+      final bAbstractMethod =
+          classB.instanceMethods.firstWhere((m) => m.name == 'abstractMethod');
       expect(abstractMethod.overriddenDepth, equals(0));
       expect(bAbstractMethod.overriddenDepth, equals(1));
     });
@@ -2611,11 +2615,11 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     setUpAll(() {
       specializedDuration =
           exLibrary.classes.firstWhere((c) => c.name == 'SpecializedDuration');
-      plus = specializedDuration.allOperators
+      plus = specializedDuration.instanceOperators
           .firstWhere((o) => o.name == 'operator +');
       equalsOverride = exLibrary.classes
           .firstWhere((c) => c.name == 'Dog')
-          .allOperators
+          .instanceOperators
           .firstWhere((o) => o.name == 'operator ==');
     });
 
@@ -2674,9 +2678,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
 
     setUpAll(() {
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
-      f1 = c.staticProperties[0]; // n
-      f2 = c.instanceProperties[0];
-      constField = c.constants[0]; // string
+      f1 = c.publicVariableStaticFieldsSorted.first; // n
+      f2 = c.publicInstanceFields.first;
+      constField = c.constantFields.first; // string
       LongFirstLine =
           fakeLibrary.classes.firstWhere((c) => c.name == 'LongFirstLine');
       CatString = exLibrary.classes.firstWhere((c) => c.name == 'CatString');
@@ -2697,49 +2701,46 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       finalProperty = UnusualProperties.allModelElements
           .firstWhere((e) => e.name == 'finalProperty');
 
-      isEmpty =
-          CatString.allInstanceFields.firstWhere((p) => p.name == 'isEmpty');
-      dynamicGetter = LongFirstLine.instanceProperties
+      isEmpty = CatString.instanceFields.firstWhere((p) => p.name == 'isEmpty');
+      dynamicGetter = LongFirstLine.instanceFields
           .firstWhere((p) => p.name == 'dynamicGetter');
-      onlySetter = LongFirstLine.instanceProperties
+      onlySetter = LongFirstLine.instanceFields
           .firstWhere((p) => p.name == 'onlySetter');
 
       lengthX = fakeLibrary.classes
           .firstWhere((c) => c.name == 'WithGetterAndSetter')
-          .allInstanceFields
+          .instanceFields
           .firstWhere((c) => c.name == 'lengthX');
 
       var appleClass =
           exLibrary.allClasses.firstWhere((c) => c.name == 'Apple');
 
-      sFromApple =
-          appleClass.allInstanceFields.firstWhere((p) => p.name == 's');
-      mFromApple =
-          appleClass.allInstanceFields.singleWhere((p) => p.name == 'm');
+      sFromApple = appleClass.instanceFields.firstWhere((p) => p.name == 's');
+      mFromApple = appleClass.instanceFields.singleWhere((p) => p.name == 'm');
 
       mInB = exLibrary.allClasses
           .firstWhere((c) => c.name == 'B')
-          .allInstanceFields
+          .instanceFields
           .firstWhere((p) => p.name == 'm');
       autoCompress = exLibrary.allClasses
           .firstWhere((c) => c.name == 'B')
-          .allInstanceFields
+          .instanceFields
           .firstWhere((p) => p.name == 'autoCompress');
       ExtraSpecialListLength = fakeLibrary.classes
           .firstWhere((c) => c.name == 'SpecialList')
-          .allInstanceFields
+          .instanceFields
           .firstWhere((f) => f.name == 'length');
       aProperty = fakeLibrary.classes
           .firstWhere((c) => c.name == 'AClassWithFancyProperties')
-          .allInstanceFields
+          .instanceFields
           .firstWhere((f) => f.name == 'aProperty');
       covariantField = fakeLibrary.classes
           .firstWhere((c) => c.name == 'CovariantMemberParams')
-          .allInstanceFields
+          .instanceFields
           .firstWhere((f) => f.name == 'covariantField');
       covariantSetter = fakeLibrary.classes
           .firstWhere((c) => c.name == 'CovariantMemberParams')
-          .allInstanceFields
+          .instanceFields
           .firstWhere((f) => f.name == 'covariantSetter');
     });
 
@@ -2996,9 +2997,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       var withGenericSub =
           exLibrary.classes.firstWhere((c) => c.name == 'WithGenericSub');
       expect(
-          withGenericSub.inheritedProperties
-              .where((p) => p.name == 'prop')
-              .length,
+          withGenericSub.inheritedFields.where((p) => p.name == 'prop').length,
           equals(1));
     });
   });
@@ -3032,7 +3031,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     });
 
     test('if overridden, gets documentation from superclasses', () {
-      final doc = classB.allInstanceFields
+      final doc = classB.instanceFields
           .firstWhere((p) => p.name == 's')
           .getter
           .documentation;
@@ -3043,8 +3042,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
         'has correct linked return type if the return type is a parameterized typedef',
         () {
       var apple = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
-      final fieldWithTypedef = apple.allInstanceFields
-          .firstWhere((m) => m.name == 'fieldWithTypedef');
+      final fieldWithTypedef =
+          apple.instanceFields.firstWhere((m) => m.name == 'fieldWithTypedef');
       expect(
           fieldWithTypedef.linkedReturnType,
           equals(
@@ -3225,8 +3224,8 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       customClassPrivate = fakeLibrary.constants
           .firstWhere((c) => c.name == 'CUSTOM_CLASS_PRIVATE');
       aStaticConstField =
-          Dog.constants.firstWhere((f) => f.name == 'aStaticConstField');
-      aName = Dog.constants.firstWhere((f) => f.name == 'aName');
+          Dog.constantFields.firstWhere((f) => f.name == 'aStaticConstField');
+      aName = Dog.constantFields.firstWhere((f) => f.name == 'aName');
     });
 
     test('substrings of the constant values type are not linked (#1535)', () {
@@ -3298,7 +3297,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       constCat = exLibrary.classes.firstWhere((c) => c.name == 'ConstantCat');
       constructorTester =
           fakeLibrary.classes.firstWhere((c) => c.name == 'ConstructorTester');
-      constCatConstructor = constCat.constructors[0];
+      constCatConstructor = constCat.constructors.first;
       appleDefaultConstructor =
           apple.constructors.firstWhere((c) => c.name == 'Apple');
       appleConstructorFromString =
@@ -3455,7 +3454,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
     setUpAll(() {
       fList = exLibrary.classes
           .firstWhere((c) => c.name == 'B')
-          .instanceProperties
+          .instanceFields
           .singleWhere((p) => p.name == 'list');
     });
 
@@ -3574,7 +3573,7 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
       c = exLibrary.classes.firstWhere((c) => c.name == 'Apple');
       CovariantMemberParams = fakeLibrary.classes
           .firstWhere((c) => c.name == 'CovariantMemberParams');
-      applyCovariantParams = CovariantMemberParams.allInstanceMethods
+      applyCovariantParams = CovariantMemberParams.instanceMethods
           .firstWhere((m) => m.name == 'applyCovariantParams');
       paramFromExportLib =
           c.instanceMethods.singleWhere((m) => m.name == 'paramFromExportLib');

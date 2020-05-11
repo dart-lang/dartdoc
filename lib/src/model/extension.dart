@@ -53,7 +53,7 @@ class Extension extends Container
   List<Method> _methods;
 
   @override
-  List<Method> get methods {
+  List<Method> get declaredMethods {
     _methods ??= _extension.methods.map((e) {
       return ModelElement.from(e, library, packageGraph) as Method;
     }).toList(growable: false)
@@ -64,11 +64,11 @@ class Extension extends Container
   @override
   String get name => super.name ?? '';
 
-  List<Field> _fields;
+  List<Field> _declaredFields;
 
   @override
-  List<Field> get allFields {
-    _fields ??= _extension.fields.map((f) {
+  List<Field> get declaredFields {
+    _declaredFields ??= _extension.fields.map((f) {
       Accessor getter, setter;
       if (f.getter != null) {
         getter = ContainerAccessor(f.getter, library, packageGraph);
@@ -80,7 +80,7 @@ class Extension extends Container
           getter: getter, setter: setter) as Field;
     }).toList(growable: false)
       ..sort(byName);
-    return _fields;
+    return _declaredFields;
   }
 
   List<TypeParameter> _typeParameters;
@@ -99,17 +99,11 @@ class Extension extends Container
   ParameterizedElementType get modelType => super.modelType;
 
   List<ModelElement> _allModelElements;
-
+  @override
   List<ModelElement> get allModelElements {
     _allModelElements ??= List.from(
         quiver.concat([
-          instanceMethods,
-          allInstanceFields,
-          allAccessors,
-          allOperators,
-          constants,
-          staticMethods,
-          staticProperties,
+          super.allModelElements,
           typeParameters,
         ]),
         growable: false);

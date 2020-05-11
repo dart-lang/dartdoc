@@ -1,0 +1,64 @@
+<ol>
+  {{#self.hasPublicLibraries}}
+  <li class="section-title"><a href="{{{self.href}}}#libraries">Libraries</a></li>
+  {{#self.publicLibraries}}
+  <li>{{{ linkedName }}}</li>
+  {{/self.publicLibraries}}
+  {{/self.hasPublicLibraries}}
+
+  {{#self.hasPublicMixins}}
+  <li class="section-title"><a href="{{{library.href}}}#mixins">Mixins</a></li>
+  {{#self.publicMixins}}
+  <li>{{{ linkedName }}}</li>
+  {{/self.publicMixins}}
+  {{/self.hasPublicMixins}}
+
+  {{#self.hasPublicClasses}}
+  <li class="section-title"><a href="{{{self.href}}}#classes">Classes</a></li>
+  {{#self.publicClasses}}
+  <li>{{{ linkedName }}}</li>
+  {{/self.publicClasses}}
+  {{/self.hasPublicClasses}}
+
+  {{#self.hasPublicConstants}}
+  <li class="section-title"><a href="{{{self.href}}}#constants">Constants</a></li>
+  {{#self.publicConstants}}
+  <li>{{{ linkedName }}}</li>
+  {{/self.publicConstants}}
+  {{/self.hasPublicConstants}}
+
+  {{#self.hasPublicProperties}}
+  <li class="section-title"><a href="{{{self.href}}}#properties">Properties</a></li>
+  {{#self.publicProperties}}
+  <li>{{{ linkedName }}}</li>
+  {{/self.publicProperties}}
+  {{/self.hasPublicProperties}}
+
+  {{#self.hasPublicFunctions}}
+  <li class="section-title"><a href="{{{self.href}}}#functions">Functions</a></li>
+  {{#self.publicFunctions}}
+  <li>{{{ linkedName }}}</li>
+  {{/self.publicFunctions}}
+  {{/self.hasPublicFunctions}}
+
+  {{#self.hasPublicEnums}}
+  <li class="section-title"><a href="{{{self.href}}}#enums">Enums</a></li>
+  {{#self.publicEnums}}
+  <li>{{{ linkedName }}}</li>
+  {{/self.publicEnums}}
+  {{/self.hasPublicEnums}}
+
+  {{#self.hasPublicTypedefs}}
+  <li class="section-title"><a href="{{{self.href}}}#typedefs">Typedefs</a></li>
+  {{#self.publicTypedefs}}
+  <li>{{{ linkedName }}}</li>
+  {{/self.publicTypedefs}}
+  {{/self.hasPublicTypedefs}}
+
+  {{#self.hasPublicExceptions}}
+  <li class="section-title"><a href="{{{self.href}}}#exceptions">Exceptions</a></li>
+  {{#self.publicExceptions}}
+  <li>{{{ linkedName }}}</li>
+  {{/self.publicExceptions}}
+  {{/self.hasPublicExceptions}}
+</ol>

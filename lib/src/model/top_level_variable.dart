@@ -8,7 +8,7 @@ import 'package:dartdoc/src/model/model.dart';
 
 /// Top-level variables. But also picks up getters and setters?
 class TopLevelVariable extends ModelElement
-    with Canonicalization, GetterSetterCombo, SourceCodeMixin, Categorization
+    with Canonicalization, GetterSetterCombo, Categorization
     implements EnclosedElement {
   @override
   final Accessor getter;

@@ -1,8 +1,14 @@
 {{>head}}
 
-  <div>
+  <div id="dartdoc-sidebar-left" class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    {{>search_sidebar}}
+    <h5><span class="package-name">{{parent.name}}</span> <span class="package-kind">{{parent.kind}}</span></h5>
+    {{>packages}}
+  </div>
+
+  <div id="dartdoc-main-content" class="col-xs-12 col-sm-9 col-md-8 main-content">
     {{#self}}
-      <div><h1>{{{name}}} {{kind}}</h1></div>
+      <div>{{>source_link}}<h1><span class="kind-library">{{{name}}}</span> {{kind}} {{>categorization}}</h1></div>
     {{/self}}
 
     {{#library}}
@@ -10,35 +16,118 @@
     {{/library}}
 
     {{#library.hasPublicClasses}}
-    <div>
+    <section class="summary offset-anchor" id="classes">
       <h2>Classes</h2>
 
       <dl>
         {{#library.publicClasses}}
-        <dt>
-          {{{linkedName}}}{{{linkedGenericParameters}}}
-        </dt>
-        <dd>
-          {{{ oneLineDoc }}} {{{ extendedDocLink }}}
-        </dd>
+        {{>class}}
         {{/library.publicClasses}}
       </dl>
-    </div>
+    </section>
     {{/library.hasPublicClasses}}
 
-    {{#library.hasPublicFunctions}}
-    <div>
-      <h2>Functions</h2>
+    {{#library.hasPublicMixins}}
+    <section class="summary offset-anchor" id="mixins">
+      <h2>Mixins</h2>
 
       <dl>
+        {{#library.publicMixins}}
+        {{>mixin}}
+        {{/library.publicMixins}}
+      </dl>
+    </section>
+    {{/library.hasPublicMixins}}
+
+    {{#library.hasPublicExtensions}}
+    <section class="summary offset-anchor" id="extensions">
+      <h2>Extensions</h2>
+
+      <dl>
+        {{#library.publicExtensions}}
+        {{>extension}}
+        {{/library.publicExtensions}}
+      </dl>
+    </section>
+    {{/library.hasPublicExtensions}}
+
+    {{#library.hasPublicConstants}}
+    <section class="summary offset-anchor" id="constants">
+      <h2>Constants</h2>
+
+      <dl class="properties">
+        {{#library.publicConstants}}
+        {{>constant}}
+        {{/library.publicConstants}}
+      </dl>
+    </section>
+    {{/library.hasPublicConstants}}
+
+    {{#library.hasPublicProperties}}
+    <section class="summary offset-anchor" id="properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        {{#library.publicProperties}}
+        {{>property}}
+        {{/library.publicProperties}}
+      </dl>
+    </section>
+    {{/library.hasPublicProperties}}
+
+    {{#library.hasPublicFunctions}}
+    <section class="summary offset-anchor" id="functions">
+      <h2>Functions</h2>
+
+      <dl class="callables">
         {{#library.publicFunctions}}
-        {{{linkedName}}}{{{linkedGenericParameters}}}
-        {{{ oneLineDoc }}} {{{ extendedDocLink }}}
+        {{>callable}}
         {{/library.publicFunctions}}
       </dl>
-    </div>
+    </section>
     {{/library.hasPublicFunctions}}
 
-  </div>
+    {{#library.hasPublicEnums}}
+    <section class="summary offset-anchor" id="enums">
+      <h2>Enums</h2>
+
+      <dl>
+        {{#library.publicEnums}}
+        {{>class}}
+        {{/library.publicEnums}}
+      </dl>
+    </section>
+    {{/library.hasPublicEnums}}
+
+    {{#library.hasPublicTypedefs}}
+    <section class="summary offset-anchor" id="typedefs">
+      <h2>Typedefs</h2>
+
+      <dl class="callables">
+        {{#library.publicTypedefs}}
+        {{>callable}}
+        {{/library.publicTypedefs}}
+      </dl>
+    </section>
+    {{/library.hasPublicTypedefs}}
+
+    {{#library.hasPublicExceptions}}
+    <section class="summary offset-anchor" id="exceptions">
+      <h2>Exceptions / Errors</h2>
+
+      <dl>
+        {{#library.publicExceptions}}
+        {{>class}}
+        {{/library.publicExceptions}}
+      </dl>
+    </section>
+    {{/library.hasPublicExceptions}}
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-right" class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
+    <h5>{{self.name}} {{self.kind}}</h5>
+    {{>sidebar_for_library}}
+  </div><!--/sidebar-offcanvas-right-->
 
 {{>footer}}

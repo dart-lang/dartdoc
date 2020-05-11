@@ -1,0 +1,48 @@
+<ol>
+    {{#extension}}
+
+    {{#hasPublicInstanceFields}}
+    <li class="section-title"> <a href="{{{href}}}#instance-properties">Properties</a>
+    </li>
+    {{#publicInstanceFieldsSorted}}
+    <li>{{{ linkedName }}}</li>
+    {{/publicInstanceFieldsSorted}}
+    {{/hasPublicInstanceFields}}
+
+    {{#hasPublicInstanceMethods}}
+    <li class="section-title"><a href="{{{href}}}#instance-methods">Methods</a></li>
+    {{#publicInstanceMethodsSorted}}
+    <li>{{{ linkedName }}}</li>
+    {{/publicInstanceMethodsSorted}}
+    {{/hasPublicInstanceMethods}}
+
+    {{#hasPublicInstanceOperators}}
+    <li class="section-title"><a href="{{{href}}}#operators">Operators</a></li>
+    {{#publicInstanceOperatorsSorted}}
+    <li>{{{ linkedName }}}</li>
+    {{/publicInstanceOperatorsSorted}}
+    {{/hasPublicInstanceOperators}}
+
+    {{#hasPublicStaticFields}}
+    <li class="section-title"><a href="{{{href}}}#static-properties">Static properties</a></li>
+    {{#publicVariableStaticFieldsSorted}}
+    <li>{{{ linkedName }}}</li>
+    {{/publicVariableStaticFieldsSorted}}
+    {{/hasPublicStaticFields}}
+
+    {{#hasPublicStaticMethods}}
+    <li class="section-title"><a href="{{{href}}}#static-methods">Static methods</a></li>
+    {{#publicStaticMethodsSorted}}
+    <li>{{{ linkedName }}}</li>
+    {{/publicStaticMethodsSorted}}
+    {{/hasPublicStaticMethods}}
+
+    {{#hasPublicConstantFields}}
+    <li class="section-title"><a href="{{{href}}}#constants">Constants</a></li>
+    {{#publicConstantFieldsSorted}}
+    <li>{{{linkedName}}}</li>
+    {{/publicConstantFieldsSorted}}
+    {{/hasPublicConstantFields}}
+
+    {{/extension}}
+</ol>

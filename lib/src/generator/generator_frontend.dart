@@ -68,7 +68,7 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, clazz, constructor);
           }
 
-          for (var constant in filterNonDocumented(clazz.constants)) {
+          for (var constant in filterNonDocumented(clazz.constantFields)) {
             if (!constant.isCanonical) continue;
 
             indexAccumulator.add(constant);
@@ -76,7 +76,8 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, clazz, constant);
           }
 
-          for (var property in filterNonDocumented(clazz.staticProperties)) {
+          for (var property
+              in filterNonDocumented(clazz.variableStaticFields)) {
             if (!property.isCanonical) continue;
 
             indexAccumulator.add(property);
@@ -84,7 +85,7 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, clazz, property);
           }
 
-          for (var property in filterNonDocumented(clazz.allInstanceFields)) {
+          for (var property in filterNonDocumented(clazz.instanceFields)) {
             if (!property.isCanonical) continue;
 
             indexAccumulator.add(property);
@@ -92,7 +93,7 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, clazz, property);
           }
 
-          for (var method in filterNonDocumented(clazz.allInstanceMethods)) {
+          for (var method in filterNonDocumented(clazz.instanceMethods)) {
             if (!method.isCanonical) continue;
 
             indexAccumulator.add(method);
@@ -100,7 +101,7 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, clazz, method);
           }
 
-          for (var operator in filterNonDocumented(clazz.allOperators)) {
+          for (var operator in filterNonDocumented(clazz.instanceOperators)) {
             if (!operator.isCanonical) continue;
 
             indexAccumulator.add(operator);
@@ -122,40 +123,27 @@ class GeneratorFrontEnd implements Generator {
           _generatorBackend.generateExtension(
               writer, packageGraph, lib, extension);
 
-          for (var constant in filterNonDocumented(extension.constants)) {
+          for (var constant in filterNonDocumented(extension.constantFields)) {
             indexAccumulator.add(constant);
             _generatorBackend.generateConstant(
                 writer, packageGraph, lib, extension, constant);
           }
 
-          for (var property
-              in filterNonDocumented(extension.staticProperties)) {
-            indexAccumulator.add(property);
-            _generatorBackend.generateProperty(
-                writer, packageGraph, lib, extension, property);
-          }
-
           for (var method
-              in filterNonDocumented(extension.allPublicInstanceMethods)) {
+              in filterNonDocumented(extension.publicInstanceMethods)) {
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
                 writer, packageGraph, lib, extension, method);
           }
 
-          for (var method in filterNonDocumented(extension.staticMethods)) {
-            indexAccumulator.add(method);
-            _generatorBackend.generateMethod(
-                writer, packageGraph, lib, extension, method);
-          }
-
-          for (var operator in filterNonDocumented(extension.allOperators)) {
+          for (var operator
+              in filterNonDocumented(extension.instanceOperators)) {
             indexAccumulator.add(operator);
             _generatorBackend.generateMethod(
                 writer, packageGraph, lib, extension, operator);
           }
 
-          for (var property
-              in filterNonDocumented(extension.allInstanceFields)) {
+          for (var property in filterNonDocumented(extension.instanceFields)) {
             indexAccumulator.add(property);
             _generatorBackend.generateProperty(
                 writer, packageGraph, lib, extension, property);
@@ -174,14 +162,15 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, mixin, constructor);
           }
 
-          for (var constant in filterNonDocumented(mixin.constants)) {
+          for (var constant in filterNonDocumented(mixin.constantFields)) {
             if (!constant.isCanonical) continue;
             indexAccumulator.add(constant);
             _generatorBackend.generateConstant(
                 writer, packageGraph, lib, mixin, constant);
           }
 
-          for (var property in filterNonDocumented(mixin.staticProperties)) {
+          for (var property
+              in filterNonDocumented(mixin.variableStaticFields)) {
             if (!property.isCanonical) continue;
 
             indexAccumulator.add(property);
@@ -189,7 +178,7 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, mixin, property);
           }
 
-          for (var property in filterNonDocumented(mixin.allInstanceFields)) {
+          for (var property in filterNonDocumented(mixin.instanceFields)) {
             if (!property.isCanonical) continue;
 
             indexAccumulator.add(property);
@@ -197,7 +186,7 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, mixin, property);
           }
 
-          for (var method in filterNonDocumented(mixin.allInstanceMethods)) {
+          for (var method in filterNonDocumented(mixin.instanceMethods)) {
             if (!method.isCanonical) continue;
 
             indexAccumulator.add(method);
@@ -205,7 +194,7 @@ class GeneratorFrontEnd implements Generator {
                 writer, packageGraph, lib, mixin, method);
           }
 
-          for (var operator in filterNonDocumented(mixin.allOperators)) {
+          for (var operator in filterNonDocumented(mixin.instanceOperators)) {
             if (!operator.isCanonical) continue;
 
             indexAccumulator.add(operator);
@@ -226,17 +215,17 @@ class GeneratorFrontEnd implements Generator {
           indexAccumulator.add(eNum);
           _generatorBackend.generateEnum(writer, packageGraph, lib, eNum);
 
-          for (var property in filterNonDocumented(eNum.allInstanceFields)) {
+          for (var property in filterNonDocumented(eNum.instanceFields)) {
             indexAccumulator.add(property);
             _generatorBackend.generateConstant(
                 writer, packageGraph, lib, eNum, property);
           }
-          for (var operator in filterNonDocumented(eNum.allOperators)) {
+          for (var operator in filterNonDocumented(eNum.instanceOperators)) {
             indexAccumulator.add(operator);
             _generatorBackend.generateMethod(
                 writer, packageGraph, lib, eNum, operator);
           }
-          for (var method in filterNonDocumented(eNum.allInstanceMethods)) {
+          for (var method in filterNonDocumented(eNum.instanceMethods)) {
             indexAccumulator.add(method);
             _generatorBackend.generateMethod(
                 writer, packageGraph, lib, eNum, method);

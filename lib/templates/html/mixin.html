@@ -101,51 +101,51 @@
     </section>
     {{/hasPublicConstructors}}
 
-    {{#hasPublicProperties}}
-    <section class="summary offset-anchor{{ #allPublicInstancePropertiesInherited }} inherited{{ /allPublicInstancePropertiesInherited }}" id="instance-properties">
+    {{#hasPublicInstanceFields}}
+    <section class="summary offset-anchor{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}" id="instance-properties">
       <h2>Properties</h2>
 
       <dl class="properties">
-        {{#allPublicInstanceProperties}}
+        {{#publicInstanceFields}}
         {{>property}}
-        {{/allPublicInstanceProperties}}
+        {{/publicInstanceFields}}
       </dl>
     </section>
-    {{/hasPublicProperties}}
+    {{/hasPublicInstanceFields}}
 
-    {{#hasPublicMethods}}
-    <section class="summary offset-anchor{{ #allPublicInstanceMethodsInherited }} inherited{{ /allPublicInstanceMethodsInherited }}" id="instance-methods">
+    {{#hasPublicInstanceMethods}}
+    <section class="summary offset-anchor{{ #publicInheritedInstanceMethods }} inherited{{ /publicInheritedInstanceMethods }}" id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">
-        {{#allPublicInstanceMethods}}
+        {{#publicInstanceMethods}}
         {{>callable}}
-        {{/allPublicInstanceMethods}}
+        {{/publicInstanceMethods}}
       </dl>
     </section>
-    {{/hasPublicMethods}}
+    {{/hasPublicInstanceMethods}}
 
-    {{#hasPublicOperators}}
-    <section class="summary offset-anchor{{ #allPublicOperatorsInherited }} inherited{{ /allPublicOperatorsInherited}}" id="operators">
+    {{#hasPublicInstanceOperators}}
+    <section class="summary offset-anchor{{ #publicInheritedInstanceOperators }} inherited{{ /publicInheritedInstanceOperators}}" id="operators">
       <h2>Operators</h2>
       <dl class="callables">
-        {{#allPublicOperators}}
+        {{#publicInstanceOperatorsSorted}}
         {{>callable}}
-        {{/allPublicOperators}}
+        {{/publicInstanceOperatorsSorted}}
       </dl>
     </section>
-    {{/hasPublicOperators}}
+    {{/hasPublicInstanceOperators}}
 
-    {{#hasPublicStaticProperties}}
+    {{#hasPublicVariableStaticFields}}
     <section class="summary offset-anchor" id="static-properties">
       <h2>Static Properties</h2>
 
       <dl class="properties">
-        {{#publicStaticProperties}}
+        {{#publicVariableStaticFieldsSorted}}
         {{>property}}
-        {{/publicStaticProperties}}
+        {{/publicVariableStaticFieldsSorted}}
       </dl>
     </section>
-    {{/hasPublicStaticProperties}}
+    {{/hasPublicVariableStaticFields}}
 
     {{#hasPublicStaticMethods}}
     <section class="summary offset-anchor" id="static-methods">
@@ -158,17 +158,17 @@
     </section>
     {{/hasPublicStaticMethods}}
 
-    {{#hasPublicConstants}}
+    {{#hasPublicConstantFields}}
     <section class="summary offset-anchor" id="constants">
       <h2>Constants</h2>
 
       <dl class="properties">
-        {{#publicConstants}}
+        {{#publicConstantFieldsSorted}}
         {{>constant}}
-        {{/publicConstants}}
+        {{/publicConstantFieldsSorted}}
       </dl>
     </section>
-    {{/hasPublicConstants}}
+    {{/hasPublicConstantFields}}
     {{/mixin}}
   </div> <!-- /.main-content -->
 

@@ -1,17 +1,22 @@
 {{>head}}
 
-  <div>
-    <h5>{{self.name}} {{self.kind}}</h5>
+  <div id="dartdoc-sidebar-left" class="col-xs-6 col-sm-3 col-md-2 sidebar sidebar-offcanvas-left">
+    {{>search_sidebar}}
+    <h5 class="hidden-xs"><span class="package-name">{{self.name}}</span> <span class="package-kind">{{self.kind}}</span></h5>
+    {{>packages}}
   </div>
 
-  <div>
+Welcome my friends to a custom template
+
+
+  <div id="dartdoc-main-content" class="col-xs-12 col-sm-9 col-md-8 main-content">
     {{#packageGraph.defaultPackage}}
       {{>documentation}}
     {{/packageGraph.defaultPackage}}
 
     {{#packageGraph}}
       {{#localPackages}}
-        <section>
+        <section class="summary">
           {{#isFirstPackage}}
             <h2>Libraries</h2>
           {{/isFirstPackage}}
@@ -20,17 +25,12 @@
           {{/isFirstPackage}}
           <dl>
           {{#defaultCategory.publicLibraries}}
-            {{{ oneLineDoc }}} {{{ extendedDocLink }}}
+            {{>library}}
           {{/defaultCategory.publicLibraries}}
           {{#categoriesWithPublicLibraries}}
             <h3>{{name}}</h3>
             {{#publicLibraries}}
-              <dt>
-                {{{ linkedName }}}
-              </dt>
-              <dd>
-                {{#isDocumented}}{{{ oneLineDoc }}} {{{ extendedDocLink }}}{{/isDocumented}}
-              </dd>
+              {{>library}}
             {{/publicLibraries}}
           {{/categoriesWithPublicLibraries}}
           </dl>
@@ -38,6 +38,9 @@
       {{/localPackages}}
     {{/packageGraph}}
 
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-right" class="col-xs-6 col-sm-6 col-md-2 sidebar sidebar-offcanvas-right">
   </div>
 
 {{>footer}}

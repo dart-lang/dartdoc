@@ -55,7 +55,7 @@ void main() {
     });
 
     test('method parameters with required', () {
-      var m1 = b.allInstanceMethods.firstWhere((m) => m.name == 'm1');
+      var m1 = b.instanceMethods.firstWhere((m) => m.name == 'm1');
       var p1 = m1.allParameters.firstWhere((p) => p.name == 'p1');
       var p2 = m1.allParameters.firstWhere((p) => p.name == 'p2');
       expect(p1.isRequiredNamed, isTrue);
@@ -76,7 +76,7 @@ void main() {
     });
 
     test('verify no regression on ordinary optionals', () {
-      var m2 = b.allInstanceMethods.firstWhere((m) => m.name == 'm2');
+      var m2 = b.instanceMethods.firstWhere((m) => m.name == 'm2');
       var sometimes = m2.allParameters.firstWhere((p) => p.name == 'sometimes');
       var optionals = m2.allParameters.firstWhere((p) => p.name == 'optionals');
       expect(sometimes.isRequiredNamed, isFalse);
@@ -99,14 +99,14 @@ void main() {
     test('Late final class member test', () {
       var c = lateFinalWithoutInitializer.allClasses
           .firstWhere((c) => c.name == 'C');
-      var a = c.allFields.firstWhere((f) => f.name == 'a');
-      var b = c.allFields.firstWhere((f) => f.name == 'b');
-      var cField = c.allFields.firstWhere((f) => f.name == 'cField');
-      var dField = c.allFields.firstWhere((f) => f.name == 'dField');
+      var a = c.instanceFields.firstWhere((f) => f.name == 'a');
+      var b = c.instanceFields.firstWhere((f) => f.name == 'b');
+      var cField = c.instanceFields.firstWhere((f) => f.name == 'cField');
+      var dField = c.instanceFields.firstWhere((f) => f.name == 'dField');
 
       // If nnbd isn't enabled, fields named 'late' come back from the analyzer
       // instead of setting up 'isLate'.
-      expect(c.allFields.any((f) => f.name == 'late'), isFalse);
+      expect(c.instanceFields.any((f) => f.name == 'late'), isFalse);
 
       expect(a.modelType.returnType.name, equals('dynamic'));
       expect(a.isLate, isTrue);
@@ -154,9 +154,9 @@ void main() {
 
       htmlInjection = injectionExLibrary.classes
           .firstWhere((c) => c.name == 'HtmlInjection');
-      injectSimpleHtml = htmlInjection.allInstanceMethods
+      injectSimpleHtml = htmlInjection.instanceMethods
           .firstWhere((m) => m.name == 'injectSimpleHtml');
-      injectHtmlFromTool = htmlInjection.allInstanceMethods
+      injectHtmlFromTool = htmlInjection.instanceMethods
           .firstWhere((m) => m.name == 'injectHtmlFromTool');
       injectionPackageGraph.allLocalModelElements
           .forEach((m) => m.documentation);
@@ -353,7 +353,7 @@ void main() {
             .singleWhere((l) => l.name == 'dart:html');
         var EventTarget =
             htmlLibrary.allClasses.singleWhere((c) => c.name == 'EventTarget');
-        var hashCode = EventTarget.allPublicInstanceProperties
+        var hashCode = EventTarget.publicInstanceFields
             .singleWhere((f) => f.name == 'hashCode');
         var objectModelElement =
             sdkAsPackageGraph.specialClasses[SpecialClass.object];
@@ -417,20 +417,20 @@ void main() {
           .classes
           .firstWhere((c) => c.name == 'DocumentationErrors')
             ..documentation;
-      withYouTubeWrongParams = documentationErrors.allInstanceMethods
+      withYouTubeWrongParams = documentationErrors.instanceMethods
           .firstWhere((m) => m.name == 'withYouTubeWrongParams')
             ..documentation;
-      withYouTubeBadWidth = documentationErrors.allInstanceMethods
+      withYouTubeBadWidth = documentationErrors.instanceMethods
           .firstWhere((m) => m.name == 'withYouTubeBadWidth')
             ..documentation;
-      withYouTubeBadHeight = documentationErrors.allInstanceMethods
+      withYouTubeBadHeight = documentationErrors.instanceMethods
           .firstWhere((m) => m.name == 'withYouTubeBadHeight')
             ..documentation;
-      withYouTubeInvalidUrl = documentationErrors.allInstanceMethods
+      withYouTubeInvalidUrl = documentationErrors.instanceMethods
           .firstWhere((m) => m.name == 'withYouTubeInvalidUrl')
             ..documentation;
       withYouTubeUrlWithAdditionalParameters = documentationErrors
-          .allInstanceMethods
+          .instanceMethods
           .firstWhere((m) => m.name == 'withYouTubeUrlWithAdditionalParameters')
             ..documentation;
     });
@@ -504,25 +504,25 @@ void main() {
           .classes
           .firstWhere((c) => c.name == 'DocumentationErrors')
             ..documentation;
-      withInvalidNamedAnimation = documentationErrors.allInstanceMethods
+      withInvalidNamedAnimation = documentationErrors.instanceMethods
           .firstWhere((m) => m.name == 'withInvalidNamedAnimation')
             ..documentation;
-      withAnimationNonUnique = documentationErrors.allInstanceMethods
+      withAnimationNonUnique = documentationErrors.instanceMethods
           .firstWhere((m) => m.name == 'withAnimationNonUnique')
             ..documentation;
-      withAnimationNonUniqueDeprecated = documentationErrors.allInstanceMethods
+      withAnimationNonUniqueDeprecated = documentationErrors.instanceMethods
           .firstWhere((m) => m.name == 'withAnimationNonUniqueDeprecated')
             ..documentation;
-      withAnimationWrongParams = documentationErrors.allInstanceMethods
+      withAnimationWrongParams = documentationErrors.instanceMethods
           .firstWhere((m) => m.name == 'withAnimationWrongParams')
             ..documentation;
-      withAnimationBadWidth = documentationErrors.allInstanceMethods
+      withAnimationBadWidth = documentationErrors.instanceMethods
           .firstWhere((m) => m.name == 'withAnimationBadWidth')
             ..documentation;
-      withAnimationBadHeight = documentationErrors.allInstanceMethods
+      withAnimationBadHeight = documentationErrors.instanceMethods
           .firstWhere((m) => m.name == 'withAnimationBadHeight')
             ..documentation;
-      withAnimationUnknownArg = documentationErrors.allInstanceMethods
+      withAnimationUnknownArg = documentationErrors.instanceMethods
           .firstWhere((m) => m.name == 'withAnimationUnknownArg')
             ..documentation;
     });

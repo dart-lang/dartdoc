@@ -69,24 +69,24 @@
     </section>
     {{/hasModifiers}}
 
-    {{#hasPublicConstants}}
+    {{#hasPublicConstantFields}}
     <section class="summary offset-anchor" id="constants">
       <h2>Constants</h2>
 
       <dl class="properties">
-        {{#publicConstants}}
+        {{#publicConstantFieldsSorted}}
         {{>constant}}
-        {{/publicConstants}}
+        {{/publicConstantFieldsSorted}}
       </dl>
     </section>
-    {{/hasPublicConstants}}
+    {{/hasPublicConstantFields}}
 
     {{#hasPublicConstructors}}
     <section class="summary offset-anchor" id="constructors">
       <h2>Constructors</h2>
 
       <dl class="constructor-summary-list">
-        {{#publicConstructors}}
+        {{#publicConstructorsSorted}}
         <dt id="{{htmlId}}" class="callable">
           <span class="name">{{{linkedName}}}</span><span class="signature">({{{ linkedParams }}})</span>
         </dt>
@@ -99,64 +99,64 @@
           <div class="constructor-modifier features">factory</div>
           {{/isFactory}}
         </dd>
-        {{/publicConstructors}}
+        {{/publicConstructorsSorted}}
       </dl>
     </section>
     {{/hasPublicConstructors}}
 
-    {{#hasPublicProperties}}
-    <section class="summary offset-anchor{{ #allPublicInstancePropertiesInherited }} inherited{{ /allPublicInstancePropertiesInherited }}" id="instance-properties">
+    {{#hasPublicInstanceFields}}
+    <section class="summary offset-anchor{{ #publicInheritedInstanceFields }} inherited{{ /publicInheritedInstanceFields }}" id="instance-properties">
       <h2>Properties</h2>
 
       <dl class="properties">
-        {{#allPublicInstanceProperties}}
+        {{#publicInstanceFieldsSorted}}
         {{>property}}
-        {{/allPublicInstanceProperties}}
+        {{/publicInstanceFieldsSorted}}
       </dl>
     </section>
-    {{/hasPublicProperties}}
+    {{/hasPublicInstanceFields}}
 
-    {{#hasPublicMethods}}
-    <section class="summary offset-anchor{{ #allPublicInstanceMethodsInherited }} inherited{{ /allPublicInstanceMethodsInherited }}" id="instance-methods">
+    {{#hasPublicInstanceMethods}}
+    <section class="summary offset-anchor{{ #publicInheritedInstanceMethods }} inherited{{ /publicInheritedInstanceMethods }}" id="instance-methods">
       <h2>Methods</h2>
       <dl class="callables">
-        {{#allPublicInstanceMethods}}
+        {{#publicInstanceMethodsSorted}}
         {{>callable}}
-        {{/allPublicInstanceMethods}}
+        {{/publicInstanceMethodsSorted}}
       </dl>
     </section>
-    {{/hasPublicMethods}}
+    {{/hasPublicInstanceMethods}}
 
-    {{#hasPublicOperators}}
-    <section class="summary offset-anchor{{ #allPublicOperatorsInherited }} inherited{{ /allPublicOperatorsInherited}}" id="operators">
+    {{#hasPublicInstanceOperators}}
+    <section class="summary offset-anchor{{ #publicInheritedInstanceOperators }} inherited{{ /publicInheritedInstanceOperators}}" id="operators">
       <h2>Operators</h2>
       <dl class="callables">
-        {{#allPublicOperators}}
+        {{#publicInstanceOperatorsSorted}}
         {{>callable}}
-        {{/allPublicOperators}}
+        {{/publicInstanceOperatorsSorted}}
       </dl>
     </section>
-    {{/hasPublicOperators}}
+    {{/hasPublicInstanceOperators}}
 
-    {{#hasPublicStaticProperties}}
+    {{#hasPublicVariableStaticFields}}
     <section class="summary offset-anchor" id="static-properties">
       <h2>Static Properties</h2>
 
       <dl class="properties">
-        {{#publicStaticProperties}}
+        {{#publicVariableStaticFieldsSorted}}
         {{>property}}
-        {{/publicStaticProperties}}
+        {{/publicVariableStaticFieldsSorted}}
       </dl>
     </section>
-    {{/hasPublicStaticProperties}}
+    {{/hasPublicVariableStaticFields}}
 
     {{#hasPublicStaticMethods}}
     <section class="summary offset-anchor" id="static-methods">
       <h2>Static Methods</h2>
       <dl class="callables">
-        {{#publicStaticMethods}}
+        {{#publicStaticMethodsSorted}}
         {{>callable}}
-        {{/publicStaticMethods}}
+        {{/publicStaticMethodsSorted}}
       </dl>
     </section>
     {{/hasPublicStaticMethods}}
