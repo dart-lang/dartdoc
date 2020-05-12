@@ -27,7 +27,6 @@ import 'package:dartdoc/src/version.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:path/path.dart' as path;
-import 'package:stack_trace/stack_trace.dart';
 
 export 'package:dartdoc/src/dartdoc_options.dart';
 export 'package:dartdoc/src/element_type.dart';
@@ -454,25 +453,23 @@ class Dartdoc {
   }
 
   /// Runs [generateDocs] function and properly handles the errors.
-  Future<int> execute(bool asyncStackTraces) async {
+  Future<int> execute() async {
     onCheckProgress.listen(logProgress);
     try {
-      await Chain.capture(() async {
-        await runZoned(generateDocs,
-            zoneSpecification: ZoneSpecification(
-                print: (_, __, ___, String line) => logPrint(line)));
-      }, onError: (e, Chain chain) {
-        if (e is DartdocFailure) {
-          stderr.writeln('\ndartdoc failed: ${e}.');
-          if (config.verboseWarnings) {
-            stderr.writeln(chain.terse);
-          }
-          return 1;
-        } else {
-          stderr.writeln('\ndartdoc failed: ${e}\n${chain.terse}');
-          return 255;
+      await runZoned(generateDocs,
+          zoneSpecification: ZoneSpecification(
+              print: (_, __, ___, String line) => logPrint(line)));
+    } catch (e, chain) {
+      if (e is DartdocFailure) {
+        stderr.writeln('\ndartdoc failed: ${e}.');
+        if (config.verboseWarnings) {
+          stderr.writeln(chain);
         }
-      }, when: asyncStackTraces);
+        return 1;
+      } else {
+        stderr.writeln('\ndartdoc failed: ${e}\n${chain}');
+        return 255;
+      }
     } finally {
       // Clear out any cached tool snapshots and temporary directories.
       // ignore: unawaited_futures

@@ -29,6 +29,6 @@ Future<void> main(List<String> arguments) async {
       ? await Dartdoc.fromContext(config, packageBuilder)
       : await Dartdoc.withEmptyGenerator(config, packageBuilder);
 
-  exitCode = await dartdoc.execute(config.asyncStackTraces);
+  exitCode = await dartdoc.execute();
   return;
 }

@@ -10,7 +10,6 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
   DartdocProgramOptionContext(DartdocOptionSet optionSet, Directory dir)
       : super(optionSet, dir);
 
-  bool get asyncStackTraces => optionSet['asyncStackTraces'].valueAt(context);
   bool get generateDocs => optionSet['generateDocs'].valueAt(context);
   bool get help => optionSet['help'].valueAt(context);
   bool get version => optionSet['version'].valueAt(context);
@@ -18,9 +17,6 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
 
 Future<List<DartdocOption>> createDartdocProgramOptions() async {
   return <DartdocOption>[
-    DartdocOptionArgOnly<bool>('asyncStackTraces', false,
-        help: 'Display coordinated asynchronous stack traces (slow)',
-        negatable: true),
     DartdocOptionArgOnly<bool>('generateDocs', true,
         help:
             'Generate docs into the output directory (or only display warnings if false).',
