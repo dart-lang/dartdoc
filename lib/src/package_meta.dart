@@ -118,23 +118,32 @@ abstract class PackageMeta {
     PackageMeta Function(String) fromFilenameFactory,
     PackageMeta Function(Directory) fromDirFactory,
   ) {
-    if (_elem != null || _file != null || _dir != null) {
-      throw StateError('PackageMeta factories have been defined already.');
+    assert(fromElementFactory != null);
+    assert(fromFilenameFactory != null);
+    assert(fromDirFactory != null);
+    if (_fromElement == fromElementFactory &&
+        _fromFilename == fromFilenameFactory &&
+        _fromDir == fromDirFactory) {
+      // Nothing to do.
+      return;
     }
-    _elem = fromElementFactory;
-    _file = fromFilenameFactory;
-    _dir = fromDirFactory;
-    if (_elem == null || _file == null || _dir == null) {
-      throw StateError('Null factories are not allowed for PackageMeta.');
+    if (_fromElement != null || _fromFilename != null || _fromDir != null) {
+      throw StateError('PackageMeta factories cannot be changed once defined.');
     }
+    _fromElement = fromElementFactory;
+    _fromFilename = fromFilenameFactory;
+    _fromDir = fromDirFactory;
   }
 
-  static PackageMeta Function(LibraryElement, String) _elem;
-  static PackageMeta Function(String) _file;
-  static PackageMeta Function(Directory) _dir;
-  static PackageMeta Function(LibraryElement, String) get fromElement => _elem;
-  static PackageMeta Function(String) get fromFilename => _file;
-  static PackageMeta Function(Directory) get fromDir => _dir;
+  static PackageMeta Function(LibraryElement, String) _fromElement;
+  static PackageMeta Function(String) _fromFilename;
+  static PackageMeta Function(Directory) _fromDir;
+  static PackageMeta Function(LibraryElement, String) get fromElement =>
+      _fromElement ?? PubPackageMeta.fromElement;
+  static PackageMeta Function(String) get fromFilename =>
+      _fromFilename ?? PubPackageMeta.fromFilename;
+  static PackageMeta Function(Directory) get fromDir =>
+      _fromDir ?? PubPackageMeta.fromDir;
 }
 
 /// Default implementation of [PackageMeta] depends on pub packages.
