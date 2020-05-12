@@ -19,7 +19,7 @@ Encoding utf8AllowMalformed = Utf8Codec(allowMalformed: true);
 
 Directory get defaultSdkDir {
   var sdkDir = File(Platform.resolvedExecutable).parent.parent;
-  assert(path.equals(sdkDir.path, PackageMeta.sdkDirParent(sdkDir).path));
+  assert(path.equals(sdkDir.path, PubPackageMeta.sdkDirParent(sdkDir).path));
   return sdkDir;
 }
 
@@ -39,6 +39,99 @@ abstract class PackageMeta {
   final Directory dir;
 
   PackageMeta(this.dir);
+
+  @override
+  bool operator ==(other) {
+    if (other is! PackageMeta) return false;
+    return path.equals(dir.absolute.path, other.dir.absolute.path);
+  }
+
+  @override
+  int get hashCode => path.hash(dir.absolute.path);
+
+  /// Returns true if this represents a 'Dart' SDK.  A package can be part of
+  /// Dart and Flutter at the same time, but if we are part of a Dart SDK
+  /// sdkType should never return null.
+  bool get isSdk;
+
+  /// Returns 'Dart' or 'Flutter' (preferentially, 'Flutter' when the answer is
+  /// "both"), or null if this package is not part of a SDK.
+  String sdkType(String flutterRootPath);
+
+  bool get needsPubGet => false;
+
+  bool get requiresFlutter;
+
+  void runPubGet(String flutterRoot);
+
+  String get name;
+
+  /// null if not a hosted pub package.  If set, the hostname
+  /// that the package is hosted at -- usually 'pub.dartlang.org'.
+  String get hostedAt;
+
+  String get version;
+
+  String get description;
+
+  String get homepage;
+
+  FileContents getReadmeContents();
+
+  FileContents getLicenseContents();
+
+  FileContents getChangelogContents();
+
+  /// Returns true if we are a valid package, valid enough to generate docs.
+  bool get isValid => getInvalidReasons().isEmpty;
+
+  /// Returns resolved directory.
+  String get resolvedDir;
+
+  /// Returns a list of reasons this package is invalid, or an
+  /// empty list if no reasons found.
+  ///
+  /// If the list is empty, this package is valid.
+  List<String> getInvalidReasons();
+
+  @override
+  String toString() => name;
+
+  /// Sets the supported ways of constructing [PackageMeta] objects.
+  ///
+  /// These objects can be constructed from a filename, a directory
+  /// or a [LibraryElement]. We allow different dartdoc implementations to
+  /// provide their own [PackageMeta] types.
+  ///
+  /// By calling this function, these implementations can control how
+  /// [PackageMeta] is built.
+  static void setPackageMetaFactories(
+    PackageMeta Function(LibraryElement, String) fromElementFactory,
+    PackageMeta Function(String) fromFilenameFactory,
+    PackageMeta Function(Directory) fromDirFactory,
+  ) {
+    if (_elem != null || _file != null || _dir != null) {
+      throw StateError('PackageMeta factories have been defined already.');
+    }
+    _elem = fromElementFactory;
+    _file = fromFilenameFactory;
+    _dir = fromDirFactory;
+    if (_elem == null || _file == null || _dir == null) {
+      throw StateError('Null factories are not allowed for PackageMeta.');
+    }
+  }
+
+  static PackageMeta Function(LibraryElement, String) _elem;
+  static PackageMeta Function(String) _file;
+  static PackageMeta Function(Directory) _dir;
+  static PackageMeta Function(LibraryElement, String) get fromElement => _elem;
+  static PackageMeta Function(String) get fromFilename => _file;
+  static PackageMeta Function(Directory) get fromDir => _dir;
+}
+
+/// Default implementation of [PackageMeta] depends on pub packages.
+abstract class PubPackageMeta extends PackageMeta {
+  PubPackageMeta(Directory dir) : super(dir);
 
   static List<List<String>> __sdkDirFilePaths;
 
@@ -83,34 +176,25 @@ abstract class PackageMeta {
     return _sdkDirParent[dirPathCanonical];
   }
 
-  @override
-  bool operator ==(other) {
-    if (other is! PackageMeta) return false;
-    return path.equals(dir.absolute.path, other.dir.absolute.path);
-  }
-
-  @override
-  int get hashCode => path.hash(dir.absolute.path);
-
   /// Use this instead of fromDir where possible.
-  factory PackageMeta.fromElement(
+  static PubPackageMeta fromElement(
       LibraryElement libraryElement, String sdkDir) {
     if (libraryElement.isInSdk) {
-      return PackageMeta.fromDir(Directory(sdkDir));
+      return PubPackageMeta.fromDir(Directory(sdkDir));
     }
-    return PackageMeta.fromDir(
+    return PubPackageMeta.fromDir(
         File(path.canonicalize(libraryElement.source.fullName)).parent);
   }
 
-  factory PackageMeta.fromFilename(String filename) {
-    return PackageMeta.fromDir(File(filename).parent);
+  static PubPackageMeta fromFilename(String filename) {
+    return PubPackageMeta.fromDir(File(filename).parent);
   }
 
   /// This factory is guaranteed to return the same object for any given
   /// [dir.absolute.path].  Multiple [dir.absolute.path]s will resolve to the
   /// same object if they are part of the same package.  Returns null
   /// if the directory is not part of a known package.
-  factory PackageMeta.fromDir(Directory dir) {
+  static PubPackageMeta fromDir(Directory dir) {
     var original = dir.absolute;
     dir = original;
     if (!original.existsSync()) {
@@ -142,13 +226,7 @@ abstract class PackageMeta {
     return _packageMetaCache[dir.absolute.path];
   }
 
-  /// Returns true if this represents a 'Dart' SDK.  A package can be part of
-  /// Dart and Flutter at the same time, but if we are part of a Dart SDK
-  /// sdkType should never return null.
-  bool get isSdk;
-
-  /// Returns 'Dart' or 'Flutter' (preferentially, 'Flutter' when the answer is
-  /// "both"), or null if this package is not part of a SDK.
+  @override
   String sdkType(String flutterRootPath) {
     if (flutterRootPath != null) {
       var flutterPackages = path.join(flutterRootPath, 'packages');
@@ -166,48 +244,13 @@ abstract class PackageMeta {
     return isSdk ? 'Dart' : null;
   }
 
-  bool get needsPubGet => false;
-
-  bool get requiresFlutter;
-
-  void runPubGet(String flutterRoot);
-
-  String get name;
-
-  /// null if not a hosted pub package.  If set, the hostname
-  /// that the package is hosted at -- usually 'pub.dartlang.org'.
-  String get hostedAt;
-
-  String get version;
-
-  String get description;
-
-  String get homepage;
-
   String _resolvedDir;
 
+  @override
   String get resolvedDir {
     _resolvedDir ??= dir.resolveSymbolicLinksSync();
     return _resolvedDir;
   }
-
-  FileContents getReadmeContents();
-
-  FileContents getLicenseContents();
-
-  FileContents getChangelogContents();
-
-  /// Returns true if we are a valid package, valid enough to generate docs.
-  bool get isValid => getInvalidReasons().isEmpty;
-
-  /// Returns a list of reasons this package is invalid, or an
-  /// empty list if no reasons found.
-  ///
-  /// If the list is empty, this package is valid.
-  List<String> getInvalidReasons();
-
-  @override
-  String toString() => name;
 }
 
 class FileContents {
@@ -225,7 +268,7 @@ class FileContents {
   String toString() => file.path;
 }
 
-class _FilePackageMeta extends PackageMeta {
+class _FilePackageMeta extends PubPackageMeta {
   FileContents _readme;
   FileContents _license;
   FileContents _changelog;
@@ -374,7 +417,7 @@ File _locate(Directory dir, List<String> fileNames) {
   return null;
 }
 
-class _SdkMeta extends PackageMeta {
+class _SdkMeta extends PubPackageMeta {
   String sdkReadmePath;
 
   _SdkMeta(Directory dir) : super(dir) {
