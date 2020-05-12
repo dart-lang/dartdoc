@@ -35,6 +35,14 @@ final List<List<String>> __sdkDirFilePathsPosix = [
   ['lib/core/core.dart'],
 ];
 
+/// Describes a single package in the context of `dartdoc`.
+///
+/// The primary function of this class is to allow canonicalization of packages
+/// by returning the same [PackageMeta] for a given filename, library or path
+/// if they belong to the same package.
+///
+/// Overriding this is typically done by overriding factories as rest of
+/// `dartdoc` creates this object by calling these static factories.
 abstract class PackageMeta {
   final Directory dir;
 

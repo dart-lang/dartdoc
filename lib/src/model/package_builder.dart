@@ -39,6 +39,7 @@ abstract class PackageBuilder {
   Future<PackageGraph> buildPackageGraph();
 }
 
+/// A package builder that understands pub package format.
 class PubPackageBuilder implements PackageBuilder {
   final DartdocOptionContext config;
 
