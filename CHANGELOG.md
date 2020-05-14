@@ -1,3 +1,14 @@
+## 0.32.0
+* Fix type exception in 2.9 dev versions of dart (#2214)
+* **BREAKING** : Refactor `Container` class, changing the names
+  of many getters for templates.  Users with custom templates
+  may need to update their templates (#2206, #2208).
+* Refactors moving toward mono-repo support (#2204, #2203).
+* Fix crash with newer analyzers and unnamed extension methods
+  (#2197).
+* Use `flutter pub get` when appropriate instead of dart
+  `pub get` (#2190)
+
 ## 0.31.0
 * `--link-to-remote` is now the default.  (#2147)
 * `--show-progress` is now the default on interactive terminals,
