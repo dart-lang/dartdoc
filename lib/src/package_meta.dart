@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:path/path.dart' as path;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
 import 'logging.dart';
@@ -89,6 +90,7 @@ abstract class PackageMeta {
     return path.equals(dir.absolute.path, other.dir.absolute.path);
   }
 
+
   @override
   int get hashCode => path.hash(dir.absolute.path);
 
@@ -167,6 +169,13 @@ abstract class PackageMeta {
   }
 
   bool get needsPubGet => false;
+
+  /// If the NNBD experiment is on, files in this package can
+  /// be read as non-nullable by default.
+  ///
+  /// A package property, as this depends in part on the pubspec version
+  /// constraint.
+  bool get allowsNullable;
 
   bool get requiresFlutter;
 
@@ -318,6 +327,24 @@ class _FilePackageMeta extends PackageMeta {
   @override
   String get homepage => _pubspec['homepage'];
 
+  static final _nullableRange = VersionConstraint.parse('>=2.9.0-dev.0 <2.9') as VersionRange;
+
+  /// If the NNBD experiment is on, files in this package can
+  /// be read as non-nullable by default.
+  ///
+  /// A package property, as this depends in part on the pubspec version
+  /// constraint.
+  @override
+  bool get allowsNullable {
+    if (_pubspec['environment']?.containsKey('sdk') ?? false) {
+      // TODO(jcollins-g): VersionConstraint.parse returns [VersionRange]s right
+      // now, but the interface doesn't guarantee that.
+      var sdkConstraint = VersionConstraint.parse(_pubspec['environment']['sdk']) as VersionRange;
+      return _nullableRange == sdkConstraint;
+    }
+    return false;
+  }
+
   @override
   bool get requiresFlutter =>
       _pubspec['environment']?.containsKey('flutter') == true ||
@@ -380,6 +407,10 @@ class _SdkMeta extends PackageMeta {
   _SdkMeta(Directory dir) : super(dir) {
     sdkReadmePath = path.join(dir.path, 'lib', 'api_readme.md');
   }
+
+  @override
+  // FIXME: whoa.
+  bool get allowsNullable => true;
 
   @override
   String get hostedAt => null;
