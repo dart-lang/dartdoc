@@ -455,6 +455,12 @@ class Dartdoc {
   /// Runs [generateDocs] function and properly handles the errors.
   Future<int> execute() async {
     onCheckProgress.listen(logProgress);
+    // We catch and report failures coming from the Zone below as it is not an
+    // error zone. Please do *not* convert this into an error zone (by using
+    // package:stack_trace for instance) as it leads to the finally block being
+    // skipped.
+    //
+    // File an issue if this code is problematic when debugging.
     try {
       await runZoned(generateDocs,
           zoneSpecification: ZoneSpecification(
