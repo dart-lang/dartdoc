@@ -5,7 +5,6 @@
 library dartdoc.bin;
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/options.dart';
@@ -25,10 +24,8 @@ Future<void> main(List<String> arguments) async {
     PubPackageMeta.fromDir,
   );
   final packageBuilder = PubPackageBuilder(config);
-  var dartdoc = config.generateDocs
+  final dartdoc = config.generateDocs
       ? await Dartdoc.fromContext(config, packageBuilder)
       : await Dartdoc.withEmptyGenerator(config, packageBuilder);
-
-  exitCode = await dartdoc.execute();
-  return;
+  dartdoc.executeGuarded();
 }

@@ -210,22 +210,31 @@ class Dartdoc {
   }
 
   Future<DartdocResults> generateDocs() async {
-    logInfo('Documenting ${config.topLevelPackageMeta}...');
+    try {
+      logInfo('Documenting ${config.topLevelPackageMeta}...');
 
-    var dartdocResults = await generateDocsBase();
-    if (dartdocResults.packageGraph.localPublicLibraries.isEmpty) {
-      throw DartdocFailure('dartdoc could not find any libraries to document');
-    }
+      var dartdocResults = await generateDocsBase();
+      if (dartdocResults.packageGraph.localPublicLibraries.isEmpty) {
+        throw DartdocFailure(
+            'dartdoc could not find any libraries to document');
+      }
 
-    final errorCount =
-        dartdocResults.packageGraph.packageWarningCounter.errorCount;
-    if (errorCount > 0) {
-      throw DartdocFailure(
-          'dartdoc encountered $errorCount errors while processing.');
+      final errorCount =
+          dartdocResults.packageGraph.packageWarningCounter.errorCount;
+      if (errorCount > 0) {
+        throw DartdocFailure(
+            'dartdoc encountered $errorCount errors while processing.');
+      }
+      logInfo(
+          'Success! Docs generated into ${dartdocResults.outDir.absolute.path}');
+      return dartdocResults;
+    } finally {
+      // Clear out any cached tool snapshots and temporary directories.
+      // ignore: unawaited_futures
+      SnapshotCache.instance.dispose();
+      // ignore: unawaited_futures
+      ToolTempFileTracker.instance.dispose();
     }
-    logInfo(
-        'Success! Docs generated into ${dartdocResults.outDir.absolute.path}');
-    return dartdocResults;
   }
 
   /// Warn on file paths.
@@ -453,37 +462,34 @@ class Dartdoc {
   }
 
   /// Runs [generateDocs] function and properly handles the errors.
-  Future<int> execute() async {
+  void executeGuarded() {
     onCheckProgress.listen(logProgress);
-    // We catch and report failures coming from the Zone below as it is not an
-    // error zone. Please do *not* convert this into an error zone (by using
-    // package:stack_trace for instance) as it leads to the finally block being
-    // skipped.
+    // This function should *never* await `runZonedGuarded` because the errors
+    // thrown in generateDocs are uncaught. We want this because uncaught errors
+    // cause IDE debugger to automatically stop at the exception.
     //
-    // File an issue if this code is problematic when debugging.
-    try {
-      await runZoned(generateDocs,
-          zoneSpecification: ZoneSpecification(
-              print: (_, __, ___, String line) => logPrint(line)));
-    } catch (e, chain) {
-      if (e is DartdocFailure) {
-        stderr.writeln('\ndartdoc failed: ${e}.');
-        if (config.verboseWarnings) {
-          stderr.writeln(chain);
+    // If you await the zone, the code that comes after the await is not
+    // executed if the zone dies due to uncaught error. To avoid this confusion,
+    // never await `runZonedGuarded` and never change the return value of
+    // [executeGuarded].
+    runZonedGuarded(
+      generateDocs,
+      (e, chain) {
+        if (e is DartdocFailure) {
+          stderr.writeln('\ndartdoc failed: ${e}.');
+          if (config.verboseWarnings) {
+            stderr.writeln(chain);
+          }
+          exitCode = 1;
+        } else {
+          stderr.writeln('\ndartdoc failed: ${e}\n${chain}');
+          exitCode = 255;
         }
-        return 1;
-      } else {
-        stderr.writeln('\ndartdoc failed: ${e}\n${chain}');
-        return 255;
-      }
-    } finally {
-      // Clear out any cached tool snapshots and temporary directories.
-      // ignore: unawaited_futures
-      SnapshotCache.instance.dispose();
-      // ignore: unawaited_futures
-      ToolTempFileTracker.instance.dispose();
-    }
-    return 0;
+      },
+      zoneSpecification: ZoneSpecification(
+        print: (_, __, ___, String line) => logPrint(line),
+      ),
+    );
   }
 }
 
