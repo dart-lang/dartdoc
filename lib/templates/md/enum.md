@@ -54,70 +54,70 @@
 {{/hasAnnotations}}
 {{/hasModifiers}}
 
-{{#hasPublicConstants}}
+{{#hasPublicConstantFields}}
 ## Constants
 
-{{#publicConstants}}
+{{#publicConstantFieldsSorted}}
 {{>constant}}
 
-{{/publicConstants}}
-{{/hasPublicConstants}}
+{{/publicConstantFieldsSorted}}
+{{/hasPublicConstantFields}}
 
 {{#hasPublicConstructors}}
 ## Constructors
 
-{{#publicConstructors}}
+{{#publicConstructorsSorted}}
 {{{linkedName}}}({{{ linkedParams }}})
 
 {{{ oneLineDoc }}} {{{ extendedDocLink }}}  {{!two spaces intentional}}
 {{#isConst}}_const_{{/isConst}} {{#isFactory}}_factory_{{/isFactory}}
 
-{{/publicConstructors}}
+{{/publicConstructorsSorted}}
 {{/hasPublicConstructors}}
 
-{{#hasPublicProperties}}
+{{#hasPublicInstanceFields}}
 ## Properties
 
-{{#allPublicInstanceProperties}}
+{{#publicInstanceFieldsSorted}}
 {{>property}}
 
-{{/allPublicInstanceProperties}}
-{{/hasPublicProperties}}
+{{/publicInstanceFieldsSorted}}
+{{/hasPublicInstanceFields}}
 
-{{#hasPublicMethods}}
+{{#hasPublicInstanceMethods}}
 ## Methods
 
-{{#allPublicInstanceMethods}}
+{{#publicInstanceMethodsSorted}}
 {{>callable}}
 
-{{/allPublicInstanceMethods}}
-{{/hasPublicMethods}}
+{{/publicInstanceMethodsSorted}}
+{{/hasPublicInstanceMethods}}
 
-{{#hasPublicOperators}}
+{{#hasPublicInstanceOperators}}
 ## Operators
 
-{{#allPublicOperators}}
+{{#publicInstanceOperatorsSorted}}
 {{>callable}}
 
-{{/allPublicOperators}}
-{{/hasPublicOperators}}
+{{/publicInstanceOperatorsSorted}}
+{{/hasPublicInstanceOperators}}
 
-{{#hasPublicStaticProperties}}
+{{#hasPublicVariableStaticFields}}
 ## Static Properties
 
-{{#publicStaticProperties}}
+{{#publicVariableStaticFieldsSorted}}
 {{>property}}
 
-{{/publicStaticProperties}}
-{{/hasPublicStaticProperties}}
+{{/publicVariableStaticFieldsSorted}}
+{{/hasPublicVariableStaticFields}}
 
 {{#hasPublicStaticMethods}}
 ## Static Methods
 
-{{#publicStaticMethods}}
+{{#publicStaticMethodsSorted}}
 {{>callable}}
 
-{{/publicStaticMethods}}
+{{/publicStaticMethodsSorted}}
 {{/hasPublicStaticMethods}}
 {{/eNum}}
 

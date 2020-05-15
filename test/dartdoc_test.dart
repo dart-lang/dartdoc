@@ -407,6 +407,12 @@ void main() {
       }
     });
 
+    test('generating markdown docs does not crash', () async {
+      var dartdoc =
+          await buildDartdoc(['--format', 'md'], testPackageDir, tempDir);
+      await dartdoc.generateDocsBase();
+    });
+
     test('rel canonical prefix does not include base href', () async {
       // ignore: omit_local_variable_types
       final String prefix = 'foo.bar/baz';

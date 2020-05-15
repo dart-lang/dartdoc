@@ -69,7 +69,7 @@ class TypeParameter extends ModelElement {
   TypeParameterElement get _typeParameter => element as TypeParameterElement;
 }
 
-abstract class TypeParameters implements ModelElement {
+mixin TypeParameters implements ModelElement {
   String get nameWithGenerics => '$name$genericParameters';
 
   String get nameWithLinkedGenerics => '$name$linkedGenericParameters';
@@ -81,9 +81,6 @@ abstract class TypeParameters implements ModelElement {
 
   String get linkedGenericParameters =>
       _typeParametersRenderer.renderLinkedGenericParameters(this);
-
-  @override
-  DefinedElementType get modelType;
 
   List<TypeParameter> get typeParameters;
 
