@@ -114,7 +114,7 @@ Future<DartdocOptionContext> contextFromArgv(List<String> argv) async {
 }
 
 Future<PackageGraph> bootSdkPackage() async {
-  return PackageBuilder(await contextFromArgv(['--input', sdkDir.path]))
+  return PubPackageBuilder(await contextFromArgv(['--input', sdkDir.path]))
       .buildPackageGraph();
 }
 
@@ -123,7 +123,7 @@ Future<PackageGraph> bootBasicPackage(
     {List<String> additionalArguments}) async {
   var dir = Directory(dirPath);
   additionalArguments ??= <String>[];
-  return PackageBuilder(await contextFromArgv([
+  return PubPackageBuilder(await contextFromArgv([
             '--input',
             dir.path,
             '--sdk-dir',
