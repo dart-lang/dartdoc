@@ -175,7 +175,7 @@ abstract class PackageMeta {
   ///
   /// A package property, as this depends in part on the pubspec version
   /// constraint.
-  bool get allowsNullable;
+  bool get allowsNNBD;
 
   bool get requiresFlutter;
 
@@ -239,6 +239,7 @@ class _FilePackageMeta extends PackageMeta {
   FileContents _license;
   FileContents _changelog;
   Map _pubspec;
+  Map _analysisOptions;
 
   _FilePackageMeta(Directory dir) : super(dir) {
     var f = File(path.join(dir.path, 'pubspec.yaml'));
@@ -246,6 +247,12 @@ class _FilePackageMeta extends PackageMeta {
       _pubspec = loadYaml(f.readAsStringSync());
     } else {
       _pubspec = {};
+    }
+    f = File(path.join(dir.path, 'analysis_options.yaml'));
+    if (f.existsSync()) {
+      _analysisOptions = loadYaml(f.readAsStringSync());
+    } else {
+      _analysisOptions = {};
     }
   }
 
@@ -327,7 +334,7 @@ class _FilePackageMeta extends PackageMeta {
   @override
   String get homepage => _pubspec['homepage'];
 
-  static final _nullableRange = VersionConstraint.parse('>=2.9.0-dev.0 <2.9') as VersionRange;
+  static final _nullableRange = VersionConstraint.parse('>=2.9.0-dev.0 <2.10.0') as VersionRange;
 
   /// If the NNBD experiment is on, files in this package can
   /// be read as non-nullable by default.
@@ -335,12 +342,18 @@ class _FilePackageMeta extends PackageMeta {
   /// A package property, as this depends in part on the pubspec version
   /// constraint.
   @override
-  bool get allowsNullable {
-    if (_pubspec['environment']?.containsKey('sdk') ?? false) {
+  bool get allowsNNBD {
+    // TODO(jcollins-g): override/add to with allow list once that exists
+    var sdkConstraint;
+    if (_pubspec?.containsKey('sdk') ?? false) {
       // TODO(jcollins-g): VersionConstraint.parse returns [VersionRange]s right
       // now, but the interface doesn't guarantee that.
-      var sdkConstraint = VersionConstraint.parse(_pubspec['environment']['sdk']) as VersionRange;
-      return _nullableRange == sdkConstraint;
+      sdkConstraint = VersionConstraint.parse(_pubspec['sdk']) as VersionRange;
+    }
+    if (sdkConstraint == _nullableRange
+        && (_analysisOptions['analyzer']?.containsKey('enable-experiment') ?? false)
+        && _analysisOptions['analyzer']['enable-experiment'].contains('non-nullable')) {
+          return true;
     }
     return false;
   }
@@ -410,7 +423,7 @@ class _SdkMeta extends PackageMeta {
 
   @override
   // FIXME: whoa.
-  bool get allowsNullable => true;
+  bool get allowsNNBD => true;
 
   @override
   String get hostedAt => null;

@@ -15,3 +15,13 @@ abstract class B {
   m2(int sometimes, we, [String have, double optionals]);
 }
 
+/// Test nullable parameters, factories, members
+abstract class C {
+  factory C.factory1(int? param, {Object? param2}) => null;
+
+  int? testField;
+
+  List<int?> get testFieldNullableParameter;
+
+  List<Map<String, num?>>? method1();
+}

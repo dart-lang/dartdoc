@@ -1,4 +1,4 @@
 name: test_package_experiments
 version: 0.0.1
-sdk: '>=2.9.0 <2.10.0'
+sdk: '>=2.9.0-dev.0 <2.10.0'
 description: Experimental flags are tested here.

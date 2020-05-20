@@ -4,11 +4,12 @@
 
 library nullable_elements;
 
-int publicNullable?;
+int? publicNullable;
 
 String? get nullableGetter => null;
 
 String? _nullableSetter;
+
 void set nullableSetter(String? value) {
   _nullableSetter = value);
 }

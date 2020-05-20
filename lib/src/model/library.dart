@@ -107,6 +107,14 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
 
   List<String> _allOriginalModelElementNames;
 
+  /// Return true if this library is in a package configured to be treated as
+  /// non-nullable by default.
+  bool get _allowsNNBD => element.languageVersionMajor == 2 && element.languageVersionMinor >= 9 && packageMeta.allowsNNBD;
+
+  /// Return true if this library should be documented as non-nullable.
+  /// A library may be NNBD but not documented that way.
+  bool get isNNBD => config.enableExperiment.contains('non-nullable') && _allowsNNBD;
+
   bool get isInSdk => element.isInSdk;
 
   final Package _package;

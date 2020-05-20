@@ -74,7 +74,22 @@ abstract class ElementType extends Privacy {
 
   String get name;
 
+  /// Name with generics and nullability indication.
   String get nameWithGenerics;
+
+  /// Return a dartdoc nullability suffix for this type.
+  String get nullabilitySuffix {
+    if (library.isNNBD && !type.isVoid && !type.isBottom) {
+      /// If a legacy type appears inside the public interface of a
+      /// NNBD library, we pretend it is nullable for the purpose of
+      /// documentation (since star-types are not supposed to be public).
+      if (type.nullabilitySuffix == NullabilitySuffix.question ||
+          type.nullabilitySuffix == NullabilitySuffix.star) {
+        return '?';
+      }
+    }
+    return '';
+  }
 
   List<Parameter> get parameters => [];
 
@@ -120,7 +135,7 @@ class UndefinedElementType extends ElementType {
   }
 
   @override
-  String get nameWithGenerics => name;
+  String get nameWithGenerics => '$name${nullabilitySuffix}';
 
   /// Assume that undefined elements don't have useful bounds.
   @override
