@@ -268,7 +268,8 @@ void dartfmt() async {
   analyze,
   checkBuild,
   smokeTest,
-  dartfmt, /*tryPublish*/
+  dartfmt,
+  tryPublish,
 )
 void presubmit() => null;
 
