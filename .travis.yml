@@ -2,7 +2,7 @@ language: dart
 sudo: false
 dart:
   - stable
-  - "dev/raw/latest"
+  - dev
 env:
   - DARTDOC_BOT=main
   - DARTDOC_BOT=flutter
@@ -18,7 +18,7 @@ matrix:
   include:
   - env: DARTDOC_BOT=main
     os: osx
-    dart: "dev/raw/latest"
+    dart: dev
 
 install:
 - ./tool/install_travis.sh
