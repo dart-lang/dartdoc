@@ -20,6 +20,7 @@ import 'package:dartdoc/src/generator/markdown_generator.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
+import 'package:dartdoc/src/tool_runner.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/version.dart';
@@ -94,8 +95,10 @@ class DartdocFileWriter implements FileWriter {
 
 /// Generates Dart documentation for all public Dart libraries in the given
 /// directory.
-class Dartdoc extends PackageBuilder {
+class Dartdoc {
   final Generator generator;
+  final PackageBuilder packageBuilder;
+  final DartdocOptionContext config;
   final Set<String> writtenFiles = {};
   Directory outputDir;
 
@@ -103,7 +106,7 @@ class Dartdoc extends PackageBuilder {
   final StreamController<String> _onCheckProgress =
       StreamController(sync: true);
 
-  Dartdoc._(DartdocOptionContext config, this.generator) : super(config) {
+  Dartdoc._(this.config, this.generator, this.packageBuilder) {
     outputDir = Directory(config.output)..createSync(recursive: true);
   }
 
@@ -111,19 +114,34 @@ class Dartdoc extends PackageBuilder {
   /// and returns a Dartdoc object with them.
   @Deprecated('Prefer fromContext() instead')
   static Future<Dartdoc> withDefaultGenerators(
-      DartdocGeneratorOptionContext config) async {
-    return Dartdoc._(config, await initHtmlGenerator(config));
+    DartdocGeneratorOptionContext config,
+    PackageBuilder packageBuilder,
+  ) async {
+    return Dartdoc._(
+      config,
+      await initHtmlGenerator(config),
+      packageBuilder,
+    );
   }
 
   /// Asynchronous factory method that builds Dartdoc with an empty generator.
-  static Future<Dartdoc> withEmptyGenerator(DartdocOptionContext config) async {
-    return Dartdoc._(config, await initEmptyGenerator(config));
+  static Future<Dartdoc> withEmptyGenerator(
+    DartdocOptionContext config,
+    PackageBuilder packageBuilder,
+  ) async {
+    return Dartdoc._(
+      config,
+      await initEmptyGenerator(config),
+      packageBuilder,
+    );
   }
 
   /// Asynchronous factory method that builds Dartdoc with a generator
   /// determined by the given context.
   static Future<Dartdoc> fromContext(
-      DartdocGeneratorOptionContext context) async {
+    DartdocGeneratorOptionContext context,
+    PackageBuilder packageBuilder,
+  ) async {
     Generator generator;
     switch (context.format) {
       case 'html':
@@ -135,7 +153,11 @@ class Dartdoc extends PackageBuilder {
       default:
         throw DartdocFailure('Unsupported output format: ${context.format}');
     }
-    return Dartdoc._(context, generator);
+    return Dartdoc._(
+      context,
+      generator,
+      packageBuilder,
+    );
   }
 
   Stream<String> get onCheckProgress => _onCheckProgress.stream;
@@ -150,7 +172,7 @@ class Dartdoc extends PackageBuilder {
   Future<DartdocResults> generateDocsBase() async {
     var _stopwatch = Stopwatch()..start();
     double seconds;
-    packageGraph = await buildPackageGraph();
+    packageGraph = await packageBuilder.buildPackageGraph();
     seconds = _stopwatch.elapsedMilliseconds / 1000.0;
     var libs = packageGraph.libraries.length;
     logInfo("Initialized dartdoc with ${libs} librar${libs == 1 ? 'y' : 'ies'} "
@@ -188,22 +210,31 @@ class Dartdoc extends PackageBuilder {
   }
 
   Future<DartdocResults> generateDocs() async {
-    logInfo('Documenting ${config.topLevelPackageMeta}...');
+    try {
+      logInfo('Documenting ${config.topLevelPackageMeta}...');
 
-    var dartdocResults = await generateDocsBase();
-    if (dartdocResults.packageGraph.localPublicLibraries.isEmpty) {
-      throw DartdocFailure('dartdoc could not find any libraries to document');
-    }
+      var dartdocResults = await generateDocsBase();
+      if (dartdocResults.packageGraph.localPublicLibraries.isEmpty) {
+        throw DartdocFailure(
+            'dartdoc could not find any libraries to document');
+      }
 
-    final errorCount =
-        dartdocResults.packageGraph.packageWarningCounter.errorCount;
-    if (errorCount > 0) {
-      throw DartdocFailure(
-          'dartdoc encountered $errorCount errors while processing.');
+      final errorCount =
+          dartdocResults.packageGraph.packageWarningCounter.errorCount;
+      if (errorCount > 0) {
+        throw DartdocFailure(
+            'dartdoc encountered $errorCount errors while processing.');
+      }
+      logInfo(
+          'Success! Docs generated into ${dartdocResults.outDir.absolute.path}');
+      return dartdocResults;
+    } finally {
+      // Clear out any cached tool snapshots and temporary directories.
+      // ignore: unawaited_futures
+      SnapshotCache.instance.dispose();
+      // ignore: unawaited_futures
+      ToolTempFileTracker.instance.dispose();
     }
-    logInfo(
-        'Success! Docs generated into ${dartdocResults.outDir.absolute.path}');
-    return dartdocResults;
   }
 
   /// Warn on file paths.
@@ -428,6 +459,37 @@ class Dartdoc extends PackageBuilder {
     _doCheck(packageGraph, origin, visited, start);
     _doOrphanCheck(packageGraph, origin, visited);
     _doSearchIndexCheck(packageGraph, origin, visited);
+  }
+
+  /// Runs [generateDocs] function and properly handles the errors.
+  void executeGuarded() {
+    onCheckProgress.listen(logProgress);
+    // This function should *never* await `runZonedGuarded` because the errors
+    // thrown in generateDocs are uncaught. We want this because uncaught errors
+    // cause IDE debugger to automatically stop at the exception.
+    //
+    // If you await the zone, the code that comes after the await is not
+    // executed if the zone dies due to uncaught error. To avoid this confusion,
+    // never await `runZonedGuarded` and never change the return value of
+    // [executeGuarded].
+    runZonedGuarded(
+      generateDocs,
+      (e, chain) {
+        if (e is DartdocFailure) {
+          stderr.writeln('\ndartdoc failed: ${e}.');
+          if (config.verboseWarnings) {
+            stderr.writeln(chain);
+          }
+          exitCode = 1;
+        } else {
+          stderr.writeln('\ndartdoc failed: ${e}\n${chain}');
+          exitCode = 255;
+        }
+      },
+      zoneSpecification: ZoneSpecification(
+        print: (_, __, ___, String line) => logPrint(line),
+      ),
+    );
   }
 }
 

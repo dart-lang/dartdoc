@@ -45,8 +45,12 @@ void main() {
 
     Future<Dartdoc> buildDartdoc(
         List<String> argv, Directory packageRoot, Directory tempDir) async {
-      return await Dartdoc.fromContext(await generatorContextFromArgv(argv
-        ..addAll(['--input', packageRoot.path, '--output', tempDir.path])));
+      var context = await generatorContextFromArgv(argv
+        ..addAll(['--input', packageRoot.path, '--output', tempDir.path]));
+      return await Dartdoc.fromContext(
+        context,
+        PubPackageBuilder(context),
+      );
     }
 
     group('Option handling', () {

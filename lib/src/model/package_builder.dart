@@ -34,11 +34,18 @@ import 'package:path/path.dart' as path;
 import 'package:quiver/iterables.dart' as quiver;
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
-class PackageBuilder {
+abstract class PackageBuilder {
+  // Builds package graph to be used by documentation generator.
+  Future<PackageGraph> buildPackageGraph();
+}
+
+/// A package builder that understands pub package format.
+class PubPackageBuilder implements PackageBuilder {
   final DartdocOptionContext config;
 
-  PackageBuilder(this.config);
+  PubPackageBuilder(this.config);
 
+  @override
   Future<PackageGraph> buildPackageGraph() async {
     if (!config.sdkDocs) {
       if (config.topLevelPackageMeta.needsPubGet &&
