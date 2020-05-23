@@ -24,7 +24,7 @@ final RegExp observatoryPortRegexp =
     RegExp(r'^Observatory listening on http://.*:(\d+)');
 
 Directory sdkDir = defaultSdkDir;
-PackageMeta sdkPackageMeta = PackageMeta.fromDir(sdkDir);
+PackageMeta sdkPackageMeta = pubPackageMetaProvider.fromDir(sdkDir);
 
 final _testPackageGraphMemo = AsyncMemoizer<PackageGraph>();
 Future<PackageGraph> get testPackageGraph => _testPackageGraphMemo.runOnce(() =>
@@ -98,8 +98,10 @@ final Directory testPackageCustomTemplates =
 /// the '--input' flag.
 Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
     List<String> argv) async {
-  var optionSet = await DartdocOptionSet.fromOptionGenerators(
-      'dartdoc', [createDartdocOptions, createGeneratorOptions]);
+  var optionSet = await DartdocOptionSet.fromOptionGenerators('dartdoc', [
+    () => createDartdocOptions(pubPackageMetaProvider),
+    createGeneratorOptions,
+  ]);
   optionSet.parseArguments(argv);
   return DartdocGeneratorOptionContext(optionSet, null);
 }
@@ -107,8 +109,9 @@ Future<DartdocGeneratorOptionContext> generatorContextFromArgv(
 /// Convenience factory to build a [DartdocOptionContext] and associate it with a
 /// [DartdocOptionSet] based on the current working directory.
 Future<DartdocOptionContext> contextFromArgv(List<String> argv) async {
-  var optionSet = await DartdocOptionSet.fromOptionGenerators(
-      'dartdoc', [createDartdocOptions]);
+  var optionSet = await DartdocOptionSet.fromOptionGenerators('dartdoc', [
+    () => createDartdocOptions(pubPackageMetaProvider),
+  ]);
   optionSet.parseArguments(argv);
   return DartdocOptionContext(optionSet, Directory.current);
 }

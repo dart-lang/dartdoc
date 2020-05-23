@@ -16,7 +16,7 @@ void main() {
 
     setUp(() {
       var d = Directory.systemTemp.createTempSync('test_package_not_valid');
-      p = PackageMeta.fromDir(d);
+      p = pubPackageMetaProvider.fromDir(d);
     });
 
     test('is not valid', () {
@@ -25,7 +25,7 @@ void main() {
   });
 
   group('PackageMeta for the test package', () {
-    var p = PackageMeta.fromDir(Directory(
+    var p = pubPackageMetaProvider.fromDir(Directory(
         path.join(Directory.current.path, 'testing', 'test_package')));
 
     test('readme with corrupt UTF-8 loads without throwing', () {
@@ -35,7 +35,7 @@ void main() {
   });
 
   group('PackageMeta.fromDir for this package', () {
-    var p = PackageMeta.fromDir(Directory.current);
+    var p = pubPackageMetaProvider.fromDir(Directory.current);
 
     test('has a name', () {
       expect(p.name, 'dartdoc');
@@ -82,7 +82,7 @@ void main() {
   });
 
   group('PackageMeta.fromSdk', () {
-    var p = PackageMeta.fromDir(defaultSdkDir);
+    var p = pubPackageMetaProvider.fromDir(defaultSdkDir);
 
     test('has a name', () {
       expect(p.name, 'Dart');

@@ -14,7 +14,8 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
-import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
+import 'package:dartdoc/src/package_meta.dart'
+    show PackageMeta, PackageMetaProvider;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:dartdoc/src/tuple.dart';
@@ -22,8 +23,12 @@ import 'package:dartdoc/src/warnings.dart';
 
 class PackageGraph {
   PackageGraph.UninitializedPackageGraph(
-      this.config, this.sdk, this.hasEmbedderSdk, this.rendererFactory)
-      : packageMeta = config.topLevelPackageMeta {
+    this.config,
+    this.sdk,
+    this.hasEmbedderSdk,
+    this.rendererFactory,
+    this.packageMetaProvider,
+  ) : packageMeta = config.topLevelPackageMeta {
     _packageWarningCounter = PackageWarningCounter(this);
     // Make sure the default package exists, even if it has no libraries.
     // This can happen for packages that only contain embedder SDKs.
@@ -38,7 +43,7 @@ class PackageGraph {
   void addLibraryToGraph(DartDocResolvedLibrary resolvedLibrary) {
     assert(!allLibrariesAdded);
     var element = resolvedLibrary.element;
-    var packageMeta = PackageMeta.fromElement(element, config.sdkDir);
+    var packageMeta = packageMetaProvider.fromElement(element, config.sdkDir);
     var lib = Library.fromLibraryResult(
         resolvedLibrary, this, Package.fromPackageMeta(packageMeta, this));
     packageMap[packageMeta.name].libraries.add(lib);
@@ -213,6 +218,9 @@ class PackageGraph {
 
   /// Factory for renderers
   final RendererFactory rendererFactory;
+
+  /// PackageMeta Provider for building [PackageMeta]s.
+  final PackageMetaProvider packageMetaProvider;
 
   Package _defaultPackage;
 
@@ -849,7 +857,7 @@ class PackageGraph {
         resolvedLibrary,
         this,
         Package.fromPackageMeta(
-            PackageMeta.fromElement(elementLibrary, config.sdkDir),
+            packageMetaProvider.fromElement(elementLibrary, config.sdkDir),
             packageGraph));
     allLibraries[elementLibrary] = foundLibrary;
     return foundLibrary;

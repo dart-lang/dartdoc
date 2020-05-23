@@ -28,9 +28,12 @@ Future<List<DartdocOption>> createDartdocProgramOptions() async {
   ];
 }
 
-Future<DartdocProgramOptionContext> parseOptions(List<String> arguments) async {
+Future<DartdocProgramOptionContext> parseOptions(
+  PackageMetaProvider packageMetaProvider,
+  List<String> arguments,
+) async {
   var optionSet = await DartdocOptionSet.fromOptionGenerators('dartdoc', [
-    createDartdocOptions,
+    () => createDartdocOptions(packageMetaProvider),
     createDartdocProgramOptions,
     createLoggingOptions,
     createGeneratorOptions,
