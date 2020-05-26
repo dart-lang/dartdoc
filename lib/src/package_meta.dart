@@ -482,8 +482,8 @@ class _SdkMeta extends PubPackageMeta {
   }
 
   @override
-  // FIXME: whoa.
-  bool get allowsNNBD => true;
+  // TODO(jcollins-g): There should be a better way to determine this.
+  bool get allowsNNBD => version.startsWith('2.9.');
 
   @override
   String get hostedAt => null;
