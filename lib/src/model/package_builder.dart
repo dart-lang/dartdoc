@@ -26,7 +26,8 @@ import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/io_utils.dart';
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:dartdoc/src/package_meta.dart' show PackageMeta;
+import 'package:dartdoc/src/package_meta.dart'
+    show PackageMeta, pubPackageMetaProvider;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:package_config/discovery.dart' as package_config;
@@ -62,7 +63,12 @@ class PubPackageBuilder implements PackageBuilder {
     var rendererFactory = RendererFactory.forFormat(config.format);
 
     var newGraph = PackageGraph.UninitializedPackageGraph(
-        config, sdk, hasEmbedderSdkFiles, rendererFactory);
+      config,
+      sdk,
+      hasEmbedderSdkFiles,
+      rendererFactory,
+      pubPackageMetaProvider,
+    );
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();
     return newGraph;
@@ -238,7 +244,7 @@ class PubPackageBuilder implements PackageBuilder {
   Set<PackageMeta> _packageMetasForFiles(Iterable<String> files) {
     var metas = <PackageMeta>{};
     for (var filename in files) {
-      metas.add(PackageMeta.fromFilename(filename));
+      metas.add(pubPackageMetaProvider.fromFilename(filename));
     }
     return metas;
   }

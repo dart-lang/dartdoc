@@ -8,6 +8,7 @@ library dartdoc.warnings_test;
 import 'dart:io';
 
 import 'package:dartdoc/src/dartdoc_options.dart';
+import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
@@ -47,7 +48,7 @@ dartdoc:
 
   setUp(() async {
     optionSet = await DartdocOptionSet.fromOptionGenerators(
-        'dartdoc', [createDartdocOptions]);
+        'dartdoc', [() => createDartdocOptions(pubPackageMetaProvider)]);
   });
 
   test('Verify that options for enabling/disabling packages work', () {

@@ -23,7 +23,9 @@ abstract class PackageWarningOptionContext implements DartdocOptionContextBase {
   bool get verboseWarnings => optionSet['verboseWarnings'].valueAt(context);
 }
 
-Future<List<DartdocOption>> createPackageWarningOptions() async {
+Future<List<DartdocOption>> createPackageWarningOptions(
+  PackageMetaProvider packageMetaProvider,
+) async {
   return <DartdocOption>[
     DartdocOptionArgOnly<bool>('allowNonLocalWarnings', false,
         negatable: true,
@@ -79,7 +81,10 @@ Future<List<DartdocOption>> createPackageWarningOptions() async {
                     .join('\n')),
     // Synthetic option uses a factory to build a PackageWarningOptions from all the above flags.
     DartdocOptionSyntheticOnly<PackageWarningOptions>(
-        'packageWarningOptions', PackageWarningOptions.fromOptions),
+      'packageWarningOptions',
+      (DartdocSyntheticOption<PackageWarningOptions> option, Directory dir) =>
+          PackageWarningOptions.fromOptions(option, dir, packageMetaProvider),
+    ),
   ];
 }
 
@@ -303,10 +308,13 @@ class PackageWarningOptions {
 
   /// [packageMeta] parameter is for testing.
   static PackageWarningOptions fromOptions(
-      DartdocSyntheticOption<PackageWarningOptions> option, Directory dir) {
+    DartdocSyntheticOption<PackageWarningOptions> option,
+    Directory dir,
+    PackageMetaProvider packageMetaProvider,
+  ) {
     // First, initialize defaults.
     var newOptions = PackageWarningOptions();
-    var packageMeta = PackageMeta.fromDir(dir);
+    var packageMeta = packageMetaProvider.fromDir(dir);
 
     // Interpret errors/warnings/ignore options.  In the event of conflict, warning overrides error and
     // ignore overrides warning.

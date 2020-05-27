@@ -779,8 +779,12 @@ Future<List<Map>> _buildFlutterDocs(
 
 /// Returns the directory in which we generated documentation.
 Future<String> _buildPubPackageDocs(
-    String pubPackageName, List<String> dartdocParameters,
-    [String version, String label]) async {
+  String pubPackageName,
+  List<String> dartdocParameters,
+  PackageMetaProvider packageMetaProvider, [
+  String version,
+  String label,
+]) async {
   var env = _createThrowawayPubCache();
   var launcher = SubprocessLauncher(
       'build-${pubPackageName}${version == null ? "" : "-$version"}${label == null ? "" : "-$label"}',
@@ -793,7 +797,7 @@ Future<String> _buildPubPackageDocs(
       Directory(path.join(env['PUB_CACHE'], 'hosted', 'pub.dartlang.org'));
   Directory pubPackageDir =
       cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
-  if (PackageMeta.fromDir(pubPackageDir).requiresFlutter) {
+  if (packageMetaProvider.fromDir(pubPackageDir).requiresFlutter) {
     var flutterRepo =
         await FlutterRepo.fromExistingFlutterRepo(await cleanFlutterRepo);
     await launcher.runStreamed(flutterRepo.cachePub, ['get'],
@@ -835,7 +839,12 @@ Future<String> buildPubPackage() async {
   assert(Platform.environment.containsKey('PACKAGE_NAME'));
   var packageName = Platform.environment['PACKAGE_NAME'];
   var version = Platform.environment['PACKAGE_VERSION'];
-  return _buildPubPackageDocs(packageName, extraDartdocParameters, version);
+  return _buildPubPackageDocs(
+    packageName,
+    extraDartdocParameters,
+    pubPackageMetaProvider,
+    version,
+  );
 }
 
 @Task(
