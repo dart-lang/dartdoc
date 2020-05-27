@@ -380,11 +380,6 @@ class _FilePackageMeta extends PubPackageMeta {
   static final _nullableRange =
       VersionConstraint.parse('>=2.9.0-dev.0 <2.10.0') as VersionRange;
 
-  /// If the NNBD experiment is on, files in this package can
-  /// be read as non-nullable by default.
-  ///
-  /// A package property, as this depends in part on the pubspec version
-  /// constraint.
   @override
   bool get allowsNNBD {
     // TODO(jcollins-g): override/add to with allow list once that exists
