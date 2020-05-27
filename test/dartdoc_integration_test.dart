@@ -164,7 +164,7 @@ void main() {
       await subprocessLauncher.runStreamed(Platform.resolvedExecutable, args,
           workingDirectory: _testPackagePath,
           perLine: (s) => output.writeln(s));
-      var dartdocMeta = PackageMeta.fromFilename(dartdocPath);
+      var dartdocMeta = pubPackageMetaProvider.fromFilename(dartdocPath);
       expect(output.toString(),
           endsWith('dartdoc version: ${dartdocMeta.version}\n'));
     });

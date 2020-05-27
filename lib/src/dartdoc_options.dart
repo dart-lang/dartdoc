@@ -1429,7 +1429,9 @@ class DartdocOptionContext extends DartdocOptionContextBase
 
 /// Instantiate dartdoc's configuration file and options parser with the
 /// given command line arguments.
-Future<List<DartdocOption>> createDartdocOptions() async {
+Future<List<DartdocOption>> createDartdocOptions(
+  PackageMetaProvider packageMetaProvider,
+) async {
   return <DartdocOption>[
     DartdocOptionArgOnly<bool>('allowTools', false,
         help: 'Execute user-defined tools to fill in @tool directives.',
@@ -1562,7 +1564,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     DartdocOptionSyntheticOnly<PackageMeta>(
       'packageMeta',
       (DartdocSyntheticOption<PackageMeta> option, Directory dir) {
-        var packageMeta = PackageMeta.fromDir(dir);
+        var packageMeta = packageMetaProvider.fromDir(dir);
         if (packageMeta == null) {
           throw DartdocOptionError(
               'Unable to determine package for directory: ${dir.path}');
@@ -1590,8 +1592,8 @@ Future<List<DartdocOption>> createDartdocOptions() async {
         help: "Label categories that aren't documented", negatable: true),
     DartdocOptionSyntheticOnly<PackageMeta>('topLevelPackageMeta',
         (DartdocSyntheticOption<PackageMeta> option, Directory dir) {
-      var packageMeta = PackageMeta.fromDir(
-          Directory(option.parent['inputDir'].valueAt(dir)));
+      var packageMeta = packageMetaProvider
+          .fromDir(Directory(option.parent['inputDir'].valueAt(dir)));
       if (packageMeta == null) {
         throw DartdocOptionError(
             'Unable to generate documentation: no package found');
@@ -1632,7 +1634,7 @@ Future<List<DartdocOption>> createDartdocOptions() async {
     // TODO(jcollins-g): refactor so there is a single static "create" for
     // each DartdocOptionContext that traverses the inheritance tree itself.
     ...await createExperimentOptions(),
-    ...await createPackageWarningOptions(),
+    ...await createPackageWarningOptions(packageMetaProvider),
     ...await createSourceLinkerOptions(),
   ];
 }

@@ -36,6 +36,28 @@ final List<List<String>> __sdkDirFilePathsPosix = [
   ['lib/core/core.dart'],
 ];
 
+final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
+  PubPackageMeta.fromElement,
+  PubPackageMeta.fromFilename,
+  PubPackageMeta.fromDir,
+);
+
+/// Sets the supported way of constructing [PackageMeta] objects.
+///
+/// These objects can be constructed from a filename, a directory
+/// or a [LibraryElement]. We allow different dartdoc implementations to
+/// provide their own [PackageMeta] types.
+///
+/// By using a different provider, these implementations can control how
+/// [PackageMeta] objects is built.
+class PackageMetaProvider {
+  final PackageMeta Function(LibraryElement, String) fromElement;
+  final PackageMeta Function(String) fromFilename;
+  final PackageMeta Function(Directory) fromDir;
+
+  PackageMetaProvider(this.fromElement, this.fromFilename, this.fromDir);
+}
+
 /// Describes a single package in the context of `dartdoc`.
 ///
 /// The primary function of this class is to allow canonicalization of packages
@@ -113,46 +135,6 @@ abstract class PackageMeta {
 
   @override
   String toString() => name;
-
-  /// Sets the supported ways of constructing [PackageMeta] objects.
-  ///
-  /// These objects can be constructed from a filename, a directory
-  /// or a [LibraryElement]. We allow different dartdoc implementations to
-  /// provide their own [PackageMeta] types.
-  ///
-  /// By calling this function, these implementations can control how
-  /// [PackageMeta] is built.
-  static void setPackageMetaFactories(
-    PackageMeta Function(LibraryElement, String) fromElementFactory,
-    PackageMeta Function(String) fromFilenameFactory,
-    PackageMeta Function(Directory) fromDirFactory,
-  ) {
-    assert(fromElementFactory != null);
-    assert(fromFilenameFactory != null);
-    assert(fromDirFactory != null);
-    if (_fromElement == fromElementFactory &&
-        _fromFilename == fromFilenameFactory &&
-        _fromDir == fromDirFactory) {
-      // Nothing to do.
-      return;
-    }
-    if (_fromElement != null || _fromFilename != null || _fromDir != null) {
-      throw StateError('PackageMeta factories cannot be changed once defined.');
-    }
-    _fromElement = fromElementFactory;
-    _fromFilename = fromFilenameFactory;
-    _fromDir = fromDirFactory;
-  }
-
-  static PackageMeta Function(LibraryElement, String) _fromElement;
-  static PackageMeta Function(String) _fromFilename;
-  static PackageMeta Function(Directory) _fromDir;
-  static PackageMeta Function(LibraryElement, String) get fromElement =>
-      _fromElement ?? PubPackageMeta.fromElement;
-  static PackageMeta Function(String) get fromFilename =>
-      _fromFilename ?? PubPackageMeta.fromFilename;
-  static PackageMeta Function(Directory) get fromDir =>
-      _fromDir ?? PubPackageMeta.fromDir;
 }
 
 /// Default implementation of [PackageMeta] depends on pub packages.

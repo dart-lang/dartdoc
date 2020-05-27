@@ -437,7 +437,10 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   PackageMeta _packageMeta;
 
   PackageMeta get packageMeta {
-    _packageMeta ??= PackageMeta.fromElement(element, config.sdkDir);
+    _packageMeta ??= packageGraph.packageMetaProvider.fromElement(
+      element,
+      config.sdkDir,
+    );
     return _packageMeta;
   }
 

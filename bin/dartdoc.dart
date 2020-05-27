@@ -12,17 +12,11 @@ import 'package:dartdoc/options.dart';
 /// Analyzes Dart files and generates a representation of included libraries,
 /// classes, and members. Uses the current directory to look for libraries.
 Future<void> main(List<String> arguments) async {
-  var config = await parseOptions(arguments);
+  var config = await parseOptions(pubPackageMetaProvider, arguments);
   if (config == null) {
     // There was an error while parsing options.
     return;
   }
-  // Set the default way to construct [PackageMeta].
-  PackageMeta.setPackageMetaFactories(
-    PubPackageMeta.fromElement,
-    PubPackageMeta.fromFilename,
-    PubPackageMeta.fromDir,
-  );
   final packageBuilder = PubPackageBuilder(config);
   final dartdoc = config.generateDocs
       ? await Dartdoc.fromContext(config, packageBuilder)
