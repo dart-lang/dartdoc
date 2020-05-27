@@ -17,7 +17,6 @@ Future<void> main(List<String> arguments) async {
     // There was an error while parsing options.
     return;
   }
-  // Set the default way to construct [PackageMeta].
   final packageBuilder = PubPackageBuilder(config);
   final dartdoc = config.generateDocs
       ? await Dartdoc.fromContext(config, packageBuilder)
