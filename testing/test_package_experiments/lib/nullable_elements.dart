@@ -11,7 +11,7 @@ String? get nullableGetter => null;
 String? _nullableSetter;
 
 void set nullableSetter(String? value) {
-  _nullableSetter = value);
+  _nullableSetter = value;
 }
 
 void some(int? nullable, String? parameters) {}

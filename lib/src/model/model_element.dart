@@ -149,7 +149,14 @@ ModelElement resolveMultiplyInheritedElement(
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
 abstract class ModelElement extends Canonicalization
-    with Privacy, Warnable, Locatable, Nameable, SourceCodeMixin, Indexable, FeatureSet
+    with
+        Privacy,
+        Warnable,
+        Locatable,
+        Nameable,
+        SourceCodeMixin,
+        Indexable,
+        FeatureSet
     implements Comparable, Documentable {
   final Element _element;
 

@@ -4,6 +4,6 @@
 
 // @dart=2.8
 
-library opt_out_of_nnbd.dart;
+library opt_out_of_nnbd;
 
 String notOptedIn = false ? 'hi' : null;

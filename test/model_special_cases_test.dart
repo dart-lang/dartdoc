@@ -35,12 +35,14 @@ void main() {
   // if we haven't figured out how to switch on NNBD outside of `dev` builds
   // as specified in #2148.
   final _nnbdExperimentAllowed =
-      VersionRange(min: Version.parse('2.9.0'), includeMin: true);
+      VersionRange(min: Version.parse('2.9.0-9.0.dev'), includeMin: true);
 
   // Experimental features not yet enabled by default.  Move tests out of this block
   // when the feature is enabled by default.
   group('Experiments', () {
-    Library lateFinalWithoutInitializer, nnbdClassMemberDeclarations;
+    Library lateFinalWithoutInitializer,
+        nnbdClassMemberDeclarations,
+        optOutOfNnbd;
     Class b;
 
     setUpAll(() async {
@@ -50,8 +52,16 @@ void main() {
       nnbdClassMemberDeclarations = (await utils.testPackageGraphExperiments)
           .libraries
           .firstWhere((lib) => lib.name == 'nnbd_class_member_declarations');
+      optOutOfNnbd = (await utils.testPackageGraphExperiments)
+          .libraries
+          .firstWhere((lib) => lib.name == 'opt_out_of_nnbd');
       b = nnbdClassMemberDeclarations.allClasses
           .firstWhere((c) => c.name == 'B');
+    });
+
+    test('isNNBD is set correctly for libraries', () {
+      expect(lateFinalWithoutInitializer.isNNBD, isTrue);
+      expect(optOutOfNnbd.isNNBD, isFalse);
     });
 
     test('method parameters with required', () {

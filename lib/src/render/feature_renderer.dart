@@ -20,10 +20,12 @@ class FeatureRendererHtml extends FeatureRenderer {
   String renderFeatureLabel(LanguageFeature feature) {
     var spanClasses = <String>[];
     spanClasses.add('feature');
-    spanClasses.add('feature-${feature.name.split(' ').join('-').toLowerCase()}');
+    spanClasses
+        .add('feature-${feature.name.split(' ').join('-').toLowerCase()}');
 
     var buf = StringBuffer();
-    buf.write('<span class="${spanClasses.join(' ')}" title="${feature.featureDescription}">${feature.name}</span>');
+    buf.write(
+        '<span class="${spanClasses.join(' ')}" title="${feature.featureDescription}">${feature.name}</span>');
     return buf.toString();
   }
 }

@@ -10,8 +10,12 @@ abstract class ElementTypeRenderer<T extends ElementType> {
 
   String renderNameWithGenerics(T elementType) => '';
 
-  String wrapNullabilityParens(T elementType, String inner) => elementType.nullabilitySuffix.isEmpty ? inner : '($inner${elementType.nullabilitySuffix})';
-  String wrapNullability(T elementType, String inner) => '$inner${elementType.nullabilitySuffix}';
+  String wrapNullabilityParens(T elementType, String inner) =>
+      elementType.nullabilitySuffix.isEmpty
+          ? inner
+          : '($inner${elementType.nullabilitySuffix})';
+  String wrapNullability(T elementType, String inner) =>
+      '$inner${elementType.nullabilitySuffix}';
 }
 
 // Html implementations

@@ -111,12 +111,14 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// as non-nullable by default and is itself NNBD.
   // TODO(jcollins-g): packageMeta.allowsNNBD may be redundant after package
   // allow list support is published in analyzer
-  bool get _allowsNNBD => element.isNonNullableByDefault && packageMeta.allowsNNBD;
+  bool get _allowsNNBD =>
+      element.isNonNullableByDefault && packageMeta.allowsNNBD;
 
   /// Return true if this library should be documented as non-nullable.
   /// A library may be NNBD but not documented that way.
   @override
-  bool get isNNBD => config.enableExperiment.contains('non-nullable') && _allowsNNBD;
+  bool get isNNBD =>
+      config.enableExperiment.contains('non-nullable') && _allowsNNBD;
 
   bool get isInSdk => element.isInSdk;
 

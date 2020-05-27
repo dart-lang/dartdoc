@@ -252,7 +252,6 @@ abstract class PubPackageMeta extends PackageMeta {
     return isSdk ? 'Dart' : null;
   }
 
-
   String _resolvedDir;
 
   @override
@@ -378,7 +377,8 @@ class _FilePackageMeta extends PubPackageMeta {
   String get homepage => _pubspec['homepage'];
 
   /// This is a magic range that triggers detection of [allowsNNBD].
-  static final _nullableRange = VersionConstraint.parse('>=2.9.0-dev.0 <2.10.0') as VersionRange;
+  static final _nullableRange =
+      VersionConstraint.parse('>=2.9.0-dev.0 <2.10.0') as VersionRange;
 
   /// If the NNBD experiment is on, files in this package can
   /// be read as non-nullable by default.
@@ -394,10 +394,12 @@ class _FilePackageMeta extends PubPackageMeta {
       // now, but the interface doesn't guarantee that.
       sdkConstraint = VersionConstraint.parse(_pubspec['sdk']) as VersionRange;
     }
-    if (sdkConstraint == _nullableRange
-        && (_analysisOptions['analyzer']?.containsKey('enable-experiment') ?? false)
-        && _analysisOptions['analyzer']['enable-experiment'].contains('non-nullable')) {
-          return true;
+    if (sdkConstraint == _nullableRange &&
+        (_analysisOptions['analyzer']?.containsKey('enable-experiment') ??
+            false) &&
+        _analysisOptions['analyzer']['enable-experiment']
+            .contains('non-nullable')) {
+      return true;
     }
     return false;
   }

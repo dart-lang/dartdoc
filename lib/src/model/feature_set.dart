@@ -2,7 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-
 import 'package:dartdoc/src/model/language_feature.dart';
 import 'package:dartdoc/src/model/model.dart';
 
@@ -18,7 +17,8 @@ mixin FeatureSet {
     // TODO(jcollins-g): Implement mixed-mode handling and the tagging of
     // legacy interfaces.
     if (isNNBD) {
-      yield LanguageFeature('nnbd', packageGraph.rendererFactory.featureRenderer);
+      yield LanguageFeature(
+          'nnbd', packageGraph.rendererFactory.featureRenderer);
     }
   }
 
