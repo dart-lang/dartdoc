@@ -5,6 +5,7 @@
 
 {{>source_link}}
 {{>categorization}}
+{{>feature_set}}
 
 {{#hasNoGetterSetter}}
 {{{ linkedReturnType }}} {{>name_summary}}  {{!two spaces intentional}}

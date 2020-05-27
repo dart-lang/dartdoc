@@ -4,6 +4,7 @@
 # {{{nameWithGenerics}}} {{kind}}
 
 {{>source_link}}
+{{>feature_set}}
 {{/self}}
 
 {{#method}}

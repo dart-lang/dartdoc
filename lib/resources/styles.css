@@ -460,6 +460,24 @@ h1 .category {
   vertical-align: middle;
 }
 
+.feature {
+  padding: 2px 4px;
+  font-size: 12px;
+  border-radius: 4px;
+  background-color: #999;
+  text-transform: uppercase;
+  color: white;
+  opacity: .5;
+}
+
+.feature.feature-nnbd {
+  background-color: #8d36ad;
+}
+
+feature .category {
+  vertical-align: middle;
+}
+
 .source-link {
   padding: 18px 4px;
   vertical-align: middle;

@@ -5,6 +5,7 @@
 
 {{>source_link}}
 {{>categorization}}
+{{>feature_set}}
 
 {{>name_summary}} = {{{ constantValue }}}  {{!two spaces intentional}}
 {{>features}}

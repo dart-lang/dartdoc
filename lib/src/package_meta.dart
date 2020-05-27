@@ -85,11 +85,12 @@ abstract class PackageMeta {
 
   String get homepage;
 
-  /// If the NNBD experiment is on, files in this package can
-  /// be read as non-nullable by default.
+  /// If true, libraries in this package can be be read as non-nullable by
+  /// default.  Whether they will be will be documented that way will depend
+  /// on the experiment flag.
   ///
   /// A package property, as this depends in part on the pubspec version
-  /// constraint.
+  /// constraint and/or the package allow list.
   bool get allowsNNBD;
 
   FileContents getReadmeContents();
@@ -394,6 +395,7 @@ class _FilePackageMeta extends PubPackageMeta {
   @override
   String get homepage => _pubspec['homepage'];
 
+  /// This is a magic range that triggers detection of [allowsNNBD].
   static final _nullableRange = VersionConstraint.parse('>=2.9.0-dev.0 <2.10.0') as VersionRange;
 
   /// If the NNBD experiment is on, files in this package can
@@ -481,9 +483,13 @@ class _SdkMeta extends PubPackageMeta {
     sdkReadmePath = path.join(dir.path, 'lib', 'api_readme.md');
   }
 
+  /// 2.9.0-9.0.dev is the first unforked SDK, and therefore the first version
+  /// of the SDK it makes sense to allow NNBD documentation for.
+  static final _sdkNullableRange = VersionConstraint.parse('>=2.9.0-9.0.dev');
+
   @override
   // TODO(jcollins-g): There should be a better way to determine this.
-  bool get allowsNNBD => version.startsWith('2.9.');
+  bool get allowsNNBD => _sdkNullableRange.allows(Version.parse(version));
 
   @override
   String get hostedAt => null;
