@@ -4,7 +4,7 @@
 # {{{name}}} {{kind}}
 
 {{>source_link}}
-{{>categorization}}
+{{>feature_set}}
 {{/self}}
 
 {{#eNum}}

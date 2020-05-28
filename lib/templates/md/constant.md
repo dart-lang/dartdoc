@@ -4,6 +4,7 @@
 # {{{name}}} {{kind}}
 
 {{>source_link}}
+{{>feature_set}}
 {{/self}}
 
 {{#property}}

@@ -21,6 +21,7 @@ import 'package:crypto/crypto.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/render/model_element_renderer.dart';
@@ -148,7 +149,14 @@ ModelElement resolveMultiplyInheritedElement(
 /// ModelElement will reference itself as part of the "wrong" [Library]
 /// from the public interface perspective.
 abstract class ModelElement extends Canonicalization
-    with Privacy, Warnable, Locatable, Nameable, SourceCodeMixin, Indexable
+    with
+        Privacy,
+        Warnable,
+        Locatable,
+        Nameable,
+        SourceCodeMixin,
+        Indexable,
+        FeatureSet
     implements Comparable, Documentable {
   final Element _element;
 

@@ -5,6 +5,7 @@
 
 {{>source_link}}
 {{>categorization}}
+{{>feature_set}}
 {{/self}}
 
 {{#function}}

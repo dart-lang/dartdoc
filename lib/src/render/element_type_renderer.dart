@@ -9,6 +9,13 @@ abstract class ElementTypeRenderer<T extends ElementType> {
   String renderLinkedName(T elementType);
 
   String renderNameWithGenerics(T elementType) => '';
+
+  String wrapNullabilityParens(T elementType, String inner) =>
+      elementType.nullabilitySuffix.isEmpty
+          ? inner
+          : '($inner${elementType.nullabilitySuffix})';
+  String wrapNullability(T elementType, String inner) =>
+      '$inner${elementType.nullabilitySuffix}';
 }
 
 // Html implementations
@@ -24,7 +31,7 @@ class FunctionTypeElementTypeRendererHtml
     buf.write(
         ParameterRendererHtml().renderLinkedParams(elementType.parameters));
     buf.write(')</span>');
-    return buf.toString();
+    return wrapNullabilityParens(elementType, buf.toString());
   }
 
   @override
@@ -39,7 +46,7 @@ class FunctionTypeElementTypeRendererHtml
         buf.write('</span>&gt;');
       }
     }
-    return buf.toString();
+    return wrapNullability(elementType, buf.toString());
   }
 }
 
@@ -58,7 +65,7 @@ class ParameterizedElementTypeRendererHtml
       buf.write('</span>&gt;');
       buf.write('</span>');
     }
-    return buf.toString();
+    return wrapNullability(elementType, buf.toString());
   }
 
   @override
@@ -72,7 +79,8 @@ class ParameterizedElementTypeRendererHtml
           '</span>, <span class="type-parameter">');
       buf.write('</span>&gt;');
     }
-    return buf.toString();
+    buf.write(elementType.nullabilitySuffix);
+    return wrapNullability(elementType, buf.toString());
   }
 }
 
@@ -92,7 +100,7 @@ class CallableElementTypeRendererHtml
         .trim());
     buf.write(') → ');
     buf.write(elementType.returnType.linkedName);
-    return buf.toString();
+    return wrapNullabilityParens(elementType, buf.toString());
   }
 }
 
@@ -108,7 +116,7 @@ class FunctionTypeElementTypeRendererMd
     buf.write('(');
     buf.write(ParameterRendererMd().renderLinkedParams(elementType.parameters));
     buf.write(')');
-    return buf.toString();
+    return wrapNullabilityParens(elementType, buf.toString());
   }
 
   @override
@@ -122,7 +130,7 @@ class FunctionTypeElementTypeRendererMd
         buf.write('>');
       }
     }
-    return buf.toString();
+    return wrapNullabilityParens(elementType, buf.toString());
   }
 }
 
@@ -138,7 +146,7 @@ class ParameterizedElementTypeRendererMd
       buf.writeAll(elementType.typeArguments.map((t) => t.linkedName), ', ');
       buf.write('>');
     }
-    return buf.toString();
+    return wrapNullability(elementType, buf.toString());
   }
 
   @override
@@ -152,7 +160,8 @@ class ParameterizedElementTypeRendererMd
           elementType.typeArguments.map((t) => t.nameWithGenerics), ', ');
       buf.write('>');
     }
-    return buf.toString();
+    buf.write(elementType.nullabilitySuffix);
+    return wrapNullability(elementType, buf.toString());
   }
 }
 
@@ -172,6 +181,6 @@ class CallableElementTypeRendererMd
         .trim());
     buf.write(') → ');
     buf.write(elementType.returnType.linkedName);
-    return buf.toString();
+    return wrapNullabilityParens(elementType, buf.toString());
   }
 }

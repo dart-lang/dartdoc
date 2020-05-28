@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/dartdoc.dart';
 import 'package:path/path.dart' as path;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
 import 'logging.dart';
@@ -105,6 +106,14 @@ abstract class PackageMeta {
   String get description;
 
   String get homepage;
+
+  /// If true, libraries in this package can be be read as non-nullable by
+  /// default.  Whether they will be will be documented that way will depend
+  /// on the experiment flag.
+  ///
+  /// A package property, as this depends in part on the pubspec version
+  /// constraint and/or the package allow list.
+  bool get allowsNNBD;
 
   FileContents getReadmeContents();
 
@@ -272,6 +281,7 @@ class _FilePackageMeta extends PubPackageMeta {
   FileContents _license;
   FileContents _changelog;
   Map _pubspec;
+  Map _analysisOptions;
 
   _FilePackageMeta(Directory dir) : super(dir) {
     var f = File(path.join(dir.path, 'pubspec.yaml'));
@@ -279,6 +289,12 @@ class _FilePackageMeta extends PubPackageMeta {
       _pubspec = loadYaml(f.readAsStringSync());
     } else {
       _pubspec = {};
+    }
+    f = File(path.join(dir.path, 'analysis_options.yaml'));
+    if (f.existsSync()) {
+      _analysisOptions = loadYaml(f.readAsStringSync());
+    } else {
+      _analysisOptions = {};
     }
   }
 
@@ -360,6 +376,29 @@ class _FilePackageMeta extends PubPackageMeta {
   @override
   String get homepage => _pubspec['homepage'];
 
+  /// This is a magic range that triggers detection of [allowsNNBD].
+  static final _nullableRange =
+      VersionConstraint.parse('>=2.9.0-dev.0 <2.10.0') as VersionRange;
+
+  @override
+  bool get allowsNNBD {
+    // TODO(jcollins-g): override/add to with allow list once that exists
+    var sdkConstraint;
+    if (_pubspec?.containsKey('sdk') ?? false) {
+      // TODO(jcollins-g): VersionConstraint.parse returns [VersionRange]s right
+      // now, but the interface doesn't guarantee that.
+      sdkConstraint = VersionConstraint.parse(_pubspec['sdk']) as VersionRange;
+    }
+    if (sdkConstraint == _nullableRange &&
+        (_analysisOptions['analyzer']?.containsKey('enable-experiment') ??
+            false) &&
+        _analysisOptions['analyzer']['enable-experiment']
+            .contains('non-nullable')) {
+      return true;
+    }
+    return false;
+  }
+
   @override
   bool get requiresFlutter =>
       _pubspec['environment']?.containsKey('flutter') == true ||
@@ -422,6 +461,14 @@ class _SdkMeta extends PubPackageMeta {
   _SdkMeta(Directory dir) : super(dir) {
     sdkReadmePath = path.join(dir.path, 'lib', 'api_readme.md');
   }
+
+  /// 2.9.0-9.0.dev is the first unforked SDK, and therefore the first version
+  /// of the SDK it makes sense to allow NNBD documentation for.
+  static final _sdkNullableRange = VersionConstraint.parse('>=2.9.0-9.0.dev');
+
+  @override
+  // TODO(jcollins-g): There should be a better way to determine this.
+  bool get allowsNNBD => _sdkNullableRange.allows(Version.parse(version));
 
   @override
   String get hostedAt => null;

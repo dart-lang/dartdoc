@@ -7,6 +7,7 @@ on {{#extendedType}}{{{linkedName}}}{{/extendedType}}
 {{>source_link}}
 
 {{>categorization}}
+{{>feature_set}}
 {{/self}}
 
 {{#extension}}

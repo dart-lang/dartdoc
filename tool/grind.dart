@@ -241,7 +241,10 @@ void dartfmt() async {
     // Passing parameters to dartfmt for directories to search results in
     // filenames being stripped of the dirname so we have to filter here.
     void addFileToFix(String fileName) {
-      if (path.split(fileName).first == 'testing') return;
+      var pathComponents = path.split(fileName);
+      if (pathComponents.isNotEmpty && pathComponents.first == 'testing') {
+        return;
+      }
       filesToFix.add(fileName);
     }
 

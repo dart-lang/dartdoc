@@ -7,6 +7,7 @@ import 'package:dartdoc/src/render/category_renderer.dart';
 import 'package:dartdoc/src/render/documentation_renderer.dart';
 import 'package:dartdoc/src/render/element_type_renderer.dart';
 import 'package:dartdoc/src/render/enum_field_renderer.dart';
+import 'package:dartdoc/src/render/feature_renderer.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/template_renderer.dart';
@@ -30,6 +31,8 @@ abstract class RendererFactory {
   CategoryRenderer get categoryRenderer;
 
   DocumentationRenderer get documentationRenderer;
+
+  FeatureRenderer get featureRenderer;
 
   ElementTypeRenderer<FunctionTypeElementType>
       get functionTypeElementTypeRenderer;
@@ -96,6 +99,9 @@ class HtmlRenderFactory extends RendererFactory {
 
   @override
   TypedefRenderer get typedefRenderer => TypedefRendererHtml();
+
+  @override
+  FeatureRenderer get featureRenderer => FeatureRendererHtml();
 }
 
 class MdRenderFactory extends RendererFactory {
@@ -143,4 +149,7 @@ class MdRenderFactory extends RendererFactory {
 
   @override
   TypedefRenderer get typedefRenderer => TypedefRendererMd();
+
+  @override
+  FeatureRenderer get featureRenderer => FeatureRendererMd();
 }
