@@ -1,3 +1,7 @@
+## 0.32.1
+* Allow documenting code with null safety (#2210, #2221)
+* Refactors moving toward mono-repo support (#2219)
+
 ## 0.32.0
 * Fix type exception in 2.9 dev versions of dart (#2214)
 * **BREAKING** : Refactor `Container` class, changing the names
