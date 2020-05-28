@@ -461,20 +461,18 @@ h1 .category {
 }
 
 .feature {
-  padding: 2px 4px;
+  display: inline-block;
+  background: white;
+  border: 1px solid #0175c2;
+  border-radius: 20px;
+  color: #0175c2;
+
   font-size: 12px;
-  border-radius: 4px;
-  background-color: #999;
-  text-transform: uppercase;
-  color: white;
-  opacity: .5;
+  padding: 1px 6px;
+  margin: 0 8px 0 0;
 }
 
-.feature.feature-nnbd {
-  background-color: #8d36ad;
-}
-
-feature .category {
+h1 .feature {
   vertical-align: middle;
 }
 

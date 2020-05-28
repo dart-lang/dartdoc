@@ -18,7 +18,7 @@ mixin FeatureSet {
     // legacy interfaces.
     if (isNNBD) {
       yield LanguageFeature(
-          'nnbd', packageGraph.rendererFactory.featureRenderer);
+          'Null safety', packageGraph.rendererFactory.featureRenderer);
     }
   }
 

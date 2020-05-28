@@ -5,7 +5,7 @@
 import 'package:dartdoc/src/render/feature_renderer.dart';
 
 const Map<String, String> _featureDescriptions = {
-  'nnbd': 'This interface is non-nullable by default.',
+  'Null safety': 'Supports the null safety language feature.',
 };
 
 /// An abstraction for a language feature; used to render tags to notify
