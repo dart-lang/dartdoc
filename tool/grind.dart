@@ -770,8 +770,8 @@ Future<List<Map>> _buildFlutterDocs(
     ['get'],
     workingDirectory: path.join(flutterPath, 'dev', 'snippets'),
   );
-  await flutterRepo.launcher.runStreamed(
-      flutterRepo.cachePub, ['global', 'activate', '-spath', '.'],
+  await flutterRepo.launcher.runStreamed(flutterRepo.cachePub,
+      ['global', 'activate', '-spath', '.', '-x', 'dartdoc'],
       workingDirectory: await futureCwd);
   return await flutterRepo.launcher.runStreamed(
     flutterRepo.cacheDart,
