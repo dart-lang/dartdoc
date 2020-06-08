@@ -142,8 +142,13 @@ void main() {
       expect(initializeMe.isLate, isTrue);
       expect(initializeMe.features, contains('late'));
     });
-  },
-      skip: (!_nnbdExperimentAllowed.allows(_platformVersion) &&
+
+    test('Opt out of NNBD', () {
+      var notOptedIn = optOutOfNnbd.publicProperties.firstWhere((v) => v.name == 'notOptedIn');
+      expect(notOptedIn.isNNBD, isFalse);
+      expect(notOptedIn.modelType.nullabilitySuffix, isEmpty);
+    });
+  }, skip: (!_nnbdExperimentAllowed.allows(_platformVersion) &&
           !_platformVersionString.contains('edge')));
 
   group('HTML Injection when allowed', () {
