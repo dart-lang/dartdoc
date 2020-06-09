@@ -35,6 +35,4 @@ class ComplexNullableMembers<T extends String?> {
   void set aComplexSetterOnlyType(List<Map<T?, String?>?> value) => null;
 
   X? aMethod<X extends T?>(X? f) => null;
-
-  bMethod<A>() {}
 }
