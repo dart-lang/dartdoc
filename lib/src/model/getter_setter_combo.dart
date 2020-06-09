@@ -185,6 +185,8 @@ mixin GetterSetterCombo on ModelElement {
     if (hasGetter) {
       return getter.linkedReturnType;
     } else {
+      // TODO(jcollins-g): this results in the wrong span class for the return
+      // type.
       return setter.linkedParamsNoMetadataOrNames;
     }
   }

@@ -79,7 +79,6 @@ class ParameterizedElementTypeRendererHtml
           '</span>, <span class="type-parameter">');
       buf.write('</span>&gt;');
     }
-    buf.write(elementType.nullabilitySuffix);
     return wrapNullability(elementType, buf.toString());
   }
 }
