@@ -16,12 +16,14 @@ abstract class B {
 }
 
 /// Test nullable parameters, factories, members
-abstract class C {
-  factory C.factory1(int? param, {Object? param2}) => null;
+class C {
+  C() {}
+
+  factory C.factory1(int? param, {Object? param2}) => C();
 
   int? testField;
 
-  List<int?> get testFieldNullableParameter;
+  List<int?> get testFieldNullableParameter => [];
 
-  List<Map<String, num?>>? method1();
+  List<Map<String, num?>>? method1() => null;
 }

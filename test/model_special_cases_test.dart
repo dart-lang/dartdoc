@@ -42,7 +42,8 @@ void main() {
   group('Experiments', () {
     Library lateFinalWithoutInitializer,
         nnbdClassMemberDeclarations,
-        optOutOfNnbd;
+        optOutOfNnbd,
+        nullableElements;
     Class b;
 
     setUpAll(() async {
@@ -55,6 +56,9 @@ void main() {
       optOutOfNnbd = (await utils.testPackageGraphExperiments)
           .libraries
           .firstWhere((lib) => lib.name == 'opt_out_of_nnbd');
+      nullableElements = (await utils.testPackageGraphExperiments)
+          .libraries
+          .firstWhere((lib) => lib.name == 'nullable_elements');
       b = nnbdClassMemberDeclarations.allClasses
           .firstWhere((c) => c.name == 'B');
     });
@@ -144,11 +148,65 @@ void main() {
     });
 
     test('Opt out of NNBD', () {
-      var notOptedIn = optOutOfNnbd.publicProperties.firstWhere((v) => v.name == 'notOptedIn');
+      var notOptedIn = optOutOfNnbd.publicProperties
+          .firstWhere((v) => v.name == 'notOptedIn');
       expect(notOptedIn.isNNBD, isFalse);
       expect(notOptedIn.modelType.nullabilitySuffix, isEmpty);
     });
-  }, skip: (!_nnbdExperimentAllowed.allows(_platformVersion) &&
+
+    test('complex nullable elements are detected and rendered correctly', () {
+      var complexNullableMembers = nullableElements.allClasses
+          .firstWhere((c) => c.name == 'ComplexNullableMembers');
+      var aComplexType = complexNullableMembers.allFields
+          .firstWhere((f) => f.name == 'aComplexType');
+      var aComplexSetterOnlyType = complexNullableMembers.allFields
+          .firstWhere((f) => f.name == 'aComplexSetterOnlyType');
+      expect(complexNullableMembers.isNNBD, isTrue);
+      expect(
+          complexNullableMembers.nameWithGenerics,
+          equals(
+              'ComplexNullableMembers&lt;<wbr><span class=\"type-parameter\">T extends String?</span>&gt;'));
+      expect(
+          aComplexType.linkedReturnType,
+          equals(
+              'Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>'));
+      expect(aComplexSetterOnlyType.linkedReturnType, equals(
+          // TODO(jcollins-g): fix wrong span class for setter-only return type (#2226)
+          '<span class="parameter" id="aComplexSetterOnlyType=-param-value"><span class="type-annotation">List<span class="signature">&lt;<wbr><span class="type-parameter">Map<span class="signature">&lt;<wbr><span class="type-parameter">T?</span>, <span class="type-parameter">String?</span>&gt;</span>?</span>&gt;</span></span></span><wbr>'));
+    });
+
+    test('simple nullable elements are detected and rendered correctly', () {
+      var nullableMembers = nullableElements.allClasses
+          .firstWhere((c) => c.name == 'NullableMembers');
+      var initialized =
+          nullableMembers.allFields.firstWhere((f) => f.name == 'initialized');
+      var nullableField = nullableMembers.allFields
+          .firstWhere((f) => f.name == 'nullableField');
+      var methodWithNullables = nullableMembers.publicInstanceMethods
+          .firstWhere((f) => f.name == 'methodWithNullables');
+      var operatorStar = nullableMembers.publicInstanceOperators
+          .firstWhere((f) => f.name == 'operator *');
+      expect(nullableMembers.isNNBD, isTrue);
+      expect(
+          nullableField.linkedReturnType,
+          equals(
+              'Iterable<span class=\"signature\">&lt;<wbr><span class=\"type-parameter\">BigInt</span>&gt;</span>?'));
+      expect(
+          methodWithNullables.linkedParams,
+          equals(
+              '<span class="parameter" id="methodWithNullables-param-foo"><span class="type-annotation">String?</span> <span class="parameter-name">foo</span></span><wbr>'));
+      expect(methodWithNullables.linkedReturnType, equals('int?'));
+      expect(
+          initialized.linkedReturnType,
+          equals(
+              'Map<span class="signature">&lt;<wbr><span class="type-parameter">String</span>, <span class="type-parameter">Map</span>&gt;</span>?'));
+      expect(
+          operatorStar.linkedParams,
+          equals(
+              '<span class="parameter" id="*-param-nullableOther"><span class="type-annotation"><a href="%%__HTMLBASE_dartdoc_internal__%%nullable_elements/NullableMembers-class.html">NullableMembers</a>?</span> <span class="parameter-name">nullableOther</span></span><wbr>'));
+    });
+  },
+      skip: (!_nnbdExperimentAllowed.allows(_platformVersion) &&
           !_platformVersionString.contains('edge')));
 
   group('HTML Injection when allowed', () {

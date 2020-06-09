@@ -11,7 +11,7 @@ String? get nullableGetter => null;
 String? _nullableSetter;
 
 void set nullableSetter(String? value) {
-  _nullableSetter = value;
+  _nullableSetter = _nullableSetter ??= value;
 }
 
 void some(int? nullable, String? parameters) {}
@@ -27,4 +27,14 @@ class NullableMembers {
   operator *(NullableMembers? nullableOther) => this;
 
   int? methodWithNullables(String? foo) => foo?.length;
+}
+
+class ComplexNullableMembers<T extends String?> {
+  Map<T?, String?> aComplexType = <T?, String?>{null: null};
+
+  void set aComplexSetterOnlyType(List<Map<T?, String?>?> value) => null;
+
+  X? aMethod<X extends T?>(X? f) => null;
+
+  bMethod<A>() {}
 }
