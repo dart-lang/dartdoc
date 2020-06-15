@@ -800,8 +800,11 @@ Future<String> _buildPubPackageDocs(
   await launcher.runStreamed('pub', args);
   var cache =
       Directory(path.join(env['PUB_CACHE'], 'hosted', 'pub.dartlang.org'));
-  Directory pubPackageDir =
+  var pubPackageDirOrig =
       cache.listSync().firstWhere((e) => e.path.contains(pubPackageName));
+  var pubPackageDir = Directory.systemTemp.createTempSync(pubPackageName);
+  await copyPath(pubPackageDirOrig.path, pubPackageDir.path);
+
   if (packageMetaProvider.fromDir(pubPackageDir).requiresFlutter) {
     var flutterRepo =
         await FlutterRepo.fromExistingFlutterRepo(await cleanFlutterRepo);

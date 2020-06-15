@@ -5,10 +5,11 @@ dart:
   - dev
 env:
   - DARTDOC_BOT=main
-  - DARTDOC_BOT=flutter
   - DARTDOC_BOT=sdk-analyzer
+  - DARTDOC_BOT=flutter
   - DARTDOC_BOT=packages
   - DARTDOC_BOT=sdk-docs
+
 script: ./tool/travis.sh
 
 os:
@@ -18,6 +19,10 @@ matrix:
   include:
   - env: DARTDOC_BOT=main
     os: osx
+    dart: dev
+  # workaround for dart-lang/dartdoc#2233
+  exclude:
+  - env: DARTDOC_BOT=flutter
     dart: dev
 
 install:
