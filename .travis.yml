@@ -22,8 +22,8 @@ matrix:
     dart: dev
   # workaround for dart-lang/dartdoc#2233
   exclude:
+  - env: DARTDOC_BOT=flutter
     dart: dev
-    - env: DARTDOC_BOT=flutter
 
 install:
 - ./tool/install_travis.sh
