@@ -5,10 +5,16 @@ dart:
   - dev
 env:
   - DARTDOC_BOT=main
-  - DARTDOC_BOT=flutter
   - DARTDOC_BOT=sdk-analyzer
+  - DARTDOC_BOT=flutter
   - DARTDOC_BOT=packages
   - DARTDOC_BOT=sdk-docs
+# workaround for #2233
+jobs:
+  exclude:
+    - if: dart = dev
+      env: DARTDOC_BOT=flutter
+
 script: ./tool/travis.sh
 
 os:
