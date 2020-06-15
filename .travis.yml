@@ -12,7 +12,7 @@ env:
 # workaround for #2233
 jobs:
   exclude:
-    - if: dart = dev
+    - dart: dev
       env: DARTDOC_BOT=flutter
 
 script: ./tool/travis.sh
