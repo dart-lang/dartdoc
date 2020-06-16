@@ -75,9 +75,10 @@ class Package extends LibraryContainer
     // TODO(jcollins): consider exposing AllowedFeatures for a
     // cleaner connection here.  An opted-out Dart library named "pubspec.yaml"
     // at the top level (!!) could confuse this code.
-    return packageGraph.featureSetProvider.getFeatureSet(
-        path.join(packageMeta.resolvedDir, 'pubspec.yaml'),
-        Uri.parse(fullyQualifiedName)).isEnabled(Feature.non_nullable);
+    return packageGraph.featureSetProvider
+        .getFeatureSet(path.join(packageMeta.resolvedDir, 'pubspec.yaml'),
+            Uri.parse(fullyQualifiedName))
+        .isEnabled(Feature.non_nullable);
   }
 
   @override

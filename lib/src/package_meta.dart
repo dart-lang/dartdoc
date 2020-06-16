@@ -46,7 +46,8 @@ final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
 /// of the SDK it makes sense to allow NNBD documentation for.
 final sdkNullableRanges = <VersionConstraint>[
   VersionConstraint.parse('>=2.9.0-9.0.dev'),
-  VersionConstraint.parse('>=2.9.0-0.0.beta')];
+  VersionConstraint.parse('>=2.9.0-0.0.beta')
+];
 
 /// Sets the supported way of constructing [PackageMeta] objects.
 ///
@@ -471,8 +472,8 @@ class _SdkMeta extends PubPackageMeta {
 
   @override
   // TODO(jcollins-g): There should be a better way to determine this.
-  bool get allowsNNBD => sdkNullableRanges.any(
-          (n) => n.allows(Version.parse(version)));
+  bool get allowsNNBD =>
+      sdkNullableRanges.any((n) => n.allows(Version.parse(version)));
 
   @override
   String get hostedAt => null;

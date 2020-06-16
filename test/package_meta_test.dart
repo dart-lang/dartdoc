@@ -25,8 +25,8 @@ void main() {
     }
 
     test('nnbd sdk ranges allow correct versions', () {
-      expectVersion('2.9.0-edge.b2d41ab0a219af9342fdf205e97bed68011fed51',
-          true);
+      expectVersion(
+          '2.9.0-edge.b2d41ab0a219af9342fdf205e97bed68011fed51', true);
       expectVersion('2.9.0-13.0.dev', true);
       expectVersion('2.9.0-16.0.dev', true);
       expectVersion('2.9.0-1.0.beta', true);
@@ -41,9 +41,8 @@ void main() {
     });
 
     test('PackageMeta for a NNBD enabled package allows NNBD', () {
-      var p = pubPackageMetaProvider.fromDir(Directory(
-          path.join(Directory.current.path, 'testing',
-              'test_package_experiments')));
+      var p = pubPackageMetaProvider.fromDir(Directory(path.join(
+          Directory.current.path, 'testing', 'test_package_experiments')));
       expect(p.allowsNNBD, isTrue);
     });
 
