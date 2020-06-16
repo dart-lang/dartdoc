@@ -68,6 +68,7 @@ class PubPackageBuilder implements PackageBuilder {
       hasEmbedderSdkFiles,
       rendererFactory,
       pubPackageMetaProvider,
+      driver.featureSetProvider,
     );
     await getLibraries(newGraph);
     await newGraph.initializePackageGraph();

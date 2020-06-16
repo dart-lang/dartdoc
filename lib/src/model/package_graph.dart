@@ -9,6 +9,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/src/generated/sdk.dart';
 import 'package:analyzer/src/generated/source.dart';
 import 'package:analyzer/src/generated/source_io.dart';
+import 'package:analyzer/src/dart/analysis/feature_set_provider.dart';
 import 'package:collection/collection.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/logging.dart';
@@ -28,6 +29,7 @@ class PackageGraph {
     this.hasEmbedderSdk,
     this.rendererFactory,
     this.packageMetaProvider,
+    this.featureSetProvider,
   ) : packageMeta = config.topLevelPackageMeta {
     _packageWarningCounter = PackageWarningCounter(this);
     // Make sure the default package exists, even if it has no libraries.
@@ -167,6 +169,8 @@ class PackageGraph {
     assert(allExtensionsAdded);
     return _extensions;
   }
+
+  final FeatureSetProvider featureSetProvider;
 
   Map<String, Set<ModelElement>> _findRefElementCache;
   Map<String, Set<ModelElement>> get findRefElementCache {

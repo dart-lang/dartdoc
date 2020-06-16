@@ -42,6 +42,12 @@ final PackageMetaProvider pubPackageMetaProvider = PackageMetaProvider(
   PubPackageMeta.fromDir,
 );
 
+/// 2.9.0-9.0.dev is the first unforked SDK, and therefore the first version
+/// of the SDK it makes sense to allow NNBD documentation for.
+final sdkNullableRanges = <VersionConstraint>[
+  VersionConstraint.parse('>=2.9.0-9.0.dev'),
+  VersionConstraint.parse('>=2.9.0-0.0.beta')];
+
 /// Sets the supported way of constructing [PackageMeta] objects.
 ///
 /// These objects can be constructed from a filename, a directory
@@ -112,7 +118,8 @@ abstract class PackageMeta {
   /// on the experiment flag.
   ///
   /// A package property, as this depends in part on the pubspec version
-  /// constraint and/or the package allow list.
+  /// constraint.  Users should not generally access this directly;
+  /// use [Package.allowsNNBD].
   bool get allowsNNBD;
 
   FileContents getReadmeContents();
@@ -462,13 +469,10 @@ class _SdkMeta extends PubPackageMeta {
     sdkReadmePath = path.join(dir.path, 'lib', 'api_readme.md');
   }
 
-  /// 2.9.0-9.0.dev is the first unforked SDK, and therefore the first version
-  /// of the SDK it makes sense to allow NNBD documentation for.
-  static final _sdkNullableRange = VersionConstraint.parse('>=2.9.0-9.0.dev');
-
   @override
   // TODO(jcollins-g): There should be a better way to determine this.
-  bool get allowsNNBD => _sdkNullableRange.allows(Version.parse(version));
+  bool get allowsNNBD => sdkNullableRanges.any(
+          (n) => n.allows(Version.parse(version)));
 
   @override
   String get hostedAt => null;

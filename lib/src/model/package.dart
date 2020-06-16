@@ -4,6 +4,7 @@
 
 import 'dart:io';
 
+import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/model/model.dart';
@@ -59,6 +60,25 @@ class Package extends LibraryContainer
   }
 
   Package._(this._name, this._packageGraph, this._packageMeta);
+
+  bool get allowsNNBD {
+    // Trust the package itself if it allows NNBD through magic SDK constraints
+    // and analysis options.
+    if (packageMeta.allowsNNBD) return true;
+
+    // Depend on packageMeta for the SDK.
+    if (isSdk) return false;
+
+    // Pass a plausible path to the featureSet call that is within the package.
+    // The package path root directory will not match given FeatureSet's
+    // implementation or we would use that.
+    // TODO(jcollins): consider exposing AllowedFeatures for a
+    // cleaner connection here.  An opted-out Dart library named "pubspec.yaml"
+    // at the top level (!!) could confuse this code.
+    return packageGraph.featureSetProvider.getFeatureSet(
+        path.join(packageMeta.resolvedDir, 'pubspec.yaml'),
+        Uri.parse(fullyQualifiedName)).isEnabled(Feature.non_nullable);
+  }
 
   @override
   bool get isCanonical => true;

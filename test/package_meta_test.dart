@@ -8,9 +8,52 @@ import 'dart:io';
 
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:path/path.dart' as path;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('NNBD', () {
+    void expectVersion(String version, bool expectation) {
+      var parsedVersion = Version.parse(version);
+      if (expectation == false) {
+        sdkNullableRanges.map((v) {
+          expect(v.allows(parsedVersion), isFalse);
+        });
+      } else {
+        expect(sdkNullableRanges.any((v) => v.allows(parsedVersion)), isTrue);
+      }
+    }
+
+    test('nnbd sdk ranges allow correct versions', () {
+      expectVersion('2.9.0-edge.b2d41ab0a219af9342fdf205e97bed68011fed51',
+          true);
+      expectVersion('2.9.0-13.0.dev', true);
+      expectVersion('2.9.0-16.0.dev', true);
+      expectVersion('2.9.0-1.0.beta', true);
+      expectVersion('2.9.0', true);
+      expectVersion('2.10.0', true);
+    });
+
+    test('nnbd sdk ranges disallow other versions', () {
+      expectVersion('2.9.0-8.0.dev', false);
+      expectVersion('2.8.4', false);
+      expectVersion('2.0.0', false);
+    });
+
+    test('PackageMeta for a NNBD enabled package allows NNBD', () {
+      var p = pubPackageMetaProvider.fromDir(Directory(
+          path.join(Directory.current.path, 'testing',
+              'test_package_experiments')));
+      expect(p.allowsNNBD, isTrue);
+    });
+
+    test('PackageMeta for a non-NNBD enabled package disallows NNBD', () {
+      var p = pubPackageMetaProvider.fromDir(Directory(
+          path.join(Directory.current.path, 'testing', 'test_package')));
+      expect(p.allowsNNBD, isFalse);
+    });
+  });
+
   group('PackageMeta for a directory without a pubspec', () {
     PackageMeta p;
 
