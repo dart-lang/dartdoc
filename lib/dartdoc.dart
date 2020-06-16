@@ -463,10 +463,10 @@ class Dartdoc {
 
   /// Runs [generateDocs] function and properly handles the errors.
   ///
-  /// Passing in a [postExecutionCallback] to do additional processing after
+  /// Passing in a [postProcessCallback] to do additional processing after
   /// the documentation is generated.
   void executeGuarded([
-    Future<void> Function(DartdocOptionContext) postExecutionCallback,
+    Future<void> Function(DartdocOptionContext) postProcessCallback,
   ]) {
     onCheckProgress.listen(logProgress);
     // This function should *never* await `runZonedGuarded` because the errors
@@ -480,7 +480,7 @@ class Dartdoc {
     runZonedGuarded(
       () async {
         await generateDocs();
-        await postExecutionCallback?.call(config);
+        await postProcessCallback?.call(config);
       },
       (e, chain) {
         if (e is DartdocFailure) {
