@@ -468,7 +468,7 @@ Some examples of likely triage priorities:
 * P3
   * Theoretical or extremely rare problems with generation
   * Minor display warts on edge cases only
-  * Non-default warnings that are misleading or wrong, few or on edge cases
+  * Non-default warnings that are misleading or wrong, few or no edge cases
   * Enhancements whose importance is uncertain
   * Generation performance problem, limited impact or not widespread
 
