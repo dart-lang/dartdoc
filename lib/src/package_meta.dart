@@ -282,17 +282,26 @@ class _FilePackageMeta extends PubPackageMeta {
   FileContents _changelog;
   Map _pubspec;
   Map _analysisOptions;
+  final List<String> _initializationErrors = [];
 
   _FilePackageMeta(Directory dir) : super(dir) {
     var f = File(path.join(dir.path, 'pubspec.yaml'));
     if (f.existsSync()) {
-      _pubspec = loadYaml(f.readAsStringSync());
+      try {
+        _pubspec = loadYaml(f.readAsStringSync());
+      } catch (e) {
+        _initializationErrors.add('Can not parse ${f.path}: $e');
+      }
     } else {
       _pubspec = {};
     }
     f = File(path.join(dir.path, 'analysis_options.yaml'));
     if (f.existsSync()) {
-      _analysisOptions = loadYaml(f.readAsStringSync());
+      try {
+        _analysisOptions = loadYaml(f.readAsStringSync());
+      } catch (e) {
+        // ignore analysis options errors, to align with other tools.
+      }
     } else {
       _analysisOptions = {};
     }
@@ -432,7 +441,12 @@ class _FilePackageMeta extends PubPackageMeta {
   @override
   List<String> getInvalidReasons() {
     var reasons = <String>[];
-    if (_pubspec == null || _pubspec.isEmpty) {
+    if (_initializationErrors.isNotEmpty) {
+      reasons.addAll(_initializationErrors);
+    }
+    if (_pubspec == null) {
+      reasons.add('pubspec.yaml is corrupt');
+    } else if (_pubspec.isEmpty) {
       reasons.add('no pubspec.yaml found');
     } else if (!_pubspec.containsKey('name')) {
       reasons.add('no name found in pubspec.yaml');

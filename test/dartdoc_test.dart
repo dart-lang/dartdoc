@@ -236,6 +236,15 @@ void main() {
       expect(useSomethingInTheSdk.modelType.linkedName, contains(stringLink));
     });
 
+    group('doc generation for damaged packages', () {
+      test('bad analysis_options.yaml', () async {
+        var dartdoc = await buildDartdoc([], testPackageCorruptAnalysisYaml, tempDir);
+        var results = await dartdoc.generateDocs();
+        var p = results.packageGraph;
+        expect(p.packageWarningCounter.errorCount, 0);
+      });
+    });
+
     group('validate basic doc generation', () {
       Dartdoc dartdoc;
       DartdocResults results;
@@ -250,6 +259,8 @@ void main() {
       tearDownAll(() async {
         tempDir.deleteSync(recursive: true);
       });
+
+
 
       test('generate docs for ${path.basename(testPackageDir.path)} works',
           () async {
