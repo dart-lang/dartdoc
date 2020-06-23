@@ -71,7 +71,8 @@ Future<PackageGraph> get testPackageGraphSdk =>
 
 final Directory testPackageBadDir = Directory('testing/test_package_bad');
 final Directory testPackageDir = Directory('testing/test_package');
-final Directory testPackageCorruptAnalysisYaml = Directory('testing/test_package_corrupt_analysisyaml');
+final Directory testPackageCorruptAnalysisYaml =
+    Directory('testing/test_package_corrupt_analysisyaml');
 final Directory testPackageDuplicateDir =
     Directory('testing/test_package_duplicate');
 final Directory testPackageExperimentsDir =

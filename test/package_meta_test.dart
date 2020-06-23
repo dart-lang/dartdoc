@@ -24,9 +24,10 @@ void main() {
     });
   });
 
-  group('PackageMeta for a directory with corrupt pubspec/analysis_options', () {
-    var p = pubPackageMetaProvider.fromDir(Directory(
-        path.join(Directory.current.path, 'testing', 'test_package_corrupt_yamls')));
+  group('PackageMeta for a directory with corrupt pubspec/analysis_options',
+      () {
+    var p = pubPackageMetaProvider.fromDir(Directory(path.join(
+        Directory.current.path, 'testing', 'test_package_corrupt_yamls')));
 
     test('is not valid', () {
       expect(p.isValid, false);
@@ -34,13 +35,17 @@ void main() {
 
     test('notes pubspec corruption', () {
       expect(p.getInvalidReasons(), contains('pubspec.yaml is corrupt'));
-      expect(p.getInvalidReasons(), contains(matches(RegExp('^Can not parse'))));
+      expect(
+          p.getInvalidReasons(), contains(matches(RegExp('^Can not parse'))));
     });
   });
 
   group('PackageMeta for a directory with corrupt analysis_options', () {
-    var p = pubPackageMetaProvider.fromDir(Directory(
-      path.join(Directory.current.path, 'testing', 'test_package_corrupt_analysisyaml')));;
+    var p = pubPackageMetaProvider.fromDir(Directory(path.join(
+        Directory.current.path,
+        'testing',
+        'test_package_corrupt_analysisyaml')));
+    ;
 
     test('is valid', () {
       expect(p.isValid, true);

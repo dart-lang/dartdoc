@@ -238,7 +238,8 @@ void main() {
 
     group('doc generation for damaged packages', () {
       test('bad analysis_options.yaml', () async {
-        var dartdoc = await buildDartdoc([], testPackageCorruptAnalysisYaml, tempDir);
+        var dartdoc =
+            await buildDartdoc([], testPackageCorruptAnalysisYaml, tempDir);
         var results = await dartdoc.generateDocs();
         var p = results.packageGraph;
         expect(p.packageWarningCounter.errorCount, 0);
@@ -259,8 +260,6 @@ void main() {
       tearDownAll(() async {
         tempDir.deleteSync(recursive: true);
       });
-
-
 
       test('generate docs for ${path.basename(testPackageDir.path)} works',
           () async {
