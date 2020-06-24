@@ -124,7 +124,7 @@ class FunctionTypeElementTypeRendererMd
     buf.write(elementType.name);
     if (elementType.typeFormals.isNotEmpty) {
       if (!elementType.typeFormals.every((t) => t.name == 'dynamic')) {
-        buf.write('<');
+        buf.write('&lt;');
         buf.writeAll(elementType.typeFormals.map((t) => t.name), ', ');
         buf.write('>');
       }
@@ -141,7 +141,7 @@ class ParameterizedElementTypeRendererMd
     buf.write(elementType.element.linkedName);
     if (elementType.typeArguments.isNotEmpty &&
         !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
-      buf.write('<');
+      buf.write('&lt;');
       buf.writeAll(elementType.typeArguments.map((t) => t.linkedName), ', ');
       buf.write('>');
     }
@@ -154,7 +154,7 @@ class ParameterizedElementTypeRendererMd
     buf.write(elementType.element.name);
     if (elementType.typeArguments.isNotEmpty &&
         !elementType.typeArguments.every((t) => t.name == 'dynamic')) {
-      buf.write('<');
+      buf.write('&lt;');
       buf.writeAll(
           elementType.typeArguments.map((t) => t.nameWithGenerics), ', ');
       buf.write('>');
