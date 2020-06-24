@@ -28,6 +28,6 @@ class TypedefRendererMd extends TypedefRenderer {
       return '';
     }
     var joined = typedef.genericTypeParameters.map((t) => t.name).join(', ');
-    return '<{$joined}>';
+    return '&lt;{$joined}>';
   }
 }

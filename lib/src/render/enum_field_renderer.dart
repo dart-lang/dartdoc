@@ -23,7 +23,7 @@ class EnumFieldRendererMd extends EnumFieldRenderer {
   @override
   String renderValue(EnumField field) {
     if (field.name == 'values') {
-      return 'const List<${field.enclosingElement.name}>';
+      return 'const List&lt;${field.enclosingElement.name}>';
     } else {
       return 'const ${field.enclosingElement.name}(${field.index})';
     }
