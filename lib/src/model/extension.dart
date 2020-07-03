@@ -25,7 +25,7 @@ class Extension extends Container
   bool get alwaysApplies =>
       extendedType.instantiatedType.isDynamic ||
       extendedType.instantiatedType.isVoid ||
-      extendedType.instantiatedType.isObject;
+      extendedType.instantiatedType.isDartCoreObject;
 
   bool couldApplyTo<T extends ExtensionTarget>(T c) =>
       _couldApplyTo(c.modelType);

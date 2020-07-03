@@ -304,9 +304,8 @@ class Class extends Container
       }
 
       var inheritance = definingLibrary.inheritanceManager;
-      var classType = element.thisType;
-      var cmap = inheritance.getInheritedConcreteMap(classType);
-      var imap = inheritance.getInheritedMap(classType);
+      var cmap = inheritance.getInheritedConcreteMap2(element);
+      var imap = inheritance.getInheritedMap2(element);
 
       var combinedMap = <String, ExecutableElement>{};
       for (var nameObj in cmap.keys) {

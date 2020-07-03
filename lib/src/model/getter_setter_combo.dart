@@ -50,7 +50,7 @@ mixin GetterSetterCombo on ModelElement {
     if (constantInitializer is! InstanceCreationExpression) return original;
     var creationExpression = constantInitializer as InstanceCreationExpression;
     var constructorName = creationExpression.constructorName.toString();
-    Element staticElement = creationExpression.staticElement;
+    Element staticElement = creationExpression.constructorName.staticElement;
     if (staticElement == null) {
       warn(PackageWarning.missingConstantConstructor, message: constructorName);
       return original;
