@@ -82,6 +82,9 @@ void main() {
       void Function(DartdocOptionSet) operation,
     ) {
       withSyntheticExperimentalFeatures(() {
+        // The enclosing function expects only synchronous function argument.
+        // But `fromOptionGenerators` is asynchronous.
+        // So, we have to use `waitFor` to adapt it.
         var experimentOptions = waitFor(
           DartdocOptionSet.fromOptionGenerators(
             'dartdoc',
