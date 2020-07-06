@@ -5,7 +5,6 @@
 /// Unit tests for lib/src/experiment_options.dart.
 library dartdoc.experiment_options_test;
 
-import 'dart:cli';
 import 'dart:io';
 
 import 'package:analyzer/src/dart/analysis/experiments.dart';
@@ -19,9 +18,9 @@ void main() {
   ExperimentalFeature defaultOnNotExpired, defaultOffNotExpired;
   ExperimentalFeature defaultOnExpired, defaultOffExpired;
 
-  void withSyntheticExperimentalFeatures(
-    void Function() operation,
-  ) {
+  Future<void> withSyntheticExperimentalFeatures(
+    Future<void> Function() operation,
+  ) async {
     defaultOnNotExpired = ExperimentalFeature(
       index: 0,
       enableString: 'a',
@@ -55,16 +54,14 @@ void main() {
       firstSupportedVersion: null,
     );
 
-    overrideKnownFeatures(
+    await overrideKnownFeaturesAsync(
       {
         'a': defaultOnNotExpired,
         'b': defaultOffNotExpired,
         'c': defaultOnExpired,
         'd': defaultOffExpired,
       },
-      () {
-        operation();
-      },
+      operation,
     );
   }
 
@@ -78,25 +75,20 @@ void main() {
   });
 
   group('Experimental options test', () {
-    void withExperimentOptions(
+    Future<void> withExperimentOptions(
       void Function(DartdocOptionSet) operation,
-    ) {
-      withSyntheticExperimentalFeatures(() {
-        // The enclosing function expects only synchronous function argument.
-        // But `fromOptionGenerators` is asynchronous.
-        // So, we have to use `waitFor` to adapt it.
-        var experimentOptions = waitFor(
-          DartdocOptionSet.fromOptionGenerators(
-            'dartdoc',
-            [createExperimentOptions],
-          ),
+    ) async {
+      await withSyntheticExperimentalFeatures(() async {
+        var experimentOptions = await DartdocOptionSet.fromOptionGenerators(
+          'dartdoc',
+          [createExperimentOptions],
         );
         operation(experimentOptions);
       });
     }
 
-    test('Defaults work for all options', () {
-      withExperimentOptions((experimentOptions) {
+    test('Defaults work for all options', () async {
+      await withExperimentOptions((experimentOptions) {
         experimentOptions.parseArguments([]);
         var tester = DartdocOptionContext(experimentOptions, emptyTempDir);
         expect(tester.experimentStatus.isEnabled(defaultOnNotExpired), isTrue);
@@ -107,8 +99,8 @@ void main() {
       });
     });
 
-    test('Overriding defaults works via args', () {
-      withExperimentOptions((experimentOptions) {
+    test('Overriding defaults works via args', () async {
+      await withExperimentOptions((experimentOptions) {
         // Set all experiments to non-default values.
         experimentOptions.parseArguments([
           '--enable-experiment',
