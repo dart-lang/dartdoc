@@ -26,6 +26,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
+import 'package:dartdoc/src/render/source_code_renderer.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
@@ -929,6 +930,9 @@ abstract class ModelElement extends Canonicalization
   ParameterRenderer get _parameterRendererDetailed =>
       packageGraph.rendererFactory.parameterRendererDetailed;
 
+  SourceCodeRenderer get _sourceCodeRenderer =>
+      packageGraph.rendererFactory.sourceCodeRenderer;
+
   String get linkedParams => _parameterRenderer.renderLinkedParams(parameters);
 
   String get linkedParamsLines =>
@@ -1088,6 +1092,13 @@ abstract class ModelElement extends Canonicalization
     if (__documentation != null) return __documentation;
     __documentation = Documentation.forElement(this);
     return __documentation;
+  }
+
+  String _sourceCode;
+
+  @override
+  String get sourceCode {
+    return _sourceCode ??= _sourceCodeRenderer.renderSourceCode(super.sourceCode);
   }
 
   bool canOverride() =>

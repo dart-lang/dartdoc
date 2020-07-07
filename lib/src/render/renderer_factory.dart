@@ -10,6 +10,7 @@ import 'package:dartdoc/src/render/enum_field_renderer.dart';
 import 'package:dartdoc/src/render/feature_renderer.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/render/parameter_renderer.dart';
+import 'package:dartdoc/src/render/source_code_renderer.dart';
 import 'package:dartdoc/src/render/template_renderer.dart';
 import 'package:dartdoc/src/render/type_parameters_renderer.dart';
 import 'package:dartdoc/src/render/typedef_renderer.dart';
@@ -49,6 +50,8 @@ abstract class RendererFactory {
   ParameterRenderer get parameterRenderer;
 
   ParameterRenderer get parameterRendererDetailed;
+
+  SourceCodeRenderer get sourceCodeRenderer;
 
   TypeParametersRenderer get typeParametersRenderer;
 
@@ -102,6 +105,9 @@ class HtmlRenderFactory extends RendererFactory {
 
   @override
   FeatureRenderer get featureRenderer => FeatureRendererHtml();
+
+  @override
+  SourceCodeRenderer get sourceCodeRenderer => SourceCodeRendererHtml();
 }
 
 class MdRenderFactory extends RendererFactory {
@@ -152,4 +158,7 @@ class MdRenderFactory extends RendererFactory {
 
   @override
   FeatureRenderer get featureRenderer => FeatureRendererMd();
+
+  @override
+  SourceCodeRenderer get sourceCodeRenderer => SourceCodeRendererNoop();
 }

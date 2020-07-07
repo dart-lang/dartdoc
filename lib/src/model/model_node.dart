@@ -63,7 +63,6 @@ class ModelNode {
         var start = _sourceOffset - (_sourceOffset - i);
         var source = contents.substring(start, _sourceEnd);
 
-        source = const HtmlEscape().convert(source);
         source = model_utils.stripIndentFromSource(source);
         source = model_utils.stripDartdocCommentsFromSource(source);
 
