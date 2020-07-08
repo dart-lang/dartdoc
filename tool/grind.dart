@@ -555,16 +555,34 @@ Future<void> serveTestExperimentsPackageDocs() async {
       'test-package-docs-experiments');
 }
 
-@Task('Build generated test package docs (with inherited docs and source code)')
+@Task('Build test package docs (HTML) with inherited docs and source code')
 @Depends(clean)
 Future<void> buildTestPackageDocs() async {
   await _buildTestPackageDocs(
       testPackageDocsDir.absolute.path, Directory.current.path);
 }
 
+@Task('Build test package docs (Markdown) with inherited docs and source code')
+@Depends(clean)
+Future<void> buildTestPackageDocsMd() async {
+  await _buildTestPackageDocs(
+      testPackageDocsDir.absolute.path, Directory.current.path,
+      params: ['--format', 'md']);
+}
+
 @Task('Serve test package docs locally with dhttpd on port 8002')
 @Depends(buildTestPackageDocs)
 Future<void> serveTestPackageDocs() async {
+  await startTestPackageDocsServer();
+}
+
+@Task('Serve test package docs (in Markdown) locally with dhttpd on port 8002')
+@Depends(buildTestPackageDocsMd)
+Future<void> serveTestPackageDocsMd() async {
+  await startTestPackageDocsServer();
+}
+
+Future<void> startTestPackageDocsServer() async {
   log('launching dhttpd on port 8002 for SDK');
   var launcher = SubprocessLauncher('serve-test-package-docs');
   await launcher.runStreamed(sdkBin('pub'), [
