@@ -661,7 +661,8 @@ abstract class ModelElement extends Canonicalization
       // just shortcut them out.
       if (!utils.hasPublicName(element)) {
         _canonicalLibrary = null;
-      } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
+      } else if (definingLibrary != null &&
+          !packageGraph.localPublicLibraries.contains(definingLibrary)) {
         var candidateLibraries = definingLibrary.exportedInLibraries
             ?.where((l) =>
                 l.isPublic &&
