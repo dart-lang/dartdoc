@@ -710,12 +710,12 @@ abstract class ModelElement extends Canonicalization
             var confidence = highestScore - secondHighestScore;
             var message =
                 '${candidateLibraries.map((l) => l.name)} -> ${candidateLibraries.last.name} (confidence ${confidence.toStringAsPrecision(4)})';
-            var debugLines = <String>[];
-            debugLines.addAll(scoredCandidates.map((s) => '${s.toString()}'));
 
             if (confidence < config.ambiguousReexportScorerMinConfidence) {
               warnable.warn(PackageWarning.ambiguousReexport,
-                  message: message, extendedDebug: debugLines);
+                  message: message,
+                  extendedDebug:
+                      scoredCandidates.map((s) => '${s.toString()}'));
             }
           }
           if (candidateLibraries.isNotEmpty) {
@@ -972,8 +972,10 @@ abstract class ModelElement extends Canonicalization
     _modelType = type;
   }
 
+  String _name;
+
   @override
-  String get name => element.name;
+  String get name => _name ??= element.name;
 
   @override
   String get oneLineDoc => _documentation.asOneLiner;
