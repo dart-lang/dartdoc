@@ -1098,7 +1098,8 @@ abstract class ModelElement extends Canonicalization
 
   @override
   String get sourceCode {
-    return _sourceCode ??= _sourceCodeRenderer.renderSourceCode(super.sourceCode);
+    return _sourceCode ??=
+        _sourceCodeRenderer.renderSourceCode(super.sourceCode);
   }
 
   bool canOverride() =>
