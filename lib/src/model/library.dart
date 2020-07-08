@@ -568,6 +568,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
     if (_modelElementsNameMap == null) {
       _modelElementsNameMap = <String, Set<ModelElement>>{};
       allModelElements.forEach((ModelElement modelElement) {
+        // [definingLibrary] may be null if [element] has been imported or
+        // exported with a non-normalized URI, like "src//a.dart".
+        if (modelElement.definingLibrary == null) return;
         _modelElementsNameMap.putIfAbsent(
             modelElement.fullyQualifiedNameWithoutLibrary, () => {});
         _modelElementsNameMap[modelElement.fullyQualifiedNameWithoutLibrary]
