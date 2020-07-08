@@ -714,8 +714,7 @@ abstract class ModelElement extends Canonicalization
             if (confidence < config.ambiguousReexportScorerMinConfidence) {
               warnable.warn(PackageWarning.ambiguousReexport,
                   message: message,
-                  extendedDebug:
-                      scoredCandidates.map((s) => '${s.toString()}'));
+                  extendedDebug: scoredCandidates.map((s) => '$s'));
             }
           }
           if (candidateLibraries.isNotEmpty) {
