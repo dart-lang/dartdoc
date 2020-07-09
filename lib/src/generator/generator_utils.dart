@@ -14,8 +14,9 @@ import 'package:dartdoc/src/model/indexable.dart';
 String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
   var encoder = pretty ? JsonEncoder.withIndent(' ') : JsonEncoder();
   // ignore: omit_local_variable_types
-  final List<Map> indexItems = categories.map((Categorization e) {
-    var data = <String, dynamic>{
+  final List<Map<String, Object>> indexItems =
+      categories.map((Categorization e) {
+    var data = <String, Object>{
       'name': e.name,
       'qualifiedName': e.fullyQualifiedName,
       'href': e.href,
@@ -45,8 +46,8 @@ String generateCategoryJson(Iterable<Categorization> categories, bool pretty) {
 String generateSearchIndexJson(
     Iterable<Indexable> indexedElements, bool pretty) {
   var encoder = pretty ? JsonEncoder.withIndent(' ') : JsonEncoder();
-  final List<Map> indexItems = indexedElements.map((Indexable e) {
-    var data = <String, dynamic>{
+  final indexItems = indexedElements.map((Indexable e) {
+    var data = <String, Object>{
       'name': e.name,
       'qualifiedName': e.fullyQualifiedName,
       'href': e.href,

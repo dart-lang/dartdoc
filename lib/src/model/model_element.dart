@@ -158,7 +158,7 @@ abstract class ModelElement extends Canonicalization
         SourceCodeMixin,
         Indexable,
         FeatureSet
-    implements Comparable, Documentable {
+    implements Comparable<ModelElement>, Documentable {
   final Element _element;
 
   // TODO(jcollins-g): This really wants a "member that has a type" class.
@@ -1086,7 +1086,7 @@ abstract class ModelElement extends Canonicalization
   /// Unconditionally precache local documentation.
   ///
   /// Use only in factory for [PackageGraph].
-  Future precacheLocalDocs() async {
+  Future<void> precacheLocalDocs() async {
     _documentationLocal = await _buildDocumentationBase();
   }
 

@@ -15,8 +15,8 @@ class DartdocProgramOptionContext extends DartdocGeneratorOptionContext
   bool get version => optionSet['version'].valueAt(context);
 }
 
-Future<List<DartdocOption>> createDartdocProgramOptions() async {
-  return <DartdocOption>[
+Future<List<DartdocOption<bool>>> createDartdocProgramOptions() async {
+  return [
     DartdocOptionArgOnly<bool>('generateDocs', true,
         help:
             'Generate docs into the output directory (or only display warnings if false).',

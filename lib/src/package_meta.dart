@@ -280,8 +280,8 @@ class _FilePackageMeta extends PubPackageMeta {
   FileContents _readme;
   FileContents _license;
   FileContents _changelog;
-  Map _pubspec;
-  Map _analysisOptions;
+  Map<dynamic, dynamic> _pubspec;
+  Map<dynamic, dynamic> _analysisOptions;
 
   _FilePackageMeta(Directory dir) : super(dir) {
     var f = File(path.join(dir.path, 'pubspec.yaml'));

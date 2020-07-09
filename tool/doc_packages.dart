@@ -106,7 +106,7 @@ void generateForPackages(List<String> packages) {
   });
 }
 
-Future _printGenerationResult(
+Future<void> _printGenerationResult(
     PackageInfo package, Future<bool> generationResult) {
   var name = package.name.padRight(20);
 
@@ -190,7 +190,7 @@ Future<bool> _generateFor(PackageInfo package) async {
   }
 }
 
-Future _exec(String command, List<String> args,
+Future<void> _exec(String command, List<String> args,
     {String cwd,
     bool quiet = false,
     Duration timeout = const Duration(seconds: 60)}) {

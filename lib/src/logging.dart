@@ -130,8 +130,8 @@ abstract class LoggingContext implements DartdocOptionContextBase {
   bool get quiet => optionSet['quiet'].valueAt(context);
 }
 
-Future<List<DartdocOption>> createLoggingOptions() async {
-  return <DartdocOption>[
+Future<List<DartdocOption<Object>>> createLoggingOptions() async {
+  return [
     DartdocOptionArgOnly<bool>('json', false,
         help: 'Prints out progress JSON maps. One entry per line.',
         negatable: true),
@@ -139,7 +139,7 @@ Future<List<DartdocOption>> createLoggingOptions() async {
         help: 'Display progress indications to console stdout.',
         negatable: true),
     DartdocOptionArgSynth<bool>('quiet',
-        (DartdocSyntheticOption option, Directory dir) {
+        (DartdocSyntheticOption<Object> option, Directory dir) {
       if (option.root['generateDocs']?.valueAt(dir) == false) {
         return true;
       }

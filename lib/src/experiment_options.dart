@@ -21,8 +21,8 @@ abstract class DartdocExperimentOptionContext
 
 // TODO(jcollins-g): Implement YAML parsing for these flags and generation
 // of [DartdocExperimentOptionContext], once a YAML file is available.
-Future<List<DartdocOption>> createExperimentOptions() async {
-  return <DartdocOption>[
+Future<List<DartdocOption<Object>>> createExperimentOptions() async {
+  return [
     // TODO(jcollins-g): Consider loading experiment values from dartdoc_options.yaml?
     DartdocOptionArgOnly<List<String>>('enable-experiment', [],
         help: 'Enable or disable listed experiments.\n' +

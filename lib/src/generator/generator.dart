@@ -28,7 +28,7 @@ abstract class FileWriter {
 abstract class Generator {
   /// Generate the documentation for the given package using the specified
   /// writer. Completes the returned future when done.
-  Future generate(PackageGraph packageGraph, FileWriter writer);
+  Future<void> generate(PackageGraph packageGraph, FileWriter writer);
 }
 
 /// Dartdoc options related to generators generally.
@@ -55,8 +55,8 @@ mixin GeneratorContext on DartdocOptionContextBase {
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
 }
 
-Future<List<DartdocOption>> createGeneratorOptions() async {
-  return <DartdocOption>[
+Future<List<DartdocOption<Object>>> createGeneratorOptions() async {
+  return [
     DartdocOptionArgFile<List<String>>('footer', [],
         isFile: true,
         help:
