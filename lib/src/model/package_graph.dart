@@ -68,24 +68,23 @@ class PackageGraph {
     specialClasses = SpecialClasses();
     // Go through docs of every ModelElement in package to pre-build the macros
     // index.  Uses toList() in order to get all the precaching on the stack.
-    var precacheFutures = precacheLocalDocs().toList();
-    for (var f in precacheFutures) {
-      await f;
-    }
+    await Future.wait(precacheLocalDocs());
     _localDocumentationBuilt = true;
 
     // Scan all model elements to insure that interceptor and other special
     // objects are found.
     // After the allModelElements traversal to be sure that all packages
     // are picked up.
-    documentedPackages.toList().forEach((package) {
+    for (var package in documentedPackages) {
       package.libraries.sort((a, b) => compareNatural(a.name, b.name));
-      package.libraries.forEach((library) {
+      for (var library in package.libraries) {
         library.allClasses.forEach(_addToImplementors);
         _extensions.addAll(library.extensions);
-      });
-    });
-    _implementors.values.forEach((l) => l.sort());
+      }
+    }
+    for (var l in _implementors.values) {
+      l.sort();
+    }
     allImplementorsAdded = true;
     allExtensionsAdded = true;
 
@@ -574,18 +573,14 @@ class PackageGraph {
       }
     }
 
-    if (c.mixins.isNotEmpty) {
-      c.mixins.forEach((t) {
-        _checkAndAddClass(t.element, c);
-      });
+    for (var type in c.mixins) {
+      _checkAndAddClass(type.element, c);
     }
     if (c.supertype != null) {
       _checkAndAddClass(c.supertype.element, c);
     }
-    if (c.interfaces.isNotEmpty) {
-      c.interfaces.forEach((t) {
-        _checkAndAddClass(t.element, c);
-      });
+    for (var type in c.interfaces) {
+      _checkAndAddClass(type.element, c);
     }
   }
 
@@ -908,8 +903,8 @@ class PackageGraph {
   List<ModelElement> _allCanonicalModelElements;
 
   Iterable<ModelElement> get allCanonicalModelElements {
-    return (_allCanonicalModelElements ??=
-        allLocalModelElements.where((e) => e.isCanonical).toList());
+    return _allCanonicalModelElements ??=
+        allLocalModelElements.where((e) => e.isCanonical).toList();
   }
 
   String getMacro(String name) {

@@ -473,13 +473,14 @@ abstract class ModelElement extends Canonicalization
     return _config;
   }
 
+  Set<String> _locationPieces;
+
   @override
-  Set<String> get locationPieces {
-    return Set.from(element.location
-        .toString()
-        .split(locationSplitter)
-        .where((s) => s.isNotEmpty));
-  }
+  Set<String> get locationPieces =>
+      _locationPieces ??= Set.from(element.location
+          .toString()
+          .split(locationSplitter)
+          .where((s) => s.isNotEmpty));
 
   Set<String> get features {
     var allFeatures = <String>{};
@@ -648,81 +649,13 @@ abstract class ModelElement extends Canonicalization
     if (!_canonicalLibraryIsSet) {
       // This is not accurate if we are constructing the Package.
       assert(packageGraph.allLibrariesAdded);
-      // Since we're looking for a library, find the [Element] immediately
-      // contained by a [CompilationUnitElement] in the tree.
-      var topLevelElement = element;
-      while (topLevelElement != null &&
-          topLevelElement.enclosingElement is! LibraryElement &&
-          topLevelElement.enclosingElement is! CompilationUnitElement &&
-          topLevelElement.enclosingElement != null) {
-        topLevelElement = topLevelElement.enclosingElement;
-      }
 
       // Privately named elements can never have a canonical library, so
       // just shortcut them out.
       if (!utils.hasPublicName(element)) {
         _canonicalLibrary = null;
-      } else if (definingLibrary != null &&
-          !packageGraph.localPublicLibraries.contains(definingLibrary)) {
-        var candidateLibraries = definingLibrary.exportedInLibraries
-            ?.where((l) =>
-                l.isPublic &&
-                l.package.documentedWhere != DocumentLocation.missing)
-            ?.toList();
-
-        if (candidateLibraries != null) {
-          candidateLibraries = candidateLibraries.where((l) {
-            var lookup =
-                l.element.exportNamespace.definedNames[topLevelElement?.name];
-            if (lookup is PropertyAccessorElement) {
-              lookup = (lookup as PropertyAccessorElement).variable;
-            }
-            if (topLevelElement == lookup) return true;
-            return false;
-          }).toList();
-
-          // Avoid claiming canonicalization for elements outside of this element's
-          // defining package.
-          // TODO(jcollins-g): Make the else block unconditional.
-          if (candidateLibraries.isNotEmpty &&
-              !candidateLibraries
-                  .any((l) => l.package == definingLibrary.package)) {
-            warn(PackageWarning.reexportedPrivateApiAcrossPackages,
-                message: definingLibrary.package.fullyQualifiedName,
-                referredFrom: candidateLibraries);
-          } else {
-            candidateLibraries
-                .removeWhere((l) => l.package != definingLibrary.package);
-          }
-
-          // Start with our top-level element.
-          var warnable =
-              ModelElement.fromElement(topLevelElement, packageGraph);
-          if (candidateLibraries.length > 1) {
-            // Heuristic scoring to determine which library a human likely
-            // considers this element to be primarily 'from', and therefore,
-            // canonical.  Still warn if the heuristic isn't that confident.
-            var scoredCandidates =
-                warnable.scoreCanonicalCandidates(candidateLibraries);
-            candidateLibraries =
-                scoredCandidates.map((s) => s.library).toList();
-            var secondHighestScore =
-                scoredCandidates[scoredCandidates.length - 2].score;
-            var highestScore = scoredCandidates.last.score;
-            var confidence = highestScore - secondHighestScore;
-            var message =
-                '${candidateLibraries.map((l) => l.name)} -> ${candidateLibraries.last.name} (confidence ${confidence.toStringAsPrecision(4)})';
-
-            if (confidence < config.ambiguousReexportScorerMinConfidence) {
-              warnable.warn(PackageWarning.ambiguousReexport,
-                  message: message,
-                  extendedDebug: scoredCandidates.map((s) => '$s'));
-            }
-          }
-          if (candidateLibraries.isNotEmpty) {
-            _canonicalLibrary = candidateLibraries.last;
-          }
-        }
+      } else if (!packageGraph.localPublicLibraries.contains(definingLibrary)) {
+        _canonicalLibrary = _searchForCanonicalLibrary();
       } else {
         _canonicalLibrary = definingLibrary;
       }
@@ -741,6 +674,79 @@ abstract class ModelElement extends Canonicalization
     assert(_canonicalLibrary == null ||
         packageGraph.publicLibraries.contains(_canonicalLibrary));
     return _canonicalLibrary;
+  }
+
+  Library _searchForCanonicalLibrary() {
+    var thisAndExported = definingLibrary.exportedInLibraries;
+
+    if (thisAndExported == null) {
+      return null;
+    }
+
+    // Since we're looking for a library, find the [Element] immediately
+    // contained by a [CompilationUnitElement] in the tree.
+    var topLevelElement = element;
+    while (topLevelElement != null &&
+        topLevelElement.enclosingElement is! LibraryElement &&
+        topLevelElement.enclosingElement is! CompilationUnitElement &&
+        topLevelElement.enclosingElement != null) {
+      topLevelElement = topLevelElement.enclosingElement;
+    }
+
+    var candidateLibraries = thisAndExported
+        .where((l) =>
+            l.isPublic && l.package.documentedWhere != DocumentLocation.missing)
+        .where((l) {
+      var lookup =
+          l.element.exportNamespace.definedNames[topLevelElement?.name];
+      if (lookup is PropertyAccessorElement) {
+        lookup = (lookup as PropertyAccessorElement).variable;
+      }
+      return topLevelElement == lookup;
+    }).toList();
+
+    // Avoid claiming canonicalization for elements outside of this element's
+    // defining package.
+    // TODO(jcollins-g): Make the else block unconditional.
+    if (candidateLibraries.isNotEmpty &&
+        !candidateLibraries.any((l) => l.package == definingLibrary.package)) {
+      warn(PackageWarning.reexportedPrivateApiAcrossPackages,
+          message: definingLibrary.package.fullyQualifiedName,
+          referredFrom: candidateLibraries);
+    } else {
+      candidateLibraries
+          .removeWhere((l) => l.package != definingLibrary.package);
+    }
+
+    if (candidateLibraries.isEmpty) {
+      return null;
+    }
+    if (candidateLibraries.length == 1) {
+      return candidateLibraries.single;
+    }
+
+    // Start with our top-level element.
+    var warnable = ModelElement.fromElement(topLevelElement, packageGraph);
+    // Heuristic scoring to determine which library a human likely
+    // considers this element to be primarily 'from', and therefore,
+    // canonical.  Still warn if the heuristic isn't that confident.
+    var scoredCandidates =
+        warnable.scoreCanonicalCandidates(candidateLibraries);
+    candidateLibraries = scoredCandidates.map((s) => s.library).toList();
+    var secondHighestScore =
+        scoredCandidates[scoredCandidates.length - 2].score;
+    var highestScore = scoredCandidates.last.score;
+    var confidence = highestScore - secondHighestScore;
+
+    if (confidence < config.ambiguousReexportScorerMinConfidence) {
+      var libraryNames = candidateLibraries.map((l) => l.name);
+      var message = '$libraryNames -> ${candidateLibraries.last.name} '
+          '(confidence ${confidence.toStringAsPrecision(4)})';
+      warnable.warn(PackageWarning.ambiguousReexport,
+          message: message, extendedDebug: scoredCandidates.map((s) => '$s'));
+    }
+
+    return candidateLibraries.last;
   }
 
   @override
@@ -1072,6 +1078,9 @@ abstract class ModelElement extends Canonicalization
 
   String computeDocumentationComment() => element.documentationComment;
 
+  /// The documentation comment on the Element may be null, so memoization
+  /// cannot rely on the null-ness of [_documentationComment], it must be
+  /// more explicit.
   bool _documentationCommentComputed = false;
   String _documentationComment;
 
