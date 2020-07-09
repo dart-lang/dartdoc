@@ -13,7 +13,7 @@ import 'package:dartdoc/src/model_utils.dart';
 /// it were.
 class EmptyGenerator extends Generator {
   @override
-  Future generate(PackageGraph _packageGraph, FileWriter writer) {
+  Future<void> generate(PackageGraph _packageGraph, FileWriter writer) {
     logProgress(_packageGraph.defaultPackage.documentationAsHtml);
     for (var package in {_packageGraph.defaultPackage}
       ..addAll(_packageGraph.localPackages)) {

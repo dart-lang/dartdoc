@@ -94,11 +94,11 @@ class PackageGraph {
   }
 
   /// Generate a list of futures for any docs that actually require precaching.
-  Iterable<Future> precacheLocalDocs() sync* {
+  Iterable<Future<void>> precacheLocalDocs() sync* {
     // Prevent reentrancy.
     var precachedElements = <ModelElement>{};
 
-    Iterable<Future> precacheOneElement(ModelElement m) sync* {
+    Iterable<Future<void>> precacheOneElement(ModelElement m) sync* {
       for (var d
           in m.documentationFrom.where((d) => d.documentationComment != null)) {
         if (needsPrecacheRegExp.hasMatch(d.documentationComment) &&
@@ -567,7 +567,7 @@ class PackageGraph {
     _implementors.putIfAbsent(c.href, () => []);
     void _checkAndAddClass(Class key, Class implClass) {
       _implementors.putIfAbsent(key.href, () => []);
-      List list = _implementors[key.href];
+      var list = _implementors[key.href];
 
       if (!list.any((l) => l.element == c.element)) {
         list.add(implClass);

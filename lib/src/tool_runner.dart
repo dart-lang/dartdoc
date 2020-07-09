@@ -17,7 +17,7 @@ typedef FakeResultCallback = String Function(String tool,
 
 /// Set a ceiling on how many tool instances can be in progress at once,
 /// limiting both parallelization and the number of open temporary files.
-final MultiFutureTracker _toolTracker = MultiFutureTracker(4);
+final MultiFutureTracker<void> _toolTracker = MultiFutureTracker(4);
 
 /// Can be called when the ToolRunner is no longer needed.
 ///
@@ -121,7 +121,7 @@ class ToolRunner {
   /// of the tool).
   Future<String> run(List<String> args, ToolErrorCallback toolErrorCallback,
       {String content, Map<String, String> environment}) async {
-    Future runner;
+    Future<String> runner;
     // Prevent too many tools from running simultaneously.
     await _toolTracker.addFutureFromClosure(() {
       runner = _run(args, toolErrorCallback,

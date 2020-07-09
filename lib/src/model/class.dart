@@ -172,7 +172,7 @@ class Class extends Container
     return _inheritedMethods;
   }
 
-  Iterable get publicInheritedMethods =>
+  Iterable<Method> get publicInheritedMethods =>
       model_utils.filterNonPublic(inheritedMethods);
 
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;

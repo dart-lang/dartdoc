@@ -50,7 +50,7 @@ class HtmlGeneratorBackend extends DartdocGeneratorBackend {
     }
   }
 
-  Future _copyResources(FileWriter writer) async {
+  Future<void> _copyResources(FileWriter writer) async {
     final prefix = 'package:dartdoc/resources/';
     for (var resourcePath in resources.resource_names) {
       if (!resourcePath.startsWith(prefix)) {

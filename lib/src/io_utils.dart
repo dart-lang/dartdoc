@@ -106,7 +106,7 @@ class MultiFutureTracker<T> {
     while (_trackedFutures.length > parallel - 1) {
       await Future.any(_trackedFutures);
     }
-    Future future = closure();
+    Future<void> future = closure();
     _trackedFutures.add(future);
     // ignore: unawaited_futures
     future.then((f) => _trackedFutures.remove(future));

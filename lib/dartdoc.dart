@@ -355,7 +355,7 @@ class Dartdoc {
       return null;
     }
     var decoder = JsonDecoder();
-    List jsonData = decoder.convert(file.readAsStringSync());
+    List<Object> jsonData = decoder.convert(file.readAsStringSync());
 
     var found = <String>{};
     found.add(fullPath);
@@ -390,7 +390,7 @@ class Dartdoc {
       fullPath = path.normalize(fullPath);
     }
 
-    Tuple2 stringLinksAndHref = _getStringLinksAndHref(fullPath);
+    var stringLinksAndHref = _getStringLinksAndHref(fullPath);
     if (stringLinksAndHref == null) {
       _warn(packageGraph, PackageWarning.brokenLink, pathToCheck,
           path.normalize(origin),
@@ -402,8 +402,8 @@ class Dartdoc {
       return null;
     }
     visited.add(fullPath);
-    Iterable<String> stringLinks = stringLinksAndHref.item1;
-    String baseHref = stringLinksAndHref.item2;
+    var stringLinks = stringLinksAndHref.item1;
+    var baseHref = stringLinksAndHref.item2;
 
     // Prevent extremely large stacks by storing the paths we are using
     // here instead -- occasionally, very large jobs have overflowed
@@ -438,7 +438,7 @@ class Dartdoc {
         }
       }
     }
-    for (Tuple2 visitPaths in toVisit) {
+    for (var visitPaths in toVisit) {
       _doCheck(packageGraph, origin, visited, visitPaths.item1, pathToCheck,
           visitPaths.item2);
     }

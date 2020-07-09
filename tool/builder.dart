@@ -22,7 +22,7 @@ class ResourceBuilder implements Builder {
 
   static final _allResources = Glob('lib/resources/**');
   @override
-  Future build(BuildStep buildStep) async {
+  Future<void> build(BuildStep buildStep) async {
     var packagePaths = <String>[];
     await for (AssetId asset in buildStep.findAssets(_allResources)) {
       packagePaths.add(asset.uri.toString());

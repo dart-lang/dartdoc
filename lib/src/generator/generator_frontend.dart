@@ -18,7 +18,7 @@ class GeneratorFrontEnd implements Generator {
   GeneratorFrontEnd(this._generatorBackend);
 
   @override
-  Future generate(PackageGraph packageGraph, FileWriter writer) async {
+  Future<void> generate(PackageGraph packageGraph, FileWriter writer) async {
     var indexElements = <Indexable>[];
     _generateDocs(packageGraph, writer, indexElements);
     await _generatorBackend.generateAdditionalFiles(writer, packageGraph);
