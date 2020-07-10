@@ -290,10 +290,10 @@ class Dartdoc {
     var indexJson = path.joinAll([normalOrigin, 'index.json']);
     var foundIndexJson = false;
     for (var f in Directory(normalOrigin).listSync(recursive: true)) {
-      var fullPath = path.normalize(f.path);
       if (f is Directory) {
         continue;
       }
+      var fullPath = path.normalize(f.path);
       if (fullPath.startsWith(staticAssets)) {
         continue;
       }
@@ -331,6 +331,9 @@ class Dartdoc {
     if (!file.existsSync()) {
       return null;
     }
+    // TODO(srawlins): It is possible that instantiating an HtmlParser using
+    // `lowercaseElementName: false` and `lowercaseAttrName: false` may save
+    // time or memory.
     var doc = parse(file.readAsBytesSync());
     var base = doc.querySelector('base');
     String baseHref;

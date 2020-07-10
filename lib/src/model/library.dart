@@ -628,13 +628,9 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   List<ModelElement> _allModelElements;
 
   Iterable<ModelElement> get allModelElements {
-    if (_allModelElements == null) {
-      _allModelElements = [];
-      for (var modelElements in modelElementsMap.values) {
-        _allModelElements.addAll(modelElements);
-      }
-    }
-    return _allModelElements;
+    return _allModelElements ??= [
+      for (var modelElements in modelElementsMap.values) ...modelElements,
+    ];
   }
 
   List<ModelElement> _allCanonicalModelElements;

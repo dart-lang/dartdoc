@@ -15,8 +15,8 @@ abstract class Canonicalization implements Locatable, Documentable {
   /// Pieces of the location, split to remove 'package:' and slashes.
   Set<String> get locationPieces;
 
-  List<ScoredCandidate> scoreCanonicalCandidates(List<Library> libraries) {
-    return libraries.map((l) => scoreElementWithLibrary(l)).toList()..sort();
+  List<ScoredCandidate> scoreCanonicalCandidates(Iterable<Library> libraries) {
+    return libraries.map(scoreElementWithLibrary).toList()..sort();
   }
 
   ScoredCandidate scoreElementWithLibrary(Library lib) {

@@ -171,22 +171,27 @@ class Package extends LibraryContainer
     return _isLocal;
   }
 
+  /* late */ DocumentLocation _documentedWhere;
+
   DocumentLocation get documentedWhere {
-    if (isLocal) {
-      if (isPublic) {
-        return DocumentLocation.local;
+    if (_documentedWhere == null) {
+      if (isLocal) {
+        if (isPublic) {
+          _documentedWhere = DocumentLocation.local;
+        } else {
+          // Possible if excludes result in a "documented" package not having
+          // any actual documentation.
+          _documentedWhere = DocumentLocation.missing;
+        }
       } else {
-        // Possible if excludes result in a "documented" package not having
-        // any actual documentation.
-        return DocumentLocation.missing;
-      }
-    } else {
-      if (config.linkToRemote && config.linkToUrl.isNotEmpty && isPublic) {
-        return DocumentLocation.remote;
-      } else {
-        return DocumentLocation.missing;
+        if (config.linkToRemote && config.linkToUrl.isNotEmpty && isPublic) {
+          _documentedWhere = DocumentLocation.remote;
+        } else {
+          _documentedWhere = DocumentLocation.missing;
+        }
       }
     }
+    return _documentedWhere;
   }
 
   @override
