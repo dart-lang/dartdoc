@@ -752,22 +752,14 @@ abstract class ModelElement extends Canonicalization
   @override
   bool get isCanonical {
     if (!isPublic) return false;
-    if (library == canonicalLibrary) {
-      if (this is Inheritable) {
-        var i = (this as Inheritable);
-        // If we're the defining element, or if the defining element is not
-        // in the set of libraries being documented, then this element
-        // should be treated as canonical (given library == canonicalLibrary).
-        if (i.enclosingElement == i.canonicalEnclosingContainer) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      // If there's no inheritance to deal with, we're done.
-      return true;
-    }
-    return false;
+    if (library != canonicalLibrary) return false;
+    // If there's no inheritance to deal with, we're done.
+    if (this is! Inheritable) return true;
+    var i = this as Inheritable;
+    // If we're the defining element, or if the defining element is not in the
+    // set of libraries being documented, then this element should be treated as
+    // canonical (given library == canonicalLibrary).
+    return i.enclosingElement == i.canonicalEnclosingContainer;
   }
 
   String _htmlDocumentation;
