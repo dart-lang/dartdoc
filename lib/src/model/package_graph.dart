@@ -587,12 +587,12 @@ class PackageGraph {
 
   Iterable<Library> get libraries => packages.expand((p) => p.libraries);
 
-  Set<Library> _publicLibraries;
+  List<Library> _publicLibraries;
 
-  Set<Library> get publicLibraries {
+  Iterable<Library> get publicLibraries {
     if (_publicLibraries == null) {
       assert(allLibrariesAdded);
-      _publicLibraries = utils.filterNonPublic(libraries).toSet();
+      _publicLibraries = utils.filterNonPublic(libraries).toList();
     }
     return _publicLibraries;
   }
