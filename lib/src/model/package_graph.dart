@@ -798,18 +798,19 @@ class PackageGraph {
       }
     } else {
       if (lib != null) {
-        Accessor getter;
-        Accessor setter;
         if (e is PropertyInducingElement) {
-          if (e.getter != null) {
-            getter = ModelElement.from(e.getter, lib, packageGraph);
-          }
-          if (e.setter != null) {
-            setter = ModelElement.from(e.setter, lib, packageGraph);
-          }
+          var getter = e.getter != null
+              ? ModelElement.from(e.getter, lib, packageGraph)
+              : null;
+          var setter = e.setter != null
+              ? ModelElement.from(e.setter, lib, packageGraph)
+              : null;
+          modelElement = ModelElement.fromPropertyInducingElement(
+              e, lib, packageGraph,
+              getter: getter, setter: setter);
+        } else {
+          modelElement = ModelElement.from(e, lib, packageGraph);
         }
-        modelElement = ModelElement.from(e, lib, packageGraph,
-            getter: getter, setter: setter);
       }
       assert(modelElement is! Inheritable);
       if (modelElement != null && !modelElement.isCanonical) {

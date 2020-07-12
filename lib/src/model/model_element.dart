@@ -31,6 +31,7 @@ import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/tuple.dart';
 import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
 /// Items mapped less than zero will sort before custom annotations.
@@ -179,38 +180,111 @@ abstract class ModelElement extends Canonicalization
   ModelElement(
       this._element, this._library, this._packageGraph, this._originalMember);
 
+  /// Creates a [ModelElement] from [e].
   factory ModelElement.fromElement(Element e, PackageGraph p) {
     var lib = p.findButDoNotCreateLibraryFor(e);
-    Accessor getter;
-    Accessor setter;
     if (e is PropertyInducingElement) {
-      getter = e.getter != null ? ModelElement.from(e.getter, lib, p) : null;
-      setter = e.setter != null ? ModelElement.from(e.setter, lib, p) : null;
+      var getter =
+          e.getter != null ? ModelElement.from(e.getter, lib, p) : null;
+      var setter =
+          e.setter != null ? ModelElement.from(e.setter, lib, p) : null;
+      return ModelElement.fromPropertyInducingElement(e, lib, p,
+          getter: getter, setter: setter);
     }
-    return ModelElement.from(e, lib, p, getter: getter, setter: setter);
+    return ModelElement.from(e, lib, p);
   }
 
+  /// Creates a  [ModelElement] from [PropertyInducingElement] [e].
+  ///
+  /// Do not construct any ModelElements except from this constructor or
+  /// [ModelElement.from]. Specify [enclosingContainer]
+  /// if and only if this is to be an inherited or extended object.
+  factory ModelElement.fromPropertyInducingElement(
+      PropertyInducingElement e, Library library, PackageGraph packageGraph,
+      {Container enclosingContainer,
+      @required Accessor getter,
+      @required Accessor setter}) {
+    assert(packageGraph != null);
+    assert(e != null);
+    assert(library != null);
+
+    // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
+    //                   for members?
+    if (e is Member) {
+      e = e.declaration;
+    }
+
+    // Return the cached ModelElement if it exists.
+    var key =
+        Tuple3<Element, Library, Container>(e, library, enclosingContainer);
+    if (packageGraph.allConstructedModelElements.containsKey(key)) {
+      return packageGraph.allConstructedModelElements[key];
+    }
+
+    ModelElement newModelElement;
+    if (e is FieldElement) {
+      if (enclosingContainer == null) {
+        if (e.isEnumConstant) {
+          var index = e.computeConstantValue().getField(e.name).toIntValue();
+          newModelElement =
+              EnumField.forConstant(index, e, library, packageGraph, getter);
+        } else if (e.enclosingElement is ExtensionElement) {
+          newModelElement = Field(e, library, packageGraph, getter, setter);
+        } else if (e.enclosingElement is ClassElement &&
+            (e.enclosingElement as ClassElement).isEnum) {
+          newModelElement = EnumField(e, library, packageGraph, getter, setter);
+        } else {
+          newModelElement = Field(e, library, packageGraph, getter, setter);
+        }
+      } else {
+        // EnumFields can't be inherited, so this case is simpler.
+        newModelElement = Field.inherited(
+            e, enclosingContainer, library, packageGraph, getter, setter);
+      }
+    }
+    if (e is TopLevelVariableElement) {
+      assert(getter != null || setter != null);
+      newModelElement =
+          TopLevelVariable(e, library, packageGraph, getter, setter);
+    }
+
+    if (enclosingContainer != null) assert(newModelElement is Inheritable);
+    _cacheNewModelElement(e, newModelElement, library,
+        enclosingContainer: enclosingContainer);
+
+    assert(newModelElement.element is! MultiplyInheritedExecutableElement);
+    return newModelElement;
+  }
+
+  /// Creates a [ModelElement] from a non-property-inducing [e].
+  ///
+  /// Do not construct any ModelElements except from this constructor or
+  /// [ModelElement.fromPropertyInducingElement]. Specify [enclosingContainer]
+  /// if and only if this is to be an inherited or extended object.
   // TODO(jcollins-g): this way of using the optional parameter is messy,
   // clean that up.
-  // TODO(jcollins-g): Refactor this into class-specific factories that
-  // call this one.
   // TODO(jcollins-g): Enforce construction restraint.
   // TODO(jcollins-g): Allow e to be null and drop extraneous null checks.
   // TODO(jcollins-g): Auto-vivify element's defining library for library
   // parameter when given a null.
-  /// Do not construct any ModelElements unless they are from this constructor.
-  /// Specify enclosingContainer if and only if this is to be an inherited or
-  /// extended object.
   factory ModelElement.from(
       Element e, Library library, PackageGraph packageGraph,
-      {Container enclosingContainer, Accessor getter, Accessor setter}) {
-    assert(packageGraph != null && e != null);
+      {Container enclosingContainer}) {
+    assert(packageGraph != null);
+    assert(e != null);
     assert(library != null ||
         e is ParameterElement ||
         e is TypeParameterElement ||
         e is GenericFunctionTypeElementImpl ||
         e.kind == ElementKind.DYNAMIC ||
         e.kind == ElementKind.NEVER);
+
+    if (e.kind == ElementKind.DYNAMIC) {
+      return Dynamic(e, packageGraph);
+    }
+    if (e.kind == ElementKind.NEVER) {
+      return NeverType(e, packageGraph);
+    }
 
     Member originalMember;
     // TODO(jcollins-g): Refactor object model to instantiate 'ModelMembers'
@@ -219,130 +293,35 @@ abstract class ModelElement extends Canonicalization
       originalMember = e;
       e = e.declaration;
     }
+
+    // Return the cached ModelElement if it exists.
     var key =
         Tuple3<Element, Library, Container>(e, library, enclosingContainer);
-    ModelElement newModelElement;
-    if (e.kind != ElementKind.DYNAMIC &&
-        e.kind != ElementKind.NEVER &&
-        packageGraph.allConstructedModelElements.containsKey(key)) {
-      newModelElement = packageGraph.allConstructedModelElements[key];
-      assert(newModelElement.element is! MultiplyInheritedExecutableElement);
-    } else {
-      if (e.kind == ElementKind.DYNAMIC) {
-        newModelElement = Dynamic(e, packageGraph);
-      }
-      if (e.kind == ElementKind.NEVER) {
-        newModelElement = NeverType(e, packageGraph);
-      }
-      if (e is MultiplyInheritedExecutableElement) {
-        newModelElement = resolveMultiplyInheritedElement(
-            e, library, packageGraph, enclosingContainer);
-      } else {
-        if (e is LibraryElement) {
-          newModelElement = Library(e, packageGraph);
-        }
-        // Also handles enums
-        if (e is ClassElement) {
-          if (e.isMixin) {
-            newModelElement = Mixin(e, library, packageGraph);
-          } else if (e.isEnum) {
-            newModelElement = Enum(e, library, packageGraph);
-          } else {
-            newModelElement = Class(e, library, packageGraph);
-          }
-        }
-        if (e is ExtensionElement) {
-          newModelElement = Extension(e, library, packageGraph);
-        }
-        if (e is FunctionElement) {
-          newModelElement = ModelFunction(e, library, packageGraph);
-        } else if (e is GenericFunctionTypeElement) {
-          assert(e.enclosingElement is GenericTypeAliasElement);
-          assert(e.enclosingElement.name != '');
-          newModelElement = ModelFunctionTypedef(e, library, packageGraph);
-        }
-        if (e is FunctionTypeAliasElement) {
-          newModelElement = Typedef(e, library, packageGraph);
-        }
-        if (e is FieldElement) {
-          if (enclosingContainer == null) {
-            if (e.isEnumConstant) {
-              var index =
-                  e.computeConstantValue().getField(e.name).toIntValue();
-              newModelElement = EnumField.forConstant(
-                  index, e, library, packageGraph, getter);
-              // ignore: unnecessary_cast
-            } else if (e.enclosingElement is ExtensionElement) {
-              newModelElement = Field(e, library, packageGraph, getter, setter);
-            } else if (e.enclosingElement is ClassElement &&
-                (e.enclosingElement as ClassElement).isEnum) {
-              newModelElement =
-                  EnumField(e, library, packageGraph, getter, setter);
-            } else {
-              newModelElement = Field(e, library, packageGraph, getter, setter);
-            }
-          } else {
-            // EnumFields can't be inherited, so this case is simpler.
-            newModelElement = Field.inherited(
-                e, enclosingContainer, library, packageGraph, getter, setter);
-          }
-        }
-        if (e is ConstructorElement) {
-          newModelElement = Constructor(e, library, packageGraph);
-        }
-        if (e is MethodElement && e.isOperator) {
-          if (enclosingContainer == null) {
-            newModelElement = Operator(e, library, packageGraph);
-          } else {
-            newModelElement = Operator.inherited(
-                e, enclosingContainer, library, packageGraph,
-                originalMember: originalMember);
-          }
-        }
-        if (e is MethodElement && !e.isOperator) {
-          if (enclosingContainer == null) {
-            newModelElement = Method(e, library, packageGraph);
-          } else {
-            newModelElement = Method.inherited(
-                e, enclosingContainer, library, packageGraph,
-                originalMember: originalMember);
-          }
-        }
-        if (e is TopLevelVariableElement) {
-          assert(getter != null || setter != null);
-          newModelElement =
-              TopLevelVariable(e, library, packageGraph, getter, setter);
-        }
-        if (e is PropertyAccessorElement) {
-          // TODO(jcollins-g): why test for ClassElement in enclosingElement?
-          if (e.enclosingElement is ClassElement ||
-              e is MultiplyInheritedExecutableElement) {
-            if (enclosingContainer == null) {
-              newModelElement = ContainerAccessor(e, library, packageGraph);
-            } else {
-              newModelElement = ContainerAccessor.inherited(
-                  e, library, packageGraph, enclosingContainer,
-                  originalMember: originalMember);
-            }
-          } else {
-            newModelElement = Accessor(e, library, packageGraph, null);
-          }
-        }
-        if (e is TypeParameterElement) {
-          newModelElement = TypeParameter(e, library, packageGraph);
-        }
-        if (e is ParameterElement) {
-          newModelElement = Parameter(e, library, packageGraph,
-              originalMember: originalMember);
-        }
-      }
+    if (packageGraph.allConstructedModelElements.containsKey(key)) {
+      return packageGraph.allConstructedModelElements[key];
     }
 
-    if (newModelElement == null) throw 'Unknown type ${e.runtimeType}';
+    var newModelElement = ModelElement._from(e, library, packageGraph,
+        enclosingContainer: enclosingContainer, originalMember: originalMember);
+
     if (enclosingContainer != null) assert(newModelElement is Inheritable);
+    _cacheNewModelElement(e, newModelElement, library,
+        enclosingContainer: enclosingContainer);
+
+    assert(newModelElement.element is! MultiplyInheritedExecutableElement);
+    return newModelElement;
+  }
+
+  /// Caches a newly-created [ModelElement] from [ModelElement.from] or
+  /// [ModelElement.fromPropertyInducingElement].
+  static void _cacheNewModelElement(
+      Element e, ModelElement newModelElement, Library library,
+      {Container enclosingContainer}) {
     // TODO(jcollins-g): Reenable Parameter caching when dart-lang/sdk#30146
     //                   is fixed?
     if (library != null && newModelElement is! Parameter) {
+      var key =
+          Tuple3<Element, Library, Container>(e, library, enclosingContainer);
       library.packageGraph.allConstructedModelElements[key] = newModelElement;
       if (newModelElement is Inheritable) {
         var iKey = Tuple2<Element, Library>(e, library);
@@ -350,13 +329,82 @@ abstract class ModelElement extends Canonicalization
         library.packageGraph.allInheritableElements[iKey].add(newModelElement);
       }
     }
-    if (newModelElement is GetterSetterCombo) {
-      assert(getter == null || newModelElement?.getter?.enclosingCombo != null);
-      assert(setter == null || newModelElement?.setter?.enclosingCombo != null);
-    }
+  }
 
-    assert(newModelElement.element is! MultiplyInheritedExecutableElement);
-    return newModelElement;
+  static ModelElement _from(
+      Element e, Library library, PackageGraph packageGraph,
+      {Container enclosingContainer, Member originalMember}) {
+    if (e is MultiplyInheritedExecutableElement) {
+      return resolveMultiplyInheritedElement(
+          e, library, packageGraph, enclosingContainer);
+    }
+    if (e is LibraryElement) {
+      return Library(e, packageGraph);
+    }
+    if (e is ClassElement) {
+      if (e.isMixin) {
+        return Mixin(e, library, packageGraph);
+      } else if (e.isEnum) {
+        return Enum(e, library, packageGraph);
+      } else {
+        return Class(e, library, packageGraph);
+      }
+    }
+    if (e is ExtensionElement) {
+      return Extension(e, library, packageGraph);
+    }
+    if (e is FunctionElement) {
+      return ModelFunction(e, library, packageGraph);
+    } else if (e is GenericFunctionTypeElement) {
+      assert(e.enclosingElement is GenericTypeAliasElement);
+      assert(e.enclosingElement.name != '');
+      return ModelFunctionTypedef(e, library, packageGraph);
+    }
+    if (e is FunctionTypeAliasElement) {
+      return Typedef(e, library, packageGraph);
+    }
+    if (e is ConstructorElement) {
+      return Constructor(e, library, packageGraph);
+    }
+    if (e is MethodElement && e.isOperator) {
+      if (enclosingContainer == null) {
+        return Operator(e, library, packageGraph);
+      } else {
+        return Operator.inherited(e, enclosingContainer, library, packageGraph,
+            originalMember: originalMember);
+      }
+    }
+    if (e is MethodElement && !e.isOperator) {
+      if (enclosingContainer == null) {
+        return Method(e, library, packageGraph);
+      } else {
+        return Method.inherited(e, enclosingContainer, library, packageGraph,
+            originalMember: originalMember);
+      }
+    }
+    if (e is PropertyAccessorElement) {
+      // TODO(jcollins-g): why test for ClassElement in enclosingElement?
+      if (e.enclosingElement is ClassElement ||
+          e is MultiplyInheritedExecutableElement) {
+        if (enclosingContainer == null) {
+          return ContainerAccessor(e, library, packageGraph);
+        } else {
+          return ContainerAccessor.inherited(
+              e, library, packageGraph, enclosingContainer,
+              originalMember: originalMember);
+        }
+      } else {
+        return Accessor(e, library, packageGraph, null);
+      }
+    }
+    if (e is TypeParameterElement) {
+      return TypeParameter(e, library, packageGraph);
+    }
+    if (e is ParameterElement) {
+      return Parameter(e, library, packageGraph,
+          originalMember: originalMember);
+    }
+    throw 'Unknown type ${e.runtimeType}';
   }
 
   /// Stub for mustache4dart, or it will search enclosing elements to find

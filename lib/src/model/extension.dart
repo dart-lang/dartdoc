@@ -76,7 +76,7 @@ class Extension extends Container
       if (f.setter != null) {
         setter = ContainerAccessor(f.setter, library, packageGraph);
       }
-      return ModelElement.from(f, library, packageGraph,
+      return ModelElement.fromPropertyInducingElement(f, library, packageGraph,
           getter: getter, setter: setter) as Field;
     }).toList(growable: false)
       ..sort(byName);
