@@ -163,11 +163,10 @@ class PubPackageBuilder implements PackageBuilder {
     if (_driver == null) {
       var log = PerformanceLog(null);
       var scheduler = AnalysisDriverScheduler(log);
-      var options = AnalysisOptionsImpl();
-
-      // TODO(jcollins-g): pass in an ExperimentStatus instead?
-      options.contextFeatures =
-          FeatureSet.fromEnableFlags(config.enableExperiment);
+      var options = AnalysisOptionsImpl()
+        ..hint = false
+        // TODO(jcollins-g): pass in an ExperimentStatus instead?
+        ..contextFeatures = FeatureSet.fromEnableFlags(config.enableExperiment);
 
       // TODO(jcollins-g): Make use of currently not existing API for managing
       //                   many AnalysisDrivers

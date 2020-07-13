@@ -256,17 +256,18 @@ class PackageGraph {
   bool allLibrariesAdded = false;
   bool _localDocumentationBuilt = false;
 
-  /// Returns true if there's at least one library documented in the package
-  /// that has the same package path as the library for the given element.
-  /// Usable as a cross-check for dartdoc's canonicalization to generate
-  /// warnings for ModelElement.isPublicAndPackageDocumented.
   Set<String> _allRootDirs;
 
+  /// Returns true if there's at least one library documented in the package
+  /// that has the same package path as the library for the given element.
+  ///
+  /// Usable as a cross-check for dartdoc's canonicalization to generate
+  /// warnings for ModelElement.isPublicAndPackageDocumented.
   bool packageDocumentedFor(ModelElement element) {
     _allRootDirs ??= {
       ...(publicLibraries.map((l) => l.packageMeta?.resolvedDir))
     };
-    return (_allRootDirs.contains(element.library.packageMeta?.resolvedDir));
+    return _allRootDirs.contains(element.library.packageMeta?.resolvedDir);
   }
 
   PackageWarningCounter get packageWarningCounter => _packageWarningCounter;
@@ -584,7 +585,7 @@ class PackageGraph {
     }
   }
 
-  List<Library> get libraries =>
+  Iterable<Library> get libraries =>
       packages.expand((p) => p.libraries).toList()..sort();
 
   List<Library> _publicLibraries;
@@ -682,8 +683,7 @@ class PackageGraph {
       if (library.modelElementsMap.containsKey(searchElement)) {
         for (var modelElement in library.modelElementsMap[searchElement]) {
           if (modelElement.isCanonical) {
-            _canonicalLibraryFor[e] = library;
-            break;
+            return _canonicalLibraryFor[e] = library;
           }
         }
       }
@@ -745,8 +745,7 @@ class PackageGraph {
       Class canonicalClass = findCanonicalModelElementFor(e.enclosingElement);
       if (canonicalClass != null) {
         candidates.addAll(canonicalClass.allCanonicalModelElements.where((m) {
-          if (m.element == e) return true;
-          return false;
+          return m.element == e;
         }));
       }
       var matches = <ModelElement>{...candidates.where((me) => me.isCanonical)};
