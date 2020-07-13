@@ -585,7 +585,8 @@ class PackageGraph {
     }
   }
 
-  Iterable<Library> get libraries => packages.expand((p) => p.libraries);
+  Iterable<Library> get libraries =>
+      packages.expand((p) => p.libraries).toList()..sort();
 
   List<Library> _publicLibraries;
 
