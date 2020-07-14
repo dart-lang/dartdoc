@@ -140,22 +140,27 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
   /// to inheritance and reexporting.  Most useful for error reporting.
   Iterable<String> get allOriginalModelElementNames {
     _allOriginalModelElementNames ??= allModelElements.map((e) {
-      Accessor getter;
-      Accessor setter;
       if (e is GetterSetterCombo) {
+        Accessor getter;
+        Accessor setter;
         if (e.hasGetter) {
           getter = ModelElement.fromElement(e.getter.element, packageGraph);
         }
         if (e.hasSetter) {
           setter = ModelElement.fromElement(e.setter.element, packageGraph);
         }
+        return ModelElement.fromPropertyInducingElement(
+                e.element,
+                packageGraph.findButDoNotCreateLibraryFor(e.element),
+                packageGraph,
+                getter: getter,
+                setter: setter)
+            .fullyQualifiedName;
       }
       return ModelElement.from(
               e.element,
               packageGraph.findButDoNotCreateLibraryFor(e.element),
-              packageGraph,
-              getter: getter,
-              setter: setter)
+              packageGraph)
           .fullyQualifiedName;
     }).toList();
     return _allOriginalModelElementNames;
@@ -504,7 +509,8 @@ class Library extends ModelElement with Categorization, TopLevelContainer {
         if (element.setter != null) {
           setter = ModelElement.from(element.setter, this, packageGraph);
         }
-        var me = ModelElement.from(element, this, packageGraph,
+        var me = ModelElement.fromPropertyInducingElement(
+            element, this, packageGraph,
             getter: getter, setter: setter);
         _variables.add(me);
       }

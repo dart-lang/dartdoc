@@ -428,14 +428,14 @@ class Class extends Container
     if ((getter == null || getter.isInherited) &&
         (setter == null || setter.isInherited)) {
       // Field is 100% inherited.
-      field = ModelElement.from(f, library, packageGraph,
+      field = ModelElement.fromPropertyInducingElement(f, library, packageGraph,
           enclosingContainer: this, getter: getter, setter: setter);
     } else {
       // Field is <100% inherited (could be half-inherited).
       // TODO(jcollins-g): Navigation is probably still confusing for
       // half-inherited fields when traversing the inheritance tree.  Make
       // this better, somehow.
-      field = ModelElement.from(f, library, packageGraph,
+      field = ModelElement.fromPropertyInducingElement(f, library, packageGraph,
           getter: getter, setter: setter);
     }
     _allFields.add(field);
