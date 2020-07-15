@@ -79,9 +79,9 @@ abstract class ElementType extends Privacy {
 
   /// Return a dartdoc nullability suffix for this type.
   String get nullabilitySuffix {
-    if (library.isNNBD && !type.isVoid && !type.isBottom) {
-      /// If a legacy type appears inside the public interface of a
-      /// NNBD library, we pretend it is nullable for the purpose of
+    if (library.isNullSafety && !type.isVoid && !type.isBottom) {
+      /// If a legacy type appears inside the public interface of a Null
+      /// safety library, we pretend it is nullable for the purpose of
       /// documentation (since star-types are not supposed to be public).
       if (type.nullabilitySuffix == NullabilitySuffix.question ||
           type.nullabilitySuffix == NullabilitySuffix.star) {
@@ -406,11 +406,12 @@ abstract class CallableElementTypeMixin implements ParameterizedElementType {
   /// Return the [TypeParameterType] with the legacy nullability for the given
   /// type parameter [element].
   ///
-  /// TODO(scheglov) This method is a work around that fact that DartDoc
+  /// TODO(scheglov): This method is a work around that fact that DartDoc
   /// currently represents both type formals and uses of them as actual types,
-  /// as [TypeParameterType]s. This was not perfect, but worked before NNBD.
-  /// With NNBD types have nullability suffixes, but type formals should not.
-  /// Eventually we should separate models for type formals and types.
+  /// as [TypeParameterType]s. This was not perfect, but worked before Null
+  /// safety. With Null safety, types have nullability suffixes, but type
+  /// formals should not. Eventually we should separate models for type formals
+  /// and types.
   static TypeParameterType _legacyTypeParameterType(
     TypeParameterElement element,
   ) {

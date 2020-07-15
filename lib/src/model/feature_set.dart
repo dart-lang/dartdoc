@@ -16,7 +16,7 @@ mixin FeatureSet {
   Iterable<LanguageFeature> get displayedLanguageFeatures sync* {
     // TODO(jcollins-g): Implement mixed-mode handling and the tagging of
     // legacy interfaces.
-    if (isNNBD) {
+    if (isNullSafety) {
       yield LanguageFeature(
           'Null safety', packageGraph.rendererFactory.featureRenderer);
     }
@@ -26,5 +26,5 @@ mixin FeatureSet {
 
   // TODO(jcollins-g): This is an approximation and not strictly true for
   // inheritance/reexports.
-  bool get isNNBD => library.isNNBD;
+  bool get isNullSafety => library.isNullSafety;
 }
