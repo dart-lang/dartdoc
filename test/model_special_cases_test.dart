@@ -30,19 +30,19 @@ void main() {
     exit(1);
   }
 
-  // This doesn't have the `max` because NNBD is supposed to work after this
-  // version, and if the `max` is placed here we'll silently pass 2.10 stable
-  // if we haven't figured out how to switch on NNBD outside of `dev` builds
-  // as specified in #2148.
-  final _nnbdExperimentAllowed =
+  // This doesn't have the `max` because Null safety is supposed to work after
+  // this version, and if the `max` is placed here we'll silently pass 2.10
+  // stable if we haven't figured out how to switch on Null safety outside of
+  // dev builds as specified in #2148.
+  final _nullSafetyExperimentAllowed =
       VersionRange(min: Version.parse('2.9.0-9.0.dev'), includeMin: true);
 
-  // Experimental features not yet enabled by default.  Move tests out of this block
-  // when the feature is enabled by default.
+  // Experimental features not yet enabled by default.  Move tests out of this
+  // block when the feature is enabled by default.
   group('Experiments', () {
     Library lateFinalWithoutInitializer,
-        nnbdClassMemberDeclarations,
-        optOutOfNnbd,
+        nullSafetyClassMemberDeclarations,
+        optOutOfNullSafety,
         nullableElements;
     Class b;
 
@@ -50,22 +50,23 @@ void main() {
       lateFinalWithoutInitializer = (await utils.testPackageGraphExperiments)
           .libraries
           .firstWhere((lib) => lib.name == 'late_final_without_initializer');
-      nnbdClassMemberDeclarations = (await utils.testPackageGraphExperiments)
+      nullSafetyClassMemberDeclarations = (await utils
+              .testPackageGraphExperiments)
           .libraries
           .firstWhere((lib) => lib.name == 'nnbd_class_member_declarations');
-      optOutOfNnbd = (await utils.testPackageGraphExperiments)
+      optOutOfNullSafety = (await utils.testPackageGraphExperiments)
           .libraries
           .firstWhere((lib) => lib.name == 'opt_out_of_nnbd');
       nullableElements = (await utils.testPackageGraphExperiments)
           .libraries
           .firstWhere((lib) => lib.name == 'nullable_elements');
-      b = nnbdClassMemberDeclarations.allClasses
+      b = nullSafetyClassMemberDeclarations.allClasses
           .firstWhere((c) => c.name == 'B');
     });
 
-    test('isNNBD is set correctly for libraries', () {
-      expect(lateFinalWithoutInitializer.isNNBD, isTrue);
-      expect(optOutOfNnbd.isNNBD, isFalse);
+    test('isNullSafety is set correctly for libraries', () {
+      expect(lateFinalWithoutInitializer.isNullSafety, isTrue);
+      expect(optOutOfNullSafety.isNullSafety, isFalse);
     });
 
     test('method parameters with required', () {
@@ -118,8 +119,8 @@ void main() {
       var cField = c.instanceFields.firstWhere((f) => f.name == 'cField');
       var dField = c.instanceFields.firstWhere((f) => f.name == 'dField');
 
-      // If nnbd isn't enabled, fields named 'late' come back from the analyzer
-      // instead of setting up 'isLate'.
+      // If Null safety isn't enabled, fields named 'late' come back from the
+      // analyzer instead of setting up 'isLate'.
       expect(c.instanceFields.any((f) => f.name == 'late'), isFalse);
 
       expect(a.modelType.returnType.name, equals('dynamic'));
@@ -147,10 +148,10 @@ void main() {
       expect(initializeMe.features, contains('late'));
     });
 
-    test('Opt out of NNBD', () {
-      var notOptedIn = optOutOfNnbd.publicProperties
+    test('Opt out of Null safety', () {
+      var notOptedIn = optOutOfNullSafety.publicProperties
           .firstWhere((v) => v.name == 'notOptedIn');
-      expect(notOptedIn.isNNBD, isFalse);
+      expect(notOptedIn.isNullSafety, isFalse);
       expect(notOptedIn.modelType.nullabilitySuffix, isEmpty);
     });
 
@@ -161,7 +162,7 @@ void main() {
           .firstWhere((f) => f.name == 'aComplexType');
       var aComplexSetterOnlyType = complexNullableMembers.allFields
           .firstWhere((f) => f.name == 'aComplexSetterOnlyType');
-      expect(complexNullableMembers.isNNBD, isTrue);
+      expect(complexNullableMembers.isNullSafety, isTrue);
       expect(
           complexNullableMembers.nameWithGenerics,
           equals(
@@ -186,7 +187,7 @@ void main() {
           .firstWhere((f) => f.name == 'methodWithNullables');
       var operatorStar = nullableMembers.publicInstanceOperators
           .firstWhere((f) => f.name == 'operator *');
-      expect(nullableMembers.isNNBD, isTrue);
+      expect(nullableMembers.isNullSafety, isTrue);
       expect(
           nullableField.linkedReturnType,
           equals(
@@ -206,7 +207,7 @@ void main() {
               '<span class="parameter" id="*-param-nullableOther"><span class="type-annotation"><a href="%%__HTMLBASE_dartdoc_internal__%%nullable_elements/NullableMembers-class.html">NullableMembers</a>?</span> <span class="parameter-name">nullableOther</span></span><wbr>'));
     });
   },
-      skip: (!_nnbdExperimentAllowed.allows(_platformVersion) &&
+      skip: (!_nullSafetyExperimentAllowed.allows(_platformVersion) &&
           !_platformVersionString.contains('edge')));
 
   group('HTML Injection when allowed', () {
