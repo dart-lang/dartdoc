@@ -8,6 +8,7 @@ import 'package:collection/collection.dart';
 import 'package:dartdoc/src/model/categorization.dart';
 import 'package:dartdoc/src/model/enclosed_element.dart';
 import 'package:dartdoc/src/model/indexable.dart';
+import 'package:dartdoc/src/model/model_element.dart';
 
 /// Convenience function to generate category JSON since different generators
 /// will likely want the same content for this.
@@ -54,6 +55,9 @@ String generateSearchIndexJson(
       'type': e.kind,
       'overriddenDepth': e.overriddenDepth,
     };
+    if (e is ModelElement) {
+      data['packageName'] = e.package.name;
+    }
     if (e is EnclosedElement) {
       var ee = e as EnclosedElement;
       data['enclosedBy'] = {
