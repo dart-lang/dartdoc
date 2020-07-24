@@ -266,6 +266,18 @@ void main() {
       expect(injectHtmlFromTool.documentationAsHtml,
           isNot(contains('{@end-inject-html}')));
     });
+    test('tool outputs a macro which outputs injected HTML', () {
+      var ToolPrintingMacroWhichInjectsHtml = injectionExLibrary.allClasses
+          .firstWhere((c) => c.name == 'ToolPrintingMacroWhichInjectsHtml');
+      var a = ToolPrintingMacroWhichInjectsHtml.instanceFields
+          .firstWhere((m) => m.name == 'a');
+      expect(a.documentationAsHtml,
+          contains('<p>Text.</p>\n<p><div class="title">Title</div></p>'));
+      var b = ToolPrintingMacroWhichInjectsHtml.instanceFields
+          .firstWhere((m) => m.name == 'b');
+      expect(b.documentationAsHtml,
+          contains('<p>Text.</p>\n<p><div class="title">Title</div></p>'));
+    });
   });
 
   group('Missing and Remote', () {
