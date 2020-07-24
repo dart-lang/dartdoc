@@ -11,6 +11,9 @@ dartdoc:
     drill:
       command: ["bin/drill.dart"]
       description: "Puts holes in things."
+    print_macro:
+      command: ["bin/print_macro.dart"]
+      description: "Prints a macro."
     echo:
       macos: ['/bin/sh', '-c', 'echo']
       linux: ['/bin/sh', '-c', 'echo']

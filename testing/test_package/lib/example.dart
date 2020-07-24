@@ -200,15 +200,13 @@ class Apple {
   final ParameterizedTypedef<bool> fieldWithTypedef;
 }
 
-
 /// Extension on Apple
 extension AppleExtension on Apple {
-/// Can call s on Apple
+  /// Can call s on Apple
   void s() {
     print('Extension on Apple');
   }
 }
-
 
 class WithGeneric<T> {
   T prop;
@@ -666,7 +664,7 @@ class ExtensionUser {
 /// Extension on List
 extension FancyList<Z> on List<Z> {
   int get doubleLength => this.length * 2;
-  List<Z> operator-() => this.reversed.toList();
+  List<Z> operator -() => this.reversed.toList();
   List<List<Z>> split(int at) =>
       <List<Z>>[this.sublist(0, at), this.sublist(at)];
   static List<Z> big() => List(1000000);
@@ -674,7 +672,7 @@ extension FancyList<Z> on List<Z> {
 
 extension SymDiff<Q> on Set<Q> {
   Set<Q> symmetricDifference(Set<Q> other) =>
-    this.difference(other).union(other.difference(this));
+      this.difference(other).union(other.difference(this));
 }
 
 /// Extensions can be made specific.
@@ -684,16 +682,30 @@ extension IntSet on Set<int> {
 
 // Extensions can be private.
 extension _Shhh on Object {
-  void secret() { }
+  void secret() {}
 }
 
 // Extension with no name
 extension on Object {
-  void bar() { }
+  void bar() {}
 }
-
 
 /// This class has nothing to do with [_Shhh], [FancyList], or [AnExtension.call],
 /// but should not crash because we referenced them.
 /// We should be able to find [DocumentThisExtensionOnce], too.
 class ExtensionReferencer {}
+
+class ToolPrintingMacroWhichInjectsHtml {
+  /// Text.
+  /// {@template html-macro}
+  /// {@inject-html}<div class="title">Title</div>{@end-inject-html}
+  /// {@endtemplate}
+  int a;
+
+  /// Text.
+  ///
+  /// {@tool print_macro}
+  /// Text for tool.
+  /// {@end-tool}
+  int b;
+}

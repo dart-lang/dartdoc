@@ -8,19 +8,16 @@ library dartdoc.models;
 import 'dart:async';
 import 'dart:collection' show UnmodifiableListView;
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/source/line_info.dart';
 import 'package:analyzer/src/dart/element/element.dart';
 import 'package:analyzer/src/dart/element/member.dart'
     show ExecutableMember, Member, ParameterMember;
-import 'package:args/args.dart';
 import 'package:collection/collection.dart';
-import 'package:crypto/crypto.dart';
 import 'package:dartdoc/src/dartdoc_options.dart';
 import 'package:dartdoc/src/element_type.dart';
-import 'package:dartdoc/src/logging.dart';
+import 'package:dartdoc/src/model/comment_processable.dart';
 import 'package:dartdoc/src/model/feature_set.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as utils;
@@ -29,7 +26,6 @@ import 'package:dartdoc/src/render/parameter_renderer.dart';
 import 'package:dartdoc/src/render/source_code_renderer.dart';
 import 'package:dartdoc/src/source_linker.dart';
 import 'package:dartdoc/src/tuple.dart';
-import 'package:dartdoc/src/utils.dart';
 import 'package:dartdoc/src/warnings.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
@@ -71,32 +67,7 @@ int byFeatureOrdering(String a, String b) {
 /// fragment.
 final needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
 
-final templateRegExp = RegExp(
-    r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?',
-    multiLine: true);
-final htmlRegExp = RegExp(
-    r'[ ]*{@inject-html\s*}([\s\S]+?){@end-inject-html}[ ]*\n?',
-    multiLine: true);
 final htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
-
-// Matches all tool directives (even some invalid ones). This is so
-// we can give good error messages if the directive is malformed, instead of
-// just silently emitting it as-is.
-final basicToolRegExp = RegExp(
-    r'[ ]*{@tool\s+([^}]+)}\n?([\s\S]+?)\n?{@end-tool}[ ]*\n?',
-    multiLine: true);
-
-/// Regexp to take care of splitting arguments, and handling the quotes
-/// around arguments, if any.
-///
-/// Match group 1 is the "foo=" (or "--foo=") part of the option, if any.
-/// Match group 2 contains the quote character used (which is discarded).
-/// Match group 3 is a quoted arg, if any, without the quotes.
-/// Match group 4 is the unquoted arg, if any.
-final RegExp argMatcher = RegExp(r'([a-zA-Z\-_0-9]+=)?' // option name
-    r'(?:' // Start a new non-capture group for the two possibilities.
-    r'''(["'])((?:\\{2})*|(?:.*?[^\\](?:\\{2})*))\2|''' // with quotes.
-    r'([^ ]+))'); // without quotes.
 
 final macroRegExp = RegExp(r'{@macro\s+([^}]+)}');
 
@@ -158,7 +129,8 @@ abstract class ModelElement extends Canonicalization
         Nameable,
         SourceCodeMixin,
         Indexable,
-        FeatureSet
+        FeatureSet,
+        CommentProcessable
     implements Comparable<ModelElement>, Documentable {
   final Element _element;
 
@@ -171,9 +143,6 @@ abstract class ModelElement extends Canonicalization
   Documentation __documentation;
   UnmodifiableListView<Parameter> _parameters;
   String _linkedName;
-
-  String _fullyQualifiedName;
-  String _fullyQualifiedNameWithoutLibrary;
 
   // TODO(jcollins-g): make _originalMember optional after dart-lang/sdk#15101
   // is fixed.
@@ -599,22 +568,19 @@ abstract class ModelElement extends Canonicalization
   /// to find docs, if the current class doesn't have docs
   /// for this element.
   List<ModelElement> get computeDocumentationFrom {
-    List<ModelElement> docFrom;
-
     if (documentationComment == null &&
-        canOverride() &&
+        _canOverride &&
         this is Inheritable &&
         (this as Inheritable).overriddenElement != null) {
-      docFrom = (this as Inheritable).overriddenElement.documentationFrom;
+      return (this as Inheritable).overriddenElement.documentationFrom;
     } else if (this is Inheritable && (this as Inheritable).isInherited) {
       var thisInheritable = (this as Inheritable);
       var fromThis = ModelElement.fromElement(
           element, thisInheritable.definingEnclosingContainer.packageGraph);
-      docFrom = fromThis.documentationFrom;
+      return fromThis.documentationFrom;
     } else {
-      docFrom = [this];
+      return [this];
     }
-    return docFrom;
   }
 
   String _buildDocumentationLocal() => _buildDocumentationBaseSync();
@@ -633,12 +599,7 @@ abstract class ModelElement extends Canonicalization
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
     } else {
-      _rawDocs = documentationComment ?? '';
-      _rawDocs = stripComments(_rawDocs) ?? '';
-      _rawDocs = _injectExamples(_rawDocs);
-      _rawDocs = _injectYouTube(_rawDocs);
-      _rawDocs = _injectAnimations(_rawDocs);
-      _rawDocs = _stripHtmlAndAddToIndex(_rawDocs);
+      _rawDocs = processCommentWithoutTools(documentationComment ?? '');
     }
     _rawDocs = buildDocumentationAddition(_rawDocs);
     return _rawDocs;
@@ -653,15 +614,7 @@ abstract class ModelElement extends Canonicalization
     if (config.dropTextFrom.contains(element.library.name)) {
       _rawDocs = '';
     } else {
-      _rawDocs = documentationComment ?? '';
-      _rawDocs = stripComments(_rawDocs) ?? '';
-      // Must evaluate tools first, in case they insert any other directives.
-      _rawDocs = await _evaluateTools(_rawDocs);
-      _rawDocs = _injectExamples(_rawDocs);
-      _rawDocs = _injectYouTube(_rawDocs);
-      _rawDocs = _injectAnimations(_rawDocs);
-      _rawDocs = _stripMacroTemplatesAndAddToIndex(_rawDocs);
-      _rawDocs = _stripHtmlAndAddToIndex(_rawDocs);
+      _rawDocs = await processComment(documentationComment ?? '');
     }
     _rawDocs = buildDocumentationAddition(_rawDocs);
     return _rawDocs;
@@ -688,8 +641,8 @@ abstract class ModelElement extends Canonicalization
 
   Library _canonicalLibrary;
 
-  // _canonicalLibrary can be null so we can't check against null to see whether
-  // we tried to compute it before.
+  // [_canonicalLibrary] can be null so we can't check against null to see
+  // whether we tried to compute it before.
   bool _canonicalLibraryIsSet = false;
 
   @override
@@ -846,6 +799,8 @@ abstract class ModelElement extends Canonicalization
 
   String get filePath;
 
+  String _fullyQualifiedName;
+
   /// Returns the fully qualified name.
   ///
   /// For example: libraryName.className.methodName
@@ -854,6 +809,7 @@ abstract class ModelElement extends Canonicalization
     return (_fullyQualifiedName ??= _buildFullyQualifiedName());
   }
 
+  String _fullyQualifiedNameWithoutLibrary;
   String get fullyQualifiedNameWithoutLibrary {
     // Remember, periods are legal in library names.
     _fullyQualifiedNameWithoutLibrary ??=
@@ -1153,7 +1109,7 @@ abstract class ModelElement extends Canonicalization
         _sourceCodeRenderer.renderSourceCode(super.sourceCode);
   }
 
-  bool canOverride() =>
+  bool get _canOverride =>
       element is ClassMemberElement || element is PropertyAccessorElement;
 
   @override
@@ -1196,369 +1152,6 @@ abstract class ModelElement extends Canonicalization
     }
 
     return _modelElementRenderer.renderLinkedName(this);
-  }
-
-  /// Replace &#123;@example ...&#125; in API comments with the content of named file.
-  ///
-  /// Syntax:
-  ///
-  ///     &#123;@example PATH [region=NAME] [lang=NAME]&#125;
-  ///
-  /// If PATH is `dir/file.ext` and region is `r` then we'll look for the file
-  /// named `dir/file-r.ext.md`, relative to the project root directory of the
-  /// project for which the docs are being generated.
-  ///
-  /// Examples: (escaped in this comment to show literal values in dartdoc's
-  ///            dartdoc)
-  ///
-  ///     &#123;@example examples/angular/quickstart/web/main.dart&#125;
-  ///     &#123;@example abc/def/xyz_component.dart region=template lang=html&#125;
-  ///
-  String _injectExamples(String rawdocs) {
-    final dirPath = package.packageMeta.dir.path;
-    var exampleRE = RegExp(r'{@example\s+([^}]+)}');
-    return rawdocs.replaceAllMapped(exampleRE, (match) {
-      var args = _getExampleArgs(match[1]);
-      if (args == null) {
-        // Already warned about an invalid parameter if this happens.
-        return '';
-      }
-      var lang =
-          args['lang'] ?? path.extension(args['src']).replaceFirst('.', '');
-
-      var replacement = match[0]; // default to fully matched string.
-
-      var fragmentFile = File(path.join(dirPath, args['file']));
-      if (fragmentFile.existsSync()) {
-        replacement = fragmentFile.readAsStringSync();
-        if (lang.isNotEmpty) {
-          replacement = replacement.replaceFirst('```', '```$lang');
-        }
-      } else {
-        // TODO(jcollins-g): move this to Package.warn system
-        var filePath = element.source.fullName.substring(dirPath.length + 1);
-
-        logWarning(
-            'warning: ${filePath}: @example file not found, ${fragmentFile.path}');
-      }
-      return replacement;
-    });
-  }
-
-  static Future<String> _replaceAllMappedAsync(String string, Pattern exp,
-      Future<String> Function(Match match) replace) async {
-    var replaced = StringBuffer();
-    var currentIndex = 0;
-    for (var match in exp.allMatches(string)) {
-      var prefix = match.input.substring(currentIndex, match.start);
-      currentIndex = match.end;
-      replaced..write(prefix)..write(await replace(match));
-    }
-    replaced.write(string.substring(currentIndex));
-    return replaced.toString();
-  }
-
-  /// Replace &#123;@tool ...&#125&#123;@end-tool&#125; in API comments with the
-  /// output of an external tool.
-  ///
-  /// Looks for tools invocations, looks up their bound executables in the
-  /// options, and executes them with the source comment material as input,
-  /// returning the output of the tool. If a named tool isn't configured in the
-  /// options file, then it will not be executed, and dartdoc will quit with an
-  /// error.
-  ///
-  /// Tool command line arguments are passed to the tool, with the token
-  /// `$INPUT` replaced with the absolute path to a temporary file containing
-  /// the content for the tool to read and produce output from. If the tool
-  /// doesn't need any input, then no `$INPUT` is needed.
-  ///
-  /// Nested tool directives will not be evaluated, but tools may generate other
-  /// directives in their output and those will be evaluated.
-  ///
-  /// Syntax:
-  ///
-  ///     &#123;@tool TOOL [Tool arguments]&#125;
-  ///     Content to send to tool.
-  ///     &#123;@end-tool&#125;
-  ///
-  /// Examples:
-  ///
-  /// In `dart_options.yaml`:
-  ///
-  /// ```yaml
-  /// dartdoc:
-  ///   tools:
-  ///     # Prefixes the given input with "## "
-  ///     # Path is relative to project root.
-  ///     prefix: "bin/prefix.dart"
-  ///     # Prints the date
-  ///     date: "/bin/date"
-  /// ```
-  ///
-  /// In code:
-  ///
-  /// _This:_
-  ///
-  ///     &#123;@tool prefix $INPUT&#125;
-  ///     Content to send to tool.
-  ///     &#123;@end-tool&#125;
-  ///     &#123;@tool date --iso-8601=minutes --utc&#125;
-  ///     &#123;@end-tool&#125;
-  ///
-  /// _Produces:_
-  ///
-  /// ## Content to send to tool.
-  /// 2018-09-18T21:15+00:00
-  Future<String> _evaluateTools(String rawDocs) async {
-    if (config.allowTools) {
-      var invocationIndex = 0;
-      return await _replaceAllMappedAsync(rawDocs, basicToolRegExp,
-          (basicMatch) async {
-        var args = _splitUpQuotedArgs(basicMatch[1]).toList();
-        // Tool name must come first.
-        if (args.isEmpty) {
-          warn(PackageWarning.toolError,
-              message:
-                  'Must specify a tool to execute for the @tool directive.');
-          return Future.value('');
-        }
-        // Count the number of invocations of tools in this dartdoc block,
-        // so that tools can differentiate different blocks from each other.
-        invocationIndex++;
-        return await config.tools.runner.run(
-            args,
-            (String message) async =>
-                warn(PackageWarning.toolError, message: message),
-            content: basicMatch[2],
-            environment: {
-              'SOURCE_LINE': characterLocation?.lineNumber.toString(),
-              'SOURCE_COLUMN': characterLocation?.columnNumber.toString(),
-              'SOURCE_PATH': (sourceFileName == null ||
-                      package?.packagePath == null)
-                  ? null
-                  : path.relative(sourceFileName, from: package.packagePath),
-              'PACKAGE_PATH': package?.packagePath,
-              'PACKAGE_NAME': package?.name,
-              'LIBRARY_NAME': library?.fullyQualifiedName,
-              'ELEMENT_NAME': fullyQualifiedNameWithoutLibrary,
-              'INVOCATION_INDEX': invocationIndex.toString(),
-              'PACKAGE_INVOCATION_INDEX':
-                  (package.toolInvocationIndex++).toString(),
-            }..removeWhere((key, value) => value == null));
-      });
-    } else {
-      return rawDocs;
-    }
-  }
-
-  /// Replace &#123;@youtube ...&#125; in API comments with some HTML to embed
-  /// a YouTube video.
-  ///
-  /// Syntax:
-  ///
-  ///     &#123;@youtube WIDTH HEIGHT URL&#125;
-  ///
-  /// Example:
-  ///
-  ///     &#123;@youtube 560 315 https://www.youtube.com/watch?v=oHg5SJYRHA0&#125;
-  ///
-  /// Which will embed a YouTube player into the page that plays the specified
-  /// video.
-  ///
-  /// The width and height must be positive integers specifying the dimensions
-  /// of the video in pixels. The height and width are used to calculate the
-  /// aspect ratio of the video; the video is always rendered to take up all
-  /// available horizontal space to accommodate different screen sizes on
-  /// desktop and mobile.
-  ///
-  /// The video URL must have the following format:
-  /// https://www.youtube.com/watch?v=oHg5SJYRHA0. This format can usually be
-  /// found in the address bar of the browser when viewing a YouTube video.
-  String _injectYouTube(String rawDocs) {
-    // Matches all youtube directives (even some invalid ones). This is so
-    // we can give good error messages if the directive is malformed, instead of
-    // just silently emitting it as-is.
-    var basicAnimationRegExp = RegExp(r'''{@youtube\s+([^}]+)}''');
-
-    // Matches YouTube IDs from supported YouTube URLs.
-    var validYouTubeUrlRegExp =
-        RegExp('https://www\.youtube\.com/watch\\?v=([^&]+)\$');
-
-    return rawDocs.replaceAllMapped(basicAnimationRegExp, (basicMatch) {
-      var parser = ArgParser();
-      var args = _parseArgs(basicMatch[1], parser, 'youtube');
-      if (args == null) {
-        // Already warned about an invalid parameter if this happens.
-        return '';
-      }
-      var positionalArgs = args.rest.sublist(0);
-      if (positionalArgs.length != 3) {
-        warn(PackageWarning.invalidParameter,
-            message: 'Invalid @youtube directive, "${basicMatch[0]}"\n'
-                'YouTube directives must be of the form "{@youtube WIDTH '
-                'HEIGHT URL}"');
-        return '';
-      }
-
-      var width = int.tryParse(positionalArgs[0]);
-      if (width == null || width <= 0) {
-        warn(PackageWarning.invalidParameter,
-            message: 'A @youtube directive has an invalid width, '
-                '"${positionalArgs[0]}". The width must be a positive integer.');
-      }
-
-      var height = int.tryParse(positionalArgs[1]);
-      if (height == null || height <= 0) {
-        warn(PackageWarning.invalidParameter,
-            message: 'A @youtube directive has an invalid height, '
-                '"${positionalArgs[1]}". The height must be a positive integer.');
-      }
-
-      var url = validYouTubeUrlRegExp.firstMatch(positionalArgs[2]);
-      if (url == null) {
-        warn(PackageWarning.invalidParameter,
-            message: 'A @youtube directive has an invalid URL: '
-                '"${positionalArgs[2]}". Supported YouTube URLs have the '
-                'following format: https://www.youtube.com/watch?v=oHg5SJYRHA0.');
-        return '';
-      }
-      var youTubeId = url.group(url.groupCount);
-      var aspectRatio = (height / width * 100).toStringAsFixed(2);
-
-      return _modelElementRenderer.renderYoutubeUrl(youTubeId, aspectRatio);
-    });
-  }
-
-  /// Replace &#123;@animation ...&#125; in API comments with some HTML to manage an
-  /// MPEG 4 video as an animation.
-  ///
-  /// Syntax:
-  ///
-  ///     &#123;@animation WIDTH HEIGHT URL [id=ID]&#125;
-  ///
-  /// Example:
-  ///
-  ///     &#123;@animation 300 300 https://example.com/path/to/video.mp4 id="my_video"&#125;
-  ///
-  /// Which will render the HTML necessary for embedding a simple click-to-play
-  /// HTML5 video player with no controls that has an HTML id of "my_video".
-  ///
-  /// The optional ID should be a unique id that is a valid JavaScript
-  /// identifier, and will be used as the id for the video tag. If no ID is
-  /// supplied, then a unique identifier (starting with "animation_") will be
-  /// generated.
-  ///
-  /// The width and height must be integers specifying the dimensions of the
-  /// video file in pixels.
-  String _injectAnimations(String rawDocs) {
-    // Matches all animation directives (even some invalid ones). This is so
-    // we can give good error messages if the directive is malformed, instead of
-    // just silently emitting it as-is.
-    var basicAnimationRegExp = RegExp(r'''{@animation\s+([^}]+)}''');
-
-    // Matches valid javascript identifiers.
-    var validIdRegExp = RegExp(r'^[a-zA-Z_]\w*$');
-
-    // Make sure we have a set to keep track of used IDs for this href.
-    package.usedAnimationIdsByHref[href] ??= {};
-
-    String getUniqueId(String base) {
-      var animationIdCount = 1;
-      var id = '$base$animationIdCount';
-      // We check for duplicate IDs so that we make sure not to collide with
-      // user-supplied ids on the same page.
-      while (package.usedAnimationIdsByHref[href].contains(id)) {
-        animationIdCount++;
-        id = '$base$animationIdCount';
-      }
-      return id;
-    }
-
-    return rawDocs.replaceAllMapped(basicAnimationRegExp, (basicMatch) {
-      var parser = ArgParser();
-      parser.addOption('id');
-      var args = _parseArgs(basicMatch[1], parser, 'animation');
-      if (args == null) {
-        // Already warned about an invalid parameter if this happens.
-        return '';
-      }
-      final positionalArgs = args.rest.sublist(0);
-      String uniqueId;
-      var wasDeprecated = false;
-      if (positionalArgs.length == 4) {
-        // Supports the original form of the animation tag for backward
-        // compatibility.
-        uniqueId = positionalArgs.removeAt(0);
-        wasDeprecated = true;
-      } else if (positionalArgs.length == 3) {
-        uniqueId = args['id'] ?? getUniqueId('animation_');
-      } else {
-        warn(PackageWarning.invalidParameter,
-            message: 'Invalid @animation directive, "${basicMatch[0]}"\n'
-                'Animation directives must be of the form "{@animation WIDTH '
-                'HEIGHT URL [id=ID]}"');
-        return '';
-      }
-
-      if (!validIdRegExp.hasMatch(uniqueId)) {
-        warn(PackageWarning.invalidParameter,
-            message: 'An animation has an invalid identifier, "$uniqueId". The '
-                'identifier can only contain letters, numbers and underscores, '
-                'and must not begin with a number.');
-        return '';
-      }
-      if (package.usedAnimationIdsByHref[href].contains(uniqueId)) {
-        warn(PackageWarning.invalidParameter,
-            message: 'An animation has a non-unique identifier, "$uniqueId". '
-                'Animation identifiers must be unique.');
-        return '';
-      }
-      package.usedAnimationIdsByHref[href].add(uniqueId);
-
-      int width;
-      try {
-        width = int.parse(positionalArgs[0]);
-      } on FormatException {
-        warn(PackageWarning.invalidParameter,
-            message: 'An animation has an invalid width ($uniqueId), '
-                '"${positionalArgs[0]}". The width must be an integer.');
-        return '';
-      }
-
-      int height;
-      try {
-        height = int.parse(positionalArgs[1]);
-      } on FormatException {
-        warn(PackageWarning.invalidParameter,
-            message: 'An animation has an invalid height ($uniqueId), '
-                '"${positionalArgs[1]}". The height must be an integer.');
-        return '';
-      }
-
-      Uri movieUrl;
-      try {
-        movieUrl = Uri.parse(positionalArgs[2]);
-      } on FormatException catch (e) {
-        warn(PackageWarning.invalidParameter,
-            message: 'An animation URL could not be parsed ($uniqueId): '
-                '${positionalArgs[2]}\n$e');
-        return '';
-      }
-      var overlayId = '${uniqueId}_play_button_';
-
-      // Only warn about deprecation if some other warning didn't occur.
-      if (wasDeprecated) {
-        warn(PackageWarning.deprecated,
-            message:
-                'Deprecated form of @animation directive, "${basicMatch[0]}"\n'
-                'Animation directives are now of the form "{@animation '
-                'WIDTH HEIGHT URL [id=ID]}" (id is an optional '
-                'parameter)');
-      }
-
-      return _modelElementRenderer.renderAnimation(
-          uniqueId, width, height, movieUrl, overlayId);
-    });
   }
 
   /// Replace &lt;<dartdoc-html>[digest]</dartdoc-html>&gt; in API comments with
@@ -1639,133 +1232,8 @@ abstract class ModelElement extends Canonicalization
       if (macro == null) {
         warn(PackageWarning.unknownMacro, message: match[1]);
       }
+      macro = processCommentDirectives(macro ?? '');
       return macro;
     });
-  }
-
-  /// Parse and remove &#123;@template ...&#125; in API comments and store them
-  /// in the index on the package.
-  ///
-  /// Syntax:
-  ///
-  ///     &#123;@template NAME&#125;
-  ///     The contents of the macro
-  ///     &#123;@endtemplate&#125;
-  ///
-  String _stripMacroTemplatesAndAddToIndex(String rawDocs) {
-    return rawDocs.replaceAllMapped(templateRegExp, (match) {
-      packageGraph.addMacro(match[1].trim(), match[2].trim());
-      return '{@macro ${match[1].trim()}}';
-    });
-  }
-
-  /// Parse and remove &#123;@inject-html ...&#125; in API comments and store
-  /// them in the index on the package, replacing them with a SHA1 hash of the
-  /// contents, where the HTML will be re-injected after Markdown processing of
-  /// the rest of the text is complete.
-  ///
-  /// Syntax:
-  ///
-  ///     &#123;@inject-html&#125;
-  ///     <p>The HTML to inject.</p>
-  ///     &#123;@end-inject-html&#125;
-  ///
-  String _stripHtmlAndAddToIndex(String rawDocs) {
-    if (!config.injectHtml) return rawDocs;
-    return rawDocs.replaceAllMapped(htmlRegExp, (match) {
-      var fragment = match[1];
-      var digest = sha1.convert(fragment.codeUnits).toString();
-      packageGraph.addHtmlFragment(digest, fragment);
-      // The newlines are so that Markdown will pass this through without
-      // touching it.
-      return '\n<dartdoc-html>$digest</dartdoc-html>\n';
-    });
-  }
-
-  /// Helper to process arguments given as a (possibly quoted) string.
-  ///
-  /// First, this will split the given [argsAsString] into separate arguments,
-  /// taking any quoting (either ' or " are accepted) into account, including
-  /// handling backslash-escaped quotes.
-  ///
-  /// Then, it will prepend "--" to any args that start with an identifier
-  /// followed by an equals sign, allowing the argument parser to treat any
-  /// "foo=bar" argument as "--foo=bar". It does handle quoted args like
-  /// "foo='bar baz'" too, returning just bar (without quotes) for the foo
-  /// value.
-  Iterable<String> _splitUpQuotedArgs(String argsAsString,
-      {bool convertToArgs = false}) {
-    final Iterable<Match> matches = argMatcher.allMatches(argsAsString);
-    // Remove quotes around args, and if convertToArgs is true, then for any
-    // args that look like assignments (start with valid option names followed
-    // by an equals sign), add a "--" in front so that they parse as options.
-    return matches.map<String>((Match match) {
-      var option = '';
-      if (convertToArgs && match[1] != null && !match[1].startsWith('-')) {
-        option = '--';
-      }
-      if (match[2] != null) {
-        // This arg has quotes, so strip them.
-        return '$option${match[1] ?? ''}${match[3] ?? ''}${match[4] ?? ''}';
-      }
-      return '$option${match[0]}';
-    });
-  }
-
-  /// Helper to process arguments given as a (possibly quoted) string.
-  ///
-  /// First, this will split the given [argsAsString] into separate arguments
-  /// with [_splitUpQuotedArgs] it then parses the resulting argument list
-  /// normally with [argParser] and returns the result.
-  ArgResults _parseArgs(
-      String argsAsString, ArgParser argParser, String directiveName) {
-    var args = _splitUpQuotedArgs(argsAsString, convertToArgs: true);
-    try {
-      return argParser.parse(args);
-    } on ArgParserException catch (e) {
-      warn(PackageWarning.invalidParameter,
-          message: 'The {@$directiveName ...} directive was called with '
-              'invalid parameters. $e');
-      return null;
-    }
-  }
-
-  /// Helper for _injectExamples used to process @example arguments.
-  /// Returns a map of arguments. The first unnamed argument will have key 'src'.
-  /// The computed file path, constructed from 'src' and 'region' will have key
-  /// 'file'.
-  Map<String, String> _getExampleArgs(String argsAsString) {
-    var parser = ArgParser();
-    parser.addOption('lang');
-    parser.addOption('region');
-    var results = _parseArgs(argsAsString, parser, 'example');
-    if (results == null) {
-      return null;
-    }
-
-    // Extract PATH and fix the path separators.
-    var src = results.rest.isEmpty
-        ? ''
-        : results.rest.first.replaceAll('/', Platform.pathSeparator);
-    var args = <String, String>{
-      'src': src,
-      'lang': results['lang'],
-      'region': results['region'] ?? '',
-    };
-
-    // Compute 'file' from region and src.
-    final fragExtension = '.md';
-    var file = src + fragExtension;
-    var region = args['region'] ?? '';
-    if (region.isNotEmpty) {
-      var dir = path.dirname(src);
-      var basename = path.basenameWithoutExtension(src);
-      var ext = path.extension(src);
-      file = path.join(dir, '$basename-$region$ext$fragExtension');
-    }
-    args['file'] = config.examplePathPrefix == null
-        ? file
-        : path.join(config.examplePathPrefix, file);
-    return args;
   }
 }
