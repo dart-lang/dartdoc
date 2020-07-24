@@ -1617,7 +1617,7 @@ void main() {
     });
 
     test('correctly finds all the classes', () {
-      expect(classes, hasLength(33));
+      expect(classes, hasLength(34));
     });
 
     test('abstract', () {
