@@ -35,7 +35,15 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
   /// `{@}`-style directives, except `{@tool}`, returning the processed result.
   String processCommentWithoutTools(String documentationComment) {
     var docs = stripComments(documentationComment);
-    docs = processCommentDirectives(docs);
+    if (!docs.contains('{@')) {
+      return docs;
+    }
+    docs = _injectExamples(docs);
+    docs = _injectYouTube(docs);
+    docs = _injectAnimations(docs);
+    // TODO(srawlins): Processing templates here causes #2281. But leaving them
+    // unprocessed causes #2272.
+    docs = _stripHtmlAndAddToIndex(docs);
     return docs;
   }
 
