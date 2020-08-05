@@ -947,6 +947,7 @@ abstract class ModelElement extends Canonicalization
       .renderLinkedParams(parameters, showMetadata: false, showNames: false);
 
   ElementType get modelType {
+    var element = this.element;
     if (_modelType == null) {
       // TODO(jcollins-g): Need an interface for a "member with a type" (or changed object model).
       if (_originalMember != null &&
@@ -962,13 +963,16 @@ abstract class ModelElement extends Canonicalization
           _modelType = ElementType.from(
               (_originalMember as ParameterMember).type, library, packageGraph);
         }
-      } else if (element is ExecutableElement ||
-          element is FunctionTypedElement ||
-          element is ParameterElement ||
-          element is TypeDefiningElement ||
-          element is PropertyInducingElement) {
-        _modelType =
-            ElementType.from((element as dynamic).type, library, packageGraph);
+      } else if (element is ClassElement) {
+        _modelType = ElementType.from(element.thisType, library, packageGraph);
+      } else if (element is FunctionTypedElement) {
+        _modelType = ElementType.from(element.type, library, packageGraph);
+      } else if (element is ParameterElement) {
+        _modelType = ElementType.from(element.type, library, packageGraph);
+      } else if (element is PropertyInducingElement) {
+        _modelType = ElementType.from(element.type, library, packageGraph);
+      } else {
+        throw UnimplementedError('(${element.runtimeType}) $element');
       }
     }
     return _modelType;
