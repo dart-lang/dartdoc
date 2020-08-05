@@ -965,6 +965,9 @@ abstract class ModelElement extends Canonicalization
         }
       } else if (element is ClassElement) {
         _modelType = ElementType.from(element.thisType, library, packageGraph);
+      } else if (element is FunctionTypeAliasElement) {
+        _modelType =
+            ElementType.from(element.function.type, library, packageGraph);
       } else if (element is FunctionTypedElement) {
         _modelType = ElementType.from(element.type, library, packageGraph);
       } else if (element is ParameterElement) {
