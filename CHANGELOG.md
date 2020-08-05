@@ -1,9 +1,26 @@
+## 0.32.3
+
+* Allow injected HTML in a macro which is output by a tool (#2274).
+* Add packageName to index.json entries (#2271).
+* Bump markdown to 2.1.5 (#2267).
+* Reduce the time to generate docs. Using an example Flutter package, the time
+  required to generate docs was reduced from 67 seconds to 46 seconds, a 31%
+  reduction (#2255, #2259, #2260, #2267).
+* Don't HTML-escape source code blocks in Markdown output (#2253).
+* Don't crash when documenting an export with '//' in the path (#2254).
+* Improve null safety support (#2269).
+
+## 0.32.2 (unreleased)
+* Improve null safety support (#2248, #2250).
+* Allow dartdoc to execute a callback after `generateDocs` (#2238, #2239).
+* Fix a type parameter rendering bug (#2227).
+
 ## 0.32.1
-* Allow documenting code with null safety (#2210, #2221)
-* Refactors moving toward mono-repo support (#2219)
+* Allow documenting code with null safety (#2210, #2221).
+* Refactors moving toward mono-repo support (#2219).
 
 ## 0.32.0
-* Fix type exception in 2.9 dev versions of dart (#2214)
+* Fix type exception in 2.9 dev versions of dart (#2214).
 * **BREAKING** : Refactor `Container` class, changing the names
   of many getters for templates.  Users with custom templates
   may need to update their templates (#2206, #2208).
@@ -11,7 +28,7 @@
 * Fix crash with newer analyzers and unnamed extension methods
   (#2197).
 * Use `flutter pub get` when appropriate instead of dart
-  `pub get` (#2190)
+  `pub get` (#2190).
 
 ## 0.31.0
 * `--link-to-remote` is now the default.  (#2147)
