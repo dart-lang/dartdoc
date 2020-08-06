@@ -425,7 +425,7 @@ class Dartdoc {
         }
 
         if (uri == null || !uri.hasAuthority && !uri.hasFragment) {
-          var full;
+          String full;
           if (baseHref != null) {
             full = '${path.dirname(pathToCheck)}/$baseHref/$href';
           } else {

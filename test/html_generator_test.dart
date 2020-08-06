@@ -4,7 +4,7 @@
 
 library dartdoc.html_generator_test;
 
-import 'dart:io' show File, Directory;
+import 'dart:io' show File, FileSystemEntity, Directory;
 
 import 'package:dartdoc/dartdoc.dart';
 import 'package:dartdoc/src/generator/generator_frontend.dart';
@@ -144,12 +144,13 @@ const Matcher doesExist = _DoesExist();
 class _DoesExist extends Matcher {
   const _DoesExist();
   @override
-  bool matches(item, Map matchState) => item.existsSync();
+  bool matches(dynamic item, Map matchState) =>
+      (item as FileSystemEntity).existsSync();
   @override
   Description describe(Description description) => description.add('exists');
   @override
-  Description describeMismatch(
-      item, Description mismatchDescription, Map matchState, bool verbose) {
+  Description describeMismatch(dynamic item, Description mismatchDescription,
+      Map matchState, bool verbose) {
     if (item is! File && item is! Directory) {
       return mismatchDescription
           .addDescriptionOf(item)
