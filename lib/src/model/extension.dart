@@ -6,7 +6,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
-import 'package:quiver/iterables.dart' as quiver;
+import 'package:dartdoc/src/quiver.dart' as quiver;
 
 /// Extension methods
 class Extension extends Container

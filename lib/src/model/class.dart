@@ -8,7 +8,7 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
-import 'package:quiver/iterables.dart' as quiver;
+import 'package:dartdoc/src/quiver.dart' as quiver;
 
 /// A [Container] defined with a `class` declaration in Dart.
 ///
