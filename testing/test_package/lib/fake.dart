@@ -737,6 +737,9 @@ String topLevelFunction(int param1, bool param2, Cool coolBeans,
   return null;
 }
 
+void topLevelFunction2(int p1, bool p2,
+    [Map<String, int> p3 = const <String, int>{}]) {}
+
 /// A single optional positional param, no type annotation, no default value.
 @greatAnnotation
 void onlyPositionalWithNoDefaultNoType([@greatestAnnotation anything]) {}

@@ -2273,6 +2273,17 @@ void main() {
       expect(topLevelFunction.documentation, contains("['hello from dart']"));
     });
 
+    test('escapes HTML in default values', () {
+      var topLevelFunction2 = fakeLibrary.functions
+          .firstWhere((f) => f.name == 'topLevelFunction2');
+
+      expect(
+          topLevelFunction2.linkedParamsLines,
+          contains('<span class="parameter-name">p3</span> = '
+              '<span class="default-value">const &lt;String, int&gt;{}</span>'
+              ']</span>'));
+    });
+
     test('has source code', () {
       expect(topLevelFunction.sourceCode, startsWith('@deprecated'));
       expect(topLevelFunction.sourceCode, endsWith('''

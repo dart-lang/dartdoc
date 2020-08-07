@@ -2,9 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/parameter.dart';
+import 'package:meta/meta.dart' as meta;
 
 /// Render HTML in an extended vertical format using <ol> tag.
 class ParameterRendererHtmlList extends ParameterRendererHtml {
@@ -27,8 +30,12 @@ class ParameterRendererHtml extends ParameterRenderer {
   @override
   String covariant(String covariant) => '<span>$covariant</span>';
   @override
-  String defaultValue(String defaultValue) =>
-      '<span class="default-value">$defaultValue</span>';
+  String defaultValue(String defaultValue) {
+    var escaped =
+        const HtmlEscape(HtmlEscapeMode.unknown).convert(defaultValue);
+    return '<span class="default-value">$escaped</span>';
+  }
+
   @override
   String parameter(String parameter, String htmlId) =>
       '<span class="parameter" id="${htmlId}">$parameter</span>';
@@ -93,34 +100,38 @@ abstract class ParameterRenderer {
     var positional = '', optional = '', named = '';
     if (positionalParams.isNotEmpty) {
       positional = _linkedParameterSublist(positionalParams,
-          optionalPositionalParams.isNotEmpty || namedParams.isNotEmpty,
-          showMetadata: showMetadata, showNames: showNames);
+          trailingComma:
+              optionalPositionalParams.isNotEmpty || namedParams.isNotEmpty,
+          showMetadata: showMetadata,
+          showNames: showNames);
     }
     if (optionalPositionalParams.isNotEmpty) {
-      optional = _linkedParameterSublist(
-          optionalPositionalParams, namedParams.isNotEmpty,
+      optional = _linkedParameterSublist(optionalPositionalParams,
+          trailingComma: namedParams.isNotEmpty,
           openBracket: '[',
           closeBracket: ']',
           showMetadata: showMetadata,
           showNames: showNames);
     }
     if (namedParams.isNotEmpty) {
-      named = _linkedParameterSublist(namedParams, false,
+      named = _linkedParameterSublist(namedParams,
+          trailingComma: false,
           openBracket: '{',
           closeBracket: '}',
           showMetadata: showMetadata,
           showNames: showNames);
     }
-    return (orderedList(positional + optional + named));
+    return orderedList(positional + optional + named);
   }
 
-  String _linkedParameterSublist(List<Parameter> parameters, bool trailingComma,
-      {String openBracket = '',
+  String _linkedParameterSublist(List<Parameter> parameters,
+      {@meta.required bool trailingComma,
+      String openBracket = '',
       String closeBracket = '',
       showMetadata = true,
       showNames = true}) {
     var builder = StringBuffer();
-    parameters.forEach((p) {
+    for (var p in parameters) {
       var prefix = '';
       var suffix = '';
       if (identical(p, parameters.first)) {
@@ -136,7 +147,7 @@ abstract class ParameterRenderer {
           _renderParam(p, showMetadata: showMetadata, showNames: showNames);
       builder.write(
           listItem(parameter(prefix + renderedParam + suffix, p.htmlId)));
-    });
+    }
     return builder.toString();
   }
 
