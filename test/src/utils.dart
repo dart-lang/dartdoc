@@ -384,8 +384,12 @@ class SubprocessLauncher {
 
     var exitCode = await process.exitCode;
     if (exitCode != 0) {
-      throw ProcessException(executable, arguments,
-          'SubprocessLauncher got non-zero exitCode: $exitCode', exitCode);
+      throw ProcessException(
+          executable,
+          arguments,
+          'SubprocessLauncher got non-zero exitCode: $exitCode\n\n'
+          'stdout: ${process.stdout}\n\nstderr: ${process.stderr}',
+          exitCode);
     }
     return jsonObjects;
   }
