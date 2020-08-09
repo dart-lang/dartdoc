@@ -126,7 +126,7 @@ End text.'''));
     verify(processor.packageGraph.addMacro('abc', 'Template text.')).called(1);
   });
 
-  // TODO(srawlins): More unit tests: @video, @youtube, @animation,
+  // TODO(srawlins): More unit tests: @example, @youtube, @animation,
   // @inject-html, @tool.
 }
 
@@ -135,7 +135,7 @@ End text.'''));
 abstract class __Processor extends Fake
     implements Documentable, Warnable, Locatable, SourceCodeMixin {}
 
-/// A simple comment processor.
+/// A simple comment processor for testing [CommentProcessable].
 class _Processor extends __Processor with CommentProcessable {
   @override
   final _FakeDartdocOptionContext config;
