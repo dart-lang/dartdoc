@@ -11,7 +11,7 @@ import 'package:dartdoc/src/warnings.dart';
 import 'package:path/path.dart' as path;
 
 final _templatePattern = RegExp(
-    r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*\n?',
+    r'[ ]*{@template\s+(.+?)}([\s\S]+?){@endtemplate}[ ]*(\n?)',
     multiLine: true);
 final _htmlPattern = RegExp(
     r'[ ]*{@inject-html\s*}([\s\S]+?){@end-inject-html}[ ]*\n?',
@@ -366,9 +366,6 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
   /// The width and height must be integers specifying the dimensions of the
   /// video file in pixels.
   String _injectAnimations(String rawDocs) {
-    // Make sure we have a set to keep track of used IDs for this href.
-    package.usedAnimationIdsByHref[href] ??= {};
-
     String getUniqueId(String base) {
       var animationIdCount = 1;
       var id = '$base$animationIdCount';
@@ -382,6 +379,9 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
     }
 
     return rawDocs.replaceAllMapped(_basicAnimationPattern, (basicMatch) {
+      // Make sure we have a set to keep track of used IDs for this href.
+      package.usedAnimationIdsByHref[href] ??= {};
+
       var parser = ArgParser();
       parser.addOption('id');
       var args = _parseArgs(basicMatch[1], parser, 'animation');
@@ -481,8 +481,9 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
     return rawDocs.replaceAllMapped(_templatePattern, (match) {
       var name = match[1].trim();
       var content = match[2].trim();
+      var trailingNewline = match[3];
       packageGraph.addMacro(name, content);
-      return '{@macro $name}';
+      return '{@macro $name}$trailingNewline';
     });
   }
 
