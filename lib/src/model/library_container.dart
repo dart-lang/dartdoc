@@ -7,6 +7,7 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 
 /// A set of libraries, initialized after construction by accessing [libraries].
+///
 /// Do not cache return values of any methods or members excepting [libraries]
 /// and [name] before finishing initialization of a [LibraryContainer].
 abstract class LibraryContainer
@@ -35,11 +36,11 @@ abstract class LibraryContainer
   bool get isSdk => false;
 
   /// Returns:
-  /// -1 if this container is listed in [containerOrder].
-  /// 0 if this container is named the same as the [enclosingName].
-  /// 1 if this container represents the SDK.
-  /// 2 if this group has a name that contains the name [enclosingName].
-  /// 3 otherwise.
+  /// * -1 if this container is listed in [containerOrder].
+  /// * 0 if this container is named the same as the [enclosingName].
+  /// * 1 if this container represents the SDK.
+  /// * 2 if this group has a name that contains the name [enclosingName].
+  /// * 3 otherwise.
   int get _group {
     if (containerOrder.contains(sortKey)) return -1;
     if (equalsIgnoreAsciiCase(sortKey, enclosingName)) return 0;
