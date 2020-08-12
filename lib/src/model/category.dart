@@ -24,6 +24,8 @@ class Category extends Nameable
         Indexable
     implements Documentable {
   /// All libraries in [libraries] must come from [package].
+  // TODO(srawlins): To make final, remove public getter, setter, rename to be
+  // public, and add `final` modifier.
   Package _package;
 
   @override
@@ -35,6 +37,8 @@ class Category extends Nameable
 
   final String _name;
 
+  // TODO(srawlins): To make final, remove public getter, setter, rename to be
+  // public, and add `final` modifier.
   DartdocOptionContext _config;
 
   @override
