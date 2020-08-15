@@ -263,6 +263,7 @@ enum PackageWarning {
   deprecated,
   unresolvedExport,
   missingConstantConstructor,
+  missingExampleFile,
 }
 
 /// Used to declare defaults for a particular package warning.
