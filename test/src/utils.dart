@@ -77,8 +77,7 @@ final Directory testPackageExperimentsDir =
     Directory('testing/test_package_experiments');
 final Directory testPackageMinimumDir =
     Directory('testing/test_package_minimum');
-final Directory testPackageWithEmbedderYaml =
-    Directory('testing/test_package_embedder_yaml');
+final Directory testSkyEnginePackage = Directory('testing/sky_engine');
 final Directory testPackageWithNoReadme =
     Directory('testing/test_package_small');
 final Directory testPackageIncludeExclude =
