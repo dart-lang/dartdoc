@@ -15,8 +15,6 @@ abstract class DartdocExperimentOptionContext
     implements DartdocOptionContextBase {
   List<String> get enableExperiment =>
       optionSet['enable-experiment'].valueAt(context);
-  ExperimentStatus get experimentStatus =>
-      optionSet['experimentStatus'].valueAt(context);
 }
 
 // TODO(jcollins-g): Implement YAML parsing for these flags and generation
@@ -31,9 +29,5 @@ Future<List<DartdocOption<Object>>> createExperimentOptions() async {
                 .map((e) =>
                     '    [no-]${e.enableString}: ${e.documentation} (default: ${e.isEnabledByDefault})')
                 .join('\n')),
-    DartdocOptionSyntheticOnly<ExperimentStatus>(
-        'experimentStatus',
-        (option, dir) => ExperimentStatus.fromStrings(
-            option.parent['enable-experiment'].valueAt(dir))),
   ];
 }
