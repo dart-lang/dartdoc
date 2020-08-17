@@ -99,7 +99,8 @@ class CategoryConfiguration {
               pathContext.canonicalize(documentationMarkdown);
           if (!File(documentationMarkdown).existsSync()) {
             throw DartdocFileMissing(
-                'In categories definition for ${name}, "markdown" resolves to the missing file $documentationMarkdown');
+                'In categories definition for ${name}, "markdown" resolves to '
+                'the missing file $documentationMarkdown');
           }
         }
         newCategoryDefinitions[name] =
@@ -266,8 +267,8 @@ class DartToolDefinition extends ToolDefinition {
   Future<Tuple2<String, Function()>> modifyArgsToCreateSnapshotIfNeeded(
       List<String> args) async {
     assert(args[0] == command.first);
-    // Set up flags to create a new snapshot, if needed, and use the first run as the training
-    // run.
+    // Set up flags to create a new snapshot, if needed, and use the first run
+    // as the training run.
     var snapshot = SnapshotCache.instance.getSnapshot(command.first);
     var snapshotFile = snapshot.snapshotFile;
     var needsSnapshot = snapshot.needsSnapshot;
@@ -432,15 +433,18 @@ class _OptionValueWithContext<T> {
   p.Context pathContext;
 
   /// Build a _OptionValueWithContext.
-  /// [path] is the path where this value came from (not required to be canonical)
+  ///
+  /// [path] is the path where this value came from (not required to be
+  /// canonical).
   _OptionValueWithContext(this.value, String path, {String definingFile}) {
     this.definingFile = definingFile;
     canonicalDirectoryPath = p.canonicalize(path);
     pathContext = p.Context(current: canonicalDirectoryPath);
   }
 
-  /// Assume value is a path, and attempt to resolve it.  Throws [UnsupportedError]
-  /// if [T] isn't a [String] or [List<String>].
+  /// Assume value is a path, and attempt to resolve it.
+  ///
+  /// Throws [UnsupportedError] if [T] isn't a [String] or [List<String>].
   T get resolvedValue {
     if (value is List<String>) {
       return (value as List<String>)
@@ -462,12 +466,12 @@ class _OptionValueWithContext<T> {
 
 /// An abstract class for interacting with dartdoc options.
 ///
-/// This class and its implementations allow Dartdoc to declare options
-/// that are both defined in a configuration file and specified via the
-/// command line, with searching the directory tree for a proper file
-/// and overriding file options with the command line built-in.  A number
-/// of sanity checks are also built in to these classes so that file existence
-/// can be verified, types constrained, and defaults provided.
+/// This class and its implementations allow Dartdoc to declare options that
+/// are both defined in a configuration file and specified via the command line,
+/// with searching the directory tree for a proper file and overriding file
+/// options with the command line built-in.  A number of sanity checks are also
+/// built in to these classes so that file existence can be verified, types
+/// constrained, and defaults provided.
 ///
 /// Use via implementations [DartdocOptionSet], [DartdocOptionArgFile],
 /// [DartdocOptionArgOnly], and [DartdocOptionFileOnly].
@@ -623,7 +627,8 @@ abstract class DartdocOption<T> {
   /// Direct children of this node, mapped by name.
   final Map<String, DartdocOption<Object>> _children = {};
 
-  /// Return the calculated value of this option, given the directory as context.
+  /// Return the calculated value of this option, given the directory as
+  /// context.
   ///
   /// If [isFile] or [isDir] is set, the returned value will be transformed
   /// into a canonical path relative to the current working directory
@@ -807,13 +812,15 @@ abstract class DartdocSyntheticOption<T> implements DartdocOption<T> {
       _OptionValueWithContext<Object> valueWithContext, String missingPath) {
     var description = 'Synthetic configuration option ${name} from <internal>';
     throw DartdocFileMissing(
-        '$description, computed as ${valueWithContext.value}, resolves to missing path: "${missingPath}"');
+        '$description, computed as ${valueWithContext.value}, resolves to '
+        'missing path: "${missingPath}"');
   }
 }
 
 typedef OptionGenerator = Future<List<DartdocOption<Object>>> Function();
 
-/// A [DartdocOption] that only contains other [DartdocOption]s and is not an option itself.
+/// A [DartdocOption] that only contains other [DartdocOption]s and is not an
+/// option itself.
 class DartdocOptionSet extends DartdocOption<Null> {
   DartdocOptionSet(String name)
       : super(name, null, null, false, false, false, null);
@@ -842,15 +849,16 @@ class DartdocOptionSet extends DartdocOption<Null> {
   void _onMissing(_OptionValueWithContext<Object> valueWithContext,
       String missingFilename) {}
 
-  /// Traverse skips this node, because it doesn't represent a real configuration object.
+  /// Traverse skips this node, because it doesn't represent a real
+  /// configuration object.
   @override
   void traverse(void Function(DartdocOption<Object> option) visitor) {
     _children.values.forEach((d) => d.traverse(visitor));
   }
 }
 
-/// A [DartdocOption] that only exists as a command line argument. --help would
-/// be a good example.
+/// A [DartdocOption] that only exists as a command line argument. `--help` is a
+/// good example.
 class DartdocOptionArgOnly<T> extends DartdocOption<T>
     with _DartdocArgOption<T> {
   String _abbr;
@@ -887,7 +895,8 @@ class DartdocOptionArgOnly<T> extends DartdocOption<T>
   bool get splitCommas => _splitCommas;
 }
 
-/// A [DartdocOption] that works with command line arguments and dartdoc_options files.
+/// A [DartdocOption] that works with command line arguments and
+/// `dartdoc_options` files.
 class DartdocOptionArgFile<T> extends DartdocOption<T>
     with _DartdocArgOption<T>, _DartdocFileOption<T> {
   String _abbr;
@@ -924,8 +933,8 @@ class DartdocOptionArgFile<T> extends DartdocOption<T>
     }
   }
 
-  /// Try to find an explicit argument setting this value, but if not, fall back to files
-  /// finally, the default.
+  /// Try to find an explicit argument setting this value, but if not, fall back
+  /// to files finally, the default.
   @override
   T valueAt(Directory dir) {
     var value = _valueAtFromArgs();
@@ -972,8 +981,9 @@ class DartdocOptionFileOnly<T> extends DartdocOption<T>
 
 /// Implements checking for options contained in dartdoc.yaml.
 abstract class _DartdocFileOption<T> implements DartdocOption<T> {
-  /// If true, the parent directory's value overrides the child's.  Otherwise, the child's
-  /// value overrides values in parents.
+  /// If true, the parent directory's value overrides the child's.
+  ///
+  /// Otherwise, the child's value overrides values in parents.
   bool get parentDirOverridesChild;
 
   /// The name of the option, with nested options joined by [.].  For example:
@@ -995,8 +1005,9 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
       _OptionValueWithContext<Object> valueWithContext, String missingPath) {
     var dartdocYaml = p.join(
         valueWithContext.canonicalDirectoryPath, valueWithContext.definingFile);
-    throw DartdocFileMissing(
-        'Field ${fieldName} from ${dartdocYaml}, set to ${valueWithContext.value}, resolves to missing path: "${missingPath}"');
+    throw DartdocFileMissing('Field ${fieldName} from ${dartdocYaml}, set to '
+        '${valueWithContext.value}, resolves to missing path: '
+        '"${missingPath}"');
   }
 
   @override
@@ -1025,9 +1036,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
     return __valueAtFromFiles[key];
   }
 
-  /// Searches all dartdoc_options files through parent directories,
-  /// starting at [dir], for the option and returns one once
-  /// found.
+  /// Searches all dartdoc_options files through parent directories, starting at
+  /// [dir], for the option and returns one once found.
   _OptionValueWithContext<Object> _valueAtFromFilesFirstFound(Directory dir) {
     _OptionValueWithContext<Object> value;
     while (true) {
@@ -1038,8 +1048,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
     return value;
   }
 
-  /// Searches all dartdoc_options files for the option, and returns the
-  /// value in the top-most parent directory dartdoc_options.yaml file it is
+  /// Searches all dartdoc_options files for the option, and returns the value
+  /// in the top-most parent directory `dartdoc_options.yaml` file it is
   /// mentioned in.
   _OptionValueWithContext<Object> _valueAtFromFilesLastFound(Directory dir) {
     _OptionValueWithContext<Object> value;
@@ -1052,7 +1062,7 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
     return value;
   }
 
-  /// Returns null if not set in the yaml file in this directory (or its
+  /// Returns null if not set in the YAML file in this directory (or its
   /// parents).
   _OptionValueWithContext<Object> _valueAtFromFile(Directory dir) {
     var yamlFileData = _yamlAtDirectory(dir);
@@ -1090,7 +1100,8 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
       }
       if (_convertYamlToType == null) {
         throw DartdocOptionError(
-            'Unable to convert yaml to type for option: $fieldName, method not defined');
+            'Unable to convert yaml to type for option: $fieldName, method not '
+            'defined');
       }
       var canonicalDirectoryPath = p.canonicalize(contextPath);
       returnData = _convertYamlToType(
@@ -1138,16 +1149,19 @@ abstract class _DartdocFileOption<T> implements DartdocOption<T> {
 
 /// Mixin class implementing command-line arguments for [DartdocOption].
 abstract class _DartdocArgOption<T> implements DartdocOption<T> {
-  /// For [ArgParser], set to true if the argument can be negated with --no on the command line.
+  /// For [ArgParser], set to true if the argument can be negated with `--no` on
+  /// the command line.
   bool get negatable;
 
-  /// For [ArgParser], set to true if a single string argument will be broken into a list on commas.
+  /// For [ArgParser], set to true if a single string argument will be broken
+  /// into a list on commas.
   bool get splitCommas;
 
   /// For [ArgParser], set to true to hide this from the help menu.
   bool get hide;
 
-  /// For [ArgParser], set to a single character to have a short version of the command line argument.
+  /// For [ArgParser], set to a single character to have a short version of the
+  /// command line argument.
   String get abbr;
 
   /// valueAt for arguments ignores the [dir] parameter and only uses command
@@ -1166,7 +1180,8 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
       example = '0.76';
     }
     throw DartdocOptionError(
-        'Invalid argument value: --${argName}, set to "${value}", must be a ${T}.  Example:  --${argName} ${example}');
+        'Invalid argument value: --${argName}, set to "${value}", must be a '
+        '${T}.  Example:  --${argName} ${example}');
   }
 
   /// Returns null if no argument was given on the command line.
@@ -1183,7 +1198,8 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
   void _onMissingFromArgs(
       _OptionValueWithContext<Object> valueWithContext, String missingPath) {
     throw DartdocFileMissing(
-        'Argument --${argName}, set to ${valueWithContext.value}, resolves to missing path: "${missingPath}"');
+        'Argument --${argName}, set to ${valueWithContext.value}, resolves to '
+        'missing path: "${missingPath}"');
   }
 
   /// Generates an _OptionValueWithContext using the value of the argument from
@@ -1194,9 +1210,9 @@ abstract class _DartdocArgOption<T> implements DartdocOption<T> {
     if (!_argResults.wasParsed(argName)) return null;
 
     T retval;
-    // Unlike in _DartdocFileOption, we throw here on inputs being invalid rather
-    // than silently proceeding.  TODO(jcollins-g): throw on input formatting for
-    // files too?
+    // Unlike in _DartdocFileOption, we throw here on inputs being invalid
+    // rather than silently proceeding.  TODO(jcollins-g): throw on input
+    // formatting for files too?
     if (_isBool || _isListString || _isString) {
       retval = _argResults[argName];
     } else if (_isInt) {
@@ -1289,9 +1305,11 @@ abstract class DartdocOptionContextBase {
 }
 
 /// An [DartdocOptionSet] wrapped in nice accessors specific to Dartdoc, which
-/// automatically passes in the right directory for a given context.  Usually,
-/// a single [ModelElement], [Package], [Category] and so forth has a single context
-/// and so this can be made a member variable of those structures.
+/// automatically passes in the right directory for a given context.
+///
+/// Usually, a single [ModelElement], [Package], [Category] and so forth has a
+/// single context and so this can be made a member variable of those
+/// structures.
 class DartdocOptionContext extends DartdocOptionContextBase
     with
         DartdocExperimentOptionContext,
@@ -1325,7 +1343,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
     return DartdocOptionContext(optionSet, File(element.source.fullName));
   }
 
-  /// Build a DartdocOptionContext from an existing [DartdocOptionContext] and a new analyzer [Element].
+  /// Build a DartdocOptionContext from an existing [DartdocOptionContext] and a
+  /// new analyzer [Element].
   factory DartdocOptionContext.fromContextElement(
       DartdocOptionContext optionContext, Element element) {
     return DartdocOptionContext.fromElement(optionContext.optionSet, element);
@@ -1422,7 +1441,8 @@ class DartdocOptionContext extends DartdocOptionContextBase
   /// Output format, e.g. 'html', 'md'
   String get format => optionSet['format'].valueAt(context);
 
-  // TODO(jdkoren): temporary while we confirm href base behavior doesn't break important clients
+  // TODO(jdkoren): temporary while we confirm href base behavior doesn't break
+  // important clients
   bool get useBaseHref => optionSet['useBaseHref'].valueAt(context);
 }
 
@@ -1443,9 +1463,9 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
             'in the current package or "include-external"',
         negatable: true),
     DartdocOptionArgFile<List<String>>('categoryOrder', [],
-        help:
-            "A list of categories (not package names) to place first when grouping symbols on dartdoc's sidebar. "
-            'Unmentioned categories are sorted after these.'),
+        help: 'A list of categories (not package names) to place first when '
+            "grouping symbols on dartdoc's sidebar. Unmentioned categories are "
+            'sorted after these.'),
     DartdocOptionFileOnly<CategoryConfiguration>(
         'categories', CategoryConfiguration.empty,
         convertYamlToType: CategoryConfiguration.fromYamlMap,
@@ -1573,8 +1593,8 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
     ),
     DartdocOptionArgOnly<List<String>>('packageOrder', [],
         help:
-            'A list of package names to place first when grouping libraries in packages. '
-            'Unmentioned packages are sorted after these.'),
+            'A list of package names to place first when grouping libraries in '
+            'packages. Unmentioned packages are sorted after these.'),
     DartdocOptionArgOnly<bool>('sdkDocs', false,
         help: 'Generate ONLY the docs for the Dart SDK.'),
     DartdocOptionArgSynth<String>('sdkDir',
@@ -1606,8 +1626,8 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
     DartdocOptionArgOnly<bool>('useCategories', true,
         help: 'Display categories in the sidebar of packages'),
     DartdocOptionArgOnly<bool>('validateLinks', true,
-        help:
-            'Runs the built-in link checker to display Dart context aware warnings for broken links (slow)',
+        help: 'Runs the built-in link checker to display Dart context aware '
+            'warnings for broken links (slow)',
         negatable: true),
     DartdocOptionArgOnly<bool>('verboseWarnings', true,
         help: 'Display extra debugging information and help with warnings.',
@@ -1625,7 +1645,7 @@ Future<List<DartdocOption<Object>>> createDartdocOptions(
             'Use <base href> in generated files (legacy behavior). This option '
             'is temporary and support will be removed in the future. Use only '
             'if the default behavior breaks links between your documentation '
-            'pages, and please file an issue on Github.',
+            'pages, and please file an issue on GitHub.',
         negatable: false,
         hide: true),
     // TODO(jdkoren): Unhide when we have good support for another format.
