@@ -8,8 +8,8 @@ import 'package:dartdoc/src/element_type.dart';
 import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
+import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:meta/meta.dart';
-import 'package:quiver/iterables.dart' as quiver;
 
 /// A [Container] defined with a `class` declaration in Dart.
 ///
@@ -81,6 +81,7 @@ class Class extends Container
       quiver.concat([super.instanceOperators, inheritedOperators]);
 
   List<ModelElement> _allModelElements;
+
   @override
   List<ModelElement> get allModelElements {
     _allModelElements ??= List.from(
@@ -129,6 +130,7 @@ class Class extends Container
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
 
   List<Constructor> _publicConstructorsSorted;
+
   List<Constructor> get publicConstructorsSorted =>
       _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
 
@@ -165,7 +167,9 @@ class Class extends Container
         model_utils.findCanonicalFor(packageGraph.implementors[href] ?? []));
   }
 
-  /*lazy final*/ List<Method> _inheritedMethods;
+  /*lazy final*/
+  List<Method> _inheritedMethods;
+
   Iterable<Method> get inheritedMethods {
     if (_inheritedMethods == null) {
       _inheritedMethods = <Method>[];
@@ -192,7 +196,9 @@ class Class extends Container
 
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
 
-  /*lazy final*/ List<Operator> _inheritedOperators;
+  /*lazy final*/
+  List<Operator> _inheritedOperators;
+
   Iterable<Operator> get inheritedOperators {
     if (_inheritedOperators == null) {
       _inheritedOperators = [];
@@ -352,6 +358,7 @@ class Class extends Container
   }
 
   List<Field> _allFields;
+
   List<Field> get allFields {
     if (_allFields == null) {
       _allFields = [];
@@ -463,6 +470,7 @@ class Class extends Container
   }
 
   Iterable<Method> _declaredMethods;
+
   @override
   Iterable<Method> get declaredMethods =>
       _declaredMethods ??= element.methods.map((e) {
@@ -470,6 +478,7 @@ class Class extends Container
       });
 
   List<TypeParameter> _typeParameters;
+
   // a stronger hash?
   @override
   List<TypeParameter> get typeParameters {
@@ -481,6 +490,7 @@ class Class extends Container
   }
 
   Iterable<Field> _instanceFields;
+
   @override
   Iterable<Field> get instanceFields =>
       _instanceFields ??= allFields.where((f) => !f.isStatic);

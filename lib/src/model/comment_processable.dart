@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:crypto/crypto.dart';
+import 'package:crypto/crypto.dart' as crypto;
 import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
@@ -502,7 +502,7 @@ mixin CommentProcessable on Documentable, Warnable, Locatable, SourceCodeMixin {
     if (!config.injectHtml) return rawDocs;
     return rawDocs.replaceAllMapped(_htmlPattern, (match) {
       var fragment = match[1];
-      var digest = sha1.convert(fragment.codeUnits).toString();
+      var digest = crypto.sha1.convert(fragment.codeUnits).toString();
       packageGraph.addHtmlFragment(digest, fragment);
       // The newlines are so that Markdown will pass this through without
       // touching it.

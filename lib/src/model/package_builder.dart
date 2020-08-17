@@ -28,11 +28,11 @@ import 'package:dartdoc/src/logging.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart'
     show PackageMeta, pubPackageMetaProvider;
+import 'package:dartdoc/src/quiver.dart' as quiver;
 import 'package:dartdoc/src/render/renderer_factory.dart';
 import 'package:dartdoc/src/special_elements.dart';
 import 'package:package_config/discovery.dart' as package_config;
 import 'package:path/path.dart' as path;
-import 'package:quiver/iterables.dart' as quiver;
 
 /// Everything you need to instantiate a PackageGraph object for documenting.
 abstract class PackageBuilder {
