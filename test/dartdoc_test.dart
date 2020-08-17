@@ -338,14 +338,13 @@ void main() {
     });
 
     test('generate docs for package with embedder yaml', () async {
-      var dartdoc =
-          await buildDartdoc([], testPackageWithEmbedderYaml, tempDir);
+      var dartdoc = await buildDartdoc([], testSkyEnginePackage, tempDir);
 
       var results = await dartdoc.generateDocs();
       expect(results.packageGraph, isNotNull);
 
       var p = results.packageGraph;
-      expect(p.defaultPackage.name, 'test_package_embedder_yaml');
+      expect(p.defaultPackage.name, 'sky_engine');
       expect(p.defaultPackage.hasDocumentationFile, isFalse);
       expect(p.libraries, hasLength(3));
       expect(p.libraries.map((lib) => lib.name).contains('dart:core'), isTrue);
@@ -354,7 +353,7 @@ void main() {
       expect(p.packageMap.length, equals(2));
       // Things that do not override the core SDK belong in their own package.
       expect(p.packageMap['Dart'].isSdk, isTrue);
-      expect(p.packageMap['test_package_embedder_yaml'].isSdk, isFalse);
+      expect(p.packageMap['sky_engine'].isSdk, isFalse);
       // Should be true once dart-lang/sdk#32707 is fixed.
       //expect(
       //    p.publicLibraries,
