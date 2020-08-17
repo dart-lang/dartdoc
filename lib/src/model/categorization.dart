@@ -4,13 +4,13 @@
 
 import 'package:dartdoc/src/model/model.dart';
 
-final RegExp _categoryRegexp = RegExp(
+final RegExp _categoryRegExp = RegExp(
     r'[ ]*{@(api|category|subCategory|image|samples) (.+?)}[ ]*\n?',
     multiLine: true);
 
 @Deprecated('Public variable intended to be private; will be removed as early '
     'as Dartdoc 1.0.0')
-RegExp get categoryRegexp => _categoryRegexp;
+RegExp get categoryRegexp => _categoryRegExp;
 
 /// Mixin implementing dartdoc categorization for ModelElements.
 abstract class Categorization implements ModelElement {
@@ -26,7 +26,7 @@ abstract class Categorization implements ModelElement {
     var _subCategorySet = <String>{};
     _hasCategorization = false;
 
-    rawDocs = rawDocs.replaceAllMapped(_categoryRegexp, (match) {
+    rawDocs = rawDocs.replaceAllMapped(_categoryRegExp, (match) {
       _hasCategorization = true;
       switch (match[1]) {
         case 'category':
