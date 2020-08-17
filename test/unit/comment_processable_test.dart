@@ -11,14 +11,18 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/package_meta.dart';
 import 'package:dartdoc/src/render/model_element_renderer.dart';
 import 'package:dartdoc/src/warnings.dart';
+import 'package:path/path.dart' as p;
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
+
+final _projectRoot = p.join('/', 'project');
+final _aLibPath = p.join(_projectRoot, 'a.dart');
 
 void main() {
   _Processor processor;
   setUp(() {
     processor = _Processor(_FakeDartdocOptionContext());
-    processor.href = '/project/a.dart';
+    processor.href = _aLibPath;
   });
 
   test('removes triple slashes', () async {
@@ -57,8 +61,7 @@ More text.'''));
   });
 
   test('processes @animation', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     var doc = await processor.processComment('''
 /// Text.
 ///
@@ -75,8 +78,7 @@ End text.'''));
   });
 
   test('warns when @animation has fewer than 3 arguments', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -94,8 +96,7 @@ End text.'''));
   });
 
   test('warns when @animation has more than 4 arguments', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -114,8 +115,7 @@ End text.'''));
   });
 
   test('warns when @animation has more than 4 arguments', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -134,8 +134,7 @@ End text.'''));
   });
 
   test('warns when @animation has a non-unique identifier', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -152,8 +151,7 @@ End text.'''));
   });
 
   test('warns when @animation has an invalid identifier', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -170,8 +168,7 @@ End text.'''));
   });
 
   test('warns when @animation has a malformed width', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -187,8 +184,7 @@ End text.'''));
   });
 
   test('warns when @animation has a malformed height', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -204,8 +200,7 @@ End text.'''));
   });
 
   test('warns when @animation has an unknown parameter', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -222,8 +217,7 @@ End text.'''));
   });
 
   test('warns when @animation uses the deprecated syntax', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment('''
 /// Text.
 ///
@@ -318,8 +312,7 @@ End text.'''));
   });
 
   test('processes @example with file-not-found', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     var doc = await processor.processComment('''
 /// Text.
 ///
@@ -329,7 +322,8 @@ End text.'''));
 ''');
     verify(processor.packageGraph.warnOnElement(
             processor, PackageWarning.missingExampleFile,
-            message: '/project/abc.md; path listed at a.dart'))
+            message:
+                '${p.join(_projectRoot, 'abc.md')}; path listed at a.dart'))
         .called(1);
     // When the example path is invalid, the directive should be left in-place.
     expect(doc, equals('''
@@ -341,8 +335,7 @@ End text.'''));
   });
 
   test('processes @example with directories', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     var doc = await processor.processComment('''
 /// Text.
 ///
@@ -352,7 +345,8 @@ End text.'''));
 ''');
     verify(processor.packageGraph.warnOnElement(
             processor, PackageWarning.missingExampleFile,
-            message: '/project/abc/def/ghi.md; path listed at a.dart'))
+            message:
+                '${p.join(_projectRoot, 'abc', 'def', 'ghi.md')}; path listed at a.dart'))
         .called(1);
     // When the example path is invalid, the directive should be left in-place.
     expect(doc, equals('''
@@ -364,8 +358,7 @@ End text.'''));
   });
 
   test('processes @example with a region', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     var doc = await processor.processComment('''
 /// Text.
 ///
@@ -375,7 +368,8 @@ End text.'''));
 ''');
     verify(processor.packageGraph.warnOnElement(
             processor, PackageWarning.missingExampleFile,
-            message: '/project/./abc-r.md; path listed at a.dart'))
+            message:
+                '${p.join(_projectRoot, '.', 'abc-r.md')}; path listed at a.dart'))
         .called(1);
     // When the example path is invalid, the directive should be left in-place.
     expect(doc, equals('''
@@ -390,8 +384,7 @@ End text.'''));
   // we abstract the file system.
 
   test('processes @youtube', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     var doc = await processor.processComment('''
 /// Text.
 ///
@@ -408,8 +401,7 @@ End text.'''));
   });
 
   test('processes leading @youtube', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     var doc = await processor.processComment('''
 /// {@youtube 100 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}
 ///
@@ -422,8 +414,7 @@ End text.'''));
   });
 
   test('processes trailing @youtube', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     var doc = await processor.processComment('''
 /// Text.
 ///
@@ -436,8 +427,7 @@ Text.
   });
 
   test('warns when @youtube has less than 3 arguments', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment(
         '/// {@youtube 100 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph.warnOnElement(
@@ -450,8 +440,7 @@ Text.
   });
 
   test('warns when @youtube has more than 3 arguments', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment(
         '/// {@youtube 100 200 300 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph.warnOnElement(
@@ -464,8 +453,7 @@ Text.
   });
 
   test('warns when @youtube has a malformed width', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment(
         '/// {@youtube 100px 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph
@@ -476,8 +464,7 @@ Text.
   });
 
   test('warns when @youtube has a negative width', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment(
         '/// {@youtube -100 200 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph.warnOnElement(
@@ -489,8 +476,7 @@ Text.
   });
 
   test('warns when @youtube has a malformed height', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment(
         '/// {@youtube 100 200px https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph
@@ -501,8 +487,7 @@ Text.
   });
 
   test('warns when @youtube has a negative height', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment(
         '/// {@youtube 100 -200 https://www.youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph.warnOnElement(
@@ -514,8 +499,7 @@ Text.
   });
 
   test('warns when @youtube has an invalid URL', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment(
         '/// {@youtube 100 200 https://www.not-youtube.com/watch?v=oHg5SJYRHA0}');
     verify(processor.packageGraph.warnOnElement(
@@ -528,8 +512,7 @@ Text.
   });
 
   test('warns when @youtube has a URL with extra query parameters', () async {
-    processor.element =
-        _FakeElement(source: _FakeSource(fullName: '/project/a.dart'));
+    processor.element = _FakeElement(source: _FakeSource(fullName: _aLibPath));
     await processor.processComment(
         '/// {@youtube 100 200 https://www.not-youtube.com/watch?v=oHg5SJYRHA0&a=1}');
     verify(processor.packageGraph.warnOnElement(
@@ -594,7 +577,7 @@ class _FakeDirectory extends Fake implements Directory {
   @override
   final String path;
 
-  _FakeDirectory() : path = '/project';
+  _FakeDirectory() : path = _projectRoot;
 }
 
 class _MockModelElementRenderer extends Mock implements ModelElementRenderer {}
