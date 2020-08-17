@@ -10,7 +10,10 @@ import 'package:dartdoc/src/model/model.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as path;
 
-final uriTemplateRegexp = RegExp(r'(%[frl]%)');
+final _uriTemplateRegexp = RegExp(r'(%[frl]%)');
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+RegExp get uriTemplateRegexp => _uriTemplateRegexp;
 
 abstract class SourceLinkerOptionContext implements DartdocOptionContextBase {
   List<String> get linkToSourceExcludes =>
@@ -105,7 +108,7 @@ class SourceLinker {
             .any((String exclude) => path.isWithin(exclude, sourceFileName))) {
       return '';
     }
-    return uriTemplate.replaceAllMapped(uriTemplateRegexp, (match) {
+    return uriTemplate.replaceAllMapped(_uriTemplateRegexp, (match) {
       switch (match[1]) {
         case '%f%':
           var urlContext = path.Context(style: path.Style.url);

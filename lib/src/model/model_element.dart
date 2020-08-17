@@ -65,11 +65,17 @@ int byFeatureOrdering(String a, String b) {
 
 /// This doc may need to be processed in case it has a template or html
 /// fragment.
-final needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
+final RegExp needsPrecacheRegExp = RegExp(r'{@(template|tool|inject-html)');
 
-final htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
+final _htmlInjectRegExp = RegExp(r'<dartdoc-html>([a-f0-9]+)</dartdoc-html>');
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+RegExp get htmlInjectRegExp => _htmlInjectRegExp;
 
-final macroRegExp = RegExp(r'{@macro\s+([^}]+)}');
+final _macroRegExp = RegExp(r'{@macro\s+([^}]+)}');
+@Deprecated('Public variable intended to be private; will be removed as early '
+    'as Dartdoc 1.0.0')
+RegExp get macroRegExp => _macroRegExp;
 
 // TODO(jcollins-g): Implement resolution per ECMA-408 4th edition, page 39 #22.
 /// Resolves this very rare case incorrectly by picking the closest element in
@@ -1198,7 +1204,7 @@ abstract class ModelElement extends Canonicalization
   String _injectHtmlFragments(String rawDocs) {
     if (!config.injectHtml) return rawDocs;
 
-    return rawDocs.replaceAllMapped(htmlInjectRegExp, (match) {
+    return rawDocs.replaceAllMapped(_htmlInjectRegExp, (match) {
       var fragment = packageGraph.getHtmlFragment(match[1]);
       if (fragment == null) {
         warn(PackageWarning.unknownHtmlFragment, message: match[1]);
@@ -1234,7 +1240,7 @@ abstract class ModelElement extends Canonicalization
   ///     More comments
   ///
   String _injectMacros(String rawDocs) {
-    return rawDocs.replaceAllMapped(macroRegExp, (match) {
+    return rawDocs.replaceAllMapped(_macroRegExp, (match) {
       var macro = packageGraph.getMacro(match[1]);
       if (macro == null) {
         warn(PackageWarning.unknownMacro, message: match[1]);
