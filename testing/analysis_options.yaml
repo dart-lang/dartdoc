@@ -1,0 +1,2 @@
+# This file exists only to prevent the analyzer from climbing up and using
+# the analysis_options.yaml file from the dartdoc package.
