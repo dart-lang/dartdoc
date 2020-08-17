@@ -71,9 +71,10 @@ abstract class PackageMeta {
   PackageMeta(this.dir);
 
   @override
-  bool operator ==(other) {
+  bool operator ==(Object other) {
     if (other is! PackageMeta) return false;
-    return path.equals(dir.absolute.path, other.dir.absolute.path);
+    PackageMeta otherMeta = other;
+    return path.equals(dir.absolute.path, otherMeta.dir.absolute.path);
   }
 
   @override
@@ -278,7 +279,7 @@ class _FilePackageMeta extends PubPackageMeta {
     if (f.existsSync()) {
       _pubspec = loadYaml(f.readAsStringSync());
     } else {
-      _pubspec = {};
+      _pubspec = <dynamic, dynamic>{};
     }
   }
 

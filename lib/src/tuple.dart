@@ -22,7 +22,8 @@ class Tuple2<T1, T2> {
   String toString() => '[$item1, $item2]';
 
   @override
-  bool operator ==(o) => o is Tuple2 && o.item1 == item1 && o.item2 == item2;
+  bool operator ==(Object o) =>
+      o is Tuple2 && o.item1 == item1 && o.item2 == item2;
 
   @override
   int get hashCode => hash2(item1.hashCode, item2.hashCode);
@@ -46,7 +47,7 @@ class Tuple3<T1, T2, T3> {
   String toString() => '[$item1, $item2, $item3]';
 
   @override
-  bool operator ==(o) =>
+  bool operator ==(Object o) =>
       o is Tuple3 && o.item1 == item1 && o.item2 == item2 && o.item3 == item3;
 
   @override
@@ -74,7 +75,7 @@ class Tuple4<T1, T2, T3, T4> {
   String toString() => '[$item1, $item2, $item3, $item4]';
 
   @override
-  bool operator ==(o) =>
+  bool operator ==(Object o) =>
       o is Tuple4 &&
       o.item1 == item1 &&
       o.item2 == item2 &&

@@ -90,7 +90,7 @@ abstract class ParameterRenderer {
   String required(String required);
 
   String renderLinkedParams(List<Parameter> parameters,
-      {showMetadata = true, showNames = true}) {
+      {bool showMetadata = true, bool showNames = true}) {
     var positionalParams =
         parameters.where((Parameter p) => p.isRequiredPositional).toList();
     var optionalPositionalParams =

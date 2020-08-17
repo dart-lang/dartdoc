@@ -195,7 +195,7 @@ class ToolRunner {
     }
 
     argsWithInput = toolArgs + argsWithInput;
-    var commandPath;
+    String commandPath;
     void Function() callCompleter;
     if (toolDefinition is DartToolDefinition) {
       var modified = await toolDefinition

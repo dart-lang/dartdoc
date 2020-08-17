@@ -48,7 +48,7 @@ class Field extends ModelElement
     // to prevent displaying more or less than one summary.
     if (isPublic) {
       var assertCheck = <dynamic>{}
-        ..addAll([hasPublicSetter, hasPublicGetterNoSetter]);
+        ..addAll(<bool>[hasPublicSetter, hasPublicGetterNoSetter]);
       assert(assertCheck.containsAll([true, false]));
     }
     documentationFrom;

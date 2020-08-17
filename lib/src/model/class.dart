@@ -84,7 +84,7 @@ class Class extends Container
   @override
   List<ModelElement> get allModelElements {
     _allModelElements ??= List.from(
-        quiver.concat([
+        quiver.concat<ModelElement>([
           super.allModelElements,
           constructors,
           typeParameters,
@@ -492,7 +492,7 @@ class Class extends Container
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
   @override
-  bool operator ==(o) =>
+  bool operator ==(Object o) =>
       o is Class &&
       name == o.name &&
       o.library.name == library.name &&
