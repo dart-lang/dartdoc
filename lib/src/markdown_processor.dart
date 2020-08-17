@@ -164,7 +164,8 @@ class MatchingLinkResult {
 }
 
 class IterableBlockParser extends md.BlockParser {
-  IterableBlockParser(lines, document) : super(lines, document);
+  IterableBlockParser(List<String> lines, md.Document document)
+      : super(lines, document);
 
   Iterable<md.Node> parseLinesGenerator() sync* {
     while (!isDone) {
@@ -870,7 +871,7 @@ class MarkdownDocument extends md.Document {
       Iterable<md.InlineSyntax> inlineSyntaxes,
       md.ExtensionSet extensionSet,
       md.Resolver linkResolver,
-      imageLinkResolver})
+      md.Resolver imageLinkResolver})
       : super(
             blockSyntaxes: blockSyntaxes,
             inlineSyntaxes: inlineSyntaxes,

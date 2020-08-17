@@ -102,7 +102,7 @@ class Extension extends Container
   @override
   List<ModelElement> get allModelElements {
     _allModelElements ??= List.from(
-        quiver.concat([
+        quiver.concat<ModelElement>([
           super.allModelElements,
           typeParameters,
         ]),

@@ -9,6 +9,7 @@ import 'package:dartdoc/src/model/extension_target.dart';
 import 'package:dartdoc/src/model/model.dart';
 import 'package:dartdoc/src/model_utils.dart' as model_utils;
 import 'package:dartdoc/src/quiver.dart' as quiver;
+import 'package:meta/meta.dart';
 
 /// A [Container] defined with a `class` declaration in Dart.
 ///
@@ -20,32 +21,43 @@ import 'package:dartdoc/src/quiver.dart' as quiver;
 class Class extends Container
     with TypeParameters, Categorization, ExtensionTarget
     implements EnclosedElement {
-  List<DefinedElementType> mixins;
-  DefinedElementType supertype;
-  List<DefinedElementType> _interfaces;
-  List<Operator> _inheritedOperators;
-  List<Method> _inheritedMethods;
+  // TODO(srawlins): To make final, remove public getter, setter, rename to be
+  // public, and add `final` modifier.
+  List<DefinedElementType> _mixins;
+
+  List<DefinedElementType> get mixins => _mixins;
+
+  @Deprecated('Field intended to be final; setter will be removed as early as '
+      'Dartdoc 1.0.0')
+  set mixins(List<DefinedElementType> value) => _mixins = value;
+
+  // TODO(srawlins): To make final, remove public getter, setter, rename to be
+  // public, and add `final` modifier.
+  DefinedElementType _supertype;
+
+  DefinedElementType get supertype => _supertype;
+
+  @Deprecated('Field intended to be final; setter will be removed as early as '
+      'Dartdoc 1.0.0')
+  set supertype(DefinedElementType value) => _supertype = value;
+
+  final List<DefinedElementType> _interfaces;
 
   Class(ClassElement element, Library library, PackageGraph packageGraph)
-      : super(element, library, packageGraph) {
+      : _mixins = element.mixins
+            .map<DefinedElementType>(
+                (f) => ElementType.from(f, library, packageGraph))
+            .where((mixin) => mixin != null)
+            .toList(growable: false),
+        _supertype = element.supertype?.element?.supertype == null
+            ? null
+            : ElementType.from(element.supertype, library, packageGraph),
+        _interfaces = element.interfaces
+            .map<DefinedElementType>(
+                (f) => ElementType.from(f, library, packageGraph))
+            .toList(growable: false),
+        super(element, library, packageGraph) {
     packageGraph.specialClasses.addSpecial(this);
-    mixins = element.mixins
-        .map((f) {
-          DefinedElementType t = ElementType.from(f, library, packageGraph);
-          return t;
-        })
-        .where((mixin) => mixin != null)
-        .toList(growable: false);
-
-    if (element.supertype != null &&
-        element.supertype.element.supertype != null) {
-      supertype = ElementType.from(element.supertype, library, packageGraph);
-    }
-
-    _interfaces = element.interfaces
-        .map((f) =>
-            ElementType.from(f, library, packageGraph) as DefinedElementType)
-        .toList(growable: false);
   }
 
   Constructor _defaultConstructor;
@@ -60,6 +72,7 @@ class Class extends Container
   Iterable<Method> get instanceMethods =>
       quiver.concat([super.instanceMethods, inheritedMethods]);
 
+  // Whether all instance methods are inherited, used in mustache templates.
   bool get publicInheritedInstanceMethods =>
       instanceMethods.every((f) => f.isInherited);
 
@@ -68,10 +81,11 @@ class Class extends Container
       quiver.concat([super.instanceOperators, inheritedOperators]);
 
   List<ModelElement> _allModelElements;
+
   @override
   List<ModelElement> get allModelElements {
     _allModelElements ??= List.from(
-        quiver.concat([
+        quiver.concat<ModelElement>([
           super.allModelElements,
           constructors,
           typeParameters,
@@ -87,10 +101,10 @@ class Class extends Container
         allModelElements.where((e) => e.isCanonical).toList());
   }
 
-  Iterable<Constructor> get constructors => element.constructors.map((e) {
-        return ModelElement.from(e, library, packageGraph) as Constructor;
-      });
+  Iterable<Constructor> get constructors => element.constructors
+      .map((e) => ModelElement.from(e, library, packageGraph) as Constructor);
 
+  @visibleForTesting
   Iterable<Constructor> get publicConstructors =>
       model_utils.filterNonPublic(constructors);
 
@@ -112,9 +126,11 @@ class Class extends Container
     return kind;
   }
 
+  // Whether any constructors are public, used in mustache templates.
   bool get hasPublicConstructors => publicConstructorsSorted.isNotEmpty;
 
   List<Constructor> _publicConstructorsSorted;
+
   List<Constructor> get publicConstructorsSorted =>
       _publicConstructorsSorted ??= publicConstructors.toList()..sort(byName);
 
@@ -151,6 +167,9 @@ class Class extends Container
         model_utils.findCanonicalFor(packageGraph.implementors[href] ?? []));
   }
 
+  /*lazy final*/
+  List<Method> _inheritedMethods;
+
   Iterable<Method> get inheritedMethods {
     if (_inheritedMethods == null) {
       _inheritedMethods = <Method>[];
@@ -176,6 +195,9 @@ class Class extends Container
       model_utils.filterNonPublic(inheritedMethods);
 
   bool get hasPublicInheritedMethods => publicInheritedMethods.isNotEmpty;
+
+  /*lazy final*/
+  List<Operator> _inheritedOperators;
 
   Iterable<Operator> get inheritedOperators {
     if (_inheritedOperators == null) {
@@ -227,8 +249,13 @@ class Class extends Container
   }
 
   /// Returns true if [other] is a parent class for this class.
-  bool isInheritingFrom(covariant Class other) =>
+  bool _isInheritingFrom(Class other) =>
       superChain.map((et) => (et.element as Class)).contains(other);
+
+  @Deprecated(
+      'Public method intended to be private; will be removed as early as '
+      'Dartdoc 1.0.0')
+  bool isInheritingFrom(Class other) => _isInheritingFrom(other);
 
   @override
   String get kind => 'class';
@@ -331,6 +358,7 @@ class Class extends Container
   }
 
   List<Field> _allFields;
+
   List<Field> get allFields {
     if (_allFields == null) {
       _allFields = [];
@@ -417,7 +445,7 @@ class Class extends Container
         // to this class on the inheritance chain.
         if (setter.enclosingElement is Class &&
             (setter.enclosingElement as Class)
-                .isInheritingFrom(getter.enclosingElement)) {
+                ._isInheritingFrom(getter.enclosingElement)) {
           f = setterElement.variable;
         } else {
           f = getterElement.variable;
@@ -442,6 +470,7 @@ class Class extends Container
   }
 
   Iterable<Method> _declaredMethods;
+
   @override
   Iterable<Method> get declaredMethods =>
       _declaredMethods ??= element.methods.map((e) {
@@ -449,6 +478,7 @@ class Class extends Container
       });
 
   List<TypeParameter> _typeParameters;
+
   // a stronger hash?
   @override
   List<TypeParameter> get typeParameters {
@@ -460,6 +490,7 @@ class Class extends Container
   }
 
   Iterable<Field> _instanceFields;
+
   @override
   Iterable<Field> get instanceFields =>
       _instanceFields ??= allFields.where((f) => !f.isStatic);
@@ -471,7 +502,7 @@ class Class extends Container
   Iterable<Field> get constantFields => allFields.where((f) => f.isConst);
 
   @override
-  bool operator ==(o) =>
+  bool operator ==(Object o) =>
       o is Class &&
       name == o.name &&
       o.library.name == library.name &&

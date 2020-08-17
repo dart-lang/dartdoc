@@ -20,8 +20,8 @@ abstract class TemplateData<T extends Documentable> {
   String get layoutTitle;
   String get metaDescription;
 
-  List get navLinks;
-  List get navLinksWithGenerics => [];
+  List<Documentable> get navLinks;
+  List<Documentable> get navLinksWithGenerics => [];
   Documentable get parent {
     if (navLinksWithGenerics.isEmpty) {
       return navLinks.isNotEmpty ? navLinks.last : null;
@@ -60,7 +60,7 @@ class PackageTemplateData extends TemplateData<Package> {
   @override
   bool get includeVersion => true;
   @override
-  List get navLinks => [];
+  List<Documentable> get navLinks => [];
   @override
   String get title => '${package.name} - Dart API docs';
   @override
@@ -101,7 +101,7 @@ class CategoryTemplateData extends TemplateData<Category> {
       '${category.name} ${category.kind} docs, for the Dart programming language.';
 
   @override
-  List get navLinks => [category.package];
+  List<Documentable> get navLinks => [category.package];
 
   @override
   Category get self => category;
@@ -122,7 +122,7 @@ class LibraryTemplateData extends TemplateData<Library> {
   String get metaDescription =>
       '${library.name} library API docs, for the Dart programming language.';
   @override
-  List get navLinks => [packageGraph.defaultPackage];
+  List<Documentable> get navLinks => [packageGraph.defaultPackage];
 
   @override
   String get layoutTitle =>
@@ -170,7 +170,7 @@ class ClassTemplateData<T extends Class> extends TemplateData<T> {
   String get layoutTitle => _layoutTitle(
       clazz.nameWithLinkedGenerics, clazz.fullkind, clazz.isDeprecated);
   @override
-  List get navLinks => [packageGraph.defaultPackage, library];
+  List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
   @override
   String get htmlBase => '../';
 
@@ -213,7 +213,7 @@ class ExtensionTemplateData<T extends Extension> extends TemplateData<T> {
   @override
   String get layoutTitle => _layoutTitle(extension.name, extension.kind, false);
   @override
-  List get navLinks => [packageGraph.defaultPackage, library];
+  List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
   @override
   String get htmlBase => '../';
 }
@@ -233,9 +233,9 @@ class ConstructorTemplateData extends TemplateData<Constructor> {
   String get layoutTitle => _layoutTitle(
       constructor.name, constructor.fullKind, constructor.isDeprecated);
   @override
-  List get navLinks => [packageGraph.defaultPackage, library];
+  List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
   @override
-  List get navLinksWithGenerics => [clazz];
+  List<Documentable> get navLinksWithGenerics => [clazz];
   @override
   @override
   String get htmlBase => '../../';
@@ -280,7 +280,7 @@ class FunctionTemplateData extends TemplateData<ModelFunction> {
       'API docs for the ${function.name} function from the '
       '${library.name} library, for the Dart programming language.';
   @override
-  List get navLinks => [packageGraph.defaultPackage, library];
+  List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
   @override
   String get htmlBase => '../';
 }
@@ -311,9 +311,9 @@ class MethodTemplateData extends TemplateData<Method> {
       'API docs for the ${method.name} method from the '
       '${container.name} ${containerDesc}, for the Dart programming language.';
   @override
-  List get navLinks => [packageGraph.defaultPackage, library];
+  List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
   @override
-  List get navLinksWithGenerics => [container];
+  List<Documentable> get navLinksWithGenerics => [container];
   @override
   String get htmlBase => '../../';
 }
@@ -345,9 +345,9 @@ class PropertyTemplateData extends TemplateData<Field> {
       'API docs for the ${property.name} $_type from the '
       '${container.name} ${containerDesc}, for the Dart programming language.';
   @override
-  List get navLinks => [packageGraph.defaultPackage, library];
+  List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
   @override
-  List get navLinksWithGenerics => [container];
+  List<Documentable> get navLinksWithGenerics => [container];
   @override
   String get htmlBase => '../../';
 
@@ -376,7 +376,7 @@ class TypedefTemplateData extends TemplateData<Typedef> {
       'API docs for the ${typeDef.name} property from the '
       '${library.name} library, for the Dart programming language.';
   @override
-  List get navLinks => [packageGraph.defaultPackage, library];
+  List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
   @override
   String get htmlBase => '../';
 }
@@ -403,7 +403,7 @@ class TopLevelPropertyTemplateData extends TemplateData<TopLevelVariable> {
       'API docs for the ${property.name} $_type from the '
       '${library.name} library, for the Dart programming language.';
   @override
-  List get navLinks => [packageGraph.defaultPackage, library];
+  List<Documentable> get navLinks => [packageGraph.defaultPackage, library];
   @override
   String get htmlBase => '../';
 

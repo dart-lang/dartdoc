@@ -27,7 +27,7 @@ class Typedef extends ModelElement
     if (element is GenericTypeAliasElement) {
       return (element as GenericTypeAliasElement).function.typeParameters;
     }
-    return Iterable.empty();
+    return Iterable<TypeParameterElement>.empty();
   }
 
   @override

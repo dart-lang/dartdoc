@@ -341,6 +341,12 @@ dd p {
   margin-bottom: 0;
 }
 
+/* Enum values do not have their own pages; their full docs are presented on the
+ * enum class's page. */
+dt.constant + dd p {
+  margin-bottom: 1em;
+}
+
 /* indents wrapped lines */
 section.summary dt {
   margin-left: 24px;

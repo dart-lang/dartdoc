@@ -29,5 +29,6 @@ linter:
     - prefer_final_fields
     - prefer_generic_function_type_aliases
     - slash_for_doc_comments
+    - type_annotate_public_apis
     - unawaited_futures
 #    - unnecessary_brace_in_string_interps

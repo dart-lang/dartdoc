@@ -6,7 +6,7 @@
 
 // From lib/iterables.dart:
 
-/// Returns the concatentation of the input iterables.
+/// Returns the concatenation of the input iterables.
 ///
 /// The returned iterable is a lazily-evaluated view on the input iterables.
 Iterable<T> concat<T>(Iterable<Iterable<T>> iterables) =>
@@ -15,14 +15,15 @@ Iterable<T> concat<T>(Iterable<Iterable<T>> iterables) =>
 // From lib/src/core/hash.dart:
 
 /// Generates a hash code for two objects.
-int hash2(a, b) => _finish(_combine(_combine(0, a.hashCode), b.hashCode));
+int hash2(Object a, Object b) =>
+    _finish(_combine(_combine(0, a.hashCode), b.hashCode));
 
 /// Generates a hash code for three objects.
-int hash3(a, b, c) => _finish(
+int hash3(Object a, Object b, Object c) => _finish(
     _combine(_combine(_combine(0, a.hashCode), b.hashCode), c.hashCode));
 
 /// Generates a hash code for four objects.
-int hash4(a, b, c, d) => _finish(_combine(
+int hash4(Object a, Object b, Object c, Object d) => _finish(_combine(
     _combine(_combine(_combine(0, a.hashCode), b.hashCode), c.hashCode),
     d.hashCode));
 

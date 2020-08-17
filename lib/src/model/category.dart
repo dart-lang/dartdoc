@@ -24,11 +24,30 @@ class Category extends Nameable
         Indexable
     implements Documentable {
   /// All libraries in [libraries] must come from [package].
+  // TODO(srawlins): To make final, remove public getter, setter, rename to be
+  // public, and add `final` modifier.
+  Package _package;
+
   @override
-  Package package;
+  Package get package => _package;
+
+  @Deprecated('Field intended to be final; setter will be removed as early as '
+      'Dartdoc 1.0.0')
+  set package(Package value) => _package = value;
+
   final String _name;
+
+  // TODO(srawlins): To make final, remove public getter, setter, rename to be
+  // public, and add `final` modifier.
+  DartdocOptionContext _config;
+
   @override
-  DartdocOptionContext config;
+  DartdocOptionContext get config => _config;
+
+  @Deprecated('Field intended to be final; setter will be removed as early as '
+      'Dartdoc 1.0.0')
+  set config(DartdocOptionContext value) => _config = value;
+
   final Set<Categorization> _allItems = {};
 
   final List<Class> _classes = [];
@@ -41,7 +60,7 @@ class Category extends Nameable
   final List<ModelFunction> _functions = [];
   final List<Typedef> _typedefs = [];
 
-  Category(this._name, this.package, this.config);
+  Category(this._name, this._package, this._config);
 
   void addItem(Categorization c) {
     if (_allItems.contains(c)) return;
@@ -118,15 +137,24 @@ class Category extends Nameable
   @override
   String get fullyQualifiedName => name;
 
-  String get fileType => package.fileType;
+  String get _fileType => package.fileType;
 
-  String get filePath => 'topics/$name-topic.$fileType';
+  @Deprecated(
+      'Public field intended to be private; will be removed as early as '
+      'Dartdoc 1.0.0')
+  String get fileType => _fileType;
+
+  String get filePath => 'topics/$name-topic.$_fileType';
 
   @override
   String get href => isCanonical ? '${package.baseHref}$filePath' : null;
 
+  @Deprecated(
+      'Public field is unused; will be removed as early as Dartdoc 1.0.0')
   String get categoryLabel => _categoryRenderer.renderCategoryLabel(this);
 
+  @Deprecated(
+      'Public field is unused; will be removed as early as Dartdoc 1.0.0')
   String get linkedName => _categoryRenderer.renderLinkedName(this);
 
   int _categoryIndex;
